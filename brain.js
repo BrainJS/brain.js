@@ -23,10 +23,14 @@ NeuralNetwork.prototype = {
   createLayers : function(hidden) {
     this.layers = [];
 
-    var nlayers = hidden ? hidden.length + 2 : 3;
+    var nlayers = 3; // one hidden layer is default
+    if(hidden)
+      nlayers = hidden.length + 2;
+
     var prevLayer;
     for(var i = 0; i < nlayers; i++) {
-      var nnodes = hidden ? hidden[i - 1] : 0;
+      if(hidden)
+        var nnodes = hidden[i - 1];
       var layer = new Layer(this, prevLayer, nnodes);
       this.layers.push(layer);
       prevLayer = layer;
@@ -52,16 +56,6 @@ NeuralNetwork.prototype = {
     return this.formatOutput(outputs);
   },
 
-  formatOutput : function(outputs) {
-    var values = [];
-    for(var id in outputs) {
-      if(parseInt(id) != id) // not an array
-        return outputs;
-      values.push(outputs[id]);
-    }
-    return values;
-  },
-
   trainItem : function(inputs, targets) {
     this.outputLayer.createNodes(targets);
 
@@ -82,6 +76,16 @@ NeuralNetwork.prototype = {
       for(var j = 0; j < data.length; j++)
         this.trainItem(data[j].input, data[j].target);
     }
+  },
+
+  formatOutput : function(outputs) {
+    var values = [];
+    for(var id in outputs) {
+      if(parseInt(id) != id) // not an array
+        return outputs;
+      values.push(outputs[id]);
+    }
+    return values;
   },
 
   toJSON : function() {
@@ -204,13 +208,12 @@ function Node(layer, id, json) {
   this.id = id;
   this.output = 0;
 
-  var prev = this.layer.prevLayer;
-  this.weights = {};
   if(json) {
     this.fromJSON(json);
   }
-  else if(prev) {
-    for(var id in prev.nodes)
+  else if(this.layer.prevLayer) {
+    this.weights = {};
+    for(var id in this.incoming)
       this.weights[id] = this.randomWeight();
     this.bias = this.randomWeight(); // instead of having a seperate bias node
   }
@@ -218,6 +221,8 @@ function Node(layer, id, json) {
 
 Node.prototype = {
   get inputs() { return this.layer.prevLayer.outputs; },
+
+  get incoming() { return this.layer.prevLayer.nodes; },
  
   get outgoing() { return this.layer.nextLayer.nodes; },
 

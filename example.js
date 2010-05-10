@@ -11,8 +11,8 @@ net.train(data);
 var output = net.run([1, 0]);  // 0.988...
 
 
-// var sys = require("sys"); sys.puts(output);
+var sys = require("sys"); sys.puts(output); // node
 
-// print(output);
+// print(output); // narwhal
 
 
