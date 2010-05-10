@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+body {
+  font-family: "Myriad Pro", Corbel, Tahoma, "Lucida Grande", "Bitstream Vera Sans", Arial, Helvetica, sans-serif;
+  font-size: 85%;
+}
+
+pre {
+  padding: 8px;
+  background-color: #FBF7FC;
+}
+
+#container {
+  margin: 0 auto;
+  width: 800px;
+}
+
+#header {
+  text-align: center;
+}
+
+#title {
+  font-size: 2.5em;
+}
+
+#subtitle {
+  font-variant: small-caps;
+}
+
+.section {
+  margin-top: 54px;
+}
+
+.section-header {
+  font-weight: bold;
+  border-bottom: 1px dotted #ccc;
+  margin-bottom: 10px;
+}
+
+.sub-section-header {
+  padding: 6px;
+  margin-top: 8px;
+}
+
+img {
+  border: 5px solid #ccc;
+  -moz-border-radius: 2px;
+}
+
+</style>
+</head>
+<body>
+  <a href="http://github.com/harthur/brain"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" /></a>
+  <div id="container">
+    <div id="header">
+      <div id="title">brain</div>
+      <div id="subtitle">javascript neural network library</div>
+    </div>
+    <div id="content">
+      <div class="section">
+      <p>js-brain is a lightweight client-side and server-side(commonJS) javascript library for neural networks.</p> <p>js-brain implements the standard feedforward multi-layer perceptron neural network trained through the backpropagation algorithm. It will try to abstract that for those who don't want to know what that sentence means, however.</p>
+
+<p>It supports hashed (dynamic) input and output, JSON serialization, and options for tweaking the number of hidden layers/nodes and other network parameters.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          what to use it for
+        </div>
+        There's lots of literature on what classes of problems neural networks are good at solving. One kind of problem that this sort of neural network is good at solving is classification problems (where the classes are known ahead of time).
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          what it can't be used for
+        </div>
+        This library in particular doesn't have a database component, so it's no good for building and training huge neural networks with thousands of different inputs. It's also not suited for real-time concurrent training or anything of that sort.
+      </div>
+    </div>
+
+      <div class="section">
+        <div class="section-header">
+          examples
+        </div>
+        Training the exclusive-or bitwise operation:
+        <pre>
+  var data = [{input: [0, 0], target: [0]},
+              {input: [0, 1], target: [1]},
+              {input: [1, 0], target: [1]},
+              {input: [1, 1], target: [0]}];
+
+  var net = new NeuralNetwork();
+  net.train(data);
+  var output = net.run([1, 0]);
+        </pre>
+
+       Serializing the network and plugging it in somewhere else:
+        <pre>
+  var serialized = net.toJSON();
+
+  var net2 = new NeuralNetwork({ json: serialized});
+  net2.run([1, 0]);
+        </pre>   
+       Using a hashes instead of arrays for input and output:
+        <pre>
+  var data = [{input: {red: 0, green: 0, blue: 1},    target: {blue: 1}},
+              {input: {red: 1, green: 0.65, blue: 0}, target: {orange: 1}},
+              {input: {red: 0, green: 1, blue: 0},    target: {green: 1}}];
+
+  var net = new NeuralNetwork();
+  net.train(data);
+  var output = net.run({red: 1, green: 1, blue: 0}); // {"blue":0.009,"orange":0.981,"green":0.019}
+
+        </pre>   
+      </div>
+    </div>
+  </div>
+</body>
+</html>
