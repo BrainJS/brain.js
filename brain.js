@@ -154,7 +154,6 @@ Layer.prototype = {
 
   growLayer : function(inputSize) {
     var targetSize = Math.max(2, inputSize * this.network.growthRate);
-    var difference = targetSize - this.size;
     for(var i = this.size; i < targetSize; i++)
       this.createNode(i);
   },
@@ -267,7 +266,6 @@ Node.prototype = {
     var rate = this.layer.network.learningRate;
     for(var id in this.inputs)
       this.weights[id] += rate * this.delta * this.inputs[id];
-
     this.bias += rate * this.delta; 
   },
 
