@@ -76,7 +76,7 @@ NeuralNetwork.prototype = {
     if(!maxIterations)
       maxIterations = 20000;
     if(!minError)
-      minError = 0;
+      minError = 0.01;
     var error = 1;
     for(var i = 0; i < maxIterations && error > minError; i++) {
       var sum = 0;
