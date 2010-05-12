@@ -5,10 +5,7 @@ NeuralNetwork = function(options) {
 
   this.setOptions(options);
 
-  if(this.json)
-    this.fromJSON(this.json);
-  else
-    this.createLayers(this.hiddenLayers);
+  this.createLayers(this.hiddenLayers, this.json);
 }
 
 NeuralNetwork.prototype = {
@@ -20,25 +17,29 @@ NeuralNetwork.prototype = {
     }
   },
 
-  createLayers : function(hidden) {
+  createLayers : function(hidden, json) {
     this.layers = [];
 
     var nlayers = 3; // one hidden layer is default
     if(hidden)
       nlayers = hidden.length + 2;
+    else if(json)
+      nlayers = json.layers.length;
 
     var prevLayer;
     for(var i = 0; i < nlayers; i++) {
       if(hidden)
         var nnodes = hidden[i - 1];
-      var layer = new Layer(this, prevLayer, nnodes);
+      if(json)
+        var layerJSON = json.layers[i];
+      var layer = new Layer(this, prevLayer, nnodes, layerJSON);
       this.layers.push(layer);
       prevLayer = layer;
     }
 
     this.inputLayer = this.layers[0];
     this.outputLayer = this.layers[nlayers - 1];
-    if(!hidden)
+    if(!hidden && !json)
       this.hiddenLayer = this.layers[1];
   },
 
@@ -97,15 +98,7 @@ NeuralNetwork.prototype = {
 
   fromJSON : function(json) {
     this.layers = [];
-    var prevLayer;
-    for(var i in json.layers) {
-      var layer = new Layer(this, prevLayer, 0, json.layers[i]);
-      this.layers.push(layer);
-      prevLayer = layer; 
-    }
-
-    this.inputLayer = this.layers[0];
-    this.outputLayer = this.layers[this.layers.length - 1];
+    this.createLayers(null, json);
   },
 
   toString : function() {
