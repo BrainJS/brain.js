@@ -68,15 +68,23 @@ NeuralNetwork.prototype = {
 
     for(var i = 1; i < this.layers.length; i++)
       this.layers[i].adjustWeights();
+
+    return this.outputLayer.error;
   },
 
-  train: function(data, iterations) {
-    if(!iterations)
-      iterations = 20000;
-    for(var i = 0; i < iterations; i++) {
+  train: function(data, maxIterations, minError) {
+    if(!maxIterations)
+      maxIterations = 20000;
+    if(!minError)
+      minError = 0;
+    var error = 1;
+    for(var i = 0; i < maxIterations && error > minError; i++) {
+      var sum = 0;
       for(var j = 0; j < data.length; j++)
-        this.trainItem(data[j].input, data[j].target);
+        sum += this.trainItem(data[j].input, data[j].target);
+      error = sum / data.length;
     }
+    return error;
   },
 
   formatOutput : function(outputs) {
@@ -129,6 +137,12 @@ Layer.prototype = {
 
   set outputs(outputs) {
     this.map(function(node, id) { node.output = outputs[id] || 0; });
+  },
+
+  get error() {
+    var sum = 0;
+    this.map(function(node) { sum += node.error; });
+    return sum / this.size;
   },
 
   get size() {
@@ -252,6 +266,7 @@ Node.prototype = {
       for(var id in this.outgoing)
         error += this.outgoing[id].delta * this.outgoing[id].weights[this.id];
     }
+    this.error = Math.abs(error);
     this.delta = error * this.dsigmoid(this.output);
   },
 

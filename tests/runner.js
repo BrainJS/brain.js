@@ -1,6 +1,6 @@
 var sys = require("sys");
 
-var tests = ["json", "hash"];
+var tests = ["json", "hash", "errorthresh"];
 
 for(var i = 0; i < tests.length; i++) {
   var test = tests[i];
