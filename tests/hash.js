@@ -17,7 +17,7 @@ function checkLayer(nodes, layer) {
     assert.ok(!!layer[nodes[node]], "couldn't find node for " + nodes[node]);
 }
 
-json = net.toJSON();
+var json = net.toJSON();
 var inputNodes = ['a', 'b', 'c', 'd', 'e', 'f'];
 checkLayer(inputNodes, json.layers[0].nodes);
 
@@ -32,6 +32,9 @@ checkLayer(outputNodes, output);
 /* never seen before input */
 var output = net.run({z: Math.random()});
 checkLayer(outputNodes, output);
+
+var json = net.toJSON();
+assert.ok(!!json.layers[0].nodes['z']);
 
 /* no input */
 var output = net.run({});

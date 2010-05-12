@@ -17,6 +17,6 @@ var input = {a : Math.random(), b: Math.random()};
 var output1 = JSON.stringify(net.run(input));
 var output2 = JSON.stringify(net2.run(input));
 
-assert.ok(output1 == output2);
+assert.equal(output1, output2, "loading json serialized network failed");
 
 
