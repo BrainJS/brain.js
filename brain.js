@@ -2,7 +2,6 @@
 NeuralNetwork = function(options) {
   this.learningRate = 0.5;
   this.growthRate = 0.4;
-
   this.setOptions(options);
 
   this.createLayers(this.hiddenLayers, this.json);
