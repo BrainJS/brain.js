@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="brain.js"></script>
+<style>
+
+body {
+  font-family: "Myriad Pro", Corbel, Tahoma, "Lucida Grande", "Bitstream Vera Sans", Arial, Helvetica, sans-serif;
+  font-size: 85%;
+}
+
+#container {
+  margin: 0 auto;
+  width: 800px;
+}
+
+#black-swatch {
+  color: black;
+}
+
+#white-swatch {
+  color: white;
+}
+
+.section {
+  margin: 50px;
+  text-align: center;
+}
+
+.section-header {
+  margin-bottom: 20px;
+  font-size: 1.2em;
+}
+
+#swatches {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -webkit-box-orient: horizontal;
+}
+
+.swatch:active {
+   -moz-box-shadow: 0 0 2px 3px grey;
+-webkit-box-shadow: 0 0 2px 3px grey;
+        box-shadow: 0 0 2px 3px grey;
+}
+
+.swatch {
+  margin: 10px;
+  padding: 20px;
+  width: 140px;
+  height: 140px;
+  cursor: pointer;
+}
+
+
+#pass-button {
+  color: #333;
+  margin-left: 280px;
+  font-size: 1.5em;
+}
+
+#test-button {
+  background-color: #EEE;
+  margin-top: 30px;
+}
+
+.button:active {
+  background-color: #BBB !important;
+}
+
+.button {
+  padding: 6px 14px;
+  margin: 10px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+</style>
+<script>
+  var color;
+  var training = [];
+
+  function pickSwatch(textColor) {
+    var input = { red: color.red / 255, green: color.green / 255, blue: color.blue / 255 };
+    var target = { black_text: textColor == 'black' ? 1 : 0};
+    training.push({input: input, target: target});
+
+    changeColor();
+  }
+
+  function changeColor() {
+    color = { red: Math.round(Math.random() * 255), 
+              green: Math.round(Math.random() * 255),
+              blue: Math.round(Math.random() * 255)};
+    var rgb = "rgb(" + color.red + "," + color.green + "," + color.blue + ")";
+
+    document.getElementById("black-swatch").style.backgroundColor = rgb;
+    document.getElementById("white-swatch").style.backgroundColor = rgb;
+  }
+
+  function testNetwork() {
+    
+  }
+</script>
+</head>
+<body onload="changeColor();">
+  <div id="container">
+    <div class="section" id="training-box">
+      <div class="section-header">
+        Which one can you read more easily?
+      </div>
+	    <div id="swatches">
+		    <div id="black-swatch" class="swatch" onclick="pickSwatch('black');">
+		      <div class="swatch-text">This one</div>
+		    </div>
+		    <div id="white-swatch" class="swatch" onclick="pickSwatch('white');">
+		      <div class="swatch-text">This one</div>
+		    </div>
+	    </div>
+        <div id="training-buttons">
+          <span id="pass-button" onclick="changeColor();" class="button" title="skip">&rarr;</span>
+          
+        </div><span id="test-button" onclick="testNetwork();" class="button">test neural network</span>
+    </div>
+  </div>
+</body>
+</html>
