@@ -83,26 +83,81 @@ body {
   var training = [];
 
   function pickSwatch(textColor) {
-    var input = { red: color.red / 255, green: color.green / 255, blue: color.blue / 255 };
+    var input = normalize(color);
     var target = { black_text: textColor == 'black' ? 1 : 0};
     training.push({input: input, target: target});
 
     changeColor();
   }
 
-  function changeColor() {
-    color = { red: Math.round(Math.random() * 255), 
-              green: Math.round(Math.random() * 255),
-              blue: Math.round(Math.random() * 255)};
-    var rgb = "rgb(" + color.red + "," + color.green + "," + color.blue + ")";
+  function randomColor() {
+    return { red: Math.round(Math.random() * 255), 
+             green: Math.round(Math.random() * 255),
+             blue: Math.round(Math.random() * 255)};
+  }
 
+  function toRgb(color) {
+    return "rgb(" + color.red + "," + color.green + "," + color.blue + ")";
+  }
+
+  function normalize(color) {
+    return { red: color.red / 255, green: color.green / 255, blue: color.blue / 255 };
+  }
+
+  function changeColor() {
+    color = randomColor(); 
+    var rgb = toRgb(color);
     document.getElementById("black-swatch").style.backgroundColor = rgb;
     document.getElementById("white-swatch").style.backgroundColor = rgb;
   }
 
   function testNetwork() {
-    
+    net = new NeuralNetwork({ hiddenLayers: [3]});
+    net.train(training);
   }
+
+  function testColor(color) {
+    var rgb = toRgb(color);
+    document.getElementById("nn-swatch").style.backgroundColor = rgb;
+    document.getElementById("wcag-swatch").style.backgroundColor = rgb;
+  
+    document.getElementById("nn-swatch").style.color = nnText(color);
+    document.getElementById("wcag-swatch").style.color = wcagText(color);  
+  }
+  
+  function nnText(color) {
+    return net.run(normalize(color)).black_text > .5 ? 'black' : 'white';
+  }
+
+  function wcagText(color) {
+    if(contrast(color, {red: 255, green: 255, blue: 255}) 
+       > contrast(color, {red: 0, green: 0, blue: 0}))
+      return 'white';
+    return 'black';
+  }
+
+  function luminosity(color) {
+    var color = normalize(color);
+    var r = color.red, g = color.green, b = color.blue;
+    var red = (r <= 0.03928) ? r/12.92 : Math.pow(((r + 0.055)/1.055), 2.4);
+    var green = (g <= 0.03928) ? g/12.92 : Math.pow(((g + 0.055)/1.055), 2.4);
+    var blue = (b <= 0.03928) ? b/12.92 : Math.pow(((b + 0.055)/1.055), 2.4);
+
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+  }
+
+  function contrast(color1, color2) {
+    var lum1 = luminosity(color1);
+    var lum2 = luminosity(color2);
+    if(lum1 > lum2)
+      return (lum1 + 0.05) / (lum2 + 0.05);
+    return (lum2 + 0.05) / (lum1 + 0.05);
+  }
+
+  function testRandom() {
+    testColor(randomColor());
+  }
+
 </script>
 </head>
 <body onload="changeColor();">
@@ -123,6 +178,18 @@ body {
           <span id="pass-button" onclick="changeColor();" class="button" title="skip">&rarr;</span>
           
         </div><span id="test-button" onclick="testNetwork();" class="button">test neural network</span>
+    </div>
+
+    <div class="section" id="testing-box">
+       <span class="button" onclick="testRandom();">random</span>
+       <div id="swatches">
+		    <div id="nn-swatch" class="swatch">
+		      <div class="swatch-text">neural network</div>
+		    </div>
+		    <div id="wcag-swatch" class="swatch">
+		      <div class="swatch-text">luminosity algorithm</div>
+		    </div>
+	    </div>
     </div>
   </div>
 </body>
