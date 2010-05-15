@@ -1,4 +1,4 @@
-
+sys = require("sys");
 NeuralNetwork = function(options) {
   this.learningRate = 0.5;
   this.growthRate = 0.4;
@@ -106,6 +106,24 @@ NeuralNetwork.prototype = {
   fromJSON : function(json) {
     this.layers = [];
     this.createLayers(null, json);
+  },
+
+  toFunction : function(inputs) {
+    var json = this.toJSON();
+
+    for(var i = 1; i < json.layers.length; i++) {
+      var nodes = json.layers[i].nodes;
+      var outputs = {};
+      for(var id in nodes) {
+        var node = nodes[id];
+        var sum = node.bias;
+        for(var iid in node.weights)
+          sum += node.weights[iid] * inputs[iid];
+        outputs[id] = (1/(1 + Math.exp(-sum)));
+      }
+      inputs = outputs;
+    }
+    return outputs;
   },
 
   toString : function() {
