@@ -1,4 +1,3 @@
-sys = require("sys");
 NeuralNetwork = function(options) {
   this.learningRate = 0.5;
   this.growthRate = 0.4;
@@ -108,22 +107,25 @@ NeuralNetwork.prototype = {
     this.createLayers(null, json);
   },
 
-  toFunction : function(inputs) {
+  toFunction: function() {
     var json = this.toJSON();
-
-    for(var i = 1; i < json.layers.length; i++) {
-      var nodes = json.layers[i].nodes;
-      var outputs = {};
-      for(var id in nodes) {
-        var node = nodes[id];
-        var sum = node.bias;
-        for(var iid in node.weights)
-          sum += node.weights[iid] * inputs[iid];
-        outputs[id] = (1/(1 + Math.exp(-sum)));
-      }
-      inputs = outputs;
-    }
-    return outputs;
+    // currying w/ closures won't do, this needs to be standalone
+    return new Function("inputs",
+       'var net = ' + JSON.stringify(json) + ';\n\
+		    for(var i = 1; i < net.layers.length; i++) {\n\
+		      var nodes = net.layers[i].nodes;\n\
+		      var outputs = {};\n\
+		      for(var id in nodes) {\n\
+		        var node = nodes[id];\n\
+		        var sum = node.bias;\n\
+		        for(var iid in node.weights)\n \
+		          sum += node.weights[iid] * inputs[iid];\n\
+		        outputs[id] = (1/(1 + Math.exp(-sum)));\n\
+		      }\n\
+		      inputs = outputs;\n\
+		    }\n\
+		    return outputs;');
+    // note: this doesn't handle never-been-seen before inputs
   },
 
   toString : function() {
@@ -213,7 +215,7 @@ Layer.prototype = {
   },
 
   toJSON : function() {
-    var json = { nodes: []};
+    var json = { nodes: {}};
     for(var id in this.nodes)
       json.nodes[id] = this.nodes[id].toJSON();
     return json;
