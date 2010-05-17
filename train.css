@@ -1,0 +1,74 @@
+
+body {
+  font-family: "Myriad Pro", Corbel, Tahoma, "Lucida Grande", "Bitstream Vera Sans", Arial, Helvetica, sans-serif;
+  font-size: 85%;
+}
+
+#container {
+  margin: 0 auto;
+  width: 800px;
+}
+
+#black-swatch {
+  color: black;
+}
+
+#white-swatch {
+  color: white;
+}
+
+.section {
+  margin: 50px;
+  text-align: center;
+}
+
+.section-header {
+  margin-bottom: 20px;
+  font-size: 1.2em;
+}
+
+#swatches {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -webkit-box-orient: horizontal;
+}
+
+.swatch:active {
+  -moz-box-shadow: 0 0 2px 3px grey;
+  -webkit-box-shadow: 0 0 2px 3px grey;
+  box-shadow: 0 0 2px 3px grey;
+}
+
+.swatch {
+  margin: 10px;
+  padding: 20px;
+  width: 140px;
+  height: 140px;
+  cursor: pointer;
+}
+
+
+#pass-button {
+  color: #333;
+  margin-left: 280px;
+  font-size: 1.5em;
+}
+
+#test-button {
+  background-color: #EEE;
+  margin-top: 30px;
+}
+
+.button:active {
+  background-color: #BBB !important;
+}
+
+.button {
+  padding: 6px 14px;
+  margin: 10px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  cursor: pointer;
+  display: inline-block;
+}
+
