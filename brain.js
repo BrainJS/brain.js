@@ -112,19 +112,19 @@ NeuralNetwork.prototype = {
     // currying w/ closures won't do, this needs to be standalone
     return new Function("inputs",
        'var net = ' + JSON.stringify(json) + ';\n\
-		    for(var i = 1; i < net.layers.length; i++) {\n\
-		      var nodes = net.layers[i].nodes;\n\
-		      var outputs = {};\n\
-		      for(var id in nodes) {\n\
-		        var node = nodes[id];\n\
-		        var sum = node.bias;\n\
-		        for(var iid in node.weights)\n \
-		          sum += node.weights[iid] * inputs[iid];\n\
-		        outputs[id] = (1/(1 + Math.exp(-sum)));\n\
-		      }\n\
-		      inputs = outputs;\n\
-		    }\n\
-		    return outputs;');
+        for(var i = 1; i < net.layers.length; i++) {\n\
+          var nodes = net.layers[i].nodes;\n\
+          var outputs = {};\n\
+          for(var id in nodes) {\n\
+            var node = nodes[id];\n\
+            var sum = node.bias;\n\
+            for(var iid in node.weights)\n \
+              sum += node.weights[iid] * inputs[iid];\n\
+            outputs[id] = (1/(1 + Math.exp(-sum)));\n\
+          }\n\
+          inputs = outputs;\n\
+        }\n\
+        return outputs;');
     // note: this doesn't handle never-been-seen before inputs
   },
 

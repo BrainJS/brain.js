@@ -1,5 +1,5 @@
-brain
-------------------------------------
+# brain
+
 brain is a client/server-side javascript neural network library. An example (training the XOR bitwise operation):
 
 	var data = [{input: [0, 0], target: [0]},
@@ -11,17 +11,20 @@ brain is a client/server-side javascript neural network library. An example (tra
 	net.train(data);
 	var output = net.run([1, 0]);
 
-the output will be `[0.987]` or something close like that. There's no reason to use a neural network to figure out XOR, but it's a small example (-:
+The output will be `[0.987]` or something close like that. There's no reason to use a neural network to figure out XOR, but it's a small example (-:
 
-to use this as a commonJS module (node/narwhal):
+# using in the browser
+Download the latest client-side file at:
+[http://github.com/downloads/harthur/brain/brain.js](http://github.com/downloads/harthur/brain/brain.js). Because neural network training can take a long time, if you can you should train the network offline and use the `toFunction()` or `toJSON()` options to plug the trained network in to your website.
+
+# using as a commonJS module
+To use this as a commonJS module (node/narwhal) checkout or download the code, then:
 
 	var brain = require("./brain");
 	var net = new brain.NeuralNetwork();
 
-to use this on the client-side, download the latest browser file at:
-[http://github.com/downloads/harthur/brain/brain.js](http://github.com/downloads/harthur/brain/brain.js)
-
-running the tests requires a commonJS engine like node or narwhal:
+# tests
+Running the tests requires [node.js](http://nodejs.org/):
 
 	node tests/runner.js
 
