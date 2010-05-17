@@ -3,7 +3,7 @@ NeuralNetwork = function(options) {
   this.growthRate = 0.4;
   this.setOptions(options);
 
-  this.createLayers(this.hiddenLayers, this.json);
+  this.createLayers(this.hidden, this.json);
 }
 
 NeuralNetwork.prototype = {

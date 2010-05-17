@@ -1,7 +1,7 @@
 var assert = require('assert'),
     brain = require("../brain");
 
-var net = new brain.NeuralNetwork({hiddenLayers: [4, 12, 2]});
+var net = new brain.NeuralNetwork({ hidden: [4, 12, 2] });
 
 net.train([{input:  {a: Math.random(), b: Math.random()},
             target: {c: Math.random(), d: Math.random()}},
