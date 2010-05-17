@@ -306,3 +306,4 @@ Node.prototype = {
   },
 }
 
+exports.NeuralNetwork = NeuralNetwork;
