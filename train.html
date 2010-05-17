@@ -27,13 +27,17 @@
         <div id="training-buttons">
           <span id="pass-button" onclick="trainer.changeColor();" class="button" title="skip">&rarr;</span>
         </div>
-      <span id="test-button" onclick="tester.init();" class="button">test neural network</span>
+      <span id="test-button" onclick="trainer.trainNetwork();" class="button">test neural network</span>
+    </div>
+
+    <div id="training-message">
+      training network...
     </div>
 
     <div class="section" id="testing-box">
        <div id="swatches">
 		    <div id="nn-swatch" class="swatch">
-		      <div class="swatch-text">neural network</div>
+		      <div class="swatch-text">your neural network</div>
 		    </div>
 		    <div id="wcag-swatch" class="swatch">
 		      <div class="swatch-text">luminosity algorithm</div>
