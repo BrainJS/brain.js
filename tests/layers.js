@@ -6,7 +6,7 @@ var net = new brain.NeuralNetwork({ hidden: [4, 12, 2] });
 net.train([{input:  {a: Math.random(), b: Math.random()},
             target: {c: Math.random(), d: Math.random()}},
            {input:  {a: Math.random(), b: Math.random()},
-            target: {c: Math.random(), d: Math.random()}}]);
+            target: {c: Math.random(), d: Math.random()}}], 1000);
 
 var json = net.toJSON();
 

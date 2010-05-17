@@ -18,5 +18,10 @@ to use this as a commonJS module (node/narwhal):
 	var brain = require("./brain");
 	var net = new brain.NeuralNetwork();
 
-to use this on the client-side, remove the line `exports.NeuralNetwork = NeuralNetwork` from the bottom of brain.js.
+to use this on the client-side, download the latest browser file at:
+[http://github.com/downloads/harthur/brain/brain.js](http://github.com/downloads/harthur/brain/brain.js)
+
+running the tests requires a commonJS engine like node or narwhal:
+
+	node tests/runner.js
 
