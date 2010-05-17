@@ -24,9 +24,9 @@ var trainer = {
  
   data : [],
 
-	pickSwatch : function(textColor) {
-	  var isBlack = textColor == 'black' ? 1 : 0;
-	  this.data.push({input: utils.normalize(color), target: { black : isBlack}});
+	pickSwatch : function(color) {
+	  this.data.push({ input: utils.normalize(color),
+                    target: { black : color == 'black' ? 1 : 0}});
 	  this.changeColor();
 	},
 
@@ -38,8 +38,8 @@ var trainer = {
 	},
 
 	getNetwork : function() {
-	  var net = new NeuralNetwork({ hiddenLayers: [2]});
-	  var net2 = new NeuralNetwork({ hiddenLayers: [3]});
+	  var net = new NeuralNetwork({ hiddenLayers: [1]});
+	  var net2 = new NeuralNetwork({ hiddenLayers: [2,2]});
 
     net = compare(net, net2, this.data);
 
@@ -56,20 +56,20 @@ var tester = {
   },
 
 	testRandom : function() {
-	  this.testColor(randomColor());
+	  this.testColor(utils.randomColor());
 	},
 
 	testColor : function(color) {
 	  var rgb = utils.toRgb(color);
-	  ("#nn-swatch").css("backgroundColor", rgb);
-	  ("#wcag-swatch").css("backgroundColor", rgb);
+	  $("#nn-swatch").css("backgroundColor", rgb);
+	  $("#wcag-swatch").css("backgroundColor", rgb);
 
-	  ("#nn-swatch").css("color", nnText(color));
-	  ("#wcag-swatch").css("color", wcagText(color));  
+	  $("#nn-swatch").css("color", this.nnText(color));
+	  $("#wcag-swatch").css("color", this.wcagText(color));  
 	},
 
 	nnText : function(color) {
-	  return this.runNetwork(this.normalize(color)).black > .5 ? 'black' : 'white';
+	  return this.runNetwork(utils.normalize(color)).black > .5 ? 'black' : 'white';
 	},
 
 	wcagText : function(color) {
