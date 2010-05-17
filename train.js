@@ -39,6 +39,8 @@ var trainer = {
   },
 
   trainNetwork : function() {
+    if(!window.Worker)
+      alert("browser does not support web workers");
     $("#training-box").hide();
     $("#training-message").show();
     var worker = new Worker("training-worker.js");
