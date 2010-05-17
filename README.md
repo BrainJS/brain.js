@@ -15,7 +15,7 @@ The output will be `[0.987]` or something close like that. There's no reason to 
 
 # using in the browser
 Download the latest client-side file at:
-[http://github.com/downloads/harthur/brain/brain.js](http://github.com/downloads/harthur/brain/brain.js). Because neural network training can take a long time, if you can you should train the network offline and use the `toFunction()` or `toJSON()` options to plug the trained network in to your website.
+[http://github.com/downloads/harthur/brain/brain.js](http://github.com/downloads/harthur/brain/brain.js). If you can you should train the network offline and use the `toFunction()` or `toJSON()` options to plug the trained network in to your website.
 
 # using as a commonJS module
 To use this as a commonJS module (node/narwhal) checkout or download the code, then:
