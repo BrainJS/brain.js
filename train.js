@@ -26,31 +26,40 @@ var trainer = {
   data : [],
 
   pickSwatch : function(color) {
-    this.data.push({ input: utils.normalize(color),
+    this.data.push({ input: utils.normalize(this.currentColor),
                     target: { black : color == 'black' ? 1 : 0}});
     this.changeColor();
   },
 
   changeColor : function() {
-    color = utils.randomColor(); 
-    var rgb = utils.toRgb(color);
+    this.currentColor = utils.randomColor(); 
+    var rgb = utils.toRgb(this.currentColor);
     $("#black-swatch").css("backgroundColor", rgb);
     $("#white-swatch").css("backgroundColor", rgb);
   },
 
   trainNetwork : function() {
-    if(!window.Worker)
-      alert("browser does not support web workers");
     $("#training-box").hide();
     $("#training-message").show();
-    var worker = new Worker("training-worker.js");
-    worker.onmessage = tester.show;
-    worker.onerror = this.onError;
-    worker.postMessage(this.data);
+
+    if(window.Worker && $.browser.mozilla) {
+      // in Chrome 5 on Linux, "new Worker" never returns - wtf
+      var worker = new Worker("training-worker.js");
+      worker.onmessage = tester.show;
+      worker.onerror = this.onError;
+      worker.postMessage(this.data);
+    }
+    else {
+      var net = new NeuralNetwork();
+      alert(JSON.stringify(this.data));
+      var maxIterations = 10000;
+      var error = net.train(this.data, maxIterations);
+      tester.show({data: net.toFunction().toString()});
+    }
   },
 
   onError : function(event) {
-    $("#training-message").text("error training network: " + event.data);
+    $("#training-message").text("error training network: " + event.message);
   }
 }
 
