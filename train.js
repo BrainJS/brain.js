@@ -51,7 +51,7 @@ var trainer = {
     }
     else {
       var net = new NeuralNetwork();
-      var iterations = 10000;
+      var iterations = 8000;
       var error = net.train(this.data, iterations);
       tester.show({data: net.toFunction().toString()});
     }
