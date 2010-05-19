@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+body {
+  font-family: "Myriad Pro", Corbel, Tahoma, "Lucida Grande", "Bitstream Vera Sans", Arial, Helvetica, sans-serif;
+  font-size: 85%;
+}
+
+code, pre {
+  font-size: 1.4em;
+}
+
+.section-code {
+  padding: .4em;
+  background-color: #F8EBFF;
+  display: inline-block;
+}
+
+.api-spec {
+  font-weight: bold;
+}
+
+.optional {
+  color: #999;
+}
+
+#container {
+  margin: 0 auto;
+  width: 800px;
+}
+
+#header {
+  text-align: center;
+}
+
+#title {
+  font-size: 2.5em;
+  font-weight: bold;
+}
+
+#subtitle {
+  color: #999;
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+.section {
+  margin-top: 36px;
+}
+
+.section-header {
+  font-weight: bold;
+  border-bottom: 1px dotted #ccc;
+  margin-bottom: 10px;
+}
+
+.sub-section-header {
+  padding: 6px;
+  margin-top: 8px;
+}
+
+img {
+  border: 5px solid #ccc;
+  -moz-border-radius: 2px;
+}
+
+.arguments {
+  margin-left: 16px;
+}
+
+.argument {
+  margin-top: 10px;
+}
+
+</style>
+</head>
+<body>
+  <a href="http://github.com/harthur/brain"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" /></a>
+  <div id="container">
+    <div id="header">
+      <div id="title">brain API</div>
+    </div>
+    <div id="content">
+      <div class="section">
+      <div><code class="section-code">var net = new <span class="api-spec">NeuralNetwork</span>(<span class="optional">options</span>)</code></div>
+       <code>NeuralNetwork</code> takes an optional argument that is a json object that can have members:
+        <div class="arguments">
+          <div class="argument">
+            <code>hidden</code> - an array representing the number of hidden layers 
+                    in the network and number of nodes per hidden layer. e.g. <code>[3, 4]</code>
+          </div>
+          <div class="argument">
+            <code>growthRate</code> - the rate at which to grow the hidden layer with
+              respect to the size of input layer. The default is <code>0.4</code> (the hidden layer stays
+              40% the size of the input layer). This option does not apply if the <code>hidden</code> option
+              was specified or the network was loaded in from json.
+          </div> 
+          <div class="argument">
+            <code>learningRate</code> - the rate at which the network learns from training. Default is <code>0.5</code>.
+               The higher the number, the faster the training will go, but the risk of the network
+               getting 'stuck' on local minima increases.
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div><code class="section-code">net.<span class="api-spec">train</span>(data<span class="optional">, iterations, errorThresh</span>)</code></div>
+        <code>train</code> takes an array of training data, where each item is a json object with members 
+         <code>input</code> and <code>target</code>. input and output can be either an array or json object of values from 0 to 1. e.g. 
+        <pre>
+var data = [{input: {r: 0.9, g: 0.4, b: 0}, target: {orange: 1.0}},
+            {input: {r: 1.0, g: 1.0, b: 0}, target: {yellow: 1.0}}]</pre>
+         the maximum number of training iterations and the error threshold to train to can also be specified.
+         It will train until either the max number of iterations has been reached or until the average error dips
+         below the error threshold. By default it will train for <code>20000</code> iterations or until the
+         error drops below <code>0.01</code>.
+      </div>
+      <div class="section">
+        <div><code class="section-code">var output = net.<span class="api-spec">run</span>(input)</code></div>
+          <code>run</code> runs the neural network on the given input. the input should be an array or json object
+          of values from 0 to 1. e.g. <code>{a: 0.45, b: 0.02}</code> or <code>[0.45, 1.0]</code>
+      </div>
+      <div class="section">
+        <div><code class="section-code">var json = net.<span class="api-spec">toJSON</span>()</code></div>
+          <code>toJSON</code> returns a JSON serialization of the network.
+      </div>
+      <div class="section">
+        <div><code class="section-code">net.<span class="api-spec">fromJSON</span>(json)</code></div>
+          <code>fromJSON</code> loads a serialized network. It will replace all the layers/weights that the network currently has.
+      </div>
+      <div class="section">
+        <div><code class="section-code">var run = net.<span class="api-spec">toFunction</span>()</code></div>
+          <code>toFunction</code> returns a standalone function that mimics the <code>run</code> function of the network.
+      </div>
+    </div>
+  </div>
+</body>
+</html>
