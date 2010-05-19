@@ -106,7 +106,7 @@ img {
       </div>
       <div class="section">
         <div><code class="section-code">net.<span class="api-spec">train</span>(data<span class="optional">, iterations, errorThresh</span>)</code></div>
-        <code>train</code> takes an array of training data, where each item is a json object with members 
+        <code>train</code> trains the network on array of training data, where each item in the training data is a json object with members 
          <code>input</code> and <code>target</code>. input and output can be either an array or json object of values from 0 to 1. e.g. 
         <pre>
 var data = [{input: {r: 0.9, g: 0.4, b: 0}, target: {orange: 1.0}},
@@ -118,7 +118,7 @@ var data = [{input: {r: 0.9, g: 0.4, b: 0}, target: {orange: 1.0}},
       </div>
       <div class="section">
         <div><code class="section-code">var output = net.<span class="api-spec">run</span>(input)</code></div>
-          <code>run</code> runs the neural network on the given input. the input should be an array or json object
+          <code>run</code> runs the input on the neural network. the input should be an array or json object
           of values from 0 to 1. e.g. <code>{a: 0.45, b: 0.02}</code> or <code>[0.45, 1.0]</code>
       </div>
       <div class="section">
@@ -127,7 +127,7 @@ var data = [{input: {r: 0.9, g: 0.4, b: 0}, target: {orange: 1.0}},
       </div>
       <div class="section">
         <div><code class="section-code">net.<span class="api-spec">fromJSON</span>(json)</code></div>
-          <code>fromJSON</code> loads a serialized network. It will replace all the layers/weights that the network currently has.
+          <code>fromJSON</code> loads a serialized network. It will replace all the current layers and weights that the network has.
       </div>
       <div class="section">
         <div><code class="section-code">var run = net.<span class="api-spec">toFunction</span>()</code></div>
