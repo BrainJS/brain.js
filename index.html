@@ -12,7 +12,22 @@
     </div>
     <div id="content">
       <div class="section">
-      <p>Brain is a lightweight client-side and server-side(commonJS) javascript library for neural networks. It implements the standard feedforward multi-layer perceptron neural network trained with backpropagation.</p>
+      <p>Brain is a lightweight client-side and server-side(commonJS) javascript
+	     library for neural networks. It implements the standard feedforward multi-layer
+	     perceptron neural network trained with backpropagation.</p>
+	  <p>An example, giving a color a label based on its rgb values:
+	    <pre class="code-example">
+var net = new NeuralNetwork();
+
+net.train([{input: { r: 1, g: 0.65, b: 0}, output: { orange: 1}},
+           {input: { r: 0, g: 1, b: 1},    output: { cyan: 1}},
+           {input: { r: 0.67, g: 0, b: 1}, output: { purple: 1}}]);
+
+var output = net.run({r: 1, g: 1, b: 0});
+		</pre>
+		the output would be something like <code>{"orange":0.98,"cyan":0.15,"purple":0.01}</code>
+		because yellow is most similar to orange.
+	  </p>
       </div>
       
         <div class="big-section">
@@ -44,11 +59,11 @@
 	      <div class="section">
 	        <div><code class="section-code">net.<span class="api-spec">train</span>(data<span class="optional">, iterations, errorThresh</span>)</code></div>
 	        <code>train</code> trains the network on array of training data, where each item in the 
-	        training data is a json object with members <code>input</code> and <code>target</code>.
+	        training data is a json object with members <code>input</code> and <code>output</code>.
 	        input and output can be either an array or json object of values from 0 to 1. e.g. 
 	        <pre>
-	var data = [{input: {r: 0.9, g: 0.4, b: 0}, target: {orange: 1.0}},
-	            {input: {r: 1.0, g: 1.0, b: 0}, target: {yellow: 1.0}}]</pre>
+	var data = [{input: {r: 0.9, g: 0.4, b: 0}, output: {orange: 1.0}},
+	            {input: {r: 1.0, g: 1.0, b: 0}, output: {yellow: 1.0}}]</pre>
 	         the maximum number of training iterations and the error threshold to train to
 	         can also be specified. It will train until either the max number of iterations has
 	         been reached or until the average error dips below the error threshold. By default
@@ -66,10 +81,10 @@
 	      <div class="section">
 	        <div><code class="section-code">net.<span class="api-spec">fromJSON</span>(json)</code></div>
 	          <code>fromJSON</code> loads a serialized network. It will replace all the
-	          current layers and weights that the network has.
+	          current layers and weights of the network.
 	      </div>
 	      <div class="section">
-	        <div><code class="section-code">var run = net.<span class="api-spec">toFunction</span>()</code></div>
+	        <div><code class="section-code">var classify = net.<span class="api-spec">toFunction</span>()</code></div>
 	          <code>toFunction</code> returns a standalone function that mimics the <code>run</code>
 	          function of the network.
 	      </div>

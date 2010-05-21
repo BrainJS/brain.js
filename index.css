@@ -5,13 +5,19 @@ body {
 }
 
 code, pre {
-  font-size: 1.4em;
+  font-size: 1.3em;
 }
 
 .section-code {
   padding: .4em;
-  background-color: #E8DEFF;
+  background-color: #F3EDFF;
   display: inline-block;
+}
+
+.code-example {
+  border: 1px solid #ddd;
+  padding: 10px;
+  background-color: #F2F4FF;
 }
 
 .api-spec {
@@ -30,6 +36,7 @@ code, pre {
 #header {
   text-align: center;
   font-family: Helvetica;
+  margin-bottom: 30px;
 }
 
 #title {

@@ -305,3 +305,5 @@ Node.prototype = {
     this.bias = json.bias;
   },
 }
+
+exports.NeuralNetwork = NeuralNetwork
