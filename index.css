@@ -1,0 +1,78 @@
+
+body {
+  font-family: Corbel, Tahoma, "Lucida Grande", "Bitstream Vera Sans", Helvetica, Arial, sans-serif;
+  font-size: 85%;
+}
+
+code, pre {
+  font-size: 1.4em;
+}
+
+.section-code {
+  padding: .4em;
+  background-color: #E8DEFF;
+  display: inline-block;
+}
+
+.api-spec {
+  font-weight: bold;
+}
+
+.optional {
+  color: #999;
+}
+
+#container {
+  margin: 0 auto;
+  width: 800px;
+}
+
+#header {
+  text-align: center;
+  font-family: Helvetica;
+}
+
+#title {
+  font-size: 2.5em;
+  font-weight: bold;
+}
+
+#subtitle {
+  color: #999;
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+.big-section {
+  margin-top: 38px;
+  margin-bottom: 38px;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.section-header {
+  font-family: Helvetica;
+  font-weight: bold;
+  font-size: 1.4em;
+  margin-bottom: 10px;
+}
+
+.sub-section-header {
+  padding: 6px;
+  margin-top: 8px;
+}
+
+img {
+  border: 5px solid #ccc;
+  -moz-border-radius: 2px;
+}
+
+.arguments {
+  margin-left: 16px;
+}
+
+.argument {
+  margin-top: 10px;
+}

@@ -1,59 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-
-body {
-  font-family: "Myriad Pro", Corbel, Tahoma, "Lucida Grande", "Bitstream Vera Sans", Arial, Helvetica, sans-serif;
-  font-size: 85%;
-}
-
-pre {
-  padding: 8px;
-  background-color: #FBF7FC;
-}
-
-#container {
-  margin: 0 auto;
-  width: 800px;
-}
-
-#header {
-  text-align: center;
-}
-
-#title {
-  font-size: 2.5em;
-  font-weight: bold;
-}
-
-#subtitle {
-  color: #999;
-  font-weight: bold;
-  font-size: 1.5em;
-}
-
-.section {
-  margin-top: 36px;
-}
-
-.section-header {
-  font-weight: bold;
-  border-bottom: 1px dotted #ccc;
-  margin-bottom: 10px;
-}
-
-.sub-section-header {
-  padding: 6px;
-  margin-top: 8px;
-}
-
-img {
-  border: 5px solid #ccc;
-  -moz-border-radius: 2px;
-}
-
-</style>
+<link rel="stylesheet" href="index.css">
 </head>
 <body>
   <a href="http://github.com/harthur/brain"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" /></a>
@@ -64,61 +12,91 @@ img {
     </div>
     <div id="content">
       <div class="section">
-      <p>Brain is a lightweight client-side and server-side(commonJS) javascript library for neural networks.</p> <p>Brain implements the standard feedforward multi-layer perceptron neural network trained through the backpropagation algorithm.</p>
-
-<p>It supports hashed (dynamic) input and output, JSON serialization, and options for tweaking the number of hidden layers/nodes and other network parameters.</p>
+      <p>Brain is a lightweight client-side and server-side(commonJS) javascript library for neural networks. It implements the standard feedforward multi-layer perceptron neural network trained with backpropagation.</p>
       </div>
-
-      <div class="section">
+      
+        <div class="big-section">
+	      <div class="section-header">
+		    API
+		  </div>
+		  <div class="section-content">
+	      <div class="section">
+	      <div><code class="section-code">var net = new <span class="api-spec">NeuralNetwork</span>(<span class="optional">options</span>)</code></div>
+	       <code>NeuralNetwork</code> takes an optional argument that is a json object that can have members:
+	        <div class="arguments">
+	          <div class="argument">
+	            <code>hidden</code> - an array representing the number of hidden layers 
+	                    in the network and number of nodes per hidden layer. e.g. <code>[3, 4]</code>
+	          </div>
+	          <div class="argument">
+	            <code>growthRate</code> - the rate at which to grow the hidden layer with
+	              respect to the size of input layer. The default is <code>0.4</code> (the hidden layer stays
+	              40% the size of the input layer). This option does not apply if the <code>hidden</code> option
+	              was specified or the network was loaded in from json.
+	          </div> 
+	          <div class="argument">
+	            <code>learningRate</code> - the rate at which the network learns from training. Default is <code>0.5</code>.
+	               The higher the number, the faster the training will go, but the risk of the network
+	               getting 'stuck' on local minima increases.
+	          </div>
+	        </div>
+	      </div>
+	      <div class="section">
+	        <div><code class="section-code">net.<span class="api-spec">train</span>(data<span class="optional">, iterations, errorThresh</span>)</code></div>
+	        <code>train</code> trains the network on array of training data, where each item in the 
+	        training data is a json object with members <code>input</code> and <code>target</code>.
+	        input and output can be either an array or json object of values from 0 to 1. e.g. 
+	        <pre>
+	var data = [{input: {r: 0.9, g: 0.4, b: 0}, target: {orange: 1.0}},
+	            {input: {r: 1.0, g: 1.0, b: 0}, target: {yellow: 1.0}}]</pre>
+	         the maximum number of training iterations and the error threshold to train to
+	         can also be specified. It will train until either the max number of iterations has
+	         been reached or until the average error dips below the error threshold. By default
+	         it will train for <code>20000</code> iterations or until the error drops below <code>0.01</code>.
+	      </div>
+	      <div class="section">
+	        <div><code class="section-code">var output = net.<span class="api-spec">run</span>(input)</code></div>
+	          <code>run</code> runs the input on the neural network. the input should be an array or json object
+	          of values from 0 to 1. e.g. <code>{a: 0.45, b: 0.02}</code> or <code>[0.45, 1.0]</code>
+	      </div>
+	      <div class="section">
+	        <div><code class="section-code">var json = net.<span class="api-spec">toJSON</span>()</code></div>
+	          <code>toJSON</code> returns a JSON serialization of the network.
+	      </div>
+	      <div class="section">
+	        <div><code class="section-code">net.<span class="api-spec">fromJSON</span>(json)</code></div>
+	          <code>fromJSON</code> loads a serialized network. It will replace all the
+	          current layers and weights that the network has.
+	      </div>
+	      <div class="section">
+	        <div><code class="section-code">var run = net.<span class="api-spec">toFunction</span>()</code></div>
+	          <code>toFunction</code> returns a standalone function that mimics the <code>run</code>
+	          function of the network.
+	      </div>
+	    </div>
+       </div>
+      <div class="big-section">
         <div class="section-header">
           what to use it for
         </div>
-        There's lots of literature on what classes of problems neural networks are good at solving. One kind of problem that this sort of neural network is good at solving is classification problems (where the classes are known ahead of time).
+        <div class="section-content">
+        There's lots of literature on what classes of problems neural networks are good at solving.
+        One kind of problem that this sort of neural network is good at solving is classification
+        problems (where the classes are known ahead of time).
+        </div>
       </div>
 
-      <div class="section">
+      <div class="big-section">
         <div class="section-header">
           what it can't be used for
         </div>
-        This library in particular doesn't have a database component, so it's no good for building and training huge neural networks with thousands of different inputs. It's also not suited for real-time concurrent training or anything of that sort.
+        <div class="section-content">
+        This library in particular doesn't have a database component, so it's no good for
+        building and training huge neural networks with thousands of different inputs. It's also
+        not suited for real-time concurrent training or anything of that sort.
+        </div>
       </div>
     </div>
-
-      <div class="section">
-        <div class="section-header">
-          examples
-        </div>
-        Training the exclusive-or bitwise operation:
-        <pre>
-  var data = [{input: [0, 0], target: [0]},
-              {input: [0, 1], target: [1]},
-              {input: [1, 0], target: [1]},
-              {input: [1, 1], target: [0]}];
-
-  var net = new NeuralNetwork();
-  net.train(data);
-  var output = net.run([1, 0]);
-        </pre>
-
-       Serializing the network and plugging it in somewhere else:
-        <pre>
-  var serialized = net.toJSON();
-
-  var net2 = new NeuralNetwork({ json: serialized});
-  net2.run([1, 0]);
-        </pre>   
-       Using a hashes instead of arrays for input and output:
-        <pre>
-  var data = [{input: {red: 0, green: 0, blue: 1},    target: {blue: 1}},
-              {input: {red: 1, green: 0.65, blue: 0}, target: {orange: 1}},
-              {input: {red: 0, green: 1, blue: 0},    target: {green: 1}}];
-
-  var net = new NeuralNetwork();
-  net.train(data);
-  var output = net.run({red: 1, green: 1, blue: 0}); // {"blue":0.009,"orange":0.981,"green":0.019}
-
-        </pre>   
-      </div>
     </div>
   </div>
 </body>
