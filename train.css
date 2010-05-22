@@ -1,18 +1,10 @@
 body {
-  font-family: "Myriad Pro", Corbel, Tahoma, "Lucida Grande", "Bitstream Vera Sans", Arial, Helvetica, sans-serif;
+  font-family: Corbel, Tahoma, "Lucida Grande", "Bitstream Vera Sans", Arial, Helvetica, sans-serif;
   font-size: 85%;
 }
 
 #container {
   margin: 0 auto;
-}
-
-#black-swatch {
-  color: black;
-}
-
-#white-swatch {
-  color: white;
 }
 
 .section {
@@ -25,6 +17,14 @@ body {
   font-size: 1.2em;
 }
 
+#black-swatch {
+  color: black;
+}
+
+#white-swatch {
+  color: white;
+}
+
 .swatch:active {
   -moz-box-shadow: 0 0 2px 3px grey;
   -webkit-box-shadow: 0 0 2px 3px grey;
@@ -35,20 +35,20 @@ body {
   margin: 10px;
   padding: 40px;
   height: 60px;
+  width: 70px;
   cursor: pointer;
   display: inline-block;
 }
 
-
 #pass-button {
   color: #333;
-  margin-left: 280px;
+  margin-left: 360px;
   font-size: 1.5em;
 }
 
 #test-button {
   background-color: #EEE;
-  margin-top: 30px;
+  margin-top: 40px;
 }
 
 .button:active {
@@ -57,11 +57,31 @@ body {
 
 .button {
   padding: 6px 14px;
-  margin: 10px;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
   cursor: pointer;
   display: inline-block;
+}
+
+#code-section {
+  margin: 32px auto;
+}
+
+#code-header {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+#code-box {
+  text-align: left;
+  font-family: "DejaVu Sans Mono", monospace;
+  font-size: 0.9em;
+  white-space: pre-wrap;
+  background-color: #F4F4F4;
+  padding: 18px 16px;
+  margin: 0 auto;
+  width: 600px;
+  border: 1px solid #eee;
 }
 
 #training-message {
@@ -69,4 +89,3 @@ body {
   font-weight: bold;
   font-size: 2em;
 }
-

@@ -39,6 +39,8 @@ NeuralNetwork.prototype = {
     this.outputLayer = this.layers[nlayers - 1];
     if(!hidden && !json)
       this.hiddenLayer = this.layers[1];
+    else
+      this.hiddenLayer = null;
   },
 
   run : function(inputs) {
@@ -105,6 +107,7 @@ NeuralNetwork.prototype = {
   fromJSON : function(json) {
     this.layers = [];
     this.createLayers(null, json);
+    return this;
   },
 
   toFunction: function() {
@@ -179,7 +182,7 @@ Layer.prototype = {
   },
 
   growLayer : function(inputSize) {
-    var targetSize = Math.max(2, inputSize * this.network.growthRate);
+    var targetSize = Math.max(3, inputSize * this.network.growthRate);
     for(var i = this.size; i < targetSize; i++)
       this.createNode(i);
   },
