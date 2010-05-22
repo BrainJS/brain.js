@@ -114,7 +114,7 @@ NeuralNetwork.prototype = {
     var json = this.toJSON();
     // currying w/ closures won't do, this needs to be standalone
     return new Function("inputs",
- 'var net = ' + JSON.stringify(json) + ';\n\n\
+'  var net = ' + JSON.stringify(json) + ';\n\n\
   for(var i = 1; i < net.layers.length; i++) {\n\
     var nodes = net.layers[i].nodes;\n\
     var outputs = {};\n\
@@ -127,7 +127,7 @@ NeuralNetwork.prototype = {
     }\n\
     inputs = outputs;\n\
   }\n\
-return outputs;');
+  return outputs;');
     // note: this doesn't handle never-been-seen before inputs
   },
 
