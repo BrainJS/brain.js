@@ -28,7 +28,7 @@ var trainer = {
 
   pickSwatch : function(color) {
     this.data.push({ input: utils.normalize(this.currentColor),
-                    target: { black : color == 'black' ? 1 : 0}});
+                     output: { black : color == 'black' ? 1 : 0}});
     this.changeColor();
   },
 

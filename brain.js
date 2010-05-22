@@ -1,9 +1,9 @@
 NeuralNetwork = function(options) {
   this.learningRate = 0.5;
-  this.growthRate = 0.4;
+  this.growthRate = 0.5;
   this.setOptions(options);
 
-  this.createLayers(this.hiddenLayers, this.json);
+  this.createLayers(this.hidden);
 }
 
 NeuralNetwork.prototype = {
@@ -72,16 +72,16 @@ NeuralNetwork.prototype = {
     return this.outputLayer.error;
   },
 
-  train: function(data, maxIterations, minError) {
-    if(!maxIterations)
-      maxIterations = 20000;
-    if(!minError)
-      minError = 0.01;
+  train: function(data, iterations, errorThresh) {
+    if(!iterations)
+      var iterations = 20000;
+    if(!errorThresh)
+      var errorThresh = 0.01;
     var error = 1;
-    for(var i = 0; i < maxIterations && error > minError; i++) {
+    for(var i = 0; i < iterations && error > errorThresh; i++) {
       var sum = 0;
       for(var j = 0; j < data.length; j++)
-        sum += this.trainItem(data[j].input, data[j].target);
+        sum += this.trainItem(data[j].input, data[j].output);
       error = sum / data.length;
     }
     return error;
@@ -114,20 +114,20 @@ NeuralNetwork.prototype = {
     var json = this.toJSON();
     // currying w/ closures won't do, this needs to be standalone
     return new Function("inputs",
-       'var net = ' + JSON.stringify(json) + ';\n\
-		    for(var i = 1; i < net.layers.length; i++) {\n\
-		      var nodes = net.layers[i].nodes;\n\
-		      var outputs = {};\n\
-		      for(var id in nodes) {\n\
-		        var node = nodes[id];\n\
-		        var sum = node.bias;\n\
-		        for(var iid in node.weights)\n \
-		          sum += node.weights[iid] * inputs[iid];\n\
-		        outputs[id] = (1/(1 + Math.exp(-sum)));\n\
-		      }\n\
-		      inputs = outputs;\n\
-		    }\n\
-		    return outputs;');
+       '\nvar net = ' + JSON.stringify(json) + ';\n\n\
+        for(var i = 1; i < net.layers.length; i++) {\n\
+          var nodes = net.layers[i].nodes;\n\
+          var outputs = {};\n\
+          for(var id in nodes) {\n\
+            var node = nodes[id];\n\
+            var sum = node.bias;\n\
+            for(var iid in node.weights)\n \
+              sum += node.weights[iid] * inputs[iid];\n\
+            outputs[id] = (1/(1 + Math.exp(-sum)));\n\
+          }\n\
+          inputs = outputs;\n\
+        }\n\
+        return outputs;');
     // note: this doesn't handle never-been-seen before inputs
   },
 
@@ -182,7 +182,10 @@ Layer.prototype = {
   },
 
   growLayer : function(inputSize) {
-    var targetSize = Math.max(3, inputSize * this.network.growthRate);
+	if(inputSize < 5)
+	  var targetSize = inputSize;
+	else
+	  var targetSize = inputSize * this.network.growthRate;
     for(var i = this.size; i < targetSize; i++)
       this.createNode(i);
   },
