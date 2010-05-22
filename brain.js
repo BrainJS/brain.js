@@ -74,9 +74,9 @@ NeuralNetwork.prototype = {
 
   train: function(data, iterations, errorThresh) {
     if(!iterations)
-      var iterations = 20000;
+      iterations = 20000;
     if(!errorThresh)
-      var errorThresh = 0.01;
+      errorThresh = 0.01;
     var error = 1;
     for(var i = 0; i < iterations && error > errorThresh; i++) {
       var sum = 0;
@@ -114,20 +114,20 @@ NeuralNetwork.prototype = {
     var json = this.toJSON();
     // currying w/ closures won't do, this needs to be standalone
     return new Function("inputs",
-       '\nvar net = ' + JSON.stringify(json) + ';\n\n\
-        for(var i = 1; i < net.layers.length; i++) {\n\
-          var nodes = net.layers[i].nodes;\n\
-          var outputs = {};\n\
-          for(var id in nodes) {\n\
-            var node = nodes[id];\n\
-            var sum = node.bias;\n\
-            for(var iid in node.weights)\n \
-              sum += node.weights[iid] * inputs[iid];\n\
-            outputs[id] = (1/(1 + Math.exp(-sum)));\n\
-          }\n\
-          inputs = outputs;\n\
-        }\n\
-        return outputs;');
+'  var net = ' + JSON.stringify(json) + ';\n\n\
+  for(var i = 1; i < net.layers.length; i++) {\n\
+    var nodes = net.layers[i].nodes;\n\
+    var outputs = {};\n\
+    for(var id in nodes) {\n\
+      var node = nodes[id];\n\
+      var sum = node.bias;\n\
+      for(var iid in node.weights)\n\
+        sum += node.weights[iid] * inputs[iid];\n\
+      outputs[id] = (1/(1 + Math.exp(-sum)));\n\
+    }\n\
+    inputs = outputs;\n\
+  }\n\
+  return outputs;');
     // note: this doesn't handle never-been-seen before inputs
   },
 
