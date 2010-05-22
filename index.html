@@ -13,10 +13,10 @@
     <div id="content">
       <div class="section">
       <p>Brain is a lightweight JavaScript library for neural networks.
-	     It implements the standard feedforward multi-layer
-	     perceptron neural network trained with backpropagation.</p>
-	  <p>An example, giving a color a label based on its rgb values:
-	    <pre class="code-example">
+         It implements the standard feedforward multi-layer
+         perceptron neural network trained with backpropagation.</p>
+      <p>An example, giving a color a label based on its rgb values:
+        <pre class="code-example">
 var net = new NeuralNetwork();
 
 net.train([{input: { r: 1.0, g: 0.65, b: 0},  output: { orange: 1}},
@@ -25,84 +25,84 @@ net.train([{input: { r: 1.0, g: 0.65, b: 0},  output: { orange: 1}},
            {input: { r: 0.67, g: 0, b: 1},    output: { purple: 1}}]);
 
 var output = net.run({r: 1, g: 1, b: 0});
-		</pre>
-		the output would be something like <code>{"orange":0.96,"green":0.18,"purple":0.00}</code>
-		because yellow is most similar to orange.
-	  </p>
+        </pre>
+        the output would be something like <code>{"orange":0.96,"green":0.18,"purple":0.00}</code>
+        because yellow is most similar to orange.
+      </p>
       </div>
       <div class="big-section">
-	    <div class="section-header">
+        <div class="section-header">
           Download
-		</div>
-		<div class="section-content">
+        </div>
+        <div class="section-content">
           To use this in the browser, download the latest client-side <a href="http://github.com/harthur/brain/downloads">brain.js</a>.
           To use this as a commonJS module or server-side, checkout or download
           <a href="http://github.com/harthur/brain">the code</a> from github.
-		</div>
-	  </div>
+        </div>
+      </div>
         <div class="big-section">
-	      <div class="section-header">
-		    API
-		  </div>
-		  <div class="section-content">
-	      <div class="section">
-	      <div><code class="section-code">var net = new <span class="api-spec">NeuralNetwork</span>(<span class="optional">options</span>)</code></div>
-	       <code>NeuralNetwork</code> takes an optional argument that is a 
-	       json object that can have members:
-	        <div class="arguments">
-	          <div class="argument">
-	            <code>hidden</code> - an array representing the number of hidden layers 
-	                    in the network and number of nodes per hidden layer. e.g. <code>[3, 4]</code>
-	          </div>
-	          <div class="argument">
-	            <code>growthRate</code> - the rate at which to grow the hidden layer with
-	              respect to the size of input layer. The default is <code>0.5</code> 
-	              (the hidden layer stays 50% the size of the input layer). This option
-	              does not apply if the <code>hidden</code> option was specified or
-	              the network was loaded in from json.
-	          </div> 
-	          <div class="argument">
-	            <code>learningRate</code> - the rate at which the network learns from training. Default is <code>0.5</code>.
-	               The higher the number, the faster the training will go, but the
-	               risk of the network getting 'stuck' on local minima increases.
-	          </div>
-	        </div>
-	      </div>
-	      <div class="section">
-	        <div><code class="section-code">net.<span class="api-spec">train</span>(data<span class="optional">, iterations, threshold</span>)</code></div>
-	        <code>train</code> trains the network on array of training data, where each item in the 
-	        training data is a json object with members <code>input</code> and <code>output</code>.
-	        input and output can be either an array or json object of values from 0 to 1. e.g. 
-	        <pre>
-	var data = [{input: [0.9, 0.4, 0], output: {orange: 1.0}},
-	            {input: [1.0, 1.0, 0], output: {yellow: 1.0}}]</pre>
-	         the maximum number of training iterations and the error threshold to train to
-	         can also be specified. It will train until either the max number of
-	         iterations has been reached or until the average error dips below the
-	         error threshold. By default it will train for <code>20000</code> 
-	         iterations or until the error drops below <code>0.01</code>.
-	      </div>
-	      <div class="section">
-	        <div><code class="section-code">var output = net.<span class="api-spec">run</span>(input)</code></div>
-	          <code>run</code> runs the input on the neural network. the input
-	          should be an array or json object of values from 0 to 1. e.g. 
-	          <code>{a: 0.45, b: 0.02}</code> or <code>[0.45, 1.0]</code>
-	      </div>
-	      <div class="section">
-	        <div><code class="section-code">var json = net.<span class="api-spec">toJSON</span>()</code></div>
-	          <code>toJSON</code> returns a JSON serialization of the network.
-	      </div>
-	      <div class="section">
-	        <div><code class="section-code">net.<span class="api-spec">fromJSON</span>(json)</code></div>
-	          <code>fromJSON</code> loads a serialized network. It will replace all the
-	          current layers and weights of the network.
-	      </div>
-	      <div class="section">
-	        <div><code class="section-code">var classify = net.<span class="api-spec">toFunction</span>()</code></div>
-	          <code>toFunction</code> returns a standalone function that mimics
-	          the <code>run</code> function of the network.
-	      </div>
-	    </div>
+          <div class="section-header">
+            API
+          </div>
+          <div class="section-content">
+          <div class="section">
+          <div><code class="section-code">var net = new <span class="api-spec">NeuralNetwork</span>(<span class="optional">options</span>)</code></div>
+           <code>NeuralNetwork</code> takes an optional argument that is a 
+           json object that can have members:
+            <div class="arguments">
+              <div class="argument">
+                <code>hidden</code> - an array representing the number of hidden layers 
+                        in the network and number of nodes per hidden layer. e.g. <code>[3, 4]</code>
+              </div>
+              <div class="argument">
+                <code>growthRate</code> - the rate at which to grow the hidden layer with
+                  respect to the size of input layer. The default is <code>0.5</code> 
+                  (the hidden layer stays 50% the size of the input layer). This option
+                  does not apply if the <code>hidden</code> option was specified or
+                  the network was loaded in from json.
+              </div> 
+              <div class="argument">
+                <code>learningRate</code> - the rate at which the network learns from training. Default is <code>0.5</code>.
+                   The higher the number, the faster the training will go, but the
+                   risk of the network getting 'stuck' on local minima increases.
+              </div>
+            </div>
+          </div>
+          <div class="section">
+            <div><code class="section-code">net.<span class="api-spec">train</span>(data<span class="optional">, iterations, threshold</span>)</code></div>
+            <code>train</code> trains the network on array of training data, where each item in the 
+            training data is a json object with members <code>input</code> and <code>output</code>.
+            input and output can be either an array or json object of values from 0 to 1. e.g. 
+            <pre>
+    var data = [{input: [0.9, 0.4, 0], output: {orange: 1.0}},
+                {input: [1.0, 1.0, 0], output: {yellow: 1.0}}]</pre>
+             the maximum number of training iterations and the error threshold to train to
+             can also be specified. It will train until either the max number of
+             iterations has been reached or until the average error dips below the
+             error threshold. By default it will train for <code>20000</code> 
+             iterations or until the error drops below <code>0.01</code>.
+          </div>
+          <div class="section">
+            <div><code class="section-code">var output = net.<span class="api-spec">run</span>(input)</code></div>
+              <code>run</code> runs the input on the neural network. the input
+              should be an array or json object of values from 0 to 1. e.g. 
+              <code>{a: 0.45, b: 0.02}</code> or <code>[0.45, 1.0]</code>
+          </div>
+          <div class="section">
+            <div><code class="section-code">var json = net.<span class="api-spec">toJSON</span>()</code></div>
+              <code>toJSON</code> returns a JSON serialization of the network.
+          </div>
+          <div class="section">
+            <div><code class="section-code">net.<span class="api-spec">fromJSON</span>(json)</code></div>
+              <code>fromJSON</code> loads a serialized network. It will replace all the
+              current layers and weights of the network.
+          </div>
+          <div class="section">
+            <div><code class="section-code">var classify = net.<span class="api-spec">toFunction</span>()</code></div>
+              <code>toFunction</code> returns a standalone function that mimics
+              the <code>run</code> function of the network.
+          </div>
+        </div>
        </div>
       <div class="big-section">
         <div class="section-header">
