@@ -41,12 +41,16 @@ body {
   font-family: Helvetica;
   font-weight: bold;
   font-size: 1.4em;
-  margin-bottom: 10px;
+  margin-bottom: 0.5em;
 }
 
 .sub-section-header {
   padding: 6px;
   margin-top: 8px;
+}
+
+.api-section-header {
+  margin-bottom: 5px;
 }
 
 img {
