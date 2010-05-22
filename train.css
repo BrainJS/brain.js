@@ -85,7 +85,9 @@ body {
 }
 
 #training-message {
-  margin: 50px;
+  width: 600px;
+  text-align: center;
+  margin: 200px auto;
   font-weight: bold;
   font-size: 2em;
 }
