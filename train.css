@@ -1,5 +1,5 @@
 body {
-  font-family: Corbel, Tahoma, "Lucida Grande", "Bitstream Vera Sans", Arial, Helvetica, sans-serif;
+  font-family: Corbel, Tahoma, Helvetica, Arial, sans-serif;
   font-size: 85%;
 }
 
@@ -42,7 +42,7 @@ body {
 
 #pass-button {
   color: #333;
-  margin-left: 360px;
+  margin-left: 310px;
   font-size: 1.5em;
 }
 
