@@ -10,8 +10,7 @@ net.train([{input:  {a: Math.random(), b: Math.random()},
 
 var json = net.toJSON();
 
-assert.equal(json.layers.length, 5, "incorrect number of layers, expected: "
-               + 5 + " got: " + json.layers.length);
+assert.equal(json.layers.length, 5, "incorrect number of layers");
 
 function size(json) {
   var num = 0;

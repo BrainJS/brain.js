@@ -1,7 +1,9 @@
+
 NeuralNetwork = function(options) {
   this.learningRate = 0.5;
   this.growthRate = 0.5;
-  this.setOptions(options);
+  if(options)
+    this.setOptions(options);
 
   this.createLayers(this.hidden);
 }
@@ -9,10 +11,8 @@ NeuralNetwork = function(options) {
 NeuralNetwork.prototype = {
 
   setOptions : function(options) {
-    if(options) {
-      for(option in options)
-        this[option] = options[option];
-    }
+    for(option in options)
+      this[option] = options[option];
   },
 
   createLayers : function(hidden, json) {

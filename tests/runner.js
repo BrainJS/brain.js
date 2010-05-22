@@ -10,6 +10,10 @@ for(var i = 0; i < tests.length; i++) {
     sys.puts("PASS " + test);
   }
   catch(e) {
-    sys.puts("FAIL " + test + ": " +  e);
+    var msg = "FAIL " + test + ": " +  e;
+    if(e.expected != true)
+      msg += ", expected: " + JSON.stringify(e.expected)
+             + " actual: " + JSON.stringify(e.actual);
+    sys.puts(msg);
   }
 }

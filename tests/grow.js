@@ -15,6 +15,5 @@ net.train([{input:  {a: 0, b: 0, c: 0, d: 0}, output: {}},
 var json = net.toJSON();
 var numHidden = size(json.layers[1].nodes);
 
-assert.equal(numHidden, 5, "hidden layer should be 0.5 the size of input layer,\
-               expected: 5 got: " + numHidden);
+assert.equal(numHidden, 5, "hidden layer should be 0.5 the size of input layer");
 
