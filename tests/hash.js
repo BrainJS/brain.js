@@ -5,12 +5,12 @@ var net = new brain.NeuralNetwork();
 
 /* sparse hashes for input/output training data */
 net.train([{input:  {a: Math.random(), b: Math.random(), c: Math.random()},
-            target: {A: Math.random(), B: Math.random()}},
+            output: {A: Math.random(), B: Math.random()}},
 
            {input:  {d: Math.random(), e: Math.random(), f : Math.random()},
-            target: {C: Math.random()}},
+            output: {C: Math.random()}},
 
-           {input : {}, target : {}}]);
+           {input : {}, output : {}}]);
 
 function checkLayer(nodes, layer) {
   for(var node in nodes)

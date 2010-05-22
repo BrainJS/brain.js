@@ -1,9 +1,9 @@
 NeuralNetwork = function(options) {
   this.learningRate = 0.5;
-  this.growthRate = 0.4;
+  this.growthRate = 0.5;
   this.setOptions(options);
 
-  this.createLayers(this.hidden, this.json);
+  this.createLayers(this.hidden);
 }
 
 NeuralNetwork.prototype = {
@@ -39,6 +39,8 @@ NeuralNetwork.prototype = {
     this.outputLayer = this.layers[nlayers - 1];
     if(!hidden && !json)
       this.hiddenLayer = this.layers[1];
+    else
+      this.hiddenLayer = null;
   },
 
   run : function(inputs) {
@@ -70,16 +72,16 @@ NeuralNetwork.prototype = {
     return this.outputLayer.error;
   },
 
-  train: function(data, maxIterations, minError) {
-    if(!maxIterations)
-      maxIterations = 20000;
-    if(!minError)
-      minError = 0.01;
+  train: function(data, iterations, errorThresh) {
+    if(!iterations)
+      iterations = 20000;
+    if(!errorThresh)
+      errorThresh = 0.01;
     var error = 1;
-    for(var i = 0; i < maxIterations && error > minError; i++) {
+    for(var i = 0; i < iterations && error > errorThresh; i++) {
       var sum = 0;
       for(var j = 0; j < data.length; j++)
-        sum += this.trainItem(data[j].input, data[j].target);
+        sum += this.trainItem(data[j].input, data[j].output);
       error = sum / data.length;
     }
     return error;
@@ -105,13 +107,14 @@ NeuralNetwork.prototype = {
   fromJSON : function(json) {
     this.layers = [];
     this.createLayers(null, json);
+    return this;
   },
 
   toFunction: function() {
     var json = this.toJSON();
     // currying w/ closures won't do, this needs to be standalone
     return new Function("inputs",
-       'var net = ' + JSON.stringify(json) + ';\n\
+       '\nvar net = ' + JSON.stringify(json) + ';\n\n\
         for(var i = 1; i < net.layers.length; i++) {\n\
           var nodes = net.layers[i].nodes;\n\
           var outputs = {};\n\
@@ -179,7 +182,10 @@ Layer.prototype = {
   },
 
   growLayer : function(inputSize) {
-    var targetSize = Math.max(2, inputSize * this.network.growthRate);
+	if(inputSize < 5)
+	  var targetSize = inputSize;
+	else
+	  var targetSize = inputSize * this.network.growthRate;
     for(var i = this.size; i < targetSize; i++)
       this.createNode(i);
   },

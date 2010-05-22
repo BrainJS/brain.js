@@ -4,9 +4,9 @@ var assert = require('assert'),
 var net = new brain.NeuralNetwork();
 
 net.train([{input:  {a: Math.random(), b: Math.random()},
-            target: {c: Math.random(), d: Math.random()}},
+            output: {c: Math.random(), d: Math.random()}},
            {input:  {a: Math.random(), b: Math.random()},
-            target: {c: Math.random(), d: Math.random()}}]);
+            output: {c: Math.random(), d: Math.random()}}]);
 
 var input = {a : Math.random(), b: Math.random()};
 var output1 = JSON.stringify(net.run(input));
