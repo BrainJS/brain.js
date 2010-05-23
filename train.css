@@ -37,7 +37,33 @@ body {
   height: 60px;
   width: 70px;
   cursor: pointer;
+}
+
+.swatch-box {
   display: inline-block;
+}
+
+.view-code {
+  color: #aaa;
+  cursor: pointer;
+  margin-right: 4px;
+  vertical-align: center;
+}
+
+.swatch-box.selected .view-code {
+  color: #222;
+}
+
+.view-code-arrow {
+  margin-left: .16em;
+  font-size: .8em;
+  display: inline-block;
+}
+
+.swatch-box.selected .view-code-arrow {
+  -moz-transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+  -o-transform:rotate(90deg);
 }
 
 #pass-button {
@@ -63,7 +89,7 @@ body {
   display: inline-block;
 }
 
-#code-section {
+#code-box {
   margin: 32px auto;
 }
 
@@ -72,7 +98,7 @@ body {
   font-weight: bold;
 }
 
-#code-box {
+#code {
   text-align: left;
   font-family: "DejaVu Sans Mono", monospace;
   font-size: 13px;

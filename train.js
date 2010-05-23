@@ -80,8 +80,7 @@ var trainer = {
 
   showProgress : function(progress) {
 	var completed = progress.iterations / trainer.iterations * 100;
-	$("#progress-completed").css("width", completed + "%")
-   // alert(JSON.stringify(progress));
+	$("#progress-completed").css("width", completed + "%");
   }
 }
 
@@ -103,42 +102,53 @@ var tester = {
     $(".swatch").css("backgroundColor", rgb);
 
     var color = utils.normalize(color);
-    $("#nn-swatch").css("color", this.nnColor(color));
-    $("#wcag-swatch").css("color", this.wcagColor(color));
+    $("#nn-swatch").css("color", nnColor(color));
+    $("#wcag-swatch").css("color", wcagColor(color));
   },
 
-  nnColor : function(bgColor) {
-    var output = runNetwork(bgColor);
-    if(output.black > .5)
-      return 'black';
-    return 'white';
-  },
-
-  wcagColor : function(bgColor) {
-    if(contrast(bgColor, {r: 1, g: 1, b: 1}) 
-        > contrast(bgColor, {r: 0, g: 0, b: 0}))
-      return 'white';
-    return 'black';
-  },
-
-  viewCode : function(type) {
-    if(type == 'nn') {   
-      var code = "var textColor = " + this.nnColor.toString()
-                  + "\n\nvar runNetwork = " + runNetwork.toString();
+  viewCode : function(type) {	
+    if(type == 'nn' && !$("#nn-swatch-box").hasClass("selected")) {
       $("#code-header").text("neural network code:");
+      var code = "var textColor = " + nnColor.toString()
+                  + "\n\nvar runNetwork = " + runNetwork.toString();
+      $("#code").text(code);
+      $(".swatch-box").removeClass("selected");
+      $("#nn-swatch-box").addClass("selected");
+      $("#code-box").show();
     }
-    else {
-      var code = "var textColor = " + this.wcagColor.toString()
+    else if(type == 'wcag' && !$("#wcag-swatch-box").hasClass("selected")) {
+      $("#code-header").text("luminosity algorithm code:");
+      var code = "var textColor = " + wcagColor.toString()
                   + "\n\nvar contrast = " + contrast.toString()
                   + "\n\nvar luminosity = " + luminosity.toString();
-      $("#code-header").text("luminosity algorithm code:");
+      $("#code").text(code);
+      $(".swatch-box").removeClass("selected");
+      $("#wcag-swatch-box").addClass("selected");
+      $("#code-box").show();
     }
-    $("#code-box").show();
-    $("#code-box").text(code);
+    else {
+      $("#code-box").hide();
+      $(".swatch-box").removeClass("selected");
+    }
   }
 }
 
+
 /* these functions are outside so we can just call toString() for 'view code'*/
+var nnColor = function(bgColor) {
+  var output = runNetwork(bgColor);
+  if(output.black > .5)
+    return 'black';
+  return 'white';
+}
+
+var wcagColor = function(bgColor) {
+  if(contrast(bgColor, {r: 1, g: 1, b: 1}) 
+      > contrast(bgColor, {r: 0, g: 0, b: 0}))
+    return 'white';
+  return 'black';
+}
+
 var luminosity = function(color) {
   var r = color.r, g = color.g, b = color.b;
   var red = (r <= 0.03928) ? r/12.92 : Math.pow(((r + 0.055)/1.055), 2.4);
