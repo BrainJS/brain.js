@@ -74,17 +74,19 @@ NeuralNetwork.prototype = {
 
   train: function(data, iterations, errorThresh) {
     if(!iterations)
-      iterations = 20000;
+      var iterations = 20000;
     if(!errorThresh)
-      errorThresh = 0.01;
+      var errorThresh = 0.01;
     var error = 1;
     for(var i = 0; i < iterations && error > errorThresh; i++) {
       var sum = 0;
-      for(var j = 0; j < data.length; j++)
-        sum += this.trainItem(data[j].input, data[j].output);
-      error = sum / data.length;
+      for(var j = 0; j < data.length; j++) {
+        var err = this.trainItem(data[j].input, data[j].output);
+        sum += Math.pow(err, 2);
+      }
+      error = Math.sqrt(sum) / data.length;
     }
-    return error;
+    return {error: error, iterations: iterations};
   },
 
   formatOutput : function(outputs) {
