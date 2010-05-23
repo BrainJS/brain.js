@@ -75,19 +75,32 @@ body {
 #code-box {
   text-align: left;
   font-family: "DejaVu Sans Mono", monospace;
-  font-size: 0.9em;
+  font-size: 13px;
   white-space: pre-wrap;
   background-color: #F4F4F4;
   padding: 18px 16px;
   margin: 0 auto;
-  width: 600px;
+  width: 640px;
   border: 1px solid #eee;
 }
 
-#training-message {
+#progress-box {
   width: 600px;
   text-align: center;
   margin: 200px auto;
   font-weight: bold;
   font-size: 2em;
+}
+
+#progress-bar {
+  height: 20px;
+  border: 1px solid #ccc;
+  background-color: #f2f2f2;
+  margin-top: 20px;
+}
+
+#progress-completed {
+  background-color: #d0d0d0;
+  width: 10%;
+  height: 100%;
 }

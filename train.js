@@ -1,6 +1,6 @@
 $(document).ready(function(){
   trainer.changeColor();
-  $("#training-message").hide();
+  $("#progress-box").hide();
   $("#testing-box").hide();
   $("#code-box").hide();
 });
@@ -26,6 +26,8 @@ var trainer = {
 
   data : [],
 
+  iterations : 9000,
+
   pickSwatch : function(color) {
     var result = { input: utils.normalize(this.currentColor),
                    output: { black : color == 'black' ? 1 : 0}};
@@ -44,38 +46,48 @@ var trainer = {
 
   trainNetwork : function() {
     $("#training-box").hide();
-    $("#training-message").show();
+    $("#progress-box").show();
 
     if(window.Worker && 
        !(/chrome/.test(navigator.userAgent.toLowerCase()))) {
       // in Chrome "new Worker" never returns
       var worker = new Worker("training-worker.js");
-      worker.onmessage = tester.loadNetwork;
+      worker.onmessage = this.onMessage;
       worker.onerror = this.onError;
       worker.postMessage(JSON.stringify(this.data));
     }
     else {
       var net = new NeuralNetwork();
-      var iterations = 8000;
-      var info = net.train(this.data, iterations);
-      alert(JSON.stringify(info));
+      net.train(this.data, this.iterations, 0.005, this.showProgress, 1000);
+      tester.show(net);
+    }
+  },
+
+  onMessage : function(event) {
+	var data = JSON.parse(event.data);
+	if(data.type == 'progress') {
+      trainer.showProgress(data);
+	}
+	else if(data.type == 'result') {
+      var net = new NeuralNetwork().fromJSON(data.net);
       tester.show(net);
     }
   },
 
   onError : function(event) {
     $("#training-message").text("error training network: " + event.message);
+  },
+
+  showProgress : function(progress) {
+	var completed = progress.iterations / trainer.iterations * 100;
+	$("#progress-completed").css("width", completed + "%")
+   // alert(JSON.stringify(progress));
   }
 }
 
 var tester = {
-  loadNetwork : function(event) {
-    var net = new NeuralNetwork().fromJSON(JSON.parse(event.data));
-    tester.show(net);
-  },
-
   show : function(net) {
-    $("#training-message").hide();
+    $("#progress-box").hide();
     runNetwork = net.toFunction();
     runNetwork.name = "runNetwork"; // for view code later
     this.testRandom();

@@ -4,7 +4,7 @@
   <link rel="stylesheet" href="train.css">
 
   <script src="jquery-1.4.2.min.js"></script>
-  <script src="brain.js"></script>
+  <script src="brain-0.1.js"></script>
   <script src="compare.js"></script>
   <script src="train.js"></script>
 </head>
@@ -30,9 +30,15 @@
       <span id="test-button" onclick="trainer.trainNetwork();" class="button">test neural network</span>
     </div>
 
-    <div id="training-message">
-      training network...
-    </div>
+    <div id="progress-box">
+      <div id="training-message">
+        training network...
+      </div>
+      <div id="progress-bar">
+	    <div id="progress-completed">
+	    </div>
+      </div>
+   </div>
 
     <div class="section" id="testing-box">
       <div id="swatches">
