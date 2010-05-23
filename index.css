@@ -3,6 +3,10 @@ body {
   font-size: 85%;
 }
 
+code, pre {
+  font-size: 1.11em;
+}
+
 #container {
   margin: 0 auto;
   width: 660px;
@@ -53,20 +57,16 @@ body {
   margin-bottom: 5px;
 }
 
-img {
-  border: 5px solid #ccc;
-  -moz-border-radius: 2px;
-}
-
 .section-code {
   padding: .4em;
   background-color: #F3EDFF;
   display: inline-block;
+  font-size: 1.14em;
 }
 
 .code-example {
   border: 1px solid #ddd;
-  padding: 10px;
+  padding: 12px;
   background-color: #F2F4FF;
   margin-right: 50px;
 }
