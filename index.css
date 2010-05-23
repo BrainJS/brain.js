@@ -1,5 +1,5 @@
 body {
-  font-family: Corbel, Tahoma, Helvetica, Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
 }
 
@@ -10,7 +10,7 @@ body {
 
 #header {
   text-align: center;
-  font-family: Helvetica;
+  font-family: Helvetica, sans-serif;
 }
 
 #content {
