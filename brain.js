@@ -76,7 +76,7 @@ NeuralNetwork.prototype = {
     if(!iterations)
       var iterations = 20000;
     if(!errorThresh)
-      var errorThresh = 0.01;
+      var errorThresh = 0.005;
     var error = 1;
     for(var i = 0; i < iterations && error > errorThresh; i++) {
       var sum = 0;
@@ -86,7 +86,7 @@ NeuralNetwork.prototype = {
       }
       error = Math.sqrt(sum) / data.length;
     }
-    return {error: error, iterations: iterations};
+    return {error: error, iterations: i};
   },
 
   formatOutput : function(outputs) {
