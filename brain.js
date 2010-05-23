@@ -1,7 +1,9 @@
+
 NeuralNetwork = function(options) {
   this.learningRate = 0.5;
   this.growthRate = 0.5;
-  this.setOptions(options);
+  if(options)
+    this.setOptions(options);
 
   this.createLayers(this.hidden);
 }
@@ -9,10 +11,8 @@ NeuralNetwork = function(options) {
 NeuralNetwork.prototype = {
 
   setOptions : function(options) {
-    if(options) {
-      for(option in options)
-        this[option] = options[option];
-    }
+    for(option in options)
+      this[option] = options[option];
   },
 
   createLayers : function(hidden, json) {
@@ -74,17 +74,19 @@ NeuralNetwork.prototype = {
 
   train: function(data, iterations, errorThresh) {
     if(!iterations)
-      iterations = 20000;
+      var iterations = 20000;
     if(!errorThresh)
-      errorThresh = 0.01;
+      var errorThresh = 0.005;
     var error = 1;
     for(var i = 0; i < iterations && error > errorThresh; i++) {
       var sum = 0;
-      for(var j = 0; j < data.length; j++)
-        sum += this.trainItem(data[j].input, data[j].output);
-      error = sum / data.length;
+      for(var j = 0; j < data.length; j++) {
+        var err = this.trainItem(data[j].input, data[j].output);
+        sum += Math.pow(err, 2);
+      }
+      error = Math.sqrt(sum) / data.length;
     }
-    return error;
+    return {error: error, iterations: i};
   },
 
   formatOutput : function(outputs) {
@@ -163,8 +165,8 @@ Layer.prototype = {
 
   get error() {
     var sum = 0;
-    this.map(function(node) { sum += node.error; });
-    return sum / this.size;
+    this.map(function(node) { sum += Math.pow(node.error, 2); });
+    return Math.sqrt(sum) / this.size;
   },
 
   get size() {
@@ -311,3 +313,5 @@ Node.prototype = {
     this.bias = json.bias;
   },
 }
+
+exports.NeuralNetwork = NeuralNetwork;

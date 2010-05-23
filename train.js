@@ -27,8 +27,12 @@ var trainer = {
   data : [],
 
   pickSwatch : function(color) {
-    this.data.push({ input: utils.normalize(this.currentColor),
-                     output: { black : color == 'black' ? 1 : 0}});
+    var result = { input: utils.normalize(this.currentColor),
+                   output: { black : color == 'black' ? 1 : 0}};
+    this.data.push(result);
+
+     $.ajax({url: 'http://localhost:5984/blackorwhite/', type: 'POST', 
+             data: JSON.stringify(result)});
     this.changeColor();
   },
 
@@ -53,7 +57,8 @@ var trainer = {
     else {
       var net = new NeuralNetwork();
       var iterations = 8000;
-      var error = net.train(this.data, iterations);
+      var info = net.train(this.data, iterations);
+      alert(JSON.stringify(info));
       tester.show(net);
     }
   },
