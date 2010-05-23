@@ -72,12 +72,13 @@ NeuralNetwork.prototype = {
     return this.outputLayer.error;
   },
 
-  train: function(data, iterations, errorThresh) {
+  train: function(data, iterations, errorThresh, callback, resolution) {
     if(!iterations)
       var iterations = 20000;
     if(!errorThresh)
       var errorThresh = 0.005;
     var error = 1;
+
     for(var i = 0; i < iterations && error > errorThresh; i++) {
       var sum = 0;
       for(var j = 0; j < data.length; j++) {
@@ -85,6 +86,9 @@ NeuralNetwork.prototype = {
         sum += Math.pow(err, 2);
       }
       error = Math.sqrt(sum) / data.length;
+
+      if(callback && (i % resolution == 0))
+        callback({error: error, iterations: i});
     }
     return {error: error, iterations: i};
   },
