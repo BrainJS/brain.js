@@ -66,15 +66,23 @@ body {
   -o-transform:rotate(90deg);
 }
 
-#pass-button {
+.pass-button {
   color: #333;
-  margin-left: 310px;
   font-size: 1.5em;
+}
+
+#training-box .pass-button {
+  margin-left: 310px;
+}
+
+#testing-box .pass-button {
+  margin-left: 350px;
 }
 
 #test-button {
   background-color: #EEE;
   margin-top: 40px;
+  padding: 6px 14px;
 }
 
 .button:active {
@@ -82,7 +90,6 @@ body {
 }
 
 .button {
-  padding: 6px 14px;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
   cursor: pointer;
@@ -127,6 +134,6 @@ body {
 
 #progress-completed {
   background-color: #d0d0d0;
-  width: 10%;
+  width: 0%;
   height: 100%;
 }
