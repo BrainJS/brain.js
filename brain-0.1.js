@@ -1,3 +1,26 @@
+/*
+ * brain.js 
+ * Copyright (c) 2010 Heather Arthur
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 NeuralNetwork = function(options) {
   this.learningRate = 0.5;
@@ -72,12 +95,13 @@ NeuralNetwork.prototype = {
     return this.outputLayer.error;
   },
 
-  train: function(data, iterations, errorThresh) {
+  train: function(data, iterations, errorThresh, callback, resolution) {
     if(!iterations)
       var iterations = 20000;
     if(!errorThresh)
       var errorThresh = 0.005;
     var error = 1;
+
     for(var i = 0; i < iterations && error > errorThresh; i++) {
       var sum = 0;
       for(var j = 0; j < data.length; j++) {
@@ -85,6 +109,9 @@ NeuralNetwork.prototype = {
         sum += Math.pow(err, 2);
       }
       error = Math.sqrt(sum) / data.length;
+
+      if(callback && (i % resolution == 0))
+        callback({error: error, iterations: i});
     }
     return {error: error, iterations: i};
   },
@@ -313,5 +340,3 @@ Node.prototype = {
     this.bias = json.bias;
   },
 }
-
-exports.NeuralNetwork = NeuralNetwork;
