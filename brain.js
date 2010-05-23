@@ -163,8 +163,8 @@ Layer.prototype = {
 
   get error() {
     var sum = 0;
-    this.map(function(node) { sum += node.error; });
-    return sum / this.size;
+    this.map(function(node) { sum += Math.pow(node.error, 2); });
+    return Math.sqrt(sum) / this.size;
   },
 
   get size() {
