@@ -19,12 +19,12 @@
         <pre class="code-example">
 var net = new NeuralNetwork();
 
-net.train([{input: { r: 1.0, g: 0.65, b: 0},  output: { orange: 1}},
-           {input: { r: 0, g: 0.54, b: 0},    output: { green: 1}},
-           {input: { r: 0.6, g: 0.9, b: 0.5}, output: { green: 1}},
-           {input: { r: 0.67, g: 0, b: 1},    output: { purple: 1}}]);
+net.train([{input: [1, 0.65, 0],  output: { orange: 1}},
+           {input: [0, 0.54, 0],  output: { green: 1}},
+           {input: [0.6, 1, 0.5], output: { green: 1}},
+           {input: [0.67, 0, 1],  output: { purple: 1}}]);
 
-var output = net.run({r: 1, g: 1, b: 0});</pre>
+var output = net.run([1,1,0]);</pre>
         the output would be something like <code>{"orange":0.96,"green":0.18,"purple":0.00}</code>
         because yellow is most similar to orange.
       </p>
