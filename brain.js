@@ -1,4 +1,3 @@
-
 NeuralNetwork = function(options) {
   this.learningRate = 0.5;
   this.growthRate = 0.5;
@@ -159,7 +158,7 @@ function Layer(network, prevLayer, numNodes, json) {
 }
 
 Layer.prototype = {
-  get outputs() {
+  get outputs() { // output is kept as state for backpropagation
     return this.map(function(node) { return node.output; });
   },
 
