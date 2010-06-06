@@ -15,18 +15,16 @@ NeuralNetwork.prototype = {
   },
 
   createLayers : function(hidden, json) {
-    this.layers = [];
     var nlayers = 3; // one hidden layer is default
     if(hidden)
       nlayers = hidden.length + 2;
     else if(json)
       nlayers = json.layers.length;
 
+    this.layers = [];
     for(var i = 0; i < nlayers; i++) {
-      if(hidden)
-        var nnodes = hidden[i - 1];
-      if(json)
-        var layerJSON = json.layers[i];
+      var nnodes = hidden ? hidden[i - 1] : 0;
+      var layerJSON = json ? json.layers[i] : null;
       var layer = new Layer(this, layer, nnodes, layerJSON);
       this.layers.push(layer);
     }
@@ -34,7 +32,7 @@ NeuralNetwork.prototype = {
     this.inputLayer = this.layers[0];
     this.outputLayer = this.layers[nlayers - 1];
     if(!hidden && !json)
-      this.hiddenLayer = this.layers[1]; // hold on to for growing
+      this.hiddenLayer = this.layers[1]; // hold onto for growing
     else
       this.hiddenLayer = null;
   },
@@ -284,18 +282,16 @@ Node.prototype = {
   },
 
   calcError : function(targets) {
-    var error;
     if(targets) {
       var expected = targets[this.id] || 0;
-      error = (expected - this.output);
+      this.error = (expected - this.output);
     }
     else {
-      error = 0;
+      this.error = 0;
       for(var id in this.outgoing)
-        error += this.outgoing[id].delta * this.outgoing[id].weights[this.id];
+        this.error += this.outgoing[id].delta * this.outgoing[id].weights[this.id];
     }
-    this.error = Math.abs(error);
-    this.delta = error * this.dsigmoid(this.output);
+    this.delta = this.error * this.dsigmoid(this.output);
   },
 
   adjustWeights : function() {
