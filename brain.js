@@ -35,7 +35,7 @@ NeuralNetwork.prototype = {
     this.inputLayer = this.layers[0];
     this.outputLayer = this.layers[nlayers - 1];
     if(!hidden && !json)
-      this.hiddenLayer = this.layers[1];
+      this.hiddenLayer = this.layers[1]; // hold on to for growing
     else
       this.hiddenLayer = null;
   },
