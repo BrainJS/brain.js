@@ -246,7 +246,7 @@ function Node(layer, id, json) {
   else if(this.layer.prevLayer) {
     this.weights = {};
     for(var id in this.incoming)
-      this.weights[id] = this.randomWeight();
+      this.addIncoming(id);
     this.bias = this.randomWeight(); // instead of having a seperate bias node
   }
 }
@@ -302,7 +302,7 @@ Node.prototype = {
   },
 
   toJSON : function() {
-    return { weights: this.weights, bias: this.bias};
+    return { weights: this.weights, bias: this.bias };
   },
 
   fromJSON : function(json) {
