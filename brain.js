@@ -16,7 +16,6 @@ NeuralNetwork.prototype = {
 
   createLayers : function(hidden, json) {
     this.layers = [];
-
     var nlayers = 3; // one hidden layer is default
     if(hidden)
       nlayers = hidden.length + 2;
@@ -46,7 +45,6 @@ NeuralNetwork.prototype = {
       this.hiddenLayer.growLayer(this.inputLayer.size);
 
     this.inputLayer.outputs = inputs;
-
     for(var i = 1; i < this.layers.length; i++)
       this.layers[i].calcOutputs();
 
@@ -71,18 +69,18 @@ NeuralNetwork.prototype = {
 
   train: function(data, iterations, errorThresh, callback, resolution) {
     if(!iterations)
-      var iterations = 20000;
+      iterations = 20000;
     if(!errorThresh)
-      var errorThresh = 0.005;
-    var error = 1;
+      errorThresh = 0.005;
 
+    var error = 1;
     for(var i = 0; i < iterations && error > errorThresh; i++) {
       var sum = 0;
       for(var j = 0; j < data.length; j++) {
         var err = this.trainItem(data[j].input, data[j].output);
         sum += Math.pow(err, 2);
       }
-      error = Math.sqrt(sum) / data.length;
+      error = Math.sqrt(sum) / data.length; // mean squared error
 
       if(callback && (i % resolution == 0))
         callback({error: error, iterations: i});
@@ -91,9 +89,10 @@ NeuralNetwork.prototype = {
   },
 
   formatOutput : function(outputs) {
+    /* we use hashes internally, turn back into array if needed */
     var values = [];
     for(var id in outputs) {
-      if(parseInt(id) != id) // not an array
+      if(parseInt(id) != id) // not an array index
         return outputs;
       values.push(outputs[id]);
     }
@@ -165,16 +164,12 @@ Layer.prototype = {
   },
 
   get error() {
-    var sum = 0;
-    this.map(function(node) { sum += Math.pow(node.error, 2); });
-    return Math.sqrt(sum) / this.size;
+    var sum = this.reduce(function(sum, node) { return sum + Math.pow(node.error, 2);}, 0);
+    return Math.sqrt(sum) / this.size; // mean squared error
   },
 
   get size() {
-    var n = 0;
-    for(var id in this.nodes)
-      n++;
-    return n;
+    return this.reduce(function(count) { return ++count;}, 0);
   },
 
   map : function(callback) {
@@ -184,11 +179,16 @@ Layer.prototype = {
     return values;
   },
 
+  reduce : function(callback, value) {
+    for(var id in this.nodes)
+      value = callback(value, this.nodes[id]);
+    return value;  
+  },
+
   growLayer : function(inputSize) {
-	if(inputSize < 5)
-	  var targetSize = inputSize;
-	else
-	  var targetSize = inputSize * this.network.growthRate;
+    var targetSize = inputSize;
+    if(inputSize > 5)
+      targetSize *= this.network.growthRate;
     for(var i = this.size; i < targetSize; i++)
       this.createNode(i);
   },
