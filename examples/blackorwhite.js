@@ -79,8 +79,8 @@ var trainer = {
   },
 
   showProgress : function(progress) {
-	var completed = progress.iterations / trainer.iterations * 100;
-	$("#progress-completed").css("width", completed + "%");
+    var completed = progress.iterations / trainer.iterations * 100;
+    $("#progress-completed").css("width", completed + "%");
   }
 }
 
@@ -106,7 +106,7 @@ var tester = {
     $("#wcag-swatch").css("color", wcagColor(color));
   },
 
-  viewCode : function(type) {	
+  viewCode : function(type) {   
     if(type == 'nn' && !$("#nn-swatch-box").hasClass("selected")) {
       $("#code-header").text("neural network code:");
       var code = "var textColor = " + nnColor.toString()
