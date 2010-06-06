@@ -1,14 +1,12 @@
 # brain
 
 brain is a javascript neural network library. An example, training the XOR bitwise operation:
-
-	var data = [{input: [0, 0], output: [0]},
-	            {input: [0, 1], output: [1]},
-	            {input: [1, 0], output: [1]},
-	            {input: [1, 1], output: [0]}];
-
 	var net = new NeuralNetwork();
-	net.train(data);
+	net.train([{input: [0, 0], output: [0]},
+	           {input: [0, 1], output: [1]},
+	           {input: [1, 0], output: [1]},
+	           {input: [1, 1], output: [0]}]);
+	
 	var output = net.run([1, 0]);
 
 The output will be `[0.987]` or something close like that. There's no reason to use a neural network to figure out XOR, but it's a small example (-:
@@ -22,8 +20,11 @@ To use this as a commonJS module (node/narwhal) checkout or download the code, t
 	var brain = require("./brain");
 	var net = new brain.NeuralNetwork();
 
+# API
+[http://harthur.github.com/brain#api](http://harthur.github.com/brain#api)
+
 # tests
 Running the tests requires [node.js](http://nodejs.org/):
 
 	node tests/runner.js
-
+	
