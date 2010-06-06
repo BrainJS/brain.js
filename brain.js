@@ -23,15 +23,13 @@ NeuralNetwork.prototype = {
     else if(json)
       nlayers = json.layers.length;
 
-    var prevLayer;
     for(var i = 0; i < nlayers; i++) {
       if(hidden)
         var nnodes = hidden[i - 1];
       if(json)
         var layerJSON = json.layers[i];
-      var layer = new Layer(this, prevLayer, nnodes, layerJSON);
+      var layer = new Layer(this, layer, nnodes, layerJSON);
       this.layers.push(layer);
-      prevLayer = layer;
     }
 
     this.inputLayer = this.layers[0];
