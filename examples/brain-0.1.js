@@ -211,10 +211,10 @@ Layer.prototype = {
   },
 
   growLayer : function(inputSize) {
-	if(inputSize < 5)
-	  var targetSize = inputSize;
-	else
-	  var targetSize = inputSize * this.network.growthRate;
+    if(inputSize < 5)
+      var targetSize = inputSize;
+    else
+      var targetSize = inputSize * this.network.growthRate;
     for(var i = this.size; i < targetSize; i++)
       this.createNode(i);
   },
