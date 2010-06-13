@@ -109,36 +109,14 @@ var output = net.run([1,1,0]);</pre>
           Demo
         </div>
         <div class="section-content">
-        <a href="http://harthur.github.com/brain/examples/blackorwhite.html"><img src="demo.png"></a>
+        <a href="http://harthur.github.com/brain/examples/blackorwhite.html">
+	      <img src="demo.png" id="demo-thumbnail">
+	    </a>
         This webpage trains a network to recognize whether to use black or white text
         over a given background color. It is purely client-side, training the network
         on a Worker thread and using the JSON serializing function to pass the trained
         network back to the main thread. You can see the code for the site on
         <a href="http://github.com/harthur/brain/blob/gh-pages/examples">brain's github</a>.
-        </div>
-      </div>
-
-      <div class="big-section">
-        <div class="section-header">
-          What to use it for
-        </div>
-        <div class="section-content">
-        There's lots of literature on what classes of problems neural networks are
-        good at solving. One kind of problem that this sort of neural network
-        is good at solving is classification problems (where the classes 
-        are known ahead of time).
-        </div>
-      </div>
-
-      <div class="big-section">
-        <div class="section-header">
-          What it can't be used for
-        </div>
-        <div class="section-content">
-        This library in particular doesn't have a database component, 
-        so it's no good for building and training huge neural networks
-        with thousands of different inputs. It's also not suited for
-        real-time concurrent training or anything of that sort.
         </div>
       </div>
     </div>
