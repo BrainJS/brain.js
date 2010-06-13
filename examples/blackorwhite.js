@@ -58,7 +58,7 @@ var trainer = {
     }
     else {
       var net = new NeuralNetwork();
-      net.train(this.data, this.iterations, 0.005, this.showProgress, 1000);
+      net.train(this.data, this.iterations, 0.005);
       tester.show(net);
     }
   },

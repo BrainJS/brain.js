@@ -4,7 +4,7 @@ body {
 }
 
 #container {
-  margin: 0 auto;
+  margin: 80px auto 0px auto;
 }
 
 .section {
@@ -37,6 +37,10 @@ body {
   height: 60px;
   width: 70px;
   cursor: pointer;
+}
+
+.swatch {
+  font-size: .97em;
 }
 
 .swatch-box {
