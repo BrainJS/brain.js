@@ -7,6 +7,14 @@ code, pre {
   font-size: 1.11em;
 }
 
+img {
+  border: 3px solid #CCC;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  display: block;
+}
+
 #container {
   margin: 0 auto;
   width: 660px;

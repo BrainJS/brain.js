@@ -79,9 +79,7 @@ var output = net.run([1,1,0]);</pre>
     var data = [{input: [0.9, 0.4, 0], output: {orange: 1.0}},
                 {input: [1.0, 1.0, 0], output: {yellow: 1.0}}]</pre>
              The maximum number of training iterations and the error threshold to train to
-             can also be specified. It will train until either the max number of
-             iterations has been reached or until the average error dips below the
-             error threshold. By default it will train for <code>20000</code> 
+             can also be specified. By default it will train for <code>20000</code> 
              iterations or until the error drops below <code>0.01</code>.
           </div>
           <div class="section">
@@ -106,15 +104,16 @@ var output = net.run([1,1,0]);</pre>
           </div>
         </div>
        </div>
-     <div class="big-section">
+     <div class="big-section" id="demo">
         <div class="section-header">
-          An example
+          Demo
         </div>
         <div class="section-content">
-        <a href="http://harthur.github.com/brain/examples/blackorwhite.html">This page</a> trains a network
-	    to recognize whether to use black or white text over a given background color. It is purely
-        client-side, training the network on a Worker thread and using the JSON serializing function
-        to pass the trained network back to the main thread. You can see the code for the site on
+        <a href="http://harthur.github.com/brain/examples/blackorwhite.html"><img src="demo.png"></a>
+        This webpage trains a network to recognize whether to use black or white text
+        over a given background color. It is purely client-side, training the network
+        on a Worker thread and using the JSON serializing function to pass the trained
+        network back to the main thread. You can see the code for the site on
         <a href="http://github.com/harthur/brain/blob/gh-pages/examples">brain's github</a>.
         </div>
       </div>
