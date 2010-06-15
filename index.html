@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>brain - javascript neural networks</title>
+<title>brain - JavaScript neural networks</title>
 <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -13,22 +13,20 @@
     </div>
     <div id="content">
       <div class="section">
-      <p>brain is a lightweight JavaScript library for neural networks.
-         It implements the standard feedforward multi-layer
-         perceptron neural network trained with backpropagation. If you're not sure
-         what use you can use a neural network for, this is a
-         <a href="http://www.heatonresearch.com/content/non-mathematical-introduction-using-neural-networks">
-	      good introduction</a>.</p>
+      <p>brain is a lightweight JavaScript library for
+	    <a href="http://www.heatonresearch.com/content/non-mathematical-introduction-using-neural-networks">
+	      neural networks</a>. It implements the standard feedforward multi-layer
+         perceptron neural network trained with backpropagation.</p>
       <p>An example, giving a color a label based on its rgb values:
         <pre class="code-example">
 var net = new NeuralNetwork();
 
-net.train([{input: [1, 0.65, 0],  output: { orange: 1}},
-           {input: [0, 0.54, 0],  output: { green: 1}},
-           {input: [0.6, 1, 0.5], output: { green: 1}},
-           {input: [0.67, 0, 1],  output: { purple: 1}}]);
+net.train([{input: {r:1, g:0.65, b:0},  output: {orange: 1}},
+           {input: {r:0, g:0.54, b:0},  output: {green: 1}},
+           {input: {r:0.6, g:1, b:0.5}, output: {green: 1}},
+           {input: {r:0.67, g:0, b:1},  output: {purple: 1}}]);
 
-var output = net.run([1,1,0]);</pre>
+var output = net.run({r:1, g:1, b:0});</pre>
         the output would be something like <code>{"orange":0.96,"green":0.18,"purple":0.00}</code>
         because yellow is most similar to orange.
       </p>
