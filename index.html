@@ -14,8 +14,8 @@
     <div id="content">
       <div class="section">
       <p>brain is a lightweight JavaScript library for
-	    <a href="http://www.heatonresearch.com/content/non-mathematical-introduction-using-neural-networks">
-	      neural networks</a>. It implements the standard feedforward multi-layer
+        <a href="http://www.heatonresearch.com/content/non-mathematical-introduction-using-neural-networks">
+          neural networks</a>. It implements the standard feedforward multi-layer
          perceptron neural network trained with backpropagation.</p>
       <p>An example, giving a color a label based on its rgb values:
         <pre class="code-example">
@@ -72,8 +72,8 @@ var output = net.run({r:1, g:1, b:0});</pre>
           </div>
           <div class="section">
             <div class="api-section-header">
-	          <code class="section-code">net.<span class="api-spec">train</span>(data<span class="optional">, iterations, threshold</span>)</code>
-	        </div>
+              <code class="section-code">net.<span class="api-spec">train</span>(data<span class="optional">, iterations, threshold</span>)</code>
+            </div>
             <code>train</code> trains the network on array of training data, where each item in the 
             training data is a json object with members <code>input</code> and <code>output</code>.
             input and output can be either an array or json object of values from 0 to 1. e.g. 
@@ -112,8 +112,8 @@ var output = net.run({r:1, g:1, b:0});</pre>
         </div>
         <div class="section-content">
         <a href="http://harthur.github.com/brain/examples/blackorwhite.html">
-	      <img src="demo.png" id="demo-thumbnail">
-	    </a>
+          <img src="demo.png" id="demo-thumbnail">
+        </a>
         This webpage trains a network to recognize whether to use black or white text
         over a given background color. It is purely client-side, training the network
         on a Worker thread and using the JSON serializing function to pass the trained
