@@ -23,6 +23,8 @@ then:
 
 	var brain = require("brain-0.2.4");
 	var net = new brain.NeuralNetwork();
+	
+If you installed with npm, you can replace "brain-0.2.4" with the current version or "brain/brain". Otherwise, specify the path to the brain.js file, like "./lib/brain".
 
 # API
 [http://harthur.github.com/brain#api](http://harthur.github.com/brain#api)
@@ -31,7 +33,7 @@ then:
 Running the tests requires [node.js](http://nodejs.org/):
 
 	node test/runtests.js
-	
+
 # todo
 There are many things to be done: [wiki todo list](http://wiki.github.com/harthur/brain/todo)
-	
+
