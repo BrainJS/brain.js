@@ -3,7 +3,10 @@ var assert = require('assert'),
 
 var wiggle = 0.1;
 
-function testBitwise(net, data, op) {
+function testBitwise(data, op) {
+  var net = new brain.NeuralNetwork();
+  net.train(data);
+
   for(var i in data) {
     var output = net.run(data[i].input);
     var target = data[i].output;
@@ -14,30 +17,22 @@ function testBitwise(net, data, op) {
 
 var not = [{input: [0], output: [1]},
            {input: [1], output: [0]}];
-var net = new brain.NeuralNetwork();
-net.train(not);
-testBitwise(net, not, "not");
+testBitwise(not, "not");
 
 var xor = [{input: [0, 0], output: [0]},
            {input: [0, 1], output: [1]},
            {input: [1, 0], output: [1]},
            {input: [1, 1], output: [0]}];
-var net = new brain.NeuralNetwork();
-net.train(xor);
-testBitwise(net, xor, "xor");
+testBitwise(xor, "xor");
 
 var or = [{input: [0, 0], output: [0]},
           {input: [0, 1], output: [1]},
           {input: [1, 0], output: [1]},
           {input: [1, 1], output: [1]}];
-var net = new brain.NeuralNetwork();
-net.train(or);
-testBitwise(net, or, "or");
+testBitwise(or, "or");
 
 var and = [{input: [0, 0], output: [0]},
            {input: [0, 1], output: [0]},
            {input: [1, 0], output: [0]},
            {input: [1, 1], output: [1]}];
-var net = new brain.NeuralNetwork();
-net.train(and);
-testBitwise(net, and, "and");
+testBitwise(and, "and");
