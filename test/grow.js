@@ -1,5 +1,5 @@
 var assert = require('assert'),
-    brain = require("../brain");
+    brain = require("../lib/brain");
 
 function size(json) {
   var num = 0;

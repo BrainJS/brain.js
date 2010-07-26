@@ -1,5 +1,5 @@
 var assert = require('assert'),
-    brain = require("../brain");
+    brain = require("../lib/brain");
 
 var data = [{input: [0, 0], output: [0]},
             {input: [0, 1], output: [1]},

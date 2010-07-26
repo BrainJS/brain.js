@@ -1,0 +1,14 @@
+{
+    "name": "brain",
+    "description": "neural network library",
+    "version": "0.2.4",
+    "author": "Heather Arthur <fayearthur@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/harthur/brain.git"
+    },
+    "directories": {
+        "lib": "./lib"
+    },
+    "main": "./lib/brain"
+}

@@ -14,10 +14,14 @@ The output will be `[0.987]` or something close like that. There's no reason to 
 # using in the browser
 Download the latest [brain.js](http://github.com/harthur/brain/downloads). If you can you should train the network offline (or on a Worker thread) and use the `toFunction()` or `toJSON()` options to plug the trained network in to your website.
 
-# using as a commonJS module
-To use this as a commonJS module (node/narwhal) checkout or download the code, then:
+# using as a commonJS package
+To use this as a commonJS package (node/narwhal) checkout or download the code, it is a commonJS package. If you have [node](http://nodejs.org/) and [npm](http://github.com/isaacs/npm) you can:
 
-	var brain = require("./brain");
+	npm install brain@latest
+
+then:
+
+	var brain = require("brain-0.2.4");
 	var net = new brain.NeuralNetwork();
 
 # API
@@ -26,5 +30,8 @@ To use this as a commonJS module (node/narwhal) checkout or download the code, t
 # tests
 Running the tests requires [node.js](http://nodejs.org/):
 
-	node tests/runner.js
+	node test/runtests.js
+	
+# todo
+There are many things to be done: [wiki todo list](http://wiki.github.com/harthur/brain/todo)
 	
