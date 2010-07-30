@@ -21,10 +21,10 @@ To use this as a commonJS package (node/narwhal) checkout or download the code, 
 
 then:
 
-	var brain = require("brain-0.2.4");
+	var brain = require("brain");
 	var net = new brain.NeuralNetwork();
 	
-If you installed with npm, you can replace "brain-0.2.4" with the current version or "brain/brain". Otherwise, specify the path to the brain.js file, like "./lib/brain".
+If you didn't install with npm, you can specify the path to the brain.js file, like "./lib/brain".
 
 # API
 [http://harthur.github.com/brain#api](http://harthur.github.com/brain#api)
