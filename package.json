@@ -10,5 +10,8 @@
     "directories": {
         "lib": "./lib"
     },
+    "dependencies" : {
+        "underscore" : "*"
+    },
     "main": "./lib/brain"
 }

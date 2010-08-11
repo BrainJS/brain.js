@@ -49,7 +49,7 @@ else {
   fs.readdirSync(__dirname).forEach(function(file) {
     var fname = path.join(__dirname, file);
     if(fs.statSync(fname).isDirectory())
-      tests = tests.concat(tests, readdirDeepSync(fname));
+      tests = tests.concat(readdirDeepSync(fname));
   });
 }
 
