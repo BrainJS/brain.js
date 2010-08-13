@@ -57,7 +57,7 @@ var trainer = {
       worker.postMessage(JSON.stringify(this.data));
     }
     else {
-      var net = new NeuralNetwork();
+      var net = new brain.NeuralNetwork();
       net.train(this.data, this.iterations, 0.005);
       tester.show(net);
     }
@@ -69,7 +69,7 @@ var trainer = {
       trainer.showProgress(data);
     }
     else if(data.type == 'result') {
-      var net = new NeuralNetwork().fromJSON(data.net);
+      var net = new brain.NeuralNetwork().fromJSON(data.net);
       tester.show(net);
     }
   },
