@@ -19,7 +19,7 @@
          perceptron neural network trained with backpropagation.</p>
       <p>An example, giving a color a label based on its rgb values:
         <pre class="code-example">
-var net = new NeuralNetwork();
+var net = new brain.NeuralNetwork();
 
 net.train([{input: {r:1, g:0.65, b:0},  output: {orange: 1}},
            {input: {r:0, g:0.54, b:0},  output: {green: 1}},
@@ -47,7 +47,7 @@ var output = net.run({r:1, g:1, b:0});</pre>
           </div>
           <div class="section-content">
           <div class="section">
-          <div class="api-section-header"><code class="section-code">var net = new <span class="api-spec">NeuralNetwork</span>(<span class="optional">options</span>)</code></div>
+          <div class="api-section-header"><code class="section-code">var net = new brain.<span class="api-spec">NeuralNetwork</span>(<span class="optional">options</span>)</code></div>
            <code>NeuralNetwork</code> takes an optional argument that is a 
            json object that can have members:
             <div class="arguments">
