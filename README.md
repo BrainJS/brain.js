@@ -30,10 +30,21 @@ If you didn't install with npm, you can specify the path to the brain.js file, l
 [http://harthur.github.com/brain#api](http://harthur.github.com/brain#api)
 
 # tests
-Running the tests requires [node.js](http://nodejs.org/):
+Running the tests requires [node.js](http://nodejs.org/). To run the suite of API tests:
 
 	node test/runtests.js
 
+h3.cross-validation tests
+The in-repo tests are just sanity/API checks, to really test out the library, run the cross-validation tests. These
+test the classifiers on large sets of real training data and give an error value (between 0 and 1) that indicates how good the classifier is at training. You can run the default cross-validation tests with:
+
+	node test/runcv.js
+	
+(requires network access to the dbs of data). Specify your own db and options to pass in:
+
+	node test/runcv.js --db=http://localhost:5984/nndata --options='{learningRate:0.6}'
+
+The db must be a [CouchDB](http://couchdb.com) database of JSON objects with 'input' and 'output' fields.
+
 # todo
 There are many things to be done: [wiki todo list](http://wiki.github.com/harthur/brain/todo)
-
