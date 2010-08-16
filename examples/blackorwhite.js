@@ -33,8 +33,9 @@ var trainer = {
                    output: { black : color == 'black' ? 1 : 0}};
     this.data.push(result);
 
-    /* $.ajax({url: 'http://localhost:5984/blackorwhite/', type: 'POST', 
-             data: JSON.stringify(result)}); */ // collect training data on the server side
+   /* $.ajax({url: 'http://localhost:5984/blackorwhite/', type: 'POST', 
+            data: JSON.stringify(result),
+            contentType: "application/json"});  // collect training data on the server side */
     this.changeColor();
   },
 
