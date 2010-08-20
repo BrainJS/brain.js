@@ -2,7 +2,9 @@
 <html>
 <head>
 <title>brain - javascript neural networks</title>
-<link rel="stylesheet" href="index.css">
+<link rel="stylesheet/less" href="index.less" type="text/css">
+<script src="less-1.0.34.min.js" type="text/javascript"></script>
+
 </head>
 <body>
   <a href="http://github.com/harthur/brain"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" /></a>
@@ -11,6 +13,14 @@
       <div id="title">brain</div>
       <div id="subtitle">javascript neural network library</div>
     </div>
+    
+    <div id="side-nav">
+      <ul id="nav-list">
+        <li><a href="#neural-network">Neural Network</a></li>
+        <li><a href="#cross-validation">Cross Validation</a></li>
+      </ul>
+    </div>
+    
     <div id="content">
       <div class="section">
       <p>brain is a lightweight JavaScript library for
@@ -31,7 +41,7 @@ var output = net.run({r:1, g:1, b:0});</pre>
         because yellow is most similar to orange.
       </p>
       </div>
-      <div class="big-section">
+      <div class="main-section">
         <div class="section-header">
           Download
         </div>
@@ -41,11 +51,14 @@ var output = net.run({r:1, g:1, b:0});</pre>
           <a href="http://github.com/harthur/brain">the code</a> from github.
         </div>
       </div>
-        <div class="big-section"id="api">
-          <div class="section-header">
+      <div class="main-section" id="neural-network">
+        <div class="section-header">
+          Neural Network
+        </div>
+        <div class="section-content">
+          <div class="section-header sub-section-header">
             API
           </div>
-          <div class="section-content">
           <div class="section">
           <div class="api-section-header"><code class="section-code">var net = new brain.<span class="api-spec">NeuralNetwork</span>(<span class="optional">options</span>)</code></div>
            <code>NeuralNetwork</code> takes an optional argument that is a 
@@ -102,27 +115,50 @@ var output = net.run({r:1, g:1, b:0});</pre>
           <div class="section">
             <div class="api-section-header"><code class="section-code">var output = net.<span class="api-spec">toFunction</span>()(input)</code></div>
               <code>toFunction</code> returns a standalone function that mimics
-              the <code>run</code> function of the network. Useful with <code>toString()</code> for training a network offline.
+              the <code>run</code> function of the network. Useful with <code>toString()</code>
+              for training a network offline.
           </div>
         </div>
-       </div>
-     <div class="big-section" id="demo">
-        <div class="section-header">
+      </div>
+      <div class="section" id="demo">
+        <div class="section-header sub-section-header">
           Demo
         </div>
         <div class="section-content">
-        <a href="http://harthur.github.com/brain/examples/blackorwhite.html">
-          <img src="demo.png" id="demo-thumbnail">
-        </a>
-        This webpage trains a network to recognize whether to use black or white text
-        over a given background color. It is purely client-side, training the network
-        on a Worker thread and using the JSON serializing function to pass the trained
-        network back to the main thread. You can see the code for the site on
-        <a href="http://github.com/harthur/brain/blob/gh-pages/examples">brain's github</a>.
+          <a href="http://harthur.github.com/brain/examples/blackorwhite.html">
+              <img src="demo.png" id="demo-thumbnail">
+          </a>
+          This webpage trains a network to recognize whether to use black or white text
+          over a given background color. It is purely client-side, training the network
+          on a Worker thread and using the JSON serializing function to pass the trained
+          network back to the main thread. You can see the code for the site on
+          <a href="http://github.com/harthur/brain/blob/gh-pages/examples">brain's github</a>.
+        </div>
+      </div>
+      <div class="main-section" id="cross-validation">
+        <div class="section-header">
+          Cross Validation
+        </div>
+        <div class="section-content">
+          To optimize the parameters for a particular training set, use the 
+          <code>crossValidate()</code> function. Cross-validation takes a set of training data and
+          partitions it into n parts. It uses one section as the testing set and the remaining
+          sections to train the classifier. It compares the output from the testing set to the
+          expected output and reports an error. It does this for each of the n partitions.
+          You can compare the error values you get from using different settings (number of hidden
+          nodes in a neural network, learning rate) to find the optimal setting.
+          <div class="section">
+            <div class="sub-section-header section-header">
+              API
+            </div>
+            <div>
+              <div class="api-section-header"><code class="section-code">var stats = brain.<span class="api-spec">crossValidate</span>(brain.NeuralNetwork, <span class="optional">slices</span>)</code></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    </div>
   </div>
+</div>
 </body>
 </html>

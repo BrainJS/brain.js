@@ -1,3 +1,6 @@
+@header-size: 1.6em;
+@container-width: 840px;
+
 body {
   font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
   font-size: 85%;
@@ -17,7 +20,7 @@ img {
 
 #container {
   margin: 0 auto;
-  width: 660px;
+  width: @container-width;
 }
 
 #header {
@@ -25,8 +28,26 @@ img {
   font-family: Helvetica, sans-serif;
 }
 
+#side-nav {
+  float: left;
+  width: @container-width *.2;
+  margin-right: @container-width * .05;
+  margin-top: 30px;
+  
+  li {
+    list-style-type: none;
+    margin-bottom: 10px;
+  }
+  
+  a {
+    text-decoration: none; 
+  }
+}
+
 #content {
-  margin-top: 40px;
+  float: right;
+  width: @container-width * .75;
+  margin-top: 30px;
 }
 
 #title {
@@ -37,10 +58,10 @@ img {
 #subtitle {
   color: #999;
   font-weight: bold;
-  font-size: 1.5em;
+  font-size: @header-size;
 }
 
-.big-section {
+.main-section {
   margin-top: 36px;
   margin-bottom: 36px;
 }
@@ -52,13 +73,13 @@ img {
 .section-header {
   font-family: Helvetica;
   font-weight: bold;
-  font-size: 1.4em;
+  font-size: @header-size;
   margin-bottom: 0.5em;
 }
 
 .sub-section-header {
-  padding: 6px;
-  margin-top: 8px;
+  margin-top: 14px;
+  font-size: @header-size * .7;
 }
 
 .api-section-header {
