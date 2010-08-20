@@ -1,6 +1,8 @@
 @header-size: 1.6em;
 @container-width: 840px;
 
+@api-code-bg: #EDE5FE;
+
 body {
   font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
   font-size: 85%;
@@ -19,7 +21,7 @@ img {
 }
 
 #container {
-  margin: 0 auto;
+  margin: 0 auto 0 10%;
   width: @container-width;
 }
 
@@ -37,6 +39,17 @@ img {
   li {
     list-style-type: none;
     margin-bottom: 10px;
+    
+    .nav-list-header {
+      font-weight: bold;
+    }
+  }
+  
+  .nav-list-header {
+    font-size: 1.05em;
+    font-weight: bold;
+    padding-bottom: 6px;
+    border-bottom: 1px dotted #666; 
   }
   
   a {
@@ -62,8 +75,8 @@ img {
 }
 
 .main-section {
-  margin-top: 36px;
-  margin-bottom: 36px;
+  margin-top: 38px;
+  margin-bottom: 38px;
 }
 
 .section {
@@ -88,7 +101,7 @@ img {
 
 .section-code {
   padding: .4em;
-  background-color: #F3EDFF;
+  background-color: @api-code-bg;
   display: inline-block;
   font-size: 1.14em;
 }
@@ -105,7 +118,7 @@ img {
 }
 
 .optional {
-  color: #999;
+  color: #666;
 }
 
 .arguments {
