@@ -34,13 +34,13 @@ Running the tests requires [node.js](http://nodejs.org/). To run the suite of AP
 
 	node test/runtests.js
 
-h3.cross-validation tests
+### cross-validation tests
 The in-repo tests are just sanity/API checks, to really test out the library, run the cross-validation tests. These
 test the classifiers on large sets of real training data and give an error value (between 0 and 1) that indicates how good the classifier is at training. You can run the default cross-validation tests with:
 
 	node test/runcv.js
 	
-(requires network access to the dbs of data). Specify your own db and options to pass in:
+(requires network access to the dbs of training data). Specify your own db and options to pass in:
 
 	node test/runcv.js --db=http://localhost:5984/nndata --options='{learningRate:0.6}'
 
