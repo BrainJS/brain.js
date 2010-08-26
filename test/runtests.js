@@ -1,6 +1,7 @@
 var sys = require("sys"),
     fs = require("fs"),
-    path = require("path");
+    path = require("path"),
+    nomnom = require("nomnom");
 
 function readdirDeepSync(dir) {
   var files = [];
@@ -32,10 +33,13 @@ function testFile(test) {
 }
 
 
+var opts = [{name: 'target', position: 0}];
+var options = nomnom.parseArgs(opts, {script: 'node runtests.js'});
+
 var tests = [];
-if(process.argv.length >= 3) {
+if(options.target) {
   /* only run target's directory */
-  var target = path.join(__dirname, process.argv[2]);
+  var target = path.join(__dirname, options.target);
   tests = fs.readdirSync(target).map(function(test) {
     return path.join(target, test);
   });

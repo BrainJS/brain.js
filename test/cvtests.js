@@ -6,7 +6,7 @@ var sys = require("sys"),
     url = require("url"),
     cradle = require("cradle"),
     brain = require("../lib/brain"),
-    argparse = require("argparse");
+    nomnom = require("nomnom");
 
 
 function crossValidate(type, options, data, slices) {
@@ -43,12 +43,21 @@ function runTest(config) {
 
 var opts = [
   { name: 'config',
-    string: '--config',
+    string: '--config=FILE',
     default: path.join(__dirname, "cvtests.json"),
+    help: 'JSON manifest of cross-validation tests to run'
+  },
+  {
+    string: '--db=URL',
+    help: 'url to CouchDB database of training data'
+  },
+  {
+    string: '--options=JSON',
+    help: 'options to pass to classifier'
   }
 ];
-var parser = new argparse.ArgParser(opts);
-var options = parser.parse();
+
+var options = nomnom.parseArgs(opts, {script: 'node cvtests.js'});
 
 var tests;
 if(options.db) {
