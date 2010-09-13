@@ -45,9 +45,9 @@ function runTest(config) {
       sys.puts(JSON.stringify(stats));
     else {
       var errors = _(stats).pluck('error');
-      var sum = _(errors).reduce(0, function(memo, err) {
+      var sum = _(errors).reduce(function(memo, err) {
         return memo + err;
-      });
+      }, 0);
       sys.puts("average error: " + (sum / errors.length));
     }
   })
@@ -101,13 +101,13 @@ else {
       return test;
     });
   else
-    tests = _(config).reduce([], function(memo, tests, type) {
+    tests = _(config).reduce(function(memo, tests, type) {
       tests = tests.map(function(test) {
         test.type = type;
         return test;
       });
       return memo.concat(tests);
-    });
+    }, []);
 }
 
 _(tests).map(function(testConfig) {
