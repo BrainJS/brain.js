@@ -17,6 +17,16 @@
          },
          "def": "not"
        }
+    },
+    { "db": "http://harth.couchone.com/pythontweets",
+      "options" : {
+         "backend": {
+           "type": "localStorage",
+           "options": {
+             "testing": true
+           }
+         }
+       }
     }
   ]
 }
