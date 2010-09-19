@@ -47,9 +47,15 @@ var output = net.run({r:1, g:1, b:0});</pre>
           Download
         </div>
         <div class="section-content">
-          To use this in the browser, download the latest <a href="http://github.com/harthur/brain/downloads">brain.js</a>.
-          To use this as a commonJS package or server-side, checkout or download
-          <a href="http://github.com/harthur/brain">the code</a> from github.
+          <p>To use this in the browser, download the latest <a href="http://github.com/harthur/brain/downloads">brain.js</a> and grab 
+          <a href="http://documentcloud.github.com/underscore/">underscore.js</a>
+          as well if you're using <code>BayesianClassifier</code>.</p>
+          
+          <p>To use this as a commonJS package or server-side, checkout or download
+          <a href="http://github.com/harthur/brain">the code</a> from GitHub, or
+          install on <a href="http://nodejs.org/">node</a> with
+          <a href="http://github.com/isaacs/npm">npm</a>:
+          <pre>npm install brain@latest</pre></p>
         </div>
       </div>
       <div class="main-section" id="neural-network">
@@ -190,6 +196,17 @@ var options = {
     },
 
     def: 'notspam' // category if can't classify 
+  }
+</pre>
+          localStorage backend:
+<pre>
+  var options = {
+    backend: {
+      type: 'localStorage',
+      options: {
+        name: 'emailspam' 
+      } 
+    }
   }
 </pre>
           </div>
