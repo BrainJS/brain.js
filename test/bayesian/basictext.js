@@ -27,7 +27,7 @@ function testBasic(bayes) {
 }
 
 // test the synchronous backends
-//testBasic(new brain.BayesianClassifier());
+testBasic(new brain.BayesianClassifier());
 
 testBasic(new brain.BayesianClassifier({
   backend : {
