@@ -30,7 +30,7 @@ var bayes = new brain.BayesianClassifier({
 
 bayes.trainAll(data, function() {
   bayes.classify("replica watches", function(cat) {
-    assert.equal(cat, "spam")
+    assert.equal(cat, "spam");
   });
 
   bayes.classify("check out the docs", function(cat) {
