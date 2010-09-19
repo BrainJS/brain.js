@@ -34,7 +34,7 @@ If you didn't install with npm, you can specify the path to the brain.js file, l
 
 
 # using in the browser
-The `NeuralNetwork` works in the browser. Download the latest [brain.js](http://github.com/harthur/brain/downloads). If you can you should train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the trained network in to your website.
+Download the latest [brain.js](http://github.com/harthur/brain/downloads). If you're using `BayesianClassifier`, you can only use the `localStorage` and (default) in-memory backends, and you'll need to grab [underscore.js](http://documentcloud.github.com/underscore/). If you're using the `NeuralNetwork` you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the trained network in to your website.
 
 
 # tests
