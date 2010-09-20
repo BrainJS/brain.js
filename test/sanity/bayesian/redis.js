@@ -1,5 +1,5 @@
 var assert = require('assert'),
-    brain = require("../../lib/brain");
+    brain = require("../../../lib/brain");
 
 var spam = ["vicodin pharmacy",
             "all quality replica watches marked down",

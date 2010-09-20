@@ -5,7 +5,7 @@ var sys = require("sys"),
     cradle = require("cradle"),
     nomnom = require("nomnom"),
     _ = require("underscore")._,
-    brain = require("../lib/brain");
+    brain = require("../../lib/brain");
 
 
 function crossValidate(type, options, data, slices) {
@@ -42,15 +42,13 @@ function runTest(config) {
     sys.puts("\nrunning " + type + " test on data size: " + data.length)
     var stats = crossValidate(type, opts, data, slices);
     if(options.verbose)
-      sys.puts(JSON.stringify(stats));
-    else {
-      var errors = _(stats).pluck('error');
-      var sum = _(errors).reduce(function(memo, err) {
-        return memo + err;
-      }, 0);
-      sys.puts("average error: " + (sum / errors.length));
-    }
-  })
+      sys.inspect(stats);
+    var avg = _(stats).reduce(function(sum, stat) {
+      return {err: sum.err + stat.error, time: sum.time + stat.trainTime};
+    }, {err: 0, time: 0});
+    sys.puts("\naverage error: " + (avg.err / stats.length));
+    sys.puts("average train time: " + (avg.time / stats.length) / 1000 + " seconds");
+  });
 }
 
 var opts = [

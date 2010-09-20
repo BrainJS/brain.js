@@ -1,5 +1,5 @@
 var assert = require('assert'),
-    brain = require("../../lib/brain");
+    brain = require("../../../lib/brain");
 
 var net = new brain.NeuralNetwork({ hidden: [4, 12, 2] });
 
