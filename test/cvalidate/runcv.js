@@ -57,10 +57,14 @@ function runTest(config) {
       var report = {
         stats: stats,
         name: options.reportName,
-        timestamp: new Date()
+        timestamp: new Date(),
+        config: config
       }
       db.insert(report, function(err, res) {
-        sys.puts("saved report" + JSON.stringify(res));
+        if(err)
+          sys.puts("error sending report to " + option.report);
+        else
+          sys.puts("saved report " + options.report + "/" + res.id);
       }); 
     }
   });
