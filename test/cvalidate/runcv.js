@@ -7,6 +7,23 @@ var sys = require("sys"),
     _ = require("underscore")._,
     brain = require("../../lib/brain");
 
+function getDb(couchUrl) {
+  var parts = url.parse(couchUrl);
+  var client = new cradle.Connection(parts.hostname, parts.port || 80);
+  return client.database(parts.pathname);  
+}
+
+function getDocs(couchUrl, callback) {
+  var db = getDb(couchUrl);
+  db.all({include_docs: true}, function(err, res) {
+    if(err)
+      sys.puts("error retreiving data from " + couchUrl + ": '" + err + "'");
+    else {
+      var data = _(res.rows).pluck("doc")
+      callback(data);
+    }
+  });
+}
 
 function crossValidate(type, options, data, slices) {
   var constructor;
@@ -16,21 +33,6 @@ function crossValidate(type, options, data, slices) {
     constructor = brain.BayesianClassifier;
   
   return brain.crossValidate(constructor, options, data, slices);
-}
-
-function getDocs(couchUrl, callback) {
-  var parts = url.parse(couchUrl);
-  var client = new cradle.Connection(parts.hostname, parts.port || 80);
-
-  var db = client.database(parts.pathname);
-  db.all({include_docs: true}, function(err, res) {
-    if(err)
-      sys.puts("error retreiving data from " + couchUrl + ": '" + err + "'");
-    else {
-      var data = _(res.rows).pluck("doc")
-      callback(data);
-    }
-  });
 }
 
 function runTest(config) {
@@ -43,11 +45,24 @@ function runTest(config) {
     var stats = crossValidate(type, opts, data, slices);
     if(options.verbose)
       sys.inspect(stats);
+
     var avg = _(stats).reduce(function(sum, stat) {
       return {err: sum.err + stat.error, time: sum.time + stat.trainTime};
     }, {err: 0, time: 0});
     sys.puts("\naverage error: " + (avg.err / stats.length));
     sys.puts("average train time: " + (avg.time / stats.length) / 1000 + " seconds");
+    
+    if(options.report) {
+      var db = getDb(options.report);
+      var report = {
+        stats: stats,
+        name: options.reportName,
+        timestamp: new Date()
+      }
+      db.insert(report, function(err, res) {
+        sys.puts("saved report" + JSON.stringify(res));
+      }); 
+    }
   });
 }
 
@@ -82,7 +97,19 @@ var opts = [
     string: '-v',
     long: '--verbose',
     help: 'print more messages'
-  }
+  },
+  
+  { name: 'report',
+    string: '-r COUCHDB',
+    long: '--report=COUCHDB',
+    help: 'couch db to post results to'
+  },
+  
+  { name: 'reportName',
+    string: '-n NAME',
+    long: '--report-name=NAME',
+    help: 'name of results report'
+  },
 ];
 
 var options = nomnom.parseArgs(opts, {script: 'node cvtests.js'});
@@ -99,12 +126,12 @@ else {
       return test;
     });
   else
-    tests = _(config).reduce(function(memo, tests, type) {
+    tests = _(config).reduce(function(allTests, tests, type) {
       tests = tests.map(function(test) {
         test.type = type;
         return test;
       });
-      return memo.concat(tests);
+      return allTests.concat(tests);
     }, []);
 }
 
