@@ -23,7 +23,7 @@ Naive Bayesian classifier example:
 # using as a commonJS package
 To use this as a commonJS package (node/narwhal) checkout or download the code, it's a commonJS package. If you have [node](http://nodejs.org/) and [npm](http://github.com/isaacs/npm) you can:
 
-	npm install brain@latest
+	npm install brain
 
 then:
 
