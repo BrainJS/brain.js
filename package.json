@@ -11,7 +11,9 @@
         "lib": "./lib"
     },
     "dependencies" : {
-        "underscore" : "*"
+        "underscore" : "*",
+        "nomnom" : "*",
+        "cradle" : "*"
     },
     "main": "./lib/brain"
 }

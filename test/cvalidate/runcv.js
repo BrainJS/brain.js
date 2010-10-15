@@ -46,11 +46,15 @@ function runTest(config) {
     if(options.verbose)
       sys.inspect(stats);
 
-    var avg = _(stats).reduce(function(sum, stat) {
-      return {err: sum.err + stat.error, time: sum.time + stat.trainTime};
-    }, {err: 0, time: 0});
-    sys.puts("\naverage error: " + (avg.err / stats.length));
-    sys.puts("average train time: " + (avg.time / stats.length) / 1000 + " seconds");
+    var err = 0, train = 0, test = 0;
+    var sums = stats.forEach(function(stat) {
+      err += stat.error;
+      train += stat.trainTime;
+      test += stat.testTime;
+    });
+    sys.puts("\naverage error: " + (err / stats.length));
+    sys.puts("average train time: " + (train / stats.length) / 1000 + " s");
+    sys.puts("average test time: " + (test / stats.length) + " ms");
     
     if(options.report) {
       var db = getDb(options.report);
@@ -72,46 +76,40 @@ function runTest(config) {
 
 var opts = [
   { name: 'target',
-    position: 0
+    position: 0,
+    help: "[neuralnetwork|bayesian]"
   },
   
   { name: 'config',
-    string: '-c FILE',
-    long: '--config=FILE',
+    string: '-c FILE, --config=FILE',
     default: path.join(__dirname, "cvtests.json"),
     help: 'JSON manifest of cross-validation tests to run'
   },
   
-  { string: '-d URL',
-    long: '--db=URL',
+  { string: '-d URL, --db=URL',
     help: 'url to CouchDB database of training data'
   },
   
-  { string: '-o JSON',
-    long: '--options=JSON',
+  { string: '-o JSON, --options=JSON',
     help: 'options to pass to classifier'
   },
 
-  { string: '-t [neuralnetwork|bayesian]',
-    long: '--type=TYPE',
+  { string: '-t [neuralnetwork|bayesian], --type=TYPE',
     help: 'type of classifier/network to test'
   },
 
   { name: 'verbose',
-    string: '-v',
-    long: '--verbose',
+    string: '-v, --verbose',
     help: 'print more messages'
   },
   
   { name: 'report',
-    string: '-r COUCHDB',
-    long: '--report=COUCHDB',
+    string: '-r COUCHDB, --report=COUCHDB',
     help: 'couch db to post results to'
   },
   
   { name: 'reportName',
-    string: '-n NAME',
-    long: '--report-name=NAME',
+    string: '-n NAME, --report-name=NAME',
     help: 'name of results report'
   },
 ];

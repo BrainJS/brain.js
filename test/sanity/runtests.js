@@ -33,7 +33,12 @@ function testFile(test) {
 }
 
 
-var opts = [{name: 'target', position: 0}];
+var opts = {
+  'target': {
+    position: 0,
+    help: 'type of classifier to test (neuralnetwork or bayesian)'
+  }
+};
 var options = nomnom.parseArgs(opts, {script: 'node runtests.js'});
 
 var tests = [];
