@@ -30,7 +30,7 @@ then:
 	var brain = require("brain");
 	var net = new brain.NeuralNetwork();
 	
-If you didn't install with npm, you can specify the path to the brain.js file, like `require("./lib/brain")`. If you're using the Redis backend for the Bayesian classifier, you'll also need to install [redis-node](http://github.com/bnoguchi/redis-node) as "redis".
+If you didn't install with npm, you can specify the path to the brain.js file, like `require("./lib/brain")`.
 
 
 # using in the browser

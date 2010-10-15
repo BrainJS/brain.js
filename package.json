@@ -13,7 +13,8 @@
     "dependencies" : {
         "underscore" : "*",
         "nomnom" : "*",
-        "cradle" : "*"
+        "cradle" : "*",
+        "redis" : "*"
     },
     "main": "./lib/brain"
 }
