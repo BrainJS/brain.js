@@ -8,7 +8,7 @@ var spam = ["vicodin pharmacy",
             "viagra pills",
             "watches chanel tag heuer",
             "watches at low prices"];
-          
+
 var not = ["unknown command line parameters",
            "I don't know if this works on Windows",
            "recently made changed to terms of service agreement",
@@ -45,3 +45,7 @@ bayes.trainAll(data, function() {
     assert.equal(cat, "spam")
   });
 });
+
+assert.doesNotThrow(function() {
+    bayes.train("cheap cialis", "spam");
+}, function (err) {}, "train should not require a callback.");
