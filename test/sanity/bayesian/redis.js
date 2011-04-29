@@ -47,5 +47,6 @@ bayes.trainAll(data, function() {
 });
 
 assert.doesNotThrow(function() {
-    bayes.train("cheap cialis", "spam");
+  bayes.train("cheap cialis", "spam");
+  bayes.trainAll([{input: "hello dear sir", output: "notspam"}]);
 }, function (err) {}, "train should not require a callback.");
