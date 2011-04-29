@@ -1,14 +1,11 @@
 {
     "name": "brain",
     "description": "neural network and classifier library",
-    "version": "0.3.1",
+    "version": "0.3.3",
     "author": "Heather Arthur <fayearthur@gmail.com>",
     "repository": {
         "type": "git",
         "url": "http://github.com/harthur/brain.git"
-    },
-    "directories": {
-        "lib": "./lib"
     },
     "dependencies" : {
         "underscore" : "*",
