@@ -1,11 +1,11 @@
 {
-  "neuralnetwork" : [
+  "neuralnet" : [
     { "db": "http://harth.couchone.com/blackorwhite",
       "options" : {}
     }
   ],
   
-  "bayesian" : [
+  "bayes" : [
     { "db": "http://harth.couchone.com/pythontweets",
       "options" : {}
     },
