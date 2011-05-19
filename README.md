@@ -22,29 +22,26 @@ Naive Bayesian classifier example:
 	var category = bayes.classify("free watches");
 
 
-# using as a commonJS package
-If you have [node](http://nodejs.org/) and [npm](http://github.com/isaacs/npm) you can:
+# using in node
+If you have [node](http://nodejs.org/) you can install with [npm](http://github.com/isaacs/npm):
 
 	npm install brain
 
-then:
-
-	var brain = require("brain");
-	var net = new brain.NeuralNetwork();
-
 # using in the browser
-Download the latest [brain.js](http://github.com/harthur/brain/downloads). If you're using `BayesianClassifier`, you can only use the `localStorage` and (default) in-memory backends, and you'll need to grab [underscore.js](http://documentcloud.github.com/underscore/). If you're using the `NeuralNetwork` you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
+Download the latest [brain.js](http://github.com/harthur/brain/downloads). If you're using `BayesianClassifier`, you can only use the `localStorage` and (default) in-memory backends. If you're using the `NeuralNetwork` you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
 
 
 # tests
-Running the tests requires checking out the code and installing the dev dependencies: `npm install brain --dev`. To run the suite of tests:
+Running the tests requires checking out the code and installing the dev dependencies: `npm install --dev`. To run the suite of tests:
 
 	node test/runtests.js
 	
 To run the other tests: [browser and cross-validation tests](https://github.com/harthur/brain/tree/master/test)
 
 # build
-To build a browser file from the CommonJS package you'll need [node-jake](https://github.com/mde/node-jake), then:
+To build a browser file from the CommonJS package you'll need [node-jake](https://github.com/mde/node-jake):
 
+	npm install jake -g
+	
 	jake build
 	jake minify
