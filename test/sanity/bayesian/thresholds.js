@@ -1,6 +1,5 @@
 var assert = require('assert'),
-    brain = require("../../../lib/brain"),
-    sys = require("sys");
+    brain = require("../../../lib/brain");
 
 var spam = ["a c", "b a", "c e"];
 var not = ["d e", "e f", "f b"];
