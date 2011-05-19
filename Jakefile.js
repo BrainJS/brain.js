@@ -8,18 +8,20 @@ var fs = require("fs"),
     path = require("path"),
     sys = require("sys")
     build = require("./build");
+   
+var pkg = JSON.parse(fs.readFileSync("package.json")); 
+var prefix = pkg.name + "-" + pkg.version;
 
 task('build', [], function (dest) {
   sys.puts("building...");
-  dest = dest || getPackage().name + ".js";
+  dest = dest || prefix + ".js";
   build.build(dest);
   sys.puts("> " + dest);
 });
 
 task('minify', [], function (file, dest) {
-  var name = getPackage().name;
-  file = file || name + ".js";
-  dest = dest || name + ".min.js";
+  file = file || prefix + ".js";
+  dest = dest || prefix + ".min.js";
 
   var minified = minify(fs.readFileSync(file, "utf-8"));
   fs.writeFileSync(dest, minified, "utf-8");
@@ -27,15 +29,9 @@ task('minify', [], function (file, dest) {
 });
 
 task('clean', [], function () {
-  var name = getPackage().name;
-  fs.unlink(name + ".js");
-  fs.unlink(name + ".min.js");
+  fs.unlink(prefix + ".js");
+  fs.unlink(prefix + ".min.js");
 });
-
-
-function getPackage() {
-  return JSON.parse(fs.readFileSync("package.json"));
-}
 
 function minify(code) {
   var uglifyjs = require("uglify-js"),
