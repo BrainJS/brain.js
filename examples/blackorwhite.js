@@ -105,6 +105,7 @@ var tester = {
     var color = utils.normalize(color);
     $("#nn-swatch").css("color", nnColor(color));
     $("#wcag-swatch").css("color", wcagColor(color));
+    $("#yiq-swatch").css("color", yiqColor(color));
   },
 
   viewCode : function(type) {   
@@ -152,9 +153,9 @@ var wcagColor = function(bgColor) {
 
 var luminosity = function(color) {
   var r = color.r, g = color.g, b = color.b;
-  var red = (r <= 0.03928) ? r/12.92 : Math.pow(((r + 0.055)/1.055), 2.4);
-  var green = (g <= 0.03928) ? g/12.92 : Math.pow(((g + 0.055)/1.055), 2.4);
-  var blue = (b <= 0.03928) ? b/12.92 : Math.pow(((b + 0.055)/1.055), 2.4);
+  var red = (r <= 0.03928) ? r / 12.92 : Math.pow(((r + 0.055)/1.055), 2.4);
+  var green = (g <= 0.03928) ? g / 12.92 : Math.pow(((g + 0.055)/1.055), 2.4);
+  var blue = (b <= 0.03928) ? b / 12.92 : Math.pow(((b + 0.055)/1.055), 2.4);
 
   return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
 }
@@ -165,4 +166,10 @@ var contrast = function(color1, color2) {
   if(lum1 > lum2)
     return (lum1 + 0.05) / (lum2 + 0.05);
   return (lum2 + 0.05) / (lum1 + 0.05);
+}
+
+var yiqColor = function(bgColor) {
+   var r = bgColor.r * 255, g = bgColor.g * 255, b = bgColor.b * 255;
+   var yiq = (r * 299 + g * 587 + b * 114) / 1000;
+	return (yiq >= 128) ? 'black' : 'white';
 }
