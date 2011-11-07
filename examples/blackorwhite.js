@@ -149,8 +149,9 @@ var tester = {
 /* these functions are outside so we can just call toString() for 'view code'*/
 var nnColor = function(bgColor) {
   var output = runNetwork(bgColor);
-  if(output.black > .5)
-    return 'black';
+  if (output.black > .5) {
+    return 'black';    
+  }
   return 'white';
 }
 
@@ -173,8 +174,9 @@ var luminosity = function(color) {
 var contrast = function(color1, color2) {
   var lum1 = luminosity(color1);
   var lum2 = luminosity(color2);
-  if(lum1 > lum2)
-    return (lum1 + 0.05) / (lum2 + 0.05);
+  if (lum1 > lum2) {
+    return (lum1 + 0.05) / (lum2 + 0.05);    
+  }
   return (lum2 + 0.05) / (lum1 + 0.05);
 }
 
