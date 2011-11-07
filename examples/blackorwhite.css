@@ -1,10 +1,17 @@
 body {
   font-family: Tahoma, Helvetica, Arial, sans-serif;
-  font-size: 85%;
+  font-size: 86%;
+  margin: 0;
+}
+
+#desc {
+  padding: 14px;
+  background-color: #EEE;
 }
 
 #container {
   margin: 80px auto 0px auto;
+  width: 500px;
 }
 
 .section {
@@ -15,6 +22,13 @@ body {
 .section-header {
   margin-bottom: 20px;
   font-size: 1.2em;
+}
+
+#subtitle {
+  margin-top: 2em;
+  font-size: .95em;
+  color: #555;
+  padding: 0px 40px;
 }
 
 #black-swatch {
@@ -70,9 +84,15 @@ body {
   -o-transform:rotate(90deg);
 }
 
+#test-box {
+  margin-top: 50px;
+}
+
 .pass-button {
   color: #333;
-  font-size: 1.5em;
+  font-weight: bold;
+  font-size: 1.6em;
+  font-family: "Lucida Grande", Lucida, sans-serif;
 }
 
 #training-box .pass-button {
@@ -85,6 +105,8 @@ body {
 
 #test-button {
   background-color: #EEE;
+  box-shadow: #EEE 0 .15em 0.6em;
+  border: 1px solid #DDD;
   margin-top: 40px;
   padding: 6px 14px;
 }
@@ -94,8 +116,7 @@ body {
 }
 
 .button {
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
+  border-radius: 4px;
   cursor: pointer;
   display: inline-block;
 }
