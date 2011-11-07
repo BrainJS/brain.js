@@ -10,7 +10,8 @@ brain is a limited JavaScript supervised machine learning library. [Full API her
 	
 	var output = net.run([1, 0]);
 
-The output will be `[0.987]` or something close like that. There's no reason to use a neural network to figure out XOR, but it's a small example (-:
+The output will be `[0.987]` or something close like that. There's no reason to use a neural network to figure out XOR (-:, so here's a more involved, realistic example:
+[Demo: training a neural network to recognize color contrast](http://harthur.github.com/brain/examples/blackorwhite.html)
 
 Naive Bayesian classifier example:
 
