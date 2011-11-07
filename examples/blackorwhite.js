@@ -3,6 +3,9 @@ $(document).ready(function(){
   $("#progress-box").hide();
   $("#testing-box").hide();
   $("#code-box").hide();
+
+  // only show nn and yiq
+  $("#wcag-swatch-box").hide();
 });
 
 var utils = {
@@ -128,6 +131,15 @@ var tester = {
       $("#wcag-swatch-box").addClass("selected");
       $("#code-box").show();
     }
+    else if(type == 'yiq' && !$("#yiq-swatch-box").hasClass("selected")) {
+      $("#code-header").text("YIQ formula code:");
+      var code = "var textColor = " + yiqColor.toString();
+
+      $("#code").text(code);
+      $(".swatch-box").removeClass("selected");
+      $("#yiq-swatch-box").addClass("selected");
+      $("#code-box").show();
+    }
     else {
       $("#code-box").hide();
       $(".swatch-box").removeClass("selected");
@@ -169,7 +181,9 @@ var contrast = function(color1, color2) {
 }
 
 var yiqColor = function(bgColor) {
-   var r = bgColor.r * 255, g = bgColor.g * 255, b = bgColor.b * 255;
-   var yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  var r = bgColor.r * 255,
+      g = bgColor.g * 255,
+      b = bgColor.b * 255;
+  var yiq = (r * 299 + g * 587 + b * 114) / 1000;
 	return (yiq >= 128) ? 'black' : 'white';
 }

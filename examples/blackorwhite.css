@@ -11,7 +11,7 @@ body {
 
 #container {
   margin: 80px auto 0px auto;
-  width: 500px;
+  width: 600px;
 }
 
 .section {
@@ -28,7 +28,7 @@ body {
   margin-top: 2em;
   font-size: .95em;
   color: #555;
-  padding: 0px 40px;
+  padding: 0px 80px;
 }
 
 #black-swatch {
@@ -138,7 +138,6 @@ body {
   background-color: #F4F4F4;
   padding: 18px 16px;
   margin: 0 auto;
-  width: 640px;
   border: 1px solid #eee;
 }
 
