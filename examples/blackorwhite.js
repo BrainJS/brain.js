@@ -52,9 +52,7 @@ var trainer = {
     $("#training-box").hide();
     $("#progress-box").show();
 
-    if(window.Worker && 
-       !(/chrome/.test(navigator.userAgent.toLowerCase()))) {
-      // in Chrome "new Worker" never returns
+    if(window.Worker) {
       var worker = new Worker("training-worker.js");
       worker.onmessage = this.onMessage;
       worker.onerror = this.onError;
