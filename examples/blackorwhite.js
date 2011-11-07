@@ -183,5 +183,5 @@ var yiqColor = function(bgColor) {
       g = bgColor.g * 255,
       b = bgColor.b * 255;
   var yiq = (r * 299 + g * 587 + b * 114) / 1000;
-	return (yiq >= 128) ? 'black' : 'white';
+  return (yiq >= 128) ? 'black' : 'white';
 }
