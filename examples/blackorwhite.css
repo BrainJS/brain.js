@@ -5,8 +5,8 @@ body {
 }
 
 #desc {
-  padding: 14px;
-  background-color: #EEE;
+  padding: 9px 14px;
+  background-color: #F0F0F0;
 }
 
 #container {
@@ -104,9 +104,9 @@ body {
 }
 
 #test-button {
-  background-color: #EEE;
-  box-shadow: #EEE 0 .15em 0.6em;
-  border: 1px solid #DDD;
+  background-color: #DDD;
+  box-shadow: #E0E0E0 0 .15em 0.6em;
+  border: 1px solid #CCC;
   margin-top: 40px;
   padding: 6px 14px;
 }
