@@ -40,7 +40,7 @@ Running the tests requires checking out the code and installing the dev dependen
 To run the other tests: [browser and cross-validation tests](https://github.com/harthur/brain/tree/master/test)
 
 # build
-To build a browser file from the CommonJS package you'll need [node-jake](https://github.com/mde/node-jake):
+To build a browser file from the CommonJS package you'll need [jake](https://github.com/mde/jake):
 
 	npm install jake -g
 	
