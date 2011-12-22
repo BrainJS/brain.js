@@ -6,6 +6,14 @@ var path = require("path"),
 
 
 var parser = nomnom()
+  .opts({
+    type: {
+      string: '-t TYPE, --type=TYPE',
+      help: "type of classifier to test, 'neuralnet' or 'bayes'"
+    }
+  });
+  
+parser.nocommand()
   .callback(function(options) {
     runSanity(options);
     runCValidate(options);
@@ -17,12 +25,6 @@ var parser = nomnom()
       help: 'JSON manifest of cross-validation tests to run'
     }
   })
-  .globalOpts({
-    type: {
-      string: '-t TYPE, --type=TYPE',
-      help: "type of classifier to test, 'neuralnet' or 'bayes'"
-    }
-  });
 
 parser.command('browser')
   .callback(runBrowser)
