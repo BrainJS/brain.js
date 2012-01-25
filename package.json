@@ -1,7 +1,7 @@
 {
     "name": "brain",
-    "description": "neural network and classifier library",
-    "version": "0.3.5",
+    "description": "Neural network and classifier library",
+    "version": "0.3.6",
     "author": "Heather Arthur <fayearthur@gmail.com>",
     "repository": {
         "type": "git",
@@ -12,7 +12,7 @@
         "redis" : ">=0.6.0"
     },
     "devDependencies" : {
-        "nomnom" : ">=0.4.2",
+        "nomnom" : ">=1.5.0",
         "cradle" : ">=0.2.5",
         "connect" : ">=1.4.0",
         "uglify-js" : ">=1.0.1",
