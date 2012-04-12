@@ -15,12 +15,12 @@ var output = net.run([1, 0]);  // [0.987]
 There's no reason to use a neural network to figure out XOR however (-: so here's a more involved, realistic example:
 [Demo: training a neural network to recognize color contrast](http://harthur.github.com/brain/examples/blackorwhite.html)
 
-# using in node
+# Using in node
 If you have [node](http://nodejs.org/) you can install with [npm](http://github.com/isaacs/npm):
 
 	npm install brain
 
-# using in the browser
+# Using in the browser
 Download the latest [brain.js](http://github.com/harthur/brain/downloads). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
 
 # Training
@@ -33,10 +33,10 @@ net.train([{input: { r: 0.03, g: 0.7, b: 0.5 }, output: { black: 1 }},
            {input: { r: 0.16, g: 0.09, b: 0.2 }, output: { white: 1 }},
            {input: { r: 0.5, g: 0.5, b: 1.0 }, output: { white: 1 }}]);
 
-var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.99 black: 0.002 }
+var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.99, black: 0.002 }
 ```
 
-The network has to be trained with all the data in bulk in one call to `train()`. The more training data the longer it will take to train, but the better the network will be at classifiying new data.
+The network has to be trained with all the data in bulk in one call to `train()`. The more training data, the longer it will take to train, but the better the network will be at classifiying new data.
 
 # JSON
 Serialize or load in the state of a trained network with JSON:
@@ -52,8 +52,9 @@ You can also get a custom standalone function from a trained network that acts j
 ```javascript
 var run = net.toFunction();
 
-var output = run({r: 1, g: 0.4, b: 0});
+var output = run({ r: 1, g: 0.4, b: 0 });
 ```
 
+#### Bayesian classifier
 
-
+The Bayesian classifier that used to be here has moved to it's own library, [classifier](https://github.com/harthur/classifier).
