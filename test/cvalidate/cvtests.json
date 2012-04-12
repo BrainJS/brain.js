@@ -1,7 +1,0 @@
-{
-  "neuralnet" : [
-    { "db": "http://harth.couchone.com/blackorwhite",
-      "options" : {}
-    }
-  ]
-}
