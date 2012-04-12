@@ -3,30 +3,5 @@
     { "db": "http://harth.couchone.com/blackorwhite",
       "options" : {}
     }
-  ],
-  
-  "bayes" : [
-    { "db": "http://harth.couchone.com/pythontweets",
-      "options" : {}
-    },
-    { "db": "http://harth.couchone.com/pythontweets",
-      "options" : { 
-         "thresholds": {
-           "programming": 3,
-           "not": 1
-         },
-         "def": "not"
-       }
-    },
-    { "db": "http://harth.couchone.com/pythontweets",
-      "options" : {
-         "backend": {
-           "type": "localStorage",
-           "options": {
-             "testing": true
-           }
-         }
-       }
-    }
   ]
 }
