@@ -39,6 +39,9 @@ describe('neural network cross-validation', function() {
       console.log("Cross-validation of color contrast data:\n");
       console.log(result);
 
+      var perf = result.iterations / (result.trainTime / 1000);
+      console.log("training iterations per second: " + perf);
+
       assert.ok(result.error < .01);
       done();
     })
