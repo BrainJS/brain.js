@@ -41,15 +41,19 @@ describe('OCR cross-validation', function() {
     var canvas = new canvas(dim, dim);
     var context = canvas.getContext("2d");
 
-    var letters = ["A", "B", "C", "E", "G", "Z"];
+    var letters = ["A", "B", "C", "D", "E",
+                   "K", "O", "Z"];
     var fonts = ["Arial", "Courier", "Georgia", "Menlo", "Optima",
-                 "Copperplate", "American Typewriter", "Comic Sans"];
+                 "Copperplate", "American Typewriter", "Comic Sans",
+                 "Baskerville", "Verdana", "Helvetica", "Didot",
+                 "Geneva", "Cracked", "Impact", "Cooper"];
 
     var data = [];
 
     letters.forEach(function(letter) {
        fonts.forEach(function(font) {
           var input = getSampling(context, letter, font);
+
           var output = {};
           output[letter] = 1;
           data.push({ input: input, output: output });
@@ -58,12 +62,25 @@ describe('OCR cross-validation', function() {
 
     var result = crossValidate(brain.NeuralNetwork, {}, data);
 
+    console.log("\nMisclassifications:");
+    result.misclasses.forEach(function(misclass) {
+      console.log("input: " + misclass.input
+        + " actual: " + letters[misclass.actual]
+        + " expected: " + letters[misclass.expected] + "\n")
+    })
+
     console.log("\nCross-validation of OCR data:\n");
-    console.log(result);
+    console.log(result.avgs);
 
-    var perf = result.iterations / (result.trainTime / 1000);
-    console.log("\ntraining iterations per second: " + perf);
+    console.log("\nMisclassification rate: "
+      + result.misclasses.length / data.length);
 
-    assert.ok(result.error < .1);
+    console.log("\nMean squared error: "
+      + result.avgs.error);
+
+    var perf = result.avgs.iterations / (result.avgs.trainTime / 1000);
+    console.log("\nTraining iterations per second: " + perf);
+
+    assert.ok(result.avgs.error < .1);
   })
 })

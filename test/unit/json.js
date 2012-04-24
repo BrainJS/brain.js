@@ -22,6 +22,7 @@ describe('JSON', function() {
                   "loading json serialized network failed");
   })
 
+
   it('toFunction()', function() {
     var output1 = net.run(input);
     var output2 = net.toFunction()(input);

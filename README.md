@@ -24,9 +24,10 @@ If you have [node](http://nodejs.org/) you can install with [npm](http://github.
 Download the latest [brain.js](http://github.com/harthur/brain/downloads). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
 
 # Training
+Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. The more training patterns, the longer it will take to train, but the better the network will be at classifiying new patterns.
 
 #### Data format
-Use `train()` to train the network with an array of training data. Each piece of training data should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color constrast demo](http://harthur.github.com/brain/examples/blackorwhite.html) it looks something like this:
+Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color constrast demo](http://harthur.github.com/brain/examples/blackorwhite.html) it looks something like this:
 
 ```javascript
 var net = new brain.NeuralNetwork();
@@ -38,27 +39,25 @@ net.train([{input: { r: 0.03, g: 0.7, b: 0.5 }, output: { black: 1 }},
 var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.99, black: 0.002 }
 ```
 
-The network has to be trained with all the data in bulk in one call to `train()`. The more training data, the longer it will take to train, but the better the network will be at classifiying new data.
-
 #### Threshold
-The optional second argument to `train()` is the error threshold (default `0.002`), the third is the maximum training iterations (default `10000`).
+The optional second argument to `train()` is the error threshold (default `0.004`), the third is the maximum training iterations (default `20000`).
 
 The network will train until the training error has gone below the threshold or the max number of iterations has been reached, whichever comes first.
 
 #### Output
-The ouput of `train()` is a hash:
+The ouput of `train()` is a hash of information about how the training went:
 
-```
+```javascript
 {
-  error: 0.0019139985510105032,  // training error
-  iterations: 404                // training iterations
+  error: 0.0039139985510105032,  // training error
+  iterations: 406                // training iterations
 }
 ```
 
 #### Failing
 If the network failed to train, the error will be above the error threshold. This could happen because the training data is too noisy (most likely), the network doesn't have enough hidden layers or nodes to handle the complexity of the data, or it hasn't trained for enough iterations.
 
-If the training error is still something huge like `0.4` after 10000 iterations, it's a good sign that the network can't make any sense of the data you're giving it.
+If the training error is still something huge like `0.4` after 20000 iterations, it's a good sign that the network can't make sense of the data you're giving it.
 
 # JSON
 Serialize or load in the state of a trained network with JSON:
@@ -84,22 +83,22 @@ console.log(run.toString()); // copy and paste! no need to import brain.js
 
 ```javascript
 var net = new NeuralNetwork({
-   hidden: [4],
+   hiddenLayers: [4],
    learningRate: 0.6
 });
 ```
 
-#### hidden
+#### hiddenLayers
 Specify the number of hidden layers in the network and the size of each layer. For example, if you want two hidden layers - the first with 3 nodes and the second with 4 nodes, you'd give:
 
 ```
-hidden: [3, 4]
+hiddenLayers: [3, 4]
 ```
 
 By default `brain` uses one hidden layer with size proportionate to the size of the input array.
 
 #### learningRate
-The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take a lot longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data. The default learning rate is `0.5`.
+The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data. The default learning rate is `0.3`.
 
 
 # Bayesian classifier

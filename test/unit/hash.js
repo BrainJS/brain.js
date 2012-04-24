@@ -1,52 +1,80 @@
 var assert = require('should'),
     brain = require("../../lib/brain");
 
-function checkLayer(nodes, layer) {
-  for (var node in nodes) {
-    assert.ok(!!layer[nodes[node]], "couldn't find node for " + nodes[node]);
-  }
-}
+describe('hash input and output', function() {
+  it('runs correctly with array input and output', function() {
+    var net = new brain.NeuralNetwork();
 
+    net.train([{input: [0, 0], output: [0]},
+               {input: [0, 1], output: [1]},
+               {input: [1, 0], output: [1]},
+               {input: [1, 1], output: [0]}]);
+    var output = net.run([1, 0]);
 
-describe('hashes', function() {
-  var net = new brain.NeuralNetwork();
-
-  net.train([{input:  {a: Math.random(), b: Math.random(), c: Math.random()},
-              output: {A: Math.random(), B: Math.random()}},
-
-             {input:  {d: Math.random(), e: Math.random(), f : Math.random()},
-              output: {C: Math.random()}},
-
-             {input : {}, output : {}}]);
-
-  var json = net.toJSON();
-
-  var inputNodes = ['a', 'b', 'c', 'd', 'e', 'f'];
-  var outputNodes = ['A', 'B', 'C'];
-
-  it('input layer nodes', function() {
-    checkLayer(inputNodes, json.layers[0].nodes);
+    assert.ok(output[0] > 0.9, "output: " + output[0]);
   })
 
-  it('output layer nodes', function() {
-    checkLayer(outputNodes, json.layers[json.layers.length - 1].nodes);
+ it('runs correctly with hash input', function() {
+    var net = new brain.NeuralNetwork();
+
+    var info = net.train([{input: { x: 0, y: 0 }, output: [0]},
+               {input: { x: 0, y: 1 }, output: [1]},
+               {input: { x: 1, y: 0 }, output: [1]},
+               {input: { x: 1, y: 1 }, output: [0]}]);
+    var output = net.run({x: 1, y: 0});
+
+    assert.ok(output[0] > 0.9, "output: " + output[0]);
   })
 
-  it('output layer from sparse hash output', function() {
-    var output = net.run({c: Math.random()});
-    checkLayer(outputNodes, output);
+ it('runs correctly with hash output', function() {
+    var net = new brain.NeuralNetwork();
+
+    net.train([{input: [0, 0], output: { answer: 0 }},
+               {input: [0, 1], output: { answer: 1 }},
+               {input: [1, 0], output: { answer: 1 }},
+               {input: [1, 1], output: { answer: 0 }}]);
+
+    var output = net.run([1, 0]);
+
+    assert.ok(output.answer > 0.9, "output: " + output.answer);
   })
 
-  it('output layer from output with new property', function() {
-    var output = net.run({z: Math.random()});
-    checkLayer(outputNodes, output);
+  it('runs correctly with hash input and output', function() {
+    var net = new brain.NeuralNetwork({learningRate: 0.2});
 
-    var json = net.toJSON();
-    assert.ok(!!json.layers[0].nodes['z']);
+    net.train([{input: { x: 0, y: 0 }, output: { answer: 0 }},
+               {input: { x: 0, y: 1 }, output: { answer: 1 }},
+               {input: { x: 1, y: 0 }, output: { answer: 1 }},
+               {input: { x: 1, y: 1 }, output: { answer: 0 }}]);
+
+    var output = net.run({x: 1, y: 0});
+
+    assert.ok(output.answer > 0.9, "output: " + output.answer);
   })
 
-  it('output layer from empty hash input', function() {
-    var output = net.run({});
-    checkLayer(outputNodes, output);
+  it('runs correctly with sparse hashes', function() {
+      var net = new brain.NeuralNetwork();
+
+      net.train([{input: {}, output: {}},
+                 {input: { y: 1 }, output: { answer: 1 }},
+                 {input: { x: 1 }, output: { answer: 1 }},
+                 {input: { x: 1, y: 1 }, output: {}}]);
+
+
+      var output = net.run({x: 1});
+
+      assert.ok(output.answer > 0.9);
+  })
+
+  it('runs correctly with unseen input', function() {
+      var net = new brain.NeuralNetwork();
+
+      net.train([{input: {}, output: {}},
+                 {input: { y: 1 }, output: { answer: 1 }},
+                 {input: { x: 1 }, output: { answer: 1 }},
+                 {input: { x: 1, y: 1 }, output: {}}]);
+
+      var output = net.run({x: 1, z: 1});
+      assert.ok(output.answer > 0.9);
   })
 })
