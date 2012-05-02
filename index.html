@@ -1,284 +1,92 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>brain - javascript neural networks and classifiers</title>
-<link rel="stylesheet/less" href="index.less" type="text/css">
-<script src="less-1.0.34.min.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="blackorwhite.css">
 
+  <script src="jquery-1.4.2.min.js"></script>
+  <script src="brain-0.3.5.js"></script>
+  <script src="blackorwhite.js"></script>
+  
+  <title>brain.js demo: Train a neural network to recognize color contrast</title>
 </head>
+
 <body>
-  <a href="http://github.com/harthur/brain"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" /></a>
+  <div id="desc">brain.js demo - train a neural network to recognize color contrast</div>
+
   <div id="container">
-    <div id="header">
-      <div id="title">brain</div>
-      <div id="subtitle">javascript supervised machine learning</div>
+    <div class="section" id="training-box">
+      <div class="section-header">
+        Which one can you read more easily?
+      </div>
+        <div id="swatches">
+		    <div class="swatch-box">
+            <div id="black-swatch" class="swatch" onclick="trainer.pickSwatch('black');">
+              <div class="swatch-text">This one</div>
+            </div></div>
+	    <div class="swatch-box">
+            <div id="white-swatch" class="swatch" onclick="trainer.pickSwatch('white');">
+              <div class="swatch-text">This one</div>
+            </div></div>
+        </div>
+        <div id="training-buttons">
+          <span class="pass-button button" onclick="trainer.changeColor();"
+                title="skip">&rarr;</span>
+        </div>
+      <div id="test-box">
+        <div id="test-button" onclick="trainer.trainNetwork();" class="button">train neural network</div>
+        <div id="subtitle"> You can train the network at any point, but the more
+        color selections you give it, the better.
+        </div>
+      </div>
     </div>
-    
-    <div id="side-nav">
-      <ul id="nav-list">
-        <li class="nav-list-header">Docs</li>
-        <li><a href="#neural-network">Neural Network</a></li>
-        <li><a href="#bayesian">Bayesian Classifier</a></li>
-        <li><a href="#cross-validation">Cross Validation</a></li>
-      </ul>
+
+    <div id="progress-box">
+      <div id="training-message">
+        training network...
+      </div>
+      <div id="progress-bar">
+	    <div id="progress-completed">
+	    </div>
+      </div>
+   </div>
+
+    <div class="section" id="testing-box">
+      <div id="swatches">
+	      <div id="nn-swatch-box" class="swatch-box">
+            <div id="nn-swatch" class="swatch" onclick="tester.viewCode('nn');" 
+                 title="view neural network code">
+              <div class="swatch-text">your neural network</div>
+            </div>
+            <div class="view-code" onclick="tester.viewCode('nn');">code
+	            <div class="view-code-arrow">&#x25B6;</div>
+  	        </div>
+	      </div>
+	      <div id="wcag-swatch-box" class="swatch-box">
+          <div id="wcag-swatch" class="swatch"
+               onclick="tester.viewCode('wcag');" title="view luminosity code">
+          <div class="swatch-text">luminosity algorithm</div>
+          </div>
+          <div class="view-code" onclick="tester.viewCode('wcag')">code
+	          <div class="view-code-arrow">&#x25B6;</div>
+	        </div>
+	      </div>
+        <div id="yiq-swatch-box" class="swatch-box">
+          <div id="yiq-swatch" class="swatch"
+               onclick="tester.viewCode('yiq');" title="view yiq code">
+               <div class="swatch-text">YIQ formula</div>
+          </div>
+          <div class="view-code" onclick="tester.viewCode('yiq')">code
+	          <div class="view-code-arrow">&#x25B6;</div>
+	        </div>
+        </div>
+      </div>
+      <div id="training-buttons">
+        <span class="pass-button button" onclick="tester.testRandom();"
+              title="next color">&rarr;</span>
+      </div>
     </div>
-    
-    <div id="content">
-      <div class="section">
-        <p>brain is a JavaScript library for 
-        <a href="http://www.heatonresearch.com/content/non-mathematical-introduction-using-neural-networks">
-          neural networks</a> and Bayesian classifiers.
-        An example use of the neural network, giving a color a label based on its rgb values:
-        <pre class="code-example">
-var net = new brain.NeuralNetwork();
-
-net.train([{input: {r:1, g:0.65, b:0},  output: {orange: 1}},
-           {input: {r:0, g:0.54, b:0},  output: {green: 1}},
-           {input: {r:0.6, g:1, b:0.5}, output: {green: 1}},
-           {input: {r:0.67, g:0, b:1},  output: {purple: 1}}]);
-
-var output = net.run({r:1, g:1, b:0});</pre>
-          the output would be something like <code>{"orange":0.96,"green":0.18,"purple":0.00}</code>
-          because yellow is most similar to orange.
-        </p>
-      </div>
-      <div class="main-section">
-        <div class="section-header">
-          Download
-        </div>
-        <div class="section-content">
-          <p>To use this in the browser, download the latest <a href="http://github.com/harthur/brain/downloads">brain.js</a> and grab 
-          <a href="http://documentcloud.github.com/underscore/">underscore.js</a>
-          as well if you're using <code>BayesianClassifier</code>.</p>
-          
-          <p>To use this as a commonJS package or server-side, checkout or download
-          <a href="http://github.com/harthur/brain">the code</a> from GitHub, or
-          install on <a href="http://nodejs.org/">node</a> with
-          <a href="http://github.com/isaacs/npm">npm</a>:
-          <pre>npm install brain@latest</pre></p>
-        </div>
-      </div>
-      <div class="main-section" id="neural-network">
-        <div class="section-header">
-          Neural Network
-        </div>
-        <div class="section-content">
-          The neural network implements the standard feedforward multi-layer
-          perceptron neural network trained with backpropagation. It's all in memory,
-          so the whole API can be used in the browser.
-          <div class="section-header sub-section-header">
-            API
-          </div>
-          <div class="section">
-            <div class="api-section-header">
-              <code class="section-code">var net = new brain.<span class="api-spec">NeuralNetwork</span>(<span class="optional">options</span>)</code>
-            </div>
-            <code>NeuralNetwork</code> takes an optional argument that is a 
-            JSON object:
-            <div class="arguments">
-                <pre>
-var options = {
-  hidden : [16],
-  growthRate : 1.0,
-  learningRate : 0.4
-}</pre>
-                <div class="argument">
-                  <code>hidden</code> - an array representing the  
-                  number of nodes per hidden layer. e.g. <code>[3, 4]</code>. The default is one
-                  hidden layer, with a variable number of nodes.
-                </div>
-                <div class="argument">
-                  <code>growthRate</code> - the rate at which to grow the hidden layer with
-                    respect to the size of input layer. The default is <code>0.5</code> 
-                    (the hidden layer stays 50% the size of the input layer). This option
-                    does not apply if the <code>hidden</code> option was specified or
-                    the network was loaded in from JSON.
-                </div> 
-                <div class="argument">
-                  <code>learningRate</code> - the rate at which the network learns from training.
-                  Default is <code>0.5</code>. The higher the number, the faster the training will
-                  go, but the risk of the network failing to train correctly increases.
-                </div>
-              </div>
-          </div>
-          <div class="section">
-            <div class="api-section-header">
-              <code class="section-code">net.<span class="api-spec">train</span>(data<span class="optional">, iterations, threshold</span>)</code>
-            </div>
-            <code>train</code> trains the network on array of training data, where each item in the 
-            training data is a JSON object with members <code>input</code> and <code>output</code>.
-            input and output can be either an array or JSON object of values from 0 to 1. e.g. 
-            <pre>
-    var data = [{input: [0.9, 0.4, 0], output: {orange: 1.0}},
-                {input: [1.0, 1.0, 0], output: {yellow: 1.0}}]</pre>
-             The maximum number of training iterations and the error threshold to train to
-             can also be specified. By default it will train for <code>20000</code> 
-             iterations or until the error drops below <code>0.01</code>.
-          </div>
-          <div class="section">
-            <div class="api-section-header"><code class="section-code">
-              var output = net.<span class="api-spec">run</span>(input)</code>
-            </div>
-            <code>run</code> runs the input on the neural network. the input
-            should be an array or JSON object of values from 0 to 1. e.g. 
-            <code>var input = {a: 0.45, b: 0.02}</code> or <code>[0.45, 1.0]</code>
-          </div>
-          <div class="section">
-            <div class="api-section-header"><code class="section-code">
-              var json = net.<span class="api-spec">toJSON</span>()</code>
-            </div>
-              <code>toJSON</code> returns a JSON representation of the network.
-          </div>
-          <div class="section">
-            <div class="api-section-header">
-              <code class="section-code">net.<span class="api-spec">fromJSON</span>(json)</code>
-            </div>
-              <code>fromJSON</code> loads a network from json. It will replace all the
-              current layers and weights of the network.
-          </div>
-          <div class="section">
-            <div class="api-section-header">
-              <code class="section-code">var output = net.<span class="api-spec">toFunction</span>()(input)</code>
-            </div>
-            <code>toFunction</code> returns a standalone function that mimics
-            the <code>run</code> function of the network. Useful with <code>toString()</code>
-            for training a network offline.
-          </div>
-          <div class="section" id="demo">
-            <div class="section-header sub-section-header">
-              Demo
-            </div>
-            <div class="section-content">
-              <a href="http://harthur.github.com/brain/examples/blackorwhite.html">
-                  <img src="demo.png" id="demo-thumbnail">
-              </a>
-              This webpage trains a network to recognize whether to use black or white text
-              over a given background color. It is purely client-side, training the network
-              on a Worker thread and using the JSON serializing function to pass the trained
-              network back to the main thread. You can see the code for the site on
-              <a href="http://github.com/harthur/brain/blob/gh-pages/examples">brain's github</a>.
-            </div>
-          </div>
-      </div>
-      <div class="main-section" id="bayesian">
-        <div class="section-header">
-          Bayesian Classifier
-        </div>
-        <div class="section-content">
-          The Bayesian classifier is a basic naive Bayesian classifier. Used for things like spam filtering
-          and document classification. By default it stores in memory, but there's also a
-          <a href="http://github.com/antirez/redis">Redis</a> backend.
-          <div class="section">
-            <div class="sub-section-header section-header">
-              API
-            </div>
-            <div class="section">
-              <div class="api-section-header">
-                <code class="section-code">
-                  var bayes = new brain.<span class="api-spec">BayesianClassifier</span>(<span class="optional">options</span>)
-                </code>
-              </div>
-                Makes a new classifier, with optional options. An example <code>options</code>:
-<pre>
-  var options = {
-    backend : {
-      type: 'Redis',
-      options: {
-        hostname: 'localhost', // this is the default
-        port: 6379,
-        name: 'emailspam' // namespace so you can persist training
-      }
-    },
-
-    thresholds : {
-      spam: 3, // higher threshold for spam
-      notspam: 1 // 1 is default threshold for all categories
-    },
-
-    def: 'notspam' // category if can't classify 
-  }
-</pre>
-          localStorage backend:
-<pre>
-  var options = {
-    backend: {
-      type: 'localStorage',
-      options: {
-        name: 'emailspam' 
-      } 
-    }
-  }
-</pre>
-          </div>
-            <div class="section">
-              <div class="api-section-header">
-                <code class="section-code">
-                  bayes.<span class="api-spec">train</span>("buy these great watches", "spam", <span class="optional">callback</span>)
-                </code>
-              </div>
-              Trains the classifier for a document. You can either pass in a string of text
-              or an array of words. If you're using the Redis backend, you can 
-              specify a callback that will be called when the classifier has been
-              trained with this doc.
-            </div>
-            <div class="section">
-              <div class="api-section-header">
-                <code class="section-code">
-                  bayes.<span class="api-spec">trainAll</span>(data, <span class="optional">callback</span>)
-                </code>
-              </div>
-              Trains the classifier for a set of training data. Training
-              data is an array of JSON objects that look like
-              <code>{input: "buy these great watches", output: "spam"}</code>.
-              If you're using the Redis backend, you can specify a callback
-              that will be called when the classifier has been trained with all the data.
-            </div>
-            <div class="section">
-              <div class="api-section-header">
-                <code class="section-code">
-                  var category = bayes.<span class="api-spec">classify</span>("get cheap watches", <span class="optional">callback</span>)
-                </code>
-              </div>
-                 Classifies a document. Returns the category name, or if you're using the
-                 Redis backend, calls the callback with the category name.
-            </div>
-        </div>
-      </div>
-      <div class="main-section" id="cross-validation">
-        <div class="section-header">
-          Cross Validation
-        </div>
-        <div class="section-content">
-          To optimize the parameters for a particular training set, use the 
-          <code>crossValidate()</code> function. Cross-validation takes a set of training data and
-          partitions it into n parts. It uses one section as the testing set and the remaining
-          sections to train the classifier. It compares the output from the testing set to the
-          expected output and reports an error. It does this for each of the n partitions.
-          
-          <p>You can compare the error values you get from using different settings (number of hidden
-          nodes in a neural network, learning rate) to find the optimal setting.</p>
-          <div class="section">
-            <div class="sub-section-header section-header">
-              API
-            </div>
-            <div>
-              <div class="api-section-header"><code class="section-code">var stats = brain.<span class="api-spec">crossValidate</span>(brain.NeuralNetwork, options, data, <span class="optional">numSlices</span>)</code></div>
-              the first argument is the constructor function of the network/classifer that is being tested. <code>options</code> is the options for the classifier, <code>data</code> is an array of training data (JSON objects with <code>input</code> and <code>output</code> fields), and <code>numSlices</code> is the number of sections to divide the training data into.
-              
-              <code>crossValidate</code> returns an array of objects like this:
-              <pre>
-{ error: 0.013175532770791403,
-  trainTime: 61086,
-  testTime: 10,
-  trainSize: 394,
-  testSize: 197
-}
-</pre>
-which has the error from the testing set, the time it took to train and test (in ms), and the size of the training and testing sets.
-            </div>
-          </div>
-        </div>
-      </div>
+    <div id="code-box">
+      <pre id="code"></pre>
     </div>
   </div>
 </body>
