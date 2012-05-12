@@ -1,4 +1,4 @@
-var assert = require('should'),
+var assert = require("should"),
     brain = require("../../lib/brain");
 
 var data = [{input: [0, 0], output: [0]},
@@ -6,7 +6,7 @@ var data = [{input: [0, 0], output: [0]},
             {input: [1, 0], output: [1]},
             {input: [1, 1], output: [1]}];
 
-describe('thresholds' , function() {
+describe('train() options', function() {
   it('train until error threshold reached', function() {
     var net = new brain.NeuralNetwork();
     var error = net.train(data, {
@@ -26,4 +26,26 @@ describe('thresholds' , function() {
 
     assert.equal(stats.iterations, 1);
   })
+
+  it('training callback called with training stats', function(done) {
+    var iters = 100;
+    var period = 20;
+    var target = iters / 20;
+
+    var calls = 0;
+
+    var net = new brain.NeuralNetwork();
+    net.train(data, {
+      iterations: iters,
+      callback: function(stats) {
+        assert.ok(stats.iterations % period == 0);
+
+        calls++;
+        if (calls == target) {
+          done();
+        }
+      },
+      callbackPeriod: 20
+    });
+  });
 })
