@@ -5,7 +5,7 @@ var wiggle = 0.1;
 
 function testBitwise(data, op) {
   var net = new brain.NeuralNetwork();
-  net.train(data);
+  net.train(data, { errorThresh: 0.003 });
 
   for(var i in data) {
     var output = net.run(data[i].input);
