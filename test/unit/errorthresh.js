@@ -9,13 +9,21 @@ var data = [{input: [0, 0], output: [0]},
 describe('thresholds' , function() {
   it('train until error threshold reached', function() {
     var net = new brain.NeuralNetwork();
-    var error = net.train(data, 0.2, 100000).error;
+    var error = net.train(data, {
+      errorThresh: 0.2,
+      iterations: 100000
+    }).error;
+
     assert.ok(error < 0.2, "network did not train until error threshold was reached");
   });
 
   it('train until max iterations reached', function() {
     var net = new brain.NeuralNetwork();
-    var error = net.train(data, 0.001, 1).error;
-    assert.ok(error > 0.001, "network trained past max iterations");
+    var stats = net.train(data, {
+      errorThresh: 0.001,
+      iterations: 1
+    });
+
+    assert.equal(stats.iterations, 1);
   })
 })

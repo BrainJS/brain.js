@@ -39,10 +39,21 @@ net.train([{input: { r: 0.03, g: 0.7, b: 0.5 }, output: { black: 1 }},
 var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.99, black: 0.002 }
 ```
 
-#### Threshold
-The optional second argument to `train()` is the error threshold (default `0.004`), the third is the maximum training iterations (default `20000`).
+#### Options
+`train()` takes a hash of options as its second argument:
 
-The network will train until the training error has gone below the threshold or the max number of iterations has been reached, whichever comes first.
+```javascript
+net.train(data, {
+  errorThresh: 0.004,  // error threshold to reach
+  iterations: 20000,   // maximum training iterations
+  log: true,           // console.log() progress periodically
+  logPeriod: 10        // number of iterations between logging
+})
+```
+
+The network will train until the training error has gone below the threshold (default `0.004`) or the max number of iterations (default `20000`) has been reached, whichever comes first.
+
+By default training won't let you know how its doing until the end, but set `log` to `true` to get periodic updates on the current training error of the network. The training error should decrease every time.
 
 #### Output
 The ouput of `train()` is a hash of information about how the training went:
