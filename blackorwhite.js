@@ -10,7 +10,7 @@ $(document).ready(function(){
 
 var utils = {
   randomColor : function() {
-    return { r: Math.round(Math.random() * 255), 
+    return { r: Math.round(Math.random() * 255),
              g: Math.round(Math.random() * 255),
              b: Math.round(Math.random() * 255) };
   },
@@ -29,21 +29,19 @@ var trainer = {
 
   data : [],
 
-  iterations : 9000,
-
   pickSwatch : function(color) {
     var result = { input: utils.normalize(this.currentColor),
                    output: { black : color == 'black' ? 1 : 0}};
     this.data.push(result);
 
-   /* $.ajax({url: 'http://localhost:5984/blackorwhite/', type: 'POST', 
+   /* $.ajax({url: 'http://localhost:5984/blackorwhite/', type: 'POST',
             data: JSON.stringify(result),
             contentType: "application/json"});  // collect training data on the server side */
     this.changeColor();
   },
 
   changeColor : function() {
-    this.currentColor = utils.randomColor(); 
+    this.currentColor = utils.randomColor();
     var rgb = utils.toRgb(this.currentColor);
     $(".swatch").css("backgroundColor", rgb);
   },
@@ -60,7 +58,9 @@ var trainer = {
     }
     else {
       var net = new brain.NeuralNetwork();
-      net.train(this.data, this.iterations, 0.005);
+      net.train(this.data, {
+        iterations: 9000
+      });
       tester.show(net);
     }
   },
@@ -109,7 +109,7 @@ var tester = {
     $("#yiq-swatch").css("color", yiqColor(color));
   },
 
-  viewCode : function(type) {   
+  viewCode : function(type) {
     if(type == 'nn' && !$("#nn-swatch-box").hasClass("selected")) {
       $("#code-header").text("neural network code:");
       var code = "var textColor = " + nnColor.toString()
@@ -150,13 +150,13 @@ var tester = {
 var nnColor = function(bgColor) {
   var output = runNetwork(bgColor);
   if (output.black > .5) {
-    return 'black';    
+    return 'black';
   }
   return 'white';
 }
 
 var wcagColor = function(bgColor) {
-  if(contrast(bgColor, {r: 1, g: 1, b: 1}) 
+  if(contrast(bgColor, {r: 1, g: 1, b: 1})
       > contrast(bgColor, {r: 0, g: 0, b: 0}))
     return 'white';
   return 'black';
@@ -175,7 +175,7 @@ var contrast = function(color1, color2) {
   var lum1 = luminosity(color1);
   var lum2 = luminosity(color2);
   if (lum1 > lum2) {
-    return (lum1 + 0.05) / (lum2 + 0.05);    
+    return (lum1 + 0.05) / (lum2 + 0.05);
   }
   return (lum2 + 0.05) / (lum1 + 0.05);
 }
