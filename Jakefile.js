@@ -6,17 +6,17 @@
 */
 var fs = require("fs"),
     path = require("path"),
-    sys = require("sys")
+    util = require('util')
     build = require("./build");
    
 var pkg = JSON.parse(fs.readFileSync("package.json")); 
 var prefix = pkg.name + "-" + pkg.version;
 
 task('build', [], function (dest) {
-  sys.puts("building...");
+  util.puts("building...");
   dest = dest || prefix + ".js";
   build.build(dest);
-  sys.puts("> " + dest);
+  util.puts("> " + dest);
 });
 
 task('minify', [], function (file, dest) {
@@ -25,7 +25,7 @@ task('minify', [], function (file, dest) {
 
   var minified = minify(fs.readFileSync(file, "utf-8"));
   fs.writeFileSync(dest, minified, "utf-8");
-  sys.puts("> " + dest)
+  util.puts("> " + dest)
 });
 
 task('clean', [], function () {
