@@ -4,15 +4,15 @@ var assert = require('should'),
 describe('JSON', function() {
   var net = new brain.NeuralNetwork();
 
-  net.train([{input:  {a: Math.random(), b: Math.random()},
-              output: {c: Math.random(), d: Math.random()}},
-             {input:  {a: Math.random(), b: Math.random()},
-              output: {c: Math.random(), d: Math.random()}}]);
+  net.train([{input:  {"0": Math.random(), b: Math.random()},
+              output: {c: Math.random(), "0": Math.random()}},
+             {input:  {"0": Math.random(), b: Math.random()},
+              output: {c: Math.random(), "0": Math.random()}}]);
 
   var serialized = net.toJSON();
   var net2 = new brain.NeuralNetwork().fromJSON(serialized);
 
-  var input = {a : Math.random(), b: Math.random()};
+  var input = {"0" : Math.random(), b: Math.random()};
 
   it('toJSON()/fromJSON()', function() {
     var output1 = net.run(input);
