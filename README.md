@@ -18,7 +18,7 @@ There's no reason to use a neural network to figure out XOR however (-: so here'
 # Using in node
 If you have [node](http://nodejs.org/) you can install with [npm](http://github.com/isaacs/npm):
 
-	npm install brain
+  npm install brain
 
 # Using in the browser
 Download the latest [brain.js](http://github.com/harthur/brain/downloads). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
@@ -88,6 +88,27 @@ var output = run({ r: 1, g: 0.4, b: 0 });
 
 console.log(run.toString()); // copy and paste! no need to import brain.js
 ```
+# Streams
+The network now has a [WriteStream](http://nodejs.org/api/stream.html#stream_class_stream_writable). You can train the network by using `pipe()` to send the training data to the network.
+
+#### Example
+Refer to `test/unit/stream-bitwise.js` for an example on how to train the network with a stream.
+
+#### Initialization
+To train the network using a stream you must first create the stream by calling `net.createTrainStream()` which takes the following options:
+
+* `floodCallback()` - the callback function to re-populate the stream. This gets called on every training iteration.
+* `doneTrainingCallback(info)` - the callback function to execute when the network is done training. The `info` param will contain a hash of information about how the training went:
+
+```javascript
+{
+  error: 0.0039139985510105032,  // training error
+  iterations: 406                // training iterations
+}
+```
+
+#### Transform
+Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transform) to coerce the data into the correct format. You might also use a Transform stream to normalize your data on the fly.
 
 # Options
 `NeuralNetwork()` takes a hash of options:
