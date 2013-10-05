@@ -51,7 +51,7 @@ net.train(data, {
 })
 ```
 
-The network will train until the training error has gone below the threshold (default `0.004`) or the max number of iterations (default `20000`) has been reached, whichever comes first.
+The network will train until the training error has gone below the threshold (default `0.005`) or the max number of iterations (default `20000`) has been reached, whichever comes first.
 
 By default training won't let you know how its doing until the end, but set `log` to `true` to get periodic updates on the current training error of the network. The training error should decrease every time.
 
