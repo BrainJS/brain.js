@@ -15,15 +15,15 @@ var output = net.run([1, 0]);  // [0.987]
 There's no reason to use a neural network to figure out XOR however (-: so here's a more involved, realistic example:
 [Demo: training a neural network to recognize color contrast](http://harthur.github.com/brain/)
 
-# Using in node
+## Using in node
 If you have [node](http://nodejs.org/) you can install with [npm](http://github.com/isaacs/npm):
 
   npm install brain
 
-# Using in the browser
+## Using in the browser
 Download the latest [brain.js](http://github.com/harthur/brain/downloads). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
 
-# Training
+## Training
 Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. The more training patterns, the longer it will take to train, but the better the network will be at classifiying new patterns.
 
 #### Data format
@@ -70,7 +70,7 @@ If the network failed to train, the error will be above the error threshold. Thi
 
 If the training error is still something huge like `0.4` after 20000 iterations, it's a good sign that the network can't make sense of the data you're giving it.
 
-# JSON
+## JSON
 Serialize or load in the state of a trained network with JSON:
 
 ```javascript
@@ -88,7 +88,7 @@ var output = run({ r: 1, g: 0.4, b: 0 });
 
 console.log(run.toString()); // copy and paste! no need to import brain.js
 ```
-# Streams
+## Streams
 The network now has a [WriteStream](http://nodejs.org/api/stream.html#stream_class_stream_writable). You can train the network by using `pipe()` to send the training data to the network.
 
 #### Example
@@ -110,7 +110,7 @@ To train the network using a stream you must first create the stream by calling 
 #### Transform
 Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transform) to coerce the data into the correct format. You might also use a Transform stream to normalize your data on the fly.
 
-# Options
+## Options
 `NeuralNetwork()` takes a hash of options:
 
 ```javascript
@@ -133,6 +133,6 @@ By default `brain` uses one hidden layer with size proportionate to the size of 
 The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data. The default learning rate is `0.3`.
 
 
-# Bayesian classifier
+## Bayesian classifier
 
 The Bayesian classifier that used to be here has moved to its own library, [classifier](https://github.com/harthur/classifier).
