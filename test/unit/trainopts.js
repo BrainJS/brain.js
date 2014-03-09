@@ -1,4 +1,4 @@
-var assert = require("should"),
+var assert = require("assert"),
     brain = require("../../lib/brain");
 
 var data = [{input: [0, 0], output: [0]},

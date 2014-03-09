@@ -1,4 +1,4 @@
-var assert = require('should'),
+var assert = require("assert"),
     lookup = require("../../lib/lookup");
 
 

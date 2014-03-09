@@ -1,5 +1,5 @@
-var assert = require('should'),
-  brain = require("../../lib/brain");
+var assert = require("assert"),
+    brain = require("../../lib/brain");
 
 function StreamTester(opts) {
   if (!(this instanceof StreamTester)) return new StreamTester(opts);

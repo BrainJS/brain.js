@@ -1,9 +1,9 @@
 # tests
 
-To run the tests in this directory, first install the dev dependencies with this command from the top-level directory:
+To run the tests in this directory, make sure you've installed the dev dependencies with this command from the top-level directory:
 
 ```
-npm install --dev
+npm install
 ```
 
 You'll also have to globally install [mocha](http://visionmedia.github.com/mocha/). `npm install mocha -g`.

@@ -1,4 +1,4 @@
-var assert = require('should'),
+var assert = require("assert"),
     _ = require("underscore"),
     brain = require("../../lib/brain");
 
