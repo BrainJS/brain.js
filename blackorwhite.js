@@ -6,6 +6,7 @@ $(document).ready(function(){
 
   // only show nn and yiq
   $("#wcag-swatch-box").hide();
+  $("#test-box").hide();
 });
 
 var utils = {
@@ -34,10 +35,12 @@ var trainer = {
                    output: { black : color == 'black' ? 1 : 0}};
     this.data.push(result);
 
-   /* $.ajax({url: 'http://localhost:5984/blackorwhite/', type: 'POST',
-            data: JSON.stringify(result),
-            contentType: "application/json"});  // collect training data on the server side */
     this.changeColor();
+
+    // show the "Train network" button after we've selected a few entries
+    if (this.data.length == 5) {
+      $("#test-box").show();
+    }
   },
 
   changeColor : function() {
