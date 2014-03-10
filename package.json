@@ -9,12 +9,15 @@
     },
     "main": "./lib/brain",
     "dependencies": {
-        "underscore" : ">=1.5.1",
+        "underscore": ">=1.5.1",
         "inherits": "~2.0.1"
     },
-    "devDependencies" : {
-        "mocha" : ">=1.0.0",
-        "canvas" : ">=0.10.0"
+    "devDependencies": {
+        "mocha": ">=1.0.0",
+        "canvas": ">=0.10.0",
+        "grunt": "~0.4.3",
+        "grunt-contrib-uglify": "~0.2.0",
+        "browserify": "~3.32.0"
     },
     "keywords": ["neural network", "classifier", "machine learning"]
 }
