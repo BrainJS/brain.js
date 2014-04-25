@@ -40,7 +40,7 @@ describe('hash input and output', function() {
   })
 
   it('runs correctly with hash input and output', function() {
-    var net = new brain.NeuralNetwork({learningRate: 0.2});
+    var net = new brain.NeuralNetwork();
 
     net.train([{input: { x: 0, y: 0 }, output: { answer: 0 }},
                {input: { x: 0, y: 1 }, output: { answer: 1 }},

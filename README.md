@@ -44,10 +44,11 @@ var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.99, black: 0.002 }
 
 ```javascript
 net.train(data, {
-  errorThresh: 0.004,  // error threshold to reach
+  errorThresh: 0.005,  // error threshold to reach
   iterations: 20000,   // maximum training iterations
   log: true,           // console.log() progress periodically
-  logPeriod: 10        // number of iterations between logging
+  logPeriod: 10,       // number of iterations between logging
+  learningRate: 0.3    // learning rate
 })
 ```
 
@@ -55,8 +56,10 @@ The network will train until the training error has gone below the threshold (de
 
 By default training won't let you know how its doing until the end, but set `log` to `true` to get periodic updates on the current training error of the network. The training error should decrease every time.
 
+The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data. The default learning rate is `0.3`.
+
 #### Output
-The ouput of `train()` is a hash of information about how the training went:
+The output of `train()` is a hash of information about how the training went:
 
 ```javascript
 {
@@ -115,8 +118,8 @@ Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transfor
 
 ```javascript
 var net = new NeuralNetwork({
-   hiddenLayers: [4],
-   learningRate: 0.6
+  hiddenLayers: [4],
+  learningRate: 0.6 // global learning rate, useful when training using streams
 });
 ```
 
@@ -128,9 +131,6 @@ hiddenLayers: [3, 4]
 ```
 
 By default `brain` uses one hidden layer with size proportionate to the size of the input array.
-
-#### learningRate
-The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data. The default learning rate is `0.3`.
 
 
 ## Bayesian classifier
