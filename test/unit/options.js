@@ -48,6 +48,21 @@ describe('neural network options', function() {
     assert.ok(iters1 > (iters2 * 1.1), iters1 + " !> " + iters2 * 1.1);
   })
 
+  it('learningRate - backwards compatibility', function() {
+    var data = [{input: [0, 0], output: [0]},
+                {input: [0, 1], output: [1]},
+                {input: [1, 0], output: [1]},
+                {input: [1, 1], output: [1]}];
+
+    var net1 = new brain.NeuralNetwork({ learningRate: 0.5 });
+    var iters1 = net1.train(data).iterations;
+
+    var net2 = new brain.NeuralNetwork( { learningRate: 0.8 });
+    var iters2 = net2.train(data).iterations;
+
+    assert.ok(iters1 > (iters2 * 1.1), iters1 + " !> " + iters2 * 1.1);
+  })
+
   it('momentum - higher momentum should train faster', function() {
     var data = [{input: [0, 0], output: [0]},
                 {input: [0, 1], output: [1]},
