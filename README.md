@@ -16,15 +16,17 @@ There's no reason to use a neural network to figure out XOR however (-: so here'
 [Demo: training a neural network to recognize color contrast](http://harthur.github.com/brain/)
 
 ## Using in node
-If you have [node](http://nodejs.org/) you can install with [npm](http://github.com/isaacs/npm):
+If you have [node](http://nodejs.org/) you can install with [npm](http://npmjs.org):
 
-  npm install brain
+```
+npm install brain
+```
 
 ## Using in the browser
 Download the latest [brain.js](https://github.com/harthur/brain/tree/gh-pages). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
 
 ## Training
-Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. The more training patterns, the longer it will take to train, but the better the network will be at classifiying new patterns.
+Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. The more training patterns, the longer it will probably take to train, but the better the network will be at classifiying new patterns.
 
 #### Data format
 Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color constrast demo](http://harthur.github.com/brain/) it looks something like this:
@@ -91,6 +93,26 @@ var output = run({ r: 1, g: 0.4, b: 0 });
 
 console.log(run.toString()); // copy and paste! no need to import brain.js
 ```
+
+## Options
+`NeuralNetwork()` takes a hash of options:
+
+```javascript
+var net = new NeuralNetwork({
+  hiddenLayers: [4],
+  learningRate: 0.6 // global learning rate, useful when training using streams
+});
+```
+
+#### hiddenLayers
+Specify the number of hidden layers in the network and the size of each layer. For example, if you want two hidden layers - the first with 3 nodes and the second with 4 nodes, you'd give:
+
+```
+hiddenLayers: [3, 4]
+```
+
+By default `brain` uses one hidden layer with size proportionate to the size of the input array.
+
 ## Streams
 The network now has a [WriteStream](http://nodejs.org/api/stream.html#stream_class_stream_writable). You can train the network by using `pipe()` to send the training data to the network.
 
@@ -112,27 +134,3 @@ To train the network using a stream you must first create the stream by calling 
 
 #### Transform
 Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transform) to coerce the data into the correct format. You might also use a Transform stream to normalize your data on the fly.
-
-## Options
-`NeuralNetwork()` takes a hash of options:
-
-```javascript
-var net = new NeuralNetwork({
-  hiddenLayers: [4],
-  learningRate: 0.6 // global learning rate, useful when training using streams
-});
-```
-
-#### hiddenLayers
-Specify the number of hidden layers in the network and the size of each layer. For example, if you want two hidden layers - the first with 3 nodes and the second with 4 nodes, you'd give:
-
-```
-hiddenLayers: [3, 4]
-```
-
-By default `brain` uses one hidden layer with size proportionate to the size of the input array.
-
-
-## Bayesian classifier
-
-The Bayesian classifier that used to be here has moved to its own library, [classifier](https://github.com/harthur/classifier).
