@@ -1,0 +1,22 @@
+{
+  "name": "brain",
+  "version": "0.7.0",
+  "homepage": "https://github.com/harthur/brain",
+  "authors": [
+    "Heather Arthur <fayearthur@gmail.com>"
+  ],
+  "description": "Neural network library",
+  "keywords": [
+    "neural-networks",
+    "machine-learning",
+    "classifier"
+  ],
+  "main": "lib/brain.js",
+  "ignore": [
+    "node_modules",
+    "test"
+  ],
+  "dependencies": {
+    "underscore": ">=1.5.1"
+  }
+}
