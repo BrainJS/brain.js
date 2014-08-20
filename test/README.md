@@ -12,7 +12,7 @@ You'll also have to globally install [mocha](http://visionmedia.github.com/mocha
 Run the unit tests with:
 
 ```
-mocha test/unit/*
+grunt test
 ```
 
 # Cross-validation tests
