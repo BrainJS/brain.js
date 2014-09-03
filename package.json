@@ -7,6 +7,11 @@
         "type": "git",
         "url": "http://github.com/harthur/brain.git"
     },
+    "scripts": {
+        "test-unit": "mocha test/unit",
+        "test-cv": "mocha test/cross-validation --timeout 10000",
+        "test": "npm run test-unit && npm run test-cv"
+    },
     "main": "./lib/brain",
     "dependencies": {
         "underscore": ">=1.5.1",
