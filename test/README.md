@@ -1,4 +1,4 @@
-# tests
+# Tests
 
 To run the tests in this directory, make sure you've installed the dev dependencies with this command from the top-level directory:
 
@@ -6,7 +6,7 @@ To run the tests in this directory, make sure you've installed the dev dependenc
 npm install
 ```
 
-You'll also have to globally install [mocha](http://visionmedia.github.com/mocha/). `npm install mocha -g`.
+Then you can run all tests (unit and cross-validation) using `npm test`.
 
 # Unit tests
 Run the unit tests with:
@@ -14,6 +14,10 @@ Run the unit tests with:
 ```
 mocha test/unit/*
 ```
+
+or
+
+`npm run test-unit`
 
 # Cross-validation tests
 The cross-validation tests will actually test how good the neural network is a training by getting a bunch of training data, training it with some, and using the rest as verification.
@@ -25,3 +29,7 @@ Run these with:
 ```
 mocha test/cross-validation/* --timeout 10000
 ```
+
+or
+
+`npm run test-cv`
