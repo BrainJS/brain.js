@@ -24,7 +24,7 @@ var trainStream = net.createTrainStream({
     console.log("trained in " + obj.iterations + " iterations with error: "
                 + obj.error);
 
-    var result = net.run([0, 1])[0];
+    var result = net.run([0, 1]);
 
     console.log("0 XOR 1: ", result);  // 0.987
   }
