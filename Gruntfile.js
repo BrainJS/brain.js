@@ -12,6 +12,15 @@ var fs = require("fs"),
 
 module.exports = function(grunt) {
   grunt.initConfig({
+    mochaTest: {
+      test: {
+        options: {
+          style: 'bdd',
+          reporter: 'spec'
+        },
+        src: ['test/unit/*.js']
+      }
+    },
     pkg: grunt.file.readJSON('package.json'),
     uglify: {
       options: {
@@ -42,6 +51,8 @@ module.exports = function(grunt) {
       done();
     });
   });
+  grunt.registerTask('test', 'mochaTest');
 
+  grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 };
