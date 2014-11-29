@@ -12,7 +12,7 @@ Then you can run all tests (unit and cross-validation) using `npm test`.
 Run the unit tests with:
 
 ```
-mocha test/unit/*
+grunt test
 ```
 
 or
