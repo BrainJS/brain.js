@@ -101,7 +101,7 @@ console.log(run.toString()); // copy and paste! no need to import brain.js
 `NeuralNetwork()` takes a hash of options:
 
 ```javascript
-var net = new NeuralNetwork({
+var net = new brain.NeuralNetwork({
   hiddenLayers: [4],
   learningRate: 0.6 // global learning rate, useful when training using streams
 });
