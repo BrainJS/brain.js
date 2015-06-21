@@ -77,4 +77,41 @@ describe('neural network options', function() {
 
     assert.ok(iters1 > (iters2 * 1.1), iters1 + " !> " + (iters2 * 1.1));
   })
+
+  describe('log', function () {
+    var logCalled;
+
+    beforeEach(function () {
+      logCalled = false;
+    });
+
+    function logFunction() {
+      logCalled = true;
+    }
+
+    function trainWithLog(log) {
+      var net = new brain.NeuralNetwork();
+      net.train([{input: [0], output: [0]}],
+        {
+          log: log,
+          logPeriod: 1
+        });
+      }
+
+      it('should call console.log if log === true', function () {
+        var originalLog = console.log;
+        console.log = logFunction;
+
+        trainWithLog(true);
+
+        console.log = originalLog;
+        assert.equal(logCalled, true);
+      })
+
+      it('should call the given log function', function () {
+        trainWithLog(logFunction);
+
+        assert.equal(logCalled, true);
+      })
+  })
 })
