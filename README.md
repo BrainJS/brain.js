@@ -63,7 +63,8 @@ By default training won't let you know how its doing until the end, but set `log
 
 The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data. The default learning rate is `0.3`.
 
-#### Output
+#### Methods
+##### `train`
 The output of `train()` is a hash of information about how the training went:
 
 ```javascript
@@ -72,6 +73,8 @@ The output of `train()` is a hash of information about how the training went:
   iterations: 406                // training iterations
 }
 ```
+##### `likely`
+See: https://github.com/harthur-org/brain/blob/master/test/unit/likely.js#L47
 
 #### Failing
 If the network failed to train, the error will be above the error threshold. This could happen because the training data is too noisy (most likely), the network doesn't have enough hidden layers or nodes to handle the complexity of the data, or it hasn't trained for enough iterations.
