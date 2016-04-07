@@ -4,7 +4,7 @@
 
 `brain` is a JavaScript [neural network](http://en.wikipedia.org/wiki/Artificial_neural_network) library.
 
-:bulb: **Note**: This is a continuation of the [**harthur/brain*](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
+:bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
 
 Here's an example of using it to approximate the XOR function:
 
