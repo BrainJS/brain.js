@@ -36,7 +36,7 @@ Download the latest [brain.js](https://github.com/harthur/brain/tree/gh-pages). 
 Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. The more training patterns, the longer it will probably take to train, but the better the network will be at classifiying new patterns.
 
 #### Data format
-Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color constrast demo](http://harthur.github.com/brain/) it looks something like this:
+Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color contrast demo](http://harthur.github.com/brain/) it looks something like this:
 
 ```javascript
 var net = new brain.NeuralNetwork();
