@@ -1,29 +1,41 @@
 {
-    "name": "brain",
-    "description": "Neural network library",
-    "version": "0.7.0",
-    "author": "Heather Arthur <fayearthur@gmail.com>",
-    "repository": {
-        "type": "git",
-        "url": "http://github.com/harthur/brain.git"
-    },
-    "scripts": {
-        "test-unit": "mocha test/unit",
-        "test-cv": "mocha test/cross-validation --timeout 10000",
-        "test": "npm run test-unit && npm run test-cv"
-    },
-    "main": "./lib/brain",
-    "dependencies": {
-        "underscore": ">=1.5.1",
-        "inherits": "~2.0.1"
-    },
-    "devDependencies": {
-        "mocha": ">=1.0.0",
-        "canvas": ">=0.10.0",
-        "grunt": "~0.4.3",
-        "grunt-contrib-uglify": "~0.2.0",
-        "grunt-mocha-test": "~0.11.0",
-        "browserify": "~3.32.0"
-    },
-    "keywords": ["neural network", "classifier", "machine learning"]
+  "name": "brain.js",
+  "description": "Neural network library",
+  "version": "0.7.0",
+  "author": "Heather Arthur <fayearthur@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/harthur-org/brain.js.git"
+  },
+  "scripts": {
+    "test-unit": "mocha test/unit",
+    "test-cv": "mocha test/cross-validation --timeout 10000",
+    "test": "npm run test-unit && npm run test-cv"
+  },
+  "main": "./lib/brain",
+  "dependencies": {
+    "underscore": ">=1.5.1",
+    "inherits": "~2.0.1"
+  },
+  "devDependencies": {
+    "mocha": ">=1.0.0",
+    "canvas": ">=0.10.0",
+    "grunt": "~0.4.3",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-mocha-test": "~0.11.0",
+    "browserify": "~3.32.0"
+  },
+  "keywords": [
+    "neural network",
+    "classifier",
+    "machine learning"
+  ],
+  "bugs": {
+    "url": "https://github.com/harthur-org/brain.js/issues"
+  },
+  "homepage": "https://github.com/harthur-org/brain.jsreadme",
+  "directories": {
+    "test": "test"
+  },
+  "license": "MIT"
 }
