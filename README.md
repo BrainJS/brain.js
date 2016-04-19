@@ -29,6 +29,11 @@ If you have [node](http://nodejs.org/) you can install with [npm](http://npmjs.o
 npm install brain
 ```
 
+For debian based Linux distribution, canvas dependency installation requires install of cairo package, like so:
+```
+apt-get install libcairo2-dev libjpeg-dev libgif-dev
+```
+
 ## Using in the browser
 Download the latest [brain.js](https://github.com/harthur/brain/tree/gh-pages). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
 
