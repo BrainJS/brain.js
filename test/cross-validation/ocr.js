@@ -1,7 +1,8 @@
 var canvas = require("canvas"),
     _ = require("underscore"),
     brain = require("../../lib/brain"),
-    crossValidate = require("../../lib/cross-validate");
+    crossValidate = require("../../lib/cross-validate"),
+    assert = require("assert");
 
 var dim = 24;
 
@@ -60,7 +61,7 @@ describe('OCR cross-validation', function() {
     });
 
     console.log("Cross validating");
-    var result = crossValidate(brain.NeuralNetwork, data, {});
+    var result = crossValidate(brain.NeuralNetwork, data, {}, {});
 
     console.log("\nMisclassifications:");
     result.misclasses.forEach(function(misclass) {
