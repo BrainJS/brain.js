@@ -20,7 +20,7 @@ var output = net.run([1, 0]);  // [0.987]
 ```
 
 There's no reason to use a neural network to figure out XOR however (-: so here's a more involved, realistic example:
-[Demo: training a neural network to recognize color contrast](http://harthur.github.com/brain.js/)
+[Demo: training a neural network to recognize color contrast](http://harthur-org.github.io/brain.js/)
 
 ## Using in node
 If you have [node](http://nodejs.org/) you can install with [npm](http://npmjs.org):
@@ -35,13 +35,13 @@ apt-get install libcairo2-dev libjpeg-dev libgif-dev
 ```
 
 ## Using in the browser
-Download the latest [brain.js](https://github.com/harthur/brain/tree/gh-pages). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
+Download the latest [brain.js](https://github.com/harthur-org/brain.js/tree/gh-pages). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
 
 ## Training
 Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. The more training patterns, the longer it will probably take to train, but the better the network will be at classifiying new patterns.
 
 #### Data format
-Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color contrast demo](http://harthur.github.com/brain/) it looks something like this:
+Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color contrast demo](http://harthur-org.github.com/brain.js/) it looks something like this:
 
 ```javascript
 var net = new brain.NeuralNetwork();
