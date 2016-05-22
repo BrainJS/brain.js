@@ -26,7 +26,7 @@ There's no reason to use a neural network to figure out XOR however (-: so here'
 If you have [node](http://nodejs.org/) you can install with [npm](http://npmjs.org):
 
 ```
-npm install brain
+npm install brain.js
 ```
 
 For debian based Linux distribution, canvas dependency installation requires install of cairo package, like so:
