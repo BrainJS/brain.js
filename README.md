@@ -28,6 +28,10 @@ If you have [node](http://nodejs.org/) you can install with [npm](http://npmjs.o
 ```
 npm install brain.js
 ```
+Alternatively, you can install with bower:
+```
+bower install brain.js
+```
 
 For debian based Linux distribution, canvas dependency installation requires install of cairo package, like so:
 ```
