@@ -86,8 +86,6 @@ The output of `train()` is a hash of information about how the training went:
   iterations: 406                // training iterations
 }
 ```
-##### `likely`
-See: https://github.com/harthur-org/brain/blob/master/test/unit/likely.js#L47
 
 #### Failing
 If the network failed to train, the error will be above the error threshold. This could happen because the training data is too noisy (most likely), the network doesn't have enough hidden layers or nodes to handle the complexity of the data, or it hasn't trained for enough iterations.
@@ -153,3 +151,11 @@ To train the network using a stream you must first create the stream by calling 
 
 #### Transform
 Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transform) to coerce the data into the correct format. You might also use a Transform stream to normalize your data on the fly.
+
+## Utilities
+### `likely`
+```js
+var likely = require('brain').likely;
+var key = likely(input, net);
+```
+See: https://github.com/harthur-org/brain/blob/master/test/unit/likely.js
