@@ -92,9 +92,16 @@ var letterToIndex = {};
 var indexToLetter = {};
 var vocab = [];
 var dataSents = [];
-var solver = new Solver(); // should be class because it needs memory for step caches
 var pplGraph = new Rvis.Graph();
+// model parameters
+var generator = 'lstm'; // can be 'rnn' or 'lstm'
+var hiddenSizes = [20,20]; // list of sizes of hidden layers
+var letterSize = 5; // size of letter embeddings
 
+// optimization
+var regc = 0.000001; // L2 regularization strength
+var learningRate = 0.01; // learning rate
+var clipval = 5.0; // clip gradients at this value
 var model = {};
 var learningRate;
 
@@ -186,7 +193,6 @@ function reinit() {
 
   reinitLearningRateSlider();
 
-  solver = new R.Solver(); // reinit solver
   pplGraph = new Rvis.Graph();
 
   pplList = [];
