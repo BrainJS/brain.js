@@ -37,9 +37,9 @@ module.exports = function(grunt) {
   grunt.registerTask('build', 'build a browser file', function() {
     var done = this.async();
 
-    var outfile = './brain-' + pkg.version + '.js';
+    var outfile = './browser.js';
 
-    var bundle = browserify('./browser.js').bundle(function(err, src) {
+    var bundle = browserify(pkg.main).bundle(function(err, src) {
       console.log("> " + outfile);
 
       // prepend license
