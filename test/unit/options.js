@@ -1,6 +1,5 @@
-var assert = require("assert"),
-    _ = require("underscore"),
-    brain = require("../../lib/brain");
+var assert = require('assert');
+var brain = require('../../lib/brain');
 
 describe('neural network options', function() {
   it('hiddenLayers', function() {
@@ -14,9 +13,9 @@ describe('neural network options', function() {
     var json = net.toJSON();
 
     assert.equal(json.layers.length, 4);
-    assert.equal(_(json.layers[1]).keys().length, 8);
-    assert.equal(_(json.layers[2]).keys().length, 7);
-  })
+    assert.equal(Object.keys(json.layers[1]).length, 8);
+    assert.equal(Object.keys(json.layers[2]).length, 7);
+  });
 
   it('hiddenLayers default expand to input size', function() {
     var net = new brain.NeuralNetwork();
@@ -29,9 +28,8 @@ describe('neural network options', function() {
     var json = net.toJSON();
 
     assert.equal(json.layers.length, 3);
-    assert.equal(_(json.layers[1]).keys().length, 4, "9 input units means 4 hidden");
-  })
-
+    assert.equal(Object.keys(json.layers[1]).length, 4, '9 input units means 4 hidden');
+  });
 
   it('learningRate - higher learning rate should train faster', function() {
     var data = [{input: [0, 0], output: [0]},
@@ -45,8 +43,8 @@ describe('neural network options', function() {
     var net2 = new brain.NeuralNetwork();
     var iters2 = net2.train(data, { learningRate: 0.8 }).iterations;
 
-    assert.ok(iters1 > (iters2 * 1.1), iters1 + " !> " + iters2 * 1.1);
-  })
+    assert.ok(iters1 > (iters2 * 1.1), iters1 + ' !> ' + iters2 * 1.1);
+  });
 
   it('learningRate - backwards compatibility', function() {
     var data = [{input: [0, 0], output: [0]},
@@ -60,8 +58,8 @@ describe('neural network options', function() {
     var net2 = new brain.NeuralNetwork( { learningRate: 0.8 });
     var iters2 = net2.train(data).iterations;
 
-    assert.ok(iters1 > (iters2 * 1.1), iters1 + " !> " + iters2 * 1.1);
-  })
+    assert.ok(iters1 > (iters2 * 1.1), iters1 + ' !> ' + iters2 * 1.1);
+  });
 
   it('momentum - higher momentum should train faster', function() {
     var data = [{input: [0, 0], output: [0]},
@@ -75,8 +73,8 @@ describe('neural network options', function() {
     var net2 = new brain.NeuralNetwork({ momentum: 0.5 });
     var iters2 = net2.train(data).iterations;
 
-    assert.ok(iters1 > (iters2 * 1.1), iters1 + " !> " + (iters2 * 1.1));
-  })
+    assert.ok(iters1 > (iters2 * 1.1), iters1 + ' !> ' + (iters2 * 1.1));
+  });
 
   describe('log', function () {
     var logCalled;
@@ -106,7 +104,7 @@ describe('neural network options', function() {
 
         console.log = originalLog;
         assert.equal(logCalled, true);
-      })
+      });
 
       it('should call the given log function', function () {
         trainWithLog(logFunction);
@@ -114,4 +112,4 @@ describe('neural network options', function() {
         assert.equal(logCalled, true);
       })
   })
-})
+});
