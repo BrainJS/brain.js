@@ -78,7 +78,9 @@ describe('OCR cross-validation', function() {
     });
 
     console.log('Cross validating');
-    var result = crossValidate(NeuralNetwork, data, {}, { log: console.log, errorThresh: 0.08 });
+    var opts = {};
+    var trainOpts = { log: console.log, errorThresh: 0.08 };
+    var result = crossValidate(NeuralNetwork, data, opts, trainOpts);
 
     console.log('\nMisclassifications:');
     result.misclasses.forEach(function(misclass) {
