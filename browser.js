@@ -21,13 +21,27 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-exports.NeuralNetwork = require('./neural-network');
-exports.crossValidate = require('./cross-validate');
-exports.likely = require('./likely');
+'use strict';
 
-},{"./cross-validate":2,"./likely":3,"./neural-network":5}],2:[function(require,module,exports){
-function testPartition(classifierConst, opts, trainOpts, trainSet, testSet) {
-  var classifier = new classifierConst(opts);
+module.exports = {
+  NeuralNetwork: require('./neural-network'),
+  crossValidate: require('./cross-validate')
+};
+
+},{"./cross-validate":2,"./neural-network":4}],2:[function(require,module,exports){
+'use strict';
+
+/**
+ *
+ * @param {NeuralNetwork|constructor} Classifier
+ * @param {object} opts
+ * @param {object} trainOpts
+ * @param {object} trainSet
+ * @param {object} testSet
+ * @returns {void|*}
+ */
+function testPartition(Classifier, opts, trainOpts, trainSet, testSet) {
+  var classifier = new Classifier(opts);
 
   var beginTrain = Date.now();
 
@@ -67,7 +81,35 @@ function shuffleArray(array) {
   return array;
 }
 
-module.exports = function crossValidate(classifierConst, data, opts, trainOpts, k) {
+/**
+ *
+ * @param {NeuralNetwork|constructor} Classifier
+ * @param {object} data
+ * @param {object} opts
+ * @param {object} trainOpts
+ * @param {number} k
+ * @returns {
+ *  {
+ *    avgs: {
+ *      error: number,
+ *      trainTime: number,
+ *      testTime: number,
+ *      iterations: number,
+ *      trainError: number
+ *    },
+ *    stats: {
+ *      truePos: number,
+ *      trueNeg: number,
+ *      falsePos: number,
+ *      falseNeg: number,
+ *      total: number
+ *    },
+ *    sets: Array,
+ *    misclasses: Array
+ *  }
+ * }
+ */
+function crossValidate(Classifier, data, opts, trainOpts, k) {
   k = k || 4;
   var size = data.length / k;
 
@@ -103,11 +145,10 @@ module.exports = function crossValidate(classifierConst, data, opts, trainOpts, 
   var sum;
 
   for (var i = 0; i < k; i++) {
-    var dclone = Object.assign({}, data);
+    var dclone = data.slice(0);
     var testSet = dclone.splice(i * size, size);
     var trainSet = dclone;
-
-    var result = testPartition(classifierConst, opts, trainOpts, trainSet, testSet);
+    var result = testPartition(Classifier, opts, trainOpts, trainSet, testSet);
     for (stat in avgs) {
       if (avgs.hasOwnProperty(stat)) {
         sum = avgs[stat];
@@ -147,30 +188,20 @@ module.exports = function crossValidate(classifierConst, data, opts, trainOpts, 
     sets: results,
     misclasses: misclasses
   };
-};
+}
+
+module.exports = crossValidate;
 
 },{}],3:[function(require,module,exports){
-module.exports = function likely(input, net) {
-  var output = net.run(input);
-  var maxProp = null;
-  var maxValue = -1;
-  for (var prop in output) {
-    if (output.hasOwnProperty(prop)) {
-      var value = output[prop];
-      if (value > maxValue) {
-        maxProp = prop;
-        maxValue = value
-      }
-    }
-  }
-  return maxProp;
-};
+'use strict';
 
-},{}],4:[function(require,module,exports){
 /* Functions for turning sparse hashes into arrays and vice versa */
-
+/**
+ * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
+ * @param {Object} hashes
+ * @returns {Object}
+ */
 function buildLookup(hashes) {
-  // [{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}
   var hash = hashes.reduce(function(memo, hash) {
     return Object.assign(memo, hash);
   }, {});
@@ -178,8 +209,12 @@ function buildLookup(hashes) {
   return lookupFromHash(hash);
 }
 
+/**
+ * performs `{a: 6, b: 7} -> {a: 0, b: 1}`
+ * @param {Object} hash
+ * @returns {Object}
+ */
 function lookupFromHash(hash) {
-  // {a: 6, b: 7} -> {a: 0, b: 1}
   var lookup = {};
   var index = 0;
   for (var i in hash) {
@@ -188,8 +223,13 @@ function lookupFromHash(hash) {
   return lookup;
 }
 
+/**
+ * performs `{a: 0, b: 1}, {a: 6} -> [6, 0]`
+ * @param {*} lookup
+ * @param {*} hash
+ * @returns {Array}
+ */
 function toArray(lookup, hash) {
-  // {a: 0, b: 1}, {a: 6} -> [6, 0]
   var array = [];
   for (var i in lookup) {
     array[lookup[i]] = hash[i] || 0;
@@ -197,8 +237,13 @@ function toArray(lookup, hash) {
   return array;
 }
 
+/**
+ * performs `{a: 0, b: 1}, [6, 7] -> {a: 6, b: 7}`
+ * @param {Object} lookup
+ * @param {Array} array
+ * @returns {Object}
+ */
 function toHash(lookup, array) {
-  // {a: 0, b: 1}, [6, 7] -> {a: 6, b: 7}
   var hash = {};
   for (var i in lookup) {
     hash[i] = array[lookup[i]];
@@ -206,9 +251,13 @@ function toHash(lookup, array) {
   return hash;
 }
 
+/**
+ *
+ * @param {Array} array
+ * @returns {*}
+ */
 function lookupFromArray(array) {
   var lookup = {};
-  // super fast loop
   var z = 0;
   var i = array.length;
   while (i-- > 0) {
@@ -225,10 +274,17 @@ module.exports = {
   lookupFromArray: lookupFromArray
 };
 
-},{}],5:[function(require,module,exports){
-var lookup = require('./lookup'),
-  TrainStream = require('./train-stream');
+},{}],4:[function(require,module,exports){
+'use strict';
 
+var lookup = require('./lookup');
+var TrainStream = require('./train-stream');
+
+/**
+ *
+ * @param {object} options
+ * @constructor
+ */
 function NeuralNetwork(options) {
   options = options || {};
   this.learningRate = options.learningRate || 0.3;
@@ -250,6 +306,11 @@ function NeuralNetwork(options) {
 }
 
 NeuralNetwork.prototype = {
+  /**
+   *
+   * @param {} sizes
+   * @param {Boolean} keepNetworkIntact
+   */
   initialize: function(sizes, keepNetworkIntact) {
     this.sizes = sizes;
     this.outputLayer = this.sizes.length - 1;
@@ -291,6 +352,11 @@ NeuralNetwork.prototype = {
     }
   },
 
+  /**
+   *
+   * @param input
+   * @returns {*}
+   */
   run: function(input) {
     if (this.inputLookup) {
       input = lookup.toArray(this.inputLookup, input);
@@ -304,6 +370,11 @@ NeuralNetwork.prototype = {
     return output;
   },
 
+  /**
+   *
+   * @param input
+   * @returns {*}
+   */
   runInput: function(input) {
     this.outputs[0] = input;  // set output state of input layer
 
@@ -321,6 +392,13 @@ NeuralNetwork.prototype = {
     }
     return output;
   },
+
+  /**
+   *
+   * @param data
+   * @param options
+   * @returns {{error: number, iterations: number}}
+   */
   train: function(data, options) {
     data = this.formatData(data);
 
@@ -359,7 +437,7 @@ NeuralNetwork.prototype = {
       error = sum / data.length;
 
       if (log && (i % logPeriod == 0)) {
-        log("iterations:", i, "training error:", error);
+        log('iterations:', i, 'training error:', error);
       }
       if (callback && (i % callbackPeriod == 0)) {
         callback({ error: error, iterations: i });
@@ -372,6 +450,12 @@ NeuralNetwork.prototype = {
     };
   },
 
+  /**
+   *
+   * @param input
+   * @param target
+   * @param learningRate
+   */
   trainPattern : function(input, target, learningRate) {
     learningRate = learningRate || this.learningRate;
 
@@ -386,6 +470,10 @@ NeuralNetwork.prototype = {
     return error;
   },
 
+  /**
+   *
+   * @param target
+   */
   calculateDeltas: function(target) {
     for (var layer = this.outputLayer; layer >= 0; layer--) {
       for (var node = 0; node < this.sizes[layer]; node++) {
@@ -407,6 +495,10 @@ NeuralNetwork.prototype = {
     }
   },
 
+  /**
+   *
+   * @param learningRate
+   */
   adjustWeights: function(learningRate) {
     for (var layer = 1; layer <= this.outputLayer; layer++) {
       var incoming = this.outputs[layer - 1];
@@ -428,6 +520,11 @@ NeuralNetwork.prototype = {
     }
   },
 
+  /**
+   *
+   * @param data
+   * @returns {*}
+   */
   formatData: function(data) {
     if (data.constructor !== Array) { // turn stream datum into array
       var tmp = [];
@@ -458,15 +555,25 @@ NeuralNetwork.prototype = {
     return data;
   },
 
+  /**
+   *
+   * @param data
+   * @returns {
+   *  {
+   *    error: number,
+   *    misclasses: Array
+   *  }
+   * }
+   */
   test : function(data) {
     data = this.formatData(data);
 
     // for binary classification problems with one output node
     var isBinary = data[0].output.length == 1;
-    var falsePos = 0,
-        falseNeg = 0,
-        truePos = 0,
-        trueNeg = 0;
+    var falsePos = 0;
+    var falseNeg = 0;
+    var truePos = 0;
+    var trueNeg = 0;
 
     // for classification problems
     var misclasses = [];
@@ -539,18 +646,43 @@ NeuralNetwork.prototype = {
     return stats;
   },
 
+  /**
+   *
+   * @returns
+   *  {
+   *    layers: [
+   *      {
+   *        x: {},
+   *        y: {}
+   *      },
+   *      {
+   *        '0': {
+   *          bias: -0.98771313,
+   *          weights: {
+   *            x: 0.8374838,
+   *            y: 1.245858
+   *          },
+   *        '1': {
+   *          bias: 3.48192004,
+   *          weights: {
+   *            x: 1.7825821,
+   *            y: -2.67899
+   *          }
+   *        }
+   *      },
+   *      {
+   *        f: {
+   *          bias: 0.27205739,
+   *          weights: {
+   *            '0': 1.3161821,
+   *            '1': 2.00436
+   *          }
+   *        }
+   *      }
+   *    ]
+   *  }
+   */
   toJSON: function() {
-    /* make json look like:
-      {
-        layers: [
-          { x: {},
-            y: {}},
-          {'0': {bias: -0.98771313, weights: {x: 0.8374838, y: 1.245858},
-           '1': {bias: 3.48192004, weights: {x: 1.7825821, y: -2.67899}}},
-          { f: {bias: 0.27205739, weights: {'0': 1.3161821, '1': 2.00436}}}
-        ]
-      }
-    */
     var layers = [];
     for (var layer = 0; layer <= this.outputLayer; layer++) {
       layers[layer] = {};
@@ -587,6 +719,11 @@ NeuralNetwork.prototype = {
     return { layers: layers, outputLookup:!!this.outputLookup, inputLookup:!!this.inputLookup };
   },
 
+  /**
+   *
+   * @param json
+   * @returns {NeuralNetwork}
+   */
   fromJSON: function(json) {
     var size = json.layers.length;
     this.outputLayer = size - 1;
@@ -620,10 +757,14 @@ NeuralNetwork.prototype = {
     return this;
   },
 
-   toFunction: function() {
+  /**
+   *
+   * @returns {Function}
+   */
+  toFunction: function() {
     var json = this.toJSON();
     // return standalone function that mimics run()
-    return new Function("input",
+    return new Function('input',
 '  var net = ' + JSON.stringify(json) + ';\n\n\
   for (var i = 1; i < net.layers.length; i++) {\n\
     var layer = net.layers[i];\n\
@@ -643,21 +784,32 @@ NeuralNetwork.prototype = {
   return output;');
   },
 
-  // This will create a TrainStream (WriteStream)
-  //  for us to send the training data to.
-  //  param: opts - the training options
+  /**
+   * This will create a TrainStream (WriteStream) for us to send the training data to.
+   * @param opts training options
+   * @returns {TrainStream|*}
+   */
   createTrainStream: function(opts) {
     opts = opts || {};
     opts.neuralNetwork = this;
     this.trainStream = new TrainStream(opts);
     return this.trainStream;
   }
-}
+};
 
+/**
+ *
+ * @returns {number}
+ */
 function randomWeight() {
   return Math.random() * 0.4 - 0.2;
 }
 
+/**
+ *
+ * @param size
+ * @returns {Array}
+ */
 function zeros(size) {
   var array = new Array(size);
   for (var i = 0; i < size; i++) {
@@ -666,6 +818,11 @@ function zeros(size) {
   return array;
 }
 
+/**
+ *
+ * @param size
+ * @returns {Array}
+ */
 function randos(size) {
   var array = new Array(size);
   for (var i = 0; i < size; i++) {
@@ -674,8 +831,12 @@ function randos(size) {
   return array;
 }
 
+/**
+ * mean squared error
+ * @param errors
+ * @returns {number}
+ */
 function mse(errors) {
-  // mean squared error
   var sum = 0;
   for (var i = 0; i < errors.length; i++) {
     sum += Math.pow(errors[i], 2);
@@ -683,6 +844,12 @@ function mse(errors) {
   return sum / errors.length;
 }
 
+/**
+ *
+ * @param start
+ * @param end
+ * @returns {Array}
+ */
 function range(start, end) {
   var result = [];
   for (; start < end; start++) {
@@ -691,6 +858,11 @@ function range(start, end) {
   return result;
 }
 
+/**
+ *
+ * @param values
+ * @returns {*}
+ */
 function toArray(values) {
   values = values || [];
   if (values.constructor === Array) {
@@ -700,16 +872,27 @@ function toArray(values) {
   }
 }
 
+/**
+ *
+ * @param values
+ * @returns {number}
+ */
 function max(values) {
   return Math.max.apply(Math, toArray(values));
 }
 
 module.exports = NeuralNetwork;
 
-},{"./lookup":4,"./train-stream":6}],6:[function(require,module,exports){
+},{"./lookup":3,"./train-stream":5}],5:[function(require,module,exports){
 var lookup = require('./lookup');
 var Writable = require('stream').Writable;
 
+/**
+ *
+ * @param opts
+ * @returns {TrainStream}
+ * @constructor
+ */
 function TrainStream(opts) {
   Writable.call(this, {
     objectMode: true
@@ -747,13 +930,17 @@ function TrainStream(opts) {
   return this;
 }
 
-/*
- _write expects data to be in the form of a datum.
- ie. {input: {a: 1 b: 0}, output: {z: 0}}
- */
 TrainStream.prototype = Object.assign(Object.create(Writable.prototype), {
+  /**
+   * _write expects data to be in the form of a datum. ie. {input: {a: 1 b: 0}, output: {z: 0}}
+   * @param chunk
+   * @param enc
+   * @param next
+   * @returns {*}
+   * @private
+   */
   _write: function(chunk, enc, next) {
-    if (!chunk) { // check for the end of one interation of the stream
+    if (!chunk) { // check for the end of one iteration of the stream
       this.emit('finish');
       return next();
     }
@@ -774,13 +961,23 @@ TrainStream.prototype = Object.assign(Object.create(Writable.prototype), {
     // tell the Readable Stream that we are ready for more data
     next();
   },
+
+  /**
+   *
+   * @param datum
+   */
   trainDatum: function(datum) {
     var err = this.neuralNetwork.trainPattern(datum.input, datum.output);
     this.sum += err;
   },
+
+  /**
+   *
+   * @returns {*}
+   */
   finishStreamIteration: function() {
     if (this.dataFormatDetermined && this.size !== this.count) {
-      console.log("This iteration's data length was different from the first.");
+      this.log('This iteration\'s data length was different from the first.');
     }
 
     if (!this.dataFormatDetermined) {
@@ -818,7 +1015,7 @@ TrainStream.prototype = Object.assign(Object.create(Writable.prototype), {
     var error = this.sum / this.size;
 
     if (this.log && (this.i % this.logPeriod == 0)) {
-      this.log("iterations:", this.i, "training error:", error);
+      this.log('iterations:', this.i, 'training error:', error);
     }
     if (this.callback && (this.i % this.callbackPeriod == 0)) {
       this.callback({
@@ -849,18 +1046,25 @@ TrainStream.prototype = Object.assign(Object.create(Writable.prototype), {
   }
 });
 
-//http://stackoverflow.com/a/21445415/1324039
+/**
+ *
+ * http://stackoverflow.com/a/21445415/1324039
+ * @param arr
+ * @returns {Array}
+ */
 function uniques(arr) {
   var a = [];
-  for (var i=0, l=arr.length; i<l; i++)
-    if (a.indexOf(arr[i]) === -1 && arr[i] !== '')
+  for (var i=0, l=arr.length; i<l; i++) {
+    if (a.indexOf(arr[i]) === -1 && arr[i] !== '') {
       a.push(arr[i]);
+    }
+  }
   return a;
 }
 
 module.exports = TrainStream;
 
-},{"./lookup":4,"stream":13}],7:[function(require,module,exports){
+},{"./lookup":3,"stream":12}],6:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -1971,7 +2175,7 @@ function assert (test, message) {
   if (!test) throw new Error(message || 'Failed assertion')
 }
 
-},{"base64-js":8,"ieee754":9}],8:[function(require,module,exports){
+},{"base64-js":7,"ieee754":8}],7:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -2097,7 +2301,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -2183,7 +2387,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2486,7 +2690,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -2551,7 +2755,7 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2625,7 +2829,7 @@ function onend() {
   });
 }
 
-},{"./readable.js":16,"./writable.js":18,"inherits":20,"process/browser.js":14}],13:[function(require,module,exports){
+},{"./readable.js":15,"./writable.js":17,"inherits":19,"process/browser.js":13}],12:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2754,7 +2958,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"./duplex.js":12,"./passthrough.js":15,"./readable.js":16,"./transform.js":17,"./writable.js":18,"events":10,"inherits":20}],14:[function(require,module,exports){
+},{"./duplex.js":11,"./passthrough.js":14,"./readable.js":15,"./transform.js":16,"./writable.js":17,"events":9,"inherits":19}],13:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -2809,7 +3013,7 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2852,7 +3056,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./transform.js":17,"inherits":20}],16:[function(require,module,exports){
+},{"./transform.js":16,"inherits":19}],15:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -3789,7 +3993,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require("FWaASH"))
-},{"./index.js":13,"FWaASH":11,"buffer":7,"events":10,"inherits":20,"process/browser.js":14,"string_decoder":19}],17:[function(require,module,exports){
+},{"./index.js":12,"FWaASH":10,"buffer":6,"events":9,"inherits":19,"process/browser.js":13,"string_decoder":18}],16:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -3995,7 +4199,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./duplex.js":12,"inherits":20}],18:[function(require,module,exports){
+},{"./duplex.js":11,"inherits":19}],17:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4383,7 +4587,7 @@ function endWritable(stream, state, cb) {
   state.ended = true;
 }
 
-},{"./index.js":13,"buffer":7,"inherits":20,"process/browser.js":14}],19:[function(require,module,exports){
+},{"./index.js":12,"buffer":6,"inherits":19,"process/browser.js":13}],18:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4576,7 +4780,7 @@ function base64DetectIncompleteChar(buffer) {
   return incomplete;
 }
 
-},{"buffer":7}],20:[function(require,module,exports){
+},{"buffer":6}],19:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {

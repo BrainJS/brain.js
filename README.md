@@ -2,7 +2,7 @@
 
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/harthur/brain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-`brain` is a JavaScript [neural network](http://en.wikipedia.org/wiki/Artificial_neural_network) library.
+`brain.js` is a JavaScript [neural network](http://en.wikipedia.org/wiki/Artificial_neural_network) library.
 
 :bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
 
@@ -128,7 +128,7 @@ Specify the number of hidden layers in the network and the size of each layer. F
 hiddenLayers: [3, 4]
 ```
 
-By default `brain` uses one hidden layer with size proportionate to the size of the input array.
+By default `brain.js` uses one hidden layer with size proportionate to the size of the input array.
 
 ## Streams
 The network now has a [WriteStream](http://nodejs.org/api/stream.html#stream_class_stream_writable). You can train the network by using `pipe()` to send the training data to the network.
@@ -155,7 +155,7 @@ Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transfor
 ## Utilities
 ### `likely`
 ```js
-var likely = require('brain').likely;
+var likely = require('brain/likely');
 var key = likely(input, net);
 ```
 See: https://github.com/harthur-org/brain/blob/master/test/unit/likely.js
