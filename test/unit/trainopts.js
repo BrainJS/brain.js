@@ -1,5 +1,5 @@
-var assert = require("assert"),
-    brain = require("../../lib/brain");
+var assert = require('assert');
+var brain = require('../../lib/brain');
 
 var data = [{input: [0, 0], output: [0]},
             {input: [0, 1], output: [1]},
@@ -14,7 +14,7 @@ describe('train() options', function() {
       iterations: 100000
     }).error;
 
-    assert.ok(error < 0.2, "network did not train until error threshold was reached");
+    assert.ok(error < 0.2, 'network did not train until error threshold was reached');
   });
 
   it('train until max iterations reached', function() {
@@ -25,7 +25,7 @@ describe('train() options', function() {
     });
 
     assert.equal(stats.iterations, 1);
-  })
+  });
 
   it('training callback called with training stats', function(done) {
     var iters = 100;
@@ -48,4 +48,4 @@ describe('train() options', function() {
       callbackPeriod: 20
     });
   });
-})
+});

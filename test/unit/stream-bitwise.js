@@ -1,5 +1,5 @@
-var assert = require("assert"),
-    brain = require("../../lib/brain");
+var assert = require('assert');
+var brain = require('../../lib/brain');
 
 function StreamTester(opts) {
   if (!(this instanceof StreamTester)) return new StreamTester(opts);
@@ -28,25 +28,27 @@ function StreamTester(opts) {
   you must write null to the stream
   to let it know we have reached the end of the epoch
  */
-StreamTester.prototype.flood = function() {
-  var self = this;
+StreamTester.prototype = {
+  flood: function() {
+    var self = this;
 
-  for (var i = self.testData.length - 1; i >= 0; i--) {
-    self.trainStream.write(self.testData[i]);
+    for (var i = self.testData.length - 1; i >= 0; i--) {
+      self.trainStream.write(self.testData[i]);
+    }
+    self.trainStream.write(null);
+  },
+
+  doneTraining: function(info) {
+    var self = this;
+
+    for (var i in self.testData) {
+      var output = self.net.run(self.testData[i].input)[0];
+      var target = self.testData[i].output;
+      assert.ok(output < (target + self.wiggle) && output > (target - self.wiggle),
+        "failed to train " + self.op + " - output: " + output + " target: " + target);
+    }
   }
-  self.trainStream.write(null);
-}
-
-StreamTester.prototype.doneTraining = function(info) {
-  var self = this;
-
-  for (var i in self.testData) {
-    var output = self.net.run(self.testData[i].input)[0];
-    var target = self.testData[i].output;
-    assert.ok(output < (target + self.wiggle) && output > (target - self.wiggle),
-      "failed to train " + self.op + " - output: " + output + " target: " + target);
-  }
-}
+};
 
 
 function testBitwise(data, op) {
@@ -69,7 +71,7 @@ describe('bitwise functions', function() {
       output: [0]
     }];
     testBitwise(not, "not");
-  })
+  });
 
   it('XOR function', function() {
     var xor = [{
@@ -86,7 +88,7 @@ describe('bitwise functions', function() {
       output: [0]
     }];
     testBitwise(xor, "xor");
-  })
+  });
 
   it('OR function', function() {
     var or = [{
@@ -120,5 +122,5 @@ describe('bitwise functions', function() {
       output: [1]
     }];
     testBitwise(and, "and");
-  })
-})
+  });
+});

@@ -6,9 +6,9 @@
  *  `grunt --help`
  */
 
-var fs = require("fs"),
-    browserify = require("browserify"),
-    pkg = require("./package.json");
+var fs = require('fs');
+var browserify = require('browserify');
+var pkg = require('./package.json');
 
 module.exports = function(grunt) {
   grunt.initConfig({
@@ -24,11 +24,11 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     uglify: {
       options: {
-        banner: "/*\n" + grunt.file.read('LICENSE') + "*/"
+        banner: '/*\n' + grunt.file.read('LICENSE') + '*/'
       },
       dist: {
         files: {
-          '<%=pkg.name%>-<%=pkg.version%>.min.js': ['<%=pkg.name%>-<%=pkg.version%>.js']
+          'browser.min.js': ['browser.js']
         }
       }
     }
@@ -36,23 +36,23 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', 'build a browser file', function() {
     var done = this.async();
-
-    var outfile = './brain-' + pkg.version + '.js';
-
-    var bundle = browserify('./browser.js').bundle(function(err, src) {
-      console.log("> " + outfile);
+    var outfile = './browser.js';
+    var bundle = browserify(pkg.main).bundle(function(err, src) {
+      console.log('> ' + outfile);
 
       // prepend license
-      var license = fs.readFileSync("./LICENSE");
-      src = "/*\n" + license + "*/" + src;
+      var license = fs.readFileSync('./LICENSE');
+      src = '/*\n' + license + '*/' + src;
 
       // write out the browser file
       fs.writeFileSync(outfile, src);
       done();
     });
   });
+  
+  grunt.registerTask('build-min', 'uglify');
   grunt.registerTask('test', 'mochaTest');
-
+  grunt.registerTask('default', ['build', 'build-min', 'test']);
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 };

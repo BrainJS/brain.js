@@ -1,5 +1,5 @@
-var assert = require("assert"),
-    brain = require("../../lib/brain");
+var assert = require('assert')
+var brain = require('../../lib/brain');
 
 describe('hash input and output', function() {
   it('runs correctly with array input and output', function() {
@@ -11,8 +11,8 @@ describe('hash input and output', function() {
                {input: [1, 1], output: [0]}]);
     var output = net.run([1, 0]);
 
-    assert.ok(output[0] > 0.9, "output: " + output[0]);
-  })
+    assert.ok(output[0] > 0.9, 'output: ' + output[0]);
+  });
 
  it('runs correctly with hash input', function() {
     var net = new brain.NeuralNetwork();
@@ -23,8 +23,8 @@ describe('hash input and output', function() {
                {input: { x: 1, y: 1 }, output: [0]}]);
     var output = net.run({x: 1, y: 0});
 
-    assert.ok(output[0] > 0.9, "output: " + output[0]);
-  })
+    assert.ok(output[0] > 0.9, 'output: ' + output[0]);
+  });
 
  it('runs correctly with hash output', function() {
     var net = new brain.NeuralNetwork();
@@ -36,8 +36,8 @@ describe('hash input and output', function() {
 
     var output = net.run([1, 0]);
 
-    assert.ok(output.answer > 0.9, "output: " + output.answer);
-  })
+    assert.ok(output.answer > 0.9, 'output: ' + output.answer);
+  });
 
   it('runs correctly with hash input and output', function() {
     var net = new brain.NeuralNetwork();
@@ -49,8 +49,8 @@ describe('hash input and output', function() {
 
     var output = net.run({x: 1, y: 0});
 
-    assert.ok(output.answer > 0.9, "output: " + output.answer);
-  })
+    assert.ok(output.answer > 0.9, 'output: ' + output.answer);
+  });
 
   it('runs correctly with sparse hashes', function() {
       var net = new brain.NeuralNetwork();
@@ -64,7 +64,7 @@ describe('hash input and output', function() {
       var output = net.run({x: 1});
 
       assert.ok(output.answer > 0.9);
-  })
+  });
 
   it('runs correctly with unseen input', function() {
       var net = new brain.NeuralNetwork();
@@ -76,5 +76,5 @@ describe('hash input and output', function() {
 
       var output = net.run({x: 1, z: 1});
       assert.ok(output.answer > 0.9);
-  })
-})
+  });
+});
