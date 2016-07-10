@@ -1,4 +1,5 @@
 var brain = require('../../lib/brain');
+var likely = require('../../lib/likely');
 var assert = require('assert');
 
 describe('likely', function() {
@@ -44,7 +45,7 @@ describe('likely', function() {
     /**
      * Predict the letter A, even with a pixel off.
      */
-    var result = brain.likely(character(
+    var result = likely(character(
       '.#####.' +
       '#.....#' +
       '#.....#' +
@@ -61,7 +62,7 @@ describe('likely', function() {
     /**
      * Predict the letter B, even with a pixel off.
      */
-    var result = brain.likely(character(
+    var result = likely(character(
       '######.' +
       '#.....#' +
       '#.....#' +
@@ -78,7 +79,7 @@ describe('likely', function() {
     /**
      * Predict the letter C, even with a pixel off.
      */
-    var result = brain.likely(character(
+    var result = likely(character(
       '#######' +
       '#......' +
       '#......' +

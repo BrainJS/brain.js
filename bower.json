@@ -1,6 +1,6 @@
 {
   "name": "brain.js",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "homepage": "https://github.com/harthur-org/brain.js",
   "authors": [
     "Heather Arthur <fayearthur@gmail.com>"
@@ -16,7 +16,7 @@
     "machine-learning",
     "classifier"
   ],
-  "main": "lib/brain.js",
+  "main": "browser.min.js",
   "ignore": [
     "node_modules",
     "test"
