@@ -884,6 +884,7 @@ function max(values) {
 module.exports = NeuralNetwork;
 
 },{"./lookup":3,"./train-stream":5}],5:[function(require,module,exports){
+'user strict';
 var lookup = require('./lookup');
 var Writable = require('stream').Writable;
 
