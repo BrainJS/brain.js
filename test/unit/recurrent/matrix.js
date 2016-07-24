@@ -94,14 +94,11 @@ describe('matrix', function() {
         });
         assert(m1.recurrence.length === 4);
         m1.recurrence.forEach(function(value, i) {
-          console.log(value);
           assert(value === recurrence[i]);
         });
         assert(m2.recurrence.length === 4);
         m2.recurrence.forEach(function(value, i) {
-          console.log('THIS MAY BE A BUG vvvvv');
-          //assert(value === recurrence[i]);
-          console.log('THIS MAY BE A BUG ^^^^^');
+          assert(value === recurrence[i]);
         });
       });
     });
@@ -154,13 +151,11 @@ describe('matrix', function() {
         var m1Recurrence = { '0': 4, '1': 21, '2': 6, '3': 23 };
         assert(m1.recurrence.length === 4);
         m1.recurrence.forEach(function(value, i) {
-          console.log(value);
           assert(value === m1Recurrence[i]);
         });
         var m2Recurrence = { '0': 8, '1': 9, '2': 18, '3': 19 };
         assert(m2.recurrence.length === 4);
         m2.recurrence.forEach(function(value, i) {
-          console.log(value);
           assert(value === m2Recurrence[i]);
         });
       });
@@ -196,16 +191,24 @@ describe('matrix', function() {
         var fakeNeuralNet = { backprop: [] };
         var result = multiplyElementB(m1, m2, fakeNeuralNet);
         var weights = {
-          '0':8,
-          '1':12,
-          '2':24,
-          '3':44
+          '0':0,
+          '1':5,
+          '2':10,
+          '3':15
         };
+        result.recurrence.forEach(function(_, i) {
+          result.recurrence[i] = 2;
+        });
         while(fakeNeuralNet.backprop.length > 0) {
           fakeNeuralNet.backprop.pop()();
         }
-        assert(result.recurrence.length === 4);
-        result.recurrence.forEach(function(value, i) {
+        assert(m1.recurrence.length === 4);
+        m1.recurrence.forEach(function(value, i) {
+          assert(value === weights[i]);
+        });
+
+        assert(m2.recurrence.length === 4);
+        m2.recurrence.forEach(function(value, i) {
           assert(value === weights[i]);
         });
       });
