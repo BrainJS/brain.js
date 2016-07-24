@@ -18,7 +18,7 @@ module.exports = function(grunt) {
           style: 'bdd',
           reporter: 'spec'
         },
-        src: ['test/unit/*.js']
+        src: ['test/unit/*.js', 'test/unit/recurrent/*.js']
       }
     },
     pkg: grunt.file.readJSON('package.json'),
