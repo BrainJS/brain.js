@@ -1,7 +1,9 @@
 var fs = require('fs');
 var RNN = require('../../../lib/recurrent/rnn');
 var phraseWriterJson = require('./phrase-writer.json');
-function initVocab(srcJson, count_threshold) {
+var vocabData = initVocab();
+
+function initVocab(srcJson, maxThreshold) {
   var phrases = phraseWriterJson;
   // go over all characters and keep track of all unique ones seen
   var txt = phrases.join(''); // concat all
@@ -18,19 +20,19 @@ function initVocab(srcJson, count_threshold) {
   }
 
   // filter by count threshold and create pointers
-  var letterToIndex = {};
-  var indexToLetter = {};
+  var characterToIndex = {};
+  var indexToCharacter = {};
   var vocab = [];
   // NOTE: start at one because we will have START and END tokens!
   // that is, START token will be index 0 in model letter vectors
   // and END token will be index 0 in the next character softmax
   var q = 1;
-  for(ch in d) {
+  for(var ch in d) {
     if(d.hasOwnProperty(ch)) {
-      if(d[ch] >= count_threshold) {
+      if(d[ch] >= maxThreshold) {
         // add character to vocab
-        letterToIndex[ch] = q;
-        indexToLetter[q] = ch;
+        characterToIndex[ch] = q;
+        indexToCharacter[q] = ch;
         vocab.push(ch);
         q++;
       }
@@ -39,7 +41,8 @@ function initVocab(srcJson, count_threshold) {
 
   return {
     phrases: phrases,
-    //phrasesAs
+    characterToIndex: characterToIndex,
+    indexToCharacter: indexToCharacter,
     distinct: vocab.join(''),
     inputSize: vocab.length + 1,
     outputSize: vocab.length + 1,
@@ -47,13 +50,53 @@ function initVocab(srcJson, count_threshold) {
   };
 }
 
+function phraseToIndexes(phrase, maxThreshold) {
+  maxThreshold = maxThreshold || 0;
+  var result = [];
+  var characterToIndex = vocabData.characterToIndex;
+
+  for (var i = 0, max = phrase.length; i < max; i++) {
+    var character = phrase[i];
+    var index = characterToIndex[character];
+    if (index < maxThreshold) continue;
+    result.push(index);
+  }
+
+  return result;
+}
+
+function indexesToPhrase(indexes, maxThreshold) {
+  maxThreshold = maxThreshold || 0;
+  var result = [];
+  var indexToCharacter = vocabData.indexToCharacter;
+
+  for (var i = 0, max = indexes.length; i < max; i++) {
+    var index = indexes[i];
+    if (index < maxThreshold) continue;
+    var character = indexToCharacter[index];
+    result.push(character);
+  }
+
+  return result;
+}
+
+function randomPhrase() {
+  return vocabData.phrases[Math.floor(Math.random() * vocabData.phrases.length)];
+}
+
 describe('character', function() {
   it('', function() {
-    var vocabData = initVocab();
-    var randomPhrase = vocabData.phrases[Math.floor(Math.random() * vocabData.phrases.length)];
     var rnn = new RNN();
-    rnn
-      .input([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
-      .step();
+    var prediction = rnn
+      .input(phraseToIndexes(randomPhrase()))
+      .step()
+      .step()
+      .step()
+      .step()
+      .step()
+      .step()
+      .predict();
+
+    console.log(prediction);
   });
 });
