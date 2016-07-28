@@ -1,5 +1,6 @@
 var fs = require('fs');
 var RNN = require('../../../lib/recurrent/rnn');
+var LSTM = require('../../../lib/recurrent/lstm');
 var phraseWriterJson = require('./phrase-writer.json');
 var vocabData = initVocab();
 
@@ -87,15 +88,17 @@ function randomPhrase() {
 
 describe('character', function() {
   it('', function() {
-    var rnn = new RNN({
+    var rnn = new LSTM({
       inputSize: vocabData.inputSize,
       outputSize: vocabData.outputSize
     });
 
-    rnn.input(phraseToIndexes(randomPhrase()));
+    for (var i = 0; i < 1000; i++) {
+      rnn.input(phraseToIndexes(randomPhrase()));
+    }
 
     var prediction = rnn.predict();
 
-    console.log(indexesToPhrase(prediction));
+    console.log(indexesToPhrase(prediction).join(''));
   });
 });
