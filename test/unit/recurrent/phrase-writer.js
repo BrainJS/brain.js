@@ -3,7 +3,8 @@ var RNN = require('../../../lib/recurrent/rnn');
 var phraseWriterJson = require('./phrase-writer.json');
 var vocabData = initVocab();
 
-function initVocab(srcJson, maxThreshold) {
+function initVocab(maxThreshold) {
+  maxThreshold = maxThreshold || 0;
   var phrases = phraseWriterJson;
   // go over all characters and keep track of all unique ones seen
   var txt = phrases.join(''); // concat all
@@ -86,17 +87,15 @@ function randomPhrase() {
 
 describe('character', function() {
   it('', function() {
-    var rnn = new RNN();
-    var prediction = rnn
-      .input(phraseToIndexes(randomPhrase()))
-      .step()
-      .step()
-      .step()
-      .step()
-      .step()
-      .step()
-      .predict();
+    var rnn = new RNN({
+      inputSize: vocabData.inputSize,
+      outputSize: vocabData.outputSize
+    });
 
-    console.log(prediction);
+    rnn.input(phraseToIndexes(randomPhrase()));
+
+    var prediction = rnn.predict();
+
+    console.log(indexesToPhrase(prediction));
   });
 });
