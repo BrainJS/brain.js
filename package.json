@@ -10,7 +10,8 @@
   "scripts": {
     "test-unit": "mocha test/unit",
     "test-cv": "mocha test/cross-validation --timeout 10000",
-    "test": "npm run test-unit && npm run test-cv"
+    "test-recurrent": "mocha test/unit/recurrent --timeout 10000",
+    "test": "npm run test-unit && npm run test-cv && npm run test-recurrent"
   },
   "main": "./lib/brain",
   "dependencies": {
