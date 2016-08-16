@@ -16,8 +16,8 @@ describe('math', function() {
     it('can predict what a math problem is after being fed 1000 random math problems', function() {
       console.time('math rnn');
       var rnn = new RNN({
-        inputSize: vocab.characters.length + 1,
-        outputSize: vocab.characters.length + 1,
+        inputSize: vocab.characters.length,
+        outputSize: vocab.characters.length,
         vocab: vocab
       });
 
