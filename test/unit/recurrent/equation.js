@@ -1,10 +1,7 @@
 var fs = require('fs');
 var assert = require('assert');
 var Matrix = require('../../../lib/recurrent/matrix');
-var equationBuilder = require('../../../lib/recurrent/equation-builder');
-var add = equationBuilder.add;
-var multiply = equationBuilder.multiply;
-var run = equationBuilder.run;
+var Equation = require('../../../lib/recurrent/equation');
 
 function randomMath() {
   var left = Math.floor(Math.random() * 10);
@@ -20,12 +17,13 @@ function fourSquareMatrix(value) {
   return result;
 }
 
-describe('equation-builder', function() {
+describe('equation', function() {
   describe('add', function() {
     it('can add two matrices with values of one', function() {
+      var equation = new Equation();
       var input = fourSquareMatrix(1);
-      var equation = add(input, fourSquareMatrix(1));
-      var output = run(equation);
+      equation.add(input, fourSquareMatrix(1));
+      var output = equation.run();
       output.weights.forEach(function(value) {
         assert.equal(value, 2);
       });
@@ -33,9 +31,10 @@ describe('equation-builder', function() {
   });
   describe('add', function() {
     it('can add two matrices nested 3 times, all matrices start with values of one', function() {
+      var equation = new Equation();
       var input = fourSquareMatrix(1);
-      var equation = add(add(add(input, fourSquareMatrix(1)), fourSquareMatrix(1)), fourSquareMatrix(1));
-      var output = run(equation);
+      equation.add(equation.add(equation.add(input, fourSquareMatrix(1)), fourSquareMatrix(1)), fourSquareMatrix(1));
+      var output = equation.run();
       output.weights.forEach(function(value) {
         assert.equal(value, 4);
       });
@@ -43,17 +42,19 @@ describe('equation-builder', function() {
   });
   describe('multiply', function() {
     it('can multiply two matrices all values of two', function() {
+      var equation = new Equation();
       var input = fourSquareMatrix(2);
-      var equation = multiply(input, fourSquareMatrix(2));
-      var output = run(equation);
+      equation.multiply(input, fourSquareMatrix(2));
+      var output = equation.run();
       output.weights.forEach(function(value) {
         assert.equal(value, 16);
       });
     });
     it('can multiply two matrices nested 3 times, all matrices start with values of two', function() {
+      var equation = new Equation();
       var input = fourSquareMatrix(2);
-      var equation = multiply(multiply(multiply(input, fourSquareMatrix(2)), fourSquareMatrix(2)), fourSquareMatrix(2));
-      var output = run(equation);
+      equation.multiply(equation.multiply(equation.multiply(input, fourSquareMatrix(2)), fourSquareMatrix(2)), fourSquareMatrix(2));
+      var output = equation.run();
       output.weights.forEach(function(value) {
         assert.equal(value, 1024);
       });

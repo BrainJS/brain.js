@@ -49,14 +49,10 @@ describe('matrix', function() {
       it('', function() {
         var m1 = makeFakeMatrix(2, 2);
         var m2 = makeFakeMatrix(2, 2);
-        var result = add(m1, m2);
-        var weights = {
-          '0':0,
-          '1':4,
-          '2':8,
-          '3':12
-        };
-        assert(result.weights.length === 4);
+        var result = new Matrix(2, 2);
+        add(result, m1, m2);
+        var weights = [0, 4, 8, 12];
+        assert(result.weights.length, 4);
         result.weights.forEach(function(value, i) {
           assert(value === weights[i]);
         });
@@ -69,34 +65,15 @@ describe('matrix', function() {
       it('', function() {
         var m1 = makeFakeMatrix(2, 2);
         var m2 = makeFakeMatrix(2, 2);
-        var fakeNeuralNet = { backprop: [] };
-        var result = addB(m1, m2, fakeNeuralNet);
-        var weights = {
-          '0':0,
-          '1':4,
-          '2':8,
-          '3':12
-        };
-        var recurrence = {
-          '0':0,
-          '1':1,
-          '2':2,
-          '3':3
-        };
+        var result = makeFakeMatrix(2, 2);
+        addB(result, m1, m2);
+        var recurrence = [0, 2, 4, 6];
 
-        while (fakeNeuralNet.backprop.length > 0) {
-          fakeNeuralNet.backprop.pop()();
-        }
-
-        assert(result.weights.length === 4);
-        result.weights.forEach(function(value, i) {
-          assert(value === weights[i]);
-        });
-        assert(m1.recurrence.length === 4);
+        assert(m1.recurrence.length, 4);
         m1.recurrence.forEach(function(value, i) {
           assert(value === recurrence[i]);
         });
-        assert(m2.recurrence.length === 4);
+        assert(m2.recurrence.length, 4);
         m2.recurrence.forEach(function(value, i) {
           assert(value === recurrence[i]);
         });
@@ -109,13 +86,9 @@ describe('matrix', function() {
       it('correctly multiplies the values', function() {
         var m1 = makeFakeMatrix(2, 2);
         var m2 = makeFakeMatrix(2, 2);
-        var result = multiply(m1, m2);
-        var weights = {
-          '0':8,
-          '1':12,
-          '2':24,
-          '3':44
-        };
+        var result = new Matrix(2, 2);
+        multiply(result, m1, m2);
+        var weights = [8, 12, 24, 44];
         assert(result.weights.length === 4);
         result.weights.forEach(function(value, i) {
           assert(value === weights[i]);
@@ -129,31 +102,22 @@ describe('matrix', function() {
       it('correctly multiplies the values', function() {
         var m1 = makeFakeMatrix(2, 2);
         var m2 = makeFakeMatrix(2, 2);
-        var fakeNeuralNet = { backprop: [] };
-        var result = multiplyB(m1, m2, fakeNeuralNet);
-        var weights = {
-          '0':8,
-          '1':12,
-          '2':24,
-          '3':44
-        };
+        var result = new Matrix(2, 2);
         result.recurrence.forEach(function(_, i) {
           result.recurrence[i] = 2;
         });
-        while (fakeNeuralNet.backprop.length > 0) {
-          fakeNeuralNet.backprop.pop()();
-        }
-        assert(result.weights.length === 4);
-        result.weights.forEach(function(value, i) {
-          assert(value === weights[i]);
+        multiply(result, m1, m2);
+        multiplyB(result, m1, m2);
+        assert(result.recurrence.length, 4);
+        result.recurrence.forEach(function(_, i) {
+          result.recurrence[i] = 2;
         });
-
-        var m1Recurrence = { '0': 4, '1': 21, '2': 6, '3': 23 };
+        var m1Recurrence = [4, 21, 6, 23];
         assert(m1.recurrence.length === 4);
         m1.recurrence.forEach(function(value, i) {
           assert(value === m1Recurrence[i]);
         });
-        var m2Recurrence = { '0': 8, '1': 9, '2': 18, '3': 19 };
+        var m2Recurrence = [8, 9, 18, 19];
         assert(m2.recurrence.length === 4);
         m2.recurrence.forEach(function(value, i) {
           assert(value === m2Recurrence[i]);
@@ -167,13 +131,9 @@ describe('matrix', function() {
       it('correctly multiplies the values', function() {
         var m1 = makeFakeMatrix(2, 2);
         var m2 = makeFakeMatrix(2, 2);
-        var result = multiplyElement(m1, m2);
-        var weights = {
-          '0':0,
-          '1':4,
-          '2':16,
-          '3':36
-        };
+        var result = new Matrix(2, 2);
+        multiplyElement(result, m1, m2);
+        var weights = [0, 4, 16, 36];
         assert(result.weights.length === 4);
         result.weights.forEach(function(value, i) {
           assert(value === weights[i]);
@@ -188,20 +148,13 @@ describe('matrix', function() {
       it('correctly multiplies the values', function() {
         var m1 = makeFakeMatrix(2, 2);
         var m2 = makeFakeMatrix(2, 2);
-        var fakeNeuralNet = { backprop: [] };
-        var result = multiplyElementB(m1, m2, fakeNeuralNet);
-        var weights = {
-          '0':0,
-          '1':5,
-          '2':10,
-          '3':15
-        };
+        var result = new Matrix(2, 2);
         result.recurrence.forEach(function(_, i) {
           result.recurrence[i] = 2;
         });
-        while(fakeNeuralNet.backprop.length > 0) {
-          fakeNeuralNet.backprop.pop()();
-        }
+        multiplyElementB(result, m1, m2);
+        var weights = [0, 5, 10, 15];
+
         assert(m1.recurrence.length === 4);
         m1.recurrence.forEach(function(value, i) {
           assert(value === weights[i]);
