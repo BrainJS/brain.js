@@ -12,15 +12,17 @@ function randomMath() {
 
 describe('lstm', function() {
   it('can predict what a math problem is after being fed 1000 random math problems', function() {
-    return;
     console.time('math lstm');
     var lstm = new LSTM({
       inputSize: vocab.characters.length,
       outputSize: vocab.characters.length
     });
 
-    for (var i = 0; i < 1000; i++) {
+    for (var i = 0; i < 10000; i++) {
       lstm.run(vocab.toIndexes(randomMath()));
+      if (i % 10 === 0) {
+        console.log(vocab.toCharacters(lstm.predict()).join(''));
+      }
     }
 
     for (i = 0; i < 5; i++) {

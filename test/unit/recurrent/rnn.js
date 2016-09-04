@@ -21,7 +21,7 @@ describe('rnn', function() {
       outputSize: vocab.characters.length //<- length
     });
 
-    for (var i = 0; i < 1000; i++) {
+    for (var i = 0; i < 5000; i++) {
       rnn.run(vocab.toIndexes(randomMath()));
       if (i % 10 === 0) {
         console.log(vocab.toCharacters(rnn.predict()).join(''));
