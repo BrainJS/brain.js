@@ -18,7 +18,7 @@ describe('lstm', function() {
       outputSize: vocab.characters.length
     });
 
-    for (var i = 0; i < 10000; i++) {
+    for (var i = 0; i < 1000; i++) {
       lstm.run(vocab.toIndexes(randomMath()));
       if (i % 10 === 0) {
         console.log(vocab.toCharacters(lstm.predict()).join(''));

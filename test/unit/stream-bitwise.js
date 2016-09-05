@@ -45,7 +45,7 @@ StreamTester.prototype = {
       var output = self.net.run(self.testData[i].input)[0];
       var target = self.testData[i].output;
       assert.ok(output < (target + self.wiggle) && output > (target - self.wiggle),
-        "failed to train " + self.op + " - output: " + output + " target: " + target);
+        'failed to train ' + self.op + ' - output: ' + output + ' target: ' + target);
     }
   }
 };
@@ -70,7 +70,7 @@ describe('bitwise functions', function() {
       input: [1],
       output: [0]
     }];
-    testBitwise(not, "not");
+    testBitwise(not, 'not');
   });
 
   it('XOR function', function() {
@@ -87,7 +87,7 @@ describe('bitwise functions', function() {
       input: [1, 1],
       output: [0]
     }];
-    testBitwise(xor, "xor");
+    testBitwise(xor, 'xor');
   });
 
   it('OR function', function() {
@@ -104,7 +104,7 @@ describe('bitwise functions', function() {
       input: [1, 1],
       output: [1]
     }];
-    testBitwise(or, "or");
+    testBitwise(or, 'or');
   });
 
   it('AND function', function() {
@@ -121,6 +121,6 @@ describe('bitwise functions', function() {
       input: [1, 1],
       output: [1]
     }];
-    testBitwise(and, "and");
+    testBitwise(and, 'and');
   });
 });
