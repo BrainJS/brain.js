@@ -145,7 +145,7 @@ export default class NeuralNetwork {
     if (!hiddenSizes) {
       sizes.push(Math.max(3, Math.floor(inputSize / 2)));
     } else {
-      hiddenSizes.forEach(function(size) {
+      hiddenSizes.forEach(size => {
         sizes.push(size);
       });
     }
@@ -264,9 +264,9 @@ export default class NeuralNetwork {
     let datum = data[0].input;
     if (datum.constructor !== Array && !(datum instanceof Float64Array)) {
       if (!this.inputLookup) {
-        this.inputLookup = lookup.buildLookup(data.map(function(value) { return value['input']; }));
+        this.inputLookup = lookup.buildLookup(data.map(value => value['input']));
       }
-      data = data.map(function(datum) {
+      data = data.map(datum => {
         let array = lookup.toArray(this.inputLookup, datum.input);
         return Object.assign({}, datum, { input: array });
       }, this);
@@ -274,9 +274,9 @@ export default class NeuralNetwork {
 
     if (data[0].output.constructor !== Array) {
       if (!this.outputLookup) {
-        this.outputLookup = lookup.buildLookup(data.map(function(value) { return value['output']; }));
+        this.outputLookup = lookup.buildLookup(data.map(value => value['output']));
       }
-      data = data.map(function(datum) {
+      data = data.map(datum => {
         let array = lookup.toArray(this.outputLookup, datum.output);
         return Object.assign({}, datum, { output: array });
       }, this);
@@ -348,7 +348,7 @@ export default class NeuralNetwork {
         }
       }
 
-      let errors = output.map(function(value, i) {
+      let errors = output.map((value, i) => {
         return target[i] - value;
       });
       sum += mse(errors);
