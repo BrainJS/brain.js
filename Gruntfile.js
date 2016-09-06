@@ -9,16 +9,41 @@
 var fs = require('fs');
 var browserify = require('browserify');
 var pkg = require('./package.json');
+var grunt = require('grunt');
+require('load-grunt-tasks')(grunt);
 
 module.exports = function(grunt) {
   grunt.initConfig({
+    babel: {
+      options: {
+        sourceMap: true,
+        presets: ['es2015']
+      },
+      dist: {
+        files: [{
+          expand: true,
+          cwd: 'src/',
+          src: ['*.js'],
+          dest: 'dist/'
+        },{
+          expand: true,
+          cwd: 'src/utilities',
+          src: ['*.js'],
+          dest: 'dist/utilities'
+        }]
+      }
+    },
     mochaTest: {
       test: {
         options: {
           style: 'bdd',
-          reporter: 'spec'
+          reporter: 'spec',
+          require: 'babel-register'
         },
-        src: ['test/unit/*.js']
+        src: [
+          'test/cross-validation/*.js',
+          'test/unit/*.js'
+        ]
       }
     },
     pkg: grunt.file.readJSON('package.json'),
@@ -49,10 +74,10 @@ module.exports = function(grunt) {
       done();
     });
   });
-  
+
   grunt.registerTask('build-min', 'uglify');
   grunt.registerTask('test', 'mochaTest');
-  grunt.registerTask('default', ['build', 'build-min', 'test']);
+  grunt.registerTask('default', ['babel', 'build', 'build-min', 'test']);
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 };

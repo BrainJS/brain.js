@@ -1,15 +1,15 @@
-var assert = require('assert');
-var brain = require('../../lib/brain');
+import assert from 'assert';
+import brain from '../../src';
 
-var data = [{input: [0, 0], output: [0]},
+let data = [{input: [0, 0], output: [0]},
             {input: [0, 1], output: [1]},
             {input: [1, 0], output: [1]},
             {input: [1, 1], output: [1]}];
 
-describe('train() options', function() {
-  it('train until error threshold reached', function() {
-    var net = new brain.NeuralNetwork();
-    var error = net.train(data, {
+describe('train() options', () => {
+  it('train until error threshold reached', () => {
+    let net = new brain.NeuralNetwork();
+    let error = net.train(data, {
       errorThresh: 0.2,
       iterations: 100000
     }).error;
@@ -17,9 +17,9 @@ describe('train() options', function() {
     assert.ok(error < 0.2, 'network did not train until error threshold was reached');
   });
 
-  it('train until max iterations reached', function() {
-    var net = new brain.NeuralNetwork();
-    var stats = net.train(data, {
+  it('train until max iterations reached', () => {
+    let net = new brain.NeuralNetwork();
+    let stats = net.train(data, {
       errorThresh: 0.001,
       iterations: 1
     });
@@ -27,17 +27,17 @@ describe('train() options', function() {
     assert.equal(stats.iterations, 1);
   });
 
-  it('training callback called with training stats', function(done) {
-    var iters = 100;
-    var period = 20;
-    var target = iters / 20;
+  it('training callback called with training stats', (done) => {
+    let iters = 100;
+    let period = 20;
+    let target = iters / 20;
 
-    var calls = 0;
+    let calls = 0;
 
-    var net = new brain.NeuralNetwork();
+    let net = new brain.NeuralNetwork();
     net.train(data, {
       iterations: iters,
-      callback: function(stats) {
+      callback: (stats) => {
         assert.ok(stats.iterations % period == 0);
 
         calls++;

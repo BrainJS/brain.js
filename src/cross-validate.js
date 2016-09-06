@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  *
  * @param {NeuralNetwork|constructor} Classifier
@@ -9,20 +7,14 @@
  * @param {object} testSet
  * @returns {void|*}
  */
-function testPartition(Classifier, opts, trainOpts, trainSet, testSet) {
-  var classifier = new Classifier(opts);
-
-  var beginTrain = Date.now();
-
-  var trainingStats = classifier.train(trainSet, trainOpts);
-
-  var beginTest = Date.now();
-
-  var testStats = classifier.test(testSet);
-
-  var endTest = Date.now();
-
-  var stats = Object.assign({}, testStats, {
+export function testPartition(Classifier, opts, trainOpts, trainSet, testSet) {
+  let classifier = new Classifier(opts);
+  let beginTrain = Date.now();
+  let trainingStats = classifier.train(trainSet, trainOpts);
+  let beginTest = Date.now();
+  let testStats = classifier.test(testSet);
+  let endTest = Date.now();
+  let stats = Object.assign({}, testStats, {
     trainTime : beginTest - beginTrain,
     testTime : endTest - beginTest,
     iterations: trainingStats.iterations,
@@ -40,10 +32,10 @@ function testPartition(Classifier, opts, trainOpts, trainSet, testSet) {
  * Using Durstenfeld shuffle algorithm.
  * source: http://stackoverflow.com/a/12646864/1324039
  */
-function shuffleArray(array) {
-  for (var i = array.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var temp = array[i];
+export function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    let temp = array[i];
     array[i] = array[j];
     array[j] = temp;
   }
@@ -78,21 +70,21 @@ function shuffleArray(array) {
  *  }
  * }
  */
-function crossValidate(Classifier, data, opts, trainOpts, k) {
+export default function crossValidate(Classifier, data, opts, trainOpts, k) {
   k = k || 4;
-  var size = data.length / k;
+  let size = data.length / k;
 
   if (data.constructor === Array) {
     shuffleArray(data);
   } else {
-    var newData = {};
-    shuffleArray(Object.keys(data)).forEach(function(key) {
+    let newData = {};
+    shuffleArray(Object.keys(data)).forEach((key) => {
       newData[key] = data[key];
     });
     data = newData;
   }
 
-  var avgs = {
+  let avgs = {
     error : 0,
     trainTime : 0,
     testTime : 0,
@@ -100,7 +92,7 @@ function crossValidate(Classifier, data, opts, trainOpts, k) {
     trainError: 0
   };
 
-  var stats = {
+  let stats = {
     truePos: 0,
     trueNeg: 0,
     falsePos: 0,
@@ -108,25 +100,25 @@ function crossValidate(Classifier, data, opts, trainOpts, k) {
     total: 0
   };
 
-  var misclasses = [];
-  var results = [];
-  var stat;
-  var sum;
+  let misclasses = [];
+  let results = [];
+  let stat;
+  let sum;
 
-  for (var i = 0; i < k; i++) {
-    var dclone = data.slice(0);
-    var testSet = dclone.splice(i * size, size);
-    var trainSet = dclone;
-    var result = testPartition(Classifier, opts, trainOpts, trainSet, testSet);
+  for (let i = 0; i < k; i++) {
+    let dclone = data.slice(0);
+    let testSet = dclone.splice(i * size, size);
+    let trainSet = dclone;
+    let result = testPartition(Classifier, opts, trainOpts, trainSet, testSet);
     for (stat in avgs) {
-      if (avgs.hasOwnProperty(stat)) {
+      if (stat in avgs) {
         sum = avgs[stat];
         avgs[stat] = sum + result[stat];
       }
     }
 
     for (stat in stats) {
-      if (stats.hasOwnProperty(stat)) {
+      if (stat in stats) {
         sum = stats[stat];
         stats[stat] = sum + result[stat];
       }
@@ -138,7 +130,7 @@ function crossValidate(Classifier, data, opts, trainOpts, k) {
   }
 
   for (stat in avgs) {
-    if (avgs.hasOwnProperty(stat)) {
+    if (stat in avgs) {
       sum = avgs[stat];
       avgs[stat] = sum / k;
     }
@@ -158,5 +150,3 @@ function crossValidate(Classifier, data, opts, trainOpts, k) {
     misclasses: misclasses
   };
 }
-
-module.exports = crossValidate;

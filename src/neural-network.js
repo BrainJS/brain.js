@@ -1,40 +1,44 @@
-'use strict';
-
-var lookup = require('./lookup');
-var TrainStream = require('./train-stream');
+import lookup from './lookup';
+import TrainStream from './train-stream';
+import max from './utilities/max';
+import mse from './utilities/mse';
+import randos from './utilities/randos';
+import range from './utilities/range';
+import toArray from './utilities/to-array';
+import zeros from './utilities/zeros';
 
 /**
  *
  * @param {object} options
  * @constructor
  */
-function NeuralNetwork(options) {
-  options = options || {};
-  this.learningRate = options.learningRate || 0.3;
-  this.momentum = options.momentum || 0.1;
-  this.hiddenSizes = options.hiddenLayers;
+export default class NeuralNetwork {
+  constructor(options) {
+    options = options || {};
+    this.learningRate = options.learningRate || 0.3;
+    this.momentum = options.momentum || 0.1;
+    this.hiddenSizes = options.hiddenLayers;
 
-  this.binaryThresh = options.binaryThresh || 0.5;
+    this.binaryThresh = options.binaryThresh || 0.5;
 
-  this.sizes = null;
-  this.outputLayer = null;
-  this.biases = null; // weights for bias nodes
-  this.weights = null;
-  this.outputs = null;
+    this.sizes = null;
+    this.outputLayer = null;
+    this.biases = null; // weights for bias nodes
+    this.weights = null;
+    this.outputs = null;
 
-  // state for training
-  this.deltas = null;
-  this.changes = null; // for momentum
-  this.errors = null;
-}
+    // state for training
+    this.deltas = null;
+    this.changes = null; // for momentum
+    this.errors = null;
+  }
 
-NeuralNetwork.prototype = {
   /**
    *
    * @param {} sizes
    * @param {Boolean} keepNetworkIntact
    */
-  initialize: function(sizes, keepNetworkIntact) {
+  initialize(sizes, keepNetworkIntact) {
     this.sizes = sizes;
     this.outputLayer = this.sizes.length - 1;
 
@@ -49,8 +53,8 @@ NeuralNetwork.prototype = {
     this.changes = []; // for momentum
     this.errors = [];
 
-    for (var layer = 0; layer <= this.outputLayer; layer++) {
-      var size = this.sizes[layer];
+    for (let layer = 0; layer <= this.outputLayer; layer++) {
+      let size = this.sizes[layer];
       this.deltas[layer] = zeros(size);
       this.errors[layer] = zeros(size);
       if (!keepNetworkIntact) {
@@ -64,8 +68,8 @@ NeuralNetwork.prototype = {
         }
         this.changes[layer] = new Array(size);
 
-        for (var node = 0; node < size; node++) {
-          var prevSize = this.sizes[layer - 1];
+        for (let node = 0; node < size; node++) {
+          let prevSize = this.sizes[layer - 1];
           if (!keepNetworkIntact) {
             this.weights[layer][node] = randos(prevSize);
           }
@@ -73,48 +77,49 @@ NeuralNetwork.prototype = {
         }
       }
     }
-  },
+  }
 
   /**
    *
    * @param input
    * @returns {*}
    */
-  run: function(input) {
+  run(input) {
     if (this.inputLookup) {
       input = lookup.toArray(this.inputLookup, input);
     }
 
-    var output = this.runInput(input);
+    let output = this.runInput(input);
 
     if (this.outputLookup) {
       output = lookup.toHash(this.outputLookup, output);
     }
     return output;
-  },
+  }
 
   /**
    *
    * @param input
    * @returns {*}
    */
-  runInput: function(input) {
+  runInput(input) {
     this.outputs[0] = input;  // set output state of input layer
 
-    for (var layer = 1; layer <= this.outputLayer; layer++) {
-      for (var node = 0; node < this.sizes[layer]; node++) {
-        var weights = this.weights[layer][node];
+    let output = null;
+    for (let layer = 1; layer <= this.outputLayer; layer++) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let weights = this.weights[layer][node];
 
-        var sum = this.biases[layer][node];
-        for (var k = 0; k < weights.length; k++) {
+        let sum = this.biases[layer][node];
+        for (let k = 0; k < weights.length; k++) {
           sum += weights[k] * input[k];
         }
         this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
       }
-      var output = input = this.outputs[layer];
+      output = input = this.outputs[layer];
     }
     return output;
-  },
+  }
 
   /**
    *
@@ -122,21 +127,21 @@ NeuralNetwork.prototype = {
    * @param options
    * @returns {{error: number, iterations: number}}
    */
-  train: function(data, options) {
+  train(data, options) {
     data = this.formatData(data);
 
     options = options || {};
-    var iterations = options.iterations || 20000;
-    var errorThresh = options.errorThresh || 0.005;
-    var log = options.log ? (typeof options.log === 'function' ? options.log : console.log) : false;
-    var logPeriod = options.logPeriod || 10;
-    var learningRate = options.learningRate || this.learningRate || 0.3;
-    var callback = options.callback;
-    var callbackPeriod = options.callbackPeriod || 10;
-    var sizes = [];
-    var inputSize = data[0].input.length;
-    var outputSize = data[0].output.length;
-    var hiddenSizes = this.hiddenSizes;
+    let iterations = options.iterations || 20000;
+    let errorThresh = options.errorThresh || 0.005;
+    let log = options.log ? (typeof options.log === 'function' ? options.log : console.log) : false;
+    let logPeriod = options.logPeriod || 10;
+    let learningRate = options.learningRate || this.learningRate || 0.3;
+    let callback = options.callback;
+    let callbackPeriod = options.callbackPeriod || 10;
+    let sizes = [];
+    let inputSize = data[0].input.length;
+    let outputSize = data[0].output.length;
+    let hiddenSizes = this.hiddenSizes;
     if (!hiddenSizes) {
       sizes.push(Math.max(3, Math.floor(inputSize / 2)));
     } else {
@@ -150,11 +155,12 @@ NeuralNetwork.prototype = {
 
     this.initialize(sizes, options.keepNetworkIntact);
 
-    var error = 1;
-    for (var i = 0; i < iterations && error > errorThresh; i++) {
-      var sum = 0;
-      for (var j = 0; j < data.length; j++) {
-        var err = this.trainPattern(data[j].input, data[j].output, learningRate);
+    let error = 1;
+    let i;
+    for (i = 0; i < iterations && error > errorThresh; i++) {
+      let sum = 0;
+      for (let j = 0; j < data.length; j++) {
+        let err = this.trainPattern(data[j].input, data[j].output, learningRate);
         sum += err;
       }
       error = sum / data.length;
@@ -171,7 +177,7 @@ NeuralNetwork.prototype = {
       error: error,
       iterations: i
     };
-  },
+  }
 
   /**
    *
@@ -179,7 +185,7 @@ NeuralNetwork.prototype = {
    * @param target
    * @param learningRate
    */
-  trainPattern : function(input, target, learningRate) {
+  trainPattern(input, target, learningRate) {
     learningRate = learningRate || this.learningRate;
 
     // forward propagate
@@ -189,26 +195,26 @@ NeuralNetwork.prototype = {
     this.calculateDeltas(target);
     this.adjustWeights(learningRate);
 
-    var error = mse(this.errors[this.outputLayer]);
+    let error = mse(this.errors[this.outputLayer]);
     return error;
-  },
+  }
 
   /**
    *
    * @param target
    */
-  calculateDeltas: function(target) {
-    for (var layer = this.outputLayer; layer >= 0; layer--) {
-      for (var node = 0; node < this.sizes[layer]; node++) {
-        var output = this.outputs[layer][node];
+  calculateDeltas(target) {
+    for (let layer = this.outputLayer; layer >= 0; layer--) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let output = this.outputs[layer][node];
 
-        var error = 0;
+        let error = 0;
         if (layer == this.outputLayer) {
           error = target[node] - output;
         }
         else {
-          var deltas = this.deltas[layer + 1];
-          for (var k = 0; k < deltas.length; k++) {
+          let deltas = this.deltas[layer + 1];
+          for (let k = 0; k < deltas.length; k++) {
             error += deltas[k] * this.weights[layer + 1][k][node];
           }
         }
@@ -216,24 +222,24 @@ NeuralNetwork.prototype = {
         this.deltas[layer][node] = error * output * (1 - output);
       }
     }
-  },
+  }
 
   /**
    *
    * @param learningRate
    */
-  adjustWeights: function(learningRate) {
-    for (var layer = 1; layer <= this.outputLayer; layer++) {
-      var incoming = this.outputs[layer - 1];
+  adjustWeights(learningRate) {
+    for (let layer = 1; layer <= this.outputLayer; layer++) {
+      let incoming = this.outputs[layer - 1];
 
-      for (var node = 0; node < this.sizes[layer]; node++) {
-        var delta = this.deltas[layer][node];
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let delta = this.deltas[layer][node];
 
-        for (var k = 0; k < incoming.length; k++) {
-          var change = this.changes[layer][node][k];
+        for (let k = 0; k < incoming.length; k++) {
+          let change = this.changes[layer][node][k];
 
           change = (learningRate * delta * incoming[k])
-                   + (this.momentum * change);
+            + (this.momentum * change);
 
           this.changes[layer][node][k] = change;
           this.weights[layer][node][k] += change;
@@ -241,27 +247,27 @@ NeuralNetwork.prototype = {
         this.biases[layer][node] += learningRate * delta;
       }
     }
-  },
+  }
 
   /**
    *
    * @param data
    * @returns {*}
    */
-  formatData: function(data) {
+  formatData(data) {
     if (data.constructor !== Array) { // turn stream datum into array
-      var tmp = [];
+      let tmp = [];
       tmp.push(data);
       data = tmp;
     }
     // turn sparse hash input into arrays with 0s as filler
-    var datum = data[0].input;
+    let datum = data[0].input;
     if (datum.constructor !== Array && !(datum instanceof Float64Array)) {
       if (!this.inputLookup) {
         this.inputLookup = lookup.buildLookup(data.map(function(value) { return value['input']; }));
       }
       data = data.map(function(datum) {
-        var array = lookup.toArray(this.inputLookup, datum.input);
+        let array = lookup.toArray(this.inputLookup, datum.input);
         return Object.assign({}, datum, { input: array });
       }, this);
     }
@@ -271,12 +277,12 @@ NeuralNetwork.prototype = {
         this.outputLookup = lookup.buildLookup(data.map(function(value) { return value['output']; }));
       }
       data = data.map(function(datum) {
-        var array = lookup.toArray(this.outputLookup, datum.output);
+        let array = lookup.toArray(this.outputLookup, datum.output);
         return Object.assign({}, datum, { output: array });
       }, this);
     }
     return data;
-  },
+  }
 
   /**
    *
@@ -288,27 +294,27 @@ NeuralNetwork.prototype = {
    *  }
    * }
    */
-  test : function(data) {
+  test(data) {
     data = this.formatData(data);
 
     // for binary classification problems with one output node
-    var isBinary = data[0].output.length == 1;
-    var falsePos = 0;
-    var falseNeg = 0;
-    var truePos = 0;
-    var trueNeg = 0;
+    let isBinary = data[0].output.length == 1;
+    let falsePos = 0;
+    let falseNeg = 0;
+    let truePos = 0;
+    let trueNeg = 0;
 
     // for classification problems
-    var misclasses = [];
+    let misclasses = [];
 
     // run each pattern through the trained network and collect
     // error and misclassification statistics
-    var sum = 0;
-    for (var i = 0; i < data.length; i++) {
-      var output = this.runInput(data[i].input);
-      var target = data[i].output;
+    let sum = 0;
+    for (let i = 0; i < data.length; i++) {
+      let output = this.runInput(data[i].input);
+      let target = data[i].output;
 
-      var actual, expected;
+      let actual, expected;
       if (isBinary) {
         actual = output[0] > this.binaryThresh ? 1 : 0;
         expected = target[0];
@@ -319,7 +325,7 @@ NeuralNetwork.prototype = {
       }
 
       if (actual != expected) {
-        var misclass = data[i];
+        let misclass = data[i];
         Object.assign(misclass, {
           actual: actual,
           expected: expected
@@ -342,14 +348,14 @@ NeuralNetwork.prototype = {
         }
       }
 
-      var errors = output.map(function(value, i) {
+      let errors = output.map(function(value, i) {
         return target[i] - value;
       });
       sum += mse(errors);
     }
-    var error = sum / data.length;
+    let error = sum / data.length;
 
-    var stats = {
+    let stats = {
       error: error,
       misclasses: misclasses
     };
@@ -367,7 +373,7 @@ NeuralNetwork.prototype = {
       });
     }
     return stats;
-  },
+  }
 
   /**
    *
@@ -405,12 +411,12 @@ NeuralNetwork.prototype = {
    *    ]
    *  }
    */
-  toJSON: function() {
-    var layers = [];
-    for (var layer = 0; layer <= this.outputLayer; layer++) {
+  toJSON() {
+    let layers = [];
+    for (let layer = 0; layer <= this.outputLayer; layer++) {
       layers[layer] = {};
 
-      var nodes;
+      let nodes;
       // turn any internal arrays back into hashes for readable json
       if (layer == 0 && this.inputLookup) {
         nodes = Object.keys(this.inputLookup);
@@ -422,15 +428,15 @@ NeuralNetwork.prototype = {
         nodes = range(0, this.sizes[layer]);
       }
 
-      for (var j = 0; j < nodes.length; j++) {
-        var node = nodes[j];
+      for (let j = 0; j < nodes.length; j++) {
+        let node = nodes[j];
         layers[layer][node] = {};
 
         if (layer > 0) {
           layers[layer][node].bias = this.biases[layer][j];
           layers[layer][node].weights = {};
-          for (var k in layers[layer - 1]) {
-            var index = k;
+          for (let k in layers[layer - 1]) {
+            let index = k;
             if (layer == 1 && this.inputLookup) {
               index = this.inputLookup[k];
             }
@@ -440,15 +446,15 @@ NeuralNetwork.prototype = {
       }
     }
     return { layers: layers, outputLookup:!!this.outputLookup, inputLookup:!!this.inputLookup };
-  },
+  }
 
   /**
    *
    * @param json
    * @returns {NeuralNetwork}
    */
-  fromJSON: function(json) {
-    var size = json.layers.length;
+  fromJSON(json) {
+    let size = json.layers.length;
     this.outputLayer = size - 1;
 
     this.sizes = new Array(size);
@@ -456,8 +462,8 @@ NeuralNetwork.prototype = {
     this.biases = new Array(size);
     this.outputs = new Array(size);
 
-    for (var i = 0; i <= this.outputLayer; i++) {
-      var layer = json.layers[i];
+    for (let i = 0; i <= this.outputLayer; i++) {
+      let layer = json.layers[i];
       if (i == 0 && (!layer[0] || json.inputLookup)) {
         this.inputLookup = lookup.lookupFromHash(layer);
       }
@@ -465,143 +471,59 @@ NeuralNetwork.prototype = {
         this.outputLookup = lookup.lookupFromHash(layer);
       }
 
-      var nodes = Object.keys(layer);
+      let nodes = Object.keys(layer);
       this.sizes[i] = nodes.length;
       this.weights[i] = [];
       this.biases[i] = [];
       this.outputs[i] = [];
 
-      for (var j in nodes) {
-        var node = nodes[j];
+      for (let j in nodes) {
+        let node = nodes[j];
         this.biases[i][j] = layer[node].bias;
         this.weights[i][j] = toArray(layer[node].weights);
       }
     }
     return this;
-  },
+  }
 
   /**
    *
    * @returns {Function}
    */
-  toFunction: function() {
-    var json = this.toJSON();
+  toFunction() {
+    const json = this.toJSON();
+    const jsonString = JSON.stringify(json);
     // return standalone function that mimics run()
-    return new Function('input',
-'  var net = ' + JSON.stringify(json) + ';\n\n\
-  for (var i = 1; i < net.layers.length; i++) {\n\
-    var layer = net.layers[i];\n\
-    var output = {};\n\
-    \n\
-    for (var id in layer) {\n\
-      var node = layer[id];\n\
-      var sum = node.bias;\n\
-      \n\
-      for (var iid in node.weights) {\n\
-        sum += node.weights[iid] * input[iid];\n\
-      }\n\
-      output[id] = (1 / (1 + Math.exp(-sum)));\n\
-    }\n\
-    input = output;\n\
-  }\n\
-  return output;');
-  },
+    return new Function('input', `
+      var net = ${ jsonString };
+      for (var i = 1; i < net.layers.length; i++) {
+        var layer = net.layers[i];
+        var output = {};
+        
+        for (var id in layer) {
+          var node = layer[id];
+          var sum = node.bias;
+          
+          for (var iid in node.weights) {
+            sum += node.weights[iid] * input[iid];
+          }
+          output[id] = (1 / (1 + Math.exp(-sum)));
+        }
+        input = output;
+      }
+      return output;
+    `);
+  }
 
   /**
    * This will create a TrainStream (WriteStream) for us to send the training data to.
    * @param opts training options
    * @returns {TrainStream|*}
    */
-  createTrainStream: function(opts) {
+  createTrainStream(opts) {
     opts = opts || {};
     opts.neuralNetwork = this;
     this.trainStream = new TrainStream(opts);
     return this.trainStream;
   }
-};
-
-/**
- *
- * @returns {number}
- */
-function randomWeight() {
-  return Math.random() * 0.4 - 0.2;
 }
-
-/**
- *
- * @param size
- * @returns {Array}
- */
-function zeros(size) {
-  var array = new Array(size);
-  for (var i = 0; i < size; i++) {
-    array[i] = 0;
-  }
-  return array;
-}
-
-/**
- *
- * @param size
- * @returns {Array}
- */
-function randos(size) {
-  var array = new Array(size);
-  for (var i = 0; i < size; i++) {
-    array[i] = randomWeight();
-  }
-  return array;
-}
-
-/**
- * mean squared error
- * @param errors
- * @returns {number}
- */
-function mse(errors) {
-  var sum = 0;
-  for (var i = 0; i < errors.length; i++) {
-    sum += Math.pow(errors[i], 2);
-  }
-  return sum / errors.length;
-}
-
-/**
- *
- * @param start
- * @param end
- * @returns {Array}
- */
-function range(start, end) {
-  var result = [];
-  for (; start < end; start++) {
-    result.push(start);
-  }
-  return result;
-}
-
-/**
- *
- * @param values
- * @returns {*}
- */
-function toArray(values) {
-  values = values || [];
-  if (values.constructor === Array) {
-    return values;
-  } else {
-    return Object.keys(values).map(function(key) { return values[key]; });
-  }
-}
-
-/**
- *
- * @param values
- * @returns {number}
- */
-function max(values) {
-  return Math.max.apply(Math, toArray(values));
-}
-
-module.exports = NeuralNetwork;
