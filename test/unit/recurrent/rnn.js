@@ -79,4 +79,21 @@ describe('rnn', function() {
       assert(/[=]/.test(prediction));
     });
   });
+
+  describe('#train', function() {
+    it('can train', function() {
+      var rnn = new RNN({
+        inputSize: 6, //<- length
+        inputRange: vocab.characters.length,
+        outputSize: vocab.characters.length //<- length
+      });
+
+      runAgainstMath(rnn, true);
+
+      rnn.train([{input: [0, 0], output: [0]},
+        {input: [0, 1], output: [1]},
+        {input: [1, 0], output: [1]},
+        {input: [1, 1], output: [0]}]);
+    });
+  });
 });
