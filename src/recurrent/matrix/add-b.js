@@ -5,7 +5,7 @@
  * @param {Matrix} right
  */
 export default function addB(from, left, right) {
-  for(var i = 0, n = left.weights.length; i < n; i++) {
+  for(let i = 0, max = left.weights.length; i < max; i++) {
     left.recurrence[i] += from.recurrence[i];
     right.recurrence[i] += from.recurrence[i];
   }

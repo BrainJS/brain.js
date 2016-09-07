@@ -5,17 +5,17 @@ import Matrix from './';
  * @returns {Matrix}
  */
 export default function softmax(m) {
-  var result = new Matrix(m.rows, m.columns); // probability volume
-  var maxVal = -999999;
-  var i;
-  var max;
+  let result = new Matrix(m.rows, m.columns); // probability volume
+  let maxVal = -999999;
+  let i;
+  let max;
 
   for (i = 0, max = m.weights.length; i < max; i++) {
     if(m.weights[i] <= maxVal) continue;
     maxVal = m.weights[i];
   }
 
-  var s = 0;
+  let s = 0;
   for (i = 0, max = m.weights.length; i < max; i++) {
     result.weights[i] = Math.exp(m.weights[i] - maxVal);
     s += result.weights[i];

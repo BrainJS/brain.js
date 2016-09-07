@@ -4,7 +4,7 @@
  * @param {Matrix} m
  */
 export default function reluB(from, m) {
-  for(var i = 0, max = m.weights.length; i < max; i++) {
+  for(let i = 0, max = m.weights.length; i < max; i++) {
     m.recurrence[i] += m.weights[i] > 0 ? from.recurrence[i] : 0;
   }
 }

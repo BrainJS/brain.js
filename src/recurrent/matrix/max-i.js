@@ -5,11 +5,11 @@
  */
 export default function maxI(m) {
   // argmax of array w
-  var w = m.weights;
-  var maxv = w[0];
-  var maxix = 0;
-  for (var i = 1, n = w.length; i < n; i++) {
-    var v = w[i];
+  let w = m.weights;
+  let maxv = w[0];
+  let maxix = 0;
+  for (let i = 1, max = w.length; i < max; i++) {
+    let v = w[i];
     if (v < maxv) continue;
 
     maxix = i;

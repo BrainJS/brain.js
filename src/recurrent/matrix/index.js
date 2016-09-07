@@ -33,7 +33,7 @@ export default class Matrix {
   getWeights(row, col) {
     // slow but careful accessor function
     // we want row-major order
-    var ix = (this.columns * row) + col;
+    let ix = (this.columns * row) + col;
     if (ix < 0 && ix >= this.weights.length) throw new Error('get accessor is skewed');
     return this.weights[ix];
   }
@@ -47,7 +47,7 @@ export default class Matrix {
    */
   setWeights(row, col, v) {
     // slow but careful accessor function
-    var ix = (this.columns * row) + col;
+    let ix = (this.columns * row) + col;
     if (ix < 0 && ix >= this.weights.length) throw new Error('set accessor is skewed');
     this.weights[ix] = v;
     return this;
@@ -66,8 +66,8 @@ export default class Matrix {
   }
 
   static fromJSON(json) {
-    var matrix = new Matrix(json.rows, json.columns);
-    for (var i = 0, max = json.rows * json.columns; i < max; i++) {
+    let matrix = new Matrix(json.rows, json.columns);
+    for (let i = 0, max = json.rows * json.columns; i < max; i++) {
       matrix.weights[i] = json.weights[i]; // copy over weights
     }
     return matrix;

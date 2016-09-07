@@ -1,11 +1,11 @@
-var Matrix = require('./');
+import Matrix from './';
 
 /**
  *
  * @param {Matrix} m
  */
 export default function clone(m) {
-  var cloned = new Matrix();
+  let cloned = new Matrix();
   cloned.rows = parseInt(m.rows);
   cloned.columns = parseInt(m.columns);
   cloned.weights = m.weights.slice(0);

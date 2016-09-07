@@ -1,4 +1,4 @@
-var randomF = require('../random').f;
+import { randomF } from '../random';
 
 /** return Matrix but filled with random numbers from gaussian
  * @param {Number} [rows]
@@ -19,7 +19,7 @@ export default class RandomMatrix {
   // fill matrix with random gaussian numbers
   fill() {
     if (!this.std) return;
-    for(var i = 0, n = this.weights.length; i < n; i++) {
+    for(let i = 0, max = this.weights.length; i < max; i++) {
       this.weights[i] = randomF(-this.std, this.std);
       this.recurrence[i] = randomF(-this.std, this.std);
     }

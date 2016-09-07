@@ -42,15 +42,15 @@ export default class GRU extends RNN {
    * @returns {Matrix}
    */
   getEquation(equation, inputMatrix, size, hiddenLayer) {
-    var sigmoid = equation.sigmoid.bind(equation);
-    var add = equation.add.bind(equation);
-    var multiply = equation.multiply.bind(equation);
-    var multiplyElement = equation.multiplyElement.bind(equation);
-    var previousResult = equation.previousResult.bind(equation);
-    var tanh = equation.tanh.bind(equation);
+    let sigmoid = equation.sigmoid.bind(equation);
+    let add = equation.add.bind(equation);
+    let multiply = equation.multiply.bind(equation);
+    let multiplyElement = equation.multiplyElement.bind(equation);
+    let previousResult = equation.previousResult.bind(equation);
+    let tanh = equation.tanh.bind(equation);
 
     // reset gate
-    var resetGate = sigmoid(
+    let resetGate = sigmoid(
       add(
         add(
           multiply(
@@ -67,7 +67,7 @@ export default class GRU extends RNN {
     );
 
     // update gate
-    var updateGate = sigmoid(
+    let updateGate = sigmoid(
       add(
         add(
           multiply(
@@ -84,7 +84,7 @@ export default class GRU extends RNN {
     );
 
     // cell
-    var cell = tanh(
+    let cell = tanh(
       add(
         add(
           multiply(
@@ -104,9 +104,9 @@ export default class GRU extends RNN {
     );
 
     // compute hidden state as gated, saturated cell activations
-    var allOnes = new OnesMatrix(updateGate.rows, updateGate.columns);
+    let allOnes = new OnesMatrix(updateGate.rows, updateGate.columns);
     // negate updateGate
-    var negUpdateGate = cloneNegative(updateGate);
+    let negUpdateGate = cloneNegative(updateGate);
     return add(
       multiplyElement(
         add(

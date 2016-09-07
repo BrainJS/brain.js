@@ -1,4 +1,4 @@
-var ones = require('../../utilities/ones');
+import ones from '../../utilities/ones';
 
 /** return Matrix but filled with random numbers from gaussian
  * @param {Number} [rows]

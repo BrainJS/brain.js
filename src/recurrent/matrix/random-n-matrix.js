@@ -1,5 +1,5 @@
-var Matrix = require('./index');
-var randomN = require('../random').n;
+import Matrix from './index';
+import { n as randomN } from '../random';
 /**
  *
  * @param {Number} rows
@@ -15,7 +15,7 @@ export default class extends Matrix {
   }
   // fill matrix with random gaussian numbers
   fillRandN(mu, std) {
-    for(var i = 0, n = this.weights.length; i < n; i++) {
+    for(let i = 0, max = this.weights.length; i < max; i++) {
       this.weights[i] = randomN(mu, std);
     }
   }

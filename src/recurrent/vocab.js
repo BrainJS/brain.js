@@ -13,11 +13,11 @@ export default class Vocab {
     this.indexTable = {};
     this.characterTable = {};
     this.characters = [];
-    var tempCharactersTable = {};
-    for (var vocabIndex = 0, vocabLength = values.length; vocabIndex < vocabLength; vocabIndex++) {
+    let tempCharactersTable = {};
+    for (let vocabIndex = 0, vocabLength = values.length; vocabIndex < vocabLength; vocabIndex++) {
       var characters = values[vocabIndex].toString();
-      for (var characterIndex = 0, charactersLength = characters.length; characterIndex < charactersLength; characterIndex++) {
-        var character = characters[characterIndex];
+      for (let characterIndex = 0, charactersLength = characters.length; characterIndex < charactersLength; characterIndex++) {
+        let character = characters[characterIndex];
         if (character in tempCharactersTable) continue;
         tempCharactersTable[character] = true;
         this.characters.push(character);
@@ -29,9 +29,9 @@ export default class Vocab {
     // NOTE: start at one because we will have START and END tokens!
     // that is, START token will be index 0 in model letter vectors
     // and END token will be index 0 in the next character softmax
-    charactersLength = this.characters.length;
-    for(characterIndex = 0; characterIndex < charactersLength; characterIndex++) {
-      character = this.characters[characterIndex];
+    let charactersLength = this.characters.length;
+    for(let characterIndex = 0; characterIndex < charactersLength; characterIndex++) {
+      let character = this.characters[characterIndex];
       if(characterIndex >= maxThreshold) {
         // add character to vocab
         this.indexTable[character] = characterIndex + 1;
@@ -39,14 +39,15 @@ export default class Vocab {
       }
     }
   }
+
   toIndexes(phrase, maxThreshold) {
     maxThreshold = maxThreshold || 0;
-    var result = [];
-    var indexTable = this.indexTable;
+    let result = [];
+    let indexTable = this.indexTable;
 
-    for (var i = 0, max = phrase.length; i < max; i++) {
-      var character = phrase[i];
-      var index = indexTable[character];
+    for (let i = 0, max = phrase.length; i < max; i++) {
+      let character = phrase[i];
+      let index = indexTable[character];
       if (index < maxThreshold) continue;
       result.push(index);
     }
@@ -56,13 +57,13 @@ export default class Vocab {
 
   toCharacters(indexes, maxThreshold) {
     maxThreshold = maxThreshold || 0;
-    var result = [];
-    var characterTable = this.characterTable;
+    let result = [];
+    let characterTable = this.characterTable;
 
-    for (var i = 0, max = indexes.length; i < max; i++) {
-      var index = indexes[i];
+    for (let i = 0, max = indexes.length; i < max; i++) {
+      let index = indexes[i];
       if (index < maxThreshold) continue;
-      var character = characterTable[index];
+      let character = characterTable[index];
       result.push(character);
     }
 

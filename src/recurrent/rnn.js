@@ -35,7 +35,7 @@ export default class RNN {
   constructor(options) {
     options = options || {};
 
-    for (var p in defaults) {
+    for (let p in defaults) {
       if (defaults.hasOwnProperty(p) && p !== 'isBackPropagate') {
         this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
       }
@@ -66,15 +66,15 @@ export default class RNN {
   }
 
   createModel() {
-    var hiddenSizes = this.hiddenSizes;
-    var model = this.model;
-    var hiddenLayers = model.hiddenLayers;
+    let hiddenSizes = this.hiddenSizes;
+    let model = this.model;
+    let hiddenLayers = model.hiddenLayers;
     //0 is end, so add 1 to offset
     hiddenLayers.push(this.getModel(hiddenSizes[0], this.inputSize));
-    var prevSize = hiddenSizes[0];
+    let prevSize = hiddenSizes[0];
 
-    for(var d = 1; d < hiddenSizes.length; d++) { // loop over depths
-      var hiddenSize = hiddenSizes[d];
+    for(let d = 1; d < hiddenSizes.length; d++) { // loop over depths
+      let hiddenSize = hiddenSizes[d];
       hiddenLayers.push(this.getModel(hiddenSize, prevSize));
       prevSize = hiddenSize;
     }
@@ -100,10 +100,10 @@ export default class RNN {
    * @returns {Matrix}
    */
   getEquation(equation, inputMatrix, size, hiddenLayer) {
-    var relu = equation.relu.bind(equation);
-    var add = equation.add.bind(equation);
-    var multiply = equation.multiply.bind(equation);
-    var previousResult = equation.previousResult.bind(equation);
+    let relu = equation.relu.bind(equation);
+    let add = equation.add.bind(equation);
+    let multiply = equation.multiply.bind(equation);
+    let previousResult = equation.previousResult.bind(equation);
 
     return relu(
       add(
@@ -128,9 +128,9 @@ export default class RNN {
   }
 
   createOutputMatrix() {
-    var model = this.model;
-    var outputSize = this.outputSize;
-    var lastHiddenSize = this.hiddenSizes[this.hiddenSizes.length - 1];
+    let model = this.model;
+    let outputSize = this.outputSize;
+    let lastHiddenSize = this.hiddenSizes[this.hiddenSizes.length - 1];
 
     //0 is end, so add 1 to offset
     //whd
@@ -141,17 +141,17 @@ export default class RNN {
   }
 
   bindEquations() {
-    var model = this.model;
-    var hiddenSizes = this.hiddenSizes;
-    var hiddenLayers = model.hiddenLayers;
+    let model = this.model;
+    let hiddenSizes = this.hiddenSizes;
+    let hiddenLayers = model.hiddenLayers;
 
-    var equation = new Equation();
+    let equation = new Equation();
     model.equations.push(equation);
     // 0 index
-    var output = this.getEquation(equation, equation.inputMatrixToRow(model.input), hiddenSizes[0], hiddenLayers[0]);
+    let output = this.getEquation(equation, equation.inputMatrixToRow(model.input), hiddenSizes[0], hiddenLayers[0]);
     equation.addPreviousResult(output);
     // 1+ indexes
-    for (var i = 1, max = hiddenSizes.length; i < max; i++) {
+    for (let i = 1, max = hiddenSizes.length; i < max; i++) {
       output = this.getEquation(equation, output, hiddenSizes[i], hiddenLayers[i]);
       equation.addPreviousResult(output);
     }
@@ -159,9 +159,9 @@ export default class RNN {
   }
 
   mapModel() {
-    var model = this.model;
-    var hiddenLayers = model.hiddenLayers;
-    var allMatrices = model.allMatrices;
+    let model = this.model;
+    let hiddenLayers = model.hiddenLayers;
+    let allMatrices = model.allMatrices;
 
     this.createInputMatrix();
     if (!model.input) throw new Error('net.model.input not set');
@@ -175,9 +175,9 @@ export default class RNN {
 
     allMatrices.push(model.input);
 
-    for(var i = 0, max = hiddenLayers.length; i < max; i++) {
-      var hiddenMatrix = hiddenLayers[i];
-      for (var property in hiddenMatrix) {
+    for(let i = 0, max = hiddenLayers.length; i < max; i++) {
+      let hiddenMatrix = hiddenLayers[i];
+      for (let property in hiddenMatrix) {
         if (!hiddenMatrix.hasOwnProperty(property)) continue;
         allMatrices.push(hiddenMatrix[property]);
       }
@@ -190,12 +190,12 @@ export default class RNN {
   run(input) {
     this.runs++;
     input = input || this.model.input;
-    var equations = this.model.equations;
-    var max = input.length;
-    var log2ppl = 0;
-    var cost = 0;
+    let equations = this.model.equations;
+    let max = input.length;
+    let log2ppl = 0;
+    let cost = 0;
 
-    for (var equationIndex = 0, equationMax = equations.length; equationIndex < equationMax; equationIndex++) {
+    for (let equationIndex = 0, equationMax = equations.length; equationIndex < equationMax; equationIndex++) {
       equations[equationIndex].resetPreviousResults();
     }
 
@@ -203,19 +203,21 @@ export default class RNN {
       this.bindEquations();
     }
 
-    for (var i = -1; i < max; i++) {
+    let i;
+    let output;
+    for (i = -1; i < max; i++) {
       // start and end tokens are zeros
-      var equation = equations[i + 1];
-      var ixSource = (i === -1 ? 0 : input[i]); // first step: start with START token
-      var ixTarget = (i === max - 1 ? 0 : input[i + 1]); // last step: end with END token
-      var output = equation.run(ixSource);
+      let equation = equations[i + 1];
+      let ixSource = (i === -1 ? 0 : input[i]); // first step: start with START token
+      let ixTarget = (i === max - 1 ? 0 : input[i + 1]); // last step: end with END token
+      output = equation.run(ixSource);
       if (equations[i + 2]) {
         equation.copyPreviousResultsTo(equations[i + 2]);
       }
 
       // set gradients into log probabilities
       this.logProbabilities = output; // interpret output as log probabilities
-      var probabilities = softmax(output); // compute the softmax probabilities
+      let probabilities = softmax(output); // compute the softmax probabilities
 
       log2ppl += -Math.log2(probabilities.weights[ixTarget]); // accumulate base 2 log prob and do smoothing
       cost += -Math.log(probabilities.weights[ixTarget]);
@@ -238,24 +240,24 @@ export default class RNN {
 
   step() {
     // perform parameter update
-    var stepSize = this.learningRate;
-    var regc = this.regc;
-    var clipval = this.clipval;
-    var model = this.model;
-    var numClipped = 0;
-    var numTot = 0;
-    var allMatrices = model.allMatrices;
-    var matrixIndexes = allMatrices.length;
-    for(var matrixIndex = 0; matrixIndex < matrixIndexes; matrixIndex++) {
-      var matrix = allMatrices[matrixIndex];
+    let stepSize = this.learningRate;
+    let regc = this.regc;
+    let clipval = this.clipval;
+    let model = this.model;
+    let numClipped = 0;
+    let numTot = 0;
+    let allMatrices = model.allMatrices;
+    let matrixIndexes = allMatrices.length;
+    for(let matrixIndex = 0; matrixIndex < matrixIndexes; matrixIndex++) {
+      let matrix = allMatrices[matrixIndex];
       if (!(matrixIndex in this.stepCache)) {
         this.stepCache[matrixIndex] = new Matrix(matrix.rows, matrix.columns);
       }
-      var cache = this.stepCache[matrixIndex];
+      let cache = this.stepCache[matrixIndex];
 
-      for(var i = 0, n = matrix.weights.length; i < n; i++) {
+      for(let i = 0, n = matrix.weights.length; i < n; i++) {
         // rmsprop adaptive learning rate
-        var mdwi = matrix.recurrence[i];
+        let mdwi = matrix.recurrence[i];
         cache.weights[i] = cache.weights[i] * this.decayRate + (1 - this.decayRate) * mdwi * mdwi;
         // gradient clip
         if (mdwi > clipval) {
@@ -281,14 +283,14 @@ export default class RNN {
     if (typeof temperature === 'undefined') { temperature = 1; }
     if (typeof predictionLength === 'undefined') { predictionLength = 100; }
 
-    var result = [];
+    let result = [];
     //var prev;
-    var ix;
-    var equation = this.model.equations[0];
+    let ix;
+    let equation = this.model.equations[0];
     equation.resetPreviousResults();
     while (true) {
       ix = result.length === 0 ? 0 : result[result.length - 1];
-      var lh = equation.run(ix);
+      let lh = equation.run(ix);
       equation.updatePreviousResults();
       //prev = clone(lh);
       // sample predicted letter
@@ -298,12 +300,12 @@ export default class RNN {
         // if temperature is high, logprobs will go towards zero
         // and the softmax outputs will be more diffuse. if temperature is
         // very low, the softmax outputs will be more peaky
-        for (var q = 0, nq = this.logProbabilities.weights.length; q < nq; q++) {
+        for (let q = 0, nq = this.logProbabilities.weights.length; q < nq; q++) {
           this.logProbabilities.weights[q] /= temperature;
         }
       }
 
-      var probs = softmax(this.logProbabilities);
+      let probs = softmax(this.logProbabilities);
 
       if (_sampleI) {
         ix = sampleI(probs);
@@ -345,17 +347,17 @@ export default class RNN {
     //data = this.formatData(data);
 
     options = options || {};
-    var iterations = options.iterations || 20000;
-    var errorThresh = options.errorThresh || 0.005;
-    var log = options.log ? (typeof options.log === 'function' ? options.log : console.log) : false;
-    var logPeriod = options.logPeriod || 10;
-    var learningRate = options.learningRate || this.learningRate || 0.3;
-    var callback = options.callback;
-    var callbackPeriod = options.callbackPeriod || 10;
-    var sizes = [];
-    var inputSize = data[0].input.length;
-    var outputSize = data[0].output.length;
-    var hiddenSizes = this.hiddenSizes;
+    let iterations = options.iterations || 20000;
+    let errorThresh = options.errorThresh || 0.005;
+    let log = options.log ? (typeof options.log === 'function' ? options.log : console.log) : false;
+    let logPeriod = options.logPeriod || 10;
+    let learningRate = options.learningRate || this.learningRate || 0.3;
+    let callback = options.callback;
+    let callbackPeriod = options.callbackPeriod || 10;
+    let sizes = [];
+    let inputSize = data[0].input.length;
+    let outputSize = data[0].output.length;
+    let hiddenSizes = this.hiddenSizes;
     if (!hiddenSizes) {
       sizes.push(Math.max(3, Math.floor(inputSize / 2)));
     } else {
@@ -369,11 +371,11 @@ export default class RNN {
 
     this.initialize(sizes, options.keepNetworkIntact);
 
-    var error = 1;
-    for (var i = 0; i < iterations && error > errorThresh; i++) {
-      var sum = 0;
-      for (var j = 0; j < data.length; j++) {
-        var err = this.trainPattern(data[j].input, data[j].output, learningRate);
+    let error = 1;
+    for (let i = 0; i < iterations && error > errorThresh; i++) {
+      let sum = 0;
+      for (let j = 0; j < data.length; j++) {
+        let err = this.trainPattern(data[j].input, data[j].output, learningRate);
         sum += err;
       }
       error = sum / data.length;
@@ -442,13 +444,13 @@ export default class RNN {
   }
 
   toJSON() {
-    var model = this.model;
+    let model = this.model;
     return {
       type: this.constructor.name,
       input: model.input.toJSON(),
       hiddenLayers: model.hiddenLayers.map(function(hiddenLayer) {
-        var layers = {};
-        for (var p in hiddenLayer) {
+        let layers = {};
+        for (let p in hiddenLayer) {
           layers[p] = hiddenLayer[p].toJSON();
         }
         return layers;
@@ -460,13 +462,13 @@ export default class RNN {
 
   fromJSON(json) {
     this.json = json;
-    var model = this.model;
-    var allMatrices = model.allMatrices;
+    let model = this.model;
+    let allMatrices = model.allMatrices;
     model.input = Matrix.fromJSON(json.input);
     allMatrices.push(model.input);
     model.hiddenLayers = json.hiddenLayers.map(function(hiddenLayer) {
-      var layers = {};
-      for (var p in hiddenLayer) {
+      let layers = {};
+      for (let p in hiddenLayer) {
         layers[p] = Matrix.fromJSON(hiddenLayer[p]);
         allMatrices.push(layers[p]);
       }

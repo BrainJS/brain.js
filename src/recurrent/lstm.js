@@ -46,14 +46,14 @@ export default class LSTM extends RNN {
    * @returns {Matrix}
    */
   getEquation(equation, inputMatrix, size, hiddenLayer) {
-    var sigmoid = equation.sigmoid.bind(equation);
-    var add = equation.add.bind(equation);
-    var multiply = equation.multiply.bind(equation);
-    var multiplyElement = equation.multiplyElement.bind(equation);
-    var previousResult = equation.previousResult.bind(equation);
-    var tanh = equation.tanh.bind(equation);
+    let sigmoid = equation.sigmoid.bind(equation);
+    let add = equation.add.bind(equation);
+    let multiply = equation.multiply.bind(equation);
+    let multiplyElement = equation.multiplyElement.bind(equation);
+    let previousResult = equation.previousResult.bind(equation);
+    let tanh = equation.tanh.bind(equation);
 
-    var inputGate = sigmoid(
+    let inputGate = sigmoid(
       add(
         add(
           multiply(
@@ -69,7 +69,7 @@ export default class LSTM extends RNN {
       )
     );
 
-    var forgetGate = sigmoid(
+    let forgetGate = sigmoid(
       add(
         add(
           multiply(
@@ -86,7 +86,7 @@ export default class LSTM extends RNN {
     );
 
     // output gate
-    var outputGate = sigmoid(
+    let outputGate = sigmoid(
       add(
         add(
           multiply(
@@ -103,7 +103,7 @@ export default class LSTM extends RNN {
     );
 
     // write operation on cells
-    var cellWrite = tanh(
+    let cellWrite = tanh(
       add(
         add(
           multiply(
@@ -120,9 +120,9 @@ export default class LSTM extends RNN {
     );
 
     // compute new cell activation
-    var retainCell = multiplyElement(forgetGate, previousResult(size)); // what do we keep from cell
-    var writeCell = multiplyElement(inputGate, cellWrite); // what do we write to cell
-    var cell = add(retainCell, writeCell); // new cell contents
+    let retainCell = multiplyElement(forgetGate, previousResult(size)); // what do we keep from cell
+    let writeCell = multiplyElement(inputGate, cellWrite); // what do we write to cell
+    let cell = add(retainCell, writeCell); // new cell contents
 
     // compute hidden state as gated, saturated cell activations
     return multiplyElement(outputGate, tanh(cell));

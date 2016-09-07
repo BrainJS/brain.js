@@ -5,7 +5,7 @@
  * @param {Matrix} right
  */
 export default function multiplyElementB(from, left, right) {
-  for(var i = 0, weights = left.weights.length; i < weights; i++) {
+  for(let i = 0, weights = left.weights.length; i < weights; i++) {
     left.recurrence[i] += right.weights[i] * from.recurrence[i];
     right.recurrence[i] += left.weights[i] * from.recurrence[i];
   }

@@ -4,7 +4,7 @@
  * @param {Matrix} right
  */
 export default function multiplyElement(into, left, right) {
-  for(var i = 0, weights = left.weights.length; i < weights; i++) {
+  for(let i = 0, weights = left.weights.length; i < weights; i++) {
     into.weights[i] = left.weights[i] * right.weights[i];
     into.recurrence[i] = 0;
   }

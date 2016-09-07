@@ -1,4 +1,4 @@
-var randf = require('../random').f;
+import { randomF } from '../random';
 
 /**
  *
@@ -8,10 +8,10 @@ var randf = require('../random').f;
 export default function sampleI(m) {
   // sample argmax from w, assuming w are
   // probabilities that sum to one
-  var r = randf(0, 1);
-  var x = 0;
-  var i = 0;
-  var w = m.weights;
+  let r = randomF(0, 1);
+  let x = 0;
+  let i = 0;
+  let w = m.weights;
 
   while (true) {
     x += w[i];

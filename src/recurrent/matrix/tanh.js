@@ -4,7 +4,7 @@
  */
 export default function tanh(into, m) {
   // tanh nonlinearity
-  for(var i = 0, n = m.weights.length; i < n; i++) {
+  for(let i = 0, max = m.weights.length; i < max; i++) {
     into.weights[i] = Math.tanh(m.weights[i]);
     into.recurrence[i] = 0;
   }

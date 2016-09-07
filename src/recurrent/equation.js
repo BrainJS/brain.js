@@ -29,7 +29,7 @@ export default class Equation {
    * @returns {Matrix}
    */
   previousResult(size) {
-    var into = new Matrix(size, 1);
+    let into = new Matrix(size, 1);
     this.previousResultInputs.push(into);
     return into;
   }
@@ -44,7 +44,7 @@ export default class Equation {
     if (left.weights.length !== right.weights.length) {
       throw new Error('misaligned matrices');
     }
-    var into = new Matrix(left.rows, left.columns);
+    let into = new Matrix(left.rows, left.columns);
     this.states.push({
       left: left,
       right: right,
@@ -65,7 +65,7 @@ export default class Equation {
     if (left.columns !== right.rows) {
       throw new Error('misaligned matrices');
     }
-    var into = new Matrix(left.rows, right.columns);
+    let into = new Matrix(left.rows, right.columns);
     this.states.push({
       left: left,
       right: right,
@@ -86,7 +86,7 @@ export default class Equation {
     if (left.weights.length !== right.weights.length) {
       throw new Error('misaligned matrices');
     }
-    var into = new Matrix(left.rows, left.columns);
+    let into = new Matrix(left.rows, left.columns);
     this.states.push({
       left: left,
       right: right,
@@ -103,7 +103,7 @@ export default class Equation {
    * @returns {Matrix}
    */
   relu(m) {
-    var into = new Matrix(m.rows, m.columns);
+    let into = new Matrix(m.rows, m.columns);
     this.states.push({
       left: m,
       into: into,
@@ -119,8 +119,8 @@ export default class Equation {
    * @returns {Matrix}
    */
   inputMatrixToRow(m) {
-    var self = this;
-    var into = new Matrix(m.columns, 1);
+    let self = this;
+    let into = new Matrix(m.columns, 1);
     this.states.push({
       left: m,
       get right () {
@@ -139,7 +139,7 @@ export default class Equation {
    * @returns {Matrix}
    */
   sigmoid(m) {
-    var into = new Matrix(m.rows, m.columns);
+    let into = new Matrix(m.rows, m.columns);
     this.states.push({
       left: m,
       into: into,
@@ -155,7 +155,7 @@ export default class Equation {
    * @returns {Matrix}
    */
   tanh(m) {
-    var into = new Matrix(m.rows, m.columns);
+    let into = new Matrix(m.rows, m.columns);
     this.states.push({
       left: m,
       into: into,
@@ -166,8 +166,8 @@ export default class Equation {
   }
 
   observe(m) {
-    var iForward = 0;
-    var iBackpropagate = 0;
+    let iForward = 0;
+    let iBackpropagate = 0;
     this.states.push({
       forwardFn: function() {
         iForward++;
@@ -188,8 +188,9 @@ export default class Equation {
   run(rowIndex) {
     this.inputRow = rowIndex || 0;
 
-    for (var i = 0, max = this.states.length; i < max; i++) {
-      var state = this.states[i];
+    let state;
+    for (let i = 0, max = this.states.length; i < max; i++) {
+      state = this.states[i];
       if (!state.hasOwnProperty('forwardFn')) {
         continue;
       }
@@ -203,9 +204,9 @@ export default class Equation {
    * @output {Matrix}
    */
   runBackpropagate() {
-    var i = this.states.length;
+    let i = this.states.length;
     while (i-- > 0) {
-      var state = this.states[i];
+      let state = this.states[i];
       if (!state.hasOwnProperty('backpropagationFn')) {
         continue;
       }
@@ -214,20 +215,20 @@ export default class Equation {
   }
 
   updatePreviousResults() {
-    for (var i = 0, max = this.previousResults.length; i < max; i++) {
+    for (let i = 0, max = this.previousResults.length; i < max; i++) {
       _copy(this.previousResultInputs[i], this.previousResults[i]);
     }
   }
 
   copyPreviousResultsTo(equation) {
-    for (var i = 0, max = this.previousResults.length; i < max; i++) {
+    for (let i = 0, max = this.previousResults.length; i < max; i++) {
       _copy(equation.previousResultInputs[i], this.previousResults[i]);
     }
   }
 
   resetPreviousResults() {
-    for (var i = 0, max = this.previousResults.length; i < max; i++) {
-      var prev = this.previousResultInputs[i];
+    for (let i = 0, max = this.previousResults.length; i < max; i++) {
+      let prev = this.previousResultInputs[i];
       _copy(prev, new Matrix(prev.rows, 1));
     }
   }
