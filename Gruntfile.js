@@ -30,6 +30,16 @@ module.exports = function(grunt) {
           cwd: 'src/utilities',
           src: ['*.js'],
           dest: 'dist/utilities'
+        },{
+          expand: true,
+          cwd: 'src/recurrent',
+          src: ['*.js'],
+          dest: 'dist/recurrent'
+        },{
+          expand: true,
+          cwd: 'src/recurrent/matrix',
+          src: ['*.js'],
+          dest: 'dist/recurrent/matrix'
         }]
       }
     },
