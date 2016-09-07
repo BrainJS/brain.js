@@ -1,7 +1,7 @@
-var fs = require('fs');
-var assert = require('assert');
-var Matrix = require('../../../lib/recurrent/matrix');
-var Equation = require('../../../lib/recurrent/equation');
+import fs from 'fs';
+import assert from 'assert';
+import Matrix from '../../../src/recurrent/matrix';
+import Equation from '../../../src/recurrent/equation';
 
 function randomMath() {
   var left = Math.floor(Math.random() * 10);

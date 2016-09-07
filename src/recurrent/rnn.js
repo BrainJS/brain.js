@@ -1,46 +1,13 @@
-var sampleI = require('./matrix/sample-i');
-var maxI = require('./matrix/max-i');
-var Matrix = require('./matrix');
-var clone = require('./matrix/clone');
-var copy = require('./matrix/copy');
-var RandomMatrix = require('./matrix/random-matrix');
-var softmax = require('./matrix/softmax');
-var Equation = require('./equation');
+import sampleI from './matrix/sample-i';
+import maxI from './matrix/max-i';
+import Matrix from './matrix';
+import clone from './matrix/clone';
+import copy from './matrix/copy';
+import RandomMatrix from './matrix/random-matrix';
+import softmax from './matrix/softmax';
+import Equation from './equation';
 
-function RNN(options) {
-  options = options || {};
-
-  for (var p in RNN.defaults) {
-    if (RNN.defaults.hasOwnProperty(p) && p !== 'isBackPropagate') {
-      this[p] = options.hasOwnProperty(p) ? options[p] : RNN.defaults[p];
-    }
-  }
-
-  this.stepCache = {};
-  this.runs = 0;
-  this.logProbabilities = null;
-  this.totalPerplexity = null;
-  this.totalCost = null;
-
-  this.model = {
-    input: [],
-    inputRows: [],
-    equations: [],
-    hidden: [],
-    output: null,
-    allMatrices: [],
-    hiddenLayers: []
-  };
-
-  if (this.json) {
-    this.fromJSON(this.json);
-  } else {
-    this.createModel();
-    this.mapModel();
-  }
-}
-
-RNN.defaults = {
+const defaults = {
   isBackPropagate: true,
   // hidden size should be a list
   inputSize: 20,
@@ -55,8 +22,50 @@ RNN.defaults = {
   json: null
 };
 
-RNN.prototype = {
-  createModel: function() {
+export default class RNN {
+  /**
+   *
+   * @param json
+   * @returns {RNN}
+   */
+  static createFromJSON(json) {
+    return new RNN({ json: json });
+  }
+
+  constructor(options) {
+    options = options || {};
+
+    for (var p in defaults) {
+      if (defaults.hasOwnProperty(p) && p !== 'isBackPropagate') {
+        this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
+      }
+    }
+
+    this.stepCache = {};
+    this.runs = 0;
+    this.logProbabilities = null;
+    this.totalPerplexity = null;
+    this.totalCost = null;
+
+    this.model = {
+      input: [],
+      inputRows: [],
+      equations: [],
+      hidden: [],
+      output: null,
+      allMatrices: [],
+      hiddenLayers: []
+    };
+
+    if (this.json) {
+      this.fromJSON(this.json);
+    } else {
+      this.createModel();
+      this.mapModel();
+    }
+  }
+
+  createModel() {
     var hiddenSizes = this.hiddenSizes;
     var model = this.model;
     var hiddenLayers = model.hiddenLayers;
@@ -69,9 +78,9 @@ RNN.prototype = {
       hiddenLayers.push(this.getModel(hiddenSize, prevSize));
       prevSize = hiddenSize;
     }
-  },
+  }
 
-  getModel: function(hiddenSize, prevSize) {
+  getModel(hiddenSize, prevSize) {
     return {
       //wxh
       weight: new RandomMatrix(hiddenSize, prevSize, 0.08),
@@ -80,7 +89,7 @@ RNN.prototype = {
       //bhh
       bias: new Matrix(hiddenSize, 1)
     };
-  },
+  }
 
   /**
    *
@@ -90,7 +99,7 @@ RNN.prototype = {
    * @param {Object} hiddenLayer
    * @returns {Matrix}
    */
-  getEquation: function(equation, inputMatrix, size, hiddenLayer) {
+  getEquation(equation, inputMatrix, size, hiddenLayer) {
     var relu = equation.relu.bind(equation);
     var add = equation.add.bind(equation);
     var multiply = equation.multiply.bind(equation);
@@ -111,12 +120,14 @@ RNN.prototype = {
         hiddenLayer.bias
       )
     );
-  },
-  createInputMatrix: function() {
+  }
+
+  createInputMatrix() {
     //0 is end, so add 1 to offset
     this.model.input = new RandomMatrix(this.inputRange + 1, this.inputSize, 0.08);
-  },
-  createOutputMatrix: function() {
+  }
+
+  createOutputMatrix() {
     var model = this.model;
     var outputSize = this.outputSize;
     var lastHiddenSize = this.hiddenSizes[this.hiddenSizes.length - 1];
@@ -127,8 +138,9 @@ RNN.prototype = {
     //0 is end, so add 1 to offset
     //bd
     model.output = new Matrix(outputSize + 1, 1);
-  },
-  bindEquations: function() {
+  }
+
+  bindEquations() {
     var model = this.model;
     var hiddenSizes = this.hiddenSizes;
     var hiddenLayers = model.hiddenLayers;
@@ -144,9 +156,9 @@ RNN.prototype = {
       equation.addPreviousResult(output);
     }
     equation.add(equation.multiply(model.outputConnector, output), model.output);
-  },
+  }
 
-  mapModel: function() {
+  mapModel() {
     var model = this.model;
     var hiddenLayers = model.hiddenLayers;
     var allMatrices = model.allMatrices;
@@ -173,9 +185,9 @@ RNN.prototype = {
 
     allMatrices.push(model.outputConnector);
     allMatrices.push(model.output);
-  },
+  }
 
-  run: function(input) {
+  run(input) {
     this.runs++;
     input = input || this.model.input;
     var equations = this.model.equations;
@@ -222,8 +234,9 @@ RNN.prototype = {
     this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
     this.totalCost = cost;
     return output;
-  },
-  step: function() {
+  }
+
+  step() {
     // perform parameter update
     var stepSize = this.learningRate;
     var regc = this.regc;
@@ -261,8 +274,9 @@ RNN.prototype = {
       }
     }
     this.ratioClipped = numClipped / numTot;
-  },
-  predict: function(_sampleI, temperature, predictionLength) {
+  }
+
+  predict(_sampleI, temperature, predictionLength) {
     if (typeof _sampleI === 'undefined') { _sampleI = true; }
     if (typeof temperature === 'undefined') { temperature = 1; }
     if (typeof predictionLength === 'undefined') { predictionLength = 100; }
@@ -310,16 +324,16 @@ RNN.prototype = {
     }
 
     return result;
-  },
+  }
 
   /**
    *
    * @param input
    * @returns {*}
    */
-  runInput: function(input) {
+  runInput(input) {
     throw new Error('not yet implemented');
-  },
+  }
 
   /**
    *
@@ -327,7 +341,7 @@ RNN.prototype = {
    * @param options
    * @returns {{error: number, iterations: number}}
    */
-  train: function(data, options) {
+  train(data, options) {
     //data = this.formatData(data);
 
     options = options || {};
@@ -376,7 +390,7 @@ RNN.prototype = {
       error: error,
       iterations: i
     };
-  },
+  }
 
   /**
    *
@@ -384,34 +398,34 @@ RNN.prototype = {
    * @param target
    * @param learningRate
    */
-  trainPattern : function(input, target, learningRate) {
+  trainPattern(input, target, learningRate) {
     throw new Error('not yet implemented');
-  },
+  }
 
   /**
    *
    * @param target
    */
-  calculateDeltas: function(target) {
+  calculateDeltas(target) {
     throw new Error('not yet implemented');
-  },
+  }
 
   /**
    *
    * @param learningRate
    */
-  adjustWeights: function(learningRate) {
+  adjustWeights(learningRate) {
     throw new Error('not yet implemented');
-  },
+  }
 
   /**
    *
    * @param data
    * @returns {*}
    */
-  formatData: function(data) {
+  formatData(data) {
     throw new Error('not yet implemented');
-  },
+  }
 
   /**
    *
@@ -423,11 +437,11 @@ RNN.prototype = {
    *  }
    * }
    */
-  test: function(data) {
+  test(data) {
     throw new Error('not yet implemented');
-  },
+  }
 
-  toJSON: function() {
+  toJSON() {
     var model = this.model;
     return {
       type: this.constructor.name,
@@ -442,9 +456,9 @@ RNN.prototype = {
       outputConnector: this.model.outputConnector.toJSON(),
       output: this.model.output.toJSON()
     };
-  },
+  }
 
-  fromJSON: function(json) {
+  fromJSON(json) {
     this.json = json;
     var model = this.model;
     var allMatrices = model.allMatrices;
@@ -462,24 +476,13 @@ RNN.prototype = {
     model.output = Matrix.fromJSON(json.output);
     allMatrices.push(model.outputConnector, model.output);
     this.bindEquations();
-  },
+  }
 
   /**
    *
    * @returns {Function}
    */
-  toFunction: function() {
+  toFunction() {
     throw new Error('not yet implemented');
   }
-};
-
-/**
- *
- * @param json
- * @returns {NeuralNetwork}
- */
-RNN.createFromJSON = function(json) {
-  return new RNN({ json: json });
-};
-
-module.exports = RNN;
+}

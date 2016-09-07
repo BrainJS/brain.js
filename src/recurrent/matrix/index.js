@@ -1,7 +1,5 @@
-'use strict';
-
-var zeros = require('./../zeros');
-var random = require('../random');
+import zeros from '../../utilities/zeros';
+import random from '../random';
 
 /**
  * A matrix
@@ -9,64 +7,69 @@ var random = require('../random');
  * @param {Number} [columns]
  * @constructor
  */
-function Matrix(rows, columns) {
-  if (typeof rows === 'undefined') return;
-  if (typeof columns === 'undefined') return;
+export default class Matrix {
+  constructor(rows, columns) {
+    if (typeof rows === 'undefined') return;
+    if (typeof columns === 'undefined') return;
 
-  this.rows = rows;
-  this.columns = columns;
-  this.weights = zeros(rows * columns);
-  this.recurrence = zeros(rows * columns);
-}
+    this.rows = rows;
+    this.columns = columns;
+    this.weights = null;
+    this.recurrence = null;
+    this.fill();
+  }
 
-Matrix.prototype = {
+  fill() {
+    this.weights = zeros(this.rows * this.columns);
+    this.recurrence = zeros(this.rows * this.columns);
+  }
+
   /**
    *
    * @param {Number} row
    * @param {Number} col
    * @returns {Float64Array|Array}
    */
-  getWeights: function(row, col) {
+  getWeights(row, col) {
     // slow but careful accessor function
     // we want row-major order
     var ix = (this.columns * row) + col;
     if (ix < 0 && ix >= this.weights.length) throw new Error('get accessor is skewed');
     return this.weights[ix];
-  },
+  }
+
   /**
-   * 
+   *
    * @param {Number} row
    * @param {Number} col
    * @param v
    * @returns {Matrix}
    */
-  setWeights: function(row, col, v) {
+  setWeights(row, col, v) {
     // slow but careful accessor function
     var ix = (this.columns * row) + col;
     if (ix < 0 && ix >= this.weights.length) throw new Error('set accessor is skewed');
     this.weights[ix] = v;
     return this;
-  },
+  }
 
   /**
-   * 
+   *
    * @returns {{rows: *, columns: *, weights: Array}}
    */
-  toJSON: function() {
+  toJSON() {
     return {
       rows: this.rows,
       columns: this.columns,
       weights: this.weights.slice(0)
     };
   }
-};
 
-Matrix.fromJSON = function(json) {
-  var matrix = new Matrix(json.rows, json.columns);
-  for(var i = 0, max = json.rows * json.columns; i < max; i++) {
-    matrix.weights[i] = json.weights[i]; // copy over weights
+  static fromJSON(json) {
+    var matrix = new Matrix(json.rows, json.columns);
+    for (var i = 0, max = json.rows * json.columns; i < max; i++) {
+      matrix.weights[i] = json.weights[i]; // copy over weights
+    }
+    return matrix;
   }
-  return matrix;
-};
-
-module.exports = Matrix;
+}

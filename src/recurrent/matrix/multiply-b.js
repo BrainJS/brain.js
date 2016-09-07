@@ -4,7 +4,7 @@
  * @param {Matrix} left
  * @param {Matrix} right
  */
-module.exports = function multiplyB(from, left, right) {
+export default function multiplyB(from, left, right) {
   var leftRows = left.rows;
   var leftColumns = left.columns;
   var rightColumns = right.columns;
@@ -23,4 +23,4 @@ module.exports = function multiplyB(from, left, right) {
       }
     }
   }
-};
+}

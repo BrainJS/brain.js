@@ -1,4 +1,3 @@
-var Matrix = require('./');
 var randomF = require('../random').f;
 
 /** return Matrix but filled with random numbers from gaussian
@@ -6,20 +5,23 @@ var randomF = require('../random').f;
  * @param {Number} [columns]
  * @param std
  * @constructor
- * @extends {Matrix}
  */
-function RandomMatrix(rows, columns, std) {
-  Matrix.call(this, rows, columns);
-  if (std) this.fillRand(-std, std);
-}
+export default class RandomMatrix {
+  constructor(rows, columns, std) {
+    this.rows = rows;
+    this.columns = columns;
+    this.std = std;
+    this.weights = [];
+    this.recurrence = [];
+    this.fill();
+  }
 
-RandomMatrix.prototype = Object.assign({
   // fill matrix with random gaussian numbers
-  fillRand: function(lo, hi) {
+  fill() {
+    if (!this.std) return;
     for(var i = 0, n = this.weights.length; i < n; i++) {
-      this.weights[i] = randomF(lo, hi);
+      this.weights[i] = randomF(-this.std, this.std);
+      this.recurrence[i] = randomF(-this.std, this.std);
     }
   }
-}, Matrix.prototype);
-
-module.exports = RandomMatrix;
+}

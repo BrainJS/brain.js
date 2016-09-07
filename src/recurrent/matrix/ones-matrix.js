@@ -1,28 +1,20 @@
-var Matrix = require('./');
-var ones = require('../ones');
+var ones = require('../../utilities/ones');
 
 /** return Matrix but filled with random numbers from gaussian
  * @param {Number} [rows]
  * @param {Number} [columns]
  * @constructor
- * @extends {Matrix}
  */
-function OnesMatrix(rows, columns) {
-  Matrix.call(this);
-  if (typeof rows === 'undefined') return;
-  if (typeof columns === 'undefined') return;
+export default class OnesMatrix {
+  constructor(rows, columns) {
+    this.rows = rows;
+    this.columns = columns;
+    this.weights = ones(rows * columns);
+    this.recurrence = ones(rows * columns);
+  }
 
-  this.rows = rows;
-  this.columns = columns;
-  this.weights = ones(rows * columns);
-  this.recurrence = ones(rows * columns);
-}
-
-OnesMatrix.prototype = Object.assign({
-  fill: function() {
+  fill() {
     this.weights = ones(this.rows * this.columns);
     this.recurrence = ones(this.rows * this.columns);
   }
-}, Matrix.prototype);
-
-module.exports = OnesMatrix;
+}

@@ -1,38 +1,38 @@
-var Matrix = require('./matrix');
-var _copy = require('./matrix/copy');
-var _add = require('./matrix/add');
-var _addB = require('./matrix/add-b');
-var _multiply = require('./matrix/multiply');
-var _multiplyB = require('./matrix/multiply-b');
-var _multiplyElement = require('./matrix/multiply-element');
-var _multiplyElementB = require('./matrix/multiply-element-b');
-var _relu = require('./matrix/relu');
-var _reluB = require('./matrix/relu-b');
-var _rowPluck = require('./matrix/row-pluck');
-var _rowPluckB = require('./matrix/row-pluck-b');
-var _sigmoid = require('./matrix/sigmoid');
-var _sigmoidB = require('./matrix/sigmoid-b');
-var _tanh = require('./matrix/tanh');
-var _tanhB = require('./matrix/tanh-b');
+import Matrix from './matrix';
+import _copy from './matrix/copy';
+import _add from './matrix/add';
+import _addB from './matrix/add-b';
+import _multiply from './matrix/multiply';
+import _multiplyB from './matrix/multiply-b';
+import _multiplyElement from './matrix/multiply-element';
+import _multiplyElementB from './matrix/multiply-element-b';
+import _relu from './matrix/relu';
+import _reluB from './matrix/relu-b';
+import _rowPluck from './matrix/row-pluck';
+import _rowPluckB from './matrix/row-pluck-b';
+import _sigmoid from './matrix/sigmoid';
+import _sigmoidB from './matrix/sigmoid-b';
+import _tanh from './matrix/tanh';
+import _tanhB from './matrix/tanh-b';
 
-function Equation() {
-  this.inputRow = 0;
-  this.states = [];
-  this.previousResults = [];
-  this.previousResultInputs = [];
-}
+export default class Equation {
+  constructor() {
+    this.inputRow = 0;
+    this.states = [];
+    this.previousResults = [];
+    this.previousResultInputs = [];
+  }
 
-Equation.prototype = {
   /**
    *
    * @param {Number} size
    * @returns {Matrix}
    */
-  previousResult: function (size) {
+  previousResult(size) {
     var into = new Matrix(size, 1);
     this.previousResultInputs.push(into);
     return into;
-  },
+  }
 
   /**
    * connects two matrices together by add
@@ -40,7 +40,7 @@ Equation.prototype = {
    * @param {Matrix} right
    * @returns {Matrix}
    */
-  add: function (left, right) {
+  add(left, right) {
     if (left.weights.length !== right.weights.length) {
       throw new Error('misaligned matrices');
     }
@@ -53,7 +53,7 @@ Equation.prototype = {
       backpropagationFn: _addB
     });
     return into;
-  },
+  }
 
   /**
    * connects two matrices together by multiply
@@ -61,7 +61,7 @@ Equation.prototype = {
    * @param {Matrix} right
    * @returns {Matrix}
    */
-  multiply: function (left, right) {
+  multiply(left, right) {
     if (left.columns !== right.rows) {
       throw new Error('misaligned matrices');
     }
@@ -74,7 +74,7 @@ Equation.prototype = {
       backpropagationFn: _multiplyB
     });
     return into;
-  },
+  }
 
   /**
    * connects two matrices together by multiplyElement
@@ -82,7 +82,7 @@ Equation.prototype = {
    * @param {Matrix} right
    * @returns {Matrix}
    */
-  multiplyElement: function (left, right) {
+  multiplyElement(left, right) {
     if (left.weights.length !== right.weights.length) {
       throw new Error('misaligned matrices');
     }
@@ -95,14 +95,14 @@ Equation.prototype = {
       backpropagationFn: _multiplyElementB
     });
     return into;
-  },
+  }
 
   /**
    * connects a matrix to relu
    * @param {Matrix} m
    * @returns {Matrix}
    */
-  relu: function (m) {
+  relu(m) {
     var into = new Matrix(m.rows, m.columns);
     this.states.push({
       left: m,
@@ -111,14 +111,14 @@ Equation.prototype = {
       backpropagationFn: _reluB
     });
     return into;
-  },
+  }
 
   /**
    * connects a matrix via a row
    * @param {Matrix} m
    * @returns {Matrix}
    */
-  inputMatrixToRow: function (m) {
+  inputMatrixToRow(m) {
     var self = this;
     var into = new Matrix(m.columns, 1);
     this.states.push({
@@ -131,14 +131,14 @@ Equation.prototype = {
       backpropagationFn: _rowPluckB
     });
     return into;
-  },
+  }
 
   /**
    * connects a matrix to sigmoid
    * @param {Matrix} m
    * @returns {Matrix}
    */
-  sigmoid: function (m) {
+  sigmoid(m) {
     var into = new Matrix(m.rows, m.columns);
     this.states.push({
       left: m,
@@ -147,14 +147,14 @@ Equation.prototype = {
       backpropagationFn: _sigmoidB
     });
     return into;
-  },
+  }
 
   /**
    * connects a matrix to tanh
    * @param {Matrix} m
    * @returns {Matrix}
    */
-  tanh: function (m) {
+  tanh(m) {
     var into = new Matrix(m.rows, m.columns);
     this.states.push({
       left: m,
@@ -163,9 +163,9 @@ Equation.prototype = {
       backpropagationFn: _tanhB
     });
     return into;
-  },
+  }
 
-  observe: function(m) {
+  observe(m) {
     var iForward = 0;
     var iBackpropagate = 0;
     this.states.push({
@@ -179,13 +179,13 @@ Equation.prototype = {
       }
     });
     return m;
-  },
+  }
 
   /**
    *
    * @output {Matrix}
    */
-  run: function (rowIndex) {
+  run(rowIndex) {
     this.inputRow = rowIndex || 0;
 
     for (var i = 0, max = this.states.length; i < max; i++) {
@@ -197,12 +197,12 @@ Equation.prototype = {
     }
 
     return state.into;
-  },
+  }
 
   /**
    * @output {Matrix}
    */
-  runBackpropagate: function () {
+  runBackpropagate() {
     var i = this.states.length;
     while (i-- > 0) {
       var state = this.states[i];
@@ -211,32 +211,32 @@ Equation.prototype = {
       }
       state.backpropagationFn(state.into, state.left, state.right);
     }
-  },
+  }
 
-  updatePreviousResults: function() {
+  updatePreviousResults() {
     for (var i = 0, max = this.previousResults.length; i < max; i++) {
       _copy(this.previousResultInputs[i], this.previousResults[i]);
     }
-  },
+  }
 
-  copyPreviousResultsTo: function(equation) {
+  copyPreviousResultsTo(equation) {
     for (var i = 0, max = this.previousResults.length; i < max; i++) {
       _copy(equation.previousResultInputs[i], this.previousResults[i]);
     }
-  },
+  }
 
-  resetPreviousResults: function() {
+  resetPreviousResults() {
     for (var i = 0, max = this.previousResults.length; i < max; i++) {
       var prev = this.previousResultInputs[i];
       _copy(prev, new Matrix(prev.rows, 1));
     }
-  },
+  }
 
-  addPreviousResult: function(m) {
+  addPreviousResult(m) {
     this.previousResults.push(m);
-  },
+  }
 
-  toFunction: function() {
+  toFunction() {
     throw new Error('not yet implemented');
     /*var lookupTable = [model.input, model.hiddenLayers, model.outputConnector, model.output];
     var hiddenLayers = this.model.hiddenLayers;
@@ -276,11 +276,9 @@ Equation.prototype = {
 \
     return state.into;\
 ');*/
-  },
+  }
 
-  toFunctionStates: function() {
+  toFunctionStates() {
 
   }
-};
-
-module.exports = Equation;
+}

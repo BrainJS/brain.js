@@ -1,16 +1,11 @@
-var Matrix = require('./matrix');
-var RNN = require('./rnn');
-var RandomMatrix = require('./matrix/random-matrix');
-var OnesMatrix = require('./matrix/ones-matrix');
-var cloneNegative = require('./matrix/clone-negative');
+import Matrix from './matrix';
+import RNN from './rnn';
+import RandomMatrix from './matrix/random-matrix';
+import OnesMatrix from './matrix/ones-matrix';
+import cloneNegative from './matrix/clone-negative';
 
-function GRU(options) {
-  //call super
-  RNN.call(this, options);
-}
-
-GRU.prototype = Object.assign({}, RNN.prototype, {
-  getModel: function(hiddenSize, prevSize) {
+export default class GRU extends RNN {
+  getModel(hiddenSize, prevSize) {
     return {
       // reset Gate
       //wrxh
@@ -36,7 +31,7 @@ GRU.prototype = Object.assign({}, RNN.prototype, {
       //bc
       cellWriteBias: new Matrix(hiddenSize, 1)
     };
-  },
+  }
 
   /**
    *
@@ -46,7 +41,7 @@ GRU.prototype = Object.assign({}, RNN.prototype, {
    * @param {Object} hiddenLayer
    * @returns {Matrix}
    */
-  getEquation: function(equation, inputMatrix, size, hiddenLayer) {
+  getEquation(equation, inputMatrix, size, hiddenLayer) {
     var sigmoid = equation.sigmoid.bind(equation);
     var add = equation.add.bind(equation);
     var multiply = equation.multiply.bind(equation);
@@ -126,6 +121,4 @@ GRU.prototype = Object.assign({}, RNN.prototype, {
       )
     );
   }
-});
-
-module.exports = GRU;
+}

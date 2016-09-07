@@ -3,8 +3,8 @@
  * @param {Matrix} from
  * @param {Matrix} m
  */
-module.exports = function reluB(from, m) {
+export default function reluB(from, m) {
   for(var i = 0, max = m.weights.length; i < max; i++) {
     m.recurrence[i] += m.weights[i] > 0 ? from.recurrence[i] : 0;
   }
-};
+}

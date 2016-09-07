@@ -1,4 +1,4 @@
-function run() {
+/*function run() {
   bindEquations: function() {
     var model = this.model;
     var hiddenSizes = this.hiddenSizes;
@@ -65,4 +65,4 @@ function run() {
     this.totalCost = cost;
     return output;
   }
-}
+}*/

@@ -52,7 +52,8 @@ module.exports = function(grunt) {
         },
         src: [
           'test/cross-validation/*.js',
-          'test/unit/*.js'
+          'test/unit/*.js',
+          'test/unit/recurrent/*.js'
         ]
       }
     },

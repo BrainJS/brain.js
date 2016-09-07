@@ -1,7 +1,7 @@
-var fs = require('fs');
-var RNN = require('../../../lib/recurrent/rnn');
-var LSTM = require('../../../lib/recurrent/lstm');
-var phraseWriterJson = require('./phrase-writer.json');
+import fs from 'fs';
+import RNN from '../../../src/recurrent/rnn';
+import LSTM from '../../../src/recurrent/lstm';
+import phraseWriterJson from './phrase-writer.json';
 var vocabData = initVocab();
 
 function initVocab(maxThreshold) {

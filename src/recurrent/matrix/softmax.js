@@ -1,10 +1,10 @@
-var Matrix = require('./');
+import Matrix from './';
 /**
  *
  * @param {Matrix} m
  * @returns {Matrix}
  */
-module.exports = function softmax(m) {
+export default function softmax(m) {
   var result = new Matrix(m.rows, m.columns); // probability volume
   var maxVal = -999999;
   var i;
@@ -30,4 +30,4 @@ module.exports = function softmax(m) {
   // since we will use the computed probabilities outside
   // to set gradients directly on m
   return result;
-};
+}

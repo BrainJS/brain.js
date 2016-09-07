@@ -1,11 +1,11 @@
-var assert = require('assert');
-var Matrix = require('../../../lib/recurrent/matrix');
-var add = require('../../../lib/recurrent/matrix/add');
-var addB = require('../../../lib/recurrent/matrix/add-b');
-var multiply = require('../../../lib/recurrent/matrix/multiply');
-var multiplyB = require('../../../lib/recurrent/matrix/multiply-b');
-var multiplyElement = require('../../../lib/recurrent/matrix/multiply-element');
-var multiplyElementB = require('../../../lib/recurrent/matrix/multiply-element-b');
+import assert from 'assert';
+import Matrix from '../../../src/recurrent/matrix';
+import add from '../../../src/recurrent/matrix/add';
+import addB from '../../../src/recurrent/matrix/add-b';
+import multiply from '../../../src/recurrent/matrix/multiply';
+import multiplyB from '../../../src/recurrent/matrix/multiply-b';
+import multiplyElement from '../../../src/recurrent/matrix/multiply-element';
+import multiplyElementB from '../../../src/recurrent/matrix/multiply-element-b';
 
 function makeFakeMatrix(rows, columns) {
   var m = new Matrix(rows, columns);

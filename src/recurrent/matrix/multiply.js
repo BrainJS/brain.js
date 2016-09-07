@@ -4,7 +4,7 @@
  * @param {Matrix} left
  * @param {Matrix} right
  */
-module.exports = function multiply(into, left, right) {
+export default function multiply(into, left, right) {
   var leftRows = left.rows;
   var leftColumns = left.columns;
   var rightColumns = right.columns;
@@ -29,4 +29,4 @@ module.exports = function multiply(into, left, right) {
       into.recurrence[i] = 0;
     }
   }
-};
+}

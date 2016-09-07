@@ -3,7 +3,7 @@
  * @param {Matrix} m
  * @returns {number}
  */
-module.exports = function maxI(m) {
+export default function maxI(m) {
   // argmax of array w
   var w = m.weights;
   var maxv = w[0];

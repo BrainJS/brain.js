@@ -4,7 +4,7 @@ var Matrix = require('./');
  *
  * @param {Matrix} m
  */
-function cloneNegative(m) {
+export default function cloneNegative(m) {
   var cloned = new Matrix(m.rows, m.columns);
   cloned.rows = parseInt(m.rows);
   cloned.columns = parseInt(m.columns);
@@ -15,5 +15,3 @@ function cloneNegative(m) {
   }
   return cloned;
 }
-
-module.exports = cloneNegative;

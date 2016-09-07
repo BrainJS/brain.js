@@ -5,7 +5,7 @@ var randf = require('../random').f;
  * @param {Matrix} m
  * @returns {number}
  */
-module.exports = function sampleI(m) {
+export default function sampleI(m) {
   // sample argmax from w, assuming w are
   // probabilities that sum to one
   var r = randf(0, 1);
@@ -20,4 +20,4 @@ module.exports = function sampleI(m) {
     }
     i++;
   }
-};
+}

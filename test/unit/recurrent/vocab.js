@@ -1,5 +1,5 @@
-var assert = require('assert');
-var Vocab = require('../../../lib/recurrent/vocab');
+import assert from 'assert';
+import Vocab from '../../../src/recurrent/vocab';
 
 describe('vocab', function() {
   describe('#toIndexes', function() {

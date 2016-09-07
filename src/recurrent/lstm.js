@@ -1,14 +1,9 @@
-var Matrix = require('./matrix');
-var RNN = require('./rnn');
-var RandomMatrix = require('./matrix/random-matrix');
+import Matrix from './matrix';
+import RNN from './rnn';
+import RandomMatrix from './matrix/random-matrix';
 
-function LSTM(options) {
-  //call super
-  RNN.call(this, options);
-}
-
-LSTM.prototype = Object.assign({}, RNN.prototype, {
-  getModel: function(hiddenSize, prevSize) {
+export default class LSTM extends RNN {
+  getModel(hiddenSize, prevSize) {
     return {
       // gates parameters
       //wix
@@ -40,7 +35,7 @@ LSTM.prototype = Object.assign({}, RNN.prototype, {
       //bc
       cellActivationBias: new Matrix(hiddenSize, 1)
     };
-  },
+  }
 
   /**
    *
@@ -50,7 +45,7 @@ LSTM.prototype = Object.assign({}, RNN.prototype, {
    * @param {Object} hiddenLayer
    * @returns {Matrix}
    */
-  getEquation: function(equation, inputMatrix, size, hiddenLayer) {
+  getEquation(equation, inputMatrix, size, hiddenLayer) {
     var sigmoid = equation.sigmoid.bind(equation);
     var add = equation.add.bind(equation);
     var multiply = equation.multiply.bind(equation);
@@ -132,6 +127,4 @@ LSTM.prototype = Object.assign({}, RNN.prototype, {
     // compute hidden state as gated, saturated cell activations
     return multiplyElement(outputGate, tanh(cell));
   }
-});
-
-module.exports = LSTM;
+}

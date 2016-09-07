@@ -4,43 +4,42 @@
  * @param maxThreshold
  * @constructor
  */
-function Vocab(values, maxThreshold) {
-  maxThreshold = maxThreshold || 0;
-  this.values = values;
-  // go over all characters and keep track of all unique ones seen
-  // count up all characters
-  this.indexTable = {};
-  this.characterTable = {};
-  this.characters = [];
-  var tempCharactersTable = {};
-  for (var vocabIndex = 0, vocabLength = values.length; vocabIndex < vocabLength; vocabIndex++) {
-    var characters = values[vocabIndex].toString();
-    for (var characterIndex = 0, charactersLength = characters.length; characterIndex < charactersLength; characterIndex++) {
-      var character = characters[characterIndex];
-      if (character in tempCharactersTable) continue;
-      tempCharactersTable[character] = true;
-      this.characters.push(character);
+export default class Vocab {
+  constructor(values, maxThreshold) {
+    maxThreshold = maxThreshold || 0;
+    this.values = values;
+    // go over all characters and keep track of all unique ones seen
+    // count up all characters
+    this.indexTable = {};
+    this.characterTable = {};
+    this.characters = [];
+    var tempCharactersTable = {};
+    for (var vocabIndex = 0, vocabLength = values.length; vocabIndex < vocabLength; vocabIndex++) {
+      var characters = values[vocabIndex].toString();
+      for (var characterIndex = 0, charactersLength = characters.length; characterIndex < charactersLength; characterIndex++) {
+        var character = characters[characterIndex];
+        if (character in tempCharactersTable) continue;
+        tempCharactersTable[character] = true;
+        this.characters.push(character);
+      }
+    }
+
+    // filter by count threshold and create pointers
+
+    // NOTE: start at one because we will have START and END tokens!
+    // that is, START token will be index 0 in model letter vectors
+    // and END token will be index 0 in the next character softmax
+    charactersLength = this.characters.length;
+    for(characterIndex = 0; characterIndex < charactersLength; characterIndex++) {
+      character = this.characters[characterIndex];
+      if(characterIndex >= maxThreshold) {
+        // add character to vocab
+        this.indexTable[character] = characterIndex + 1;
+        this.characterTable[characterIndex + 1] = character;
+      }
     }
   }
-
-  // filter by count threshold and create pointers
-
-  // NOTE: start at one because we will have START and END tokens!
-  // that is, START token will be index 0 in model letter vectors
-  // and END token will be index 0 in the next character softmax
-  charactersLength = this.characters.length;
-  for(characterIndex = 0; characterIndex < charactersLength; characterIndex++) {
-    character = this.characters[characterIndex];
-    if(characterIndex >= maxThreshold) {
-      // add character to vocab
-      this.indexTable[character] = characterIndex + 1;
-      this.characterTable[characterIndex + 1] = character;
-    }
-  }
-}
-
-Vocab.prototype = {
-  toIndexes: function(phrase, maxThreshold) {
+  toIndexes(phrase, maxThreshold) {
     maxThreshold = maxThreshold || 0;
     var result = [];
     var indexTable = this.indexTable;
@@ -53,9 +52,9 @@ Vocab.prototype = {
     }
 
     return result;
-  },
+  }
 
-  toCharacters: function(indexes, maxThreshold) {
+  toCharacters(indexes, maxThreshold) {
     maxThreshold = maxThreshold || 0;
     var result = [];
     var characterTable = this.characterTable;
@@ -69,6 +68,4 @@ Vocab.prototype = {
 
     return result;
   }
-};
-
-module.exports = Vocab;
+}

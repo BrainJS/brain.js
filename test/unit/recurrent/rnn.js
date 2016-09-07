@@ -1,7 +1,7 @@
-var fs = require('fs');
-var assert = require('assert');
-var RNN = require('../../../lib/recurrent/rnn');
-var Vocab = require('../../../lib/recurrent/vocab');
+import fs from 'fs';
+import assert from 'assert';
+import RNN from '../../../src/recurrent/rnn';
+import Vocab from '../../../src/recurrent/vocab';
 var vocab = new Vocab(['0','1','2','3','4','5','6','7','8','9','+','=']);
 
 function randomMath() {
