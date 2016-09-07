@@ -18,6 +18,7 @@ describe('gru', function() {
       outputSize: vocab.characters.length
     });
 
+    process.exit(0);
     for (var i = 0; i < 10000; i++) {
       gru.run(vocab.toIndexes(randomMath()));
       if (i % 10 === 0) {

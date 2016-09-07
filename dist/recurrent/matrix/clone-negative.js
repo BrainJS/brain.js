@@ -16,7 +16,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @param {Matrix} m
  */
 function cloneNegative(m) {
-  var cloned = new _2.default(m.rows, m.columns);
+  var cloned = new _2.default();
   cloned.rows = parseInt(m.rows);
   cloned.columns = parseInt(m.columns);
 

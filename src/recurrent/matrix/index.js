@@ -14,14 +14,8 @@ export default class Matrix {
 
     this.rows = rows;
     this.columns = columns;
-    this.weights = null;
-    this.recurrence = null;
-    this.fill();
-  }
-
-  fill() {
-    this.weights = zeros(this.rows * this.columns);
-    this.recurrence = zeros(this.rows * this.columns);
+    this.weights = zeros(rows * columns);
+    this.recurrence = zeros(rows * columns);
   }
 
   /**

@@ -33,26 +33,19 @@ var Matrix = function () {
 
     this.rows = rows;
     this.columns = columns;
-    this.weights = null;
-    this.recurrence = null;
-    this.fill();
+    this.weights = (0, _zeros2.default)(rows * columns);
+    this.recurrence = (0, _zeros2.default)(rows * columns);
   }
 
+  /**
+   *
+   * @param {Number} row
+   * @param {Number} col
+   * @returns {Float64Array|Array}
+   */
+
+
   _createClass(Matrix, [{
-    key: 'fill',
-    value: function fill() {
-      this.weights = (0, _zeros2.default)(this.rows * this.columns);
-      this.recurrence = (0, _zeros2.default)(this.rows * this.columns);
-    }
-
-    /**
-     *
-     * @param {Number} row
-     * @param {Number} col
-     * @returns {Float64Array|Array}
-     */
-
-  }, {
     key: 'getWeights',
     value: function getWeights(row, col) {
       // slow but careful accessor function

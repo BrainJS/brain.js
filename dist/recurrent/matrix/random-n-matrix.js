@@ -46,7 +46,7 @@ var _class = function (_Matrix) {
     key: 'fillRandN',
     value: function fillRandN(mu, std) {
       for (var i = 0, max = this.weights.length; i < max; i++) {
-        this.weights[i] = (0, _random.n)(mu, std);
+        this.weights[i] = (0, _random.randomN)(mu, std);
       }
     }
   }]);

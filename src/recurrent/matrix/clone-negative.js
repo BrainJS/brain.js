@@ -5,7 +5,7 @@ import Matrix from './';
  * @param {Matrix} m
  */
 export default function cloneNegative(m) {
-  let cloned = new Matrix(m.rows, m.columns);
+  let cloned = new Matrix();
   cloned.rows = parseInt(m.rows);
   cloned.columns = parseInt(m.columns);
 

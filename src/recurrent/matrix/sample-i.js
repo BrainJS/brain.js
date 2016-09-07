@@ -13,6 +13,10 @@ export default function sampleI(m) {
   let i = 0;
   let w = m.weights;
 
+  if (isNaN(w[0])) {
+    throw new Error('NaN');
+  }
+
   while (true) {
     x += w[i];
     if(x > r) {

@@ -1,5 +1,5 @@
 import Matrix from './index';
-import { n as randomN } from '../random';
+import { randomN } from '../random';
 /**
  *
  * @param {Number} rows

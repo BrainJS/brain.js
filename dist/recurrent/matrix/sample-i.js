@@ -20,6 +20,10 @@ function sampleI(m) {
   var i = 0;
   var w = m.weights;
 
+  if (isNaN(w[0])) {
+    throw new Error('NaN');
+  }
+
   while (true) {
     x += w[i];
     if (x > r) {

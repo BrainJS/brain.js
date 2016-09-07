@@ -1,3 +1,4 @@
+import Matrix from './';
 import { randomF } from '../random';
 
 /** return Matrix but filled with random numbers from gaussian
@@ -6,22 +7,15 @@ import { randomF } from '../random';
  * @param std
  * @constructor
  */
-export default class RandomMatrix {
+export default class RandomMatrix extends Matrix {
   constructor(rows, columns, std) {
+    super(rows, columns);
     this.rows = rows;
     this.columns = columns;
     this.std = std;
-    this.weights = [];
-    this.recurrence = [];
-    this.fill();
-  }
-
-  // fill matrix with random gaussian numbers
-  fill() {
-    if (!this.std) return;
     for(let i = 0, max = this.weights.length; i < max; i++) {
-      this.weights[i] = randomF(-this.std, this.std);
-      this.recurrence[i] = randomF(-this.std, this.std);
+      this.weights[i] = randomF(-std, std);
+      this.recurrence[i] = randomF(-std, std);
     }
   }
 }

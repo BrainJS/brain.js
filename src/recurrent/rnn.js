@@ -1,8 +1,6 @@
 import sampleI from './matrix/sample-i';
 import maxI from './matrix/max-i';
 import Matrix from './matrix';
-import clone from './matrix/clone';
-import copy from './matrix/copy';
 import RandomMatrix from './matrix/random-matrix';
 import softmax from './matrix/softmax';
 import Equation from './equation';
@@ -344,6 +342,7 @@ export default class RNN {
    * @returns {{error: number, iterations: number}}
    */
   train(data, options) {
+    throw new Error('not yet implemented');
     //data = this.formatData(data);
 
     options = options || {};
