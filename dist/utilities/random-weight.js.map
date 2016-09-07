@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/utilities/random-weight.js"],"names":["randomWeight","Math","random"],"mappings":";;;;;kBAAwBA,Y;AAAT,SAASA,YAAT,GAAwB;AACrC,SAAOC,KAAKC,MAAL,KAAgB,GAAhB,GAAsB,GAA7B;AACD","file":"random-weight.js","sourcesContent":["export default function randomWeight() {\n  return Math.random() * 0.4 - 0.2;\n}"]}
