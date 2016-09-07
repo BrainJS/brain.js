@@ -1,10 +1,10 @@
-var assert = require('assert');
-var brain = require('../../lib/brain');
+import assert from 'assert';
+import brain from '../../src';
 
 function StreamTester(opts) {
   if (!(this instanceof StreamTester)) return new StreamTester(opts);
 
-  var self = this;
+  let self = this;
 
   this.wiggle = opts.wiggle || 0.1;
   this.op = opts.op;
@@ -30,20 +30,20 @@ function StreamTester(opts) {
  */
 StreamTester.prototype = {
   flood: function() {
-    var self = this;
+    let self = this;
 
-    for (var i = self.testData.length - 1; i >= 0; i--) {
+    for (let i = self.testData.length - 1; i >= 0; i--) {
       self.trainStream.write(self.testData[i]);
     }
     self.trainStream.write(null);
   },
 
   doneTraining: function(info) {
-    var self = this;
+    let self = this;
 
-    for (var i in self.testData) {
-      var output = self.net.run(self.testData[i].input)[0];
-      var target = self.testData[i].output;
+    for (let i in self.testData) {
+      let output = self.net.run(self.testData[i].input)[0];
+      let target = self.testData[i].output;
       assert.ok(output < (target + self.wiggle) && output > (target - self.wiggle),
         'failed to train ' + self.op + ' - output: ' + output + ' target: ' + target);
     }
@@ -52,7 +52,7 @@ StreamTester.prototype = {
 
 
 function testBitwise(data, op) {
-  var st = StreamTester({
+  let st = StreamTester({
     testData: data,
     op: op,
     wiggle: 0.1,
@@ -60,10 +60,10 @@ function testBitwise(data, op) {
   });
 }
 
-describe('bitwise functions', function() {
+describe('bitwise functions', () => {
 
-  it('NOT function', function() {
-    var not = [{
+  it('NOT function', () => {
+    let not = [{
       input: [0],
       output: [1]
     }, {
@@ -73,8 +73,8 @@ describe('bitwise functions', function() {
     testBitwise(not, 'not');
   });
 
-  it('XOR function', function() {
-    var xor = [{
+  it('XOR function', () => {
+    let xor = [{
       input: [0, 0],
       output: [0]
     }, {
@@ -90,8 +90,8 @@ describe('bitwise functions', function() {
     testBitwise(xor, 'xor');
   });
 
-  it('OR function', function() {
-    var or = [{
+  it('OR function', () => {
+    let or = [{
       input: [0, 0],
       output: [0]
     }, {
@@ -107,8 +107,8 @@ describe('bitwise functions', function() {
     testBitwise(or, 'or');
   });
 
-  it('AND function', function() {
-    var and = [{
+  it('AND function', () => {
+    let and = [{
       input: [0, 0],
       output: [0]
     }, {

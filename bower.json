@@ -1,27 +1,29 @@
 {
   "name": "brain.js",
-  "version": "0.7.1",
+  "version": "1.0.0-alpha",
   "homepage": "https://github.com/harthur-org/brain.js",
   "authors": [
     "Heather Arthur <fayearthur@gmail.com>"
   ],
   "description": "Neural network library",
   "keywords": [
-    "brain",
-    "nueral",
-    "network",
     "ai",
     "artificial-intelligence",
+    "brain",
+    "brainjs",
+    "brain,js",
+    "feed forward",
+    "neural network",
+    "classifier",
+    "neural",
+    "network",
     "neural-networks",
     "machine-learning",
-    "classifier"
+    "synpapse"
   ],
-  "main": "browser.min.js",
+  "main": "./browser.min.js",
   "ignore": [
     "node_modules",
     "test"
-  ],
-  "dependencies": {
-    "underscore": ">=1.5.1"
-  }
+  ]
 }

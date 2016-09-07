@@ -1,9 +1,9 @@
-var brain = require('../../lib/brain');
-var likely = require('../../lib/likely');
-var assert = require('assert');
+import assert from 'assert';
+import brain from '../../src';
+import likely from '../../dist/likely';
 
-describe('likely', function() {
-  var a = character(
+describe('likely', () => {
+  let a = character(
     '.#####.' +
     '#.....#' +
     '#.....#' +
@@ -12,7 +12,7 @@ describe('likely', function() {
     '#.....#' +
     '#.....#'
   );
-  var b = character(
+  let b = character(
     '######.' +
     '#.....#' +
     '#.....#' +
@@ -21,7 +21,7 @@ describe('likely', function() {
     '#.....#' +
     '######.'
   );
-  var c = character(
+  let c = character(
     '#######' +
     '#......' +
     '#......' +
@@ -34,18 +34,18 @@ describe('likely', function() {
   /**
    * Learn the letters A through C.
    */
-  var net = new brain.NeuralNetwork();
+  let net = new brain.NeuralNetwork();
   net.train([
     { input: a, output: { a: 1 } },
     { input: b, output: { b: 1 } },
     { input: c, output: { c: 1 } }
   ]);
 
-  it('should be able to find a "a"', function() {
+  it('should be able to find a "a"', () => {
     /**
      * Predict the letter A, even with a pixel off.
      */
-    var result = likely(character(
+    let result = likely(character(
       '.#####.' +
       '#.....#' +
       '#.....#' +
@@ -58,11 +58,11 @@ describe('likely', function() {
     assert.ok(result === 'a');
   });
 
-  it('should be able to find a "b"', function() {
+  it('should be able to find a "b"', () => {
     /**
      * Predict the letter B, even with a pixel off.
      */
-    var result = likely(character(
+    let result = likely(character(
       '######.' +
       '#.....#' +
       '#.....#' +
@@ -75,11 +75,11 @@ describe('likely', function() {
     assert.ok(result === 'b');
   });
 
-  it('should be able to find a "c"', function() {
+  it('should be able to find a "c"', () => {
     /**
      * Predict the letter C, even with a pixel off.
      */
-    var result = likely(character(
+    let result = likely(character(
       '#######' +
       '#......' +
       '#......' +
