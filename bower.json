@@ -7,14 +7,19 @@
   ],
   "description": "Neural network library",
   "keywords": [
-    "brain",
-    "nueral",
-    "network",
     "ai",
     "artificial-intelligence",
+    "brain",
+    "brainjs",
+    "brain,js",
+    "feed forward",
+    "neural network",
+    "classifier",
+    "neural",
+    "network",
     "neural-networks",
     "machine-learning",
-    "classifier"
+    "synpapse"
   ],
   "main": "./browser.min.js",
   "ignore": [

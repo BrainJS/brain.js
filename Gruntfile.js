@@ -47,9 +47,19 @@ module.exports = function(grunt) {
       }
     },
     pkg: grunt.file.readJSON('package.json'),
+    browserify: {
+      options: {
+        banner: '/*\n' + grunt.file.read('LICENSE') + '*/',
+        version: grunt.file.readJSON('package.json').version
+      },
+      browser: {
+        src: ['dist/*.js', 'dist/utilities/*.js'],
+        dest: 'browser.js'
+      }
+    },
     uglify: {
       options: {
-        banner: '/*\n' + grunt.file.read('LICENSE') + '*/'
+        banner: '/*\n' + grunt.file.read('LICENSE') + '*/',
       },
       dist: {
         files: {
@@ -59,25 +69,15 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('build', 'build a browser file', function() {
-    var done = this.async();
-    var outfile = './browser.js';
-    var bundle = browserify(pkg.main).bundle(function(err, src) {
-      console.log('> ' + outfile);
+  //we need to keep these up to date
+  if (grunt.file.readJSON('package.json').version !== grunt.file.readJSON('bower.json').version) {
+    console.log('Error: bower.json & package.json version mismatch');
+    process.exit(0);
+  }
 
-      // prepend license
-      var license = fs.readFileSync('./LICENSE');
-      src = '/*\n' + license + '*/' + src;
-
-      // write out the browser file
-      fs.writeFileSync(outfile, src);
-      done();
-    });
-  });
-
-  grunt.registerTask('build-min', 'uglify');
   grunt.registerTask('test', 'mochaTest');
-  grunt.registerTask('default', ['babel', 'build', 'build-min', 'test']);
   grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.registerTask('default', ['babel', 'test', 'browserify', 'uglify']);
 };
