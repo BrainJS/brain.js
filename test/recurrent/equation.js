@@ -1,7 +1,7 @@
 import fs from 'fs';
 import assert from 'assert';
-import Matrix from '../../../src/recurrent/matrix';
-import Equation from '../../../src/recurrent/equation';
+import Matrix from '../../src/recurrent/matrix';
+import Equation from '../../src/recurrent/equation';
 
 function randomMath() {
   var left = Math.floor(Math.random() * 10);

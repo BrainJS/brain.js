@@ -1,7 +1,7 @@
 import canvas from 'canvas';
 import assert from 'assert';
-import brain from '../../src';
-import crossValidate from '../../src/cross-validate';
+import brain from '../../../src';
+import crossValidate from '../../../src/cross-validate';
 let dim = 24;
 
 function getSampling(context, letter, font) {

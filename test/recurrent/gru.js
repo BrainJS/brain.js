@@ -1,7 +1,7 @@
 import fs from 'fs';
 import assert from 'assert';
-import GRU from '../../../src/recurrent/gru';
-import Vocab from '../../../src/recurrent/vocab';
+import GRU from '../../src/recurrent/gru';
+import Vocab from '../../src/recurrent/vocab';
 const vocab = new Vocab(['0','1','2','3','4','5','6','7','8','9','+','=', '-', '/', '*']);
 
 function randomMath() {
@@ -18,7 +18,6 @@ describe('gru', function() {
       outputSize: vocab.characters.length
     });
 
-    process.exit(0);
     for (var i = 0; i < 10000; i++) {
       gru.run(vocab.toIndexes(randomMath()));
       if (i % 10 === 0) {

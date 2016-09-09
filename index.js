@@ -1,13 +1,13 @@
-import crossValidate from './dist/cross-validate';
-import likely from './dist/likely';
-import lookup from './dist/lookup';
-import NeuralNetwork from './dist/neural-network';
-import TrainStream from './dist/train-stream';
+var crossValidate = require('./dist/cross-validate');
+var likely = require('./dist/likely');
+var lookup = require('./dist/lookup');
+var NeuralNetwork = require('./dist/neural-network');
+var TrainStream = require('./dist/train-stream');
 
-export default {
-  crossValidate,
-  likely,
-  lookup,
-  NeuralNetwork,
-  TrainStream
+module.exports = {
+  crossValidate: crossValidate,
+  likely: likely,
+  lookup: lookup,
+  NeuralNetwork: NeuralNetwork,
+  TrainStream: TrainStream
 };

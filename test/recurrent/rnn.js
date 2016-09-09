@@ -1,7 +1,7 @@
 import fs from 'fs';
 import assert from 'assert';
-import RNN from '../../../src/recurrent/rnn';
-import Vocab from '../../../src/recurrent/vocab';
+import RNN from '../../src/recurrent/rnn';
+import Vocab from '../../src/recurrent/vocab';
 var vocab = new Vocab(['0','1','2','3','4','5','6','7','8','9','+','=']);
 
 function randomMath() {
@@ -80,7 +80,7 @@ describe('rnn', function() {
     });
   });
 
-  describe('#train', function() {
+  /*describe('#train', function() {
     it('can train', function() {
       var rnn = new RNN({
         inputSize: 6, //<- length
@@ -95,5 +95,5 @@ describe('rnn', function() {
         {input: [1, 0], output: [1]},
         {input: [1, 1], output: [0]}]);
     });
-  });
+  });*/
 });

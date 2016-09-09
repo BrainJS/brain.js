@@ -18,14 +18,6 @@ var _matrix = require('./matrix');
 
 var _matrix2 = _interopRequireDefault(_matrix);
 
-var _clone = require('./matrix/clone');
-
-var _clone2 = _interopRequireDefault(_clone);
-
-var _copy = require('./matrix/copy');
-
-var _copy2 = _interopRequireDefault(_copy);
-
 var _randomMatrix = require('./matrix/random-matrix');
 
 var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
@@ -397,6 +389,7 @@ var RNN = function () {
   }, {
     key: 'train',
     value: function train(data, options) {
+      //throw new Error('not yet implemented');
       //data = this.formatData(data);
 
       options = options || {};
@@ -422,7 +415,7 @@ var RNN = function () {
       sizes.unshift(inputSize);
       sizes.push(outputSize);
 
-      this.initialize(sizes, options.keepNetworkIntact);
+      //this.initialize(sizes, options.keepNetworkIntact);
 
       var error = 1;
       for (var _i4 = 0; _i4 < iterations && error > errorThresh; _i4++) {

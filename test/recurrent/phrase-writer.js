@@ -1,6 +1,6 @@
 import fs from 'fs';
-import RNN from '../../../src/recurrent/rnn';
-import LSTM from '../../../src/recurrent/lstm';
+import RNN from '../../src/recurrent/rnn';
+import LSTM from '../../src/recurrent/lstm';
 import phraseWriterJson from './phrase-writer.json';
 var vocabData = initVocab();
 

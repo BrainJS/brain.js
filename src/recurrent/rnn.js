@@ -342,7 +342,7 @@ export default class RNN {
    * @returns {{error: number, iterations: number}}
    */
   train(data, options) {
-    throw new Error('not yet implemented');
+    //throw new Error('not yet implemented');
     //data = this.formatData(data);
 
     options = options || {};
@@ -368,7 +368,7 @@ export default class RNN {
     sizes.unshift(inputSize);
     sizes.push(outputSize);
 
-    this.initialize(sizes, options.keepNetworkIntact);
+    //this.initialize(sizes, options.keepNetworkIntact);
 
     let error = 1;
     for (let i = 0; i < iterations && error > errorThresh; i++) {

@@ -11,7 +11,7 @@
     "artificial-intelligence",
     "brain",
     "brainjs",
-    "brain,js",
+    "brain.js",
     "feed forward",
     "neural network",
     "classifier",
@@ -19,7 +19,7 @@
     "network",
     "neural-networks",
     "machine-learning",
-    "synpapse"
+    "synapse"
   ],
   "main": "./browser.min.js",
   "ignore": [
