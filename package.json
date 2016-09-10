@@ -14,10 +14,10 @@
     "test": "npm run test-base && npm run test-base-cv && npm run test-recurrent",
     "dist": "babel src --out-dir dist --source-maps",
 
-    "browserify": "browserify ./index.js -p licensify > browser.js",
-    "browserify-min": "browserify ./index.js -p licensify -g uglifyify > browser.min.js",
+    "browser": "browserify ./index.js -p licensify > browser.js",
+    "browser-min": "browserify ./index.js -p licensify -g uglifyify > browser.min.js",
 
-    "make": "npm run dist && npm run browserify && npm run browserify-min"
+    "make": "rm -fr ./dist && npm run dist && git add ./dist && npm run browser && npm run browser-min"
   },
   "main": "./index.js",
   "devDependencies": {

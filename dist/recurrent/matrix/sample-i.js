@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = sampleI;
 
-var _random = require('../random');
+var _random = require('../../utilities/random');
 
 /**
  *

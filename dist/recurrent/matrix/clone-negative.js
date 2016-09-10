@@ -1,30 +1,22 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = cloneNegative;
-
-var _ = require('./');
-
-var _2 = _interopRequireDefault(_);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 /**
  *
+ * @param {Matrix} into
  * @param {Matrix} m
  */
-function cloneNegative(m) {
-  var cloned = new _2.default();
-  cloned.rows = parseInt(m.rows);
-  cloned.columns = parseInt(m.columns);
-  cloned.weights = []; //todo: typed array?
-  cloned.recurrence = []; //todo: typed array?
+function cloneNegative(into, m) {
+  into.rows = parseInt(m.rows);
+  into.columns = parseInt(m.columns);
+  into.weights = m.weights.slice(0);
+  into.recurrence = m.recurrence.slice(0);
   for (var i = 0, max = m.weights.length; i < max; i++) {
-    cloned.weights[i] = -m.weights[i];
-    cloned.recurrence[i] = -m.recurrence[i];
+    into.weights[i] = -m.weights[i];
+    into.recurrence[i] = 0;
   }
-  return cloned;
 }
 //# sourceMappingURL=clone-negative.js.map

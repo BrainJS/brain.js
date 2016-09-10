@@ -18,14 +18,6 @@ var _randomMatrix = require('./matrix/random-matrix');
 
 var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
 
-var _onesMatrix = require('./matrix/ones-matrix');
-
-var _onesMatrix2 = _interopRequireDefault(_onesMatrix);
-
-var _cloneNegative = require('./matrix/clone-negative');
-
-var _cloneNegative2 = _interopRequireDefault(_cloneNegative);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -47,14 +39,6 @@ var GRU = function (_RNN) {
     key: 'getModel',
     value: function getModel(hiddenSize, prevSize) {
       return {
-        // reset Gate
-        //wrxh
-        resetGateInputMatrix: new _randomMatrix2.default(hiddenSize, prevSize, 0.08),
-        //wrhh
-        resetGateHiddenMatrix: new _randomMatrix2.default(hiddenSize, hiddenSize, 0.08),
-        //br
-        resetGateBias: new _matrix2.default(hiddenSize, 1),
-
         // update Gate
         //wzxh
         updateGateInputMatrix: new _randomMatrix2.default(hiddenSize, prevSize, 0.08),
@@ -62,6 +46,14 @@ var GRU = function (_RNN) {
         updateGateHiddenMatrix: new _randomMatrix2.default(hiddenSize, hiddenSize, 0.08),
         //bz
         updateGateBias: new _matrix2.default(hiddenSize, 1),
+
+        // reset Gate
+        //wrxh
+        resetGateInputMatrix: new _randomMatrix2.default(hiddenSize, prevSize, 0.08),
+        //wrhh
+        resetGateHiddenMatrix: new _randomMatrix2.default(hiddenSize, hiddenSize, 0.08),
+        //br
+        resetGateBias: new _matrix2.default(hiddenSize, 1),
 
         // cell write parameters
         //wcxh
@@ -91,21 +83,21 @@ var GRU = function (_RNN) {
       var multiplyElement = equation.multiplyElement.bind(equation);
       var previousResult = equation.previousResult.bind(equation);
       var tanh = equation.tanh.bind(equation);
-
-      // reset gate
-      var resetGate = sigmoid(add(add(multiply(hiddenLayer.resetGateInputMatrix, inputMatrix), multiply(hiddenLayer.resetGateHiddenMatrix, previousResult(size))), hiddenLayer.resetGateBias));
+      var allOnes = equation.allOnes.bind(equation);
+      var cloneNegative = equation.cloneNegative.bind(equation);
 
       // update gate
       var updateGate = sigmoid(add(add(multiply(hiddenLayer.updateGateInputMatrix, inputMatrix), multiply(hiddenLayer.updateGateHiddenMatrix, previousResult(size))), hiddenLayer.updateGateBias));
+
+      // reset gate
+      var resetGate = sigmoid(add(add(multiply(hiddenLayer.resetGateInputMatrix, inputMatrix), multiply(hiddenLayer.resetGateHiddenMatrix, previousResult(size))), hiddenLayer.resetGateBias));
 
       // cell
       var cell = tanh(add(add(multiply(hiddenLayer.cellWriteInputMatrix, inputMatrix), multiply(hiddenLayer.cellWriteHiddenMatrix, multiplyElement(resetGate, previousResult(size)))), hiddenLayer.cellWriteBias));
 
       // compute hidden state as gated, saturated cell activations
-      var allOnes = new _onesMatrix2.default(updateGate.rows, updateGate.columns);
       // negate updateGate
-      var negUpdateGate = (0, _cloneNegative2.default)(updateGate);
-      return add(multiplyElement(add(allOnes, negUpdateGate), cell), multiplyElement(previousResult(size), updateGate));
+      return add(multiplyElement(add(allOnes(updateGate.rows, updateGate.columns), cloneNegative(updateGate)), cell), multiplyElement(previousResult(size), updateGate));
     }
   }]);
 

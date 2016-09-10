@@ -10,9 +10,17 @@ var _matrix = require('./matrix');
 
 var _matrix2 = _interopRequireDefault(_matrix);
 
+var _onesMatrix = require('./matrix/ones-matrix');
+
+var _onesMatrix2 = _interopRequireDefault(_onesMatrix);
+
 var _copy2 = require('./matrix/copy');
 
 var _copy3 = _interopRequireDefault(_copy2);
+
+var _cloneNegative2 = require('./matrix/clone-negative');
+
+var _cloneNegative3 = _interopRequireDefault(_cloneNegative2);
 
 var _add2 = require('./matrix/add');
 
@@ -21,6 +29,10 @@ var _add3 = _interopRequireDefault(_add2);
 var _addB2 = require('./matrix/add-b');
 
 var _addB3 = _interopRequireDefault(_addB2);
+
+var _allOnes2 = require('./matrix/all-ones');
+
+var _allOnes3 = _interopRequireDefault(_allOnes2);
 
 var _multiply2 = require('./matrix/multiply');
 
@@ -121,6 +133,50 @@ var Equation = function () {
         backpropagationFn: _addB3.default
       });
       return into;
+    }
+  }, {
+    key: 'allOnes',
+    value: function allOnes(rows, columns) {
+      var into = new _matrix2.default(rows, columns);
+      this.states.push({
+        left: into,
+        into: into,
+        forwardFn: _allOnes3.default
+      });
+      return into;
+    }
+
+    /**
+     *
+     * @param {Matrix} m
+     */
+
+  }, {
+    key: 'cloneNegative',
+    value: function cloneNegative(m) {
+      var into = new _matrix2.default(m.rows, m.columns);
+      this.states.push({
+        left: m,
+        into: into,
+        forwardFn: _cloneNegative3.default
+      });
+      return into;
+    }
+
+    /**
+     * connects two matrices together by subtract
+     * @param {Matrix} left
+     * @param {Matrix} right
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'subtract',
+    value: function subtract(left, right) {
+      if (left.weights.length !== right.weights.length) {
+        throw new Error('misaligned matrices');
+      }
+      return this.add(this.add(this.allOnes(left.rows, left.columns), this.cloneNegative(left)), right);
     }
 
     /**

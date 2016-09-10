@@ -8,7 +8,7 @@ var _ = require('./');
 
 var _2 = _interopRequireDefault(_);
 
-var _random = require('../random');
+var _random = require('../../utilities/random');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

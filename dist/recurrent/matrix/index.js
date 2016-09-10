@@ -10,10 +10,6 @@ var _zeros = require('../../utilities/zeros');
 
 var _zeros2 = _interopRequireDefault(_zeros);
 
-var _random = require('../random');
-
-var _random2 = _interopRequireDefault(_random);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }

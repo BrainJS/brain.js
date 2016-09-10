@@ -50,19 +50,6 @@ var defaults = {
 };
 
 var RNN = function () {
-  _createClass(RNN, null, [{
-    key: 'createFromJSON',
-
-    /**
-     *
-     * @param json
-     * @returns {RNN}
-     */
-    value: function createFromJSON(json) {
-      return new RNN({ json: json });
-    }
-  }]);
-
   function RNN(options) {
     _classCallCheck(this, RNN);
 
@@ -389,7 +376,7 @@ var RNN = function () {
   }, {
     key: 'train',
     value: function train(data, options) {
-      //throw new Error('not yet implemented');
+      throw new Error('not yet implemented');
       //data = this.formatData(data);
 
       options = options || {};
@@ -507,13 +494,19 @@ var RNN = function () {
     key: 'toJSON',
     value: function toJSON() {
       var model = this.model;
+      var options = {};
+      for (var p in defaults) {
+        options[p] = this[p];
+      }
+
       return {
         type: this.constructor.name,
+        options: options,
         input: model.input.toJSON(),
         hiddenLayers: model.hiddenLayers.map(function (hiddenLayer) {
           var layers = {};
-          for (var p in hiddenLayer) {
-            layers[p] = hiddenLayer[p].toJSON();
+          for (var _p in hiddenLayer) {
+            layers[_p] = hiddenLayer[_p].toJSON();
           }
           return layers;
         }),
@@ -526,6 +519,7 @@ var RNN = function () {
     value: function fromJSON(json) {
       this.json = json;
       var model = this.model;
+      var options = json.options;
       var allMatrices = model.allMatrices;
       model.input = _matrix2.default.fromJSON(json.input);
       allMatrices.push(model.input);
@@ -540,6 +534,13 @@ var RNN = function () {
       model.outputConnector = _matrix2.default.fromJSON(json.outputConnector);
       model.output = _matrix2.default.fromJSON(json.output);
       allMatrices.push(model.outputConnector, model.output);
+
+      for (var p in defaults) {
+        if (defaults.hasOwnProperty(p) && p !== 'isBackPropagate') {
+          this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
+        }
+      }
+
       this.bindEquations();
     }
 
