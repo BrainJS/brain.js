@@ -1,7 +1,10 @@
 import Matrix from './matrix';
+import OnesMatrix from './matrix/ones-matrix';
 import _copy from './matrix/copy';
+import _cloneNegative from './matrix/clone-negative';
 import _add from './matrix/add';
 import _addB from './matrix/add-b';
+import _allOnes from './matrix/all-ones';
 import _multiply from './matrix/multiply';
 import _multiplyB from './matrix/multiply-b';
 import _multiplyElement from './matrix/multiply-element';
@@ -53,6 +56,43 @@ export default class Equation {
       backpropagationFn: _addB
     });
     return into;
+  }
+
+  allOnes(rows, columns) {
+    let into = new Matrix(rows, columns);
+    this.states.push({
+      left: into,
+      into: into,
+      forwardFn: _allOnes
+    });
+    return into;
+  }
+
+  /**
+   *
+   * @param {Matrix} m
+   */
+  cloneNegative(m) {
+    let into = new Matrix(m.rows, m.columns);
+    this.states.push({
+      left: m,
+      into: into,
+      forwardFn: _cloneNegative
+    });
+    return into;
+  }
+
+  /**
+   * connects two matrices together by subtract
+   * @param {Matrix} left
+   * @param {Matrix} right
+   * @returns {Matrix}
+   */
+  subtract(left, right) {
+    if (left.weights.length !== right.weights.length) {
+      throw new Error('misaligned matrices');
+    }
+    return this.add(this.add(this.allOnes(left.rows, left.columns), this.cloneNegative(left)), right);
   }
 
   /**

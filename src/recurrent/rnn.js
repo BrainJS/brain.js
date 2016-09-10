@@ -21,15 +21,6 @@ const defaults = {
 };
 
 export default class RNN {
-  /**
-   *
-   * @param json
-   * @returns {RNN}
-   */
-  static createFromJSON(json) {
-    return new RNN({ json: json });
-  }
-
   constructor(options) {
     options = options || {};
 
@@ -444,8 +435,14 @@ export default class RNN {
 
   toJSON() {
     let model = this.model;
+    let options = {};
+    for (let p in defaults) {
+      options[p] = this[p];
+    }
+
     return {
       type: this.constructor.name,
+      options: options,
       input: model.input.toJSON(),
       hiddenLayers: model.hiddenLayers.map(function(hiddenLayer) {
         let layers = {};
@@ -462,6 +459,7 @@ export default class RNN {
   fromJSON(json) {
     this.json = json;
     let model = this.model;
+    let options = json.options;
     let allMatrices = model.allMatrices;
     model.input = Matrix.fromJSON(json.input);
     allMatrices.push(model.input);
@@ -476,6 +474,13 @@ export default class RNN {
     model.outputConnector = Matrix.fromJSON(json.outputConnector);
     model.output = Matrix.fromJSON(json.output);
     allMatrices.push(model.outputConnector, model.output);
+
+    for (let p in defaults) {
+      if (defaults.hasOwnProperty(p) && p !== 'isBackPropagate') {
+        this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
+      }
+    }
+
     this.bindEquations();
   }
 

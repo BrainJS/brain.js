@@ -1,5 +1,5 @@
 import assert from 'assert';
-import Vocab from '../../src/recurrent/vocab';
+import Vocab from '../../src/utilities/vocab';
 
 describe('vocab', function() {
   describe('#toIndexes', function() {

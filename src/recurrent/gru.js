@@ -1,20 +1,10 @@
 import Matrix from './matrix';
 import RNN from './rnn';
 import RandomMatrix from './matrix/random-matrix';
-import OnesMatrix from './matrix/ones-matrix';
-import cloneNegative from './matrix/clone-negative';
 
 export default class GRU extends RNN {
   getModel(hiddenSize, prevSize) {
     return {
-      // reset Gate
-      //wrxh
-      resetGateInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      //wrhh
-      resetGateHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      //br
-      resetGateBias: new Matrix(hiddenSize, 1),
-
       // update Gate
       //wzxh
       updateGateInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
@@ -22,6 +12,14 @@ export default class GRU extends RNN {
       updateGateHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
       //bz
       updateGateBias: new Matrix(hiddenSize, 1),
+
+      // reset Gate
+      //wrxh
+      resetGateInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
+      //wrhh
+      resetGateHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
+      //br
+      resetGateBias: new Matrix(hiddenSize, 1),
 
       // cell write parameters
       //wcxh
@@ -48,23 +46,8 @@ export default class GRU extends RNN {
     let multiplyElement = equation.multiplyElement.bind(equation);
     let previousResult = equation.previousResult.bind(equation);
     let tanh = equation.tanh.bind(equation);
-
-    // reset gate
-    let resetGate = sigmoid(
-      add(
-        add(
-          multiply(
-            hiddenLayer.resetGateInputMatrix,
-            inputMatrix
-          ),
-          multiply(
-            hiddenLayer.resetGateHiddenMatrix,
-            previousResult(size)
-          )
-        ),
-        hiddenLayer.resetGateBias
-      )
-    );
+    let allOnes = equation.allOnes.bind(equation);
+    let cloneNegative = equation.cloneNegative.bind(equation);
 
     // update gate
     let updateGate = sigmoid(
@@ -80,6 +63,23 @@ export default class GRU extends RNN {
           )
         ),
         hiddenLayer.updateGateBias
+      )
+    );
+
+    // reset gate
+    let resetGate = sigmoid(
+      add(
+        add(
+          multiply(
+            hiddenLayer.resetGateInputMatrix,
+            inputMatrix
+          ),
+          multiply(
+            hiddenLayer.resetGateHiddenMatrix,
+            previousResult(size)
+          )
+        ),
+        hiddenLayer.resetGateBias
       )
     );
 
@@ -104,14 +104,12 @@ export default class GRU extends RNN {
     );
 
     // compute hidden state as gated, saturated cell activations
-    let allOnes = new OnesMatrix(updateGate.rows, updateGate.columns);
     // negate updateGate
-    let negUpdateGate = cloneNegative(updateGate);
     return add(
       multiplyElement(
         add(
-          allOnes,
-          negUpdateGate
+          allOnes(updateGate.rows, updateGate.columns),
+          cloneNegative(updateGate)
         ),
         cell
       ),
