@@ -21,7 +21,7 @@ describe('gru', function() {
     for (var i = 0; i < 1000; i++) {
       gru.run(vocab.toIndexes(randomMath()));
       if (i % 10 === 0) {
-        console.log(vocab.toCharacters(gru.predict()).join(''));
+        //console.log(vocab.toCharacters(gru.predict()).join(''));
       }
     }
 

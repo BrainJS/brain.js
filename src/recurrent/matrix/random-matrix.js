@@ -1,5 +1,5 @@
 import Matrix from './';
-import { randomF } from '../random';
+import { randomF } from '../../utilities/random';
 
 /** return Matrix but filled with random numbers from gaussian
  * @param {Number} [rows]

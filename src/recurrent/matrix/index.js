@@ -1,5 +1,4 @@
 import zeros from '../../utilities/zeros';
-import random from '../random';
 
 /**
  * A matrix

@@ -1,4 +1,4 @@
-import { randomF } from '../random';
+import { randomF } from '../../utilities/random';
 
 /**
  *
