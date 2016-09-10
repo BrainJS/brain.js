@@ -333,7 +333,7 @@ export default class RNN {
    * @returns {{error: number, iterations: number}}
    */
   train(data, options) {
-    //throw new Error('not yet implemented');
+    throw new Error('not yet implemented');
     //data = this.formatData(data);
 
     options = options || {};
