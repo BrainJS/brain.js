@@ -1,7 +1,24 @@
 language: node_js
 node_js:
-  - "4.3.2"
+  - '6'
+  - '4'
 install:
   - npm install
 script:
   - npm run test
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - libcairo2-dev
+      - libjpeg8-dev
+      - libpango1.0-dev
+      - libgif-dev
+      - g++-4.9
+env:
+  - CXX=g++-4.9
+before_install:
+  - if [[ $TRAVIS_NODE_VERSION == 0.8 ]]; then npm install -g npm@1.4.28; fi
+  - npm explore npm -g -- npm install node-gyp@latest
+sudo: false
