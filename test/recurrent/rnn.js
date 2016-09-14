@@ -39,6 +39,13 @@ describe('rnn', function() {
         console.log('');
       });
     });
+    describe('#toFunction', function() {
+      console.log(new RNN({
+        inputSize: 6, //<- length
+        inputRange: vocab.characters.length,
+        outputSize: vocab.characters.length //<- length
+      }).toFunction().toString());
+    });
   });
 
   /*describe('#train', function() {

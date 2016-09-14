@@ -323,7 +323,22 @@ export default class RNN {
    * @returns {*}
    */
   runInput(input) {
-    throw new Error('not yet implemented');
+    this.outputs[0] = input;  // set output state of input layer
+
+    let output = null;
+    for (let layer = 1; layer <= this.outputLayer; layer++) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let weights = this.weights[layer][node];
+
+        let sum = this.biases[layer][node];
+        for (let k = 0; k < weights.length; k++) {
+          sum += weights[k] * input[k];
+        }
+        this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
+      }
+      output = input = this.outputs[layer];
+    }
+    return output;
   }
 
   /**
@@ -489,6 +504,99 @@ export default class RNN {
    * @returns {Function}
    */
   toFunction() {
-    throw new Error('not yet implemented');
+    let model = this.model;
+    let equation = this.model.equations[0];
+    let states = equation.states;
+    let modelAsString = JSON.stringify(this.toJSON());
+
+    function matrixOrigin(m, requestedStateIndex) {
+      for (var i = 0, max = states.length; i < max; i++) {
+        var state = states[i];
+
+        if (i === requestedStateIndex) {
+          switch (m) {
+            case state.into:
+            case state.left:
+            case state.right:
+              return `new Matrix(${ m.rows }, ${ m.columns })`;
+          }
+        }
+
+        if (m === state.into) return `states[${ i }].into`;
+        if (m === state.right) return `states[${ i }].right`;
+        if (m === state.left) return `states[${ i }].left`;
+      }
+    }
+
+    function matrixToString(m, stateIndex) {
+      if (!m) return 'null';
+
+      for (var i = 0, max = model.hiddenLayers.length; i < max; i++) {
+        var hiddenLayer = model.hiddenLayers[i];
+        for (var p in hiddenLayer) {
+          if (hiddenLayer[p] === m) {
+            return `model.hiddenLayer[${ i }].${ p }`;
+          }
+        }
+      }
+      if (m === model.input) return `model.input`;
+      if (m === model.outputConnector) return `model.outputConnector`;
+      if (m === model.output) return `model.output`;
+      return matrixOrigin(m, stateIndex);
+    }
+
+    function toInner(fnString) {
+      //crude, but should be sufficient for now
+      //function() { inner.function.string.here; }
+      fnString = fnString.toString().split('{');
+      fnString.shift();
+      // inner.function.string.here; }
+      fnString = fnString.join('{');
+      fnString = fnString.split('}');
+      fnString.pop();
+      // inner.function.string.here;
+      return fnString.join('}');
+    }
+
+    let statesRaw = [];
+    let usedFunctionNames = {};
+    let innerFunctionsSwitch = [];
+    for (var i = 0, max = states.length; i < max; i++) {
+      let state = states[i];
+      statesRaw.push(`{
+        left: ${ matrixToString(state.left, i) },
+        right: ${ matrixToString(state.right, i) },
+        into: ${ matrixToString(state.into, i) },
+        forwardFnName: '${ state.forwardFn.name }'
+      }`);
+
+      if (!usedFunctionNames[state.forwardFn.name]) {
+        usedFunctionNames[state.forwardFn.name] = true;
+        innerFunctionsSwitch.push(`
+        case '${ state.forwardFn.name }':
+          // start ${ state.forwardFn.name }
+          ${ toInner(state.forwardFn.toString()) }
+          // end ${ state.forwardFn.name }
+          break;
+        `);
+      }
+    }
+
+    return new Function('input', `
+      var model = ${ modelAsString };
+      var states = [${ statesRaw.join(',') }];
+      for (var i = 0, max = states.length; i < max; i++) {
+        var state = states[i];
+        var into = state.into;
+        var left = state.left;
+        var right = state.right;
+        
+        switch (state.forwardFnName) {
+          ${ innerFunctionsSwitch.join('\n') }
+        }
+      }
+      
+      return state.into;
+    `);
   }
 }
