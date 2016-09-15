@@ -32,9 +32,9 @@ export default class Equation {
    * @returns {Matrix}
    */
   previousResult(size) {
-    let into = new Matrix(size, 1);
-    this.previousResultInputs.push(into);
-    return into;
+    let product = new Matrix(size, 1);
+    this.previousResultInputs.push(product);
+    return product;
   }
 
   /**
@@ -47,25 +47,25 @@ export default class Equation {
     if (left.weights.length !== right.weights.length) {
       throw new Error('misaligned matrices');
     }
-    let into = new Matrix(left.rows, left.columns);
+    let product = new Matrix(left.rows, left.columns);
     this.states.push({
       left: left,
       right: right,
-      into: into,
+      product: product,
       forwardFn: _add,
       backpropagationFn: _addB
     });
-    return into;
+    return product;
   }
 
   allOnes(rows, columns) {
-    let into = new Matrix(rows, columns);
+    let product = new Matrix(rows, columns);
     this.states.push({
-      left: into,
-      into: into,
+      left: product,
+      product: product,
       forwardFn: _allOnes
     });
-    return into;
+    return product;
   }
 
   /**
@@ -73,13 +73,13 @@ export default class Equation {
    * @param {Matrix} m
    */
   cloneNegative(m) {
-    let into = new Matrix(m.rows, m.columns);
+    let product = new Matrix(m.rows, m.columns);
     this.states.push({
       left: m,
-      into: into,
+      product: product,
       forwardFn: _cloneNegative
     });
-    return into;
+    return product;
   }
 
   /**
@@ -105,15 +105,15 @@ export default class Equation {
     if (left.columns !== right.rows) {
       throw new Error('misaligned matrices');
     }
-    let into = new Matrix(left.rows, right.columns);
+    let product = new Matrix(left.rows, right.columns);
     this.states.push({
       left: left,
       right: right,
-      into: into,
+      product: product,
       forwardFn: _multiply,
       backpropagationFn: _multiplyB
     });
-    return into;
+    return product;
   }
 
   /**
@@ -126,15 +126,15 @@ export default class Equation {
     if (left.weights.length !== right.weights.length) {
       throw new Error('misaligned matrices');
     }
-    let into = new Matrix(left.rows, left.columns);
+    let product = new Matrix(left.rows, left.columns);
     this.states.push({
       left: left,
       right: right,
-      into: into,
+      product: product,
       forwardFn: _multiplyElement,
       backpropagationFn: _multiplyElementB
     });
-    return into;
+    return product;
   }
 
   /**
@@ -143,14 +143,14 @@ export default class Equation {
    * @returns {Matrix}
    */
   relu(m) {
-    let into = new Matrix(m.rows, m.columns);
+    let product = new Matrix(m.rows, m.columns);
     this.states.push({
       left: m,
-      into: into,
+      product: product,
       forwardFn: _relu,
       backpropagationFn: _reluB
     });
-    return into;
+    return product;
   }
 
   /**
@@ -160,17 +160,17 @@ export default class Equation {
    */
   inputMatrixToRow(m) {
     let self = this;
-    let into = new Matrix(m.columns, 1);
+    let product = new Matrix(m.columns, 1);
     this.states.push({
       left: m,
       get right () {
         return self.inputRow;
       },
-      into: into,
+      product: product,
       forwardFn: _rowPluck,
       backpropagationFn: _rowPluckB
     });
-    return into;
+    return product;
   }
 
   /**
@@ -179,14 +179,14 @@ export default class Equation {
    * @returns {Matrix}
    */
   sigmoid(m) {
-    let into = new Matrix(m.rows, m.columns);
+    let product = new Matrix(m.rows, m.columns);
     this.states.push({
       left: m,
-      into: into,
+      product: product,
       forwardFn: _sigmoid,
       backpropagationFn: _sigmoidB
     });
-    return into;
+    return product;
   }
 
   /**
@@ -195,14 +195,14 @@ export default class Equation {
    * @returns {Matrix}
    */
   tanh(m) {
-    let into = new Matrix(m.rows, m.columns);
+    let product = new Matrix(m.rows, m.columns);
     this.states.push({
       left: m,
-      into: into,
+      product: product,
       forwardFn: _tanh,
       backpropagationFn: _tanhB
     });
-    return into;
+    return product;
   }
 
   observe(m) {
@@ -234,10 +234,10 @@ export default class Equation {
       if (!state.hasOwnProperty('forwardFn')) {
         continue;
       }
-      state.forwardFn(state.into, state.left, state.right);
+      state.forwardFn(state.product, state.left, state.right);
     }
 
-    return state.into;
+    return state.product;
   }
 
   /**
@@ -250,7 +250,7 @@ export default class Equation {
       if (!state.hasOwnProperty('backpropagationFn')) {
         continue;
       }
-      state.backpropagationFn(state.into, state.left, state.right);
+      state.backpropagationFn(state.product, state.left, state.right);
     }
   }
 
@@ -275,51 +275,5 @@ export default class Equation {
 
   addPreviousResult(m) {
     this.previousResults.push(m);
-  }
-
-  toFunction() {
-    throw new Error('not yet implemented');
-    /*var lookupTable = [model.input, model.hiddenLayers, model.outputConnector, model.output];
-    var hiddenLayers = this.model.hiddenLayers;
-    for (var i = 0, max = hiddenLayers.length; i < max; i++) {
-      var hiddenLayer = hiddenLayers[i];
-      for (var p in hiddenLayer) {
-        lookupTable.push(hiddenLayer[p]);
-      }
-    }
-
-    var fowardFunctionList = [];
-    for (var i = 0, max = this.states.length; i++) {
-      var state = this.states[i];
-      if (!state.forwardFn) continue;
-      if (fowardFunctionList.indexOf(state.forwardFn) > -1) continue;
-      fowardFunctionList.push(state.forwardFn);
-    }
-
-    var connectorMatrices = [];
-    for (var i = 0, max = this.states.length; i++) {
-      var state = this.states[i];
-      if (!state.into) continue;
-      if (connectorMatrices.indexOf(state.into) > -1) continue;
-      connectorMatrices.push(state.into);
-    }
-
-    return new Function('rowIndex', '\
-  inputRow = rowIndex || 0;\
-\
-      for (var i = 0, max = this.states.length; i < max; i++) {\
-      var state = this.states[i];\
-      if (!state.hasOwnProperty(\'forwardFn\')) {\
-        continue;\
-      }\
-      state.forwardFn(state.into, state.left, state.right);\
-    }\
-\
-    return state.into;\
-');*/
-  }
-
-  toFunctionStates() {
-
   }
 }

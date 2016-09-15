@@ -2,13 +2,13 @@ import Matrix from './';
 
 /**
  *
- * @param {Matrix} m
+ * @param {Matrix} product
  */
-export default function clone(m) {
+export default function clone(product) {
   let cloned = new Matrix();
-  cloned.rows = parseInt(m.rows);
-  cloned.columns = parseInt(m.columns);
-  cloned.weights = m.weights.slice(0);
-  cloned.recurrence = m.recurrence.slice(0);
+  cloned.rows = parseInt(product.rows);
+  cloned.columns = parseInt(product.columns);
+  cloned.weights = product.weights.slice(0);
+  cloned.recurrence = product.recurrence.slice(0);
   return cloned;
 }

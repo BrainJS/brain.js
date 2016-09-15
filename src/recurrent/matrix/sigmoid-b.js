@@ -1,11 +1,11 @@
 /**
  *
- * @param {Matrix} from
- * @param {Matrix} m
+ * @param {Matrix} product
+ * @param {Matrix} left
  */
-export default function sigmoidB(from, m) {
-  for(let i = 0, max = m.weights.length; i < max; i++) {
-    let mwi = from.weights[i];
-    m.recurrence[i] += mwi * (1 - mwi) * from.recurrence[i];
+export default function sigmoidB(product, left) {
+  for(let i = 0, max = left.weights.length; i < max; i++) {
+    let mwi = product.weights[i];
+    left.recurrence[i] += mwi * (1 - mwi) * product.recurrence[i];
   }
 }

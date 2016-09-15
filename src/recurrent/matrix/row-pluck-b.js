@@ -1,11 +1,11 @@
 /**
  * adds {from} recurrence into {m} recurrence
- * @param {Matrix} from
- * @param {Matrix} m
- * @param {Number} row
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Number} rowIndex
  */
-export default function rowPluckB(from, m, row) {
-  for (let column = 0, columns = m.columns; column < columns; column++) {
-    m.recurrence[columns * row + column] += from.recurrence[column];
+export default function rowPluckB(product, left, rowIndex) {
+  for (let column = 0, columns = left.columns; column < columns; column++) {
+    left.recurrence[columns * rowIndex + column] += product.recurrence[column];
   }
 }

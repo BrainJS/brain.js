@@ -1,11 +1,11 @@
 /**
- * @param {Matrix} into
- * @param {Matrix} m
+ * @param {Matrix} product
+ * @param {Matrix} left
  */
-export default function tanh(into, m) {
+export default function tanh(product, left) {
   // tanh nonlinearity
-  for(let i = 0, max = m.weights.length; i < max; i++) {
-    into.weights[i] = Math.tanh(m.weights[i]);
-    into.recurrence[i] = 0;
+  for(let i = 0, max = left.weights.length; i < max; i++) {
+    product.weights[i] = Math.tanh(left.weights[i]);
+    product.recurrence[i] = 0;
   }
 }

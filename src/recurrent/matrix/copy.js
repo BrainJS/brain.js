@@ -1,11 +1,11 @@
 /**
  *
- * @param {Matrix} into
- * @param {Matrix} m
+ * @param {Matrix} product
+ * @param {Matrix} left
  */
-export default function copy(into, m) {
-  into.rows = parseInt(m.rows);
-  into.columns = parseInt(m.columns);
-  into.weights = m.weights.slice(0);
-  into.recurrence = m.recurrence.slice(0);
+export default function copy(product, left) {
+  product.rows = parseInt(left.rows);
+  product.columns = parseInt(left.columns);
+  product.weights = left.weights.slice(0);
+  product.recurrence = left.recurrence.slice(0);
 }

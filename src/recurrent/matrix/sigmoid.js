@@ -1,12 +1,12 @@
 /**
- * @param {Matrix} into
- * @param {Matrix} m
+ * @param {Matrix} product
+ * @param {Matrix} left
  */
-export default function sigmoid(into, m) {
+export default function sigmoid(product, left) {
   // sigmoid nonlinearity
-  for(let i=0, max = m.weights.length; i < max; i++) {
-    into.weights[i] = 1 / ( 1 + Math.exp(-m.weights[i]));
-    into.recurrence[i] = 0;
+  for(let i=0, max = left.weights.length; i < max; i++) {
+    product.weights[i] = 1 / ( 1 + Math.exp(-left.weights[i]));
+    product.recurrence[i] = 0;
   }
 }
 

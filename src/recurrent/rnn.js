@@ -515,14 +515,14 @@ export default class RNN {
 
         if (i === requestedStateIndex) {
           switch (m) {
-            case state.into:
+            case state.product:
             case state.left:
             case state.right:
               return `new Matrix(${ m.rows }, ${ m.columns })`;
           }
         }
 
-        if (m === state.into) return `states[${ i }].into`;
+        if (m === state.product) return `states[${ i }].product`;
         if (m === state.right) return `states[${ i }].right`;
         if (m === state.left) return `states[${ i }].left`;
       }
@@ -566,17 +566,17 @@ export default class RNN {
       statesRaw.push(`{
         left: ${ matrixToString(state.left, i) },
         right: ${ matrixToString(state.right, i) },
-        into: ${ matrixToString(state.into, i) },
+        product: ${ matrixToString(state.product, i) },
         forwardFnName: '${ state.forwardFn.name }'
       }`);
 
-      if (!usedFunctionNames[state.forwardFn.name]) {
-        usedFunctionNames[state.forwardFn.name] = true;
+      var fnName = state.forwardFn.name;
+      if (!usedFunctionNames[fnName]) {
+        usedFunctionNames[fnName] = true;
         innerFunctionsSwitch.push(`
-        case '${ state.forwardFn.name }':
-          // start ${ state.forwardFn.name }
+        case '${ fnName }':
+          //compiled from recurrent/matrix/${ fnName.replace(/[A-Z]/g, function(value) { return '-' + value.toLowerCase(); }) }.js
           ${ toInner(state.forwardFn.toString()) }
-          // end ${ state.forwardFn.name }
           break;
         `);
       }
@@ -587,7 +587,7 @@ export default class RNN {
       var states = [${ statesRaw.join(',') }];
       for (var i = 0, max = states.length; i < max; i++) {
         var state = states[i];
-        var into = state.into;
+        var product = state.product;
         var left = state.left;
         var right = state.right;
         
@@ -596,7 +596,7 @@ export default class RNN {
         }
       }
       
-      return state.into;
+      return state.product;
     `);
   }
 }

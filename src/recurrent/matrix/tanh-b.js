@@ -1,12 +1,12 @@
 /**
  *
- * @param {Matrix} from
- * @param {Matrix} m
+ * @param {Matrix} product
+ * @param {Matrix} left
  */
-export default function tanhB(from, m) {
-  for(let i = 0, max = m.weights.length; i < max; i++) {
+export default function tanhB(product, left) {
+  for(let i = 0, max = left.weights.length; i < max; i++) {
     // grad for z = tanh(x) is (1 - z^2)
-    let mwi = from.weights[i];
-    m.recurrence[i] += (1.0 - mwi * mwi) * from.recurrence[i];
+    let mwi = product.weights[i];
+    left.recurrence[i] += (1.0 - mwi * mwi) * product.recurrence[i];
   }
 }

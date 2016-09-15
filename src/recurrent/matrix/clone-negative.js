@@ -1,15 +1,15 @@
 /**
  *
- * @param {Matrix} into
- * @param {Matrix} m
+ * @param {Matrix} product
+ * @param {Matrix} left
  */
-export default function cloneNegative(into, m) {
-  into.rows = parseInt(m.rows);
-  into.columns = parseInt(m.columns);
-  into.weights = m.weights.slice(0);
-  into.recurrence = m.recurrence.slice(0);
-  for (let i = 0, max = m.weights.length; i < max; i++) {
-    into.weights[i] = -m.weights[i];
-    into.recurrence[i] = 0;
+export default function cloneNegative(product, left) {
+  product.rows = parseInt(left.rows);
+  product.columns = parseInt(left.columns);
+  product.weights = left.weights.slice(0);
+  product.recurrence = left.recurrence.slice(0);
+  for (let i = 0, max = left.weights.length; i < max; i++) {
+    product.weights[i] = -left.weights[i];
+    product.recurrence[i] = 0;
   }
 }

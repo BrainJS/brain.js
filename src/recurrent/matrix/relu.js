@@ -1,12 +1,12 @@
 /**
  *
  * relu {m} weights to {into} weights
- * @param {Matrix} into
- * @param {Matrix} m
+ * @param {Matrix} product
+ * @param {Matrix} left
  */
-export default function relu(into, m) {
-  for(let i = 0, max = m.weights.length; i < max; i++) {
-    into.weights[i] = Math.max(0, m.weights[i]); // relu
-    into.recurrence[i] = 0;
+export default function relu(product, left) {
+  for(let i = 0, max = left.weights.length; i < max; i++) {
+    product.weights[i] = Math.max(0, left.weights[i]); // relu
+    product.recurrence[i] = 0;
   }
 }

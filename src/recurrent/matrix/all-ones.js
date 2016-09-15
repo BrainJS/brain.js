@@ -1,10 +1,10 @@
 /**
  * makes matrix weights and recurrence all ones
- * @param {Matrix} m
+ * @param {Matrix} product
  */
-export default function allOnes(m) {
-  for(let i = 0, max = m.weights.length; i < max; i++) {
-    m.weights[i] = 1;
-    m.recurrence[i] = 0;
+export default function allOnes(product) {
+  for(let i = 0, max = product.weights.length; i < max; i++) {
+    product.weights[i] = 1;
+    product.recurrence[i] = 0;
   }
 }

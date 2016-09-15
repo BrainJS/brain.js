@@ -1,10 +1,10 @@
 /**
  * multiply {left} and {right} matrix weights to {into}
- * @param {Matrix} into
+ * @param {Matrix} product
  * @param {Matrix} left
  * @param {Matrix} right
  */
-export default function multiply(into, left, right) {
+export default function multiply(product, left, right) {
   let leftRows = left.rows;
   let leftColumns = left.columns;
   let rightColumns = right.columns;
@@ -25,8 +25,8 @@ export default function multiply(into, left, right) {
           * right.weights[rightColumns * leftColumn + rightColumn];
       }
       let i = rightColumns * leftRow + rightColumn;
-      into.weights[i] = dot;
-      into.recurrence[i] = 0;
+      product.weights[i] = dot;
+      product.recurrence[i] = 0;
     }
   }
 }
