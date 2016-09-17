@@ -62,7 +62,7 @@ export default class RNN {
     hiddenLayers.push(this.getModel(hiddenSizes[0], this.inputSize));
     let prevSize = hiddenSizes[0];
 
-    for(let d = 1; d < hiddenSizes.length; d++) { // loop over depths
+    for (let d = 1; d < hiddenSizes.length; d++) { // loop over depths
       let hiddenSize = hiddenSizes[d];
       hiddenLayers.push(this.getModel(hiddenSize, prevSize));
       prevSize = hiddenSize;
@@ -164,7 +164,7 @@ export default class RNN {
 
     allMatrices.push(model.input);
 
-    for(let i = 0, max = hiddenLayers.length; i < max; i++) {
+    for (let i = 0, max = hiddenLayers.length; i < max; i++) {
       let hiddenMatrix = hiddenLayers[i];
       for (let property in hiddenMatrix) {
         if (!hiddenMatrix.hasOwnProperty(property)) continue;
@@ -237,14 +237,14 @@ export default class RNN {
     let numTot = 0;
     let allMatrices = model.allMatrices;
     let matrixIndexes = allMatrices.length;
-    for(let matrixIndex = 0; matrixIndex < matrixIndexes; matrixIndex++) {
+    for (let matrixIndex = 0; matrixIndex < matrixIndexes; matrixIndex++) {
       let matrix = allMatrices[matrixIndex];
       if (!(matrixIndex in this.stepCache)) {
         this.stepCache[matrixIndex] = new Matrix(matrix.rows, matrix.columns);
       }
       let cache = this.stepCache[matrixIndex];
 
-      for(let i = 0, n = matrix.weights.length; i < n; i++) {
+      for (let i = 0, n = matrix.weights.length; i < n; i++) {
         // rmsprop adaptive learning rate
         let mdwi = matrix.recurrence[i];
         cache.weights[i] = cache.weights[i] * this.decayRate + (1 - this.decayRate) * mdwi * mdwi;
@@ -273,7 +273,7 @@ export default class RNN {
     if (typeof predictionLength === 'undefined') { predictionLength = 100; }
 
     let result = [];
-    //var prev;
+    //let prev;
     let ix;
     let equation = this.model.equations[0];
     equation.resetPreviousResults();
@@ -510,8 +510,8 @@ export default class RNN {
     let modelAsString = JSON.stringify(this.toJSON());
 
     function matrixOrigin(m, requestedStateIndex) {
-      for (var i = 0, max = states.length; i < max; i++) {
-        var state = states[i];
+      for (let i = 0, max = states.length; i < max; i++) {
+        let state = states[i];
 
         if (i === requestedStateIndex) {
           switch (m) {
@@ -531,11 +531,11 @@ export default class RNN {
     function matrixToString(m, stateIndex) {
       if (!m) return 'null';
 
-      for (var i = 0, max = model.hiddenLayers.length; i < max; i++) {
-        var hiddenLayer = model.hiddenLayers[i];
-        for (var p in hiddenLayer) {
+      for (let i = 0, max = model.hiddenLayers.length; i < max; i++) {
+        let hiddenLayer = model.hiddenLayers[i];
+        for (let p in hiddenLayer) {
           if (hiddenLayer[p] === m) {
-            return `model.hiddenLayer[${ i }].${ p }`;
+            return `model.hiddenLayers[${ i }].${ p }`;
           }
         }
       }
@@ -558,24 +558,27 @@ export default class RNN {
       return fnString.join('}');
     }
 
+    function fileName(fnName) {
+      return `src/recurrent/matrix/${ fnName.replace(/[A-Z]/g, function(value) { return '-' + value.toLowerCase(); }) }.js`;
+    }
+
     let statesRaw = [];
     let usedFunctionNames = {};
     let innerFunctionsSwitch = [];
-    for (var i = 0, max = states.length; i < max; i++) {
+    for (let i = 0, max = states.length; i < max; i++) {
       let state = states[i];
-      statesRaw.push(`{
+      statesRaw.push(`states[${ i }] = {
+        name: '${ state.forwardFn.name }',
         left: ${ matrixToString(state.left, i) },
         right: ${ matrixToString(state.right, i) },
-        product: ${ matrixToString(state.product, i) },
-        forwardFnName: '${ state.forwardFn.name }'
-      }`);
+        product: ${ matrixToString(state.product, i) }
+      };`);
 
-      var fnName = state.forwardFn.name;
+      let fnName = state.forwardFn.name;
       if (!usedFunctionNames[fnName]) {
         usedFunctionNames[fnName] = true;
         innerFunctionsSwitch.push(`
-        case '${ fnName }':
-          //compiled from recurrent/matrix/${ fnName.replace(/[A-Z]/g, function(value) { return '-' + value.toLowerCase(); }) }.js
+        case '${ fnName }': //compiled from ${ fileName(fnName) }
           ${ toInner(state.forwardFn.toString()) }
           break;
         `);
@@ -584,15 +587,38 @@ export default class RNN {
 
     return new Function('input', `
       var model = ${ modelAsString };
-      var states = [${ statesRaw.join(',') }];
-      for (var i = 0, max = states.length; i < max; i++) {
-        var state = states[i];
-        var product = state.product;
-        var left = state.left;
-        var right = state.right;
-        
-        switch (state.forwardFnName) {
-          ${ innerFunctionsSwitch.join('\n') }
+      
+      function Matrix(rows, columns) {
+        this.rows = rows;
+        this.columns = columns;
+        this.weights = zeros(rows * columns);
+        this.recurrence = zeros(rows * columns);
+      }
+      
+      function zeros(size) {
+        if (typeof Float64Array !== 'undefined') return new Float64Array(size);
+        var array = new Array(size);
+        for (var i = 0; i < size; i++) {
+          array[i] = 0;
+        }
+        return array;
+      }
+      
+      for (var inputIndex = 0, inputMax = input.length; inputIndex < inputMax; inputIndex++) {
+        var ixSource = (inputIndex === -1 ? 0 : input[inputIndex]); // first step: start with START token
+        var ixTarget = (inputIndex === inputMax - 1 ? 0 : input[inputIndex + 1]); // last step: end with END token
+        var rowPluckIndex = inputIndex; //connect up to rowPluck
+        var states = {};
+        ${ statesRaw.join('\n') }
+        for (var stateIndex = 0, stateMax = ${ statesRaw.length }; stateIndex < stateMax; stateIndex++) {
+          var state = states[stateIndex];
+          var product = state.product;
+          var left = state.left;
+          var right = state.right;
+          
+          switch (state.name) {
+            ${ innerFunctionsSwitch.join('\n') }
+          }
         }
       }
       

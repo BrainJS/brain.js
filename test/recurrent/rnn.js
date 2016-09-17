@@ -40,11 +40,15 @@ describe('rnn', function() {
       });
     });
     describe('#toFunction', function() {
-      console.log(new RNN({
+      var rnn = new RNN({
         inputSize: 6, //<- length
         inputRange: vocab.characters.length,
         outputSize: vocab.characters.length //<- length
-      }).toFunction().toString());
+      });
+
+      runAgainstMath(rnn);
+      //console.log(rnn.toFunction().toString());
+      console.log(rnn.toFunction()(vocab.toIndexes(randomMath())));
     });
   });
 

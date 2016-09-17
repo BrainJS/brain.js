@@ -33,6 +33,9 @@ export default class Equation {
    */
   previousResult(size) {
     let product = new Matrix(size, 1);
+    // this.states.push({
+    //   product: product
+    // });
     this.previousResultInputs.push(product);
     return product;
   }
