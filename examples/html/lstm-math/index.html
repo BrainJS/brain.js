@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../../../browser.js"></script>
+</head>
+<body>
+<canvas id="canvas" style="width: 100%; height: 100px"></canvas>
+<table style="width: 100%">
+  <tr>
+    <th>Correct</th>
+    <th>Correct Pattern, Wrong Math</th>
+    <th>Wrong Pattern</th>
+  </tr>
+  <tr style="vertical-align: top">
+    <td>
+      <pre id="correct" style="color: green"></pre>
+    </td>
+    <td>
+      <pre id="correct-pattern" style="color: red"></pre>
+    </td>
+    <td>
+      <pre id="wrong" style="color: gray"></pre>
+    </td>
+  </tr>
+</table>
+  <pre id="log-pre"></pre>
+</body>
+
+<script>
+  var correct = document.getElementById('correct');
+  var correctPattern = document.getElementById('correct-pattern');
+  var wrong = document.getElementById('wrong');
+  var correctMatches = [];
+
+  //start ai
+  var vocab = new brain.utilities.Vocab(['0','1','2','3','4','5','6','7','8','9','+','=']);
+  var net = new brain.LSTM({
+    inputSize: 6,
+    inputRange: vocab.characters.length,
+    outputSize: vocab.characters.length,
+    hiddenSizes:[20, 20]
+  });
+  runAgainstMath(net);
+
+  //helper functions
+  function log(str, el) {
+    var child = document.createElement('span');
+    child.textContent = str + '\n';
+    el.insertBefore(child, el.childNodes[0]);
+  }
+
+  function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+  }
+
+  function build() {
+    var items = [];
+    for (var i = 0; i <= 10; i++) {
+      for (var j = 0; j <= 10; j++) {
+        items.push(i + '+' + j + '=' + (i + j));
+        if (i === j) continue;
+        items.push(j + '+' + i + '=' + (i + j));
+      }
+    }
+    items.random = function() {
+      return items[Math.floor(Math.random() * items.length)];
+    };
+    return shuffle(items);
+  }
+
+  function trainUntil(net, fn) {
+    var items = build();
+    var i = 0;
+    function trainOnce() {
+      net.run(vocab.toIndexes(items.random()));
+      if (i % 10 === 0) {
+        for (var j = 0; j < 5; j++) {
+          var prediction = vocab.toCharacters(net.predict()).join('');
+          if (fn(prediction)) {
+            clearInterval(id);
+          }
+        }
+      }
+      //console.log(JSON.stringify(net.toJSON()));
+      i++;
+    }
+
+    var id = setInterval(trainOnce, 0);
+  }
+
+  function runAgainstMath(rnn) {
+    trainUntil(rnn, function(out) {
+      var parts = out.split(/[+=]/g);
+      var plusPosition = out.indexOf('+');
+      var equalPosition = out.indexOf('=');
+      var error = false;
+      if (plusPosition < 0) error = true;
+      if (equalPosition < 0) error = true;
+      if (plusPosition > equalPosition) error = true;
+      if (parts.length !== 3) error = true;
+      if (error) return log(out, wrong);
+
+      if (parseInt(parts[0]) + parseInt(parts[1]) === parseInt(parts[2])) {
+        log(out, correct);
+        correctMatches.push({
+          time: new Date(),
+          pattern: out
+        });
+      } else {
+        log(out, correctPattern);
+      }
+    });
+  }
+</script>
+<!-- charting below here -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.bundle.min.js"></script>
+<script>
+  window.onload = function() {
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    var perplexities = [];
+    var costs = [];
+    var labels = [];
+    var chart = new Chart.Line(ctx, {
+      data: {
+        labels: labels,
+        datasets: [{
+          data: perplexities,
+          backgroundColor: 'rgba(255, 99, 132, 0.25)',
+          borderColor: 'rgba(255,99,132,1)',
+          borderWidth: 2,
+          lineTension: 0.25,
+          pointRadius: 0
+        },{
+          data: costs,
+          backgroundColor: 'rgba(255, 99, 132, 0.25)',
+          borderColor: 'rgba(255,99,132,1)',
+          borderWidth: 2,
+          lineTension: 0.25,
+          pointRadius: 0
+        }]
+      }
+    });
+
+    setInterval(function () {
+      labels.push(new Date());
+      perplexities.push(net.totalPerplexity);
+      //chart.addData(new Date(), , net.totalCost);
+      chart.update();
+    }, 1000);
+  };
+</script>
+</html>

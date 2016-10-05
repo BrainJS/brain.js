@@ -1,6 +1,6 @@
-import Matrix from './matrix';
+import Matrix from '../matrix';
 import RNN from './rnn';
-import RandomMatrix from './matrix/random-matrix';
+import RandomMatrix from '../matrix/random-matrix';
 
 export default class LSTM extends RNN {
   getModel(hiddenSize, prevSize) {
@@ -52,70 +52,79 @@ export default class LSTM extends RNN {
     let multiplyElement = equation.multiplyElement.bind(equation);
     let previousResult = equation.previousResult.bind(equation);
     let tanh = equation.tanh.bind(equation);
+    let result = equation.result.bind(equation);
 
-    let inputGate = sigmoid(
-      add(
+    let inputGate = result(
+      sigmoid(
         add(
-          multiply(
-            hiddenLayer.inputMatrix,
-            inputMatrix
+          add(
+            multiply(
+              hiddenLayer.inputMatrix,
+              inputMatrix
+            ),
+            multiply(
+              hiddenLayer.inputHidden,
+              previousResult(size)
+            )
           ),
-          multiply(
-            hiddenLayer.inputHidden,
-            previousResult(size)
-          )
-        ),
-        hiddenLayer.inputBias
+          hiddenLayer.inputBias
+        )
       )
     );
 
-    let forgetGate = sigmoid(
-      add(
+    let forgetGate = result(
+      sigmoid(
         add(
-          multiply(
-            hiddenLayer.forgetMatrix,
-            inputMatrix
+          add(
+            multiply(
+              hiddenLayer.forgetMatrix,
+              inputMatrix
+            ),
+            multiply(
+              hiddenLayer.forgetHidden,
+              previousResult(size)
+            )
           ),
-          multiply(
-            hiddenLayer.forgetHidden,
-            previousResult(size)
-          )
-        ),
-        hiddenLayer.forgetBias
+          hiddenLayer.forgetBias
+        )
       )
     );
 
     // output gate
-    let outputGate = sigmoid(
-      add(
+    let outputGate = result(
+      sigmoid(
         add(
-          multiply(
-            hiddenLayer.outputMatrix,
-            inputMatrix
+          add(
+            multiply(
+              hiddenLayer.outputMatrix,
+              inputMatrix
+            ),
+            multiply(
+              hiddenLayer.outputHidden,
+              previousResult(size)
+            )
           ),
-          multiply(
-            hiddenLayer.outputHidden,
-            previousResult(size)
-          )
-        ),
-        hiddenLayer.outputBias
+          hiddenLayer.outputBias
+        )
       )
     );
 
     // write operation on cells
-    let cellWrite = tanh(
-      add(
+    let cellWrite = result(
+      tanh(
         add(
-          multiply(
-            hiddenLayer.cellActivationMatrix,
-            inputMatrix
+          add(
+            multiply(
+              hiddenLayer.cellActivationMatrix,
+              inputMatrix
+            ),
+            multiply(
+              hiddenLayer.cellActivationHidden,
+              previousResult(size)
+            )
           ),
-          multiply(
-            hiddenLayer.cellActivationHidden,
-            previousResult(size)
-          )
-        ),
-        hiddenLayer.cellActivationBias
+          hiddenLayer.cellActivationBias
+        )
       )
     );
 
@@ -125,6 +134,6 @@ export default class LSTM extends RNN {
     let cell = add(retainCell, writeCell); // new cell contents
 
     // compute hidden state as gated, saturated cell activations
-    return multiplyElement(outputGate, tanh(cell));
+    return result(multiplyElement(outputGate, tanh(cell)));
   }
 }

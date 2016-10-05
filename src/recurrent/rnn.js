@@ -1,9 +1,9 @@
-import sampleI from './matrix/sample-i';
-import maxI from './matrix/max-i';
-import Matrix from './matrix';
-import RandomMatrix from './matrix/random-matrix';
-import softmax from './matrix/softmax';
-import Equation from './equation';
+import sampleI from '../matrix/sample-i';
+import maxI from '../matrix/max-i';
+import Matrix from '../matrix';
+import RandomMatrix from '../matrix/random-matrix';
+import softmax from '../matrix/softmax';
+import Equation from '../utilities/equation';
 
 const defaults = {
   isBackPropagate: true,
@@ -93,20 +93,23 @@ export default class RNN {
     let add = equation.add.bind(equation);
     let multiply = equation.multiply.bind(equation);
     let previousResult = equation.previousResult.bind(equation);
+    let result = equation.result.bind(equation);
 
-    return relu(
-      add(
+    return result(
+      relu(
         add(
-          multiply(
-            hiddenLayer.weight,
-            inputMatrix
+          add(
+            multiply(
+              hiddenLayer.weight,
+              inputMatrix
+            ),
+            multiply(
+              hiddenLayer.transition,
+              previousResult(size)
+            )
           ),
-          multiply(
-            hiddenLayer.transition,
-            previousResult(size)
-          )
-        ),
-        hiddenLayer.bias
+          hiddenLayer.bias
+        )
       )
     );
   }
@@ -138,11 +141,9 @@ export default class RNN {
     model.equations.push(equation);
     // 0 index
     let output = this.getEquation(equation, equation.inputMatrixToRow(model.input), hiddenSizes[0], hiddenLayers[0]);
-    equation.addPreviousResult(output);
     // 1+ indexes
     for (let i = 1, max = hiddenSizes.length; i < max; i++) {
       output = this.getEquation(equation, output, hiddenSizes[i], hiddenLayers[i]);
-      equation.addPreviousResult(output);
     }
     equation.add(equation.multiply(model.outputConnector, output), model.output);
   }
@@ -200,9 +201,7 @@ export default class RNN {
       let ixSource = (i === -1 ? 0 : input[i]); // first step: start with START token
       let ixTarget = (i === max - 1 ? 0 : input[i + 1]); // last step: end with END token
       output = equation.run(ixSource);
-      if (equations[i + 2]) {
-        equation.copyPreviousResultsTo(equations[i + 2]);
-      }
+      equation.updatePreviousResults();
 
       // set gradients into log probabilities
       this.logProbabilities = output; // interpret output as log probabilities
@@ -216,8 +215,8 @@ export default class RNN {
       this.logProbabilities.recurrence[ixTarget] -= 1
     }
 
-    while (i > -1) {
-      equations[i--].runBackpropagate();
+    while (i-- > 0) {
+      equations[i].runBackpropagate();
     }
 
     this.step();
@@ -276,11 +275,11 @@ export default class RNN {
     //let prev;
     let ix;
     let equation = this.model.equations[0];
-    equation.resetPreviousResults();
+    //equation.resetPreviousResults();
     while (true) {
       ix = result.length === 0 ? 0 : result[result.length - 1];
       let lh = equation.run(ix);
-      equation.updatePreviousResults();
+      //equation.updatePreviousResults();
       //prev = clone(lh);
       // sample predicted letter
       this.logProbabilities = lh;

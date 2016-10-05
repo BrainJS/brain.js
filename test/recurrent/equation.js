@@ -1,7 +1,8 @@
 import fs from 'fs';
 import assert from 'assert';
-import Matrix from '../../src/recurrent/matrix';
-import Equation from '../../src/recurrent/equation';
+import sinon from 'sinon';
+import Matrix from '../../src/matrix';
+import Equation from '../../src/utilities/equation';
 
 function randomMath() {
   var left = Math.floor(Math.random() * 10);
@@ -18,26 +19,109 @@ function fourSquareMatrix(value) {
 }
 
 describe('equation', function() {
-  describe('add', function() {
-    it('can add two matrices with values of one', function() {
+  describe('run', function() {
+    it('calls all forwardFn properties', function() {
       var equation = new Equation();
-      var input = fourSquareMatrix(1);
-      equation.add(input, fourSquareMatrix(1));
-      var output = equation.run();
-      output.weights.forEach(function(value) {
-        assert.equal(value, 2);
+      for (var i = 0; i < 10; i++) {
+        equation.states.push({
+          forwardFn: sinon.spy()
+        })
+      }
+      equation.run();
+      equation.states.forEach(function(state) {
+        assert(state.forwardFn.called);
+      });
+    });
+  });
+  describe('runBack', function() {
+    it('calls all forwardFn properties', function() {
+      var equation = new Equation();
+      for (var i = 0; i < 10; i++) {
+        equation.states.push({
+          backpropagationFn: sinon.spy()
+        })
+      }
+      equation.runBackpropagate();
+      equation.states.forEach(function(state) {
+        assert(state.backpropagationFn.called);
       });
     });
   });
   describe('add', function() {
-    it('can add two matrices nested 3 times, all matrices start with values of one', function() {
+    it('calls forwardFn', function() {
       var equation = new Equation();
       var input = fourSquareMatrix(1);
-      equation.add(equation.add(equation.add(input, fourSquareMatrix(1)), fourSquareMatrix(1)), fourSquareMatrix(1));
-      var output = equation.run();
-      output.weights.forEach(function(value) {
-        assert.equal(value, 4);
-      });
+      equation.add(input, fourSquareMatrix(1));
+      assert.equal(equation.states.length, 1);
+      sinon.spy(equation.states[0], 'forwardFn');
+      equation.run();
+      assert(equation.states[0].forwardFn.called);
+    });
+  });
+  describe('multiply', function() {
+    it('calls forwardFn', function() {
+      var equation = new Equation();
+      var input = fourSquareMatrix(1);
+      equation.multiply(input, fourSquareMatrix(1));
+      assert.equal(equation.states.length, 1);
+      sinon.spy(equation.states[0], 'forwardFn');
+      equation.run();
+      assert(equation.states[0].forwardFn.called);
+    });
+  });
+  describe('multiplyElement', function() {
+    it('calls forwardFn', function() {
+      var equation = new Equation();
+      var input = fourSquareMatrix(1);
+      equation.add(input, fourSquareMatrix(1));
+      assert.equal(equation.states.length, 1);
+      sinon.spy(equation.states[0], 'forwardFn');
+      equation.run();
+      assert(equation.states[0].forwardFn.called);
+    });
+  });
+  describe('relu', function() {
+    it('calls forwardFn', function() {
+      var equation = new Equation();
+      var input = fourSquareMatrix(1);
+      equation.add(input, fourSquareMatrix(1));
+      assert.equal(equation.states.length, 1);
+      sinon.spy(equation.states[0], 'forwardFn');
+      equation.run();
+      assert(equation.states[0].forwardFn.called);
+    });
+  });
+  describe('inputMatrixToRow', function() {
+    it('calls forwardFn', function() {
+      var equation = new Equation();
+      var input = fourSquareMatrix(1);
+      equation.add(input, fourSquareMatrix(1));
+      assert.equal(equation.states.length, 1);
+      sinon.spy(equation.states[0], 'forwardFn');
+      equation.run();
+      assert(equation.states[0].forwardFn.called);
+    });
+  });
+  describe('sigmoid', function() {
+    it('calls forwardFn', function() {
+      var equation = new Equation();
+      var input = fourSquareMatrix(1);
+      equation.add(input, fourSquareMatrix(1));
+      assert.equal(equation.states.length, 1);
+      sinon.spy(equation.states[0], 'forwardFn');
+      equation.run();
+      assert(equation.states[0].forwardFn.called);
+    });
+  });
+  describe('tanh', function() {
+    it('calls forwardFn', function() {
+      var equation = new Equation();
+      var input = fourSquareMatrix(1);
+      equation.add(input, fourSquareMatrix(1));
+      assert.equal(equation.states.length, 1);
+      sinon.spy(equation.states[0], 'forwardFn');
+      equation.run();
+      assert(equation.states[0].forwardFn.called);
     });
   });
   describe('multiply', function() {
@@ -57,6 +141,17 @@ describe('equation', function() {
       var output = equation.run();
       output.weights.forEach(function(value) {
         assert.equal(value, 1024);
+      });
+    });
+  });
+  describe('add', function() {
+    it('can add two matrices nested 3 times, all matrices start with values of one', function() {
+      var equation = new Equation();
+      var input = fourSquareMatrix(1);
+      equation.add(equation.add(equation.add(input, fourSquareMatrix(1)), fourSquareMatrix(1)), fourSquareMatrix(1));
+      var output = equation.run();
+      output.weights.forEach(function(value) {
+        assert.equal(value, 4);
       });
     });
   });

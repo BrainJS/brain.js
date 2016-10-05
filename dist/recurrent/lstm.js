@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _matrix = require('./matrix');
+var _matrix = require('../matrix');
 
 var _matrix2 = _interopRequireDefault(_matrix);
 
@@ -14,7 +14,7 @@ var _rnn = require('./rnn');
 
 var _rnn2 = _interopRequireDefault(_rnn);
 
-var _randomMatrix = require('./matrix/random-matrix');
+var _randomMatrix = require('../matrix/random-matrix');
 
 var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
 
@@ -89,16 +89,17 @@ var LSTM = function (_RNN) {
       var multiplyElement = equation.multiplyElement.bind(equation);
       var previousResult = equation.previousResult.bind(equation);
       var tanh = equation.tanh.bind(equation);
+      var result = equation.result.bind(equation);
 
-      var inputGate = sigmoid(add(add(multiply(hiddenLayer.inputMatrix, inputMatrix), multiply(hiddenLayer.inputHidden, previousResult(size))), hiddenLayer.inputBias));
+      var inputGate = result(sigmoid(add(add(multiply(hiddenLayer.inputMatrix, inputMatrix), multiply(hiddenLayer.inputHidden, previousResult(size))), hiddenLayer.inputBias)));
 
-      var forgetGate = sigmoid(add(add(multiply(hiddenLayer.forgetMatrix, inputMatrix), multiply(hiddenLayer.forgetHidden, previousResult(size))), hiddenLayer.forgetBias));
+      var forgetGate = result(sigmoid(add(add(multiply(hiddenLayer.forgetMatrix, inputMatrix), multiply(hiddenLayer.forgetHidden, previousResult(size))), hiddenLayer.forgetBias)));
 
       // output gate
-      var outputGate = sigmoid(add(add(multiply(hiddenLayer.outputMatrix, inputMatrix), multiply(hiddenLayer.outputHidden, previousResult(size))), hiddenLayer.outputBias));
+      var outputGate = result(sigmoid(add(add(multiply(hiddenLayer.outputMatrix, inputMatrix), multiply(hiddenLayer.outputHidden, previousResult(size))), hiddenLayer.outputBias)));
 
       // write operation on cells
-      var cellWrite = tanh(add(add(multiply(hiddenLayer.cellActivationMatrix, inputMatrix), multiply(hiddenLayer.cellActivationHidden, previousResult(size))), hiddenLayer.cellActivationBias));
+      var cellWrite = result(tanh(add(add(multiply(hiddenLayer.cellActivationMatrix, inputMatrix), multiply(hiddenLayer.cellActivationHidden, previousResult(size))), hiddenLayer.cellActivationBias)));
 
       // compute new cell activation
       var retainCell = multiplyElement(forgetGate, previousResult(size)); // what do we keep from cell
@@ -106,7 +107,7 @@ var LSTM = function (_RNN) {
       var cell = add(retainCell, writeCell); // new cell contents
 
       // compute hidden state as gated, saturated cell activations
-      return multiplyElement(outputGate, tanh(cell));
+      return result(multiplyElement(outputGate, tanh(cell)));
     }
   }]);
 

@@ -13,7 +13,9 @@ export default {
   lookup,
   NeuralNetwork,
   TrainStream,
-  RNN,
-  LSTM,
-  GRU
+  recurrent: {
+    RNN,
+    LSTM,
+    GRU
+  }
 };

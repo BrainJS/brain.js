@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _matrix = require('./matrix');
+var _matrix = require('../matrix');
 
 var _matrix2 = _interopRequireDefault(_matrix);
 
@@ -14,7 +14,7 @@ var _rnn = require('./rnn');
 
 var _rnn2 = _interopRequireDefault(_rnn);
 
-var _randomMatrix = require('./matrix/random-matrix');
+var _randomMatrix = require('../matrix/random-matrix');
 
 var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
 

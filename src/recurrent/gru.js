@@ -1,6 +1,6 @@
-import Matrix from './matrix';
+import Matrix from '../matrix';
 import RNN from './rnn';
-import RandomMatrix from './matrix/random-matrix';
+import RandomMatrix from '../matrix/random-matrix';
 
 export default class GRU extends RNN {
   getModel(hiddenSize, prevSize) {

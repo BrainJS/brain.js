@@ -44,8 +44,10 @@ exports.default = {
   lookup: _lookup2.default,
   NeuralNetwork: _neuralNetwork2.default,
   TrainStream: _trainStream2.default,
-  RNN: _rnn2.default,
-  LSTM: _lstm2.default,
-  GRU: _gru2.default
+  recurrent: {
+    RNN: _rnn2.default,
+    LSTM: _lstm2.default,
+    GRU: _gru2.default
+  }
 };
 //# sourceMappingURL=index.js.map

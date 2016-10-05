@@ -6,27 +6,27 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _sampleI2 = require('./matrix/sample-i');
+var _sampleI2 = require('../matrix/sample-i');
 
 var _sampleI3 = _interopRequireDefault(_sampleI2);
 
-var _maxI = require('./matrix/max-i');
+var _maxI = require('../matrix/max-i');
 
 var _maxI2 = _interopRequireDefault(_maxI);
 
-var _matrix = require('./matrix');
+var _matrix = require('../matrix');
 
 var _matrix2 = _interopRequireDefault(_matrix);
 
-var _randomMatrix = require('./matrix/random-matrix');
+var _randomMatrix = require('../matrix/random-matrix');
 
 var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
 
-var _softmax = require('./matrix/softmax');
+var _softmax = require('../matrix/softmax');
 
 var _softmax2 = _interopRequireDefault(_softmax);
 
-var _equation = require('./equation');
+var _equation = require('../utilities/equation');
 
 var _equation2 = _interopRequireDefault(_equation);
 
@@ -131,8 +131,9 @@ var RNN = function () {
       var add = equation.add.bind(equation);
       var multiply = equation.multiply.bind(equation);
       var previousResult = equation.previousResult.bind(equation);
+      var result = equation.result.bind(equation);
 
-      return relu(add(add(multiply(hiddenLayer.weight, inputMatrix), multiply(hiddenLayer.transition, previousResult(size))), hiddenLayer.bias));
+      return result(relu(add(add(multiply(hiddenLayer.weight, inputMatrix), multiply(hiddenLayer.transition, previousResult(size))), hiddenLayer.bias)));
     }
   }, {
     key: 'createInputMatrix',
@@ -165,11 +166,9 @@ var RNN = function () {
       model.equations.push(equation);
       // 0 index
       var output = this.getEquation(equation, equation.inputMatrixToRow(model.input), hiddenSizes[0], hiddenLayers[0]);
-      equation.addPreviousResult(output);
       // 1+ indexes
       for (var _i = 1, max = hiddenSizes.length; _i < max; _i++) {
         output = this.getEquation(equation, output, hiddenSizes[_i], hiddenLayers[_i]);
-        equation.addPreviousResult(output);
       }
       equation.add(equation.multiply(model.outputConnector, output), model.output);
     }
@@ -229,9 +228,7 @@ var RNN = function () {
         var ixSource = i === -1 ? 0 : input[i]; // first step: start with START token
         var ixTarget = i === max - 1 ? 0 : input[i + 1]; // last step: end with END token
         output = equation.run(ixSource);
-        if (equations[i + 2]) {
-          equation.copyPreviousResultsTo(equations[i + 2]);
-        }
+        equation.updatePreviousResults();
 
         // set gradients into log probabilities
         this.logProbabilities = output; // interpret output as log probabilities
@@ -245,8 +242,8 @@ var RNN = function () {
         this.logProbabilities.recurrence[ixTarget] -= 1;
       }
 
-      while (i > -1) {
-        equations[i--].runBackpropagate();
+      while (i-- > 0) {
+        equations[i].runBackpropagate();
       }
 
       this.step();
@@ -310,14 +307,14 @@ var RNN = function () {
       }
 
       var result = [];
-      //var prev;
+      //let prev;
       var ix = void 0;
       var equation = this.model.equations[0];
-      equation.resetPreviousResults();
+      //equation.resetPreviousResults();
       while (true) {
         ix = result.length === 0 ? 0 : result[result.length - 1];
         var lh = equation.run(ix);
-        equation.updatePreviousResults();
+        //equation.updatePreviousResults();
         //prev = clone(lh);
         // sample predicted letter
         this.logProbabilities = lh;
@@ -363,7 +360,22 @@ var RNN = function () {
   }, {
     key: 'runInput',
     value: function runInput(input) {
-      throw new Error('not yet implemented');
+      this.outputs[0] = input; // set output state of input layer
+
+      var output = null;
+      for (var layer = 1; layer <= this.outputLayer; layer++) {
+        for (var node = 0; node < this.sizes[layer]; node++) {
+          var weights = this.weights[layer][node];
+
+          var sum = this.biases[layer][node];
+          for (var k = 0; k < weights.length; k++) {
+            sum += weights[k] * input[k];
+          }
+          this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
+        }
+        output = input = this.outputs[layer];
+      }
+      return output;
     }
 
     /**
@@ -552,7 +564,81 @@ var RNN = function () {
   }, {
     key: 'toFunction',
     value: function toFunction() {
-      throw new Error('not yet implemented');
+      var model = this.model;
+      var equation = this.model.equations[0];
+      var states = equation.states;
+      var modelAsString = JSON.stringify(this.toJSON());
+
+      function matrixOrigin(m, requestedStateIndex) {
+        for (var _i5 = 0, max = states.length; _i5 < max; _i5++) {
+          var state = states[_i5];
+
+          if (_i5 === requestedStateIndex) {
+            switch (m) {
+              case state.product:
+              case state.left:
+              case state.right:
+                return 'new Matrix(' + m.rows + ', ' + m.columns + ')';
+            }
+          }
+
+          if (m === state.product) return 'states[' + _i5 + '].product';
+          if (m === state.right) return 'states[' + _i5 + '].right';
+          if (m === state.left) return 'states[' + _i5 + '].left';
+        }
+      }
+
+      function matrixToString(m, stateIndex) {
+        if (!m) return 'null';
+
+        for (var _i6 = 0, max = model.hiddenLayers.length; _i6 < max; _i6++) {
+          var hiddenLayer = model.hiddenLayers[_i6];
+          for (var p in hiddenLayer) {
+            if (hiddenLayer[p] === m) {
+              return 'model.hiddenLayers[' + _i6 + '].' + p;
+            }
+          }
+        }
+        if (m === model.input) return 'model.input';
+        if (m === model.outputConnector) return 'model.outputConnector';
+        if (m === model.output) return 'model.output';
+        return matrixOrigin(m, stateIndex);
+      }
+
+      function toInner(fnString) {
+        //crude, but should be sufficient for now
+        //function() { inner.function.string.here; }
+        fnString = fnString.toString().split('{');
+        fnString.shift();
+        // inner.function.string.here; }
+        fnString = fnString.join('{');
+        fnString = fnString.split('}');
+        fnString.pop();
+        // inner.function.string.here;
+        return fnString.join('}');
+      }
+
+      function fileName(fnName) {
+        return 'src/recurrent/matrix/' + fnName.replace(/[A-Z]/g, function (value) {
+          return '-' + value.toLowerCase();
+        }) + '.js';
+      }
+
+      var statesRaw = [];
+      var usedFunctionNames = {};
+      var innerFunctionsSwitch = [];
+      for (var _i7 = 0, max = states.length; _i7 < max; _i7++) {
+        var state = states[_i7];
+        statesRaw.push('states[' + _i7 + '] = {\n        name: \'' + state.forwardFn.name + '\',\n        left: ' + matrixToString(state.left, _i7) + ',\n        right: ' + matrixToString(state.right, _i7) + ',\n        product: ' + matrixToString(state.product, _i7) + '\n      };');
+
+        var fnName = state.forwardFn.name;
+        if (!usedFunctionNames[fnName]) {
+          usedFunctionNames[fnName] = true;
+          innerFunctionsSwitch.push('\n        case \'' + fnName + '\': //compiled from ' + fileName(fnName) + '\n          ' + toInner(state.forwardFn.toString()) + '\n          break;\n        ');
+        }
+      }
+
+      return new Function('input', '\n      var model = ' + modelAsString + ';\n      \n      function Matrix(rows, columns) {\n        this.rows = rows;\n        this.columns = columns;\n        this.weights = zeros(rows * columns);\n        this.recurrence = zeros(rows * columns);\n      }\n      \n      function zeros(size) {\n        if (typeof Float64Array !== \'undefined\') return new Float64Array(size);\n        var array = new Array(size);\n        for (var i = 0; i < size; i++) {\n          array[i] = 0;\n        }\n        return array;\n      }\n      \n      for (var inputIndex = 0, inputMax = input.length; inputIndex < inputMax; inputIndex++) {\n        var ixSource = (inputIndex === -1 ? 0 : input[inputIndex]); // first step: start with START token\n        var ixTarget = (inputIndex === inputMax - 1 ? 0 : input[inputIndex + 1]); // last step: end with END token\n        var rowPluckIndex = inputIndex; //connect up to rowPluck\n        var states = {};\n        ' + statesRaw.join('\n') + '\n        for (var stateIndex = 0, stateMax = ' + statesRaw.length + '; stateIndex < stateMax; stateIndex++) {\n          var state = states[stateIndex];\n          var product = state.product;\n          var left = state.left;\n          var right = state.right;\n          \n          switch (state.name) {\n            ' + innerFunctionsSwitch.join('\n') + '\n          }\n        }\n      }\n      \n      return state.product;\n    ');
     }
   }]);
 

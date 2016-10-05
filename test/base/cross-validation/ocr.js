@@ -2,6 +2,7 @@ import canvas from 'canvas';
 import assert from 'assert';
 import brain from '../../../src';
 import crossValidate from '../../../src/cross-validate';
+import shuffle from '../../utilities/shuffle';
 let dim = 24;
 
 function getSampling(context, letter, font) {
@@ -36,16 +37,35 @@ describe('OCR cross-validation', () => {
   it('recognize characters in different fonts', () => {
     let _canvas = new canvas(dim, dim);
     let context = _canvas.getContext('2d');
-    let letters = [
+    let characters = [
       'A',
       'B',
       'C',
       'D',
       'E',
+      'F',
+      'G',
+      'H',
+      'I',
+      'J',
       'K',
+      'L',
+      'M',
+      'N',
       'O',
+      'P',
+      'Q',
+      'R',
+      'S',
+      'T',
+      'U',
+      'V',
+      'W',
+      'X',
+      'Y',
       'Z'
     ];
+    //let randomCharacters = shuffle(characters).slice(0, 4);
     let fonts = [
       'Arial',
       'Courier',
@@ -66,7 +86,7 @@ describe('OCR cross-validation', () => {
     ];
     let data = [];
 
-    letters.forEach((letter) => {
+    characters.forEach((letter) => {
        fonts.forEach((font) => {
           let input = getSampling(context, letter, font);
 
@@ -81,12 +101,14 @@ describe('OCR cross-validation', () => {
     let trainOpts = { log: console.log, errorThresh: 0.08 };
     let result = crossValidate(brain.NeuralNetwork, data, opts, trainOpts);
 
-    console.log('\nMisclassifications:');
-    result.misclasses.forEach((misclass) => {
-      console.log('input: ' + misclass.input
-        + ' actual: ' + letters[misclass.actual]
-        + ' expected: ' + letters[misclass.expected] + '\n')
-    });
+    if (result.misclasses.length > 0) {
+      console.log('\nMisclassifications:');
+      result.misclasses.forEach((misslass) => {
+        console.log('input: ' + misclass.input
+          + ' actual: ' + characters[misclass.actual]
+          + ' expected: ' + characters[misclass.expected] + '\n')
+      });
+    }
 
     console.log('\nCross-validation of OCR data:\n');
     console.log(result.avgs);

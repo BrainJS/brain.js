@@ -13,10 +13,8 @@
     "test-recurrent": "find ./test/recurrent/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
     "test": "npm run test-base && npm run test-base-cv && npm run test-recurrent",
     "dist": "babel src --out-dir dist --source-maps",
-
-    "browser": "browserify ./index.js -p licensify > browser.js",
-    "browser-min": "browserify ./index.js -p licensify -g uglifyify > browser.min.js",
-
+    "browser": "browserify ./index.js -p licensify -o browser.js",
+    "browser-min": "browserify ./index.js -p licensify -g uglifyify -o browser.min.js",
     "make": "rm -fr ./dist && npm run dist && git add ./dist && npm run browser && npm run browser-min"
   },
   "main": "./index.js",
@@ -27,6 +25,7 @@
     "canvas": "^1.4.0",
     "licensify": "^3.1.2",
     "mocha": "^3.0.2",
+    "sinon": "^1.17.6",
     "uglifyify": "^3.0.2"
   },
   "keywords": [

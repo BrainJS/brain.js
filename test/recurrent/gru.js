@@ -10,6 +10,7 @@ function randomMath() {
 }
 
 describe('gru', function() {
+  return;
   it('can predict what a math problem is after being fed 1000 random math problems', function() {
     console.time('math gru');
     var gru = new GRU({

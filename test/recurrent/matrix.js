@@ -1,11 +1,11 @@
 import assert from 'assert';
-import Matrix from '../../src/recurrent/matrix';
-import add from '../../src/recurrent/matrix/add';
-import addB from '../../src/recurrent/matrix/add-b';
-import multiply from '../../src/recurrent/matrix/multiply';
-import multiplyB from '../../src/recurrent/matrix/multiply-b';
-import multiplyElement from '../../src/recurrent/matrix/multiply-element';
-import multiplyElementB from '../../src/recurrent/matrix/multiply-element-b';
+import Matrix from '../../src/matrix';
+import add from '../../src/matrix/add';
+import addB from '../../src/matrix/add-b';
+import multiply from '../../src/matrix/multiply';
+import multiplyB from '../../src/matrix/multiply-b';
+import multiplyElement from '../../src/matrix/multiply-element';
+import multiplyElementB from '../../src/matrix/multiply-element-b';
 
 function makeFakeMatrix(rows, columns) {
   var m = new Matrix(rows, columns);

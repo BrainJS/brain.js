@@ -1,55 +1,44 @@
 import assert from 'assert';
 import RNN from '../../src/recurrent/rnn';
-import Vocab from '../../src/utilities/vocab';
-var vocab = new Vocab(['0','1','2','3','4','5','6','7','8','9','+','=']);
+import { vocab, build, train } from '../utilities/math-addition-vocab';
 
-function randomMath() {
-  var left = Math.floor(Math.random() * 10);
-  var right = Math.floor(Math.random() * 10);
-  return left + '+' + right + '=' + (left + right);
-}
-
-function runAgainstMath(rnn) {
-  for (var i = 0; i < 1000; i++) {
-    rnn.run(vocab.toIndexes(randomMath()));
-    if (i % 10 === 0) {
-      //console.log(vocab.toCharacters(rnn.predict()).join(''));
+describe('rnn', () => {
+  return;
+  describe('math', () => {
+    let mathProblems = build();
+    function runAgainstMath(rnn) {
+      train(rnn);
+      var prediction = vocab.toCharacters(rnn.predict()).join('');
+      console.log(prediction);
+      assert(/^[0-9]+[+][0-9]+[=][0-9]+$/.test(prediction));
     }
-  }
 
-  var prediction = vocab.toCharacters(rnn.predict()).join('');
-  console.log(prediction);
-  assert(/[+]/.test(prediction));
-  assert(/[=]/.test(prediction));
-}
+    describe('#predict', () => {
+      context('after being fed 1000 random addition problems', () => {
+        it('can predict what a math addition problem is and create one', () => {
+          console.time('math rnn');
+          var rnn = new RNN({
+            inputSize: 6, //<- length
+            inputRange: vocab.characters.length,
+            outputSize: vocab.characters.length //<- length
+          });
 
-describe('rnn', function() {
-  describe('#predict', function() {
-    context('after being fed 1000 random addition problems', function() {
-      it('can predict what a math addition problem is and create one', function() {
-        console.time('math rnn');
-        var rnn = new RNN({
-          inputSize: 6, //<- length
-          inputRange: vocab.characters.length,
-          outputSize: vocab.characters.length //<- length
+          runAgainstMath(rnn);
+          console.timeEnd('math rnn');
+          console.log('');
         });
-
-        runAgainstMath(rnn);
-        console.timeEnd('math rnn');
-        console.log('');
       });
     });
-    describe('#toFunction', function() {
+    /*describe('#toFunction', () => {
       var rnn = new RNN({
         inputSize: 6, //<- length
-        inputRange: vocab.characters.length,
-        outputSize: vocab.characters.length //<- length
+        inputRange: mathVocab.characters.length,
+        outputSize: mathVocab.characters.length //<- length
       });
 
       runAgainstMath(rnn);
-      //console.log(rnn.toFunction().toString());
-      console.log(rnn.toFunction()(vocab.toIndexes(randomMath())));
-    });
+      require('fs').writeFileSync('raw-rnn.js', rnn.toFunction().toString());
+    });*/
   });
 
   /*describe('#train', function() {
