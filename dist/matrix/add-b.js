@@ -11,7 +11,7 @@ exports.default = addB;
  * @param {Matrix} right
  */
 function addB(product, left, right) {
-  for (var i = 0, max = left.weights.length; i < max; i++) {
+  for (var i = 0, max = left.recurrence.length; i < max; i++) {
     left.recurrence[i] += product.recurrence[i];
     right.recurrence[i] += product.recurrence[i];
   }

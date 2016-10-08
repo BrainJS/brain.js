@@ -1,22 +1,22 @@
-import Matrix from '../matrix';
-import OnesMatrix from '../matrix/ones-matrix';
-import _copy from '../matrix/copy';
-import _cloneNegative from '../matrix/clone-negative';
-import _add from '../matrix/add';
-import _addB from '../matrix/add-b';
-import _allOnes from '../matrix/all-ones';
-import _multiply from '../matrix/multiply';
-import _multiplyB from '../matrix/multiply-b';
-import _multiplyElement from '../matrix/multiply-element';
-import _multiplyElementB from '../matrix/multiply-element-b';
-import _relu from '../matrix/relu';
-import _reluB from '../matrix/relu-b';
-import _rowPluck from '../matrix/row-pluck';
-import _rowPluckB from '../matrix/row-pluck-b';
-import _sigmoid from '../matrix/sigmoid';
-import _sigmoidB from '../matrix/sigmoid-b';
-import _tanh from '../matrix/tanh';
-import _tanhB from '../matrix/tanh-b';
+import Matrix from './';
+import OnesMatrix from './ones-matrix';
+import copy from './copy';
+import cloneNegative from './clone-negative';
+import add from './add';
+import addB from './add-b';
+import allOnes from './all-ones';
+import multiply from './multiply';
+import multiplyB from './multiply-b';
+import multiplyElement from './multiply-element';
+import multiplyElementB from './multiply-element-b';
+import relu from './relu';
+import reluB from './relu-b';
+import rowPluck from './row-pluck';
+import rowPluckB from './row-pluck-b';
+import sigmoid from './sigmoid';
+import sigmoidB from './sigmoid-b';
+import tanh from './tanh';
+import tanhB from './tanh-b';
 
 export default class Equation {
   constructor() {
@@ -39,7 +39,7 @@ export default class Equation {
       left: parseInt(this.previousResultInputs.length),
       right: this.previousResults,
       backpropagationFn: function(product, i, previousResults) {
-        _copy(product, previousResults[i]);
+        copy(product, previousResults[i]);
       }
     });
     this.previousResultInputs.push(product);
@@ -61,8 +61,8 @@ export default class Equation {
       left: left,
       right: right,
       product: product,
-      forwardFn: _add,
-      backpropagationFn: _addB
+      forwardFn: add,
+      backpropagationFn: addB
     });
     return product;
   }
@@ -72,7 +72,7 @@ export default class Equation {
     this.states.push({
       left: product,
       product: product,
-      forwardFn: _allOnes
+      forwardFn: allOnes
     });
     return product;
   }
@@ -86,7 +86,7 @@ export default class Equation {
     this.states.push({
       left: m,
       product: product,
-      forwardFn: _cloneNegative
+      forwardFn: cloneNegative
     });
     return product;
   }
@@ -119,8 +119,8 @@ export default class Equation {
       left: left,
       right: right,
       product: product,
-      forwardFn: _multiply,
-      backpropagationFn: _multiplyB
+      forwardFn: multiply,
+      backpropagationFn: multiplyB
     });
     return product;
   }
@@ -140,8 +140,8 @@ export default class Equation {
       left: left,
       right: right,
       product: product,
-      forwardFn: _multiplyElement,
-      backpropagationFn: _multiplyElementB
+      forwardFn: multiplyElement,
+      backpropagationFn: multiplyElementB
     });
     return product;
   }
@@ -156,8 +156,8 @@ export default class Equation {
     this.states.push({
       left: m,
       product: product,
-      forwardFn: _relu,
-      backpropagationFn: _reluB
+      forwardFn: relu,
+      backpropagationFn: reluB
     });
     return product;
   }
@@ -176,8 +176,8 @@ export default class Equation {
         return self.inputRow;
       },
       product: product,
-      forwardFn: _rowPluck,
-      backpropagationFn: _rowPluckB
+      forwardFn: rowPluck,
+      backpropagationFn: rowPluckB
     });
     return product;
   }
@@ -192,8 +192,8 @@ export default class Equation {
     this.states.push({
       left: m,
       product: product,
-      forwardFn: _sigmoid,
-      backpropagationFn: _sigmoidB
+      forwardFn: sigmoid,
+      backpropagationFn: sigmoidB
     });
     return product;
   }
@@ -208,8 +208,8 @@ export default class Equation {
     this.states.push({
       left: m,
       product: product,
-      forwardFn: _tanh,
-      backpropagationFn: _tanhB
+      forwardFn: tanh,
+      backpropagationFn: tanhB
     });
     return product;
   }
@@ -252,46 +252,38 @@ export default class Equation {
   /**
    * @output {Matrix}
    */
-  runBackpropagate() {
+  runBackpropagate(rowIndex) {
+    this.inputRow = rowIndex || 0;
+
     let i = this.states.length;
+    let state;
     while (i-- > 0) {
-      let state = this.states[i];
+      state = this.states[i];
       if (!state.hasOwnProperty('backpropagationFn')) {
         continue;
       }
-      if (
-        (
-          state.left
-          && state.left.recurrence
-          && state.left.recurrence[0] > 0
-        ) ||
-        (
-          state.right
-          && state.right.recurrence
-          && state.right.recurrence[0] > 0
-        )) {
-        console.log(Error('recurrence did not copy'));
-      }
       state.backpropagationFn(state.product, state.left, state.right);
     }
+
+    return state.product;
   }
 
   updatePreviousResults() {
     for (let i = 0, max = this.previousResults.length; i < max; i++) {
-      _copy(this.previousResultInputs[i], this.previousResults[i]);
+      copy(this.previousResultInputs[i], this.previousResults[i]);
     }
   }
 
   copyPreviousResultsTo(equation) {
     for (let i = 0, max = this.previousResults.length; i < max; i++) {
-      _copy(equation.previousResultInputs[i], this.previousResults[i]);
+      copy(equation.previousResultInputs[i], this.previousResults[i]);
     }
   }
 
   resetPreviousResults() {
     for (let i = 0, max = this.previousResults.length; i < max; i++) {
       let prev = this.previousResultInputs[i];
-      _copy(prev, new Matrix(prev.rows, 1));
+      copy(prev, new Matrix(prev.rows, 1));
     }
   }
 

@@ -2,7 +2,8 @@ import fs from 'fs';
 import assert from 'assert';
 import sinon from 'sinon';
 import Matrix from '../../src/matrix';
-import Equation from '../../src/utilities/equation';
+import OnesMatrix from '../../src/matrix/ones-matrix';
+import Equation from '../../src/matrix/equation';
 
 function randomMath() {
   var left = Math.floor(Math.random() * 10);
@@ -124,35 +125,127 @@ describe('equation', function() {
       assert(equation.states[0].forwardFn.called);
     });
   });
-  describe('multiply', function() {
-    it('can multiply two matrices all values of two', function() {
-      var equation = new Equation();
-      var input = fourSquareMatrix(2);
-      equation.multiply(input, fourSquareMatrix(2));
-      var output = equation.run();
-      output.weights.forEach(function(value) {
-        assert.equal(value, 16);
-      });
-    });
-    it('can multiply two matrices nested 3 times, all matrices start with values of two', function() {
+  describe('nesting', function() {
+    it('can nest 3 deep and run forward', function() {
       var equation = new Equation();
       var input = fourSquareMatrix(2);
       equation.multiply(equation.multiply(equation.multiply(input, fourSquareMatrix(2)), fourSquareMatrix(2)), fourSquareMatrix(2));
-      var output = equation.run();
-      output.weights.forEach(function(value) {
-        assert.equal(value, 1024);
+      assert.equal(equation.states.length, 3);
+      sinon.spy(equation.states[0], 'forwardFn');
+      sinon.spy(equation.states[1], 'forwardFn');
+      sinon.spy(equation.states[2], 'forwardFn');
+      equation.run();
+      equation.states.forEach(function(state) {
+        assert(state.forwardFn.called);
+      });
+    });
+    it('can nest 3 deep and run backward', function() {
+      var equation = new Equation();
+      var input = fourSquareMatrix(2);
+      equation.tanh(equation.multiply(equation.add(input, fourSquareMatrix(2)), fourSquareMatrix(2)), fourSquareMatrix(2));
+      assert.equal(equation.states.length, 3);
+      sinon.spy(equation.states[0], 'backpropagationFn');
+      sinon.spy(equation.states[1], 'backpropagationFn');
+      sinon.spy(equation.states[2], 'backpropagationFn');
+      equation.runBackpropagate();
+      equation.states.forEach(function(state) {
+        assert(state.backpropagationFn.called);
       });
     });
   });
-  describe('add', function() {
-    it('can add two matrices nested 3 times, all matrices start with values of one', function() {
-      var equation = new Equation();
-      var input = fourSquareMatrix(1);
-      equation.add(equation.add(equation.add(input, fourSquareMatrix(1)), fourSquareMatrix(1)), fourSquareMatrix(1));
-      var output = equation.run();
-      output.weights.forEach(function(value) {
-        assert.equal(value, 4);
+  describe('inputMatrixToRow', function() {
+    context('run', function() {
+      it('can properly split up a matrix', function() {
+        var input = new Matrix(2, 2);
+        /**
+         * Matrix like:
+         * 1 1
+         * 2 2
+         */
+        input.weights.forEach(function(w, i) {
+          if (i < 2) {
+            input.weights[i] = 1;
+          } else {
+            input.weights[i] = 2;
+          }
+        });
+        var equation = new Equation();
+        equation.add(new OnesMatrix(1, 2), equation.inputMatrixToRow(input));
+        var output = equation.run();
+        assert.equal(output.weights.length, 2);
+        assert.equal(output.weights[0], 2);
+        assert.equal(output.weights[1], 2);
+
+        output = equation.run(1);
+        assert.equal(output.weights.length, 2);
+        assert.equal(output.weights[0], 3);
+        assert.equal(output.weights[1], 3);
       });
+    });
+    context('runBackpropagate', function() {
+      it('can properly split up a matrix', function() {
+        var input = new Matrix(2, 2);
+        /**
+         * Matrix like:
+         * 1 1
+         * 2 2
+         */
+        input.weights.forEach(function(w, i) {
+          if (i < 2) {
+            input.weights[i] = 1;
+          } else {
+            input.weights[i] = 2;
+          }
+        });
+        var equation = new Equation();
+        equation.add(new OnesMatrix(1, 2), equation.inputMatrixToRow(input));
+        var output = equation.run();
+        assert.equal(output.weights.length, 2);
+        output = equation.run(1);
+        assert.equal(output.weights.length, 2);
+        output.weights.forEach(function(weight, i) {
+          output.recurrence[i] = weight;
+        });
+        equation.runBackpropagate(1);
+        equation.runBackpropagate();
+        console.log(input);
+      });
+    });
+  });
+  describe('previousResult', function() {
+    it('works', function () {
+      var input = new Matrix(2, 2);
+      /**
+       * Matrix like:
+       * 1 1
+       * 2 2
+       */
+      input.weights.forEach(function(w, i) {
+        if (i < 2) {
+          input.weights[i] = 1;
+        } else {
+          input.weights[i] = 2;
+        }
+      });
+      var multiplyer = new Matrix(2, 1);
+      multiplyer.weights.forEach(function(w, i) {
+        multiplyer.weights[i] = 4;
+      });
+      var equation = new Equation();
+      equation.multiply(equation.add(new OnesMatrix(1, 2), equation.inputMatrixToRow(input)), multiplyer);
+
+      var output = equation.run();
+      //assert.equal(output.weights.length, 2);
+      //assert.equal(output.weights[0], 2);
+      //assert.equal(output.weights[1], 2);
+
+      output = equation.run(1);
+      //assert.equal(output.weights.length, 2);
+      //assert.equal(output.weights[0], 3);
+      //assert.equal(output.weights[1], 3);
+
+      equation.runBackpropagate();
+      //console.log(input);
     });
   });
 });

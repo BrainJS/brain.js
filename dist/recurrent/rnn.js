@@ -26,7 +26,7 @@ var _softmax = require('../matrix/softmax');
 
 var _softmax2 = _interopRequireDefault(_softmax);
 
-var _equation = require('../utilities/equation');
+var _equation = require('../matrix/equation');
 
 var _equation2 = _interopRequireDefault(_equation);
 
@@ -156,21 +156,27 @@ var RNN = function () {
       model.output = new _matrix2.default(outputSize + 1, 1);
     }
   }, {
-    key: 'bindEquations',
-    value: function bindEquations() {
+    key: 'bindEquation',
+    value: function bindEquation() {
       var model = this.model;
       var hiddenSizes = this.hiddenSizes;
       var hiddenLayers = model.hiddenLayers;
-
       var equation = new _equation2.default();
-      model.equations.push(equation);
       // 0 index
       var output = this.getEquation(equation, equation.inputMatrixToRow(model.input), hiddenSizes[0], hiddenLayers[0]);
       // 1+ indexes
-      for (var _i = 1, max = hiddenSizes.length; _i < max; _i++) {
-        output = this.getEquation(equation, output, hiddenSizes[_i], hiddenLayers[_i]);
+      for (var i = 1, max = hiddenSizes.length; i < max; i++) {
+        output = this.getEquation(equation, output, hiddenSizes[i], hiddenLayers[i]);
       }
       equation.add(equation.multiply(model.outputConnector, output), model.output);
+      model.equations.push(equation);
+    }
+  }, {
+    key: 'createEquations',
+    value: function createEquations() {
+      for (var i = 0, max = this.inputSize; i <= max; i++) {
+        this.bindEquation();
+      }
     }
   }, {
     key: 'mapModel',
@@ -186,13 +192,13 @@ var RNN = function () {
       if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
       if (!model.output) throw new Error('net.model.output not set');
 
-      this.bindEquations();
-      if (!model.equations.length > 0) throw new Error('net.equations not set');
+      this.createEquations();
+      if (!model.equations.length) throw new Error('net.equation not set');
 
       allMatrices.push(model.input);
 
-      for (var _i2 = 0, max = hiddenLayers.length; _i2 < max; _i2++) {
-        var hiddenMatrix = hiddenLayers[_i2];
+      for (var i = 0, max = hiddenLayers.length; i < max; i++) {
+        var hiddenMatrix = hiddenLayers[i];
         for (var property in hiddenMatrix) {
           if (!hiddenMatrix.hasOwnProperty(property)) continue;
           allMatrices.push(hiddenMatrix[property]);
@@ -205,26 +211,26 @@ var RNN = function () {
   }, {
     key: 'run',
     value: function run(input) {
+      this.train(input);
+      this.runBackpropagate(input);
+      this.step();
+    }
+  }, {
+    key: 'train',
+    value: function train(input) {
       this.runs++;
-      input = input || this.model.input;
-      var equations = this.model.equations;
+      var model = this.model;
+      input = input || model.input;
       var max = input.length;
       var log2ppl = 0;
       var cost = 0;
 
-      for (var equationIndex = 0, equationMax = equations.length; equationIndex < equationMax; equationIndex++) {
-        equations[equationIndex].resetPreviousResults();
-      }
-
-      while (equations.length <= max) {
-        this.bindEquations();
-      }
-
       var i = void 0;
       var output = void 0;
+      var equation = void 0;
       for (i = -1; i < max; i++) {
         // start and end tokens are zeros
-        var equation = equations[i + 1];
+        equation = model.equations[i + 1];
         var ixSource = i === -1 ? 0 : input[i]; // first step: start with START token
         var ixTarget = i === max - 1 ? 0 : input[i + 1]; // last step: end with END token
         output = equation.run(ixSource);
@@ -242,15 +248,21 @@ var RNN = function () {
         this.logProbabilities.recurrence[ixTarget] -= 1;
       }
 
-      while (i-- > 0) {
-        equations[i].runBackpropagate();
-      }
-
-      this.step();
-
       this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
       this.totalCost = cost;
       return output;
+    }
+  }, {
+    key: 'runBackpropagate',
+    value: function runBackpropagate(input) {
+      //equation.runBackpropagate(0);
+      var i = input.length;
+      var model = this.model;
+      var equations = model.equations;
+      while (i--) {
+        equations[i].runBackpropagate(input[i]);
+      }
+      //equation.runBackpropagate(0);
     }
   }, {
     key: 'step',
@@ -271,10 +283,10 @@ var RNN = function () {
         }
         var cache = this.stepCache[matrixIndex];
 
-        for (var _i3 = 0, n = matrix.weights.length; _i3 < n; _i3++) {
+        for (var i = 0, n = matrix.weights.length; i < n; i++) {
           // rmsprop adaptive learning rate
-          var mdwi = matrix.recurrence[_i3];
-          cache.weights[_i3] = cache.weights[_i3] * this.decayRate + (1 - this.decayRate) * mdwi * mdwi;
+          var mdwi = matrix.recurrence[i];
+          cache.weights[i] = cache.weights[i] * this.decayRate + (1 - this.decayRate) * mdwi * mdwi;
           // gradient clip
           if (mdwi > clipval) {
             mdwi = clipval;
@@ -287,8 +299,8 @@ var RNN = function () {
           numTot++;
 
           // update (and regularize)
-          matrix.weights[_i3] += -stepSize * mdwi / Math.sqrt(cache.weights[_i3] + this.smoothEps) - regc * matrix.weights[_i3];
-          matrix.recurrence[_i3] = 0; // reset gradients for next iteration
+          matrix.weights[i] += -stepSize * mdwi / Math.sqrt(cache.weights[i] + this.smoothEps) - regc * matrix.weights[i];
+          matrix.recurrence[i] = 0; // reset gradients for next iteration
         }
       }
       this.ratioClipped = numClipped / numTot;
@@ -309,10 +321,11 @@ var RNN = function () {
       var result = [];
       //let prev;
       var ix = void 0;
-      var equation = this.model.equations[0];
+      var equation = void 0;
       //equation.resetPreviousResults();
       while (true) {
         ix = result.length === 0 ? 0 : result[result.length - 1];
+        equation = this.model.equations[result.length - 1];
         var lh = equation.run(ix);
         //equation.updatePreviousResults();
         //prev = clone(lh);
@@ -384,60 +397,51 @@ var RNN = function () {
      * @param options
      * @returns {{error: number, iterations: number}}
      */
-
-  }, {
-    key: 'train',
-    value: function train(data, options) {
+    /*train(data, options) {
       throw new Error('not yet implemented');
       //data = this.formatData(data);
-
-      options = options || {};
-      var iterations = options.iterations || 20000;
-      var errorThresh = options.errorThresh || 0.005;
-      var log = options.log ? typeof options.log === 'function' ? options.log : console.log : false;
-      var logPeriod = options.logPeriod || 10;
-      var learningRate = options.learningRate || this.learningRate || 0.3;
-      var callback = options.callback;
-      var callbackPeriod = options.callbackPeriod || 10;
-      var sizes = [];
-      var inputSize = data[0].input.length;
-      var outputSize = data[0].output.length;
-      var hiddenSizes = this.hiddenSizes;
+       options = options || {};
+      let iterations = options.iterations || 20000;
+      let errorThresh = options.errorThresh || 0.005;
+      let log = options.log ? (typeof options.log === 'function' ? options.log : console.log) : false;
+      let logPeriod = options.logPeriod || 10;
+      let learningRate = options.learningRate || this.learningRate || 0.3;
+      let callback = options.callback;
+      let callbackPeriod = options.callbackPeriod || 10;
+      let sizes = [];
+      let inputSize = data[0].input.length;
+      let outputSize = data[0].output.length;
+      let hiddenSizes = this.hiddenSizes;
       if (!hiddenSizes) {
         sizes.push(Math.max(3, Math.floor(inputSize / 2)));
       } else {
-        hiddenSizes.forEach(function (size) {
+        hiddenSizes.forEach(function(size) {
           sizes.push(size);
         });
       }
-
-      sizes.unshift(inputSize);
+       sizes.unshift(inputSize);
       sizes.push(outputSize);
-
-      //this.initialize(sizes, options.keepNetworkIntact);
-
-      var error = 1;
-      for (var _i4 = 0; _i4 < iterations && error > errorThresh; _i4++) {
-        var sum = 0;
-        for (var j = 0; j < data.length; j++) {
-          var err = this.trainPattern(data[j].input, data[j].output, learningRate);
+       //this.initialize(sizes, options.keepNetworkIntact);
+       let error = 1;
+      for (let i = 0; i < iterations && error > errorThresh; i++) {
+        let sum = 0;
+        for (let j = 0; j < data.length; j++) {
+          let err = this.trainPattern(data[j].input, data[j].output, learningRate);
           sum += err;
         }
         error = sum / data.length;
-
-        if (log && _i4 % logPeriod == 0) {
-          log('iterations:', _i4, 'training error:', error);
+         if (log && (i % logPeriod == 0)) {
+          log('iterations:', i, 'training error:', error);
         }
-        if (callback && _i4 % callbackPeriod == 0) {
-          callback({ error: error, iterations: _i4 });
+        if (callback && (i % callbackPeriod == 0)) {
+          callback({ error: error, iterations: i });
         }
       }
-
-      return {
+       return {
         error: error,
         iterations: i
       };
-    }
+    }*/
 
     /**
      *
@@ -553,7 +557,7 @@ var RNN = function () {
         }
       }
 
-      this.bindEquations();
+      this.bindEquation();
     }
 
     /**
@@ -570,10 +574,10 @@ var RNN = function () {
       var modelAsString = JSON.stringify(this.toJSON());
 
       function matrixOrigin(m, requestedStateIndex) {
-        for (var _i5 = 0, max = states.length; _i5 < max; _i5++) {
-          var state = states[_i5];
+        for (var i = 0, max = states.length; i < max; i++) {
+          var state = states[i];
 
-          if (_i5 === requestedStateIndex) {
+          if (i === requestedStateIndex) {
             switch (m) {
               case state.product:
               case state.left:
@@ -582,20 +586,20 @@ var RNN = function () {
             }
           }
 
-          if (m === state.product) return 'states[' + _i5 + '].product';
-          if (m === state.right) return 'states[' + _i5 + '].right';
-          if (m === state.left) return 'states[' + _i5 + '].left';
+          if (m === state.product) return 'states[' + i + '].product';
+          if (m === state.right) return 'states[' + i + '].right';
+          if (m === state.left) return 'states[' + i + '].left';
         }
       }
 
       function matrixToString(m, stateIndex) {
         if (!m) return 'null';
 
-        for (var _i6 = 0, max = model.hiddenLayers.length; _i6 < max; _i6++) {
-          var hiddenLayer = model.hiddenLayers[_i6];
+        for (var i = 0, max = model.hiddenLayers.length; i < max; i++) {
+          var hiddenLayer = model.hiddenLayers[i];
           for (var p in hiddenLayer) {
             if (hiddenLayer[p] === m) {
-              return 'model.hiddenLayers[' + _i6 + '].' + p;
+              return 'model.hiddenLayers[' + i + '].' + p;
             }
           }
         }
@@ -627,9 +631,9 @@ var RNN = function () {
       var statesRaw = [];
       var usedFunctionNames = {};
       var innerFunctionsSwitch = [];
-      for (var _i7 = 0, max = states.length; _i7 < max; _i7++) {
-        var state = states[_i7];
-        statesRaw.push('states[' + _i7 + '] = {\n        name: \'' + state.forwardFn.name + '\',\n        left: ' + matrixToString(state.left, _i7) + ',\n        right: ' + matrixToString(state.right, _i7) + ',\n        product: ' + matrixToString(state.product, _i7) + '\n      };');
+      for (var i = 0, max = states.length; i < max; i++) {
+        var state = states[i];
+        statesRaw.push('states[' + i + '] = {\n        name: \'' + state.forwardFn.name + '\',\n        left: ' + matrixToString(state.left, i) + ',\n        right: ' + matrixToString(state.right, i) + ',\n        product: ' + matrixToString(state.product, i) + '\n      };');
 
         var fnName = state.forwardFn.name;
         if (!usedFunctionNames[fnName]) {

@@ -3,6 +3,85 @@ import RNN from '../../src/recurrent/rnn';
 import { vocab, build, train } from '../utilities/math-addition-vocab';
 
 describe('rnn', () => {
+  describe('basic operations', function() {
+    it('starts with zeros in input.recurrence', function() {
+      (new RNN()).model.input.recurrence.forEach(function(v) {
+        assert(v === 0);
+      });
+    });
+    it('after initial run, does not have zeros in recurrnce', function() {
+      var net = new RNN();
+      net.train([1, 1, 0]);
+      net.runBackpropagate([1, 1, 0]);
+      var notZero = false;
+      net.model.input.recurrence.forEach(function(v) {
+        if (v !== 0) {
+          notZero = true;
+        }
+      });
+      assert(notZero)
+    });
+    describe('xor', function() {
+      function xorNet() {
+        return new RNN({
+          hiddenSizes: [3],
+          inputSize: 3,
+          inputRange: 2,
+          outputSize: 1
+        });
+      }
+      var xorNetValues = [
+        [0, 0, 0],
+        [0, 1, 1],
+        [1, 0, 1],
+        [1, 1, 0]
+      ];
+
+      it('is fully connected and gives values in recurrence', function() {
+        var net = xorNet();
+        var notZero = false;
+
+        net.train([0, 0, 0]);
+        net.runBackpropagate([0, 0, 0]);
+        net.model.input.recurrence.forEach(function(v) {
+          if (v !== 0) {
+            notZero = true;
+          }
+        });
+        assert(notZero);
+        notZero = false;
+
+        net.train([0, 1, 1]);
+        net.runBackpropagate([0, 1, 1]);
+        net.model.input.recurrence.forEach(function(v) {
+          if (v !== 0) {
+            notZero = true;
+          }
+        });
+        assert(notZero);
+        notZero = false;
+
+        net.train([1, 0, 1]);
+        net.runBackpropagate([1, 0, 1]);
+        net.model.input.recurrence.forEach(function(v) {
+          if (v !== 0) {
+            notZero = true;
+          }
+        });
+        assert(notZero);
+        notZero = false;
+
+        net.train([1, 1, 0]);
+        net.runBackpropagate([1, 1, 0]);
+        net.model.input.recurrence.forEach(function(v) {
+          if (v !== 0) {
+            notZero = true;
+          }
+        });
+        assert(notZero);
+      });
+    });
+  });
   return;
   describe('math', () => {
     let mathProblems = build();

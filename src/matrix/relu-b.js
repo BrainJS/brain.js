@@ -4,7 +4,7 @@
  * @param {Matrix} m
  */
 export default function reluB(product, left) {
-  for(let i = 0, max = left.weights.length; i < max; i++) {
+  for(let i = 0, max = product.recurrence.length; i < max; i++) {
     left.recurrence[i] += left.weights[i] > 0 ? product.recurrence[i] : 0;
   }
 }

@@ -6,81 +6,81 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _matrix = require('../matrix');
+var _ = require('./');
 
-var _matrix2 = _interopRequireDefault(_matrix);
+var _2 = _interopRequireDefault(_);
 
-var _onesMatrix = require('../matrix/ones-matrix');
+var _onesMatrix = require('./ones-matrix');
 
 var _onesMatrix2 = _interopRequireDefault(_onesMatrix);
 
-var _copy2 = require('../matrix/copy');
+var _copy = require('./copy');
 
-var _copy3 = _interopRequireDefault(_copy2);
+var _copy2 = _interopRequireDefault(_copy);
 
-var _cloneNegative2 = require('../matrix/clone-negative');
+var _cloneNegative2 = require('./clone-negative');
 
 var _cloneNegative3 = _interopRequireDefault(_cloneNegative2);
 
-var _add2 = require('../matrix/add');
+var _add2 = require('./add');
 
 var _add3 = _interopRequireDefault(_add2);
 
-var _addB2 = require('../matrix/add-b');
+var _addB = require('./add-b');
 
-var _addB3 = _interopRequireDefault(_addB2);
+var _addB2 = _interopRequireDefault(_addB);
 
-var _allOnes2 = require('../matrix/all-ones');
+var _allOnes2 = require('./all-ones');
 
 var _allOnes3 = _interopRequireDefault(_allOnes2);
 
-var _multiply2 = require('../matrix/multiply');
+var _multiply2 = require('./multiply');
 
 var _multiply3 = _interopRequireDefault(_multiply2);
 
-var _multiplyB2 = require('../matrix/multiply-b');
+var _multiplyB = require('./multiply-b');
 
-var _multiplyB3 = _interopRequireDefault(_multiplyB2);
+var _multiplyB2 = _interopRequireDefault(_multiplyB);
 
-var _multiplyElement2 = require('../matrix/multiply-element');
+var _multiplyElement2 = require('./multiply-element');
 
 var _multiplyElement3 = _interopRequireDefault(_multiplyElement2);
 
-var _multiplyElementB2 = require('../matrix/multiply-element-b');
+var _multiplyElementB = require('./multiply-element-b');
 
-var _multiplyElementB3 = _interopRequireDefault(_multiplyElementB2);
+var _multiplyElementB2 = _interopRequireDefault(_multiplyElementB);
 
-var _relu2 = require('../matrix/relu');
+var _relu2 = require('./relu');
 
 var _relu3 = _interopRequireDefault(_relu2);
 
-var _reluB2 = require('../matrix/relu-b');
+var _reluB = require('./relu-b');
 
-var _reluB3 = _interopRequireDefault(_reluB2);
+var _reluB2 = _interopRequireDefault(_reluB);
 
-var _rowPluck2 = require('../matrix/row-pluck');
+var _rowPluck = require('./row-pluck');
 
-var _rowPluck3 = _interopRequireDefault(_rowPluck2);
+var _rowPluck2 = _interopRequireDefault(_rowPluck);
 
-var _rowPluckB2 = require('../matrix/row-pluck-b');
+var _rowPluckB = require('./row-pluck-b');
 
-var _rowPluckB3 = _interopRequireDefault(_rowPluckB2);
+var _rowPluckB2 = _interopRequireDefault(_rowPluckB);
 
-var _sigmoid2 = require('../matrix/sigmoid');
+var _sigmoid2 = require('./sigmoid');
 
 var _sigmoid3 = _interopRequireDefault(_sigmoid2);
 
-var _sigmoidB2 = require('../matrix/sigmoid-b');
+var _sigmoidB = require('./sigmoid-b');
 
-var _sigmoidB3 = _interopRequireDefault(_sigmoidB2);
+var _sigmoidB2 = _interopRequireDefault(_sigmoidB);
 
-var _tanh2 = require('../matrix/tanh');
+var _tanh2 = require('./tanh');
 
 var _tanh3 = _interopRequireDefault(_tanh2);
 
-var _tanhB2 = require('../matrix/tanh-b');
+var _tanhB = require('./tanh-b');
 
-var _tanhB3 = _interopRequireDefault(_tanhB2);
+var _tanhB2 = _interopRequireDefault(_tanhB);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -106,14 +106,14 @@ var Equation = function () {
   _createClass(Equation, [{
     key: 'previousResult',
     value: function previousResult(size) {
-      var product = new _matrix2.default(size, 1);
+      var product = new _2.default(size, 1);
 
       this.states.push({
         product: product,
         left: parseInt(this.previousResultInputs.length),
         right: this.previousResults,
         backpropagationFn: function backpropagationFn(product, i, previousResults) {
-          (0, _copy3.default)(product, previousResults[i]);
+          (0, _copy2.default)(product, previousResults[i]);
         }
       });
       this.previousResultInputs.push(product);
@@ -133,20 +133,20 @@ var Equation = function () {
       if (left.weights.length !== right.weights.length) {
         throw new Error('misaligned matrices');
       }
-      var product = new _matrix2.default(left.rows, left.columns);
+      var product = new _2.default(left.rows, left.columns);
       this.states.push({
         left: left,
         right: right,
         product: product,
         forwardFn: _add3.default,
-        backpropagationFn: _addB3.default
+        backpropagationFn: _addB2.default
       });
       return product;
     }
   }, {
     key: 'allOnes',
     value: function allOnes(rows, columns) {
-      var product = new _matrix2.default(rows, columns);
+      var product = new _2.default(rows, columns);
       this.states.push({
         left: product,
         product: product,
@@ -163,7 +163,7 @@ var Equation = function () {
   }, {
     key: 'cloneNegative',
     value: function cloneNegative(m) {
-      var product = new _matrix2.default(m.rows, m.columns);
+      var product = new _2.default(m.rows, m.columns);
       this.states.push({
         left: m,
         product: product,
@@ -201,13 +201,13 @@ var Equation = function () {
       if (left.columns !== right.rows) {
         throw new Error('misaligned matrices');
       }
-      var product = new _matrix2.default(left.rows, right.columns);
+      var product = new _2.default(left.rows, right.columns);
       this.states.push({
         left: left,
         right: right,
         product: product,
         forwardFn: _multiply3.default,
-        backpropagationFn: _multiplyB3.default
+        backpropagationFn: _multiplyB2.default
       });
       return product;
     }
@@ -225,13 +225,13 @@ var Equation = function () {
       if (left.weights.length !== right.weights.length) {
         throw new Error('misaligned matrices');
       }
-      var product = new _matrix2.default(left.rows, left.columns);
+      var product = new _2.default(left.rows, left.columns);
       this.states.push({
         left: left,
         right: right,
         product: product,
         forwardFn: _multiplyElement3.default,
-        backpropagationFn: _multiplyElementB3.default
+        backpropagationFn: _multiplyElementB2.default
       });
       return product;
     }
@@ -245,12 +245,12 @@ var Equation = function () {
   }, {
     key: 'relu',
     value: function relu(m) {
-      var product = new _matrix2.default(m.rows, m.columns);
+      var product = new _2.default(m.rows, m.columns);
       this.states.push({
         left: m,
         product: product,
         forwardFn: _relu3.default,
-        backpropagationFn: _reluB3.default
+        backpropagationFn: _reluB2.default
       });
       return product;
     }
@@ -265,15 +265,15 @@ var Equation = function () {
     key: 'inputMatrixToRow',
     value: function inputMatrixToRow(m) {
       var self = this;
-      var product = new _matrix2.default(m.columns, 1);
+      var product = new _2.default(m.columns, 1);
       this.states.push({
         left: m,
         get right() {
           return self.inputRow;
         },
         product: product,
-        forwardFn: _rowPluck3.default,
-        backpropagationFn: _rowPluckB3.default
+        forwardFn: _rowPluck2.default,
+        backpropagationFn: _rowPluckB2.default
       });
       return product;
     }
@@ -287,12 +287,12 @@ var Equation = function () {
   }, {
     key: 'sigmoid',
     value: function sigmoid(m) {
-      var product = new _matrix2.default(m.rows, m.columns);
+      var product = new _2.default(m.rows, m.columns);
       this.states.push({
         left: m,
         product: product,
         forwardFn: _sigmoid3.default,
-        backpropagationFn: _sigmoidB3.default
+        backpropagationFn: _sigmoidB2.default
       });
       return product;
     }
@@ -306,12 +306,12 @@ var Equation = function () {
   }, {
     key: 'tanh',
     value: function tanh(m) {
-      var product = new _matrix2.default(m.rows, m.columns);
+      var product = new _2.default(m.rows, m.columns);
       this.states.push({
         left: m,
         product: product,
         forwardFn: _tanh3.default,
-        backpropagationFn: _tanhB3.default
+        backpropagationFn: _tanhB2.default
       });
       return product;
     }
@@ -361,31 +361,33 @@ var Equation = function () {
 
   }, {
     key: 'runBackpropagate',
-    value: function runBackpropagate() {
+    value: function runBackpropagate(rowIndex) {
+      this.inputRow = rowIndex || 0;
+
       var i = this.states.length;
+      var state = void 0;
       while (i-- > 0) {
-        var state = this.states[i];
+        state = this.states[i];
         if (!state.hasOwnProperty('backpropagationFn')) {
           continue;
         }
-        if (state.left && state.left.recurrence && state.left.recurrence[0] > 0 || state.right && state.right.recurrence && state.right.recurrence[0] > 0) {
-          console.log(Error('recurrence did not copy'));
-        }
         state.backpropagationFn(state.product, state.left, state.right);
       }
+
+      return state.product;
     }
   }, {
     key: 'updatePreviousResults',
     value: function updatePreviousResults() {
       for (var i = 0, max = this.previousResults.length; i < max; i++) {
-        (0, _copy3.default)(this.previousResultInputs[i], this.previousResults[i]);
+        (0, _copy2.default)(this.previousResultInputs[i], this.previousResults[i]);
       }
     }
   }, {
     key: 'copyPreviousResultsTo',
     value: function copyPreviousResultsTo(equation) {
       for (var i = 0, max = this.previousResults.length; i < max; i++) {
-        (0, _copy3.default)(equation.previousResultInputs[i], this.previousResults[i]);
+        (0, _copy2.default)(equation.previousResultInputs[i], this.previousResults[i]);
       }
     }
   }, {
@@ -393,7 +395,7 @@ var Equation = function () {
     value: function resetPreviousResults() {
       for (var i = 0, max = this.previousResults.length; i < max; i++) {
         var prev = this.previousResultInputs[i];
-        (0, _copy3.default)(prev, new _matrix2.default(prev.rows, 1));
+        (0, _copy2.default)(prev, new _2.default(prev.rows, 1));
       }
     }
   }, {

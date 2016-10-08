@@ -43,4 +43,7 @@ if (typeof window !== 'undefined') {
   for (i in module.exports.utilities) {
     brain.utilities[i] = module.exports.utilities[i].default || module.exports.utilities[i];
   }
+  for (i in module.exports.recurrent) {
+    brain.recurrent[i] = module.exports.recurrent[i].default || module.exports.recurrent[i];
+  }
 }

@@ -25,7 +25,7 @@ function runAgainstMath(rnn, skipTests) {
   assert(/[=]/.test(prediction));
 }
 
-describe('rnn', function() {
+describe('json', function() {
   describe('#toJSON', function() {
     it('can export model as json', function() {
       var jsonString = JSON.stringify(new RNN({

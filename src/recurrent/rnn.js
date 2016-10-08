@@ -3,7 +3,7 @@ import maxI from '../matrix/max-i';
 import Matrix from '../matrix';
 import RandomMatrix from '../matrix/random-matrix';
 import softmax from '../matrix/softmax';
-import Equation from '../utilities/equation';
+import Equation from '../matrix/equation';
 
 const defaults = {
   isBackPropagate: true,
@@ -132,20 +132,19 @@ export default class RNN {
     model.output = new Matrix(outputSize + 1, 1);
   }
 
-  bindEquations() {
+  bindEquation() {
     let model = this.model;
     let hiddenSizes = this.hiddenSizes;
     let hiddenLayers = model.hiddenLayers;
-
     let equation = new Equation();
-    model.equations.push(equation);
-    // 0 index
+      // 0 index
     let output = this.getEquation(equation, equation.inputMatrixToRow(model.input), hiddenSizes[0], hiddenLayers[0]);
     // 1+ indexes
     for (let i = 1, max = hiddenSizes.length; i < max; i++) {
       output = this.getEquation(equation, output, hiddenSizes[i], hiddenLayers[i]);
     }
     equation.add(equation.multiply(model.outputConnector, output), model.output);
+    model.equations.push(equation);
   }
 
   mapModel() {
@@ -160,8 +159,8 @@ export default class RNN {
     if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
     if (!model.output) throw new Error('net.model.output not set');
 
-    this.bindEquations();
-    if (!model.equations.length > 0) throw new Error('net.equations not set');
+    this.bindEquation();
+    if (!model.equations.length) throw new Error('net.equation not set');
 
     allMatrices.push(model.input);
 
@@ -178,26 +177,28 @@ export default class RNN {
   }
 
   run(input) {
+    this.train(input);
+    this.runBackpropagate(input);
+    this.step();
+  }
+
+  train(input) {
     this.runs++;
-    input = input || this.model.input;
-    let equations = this.model.equations;
+    let model = this.model;
+    input = input || model.input;
     let max = input.length;
     let log2ppl = 0;
     let cost = 0;
 
-    for (let equationIndex = 0, equationMax = equations.length; equationIndex < equationMax; equationIndex++) {
-      equations[equationIndex].resetPreviousResults();
-    }
-
-    while (equations.length <= max) {
-      this.bindEquations();
-    }
-
     let i;
     let output;
+    let equation;
+    while (model.equations.length <= input.length) {
+      this.bindEquation();
+    }
     for (i = -1; i < max; i++) {
       // start and end tokens are zeros
-      let equation = equations[i + 1];
+      equation = model.equations[i + 1];
       let ixSource = (i === -1 ? 0 : input[i]); // first step: start with START token
       let ixTarget = (i === max - 1 ? 0 : input[i + 1]); // last step: end with END token
       output = equation.run(ixSource);
@@ -215,15 +216,20 @@ export default class RNN {
       this.logProbabilities.recurrence[ixTarget] -= 1
     }
 
-    while (i-- > 0) {
-      equations[i].runBackpropagate();
-    }
-
-    this.step();
-
     this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
     this.totalCost = cost;
     return output;
+  }
+
+  runBackpropagate(input) {
+    //equation.runBackpropagate(0);
+    var i = input.length;
+    var model = this.model;
+    var equations = model.equations;
+    while(i--) {
+      equations[i].runBackpropagate(input[i]);
+    }
+    //equation.runBackpropagate(0);
   }
 
   step() {
@@ -274,10 +280,11 @@ export default class RNN {
     let result = [];
     //let prev;
     let ix;
-    let equation = this.model.equations[0];
+    let equation;
     //equation.resetPreviousResults();
     while (true) {
       ix = result.length === 0 ? 0 : result[result.length - 1];
+      equation = this.model.equations[result.length - 1];
       let lh = equation.run(ix);
       //equation.updatePreviousResults();
       //prev = clone(lh);
@@ -346,7 +353,7 @@ export default class RNN {
    * @param options
    * @returns {{error: number, iterations: number}}
    */
-  train(data, options) {
+  /*train(data, options) {
     throw new Error('not yet implemented');
     //data = this.formatData(data);
 
@@ -396,7 +403,7 @@ export default class RNN {
       error: error,
       iterations: i
     };
-  }
+  }*/
 
   /**
    *
@@ -495,7 +502,7 @@ export default class RNN {
       }
     }
 
-    this.bindEquations();
+    this.bindEquation();
   }
 
   /**
