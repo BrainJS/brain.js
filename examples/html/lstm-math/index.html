@@ -4,6 +4,7 @@
   <script src="../../../browser.js"></script>
 </head>
 <body>
+<div id="container"></div>
 <canvas id="canvas" style="width: 100%; height: 100px"></canvas>
 <table style="width: 100%">
   <tr>
@@ -25,7 +26,9 @@
 </table>
   <pre id="log-pre"></pre>
 </body>
-
+<script src="../../../node_modules/three/build/three.min.js"></script>
+<script src="../../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script src="../../../rnn-viewer.js"></script>
 <script>
   var correct = document.getElementById('correct');
   var correctPattern = document.getElementById('correct-pattern');
@@ -34,11 +37,11 @@
 
   //start ai
   var vocab = new brain.utilities.Vocab(['0','1','2','3','4','5','6','7','8','9','+','=']);
-  var net = new brain.recurrent.LSTM({
+  var net = new brain.recurrent.RNN({
     inputSize: 6,
     inputRange: vocab.characters.length,
     outputSize: vocab.characters.length,
-    hiddenSizes:[20, 20]
+    hiddenSizes: [20, 20]
   });
   runAgainstMath(net);
 
@@ -47,6 +50,9 @@
     var child = document.createElement('span');
     child.textContent = str + '\n';
     el.insertBefore(child, el.childNodes[0]);
+    while (el.children.length > 100) {
+      el.removeChild(el.lastChild);
+    }
   }
 
   function shuffle(array) {
@@ -86,9 +92,12 @@
     var items = build();
     var i = 0;
     function trainOnce() {
-      net.run(vocab.toIndexes(items.random()));
+      for(var j = 0; j < 100; j++) {
+        net.run(vocab.toIndexes(items.random()));
+        //if (window.render) render();
+      }
       if (i % 10 === 0) {
-        for (var j = 0; j < 5; j++) {
+        for (var j = 0; j < 1; j++) {
           var prediction = vocab.toCharacters(net.predict()).join('');
           if (fn(prediction)) {
             clearInterval(id);
@@ -163,5 +172,44 @@
       chart.update();
     }, 1000);
   };
+</script>
+<script>
+  var render = null;
+  setTimeout(function() {
+    var rnnViewer = new RNNViewer({
+      container: document.getElementById('container'),
+      net: net
+    }).render();
+
+    render = function render() {
+      var coldColor = rnnViewer.coldColor,
+          hotColor = rnnViewer.hotColor;
+
+      rnnViewer.values.forEach(function(value) {
+        var v = value.percentValue,
+            r = (coldColor.r + hotColor.r) / v,
+            g = (coldColor.g + hotColor.g) / v,
+            b = (coldColor.b + hotColor.b) / v;
+
+        value.frontFace.color.setRGB(
+            r,
+            g,
+            b
+        );
+        value.rearFace.color.setRGB(
+            r,
+            g,
+            b
+        );
+        value.square.colorsNeedUpdate = true;
+        //value.mesh.geometry.elementsNeedUpdate = true;
+        value.mesh.geometry.colorsNeedUpdate = true;
+      });
+
+      rnnViewer.render();
+    };
+
+    setInterval(render, 200);
+  }, 1000);
 </script>
 </html>

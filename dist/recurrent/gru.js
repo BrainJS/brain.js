@@ -6,17 +6,17 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _matrix = require('../matrix');
+var _matrix = require('./matrix');
 
 var _matrix2 = _interopRequireDefault(_matrix);
+
+var _randomMatrix = require('./matrix/random-matrix');
+
+var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
 
 var _rnn = require('./rnn');
 
 var _rnn2 = _interopRequireDefault(_rnn);
-
-var _randomMatrix = require('../matrix/random-matrix');
-
-var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -85,19 +85,20 @@ var GRU = function (_RNN) {
       var tanh = equation.tanh.bind(equation);
       var allOnes = equation.allOnes.bind(equation);
       var cloneNegative = equation.cloneNegative.bind(equation);
+      var result = equation.result.bind(equation);
 
       // update gate
-      var updateGate = sigmoid(add(add(multiply(hiddenLayer.updateGateInputMatrix, inputMatrix), multiply(hiddenLayer.updateGateHiddenMatrix, previousResult(size))), hiddenLayer.updateGateBias));
+      var updateGate = result(sigmoid(add(add(multiply(hiddenLayer.updateGateInputMatrix, inputMatrix), multiply(hiddenLayer.updateGateHiddenMatrix, previousResult(size))), hiddenLayer.updateGateBias)));
 
       // reset gate
-      var resetGate = sigmoid(add(add(multiply(hiddenLayer.resetGateInputMatrix, inputMatrix), multiply(hiddenLayer.resetGateHiddenMatrix, previousResult(size))), hiddenLayer.resetGateBias));
+      var resetGate = result(sigmoid(add(add(multiply(hiddenLayer.resetGateInputMatrix, inputMatrix), multiply(hiddenLayer.resetGateHiddenMatrix, previousResult(size))), hiddenLayer.resetGateBias)));
 
       // cell
-      var cell = tanh(add(add(multiply(hiddenLayer.cellWriteInputMatrix, inputMatrix), multiply(hiddenLayer.cellWriteHiddenMatrix, multiplyElement(resetGate, previousResult(size)))), hiddenLayer.cellWriteBias));
+      var cell = result(tanh(add(add(multiply(hiddenLayer.cellWriteInputMatrix, inputMatrix), multiply(hiddenLayer.cellWriteHiddenMatrix, multiplyElement(resetGate, previousResult(size)))), hiddenLayer.cellWriteBias)));
 
       // compute hidden state as gated, saturated cell activations
       // negate updateGate
-      return add(multiplyElement(add(allOnes(updateGate.rows, updateGate.columns), cloneNegative(updateGate)), cell), multiplyElement(previousResult(size), updateGate));
+      return result(add(multiplyElement(add(allOnes(updateGate.rows, updateGate.columns), cloneNegative(updateGate)), cell), multiplyElement(previousResult(size), updateGate)));
     }
   }]);
 

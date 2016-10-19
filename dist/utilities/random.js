@@ -19,12 +19,10 @@ function randomN(mu, std) {
 }
 
 // Random numbers utils
-var returnV = false;
-var vVal = 0.0;
 function gaussRandom() {
-  if (returnV) {
-    returnV = false;
-    return vVal;
+  if (gaussRandom.returnV) {
+    gaussRandom.returnV = false;
+    return gaussRandom.vVal;
   }
   var u = 2 * Math.random() - 1;
   var v = 2 * Math.random() - 1;
@@ -33,8 +31,10 @@ function gaussRandom() {
     return gaussRandom();
   }
   var c = Math.sqrt(-2 * Math.log(r) / r);
-  vVal = v * c; // cache this
-  returnV = true;
+  gaussRandom.vVal = v * c; // cache this
+  gaussRandom.returnV = true;
   return u * c;
 }
+gaussRandom.returnV = false;
+gaussRandom.vVal = 0;
 //# sourceMappingURL=random.js.map

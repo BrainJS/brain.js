@@ -1,6 +1,6 @@
-import Matrix from '../matrix';
+import Matrix from './matrix';
+import RandomMatrix from './matrix/random-matrix';
 import RNN from './rnn';
-import RandomMatrix from '../matrix/random-matrix';
 
 export default class LSTM extends RNN {
   getModel(hiddenSize, prevSize) {
@@ -134,6 +134,11 @@ export default class LSTM extends RNN {
     let cell = add(retainCell, writeCell); // new cell contents
 
     // compute hidden state as gated, saturated cell activations
-    return result(multiplyElement(outputGate, tanh(cell)));
+    return result(
+      multiplyElement(
+        outputGate,
+        tanh(cell)
+      )
+    );
   }
 }

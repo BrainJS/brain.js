@@ -1,9 +1,10 @@
-import sampleI from '../matrix/sample-i';
-import maxI from '../matrix/max-i';
-import Matrix from '../matrix';
-import RandomMatrix from '../matrix/random-matrix';
-import softmax from '../matrix/softmax';
-import Equation from '../matrix/equation';
+import Matrix from './matrix';
+import sampleI from './matrix/sample-i';
+import maxI from './matrix/max-i';
+import RandomMatrix from './matrix/random-matrix';
+import softmax from './matrix/softmax';
+import Equation from './matrix/equation';
+import copy from './matrix/copy';
 
 const defaults = {
   isBackPropagate: true,
@@ -32,9 +33,9 @@ export default class RNN {
 
     this.stepCache = {};
     this.runs = 0;
-    this.logProbabilities = null;
     this.totalPerplexity = null;
     this.totalCost = null;
+    this.ratioClipped = null;
 
     this.model = {
       input: [],
@@ -93,7 +94,7 @@ export default class RNN {
     let add = equation.add.bind(equation);
     let multiply = equation.multiply.bind(equation);
     let previousResult = equation.previousResult.bind(equation);
-    let result = equation.result.bind(equation);
+    let result = equation.rsult.bind(equation);
 
     return result(
       relu(
@@ -182,6 +183,13 @@ export default class RNN {
     this.step();
   }
 
+  runPredict() {
+    let prediction = this.predict();
+    this.runBackpropagate(prediction);
+    this.step();
+    return prediction;
+  }
+
   train(input) {
     this.runs++;
     let model = this.model;
@@ -191,45 +199,42 @@ export default class RNN {
     let cost = 0;
 
     let i;
-    let output;
     let equation;
-    while (model.equations.length <= input.length) {
+    while (model.equations.length <= input.length + 1) {//first and last are zeros
       this.bindEquation();
     }
     for (i = -1; i < max; i++) {
       // start and end tokens are zeros
       equation = model.equations[i + 1];
-      let ixSource = (i === -1 ? 0 : input[i]); // first step: start with START token
-      let ixTarget = (i === max - 1 ? 0 : input[i + 1]); // last step: end with END token
-      output = equation.run(ixSource);
-      equation.updatePreviousResults();
 
+      let ixSource = (i === -1 ? 0 : input[i] + 1); // first step: start with START token
+      let ixTarget = (i === max - 1 ? 0 : input[i + 1] + 1); // last step: end with END token
+      let output = equation.run(ixSource);
       // set gradients into log probabilities
-      this.logProbabilities = output; // interpret output as log probabilities
+      let logProbabilities = output; // interpret output as log probabilities
       let probabilities = softmax(output); // compute the softmax probabilities
 
       log2ppl += -Math.log2(probabilities.weights[ixTarget]); // accumulate base 2 log prob and do smoothing
       cost += -Math.log(probabilities.weights[ixTarget]);
 
       // write gradients into log probabilities
-      this.logProbabilities.recurrence = probabilities.weights.slice(0);
-      this.logProbabilities.recurrence[ixTarget] -= 1
+      logProbabilities.recurrence = probabilities.weights.slice(0);
+      logProbabilities.recurrence[ixTarget] -= 1
     }
 
     this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
     this.totalCost = cost;
-    return output;
   }
 
   runBackpropagate(input) {
-    //equation.runBackpropagate(0);
-    var i = input.length;
+    var i = input.length + 0;
     var model = this.model;
     var equations = model.equations;
-    while(i--) {
-      equations[i].runBackpropagate(input[i]);
+    while(i > 0) {
+      equations[i].runBackpropagate(input[i - 1] + 1);
+      i--;
     }
-    //equation.runBackpropagate(0);
+    equations[0].runBackpropagate(0);
   }
 
   step() {
@@ -272,35 +277,41 @@ export default class RNN {
     this.ratioClipped = numClipped / numTot;
   }
 
-  predict(_sampleI, temperature, predictionLength) {
-    if (typeof _sampleI === 'undefined') { _sampleI = true; }
+  predict(predictionLength, _sampleI, temperature) {
+    if (typeof _sampleI === 'undefined') { _sampleI = false; }
     if (typeof temperature === 'undefined') { temperature = 1; }
     if (typeof predictionLength === 'undefined') { predictionLength = 100; }
-
+    let model = this.model;
     let result = [];
-    //let prev;
     let ix;
     let equation;
-    //equation.resetPreviousResults();
+    let i = 0;
+    while (model.equations.length < predictionLength) {
+      this.bindEquation();
+    }
+    let output = new Matrix(model.output.rows, model.output.columns);
     while (true) {
+      if (i >= predictionLength) {
+        // something is wrong
+        break;
+      }
       ix = result.length === 0 ? 0 : result[result.length - 1];
-      equation = this.model.equations[result.length - 1];
-      let lh = equation.run(ix);
-      //equation.updatePreviousResults();
-      //prev = clone(lh);
+      equation = model.equations[i];
+      copy(output, equation.run(ix));
+      let lh = output;
       // sample predicted letter
-      this.logProbabilities = lh;
+      let logProbabilities = lh;
       if (temperature !== 1 && _sampleI) {
         // scale log probabilities by temperature and renormalize
         // if temperature is high, logprobs will go towards zero
         // and the softmax outputs will be more diffuse. if temperature is
         // very low, the softmax outputs will be more peaky
-        for (let q = 0, nq = this.logProbabilities.weights.length; q < nq; q++) {
-          this.logProbabilities.weights[q] /= temperature;
+        for (let q = 0, nq = logProbabilities.weights.length; q < nq; q++) {
+          logProbabilities.weights[q] /= temperature;
         }
       }
 
-      let probs = softmax(this.logProbabilities);
+      let probs = softmax(logProbabilities);
 
       if (_sampleI) {
         ix = sampleI(probs);
@@ -308,12 +319,9 @@ export default class RNN {
         ix = maxI(probs);
       }
 
+      i++;
       if (ix === 0) {
         // END token predicted, break out
-        break;
-      }
-      if (result.length > predictionLength) {
-        // something is wrong
         break;
       }
 

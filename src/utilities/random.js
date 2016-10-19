@@ -11,21 +11,21 @@ export function randomN(mu, std) {
 }
 
 // Random numbers utils
-let returnV = false;
-let vVal = 0.0;
 function gaussRandom() {
-  if(returnV) {
-    returnV = false;
-    return vVal;
+  if (gaussRandom.returnV) {
+    gaussRandom.returnV = false;
+    return gaussRandom.vVal;
   }
-  let u = 2 * Math.random()-1;
-  let v = 2 * Math.random()-1;
+  let u = 2 * Math.random() - 1;
+  let v = 2 * Math.random() - 1;
   let r = u * u + v * v;
-  if(r == 0 || r > 1) {
+  if (r == 0 || r > 1) {
     return gaussRandom();
   }
   let c = Math.sqrt(-2 * Math.log(r) / r);
-  vVal = v * c; // cache this
-  returnV = true;
+  gaussRandom.vVal = v * c; // cache this
+  gaussRandom.returnV = true;
   return u * c;
 }
+gaussRandom.returnV = false;
+gaussRandom.vVal = 0;

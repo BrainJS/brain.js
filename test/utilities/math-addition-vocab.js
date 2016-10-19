@@ -21,7 +21,7 @@ export function train(rnn) {
   for (let i = 0, max = items.length; i < max; i++) {
     rnn.run(vocab.toIndexes(items[i]));
     if (i % 10 === 0) {
-      console.log(vocab.toCharacters(rnn.predict()).join(''));
+      //console.log(vocab.toCharacters(rnn.predict()).join(''));
     }
   }
 }
@@ -33,7 +33,7 @@ export function trainUntil(rnn, fn) {
     rnn.run(vocab.toIndexes(items.random()));
     if (i % 10 === 0) {
       var preduction = vocab.toCharacters(rnn.predict()).join('');
-      console.log(preduction);
+      //console.log(preduction);
       if (fn(preduction)) {
         break;
       }

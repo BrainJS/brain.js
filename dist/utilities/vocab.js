@@ -46,16 +46,17 @@ var Vocab = function () {
       var _character = this.characters[_characterIndex];
       if (_characterIndex >= maxThreshold) {
         // add character to vocab
-        this.indexTable[_character] = _characterIndex + 1;
-        this.characterTable[_characterIndex + 1] = _character;
+        this.indexTable[_character] = _characterIndex;
+        this.characterTable[_characterIndex] = _character;
       }
     }
   }
 
   _createClass(Vocab, [{
     key: "toIndexes",
-    value: function toIndexes(phrase, maxThreshold) {
-      maxThreshold = maxThreshold || 0;
+    value: function toIndexes(phrase) {
+      var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
       var result = [];
       var indexTable = this.indexTable;
 
@@ -70,8 +71,9 @@ var Vocab = function () {
     }
   }, {
     key: "toCharacters",
-    value: function toCharacters(indexes, maxThreshold) {
-      maxThreshold = maxThreshold || 0;
+    value: function toCharacters(indexes) {
+      var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
       var result = [];
       var characterTable = this.characterTable;
 

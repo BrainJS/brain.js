@@ -407,1108 +407,6 @@ var lookup = function () {
 exports.default = lookup;
 
 },{}],4:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = addB;
-/**
- * adds {from} recurrence to {left} and {right} recurrence
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
- */
-function addB(product, left, right) {
-  for (var i = 0, max = left.recurrence.length; i < max; i++) {
-    left.recurrence[i] += product.recurrence[i];
-    right.recurrence[i] += product.recurrence[i];
-  }
-}
-
-},{}],5:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = add;
-/**
- * add {left} and {right} matrix weights into {into}
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
- */
-function add(product, left, right) {
-  for (var i = 0, max = left.weights.length; i < max; i++) {
-    product.weights[i] = left.weights[i] + right.weights[i];
-    product.recurrence[i] = 0;
-    left.recurrence[i] = 0;
-    right.recurrence[i] = 0;
-  }
-}
-
-},{}],6:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = allOnes;
-/**
- * makes matrix weights and recurrence all ones
- * @param {Matrix} product
- */
-function allOnes(product) {
-  for (var i = 0, max = product.weights.length; i < max; i++) {
-    product.weights[i] = 1;
-    product.recurrence[i] = 0;
-  }
-}
-
-},{}],7:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = cloneNegative;
-/**
- *
- * @param {Matrix} product
- * @param {Matrix} left
- */
-function cloneNegative(product, left) {
-  product.rows = parseInt(left.rows);
-  product.columns = parseInt(left.columns);
-  product.weights = left.weights.slice(0);
-  product.recurrence = left.recurrence.slice(0);
-  for (var i = 0, max = left.weights.length; i < max; i++) {
-    product.weights[i] = -left.weights[i];
-    product.recurrence[i] = 0;
-  }
-}
-
-},{}],8:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = copy;
-/**
- *
- * @param {Matrix} product
- * @param {Matrix} left
- */
-function copy(product, left) {
-  product.rows = parseInt(left.rows);
-  product.columns = parseInt(left.columns);
-  product.weights = left.weights.slice(0);
-  product.recurrence = left.recurrence.slice(0);
-}
-
-},{}],9:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _ = require('./');
-
-var _2 = _interopRequireDefault(_);
-
-var _onesMatrix = require('./ones-matrix');
-
-var _onesMatrix2 = _interopRequireDefault(_onesMatrix);
-
-var _copy = require('./copy');
-
-var _copy2 = _interopRequireDefault(_copy);
-
-var _cloneNegative2 = require('./clone-negative');
-
-var _cloneNegative3 = _interopRequireDefault(_cloneNegative2);
-
-var _add2 = require('./add');
-
-var _add3 = _interopRequireDefault(_add2);
-
-var _addB = require('./add-b');
-
-var _addB2 = _interopRequireDefault(_addB);
-
-var _allOnes2 = require('./all-ones');
-
-var _allOnes3 = _interopRequireDefault(_allOnes2);
-
-var _multiply2 = require('./multiply');
-
-var _multiply3 = _interopRequireDefault(_multiply2);
-
-var _multiplyB = require('./multiply-b');
-
-var _multiplyB2 = _interopRequireDefault(_multiplyB);
-
-var _multiplyElement2 = require('./multiply-element');
-
-var _multiplyElement3 = _interopRequireDefault(_multiplyElement2);
-
-var _multiplyElementB = require('./multiply-element-b');
-
-var _multiplyElementB2 = _interopRequireDefault(_multiplyElementB);
-
-var _relu2 = require('./relu');
-
-var _relu3 = _interopRequireDefault(_relu2);
-
-var _reluB = require('./relu-b');
-
-var _reluB2 = _interopRequireDefault(_reluB);
-
-var _rowPluck = require('./row-pluck');
-
-var _rowPluck2 = _interopRequireDefault(_rowPluck);
-
-var _rowPluckB = require('./row-pluck-b');
-
-var _rowPluckB2 = _interopRequireDefault(_rowPluckB);
-
-var _sigmoid2 = require('./sigmoid');
-
-var _sigmoid3 = _interopRequireDefault(_sigmoid2);
-
-var _sigmoidB = require('./sigmoid-b');
-
-var _sigmoidB2 = _interopRequireDefault(_sigmoidB);
-
-var _tanh2 = require('./tanh');
-
-var _tanh3 = _interopRequireDefault(_tanh2);
-
-var _tanhB = require('./tanh-b');
-
-var _tanhB2 = _interopRequireDefault(_tanhB);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Equation = function () {
-  function Equation() {
-    _classCallCheck(this, Equation);
-
-    this.inputRow = 0;
-    this.states = [];
-    this.previousResults = [];
-    this.previousResultInputs = [];
-  }
-
-  /**
-   *
-   * @param {Number} size
-   * @returns {Matrix}
-   */
-
-
-  _createClass(Equation, [{
-    key: 'previousResult',
-    value: function previousResult(size) {
-      var product = new _2.default(size, 1);
-
-      this.states.push({
-        product: product,
-        left: parseInt(this.previousResultInputs.length),
-        right: this.previousResults,
-        backpropagationFn: function backpropagationFn(product, i, previousResults) {
-          (0, _copy2.default)(product, previousResults[i]);
-        }
-      });
-      this.previousResultInputs.push(product);
-      return product;
-    }
-
-    /**
-     * connects two matrices together by add
-     * @param {Matrix} left
-     * @param {Matrix} right
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: 'add',
-    value: function add(left, right) {
-      if (left.weights.length !== right.weights.length) {
-        throw new Error('misaligned matrices');
-      }
-      var product = new _2.default(left.rows, left.columns);
-      this.states.push({
-        left: left,
-        right: right,
-        product: product,
-        forwardFn: _add3.default,
-        backpropagationFn: _addB2.default
-      });
-      return product;
-    }
-  }, {
-    key: 'allOnes',
-    value: function allOnes(rows, columns) {
-      var product = new _2.default(rows, columns);
-      this.states.push({
-        left: product,
-        product: product,
-        forwardFn: _allOnes3.default
-      });
-      return product;
-    }
-
-    /**
-     *
-     * @param {Matrix} m
-     */
-
-  }, {
-    key: 'cloneNegative',
-    value: function cloneNegative(m) {
-      var product = new _2.default(m.rows, m.columns);
-      this.states.push({
-        left: m,
-        product: product,
-        forwardFn: _cloneNegative3.default
-      });
-      return product;
-    }
-
-    /**
-     * connects two matrices together by subtract
-     * @param {Matrix} left
-     * @param {Matrix} right
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: 'subtract',
-    value: function subtract(left, right) {
-      if (left.weights.length !== right.weights.length) {
-        throw new Error('misaligned matrices');
-      }
-      return this.add(this.add(this.allOnes(left.rows, left.columns), this.cloneNegative(left)), right);
-    }
-
-    /**
-     * connects two matrices together by multiply
-     * @param {Matrix} left
-     * @param {Matrix} right
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: 'multiply',
-    value: function multiply(left, right) {
-      if (left.columns !== right.rows) {
-        throw new Error('misaligned matrices');
-      }
-      var product = new _2.default(left.rows, right.columns);
-      this.states.push({
-        left: left,
-        right: right,
-        product: product,
-        forwardFn: _multiply3.default,
-        backpropagationFn: _multiplyB2.default
-      });
-      return product;
-    }
-
-    /**
-     * connects two matrices together by multiplyElement
-     * @param {Matrix} left
-     * @param {Matrix} right
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: 'multiplyElement',
-    value: function multiplyElement(left, right) {
-      if (left.weights.length !== right.weights.length) {
-        throw new Error('misaligned matrices');
-      }
-      var product = new _2.default(left.rows, left.columns);
-      this.states.push({
-        left: left,
-        right: right,
-        product: product,
-        forwardFn: _multiplyElement3.default,
-        backpropagationFn: _multiplyElementB2.default
-      });
-      return product;
-    }
-
-    /**
-     * connects a matrix to relu
-     * @param {Matrix} m
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: 'relu',
-    value: function relu(m) {
-      var product = new _2.default(m.rows, m.columns);
-      this.states.push({
-        left: m,
-        product: product,
-        forwardFn: _relu3.default,
-        backpropagationFn: _reluB2.default
-      });
-      return product;
-    }
-
-    /**
-     * connects a matrix via a row
-     * @param {Matrix} m
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: 'inputMatrixToRow',
-    value: function inputMatrixToRow(m) {
-      var self = this;
-      var product = new _2.default(m.columns, 1);
-      this.states.push({
-        left: m,
-        get right() {
-          return self.inputRow;
-        },
-        product: product,
-        forwardFn: _rowPluck2.default,
-        backpropagationFn: _rowPluckB2.default
-      });
-      return product;
-    }
-
-    /**
-     * connects a matrix to sigmoid
-     * @param {Matrix} m
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: 'sigmoid',
-    value: function sigmoid(m) {
-      var product = new _2.default(m.rows, m.columns);
-      this.states.push({
-        left: m,
-        product: product,
-        forwardFn: _sigmoid3.default,
-        backpropagationFn: _sigmoidB2.default
-      });
-      return product;
-    }
-
-    /**
-     * connects a matrix to tanh
-     * @param {Matrix} m
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: 'tanh',
-    value: function tanh(m) {
-      var product = new _2.default(m.rows, m.columns);
-      this.states.push({
-        left: m,
-        product: product,
-        forwardFn: _tanh3.default,
-        backpropagationFn: _tanhB2.default
-      });
-      return product;
-    }
-  }, {
-    key: 'observe',
-    value: function observe(m) {
-      var iForward = 0;
-      var iBackpropagate = 0;
-      this.states.push({
-        forwardFn: function forwardFn() {
-          iForward++;
-          console.log(m);
-        },
-        backpropagationFn: function backpropagationFn() {
-          iBackpropagate++;
-          console.log(m);
-        }
-      });
-      return m;
-    }
-
-    /**
-     *
-     * @output {Matrix}
-     */
-
-  }, {
-    key: 'run',
-    value: function run(rowIndex) {
-      this.inputRow = rowIndex || 0;
-
-      var state = void 0;
-      for (var i = 0, max = this.states.length; i < max; i++) {
-        state = this.states[i];
-        if (!state.hasOwnProperty('forwardFn')) {
-          continue;
-        }
-        state.forwardFn(state.product, state.left, state.right);
-      }
-
-      return state.product;
-    }
-
-    /**
-     * @output {Matrix}
-     */
-
-  }, {
-    key: 'runBackpropagate',
-    value: function runBackpropagate(rowIndex) {
-      this.inputRow = rowIndex || 0;
-
-      var i = this.states.length;
-      var state = void 0;
-      while (i-- > 0) {
-        state = this.states[i];
-        if (!state.hasOwnProperty('backpropagationFn')) {
-          continue;
-        }
-        state.backpropagationFn(state.product, state.left, state.right);
-      }
-
-      return state.product;
-    }
-  }, {
-    key: 'updatePreviousResults',
-    value: function updatePreviousResults() {
-      for (var i = 0, max = this.previousResults.length; i < max; i++) {
-        (0, _copy2.default)(this.previousResultInputs[i], this.previousResults[i]);
-      }
-    }
-  }, {
-    key: 'copyPreviousResultsTo',
-    value: function copyPreviousResultsTo(equation) {
-      for (var i = 0, max = this.previousResults.length; i < max; i++) {
-        (0, _copy2.default)(equation.previousResultInputs[i], this.previousResults[i]);
-      }
-    }
-  }, {
-    key: 'resetPreviousResults',
-    value: function resetPreviousResults() {
-      for (var i = 0, max = this.previousResults.length; i < max; i++) {
-        var prev = this.previousResultInputs[i];
-        (0, _copy2.default)(prev, new _2.default(prev.rows, 1));
-      }
-    }
-  }, {
-    key: 'result',
-    value: function result(m) {
-      this.previousResults.push(m);
-      return m;
-    }
-  }]);
-
-  return Equation;
-}();
-
-exports.default = Equation;
-
-},{"./":10,"./add":5,"./add-b":4,"./all-ones":6,"./clone-negative":7,"./copy":8,"./multiply":15,"./multiply-b":12,"./multiply-element":14,"./multiply-element-b":13,"./ones-matrix":16,"./relu":19,"./relu-b":18,"./row-pluck":21,"./row-pluck-b":20,"./sigmoid":24,"./sigmoid-b":23,"./tanh":27,"./tanh-b":26}],10:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _zeros = require('../utilities/zeros');
-
-var _zeros2 = _interopRequireDefault(_zeros);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * A matrix
- * @param {Number} [rows]
- * @param {Number} [columns]
- * @constructor
- */
-var Matrix = function () {
-  function Matrix(rows, columns) {
-    _classCallCheck(this, Matrix);
-
-    if (typeof rows === 'undefined') return;
-    if (typeof columns === 'undefined') return;
-
-    this.rows = rows;
-    this.columns = columns;
-    this.weights = (0, _zeros2.default)(rows * columns);
-    this.recurrence = (0, _zeros2.default)(rows * columns);
-  }
-
-  /**
-   *
-   * @param {Number} row
-   * @param {Number} col
-   * @returns {Float64Array|Array}
-   */
-
-
-  _createClass(Matrix, [{
-    key: 'getWeights',
-    value: function getWeights(row, col) {
-      // slow but careful accessor function
-      // we want row-major order
-      var ix = this.columns * row + col;
-      if (ix < 0 && ix >= this.weights.length) throw new Error('get accessor is skewed');
-      return this.weights[ix];
-    }
-
-    /**
-     *
-     * @param {Number} row
-     * @param {Number} col
-     * @param v
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: 'setWeights',
-    value: function setWeights(row, col, v) {
-      // slow but careful accessor function
-      var ix = this.columns * row + col;
-      if (ix < 0 && ix >= this.weights.length) throw new Error('set accessor is skewed');
-      this.weights[ix] = v;
-      return this;
-    }
-
-    /**
-     *
-     * @returns {{rows: *, columns: *, weights: Array}}
-     */
-
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      return {
-        rows: this.rows,
-        columns: this.columns,
-        weights: this.weights.slice(0)
-      };
-    }
-  }], [{
-    key: 'fromJSON',
-    value: function fromJSON(json) {
-      var matrix = new Matrix(json.rows, json.columns);
-      for (var i = 0, max = json.rows * json.columns; i < max; i++) {
-        matrix.weights[i] = json.weights[i]; // copy over weights
-      }
-      return matrix;
-    }
-  }]);
-
-  return Matrix;
-}();
-
-exports.default = Matrix;
-
-},{"../utilities/zeros":42}],11:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = maxI;
-/**
- *
- * @param {Matrix} m
- * @returns {number}
- */
-function maxI(m) {
-  // argmax of array w
-  var w = m.weights;
-  var maxv = w[0];
-  var maxix = 0;
-  for (var i = 1, max = w.length; i < max; i++) {
-    var v = w[i];
-    if (v < maxv) continue;
-
-    maxix = i;
-    maxv = v;
-  }
-  return maxix;
-};
-
-},{}],12:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = multiplyB;
-/**
- * multiplies {from} recurrence to {left} and {right}
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
- */
-function multiplyB(product, left, right) {
-  var leftRows = left.rows;
-  var leftColumns = left.columns;
-  var rightColumns = right.columns;
-
-  // loop over rows of left
-  for (var leftRow = 0; leftRow < leftRows; leftRow++) {
-
-    // loop over cols of right
-    for (var rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
-
-      //loop over columns of left
-      for (var leftColumn = 0; leftColumn < leftColumns; leftColumn++) {
-        var backPropagateValue = product.recurrence[rightColumns * leftRow + rightColumn];
-        left.recurrence[leftColumns * leftRow + leftColumn] += right.weights[rightColumns * leftColumn + rightColumn] * backPropagateValue;
-        right.recurrence[rightColumns * leftColumn + rightColumn] += left.weights[leftColumns * leftRow + leftColumn] * backPropagateValue;
-      }
-    }
-  }
-}
-
-},{}],13:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = multiplyElementB;
-/**
- * multiplies {left} and {right} weight by {from} recurrence into {left} and {right} recurrence
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
- */
-function multiplyElementB(product, left, right) {
-  for (var i = 0, weights = left.weights.length; i < weights; i++) {
-    left.recurrence[i] += right.weights[i] * product.recurrence[i];
-    right.recurrence[i] += left.weights[i] * product.recurrence[i];
-  }
-}
-
-},{}],14:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = multiplyElement;
-/**
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
- */
-function multiplyElement(product, left, right) {
-  for (var i = 0, weights = left.weights.length; i < weights; i++) {
-    product.weights[i] = left.weights[i] * right.weights[i];
-    product.recurrence[i] = 0;
-    left.recurrence[i] = 0;
-    right.recurrence[i] = 0;
-  }
-}
-
-},{}],15:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = multiply;
-/**
- * multiply {left} and {right} matrix weights to {into}
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
- */
-function multiply(product, left, right) {
-  var leftRows = left.rows;
-  var leftColumns = left.columns;
-  var rightColumns = right.columns;
-
-  // loop over rows of left
-  for (var leftRow = 0; leftRow < leftRows; leftRow++) {
-
-    // loop over cols of right
-    for (var rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
-
-      // dot product loop
-      var dot = 0;
-
-      //loop over columns of left
-      for (var leftColumn = 0; leftColumn < leftColumns; leftColumn++) {
-        dot += left.weights[leftColumns * leftRow + leftColumn] * right.weights[rightColumns * leftColumn + rightColumn];
-      }
-      var i = rightColumns * leftRow + rightColumn;
-      product.weights[i] = dot;
-      product.recurrence[i] = 0;
-      left.recurrence[i] = 0;
-      right.recurrence[i] = 0;
-    }
-  }
-}
-
-},{}],16:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _ones = require('../utilities/ones');
-
-var _ones2 = _interopRequireDefault(_ones);
-
-var _ = require('./');
-
-var _2 = _interopRequireDefault(_);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/** return Matrix but filled with random numbers from gaussian
- * @param {Number} [rows]
- * @param {Number} [columns]
- * @constructor
- */
-var OnesMatrix = function (_Matrix) {
-  _inherits(OnesMatrix, _Matrix);
-
-  function OnesMatrix(rows, columns) {
-    _classCallCheck(this, OnesMatrix);
-
-    var _this = _possibleConstructorReturn(this, (OnesMatrix.__proto__ || Object.getPrototypeOf(OnesMatrix)).call(this, rows, columns));
-
-    _this.rows = rows;
-    _this.columns = columns;
-    _this.weights = (0, _ones2.default)(rows * columns);
-    _this.recurrence = (0, _ones2.default)(rows * columns);
-    return _this;
-  }
-
-  return OnesMatrix;
-}(_2.default);
-
-exports.default = OnesMatrix;
-
-},{"../utilities/ones":35,"./":10}],17:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _ = require('./');
-
-var _2 = _interopRequireDefault(_);
-
-var _random = require('../utilities/random');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/** return Matrix but filled with random numbers from gaussian
- * @param {Number} [rows]
- * @param {Number} [columns]
- * @param std
- * @constructor
- */
-var RandomMatrix = function (_Matrix) {
-  _inherits(RandomMatrix, _Matrix);
-
-  function RandomMatrix(rows, columns, std) {
-    _classCallCheck(this, RandomMatrix);
-
-    var _this = _possibleConstructorReturn(this, (RandomMatrix.__proto__ || Object.getPrototypeOf(RandomMatrix)).call(this, rows, columns));
-
-    _this.rows = rows;
-    _this.columns = columns;
-    _this.std = std;
-    for (var i = 0, max = _this.weights.length; i < max; i++) {
-      _this.weights[i] = (0, _random.randomF)(-std, std);
-    }
-    return _this;
-  }
-
-  return RandomMatrix;
-}(_2.default);
-
-exports.default = RandomMatrix;
-
-},{"../utilities/random":37,"./":10}],18:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = reluB;
-/**
- * adds {from} recurrence to {m} recurrence when {m} weights are above other a threshold of 0
- * @param {Matrix} product
- * @param {Matrix} m
- */
-function reluB(product, left) {
-  for (var i = 0, max = product.recurrence.length; i < max; i++) {
-    left.recurrence[i] += left.weights[i] > 0 ? product.recurrence[i] : 0;
-  }
-}
-
-},{}],19:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = relu;
-/**
- *
- * relu {m} weights to {into} weights
- * @param {Matrix} product
- * @param {Matrix} left
- */
-function relu(product, left) {
-  for (var i = 0, max = left.weights.length; i < max; i++) {
-    product.weights[i] = Math.max(0, left.weights[i]); // relu
-    product.recurrence[i] = 0;
-    left.recurrence[i] = 0;
-  }
-}
-
-},{}],20:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = rowPluckB;
-/**
- * adds {from} recurrence into {m} recurrence
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Number} rowIndex
- */
-function rowPluckB(product, left, rowIndex) {
-  for (var column = 0, columns = left.columns; column < columns; column++) {
-    left.recurrence[columns * rowIndex + column] += product.recurrence[column];
-  }
-}
-
-},{}],21:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = rowPluck;
-/**
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Number} rowPluckIndex
- */
-function rowPluck(product, left, rowPluckIndex) {
-  for (var column = 0, columns = left.columns; column < columns; column++) {
-    product.weights[column] = left.weights[columns * rowPluckIndex + column];
-    product.recurrence[column] = 0;
-    left.recurrence[column] = 0;
-  }
-}
-
-},{}],22:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = sampleI;
-
-var _random = require('../utilities/random');
-
-/**
- *
- * @param {Matrix} m
- * @returns {number}
- */
-function sampleI(m) {
-  // sample argmax from w, assuming w are
-  // probabilities that sum to one
-  var r = (0, _random.randomF)(0, 1);
-  var x = 0;
-  var i = 0;
-  var w = m.weights;
-
-  if (isNaN(w[0])) {
-    throw new Error('NaN');
-  }
-
-  while (true) {
-    x += w[i];
-    if (x > r) {
-      return i;
-    }
-    i++;
-  }
-}
-
-},{"../utilities/random":37}],23:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = sigmoidB;
-/**
- *
- * @param {Matrix} product
- * @param {Matrix} left
- */
-function sigmoidB(product, left) {
-  for (var i = 0, max = left.recurrence.length; i < max; i++) {
-    var mwi = product.weights[i];
-    left.recurrence[i] += mwi * (1 - mwi) * product.recurrence[i];
-  }
-}
-
-},{}],24:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = sigmoid;
-/**
- * @param {Matrix} product
- * @param {Matrix} left
- */
-function sigmoid(product, left) {
-  // sigmoid nonlinearity
-  for (var i = 0, max = left.weights.length; i < max; i++) {
-    product.weights[i] = 1 / (1 + Math.exp(-left.weights[i]));
-    product.recurrence[i] = 0;
-    left.recurrence[i] = 0;
-  }
-}
-
-function sig(x) {
-  // helper function for computing sigmoid
-  return 1 / (1 + Math.exp(-x));
-}
-
-},{}],25:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = softmax;
-
-var _ = require('./');
-
-var _2 = _interopRequireDefault(_);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- *
- * @param {Matrix} m
- * @returns {Matrix}
- */
-function softmax(m) {
-  var result = new _2.default(m.rows, m.columns); // probability volume
-  var maxVal = -999999;
-  var i = void 0;
-  var max = m.weights.length;
-
-  for (i = 0; i < max; i++) {
-    if (m.weights[i] <= maxVal) continue;
-    maxVal = m.weights[i];
-  }
-
-  var s = 0;
-  for (i = 0; i < max; i++) {
-    result.weights[i] = Math.exp(m.weights[i] - maxVal);
-    s += result.weights[i];
-  }
-
-  for (i = 0; i < max; i++) {
-    result.weights[i] /= s;
-    result.recurrence[i] = 0;
-  }
-
-  // no backward pass here needed
-  // since we will use the computed probabilities outside
-  // to set gradients directly on m
-  return result;
-}
-
-},{"./":10}],26:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = tanhB;
-/**
- *
- * @param {Matrix} product
- * @param {Matrix} left
- */
-function tanhB(product, left) {
-  for (var i = 0, max = left.recurrence.length; i < max; i++) {
-    // grad for z = tanh(x) is (1 - z^2)
-    var mwi = product.weights[i];
-    left.recurrence[i] += (1 - mwi * mwi) * product.recurrence[i];
-  }
-}
-
-},{}],27:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = tanh;
-/**
- * @param {Matrix} product
- * @param {Matrix} left
- */
-function tanh(product, left) {
-  // tanh nonlinearity
-  for (var i = 0, max = left.weights.length; i < max; i++) {
-    product.weights[i] = Math.tanh(left.weights[i]);
-    product.recurrence[i] = 0;
-    left.recurrence[i] = 0;
-  }
-}
-
-},{}],28:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2109,7 +1007,7 @@ var NeuralNetwork = function () {
 
 exports.default = NeuralNetwork;
 
-},{"./lookup":3,"./train-stream":32,"./utilities/max":33,"./utilities/mse":34,"./utilities/randos":38,"./utilities/range":39,"./utilities/to-array":40,"./utilities/zeros":42}],29:[function(require,module,exports){
+},{"./lookup":3,"./train-stream":32,"./utilities/max":33,"./utilities/mse":34,"./utilities/randos":38,"./utilities/range":39,"./utilities/to-array":40,"./utilities/zeros":42}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2118,17 +1016,17 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _matrix = require('../matrix');
+var _matrix = require('./matrix');
 
 var _matrix2 = _interopRequireDefault(_matrix);
+
+var _randomMatrix = require('./matrix/random-matrix');
+
+var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
 
 var _rnn = require('./rnn');
 
 var _rnn2 = _interopRequireDefault(_rnn);
-
-var _randomMatrix = require('../matrix/random-matrix');
-
-var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2197,19 +1095,20 @@ var GRU = function (_RNN) {
       var tanh = equation.tanh.bind(equation);
       var allOnes = equation.allOnes.bind(equation);
       var cloneNegative = equation.cloneNegative.bind(equation);
+      var result = equation.result.bind(equation);
 
       // update gate
-      var updateGate = sigmoid(add(add(multiply(hiddenLayer.updateGateInputMatrix, inputMatrix), multiply(hiddenLayer.updateGateHiddenMatrix, previousResult(size))), hiddenLayer.updateGateBias));
+      var updateGate = result(sigmoid(add(add(multiply(hiddenLayer.updateGateInputMatrix, inputMatrix), multiply(hiddenLayer.updateGateHiddenMatrix, previousResult(size))), hiddenLayer.updateGateBias)));
 
       // reset gate
-      var resetGate = sigmoid(add(add(multiply(hiddenLayer.resetGateInputMatrix, inputMatrix), multiply(hiddenLayer.resetGateHiddenMatrix, previousResult(size))), hiddenLayer.resetGateBias));
+      var resetGate = result(sigmoid(add(add(multiply(hiddenLayer.resetGateInputMatrix, inputMatrix), multiply(hiddenLayer.resetGateHiddenMatrix, previousResult(size))), hiddenLayer.resetGateBias)));
 
       // cell
-      var cell = tanh(add(add(multiply(hiddenLayer.cellWriteInputMatrix, inputMatrix), multiply(hiddenLayer.cellWriteHiddenMatrix, multiplyElement(resetGate, previousResult(size)))), hiddenLayer.cellWriteBias));
+      var cell = result(tanh(add(add(multiply(hiddenLayer.cellWriteInputMatrix, inputMatrix), multiply(hiddenLayer.cellWriteHiddenMatrix, multiplyElement(resetGate, previousResult(size)))), hiddenLayer.cellWriteBias)));
 
       // compute hidden state as gated, saturated cell activations
       // negate updateGate
-      return add(multiplyElement(add(allOnes(updateGate.rows, updateGate.columns), cloneNegative(updateGate)), cell), multiplyElement(previousResult(size), updateGate));
+      return result(add(multiplyElement(add(allOnes(updateGate.rows, updateGate.columns), cloneNegative(updateGate)), cell), multiplyElement(previousResult(size), updateGate)));
     }
   }]);
 
@@ -2218,7 +1117,7 @@ var GRU = function (_RNN) {
 
 exports.default = GRU;
 
-},{"../matrix":10,"../matrix/random-matrix":17,"./rnn":31}],30:[function(require,module,exports){
+},{"./matrix":13,"./matrix/random-matrix":20,"./rnn":31}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2227,17 +1126,17 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _matrix = require('../matrix');
+var _matrix = require('./matrix');
 
 var _matrix2 = _interopRequireDefault(_matrix);
+
+var _randomMatrix = require('./matrix/random-matrix');
+
+var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
 
 var _rnn = require('./rnn');
 
 var _rnn2 = _interopRequireDefault(_rnn);
-
-var _randomMatrix = require('../matrix/random-matrix');
-
-var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2337,7 +1236,120 @@ var LSTM = function (_RNN) {
 
 exports.default = LSTM;
 
-},{"../matrix":10,"../matrix/random-matrix":17,"./rnn":31}],31:[function(require,module,exports){
+},{"./matrix":13,"./matrix/random-matrix":20,"./rnn":31}],7:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = addB;
+/**
+ * adds {from} recurrence to {left} and {right} recurrence
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Matrix} right
+ */
+function addB(product, left, right) {
+  for (var i = 0, max = product.recurrence.length; i < max; i++) {
+    left.recurrence[i] += product.recurrence[i];
+    right.recurrence[i] += product.recurrence[i];
+  }
+}
+
+},{}],8:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = add;
+/**
+ * add {left} and {right} matrix weights into {into}
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Matrix} right
+ */
+function add(product, left, right) {
+  for (var i = 0, max = left.weights.length; i < max; i++) {
+    product.weights[i] = left.weights[i] + right.weights[i];
+
+    //TODO: needed?
+    product.recurrence[i] = 0;
+    left.recurrence[i] = 0;
+    right.recurrence[i] = 0;
+  }
+}
+
+},{}],9:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = allOnes;
+/**
+ * makes matrix weights and recurrence all ones
+ * @param {Matrix} product
+ */
+function allOnes(product) {
+  for (var i = 0, max = product.weights.length; i < max; i++) {
+    product.weights[i] = 1;
+    product.recurrence[i] = 0;
+  }
+}
+
+},{}],10:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = cloneNegative;
+/**
+ *
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+function cloneNegative(product, left) {
+  product.rows = parseInt(left.rows);
+  product.columns = parseInt(left.columns);
+  product.weights = left.weights.slice(0);
+  product.recurrence = left.recurrence.slice(0);
+  for (var i = 0, max = left.weights.length; i < max; i++) {
+    product.weights[i] = -left.weights[i];
+    product.recurrence[i] = 0;
+  }
+}
+
+},{}],11:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = copy;
+
+var _zeros = require('../../utilities/zeros');
+
+var _zeros2 = _interopRequireDefault(_zeros);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/*
+ *
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+function copy(product, left) {
+  product.rows = parseInt(left.rows);
+  product.columns = parseInt(left.columns);
+  //product.weights = left.weights.slice(0);
+  product.recurrence = left.recurrence.slice(0);
+  //TODO: needed?
+  //product.recurrence = zeros(left.recurrence.length);
+}
+
+},{"../../utilities/zeros":42}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2346,29 +1358,1089 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _sampleI2 = require('../matrix/sample-i');
+var _ = require('./');
 
-var _sampleI3 = _interopRequireDefault(_sampleI2);
+var _2 = _interopRequireDefault(_);
 
-var _maxI = require('../matrix/max-i');
+var _onesMatrix = require('./ones-matrix');
 
-var _maxI2 = _interopRequireDefault(_maxI);
+var _onesMatrix2 = _interopRequireDefault(_onesMatrix);
 
-var _matrix = require('../matrix');
+var _copy = require('./copy');
+
+var _copy2 = _interopRequireDefault(_copy);
+
+var _cloneNegative2 = require('./clone-negative');
+
+var _cloneNegative3 = _interopRequireDefault(_cloneNegative2);
+
+var _add2 = require('./add');
+
+var _add3 = _interopRequireDefault(_add2);
+
+var _addB = require('./add-b');
+
+var _addB2 = _interopRequireDefault(_addB);
+
+var _allOnes2 = require('./all-ones');
+
+var _allOnes3 = _interopRequireDefault(_allOnes2);
+
+var _multiply2 = require('./multiply');
+
+var _multiply3 = _interopRequireDefault(_multiply2);
+
+var _multiplyB = require('./multiply-b');
+
+var _multiplyB2 = _interopRequireDefault(_multiplyB);
+
+var _multiplyElement2 = require('./multiply-element');
+
+var _multiplyElement3 = _interopRequireDefault(_multiplyElement2);
+
+var _multiplyElementB = require('./multiply-element-b');
+
+var _multiplyElementB2 = _interopRequireDefault(_multiplyElementB);
+
+var _relu2 = require('./relu');
+
+var _relu3 = _interopRequireDefault(_relu2);
+
+var _reluB = require('./relu-b');
+
+var _reluB2 = _interopRequireDefault(_reluB);
+
+var _rowPluck = require('./row-pluck');
+
+var _rowPluck2 = _interopRequireDefault(_rowPluck);
+
+var _rowPluckB = require('./row-pluck-b');
+
+var _rowPluckB2 = _interopRequireDefault(_rowPluckB);
+
+var _sigmoid2 = require('./sigmoid');
+
+var _sigmoid3 = _interopRequireDefault(_sigmoid2);
+
+var _sigmoidB = require('./sigmoid-b');
+
+var _sigmoidB2 = _interopRequireDefault(_sigmoidB);
+
+var _tanh2 = require('./tanh');
+
+var _tanh3 = _interopRequireDefault(_tanh2);
+
+var _tanhB = require('./tanh-b');
+
+var _tanhB2 = _interopRequireDefault(_tanhB);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Equation = function () {
+  function Equation() {
+    _classCallCheck(this, Equation);
+
+    this.inputRow = 0;
+    this.states = [];
+    this.previousResults = [];
+    this.previousResultInputs = [];
+  }
+
+  /**
+   *
+   * @param {Number} size
+   * @returns {Matrix}
+   */
+
+
+  _createClass(Equation, [{
+    key: 'previousResult',
+    value: function previousResult(size) {
+      var product = new _2.default(size, 1);
+      var self = this;
+      var i = parseInt(this.previousResults.length);
+      this.previousResultInputs.push(product);
+
+      this.states.push({
+        product: product,
+        get left() {
+          product.previousResultsIndex = i;
+          product.previousResult = true;
+          return self.previousResults[i];
+        },
+        backpropagationFn: _copy2.default
+      });
+
+      return product;
+    }
+  }, {
+    key: 'result',
+    value: function result(m) {
+      this.previousResults.push(m);
+      if (this.previousResults.length !== this.previousResultInputs.length) {
+        throw new Error('previousResults does not match size of previousResultInputs');
+      }
+      if (m.weights.length !== this.previousResultInputs[this.previousResultInputs.length - 1].weights.length) {
+        throw new Error('misaligned matrices');
+      }
+      return m;
+    }
+
+    /**
+     * connects two matrices together by add
+     * @param {Matrix} left
+     * @param {Matrix} right
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'add',
+    value: function add(left, right) {
+      if (left.weights.length !== right.weights.length) {
+        throw new Error('misaligned matrices');
+      }
+      var product = new _2.default(left.rows, left.columns);
+      this.states.push({
+        left: left,
+        right: right,
+        product: product,
+        forwardFn: _add3.default,
+        backpropagationFn: _addB2.default
+      });
+      return product;
+    }
+
+    /**
+     *
+     * @param {Number} rows
+     * @param {Number} columns
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'allOnes',
+    value: function allOnes(rows, columns) {
+      var product = new _2.default(rows, columns);
+      this.states.push({
+        left: product,
+        product: product,
+        forwardFn: _allOnes3.default
+      });
+      return product;
+    }
+
+    /**
+     *
+     * @param {Matrix} m
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'cloneNegative',
+    value: function cloneNegative(m) {
+      var product = new _2.default(m.rows, m.columns);
+      this.states.push({
+        left: m,
+        product: product,
+        forwardFn: _cloneNegative3.default
+      });
+      return product;
+    }
+
+    /**
+     * connects two matrices together by subtract
+     * @param {Matrix} left
+     * @param {Matrix} right
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'subtract',
+    value: function subtract(left, right) {
+      if (left.weights.length !== right.weights.length) {
+        throw new Error('misaligned matrices');
+      }
+      return this.add(this.add(this.allOnes(left.rows, left.columns), this.cloneNegative(left)), right);
+    }
+
+    /**
+     * connects two matrices together by multiply
+     * @param {Matrix} left
+     * @param {Matrix} right
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'multiply',
+    value: function multiply(left, right) {
+      if (left.columns !== right.rows) {
+        throw new Error('misaligned matrices');
+      }
+      var product = new _2.default(left.rows, right.columns);
+      this.states.push({
+        left: left,
+        right: right,
+        product: product,
+        forwardFn: _multiply3.default,
+        backpropagationFn: _multiplyB2.default
+      });
+      return product;
+    }
+
+    /**
+     * connects two matrices together by multiplyElement
+     * @param {Matrix} left
+     * @param {Matrix} right
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'multiplyElement',
+    value: function multiplyElement(left, right) {
+      if (left.weights.length !== right.weights.length) {
+        throw new Error('misaligned matrices');
+      }
+      var product = new _2.default(left.rows, left.columns);
+      this.states.push({
+        left: left,
+        right: right,
+        product: product,
+        forwardFn: _multiplyElement3.default,
+        backpropagationFn: _multiplyElementB2.default
+      });
+      return product;
+    }
+
+    /**
+     * connects a matrix to relu
+     * @param {Matrix} m
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'relu',
+    value: function relu(m) {
+      var product = new _2.default(m.rows, m.columns);
+      this.states.push({
+        left: m,
+        product: product,
+        forwardFn: _relu3.default,
+        backpropagationFn: _reluB2.default
+      });
+      return product;
+    }
+
+    /**
+     * connects a matrix via a row
+     * @param {Matrix} m
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'inputMatrixToRow',
+    value: function inputMatrixToRow(m) {
+      var self = this;
+      var product = new _2.default(m.columns, 1);
+      this.states.push({
+        left: m,
+        get right() {
+          return self.inputRow;
+        },
+        product: product,
+        forwardFn: _rowPluck2.default,
+        backpropagationFn: _rowPluckB2.default
+      });
+      return product;
+    }
+
+    /**
+     * connects a matrix to sigmoid
+     * @param {Matrix} m
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'sigmoid',
+    value: function sigmoid(m) {
+      var product = new _2.default(m.rows, m.columns);
+      this.states.push({
+        left: m,
+        product: product,
+        forwardFn: _sigmoid3.default,
+        backpropagationFn: _sigmoidB2.default
+      });
+      return product;
+    }
+
+    /**
+     * connects a matrix to tanh
+     * @param {Matrix} m
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'tanh',
+    value: function tanh(m) {
+      var product = new _2.default(m.rows, m.columns);
+      this.states.push({
+        left: m,
+        product: product,
+        forwardFn: _tanh3.default,
+        backpropagationFn: _tanhB2.default
+      });
+      return product;
+    }
+
+    /**
+     *
+     * @param m
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'observe',
+    value: function observe(m) {
+      var iForward = 0;
+      var iBackpropagate = 0;
+      this.states.push({
+        forwardFn: function forwardFn() {
+          iForward++;
+        },
+        backpropagationFn: function backpropagationFn() {
+          iBackpropagate++;
+        }
+      });
+      return m;
+    }
+
+    /**
+     * @patam {Number} [rowIndex]
+     * @output {Matrix}
+     */
+
+  }, {
+    key: 'run',
+    value: function run(rowIndex) {
+      this.inputRow = rowIndex || 0;
+
+      var state = void 0;
+      for (var i = 0, max = this.states.length; i < max; i++) {
+        state = this.states[i];
+        if (!state.hasOwnProperty('forwardFn')) {
+          continue;
+        }
+        state.forwardFn(state.product, state.left, state.right);
+      }
+
+      return state.product;
+    }
+
+    /**
+     * @patam {Number} [rowIndex]
+     * @output {Matrix}
+     */
+
+  }, {
+    key: 'runBackpropagate',
+    value: function runBackpropagate(rowIndex) {
+      this.inputRow = rowIndex || 0;
+
+      var i = this.states.length;
+      var state = void 0;
+      while (i-- > 0) {
+        state = this.states[i];
+        if (!state.hasOwnProperty('backpropagationFn')) {
+          continue;
+        }
+        state.backpropagationFn(state.product, state.left, state.right);
+      }
+
+      return state.product;
+    }
+  }]);
+
+  return Equation;
+}();
+
+exports.default = Equation;
+
+},{"./":13,"./add":8,"./add-b":7,"./all-ones":9,"./clone-negative":10,"./copy":11,"./multiply":18,"./multiply-b":15,"./multiply-element":17,"./multiply-element-b":16,"./ones-matrix":19,"./relu":22,"./relu-b":21,"./row-pluck":24,"./row-pluck-b":23,"./sigmoid":27,"./sigmoid-b":26,"./tanh":30,"./tanh-b":29}],13:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _zeros = require('../../utilities/zeros');
+
+var _zeros2 = _interopRequireDefault(_zeros);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * A matrix
+ * @param {Number} [rows]
+ * @param {Number} [columns]
+ * @constructor
+ */
+var Matrix = function () {
+  function Matrix(rows, columns) {
+    _classCallCheck(this, Matrix);
+
+    if (typeof rows === 'undefined') return;
+    if (typeof columns === 'undefined') return;
+
+    this.rows = rows;
+    this.columns = columns;
+    this.weights = (0, _zeros2.default)(rows * columns);
+    this.recurrence = (0, _zeros2.default)(rows * columns);
+  }
+
+  /**
+   *
+   * @param {Number} row
+   * @param {Number} col
+   * @returns {Float64Array|Array}
+   */
+
+
+  _createClass(Matrix, [{
+    key: 'getWeights',
+    value: function getWeights(row, col) {
+      // slow but careful accessor function
+      // we want row-major order
+      var ix = this.columns * row + col;
+      if (ix < 0 && ix >= this.weights.length) throw new Error('get accessor is skewed');
+      return this.weights[ix];
+    }
+
+    /**
+     *
+     * @param {Number} row
+     * @param {Number} col
+     * @param v
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'setWeight',
+    value: function setWeight(row, col, v) {
+      // slow but careful accessor function
+      var ix = this.columns * row + col;
+      if (ix < 0 && ix >= this.weights.length) throw new Error('set accessor is skewed');
+      this.weights[ix] = v;
+    }
+
+    /**
+     *
+     * @param {Number} row
+     * @param {Number} col
+     * @param v
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'setRecurrence',
+    value: function setRecurrence(row, col, v) {
+      // slow but careful accessor function
+      var ix = this.columns * row + col;
+      if (ix < 0 && ix >= this.weights.length) throw new Error('set accessor is skewed');
+      this.recurrence[ix] = v;
+    }
+
+    /**
+     *
+     * @returns {{rows: *, columns: *, weights: Array}}
+     */
+
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      return {
+        rows: this.rows,
+        columns: this.columns,
+        weights: this.weights.slice(0)
+      };
+    }
+  }], [{
+    key: 'fromJSON',
+    value: function fromJSON(json) {
+      var matrix = new Matrix(json.rows, json.columns);
+      for (var i = 0, max = json.rows * json.columns; i < max; i++) {
+        matrix.weights[i] = json.weights[i]; // copy over weights
+      }
+      return matrix;
+    }
+
+    /**
+     *
+     * @param weightRows
+     * @param [recurrenceRows]
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'fromArray',
+    value: function fromArray(weightRows, recurrenceRows) {
+      var rows = weightRows.length;
+      var columns = weightRows[0].length;
+      var m = new Matrix(rows, columns);
+
+      recurrenceRows = recurrenceRows || weightRows;
+
+      for (var rowIndex = 0; rowIndex < rows; rowIndex++) {
+        var weightValues = weightRows[rowIndex];
+        var recurrentValues = recurrenceRows[rowIndex];
+        for (var columnIndex = 0; columnIndex < columns; columnIndex++) {
+          m.setWeight(rowIndex, columnIndex, weightValues[columnIndex]);
+          m.setRecurrence(rowIndex, columnIndex, recurrentValues[columnIndex]);
+        }
+      }
+
+      return m;
+    }
+  }]);
+
+  return Matrix;
+}();
+
+exports.default = Matrix;
+
+},{"../../utilities/zeros":42}],14:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = maxI;
+/**
+ *
+ * @param {Matrix} m
+ * @returns {number}
+ */
+function maxI(m) {
+  // argmax of array w
+  var w = m.weights;
+  var maxv = w[0];
+  var maxix = 0;
+  for (var i = 1, max = w.length; i < max; i++) {
+    var v = w[i];
+    if (v < maxv) continue;
+
+    maxix = i;
+    maxv = v;
+  }
+  return maxix;
+};
+
+},{}],15:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = multiplyB;
+/**
+ * multiplies {from} recurrence to {left} and {right}
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Matrix} right
+ */
+function multiplyB(product, left, right) {
+  var leftRows = left.rows;
+  var leftColumns = left.columns;
+  var rightColumns = right.columns;
+
+  // loop over rows of left
+  for (var leftRow = 0; leftRow < leftRows; leftRow++) {
+
+    // loop over cols of right
+    for (var rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
+
+      //loop over columns of left
+      for (var leftColumn = 0; leftColumn < leftColumns; leftColumn++) {
+        var backPropagateValue = product.recurrence[rightColumns * leftRow + rightColumn];
+        left.recurrence[leftColumns * leftRow + leftColumn] += right.weights[rightColumns * leftColumn + rightColumn] * backPropagateValue;
+        right.recurrence[rightColumns * leftColumn + rightColumn] += left.weights[leftColumns * leftRow + leftColumn] * backPropagateValue;
+      }
+    }
+  }
+}
+
+},{}],16:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = multiplyElementB;
+/**
+ * multiplies {left} and {right} weight by {from} recurrence into {left} and {right} recurrence
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Matrix} right
+ */
+function multiplyElementB(product, left, right) {
+  for (var i = 0, weights = left.weights.length; i < weights; i++) {
+    left.recurrence[i] += right.weights[i] * product.recurrence[i];
+    right.recurrence[i] += left.weights[i] * product.recurrence[i];
+  }
+}
+
+},{}],17:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = multiplyElement;
+/**
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Matrix} right
+ */
+function multiplyElement(product, left, right) {
+  for (var i = 0, weights = left.weights.length; i < weights; i++) {
+    product.weights[i] = left.weights[i] * right.weights[i];
+
+    //TODO: needed?
+    product.recurrence[i] = 0;
+    left.recurrence[i] = 0;
+    right.recurrence[i] = 0;
+  }
+}
+
+},{}],18:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = multiply;
+/**
+ * multiply {left} and {right} matrix weights to {into}
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Matrix} right
+ */
+function multiply(product, left, right) {
+  var leftRows = left.rows;
+  var leftColumns = left.columns;
+  var rightColumns = right.columns;
+
+  // loop over rows of left
+  for (var leftRow = 0; leftRow < leftRows; leftRow++) {
+
+    // loop over cols of right
+    for (var rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
+
+      // dot product loop
+      var dot = 0;
+
+      //loop over columns of left
+      for (var leftColumn = 0; leftColumn < leftColumns; leftColumn++) {
+        dot += left.weights[leftColumns * leftRow + leftColumn] * right.weights[rightColumns * leftColumn + rightColumn];
+      }
+      var i = rightColumns * leftRow + rightColumn;
+      product.weights[i] = dot;
+
+      //TODO: needed?
+      product.recurrence[i] = 0;
+      left.recurrence[i] = 0;
+      right.recurrence[i] = 0;
+    }
+  }
+}
+
+},{}],19:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _ = require('./');
+
+var _2 = _interopRequireDefault(_);
+
+var _ones = require('../../utilities/ones');
+
+var _ones2 = _interopRequireDefault(_ones);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/** return Matrix but filled with random numbers from gaussian
+ * @param {Number} [rows]
+ * @param {Number} [columns]
+ * @constructor
+ */
+var OnesMatrix = function (_Matrix) {
+  _inherits(OnesMatrix, _Matrix);
+
+  function OnesMatrix(rows, columns) {
+    _classCallCheck(this, OnesMatrix);
+
+    var _this = _possibleConstructorReturn(this, (OnesMatrix.__proto__ || Object.getPrototypeOf(OnesMatrix)).call(this, rows, columns));
+
+    _this.rows = rows;
+    _this.columns = columns;
+    _this.weights = (0, _ones2.default)(rows * columns);
+    _this.recurrence = (0, _ones2.default)(rows * columns);
+    return _this;
+  }
+
+  return OnesMatrix;
+}(_2.default);
+
+exports.default = OnesMatrix;
+
+},{"../../utilities/ones":35,"./":13}],20:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _ = require('./');
+
+var _2 = _interopRequireDefault(_);
+
+var _random = require('../../utilities/random');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/** return Matrix but filled with random numbers from gaussian
+ * @param {Number} [rows]
+ * @param {Number} [columns]
+ * @param std
+ * @constructor
+ */
+var RandomMatrix = function (_Matrix) {
+  _inherits(RandomMatrix, _Matrix);
+
+  function RandomMatrix(rows, columns, std) {
+    _classCallCheck(this, RandomMatrix);
+
+    var _this = _possibleConstructorReturn(this, (RandomMatrix.__proto__ || Object.getPrototypeOf(RandomMatrix)).call(this, rows, columns));
+
+    _this.rows = rows;
+    _this.columns = columns;
+    _this.std = std;
+    for (var i = 0, max = _this.weights.length; i < max; i++) {
+      _this.weights[i] = (0, _random.randomF)(-std, std);
+    }
+    return _this;
+  }
+
+  return RandomMatrix;
+}(_2.default);
+
+exports.default = RandomMatrix;
+
+},{"../../utilities/random":37,"./":13}],21:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = reluB;
+/**
+ * adds {from} recurrence to {m} recurrence when {m} weights are above other a threshold of 0
+ * @param {Matrix} product
+ * @param {Matrix} m
+ */
+function reluB(product, left) {
+  for (var i = 0, max = product.recurrence.length; i < max; i++) {
+    left.recurrence[i] += left.weights[i] > 0 ? product.recurrence[i] : 0;
+  }
+}
+
+},{}],22:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = relu;
+/**
+ *
+ * relu {m} weights to {into} weights
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+function relu(product, left) {
+  for (var i = 0, max = left.weights.length; i < max; i++) {
+    product.weights[i] = Math.max(0, left.weights[i]); // relu
+
+    //TODO: needed?
+    product.recurrence[i] = 0;
+    left.recurrence[i] = 0;
+  }
+}
+
+},{}],23:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = rowPluckB;
+/**
+ * adds {from} recurrence into {m} recurrence
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Number} rowIndex
+ */
+function rowPluckB(product, left, rowIndex) {
+  for (var column = 0, columns = left.columns; column < columns; column++) {
+    left.recurrence[columns * rowIndex + column] += product.recurrence[column];
+  }
+}
+
+},{}],24:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = rowPluck;
+/**
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Number} rowPluckIndex
+ */
+function rowPluck(product, left, rowPluckIndex) {
+  for (var column = 0, columns = left.columns; column < columns; column++) {
+    product.weights[column] = left.weights[columns * rowPluckIndex + column];
+  }
+}
+
+},{}],25:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = sampleI;
+
+var _random = require('../../utilities/random');
+
+/**
+ *
+ * @param {Matrix} m
+ * @returns {number}
+ */
+function sampleI(m) {
+  // sample argmax from w, assuming w are
+  // probabilities that sum to one
+  var r = (0, _random.randomF)(0, 1);
+  var x = 0;
+  var i = 0;
+  var w = m.weights;
+
+  //TODO: Needed?
+  if (isNaN(w[0])) {
+    throw new Error('NaN');
+  }
+
+  while (true) {
+    x += w[i];
+    if (x > r) {
+      return i;
+    }
+    i++;
+  }
+}
+
+},{"../../utilities/random":37}],26:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = sigmoidB;
+/**
+ *
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+function sigmoidB(product, left) {
+  for (var i = 0, max = product.recurrence.length; i < max; i++) {
+    var mwi = product.weights[i];
+    left.recurrence[i] += mwi * (1 - mwi) * product.recurrence[i];
+  }
+}
+
+},{}],27:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = sigmoid;
+/**
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+function sigmoid(product, left) {
+  // sigmoid nonlinearity
+  for (var i = 0, max = left.weights.length; i < max; i++) {
+    product.weights[i] = 1 / (1 + Math.exp(-left.weights[i]));
+
+    //TODO: needed?
+    product.recurrence[i] = 0;
+    left.recurrence[i] = 0;
+  }
+}
+
+function sig(x) {
+  // helper function for computing sigmoid
+  return 1 / (1 + Math.exp(-x));
+}
+
+},{}],28:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = softmax;
+
+var _ = require('./');
+
+var _2 = _interopRequireDefault(_);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ *
+ * @param {Matrix} m
+ * @returns {Matrix}
+ */
+function softmax(m) {
+  var result = new _2.default(m.rows, m.columns); // probability volume
+  var maxVal = -999999;
+  var i = void 0;
+  var max = m.weights.length;
+
+  for (i = 0; i < max; i++) {
+    if (m.weights[i] > maxVal) {
+      maxVal = m.weights[i];
+    }
+  }
+
+  var s = 0;
+  for (i = 0; i < max; i++) {
+    result.weights[i] = Math.exp(m.weights[i] - maxVal);
+    s += result.weights[i];
+  }
+
+  for (i = 0; i < max; i++) {
+    result.weights[i] /= s;
+  }
+
+  // no backward pass here needed
+  // since we will use the computed probabilities outside
+  // to set gradients directly on m
+  return result;
+}
+
+},{"./":13}],29:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = tanhB;
+/**
+ *
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+function tanhB(product, left) {
+  for (var i = 0, max = product.recurrence.length; i < max; i++) {
+    // grad for z = tanh(x) is (1 - z^2)
+    var mwi = product.weights[i];
+    left.recurrence[i] += (1 - mwi * mwi) * product.recurrence[i];
+  }
+}
+
+},{}],30:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = tanh;
+/**
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+function tanh(product, left) {
+  // tanh nonlinearity
+  for (var i = 0, max = left.weights.length; i < max; i++) {
+    product.weights[i] = Math.tanh(left.weights[i]);
+
+    //TODO: needed?
+    product.recurrence[i] = 0;
+    left.recurrence[i] = 0;
+  }
+}
+
+},{}],31:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _matrix = require('./matrix');
 
 var _matrix2 = _interopRequireDefault(_matrix);
 
-var _randomMatrix = require('../matrix/random-matrix');
+var _sampleI2 = require('./matrix/sample-i');
+
+var _sampleI3 = _interopRequireDefault(_sampleI2);
+
+var _maxI = require('./matrix/max-i');
+
+var _maxI2 = _interopRequireDefault(_maxI);
+
+var _randomMatrix = require('./matrix/random-matrix');
 
 var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
 
-var _softmax = require('../matrix/softmax');
+var _softmax = require('./matrix/softmax');
 
 var _softmax2 = _interopRequireDefault(_softmax);
 
-var _equation = require('../matrix/equation');
+var _equation = require('./matrix/equation');
 
 var _equation2 = _interopRequireDefault(_equation);
+
+var _copy = require('./matrix/copy');
+
+var _copy2 = _interopRequireDefault(_copy);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2403,9 +2475,9 @@ var RNN = function () {
 
     this.stepCache = {};
     this.runs = 0;
-    this.logProbabilities = null;
     this.totalPerplexity = null;
     this.totalCost = null;
+    this.ratioClipped = null;
 
     this.model = {
       input: [],
@@ -2512,13 +2584,6 @@ var RNN = function () {
       model.equations.push(equation);
     }
   }, {
-    key: 'createEquations',
-    value: function createEquations() {
-      for (var i = 0, max = this.inputSize; i <= max; i++) {
-        this.bindEquation();
-      }
-    }
-  }, {
     key: 'mapModel',
     value: function mapModel() {
       var model = this.model;
@@ -2532,7 +2597,7 @@ var RNN = function () {
       if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
       if (!model.output) throw new Error('net.model.output not set');
 
-      this.createEquations();
+      this.bindEquation();
       if (!model.equations.length) throw new Error('net.equation not set');
 
       allMatrices.push(model.input);
@@ -2556,6 +2621,14 @@ var RNN = function () {
       this.step();
     }
   }, {
+    key: 'runPredict',
+    value: function runPredict() {
+      var prediction = this.predict();
+      this.runBackpropagate(prediction);
+      this.step();
+      return prediction;
+    }
+  }, {
     key: 'train',
     value: function train(input) {
       this.runs++;
@@ -2568,24 +2641,28 @@ var RNN = function () {
       var i = void 0;
       var output = void 0;
       var equation = void 0;
+      while (model.equations.length <= input.length + 1) {
+        //first and last are zeros
+        this.bindEquation();
+      }
       for (i = -1; i < max; i++) {
         // start and end tokens are zeros
         equation = model.equations[i + 1];
-        var ixSource = i === -1 ? 0 : input[i]; // first step: start with START token
-        var ixTarget = i === max - 1 ? 0 : input[i + 1]; // last step: end with END token
-        output = equation.run(ixSource);
-        equation.updatePreviousResults();
 
+        var ixSource = i === -1 ? 0 : input[i] + 1; // first step: start with START token
+        var ixTarget = i === max - 1 ? 0 : input[i + 1] + 1; // last step: end with END token
+
+        output = equation.run(ixSource);
         // set gradients into log probabilities
-        this.logProbabilities = output; // interpret output as log probabilities
+        var logProbabilities = output; // interpret output as log probabilities
         var probabilities = (0, _softmax2.default)(output); // compute the softmax probabilities
 
         log2ppl += -Math.log2(probabilities.weights[ixTarget]); // accumulate base 2 log prob and do smoothing
         cost += -Math.log(probabilities.weights[ixTarget]);
 
         // write gradients into log probabilities
-        this.logProbabilities.recurrence = probabilities.weights.slice(0);
-        this.logProbabilities.recurrence[ixTarget] -= 1;
+        logProbabilities.recurrence = probabilities.weights.slice(0);
+        logProbabilities.recurrence[ixTarget] -= 1;
       }
 
       this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
@@ -2595,14 +2672,14 @@ var RNN = function () {
   }, {
     key: 'runBackpropagate',
     value: function runBackpropagate(input) {
-      //equation.runBackpropagate(0);
-      var i = input.length;
+      var i = input.length + 0;
       var model = this.model;
       var equations = model.equations;
-      while (i--) {
-        equations[i].runBackpropagate(input[i]);
+      while (i > 0) {
+        equations[i].runBackpropagate(input[i - 1] + 1);
+        i--;
       }
-      //equation.runBackpropagate(0);
+      equations[0].runBackpropagate(0);
     }
   }, {
     key: 'step',
@@ -2647,9 +2724,9 @@ var RNN = function () {
     }
   }, {
     key: 'predict',
-    value: function predict(_sampleI, temperature, predictionLength) {
+    value: function predict(predictionLength, _sampleI, temperature) {
       if (typeof _sampleI === 'undefined') {
-        _sampleI = true;
+        _sampleI = false;
       }
       if (typeof temperature === 'undefined') {
         temperature = 1;
@@ -2657,31 +2734,37 @@ var RNN = function () {
       if (typeof predictionLength === 'undefined') {
         predictionLength = 100;
       }
-
+      var model = this.model;
       var result = [];
-      //let prev;
       var ix = void 0;
       var equation = void 0;
-      //equation.resetPreviousResults();
+      var i = 0;
+      while (model.equations.length < predictionLength) {
+        this.bindEquation();
+      }
+      var output = new _matrix2.default(model.output.rows, model.output.columns);
       while (true) {
+        if (i >= predictionLength) {
+          // something is wrong
+          break;
+        }
         ix = result.length === 0 ? 0 : result[result.length - 1];
-        equation = this.model.equations[result.length - 1];
-        var lh = equation.run(ix);
-        //equation.updatePreviousResults();
-        //prev = clone(lh);
+        equation = model.equations[i];
+        (0, _copy2.default)(output, equation.run(ix));
+        var lh = output;
         // sample predicted letter
-        this.logProbabilities = lh;
+        var logProbabilities = lh;
         if (temperature !== 1 && _sampleI) {
           // scale log probabilities by temperature and renormalize
           // if temperature is high, logprobs will go towards zero
           // and the softmax outputs will be more diffuse. if temperature is
           // very low, the softmax outputs will be more peaky
-          for (var q = 0, nq = this.logProbabilities.weights.length; q < nq; q++) {
-            this.logProbabilities.weights[q] /= temperature;
+          for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {
+            logProbabilities.weights[q] /= temperature;
           }
         }
 
-        var probs = (0, _softmax2.default)(this.logProbabilities);
+        var probs = (0, _softmax2.default)(logProbabilities);
 
         if (_sampleI) {
           ix = (0, _sampleI3.default)(probs);
@@ -2689,12 +2772,9 @@ var RNN = function () {
           ix = (0, _maxI2.default)(probs);
         }
 
+        i++;
         if (ix === 0) {
           // END token predicted, break out
-          break;
-        }
-        if (result.length > predictionLength) {
-          // something is wrong
           break;
         }
 
@@ -2991,7 +3071,7 @@ var RNN = function () {
 
 exports.default = RNN;
 
-},{"../matrix":10,"../matrix/equation":9,"../matrix/max-i":11,"../matrix/random-matrix":17,"../matrix/sample-i":22,"../matrix/softmax":25}],32:[function(require,module,exports){
+},{"./matrix":13,"./matrix/copy":11,"./matrix/equation":12,"./matrix/max-i":14,"./matrix/random-matrix":20,"./matrix/sample-i":25,"./matrix/softmax":28}],32:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3310,12 +3390,10 @@ function randomN(mu, std) {
 }
 
 // Random numbers utils
-var returnV = false;
-var vVal = 0.0;
 function gaussRandom() {
-  if (returnV) {
-    returnV = false;
-    return vVal;
+  if (gaussRandom.returnV) {
+    gaussRandom.returnV = false;
+    return gaussRandom.vVal;
   }
   var u = 2 * Math.random() - 1;
   var v = 2 * Math.random() - 1;
@@ -3324,10 +3402,12 @@ function gaussRandom() {
     return gaussRandom();
   }
   var c = Math.sqrt(-2 * Math.log(r) / r);
-  vVal = v * c; // cache this
-  returnV = true;
+  gaussRandom.vVal = v * c; // cache this
+  gaussRandom.returnV = true;
   return u * c;
 }
+gaussRandom.returnV = false;
+gaussRandom.vVal = 0;
 
 },{}],38:[function(require,module,exports){
 'use strict';
@@ -3444,16 +3524,17 @@ var Vocab = function () {
       var _character = this.characters[_characterIndex];
       if (_characterIndex >= maxThreshold) {
         // add character to vocab
-        this.indexTable[_character] = _characterIndex + 1;
-        this.characterTable[_characterIndex + 1] = _character;
+        this.indexTable[_character] = _characterIndex;
+        this.characterTable[_characterIndex] = _character;
       }
     }
   }
 
   _createClass(Vocab, [{
     key: "toIndexes",
-    value: function toIndexes(phrase, maxThreshold) {
-      maxThreshold = maxThreshold || 0;
+    value: function toIndexes(phrase) {
+      var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
       var result = [];
       var indexTable = this.indexTable;
 
@@ -3468,8 +3549,9 @@ var Vocab = function () {
     }
   }, {
     key: "toCharacters",
-    value: function toCharacters(indexes, maxThreshold) {
-      maxThreshold = maxThreshold || 0;
+    value: function toCharacters(indexes) {
+      var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
       var result = [];
       var characterTable = this.characterTable;
 
@@ -3556,7 +3638,7 @@ if (typeof window !== 'undefined') {
   }
 }
 
-},{"./dist/cross-validate":1,"./dist/likely":2,"./dist/lookup":3,"./dist/neural-network":28,"./dist/recurrent/gru":29,"./dist/recurrent/lstm":30,"./dist/recurrent/rnn":31,"./dist/train-stream":32,"./dist/utilities/max":33,"./dist/utilities/mse":34,"./dist/utilities/ones":35,"./dist/utilities/random":37,"./dist/utilities/random-weight":36,"./dist/utilities/randos":38,"./dist/utilities/range":39,"./dist/utilities/to-array":40,"./dist/utilities/vocab":41,"./dist/utilities/zeros":42}],44:[function(require,module,exports){
+},{"./dist/cross-validate":1,"./dist/likely":2,"./dist/lookup":3,"./dist/neural-network":4,"./dist/recurrent/gru":5,"./dist/recurrent/lstm":6,"./dist/recurrent/rnn":31,"./dist/train-stream":32,"./dist/utilities/max":33,"./dist/utilities/mse":34,"./dist/utilities/ones":35,"./dist/utilities/random":37,"./dist/utilities/random-weight":36,"./dist/utilities/randos":38,"./dist/utilities/range":39,"./dist/utilities/to-array":40,"./dist/utilities/vocab":41,"./dist/utilities/zeros":42}],44:[function(require,module,exports){
 'use strict'
 
 exports.toByteArray = toByteArray

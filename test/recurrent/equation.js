@@ -1,9 +1,9 @@
 import fs from 'fs';
 import assert from 'assert';
 import sinon from 'sinon';
-import Matrix from '../../src/matrix';
-import OnesMatrix from '../../src/matrix/ones-matrix';
-import Equation from '../../src/matrix/equation';
+import Matrix from '../../src/recurrent/matrix';
+import OnesMatrix from '../../src/recurrent/matrix/ones-matrix';
+import Equation from '../../src/recurrent/matrix/equation';
 
 function randomMath() {
   var left = Math.floor(Math.random() * 10);
@@ -208,44 +208,26 @@ describe('equation', function() {
         });
         equation.runBackpropagate(1);
         equation.runBackpropagate();
-        console.log(input);
       });
     });
   });
   describe('previousResult', function() {
     it('works', function () {
-      var input = new Matrix(2, 2);
-      /**
-       * Matrix like:
-       * 1 1
-       * 2 2
-       */
-      input.weights.forEach(function(w, i) {
-        if (i < 2) {
-          input.weights[i] = 1;
-        } else {
-          input.weights[i] = 2;
-        }
-      });
-      var multiplyer = new Matrix(2, 1);
-      multiplyer.weights.forEach(function(w, i) {
-        multiplyer.weights[i] = 4;
-      });
       var equation = new Equation();
-      equation.multiply(equation.add(new OnesMatrix(1, 2), equation.inputMatrixToRow(input)), multiplyer);
+      equation.result(
+        equation.add(
+          equation.add(
+            new OnesMatrix(1, 2),
+            equation.previousResult(2)
+          ),
+          new OnesMatrix(1, 2)
+        )
+      );
 
-      var output = equation.run();
-      //assert.equal(output.weights.length, 2);
-      //assert.equal(output.weights[0], 2);
-      //assert.equal(output.weights[1], 2);
-
-      output = equation.run(1);
-      //assert.equal(output.weights.length, 2);
-      //assert.equal(output.weights[0], 3);
-      //assert.equal(output.weights[1], 3);
-
+      equation.run();
       equation.runBackpropagate();
-      //console.log(input);
+      assert.equal(equation.states[0].left[0].weights[0], 2);
+      assert.equal(equation.states[0].left[0].weights[0], 2);
     });
   });
 });

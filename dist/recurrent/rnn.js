@@ -6,29 +6,33 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _sampleI2 = require('../matrix/sample-i');
-
-var _sampleI3 = _interopRequireDefault(_sampleI2);
-
-var _maxI = require('../matrix/max-i');
-
-var _maxI2 = _interopRequireDefault(_maxI);
-
-var _matrix = require('../matrix');
+var _matrix = require('./matrix');
 
 var _matrix2 = _interopRequireDefault(_matrix);
 
-var _randomMatrix = require('../matrix/random-matrix');
+var _sampleI2 = require('./matrix/sample-i');
+
+var _sampleI3 = _interopRequireDefault(_sampleI2);
+
+var _maxI = require('./matrix/max-i');
+
+var _maxI2 = _interopRequireDefault(_maxI);
+
+var _randomMatrix = require('./matrix/random-matrix');
 
 var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
 
-var _softmax = require('../matrix/softmax');
+var _softmax = require('./matrix/softmax');
 
 var _softmax2 = _interopRequireDefault(_softmax);
 
-var _equation = require('../matrix/equation');
+var _equation = require('./matrix/equation');
 
 var _equation2 = _interopRequireDefault(_equation);
+
+var _copy = require('./matrix/copy');
+
+var _copy2 = _interopRequireDefault(_copy);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -63,9 +67,9 @@ var RNN = function () {
 
     this.stepCache = {};
     this.runs = 0;
-    this.logProbabilities = null;
     this.totalPerplexity = null;
     this.totalCost = null;
+    this.ratioClipped = null;
 
     this.model = {
       input: [],
@@ -172,13 +176,6 @@ var RNN = function () {
       model.equations.push(equation);
     }
   }, {
-    key: 'createEquations',
-    value: function createEquations() {
-      for (var i = 0, max = this.inputSize; i <= max; i++) {
-        this.bindEquation();
-      }
-    }
-  }, {
     key: 'mapModel',
     value: function mapModel() {
       var model = this.model;
@@ -192,7 +189,7 @@ var RNN = function () {
       if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
       if (!model.output) throw new Error('net.model.output not set');
 
-      this.createEquations();
+      this.bindEquation();
       if (!model.equations.length) throw new Error('net.equation not set');
 
       allMatrices.push(model.input);
@@ -216,6 +213,14 @@ var RNN = function () {
       this.step();
     }
   }, {
+    key: 'runPredict',
+    value: function runPredict() {
+      var prediction = this.predict();
+      this.runBackpropagate(prediction);
+      this.step();
+      return prediction;
+    }
+  }, {
     key: 'train',
     value: function train(input) {
       this.runs++;
@@ -228,24 +233,28 @@ var RNN = function () {
       var i = void 0;
       var output = void 0;
       var equation = void 0;
+      while (model.equations.length <= input.length + 1) {
+        //first and last are zeros
+        this.bindEquation();
+      }
       for (i = -1; i < max; i++) {
         // start and end tokens are zeros
         equation = model.equations[i + 1];
-        var ixSource = i === -1 ? 0 : input[i]; // first step: start with START token
-        var ixTarget = i === max - 1 ? 0 : input[i + 1]; // last step: end with END token
-        output = equation.run(ixSource);
-        equation.updatePreviousResults();
 
+        var ixSource = i === -1 ? 0 : input[i] + 1; // first step: start with START token
+        var ixTarget = i === max - 1 ? 0 : input[i + 1] + 1; // last step: end with END token
+
+        output = equation.run(ixSource);
         // set gradients into log probabilities
-        this.logProbabilities = output; // interpret output as log probabilities
+        var logProbabilities = output; // interpret output as log probabilities
         var probabilities = (0, _softmax2.default)(output); // compute the softmax probabilities
 
         log2ppl += -Math.log2(probabilities.weights[ixTarget]); // accumulate base 2 log prob and do smoothing
         cost += -Math.log(probabilities.weights[ixTarget]);
 
         // write gradients into log probabilities
-        this.logProbabilities.recurrence = probabilities.weights.slice(0);
-        this.logProbabilities.recurrence[ixTarget] -= 1;
+        logProbabilities.recurrence = probabilities.weights.slice(0);
+        logProbabilities.recurrence[ixTarget] -= 1;
       }
 
       this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
@@ -255,14 +264,14 @@ var RNN = function () {
   }, {
     key: 'runBackpropagate',
     value: function runBackpropagate(input) {
-      //equation.runBackpropagate(0);
-      var i = input.length;
+      var i = input.length + 0;
       var model = this.model;
       var equations = model.equations;
-      while (i--) {
-        equations[i].runBackpropagate(input[i]);
+      while (i > 0) {
+        equations[i].runBackpropagate(input[i - 1] + 1);
+        i--;
       }
-      //equation.runBackpropagate(0);
+      equations[0].runBackpropagate(0);
     }
   }, {
     key: 'step',
@@ -307,9 +316,9 @@ var RNN = function () {
     }
   }, {
     key: 'predict',
-    value: function predict(_sampleI, temperature, predictionLength) {
+    value: function predict(predictionLength, _sampleI, temperature) {
       if (typeof _sampleI === 'undefined') {
-        _sampleI = true;
+        _sampleI = false;
       }
       if (typeof temperature === 'undefined') {
         temperature = 1;
@@ -317,31 +326,37 @@ var RNN = function () {
       if (typeof predictionLength === 'undefined') {
         predictionLength = 100;
       }
-
+      var model = this.model;
       var result = [];
-      //let prev;
       var ix = void 0;
       var equation = void 0;
-      //equation.resetPreviousResults();
+      var i = 0;
+      while (model.equations.length < predictionLength) {
+        this.bindEquation();
+      }
+      var output = new _matrix2.default(model.output.rows, model.output.columns);
       while (true) {
+        if (i >= predictionLength) {
+          // something is wrong
+          break;
+        }
         ix = result.length === 0 ? 0 : result[result.length - 1];
-        equation = this.model.equations[result.length - 1];
-        var lh = equation.run(ix);
-        //equation.updatePreviousResults();
-        //prev = clone(lh);
+        equation = model.equations[i];
+        (0, _copy2.default)(output, equation.run(ix));
+        var lh = output;
         // sample predicted letter
-        this.logProbabilities = lh;
+        var logProbabilities = lh;
         if (temperature !== 1 && _sampleI) {
           // scale log probabilities by temperature and renormalize
           // if temperature is high, logprobs will go towards zero
           // and the softmax outputs will be more diffuse. if temperature is
           // very low, the softmax outputs will be more peaky
-          for (var q = 0, nq = this.logProbabilities.weights.length; q < nq; q++) {
-            this.logProbabilities.weights[q] /= temperature;
+          for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {
+            logProbabilities.weights[q] /= temperature;
           }
         }
 
-        var probs = (0, _softmax2.default)(this.logProbabilities);
+        var probs = (0, _softmax2.default)(logProbabilities);
 
         if (_sampleI) {
           ix = (0, _sampleI3.default)(probs);
@@ -349,12 +364,9 @@ var RNN = function () {
           ix = (0, _maxI2.default)(probs);
         }
 
+        i++;
         if (ix === 0) {
           // END token predicted, break out
-          break;
-        }
-        if (result.length > predictionLength) {
-          // something is wrong
           break;
         }
 

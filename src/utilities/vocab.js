@@ -34,14 +34,13 @@ export default class Vocab {
       let character = this.characters[characterIndex];
       if(characterIndex >= maxThreshold) {
         // add character to vocab
-        this.indexTable[character] = characterIndex + 1;
-        this.characterTable[characterIndex + 1] = character;
+        this.indexTable[character] = characterIndex;
+        this.characterTable[characterIndex] = character;
       }
     }
   }
 
-  toIndexes(phrase, maxThreshold) {
-    maxThreshold = maxThreshold || 0;
+  toIndexes(phrase, maxThreshold = 0) {
     let result = [];
     let indexTable = this.indexTable;
 
@@ -55,8 +54,7 @@ export default class Vocab {
     return result;
   }
 
-  toCharacters(indexes, maxThreshold) {
-    maxThreshold = maxThreshold || 0;
+  toCharacters(indexes, maxThreshold = 0) {
     let result = [];
     let characterTable = this.characterTable;
 
