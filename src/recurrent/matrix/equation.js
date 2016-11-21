@@ -24,6 +24,7 @@ export default class Equation {
     this.states = [];
     this.previousResults = [];
     this.previousResultInputs = [];
+    this.allMatrices = [];
   }
 
   /**
@@ -33,6 +34,7 @@ export default class Equation {
    */
   previousResult(size) {
     let product = new Matrix(size, 1);
+    this.allMatrices.push(product);
     let self = this;
     let i = parseInt(this.previousResults.length);
     this.previousResultInputs.push(product);
@@ -40,8 +42,6 @@ export default class Equation {
     this.states.push({
       product: product,
       get left() {
-        product.previousResultsIndex = i;
-        product.previousResult = true;
         return self.previousResults[i];
       },
       backpropagationFn: copy
@@ -51,12 +51,12 @@ export default class Equation {
   }
 
   result(m) {
+    if (m.weights.length !== this.previousResultInputs[this.previousResultInputs.length - 1].weights.length) {
+      throw new Error('misaligned matrices');
+    }
     this.previousResults.push(m);
     if (this.previousResults.length !== this.previousResultInputs.length) {
       throw new Error('previousResults does not match size of previousResultInputs');
-    }
-    if (m.weights.length !== this.previousResultInputs[this.previousResultInputs.length - 1].weights.length) {
-      throw new Error('misaligned matrices');
     }
     return m;
   }
@@ -72,6 +72,7 @@ export default class Equation {
       throw new Error('misaligned matrices');
     }
     let product = new Matrix(left.rows, left.columns);
+    this.allMatrices.push(product);
     this.states.push({
       left: left,
       right: right,
@@ -90,6 +91,7 @@ export default class Equation {
    */
   allOnes(rows, columns) {
     let product = new Matrix(rows, columns);
+    this.allMatrices.push(product);
     this.states.push({
       left: product,
       product: product,
@@ -105,6 +107,7 @@ export default class Equation {
    */
   cloneNegative(m) {
     let product = new Matrix(m.rows, m.columns);
+    this.allMatrices.push(product);
     this.states.push({
       left: m,
       product: product,
@@ -137,6 +140,7 @@ export default class Equation {
       throw new Error('misaligned matrices');
     }
     let product = new Matrix(left.rows, right.columns);
+    this.allMatrices.push(product);
     this.states.push({
       left: left,
       right: right,
@@ -158,6 +162,7 @@ export default class Equation {
       throw new Error('misaligned matrices');
     }
     let product = new Matrix(left.rows, left.columns);
+    this.allMatrices.push(product);
     this.states.push({
       left: left,
       right: right,
@@ -175,6 +180,7 @@ export default class Equation {
    */
   relu(m) {
     let product = new Matrix(m.rows, m.columns);
+    this.allMatrices.push(product);
     this.states.push({
       left: m,
       product: product,
@@ -192,6 +198,7 @@ export default class Equation {
   inputMatrixToRow(m) {
     let self = this;
     let product = new Matrix(m.columns, 1);
+    this.allMatrices.push(product);
     this.states.push({
       left: m,
       get right () {
@@ -211,6 +218,7 @@ export default class Equation {
    */
   sigmoid(m) {
     let product = new Matrix(m.rows, m.columns);
+    this.allMatrices.push(product);
     this.states.push({
       left: m,
       product: product,
@@ -227,6 +235,7 @@ export default class Equation {
    */
   tanh(m) {
     let product = new Matrix(m.rows, m.columns);
+    this.allMatrices.push(product);
     this.states.push({
       left: m,
       product: product,
@@ -259,9 +268,8 @@ export default class Equation {
    * @patam {Number} [rowIndex]
    * @output {Matrix}
    */
-  run(rowIndex) {
-    this.inputRow = rowIndex || 0;
-
+  run(rowIndex = 0) {
+    this.inputRow = rowIndex;
     let state;
     for (let i = 0, max = this.states.length; i < max; i++) {
       state = this.states[i];
@@ -278,8 +286,8 @@ export default class Equation {
    * @patam {Number} [rowIndex]
    * @output {Matrix}
    */
-  runBackpropagate(rowIndex) {
-    this.inputRow = rowIndex || 0;
+  runBackpropagate(rowIndex = 0) {
+    this.inputRow = rowIndex;
 
     let i = this.states.length;
     let state;

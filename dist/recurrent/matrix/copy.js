@@ -19,9 +19,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function copy(product, left) {
   product.rows = parseInt(left.rows);
   product.columns = parseInt(left.columns);
-  //product.weights = left.weights.slice(0);
+  product.weights = left.weights.slice(0);
   product.recurrence = left.recurrence.slice(0);
-  //TODO: needed?
-  //product.recurrence = zeros(left.recurrence.length);
 }
 //# sourceMappingURL=copy.js.map

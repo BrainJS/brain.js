@@ -26,11 +26,6 @@ export default function multiply(product, left, right) {
       }
       let i = rightColumns * leftRow + rightColumn;
       product.weights[i] = dot;
-
-      //TODO: needed?
-      product.recurrence[i] = 0;
-      left.recurrence[i] = 0;
-      right.recurrence[i] = 0;
     }
   }
 }

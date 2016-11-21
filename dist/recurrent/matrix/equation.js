@@ -94,6 +94,7 @@ var Equation = function () {
     this.states = [];
     this.previousResults = [];
     this.previousResultInputs = [];
+    this.allMatrices = [];
   }
 
   /**
@@ -107,6 +108,7 @@ var Equation = function () {
     key: 'previousResult',
     value: function previousResult(size) {
       var product = new _2.default(size, 1);
+      this.allMatrices.push(product);
       var self = this;
       var i = parseInt(this.previousResults.length);
       this.previousResultInputs.push(product);
@@ -114,8 +116,6 @@ var Equation = function () {
       this.states.push({
         product: product,
         get left() {
-          product.previousResultsIndex = i;
-          product.previousResult = true;
           return self.previousResults[i];
         },
         backpropagationFn: _copy2.default
@@ -126,12 +126,12 @@ var Equation = function () {
   }, {
     key: 'result',
     value: function result(m) {
+      if (m.weights.length !== this.previousResultInputs[this.previousResultInputs.length - 1].weights.length) {
+        throw new Error('misaligned matrices');
+      }
       this.previousResults.push(m);
       if (this.previousResults.length !== this.previousResultInputs.length) {
         throw new Error('previousResults does not match size of previousResultInputs');
-      }
-      if (m.weights.length !== this.previousResultInputs[this.previousResultInputs.length - 1].weights.length) {
-        throw new Error('misaligned matrices');
       }
       return m;
     }
@@ -150,6 +150,7 @@ var Equation = function () {
         throw new Error('misaligned matrices');
       }
       var product = new _2.default(left.rows, left.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: left,
         right: right,
@@ -171,6 +172,7 @@ var Equation = function () {
     key: 'allOnes',
     value: function allOnes(rows, columns) {
       var product = new _2.default(rows, columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: product,
         product: product,
@@ -189,6 +191,7 @@ var Equation = function () {
     key: 'cloneNegative',
     value: function cloneNegative(m) {
       var product = new _2.default(m.rows, m.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -227,6 +230,7 @@ var Equation = function () {
         throw new Error('misaligned matrices');
       }
       var product = new _2.default(left.rows, right.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: left,
         right: right,
@@ -251,6 +255,7 @@ var Equation = function () {
         throw new Error('misaligned matrices');
       }
       var product = new _2.default(left.rows, left.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: left,
         right: right,
@@ -271,6 +276,7 @@ var Equation = function () {
     key: 'relu',
     value: function relu(m) {
       var product = new _2.default(m.rows, m.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -291,6 +297,7 @@ var Equation = function () {
     value: function inputMatrixToRow(m) {
       var self = this;
       var product = new _2.default(m.columns, 1);
+      this.allMatrices.push(product);
       this.states.push({
         left: m,
         get right() {
@@ -313,6 +320,7 @@ var Equation = function () {
     key: 'sigmoid',
     value: function sigmoid(m) {
       var product = new _2.default(m.rows, m.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -332,6 +340,7 @@ var Equation = function () {
     key: 'tanh',
     value: function tanh(m) {
       var product = new _2.default(m.rows, m.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -370,9 +379,10 @@ var Equation = function () {
 
   }, {
     key: 'run',
-    value: function run(rowIndex) {
-      this.inputRow = rowIndex || 0;
+    value: function run() {
+      var rowIndex = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
 
+      this.inputRow = rowIndex;
       var state = void 0;
       for (var i = 0, max = this.states.length; i < max; i++) {
         state = this.states[i];
@@ -392,8 +402,10 @@ var Equation = function () {
 
   }, {
     key: 'runBackpropagate',
-    value: function runBackpropagate(rowIndex) {
-      this.inputRow = rowIndex || 0;
+    value: function runBackpropagate() {
+      var rowIndex = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
+      this.inputRow = rowIndex;
 
       var i = this.states.length;
       var state = void 0;

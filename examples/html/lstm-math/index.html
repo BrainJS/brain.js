@@ -29,6 +29,7 @@
 <script src="../../../node_modules/three/build/three.min.js"></script>
 <script src="../../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
 <script src="../../../rnn-viewer.js"></script>
+<script src="../../../recurrent.js"></script>
 <script>
   var correct = document.getElementById('correct');
   var correctPattern = document.getElementById('correct-pattern');
@@ -38,7 +39,7 @@
   //start ai
   var vocab = new brain.utilities.Vocab(['0','1','2','3','4','5','6','7','8','9','+','=']);
   var net = new brain.recurrent.RNN({
-    inputSize: 6,
+    inputSize: 5,
     inputRange: vocab.characters.length,
     outputSize: vocab.characters.length,
     hiddenSizes: [20, 20]
@@ -172,6 +173,99 @@
       chart.update();
     }, 1000);
   };
+
+
+  var modelMap = {
+    //wix
+    inputMatrix: ['Wix0', 'Wix1'],
+    //wih
+    inputHidden: ['Wih0', 'Wih1'],
+    //bi
+    inputBias: ['bi0', 'bi1'],
+
+    //wfx
+    forgetMatrix: ['Wfx0', 'Wfx1'],
+    //wfh
+    forgetHidden: ['Wfh0', 'Wfh1'],
+    //bf
+    forgetBias: ['bf0', 'bf1'],
+
+    //wox
+    outputMatrix: ['Wox0', 'Wox1'],
+    //woh
+    outputHidden: ['Woh0', 'Woh1'],
+    //bo
+    outputBias: ['bo0', 'bo1'],
+
+    // cell write params
+    //wcx
+    cellActivationMatrix: ['Wcx0', 'Wcx1'],
+    //wch
+    cellActivationHidden: ['Wch0', 'Wch1'],
+    //bc
+    cellActivationBias: ['bc0', 'bc1']
+  };
+
+  function onEachHiddenLayer(cb) {
+    for (var p in modelMap) if (modelMap.hasOwnProperty(p)) {
+      for (var i = 0, max = modelMap[p].length; i < max; i++) {
+        try {
+          cb(net.model.hiddenLayers[i][p], model[modelMap[p][i]]);
+        } catch (e) {
+          console.log(e.toString() + ' on ' + p + ' - ' + modelMap[p][i]);
+        }
+      }
+    }
+  }
+
+  function setValues(brainMatrix, recurrentMatrix) {
+    var value;
+    for (var i = 0, max = brainMatrix.weights.length; i < max; i++) {
+      value = Math.random();
+      brainMatrix.weights[i] = parseFloat(value);
+      recurrentMatrix.w[i] = parseFloat(value);
+    }
+
+    for (i = 0, max = brainMatrix.recurrence.length; i < max; i++) {
+      value = Math.random();
+      brainMatrix.recurrence[i] = parseFloat(value);
+      recurrentMatrix.dw[i] = parseFloat(value);
+    }
+  }
+
+  function compareMatrices(brainMatrix, recurrentMatrix) {
+    for (var i = 0, max = brainMatrix.weights.length; i < max; i++) {
+      if (brainMatrix.weights[i] !== recurrentMatrix.w[i]) {
+        throw new Error('weights have diverged');
+      }
+    }
+
+    for (i = 0, max = brainMatrix.recurrence.length; i < max; i++) {
+      if (brainMatrix.recurrence[i].toFixed(1) !== recurrentMatrix.dw[i].toFixed(1)) {
+        throw new Error('recurrence have diverged: ' + brainMatrix.recurrence[i].toFixed(1) + ' not equal to ' + recurrentMatrix.dw[i].toFixed(1));
+      }
+    }
+  }
+
+  function trainOnce() {
+    var input = [1,2,3,4,5,6];
+    net.train(input);
+    net.runBackpropagate(input);
+    costfun(model, input).G.backward();
+  }
+
+  reinit(build().join('\n'));
+
+//  onEachHiddenLayer(setValues);
+//  onEachHiddenLayer(compareMatrices);
+//  trainOnce();
+//  onEachHiddenLayer(compareMatrices);
+//  trainOnce();
+//  onEachHiddenLayer(compareMatrices);
+//  trainOnce();
+//  onEachHiddenLayer(compareMatrices);
+//  trainOnce();
+//  onEachHiddenLayer(compareMatrices);
 </script>
 <script>
   var render = null;

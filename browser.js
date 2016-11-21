@@ -1272,11 +1272,6 @@ exports.default = add;
 function add(product, left, right) {
   for (var i = 0, max = left.weights.length; i < max; i++) {
     product.weights[i] = left.weights[i] + right.weights[i];
-
-    //TODO: needed?
-    product.recurrence[i] = 0;
-    left.recurrence[i] = 0;
-    right.recurrence[i] = 0;
   }
 }
 
@@ -1343,10 +1338,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function copy(product, left) {
   product.rows = parseInt(left.rows);
   product.columns = parseInt(left.columns);
-  //product.weights = left.weights.slice(0);
+  product.weights = left.weights.slice(0);
   product.recurrence = left.recurrence.slice(0);
-  //TODO: needed?
-  //product.recurrence = zeros(left.recurrence.length);
 }
 
 },{"../../utilities/zeros":42}],12:[function(require,module,exports){
@@ -1446,6 +1439,7 @@ var Equation = function () {
     this.states = [];
     this.previousResults = [];
     this.previousResultInputs = [];
+    this.allMatrices = [];
   }
 
   /**
@@ -1459,6 +1453,7 @@ var Equation = function () {
     key: 'previousResult',
     value: function previousResult(size) {
       var product = new _2.default(size, 1);
+      this.allMatrices.push(product);
       var self = this;
       var i = parseInt(this.previousResults.length);
       this.previousResultInputs.push(product);
@@ -1466,8 +1461,6 @@ var Equation = function () {
       this.states.push({
         product: product,
         get left() {
-          product.previousResultsIndex = i;
-          product.previousResult = true;
           return self.previousResults[i];
         },
         backpropagationFn: _copy2.default
@@ -1478,12 +1471,12 @@ var Equation = function () {
   }, {
     key: 'result',
     value: function result(m) {
+      if (m.weights.length !== this.previousResultInputs[this.previousResultInputs.length - 1].weights.length) {
+        throw new Error('misaligned matrices');
+      }
       this.previousResults.push(m);
       if (this.previousResults.length !== this.previousResultInputs.length) {
         throw new Error('previousResults does not match size of previousResultInputs');
-      }
-      if (m.weights.length !== this.previousResultInputs[this.previousResultInputs.length - 1].weights.length) {
-        throw new Error('misaligned matrices');
       }
       return m;
     }
@@ -1502,6 +1495,7 @@ var Equation = function () {
         throw new Error('misaligned matrices');
       }
       var product = new _2.default(left.rows, left.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: left,
         right: right,
@@ -1523,6 +1517,7 @@ var Equation = function () {
     key: 'allOnes',
     value: function allOnes(rows, columns) {
       var product = new _2.default(rows, columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: product,
         product: product,
@@ -1541,6 +1536,7 @@ var Equation = function () {
     key: 'cloneNegative',
     value: function cloneNegative(m) {
       var product = new _2.default(m.rows, m.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -1579,6 +1575,7 @@ var Equation = function () {
         throw new Error('misaligned matrices');
       }
       var product = new _2.default(left.rows, right.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: left,
         right: right,
@@ -1603,6 +1600,7 @@ var Equation = function () {
         throw new Error('misaligned matrices');
       }
       var product = new _2.default(left.rows, left.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: left,
         right: right,
@@ -1623,6 +1621,7 @@ var Equation = function () {
     key: 'relu',
     value: function relu(m) {
       var product = new _2.default(m.rows, m.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -1643,6 +1642,7 @@ var Equation = function () {
     value: function inputMatrixToRow(m) {
       var self = this;
       var product = new _2.default(m.columns, 1);
+      this.allMatrices.push(product);
       this.states.push({
         left: m,
         get right() {
@@ -1665,6 +1665,7 @@ var Equation = function () {
     key: 'sigmoid',
     value: function sigmoid(m) {
       var product = new _2.default(m.rows, m.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -1684,6 +1685,7 @@ var Equation = function () {
     key: 'tanh',
     value: function tanh(m) {
       var product = new _2.default(m.rows, m.columns);
+      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -1722,9 +1724,10 @@ var Equation = function () {
 
   }, {
     key: 'run',
-    value: function run(rowIndex) {
-      this.inputRow = rowIndex || 0;
+    value: function run() {
+      var rowIndex = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
 
+      this.inputRow = rowIndex;
       var state = void 0;
       for (var i = 0, max = this.states.length; i < max; i++) {
         state = this.states[i];
@@ -1744,8 +1747,10 @@ var Equation = function () {
 
   }, {
     key: 'runBackpropagate',
-    value: function runBackpropagate(rowIndex) {
-      this.inputRow = rowIndex || 0;
+    value: function runBackpropagate() {
+      var rowIndex = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
+      this.inputRow = rowIndex;
 
       var i = this.states.length;
       var state = void 0;
@@ -2008,11 +2013,6 @@ exports.default = multiplyElement;
 function multiplyElement(product, left, right) {
   for (var i = 0, weights = left.weights.length; i < weights; i++) {
     product.weights[i] = left.weights[i] * right.weights[i];
-
-    //TODO: needed?
-    product.recurrence[i] = 0;
-    left.recurrence[i] = 0;
-    right.recurrence[i] = 0;
   }
 }
 
@@ -2049,11 +2049,6 @@ function multiply(product, left, right) {
       }
       var i = rightColumns * leftRow + rightColumn;
       product.weights[i] = dot;
-
-      //TODO: needed?
-      product.recurrence[i] = 0;
-      left.recurrence[i] = 0;
-      right.recurrence[i] = 0;
     }
   }
 }
@@ -2189,10 +2184,6 @@ exports.default = relu;
 function relu(product, left) {
   for (var i = 0, max = left.weights.length; i < max; i++) {
     product.weights[i] = Math.max(0, left.weights[i]); // relu
-
-    //TODO: needed?
-    product.recurrence[i] = 0;
-    left.recurrence[i] = 0;
   }
 }
 
@@ -2304,10 +2295,6 @@ function sigmoid(product, left) {
   // sigmoid nonlinearity
   for (var i = 0, max = left.weights.length; i < max; i++) {
     product.weights[i] = 1 / (1 + Math.exp(-left.weights[i]));
-
-    //TODO: needed?
-    product.recurrence[i] = 0;
-    left.recurrence[i] = 0;
   }
 }
 
@@ -2398,10 +2385,6 @@ function tanh(product, left) {
   // tanh nonlinearity
   for (var i = 0, max = left.weights.length; i < max; i++) {
     product.weights[i] = Math.tanh(left.weights[i]);
-
-    //TODO: needed?
-    product.recurrence[i] = 0;
-    left.recurrence[i] = 0;
   }
 }
 
@@ -2581,6 +2564,7 @@ var RNN = function () {
         output = this.getEquation(equation, output, hiddenSizes[i], hiddenLayers[i]);
       }
       equation.add(equation.multiply(model.outputConnector, output), model.output);
+      model.allMatrices = model.allMatrices.concat(equation.allMatrices);
       model.equations.push(equation);
     }
   }, {
@@ -2618,14 +2602,14 @@ var RNN = function () {
     value: function run(input) {
       this.train(input);
       this.runBackpropagate(input);
-      this.step();
+      this.step(input);
     }
   }, {
     key: 'runPredict',
     value: function runPredict() {
       var prediction = this.predict();
       this.runBackpropagate(prediction);
-      this.step();
+      this.step(prediction);
       return prediction;
     }
   }, {
@@ -2633,13 +2617,11 @@ var RNN = function () {
     value: function train(input) {
       this.runs++;
       var model = this.model;
-      input = input || model.input;
       var max = input.length;
       var log2ppl = 0;
       var cost = 0;
 
       var i = void 0;
-      var output = void 0;
       var equation = void 0;
       while (model.equations.length <= input.length + 1) {
         //first and last are zeros
@@ -2651,8 +2633,7 @@ var RNN = function () {
 
         var ixSource = i === -1 ? 0 : input[i] + 1; // first step: start with START token
         var ixTarget = i === max - 1 ? 0 : input[i + 1] + 1; // last step: end with END token
-
-        output = equation.run(ixSource);
+        var output = equation.run(ixSource);
         // set gradients into log probabilities
         var logProbabilities = output; // interpret output as log probabilities
         var probabilities = (0, _softmax2.default)(output); // compute the softmax probabilities
@@ -2661,13 +2642,12 @@ var RNN = function () {
         cost += -Math.log(probabilities.weights[ixTarget]);
 
         // write gradients into log probabilities
-        logProbabilities.recurrence = probabilities.weights.slice(0);
+        logProbabilities.recurrence = probabilities.weights;
         logProbabilities.recurrence[ixTarget] -= 1;
       }
 
       this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
       this.totalCost = cost;
-      return output;
     }
   }, {
     key: 'runBackpropagate',
@@ -2716,7 +2696,7 @@ var RNN = function () {
           numTot++;
 
           // update (and regularize)
-          matrix.weights[i] += -stepSize * mdwi / Math.sqrt(cache.weights[i] + this.smoothEps) - regc * matrix.weights[i];
+          matrix.weights[i] = matrix.weights[i] + -stepSize * mdwi / Math.sqrt(cache.weights[i] + this.smoothEps) - regc * matrix.weights[i];
           matrix.recurrence[i] = 0; // reset gradients for next iteration
         }
       }

@@ -50,7 +50,7 @@ describe('rnn', () => {
     describe('xor', function() {
       function xorNet() {
         return new RNN({
-          hiddenSizes: [3],
+          hiddenSizes: [3,3,3],
           inputSize: 3,
           inputRange: 2,
           outputSize: 1
@@ -207,15 +207,19 @@ describe('rnn', () => {
         var net = xorNet();
         for (var i = 0; i < 1000; i++) {
           var input = xorNetValues[Math.floor(Math.random() * xorNetValues.length)];
+          //console.log(input);
           net.train(input);
           net.runBackpropagate(input);
           net.step();
+
           if (i % 10) {
             console.log(net.predict(3));
           }
         }
       });
     });
+
+
 
     return;
     describe('math', () => {

@@ -94,7 +94,7 @@ export default class RNN {
     let add = equation.add.bind(equation);
     let multiply = equation.multiply.bind(equation);
     let previousResult = equation.previousResult.bind(equation);
-    let result = equation.rsult.bind(equation);
+    let result = equation.result.bind(equation);
 
     return result(
       relu(
@@ -145,6 +145,7 @@ export default class RNN {
       output = this.getEquation(equation, output, hiddenSizes[i], hiddenLayers[i]);
     }
     equation.add(equation.multiply(model.outputConnector, output), model.output);
+    model.allMatrices = model.allMatrices.concat(equation.allMatrices);
     model.equations.push(equation);
   }
 
@@ -180,20 +181,19 @@ export default class RNN {
   run(input) {
     this.train(input);
     this.runBackpropagate(input);
-    this.step();
+    this.step(input);
   }
 
   runPredict() {
     let prediction = this.predict();
     this.runBackpropagate(prediction);
-    this.step();
+    this.step(prediction);
     return prediction;
   }
 
   train(input) {
     this.runs++;
     let model = this.model;
-    input = input || model.input;
     let max = input.length;
     let log2ppl = 0;
     let cost = 0;
@@ -218,7 +218,7 @@ export default class RNN {
       cost += -Math.log(probabilities.weights[ixTarget]);
 
       // write gradients into log probabilities
-      logProbabilities.recurrence = probabilities.weights.slice(0);
+      logProbabilities.recurrence = probabilities.weights;
       logProbabilities.recurrence[ixTarget] -= 1
     }
 
@@ -270,7 +270,7 @@ export default class RNN {
         numTot++;
 
         // update (and regularize)
-        matrix.weights[i] += -stepSize * mdwi / Math.sqrt(cache.weights[i] + this.smoothEps) - regc * matrix.weights[i];
+        matrix.weights[i] = matrix.weights[i] + -stepSize * mdwi / Math.sqrt(cache.weights[i] + this.smoothEps) - regc * matrix.weights[i];
         matrix.recurrence[i] = 0; // reset gradients for next iteration
       }
     }
@@ -291,10 +291,6 @@ export default class RNN {
     }
     let output = new Matrix(model.output.rows, model.output.columns);
     while (true) {
-      if (i >= predictionLength) {
-        // something is wrong
-        break;
-      }
       ix = result.length === 0 ? 0 : result[result.length - 1];
       equation = model.equations[i];
       copy(output, equation.run(ix));
@@ -322,6 +318,10 @@ export default class RNN {
       i++;
       if (ix === 0) {
         // END token predicted, break out
+        break;
+      }
+      if (i >= predictionLength) {
+        // something is wrong
         break;
       }
 

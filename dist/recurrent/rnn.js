@@ -173,6 +173,7 @@ var RNN = function () {
         output = this.getEquation(equation, output, hiddenSizes[i], hiddenLayers[i]);
       }
       equation.add(equation.multiply(model.outputConnector, output), model.output);
+      model.allMatrices = model.allMatrices.concat(equation.allMatrices);
       model.equations.push(equation);
     }
   }, {
@@ -210,14 +211,14 @@ var RNN = function () {
     value: function run(input) {
       this.train(input);
       this.runBackpropagate(input);
-      this.step();
+      this.step(input);
     }
   }, {
     key: 'runPredict',
     value: function runPredict() {
       var prediction = this.predict();
       this.runBackpropagate(prediction);
-      this.step();
+      this.step(prediction);
       return prediction;
     }
   }, {
@@ -225,13 +226,11 @@ var RNN = function () {
     value: function train(input) {
       this.runs++;
       var model = this.model;
-      input = input || model.input;
       var max = input.length;
       var log2ppl = 0;
       var cost = 0;
 
       var i = void 0;
-      var output = void 0;
       var equation = void 0;
       while (model.equations.length <= input.length + 1) {
         //first and last are zeros
@@ -243,8 +242,7 @@ var RNN = function () {
 
         var ixSource = i === -1 ? 0 : input[i] + 1; // first step: start with START token
         var ixTarget = i === max - 1 ? 0 : input[i + 1] + 1; // last step: end with END token
-
-        output = equation.run(ixSource);
+        var output = equation.run(ixSource);
         // set gradients into log probabilities
         var logProbabilities = output; // interpret output as log probabilities
         var probabilities = (0, _softmax2.default)(output); // compute the softmax probabilities
@@ -253,13 +251,12 @@ var RNN = function () {
         cost += -Math.log(probabilities.weights[ixTarget]);
 
         // write gradients into log probabilities
-        logProbabilities.recurrence = probabilities.weights.slice(0);
+        logProbabilities.recurrence = probabilities.weights;
         logProbabilities.recurrence[ixTarget] -= 1;
       }
 
       this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
       this.totalCost = cost;
-      return output;
     }
   }, {
     key: 'runBackpropagate',
@@ -308,7 +305,7 @@ var RNN = function () {
           numTot++;
 
           // update (and regularize)
-          matrix.weights[i] += -stepSize * mdwi / Math.sqrt(cache.weights[i] + this.smoothEps) - regc * matrix.weights[i];
+          matrix.weights[i] = matrix.weights[i] + -stepSize * mdwi / Math.sqrt(cache.weights[i] + this.smoothEps) - regc * matrix.weights[i];
           matrix.recurrence[i] = 0; // reset gradients for next iteration
         }
       }

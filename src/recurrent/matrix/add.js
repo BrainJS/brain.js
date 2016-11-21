@@ -7,10 +7,5 @@
 export default function add(product, left, right) {
   for(let i = 0, max = left.weights.length; i < max; i++) {
     product.weights[i] = left.weights[i] + right.weights[i];
-
-    //TODO: needed?
-    product.recurrence[i] = 0;
-    left.recurrence[i] = 0;
-    right.recurrence[i] = 0;
   }
 }
