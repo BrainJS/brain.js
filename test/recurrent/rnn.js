@@ -16,6 +16,14 @@ function equationStub(rnn, index) {
   };
 }
 
+function notZero(v) {
+  return v !== 0;
+}
+
+function isZero(v) {
+  return v === 0;
+}
+
 describe('rnn', () => {
   describe('basic operations', function() {
     it('starts with zeros in input.recurrence', function() {
@@ -35,25 +43,19 @@ describe('rnn', () => {
         assert.equal(v, 0);
       });
       net.runBackpropagate([1, 1, 0]);
-      /*net.runBackpropagate([0, 1, 1]);
+      net.runBackpropagate([0, 1, 1]);
       net.runBackpropagate([1, 0, 1]);
-      net.runBackpropagate([1, 1, 0]);*/
-      var notZero = false;
-      net.model.input.recurrence.forEach(function(v) {
-        if (v !== 0) {
-          notZero = true;
-        }
-      });
-      assert(notZero)
+      net.runBackpropagate([1, 1, 0]);
+      assert(net.model.input.recurrence.some(notZero));
     });
 
     describe('xor', function() {
       function xorNet() {
         return new RNN({
-          hiddenSizes: [3,3,3],
+          hiddenSizes: [3],
           inputSize: 3,
           inputRange: 2,
-          outputSize: 1
+          outputSize: 3
         });
       }
 
@@ -205,27 +207,94 @@ describe('rnn', () => {
 
       it('is fully connected and gives values in recurrence', function() {
         var net = xorNet();
-        for (var i = 0; i < 1000; i++) {
-          var input = xorNetValues[Math.floor(Math.random() * xorNetValues.length)];
-          //console.log(input);
-          net.train(input);
-          net.runBackpropagate(input);
-          net.step();
+        var input = xorNetValues[2];
+        var initialWeights = [];
+        net.model.allMatrices.forEach(function(m) {
+          initialWeights.push(JSON.stringify(m.weights));
+          m.recurrence.forEach(function(value) {
+            assert.equal(value, 0);
+          });
+        });
+        net.train(input);
 
-          if (i % 10) {
-            console.log(net.predict(3));
+        net.model.input.recurrence.forEach(function(v) {
+          assert.equal(v, 0);
+        });
+        net.model.hiddenLayers.forEach(function(layer) {
+          for (var p in layer) {
+            if (!layer.hasOwnProperty(p)) continue;
+            layer[p].recurrence.forEach(function(v) {
+              assert.equal(v, 0);
+            });
+          }
+        });
+        net.model.output.recurrence.forEach(function(v) {
+          assert.equal(v, 0);
+        });
+
+        net.runBackpropagate(input);
+
+        assert(net.model.input.recurrence.some(notZero));
+        net.model.hiddenLayers.forEach(function(layer) {
+          for (var p in layer) {
+            if (!layer.hasOwnProperty(p)) continue;
+            assert(layer[p].recurrence.some(notZero));
+          }
+        });
+        assert(net.model.output.recurrence.some(notZero));
+
+        net.model.equations.forEach(function(equation) {
+          equation.states.forEach(function(state) {
+            if (state.left && state.left.recurrence) state.left.recurrence.some(notZero);
+            if (state.right && state.right.recurrence) state.right.recurrence.some(notZero);
+            if (state.product && state.product.recurrence) state.product.recurrence.some(notZero);
+          });
+        });
+      });
+
+      it('recurrence is reset to zero after .step() is called', function() {
+        var net = xorNet();
+        var input = xorNetValues[2];
+        net.train(input);
+        net.runBackpropagate(input);
+        net.step();
+
+        assert(net.model.input.recurrence.every(isZero));
+        net.model.hiddenLayers.forEach(function(layer) {
+          for (var p in layer) {
+            if (!layer.hasOwnProperty(p)) continue;
+            assert(layer[p].recurrence.every(isZero));
+          }
+        });
+        assert(net.model.output.recurrence.every(isZero));
+
+        net.model.equations.forEach(function(equation) {
+          equation.states.forEach(function(state) {
+            if (state.left && state.left.recurrence) state.left.recurrence.every(isZero);
+            if (state.right && state.right.recurrence) state.right.recurrence.every(isZero);
+            if (state.product && state.product.recurrence) state.product.recurrence.every(isZero);
+          });
+        });
+      });
+
+      it('can learn xor', function() {
+        var net = xorNet();
+        for (let i = 0, max = 1000; i < max; i++) {
+          var input = xorNetValues[Math.floor((xorNetValues.length - 1) * Math.random())];
+          net.run(input);
+          if (i % 10 === 0) {
+            console.log(JSON.stringify(net.predict()));
           }
         }
       });
     });
-
-
 
     return;
     describe('math', () => {
       let mathProblems = build();
       function runAgainstMath(rnn) {
         train(rnn);
+
         var prediction = vocab.toCharacters(rnn.predict()).join('');
         //console.log(prediction);
         assert(/^[0-9]+[+][0-9]+[=][0-9]+$/.test(prediction));

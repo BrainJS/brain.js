@@ -113,26 +113,26 @@ var Equation = function () {
       var i = parseInt(this.previousResults.length);
       this.previousResultInputs.push(product);
 
-      this.states.push({
-        product: product,
-        get left() {
-          return self.previousResults[i];
-        },
-        backpropagationFn: _copy2.default
-      });
-
       return product;
     }
   }, {
     key: 'result',
     value: function result(m) {
-      if (m.weights.length !== this.previousResultInputs[this.previousResultInputs.length - 1].weights.length) {
+      var input = this.previousResultInputs[this.previousResultInputs.length - 1];
+      if (m.weights.length !== input.weights.length) {
         throw new Error('misaligned matrices');
       }
       this.previousResults.push(m);
       if (this.previousResults.length !== this.previousResultInputs.length) {
         throw new Error('previousResults does not match size of previousResultInputs');
       }
+
+      this.states.push({
+        product: input,
+        left: m,
+        backpropagationFn: _copy2.default
+      });
+
       return m;
     }
 

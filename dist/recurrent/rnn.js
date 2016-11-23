@@ -72,26 +72,23 @@ var RNN = function () {
     this.ratioClipped = null;
 
     this.model = {
-      input: [],
-      inputRows: [],
-      equations: [],
-      hidden: [],
+      input: null,
+      hiddenLayers: [],
       output: null,
-      allMatrices: [],
-      hiddenLayers: []
+      equations: [],
+      allMatrices: []
     };
 
     if (this.json) {
       this.fromJSON(this.json);
     } else {
-      this.createModel();
       this.mapModel();
     }
   }
 
   _createClass(RNN, [{
-    key: 'createModel',
-    value: function createModel() {
+    key: 'createHiddenLayers',
+    value: function createHiddenLayers() {
       var hiddenSizes = this.hiddenSizes;
       var model = this.model;
       var hiddenLayers = model.hiddenLayers;
@@ -185,16 +182,10 @@ var RNN = function () {
 
       this.createInputMatrix();
       if (!model.input) throw new Error('net.model.input not set');
-
-      this.createOutputMatrix();
-      if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
-      if (!model.output) throw new Error('net.model.output not set');
-
-      this.bindEquation();
-      if (!model.equations.length) throw new Error('net.equation not set');
-
       allMatrices.push(model.input);
 
+      this.createHiddenLayers();
+      if (!model.hiddenLayers.length) throw new Error('net.hiddenLayers not set');
       for (var i = 0, max = hiddenLayers.length; i < max; i++) {
         var hiddenMatrix = hiddenLayers[i];
         for (var property in hiddenMatrix) {
@@ -202,6 +193,10 @@ var RNN = function () {
           allMatrices.push(hiddenMatrix[property]);
         }
       }
+
+      this.createOutputMatrix();
+      if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
+      if (!model.output) throw new Error('net.model.output not set');
 
       allMatrices.push(model.outputConnector);
       allMatrices.push(model.output);
@@ -333,10 +328,6 @@ var RNN = function () {
       }
       var output = new _matrix2.default(model.output.rows, model.output.columns);
       while (true) {
-        if (i >= predictionLength) {
-          // something is wrong
-          break;
-        }
         ix = result.length === 0 ? 0 : result[result.length - 1];
         equation = model.equations[i];
         (0, _copy2.default)(output, equation.run(ix));
@@ -364,6 +355,10 @@ var RNN = function () {
         i++;
         if (ix === 0) {
           // END token predicted, break out
+          break;
+        }
+        if (i >= predictionLength) {
+          // something is wrong
           break;
         }
 

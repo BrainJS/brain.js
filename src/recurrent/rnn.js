@@ -38,24 +38,21 @@ export default class RNN {
     this.ratioClipped = null;
 
     this.model = {
-      input: [],
-      inputRows: [],
-      equations: [],
-      hidden: [],
+      input: null,
+      hiddenLayers: [],
       output: null,
-      allMatrices: [],
-      hiddenLayers: []
+      equations: [],
+      allMatrices: []
     };
 
     if (this.json) {
       this.fromJSON(this.json);
     } else {
-      this.createModel();
       this.mapModel();
     }
   }
 
-  createModel() {
+  createHiddenLayers() {
     let hiddenSizes = this.hiddenSizes;
     let model = this.model;
     let hiddenLayers = model.hiddenLayers;
@@ -156,16 +153,10 @@ export default class RNN {
 
     this.createInputMatrix();
     if (!model.input) throw new Error('net.model.input not set');
-
-    this.createOutputMatrix();
-    if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
-    if (!model.output) throw new Error('net.model.output not set');
-
-    this.bindEquation();
-    if (!model.equations.length) throw new Error('net.equation not set');
-
     allMatrices.push(model.input);
 
+    this.createHiddenLayers();
+    if (!model.hiddenLayers.length) throw new Error('net.hiddenLayers not set');
     for (let i = 0, max = hiddenLayers.length; i < max; i++) {
       let hiddenMatrix = hiddenLayers[i];
       for (let property in hiddenMatrix) {
@@ -173,6 +164,10 @@ export default class RNN {
         allMatrices.push(hiddenMatrix[property]);
       }
     }
+
+    this.createOutputMatrix();
+    if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
+    if (!model.output) throw new Error('net.model.output not set');
 
     allMatrices.push(model.outputConnector);
     allMatrices.push(model.output);
