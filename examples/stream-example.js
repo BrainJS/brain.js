@@ -1,5 +1,5 @@
 var assert = require('assert');
-var brain = require('./dist/brain');
+var brain = require('../dist/brain');
 var net = new brain.NeuralNetwork();
 var xor = [
   { input: [0, 0], output: [0]},
