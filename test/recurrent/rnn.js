@@ -24,14 +24,88 @@ function isZero(v) {
   return v === 0;
 }
 
+function checkAllWeights(model, fn) {
+  fn(model.input.weights);
+  model.hiddenLayers.forEach(function(layer) {
+    for (var p in layer) {
+      if (!layer.hasOwnProperty(p)) continue;
+      assert(fn(layer[p].weights));
+    }
+  });
+  fn(model.output.weights);
+
+  model.equations.forEach(function(equation) {
+    equation.states.forEach(function(state) {
+      if (state.left && state.left.weights) fn(state.left.weights);
+      if (state.right && state.right.weights) fn(state.right.weights);
+      if (state.product && state.product.weights) fn(state.product.weights);
+    });
+  });
+}
+
+function checkAllRecurrence(model, fn) {
+  fn(model.input.recurrence);
+  model.hiddenLayers.forEach(function(layer) {
+    for (var p in layer) {
+      if (!layer.hasOwnProperty(p)) continue;
+      assert(fn(layer[p].recurrence));
+    }
+  });
+  fn(model.output.recurrence);
+
+  model.equations.forEach(function(equation) {
+    equation.states.forEach(function(state) {
+      if (state.left && state.left.recurrence) fn(state.left.recurrence);
+      if (state.right && state.right.recurrence) fn(state.right.recurrence);
+      if (state.product && state.product.recurrence) fn(state.product.recurrence);
+    });
+  });
+}
+
+function checkAllMatrices(model, fn) {
+  fn(model.input.weights);
+  model.hiddenLayers.forEach(function(layer) {
+    for (var p in layer) {
+      if (!layer.hasOwnProperty(p)) continue;
+      fn(layer[p].weights);
+    }
+  });
+  fn(model.output.weights);
+
+  model.equations.forEach(function(equation, equationIndex) {
+    equation.states.forEach(function(state, stateIndex) {
+      if (state.left && state.left.weights) fn(state.left.weights);
+      if (state.right && state.right.weights) fn(state.right.weights);
+      if (state.product && state.product.weights) fn(state.product.weights);
+    });
+  });
+
+  fn(model.input.recurrence);
+  model.hiddenLayers.forEach(function(layer) {
+    for (var p in layer) {
+      if (!layer.hasOwnProperty(p)) continue;
+      fn(layer[p].recurrence);
+    }
+  });
+  fn(model.output.recurrence);
+
+  model.equations.forEach(function(equation, equationIndex) {
+    equation.states.forEach(function(state, stateIndex) {
+      if (state.left && state.left.recurrence) fn(state.left.recurrence);
+      if (state.right && state.right.recurrence) fn(state.right.recurrence);
+      if (state.product && state.product.recurrence) fn(state.product.recurrence);
+    });
+  });
+}
+
 describe('rnn', () => {
-  describe('basic operations', function() {
-    it('starts with zeros in input.recurrence', function() {
+  describe('basic operations', () => {
+    it('starts with zeros in input.recurrence', () => {
       (new RNN()).model.input.recurrence.forEach(function(v) {
         assert(v === 0);
       });
     });
-    it('after initial run, does not have zeros in recurrence', function() {
+    it('after initial run, does not have zeros in recurrence', () => {
       var net = new RNN({
         hiddenSizes: [3],
         inputSize: 3,
@@ -49,7 +123,7 @@ describe('rnn', () => {
       assert(net.model.input.recurrence.some(notZero));
     });
 
-    describe('xor', function() {
+    describe('xor', () => {
       function xorNet() {
         return new RNN({
           hiddenSizes: [3],
@@ -66,12 +140,12 @@ describe('rnn', () => {
         [1, 1, 0]
       ];
 
-      it('properly provides values to equations[].run', function() {
+      it('properly provides values to equations[].run', () => {
         var net = xorNet();
         var called = [];
         net.model.equations[0] = { run: function(v) {
           called[0] = v;
-          return {rows: 0, columns: 0, weights: [], recurrence: []}; }
+          return {rows: 1, columns: 0, weights: [], recurrence: []}; }
         };
         net.model.equations[1] = { run: function(v) {
           called[1] = v;
@@ -103,11 +177,11 @@ describe('rnn', () => {
         assert.equal(called[3], 2);
       });
 
-      it('properly provides values to equations[].runBackpropagate', function() {
+      it('properly provides values to equations[].runBackpropagate', () => {
         var net = xorNet();
         var backPropagateCalled = [];
         net.model.equations[0] = {
-          run: function() {
+          run: () => {
             return {rows: 0, columns: 0, weights: [], recurrence: []};
           },
           runBackpropagate: function(v) {
@@ -115,7 +189,7 @@ describe('rnn', () => {
           }
         };
         net.model.equations[1] = {
-          run: function() {
+          run: () => {
             return {rows: 0, columns: 0, weights: [], recurrence: []};
           },
           runBackpropagate: function(v) {
@@ -123,7 +197,7 @@ describe('rnn', () => {
           }
         };
         net.model.equations[2] = {
-          run: function() {
+          run: () => {
             return {rows: 0, columns: 0, weights: [], recurrence: []};
           },
           runBackpropagate: function(v) {
@@ -131,7 +205,7 @@ describe('rnn', () => {
           }
         };
         net.model.equations[3] = {
-          run: function() {
+          run: () => {
             return {rows: 0, columns: 0, weights: [], recurrence: []};
           },
           runBackpropagate: function(v) {
@@ -154,11 +228,11 @@ describe('rnn', () => {
         assert.equal(backPropagateCalled[3], 2);
       });
 
-      it('properly provides values to equations[].runBackpropagate', function() {
+      it('properly provides values to equations[].runBackpropagate', () => {
         var net = xorNet();
         var backPropagateCalled = [];
         net.model.equations[0] = {
-          run: function() {
+          run: () => {
             return {rows: 0, columns: 0, weights: [], recurrence: []};
           },
           runBackpropagate: function(v) {
@@ -166,7 +240,7 @@ describe('rnn', () => {
           }
         };
         net.model.equations[1] = {
-          run: function() {
+          run: () => {
             return {rows: 0, columns: 0, weights: [], recurrence: []};
           },
           runBackpropagate: function(v) {
@@ -174,7 +248,7 @@ describe('rnn', () => {
           }
         };
         net.model.equations[2] = {
-          run: function() {
+          run: () => {
             return {rows: 0, columns: 0, weights: [], recurrence: []};
           },
           runBackpropagate: function(v) {
@@ -182,7 +256,7 @@ describe('rnn', () => {
           }
         };
         net.model.equations[3] = {
-          run: function() {
+          run: () => {
             return {rows: 0, columns: 0, weights: [], recurrence: []};
           },
           runBackpropagate: function(v) {
@@ -205,12 +279,10 @@ describe('rnn', () => {
         assert.equal(backPropagateCalled[3], 2);
       });
 
-      it('is fully connected and gives values in recurrence', function() {
+      it('is fully connected and gives values in recurrence', () => {
         var net = xorNet();
         var input = xorNetValues[2];
-        var initialWeights = [];
         net.model.allMatrices.forEach(function(m) {
-          initialWeights.push(JSON.stringify(m.weights));
           m.recurrence.forEach(function(value) {
             assert.equal(value, 0);
           });
@@ -252,7 +324,7 @@ describe('rnn', () => {
         });
       });
 
-      it('recurrence is reset to zero after .step() is called', function() {
+      it('recurrence is reset to zero after .step() is called', () => {
         var net = xorNet();
         var input = xorNetValues[2];
         net.train(input);
@@ -277,15 +349,63 @@ describe('rnn', () => {
         });
       });
 
-      it('can learn xor', function() {
+      it('recurrence and weights do not explode', () => {
         var net = xorNet();
-        for (let i = 0, max = 1000; i < max; i++) {
+        var input = xorNetValues[2];
+        for (var i = 0; i < 100; i++)
+        {
+          checkAllMatrices(net.model, function (values) {
+            values.forEach(function (value, i) {
+              assert(value < 50 && value > -50);
+            });
+          });
+          net.train(input);
+          checkAllMatrices(net.model, function (values) {
+            values.forEach(function (value, i) {
+              assert(value < 50 && value > -50);
+            });
+          });
+          net.runBackpropagate(input);
+          checkAllMatrices(net.model, function (values) {
+            values.forEach(function (value, i) {
+              assert(value < 50 && value > -50);
+            });
+          });
+          net.step();
+          checkAllMatrices(net.model, function (values) {
+            values.forEach(function (value, i) {
+              assert(value < 50 && value > -50);
+            });
+          });
+        }
+      });
+
+      it('can learn xor (perplexity goes down)', () => {
+        var net = xorNet();
+        var initialPerplexity;
+        var perplexity;
+
+        for (var i = 0; i < 3; i++) {
           var input = xorNetValues[Math.floor((xorNetValues.length - 1) * Math.random())];
           net.run(input);
-          if (i % 10 === 0) {
+          perplexity = net.totalPerplexity;
+          if (i === 0) {
+            initialPerplexity = perplexity;
+          }
+        }
+        assert(initialPerplexity > perplexity);
+      });
+
+      it('can predict xor', () => {
+        var net = xorNet();
+        for (var i = 0; i < 100; i++) {
+          var input = xorNetValues[Math.floor((xorNetValues.length - 1) * Math.random())];
+          net.run(input);
+          if (i % 10) {
             console.log(JSON.stringify(net.predict()));
           }
         }
+
       });
     });
 
@@ -328,8 +448,8 @@ describe('rnn', () => {
       });*/
     });
 
-    /*describe('#train', function() {
-      it('can train', function() {
+    /*describe('#train', () => {
+      it('can train', () => {
         var rnn = new RNN({
           inputSize: 6, //<- length
           inputRange: vocab.characters.length,

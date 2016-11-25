@@ -42,7 +42,8 @@ export default class RNN {
       hiddenLayers: [],
       output: null,
       equations: [],
-      allMatrices: []
+      allMatrices: [],
+      outputMatrixIndex: -1
     };
 
     if (this.json) {
@@ -170,19 +171,20 @@ export default class RNN {
     if (!model.output) throw new Error('net.model.output not set');
 
     allMatrices.push(model.outputConnector);
+    model.outputMatrixIndex = allMatrices.length;
     allMatrices.push(model.output);
   }
 
   run(input) {
     this.train(input);
     this.runBackpropagate(input);
-    this.step(input);
+    this.step();
   }
 
   runPredict() {
     let prediction = this.predict();
     this.runBackpropagate(prediction);
-    this.step(prediction);
+    this.step();
     return prediction;
   }
 
@@ -202,19 +204,19 @@ export default class RNN {
       // start and end tokens are zeros
       equation = model.equations[i + 1];
 
-      let ixSource = (i === -1 ? 0 : input[i] + 1); // first step: start with START token
-      let ixTarget = (i === max - 1 ? 0 : input[i + 1] + 1); // last step: end with END token
-      let output = equation.run(ixSource);
+      let source = (i === -1 ? 0 : input[i] + 1); // first step: start with START token
+      let target = (i === max - 1 ? 0 : input[i + 1] + 1); // last step: end with END token
+      let output = equation.run(source);
       // set gradients into log probabilities
       let logProbabilities = output; // interpret output as log probabilities
       let probabilities = softmax(output); // compute the softmax probabilities
 
-      log2ppl += -Math.log2(probabilities.weights[ixTarget]); // accumulate base 2 log prob and do smoothing
-      cost += -Math.log(probabilities.weights[ixTarget]);
+      log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
+      cost += -Math.log(probabilities.weights[target]);
 
       // write gradients into log probabilities
       logProbabilities.recurrence = probabilities.weights;
-      logProbabilities.recurrence[ixTarget] -= 1
+      logProbabilities.recurrence[target] -= 1;
     }
 
     this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
@@ -249,6 +251,15 @@ export default class RNN {
       }
       let cache = this.stepCache[matrixIndex];
 
+      //if we are in an equation, reset the weights and recurrence to 0, to prevent exploding gradient problem
+      if (matrixIndex > model.outputMatrixIndex) {
+        for (let i = 0, n = matrix.weights.length; i < n; i++) {
+          matrix.weights[i] = 0;
+          matrix.recurrence[i] = 0;
+        }
+        continue;
+      }
+
       for (let i = 0, n = matrix.weights.length; i < n; i++) {
         // rmsprop adaptive learning rate
         let mdwi = matrix.recurrence[i];
@@ -272,26 +283,20 @@ export default class RNN {
     this.ratioClipped = numClipped / numTot;
   }
 
-  predict(predictionLength, _sampleI, temperature) {
-    if (typeof _sampleI === 'undefined') { _sampleI = false; }
-    if (typeof temperature === 'undefined') { temperature = 1; }
-    if (typeof predictionLength === 'undefined') { predictionLength = 100; }
+  predict(maxPredictionLength = 100, _sampleI = false, temperature = 1) {
     let model = this.model;
     let result = [];
-    let ix;
     let equation;
     let i = 0;
-    while (model.equations.length < predictionLength) {
+    while (model.equations.length < maxPredictionLength) {
       this.bindEquation();
     }
-    let output = new Matrix(model.output.rows, model.output.columns);
     while (true) {
-      ix = result.length === 0 ? 0 : result[result.length - 1];
+      let output = new Matrix(model.output.rows, model.output.columns);
+      let ix = result.length === 0 ? 0 : result[result.length - 1];
       equation = model.equations[i];
-      copy(output, equation.run(ix));
-      let lh = output;
       // sample predicted letter
-      let logProbabilities = lh;
+      let logProbabilities = equation.run(ix);
       if (temperature !== 1 && _sampleI) {
         // scale log probabilities by temperature and renormalize
         // if temperature is high, logprobs will go towards zero
@@ -315,7 +320,7 @@ export default class RNN {
         // END token predicted, break out
         break;
       }
-      if (i >= predictionLength) {
+      if (i >= maxPredictionLength) {
         // something is wrong
         break;
       }
@@ -323,7 +328,7 @@ export default class RNN {
       result.push(ix);
     }
 
-    return result;
+    return result.map((value) => value - 1);
   }
 
   /**

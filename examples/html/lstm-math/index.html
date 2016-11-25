@@ -38,8 +38,8 @@
 
   //start ai
   var vocab = new brain.utilities.Vocab(['0','1','2','3','4','5','6','7','8','9','+','=']);
-  var net = new brain.recurrent.RNN({
-    inputSize: 5,
+  var net = new brain.recurrent.LSTM({
+    inputSize: 6,
     inputRange: vocab.characters.length,
     outputSize: vocab.characters.length,
     hiddenSizes: [20, 20]
@@ -89,13 +89,43 @@
     return shuffle(items);
   }
 
+  function checkExplodingMatrices(model) {
+    var allMatrices = model.allMatrices;
+    for (var i = 0, maxI = allMatrices.length; i < maxI; i++) {
+      var matrix = allMatrices[i];
+      var weights = matrix.weights;
+      var recurrence = matrix.recurrence;
+      for (var j = 0, maxJ = weights.length; j < maxJ; j++) {
+        var weight = weights[j];
+        if (weight > 3 || weight < -3) {
+          console.log(weight, j, i);
+          throw new Error('exploding weight');
+        }
+        var recurrent = recurrence[j];
+        if (recurrent > 3 || recurrent < -3) {
+          console.log(recurrent, j, i);
+          throw new Error('exploding recurrence');
+        }
+      }
+    }
+  }
+
   function trainUntil(net, fn) {
     var items = build();
     var i = 0;
     function trainOnce() {
       for(var j = 0; j < 100; j++) {
-        net.run(vocab.toIndexes(items.random()));
-        //if (window.render) render();
+        var input = vocab.toIndexes(items.random());
+        try {
+          net.train(input);
+          checkExplodingMatrices(net.model);
+          net.runBackpropagate(input);
+          checkExplodingMatrices(net.model);
+          net.step();
+          checkExplodingMatrices(net.model);
+        } catch(e) {
+          clearInterval(id);
+        }
       }
       if (i % 10 === 0) {
         for (var j = 0; j < 1; j++) {
