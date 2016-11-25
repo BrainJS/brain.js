@@ -33,9 +33,7 @@ var trainStream = net.createTrainStream({
 flood(trainStream, xor);
 
 function flood(stream, data) {
-  for (var i = 0; i < data.length; i++) {
+  for (var i = 0; i <= data.length; i++) {
     stream.write(data[i]);
   }
-  // let it know we've reached the end of the data
-  stream.write(null);
 }
