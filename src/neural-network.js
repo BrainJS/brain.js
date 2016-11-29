@@ -127,10 +127,9 @@ export default class NeuralNetwork {
    * @param options
    * @returns {{error: number, iterations: number}}
    */
-  train(data, options) {
+  train(data, options = {}) {
     data = this.formatData(data);
 
-    options = options || {};
     let iterations = options.iterations || 20000;
     let errorThresh = options.errorThresh || 0.005;
     let log = options.log ? (typeof options.log === 'function' ? options.log : console.log) : false;
