@@ -9,9 +9,8 @@ function randomMath() {
   return left + '+' + right + '=' + (left + right);
 }
 
-describe('gru', function() {
-  return;
-  it('can predict what a math problem is after being fed 1000 random math problems', function() {
+describe('gru', () => {
+  it('can predict what a math problem is after being fed 1000 random math problems', () => {
     console.time('math gru');
     var gru = new GRU({
       inputSize: vocab.characters.length,
@@ -22,7 +21,7 @@ describe('gru', function() {
     for (var i = 0; i < 1000; i++) {
       gru.run(vocab.toIndexes(randomMath()));
       if (i % 10 === 0) {
-        //console.log(vocab.toCharacters(gru.predict()).join(''));
+        console.log(vocab.toCharacters(gru.predict()).join(''));
       }
     }
 

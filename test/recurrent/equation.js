@@ -13,15 +13,15 @@ function randomMath() {
 
 function fourSquareMatrix(value) {
   var result = new Matrix(4, 4);
-  result.weights.forEach(function(_, i) {
+  result.weights.forEach((_, i) => {
     result.weights[i] = value;
   });
   return result;
 }
 
-describe('equation', function() {
-  describe('run', function() {
-    it('calls all forwardFn properties', function() {
+describe('equation', () => {
+  describe('run', () => {
+    it('calls all forwardFn properties', () => {
       var equation = new Equation();
       for (var i = 0; i < 10; i++) {
         equation.states.push({
@@ -29,13 +29,13 @@ describe('equation', function() {
         })
       }
       equation.run();
-      equation.states.forEach(function(state) {
+      equation.states.forEach((state) => {
         assert(state.forwardFn.called);
       });
     });
   });
-  describe('runBack', function() {
-    it('calls all forwardFn properties', function() {
+  describe('runBack', () => {
+    it('calls all forwardFn properties', () => {
       var equation = new Equation();
       for (var i = 0; i < 10; i++) {
         equation.states.push({
@@ -43,13 +43,13 @@ describe('equation', function() {
         })
       }
       equation.runBackpropagate();
-      equation.states.forEach(function(state) {
+      equation.states.forEach((state) => {
         assert(state.backpropagationFn.called);
       });
     });
   });
-  describe('add', function() {
-    it('calls forwardFn', function() {
+  describe('add', () => {
+    it('calls forwardFn', () => {
       var equation = new Equation();
       var input = fourSquareMatrix(1);
       equation.add(input, fourSquareMatrix(1));
@@ -59,8 +59,8 @@ describe('equation', function() {
       assert(equation.states[0].forwardFn.called);
     });
   });
-  describe('multiply', function() {
-    it('calls forwardFn', function() {
+  describe('multiply', () => {
+    it('calls forwardFn', () => {
       var equation = new Equation();
       var input = fourSquareMatrix(1);
       equation.multiply(input, fourSquareMatrix(1));
@@ -70,8 +70,8 @@ describe('equation', function() {
       assert(equation.states[0].forwardFn.called);
     });
   });
-  describe('multiplyElement', function() {
-    it('calls forwardFn', function() {
+  describe('multiplyElement', () => {
+    it('calls forwardFn', () => {
       var equation = new Equation();
       var input = fourSquareMatrix(1);
       equation.add(input, fourSquareMatrix(1));
@@ -81,8 +81,8 @@ describe('equation', function() {
       assert(equation.states[0].forwardFn.called);
     });
   });
-  describe('relu', function() {
-    it('calls forwardFn', function() {
+  describe('relu', () => {
+    it('calls forwardFn', () => {
       var equation = new Equation();
       var input = fourSquareMatrix(1);
       equation.add(input, fourSquareMatrix(1));
@@ -92,8 +92,8 @@ describe('equation', function() {
       assert(equation.states[0].forwardFn.called);
     });
   });
-  describe('inputMatrixToRow', function() {
-    it('calls forwardFn', function() {
+  describe('inputMatrixToRow', () => {
+    it('calls forwardFn', () => {
       var equation = new Equation();
       var input = fourSquareMatrix(1);
       equation.add(input, fourSquareMatrix(1));
@@ -103,8 +103,8 @@ describe('equation', function() {
       assert(equation.states[0].forwardFn.called);
     });
   });
-  describe('sigmoid', function() {
-    it('calls forwardFn', function() {
+  describe('sigmoid', () => {
+    it('calls forwardFn', () => {
       var equation = new Equation();
       var input = fourSquareMatrix(1);
       equation.add(input, fourSquareMatrix(1));
@@ -114,8 +114,8 @@ describe('equation', function() {
       assert(equation.states[0].forwardFn.called);
     });
   });
-  describe('tanh', function() {
-    it('calls forwardFn', function() {
+  describe('tanh', () => {
+    it('calls forwardFn', () => {
       var equation = new Equation();
       var input = fourSquareMatrix(1);
       equation.add(input, fourSquareMatrix(1));
@@ -125,8 +125,8 @@ describe('equation', function() {
       assert(equation.states[0].forwardFn.called);
     });
   });
-  describe('nesting', function() {
-    it('can nest 3 deep and run forward', function() {
+  describe('nesting', () => {
+    it('can nest 3 deep and run forward', () => {
       var equation = new Equation();
       var input = fourSquareMatrix(2);
       equation.multiply(equation.multiply(equation.multiply(input, fourSquareMatrix(2)), fourSquareMatrix(2)), fourSquareMatrix(2));
@@ -135,11 +135,11 @@ describe('equation', function() {
       sinon.spy(equation.states[1], 'forwardFn');
       sinon.spy(equation.states[2], 'forwardFn');
       equation.run();
-      equation.states.forEach(function(state) {
+      equation.states.forEach((state) => {
         assert(state.forwardFn.called);
       });
     });
-    it('can nest 3 deep and run backward', function() {
+    it('can nest 3 deep and run backward', () => {
       var equation = new Equation();
       var input = fourSquareMatrix(2);
       equation.tanh(equation.multiply(equation.add(input, fourSquareMatrix(2)), fourSquareMatrix(2)), fourSquareMatrix(2));
@@ -148,21 +148,21 @@ describe('equation', function() {
       sinon.spy(equation.states[1], 'backpropagationFn');
       sinon.spy(equation.states[2], 'backpropagationFn');
       equation.runBackpropagate();
-      equation.states.forEach(function(state) {
+      equation.states.forEach((state) => {
         assert(state.backpropagationFn.called);
       });
     });
   });
-  describe('inputMatrixToRow', function() {
-    context('run', function() {
-      it('can properly split up a matrix', function() {
+  describe('inputMatrixToRow', () => {
+    context('run', () => {
+      it('can properly split up a matrix', () => {
         var input = new Matrix(2, 2);
         /**
          * Matrix like:
          * 1 1
          * 2 2
          */
-        input.weights.forEach(function(w, i) {
+        input.weights.forEach((w, i) => {
           if (i < 2) {
             input.weights[i] = 1;
           } else {
@@ -182,15 +182,15 @@ describe('equation', function() {
         assert.equal(output.weights[1], 3);
       });
     });
-    context('runBackpropagate', function() {
-      it('can properly split up a matrix', function() {
+    context('runBackpropagate', () => {
+      it('can properly split up a matrix', () => {
         var input = new Matrix(2, 2);
         /**
          * Matrix like:
          * 1 1
          * 2 2
          */
-        input.weights.forEach(function(w, i) {
+        input.weights.forEach((w, i) => {
           if (i < 2) {
             input.weights[i] = 1;
           } else {
@@ -203,7 +203,7 @@ describe('equation', function() {
         assert.equal(output.weights.length, 2);
         output = equation.run(1);
         assert.equal(output.weights.length, 2);
-        output.weights.forEach(function(weight, i) {
+        output.weights.forEach((weight, i) => {
           output.recurrence[i] = weight;
         });
         equation.runBackpropagate(1);
