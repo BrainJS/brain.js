@@ -595,7 +595,7 @@ export default class RNN {
         left: ${ matrixToString(state.left, i) },
         right: ${ matrixToString(state.right, i) },
         product: ${ matrixToString(state.product, i) }
-      };`);
+      }`);
 
       let fnName = state.forwardFn.name;
       if (!usedFunctionNames[fnName]) {
@@ -627,12 +627,13 @@ export default class RNN {
         return array;
       }
       
+      var states = [];
+      ${ statesRaw.join(';\n      ') };
+      
       for (var inputIndex = 0, inputMax = input.length; inputIndex < inputMax; inputIndex++) {
         var ixSource = (inputIndex === -1 ? 0 : input[inputIndex]); // first step: start with START token
         var ixTarget = (inputIndex === inputMax - 1 ? 0 : input[inputIndex + 1]); // last step: end with END token
         var rowPluckIndex = inputIndex; //connect up to rowPluck
-        var states = {};
-        ${ statesRaw.join('\n') }
         for (var stateIndex = 0, stateMax = ${ statesRaw.length }; stateIndex < stateMax; stateIndex++) {
           var state = states[stateIndex];
           var product = state.product;
