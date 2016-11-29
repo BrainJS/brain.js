@@ -297,20 +297,21 @@ describe('rnn', () => {
         var initialPerplexity;
         var perplexity;
 
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < 10; i++) {
           var input = xorNetValues[Math.floor((xorNetValues.length - 1) * Math.random())];
           net.run(input);
           perplexity = net.totalPerplexity;
           if (i === 0) {
             initialPerplexity = perplexity;
           }
+          console.log(perplexity);
         }
         assert(initialPerplexity > perplexity);
       });
 
       it('can predict xor', () => {
         var net = xorNet();
-        for (var i = 0; i < 100; i++) {
+        for (var i = 0; i < 200; i++) {
           var input = xorNetValues[Math.floor((xorNetValues.length - 1) * Math.random())];
           net.run(input);
         }

@@ -1,8 +1,8 @@
 import assert from 'assert';
 import Matrix from '../../../src/recurrent/matrix';
 
-describe('matrix', function() {
-  it('.fromArray', function() {
+describe('matrix', () => {
+  it('.fromArray', () => {
     var m1 = Matrix.fromArray([
       [2, 2],
       [2, 2]
@@ -16,9 +16,9 @@ describe('matrix', function() {
     });
   });
 
-  describe('instantiation', function() {
-    context('when given 5 rows and 5 columns', function() {
-      it('will have a weight and recurrence length of 25', function() {
+  describe('instantiation', () => {
+    context('when given 5 rows and 5 columns', () => {
+      it('will have a weight and recurrence length of 25', () => {
         var m = new Matrix(5, 5);
         assert.equal(m.weights.length, 25);
         assert.equal(m.recurrence.length, 25);

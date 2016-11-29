@@ -86,8 +86,8 @@ function randomPhrase() {
   return vocabData.phrases[Math.floor(Math.random() * vocabData.phrases.length)];
 }
 
-describe('character', function() {
-  it('', function() {
+describe('character', () => {
+  it('', () => {
     return;
     var rnn = new LSTM({
       inputSize: vocabData.inputSize,

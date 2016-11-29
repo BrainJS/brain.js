@@ -3,10 +3,10 @@ import Matrix from '../../../src/recurrent/matrix';
 import multiply from '../../../src/recurrent/matrix/multiply';
 import multiplyB from '../../../src/recurrent/matrix/multiply-b';
 
-describe('matrix', function() {
-  describe('multiply', function() {
-    context('when given a left and right matrix both of 2 rows and 2 columns', function() {
-      it('correctly multiplies the values', function() {
+describe('matrix', () => {
+  describe('multiply', () => {
+    context('when given a left and right matrix both of 2 rows and 2 columns', () => {
+      it('correctly multiplies the values', () => {
         var m1 = Matrix.fromArray([
           [2, 2],
           [2, 2]
@@ -19,16 +19,16 @@ describe('matrix', function() {
         multiply(result, m1, m2);
         var weights = [8, 8, 8, 8];
         assert.equal(result.weights.length, 4);
-        result.weights.forEach(function(value, i) {
+        result.weights.forEach((value, i) => {
           assert.equal(value, weights[i]);
         });
       });
     });
   });
 
-  describe('multiplyB', function() {
-    context('when given a left and right matrix both of 2 rows and 2 columns', function() {
-      it('correctly multiplies the values', function() {
+  describe('multiplyB', () => {
+    context('when given a left and right matrix both of 2 rows and 2 columns', () => {
+      it('correctly multiplies the values', () => {
         var m1 = Matrix.fromArray([
           [3, 3],
           [3, 3]
@@ -42,10 +42,10 @@ describe('matrix', function() {
           [3, 3]
         ]);
         multiplyB(result, m1, m2);
-        m1.recurrence.forEach(function(value) {
+        m1.recurrence.forEach((value) => {
           assert.equal(value, 21);
         });
-        m2.recurrence.forEach(function(value) {
+        m2.recurrence.forEach((value) => {
           assert.equal(value, 21);
         });
       });

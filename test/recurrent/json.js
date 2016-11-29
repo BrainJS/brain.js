@@ -25,9 +25,9 @@ function runAgainstMath(rnn, skipTests) {
   assert(/[=]/.test(prediction));
 }
 
-describe('json', function() {
-  describe('#toJSON', function() {
-    it('can export model as json', function() {
+describe('json', () => {
+  describe('#toJSON', () => {
+    it('can export model as json', () => {
       var jsonString = JSON.stringify(new RNN({
         inputSize: 6, //<- length
         inputRange: vocab.characters.length,
@@ -38,8 +38,8 @@ describe('json', function() {
     });
   });
 
-  describe('#fromJSON', function() {
-    it('can import model from json', function() {
+  describe('#fromJSON', () => {
+    it('can import model from json', () => {
       var jsonString = JSON.stringify(new RNN({
         inputSize: 6, //<- length
         inputRange: vocab.characters.length,
