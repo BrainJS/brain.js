@@ -1079,36 +1079,34 @@ var GRU = function (_RNN) {
      *
      * @param {Equation} equation
      * @param {Matrix} inputMatrix
-     * @param {Number} size
+     * @param {Matrix} previousResult
      * @param {Object} hiddenLayer
      * @returns {Matrix}
      */
 
   }, {
     key: 'getEquation',
-    value: function getEquation(equation, inputMatrix, size, hiddenLayer) {
+    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
       var sigmoid = equation.sigmoid.bind(equation);
       var add = equation.add.bind(equation);
       var multiply = equation.multiply.bind(equation);
       var multiplyElement = equation.multiplyElement.bind(equation);
-      var previousResult = equation.previousResult.bind(equation);
       var tanh = equation.tanh.bind(equation);
       var allOnes = equation.allOnes.bind(equation);
       var cloneNegative = equation.cloneNegative.bind(equation);
-      var result = equation.result.bind(equation);
 
       // update gate
-      var updateGate = result(sigmoid(add(add(multiply(hiddenLayer.updateGateInputMatrix, inputMatrix), multiply(hiddenLayer.updateGateHiddenMatrix, previousResult(size))), hiddenLayer.updateGateBias)));
+      var updateGate = sigmoid(add(add(multiply(hiddenLayer.updateGateInputMatrix, inputMatrix), multiply(hiddenLayer.updateGateHiddenMatrix, previousResult)), hiddenLayer.updateGateBias));
 
       // reset gate
-      var resetGate = result(sigmoid(add(add(multiply(hiddenLayer.resetGateInputMatrix, inputMatrix), multiply(hiddenLayer.resetGateHiddenMatrix, previousResult(size))), hiddenLayer.resetGateBias)));
+      var resetGate = sigmoid(add(add(multiply(hiddenLayer.resetGateInputMatrix, inputMatrix), multiply(hiddenLayer.resetGateHiddenMatrix, previousResult)), hiddenLayer.resetGateBias));
 
       // cell
-      var cell = result(tanh(add(add(multiply(hiddenLayer.cellWriteInputMatrix, inputMatrix), multiply(hiddenLayer.cellWriteHiddenMatrix, multiplyElement(resetGate, previousResult(size)))), hiddenLayer.cellWriteBias)));
+      var cell = tanh(add(add(multiply(hiddenLayer.cellWriteInputMatrix, inputMatrix), multiply(hiddenLayer.cellWriteHiddenMatrix, multiplyElement(resetGate, previousResult))), hiddenLayer.cellWriteBias));
 
       // compute hidden state as gated, saturated cell activations
       // negate updateGate
-      return result(add(multiplyElement(add(allOnes(updateGate.rows, updateGate.columns), cloneNegative(updateGate)), cell), multiplyElement(previousResult(size), updateGate)));
+      return add(multiplyElement(add(allOnes(updateGate.rows, updateGate.columns), cloneNegative(updateGate)), cell), multiplyElement(previousResult, updateGate));
     }
   }]);
 
@@ -1195,39 +1193,37 @@ var LSTM = function (_RNN) {
      *
      * @param {Equation} equation
      * @param {Matrix} inputMatrix
-     * @param {Number} size
+     * @param {Matrix} previousResult
      * @param {Object} hiddenLayer
      * @returns {Matrix}
      */
 
   }, {
     key: 'getEquation',
-    value: function getEquation(equation, inputMatrix, size, hiddenLayer) {
+    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
       var sigmoid = equation.sigmoid.bind(equation);
       var add = equation.add.bind(equation);
       var multiply = equation.multiply.bind(equation);
       var multiplyElement = equation.multiplyElement.bind(equation);
-      var previousResult = equation.previousResult.bind(equation);
       var tanh = equation.tanh.bind(equation);
-      var result = equation.result.bind(equation);
 
-      var inputGate = result(sigmoid(add(add(multiply(hiddenLayer.inputMatrix, inputMatrix), multiply(hiddenLayer.inputHidden, previousResult(size))), hiddenLayer.inputBias)));
+      var inputGate = sigmoid(add(add(multiply(hiddenLayer.inputMatrix, inputMatrix), multiply(hiddenLayer.inputHidden, previousResult)), hiddenLayer.inputBias));
 
-      var forgetGate = result(sigmoid(add(add(multiply(hiddenLayer.forgetMatrix, inputMatrix), multiply(hiddenLayer.forgetHidden, previousResult(size))), hiddenLayer.forgetBias)));
+      var forgetGate = sigmoid(add(add(multiply(hiddenLayer.forgetMatrix, inputMatrix), multiply(hiddenLayer.forgetHidden, previousResult)), hiddenLayer.forgetBias));
 
       // output gate
-      var outputGate = result(sigmoid(add(add(multiply(hiddenLayer.outputMatrix, inputMatrix), multiply(hiddenLayer.outputHidden, previousResult(size))), hiddenLayer.outputBias)));
+      var outputGate = sigmoid(add(add(multiply(hiddenLayer.outputMatrix, inputMatrix), multiply(hiddenLayer.outputHidden, previousResult)), hiddenLayer.outputBias));
 
       // write operation on cells
-      var cellWrite = result(tanh(add(add(multiply(hiddenLayer.cellActivationMatrix, inputMatrix), multiply(hiddenLayer.cellActivationHidden, previousResult(size))), hiddenLayer.cellActivationBias)));
+      var cellWrite = tanh(add(add(multiply(hiddenLayer.cellActivationMatrix, inputMatrix), multiply(hiddenLayer.cellActivationHidden, previousResult)), hiddenLayer.cellActivationBias));
 
       // compute new cell activation
-      var retainCell = multiplyElement(forgetGate, previousResult(size)); // what do we keep from cell
+      var retainCell = multiplyElement(forgetGate, previousResult); // what do we keep from cell
       var writeCell = multiplyElement(inputGate, cellWrite); // what do we write to cell
       var cell = add(retainCell, writeCell); // new cell contents
 
       // compute hidden state as gated, saturated cell activations
-      return result(multiplyElement(outputGate, tanh(cell)));
+      return multiplyElement(outputGate, tanh(cell));
     }
   }]);
 
@@ -1447,48 +1443,45 @@ var Equation = function () {
    * @param {Number} size
    * @returns {Matrix}
    */
+  // previousResult(size) {
+  //   let product;
+  //   if (this.previousResults.length > 0) {
+  //     product = this.previousResults[this.previousResults.length - 1];
+  //     this.previousResultInputs.push(product);
+  //   } else {
+  //     product = new Matrix(size, 1);
+  //     this.allMatrices.push(product);
+  //     this.previousResultInputs.push(product);
+  //   }
+  //
+  //   return product;
+  // }
+  //
+  // result(m) {
+  //   let input = this.previousResultInputs[this.previousResultInputs.length - 1];
+  //   if (m.weights.length !== input.weights.length) {
+  //     throw new Error('misaligned matrices');
+  //   }
+  //   this.previousResults.push(m);
+  //
+  //   this.states.push({
+  //     product: input,
+  //     left: m,
+  //     backpropagationFn: copy
+  //   });
+  //
+  //   return m;
+  // }
+
+  /**
+   * connects two matrices together by add
+   * @param {Matrix} left
+   * @param {Matrix} right
+   * @returns {Matrix}
+   */
 
 
   _createClass(Equation, [{
-    key: 'previousResult',
-    value: function previousResult(size) {
-      var product = new _2.default(size, 1);
-      this.allMatrices.push(product);
-      var self = this;
-      var i = parseInt(this.previousResults.length);
-      this.previousResultInputs.push(product);
-
-      return product;
-    }
-  }, {
-    key: 'result',
-    value: function result(m) {
-      var input = this.previousResultInputs[this.previousResultInputs.length - 1];
-      if (m.weights.length !== input.weights.length) {
-        throw new Error('misaligned matrices');
-      }
-      this.previousResults.push(m);
-      if (this.previousResults.length !== this.previousResultInputs.length) {
-        throw new Error('previousResults does not match size of previousResultInputs');
-      }
-
-      this.states.push({
-        product: input,
-        left: m,
-        backpropagationFn: _copy2.default
-      });
-
-      return m;
-    }
-
-    /**
-     * connects two matrices together by add
-     * @param {Matrix} left
-     * @param {Matrix} right
-     * @returns {Matrix}
-     */
-
-  }, {
     key: 'add',
     value: function add(left, right) {
       if (left.weights.length !== right.weights.length) {
@@ -2467,7 +2460,9 @@ var RNN = function () {
       hiddenLayers: [],
       output: null,
       equations: [],
-      allMatrices: []
+      allMatrices: [],
+      outputMatrixIndex: -1,
+      equationConnections: []
     };
 
     if (this.json) {
@@ -2511,21 +2506,19 @@ var RNN = function () {
      *
      * @param {Equation} equation
      * @param {Matrix} inputMatrix
-     * @param {Number} size
+     * @param {Matrix} previousResult
      * @param {Object} hiddenLayer
      * @returns {Matrix}
      */
 
   }, {
     key: 'getEquation',
-    value: function getEquation(equation, inputMatrix, size, hiddenLayer) {
+    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
       var relu = equation.relu.bind(equation);
       var add = equation.add.bind(equation);
       var multiply = equation.multiply.bind(equation);
-      var previousResult = equation.previousResult.bind(equation);
-      var result = equation.result.bind(equation);
 
-      return result(relu(add(add(multiply(hiddenLayer.weight, inputMatrix), multiply(hiddenLayer.transition, previousResult(size))), hiddenLayer.bias)));
+      return relu(add(add(multiply(hiddenLayer.weight, inputMatrix), multiply(hiddenLayer.transition, previousResult)), hiddenLayer.bias));
     }
   }, {
     key: 'createInputMatrix',
@@ -2554,12 +2547,21 @@ var RNN = function () {
       var hiddenSizes = this.hiddenSizes;
       var hiddenLayers = model.hiddenLayers;
       var equation = new _equation2.default();
+      var outputs = [];
+      var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : hiddenSizes.map(function (size) {
+        return new _matrix2.default(hiddenSizes[0], 1);
+      });
+
       // 0 index
-      var output = this.getEquation(equation, equation.inputMatrixToRow(model.input), hiddenSizes[0], hiddenLayers[0]);
+      var output = this.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], hiddenLayers[0]);
+      outputs.push(output);
       // 1+ indexes
       for (var i = 1, max = hiddenSizes.length; i < max; i++) {
-        output = this.getEquation(equation, output, hiddenSizes[i], hiddenLayers[i]);
+        output = this.getEquation(equation, output, equationConnection[i], hiddenLayers[i]);
+        outputs.push(output);
       }
+
+      model.equationConnections.push(outputs);
       equation.add(equation.multiply(model.outputConnector, output), model.output);
       model.allMatrices = model.allMatrices.concat(equation.allMatrices);
       model.equations.push(equation);
@@ -2590,6 +2592,7 @@ var RNN = function () {
       if (!model.output) throw new Error('net.model.output not set');
 
       allMatrices.push(model.outputConnector);
+      model.outputMatrixIndex = allMatrices.length;
       allMatrices.push(model.output);
     }
   }, {
@@ -2597,14 +2600,14 @@ var RNN = function () {
     value: function run(input) {
       this.train(input);
       this.runBackpropagate(input);
-      this.step(input);
+      this.step();
     }
   }, {
     key: 'runPredict',
     value: function runPredict() {
       var prediction = this.predict();
       this.runBackpropagate(prediction);
-      this.step(prediction);
+      this.step();
       return prediction;
     }
   }, {
@@ -2626,19 +2629,19 @@ var RNN = function () {
         // start and end tokens are zeros
         equation = model.equations[i + 1];
 
-        var ixSource = i === -1 ? 0 : input[i] + 1; // first step: start with START token
-        var ixTarget = i === max - 1 ? 0 : input[i + 1] + 1; // last step: end with END token
-        var output = equation.run(ixSource);
+        var source = i === -1 ? 0 : input[i] + 1; // first step: start with START token
+        var target = i === max - 1 ? 0 : input[i + 1] + 1; // last step: end with END token
+        var output = equation.run(source);
         // set gradients into log probabilities
         var logProbabilities = output; // interpret output as log probabilities
         var probabilities = (0, _softmax2.default)(output); // compute the softmax probabilities
 
-        log2ppl += -Math.log2(probabilities.weights[ixTarget]); // accumulate base 2 log prob and do smoothing
-        cost += -Math.log(probabilities.weights[ixTarget]);
+        log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
+        cost += -Math.log(probabilities.weights[target]);
 
         // write gradients into log probabilities
         logProbabilities.recurrence = probabilities.weights;
-        logProbabilities.recurrence[ixTarget] -= 1;
+        logProbabilities.recurrence[target] -= 1;
       }
 
       this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
@@ -2675,10 +2678,19 @@ var RNN = function () {
         }
         var cache = this.stepCache[matrixIndex];
 
-        for (var i = 0, n = matrix.weights.length; i < n; i++) {
+        //if we are in an equation, reset the weights and recurrence to 0, to prevent exploding gradient problem
+        if (matrixIndex > model.outputMatrixIndex) {
+          for (var i = 0, n = matrix.weights.length; i < n; i++) {
+            matrix.weights[i] = 0;
+            matrix.recurrence[i] = 0;
+          }
+          continue;
+        }
+
+        for (var _i = 0, _n = matrix.weights.length; _i < _n; _i++) {
           // rmsprop adaptive learning rate
-          var mdwi = matrix.recurrence[i];
-          cache.weights[i] = cache.weights[i] * this.decayRate + (1 - this.decayRate) * mdwi * mdwi;
+          var mdwi = matrix.recurrence[_i];
+          cache.weights[_i] = cache.weights[_i] * this.decayRate + (1 - this.decayRate) * mdwi * mdwi;
           // gradient clip
           if (mdwi > clipval) {
             mdwi = clipval;
@@ -2691,40 +2703,36 @@ var RNN = function () {
           numTot++;
 
           // update (and regularize)
-          matrix.weights[i] = matrix.weights[i] + -stepSize * mdwi / Math.sqrt(cache.weights[i] + this.smoothEps) - regc * matrix.weights[i];
-          matrix.recurrence[i] = 0; // reset gradients for next iteration
+          matrix.weights[_i] = matrix.weights[_i] + -stepSize * mdwi / Math.sqrt(cache.weights[_i] + this.smoothEps) - regc * matrix.weights[_i];
+          matrix.recurrence[_i] = 0; // reset gradients for next iteration
         }
       }
       this.ratioClipped = numClipped / numTot;
     }
   }, {
     key: 'predict',
-    value: function predict(predictionLength, _sampleI, temperature) {
-      if (typeof _sampleI === 'undefined') {
-        _sampleI = false;
-      }
-      if (typeof temperature === 'undefined') {
-        temperature = 1;
-      }
-      if (typeof predictionLength === 'undefined') {
-        predictionLength = 100;
-      }
+    value: function predict() {
+      var maxPredictionLength = arguments.length <= 0 || arguments[0] === undefined ? 100 : arguments[0];
+
+      var _sampleI = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+      var temperature = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
+
       var model = this.model;
       var result = [];
-      var ix = void 0;
       var equation = void 0;
       var i = 0;
-      while (model.equations.length < predictionLength) {
+      while (model.equations.length < maxPredictionLength) {
         this.bindEquation();
       }
-      var output = new _matrix2.default(model.output.rows, model.output.columns);
       while (true) {
-        ix = result.length === 0 ? 0 : result[result.length - 1];
+        var ix = result.length === 0 ? 0 : result[result.length - 1];
         equation = model.equations[i];
-        (0, _copy2.default)(output, equation.run(ix));
-        var lh = output;
         // sample predicted letter
-        var logProbabilities = lh;
+        var output = equation.run(ix);
+
+        var logProbabilities = new _matrix2.default(model.output.rows, model.output.columns);
+        (0, _copy2.default)(logProbabilities, output);
         if (temperature !== 1 && _sampleI) {
           // scale log probabilities by temperature and renormalize
           // if temperature is high, logprobs will go towards zero
@@ -2748,7 +2756,7 @@ var RNN = function () {
           // END token predicted, break out
           break;
         }
-        if (i >= predictionLength) {
+        if (i >= maxPredictionLength) {
           // something is wrong
           break;
         }
@@ -2756,7 +2764,9 @@ var RNN = function () {
         result.push(ix);
       }
 
-      return result;
+      return result.map(function (value) {
+        return value - 1;
+      });
     }
 
     /**

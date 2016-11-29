@@ -102,48 +102,45 @@ var Equation = function () {
    * @param {Number} size
    * @returns {Matrix}
    */
+  // previousResult(size) {
+  //   let product;
+  //   if (this.previousResults.length > 0) {
+  //     product = this.previousResults[this.previousResults.length - 1];
+  //     this.previousResultInputs.push(product);
+  //   } else {
+  //     product = new Matrix(size, 1);
+  //     this.allMatrices.push(product);
+  //     this.previousResultInputs.push(product);
+  //   }
+  //
+  //   return product;
+  // }
+  //
+  // result(m) {
+  //   let input = this.previousResultInputs[this.previousResultInputs.length - 1];
+  //   if (m.weights.length !== input.weights.length) {
+  //     throw new Error('misaligned matrices');
+  //   }
+  //   this.previousResults.push(m);
+  //
+  //   this.states.push({
+  //     product: input,
+  //     left: m,
+  //     backpropagationFn: copy
+  //   });
+  //
+  //   return m;
+  // }
+
+  /**
+   * connects two matrices together by add
+   * @param {Matrix} left
+   * @param {Matrix} right
+   * @returns {Matrix}
+   */
 
 
   _createClass(Equation, [{
-    key: 'previousResult',
-    value: function previousResult(size) {
-      var product = new _2.default(size, 1);
-      this.allMatrices.push(product);
-      var self = this;
-      var i = parseInt(this.previousResults.length);
-      this.previousResultInputs.push(product);
-
-      return product;
-    }
-  }, {
-    key: 'result',
-    value: function result(m) {
-      var input = this.previousResultInputs[this.previousResultInputs.length - 1];
-      if (m.weights.length !== input.weights.length) {
-        throw new Error('misaligned matrices');
-      }
-      this.previousResults.push(m);
-      if (this.previousResults.length !== this.previousResultInputs.length) {
-        throw new Error('previousResults does not match size of previousResultInputs');
-      }
-
-      this.states.push({
-        product: input,
-        left: m,
-        backpropagationFn: _copy2.default
-      });
-
-      return m;
-    }
-
-    /**
-     * connects two matrices together by add
-     * @param {Matrix} left
-     * @param {Matrix} right
-     * @returns {Matrix}
-     */
-
-  }, {
     key: 'add',
     value: function add(left, right) {
       if (left.weights.length !== right.weights.length) {

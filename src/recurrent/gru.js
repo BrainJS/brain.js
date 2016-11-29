@@ -35,43 +35,38 @@ export default class GRU extends RNN {
    *
    * @param {Equation} equation
    * @param {Matrix} inputMatrix
-   * @param {Number} size
+   * @param {Matrix} previousResult
    * @param {Object} hiddenLayer
    * @returns {Matrix}
    */
-  getEquation(equation, inputMatrix, size, hiddenLayer) {
+  getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
     let sigmoid = equation.sigmoid.bind(equation);
     let add = equation.add.bind(equation);
     let multiply = equation.multiply.bind(equation);
     let multiplyElement = equation.multiplyElement.bind(equation);
-    let previousResult = equation.previousResult.bind(equation);
     let tanh = equation.tanh.bind(equation);
     let allOnes = equation.allOnes.bind(equation);
     let cloneNegative = equation.cloneNegative.bind(equation);
-    let result = equation.result.bind(equation);
 
     // update gate
-    let updateGate = result(
-      sigmoid(
+    let updateGate = sigmoid(
+      add(
         add(
-          add(
-            multiply(
-              hiddenLayer.updateGateInputMatrix,
-              inputMatrix
-            ),
-            multiply(
-              hiddenLayer.updateGateHiddenMatrix,
-              previousResult(size)
-            )
+          multiply(
+            hiddenLayer.updateGateInputMatrix,
+            inputMatrix
           ),
-          hiddenLayer.updateGateBias
-        )
+          multiply(
+            hiddenLayer.updateGateHiddenMatrix,
+            previousResult
+          )
+        ),
+        hiddenLayer.updateGateBias
       )
     );
 
     // reset gate
-    let resetGate = result(
-      sigmoid(
+    let resetGate = sigmoid(
         add(
           add(
             multiply(
@@ -80,51 +75,46 @@ export default class GRU extends RNN {
             ),
             multiply(
               hiddenLayer.resetGateHiddenMatrix,
-              previousResult(size)
+              previousResult
             )
           ),
           hiddenLayer.resetGateBias
         )
-      )
     );
 
     // cell
-    let cell = result(
-      tanh(
+    let cell = tanh(
+      add(
         add(
-          add(
-            multiply(
-              hiddenLayer.cellWriteInputMatrix,
-              inputMatrix
-            ),
-            multiply(
-              hiddenLayer.cellWriteHiddenMatrix,
-              multiplyElement(
-                resetGate,
-                previousResult(size)
-              )
-            )
+          multiply(
+            hiddenLayer.cellWriteInputMatrix,
+            inputMatrix
           ),
-          hiddenLayer.cellWriteBias
-        )
+          multiply(
+            hiddenLayer.cellWriteHiddenMatrix,
+            multiplyElement(
+              resetGate,
+              previousResult
+            )
+          )
+        ),
+        hiddenLayer.cellWriteBias
       )
     );
 
     // compute hidden state as gated, saturated cell activations
     // negate updateGate
-    return result(
-      add(
-        multiplyElement(
-          add(
-            allOnes(updateGate.rows, updateGate.columns),
-            cloneNegative(updateGate)
-          ),
-          cell
+    return add(
+      multiplyElement(
+        add(
+          allOnes(updateGate.rows, updateGate.columns),
+          cloneNegative(updateGate)
         ),
-        multiplyElement(
-          previousResult(size),
-          updateGate
-        )
+        cell
+      ),
+      multiplyElement(
+        previousResult,
+        updateGate
       )
     );
   }

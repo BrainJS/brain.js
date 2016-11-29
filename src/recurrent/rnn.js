@@ -43,7 +43,8 @@ export default class RNN {
       output: null,
       equations: [],
       allMatrices: [],
-      outputMatrixIndex: -1
+      outputMatrixIndex: -1,
+      equationConnections: []
     };
 
     if (this.json) {
@@ -83,32 +84,28 @@ export default class RNN {
    *
    * @param {Equation} equation
    * @param {Matrix} inputMatrix
-   * @param {Number} size
+   * @param {Matrix} previousResult
    * @param {Object} hiddenLayer
    * @returns {Matrix}
    */
-  getEquation(equation, inputMatrix, size, hiddenLayer) {
+  getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
     let relu = equation.relu.bind(equation);
     let add = equation.add.bind(equation);
     let multiply = equation.multiply.bind(equation);
-    let previousResult = equation.previousResult.bind(equation);
-    let result = equation.result.bind(equation);
 
-    return result(
-      relu(
+    return relu(
+      add(
         add(
-          add(
-            multiply(
-              hiddenLayer.weight,
-              inputMatrix
-            ),
-            multiply(
-              hiddenLayer.transition,
-              previousResult(size)
-            )
+          multiply(
+            hiddenLayer.weight,
+            inputMatrix
           ),
-          hiddenLayer.bias
-        )
+          multiply(
+            hiddenLayer.transition,
+            previousResult
+          )
+        ),
+        hiddenLayer.bias
       )
     );
   }
@@ -136,12 +133,22 @@ export default class RNN {
     let hiddenSizes = this.hiddenSizes;
     let hiddenLayers = model.hiddenLayers;
     let equation = new Equation();
+    let outputs = [];
+    let equationConnection = model.equationConnections.length > 0
+      ? model.equationConnections[model.equationConnections.length - 1]
+      : hiddenSizes.map((size) => new Matrix(hiddenSizes[0], 1))
+      ;
+
       // 0 index
-    let output = this.getEquation(equation, equation.inputMatrixToRow(model.input), hiddenSizes[0], hiddenLayers[0]);
+    let output = this.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], hiddenLayers[0]);
+    outputs.push(output);
     // 1+ indexes
     for (let i = 1, max = hiddenSizes.length; i < max; i++) {
-      output = this.getEquation(equation, output, hiddenSizes[i], hiddenLayers[i]);
+      output = this.getEquation(equation, output, equationConnection[i], hiddenLayers[i]);
+      outputs.push(output);
     }
+
+    model.equationConnections.push(outputs);
     equation.add(equation.multiply(model.outputConnector, output), model.output);
     model.allMatrices = model.allMatrices.concat(equation.allMatrices);
     model.equations.push(equation);
@@ -292,11 +299,13 @@ export default class RNN {
       this.bindEquation();
     }
     while (true) {
-      let output = new Matrix(model.output.rows, model.output.columns);
       let ix = result.length === 0 ? 0 : result[result.length - 1];
       equation = model.equations[i];
       // sample predicted letter
-      let logProbabilities = equation.run(ix);
+      let output = equation.run(ix);
+
+      let logProbabilities = new Matrix(model.output.rows, model.output.columns);
+      copy(logProbabilities, output);
       if (temperature !== 1 && _sampleI) {
         // scale log probabilities by temperature and renormalize
         // if temperature is high, logprobs will go towards zero

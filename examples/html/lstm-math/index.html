@@ -97,12 +97,12 @@
       var recurrence = matrix.recurrence;
       for (var j = 0, maxJ = weights.length; j < maxJ; j++) {
         var weight = weights[j];
-        if (weight > 3 || weight < -3) {
+        if (weight > 10 || weight < -10) {
           console.log(weight, j, i);
           throw new Error('exploding weight');
         }
         var recurrent = recurrence[j];
-        if (recurrent > 3 || recurrent < -3) {
+        if (recurrent > 10 || recurrent < -10) {
           console.log(recurrent, j, i);
           throw new Error('exploding recurrence');
         }
@@ -116,16 +116,9 @@
     function trainOnce() {
       for(var j = 0; j < 100; j++) {
         var input = vocab.toIndexes(items.random());
-        try {
-          net.train(input);
-          checkExplodingMatrices(net.model);
-          net.runBackpropagate(input);
-          checkExplodingMatrices(net.model);
-          net.step();
-          checkExplodingMatrices(net.model);
-        } catch(e) {
-          clearInterval(id);
-        }
+        net.train(input);
+        net.runBackpropagate(input);
+        net.step();
       }
       if (i % 10 === 0) {
         for (var j = 0; j < 1; j++) {
@@ -135,7 +128,6 @@
           }
         }
       }
-      //console.log(JSON.stringify(net.toJSON()));
       i++;
     }
 

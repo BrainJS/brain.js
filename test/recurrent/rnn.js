@@ -401,11 +401,9 @@ describe('rnn', () => {
         for (var i = 0; i < 100; i++) {
           var input = xorNetValues[Math.floor((xorNetValues.length - 1) * Math.random())];
           net.run(input);
-          if (i % 10) {
-            console.log(JSON.stringify(net.predict()));
-          }
         }
 
+        assert.equal(net.predict().length, 3);
       });
     });
 

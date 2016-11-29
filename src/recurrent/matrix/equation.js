@@ -32,32 +32,35 @@ export default class Equation {
    * @param {Number} size
    * @returns {Matrix}
    */
-  previousResult(size) {
-    let product = new Matrix(size, 1);
-    this.allMatrices.push(product);
-    this.previousResultInputs.push(product);
-
-    return product;
-  }
-
-  result(m) {
-    let input = this.previousResultInputs[this.previousResultInputs.length - 1];
-    if (m.weights.length !== input.weights.length) {
-      throw new Error('misaligned matrices');
-    }
-    this.previousResults.push(m);
-    if (this.previousResults.length !== this.previousResultInputs.length) {
-      throw new Error('previousResults does not match size of previousResultInputs');
-    }
-
-    this.states.push({
-      product: input,
-      left: m,
-      backpropagationFn: copy
-    });
-
-    return m;
-  }
+  // previousResult(size) {
+  //   let product;
+  //   if (this.previousResults.length > 0) {
+  //     product = this.previousResults[this.previousResults.length - 1];
+  //     this.previousResultInputs.push(product);
+  //   } else {
+  //     product = new Matrix(size, 1);
+  //     this.allMatrices.push(product);
+  //     this.previousResultInputs.push(product);
+  //   }
+  //
+  //   return product;
+  // }
+  //
+  // result(m) {
+  //   let input = this.previousResultInputs[this.previousResultInputs.length - 1];
+  //   if (m.weights.length !== input.weights.length) {
+  //     throw new Error('misaligned matrices');
+  //   }
+  //   this.previousResults.push(m);
+  //
+  //   this.states.push({
+  //     product: input,
+  //     left: m,
+  //     backpropagationFn: copy
+  //   });
+  //
+  //   return m;
+  // }
 
   /**
    * connects two matrices together by add
