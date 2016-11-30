@@ -295,9 +295,8 @@ export default class RNN {
     this.ratioClipped = numClipped / numTot;
   }
 
-  predict(maxPredictionLength = 100, _sampleI = false, temperature = 1) {
+  predict(result = [], maxPredictionLength = 100, _sampleI = false, temperature = 1) {
     let model = this.model;
-    let result = [];
     let equation;
     let i = 0;
     while (model.equations.length < maxPredictionLength) {
