@@ -69,6 +69,12 @@ export default class RNN {
     }
   }
 
+  /**
+   *
+   * @param {Number} hiddenSize
+   * @param {Number} prevSize
+   * @returns {object}
+   */
   getModel(hiddenSize, prevSize) {
     return {
       //wxh
@@ -202,17 +208,16 @@ export default class RNN {
     let log2ppl = 0;
     let cost = 0;
 
-    let i;
     let equation;
     while (model.equations.length <= input.length + 1) {//first and last are zeros
       this.bindEquation();
     }
-    for (i = -1; i < max; i++) {
+    for (let inputIndex = -1, inputMax = input.length; inputIndex < inputMax; inputIndex++) {
       // start and end tokens are zeros
-      equation = model.equations[i + 1];
+      equation = model.equations[inputIndex + 1];
 
-      let source = (i === -1 ? 0 : input[i] + 1); // first step: start with START token
-      let target = (i === max - 1 ? 0 : input[i + 1] + 1); // last step: end with END token
+      let source = (inputIndex === -1 ? 0 : input[inputIndex] + 1); // first step: start with START token
+      let target = (inputIndex === max - 1 ? 0 : input[inputIndex + 1] + 1); // last step: end with END token
       let output = equation.run(source);
       // set gradients into log probabilities
       let logProbabilities = output; // interpret output as log probabilities
@@ -558,6 +563,7 @@ export default class RNN {
         let hiddenLayer = model.hiddenLayers[i];
         for (let p in hiddenLayer) {
           if (hiddenLayer[p] === m) {
+            if (!hiddenLayer.hasOwnProperty(p)) continue;
             return `model.hiddenLayers[${ i }].${ p }`;
           }
         }
@@ -570,15 +576,15 @@ export default class RNN {
 
     function toInner(fnString) {
       //crude, but should be sufficient for now
-      //function() { inner.function.string.here; }
+      // function() { body }
       fnString = fnString.toString().split('{');
       fnString.shift();
-      // inner.function.string.here; }
+      // body }
       fnString = fnString.join('{');
       fnString = fnString.split('}');
       fnString.pop();
-      // inner.function.string.here;
-      return fnString.join('}');
+      // body
+      return fnString.join('}').split('\n').join('\n        ');
     }
 
     function fileName(fnName) {
@@ -600,53 +606,50 @@ export default class RNN {
       let fnName = state.forwardFn.name;
       if (!usedFunctionNames[fnName]) {
         usedFunctionNames[fnName] = true;
-        innerFunctionsSwitch.push(`
-        case '${ fnName }': //compiled from ${ fileName(fnName) }
+        innerFunctionsSwitch.push(
+          `        case '${ fnName }': //compiled from ${ fileName(fnName) }
           ${ toInner(state.forwardFn.toString()) }
-          break;
-        `);
+          break;`
+        );
       }
     }
 
     return new Function('input', `
-      var model = ${ modelAsString };
-      
-      function Matrix(rows, columns) {
-        this.rows = rows;
-        this.columns = columns;
-        this.weights = zeros(rows * columns);
-        this.recurrence = zeros(rows * columns);
-      }
-      
-      function zeros(size) {
-        if (typeof Float64Array !== 'undefined') return new Float64Array(size);
-        var array = new Array(size);
-        for (var i = 0; i < size; i++) {
-          array[i] = 0;
-        }
-        return array;
-      }
-      
+  var model = ${ modelAsString };
+  
+  function Matrix(rows, columns) {
+    this.rows = rows;
+    this.columns = columns;
+    this.weights = zeros(rows * columns);
+    this.recurrence = zeros(rows * columns);
+  }
+  
+  function zeros(size) {
+    if (typeof Float64Array !== 'undefined') return new Float64Array(size);
+    var array = new Array(size);
+    for (var i = 0; i < size; i++) {
+      array[i] = 0;
+    }
+    return array;
+  }
+  
+  for (var inputIndex = -1, inputMax = input.length; inputIndex < inputMax; inputIndex++) {
+    var source = (i === -1 ? 0 : input[i] + 1); // first step: start with START token
+    var rowPluckIndex = source; //connect up to rowPluck
+    for (var stateIndex = 0, stateMax = ${ statesRaw.length }; stateIndex < stateMax; stateIndex++) {
       var states = [];
       ${ statesRaw.join(';\n      ') };
+      var state = states[stateIndex];
+      var product = state.product;
+      var left = state.left;
+      var right = state.right;
       
-      for (var inputIndex = 0, inputMax = input.length; inputIndex < inputMax; inputIndex++) {
-        var ixSource = (inputIndex === -1 ? 0 : input[inputIndex]); // first step: start with START token
-        var ixTarget = (inputIndex === inputMax - 1 ? 0 : input[inputIndex + 1]); // last step: end with END token
-        var rowPluckIndex = inputIndex; //connect up to rowPluck
-        for (var stateIndex = 0, stateMax = ${ statesRaw.length }; stateIndex < stateMax; stateIndex++) {
-          var state = states[stateIndex];
-          var product = state.product;
-          var left = state.left;
-          var right = state.right;
-          
-          switch (state.name) {
-            ${ innerFunctionsSwitch.join('\n') }
-          }
-        }
+      switch (state.name) {
+${ innerFunctionsSwitch.join('\n') }
       }
-      
-      return state.product;
-    `);
+    }
+  }
+  
+  return state.product;`);
   }
 }

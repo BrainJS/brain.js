@@ -5,8 +5,7 @@
  * @constructor
  */
 export default class Vocab {
-  constructor(values, maxThreshold) {
-    maxThreshold = maxThreshold || 0;
+  constructor(values, maxThreshold = 0) {
     this.values = values;
     // go over all characters and keep track of all unique ones seen
     // count up all characters
@@ -66,5 +65,13 @@ export default class Vocab {
     }
 
     return result;
+  }
+
+  static allPrintable(maxThreshold) {
+    const values = [];
+    for(let i = 32; i <= 126; i++) {
+      values.push(String.fromCharCode(i));
+    }
+    return new Vocab(values, maxThreshold);
   }
 }

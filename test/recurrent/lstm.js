@@ -11,30 +11,28 @@ function runAgainstMath(rnn) {
 
 describe('lstm', () => {
   describe('math', () => {
-    let mathProblems = build();
     it('can predict what a math problem is after being fed 1000 random math problems', () => {
-      var lstm = new LSTM({
+      var net = new LSTM({
         inputSize: 6,
         inputRange: vocab.characters.length,
         outputSize: vocab.characters.length
       });
 
       console.time('math lstm');
-      runAgainstMath(lstm);
+      runAgainstMath(net);
       console.timeEnd('math lstm');
       console.log('');
     });
   });
 
-
   describe('#toFunction', () => {
-    var lstm = new LSTM({
+    var net = new LSTM({
       inputSize: 6, //<- length
       inputRange: vocab.characters.length,
       outputSize: vocab.characters.length //<- length
     });
 
-    runAgainstMath(lstm);
+    runAgainstMath(net);
     //console.log(rnn.toFunction().toString());
     //require('fs').writeFileSync('raw-lstm.js', lstm.toFunction().toString());
   });
