@@ -1,10 +1,12 @@
 import Matrix from './matrix';
+import RandomMatrix from './matrix/random-matrix';
+import Equation from './matrix/equation';
 import sampleI from './matrix/sample-i';
 import maxI from './matrix/max-i';
-import RandomMatrix from './matrix/random-matrix';
 import softmax from './matrix/softmax';
-import Equation from './matrix/equation';
 import copy from './matrix/copy';
+import { randomF } from '../utilities/random';
+import zeros from '../utilities/zeros';
 
 const defaults = {
   isBackPropagate: true,
@@ -192,13 +194,6 @@ export default class RNN {
     this.train(input);
     this.runBackpropagate(input);
     this.step();
-  }
-
-  runPredict() {
-    let prediction = this.predict();
-    this.runBackpropagate(prediction);
-    this.step();
-    return prediction;
   }
 
   train(input) {
@@ -486,7 +481,7 @@ export default class RNN {
       type: this.constructor.name,
       options: options,
       input: model.input.toJSON(),
-      hiddenLayers: model.hiddenLayers.map(function(hiddenLayer) {
+      hiddenLayers: model.hiddenLayers.map((hiddenLayer) => {
         let layers = {};
         for (let p in hiddenLayer) {
           layers[p] = hiddenLayer[p].toJSON();
@@ -505,7 +500,7 @@ export default class RNN {
     let allMatrices = model.allMatrices;
     model.input = Matrix.fromJSON(json.input);
     allMatrices.push(model.input);
-    model.hiddenLayers = json.hiddenLayers.map(function(hiddenLayer) {
+    model.hiddenLayers = json.hiddenLayers.map((hiddenLayer) => {
       let layers = {};
       for (let p in hiddenLayer) {
         layers[p] = Matrix.fromJSON(hiddenLayer[p]);
@@ -532,20 +527,30 @@ export default class RNN {
    */
   toFunction() {
     let model = this.model;
-    let equation = this.model.equations[0];
+    let equations = this.model.equations;
+    let equation = equations[1];
     let states = equation.states;
     let modelAsString = JSON.stringify(this.toJSON());
 
-    function matrixOrigin(m, requestedStateIndex) {
+    function matrixOrigin(m, stateIndex) {
       for (let i = 0, max = states.length; i < max; i++) {
         let state = states[i];
 
-        if (i === requestedStateIndex) {
+        if (i === stateIndex) {
+          let j = previousConnectionIndex(m);
           switch (m) {
-            case state.product:
             case state.left:
+              if (j > -1) {
+                return `typeof prevStates[${ j }] === 'object' ? prevStates[${ j }].product : new Matrix(${ m.rows }, ${ m.columns })`;
+              }
             case state.right:
+              if (j > -1) {
+                return `typeof prevStates[${ j }] === 'object' ? prevStates[${ j }].product : new Matrix(${ m.rows }, ${ m.columns })`;
+              }
+            case state.product:
               return `new Matrix(${ m.rows }, ${ m.columns })`;
+            default:
+              throw Error('unknown state');
           }
         }
 
@@ -555,21 +560,33 @@ export default class RNN {
       }
     }
 
+    function previousConnectionIndex(m) {
+      const connection = model.equationConnections[0];
+      const states = equations[0].states;
+      for (let i = 0, max = states.length; i < max; i++) {
+        if (states[i].product === m) {
+          return i;
+        }
+      }
+      return connection.indexOf(m);
+    }
+
     function matrixToString(m, stateIndex) {
-      if (!m) return 'null';
+      if (!m || !m.rows || !m.columns) return 'null';
+
+      if (m === model.input) return `model.input`;
+      if (m === model.outputConnector) return `model.outputConnector`;
+      if (m === model.output) return `model.output`;
 
       for (let i = 0, max = model.hiddenLayers.length; i < max; i++) {
         let hiddenLayer = model.hiddenLayers[i];
         for (let p in hiddenLayer) {
-          if (hiddenLayer[p] === m) {
-            if (!hiddenLayer.hasOwnProperty(p)) continue;
-            return `model.hiddenLayers[${ i }].${ p }`;
-          }
+          if (!hiddenLayer.hasOwnProperty(p)) continue;
+          if (hiddenLayer[p] !== m) continue;
+          return `model.hiddenLayers[${ i }].${ p }`;
         }
       }
-      if (m === model.input) return `model.input`;
-      if (m === model.outputConnector) return `model.outputConnector`;
-      if (m === model.output) return `model.output`;
+
       return matrixOrigin(m, stateIndex);
     }
 
@@ -596,11 +613,11 @@ export default class RNN {
     for (let i = 0, max = states.length; i < max; i++) {
       let state = states[i];
       statesRaw.push(`states[${ i }] = {
-        name: '${ state.forwardFn.name }',
-        left: ${ matrixToString(state.left, i) },
-        right: ${ matrixToString(state.right, i) },
-        product: ${ matrixToString(state.product, i) }
-      }`);
+      name: '${ state.forwardFn.name }',
+      left: ${ matrixToString(state.left, i) },
+      right: ${ matrixToString(state.right, i) },
+      product: ${ matrixToString(state.product, i) }
+    }`);
 
       let fnName = state.forwardFn.name;
       if (!usedFunctionNames[fnName]) {
@@ -613,31 +630,25 @@ export default class RNN {
       }
     }
 
-    return new Function('input', `
+    return new Function('input', 'maxPredictionLength', '_sampleI', 'temperature', `
+  if (typeof input === 'undefined') input = [];
+  if (typeof maxPredictionLength === 'undefined') maxPredictionLength = 100;
+  if (typeof _sampleI === 'undefined') _sampleI = false;
+  if (typeof temperature === 'undefined') temperature = 1;
+  
   var model = ${ modelAsString };
-  
-  function Matrix(rows, columns) {
-    this.rows = rows;
-    this.columns = columns;
-    this.weights = zeros(rows * columns);
-    this.recurrence = zeros(rows * columns);
-  }
-  
-  function zeros(size) {
-    if (typeof Float64Array !== 'undefined') return new Float64Array(size);
-    var array = new Array(size);
-    for (var i = 0; i < size; i++) {
-      array[i] = 0;
-    }
-    return array;
-  }
-  
-  for (var inputIndex = -1, inputMax = input.length; inputIndex < inputMax; inputIndex++) {
-    var source = (i === -1 ? 0 : input[i] + 1); // first step: start with START token
-    var rowPluckIndex = source; //connect up to rowPluck
+  var _i = 0;
+  var result = input.slice(0);
+  var states = [];
+  var prevStates;
+  while (true) {
+    // sample predicted letter
+    var ix = result.length === 0 ? 0 : result[result.length - 1]; // first step: start with START token
+    var rowPluckIndex = ix; //connect up to rowPluck
+    prevStates = states;
+    states = [];
+    ${ statesRaw.join(';\n    ') };
     for (var stateIndex = 0, stateMax = ${ statesRaw.length }; stateIndex < stateMax; stateIndex++) {
-      var states = [];
-      ${ statesRaw.join(';\n      ') };
       var state = states[stateIndex];
       var product = state.product;
       var left = state.left;
@@ -647,8 +658,51 @@ export default class RNN {
 ${ innerFunctionsSwitch.join('\n') }
       }
     }
+    
+    var logProbabilities = state.product;
+    if (temperature !== 1 && _sampleI) {
+      // scale log probabilities by temperature and renormalize
+      // if temperature is high, logprobs will go towards zero
+      // and the softmax outputs will be more diffuse. if temperature is
+      // very low, the softmax outputs will be more peaky
+      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {
+        logProbabilities.weights[q] /= temperature;
+      }
+    }
+
+    var probs = softmax(logProbabilities);
+
+    if (_sampleI) {
+      ix = sampleI(probs);
+    } else {
+      ix = maxI(probs);
+    }
+    
+    _i++;
+    if (ix === 0) {
+      // END token predicted, break out
+      break;
+    }
+    if (_i >= maxPredictionLength) {
+      // something is wrong
+      break;
+    }
+
+    result.push(ix);
   }
+
+  return result.map(function(value) { return value - 1; });
   
-  return state.product;`);
+  function Matrix(rows, columns) {
+    this.rows = rows;
+    this.columns = columns;
+    this.weights = zeros(rows * columns);
+    this.recurrence = zeros(rows * columns);
+  }
+  ${ zeros.toString() }
+  ${ softmax.toString() }
+  ${ randomF.toString() }
+  ${ sampleI.toString() }
+  ${ maxI.toString() }`);
   }
 }

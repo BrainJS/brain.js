@@ -53,7 +53,7 @@ describe('gru', () => {
       }
       console.timeEnd('math lstm');
       console.log('');
-      assert.equal(vocab.toCharacters(net.predict()).join(''), phrase);
+      assert.equal(vocab.toString(net.predict()).join(''), phrase);
     });
 
     it('can predict a phrase when given the first letter', () => {
@@ -98,7 +98,8 @@ describe('gru', () => {
       console.log('');
       assert.equal(vocab.toCharacters(net.predict()).join(''), phrase);
       const fn = net.toFunction();
-      fn(phraseAsIndices);
+      require('fs').writeFileSync('raw-gru.js', fn.toString());
+      console.log(vocab.toCharacters(fn(phraseAsIndices)).join(''));
     });
   });
 });

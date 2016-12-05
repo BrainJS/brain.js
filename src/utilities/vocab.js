@@ -67,6 +67,10 @@ export default class Vocab {
     return result;
   }
 
+  toString(indexes, maxThreshold) {
+    return this.toCharacters(indexes, maxThreshold).join('');
+  }
+
   static allPrintable(maxThreshold) {
     const values = [];
     for(let i = 32; i <= 126; i++) {

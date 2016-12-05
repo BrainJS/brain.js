@@ -1,4 +1,3 @@
-import zeros from '../../utilities/zeros';
 /*
  *
  * @param {Matrix} product
