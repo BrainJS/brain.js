@@ -97,9 +97,9 @@ describe('gru', () => {
     it('can output same as run method', () => {
       const vocab = new Vocab(['h', 'i', ' ', 'm', 'o', '!']);
       var net = new GRU({
-        inputSize: 7,
+        inputSize: 6,
         inputRange: vocab.characters.length,
-        outputSize: 7
+        outputSize: 6
       });
 
       for (var i = 0; i < 100; i++) {
