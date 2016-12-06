@@ -1,16 +1,9 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = copy;
-
-var _zeros = require('../../utilities/zeros');
-
-var _zeros2 = _interopRequireDefault(_zeros);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 /*
  *
  * @param {Matrix} product

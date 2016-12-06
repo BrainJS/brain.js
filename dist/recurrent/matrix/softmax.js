@@ -11,13 +11,15 @@ var _2 = _interopRequireDefault(_);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//prevent parser from renaming when calling toString() method later
+var Matrix = _2.default;
 /**
  *
  * @param {Matrix} m
  * @returns {Matrix}
  */
 function softmax(m) {
-  var result = new _2.default(m.rows, m.columns); // probability volume
+  var result = new Matrix(m.rows, m.columns); // probability volume
   var maxVal = -999999;
   var i = void 0;
   var max = m.weights.length;

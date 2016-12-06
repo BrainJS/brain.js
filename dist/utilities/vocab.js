@@ -1,10 +1,12 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -15,10 +17,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @constructor
  */
 var Vocab = function () {
-  function Vocab(values, maxThreshold) {
+  function Vocab(values) {
+    var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
     _classCallCheck(this, Vocab);
 
-    maxThreshold = maxThreshold || 0;
     this.values = values;
     // go over all characters and keep track of all unique ones seen
     // count up all characters
@@ -53,7 +56,7 @@ var Vocab = function () {
   }
 
   _createClass(Vocab, [{
-    key: "toIndexes",
+    key: 'toIndexes',
     value: function toIndexes(phrase) {
       var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 
@@ -70,7 +73,7 @@ var Vocab = function () {
       return result;
     }
   }, {
-    key: "toCharacters",
+    key: 'toCharacters',
     value: function toCharacters(indexes) {
       var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 
@@ -85,6 +88,28 @@ var Vocab = function () {
       }
 
       return result;
+    }
+  }, {
+    key: 'toString',
+    value: function toString(indexes, maxThreshold) {
+      return this.toCharacters(indexes, maxThreshold).join('');
+    }
+  }], [{
+    key: 'allPrintable',
+    value: function allPrintable(maxThreshold) {
+      var values = [];
+      for (var i = 32; i <= 126; i++) {
+        values.push(String.fromCharCode(i));
+      }
+      return new Vocab(values, maxThreshold);
+    }
+  }, {
+    key: 'fromString',
+    value: function fromString(string, maxThreshold) {
+      var _String$prototype;
+
+      var values = (_String$prototype = String.prototype).concat.apply(_String$prototype, _toConsumableArray(new Set(string)));
+      return new Vocab(values, maxThreshold);
     }
   }]);
 

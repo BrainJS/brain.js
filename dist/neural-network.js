@@ -177,10 +177,11 @@ var NeuralNetwork = function () {
 
   }, {
     key: 'train',
-    value: function train(data, options) {
+    value: function train(data) {
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
       data = this.formatData(data);
 
-      options = options || {};
       var iterations = options.iterations || 20000;
       var errorThresh = options.errorThresh || 0.005;
       var log = options.log ? typeof options.log === 'function' ? options.log : console.log : false;
