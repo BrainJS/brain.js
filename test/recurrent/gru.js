@@ -94,6 +94,71 @@ describe('gru', () => {
     });
   });
 
+  describe('json', () => {
+    describe('.toJSON', () => {
+      it('can export model as json', () => {
+        var net = new GRU({
+          inputSize: 6,
+          inputRange: 12,
+          outputSize: 6
+        });
+        var json = net.toJSON();
+
+        compare(json.input, net.model.input);
+        net.model.hiddenLayers.forEach((layer, i) => {
+          for (var p in layer) {
+            compare(json.hiddenLayers[i][p], layer[p])
+          }
+        });
+        compare(json.output, net.model.output);
+        compare(json.outputConnector, net.model.outputConnector);
+
+        function compare(left, right) {
+          left.weights.forEach((value, i) => {
+            assert.equal(value, right.weights[i]);
+          });
+          assert.equal(left.rows, right.rows);
+          assert.equal(left.columns, right.columns);
+        }
+      });
+    });
+
+    describe('.fromJSON', () => {
+      it('can import model from json', () => {
+        var vocab = new Vocab('abcdef'.split(''));
+        var jsonString = JSON.stringify(new GRU({
+          inputSize: 6, //<- length
+          inputRange: vocab.characters.length,
+          outputSize: vocab.characters.length //<- length
+        }).toJSON());
+
+        var clone = new GRU({ json: JSON.parse(jsonString) });
+
+        assert.equal(jsonString, JSON.stringify(clone.toJSON()));
+        assert.equal(clone.inputSize, 6);
+        assert.equal(clone.inputRange, vocab.characters.length);
+        assert.equal(clone.outputSize, vocab.characters.length);
+      });
+
+      it('can import model from json and train again', () => {
+        var vocab = new Vocab('abcdef'.split(''));
+        var jsonString = JSON.stringify(new GRU({
+          inputSize: 6, //<- length
+          inputRange: vocab.characters.length,
+          outputSize: vocab.characters.length //<- length
+        }).toJSON());
+
+        var clone = new GRU({ json: JSON.parse(jsonString) });
+        clone.trainPattern([0, 1, 2, 3, 4, 5]);
+
+        assert.notEqual(jsonString, JSON.stringify(clone.toJSON()));
+        assert.equal(clone.inputSize, 6);
+        assert.equal(clone.inputRange, vocab.characters.length);
+        assert.equal(clone.outputSize, vocab.characters.length);
+      });
+    });
+  });
+
   describe('.toFunction', () => {
     it('can output same as run method', () => {
       const vocab = new Vocab(['h', 'i', ' ', 'm', 'o', '!']);
