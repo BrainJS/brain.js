@@ -24,7 +24,7 @@ describe('rnn', () => {
         inputRange: 2,
         outputSize: 2
       });
-      net.train([1, 1, 0]);
+      net.runInput([1, 1, 0]);
       net.model.input.recurrence.forEach((v) => {
         assert.equal(v, 0);
       });
@@ -79,13 +79,13 @@ describe('rnn', () => {
         called[4] = v;
         return {rows: 0, columns: 0, weights: [], recurrence: []}; }
       };
-      net.train([0, 0, 0]);
+      net.runInput([0, 0, 0]);
       assert.equal(called.length, 4);
       assert.equal(called[0], 0);
       assert.equal(called[1], 1);
       assert.equal(called[2], 1);
       assert.equal(called[3], 1);
-      net.train([0, 1, 1]);
+      net.runInput([0, 1, 1]);
       assert.equal(called.length, 4);
       assert.equal(called[0], 0);
       assert.equal(called[1], 1);
@@ -128,14 +128,14 @@ describe('rnn', () => {
           backPropagateCalled[3] = v;
         }
       };
-      net.train([0, 0, 0]);
+      net.runInput([0, 0, 0]);
       net.runBackpropagate([0, 0, 0]);
       assert.equal(backPropagateCalled.length, 4);
       assert.equal(backPropagateCalled[0], 0);
       assert.equal(backPropagateCalled[1], 1);
       assert.equal(backPropagateCalled[2], 1);
       assert.equal(backPropagateCalled[3], 1);
-      net.train([0, 1, 1]);
+      net.runInput([0, 1, 1]);
       net.runBackpropagate([0, 1, 1]);
       assert.equal(backPropagateCalled.length, 4);
       assert.equal(backPropagateCalled[0], 0);
@@ -179,14 +179,14 @@ describe('rnn', () => {
           backPropagateCalled[3] = v;
         }
       };
-      net.train([0, 0, 0]);
+      net.runInput([0, 0, 0]);
       net.runBackpropagate([0, 0, 0]);
       assert.equal(backPropagateCalled.length, 4);
       assert.equal(backPropagateCalled[0], 0);
       assert.equal(backPropagateCalled[1], 1);
       assert.equal(backPropagateCalled[2], 1);
       assert.equal(backPropagateCalled[3], 1);
-      net.train([0, 1, 1]);
+      net.runInput([0, 1, 1]);
       net.runBackpropagate([0, 1, 1]);
       assert.equal(backPropagateCalled.length, 4);
       assert.equal(backPropagateCalled[0], 0);
@@ -203,7 +203,7 @@ describe('rnn', () => {
           assert.equal(value, 0);
         });
       });
-      net.train(input);
+      net.runInput(input);
 
       net.model.input.recurrence.forEach((v) => {
         assert.equal(v, 0);
@@ -243,7 +243,7 @@ describe('rnn', () => {
     it('recurrence is reset to zero after .step() is called', () => {
       var net = xorNet();
       var input = xorNetValues[2];
-      net.train(input);
+      net.runInput(input);
       net.runBackpropagate(input);
       net.step();
 
@@ -275,7 +275,7 @@ describe('rnn', () => {
             assert(value < 50 && value > -50);
           });
         });
-        net.train(input);
+        net.runInput(input);
         rnnCheck.allMatrices(net.model, (values) => {
           values.forEach((value, i) => {
             assert(value < 50 && value > -50);
@@ -303,8 +303,7 @@ describe('rnn', () => {
 
       for (var i = 0; i < 10; i++) {
         var input = xorNetValues[Math.floor((xorNetValues.length - 1) * Math.random())];
-        net.run(input);
-        perplexity = net.totalPerplexity;
+        perplexity = net.trainPattern(input);
         if (i === 0) {
           initialPerplexity = perplexity;
         }
@@ -317,10 +316,10 @@ describe('rnn', () => {
       var net = xorNet();
       for (var i = 0; i < 200; i++) {
         var input = xorNetValues[Math.floor((xorNetValues.length - 1) * Math.random())];
-        net.run(input);
+        net.trainPattern(input);
       }
 
-      assert.equal(net.predict().length, 3);
+      assert.equal(net.run().length, 3);
     });
   });
 });

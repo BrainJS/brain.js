@@ -19,9 +19,9 @@ export function build() {
 export function train(rnn) {
   let items = build();
   for (let i = 0, max = items.length; i < max; i++) {
-    rnn.run(vocab.toIndexes(items[i]));
+    rnn.trainPattern(vocab.toIndexes(items[i]));
     if (i % 10 === 0) {
-      console.log(vocab.toCharacters(rnn.predict()).join(''));
+      console.log(vocab.toCharacters(rnn.run()).join(''));
     }
   }
 }
@@ -30,9 +30,9 @@ export function trainUntil(rnn, fn) {
   let items = build();
   var i = 0;
   while (true) {
-    rnn.run(vocab.toIndexes(items.random()));
+    rnn.trainPattern(vocab.toIndexes(items.random()));
     if (i % 10 === 0) {
-      var preduction = vocab.toCharacters(rnn.predict()).join('');
+      var preduction = vocab.toCharacters(rnn.run()).join('');
       //console.log(preduction);
       if (fn(preduction)) {
         break;

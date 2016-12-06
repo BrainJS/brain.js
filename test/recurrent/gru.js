@@ -20,13 +20,13 @@ describe('gru', () => {
       });
 
       for (var i = 0; i < 1000; i++) {
-        net.run(vocab.toIndexes(randomMath()));
+        net.trainPattern(vocab.toIndexes(randomMath()));
         if (i % 10 === 0) {
-          console.log(vocab.toCharacters(net.predict()).join(''));
+          console.log(vocab.toCharacters(net.run()).join(''));
         }
       }
 
-      var prediction = vocab.toCharacters(net.predict()).join('');
+      var prediction = vocab.toCharacters(net.run()).join('');
       assert(/[+]/.test(prediction));
       assert(/[=]/.test(prediction));
       console.timeEnd('math gru');
@@ -44,16 +44,13 @@ describe('gru', () => {
         outputSize: 40
       });
 
-      console.time('math lstm');
       for (var i = 0; i < 500; i++) {
-        net.run(vocab.toIndexes(phrase));
+        net.trainPattern(vocab.toIndexes(phrase));
         if (i % 10 === 0) {
-          console.log(vocab.toCharacters(net.predict()).join(''));
+          console.log(vocab.toCharacters(net.run()).join(''));
         }
       }
-      console.timeEnd('math lstm');
-      console.log('');
-      assert.equal(vocab.toCharacters(net.predict()).join(''), phrase);
+      assert.equal(vocab.toCharacters(net.run()).join(''), phrase);
       done();
     });
 
@@ -66,16 +63,13 @@ describe('gru', () => {
         outputSize: 3
       });
 
-      console.time('math lstm');
       for (var i = 0; i < 100; i++) {
-        net.run(vocab.toIndexes(phrase));
+        net.trainPattern(vocab.toIndexes(phrase));
         if (i % 10 === 0) {
-          console.log(vocab.toCharacters(net.predict()).join(''));
+          console.log(vocab.toCharacters(net.run()).join(''));
         }
       }
-      console.timeEnd('math lstm');
-      console.log('');
-      assert.equal(vocab.toCharacters(net.predict(vocab.toIndexes('b'))).join(''), phrase);
+      assert.equal(vocab.toCharacters(net.run(vocab.toIndexes('b'))).join(''), phrase);
       done();
     });
 
@@ -88,17 +82,13 @@ describe('gru', () => {
         inputRange: vocab.characters.length,
         outputSize: 40
       });
-
-      console.time('math lstm');
-      for (var i = 0; i < 1000; i++) {
-        net.run(phraseAsIndices);
+      for (var i = 0; i < 200; i++) {
+        net.trainPattern(phraseAsIndices);
         if (i % 10 === 0) {
-          console.log(vocab.toCharacters(net.predict()).join(''));
+          console.log(vocab.toCharacters(net.run()).join(''));
         }
       }
-      console.timeEnd('math lstm');
-      console.log('');
-      assert.equal(vocab.toCharacters(net.predict()).join(''), phrase);
+      assert.equal(vocab.toCharacters(net.run()).join(''), phrase);
       done();
     });
   });
@@ -113,13 +103,13 @@ describe('gru', () => {
       });
 
       for (var i = 0; i < 100; i++) {
-        net.run(vocab.toIndexes('hi mom!'));
+        net.trainPattern(vocab.toIndexes('hi mom!'));
         if (i % 10) {
-          console.log(vocab.toCharacters(net.predict()).join(''));
+          console.log(vocab.toCharacters(net.run()).join(''));
         }
       }
 
-      var lastOutput = vocab.toCharacters(net.predict()).join('');
+      var lastOutput = vocab.toCharacters(net.run()).join('');
       assert.equal(vocab.toCharacters(net.toFunction()()).join(''), lastOutput);
     });
   });

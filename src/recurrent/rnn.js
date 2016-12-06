@@ -8,24 +8,9 @@ import copy from './matrix/copy';
 import { randomF } from '../utilities/random';
 import zeros from '../utilities/zeros';
 
-const defaults = {
-  isBackPropagate: true,
-  // hidden size should be a list
-  inputSize: 20,
-  inputRange: 20,
-  hiddenSizes:[20,20],
-  outputSize: 20,
-  learningRate: 0.01,
-  decayRate: 0.999,
-  smoothEps: 1e-8,
-  regc: 0.000001,
-  clipval: 5,
-  json: null
-};
-
 export default class RNN {
-  constructor(options) {
-    options = options || {};
+  constructor(options = {}) {
+    const defaults = RNN.defaults;
 
     for (let p in defaults) {
       if (defaults.hasOwnProperty(p) && p !== 'isBackPropagate') {
@@ -39,6 +24,12 @@ export default class RNN {
     this.totalCost = null;
     this.ratioClipped = null;
 
+    this.model = null;
+
+    this.initialize();
+  }
+
+  initialize() {
     this.model = {
       input: null,
       hiddenLayers: [],
@@ -190,13 +181,14 @@ export default class RNN {
     allMatrices.push(model.output);
   }
 
-  run(input) {
-    this.train(input);
+  trainPattern(input) {
+    const err = this.runInput(input);
     this.runBackpropagate(input);
     this.step();
+    return err;
   }
 
-  train(input) {
+  runInput(input) {
     this.runs++;
     let model = this.model;
     let max = input.length;
@@ -226,14 +218,14 @@ export default class RNN {
       logProbabilities.recurrence[target] -= 1;
     }
 
-    this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
     this.totalCost = cost;
+    return this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
   }
 
   runBackpropagate(input) {
-    var i = input.length + 0;
-    var model = this.model;
-    var equations = model.equations;
+    let i = input.length + 0;
+    let model = this.model;
+    let equations = model.equations;
     while(i > 0) {
       equations[i].runBackpropagate(input[i - 1] + 1);
       i--;
@@ -290,21 +282,22 @@ export default class RNN {
     this.ratioClipped = numClipped / numTot;
   }
 
-  predict(result = [], maxPredictionLength = 100, _sampleI = false, temperature = 1) {
+  run(input = [], maxPredictionLength = 100, _sampleI = false, temperature = 1) {
     let model = this.model;
     let equation;
     let i = 0;
+    let output = input.length > 0 ? input.slice(0) : [];
     while (model.equations.length < maxPredictionLength) {
       this.bindEquation();
     }
     while (true) {
-      let ix = result.length === 0 ? 0 : result[result.length - 1];
+      let ix = output.length === 0 ? 0 : output[output.length - 1];
       equation = model.equations[i];
       // sample predicted letter
-      let output = equation.run(ix);
+      let outputIndex = equation.run(ix);
 
       let logProbabilities = new Matrix(model.output.rows, model.output.columns);
-      copy(logProbabilities, output);
+      copy(logProbabilities, outputIndex);
       if (temperature !== 1 && _sampleI) {
         // scale log probabilities by temperature and renormalize
         // if temperature is high, logprobs will go towards zero
@@ -333,34 +326,12 @@ export default class RNN {
         break;
       }
 
-      result.push(ix);
+      output.push(ix);
     }
 
-    return result.map((value) => value - 1);
-  }
-
-  /**
-   *
-   * @param input
-   * @returns {*}
-   */
-  runInput(input) {
-    this.outputs[0] = input;  // set output state of input layer
-
-    let output = null;
-    for (let layer = 1; layer <= this.outputLayer; layer++) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let weights = this.weights[layer][node];
-
-        let sum = this.biases[layer][node];
-        for (let k = 0; k < weights.length; k++) {
-          sum += weights[k] * input[k];
-        }
-        this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
-      }
-      output = input = this.outputs[layer];
-    }
-    return output;
+    return output
+      .slice(input.length)
+      .map((value) => value - 1);
   }
 
   /**
@@ -369,18 +340,16 @@ export default class RNN {
    * @param options
    * @returns {{error: number, iterations: number}}
    */
-  /*train(data, options) {
-    throw new Error('not yet implemented');
-    //data = this.formatData(data);
-
-    options = options || {};
-    let iterations = options.iterations || 20000;
-    let errorThresh = options.errorThresh || 0.005;
-    let log = options.log ? (typeof options.log === 'function' ? options.log : console.log) : false;
-    let logPeriod = options.logPeriod || 10;
-    let learningRate = options.learningRate || this.learningRate || 0.3;
+  train(data, options = {}) {
+    options = Object.assign({}, options, RNN.trainDefaults);
+    data = this.formatData(data);
+    let iterations = options.iterations;
+    let errorThresh = options.errorThresh;
+    let log = options.log === true ? console.log : options.log;
+    let logPeriod = options.logPeriod;
+    let learningRate = options.learningRate || this.learningRate;
     let callback = options.callback;
-    let callbackPeriod = options.callbackPeriod || 10;
+    let callbackPeriod = options.callbackPeriod;
     let sizes = [];
     let inputSize = data[0].input.length;
     let outputSize = data[0].output.length;
@@ -388,7 +357,7 @@ export default class RNN {
     if (!hiddenSizes) {
       sizes.push(Math.max(3, Math.floor(inputSize / 2)));
     } else {
-      hiddenSizes.forEach(function(size) {
+      hiddenSizes.forEach(size => {
         sizes.push(size);
       });
     }
@@ -396,13 +365,16 @@ export default class RNN {
     sizes.unshift(inputSize);
     sizes.push(outputSize);
 
-    //this.initialize(sizes, options.keepNetworkIntact);
+    if (!options.keepNetworkIntact) {
+      this.initialize();
+    }
 
     let error = 1;
-    for (let i = 0; i < iterations && error > errorThresh; i++) {
+    let i;
+    for (i = 0; i < iterations && error > errorThresh; i++) {
       let sum = 0;
       for (let j = 0; j < data.length; j++) {
-        let err = this.trainPattern(data[j].input, data[j].output, learningRate);
+        let err = this.trainPattern(data[j].input);
         sum += err;
       }
       error = sum / data.length;
@@ -419,24 +391,6 @@ export default class RNN {
       error: error,
       iterations: i
     };
-  }*/
-
-  /**
-   *
-   * @param input
-   * @param target
-   * @param learningRate
-   */
-  trainPattern(input, target, learningRate) {
-    throw new Error('not yet implemented');
-  }
-
-  /**
-   *
-   * @param target
-   */
-  calculateDeltas(target) {
-    throw new Error('not yet implemented');
   }
 
   /**
@@ -471,6 +425,7 @@ export default class RNN {
   }
 
   toJSON() {
+    const defaults = RNN.defaults;
     let model = this.model;
     let options = {};
     for (let p in defaults) {
@@ -495,6 +450,7 @@ export default class RNN {
 
   fromJSON(json) {
     this.json = json;
+    const defaults = RNN.defaults;
     let model = this.model;
     let options = json.options;
     let allMatrices = model.allMatrices;
@@ -706,3 +662,29 @@ ${ innerFunctionsSwitch.join('\n') }
   ${ maxI.toString() }`);
   }
 }
+
+RNN.defaults = {
+  isBackPropagate: true,
+  // hidden size should be a list
+  inputSize: 20,
+  inputRange: 20,
+  hiddenSizes:[20,20],
+  outputSize: 20,
+  learningRate: 0.01,
+  decayRate: 0.999,
+  smoothEps: 1e-8,
+  regc: 0.000001,
+  clipval: 5,
+  json: null
+};
+
+RNN.trainDefaults = {
+  iterations: 20000,
+  errorThresh: 0.005,
+  log: false,
+  logPeriod: 10,
+  learningRate: 0.3,
+  callback: null,
+  callbackPeriod: 10,
+  keepNetworkIntact: false
+};

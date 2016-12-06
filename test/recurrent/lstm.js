@@ -5,7 +5,7 @@ import { vocab, build, train } from '../utilities/math-addition-vocab';
 
 function runAgainstMath(rnn) {
   train(rnn);
-  var prediction = vocab.toCharacters(rnn.predict()).join('');
+  var prediction = vocab.toCharacters(rnn.run()).join('');
   console.log(prediction);
   assert(/^[0-9]+[+][0-9]+[=][0-9]+$/.test(prediction));
 }
@@ -18,11 +18,7 @@ describe('lstm', () => {
         inputRange: vocab.characters.length,
         outputSize: vocab.characters.length
       });
-
-      console.time('math lstm');
       runAgainstMath(net);
-      console.timeEnd('math lstm');
-      console.log('');
     });
   });
 
@@ -36,13 +32,13 @@ describe('lstm', () => {
       });
 
       for (var i = 0; i < 100; i++) {
-        net.run(vocab.toIndexes('hi mom!'));
+        net.trainPattern(vocab.toIndexes('hi mom!'));
         if (i % 10) {
-          console.log(vocab.toCharacters(net.predict()).join(''));
+          console.log(vocab.toCharacters(net.run()).join(''));
         }
       }
 
-      var lastOutput = vocab.toCharacters(net.predict()).join('');
+      var lastOutput = vocab.toCharacters(net.run()).join('');
       assert.equal(vocab.toCharacters(net.toFunction()()).join(''), lastOutput);
     });
   });
