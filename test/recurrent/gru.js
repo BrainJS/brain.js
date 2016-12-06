@@ -45,7 +45,7 @@ describe('gru', () => {
       });
 
       console.time('math lstm');
-      for (var i = 0; i < 100; i++) {
+      for (var i = 0; i < 500; i++) {
         net.run(vocab.toIndexes(phrase));
         if (i % 10 === 0) {
           console.log(vocab.toCharacters(net.predict()).join(''));
