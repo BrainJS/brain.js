@@ -178,17 +178,17 @@ var NeuralNetwork = function () {
   }, {
     key: 'train',
     value: function train(data) {
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      var _options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
+      var options = Object.assign({}, NeuralNetwork.trainDefaults, _options);
       data = this.formatData(data);
-
-      var iterations = options.iterations || 20000;
-      var errorThresh = options.errorThresh || 0.005;
-      var log = options.log ? typeof options.log === 'function' ? options.log : console.log : false;
-      var logPeriod = options.logPeriod || 10;
-      var learningRate = options.learningRate || this.learningRate || 0.3;
+      var iterations = options.iterations;
+      var errorThresh = options.errorThresh;
+      var log = options.log === true ? console.log : options.log;
+      var logPeriod = options.logPeriod;
+      var learningRate = _options.learningRate || this.learningRate || options.learningRate;
       var callback = options.callback;
-      var callbackPeriod = options.callbackPeriod || 10;
+      var callbackPeriod = options.callbackPeriod;
       var sizes = [];
       var inputSize = data[0].input.length;
       var outputSize = data[0].output.length;
@@ -598,4 +598,16 @@ var NeuralNetwork = function () {
 }();
 
 exports.default = NeuralNetwork;
+
+
+NeuralNetwork.trainDefaults = {
+  iterations: 20000,
+  errorThresh: 0.005,
+  log: false,
+  logPeriod: 10,
+  learningRate: 0.3,
+  callback: null,
+  callbackPeriod: 10,
+  keepNetworkIntact: false
+};
 //# sourceMappingURL=neural-network.js.map
