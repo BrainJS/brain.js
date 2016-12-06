@@ -2412,9 +2412,8 @@ var RNN = function () {
     var defaults = RNN.defaults;
 
     for (var p in defaults) {
-      if (defaults.hasOwnProperty(p) && p !== 'isBackPropagate') {
-        this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
-      }
+      if (!defaults.hasOwnProperty(p)) continue;
+      this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
     }
 
     this.stepCache = {};
@@ -2422,7 +2421,6 @@ var RNN = function () {
     this.totalPerplexity = null;
     this.totalCost = null;
     this.ratioClipped = null;
-
     this.model = null;
 
     this.initialize();
@@ -2437,8 +2435,8 @@ var RNN = function () {
         output: null,
         equations: [],
         allMatrices: [],
-        outputMatrixIndex: -1,
-        equationConnections: []
+        equationConnections: [],
+        outputMatrixIndex: -1
       };
 
       if (this.json) {
@@ -2645,6 +2643,7 @@ var RNN = function () {
       var numClipped = 0;
       var numTot = 0;
       var allMatrices = model.allMatrices;
+      var outputMatrixIndex = model.outputMatrixIndex;
       var matrixIndexes = allMatrices.length;
       for (var matrixIndex = 0; matrixIndex < matrixIndexes; matrixIndex++) {
         var matrix = allMatrices[matrixIndex];
@@ -2654,7 +2653,7 @@ var RNN = function () {
         var cache = this.stepCache[matrixIndex];
 
         //if we are in an equation, reset the weights and recurrence to 0, to prevent exploding gradient problem
-        if (matrixIndex > model.outputMatrixIndex) {
+        if (matrixIndex > outputMatrixIndex) {
           for (var i = 0, n = matrix.weights.length; i < n; i++) {
             matrix.weights[i] = 0;
             matrix.recurrence[i] = 0;
@@ -2893,12 +2892,13 @@ var RNN = function () {
       });
       model.outputConnector = _matrix2.default.fromJSON(json.outputConnector);
       model.output = _matrix2.default.fromJSON(json.output);
-      allMatrices.push(model.outputConnector, model.output);
+      allMatrices.push(model.outputConnector);
+      model.outputMatrixIndex = allMatrices.length;
+      allMatrices.push(model.output);
 
       for (var p in defaults) {
-        if (defaults.hasOwnProperty(p) && p !== 'isBackPropagate') {
-          this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
-        }
+        if (!defaults.hasOwnProperty(p)) continue;
+        this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
       }
 
       this.bindEquation();
@@ -3020,7 +3020,6 @@ exports.default = RNN;
 
 
 RNN.defaults = {
-  isBackPropagate: true,
   // hidden size should be a list
   inputSize: 20,
   inputRange: 20,
@@ -3555,7 +3554,7 @@ var Vocab = function () {
   }], [{
     key: 'allPrintable',
     value: function allPrintable(maxThreshold) {
-      var values = [];
+      var values = ['\n'];
       for (var i = 32; i <= 126; i++) {
         values.push(String.fromCharCode(i));
       }

@@ -103,7 +103,7 @@ var Vocab = function () {
   }], [{
     key: 'allPrintable',
     value: function allPrintable(maxThreshold) {
-      var values = [];
+      var values = ['\n'];
       for (var i = 32; i <= 126; i++) {
         values.push(String.fromCharCode(i));
       }
