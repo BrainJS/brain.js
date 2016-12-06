@@ -48,5 +48,21 @@ describe('json', () => {
       assert.equal(clone.inputRange, vocab.characters.length);
       assert.equal(clone.outputSize, vocab.characters.length);
     });
+
+    it('can import model from json and train again', () => {
+      var jsonString = JSON.stringify(new RNN({
+        inputSize: 6, //<- length
+        inputRange: vocab.characters.length,
+        outputSize: vocab.characters.length //<- length
+      }).toJSON());
+
+      var clone = new RNN({ json: JSON.parse(jsonString) });
+      clone.trainPattern([0, 1, 2, 3, 4, 5]);
+
+      assert.notEqual(jsonString, JSON.stringify(clone.toJSON()));
+      assert.equal(clone.inputSize, 6);
+      assert.equal(clone.inputRange, vocab.characters.length);
+      assert.equal(clone.outputSize, vocab.characters.length);
+    });
   });
 });

@@ -13,9 +13,8 @@ export default class RNN {
     const defaults = RNN.defaults;
 
     for (let p in defaults) {
-      if (defaults.hasOwnProperty(p) && p !== 'isBackPropagate') {
-        this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
-      }
+      if (!defaults.hasOwnProperty(p)) continue;
+      this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
     }
 
     this.stepCache = {};
@@ -23,7 +22,6 @@ export default class RNN {
     this.totalPerplexity = null;
     this.totalCost = null;
     this.ratioClipped = null;
-
     this.model = null;
 
     this.initialize();
@@ -36,8 +34,8 @@ export default class RNN {
       output: null,
       equations: [],
       allMatrices: [],
-      outputMatrixIndex: -1,
-      equationConnections: []
+      equationConnections: [],
+      outputMatrixIndex: -1
     };
 
     if (this.json) {
@@ -242,6 +240,7 @@ export default class RNN {
     let numClipped = 0;
     let numTot = 0;
     let allMatrices = model.allMatrices;
+    let outputMatrixIndex = model.outputMatrixIndex;
     let matrixIndexes = allMatrices.length;
     for (let matrixIndex = 0; matrixIndex < matrixIndexes; matrixIndex++) {
       let matrix = allMatrices[matrixIndex];
@@ -251,7 +250,7 @@ export default class RNN {
       let cache = this.stepCache[matrixIndex];
 
       //if we are in an equation, reset the weights and recurrence to 0, to prevent exploding gradient problem
-      if (matrixIndex > model.outputMatrixIndex) {
+      if (matrixIndex > outputMatrixIndex) {
         for (let i = 0, n = matrix.weights.length; i < n; i++) {
           matrix.weights[i] = 0;
           matrix.recurrence[i] = 0;
@@ -466,12 +465,13 @@ export default class RNN {
     });
     model.outputConnector = Matrix.fromJSON(json.outputConnector);
     model.output = Matrix.fromJSON(json.output);
-    allMatrices.push(model.outputConnector, model.output);
+    allMatrices.push(model.outputConnector);
+    model.outputMatrixIndex = allMatrices.length;
+    allMatrices.push(model.output);
 
     for (let p in defaults) {
-      if (defaults.hasOwnProperty(p) && p !== 'isBackPropagate') {
-        this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
-      }
+      if (!defaults.hasOwnProperty(p)) continue;
+      this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
     }
 
     this.bindEquation();
@@ -664,7 +664,6 @@ ${ innerFunctionsSwitch.join('\n') }
 }
 
 RNN.defaults = {
-  isBackPropagate: true,
   // hidden size should be a list
   inputSize: 20,
   inputRange: 20,

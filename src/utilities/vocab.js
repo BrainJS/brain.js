@@ -78,7 +78,7 @@ export default class Vocab {
   }
 
   static allPrintable(maxThreshold) {
-    const values = [];
+    const values = ['\n'];
     for(let i = 32; i <= 126; i++) {
       values.push(String.fromCharCode(i));
     }
