@@ -127,16 +127,16 @@ export default class NeuralNetwork {
    * @param options
    * @returns {{error: number, iterations: number}}
    */
-  train(data, options = {}) {
+  train(data, _options = {}) {
+    const options = Object.assign({}, NeuralNetwork.trainDefaults, _options);
     data = this.formatData(data);
-
-    let iterations = options.iterations || 20000;
-    let errorThresh = options.errorThresh || 0.005;
-    let log = options.log ? (typeof options.log === 'function' ? options.log : console.log) : false;
-    let logPeriod = options.logPeriod || 10;
-    let learningRate = options.learningRate || this.learningRate || 0.3;
+    let iterations = options.iterations;
+    let errorThresh = options.errorThresh;
+    let log = options.log === true ? console.log : options.log;
+    let logPeriod = options.logPeriod;
+    let learningRate = _options.learningRate || this.learningRate || options.learningRate;
     let callback = options.callback;
-    let callbackPeriod = options.callbackPeriod || 10;
+    let callbackPeriod = options.callbackPeriod;
     let sizes = [];
     let inputSize = data[0].input.length;
     let outputSize = data[0].output.length;
@@ -526,3 +526,14 @@ export default class NeuralNetwork {
     return this.trainStream;
   }
 }
+
+NeuralNetwork.trainDefaults = {
+  iterations: 20000,
+  errorThresh: 0.005,
+  log: false,
+  logPeriod: 10,
+  learningRate: 0.3,
+  callback: null,
+  callbackPeriod: 10,
+  keepNetworkIntact: false
+};

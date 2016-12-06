@@ -12,13 +12,13 @@ describe('rnn.toFunction', () => {
     });
 
     for (var i = 0; i < 100; i++) {
-      net.run(vocab.toIndexes('hi mom!'));
+      net.trainPattern(vocab.toIndexes('hi mom!'));
       if (i % 10) {
-        console.log(vocab.toCharacters(net.predict()).join(''));
+        console.log(vocab.toCharacters(net.run()).join(''));
       }
     }
 
-    var lastOutput = vocab.toCharacters(net.predict()).join('');
+    var lastOutput = vocab.toCharacters(net.run()).join('');
     assert.equal(vocab.toCharacters(net.toFunction()()).join(''), lastOutput);
   });
 });
