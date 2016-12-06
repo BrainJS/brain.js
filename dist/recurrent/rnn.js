@@ -44,26 +44,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var defaults = {
-  isBackPropagate: true,
-  // hidden size should be a list
-  inputSize: 20,
-  inputRange: 20,
-  hiddenSizes: [20, 20],
-  outputSize: 20,
-  learningRate: 0.01,
-  decayRate: 0.999,
-  smoothEps: 1e-8,
-  regc: 0.000001,
-  clipval: 5,
-  json: null
-};
-
 var RNN = function () {
-  function RNN(options) {
+  function RNN() {
+    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
     _classCallCheck(this, RNN);
 
-    options = options || {};
+    var defaults = RNN.defaults;
 
     for (var p in defaults) {
       if (defaults.hasOwnProperty(p) && p !== 'isBackPropagate') {
@@ -77,24 +64,31 @@ var RNN = function () {
     this.totalCost = null;
     this.ratioClipped = null;
 
-    this.model = {
-      input: null,
-      hiddenLayers: [],
-      output: null,
-      equations: [],
-      allMatrices: [],
-      outputMatrixIndex: -1,
-      equationConnections: []
-    };
+    this.model = null;
 
-    if (this.json) {
-      this.fromJSON(this.json);
-    } else {
-      this.mapModel();
-    }
+    this.initialize();
   }
 
   _createClass(RNN, [{
+    key: 'initialize',
+    value: function initialize() {
+      this.model = {
+        input: null,
+        hiddenLayers: [],
+        output: null,
+        equations: [],
+        allMatrices: [],
+        outputMatrixIndex: -1,
+        equationConnections: []
+      };
+
+      if (this.json) {
+        this.fromJSON(this.json);
+      } else {
+        this.mapModel();
+      }
+    }
+  }, {
     key: 'createHiddenLayers',
     value: function createHiddenLayers() {
       var hiddenSizes = this.hiddenSizes;
@@ -226,15 +220,16 @@ var RNN = function () {
       allMatrices.push(model.output);
     }
   }, {
-    key: 'run',
-    value: function run(input) {
-      this.train(input);
+    key: 'trainPattern',
+    value: function trainPattern(input) {
+      var err = this.runInput(input);
       this.runBackpropagate(input);
       this.step();
+      return err;
     }
   }, {
-    key: 'train',
-    value: function train(input) {
+    key: 'runInput',
+    value: function runInput(input) {
       this.runs++;
       var model = this.model;
       var max = input.length;
@@ -265,8 +260,8 @@ var RNN = function () {
         logProbabilities.recurrence[target] -= 1;
       }
 
-      this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
       this.totalCost = cost;
+      return this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
     }
   }, {
     key: 'runBackpropagate',
@@ -331,9 +326,9 @@ var RNN = function () {
       this.ratioClipped = numClipped / numTot;
     }
   }, {
-    key: 'predict',
-    value: function predict() {
-      var result = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+    key: 'run',
+    value: function run() {
+      var input = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
       var maxPredictionLength = arguments.length <= 1 || arguments[1] === undefined ? 100 : arguments[1];
 
       var _sampleI = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
@@ -343,17 +338,18 @@ var RNN = function () {
       var model = this.model;
       var equation = void 0;
       var i = 0;
+      var output = input.length > 0 ? input.slice(0) : [];
       while (model.equations.length < maxPredictionLength) {
         this.bindEquation();
       }
       while (true) {
-        var ix = result.length === 0 ? 0 : result[result.length - 1];
+        var ix = output.length === 0 ? 0 : output[output.length - 1];
         equation = model.equations[i];
         // sample predicted letter
-        var output = equation.run(ix);
+        var outputIndex = equation.run(ix);
 
         var logProbabilities = new _matrix2.default(model.output.rows, model.output.columns);
-        (0, _copy2.default)(logProbabilities, output);
+        (0, _copy2.default)(logProbabilities, outputIndex);
         if (temperature !== 1 && _sampleI) {
           // scale log probabilities by temperature and renormalize
           // if temperature is high, logprobs will go towards zero
@@ -382,39 +378,12 @@ var RNN = function () {
           break;
         }
 
-        result.push(ix);
+        output.push(ix);
       }
 
-      return result.map(function (value) {
+      return output.slice(input.length).map(function (value) {
         return value - 1;
       });
-    }
-
-    /**
-     *
-     * @param input
-     * @returns {*}
-     */
-
-  }, {
-    key: 'runInput',
-    value: function runInput(input) {
-      this.outputs[0] = input; // set output state of input layer
-
-      var output = null;
-      for (var layer = 1; layer <= this.outputLayer; layer++) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var weights = this.weights[layer][node];
-
-          var sum = this.biases[layer][node];
-          for (var k = 0; k < weights.length; k++) {
-            sum += weights[k] * input[k];
-          }
-          this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
-        }
-        output = input = this.outputs[layer];
-      }
-      return output;
     }
 
     /**
@@ -423,74 +392,62 @@ var RNN = function () {
      * @param options
      * @returns {{error: number, iterations: number}}
      */
-    /*train(data, options) {
-      throw new Error('not yet implemented');
-      //data = this.formatData(data);
-       options = options || {};
-      let iterations = options.iterations || 20000;
-      let errorThresh = options.errorThresh || 0.005;
-      let log = options.log ? (typeof options.log === 'function' ? options.log : console.log) : false;
-      let logPeriod = options.logPeriod || 10;
-      let learningRate = options.learningRate || this.learningRate || 0.3;
-      let callback = options.callback;
-      let callbackPeriod = options.callbackPeriod || 10;
-      let sizes = [];
-      let inputSize = data[0].input.length;
-      let outputSize = data[0].output.length;
-      let hiddenSizes = this.hiddenSizes;
+
+  }, {
+    key: 'train',
+    value: function train(data) {
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      options = Object.assign({}, options, RNN.trainDefaults);
+      data = this.formatData(data);
+      var iterations = options.iterations;
+      var errorThresh = options.errorThresh;
+      var log = options.log === true ? console.log : options.log;
+      var logPeriod = options.logPeriod;
+      var learningRate = options.learningRate || this.learningRate;
+      var callback = options.callback;
+      var callbackPeriod = options.callbackPeriod;
+      var sizes = [];
+      var inputSize = data[0].input.length;
+      var outputSize = data[0].output.length;
+      var hiddenSizes = this.hiddenSizes;
       if (!hiddenSizes) {
         sizes.push(Math.max(3, Math.floor(inputSize / 2)));
       } else {
-        hiddenSizes.forEach(function(size) {
+        hiddenSizes.forEach(function (size) {
           sizes.push(size);
         });
       }
-       sizes.unshift(inputSize);
+
+      sizes.unshift(inputSize);
       sizes.push(outputSize);
-       //this.initialize(sizes, options.keepNetworkIntact);
-       let error = 1;
-      for (let i = 0; i < iterations && error > errorThresh; i++) {
-        let sum = 0;
-        for (let j = 0; j < data.length; j++) {
-          let err = this.trainPattern(data[j].input, data[j].output, learningRate);
+
+      if (!options.keepNetworkIntact) {
+        this.initialize();
+      }
+
+      var error = 1;
+      var i = void 0;
+      for (i = 0; i < iterations && error > errorThresh; i++) {
+        var sum = 0;
+        for (var j = 0; j < data.length; j++) {
+          var err = this.trainPattern(data[j].input);
           sum += err;
         }
         error = sum / data.length;
-         if (log && (i % logPeriod == 0)) {
+
+        if (log && i % logPeriod == 0) {
           log('iterations:', i, 'training error:', error);
         }
-        if (callback && (i % callbackPeriod == 0)) {
+        if (callback && i % callbackPeriod == 0) {
           callback({ error: error, iterations: i });
         }
       }
-       return {
+
+      return {
         error: error,
         iterations: i
       };
-    }*/
-
-    /**
-     *
-     * @param input
-     * @param target
-     * @param learningRate
-     */
-
-  }, {
-    key: 'trainPattern',
-    value: function trainPattern(input, target, learningRate) {
-      throw new Error('not yet implemented');
-    }
-
-    /**
-     *
-     * @param target
-     */
-
-  }, {
-    key: 'calculateDeltas',
-    value: function calculateDeltas(target) {
-      throw new Error('not yet implemented');
     }
 
     /**
@@ -535,6 +492,7 @@ var RNN = function () {
   }, {
     key: 'toJSON',
     value: function toJSON() {
+      var defaults = RNN.defaults;
       var model = this.model;
       var options = {};
       for (var p in defaults) {
@@ -560,6 +518,7 @@ var RNN = function () {
     key: 'fromJSON',
     value: function fromJSON(json) {
       this.json = json;
+      var defaults = RNN.defaults;
       var model = this.model;
       var options = json.options;
       var allMatrices = model.allMatrices;
@@ -699,4 +658,31 @@ var RNN = function () {
 }();
 
 exports.default = RNN;
+
+
+RNN.defaults = {
+  isBackPropagate: true,
+  // hidden size should be a list
+  inputSize: 20,
+  inputRange: 20,
+  hiddenSizes: [20, 20],
+  outputSize: 20,
+  learningRate: 0.01,
+  decayRate: 0.999,
+  smoothEps: 1e-8,
+  regc: 0.000001,
+  clipval: 5,
+  json: null
+};
+
+RNN.trainDefaults = {
+  iterations: 20000,
+  errorThresh: 0.005,
+  log: false,
+  logPeriod: 10,
+  learningRate: 0.3,
+  callback: null,
+  callbackPeriod: 10,
+  keepNetworkIntact: false
+};
 //# sourceMappingURL=rnn.js.map
