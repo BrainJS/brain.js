@@ -1,33 +1,40 @@
 {
   "name": "brain.js",
   "description": "Neural network library",
-  "version": "1.0.0-alpha",
+  "version": "1.0.0",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/harthur-org/brain.js.git"
   },
+  "scripts": {
+    "test-base": "find ./test/base/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
+    "test-base-cv": "find ./test/base/cross-validation/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
+    "test-recurrent": "find ./test/recurrent/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
+    "test-utilities": "find ./test/utilities/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
+    "test": "npm run test-base && npm run test-base-cv && npm run test-recurrent && npm run test-utilities",
+    "dist": "babel src --out-dir dist --source-maps",
+    "browser": "browserify ./index.js -p licensify -o browser.js",
+    "browser-min": "browserify ./index.js -p licensify -g uglifyify -o browser.min.js",
+    "make": "rm -fr ./dist && npm run dist && git add ./dist && npm run browser && npm run browser-min"
+  },
   "main": "./index.js",
   "devDependencies": {
+    "babel-core": "^6.14.0",
     "babel-preset-es2015": "^6.14.0",
-    "babel-register": "^6.14.0",
-    "browserify": "~3.46.1",
-    "canvas": "~1.3.12",
-    "grunt": "^0.4.5",
-    "grunt-babel": "^6.0.0",
-    "grunt-browserify": "^5.0.0",
-    "grunt-cli": "^1.2.0",
-    "grunt-contrib-uglify": "~0.2.7",
-    "grunt-mocha-test": "~0.11.0",
-    "load-grunt-tasks": "^3.5.2",
-    "mocha": "^3.0.2"
+    "browserify": "^13.1.0",
+    "canvas": "^1.4.0",
+    "licensify": "^3.1.2",
+    "mocha": "^3.0.2",
+    "sinon": "^1.17.6",
+    "uglifyify": "^3.0.2"
   },
   "keywords": [
     "ai",
     "artificial-intelligence",
     "brain",
     "brainjs",
-    "brain,js",
+    "brain.js",
     "feed forward",
     "neural network",
     "classifier",
@@ -35,17 +42,18 @@
     "network",
     "neural-networks",
     "machine-learning",
-    "synpapse"
+    "synapse"
   ],
   "bugs": {
     "url": "https://github.com/harthur-org/brain.js/issues"
   },
-  "homepage": "https://github.com/harthur-org/brain.jsreadme",
+  "homepage": "https://github.com/harthur-org/brain.js#readme",
   "directories": {
     "test": "test"
   },
   "license": "MIT",
   "dependencies": {
-    "babel-plugin-transform-object-rest-spread": "^6.8.0"
+    "babel-plugin-transform-object-rest-spread": "^6.8.0",
+    "babel-polyfill": "^6.13.0"
   }
 }

@@ -24,6 +24,18 @@ var _trainStream = require('./train-stream');
 
 var _trainStream2 = _interopRequireDefault(_trainStream);
 
+var _rnn = require('./recurrent/rnn');
+
+var _rnn2 = _interopRequireDefault(_rnn);
+
+var _lstm = require('./recurrent/lstm');
+
+var _lstm2 = _interopRequireDefault(_lstm);
+
+var _gru = require('./recurrent/gru');
+
+var _gru2 = _interopRequireDefault(_gru);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
@@ -31,6 +43,11 @@ exports.default = {
   likely: _likely2.default,
   lookup: _lookup2.default,
   NeuralNetwork: _neuralNetwork2.default,
-  TrainStream: _trainStream2.default
+  TrainStream: _trainStream2.default,
+  recurrent: {
+    RNN: _rnn2.default,
+    LSTM: _lstm2.default,
+    GRU: _gru2.default
+  }
 };
 //# sourceMappingURL=index.js.map
