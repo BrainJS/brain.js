@@ -66,6 +66,9 @@ var Vocab = function () {
       for (var i = 0, max = phrase.length; i < max; i++) {
         var character = phrase[i];
         var index = indexTable[character];
+        if (typeof index === 'undefined') {
+          throw new Error('unrecognized character "' + character + '"');
+        }
         if (index < maxThreshold) continue;
         result.push(index);
       }
@@ -84,6 +87,9 @@ var Vocab = function () {
         var index = indexes[i];
         if (index < maxThreshold) continue;
         var character = characterTable[index];
+        if (typeof character === 'undefined') {
+          throw new Error('unrecognized index "' + index + '"');
+        }
         result.push(character);
       }
 
