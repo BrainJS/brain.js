@@ -78,4 +78,9 @@ export default class Vocab {
     }
     return new Vocab(values, maxThreshold);
   }
+
+  static fromString(string, maxThreshold) {
+    const values = String.prototype.concat(...new Set(string));
+    return new Vocab(values, maxThreshold);
+  }
 }

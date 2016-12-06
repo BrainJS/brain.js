@@ -1,5 +1,6 @@
 import assert from 'assert';
 import LSTM from '../../src/recurrent/lstm';
+import Vocab from '../../src/utilities/vocab';
 import { vocab, build, train } from '../utilities/math-addition-vocab';
 
 function runAgainstMath(rnn) {
@@ -25,15 +26,24 @@ describe('lstm', () => {
     });
   });
 
-  describe('#toFunction', () => {
-    var net = new LSTM({
-      inputSize: 6, //<- length
-      inputRange: vocab.characters.length,
-      outputSize: vocab.characters.length //<- length
-    });
+  describe('.toFunction', () => {
+    it('can output same as run method', () => {
+      const vocab = new Vocab(['h', 'i', ' ', 'm', 'o', '!']);
+      var net = new LSTM({
+        inputSize: 7,
+        inputRange: vocab.characters.length,
+        outputSize: 7
+      });
 
-    runAgainstMath(net);
-    //console.log(rnn.toFunction().toString());
-    //require('fs').writeFileSync('raw-lstm.js', lstm.toFunction().toString());
+      for (var i = 0; i < 100; i++) {
+        net.run(vocab.toIndexes('hi mom!'));
+        if (i % 10) {
+          console.log(vocab.toCharacters(net.predict()).join(''));
+        }
+      }
+
+      var lastOutput = vocab.toCharacters(net.predict()).join('');
+      assert.equal(vocab.toCharacters(net.toFunction()()).join(''), lastOutput);
+    });
   });
 });

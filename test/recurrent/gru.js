@@ -35,17 +35,17 @@ describe('gru', () => {
   });
 
   describe('printable characters', () => {
-    it('can learn a phrase', () => {
+    it('can learn a phrase', (done) => {
       const phrase = 'hello world;|something I comment about';
-      const vocab = Vocab.allPrintable();
+      const vocab = Vocab.fromString(phrase);
       var net = new GRU({
-        inputSize: 100,
+        inputSize: 40,
         inputRange: vocab.characters.length,
-        outputSize: 100
+        outputSize: 40
       });
 
       console.time('math lstm');
-      for (var i = 0; i < 1000; i++) {
+      for (var i = 0; i < 100; i++) {
         net.run(vocab.toIndexes(phrase));
         if (i % 10 === 0) {
           console.log(vocab.toCharacters(net.predict()).join(''));
@@ -53,10 +53,11 @@ describe('gru', () => {
       }
       console.timeEnd('math lstm');
       console.log('');
-      assert.equal(vocab.toString(net.predict()).join(''), phrase);
+      assert.equal(vocab.toCharacters(net.predict()).join(''), phrase);
+      done();
     });
 
-    it('can predict a phrase when given the first letter', () => {
+    it('can predict a phrase when given the first letter', (done) => {
       const phrase = 'bob';
       const vocab = new Vocab(['b', 'o']);
       var net = new GRU({
@@ -75,16 +76,17 @@ describe('gru', () => {
       console.timeEnd('math lstm');
       console.log('');
       assert.equal(vocab.toCharacters(net.predict(vocab.toIndexes('b'))).join(''), phrase);
+      done();
     });
 
-    it('can learn a phrase, export it to a function, and it still runs', () => {
+    it('can learn a phrase, export it to a function, and it still runs', (done) => {
       const phrase = 'hello world;|something I comment about';
-      const vocab = Vocab.allPrintable();
+      const vocab = Vocab.fromString(phrase);
       const phraseAsIndices = vocab.toIndexes(phrase);
       var net = new GRU({
-        inputSize: 100,
+        inputSize: 40,
         inputRange: vocab.characters.length,
-        outputSize: 100
+        outputSize: 40
       });
 
       console.time('math lstm');
@@ -97,9 +99,28 @@ describe('gru', () => {
       console.timeEnd('math lstm');
       console.log('');
       assert.equal(vocab.toCharacters(net.predict()).join(''), phrase);
-      const fn = net.toFunction();
-      require('fs').writeFileSync('raw-gru.js', fn.toString());
-      console.log(vocab.toCharacters(fn(phraseAsIndices)).join(''));
+      done();
+    });
+  });
+
+  describe('.toFunction', () => {
+    it('can output same as run method', () => {
+      const vocab = new Vocab(['h', 'i', ' ', 'm', 'o', '!']);
+      var net = new GRU({
+        inputSize: 7,
+        inputRange: vocab.characters.length,
+        outputSize: 7
+      });
+
+      for (var i = 0; i < 100; i++) {
+        net.run(vocab.toIndexes('hi mom!'));
+        if (i % 10) {
+          console.log(vocab.toCharacters(net.predict()).join(''));
+        }
+      }
+
+      var lastOutput = vocab.toCharacters(net.predict()).join('');
+      assert.equal(vocab.toCharacters(net.toFunction()()).join(''), lastOutput);
     });
   });
 });
