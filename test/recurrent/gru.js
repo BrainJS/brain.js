@@ -10,7 +10,7 @@ function randomMath() {
 
 describe('gru', () => {
   describe('math', () => {
-    it('can predict what a math problem is after being fed 1000 random math problems', () => {
+    it('can predict what a math problem is after being fed 1000 random math problems', (done) => {
       const vocab = new Vocab(['0','1','2','3','4','5','6','7','8','9','+','=', '-', '/', '*']);
       console.time('math gru');
       var net = new GRU({
@@ -31,6 +31,7 @@ describe('gru', () => {
       assert(/[=]/.test(prediction));
       console.timeEnd('math gru');
       console.log(prediction);
+      done();
     });
   });
 

@@ -12,13 +12,14 @@ function runAgainstMath(rnn) {
 
 describe('lstm', () => {
   describe('math', () => {
-    it('can predict what a math problem is after being fed 1000 random math problems', () => {
+    it('can predict what a math problem is after being fed 1000 random math problems', (done) => {
       var net = new LSTM({
         inputSize: 6,
         inputRange: vocab.characters.length,
         outputSize: vocab.characters.length
       });
       runAgainstMath(net);
+      done();
     });
   });
 
