@@ -89,7 +89,7 @@ export default class NeuralNetwork {
       input = lookup.toArray(this.inputLookup, input);
     }
 
-    let output = this.runInput(input);
+    let output = this.runInputTanh(input);
 
     if (this.outputLookup) {
       output = lookup.toHash(this.outputLookup, output);
@@ -98,7 +98,7 @@ export default class NeuralNetwork {
   }
 
   /**
-   *
+   * trains via sigmoid
    * @param input
    * @returns {*}
    */
@@ -114,7 +114,48 @@ export default class NeuralNetwork {
         for (let k = 0; k < weights.length; k++) {
           sum += weights[k] * input[k];
         }
+        //sigmoid
         this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
+      }
+      output = input = this.outputs[layer];
+    }
+    return output;
+  }
+
+  runInputRelu(input) {
+    this.outputs[0] = input;  // set output state of input layer
+
+    let output = null;
+    for (let layer = 1; layer <= this.outputLayer; layer++) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let weights = this.weights[layer][node];
+
+        let sum = this.biases[layer][node];
+        for (let k = 0; k < weights.length; k++) {
+          sum += weights[k] * input[k];
+        }
+        //relu
+        this.outputs[layer][node] = (sum < 0 ? sum = 0 : sum);
+      }
+      output = input = this.outputs[layer];
+    }
+    return output;
+  }
+
+  runInputTanh(input) {
+    this.outputs[0] = input;  // set output state of input layer
+
+    let output = null;
+    for (let layer = 1; layer <= this.outputLayer; layer++) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let weights = this.weights[layer][node];
+
+        let sum = this.biases[layer][node];
+        for (let k = 0; k < weights.length; k++) {
+          sum += Math.tanh(weights[k] * input[k]);
+        }
+        //tanh
+        this.outputs[layer][node] = Math.tanh(sum);
       }
       output = input = this.outputs[layer];
     }
@@ -124,7 +165,7 @@ export default class NeuralNetwork {
   /**
    *
    * @param data
-   * @param options
+   * @param _options
    * @returns {{error: number, iterations: number}}
    */
   train(data, _options = {}) {
@@ -188,7 +229,7 @@ export default class NeuralNetwork {
     learningRate = learningRate || this.learningRate;
 
     // forward propagate
-    this.runInput(input);
+    this.runInputTanh(input);
 
     // back propagate
     this.calculateDeltas(target);
@@ -310,7 +351,7 @@ export default class NeuralNetwork {
     // error and misclassification statistics
     let sum = 0;
     for (let i = 0; i < data.length; i++) {
-      let output = this.runInput(data[i].input);
+      let output = this.runInputTanh(data[i].input);
       let target = data[i].output;
 
       let actual, expected;
@@ -535,5 +576,6 @@ NeuralNetwork.trainDefaults = {
   learningRate: 0.3,
   callback: null,
   callbackPeriod: 10,
-  keepNetworkIntact: false
+  keepNetworkIntact: false,
+  activation: 'sigmoid'
 };
