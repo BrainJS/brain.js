@@ -18,6 +18,12 @@ export default class RNN {
       this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
     }
 
+    if (this.vocab !== null) {
+      this.inputSize = this.vocab.characters.length;
+      this.inputRange = this.vocab.characters.length;
+      this.outputSize = this.vocab.characters.length;
+    }
+
     this.stepCache = {};
     this.runs = 0;
     this.totalPerplexity = null;
@@ -190,10 +196,11 @@ export default class RNN {
         input = this.vocab.toIndexes(input.split(''));
       }
     }
-
+    console.log(input);
     const err = this.runInput(input);
     this.runBackpropagate(input);
     this.step();
+    console.log(err);
     return err;
   }
 

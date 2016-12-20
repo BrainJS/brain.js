@@ -85,8 +85,9 @@ export default class Vocab {
   }
 
   static allPrintableSeparated(maxThreshold, values = ['\n']) {
-    values.push('separated');
-    return vocab.allPrintable(maxThreshold, values);
+    const vocab = Vocab.allPrintable(maxThreshold, values);
+    vocab.addSpecial('separated');
+    return vocab;
   }
 
   static fromString(string, maxThreshold) {
