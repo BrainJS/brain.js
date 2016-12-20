@@ -5,7 +5,7 @@ import rnnCheck from '../utilities/rnn-check';
 
 
       const vocab = new Vocab([' ', 'h', 'i', 'm', 'o', 'd', 'a', '!']);
-      vocab.addSpecial('BREAK');
+      vocab.addSpecial('separated');
       var net = new RNN({
         inputSize: 9,
         inputRange: vocab.characters.length,

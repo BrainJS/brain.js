@@ -185,7 +185,7 @@ export default class RNN {
   trainPattern(input, output = null) {
     if (this.vocab !== null) {
       if (output !== null) {
-        input = this.vocab.toIndexes(input.split('').concat('BREAK', output.split('')));
+        input = this.vocab.toIndexes(input.split('').concat('separated', output.split('')));
       } else {
         input = this.vocab.toIndexes(input.split(''));
       }
@@ -349,7 +349,7 @@ export default class RNN {
 
     if (this.vocab !== null) {
       const result = this.vocab.toCharacters(outputNormalized);
-      const i = result.indexOf('BREAK');
+      const i = result.indexOf('separated');
       if (i > -1) {
         result.splice(i, 1);
       }
