@@ -1,3 +1,4 @@
+import lookup from '../lookup';
 import Matrix from './matrix';
 import RandomMatrix from './matrix/random-matrix';
 import Equation from './matrix/equation';
@@ -24,6 +25,8 @@ export default class RNN {
     this.ratioClipped = null;
     this.model = null;
 
+    this.inputLookup = null;
+    this.outputLookup = null;
     this.initialize();
   }
 
@@ -179,7 +182,15 @@ export default class RNN {
     allMatrices.push(model.output);
   }
 
-  trainPattern(input) {
+  trainPattern(input, output = null) {
+    if (this.vocab !== null) {
+      if (output !== null) {
+        input = this.vocab.toIndexes(input.split('').concat('BREAK', output.split('')));
+      } else {
+        input = this.vocab.toIndexes(input.split(''));
+      }
+    }
+
     const err = this.runInput(input);
     this.runBackpropagate(input);
     this.step();
@@ -282,6 +293,10 @@ export default class RNN {
   }
 
   run(input = [], maxPredictionLength = 100, _sampleI = false, temperature = 1) {
+    if (this.vocab) {
+      input = this.vocab.toIndexes(input);
+    }
+
     let model = this.model;
     let equation;
     let i = 0;
@@ -328,9 +343,20 @@ export default class RNN {
       output.push(ix);
     }
 
-    return output
+    const outputNormalized = output
       .slice(input.length)
       .map((value) => value - 1);
+
+    if (this.vocab !== null) {
+      const result = this.vocab.toCharacters(outputNormalized);
+      const i = result.indexOf('BREAK');
+      if (i > -1) {
+        result.splice(i, 1);
+      }
+      return result.join('');
+    }
+
+    return outputNormalized;
   }
 
   /**
@@ -341,7 +367,7 @@ export default class RNN {
    */
   train(data, options = {}) {
     options = Object.assign({}, options, RNN.trainDefaults);
-    data = this.formatData(data);
+    //data = this.formatData(data);
     let iterations = options.iterations;
     let errorThresh = options.errorThresh;
     let log = options.log === true ? console.log : options.log;
@@ -373,7 +399,7 @@ export default class RNN {
     for (i = 0; i < iterations && error > errorThresh; i++) {
       let sum = 0;
       for (let j = 0; j < data.length; j++) {
-        let err = this.trainPattern(data[j].input);
+        let err = this.trainPattern(data[j].input, data[j].output);
         sum += err;
       }
       error = sum / data.length;
@@ -397,15 +423,6 @@ export default class RNN {
    * @param learningRate
    */
   adjustWeights(learningRate) {
-    throw new Error('not yet implemented');
-  }
-
-  /**
-   *
-   * @param data
-   * @returns {*}
-   */
-  formatData(data) {
     throw new Error('not yet implemented');
   }
 
@@ -475,6 +492,41 @@ export default class RNN {
     }
 
     this.bindEquation();
+  }
+
+  /**
+   *
+   * @param data
+   * @returns {*}
+   */
+  formatData(data) {
+    if (data.constructor !== Array) { // turn stream datum into array
+      let tmp = [];
+      tmp.push(data);
+      data = tmp;
+    }
+    // turn sparse hash input into arrays with 0s as filler
+    let datum = data[0].input;
+    if (datum.constructor !== Array && !(datum instanceof Float64Array)) {
+      if (!this.inputLookup) {
+        this.inputLookup = lookup.buildLookup(data.map(value => value.input));
+      }
+      data = data.map(datum => {
+        let array = lookup.toArray(this.inputLookup, datum.input);
+        return Object.assign({}, datum, { input: array });
+      }, this);
+    }
+
+    if (data[0].output.constructor !== Array) {
+      if (!this.outputLookup) {
+        this.outputLookup = lookup.buildLookup(data.map(value => value.output));
+      }
+      data = data.map(datum => {
+        let array = lookup.toArray(this.outputLookup, datum.output);
+        return Object.assign({}, datum, { output: array });
+      }, this);
+    }
+    return data;
   }
 
   /**
@@ -674,7 +726,8 @@ RNN.defaults = {
   smoothEps: 1e-8,
   regc: 0.000001,
   clipval: 5,
-  json: null
+  json: null,
+  vocab: null
 };
 
 RNN.trainDefaults = {

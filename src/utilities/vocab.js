@@ -77,16 +77,27 @@ export default class Vocab {
     return this.toCharacters(indexes, maxThreshold).join('');
   }
 
-  static allPrintable(maxThreshold) {
-    const values = ['\n'];
+  static allPrintable(maxThreshold, values = ['\n']) {
     for(let i = 32; i <= 126; i++) {
       values.push(String.fromCharCode(i));
     }
     return new Vocab(values, maxThreshold);
   }
 
+  static allPrintableSeparated(maxThreshold, values = ['\n']) {
+    values.push('separated');
+    return vocab.allPrintable(maxThreshold, values);
+  }
+
   static fromString(string, maxThreshold) {
     const values = String.prototype.concat(...new Set(string));
     return new Vocab(values, maxThreshold);
+  }
+
+  addSpecial(special) {
+    let i = this.indexTable[special] = this.values.length;
+    this.characterTable[i] = special;
+    this.values.push(special);
+    this.characters.push(special);
   }
 }
