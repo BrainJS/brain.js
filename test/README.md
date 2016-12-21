@@ -20,7 +20,7 @@ or
 `npm run test-unit`
 
 # Cross-validation tests
-The cross-validation tests will actually test how good the neural network is a training by getting a bunch of training data, training it with some, and using the rest as verification.
+The cross-validation tests will actually test how good the neural network is at training by getting a bunch of training data, training it with some, and using the rest for verification.
 
 Cross-validation tests will take a long time to run, and in the end will give you a printout with the average error of the test data.
 
