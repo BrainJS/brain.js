@@ -166,4 +166,4 @@ Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transfor
 var likely = require('brain/likely');
 var key = likely(input, net);
 ```
-See: https://github.com/harthur-org/brain/blob/master/test/unit/likely.js
+See: https://github.com/harthur-org/brain.js/blob/master/test/base/likely.js
