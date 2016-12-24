@@ -46,7 +46,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var RNN = function () {
   function RNN() {
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, RNN);
 
@@ -327,12 +327,12 @@ var RNN = function () {
   }, {
     key: 'run',
     value: function run() {
-      var input = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
-      var maxPredictionLength = arguments.length <= 1 || arguments[1] === undefined ? 100 : arguments[1];
+      var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      var maxPredictionLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 100;
 
-      var _sampleI = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+      var _sampleI = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-      var temperature = arguments.length <= 3 || arguments[3] === undefined ? 1 : arguments[3];
+      var temperature = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
 
       var model = this.model;
       var equation = void 0;
@@ -395,7 +395,7 @@ var RNN = function () {
   }, {
     key: 'train',
     value: function train(data) {
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       options = Object.assign({}, options, RNN.trainDefaults);
       data = this.formatData(data);

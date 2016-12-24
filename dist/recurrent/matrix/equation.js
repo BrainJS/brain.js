@@ -342,7 +342,7 @@ var Equation = function () {
   }, {
     key: 'run',
     value: function run() {
-      var rowIndex = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+      var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
       this.inputRow = rowIndex;
       var state = void 0;
@@ -365,7 +365,7 @@ var Equation = function () {
   }, {
     key: 'runBackpropagate',
     value: function runBackpropagate() {
-      var rowIndex = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+      var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
       this.inputRow = rowIndex;
 

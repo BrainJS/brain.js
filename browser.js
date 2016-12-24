@@ -11,95 +11,74 @@
  * base64-js:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: T. Jameson Little <t.jameson.little@gmail.com>
- *   maintainers: beatgammit <t.jameson.little@gmail.com>, feross <feross@feross.org>
- *   homepage: https://github.com/beatgammit/base64-js#readme
- *   version: 1.1.2
+ *   homepage: https://github.com/beatgammit/base64-js
+ *   version: 1.2.0
  *
  * buffer:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Feross Aboukhadijeh <feross@feross.org>
- *   maintainers: feross <feross@feross.org>
  *   contributors: Romain Beauxis <toots@rastageeks.org>, James Halliday <mail@substack.net>
  *   homepage: https://github.com/feross/buffer
  *   version: 4.9.1
  *
  * buffer-shims:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   maintainers: cwmma <calvin.metcalf@gmail.com>
- *   homepage: https://github.com/calvinmetcalf/buffer-shims#readme
  *   version: 1.0.0
  *
  * core-util-is:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Isaac Z. Schlueter <i@izs.me>
- *   maintainers: isaacs <i@izs.me>
- *   homepage: https://github.com/isaacs/core-util-is#readme
+ *   author: Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me/)
  *   version: 1.0.2
  *
  * events:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Irakli Gozalishvili <rfobic@gmail.com>
- *   maintainers: gozala <rfobic@gmail.com>, defunctzombie <shtylman@gmail.com>
- *   homepage: https://github.com/Gozala/events#readme
+ *   author: Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)
  *   version: 1.1.1
  *
  * ieee754:
- *   license: MIT (http://opensource.org/licenses/MIT)
+ *   license: BSD-3-Clause (http://opensource.org/licenses/BSD-3-Clause)
  *   author: Feross Aboukhadijeh <feross@feross.org>
- *   maintainers: feross <feross@feross.org>
  *   contributors: Romain Beauxis <toots@rastageeks.org>
- *   homepage: https://github.com/feross/ieee754#readme
- *   version: 1.1.6
+ *   version: 1.1.8
  *
  * inherits:
  *   license: ISC (http://opensource.org/licenses/ISC)
- *   maintainers: isaacs <i@izs.me>
- *   homepage: https://github.com/isaacs/inherits#readme
- *   version: 2.0.2
+ *   version: 2.0.3
  *
  * isarray:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Julian Gruber <mail@juliangruber.com>
- *   maintainers: juliangruber <julian@juliangruber.com>
  *   homepage: https://github.com/juliangruber/isarray
  *   version: 1.0.0
  *
  * process:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Roman Shtylman <shtylman@gmail.com>
- *   maintainers: coolaj86 <coolaj86@gmail.com>, cwmma <calvin.metcalf@gmail.com>, defunctzombie <shtylman@gmail.com>
- *   homepage: https://github.com/shtylman/node-process#readme
  *   version: 0.11.9
  *
  * process-nextick-args:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   maintainers: cwmma <calvin.metcalf@gmail.com>
  *   homepage: https://github.com/calvinmetcalf/process-nextick-args
  *   version: 1.0.7
  *
  * readable-stream:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   maintainers: isaacs <isaacs@npmjs.com>, tootallnate <nathan@tootallnate.net>, rvagg <rod@vagg.org>, cwmma <calvin.metcalf@gmail.com>
- *   homepage: https://github.com/nodejs/readable-stream#readme
- *   version: 2.1.5
+ *   version: 2.2.2
  *
  * stream-browserify:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: James Halliday <mail@substack.net>
- *   maintainers: substack <substack@gmail.com>, feross <feross@feross.org>, stevemao <steve.mao@healthinteract.com.au>
  *   homepage: https://github.com/substack/stream-browserify
  *   version: 2.0.1
  *
  * string_decoder:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   maintainers: substack <mail@substack.net>, rvagg <rod@vagg.org>
  *   homepage: https://github.com/rvagg/string_decoder
  *   version: 0.10.31
  *
  * util-deprecate:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Nathan Rajlich <nathan@tootallnate.net>
- *   maintainers: tootallnate <nathan@tootallnate.net>
+ *   author: Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)
  *   homepage: https://github.com/TooTallNate/util-deprecate
  *   version: 1.0.2
  *
@@ -587,7 +566,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'train',
     value: function train(data) {
-      var _options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      var _options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       var options = Object.assign({}, NeuralNetwork.trainDefaults, _options);
       data = this.formatData(data);
@@ -1689,7 +1668,7 @@ var Equation = function () {
   }, {
     key: 'run',
     value: function run() {
-      var rowIndex = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+      var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
       this.inputRow = rowIndex;
       var state = void 0;
@@ -1712,7 +1691,7 @@ var Equation = function () {
   }, {
     key: 'runBackpropagate',
     value: function runBackpropagate() {
-      var rowIndex = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+      var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
       this.inputRow = rowIndex;
 
@@ -2405,7 +2384,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var RNN = function () {
   function RNN() {
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, RNN);
 
@@ -2686,12 +2665,12 @@ var RNN = function () {
   }, {
     key: 'run',
     value: function run() {
-      var input = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
-      var maxPredictionLength = arguments.length <= 1 || arguments[1] === undefined ? 100 : arguments[1];
+      var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      var maxPredictionLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 100;
 
-      var _sampleI = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+      var _sampleI = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-      var temperature = arguments.length <= 3 || arguments[3] === undefined ? 1 : arguments[3];
+      var temperature = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
 
       var model = this.model;
       var equation = void 0;
@@ -2754,7 +2733,7 @@ var RNN = function () {
   }, {
     key: 'train',
     value: function train(data) {
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       options = Object.assign({}, options, RNN.trainDefaults);
       data = this.formatData(data);
@@ -3051,7 +3030,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -3469,7 +3448,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 var Vocab = function () {
   function Vocab(values) {
-    var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+    var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
     _classCallCheck(this, Vocab);
 
@@ -3509,7 +3488,7 @@ var Vocab = function () {
   _createClass(Vocab, [{
     key: 'toIndexes',
     value: function toIndexes(phrase) {
-      var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
       var result = [];
       var indexTable = this.indexTable;
@@ -3529,7 +3508,7 @@ var Vocab = function () {
   }, {
     key: 'toCharacters',
     value: function toCharacters(indexes) {
-      var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
       var result = [];
       var characterTable = this.characterTable;
@@ -3592,28 +3571,28 @@ function zeros(size) {
 }
 
 },{}],43:[function(require,module,exports){
-var crossValidate = require('./dist/cross-validate');
-var likely = require('./dist/likely');
-var lookup = require('./dist/lookup');
-var NeuralNetwork = require('./dist/neural-network');
-var TrainStream = require('./dist/train-stream');
-var RNN = require('./dist/recurrent/rnn');
-var LSTM = require('./dist/recurrent/lstm');
-var GRU = require('./dist/recurrent/gru');
+var crossValidate = require('./dist/cross-validate').default;
+var likely = require('./dist/likely').default;
+var lookup = require('./dist/lookup').default;
+var NeuralNetwork = require('./dist/neural-network').default;
+var TrainStream = require('./dist/train-stream').default;
+var RNN = require('./dist/recurrent/rnn').default;
+var LSTM = require('./dist/recurrent/lstm').default;
+var GRU = require('./dist/recurrent/gru').default;
 var utilities = {
-  max: require('./dist/utilities/max'),
-  mse: require('./dist/utilities/mse'),
-  ones: require('./dist/utilities/ones'),
-  random: require('./dist/utilities/random'),
-  randomWeight: require('./dist/utilities/random-weight'),
-  randos: require('./dist/utilities/randos'),
-  range: require('./dist/utilities/range'),
-  toArray: require('./dist/utilities/to-array'),
-  Vocab: require('./dist/utilities/vocab'),
-  zeros: require('./dist/utilities/zeros')
+  max: require('./dist/utilities/max').default,
+  mse: require('./dist/utilities/mse').default,
+  ones: require('./dist/utilities/ones').default,
+  random: require('./dist/utilities/random').default,
+  randomWeight: require('./dist/utilities/random-weight').default,
+  randos: require('./dist/utilities/randos').default,
+  range: require('./dist/utilities/range').default,
+  toArray: require('./dist/utilities/to-array').default,
+  Vocab: require('./dist/utilities/vocab').default,
+  zeros: require('./dist/utilities/zeros').default
 };
 
-module.exports = {
+var brain = {
   crossValidate: crossValidate,
   likely: likely,
   lookup: lookup,
@@ -3628,23 +3607,13 @@ module.exports = {
 };
 
 if (typeof window !== 'undefined') {
-  var brain = window.brain = {};
-  var i;
-
-  for (i in module.exports) {
-    brain[i] = module.exports[i].default || module.exports[i];
-  }
-  for (i in module.exports.utilities) {
-    brain.utilities[i] = module.exports.utilities[i].default || module.exports.utilities[i];
-  }
-  for (i in module.exports.recurrent) {
-    brain.recurrent[i] = module.exports.recurrent[i].default || module.exports.recurrent[i];
-  }
+  window.brain = brain;
 }
-
+module.exports = brain
 },{"./dist/cross-validate":1,"./dist/likely":2,"./dist/lookup":3,"./dist/neural-network":4,"./dist/recurrent/gru":5,"./dist/recurrent/lstm":6,"./dist/recurrent/rnn":31,"./dist/train-stream":32,"./dist/utilities/max":33,"./dist/utilities/mse":34,"./dist/utilities/ones":35,"./dist/utilities/random":37,"./dist/utilities/random-weight":36,"./dist/utilities/randos":38,"./dist/utilities/range":39,"./dist/utilities/to-array":40,"./dist/utilities/vocab":41,"./dist/utilities/zeros":42}],44:[function(require,module,exports){
 'use strict'
 
+exports.byteLength = byteLength
 exports.toByteArray = toByteArray
 exports.fromByteArray = fromByteArray
 
@@ -3652,23 +3621,17 @@ var lookup = []
 var revLookup = []
 var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
 
-function init () {
-  var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-  for (var i = 0, len = code.length; i < len; ++i) {
-    lookup[i] = code[i]
-    revLookup[code.charCodeAt(i)] = i
-  }
-
-  revLookup['-'.charCodeAt(0)] = 62
-  revLookup['_'.charCodeAt(0)] = 63
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
 }
 
-init()
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
 
-function toByteArray (b64) {
-  var i, j, l, tmp, placeHolders, arr
+function placeHoldersCount (b64) {
   var len = b64.length
-
   if (len % 4 > 0) {
     throw new Error('Invalid string. Length must be a multiple of 4')
   }
@@ -3678,9 +3641,19 @@ function toByteArray (b64) {
   // represent one byte
   // if there is only one, then the three characters before it represent 2 bytes
   // this is just a cheap hack to not do indexOf twice
-  placeHolders = b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+}
 
+function byteLength (b64) {
   // base64 is 4/3 + up to two characters of the original data
+  return b64.length * 3 / 4 - placeHoldersCount(b64)
+}
+
+function toByteArray (b64) {
+  var i, j, l, tmp, placeHolders, arr
+  var len = b64.length
+  placeHolders = placeHoldersCount(b64)
+
   arr = new Arr(len * 3 / 4 - placeHolders)
 
   // if there are placeholders, only get up to the last complete 4 chars
@@ -6565,6 +6538,10 @@ var processNextTick = require('process-nextick-args');
 var isArray = require('isarray');
 /*</replacement>*/
 
+/*<replacement>*/
+var Duplex;
+/*</replacement>*/
+
 Readable.ReadableState = ReadableState;
 
 /*<replacement>*/
@@ -6612,6 +6589,8 @@ var StringDecoder;
 util.inherits(Readable, Stream);
 
 function prependListener(emitter, event, fn) {
+  // Sadly this is not cacheable as some libraries bundle their own
+  // event emitter implementation with them.
   if (typeof emitter.prependListener === 'function') {
     return emitter.prependListener(event, fn);
   } else {
@@ -6623,7 +6602,6 @@ function prependListener(emitter, event, fn) {
   }
 }
 
-var Duplex;
 function ReadableState(options, stream) {
   Duplex = Duplex || require('./_stream_duplex');
 
@@ -6693,7 +6671,6 @@ function ReadableState(options, stream) {
   }
 }
 
-var Duplex;
 function Readable(options) {
   Duplex = Duplex || require('./_stream_duplex');
 
@@ -7016,7 +6993,7 @@ function maybeReadMore_(stream, state) {
 // for virtual (non-string, non-buffer) streams, "length" is somewhat
 // arbitrary, and perhaps not very meaningful.
 Readable.prototype._read = function (n) {
-  this.emit('error', new Error('not implemented'));
+  this.emit('error', new Error('_read() is not implemented'));
 };
 
 Readable.prototype.pipe = function (dest, pipeOpts) {
@@ -7194,16 +7171,16 @@ Readable.prototype.unpipe = function (dest) {
     state.pipesCount = 0;
     state.flowing = false;
 
-    for (var _i = 0; _i < len; _i++) {
-      dests[_i].emit('unpipe', this);
+    for (var i = 0; i < len; i++) {
+      dests[i].emit('unpipe', this);
     }return this;
   }
 
   // try to find the right one.
-  var i = indexOf(state.pipes, dest);
-  if (i === -1) return this;
+  var index = indexOf(state.pipes, dest);
+  if (index === -1) return this;
 
-  state.pipes.splice(i, 1);
+  state.pipes.splice(index, 1);
   state.pipesCount -= 1;
   if (state.pipesCount === 1) state.pipes = state.pipes[0];
 
@@ -7588,7 +7565,6 @@ function Transform(options) {
 
   this._transformState = new TransformState(this);
 
-  // when the writable side finishes, then flush out anything remaining.
   var stream = this;
 
   // start out asking for a readable event once data is transformed.
@@ -7605,9 +7581,10 @@ function Transform(options) {
     if (typeof options.flush === 'function') this._flush = options.flush;
   }
 
+  // When the writable side finishes, then flush out anything remaining.
   this.once('prefinish', function () {
-    if (typeof this._flush === 'function') this._flush(function (er) {
-      done(stream, er);
+    if (typeof this._flush === 'function') this._flush(function (er, data) {
+      done(stream, er, data);
     });else done(stream);
   });
 }
@@ -7628,7 +7605,7 @@ Transform.prototype.push = function (chunk, encoding) {
 // an error, then that'll put the hurt on the whole operation.  If you
 // never call cb(), then you'll never get another chunk.
 Transform.prototype._transform = function (chunk, encoding, cb) {
-  throw new Error('Not implemented');
+  throw new Error('_transform() is not implemented');
 };
 
 Transform.prototype._write = function (chunk, encoding, cb) {
@@ -7658,8 +7635,10 @@ Transform.prototype._read = function (n) {
   }
 };
 
-function done(stream, er) {
+function done(stream, er, data) {
   if (er) return stream.emit('error', er);
+
+  if (data !== null && data !== undefined) stream.push(data);
 
   // if there's nothing in the write buffer, then that means
   // that nothing more will ever be provided
@@ -7688,6 +7667,10 @@ var processNextTick = require('process-nextick-args');
 
 /*<replacement>*/
 var asyncWrite = !process.browser && ['v0.10', 'v0.9.'].indexOf(process.version.slice(0, 5)) > -1 ? setImmediate : processNextTick;
+/*</replacement>*/
+
+/*<replacement>*/
+var Duplex;
 /*</replacement>*/
 
 Writable.WritableState = WritableState;
@@ -7730,7 +7713,6 @@ function WriteReq(chunk, encoding, cb) {
   this.next = null;
 }
 
-var Duplex;
 function WritableState(options, stream) {
   Duplex = Duplex || require('./_stream_duplex');
 
@@ -7752,6 +7734,7 @@ function WritableState(options, stream) {
   // cast to ints.
   this.highWaterMark = ~ ~this.highWaterMark;
 
+  // drain event flag.
   this.needDrain = false;
   // at the start of calling end()
   this.ending = false;
@@ -7826,7 +7809,7 @@ function WritableState(options, stream) {
   this.corkedRequestsFree = new CorkedRequest(this);
 }
 
-WritableState.prototype.getBuffer = function writableStateGetBuffer() {
+WritableState.prototype.getBuffer = function getBuffer() {
   var current = this.bufferedRequest;
   var out = [];
   while (current) {
@@ -7846,13 +7829,37 @@ WritableState.prototype.getBuffer = function writableStateGetBuffer() {
   } catch (_) {}
 })();
 
-var Duplex;
+// Test _writableState for inheritance to account for Duplex streams,
+// whose prototype chain only points to Readable.
+var realHasInstance;
+if (typeof Symbol === 'function' && Symbol.hasInstance && typeof Function.prototype[Symbol.hasInstance] === 'function') {
+  realHasInstance = Function.prototype[Symbol.hasInstance];
+  Object.defineProperty(Writable, Symbol.hasInstance, {
+    value: function (object) {
+      if (realHasInstance.call(this, object)) return true;
+
+      return object && object._writableState instanceof WritableState;
+    }
+  });
+} else {
+  realHasInstance = function (object) {
+    return object instanceof this;
+  };
+}
+
 function Writable(options) {
   Duplex = Duplex || require('./_stream_duplex');
 
-  // Writable ctor is applied to Duplexes, though they're not
-  // instanceof Writable, they're instanceof Readable.
-  if (!(this instanceof Writable) && !(this instanceof Duplex)) return new Writable(options);
+  // Writable ctor is applied to Duplexes, too.
+  // `realHasInstance` is necessary because using plain `instanceof`
+  // would return false, as no `_writableState` property is attached.
+
+  // Trying to use the custom `instanceof` for Writable here will also break the
+  // Node.js LazyTransform implementation, which has a non-trivial getter for
+  // `_writableState` that would lead to infinite recursion.
+  if (!realHasInstance.call(Writable, this) && !(this instanceof Duplex)) {
+    return new Writable(options);
+  }
 
   this._writableState = new WritableState(options, this);
 
@@ -8112,7 +8119,7 @@ function clearBuffer(stream, state) {
 }
 
 Writable.prototype._write = function (chunk, encoding, cb) {
-  cb(new Error('not implemented'));
+  cb(new Error('_write() is not implemented'));
 };
 
 Writable.prototype._writev = null;
