@@ -18,7 +18,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 var Vocab = function () {
   function Vocab(values) {
-    var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+    var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
     _classCallCheck(this, Vocab);
 
@@ -58,7 +58,7 @@ var Vocab = function () {
   _createClass(Vocab, [{
     key: 'toIndexes',
     value: function toIndexes(phrase) {
-      var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
       var result = [];
       var indexTable = this.indexTable;
@@ -78,7 +78,7 @@ var Vocab = function () {
   }, {
     key: 'toCharacters',
     value: function toCharacters(indexes) {
-      var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
       var result = [];
       var characterTable = this.characterTable;
