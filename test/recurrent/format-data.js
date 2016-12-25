@@ -1,21 +1,24 @@
-import assert from 'assert';
-import RNN from '../../src/recurrent/rnn';
-import LSTM from '../../src/recurrent/lstm';
-import Vocab from '../../src/utilities/vocab';
-import rnnCheck from '../utilities/rnn-check';
-const vocab = Vocab.allPrintableSeparated();
-var net = new LSTM({
-  vocab: vocab
-});
-net.train([
-  {
+import GRU from '../../src/recurrent/gru';
+import fs from 'fs';
+//var json = JSON.parse(fs.readFileSync('format-data.json').toString());
+//delete json.options.vocab;
+var net = new GRU();
+var trainingData = [{
     input: 'hi',
-    output: 'mom!'
+    output: '1'
+  }, {
+    input: 'howdy',
+    output: '2'
   }, {
     input: 'hello',
-    output: 'dad!'
-  }
-]);
-
+    output: '3'
+  }, {
+    input: 'yo',
+    output: '4'
+  }];
+net.train(trainingData, { iterations: 20000, log: true });
+fs.writeFileSync('format-data.json', JSON.stringify(net.toJSON()));
 console.log(net.run('hi'));
+console.log(net.run('howdy'));
 console.log(net.run('hello'));
+console.log(net.run('yo'));

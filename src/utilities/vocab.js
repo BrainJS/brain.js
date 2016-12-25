@@ -6,7 +6,9 @@
  */
 export default class Vocab {
   constructor(values, maxThreshold = 0) {
-    this.values = values;
+    if (typeof values === 'undefined') return;
+
+    this.values = typeof values === 'string' ? values.split('') : values;
     // go over all characters and keep track of all unique ones seen
     // count up all characters
     this.indexTable = {};
@@ -39,12 +41,12 @@ export default class Vocab {
     }
   }
 
-  toIndexes(phrase, maxThreshold = 0) {
+  toIndexes(value, maxThreshold = 0) {
     let result = [];
     let indexTable = this.indexTable;
 
-    for (let i = 0, max = phrase.length; i < max; i++) {
-      let character = phrase[i];
+    for (let i = 0, max = value.length; i < max; i++) {
+      let character = value[i];
       let index = indexTable[character];
       if (typeof index === 'undefined') {
         throw new Error(`unrecognized character "${ character }"`);
@@ -54,6 +56,23 @@ export default class Vocab {
     }
 
     return result;
+  }
+
+  toIndexesInputOutput(value1, value2 = null, maxThreshold = 0) {
+    let result;
+    if (typeof value1 === 'string') {
+      result = this.toIndexes(value1.split('').concat(['stop-input', 'start-output']), maxThreshold);
+    } else {
+      result = this.toIndexes(value1.concat(['stop-input', 'start-output']), maxThreshold);
+    }
+
+    if (value2 === null) return result;
+
+    if (typeof value2 === 'string') {;
+      return result.concat(this.toIndexes(value2.split(''), maxThreshold));
+    } else {
+      return result.concat(this.toIndexes(value2, maxThreshold));
+    }
   }
 
   toCharacters(indexes, maxThreshold = 0) {
@@ -84,15 +103,33 @@ export default class Vocab {
     return new Vocab(values, maxThreshold);
   }
 
-  static allPrintableSeparated(maxThreshold, values = ['\n']) {
+  static allPrintableInputOutput(maxThreshold, values = ['\n']) {
     const vocab = Vocab.allPrintable(maxThreshold, values);
-    vocab.addSpecial('separated');
+    vocab.addSpecial('stop-input');
+    vocab.addSpecial('start-output');
+    return vocab;
+  }
+
+  static fromStringInputOutput(string, maxThreshold) {
+    const values = String.prototype.concat(...new Set(string));
+    const vocab = new Vocab(values, maxThreshold);
+    vocab.addSpecial('stop-input');
+    vocab.addSpecial('start-output');
     return vocab;
   }
 
   static fromString(string, maxThreshold) {
     const values = String.prototype.concat(...new Set(string));
     return new Vocab(values, maxThreshold);
+  }
+
+  static fromJSON(json) {
+    const vocab = new Vocab();
+    vocab.indexTable = json.indexTable;
+    vocab.characterTable = json.characterTable;
+    vocab.values = json.values;
+    vocab.characters = json.characters;
+    return vocab;
   }
 
   addSpecial(special) {

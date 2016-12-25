@@ -8,6 +8,7 @@ import softmax from './matrix/softmax';
 import copy from './matrix/copy';
 import { randomF } from '../utilities/random';
 import zeros from '../utilities/zeros';
+import Vocab from '../utilities/vocab';
 
 export default class RNN {
   constructor(options = {}) {
@@ -188,19 +189,10 @@ export default class RNN {
     allMatrices.push(model.output);
   }
 
-  trainPattern(input, output = null) {
-    if (this.vocab !== null) {
-      if (output !== null) {
-        input = this.vocab.toIndexes(input.split('').concat('separated', output.split('')));
-      } else {
-        input = this.vocab.toIndexes(input.split(''));
-      }
-    }
-    console.log(input);
+  trainPattern(input) {
     const err = this.runInput(input);
     this.runBackpropagate(input);
     this.step();
-    console.log(err);
     return err;
   }
 
@@ -299,15 +291,12 @@ export default class RNN {
     this.ratioClipped = numClipped / numTot;
   }
 
-  run(input = [], maxPredictionLength = 100, _sampleI = false, temperature = 1) {
-    if (this.vocab) {
-      input = this.vocab.toIndexes(input);
-    }
-
+  run(_input = [], maxPredictionLength = 100, _sampleI = false, temperature = 1) {
+    const input = this.formatDataIn(_input);
     let model = this.model;
     let equation;
     let i = 0;
-    let output = input.length > 0 ? input.slice(0) : [];
+    let output = input.length > 0 ? input.map(value => value + 1) : [];
     while (model.equations.length < maxPredictionLength) {
       this.bindEquation();
     }
@@ -350,20 +339,7 @@ export default class RNN {
       output.push(ix);
     }
 
-    const outputNormalized = output
-      .slice(input.length)
-      .map((value) => value - 1);
-
-    if (this.vocab !== null) {
-      const result = this.vocab.toCharacters(outputNormalized);
-      const i = result.indexOf('separated');
-      if (i > -1) {
-        result.splice(i, 1);
-      }
-      return result.join('');
-    }
-
-    return outputNormalized;
+    return this.formatDataOut(input, output);
   }
 
   /**
@@ -373,8 +349,7 @@ export default class RNN {
    * @returns {{error: number, iterations: number}}
    */
   train(data, options = {}) {
-    options = Object.assign({}, options, RNN.trainDefaults);
-    //data = this.formatData(data);
+    options = Object.assign({}, RNN.trainDefaults, options);
     let iterations = options.iterations;
     let errorThresh = options.errorThresh;
     let log = options.log === true ? console.log : options.log;
@@ -403,10 +378,15 @@ export default class RNN {
 
     let error = 1;
     let i;
+
+    if (this.hasOwnProperty('setupData')) {
+      data = this.setupData(data);
+    }
+
     for (i = 0; i < iterations && error > errorThresh; i++) {
       let sum = 0;
       for (let j = 0; j < data.length; j++) {
-        let err = this.trainPattern(data[j].input, data[j].output);
+        let err = this.trainPattern(data[j]);
         sum += err;
       }
       error = sum / data.length;
@@ -498,42 +478,12 @@ export default class RNN {
       this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
     }
 
+    if (options.hasOwnProperty('vocab') && options.vocab !== null) {
+      this.vocab = Vocab.fromJSON(options.vocab);
+      delete options.vocab;
+    }
+
     this.bindEquation();
-  }
-
-  /**
-   *
-   * @param data
-   * @returns {*}
-   */
-  formatData(data) {
-    if (data.constructor !== Array) { // turn stream datum into array
-      let tmp = [];
-      tmp.push(data);
-      data = tmp;
-    }
-    // turn sparse hash input into arrays with 0s as filler
-    let datum = data[0].input;
-    if (datum.constructor !== Array && !(datum instanceof Float64Array)) {
-      if (!this.inputLookup) {
-        this.inputLookup = lookup.buildLookup(data.map(value => value.input));
-      }
-      data = data.map(datum => {
-        let array = lookup.toArray(this.inputLookup, datum.input);
-        return Object.assign({}, datum, { input: array });
-      }, this);
-    }
-
-    if (data[0].output.constructor !== Array) {
-      if (!this.outputLookup) {
-        this.outputLookup = lookup.buildLookup(data.map(value => value.output));
-      }
-      data = data.map(datum => {
-        let array = lookup.toArray(this.outputLookup, datum.output);
-        return Object.assign({}, datum, { output: array });
-      }, this);
-    }
-    return data;
   }
 
   /**
@@ -734,6 +684,41 @@ RNN.defaults = {
   regc: 0.000001,
   clipval: 5,
   json: null,
+  setupData: function(data) {
+    if (!data[0].hasOwnProperty('input') || !data[0].hasOwnProperty('output')) {
+      return data;
+    }
+    let characters = '';
+    for (let i = 0; i < data.length; i++) {
+      characters += data[i].input;
+      characters += data[i].output;
+    }
+    this.vocab = Vocab.fromStringInputOutput(characters);
+    const result = [];
+    for (let i = 0, max = data.length; i < max; i++) {
+      result.push(this.formatDataIn(data[i].input, data[i].output));
+    }
+    return result;
+  },
+  formatDataIn: function(input, output = null) {
+    if (this.vocab !== null) {
+      if (this.vocab.indexTable.hasOwnProperty('stop-input')) {
+        return this.vocab.toIndexesInputOutput(input, output);
+      } else {
+        return this.vocab.toIndexes(input);
+      }
+    }
+    return input;
+  },
+  formatDataOut: function(input, _output) {
+    const output = _output.slice(0).map(value => value - 1);
+    if (this.vocab !== null) {
+      return this.vocab
+        .toCharacters(output)
+        .join('');
+    }
+    return output;
+  },
   vocab: null
 };
 
