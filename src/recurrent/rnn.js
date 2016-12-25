@@ -189,13 +189,24 @@ export default class RNN {
     allMatrices.push(model.output);
   }
 
-  trainPattern(input) {
+  /**
+   *
+   * @param {String[]} input
+   * @param {Number} [learningRate]
+   * @returns {*}
+   */
+  trainPattern(input, learningRate = null) {
     const err = this.runInput(input);
     this.runBackpropagate(input);
-    this.step();
+    this.step(learningRate);
     return err;
   }
 
+  /**
+   *
+   * @param {Number[]} input
+   * @returns {number}
+   */
   runInput(input) {
     this.runs++;
     let model = this.model;
@@ -230,8 +241,11 @@ export default class RNN {
     return this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
   }
 
+  /**
+   * @param {Number[]} input
+   */
   runBackpropagate(input) {
-    let i = input.length + 0;
+    let i = input.length;
     let model = this.model;
     let equations = model.equations;
     while(i > 0) {
@@ -241,8 +255,13 @@ export default class RNN {
     equations[0].runBackpropagate(0);
   }
 
-  step() {
+  /**
+   *
+   * @param {Number} [learningRate]
+   */
+  step(learningRate = null) {
     // perform parameter update
+    //TODO: still not sure if this is ready for learningRate
     let stepSize = this.learningRate;
     let regc = this.regc;
     let clipval = this.clipval;
@@ -291,25 +310,38 @@ export default class RNN {
     this.ratioClipped = numClipped / numTot;
   }
 
-  run(_input = [], maxPredictionLength = 100, _sampleI = false, temperature = 1) {
-    const input = this.formatDataIn(_input);
+  /**
+   *
+   * @param {Number[]|*} [rawInput]
+   * @param {Number} [maxPredictionLength]
+   * @param {Boolean} [isSampleI]
+   * @param {Number} temperature
+   * @returns {*}
+   */
+  run(rawInput = [], maxPredictionLength = 100, isSampleI = false, temperature = 1) {
+    const input = this.formatDataIn(rawInput);
     let model = this.model;
     let equation;
     let i = 0;
-    let output = input.length > 0 ? input.map(value => value + 1) : [];
+    let output = [];
     while (model.equations.length < maxPredictionLength) {
       this.bindEquation();
     }
     while (true) {
-      let ix = output.length === 0 ? 0 : output[output.length - 1];
+      let previousIndex = (i === 0
+        ? 0
+        : i < input.length
+          ? input[i - 1] + 1
+          : output[i - 1]);
+
       equation = model.equations[i];
       // sample predicted letter
-      let outputIndex = equation.run(ix);
+      let outputIndex = equation.run(previousIndex);
 
       let logProbabilities = new Matrix(model.output.rows, model.output.columns);
       copy(logProbabilities, outputIndex);
-      if (temperature !== 1 && _sampleI) {
-        // scale log probabilities by temperature and renormalize
+      if (temperature !== 1 && isSampleI) {
+        // scale log probabilities by temperature and re-normalize
         // if temperature is high, logprobs will go towards zero
         // and the softmax outputs will be more diffuse. if temperature is
         // very low, the softmax outputs will be more peaky
@@ -319,33 +351,31 @@ export default class RNN {
       }
 
       let probs = softmax(logProbabilities);
-
-      if (_sampleI) {
-        ix = sampleI(probs);
-      } else {
-        ix = maxI(probs);
-      }
+      let nextIndex = (isSampleI
+        ? sampleI(probs)
+        : maxI(probs));
 
       i++;
-      if (ix === 0) {
+      if (nextIndex === 0) {
+        //console.log('end predicted');
         // END token predicted, break out
         break;
       }
       if (i >= maxPredictionLength) {
+        //console.log('something is wrong');
         // something is wrong
         break;
       }
 
-      output.push(ix);
+      output.push(nextIndex);
     }
-
-    return this.formatDataOut(input, output);
+    return this.formatDataOut(input, output.slice(input.length).map(value => value - 1));
   }
 
   /**
    *
-   * @param data
-   * @param options
+   * @param {Object[]} data a collection of objects: `{input: 'string', output: 'string'}`
+   * @param {Object} [options]
    * @returns {{error: number, iterations: number}}
    */
   train(data, options = {}) {
@@ -357,20 +387,6 @@ export default class RNN {
     let learningRate = options.learningRate || this.learningRate;
     let callback = options.callback;
     let callbackPeriod = options.callbackPeriod;
-    let sizes = [];
-    let inputSize = data[0].input.length;
-    let outputSize = data[0].output.length;
-    let hiddenSizes = this.hiddenSizes;
-    if (!hiddenSizes) {
-      sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-    } else {
-      hiddenSizes.forEach(size => {
-        sizes.push(size);
-      });
-    }
-
-    sizes.unshift(inputSize);
-    sizes.push(outputSize);
 
     if (!options.keepNetworkIntact) {
       this.initialize();
@@ -386,7 +402,7 @@ export default class RNN {
     for (i = 0; i < iterations && error > errorThresh; i++) {
       let sum = 0;
       for (let j = 0; j < data.length; j++) {
-        let err = this.trainPattern(data[j]);
+        let err = this.trainPattern(data[j], learningRate);
         sum += err;
       }
       error = sum / data.length;
@@ -407,14 +423,6 @@ export default class RNN {
 
   /**
    *
-   * @param learningRate
-   */
-  adjustWeights(learningRate) {
-    throw new Error('not yet implemented');
-  }
-
-  /**
-   *
    * @param data
    * @returns {
    *  {
@@ -427,6 +435,10 @@ export default class RNN {
     throw new Error('not yet implemented');
   }
 
+  /**
+   *
+   * @returns {Object}
+   */
   toJSON() {
     const defaults = RNN.defaults;
     let model = this.model;
@@ -449,6 +461,10 @@ export default class RNN {
       outputConnector: this.model.outputConnector.toJSON(),
       output: this.model.output.toJSON()
     };
+  }
+
+  toJSONString() {
+    return JSON.stringify(this.toJSON());
   }
 
   fromJSON(json) {
@@ -484,6 +500,10 @@ export default class RNN {
     }
 
     this.bindEquation();
+  }
+
+  fromJSONString(json) {
+    return this.fromJSON(JSON.parse(json));
   }
 
   /**
@@ -710,8 +730,7 @@ RNN.defaults = {
     }
     return input;
   },
-  formatDataOut: function(input, _output) {
-    const output = _output.slice(0).map(value => value - 1);
+  formatDataOut: function(input, output) {
     if (this.vocab !== null) {
       return this.vocab
         .toCharacters(output)

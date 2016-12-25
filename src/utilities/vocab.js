@@ -68,7 +68,7 @@ export default class Vocab {
 
     if (value2 === null) return result;
 
-    if (typeof value2 === 'string') {;
+    if (typeof value2 === 'string') {
       return result.concat(this.toIndexes(value2.split(''), maxThreshold));
     } else {
       return result.concat(this.toIndexes(value2, maxThreshold));
