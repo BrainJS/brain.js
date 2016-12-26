@@ -19,7 +19,7 @@ describe('rnn', () => {
       });
     });
     it('after initial run, does not have zeros in recurrence', () => {
-      var net = new RNN({
+      let net = new RNN({
         hiddenSizes: [3],
         inputSize: 3,
         inputRange: 2,
@@ -39,14 +39,14 @@ describe('rnn', () => {
   describe('xor', () => {
     function xorNet() {
       return new RNN({
-        hiddenSizes: [3],
-        inputSize: 2,
-        inputRange: 2,
-        outputSize: 2
+        hiddenSizes: [20, 20],
+        inputSize: 3,
+        inputRange: 3,
+        outputSize: 3
       });
     }
 
-    var xorNetValues = [
+    let xorNetValues = [
       [0, 0, 0],
       [0, 1, 1],
       [1, 0, 1],
@@ -54,8 +54,8 @@ describe('rnn', () => {
     ];
 
     it('properly provides values to equations[].run', () => {
-      var net = xorNet();
-      var called = [];
+      let net = xorNet();
+      let called = [];
       net.model.equations[0] = { run: (v) => {
         called[0] = v;
         return {rows: 1, columns: 0, weights: [], recurrence: []}; }
@@ -91,8 +91,8 @@ describe('rnn', () => {
     });
 
     it('properly provides values to equations[].runBackpropagate', () => {
-      var net = xorNet();
-      var backPropagateCalled = [];
+      let net = xorNet();
+      let backPropagateCalled = [];
       net.model.equations[0] = {
         run: () => {
           return {rows: 0, columns: 0, weights: [], recurrence: []};
@@ -142,8 +142,8 @@ describe('rnn', () => {
     });
 
     it('properly provides values to equations[].runBackpropagate', () => {
-      var net = xorNet();
-      var backPropagateCalled = [];
+      let net = xorNet();
+      let backPropagateCalled = [];
       net.model.equations[0] = {
         run: () => {
           return {rows: 0, columns: 0, weights: [], recurrence: []};
@@ -193,8 +193,8 @@ describe('rnn', () => {
     });
 
     it('is fully connected and gives values in recurrence', () => {
-      var net = xorNet();
-      var input = xorNetValues[2];
+      let net = xorNet();
+      let input = xorNetValues[2];
       net.model.allMatrices.forEach((m) => {
         m.recurrence.forEach((value) => {
           assert.equal(value, 0);
@@ -206,7 +206,7 @@ describe('rnn', () => {
         assert.equal(v, 0);
       });
       net.model.hiddenLayers.forEach((layer) => {
-        for (var p in layer) {
+        for (let p in layer) {
           if (!layer.hasOwnProperty(p)) continue;
           layer[p].recurrence.forEach((v) => {
             assert.equal(v, 0);
@@ -221,7 +221,7 @@ describe('rnn', () => {
 
       assert(net.model.input.recurrence.some(notZero));
       net.model.hiddenLayers.forEach((layer) => {
-        for (var p in layer) {
+        for (let p in layer) {
           if (!layer.hasOwnProperty(p)) continue;
           assert(layer[p].recurrence.some(notZero));
         }
@@ -238,15 +238,15 @@ describe('rnn', () => {
     });
 
     it('recurrence is reset to zero after .step() is called', () => {
-      var net = xorNet();
-      var input = xorNetValues[2];
+      let net = xorNet();
+      let input = xorNetValues[2];
       net.runInput(input);
       net.runBackpropagate(input);
       net.step();
 
       assert(net.model.input.recurrence.every(isZero));
       net.model.hiddenLayers.forEach((layer) => {
-        for (var p in layer) {
+        for (let p in layer) {
           if (!layer.hasOwnProperty(p)) continue;
           assert(layer[p].recurrence.every(isZero));
         }
@@ -263,9 +263,9 @@ describe('rnn', () => {
     });
 
     it('recurrence and weights do not explode', () => {
-      var net = xorNet();
-      var input = xorNetValues[2];
-      for (var i = 0; i < 100; i++)
+      let net = xorNet();
+      let input = xorNetValues[2];
+      for (let i = 0; i < 100; i++)
       {
         rnnCheck.allMatrices(net.model, (values) => {
           values.forEach((value, i) => {
@@ -294,12 +294,12 @@ describe('rnn', () => {
     });
 
     it('can learn xor (perplexity goes down)', () => {
-      var net = xorNet();
-      var initialPerplexity;
-      var perplexity;
+      let net = xorNet();
+      let initialPerplexity;
+      let perplexity;
 
-      for (var i = 0; i < 10; i++) {
-        var input = xorNetValues[Math.floor((xorNetValues.length - 1) * Math.random())];
+      for (let i = 0; i < 10; i++) {
+        let input = xorNetValues[Math.floor((xorNetValues.length - 1) * Math.random())];
         perplexity = net.trainPattern(input);
         if (i === 0) {
           initialPerplexity = perplexity;
@@ -310,14 +310,12 @@ describe('rnn', () => {
     });
 
     it('can predict xor', () => {
-      var net = xorNet();
-      for (var i = 0; i < 100; i++) {
+      let net = xorNet();
+      for (let i = 0; i < 10; i++) {
         xorNetValues.forEach(function(value) {
-          net.trainPattern(value);
+          console.log(net.trainPattern(value));
         });
       }
-
-      console.log(net.run());
       assert.equal(net.run().length, 3);
     });
   });
@@ -325,12 +323,12 @@ describe('rnn', () => {
   describe('json', () => {
     describe('.toJSON', () => {
       it('can export model as json', () => {
-        var net = new RNN({
+        let net = new RNN({
           inputSize: 6,
           inputRange: 12,
           outputSize: 6
         });
-        var json = net.toJSON();
+        let json = net.toJSON();
 
         compare(json.input, net.model.input);
         net.model.hiddenLayers.forEach((layer, i) => {
@@ -353,14 +351,14 @@ describe('rnn', () => {
 
     describe('.fromJSON', () => {
       it('can import model from json', () => {
-        var vocab = new Vocab('abcdef'.split(''));
-        var jsonString = JSON.stringify(new RNN({
+        let vocab = new Vocab('abcdef'.split(''));
+        let jsonString = JSON.stringify(new RNN({
           inputSize: 6, //<- length
           inputRange: vocab.characters.length,
           outputSize: vocab.characters.length //<- length
         }).toJSON());
 
-        var clone = new RNN({ json: JSON.parse(jsonString) });
+        let clone = new RNN({ json: JSON.parse(jsonString) });
 
         assert.equal(jsonString, JSON.stringify(clone.toJSON()));
         assert.equal(clone.inputSize, 6);
@@ -369,14 +367,14 @@ describe('rnn', () => {
       });
 
       it('can import model from json and train again', () => {
-        var vocab = new Vocab('abcdef'.split(''));
-        var jsonString = JSON.stringify(new RNN({
+        let vocab = new Vocab('abcdef'.split(''));
+        let jsonString = JSON.stringify(new RNN({
           inputSize: 6, //<- length
           inputRange: vocab.characters.length,
           outputSize: vocab.characters.length //<- length
         }).toJSON());
 
-        var clone = new RNN({ json: JSON.parse(jsonString) });
+        let clone = new RNN({ json: JSON.parse(jsonString) });
         clone.trainPattern([0, 1, 2, 3, 4, 5]);
 
         assert.notEqual(jsonString, JSON.stringify(clone.toJSON()));
@@ -390,20 +388,20 @@ describe('rnn', () => {
   describe('rnn.toFunction', () => {
     it('can output same as run method', () => {
       const vocab = new Vocab(['h', 'i', ' ', 'm', 'o', '!']);
-      var net = new RNN({
+      let net = new RNN({
         inputSize: 7,
         inputRange: vocab.characters.length,
         outputSize: 7
       });
 
-      for (var i = 0; i < 100; i++) {
+      for (let i = 0; i < 100; i++) {
         net.trainPattern(vocab.toIndexes('hi mom!'));
         if (i % 10) {
           console.log(vocab.toCharacters(net.run()).join(''));
         }
       }
 
-      var lastOutput = vocab.toCharacters(net.run()).join('');
+      let lastOutput = vocab.toCharacters(net.run()).join('');
       assert.equal(vocab.toCharacters(net.toFunction()()).join(''), lastOutput);
     });
   });

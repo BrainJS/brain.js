@@ -140,7 +140,7 @@ describe('vocab', function() {
     it('works', () => {
       const vocab = Vocab.fromArrayInputOutput([1,2,3,4,5,6,7,8,9,0]);
       let indices = vocab.toIndexesInputOutput([1,2,3,4,5], [1,2,3,4,5]);
-      assert.deepEqual(vocab.toCharacters(indices), []);
+      assert.deepEqual(vocab.toCharacters(indices), [1,2,3,4,5,'stop-input', 'start-output', 1,2,3,4,5]);
     });
   });
 });
