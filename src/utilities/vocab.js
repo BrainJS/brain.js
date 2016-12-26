@@ -8,28 +8,39 @@ export default class Vocab {
   constructor(values, maxThreshold = 0) {
     if (typeof values === 'undefined') return;
 
-    this.values = typeof values === 'string' ? values.split('') : values;
+    this.values = values;
     // go over all characters and keep track of all unique ones seen
     // count up all characters
     this.indexTable = {};
     this.characterTable = {};
     this.characters = [];
+    this.buildCharactersFromIterable(values);
+    this.buildTables(maxThreshold);
+  }
+
+  buildCharactersFromIterable(values) {
     let tempCharactersTable = {};
     for (let vocabIndex = 0, vocabLength = values.length; vocabIndex < vocabLength; vocabIndex++) {
-      var characters = values[vocabIndex].toString();
-      for (let characterIndex = 0, charactersLength = characters.length; characterIndex < charactersLength; characterIndex++) {
-        let character = characters[characterIndex];
-        if (character in tempCharactersTable) continue;
-        tempCharactersTable[character] = true;
+      let characters = values[vocabIndex];
+
+      if (characters.hasOwnProperty('length')) {
+        for (let characterIndex = 0, charactersLength = characters.length; characterIndex < charactersLength; characterIndex++) {
+          let character = characters[characterIndex];
+          if (tempCharactersTable.hasOwnProperty(character)) continue;
+          tempCharactersTable[character] = true;
+          this.characters.push(character);
+        }
+      } else {
+        let character = values[vocabIndex];
+        if (tempCharactersTable.hasOwnProperty(character)) continue;
+        tempCharactersTable[vocabIndex] = true;
         this.characters.push(character);
       }
     }
+  }
 
+  buildTables(maxThreshold) {
     // filter by count threshold and create pointers
-
-    // NOTE: start at one because we will have START and END tokens!
-    // that is, START token will be index 0 in model letter vectors
-    // and END token will be index 0 in the next character softmax
     let charactersLength = this.characters.length;
     for(let characterIndex = 0; characterIndex < charactersLength; characterIndex++) {
       let character = this.characters[characterIndex];
@@ -75,12 +86,12 @@ export default class Vocab {
     }
   }
 
-  toCharacters(indexes, maxThreshold = 0) {
+  toCharacters(indices, maxThreshold = 0) {
     let result = [];
     let characterTable = this.characterTable;
 
-    for (let i = 0, max = indexes.length; i < max; i++) {
-      let index = indexes[i];
+    for (let i = 0, max = indices.length; i < max; i++) {
+      let index = indices[i];
       if (index < maxThreshold) continue;
       let character = characterTable[index];
       if (typeof character === 'undefined') {
@@ -92,8 +103,8 @@ export default class Vocab {
     return result;
   }
 
-  toString(indexes, maxThreshold) {
-    return this.toCharacters(indexes, maxThreshold).join('');
+  toString(indices, maxThreshold) {
+    return this.toCharacters(indices, maxThreshold).join('');
   }
 
   static allPrintable(maxThreshold, values = ['\n']) {
@@ -118,6 +129,13 @@ export default class Vocab {
     return vocab;
   }
 
+  static fromArrayInputOutput(array, maxThreshold) {
+    const vocab = new Vocab(array.filter((v, i, a) => a.indexOf(v) === i).sort(), maxThreshold);
+    vocab.addSpecial('stop-input');
+    vocab.addSpecial('start-output');
+    return vocab;
+  }
+
   static fromString(string, maxThreshold) {
     const values = String.prototype.concat(...new Set(string));
     return new Vocab(values, maxThreshold);
@@ -133,9 +151,16 @@ export default class Vocab {
   }
 
   addSpecial(special) {
-    let i = this.indexTable[special] = this.values.length;
+    let i = this.indexTable[special] = this.characters.length;
     this.characterTable[i] = special;
-    this.values.push(special);
     this.characters.push(special);
+  }
+
+  toFunctionString(vocabVariableName) {
+    return `
+${ this.toIndexes.toString().replace('this', vocabVariableName) }
+${ this.toIndexesInputOutput.toString().replace('this', vocabVariableName) }
+${ this.toCharacters.toString().replace('this', vocabVariableName) }
+`;
   }
 }

@@ -67,13 +67,13 @@ function phraseToIndexes(phrase, maxThreshold) {
   return result;
 }
 
-function indexesToPhrase(indexes, maxThreshold) {
+function indicesToPhrase(indices, maxThreshold) {
   maxThreshold = maxThreshold || 0;
   var result = [];
   var indexToCharacter = vocabData.indexToCharacter;
 
-  for (var i = 0, max = indexes.length; i < max; i++) {
-    var index = indexes[i];
+  for (var i = 0, max = indices.length; i < max; i++) {
+    var index = indices[i];
     if (index < maxThreshold) continue;
     var character = indexToCharacter[index];
     result.push(character);
@@ -100,6 +100,6 @@ describe('character', () => {
 
     var prediction = rnn.predict();
 
-    console.log(indexesToPhrase(prediction).join(''));
+    console.log(indicesToPhrase(prediction).join(''));
   });
 });

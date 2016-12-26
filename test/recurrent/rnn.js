@@ -40,9 +40,9 @@ describe('rnn', () => {
     function xorNet() {
       return new RNN({
         hiddenSizes: [3],
-        inputSize: 3,
+        inputSize: 2,
         inputRange: 2,
-        outputSize: 3
+        outputSize: 2
       });
     }
 
@@ -311,11 +311,13 @@ describe('rnn', () => {
 
     it('can predict xor', () => {
       var net = xorNet();
-      for (var i = 0; i < 200; i++) {
-        var input = xorNetValues[Math.floor((xorNetValues.length - 1) * Math.random())];
-        net.trainPattern(input);
+      for (var i = 0; i < 100; i++) {
+        xorNetValues.forEach(function(value) {
+          net.trainPattern(value);
+        });
       }
 
+      console.log(net.run());
       assert.equal(net.run().length, 3);
     });
   });

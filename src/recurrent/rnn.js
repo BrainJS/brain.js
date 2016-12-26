@@ -19,12 +19,6 @@ export default class RNN {
       this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
     }
 
-    if (this.vocab !== null) {
-      this.inputSize = this.vocab.characters.length;
-      this.inputRange = this.vocab.characters.length;
-      this.outputSize = this.vocab.characters.length;
-    }
-
     this.stepCache = {};
     this.runs = 0;
     this.totalPerplexity = null;
@@ -47,6 +41,12 @@ export default class RNN {
       equationConnections: [],
       outputMatrixIndex: -1
     };
+
+    if (this.vocab !== null) {
+      this.inputSize = this.vocab.characters.length;
+      this.inputRange = this.vocab.characters.length;
+      this.outputSize = this.vocab.characters.length;
+    }
 
     if (this.json) {
       this.fromJSON(this.json);
@@ -149,7 +149,7 @@ export default class RNN {
       // 0 index
     let output = this.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], hiddenLayers[0]);
     outputs.push(output);
-    // 1+ indexes
+    // 1+ indices
     for (let i = 1, max = hiddenSizes.length; i < max; i++) {
       output = this.getEquation(equation, output, equationConnection[i], hiddenLayers[i]);
       outputs.push(output);
@@ -191,7 +191,7 @@ export default class RNN {
 
   /**
    *
-   * @param {String[]} input
+   * @param {Number[]} input
    * @param {Number} [learningRate]
    * @returns {*}
    */
@@ -320,10 +320,9 @@ export default class RNN {
    */
   run(rawInput = [], maxPredictionLength = 100, isSampleI = false, temperature = 1) {
     const input = this.formatDataIn(rawInput);
-    let model = this.model;
-    let equation;
+    const model = this.model;
+    const output = [];
     let i = 0;
-    let output = [];
     while (model.equations.length < maxPredictionLength) {
       this.bindEquation();
     }
@@ -332,44 +331,58 @@ export default class RNN {
         ? 0
         : i < input.length
           ? input[i - 1] + 1
-          : output[i - 1]);
-
-      equation = model.equations[i];
+          : output[i - 1])
+          ;
+      let equation = model.equations[i];
       // sample predicted letter
-      let outputIndex = equation.run(previousIndex);
-
+      let outputMatrix = equation.run(previousIndex);
       let logProbabilities = new Matrix(model.output.rows, model.output.columns);
-      copy(logProbabilities, outputIndex);
+      copy(logProbabilities, outputMatrix);
       if (temperature !== 1 && isSampleI) {
-        // scale log probabilities by temperature and re-normalize
-        // if temperature is high, logprobs will go towards zero
-        // and the softmax outputs will be more diffuse. if temperature is
-        // very low, the softmax outputs will be more peaky
-        for (let q = 0, nq = logProbabilities.weights.length; q < nq; q++) {
-          logProbabilities.weights[q] /= temperature;
+        /**
+         * scale log probabilities by temperature and re-normalize
+         * if temperature is high, logProbabilities will go towards zero
+         * and the softmax outputs will be more diffuse. if temperature is
+         * very low, the softmax outputs will be more peaky
+         */
+        for (let j = 0, max = logProbabilities.weights.length; j < max; j++) {
+          logProbabilities.weights[j] /= temperature;
         }
       }
 
       let probs = softmax(logProbabilities);
-      let nextIndex = (isSampleI
-        ? sampleI(probs)
-        : maxI(probs));
+      let nextIndex = (isSampleI ? sampleI(probs) : maxI(probs));
 
       i++;
       if (nextIndex === 0) {
-        //console.log('end predicted');
         // END token predicted, break out
         break;
       }
       if (i >= maxPredictionLength) {
-        //console.log('something is wrong');
         // something is wrong
         break;
       }
 
       output.push(nextIndex);
     }
-    return this.formatDataOut(input, output.slice(input.length).map(value => value - 1));
+
+    /**
+     * we slice the input length here, not because output contains it, but it will be erroneous as we are sending the
+     * network what is contained in input, so the data is essentially guessed by the network what could be next, till it
+     * locks in on a value.
+     * Kind of like this, values are from input:
+     * 0 -> 4 (or in English: "beginning on input" -> "I have no idea? I'll guess what they want next!")
+     * 2 -> 2 (oh how interesting, I've narrowed down values...)
+     * 1 -> 9 (oh how interesting, I've now know what the values are...)
+     * then the output looks like: [4, 2, 9,...]
+     * so we then remove the erroneous data to get our true output
+     */
+    return this.formatDataOut(
+      input,
+      output
+        .slice(input.length)
+        .map(value => value - 1)
+    );
   }
 
   /**
@@ -387,16 +400,14 @@ export default class RNN {
     let learningRate = options.learningRate || this.learningRate;
     let callback = options.callback;
     let callbackPeriod = options.callbackPeriod;
-
-    if (!options.keepNetworkIntact) {
-      this.initialize();
-    }
-
     let error = 1;
     let i;
 
     if (this.hasOwnProperty('setupData')) {
       data = this.setupData(data);
+    }
+    if (!options.keepNetworkIntact) {
+      this.initialize();
     }
 
     for (i = 0; i < iterations && error > errorThresh; i++) {
@@ -407,6 +418,7 @@ export default class RNN {
       }
       error = sum / data.length;
 
+      if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
       if (log && (i % logPeriod == 0)) {
         log('iterations:', i, 'training error:', error);
       }
@@ -515,7 +527,7 @@ export default class RNN {
     let equations = this.model.equations;
     let equation = equations[1];
     let states = equation.states;
-    let modelAsString = JSON.stringify(this.toJSON());
+    let jsonString = JSON.stringify(this.toJSON());
 
     function matrixOrigin(m, stateIndex) {
       for (let i = 0, max = states.length; i < max; i++) {
@@ -559,16 +571,16 @@ export default class RNN {
     function matrixToString(m, stateIndex) {
       if (!m || !m.rows || !m.columns) return 'null';
 
-      if (m === model.input) return `model.input`;
-      if (m === model.outputConnector) return `model.outputConnector`;
-      if (m === model.output) return `model.output`;
+      if (m === model.input) return `json.input`;
+      if (m === model.outputConnector) return `json.outputConnector`;
+      if (m === model.output) return `json.output`;
 
       for (let i = 0, max = model.hiddenLayers.length; i < max; i++) {
         let hiddenLayer = model.hiddenLayers[i];
         for (let p in hiddenLayer) {
           if (!hiddenLayer.hasOwnProperty(p)) continue;
           if (hiddenLayer[p] !== m) continue;
-          return `model.hiddenLayers[${ i }].${ p }`;
+          return `json.hiddenLayers[${ i }].${ p }`;
         }
       }
 
@@ -576,7 +588,7 @@ export default class RNN {
     }
 
     function toInner(fnString) {
-      //crude, but should be sufficient for now
+      // crude, but should be sufficient for now
       // function() { body }
       fnString = fnString.toString().split('{');
       fnString.shift();
@@ -615,21 +627,31 @@ export default class RNN {
       }
     }
 
-    return new Function('input', 'maxPredictionLength', '_sampleI', 'temperature', `
+    return new Function('input', 'maxPredictionLength', 'isSampleI', 'temperature', `
   if (typeof input === 'undefined') input = [];
   if (typeof maxPredictionLength === 'undefined') maxPredictionLength = 100;
-  if (typeof _sampleI === 'undefined') _sampleI = false;
+  if (typeof isSampleI === 'undefined') isSampleI = false;
   if (typeof temperature === 'undefined') temperature = 1;
   
-  var model = ${ modelAsString };
+  ${
+      (this.vocab !== null && typeof this.formatDataIn === 'function')
+        ? 'input = formatDataIn(input);' 
+        : ''
+    }
+        
+  var json = ${ jsonString };
   var _i = 0;
-  var result = input.slice(0);
+  var output = [];
   var states = [];
   var prevStates;
   while (true) {
-    // sample predicted letter
-    var ix = result.length === 0 ? 0 : result[result.length - 1]; // first step: start with START token
-    var rowPluckIndex = ix; //connect up to rowPluck
+    var previousIndex = (_i === 0
+        ? 0
+        : _i < input.length
+          ? input[_i - 1] + 1
+          : output[_i - 1])
+          ;
+    var rowPluckIndex = previousIndex;
     prevStates = states;
     states = [];
     ${ statesRaw.join(';\n    ') };
@@ -645,38 +667,28 @@ ${ innerFunctionsSwitch.join('\n') }
     }
     
     var logProbabilities = state.product;
-    if (temperature !== 1 && _sampleI) {
-      // scale log probabilities by temperature and renormalize
-      // if temperature is high, logprobs will go towards zero
-      // and the softmax outputs will be more diffuse. if temperature is
-      // very low, the softmax outputs will be more peaky
+    if (temperature !== 1 && isSampleI) {
       for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {
         logProbabilities.weights[q] /= temperature;
       }
     }
 
     var probs = softmax(logProbabilities);
-
-    if (_sampleI) {
-      ix = sampleI(probs);
-    } else {
-      ix = maxI(probs);
-    }
+    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);
     
     _i++;
-    if (ix === 0) {
-      // END token predicted, break out
+    if (nextIndex === 0) {
       break;
     }
     if (_i >= maxPredictionLength) {
-      // something is wrong
       break;
     }
 
-    result.push(ix);
+    output.push(nextIndex);
   }
-
-  return result.map(function(value) { return value - 1; });
+  ${ (this.vocab !== null && typeof this.formatDataOut === 'function') 
+      ? 'return formatDataOut(output.slice(input.length).map(function(value) { return value - 1; }))'
+      : 'return output.slice(input.length).map(function(value) { return value - 1; })' };
   
   function Matrix(rows, columns) {
     this.rows = rows;
@@ -684,16 +696,22 @@ ${ innerFunctionsSwitch.join('\n') }
     this.weights = zeros(rows * columns);
     this.recurrence = zeros(rows * columns);
   }
+  ${ this.vocab !== null && typeof this.formatDataIn === 'function'
+      ? `function formatDataIn(input, output) { ${ toInner(this.formatDataIn.toString()).replace('this.vocab', 'json.options.vocab') } }`
+      : '' }
+  ${ this.vocab !== null && typeof this.formatDataOut === 'function'
+        ? `function formatDataOut(output) { ${ toInner(this.formatDataIn.toString()).replace('this.vocab', 'json.options.vocab') } }` 
+        : '' }
+  ${ (this.vocab !== null) ? this.vocab.toFunctionString('json.options.vocab') : '' }
   ${ zeros.toString() }
-  ${ softmax.toString() }
+  ${ softmax.toString().replace('_2.default', 'Matrix') }
   ${ randomF.toString() }
   ${ sampleI.toString() }
-  ${ maxI.toString() }`);
+  ${ maxI.toString() }`)
   }
 }
 
 RNN.defaults = {
-  // hidden size should be a list
   inputSize: 20,
   inputRange: 20,
   hiddenSizes:[20,20],
@@ -708,12 +726,11 @@ RNN.defaults = {
     if (!data[0].hasOwnProperty('input') || !data[0].hasOwnProperty('output')) {
       return data;
     }
-    let characters = '';
+    let values = [];
     for (let i = 0; i < data.length; i++) {
-      characters += data[i].input;
-      characters += data[i].output;
+      values = values.concat(data[i].input, data[i].output);
     }
-    this.vocab = Vocab.fromStringInputOutput(characters);
+    this.vocab = Vocab.fromArrayInputOutput(values);
     const result = [];
     for (let i = 0, max = data.length; i < max; i++) {
       result.push(this.formatDataIn(data[i].input, data[i].output));

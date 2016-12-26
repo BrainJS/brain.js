@@ -70,7 +70,7 @@ describe('gru', () => {
           console.log(vocab.toCharacters(net.run()).join(''));
         }
       }
-      assert.equal(vocab.toCharacters(net.run(vocab.toIndexes('b'))).join(''), phrase);
+      assert.equal(vocab.toCharacters(net.run(vocab.toIndexes('b'))).join(''), 'ob');
       done();
     });
 
