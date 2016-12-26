@@ -108,4 +108,57 @@ describe('lstm', () => {
       assert.equal(vocab.toCharacters(net.toFunction()()).join(''), lastOutput);
     });
   });
+
+  describe('.run', () => {
+    it('can predict greetings in 100 trainings', () => {
+      const net = new LSTM({
+        //json: json
+      });
+      const trainingData = [{
+        input: 'hi',
+        output: 'mom'
+      }, {
+        input: 'howdy',
+        output: 'dad'
+      }, {
+        input: 'hello',
+        output: 'sis'
+      }, {
+        input: 'yo',
+        output: 'bro'
+      }];
+      net.train(trainingData, { iterations: 100, log: true });
+      assert.equal(net.run('hi'), 'mom');
+      assert.equal(net.run('howdy'), 'dad');
+      assert.equal(net.run('hello'), 'sis');
+      assert.equal(net.run('yo'), 'bro');
+    });
+    it('can predict a string from index in 100 trainings', () => {
+      const net = new LSTM();
+      const transationTypes = {
+        credit: 0,
+        debit: 1,
+        personalCard: 2,
+        other: 3
+      };
+      const trainingData = [{
+        input: [transationTypes.credit],
+        output: 'credit'
+      }, {
+        input: [transationTypes.debit],
+        output: 'debit'
+      }, {
+        input: [transationTypes.personalCard],
+        output: 'personal card'
+      }, {
+        input: [transationTypes.other],
+        output: 'other'
+      }];
+      net.train(trainingData, { iterations: 100, log: true });
+      assert.equal(net.run([transationTypes.credit]), 'credit');
+      assert.equal(net.run([transationTypes.debit]), 'debit');
+      assert.equal(net.run([transationTypes.personalCard]), 'personal card');
+      assert.equal(net.run([transationTypes.other]), 'other');
+    });
+  });
 });
