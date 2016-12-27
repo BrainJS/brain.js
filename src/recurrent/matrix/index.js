@@ -8,8 +8,8 @@ import zeros from '../../utilities/zeros';
  */
 export default class Matrix {
   constructor(rows, columns) {
-    if (typeof rows === 'undefined') return;
-    if (typeof columns === 'undefined') return;
+    if (rows === undefined) return;
+    if (columns === undefined) return;
 
     this.rows = rows;
     this.columns = columns;

@@ -22,7 +22,7 @@ var Vocab = function () {
 
     _classCallCheck(this, Vocab);
 
-    if (typeof values === 'undefined') return;
+    if (values === undefined) return;
 
     this.values = values;
     // go over all characters and keep track of all unique ones seen
@@ -81,7 +81,7 @@ var Vocab = function () {
       for (var i = 0, max = value.length; i < max; i++) {
         var character = value[i];
         var index = indexTable[character];
-        if (typeof index === 'undefined') {
+        if (index === undefined) {
           throw new Error('unrecognized character "' + character + '"');
         }
         if (index < maxThreshold) continue;
@@ -123,7 +123,7 @@ var Vocab = function () {
         var index = indices[i];
         if (index < maxThreshold) continue;
         var character = characterTable[index];
-        if (typeof character === 'undefined') {
+        if (character === undefined) {
           throw new Error('unrecognized index "' + index + '"');
         }
         result.push(character);

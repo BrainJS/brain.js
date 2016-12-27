@@ -43,8 +43,8 @@ export default class RNN {
     };
 
     if (this.vocab !== null) {
-      this.inputSize = this.vocab.characters.length;
-      this.inputRange = this.vocab.characters.length;
+      this.inputSize =
+      this.inputRange =
       this.outputSize = this.vocab.characters.length;
     }
 

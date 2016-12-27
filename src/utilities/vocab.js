@@ -6,7 +6,7 @@
  */
 export default class Vocab {
   constructor(values, maxThreshold = 0) {
-    if (typeof values === 'undefined') return;
+    if (values === undefined) return;
 
     this.values = values;
     // go over all characters and keep track of all unique ones seen
@@ -59,7 +59,7 @@ export default class Vocab {
     for (let i = 0, max = value.length; i < max; i++) {
       let character = value[i];
       let index = indexTable[character];
-      if (typeof index === 'undefined') {
+      if (index === undefined) {
         throw new Error(`unrecognized character "${ character }"`);
       }
       if (index < maxThreshold) continue;
@@ -94,7 +94,7 @@ export default class Vocab {
       let index = indices[i];
       if (index < maxThreshold) continue;
       let character = characterTable[index];
-      if (typeof character === 'undefined') {
+      if (character === undefined) {
         throw new Error(`unrecognized index "${ index }"`);
       }
       result.push(character);

@@ -1762,8 +1762,8 @@ var Matrix = function () {
   function Matrix(rows, columns) {
     _classCallCheck(this, Matrix);
 
-    if (typeof rows === 'undefined') return;
-    if (typeof columns === 'undefined') return;
+    if (rows === undefined) return;
+    if (columns === undefined) return;
 
     this.rows = rows;
     this.columns = columns;
@@ -2448,9 +2448,7 @@ var RNN = function () {
       };
 
       if (this.vocab !== null) {
-        this.inputSize = this.vocab.characters.length;
-        this.inputRange = this.vocab.characters.length;
-        this.outputSize = this.vocab.characters.length;
+        this.inputSize = this.inputRange = this.outputSize = this.vocab.characters.length;
       }
 
       if (this.json) {
@@ -3553,7 +3551,7 @@ var Vocab = function () {
 
     _classCallCheck(this, Vocab);
 
-    if (typeof values === 'undefined') return;
+    if (values === undefined) return;
 
     this.values = values;
     // go over all characters and keep track of all unique ones seen
@@ -3612,7 +3610,7 @@ var Vocab = function () {
       for (var i = 0, max = value.length; i < max; i++) {
         var character = value[i];
         var index = indexTable[character];
-        if (typeof index === 'undefined') {
+        if (index === undefined) {
           throw new Error('unrecognized character "' + character + '"');
         }
         if (index < maxThreshold) continue;
@@ -3654,7 +3652,7 @@ var Vocab = function () {
         var index = indices[i];
         if (index < maxThreshold) continue;
         var character = characterTable[index];
-        if (typeof character === 'undefined') {
+        if (character === undefined) {
           throw new Error('unrecognized index "' + index + '"');
         }
         result.push(character);
@@ -3799,8 +3797,9 @@ var brain = {
 
 if (typeof window !== 'undefined') {
   window.brain = brain;
+} else {
+  module.exports = brain;
 }
-module.exports = brain
 },{"./dist/cross-validate":1,"./dist/likely":2,"./dist/lookup":3,"./dist/neural-network":4,"./dist/recurrent/gru":5,"./dist/recurrent/lstm":6,"./dist/recurrent/rnn":31,"./dist/train-stream":32,"./dist/utilities/max":33,"./dist/utilities/mse":34,"./dist/utilities/ones":35,"./dist/utilities/random":37,"./dist/utilities/random-weight":36,"./dist/utilities/randos":38,"./dist/utilities/range":39,"./dist/utilities/to-array":40,"./dist/utilities/vocab":41,"./dist/utilities/zeros":42}],44:[function(require,module,exports){
 'use strict'
 
