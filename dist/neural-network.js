@@ -178,7 +178,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'train',
     value: function train(data) {
-      var _options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var _options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
       var options = Object.assign({}, NeuralNetwork.trainDefaults, _options);
       data = this.formatData(data);
