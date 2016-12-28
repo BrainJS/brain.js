@@ -514,6 +514,29 @@ export default class NeuralNetwork {
     `);
   }
 
+  toExpression() { //returns 'run' function that calculates output mathematically
+    function nodeHandle(layers, layerNumber, nodeNumber) {
+      if (layerNumber == 0) {
+        return "input[" + nodeNumber + "]";
+      }
+      var layer = layers[layerNumber];
+      var node = layer[nodeNumber];
+      var out_str = node.bias;
+      for (var w in node.weights) {
+        out_str += "+" + node.weights[w] + "*(" +  nodeHandle(layers, layerNumber-1, w) + ")";
+      }
+      return "1/(1+1/Math.exp(" + out_str + "))";
+    }
+
+    var layers = this.toJSON().layers;
+    var out = [];
+    for (var i in layers[layers.length-1]) {
+      out.push(nodeHandle(layers, layers.length-1, i).split("+-").join("-"));
+    }
+
+    return new Function("input", "return " + out);
+  }
+
   /**
    * This will create a TrainStream (WriteStream) for us to send the training data to.
    * @param opts training options
