@@ -33,14 +33,14 @@ describe('vocab', function() {
       assert.equal(vocabIndexes[24], 24);
       assert.equal(vocabIndexes[25], 25);
     });
-    it('should properly be able to reference indexes of cat', function() {
+    it('should properly be able to reference indices of cat', function() {
       var vocab = new Vocab(['cat']);
       var asIndexes = [0, 1, 2];
       vocab.toIndexes('cat').forEach(function(v, i) {
         assert(v === asIndexes[i]);
       });
     });
-    it('should properly be able to reference indexes of math', function() {
+    it('should properly be able to reference indices of math', function() {
       var vocab = new Vocab(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '=', '+']);
       var asIndexes = [0, 11, 8, 10, 8];
       vocab.toIndexes('0+8=8').forEach(function(v, i) {
@@ -85,6 +85,62 @@ describe('vocab', function() {
       vocab.toCharacters(asIndexes).forEach(function(v, i) {
         assert(v === asCharacters[i]);
       });
+    });
+  });
+
+  it('can handle strings', () => {
+    const vocab = new Vocab('a big string');
+    const indices = vocab.toIndexes('a big string');
+    indices.forEach(value => assert(value >= 0));
+    assert.equal(vocab.toCharacters(indices).join(''), 'a big string');
+  });
+  it('can handle array of strings', () => {
+    const vocab = new Vocab('a big string'.split(''));
+    const indices = vocab.toIndexes('a big string'.split(''));
+    indices.forEach(value => assert(value >= 0));
+    assert.deepEqual(vocab.toCharacters(indices), 'a big string'.split(''));
+  });
+  it('can handle array of array of strings', () => {
+    const vocab = new Vocab(['a big string'.split(''), 'batman was here'.split('')]);
+    let indices = vocab.toIndexes('a big string'.split(''));
+    indices.forEach(value => assert(value >= 0));
+    assert.deepEqual(vocab.toCharacters(indices), 'a big string'.split(''));
+    indices = vocab.toIndexes('batman was here'.split(''));
+    indices.forEach(value => assert(value >= 0));
+    assert.deepEqual(vocab.toCharacters(indices), 'batman was here'.split(''));
+  });
+  it('can handle array of numbers', () => {
+    const vocab = new Vocab([1, 2, 3]);
+    const indices = vocab.toIndexes([1, 2, 3]);
+    indices.forEach(value => assert(value >= 0));
+    assert.deepEqual(vocab.toCharacters(indices), [1, 2, 3]);
+  });
+  it('can handle array of array of numbers', () => {
+    const vocab = new Vocab([[1, 2, 3], [4, 5, 6]]);
+    let indices = vocab.toIndexes([1, 2, 3]);
+    indices.forEach(value => assert(value >= 0));
+    assert.deepEqual(vocab.toCharacters(indices), [1, 2, 3]);
+    indices = vocab.toIndexes([4, 5, 6]);
+    indices.forEach(value => assert(value >= 3));
+    assert.deepEqual(vocab.toCharacters(indices), [4, 5, 6]);
+  });
+  it('can handle array of booleans', () => {
+    const vocab = new Vocab([true, false]);
+    const indices = vocab.toIndexes([true, false, true, false]);
+    indices.forEach(value => assert(value >= 0));
+    assert.deepEqual(vocab.toCharacters(indices), [true, false, true, false]);
+  });
+  it('can handle array of array of booleans', () => {
+    const vocab = new Vocab([[true], [false]]);
+    let indices = vocab.toIndexes([true, false]);
+    indices.forEach(value => assert(value >= 0));
+    assert.deepEqual(vocab.toCharacters(indices), [true, false]);
+  });
+  context('when splitting values to input/output', () => {
+    it('works', () => {
+      const vocab = Vocab.fromArrayInputOutput([1,2,3,4,5,6,7,8,9,0]);
+      let indices = vocab.toIndexesInputOutput([1,2,3,4,5], [1,2,3,4,5]);
+      assert.deepEqual(vocab.toCharacters(indices), [1,2,3,4,5,'stop-input', 'start-output', 1,2,3,4,5]);
     });
   });
 });

@@ -18,9 +18,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 var Vocab = function () {
   function Vocab(values) {
-    var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 
     _classCallCheck(this, Vocab);
+
+    if (values === undefined) return;
 
     this.values = values;
     // go over all characters and keep track of all unique ones seen
@@ -28,45 +30,58 @@ var Vocab = function () {
     this.indexTable = {};
     this.characterTable = {};
     this.characters = [];
-    var tempCharactersTable = {};
-    for (var vocabIndex = 0, vocabLength = values.length; vocabIndex < vocabLength; vocabIndex++) {
-      var characters = values[vocabIndex].toString();
-      for (var characterIndex = 0, _charactersLength = characters.length; characterIndex < _charactersLength; characterIndex++) {
-        var character = characters[characterIndex];
-        if (character in tempCharactersTable) continue;
-        tempCharactersTable[character] = true;
-        this.characters.push(character);
-      }
-    }
-
-    // filter by count threshold and create pointers
-
-    // NOTE: start at one because we will have START and END tokens!
-    // that is, START token will be index 0 in model letter vectors
-    // and END token will be index 0 in the next character softmax
-    var charactersLength = this.characters.length;
-    for (var _characterIndex = 0; _characterIndex < charactersLength; _characterIndex++) {
-      var _character = this.characters[_characterIndex];
-      if (_characterIndex >= maxThreshold) {
-        // add character to vocab
-        this.indexTable[_character] = _characterIndex;
-        this.characterTable[_characterIndex] = _character;
-      }
-    }
+    this.buildCharactersFromIterable(values);
+    this.buildTables(maxThreshold);
   }
 
   _createClass(Vocab, [{
+    key: 'buildCharactersFromIterable',
+    value: function buildCharactersFromIterable(values) {
+      var tempCharactersTable = {};
+      for (var vocabIndex = 0, vocabLength = values.length; vocabIndex < vocabLength; vocabIndex++) {
+        var characters = values[vocabIndex];
+
+        if (characters.hasOwnProperty('length')) {
+          for (var characterIndex = 0, charactersLength = characters.length; characterIndex < charactersLength; characterIndex++) {
+            var character = characters[characterIndex];
+            if (tempCharactersTable.hasOwnProperty(character)) continue;
+            tempCharactersTable[character] = true;
+            this.characters.push(character);
+          }
+        } else {
+          var _character = values[vocabIndex];
+          if (tempCharactersTable.hasOwnProperty(_character)) continue;
+          tempCharactersTable[vocabIndex] = true;
+          this.characters.push(_character);
+        }
+      }
+    }
+  }, {
+    key: 'buildTables',
+    value: function buildTables(maxThreshold) {
+      // filter by count threshold and create pointers
+      var charactersLength = this.characters.length;
+      for (var characterIndex = 0; characterIndex < charactersLength; characterIndex++) {
+        var character = this.characters[characterIndex];
+        if (characterIndex >= maxThreshold) {
+          // add character to vocab
+          this.indexTable[character] = characterIndex;
+          this.characterTable[characterIndex] = character;
+        }
+      }
+    }
+  }, {
     key: 'toIndexes',
-    value: function toIndexes(phrase) {
-      var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    value: function toIndexes(value) {
+      var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 
       var result = [];
       var indexTable = this.indexTable;
 
-      for (var i = 0, max = phrase.length; i < max; i++) {
-        var character = phrase[i];
+      for (var i = 0, max = value.length; i < max; i++) {
+        var character = value[i];
         var index = indexTable[character];
-        if (typeof index === 'undefined') {
+        if (index === undefined) {
           throw new Error('unrecognized character "' + character + '"');
         }
         if (index < maxThreshold) continue;
@@ -76,18 +91,39 @@ var Vocab = function () {
       return result;
     }
   }, {
+    key: 'toIndexesInputOutput',
+    value: function toIndexesInputOutput(value1) {
+      var value2 = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+      var maxThreshold = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+
+      var result = void 0;
+      if (typeof value1 === 'string') {
+        result = this.toIndexes(value1.split('').concat(['stop-input', 'start-output']), maxThreshold);
+      } else {
+        result = this.toIndexes(value1.concat(['stop-input', 'start-output']), maxThreshold);
+      }
+
+      if (value2 === null) return result;
+
+      if (typeof value2 === 'string') {
+        return result.concat(this.toIndexes(value2.split(''), maxThreshold));
+      } else {
+        return result.concat(this.toIndexes(value2, maxThreshold));
+      }
+    }
+  }, {
     key: 'toCharacters',
-    value: function toCharacters(indexes) {
-      var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    value: function toCharacters(indices) {
+      var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 
       var result = [];
       var characterTable = this.characterTable;
 
-      for (var i = 0, max = indexes.length; i < max; i++) {
-        var index = indexes[i];
+      for (var i = 0, max = indices.length; i < max; i++) {
+        var index = indices[i];
         if (index < maxThreshold) continue;
         var character = characterTable[index];
-        if (typeof character === 'undefined') {
+        if (character === undefined) {
           throw new Error('unrecognized index "' + index + '"');
         }
         result.push(character);
@@ -97,25 +133,79 @@ var Vocab = function () {
     }
   }, {
     key: 'toString',
-    value: function toString(indexes, maxThreshold) {
-      return this.toCharacters(indexes, maxThreshold).join('');
+    value: function toString(indices, maxThreshold) {
+      return this.toCharacters(indices, maxThreshold).join('');
+    }
+  }, {
+    key: 'addSpecial',
+    value: function addSpecial(special) {
+      var i = this.indexTable[special] = this.characters.length;
+      this.characterTable[i] = special;
+      this.characters.push(special);
+    }
+  }, {
+    key: 'toFunctionString',
+    value: function toFunctionString(vocabVariableName) {
+      return '\n' + this.toIndexes.toString().replace('this', vocabVariableName) + '\n' + this.toIndexesInputOutput.toString().replace('this', vocabVariableName) + '\n' + this.toCharacters.toString().replace('this', vocabVariableName) + '\n';
     }
   }], [{
     key: 'allPrintable',
     value: function allPrintable(maxThreshold) {
-      var values = ['\n'];
+      var values = arguments.length <= 1 || arguments[1] === undefined ? ['\n'] : arguments[1];
+
       for (var i = 32; i <= 126; i++) {
         values.push(String.fromCharCode(i));
       }
       return new Vocab(values, maxThreshold);
     }
   }, {
-    key: 'fromString',
-    value: function fromString(string, maxThreshold) {
+    key: 'allPrintableInputOutput',
+    value: function allPrintableInputOutput(maxThreshold) {
+      var values = arguments.length <= 1 || arguments[1] === undefined ? ['\n'] : arguments[1];
+
+      var vocab = Vocab.allPrintable(maxThreshold, values);
+      vocab.addSpecial('stop-input');
+      vocab.addSpecial('start-output');
+      return vocab;
+    }
+  }, {
+    key: 'fromStringInputOutput',
+    value: function fromStringInputOutput(string, maxThreshold) {
       var _String$prototype;
 
       var values = (_String$prototype = String.prototype).concat.apply(_String$prototype, _toConsumableArray(new Set(string)));
+      var vocab = new Vocab(values, maxThreshold);
+      vocab.addSpecial('stop-input');
+      vocab.addSpecial('start-output');
+      return vocab;
+    }
+  }, {
+    key: 'fromArrayInputOutput',
+    value: function fromArrayInputOutput(array, maxThreshold) {
+      var vocab = new Vocab(array.filter(function (v, i, a) {
+        return a.indexOf(v) === i;
+      }).sort(), maxThreshold);
+      vocab.addSpecial('stop-input');
+      vocab.addSpecial('start-output');
+      return vocab;
+    }
+  }, {
+    key: 'fromString',
+    value: function fromString(string, maxThreshold) {
+      var _String$prototype2;
+
+      var values = (_String$prototype2 = String.prototype).concat.apply(_String$prototype2, _toConsumableArray(new Set(string)));
       return new Vocab(values, maxThreshold);
+    }
+  }, {
+    key: 'fromJSON',
+    value: function fromJSON(json) {
+      var vocab = new Vocab();
+      vocab.indexTable = json.indexTable;
+      vocab.characterTable = json.characterTable;
+      vocab.values = json.values;
+      vocab.characters = json.characters;
+      return vocab;
     }
   }]);
 

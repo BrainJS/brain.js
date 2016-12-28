@@ -1,7 +1,5 @@
-import _Matrix from './';
+import Matrix from './';
 
-//prevent parser from renaming when calling toString() method later
-const Matrix = _Matrix;
 /**
  *
  * @param {Matrix} m
