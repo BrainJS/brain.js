@@ -2,13 +2,14 @@
 
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/harthur/brain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-`brain.js` is a JavaScript [neural network](http://en.wikipedia.org/wiki/Artificial_neural_network) library.
+`brain.js` is a library of JavaScript [neural networks](http://en.wikipedia.org/wiki/Artificial_neural_network).
 
 :bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
 
 Here's an example of using it to approximate the XOR function:
 
 ```javascript
+//create a simple feed forward neural network with backpropagation
 var net = new brain.NeuralNetwork();
 
 net.train([{input: [0, 0], output: [0]},
@@ -17,6 +18,21 @@ net.train([{input: [0, 0], output: [0]},
            {input: [1, 1], output: [0]}]);
 
 var output = net.run([1, 0]);  // [0.987]
+```
+or
+```javascript
+//create a simple recurrent neural network
+var net = new brain.recurrent.RNN();
+
+net.train([{input: [0, 0], output: [0]},
+           {input: [0, 1], output: [1]},
+           {input: [1, 0], output: [1]},
+           {input: [1, 1], output: [0]}]);
+
+var output = net.run([0, 0]);  // [0]
+output = net.run([0, 1]);  // [1]
+output = net.run([1, 0]);  // [1]
+output = net.run([1, 1]);  // [0]
 ```
 
 There's no reason to use a neural network to figure out XOR however (-: so here's a more involved, realistic example:
@@ -167,3 +183,14 @@ var likely = require('brain/likely');
 var key = likely(input, net);
 ```
 See: https://github.com/harthur-org/brain.js/blob/master/test/base/likely.js
+
+## Neural Network Types
+* [`brain.NueralNetwork`](blob/master/src/neural-network.js) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation
+* [`brain.recurrent.RNN`](blob/master/src/recurrent/rnn.js) - [Recurrent Neural Network or "RNN"](https://en.wikipedia.org/wiki/Recurrent_neural_network)
+* [`brain.recurrent.LSTM`](blob/master/src/recurrent/lstm.js) - [Long Short Term Memory Neural Network or "LSTM"](https://en.wikipedia.org/wiki/Long_short-term_memory)
+* [`brain.recurrent.GRU`](blob/master/src/recurrent/gru.js) - [Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
+
+### Why different Neural Network Types?
+Different neural nets do different things well.  For example:
+* A Feedforward Neural Network can classify simple things very well, but it has no memory of previous actions and has infinite variation of results.
+* A Recurrent Neural Network _remembers_, and has a finite set of results.
