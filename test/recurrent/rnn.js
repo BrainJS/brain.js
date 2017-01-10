@@ -269,44 +269,44 @@ describe('rnn', () => {
       {
         rnnCheck.allMatrices(net.model, (values) => {
           values.forEach((value, i) => {
-            assert(value < 50 && value > -50);
+            assert(!isNaN(value));
           });
         });
         net.runInput(input);
         rnnCheck.allMatrices(net.model, (values) => {
           values.forEach((value, i) => {
-            assert(value < 50 && value > -50);
+            assert(!isNaN(value));
           });
         });
         net.runBackpropagate(input);
         rnnCheck.allMatrices(net.model, (values) => {
           values.forEach((value, i) => {
-            assert(value < 50 && value > -50);
+            assert(!isNaN(value));
           });
         });
         net.step();
         rnnCheck.allMatrices(net.model, (values) => {
           values.forEach((value, i) => {
-            assert(value < 50 && value > -50);
+            assert(!isNaN(value));
           });
         });
       }
     });
 
-    it('can learn xor (perplexity goes down)', () => {
+    it('can learn xor (error goes down)', () => {
       let net = xorNet();
-      let initialPerplexity;
-      let perplexity;
+      let initialError;
+      let error;
 
       for (let i = 0; i < 10; i++) {
         let input = xorNetValues[Math.floor((xorNetValues.length - 1) * Math.random())];
-        perplexity = net.trainPattern(input);
+        error = net.trainPattern(input);
         if (i === 0) {
-          initialPerplexity = perplexity;
+          initialError = error;
         }
-        console.log(perplexity);
+        console.log(error);
       }
-      assert(initialPerplexity > perplexity);
+      assert(initialError > error);
     });
 
     it('can predict xor', () => {

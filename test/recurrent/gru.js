@@ -2,63 +2,44 @@ import assert from 'assert';
 import GRU from '../../src/recurrent/gru';
 import Vocab from '../../src/utilities/vocab';
 
-function randomMath() {
-  var left = Math.floor(Math.random() * 10);
-  var right = Math.floor(Math.random() * 10);
-  return left + '+' + right + '=' + (left + right);
-}
-
 describe('gru', () => {
   describe('math', () => {
-    it('can predict what a math problem is after being fed 1000 random math problems', (done) => {
-      const vocab = new Vocab(['0','1','2','3','4','5','6','7','8','9','+','=', '-', '/', '*']);
-      console.time('math gru');
-      var net = new GRU({
-        inputSize: vocab.characters.length,
-        inputRange: vocab.characters.length,
-        outputSize: vocab.characters.length
-      });
-
-      for (var i = 0; i < 1000; i++) {
-        net.trainPattern(vocab.toIndexes(randomMath()));
-        if (i % 10 === 0) {
-          console.log(vocab.toCharacters(net.run()).join(''));
+    it('can predict math', function(done) {
+      this.timeout(15000);
+      const net = new GRU();
+      const items = [];
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          items.push(`${i}+${j}=${i + j}`);
+          if (i === j) continue;
+          items.push(`${j}+${i}=${i + j}`);
         }
       }
-
-      var prediction = vocab.toCharacters(net.run()).join('');
-      assert(/[+]/.test(prediction));
-      assert(/[=]/.test(prediction));
-      console.timeEnd('math gru');
-      console.log(prediction);
+      net.train(items, { log: true, iterations: 100 });
+      for (let i = 0; i < 10; i++) {
+        const output = net.run();
+        console.log(output, typeof output);
+        assert(Boolean(/^[0-9]+[+][0-9]+[=][0-9]+$/.test(output)));
+      }
       done();
     });
   });
 
   describe('printable characters', () => {
     it('can learn a phrase', (done) => {
-      const phrase = 'hello world;|something I comment about';
-      const vocab = Vocab.fromString(phrase);
-      var net = new GRU({
-        inputSize: 40,
-        inputRange: vocab.characters.length,
-        outputSize: 40
-      });
-
-      for (var i = 0; i < 500; i++) {
-        net.trainPattern(vocab.toIndexes(phrase));
-        if (i % 10 === 0) {
-          console.log(vocab.toCharacters(net.run()).join(''));
-        }
-      }
-      assert.equal(vocab.toCharacters(net.run()).join(''), phrase);
+      const net = new GRU();
+      net.train([{
+        input: 'hello world',
+        output: 'comment'
+      }], { iterations: 100 });
+      assert.equal(net.run('hello world'), 'comment');
       done();
     });
 
     it('can predict a phrase when given the first letter', (done) => {
       const phrase = 'bob';
       const vocab = new Vocab(['b', 'o']);
-      var net = new GRU({
+      const net = new GRU({
         inputSize: 3,
         inputRange: vocab.characters.length,
         outputSize: 3

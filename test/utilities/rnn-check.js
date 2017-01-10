@@ -3,7 +3,7 @@ import assert from 'assert';
 export function allWeights(model, fn) {
   fn(model.input.weights);
   model.hiddenLayers.forEach((layer) => {
-    for (var p in layer) {
+    for (let p in layer) {
       if (!layer.hasOwnProperty(p)) continue;
       assert(fn(layer[p].weights));
     }
@@ -22,7 +22,7 @@ export function allWeights(model, fn) {
 export function allRecurrences(model, fn) {
   fn(model.input.recurrence);
   model.hiddenLayers.forEach((layer) => {
-    for (var p in layer) {
+    for (let p in layer) {
       if (!layer.hasOwnProperty(p)) continue;
       assert(fn(layer[p].recurrence));
     }
@@ -41,7 +41,7 @@ export function allRecurrences(model, fn) {
 export function allMatrices(model, fn) {
   fn(model.input.weights);
   model.hiddenLayers.forEach((layer) => {
-    for (var p in layer) {
+    for (let p in layer) {
       if (!layer.hasOwnProperty(p)) continue;
       fn(layer[p].weights);
     }
@@ -58,7 +58,7 @@ export function allMatrices(model, fn) {
 
   fn(model.input.recurrence);
   model.hiddenLayers.forEach((layer) => {
-    for (var p in layer) {
+    for (let p in layer) {
       if (!layer.hasOwnProperty(p)) continue;
       fn(layer[p].recurrence);
     }

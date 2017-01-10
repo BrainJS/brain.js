@@ -6,10 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _lookup = require('../lookup');
-
-var _lookup2 = _interopRequireDefault(_lookup);
-
 var _matrix = require('./matrix');
 
 var _matrix2 = _interopRequireDefault(_matrix);
@@ -67,7 +63,6 @@ var RNN = function () {
 
     this.stepCache = {};
     this.runs = 0;
-    this.totalPerplexity = null;
     this.totalCost = null;
     this.ratioClipped = null;
     this.model = null;
@@ -236,7 +231,7 @@ var RNN = function () {
      *
      * @param {Number[]} input
      * @param {Number} [learningRate]
-     * @returns {*}
+     * @returns {number}
      */
 
   }, {
@@ -244,10 +239,10 @@ var RNN = function () {
     value: function trainPattern(input) {
       var learningRate = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
 
-      var err = this.runInput(input);
+      var error = this.runInput(input);
       this.runBackpropagate(input);
       this.step(learningRate);
-      return err;
+      return error;
     }
 
     /**
@@ -264,7 +259,7 @@ var RNN = function () {
       var max = input.length;
       var log2ppl = 0;
       var cost = 0;
-
+      var error = 0;
       var equation = void 0;
       while (model.equations.length <= input.length + 1) {
         //first and last are zeros
@@ -272,7 +267,8 @@ var RNN = function () {
       }
       for (var inputIndex = -1, inputMax = input.length; inputIndex < inputMax; inputIndex++) {
         // start and end tokens are zeros
-        equation = model.equations[inputIndex + 1];
+        var equationIndex = inputIndex + 1;
+        equation = model.equations[equationIndex];
 
         var source = inputIndex === -1 ? 0 : input[inputIndex] + 1; // first step: start with START token
         var target = inputIndex === max - 1 ? 0 : input[inputIndex + 1] + 1; // last step: end with END token
@@ -283,14 +279,13 @@ var RNN = function () {
 
         log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
         cost += -Math.log(probabilities.weights[target]);
-
         // write gradients into log probabilities
         logProbabilities.recurrence = probabilities.weights;
         logProbabilities.recurrence[target] -= 1;
       }
 
       this.totalCost = cost;
-      return this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
+      return Math.pow(2, log2ppl / (max - 1));
     }
 
     /**
@@ -447,7 +442,7 @@ var RNN = function () {
 
     /**
      *
-     * @param {Object[]} data a collection of objects: `{input: 'string', output: 'string'}`
+     * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
      * @param {Object} [options]
      * @returns {{error: number, iterations: number}}
      */
@@ -718,21 +713,43 @@ RNN.defaults = {
   regc: 0.000001,
   clipval: 5,
   json: null,
+  /**
+   *
+   * @param {*[]} data
+   * @returns {Number[]}
+   */
   setupData: function setupData(data) {
-    if (!data[0].hasOwnProperty('input') || !data[0].hasOwnProperty('output')) {
+    if (typeof data[0] !== 'string' && !Array.isArray(data[0]) && (!data[0].hasOwnProperty('input') || !data[0].hasOwnProperty('output'))) {
       return data;
     }
     var values = [];
-    for (var i = 0; i < data.length; i++) {
-      values = values.concat(data[i].input, data[i].output);
-    }
-    this.vocab = _vocab2.default.fromArrayInputOutput(values);
     var result = [];
-    for (var _i2 = 0, max = data.length; _i2 < max; _i2++) {
-      result.push(this.formatDataIn(data[_i2].input, data[_i2].output));
+    if (typeof data[0] === 'string' || Array.isArray(data[0])) {
+      for (var i = 0; i < data.length; i++) {
+        values = values.concat(data[i]);
+      }
+      this.vocab = new _vocab2.default(values);
+
+      for (var _i2 = 0, max = data.length; _i2 < max; _i2++) {
+        result.push(this.formatDataIn(data[_i2]));
+      }
+    } else {
+      for (var _i3 = 0; _i3 < data.length; _i3++) {
+        values = values.concat(data[_i3].input, data[_i3].output);
+      }
+      this.vocab = _vocab2.default.fromArrayInputOutput(values);
+      for (var _i4 = 0, _max = data.length; _i4 < _max; _i4++) {
+        result.push(this.formatDataIn(data[_i4].input, data[_i4].output));
+      }
     }
     return result;
   },
+  /**
+   *
+   * @param {*[]} input
+   * @param {*[]} output
+   * @returns {Number[]}
+   */
   formatDataIn: function formatDataIn(input) {
     var output = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
 
@@ -745,6 +762,12 @@ RNN.defaults = {
     }
     return input;
   },
+  /**
+   *
+   * @param {Number[]} input
+   * @param {Number[]} output
+   * @returns {*}
+   */
   formatDataOut: function formatDataOut(input, output) {
     if (this.vocab !== null) {
       return this.vocab.toCharacters(output).join('');

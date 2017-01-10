@@ -1,24 +1,26 @@
 import assert from 'assert';
 import LSTM from '../../src/recurrent/lstm';
 import Vocab from '../../src/utilities/vocab';
-import { vocab, build, train } from '../utilities/math-addition-vocab';
-
-function runAgainstMath(rnn) {
-  train(rnn);
-  var prediction = vocab.toCharacters(rnn.run()).join('');
-  console.log(prediction);
-  assert(/^[0-9]+[+][0-9]+[=][0-9]+$/.test(prediction));
-}
 
 describe('lstm', () => {
   describe('math', () => {
-    it('can predict what a math problem is after being fed 1000 random math problems', (done) => {
-      var net = new LSTM({
-        inputSize: 6,
-        inputRange: vocab.characters.length,
-        outputSize: vocab.characters.length
-      });
-      runAgainstMath(net);
+    it('can predict math', function(done) {
+      this.timeout(15000);
+      const net = new LSTM();
+      const items = [];
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          items.push(`${i}+${j}=${i + j}`);
+          if (i === j) continue;
+          items.push(`${j}+${i}=${i + j}`);
+        }
+      }
+      net.train(items, { log: true, iterations: 100 });
+      for (let i = 0; i < 10; i++) {
+        const output = net.run();
+        console.log(output);
+        assert(/^[0-9]+[+][0-9]+[=][0-9]+$/.test(output));
+      }
       done();
     });
   });
@@ -154,7 +156,7 @@ describe('lstm', () => {
         input: [transationTypes.other],
         output: 'other'
       }];
-      net.train(trainingData, { iterations: 100, log: true });
+      net.train(trainingData, { iterations: 200, log: true });
       assert.equal(net.run([transationTypes.credit]), 'credit');
       assert.equal(net.run([transationTypes.debit]), 'debit');
       assert.equal(net.run([transationTypes.personalCard]), 'personal card');

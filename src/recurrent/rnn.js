@@ -1,4 +1,3 @@
-import lookup from '../lookup';
 import Matrix from './matrix';
 import RandomMatrix from './matrix/random-matrix';
 import Equation from './matrix/equation';
@@ -21,7 +20,6 @@ export default class RNN {
 
     this.stepCache = {};
     this.runs = 0;
-    this.totalPerplexity = null;
     this.totalCost = null;
     this.ratioClipped = null;
     this.model = null;
@@ -193,13 +191,13 @@ export default class RNN {
    *
    * @param {Number[]} input
    * @param {Number} [learningRate]
-   * @returns {*}
+   * @returns {number}
    */
   trainPattern(input, learningRate = null) {
-    const err = this.runInput(input);
+    const error = this.runInput(input);
     this.runBackpropagate(input);
     this.step(learningRate);
-    return err;
+    return error;
   }
 
   /**
@@ -213,14 +211,15 @@ export default class RNN {
     let max = input.length;
     let log2ppl = 0;
     let cost = 0;
-
+    let error = 0;
     let equation;
     while (model.equations.length <= input.length + 1) {//first and last are zeros
       this.bindEquation();
     }
     for (let inputIndex = -1, inputMax = input.length; inputIndex < inputMax; inputIndex++) {
       // start and end tokens are zeros
-      equation = model.equations[inputIndex + 1];
+      let equationIndex = inputIndex + 1;
+      equation = model.equations[equationIndex];
 
       let source = (inputIndex === -1 ? 0 : input[inputIndex] + 1); // first step: start with START token
       let target = (inputIndex === max - 1 ? 0 : input[inputIndex + 1] + 1); // last step: end with END token
@@ -231,14 +230,13 @@ export default class RNN {
 
       log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
       cost += -Math.log(probabilities.weights[target]);
-
       // write gradients into log probabilities
       logProbabilities.recurrence = probabilities.weights;
       logProbabilities.recurrence[target] -= 1;
     }
 
     this.totalCost = cost;
-    return this.totalPerplexity = Math.pow(2, log2ppl / (max - 1));
+    return Math.pow(2, log2ppl / (max - 1));
   }
 
   /**
@@ -387,7 +385,7 @@ export default class RNN {
 
   /**
    *
-   * @param {Object[]} data a collection of objects: `{input: 'string', output: 'string'}`
+   * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
    * @param {Object} [options]
    * @returns {{error: number, iterations: number}}
    */
@@ -722,21 +720,50 @@ RNN.defaults = {
   regc: 0.000001,
   clipval: 5,
   json: null,
+  /**
+   *
+   * @param {*[]} data
+   * @returns {Number[]}
+   */
   setupData: function(data) {
-    if (!data[0].hasOwnProperty('input') || !data[0].hasOwnProperty('output')) {
+    if (
+      typeof data[0] !== 'string'
+      && !Array.isArray(data[0])
+      && (
+        !data[0].hasOwnProperty('input')
+        || !data[0].hasOwnProperty('output')
+      )
+    ) {
       return data;
     }
     let values = [];
-    for (let i = 0; i < data.length; i++) {
-      values = values.concat(data[i].input, data[i].output);
-    }
-    this.vocab = Vocab.fromArrayInputOutput(values);
     const result = [];
-    for (let i = 0, max = data.length; i < max; i++) {
-      result.push(this.formatDataIn(data[i].input, data[i].output));
+    if (typeof data[0] === 'string' || Array.isArray(data[0])) {
+      for (let i = 0; i < data.length; i++) {
+        values = values.concat(data[i]);
+      }
+      this.vocab = new Vocab(values);
+
+      for (let i = 0, max = data.length; i < max; i++) {
+        result.push(this.formatDataIn(data[i]));
+      }
+    } else {
+      for (let i = 0; i < data.length; i++) {
+        values = values.concat(data[i].input, data[i].output);
+      }
+      this.vocab = Vocab.fromArrayInputOutput(values);
+      for (let i = 0, max = data.length; i < max; i++) {
+        result.push(this.formatDataIn(data[i].input, data[i].output));
+      }
     }
     return result;
   },
+  /**
+   *
+   * @param {*[]} input
+   * @param {*[]} output
+   * @returns {Number[]}
+   */
   formatDataIn: function(input, output = null) {
     if (this.vocab !== null) {
       if (this.vocab.indexTable.hasOwnProperty('stop-input')) {
@@ -747,6 +774,12 @@ RNN.defaults = {
     }
     return input;
   },
+  /**
+   *
+   * @param {Number[]} input
+   * @param {Number[]} output
+   * @returns {*}
+   */
   formatDataOut: function(input, output) {
     if (this.vocab !== null) {
       return this.vocab

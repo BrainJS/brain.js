@@ -164,14 +164,14 @@
   window.onload = function() {
     var canvas = document.getElementById('canvas');
     var ctx = canvas.getContext('2d');
-    var perplexities = [];
+    var errors = [];
     var costs = [];
     var labels = [];
     var chart = new Chart.Line(ctx, {
       data: {
         labels: labels,
         datasets: [{
-          data: perplexities,
+          data: errors,
           backgroundColor: 'rgba(255, 99, 132, 0.25)',
           borderColor: 'rgba(255,99,132,1)',
           borderWidth: 2,
@@ -190,7 +190,7 @@
 
     setInterval(function () {
       labels.push(new Date());
-      perplexities.push(net.totalPerplexity);
+      errors.push(net.error);
       //chart.addData(new Date(), , net.totalCost);
       chart.update();
     }, 1000);
