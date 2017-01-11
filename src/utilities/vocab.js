@@ -107,15 +107,15 @@ export default class Vocab {
     return this.toCharacters(indices, maxThreshold).join('');
   }
 
-  static allPrintable(maxThreshold, values = ['\n']) {
+  static fromAllPrintable(maxThreshold, values = ['\n']) {
     for(let i = 32; i <= 126; i++) {
       values.push(String.fromCharCode(i));
     }
     return new Vocab(values, maxThreshold);
   }
 
-  static allPrintableInputOutput(maxThreshold, values = ['\n']) {
-    const vocab = Vocab.allPrintable(maxThreshold, values);
+  static fromAllPrintableInputOutput(maxThreshold, values = ['\n']) {
+    const vocab = Vocab.fromAllPrintable(maxThreshold, values);
     vocab.addSpecial('stop-input');
     vocab.addSpecial('start-output');
     return vocab;

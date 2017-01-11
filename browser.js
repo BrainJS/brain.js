@@ -3729,8 +3729,8 @@ var Vocab = function () {
       return '\n' + this.toIndexes.toString().replace('this', vocabVariableName) + '\n' + this.toIndexesInputOutput.toString().replace('this', vocabVariableName) + '\n' + this.toCharacters.toString().replace('this', vocabVariableName) + '\n';
     }
   }], [{
-    key: 'allPrintable',
-    value: function allPrintable(maxThreshold) {
+    key: 'fromAllPrintable',
+    value: function fromAllPrintable(maxThreshold) {
       var values = arguments.length <= 1 || arguments[1] === undefined ? ['\n'] : arguments[1];
 
       for (var i = 32; i <= 126; i++) {
@@ -3739,11 +3739,11 @@ var Vocab = function () {
       return new Vocab(values, maxThreshold);
     }
   }, {
-    key: 'allPrintableInputOutput',
-    value: function allPrintableInputOutput(maxThreshold) {
+    key: 'fromAllPrintableInputOutput',
+    value: function fromAllPrintableInputOutput(maxThreshold) {
       var values = arguments.length <= 1 || arguments[1] === undefined ? ['\n'] : arguments[1];
 
-      var vocab = Vocab.allPrintable(maxThreshold, values);
+      var vocab = Vocab.fromAllPrintable(maxThreshold, values);
       vocab.addSpecial('stop-input');
       vocab.addSpecial('start-output');
       return vocab;

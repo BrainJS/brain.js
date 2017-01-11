@@ -2,7 +2,6 @@ import canvas from 'canvas';
 import assert from 'assert';
 import brain from '../../../src';
 import crossValidate from '../../../src/cross-validate';
-import shuffle from '../../utilities/shuffle';
 let dim = 24;
 
 function getSampling(context, letter, font) {
@@ -65,7 +64,7 @@ describe('OCR cross-validation', () => {
       'Y',
       'Z'
     ];
-    //let randomCharacters = shuffle(characters).slice(0, 4);
+
     let fonts = [
       'Arial',
       'Courier',
