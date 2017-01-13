@@ -155,7 +155,9 @@ export default class RNN {
 
     model.equationConnections.push(outputs);
     equation.add(equation.multiply(model.outputConnector, output), model.output);
-    model.allMatrices = model.allMatrices.concat(equation.allMatrices);
+    for (let i = 0, max = equation.allMatrices.length; i < max; i++) {
+      model.allMatrices.push(equation.allMatrices[i]);
+    }
     model.equations.push(equation);
   }
 
