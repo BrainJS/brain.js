@@ -194,7 +194,9 @@ var RNN = function () {
 
       model.equationConnections.push(outputs);
       equation.add(equation.multiply(model.outputConnector, output), model.output);
-      model.allMatrices = model.allMatrices.concat(equation.allMatrices);
+      for (var _i = 0, _max = equation.allMatrices.length; _i < _max; _i++) {
+        model.allMatrices.push(equation.allMatrices[_i]);
+      }
       model.equations.push(equation);
     }
   }, {
@@ -342,10 +344,10 @@ var RNN = function () {
           continue;
         }
 
-        for (var _i = 0, _n = matrix.weights.length; _i < _n; _i++) {
+        for (var _i2 = 0, _n = matrix.weights.length; _i2 < _n; _i2++) {
           // rmsprop adaptive learning rate
-          var mdwi = matrix.recurrence[_i];
-          cache.weights[_i] = cache.weights[_i] * this.decayRate + (1 - this.decayRate) * mdwi * mdwi;
+          var mdwi = matrix.recurrence[_i2];
+          cache.weights[_i2] = cache.weights[_i2] * this.decayRate + (1 - this.decayRate) * mdwi * mdwi;
           // gradient clip
           if (mdwi > clipval) {
             mdwi = clipval;
@@ -358,8 +360,8 @@ var RNN = function () {
           numTot++;
 
           // update (and regularize)
-          matrix.weights[_i] = matrix.weights[_i] + -stepSize * mdwi / Math.sqrt(cache.weights[_i] + this.smoothEps) - regc * matrix.weights[_i];
-          matrix.recurrence[_i] = 0; // reset gradients for next iteration
+          matrix.weights[_i2] = matrix.weights[_i2] + -stepSize * mdwi / Math.sqrt(cache.weights[_i2] + this.smoothEps) - regc * matrix.weights[_i2];
+          matrix.recurrence[_i2] = 0; // reset gradients for next iteration
         }
       }
       this.ratioClipped = numClipped / numTot;
@@ -730,16 +732,16 @@ RNN.defaults = {
       }
       this.vocab = new _vocab2.default(values);
 
-      for (var _i2 = 0, max = data.length; _i2 < max; _i2++) {
-        result.push(this.formatDataIn(data[_i2]));
+      for (var _i3 = 0, max = data.length; _i3 < max; _i3++) {
+        result.push(this.formatDataIn(data[_i3]));
       }
     } else {
-      for (var _i3 = 0; _i3 < data.length; _i3++) {
-        values = values.concat(data[_i3].input, data[_i3].output);
+      for (var _i4 = 0; _i4 < data.length; _i4++) {
+        values = values.concat(data[_i4].input, data[_i4].output);
       }
       this.vocab = _vocab2.default.fromArrayInputOutput(values);
-      for (var _i4 = 0, _max = data.length; _i4 < _max; _i4++) {
-        result.push(this.formatDataIn(data[_i4].input, data[_i4].output));
+      for (var _i5 = 0, _max2 = data.length; _i5 < _max2; _i5++) {
+        result.push(this.formatDataIn(data[_i5].input, data[_i5].output));
       }
     }
     return result;
