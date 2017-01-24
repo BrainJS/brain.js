@@ -92,9 +92,6 @@ var Equation = function () {
 
     this.inputRow = 0;
     this.states = [];
-    this.previousResults = [];
-    this.previousResultInputs = [];
-    this.allMatrices = [];
   }
 
   /**
@@ -112,7 +109,6 @@ var Equation = function () {
         throw new Error('misaligned matrices');
       }
       var product = new _2.default(left.rows, left.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: left,
         right: right,
@@ -134,7 +130,6 @@ var Equation = function () {
     key: 'allOnes',
     value: function allOnes(rows, columns) {
       var product = new _2.default(rows, columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: product,
         product: product,
@@ -153,7 +148,6 @@ var Equation = function () {
     key: 'cloneNegative',
     value: function cloneNegative(m) {
       var product = new _2.default(m.rows, m.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -192,7 +186,6 @@ var Equation = function () {
         throw new Error('misaligned matrices');
       }
       var product = new _2.default(left.rows, right.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: left,
         right: right,
@@ -217,7 +210,6 @@ var Equation = function () {
         throw new Error('misaligned matrices');
       }
       var product = new _2.default(left.rows, left.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: left,
         right: right,
@@ -238,7 +230,6 @@ var Equation = function () {
     key: 'relu',
     value: function relu(m) {
       var product = new _2.default(m.rows, m.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -259,7 +250,6 @@ var Equation = function () {
     value: function inputMatrixToRow(m) {
       var self = this;
       var product = new _2.default(m.columns, 1);
-      this.allMatrices.push(product);
       this.states.push({
         left: m,
         get right() {
@@ -282,7 +272,6 @@ var Equation = function () {
     key: 'sigmoid',
     value: function sigmoid(m) {
       var product = new _2.default(m.rows, m.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -302,7 +291,6 @@ var Equation = function () {
     key: 'tanh',
     value: function tanh(m) {
       var product = new _2.default(m.rows, m.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,

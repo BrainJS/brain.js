@@ -10,8 +10,9 @@ exports.default = tanh;
  */
 function tanh(product, left) {
   // tanh nonlinearity
-  for (var i = 0, max = left.weights.length; i < max; i++) {
+  for (var i = 0; i < left.weights.length; i++) {
     product.weights[i] = Math.tanh(left.weights[i]);
+    product.recurrence[i] = 0;
   }
 }
 //# sourceMappingURL=tanh.js.map

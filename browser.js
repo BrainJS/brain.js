@@ -1287,9 +1287,9 @@ exports.default = addB;
  * @param {Matrix} right
  */
 function addB(product, left, right) {
-  for (var i = 0, max = product.recurrence.length; i < max; i++) {
-    left.recurrence[i] += product.recurrence[i];
-    right.recurrence[i] += product.recurrence[i];
+  for (var i = 0; i < product.recurrence.length; i++) {
+    left.recurrence[i] = product.recurrence[i];
+    right.recurrence[i] = product.recurrence[i];
   }
 }
 
@@ -1307,8 +1307,9 @@ exports.default = add;
  * @param {Matrix} right
  */
 function add(product, left, right) {
-  for (var i = 0, max = left.weights.length; i < max; i++) {
+  for (var i = 0; i < left.weights.length; i++) {
     product.weights[i] = left.weights[i] + right.weights[i];
+    product.recurrence[i] = 0;
   }
 }
 
@@ -1324,7 +1325,7 @@ exports.default = allOnes;
  * @param {Matrix} product
  */
 function allOnes(product) {
-  for (var i = 0, max = product.weights.length; i < max; i++) {
+  for (var i = 0; i < product.weights.length; i++) {
     product.weights[i] = 1;
     product.recurrence[i] = 0;
   }
@@ -1347,7 +1348,7 @@ function cloneNegative(product, left) {
   product.columns = parseInt(left.columns);
   product.weights = left.weights.slice(0);
   product.recurrence = left.recurrence.slice(0);
-  for (var i = 0, max = left.weights.length; i < max; i++) {
+  for (var i = 0; i < left.weights.length; i++) {
     product.weights[i] = -left.weights[i];
     product.recurrence[i] = 0;
   }
@@ -1467,9 +1468,6 @@ var Equation = function () {
 
     this.inputRow = 0;
     this.states = [];
-    this.previousResults = [];
-    this.previousResultInputs = [];
-    this.allMatrices = [];
   }
 
   /**
@@ -1487,7 +1485,6 @@ var Equation = function () {
         throw new Error('misaligned matrices');
       }
       var product = new _2.default(left.rows, left.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: left,
         right: right,
@@ -1509,7 +1506,6 @@ var Equation = function () {
     key: 'allOnes',
     value: function allOnes(rows, columns) {
       var product = new _2.default(rows, columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: product,
         product: product,
@@ -1528,7 +1524,6 @@ var Equation = function () {
     key: 'cloneNegative',
     value: function cloneNegative(m) {
       var product = new _2.default(m.rows, m.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -1567,7 +1562,6 @@ var Equation = function () {
         throw new Error('misaligned matrices');
       }
       var product = new _2.default(left.rows, right.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: left,
         right: right,
@@ -1592,7 +1586,6 @@ var Equation = function () {
         throw new Error('misaligned matrices');
       }
       var product = new _2.default(left.rows, left.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: left,
         right: right,
@@ -1613,7 +1606,6 @@ var Equation = function () {
     key: 'relu',
     value: function relu(m) {
       var product = new _2.default(m.rows, m.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -1634,7 +1626,6 @@ var Equation = function () {
     value: function inputMatrixToRow(m) {
       var self = this;
       var product = new _2.default(m.columns, 1);
-      this.allMatrices.push(product);
       this.states.push({
         left: m,
         get right() {
@@ -1657,7 +1648,6 @@ var Equation = function () {
     key: 'sigmoid',
     value: function sigmoid(m) {
       var product = new _2.default(m.rows, m.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -1677,7 +1667,6 @@ var Equation = function () {
     key: 'tanh',
     value: function tanh(m) {
       var product = new _2.default(m.rows, m.columns);
-      this.allMatrices.push(product);
       this.states.push({
         left: m,
         product: product,
@@ -1923,11 +1912,12 @@ exports.default = maxI;
  */
 function maxI(m) {
   // argmax of array w
-  var w = m.weights;
-  var maxv = w[0];
+  var weights = m.weights;
+
+  var maxv = weights[0];
   var maxix = 0;
-  for (var i = 1, max = w.length; i < max; i++) {
-    var v = w[i];
+  for (var i = 1; i < weights.length; i++) {
+    var v = weights[i];
     if (v < maxv) continue;
 
     maxix = i;
@@ -1956,15 +1946,19 @@ function multiplyB(product, left, right) {
 
   // loop over rows of left
   for (var leftRow = 0; leftRow < leftRows; leftRow++) {
-
+    var leftRowBase = leftColumns * leftRow;
+    var rightRowBase = rightColumns * leftRow;
     // loop over cols of right
     for (var rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
 
       //loop over columns of left
       for (var leftColumn = 0; leftColumn < leftColumns; leftColumn++) {
-        var backPropagateValue = product.recurrence[rightColumns * leftRow + rightColumn];
-        left.recurrence[leftColumns * leftRow + leftColumn] += right.weights[rightColumns * leftColumn + rightColumn] * backPropagateValue;
-        right.recurrence[rightColumns * leftColumn + rightColumn] += left.weights[leftColumns * leftRow + leftColumn] * backPropagateValue;
+        var rightColumnBase = rightColumns * leftColumn;
+        var _leftRow = leftRowBase + leftColumn;
+        var rightRow = rightColumnBase + rightColumn;
+        var backPropagateValue = product.recurrence[rightRowBase + rightColumn];
+        left.recurrence[_leftRow] += right.weights[rightRow] * backPropagateValue;
+        right.recurrence[rightRow] += left.weights[_leftRow] * backPropagateValue;
       }
     }
   }
@@ -1984,9 +1978,9 @@ exports.default = multiplyElementB;
  * @param {Matrix} right
  */
 function multiplyElementB(product, left, right) {
-  for (var i = 0, weights = left.weights.length; i < weights; i++) {
-    left.recurrence[i] += right.weights[i] * product.recurrence[i];
-    right.recurrence[i] += left.weights[i] * product.recurrence[i];
+  for (var i = 0; i < left.weights.length; i++) {
+    left.recurrence[i] = right.weights[i] * product.recurrence[i];
+    right.recurrence[i] = left.weights[i] * product.recurrence[i];
   }
 }
 
@@ -2003,8 +1997,11 @@ exports.default = multiplyElement;
  * @param {Matrix} right
  */
 function multiplyElement(product, left, right) {
-  for (var i = 0, weights = left.weights.length; i < weights; i++) {
+  var weights = left.weights;
+
+  for (var i = 0; i < weights.length; i++) {
     product.weights[i] = left.weights[i] * right.weights[i];
+    product.recurrence[i] = 0;
   }
 }
 
@@ -2028,19 +2025,23 @@ function multiply(product, left, right) {
 
   // loop over rows of left
   for (var leftRow = 0; leftRow < leftRows; leftRow++) {
-
+    var leftRowBase = leftColumns * leftRow;
+    var rightRowBase = rightColumns * leftRow;
     // loop over cols of right
     for (var rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
 
       // dot product loop
       var dot = 0;
-
       //loop over columns of left
       for (var leftColumn = 0; leftColumn < leftColumns; leftColumn++) {
-        dot += left.weights[leftColumns * leftRow + leftColumn] * right.weights[rightColumns * leftColumn + rightColumn];
+        var rightColumnBase = rightColumns * leftColumn;
+        var leftIndex = leftRowBase + leftColumn;
+        var rightIndex = rightColumnBase + rightColumn;
+        dot += left.weights[leftIndex] * right.weights[rightIndex];
+        left.recurrence[leftIndex] = 0;
+        right.recurrence[rightIndex] = 0;
       }
-      var i = rightColumns * leftRow + rightColumn;
-      product.weights[i] = dot;
+      product.weights[rightRowBase + rightColumn] = dot;
     }
   }
 }
@@ -2155,8 +2156,8 @@ exports.default = reluB;
  * @param {Matrix} m
  */
 function reluB(product, left) {
-  for (var i = 0, max = product.recurrence.length; i < max; i++) {
-    left.recurrence[i] += left.weights[i] > 0 ? product.recurrence[i] : 0;
+  for (var i = 0; i < product.recurrence.length; i++) {
+    left.recurrence[i] = left.weights[i] > 0 ? product.recurrence[i] : 0;
   }
 }
 
@@ -2174,8 +2175,9 @@ exports.default = relu;
  * @param {Matrix} left
  */
 function relu(product, left) {
-  for (var i = 0, max = left.weights.length; i < max; i++) {
+  for (var i = 0; i < left.weights.length; i++) {
     product.weights[i] = Math.max(0, left.weights[i]); // relu
+    product.recurrence[i] = 0;
   }
 }
 
@@ -2193,8 +2195,10 @@ exports.default = rowPluckB;
  * @param {Number} rowIndex
  */
 function rowPluckB(product, left, rowIndex) {
-  for (var column = 0, columns = left.columns; column < columns; column++) {
-    left.recurrence[columns * rowIndex + column] += product.recurrence[column];
+  var columns = left.columns;
+  var rowBase = columns * rowIndex;
+  for (var column = 0; column < columns; column++) {
+    left.recurrence[rowBase + column] = product.recurrence[column];
   }
 }
 
@@ -2211,8 +2215,11 @@ exports.default = rowPluck;
  * @param {Number} rowPluckIndex
  */
 function rowPluck(product, left, rowPluckIndex) {
-  for (var column = 0, columns = left.columns; column < columns; column++) {
-    product.weights[column] = left.weights[columns * rowPluckIndex + column];
+  var columns = left.columns;
+  var rowBase = columns * rowPluckIndex;
+  for (var column = 0; column < columns; column++) {
+    product.weights[column] = left.weights[rowBase + column];
+    product.recurrence[column] = 0;
   }
 }
 
@@ -2241,11 +2248,6 @@ function sampleI(m) {
   var i = 0;
   var w = m.weights;
 
-  //TODO: Needed?
-  if (isNaN(w[0])) {
-    throw new Error('NaN');
-  }
-
   while (true) {
     x += w[i];
     if (x > r) {
@@ -2268,9 +2270,9 @@ exports.default = sigmoidB;
  * @param {Matrix} left
  */
 function sigmoidB(product, left) {
-  for (var i = 0, max = product.recurrence.length; i < max; i++) {
+  for (var i = 0; i < product.recurrence.length; i++) {
     var mwi = product.weights[i];
-    left.recurrence[i] += mwi * (1 - mwi) * product.recurrence[i];
+    left.recurrence[i] = mwi * (1 - mwi) * product.recurrence[i];
   }
 }
 
@@ -2287,8 +2289,9 @@ exports.default = sigmoid;
  */
 function sigmoid(product, left) {
   // sigmoid nonlinearity
-  for (var i = 0, max = left.weights.length; i < max; i++) {
+  for (var i = 0; i < left.weights.length; i++) {
     product.weights[i] = 1 / (1 + Math.exp(-left.weights[i]));
+    product.recurrence[i] = 0;
   }
 }
 
@@ -2319,23 +2322,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function softmax(m) {
   var result = new _2.default(m.rows, m.columns); // probability volume
   var maxVal = -999999;
-  var i = void 0;
-  var max = m.weights.length;
-
-  for (i = 0; i < max; i++) {
+  for (var i = 0; i < m.weights.length; i++) {
     if (m.weights[i] > maxVal) {
       maxVal = m.weights[i];
     }
   }
 
   var s = 0;
-  for (i = 0; i < max; i++) {
-    result.weights[i] = Math.exp(m.weights[i] - maxVal);
-    s += result.weights[i];
+  for (var _i = 0; _i < m.weights.length; _i++) {
+    result.weights[_i] = Math.exp(m.weights[_i] - maxVal);
+    s += result.weights[_i];
   }
 
-  for (i = 0; i < max; i++) {
-    result.weights[i] /= s;
+  for (var _i2 = 0; _i2 < m.weights.length; _i2++) {
+    result.weights[_i2] /= s;
   }
 
   // no backward pass here needed
@@ -2357,10 +2357,10 @@ exports.default = tanhB;
  * @param {Matrix} left
  */
 function tanhB(product, left) {
-  for (var i = 0, max = product.recurrence.length; i < max; i++) {
+  for (var i = 0; i < product.recurrence.length; i++) {
     // grad for z = tanh(x) is (1 - z^2)
     var mwi = product.weights[i];
-    left.recurrence[i] += (1 - mwi * mwi) * product.recurrence[i];
+    left.recurrence[i] = (1 - mwi * mwi) * product.recurrence[i];
   }
 }
 
@@ -2377,8 +2377,9 @@ exports.default = tanh;
  */
 function tanh(product, left) {
   // tanh nonlinearity
-  for (var i = 0, max = left.weights.length; i < max; i++) {
+  for (var i = 0; i < left.weights.length; i++) {
     product.weights[i] = Math.tanh(left.weights[i]);
+    product.recurrence[i] = 0;
   }
 }
 
@@ -2435,6 +2436,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var RNN = function () {
   function RNN() {
+    var _this = this;
+
     var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
     _classCallCheck(this, RNN);
@@ -2452,6 +2455,9 @@ var RNN = function () {
     this.ratioClipped = null;
     this.model = null;
 
+    this.initialLayerInputs = this.hiddenSizes.map(function (size) {
+      return new _matrix2.default(_this.hiddenSizes[0], 1);
+    });
     this.inputLookup = null;
     this.outputLookup = null;
     this.initialize();
@@ -2466,8 +2472,7 @@ var RNN = function () {
         output: null,
         equations: [],
         allMatrices: [],
-        equationConnections: [],
-        outputMatrixIndex: -1
+        equationConnections: []
       };
 
       if (this.vocab !== null) {
@@ -2564,9 +2569,7 @@ var RNN = function () {
       var hiddenLayers = model.hiddenLayers;
       var equation = new _equation2.default();
       var outputs = [];
-      var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : hiddenSizes.map(function (size) {
-        return new _matrix2.default(hiddenSizes[0], 1);
-      });
+      var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs;
 
       // 0 index
       var output = this.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], hiddenLayers[0]);
@@ -2579,9 +2582,6 @@ var RNN = function () {
 
       model.equationConnections.push(outputs);
       equation.add(equation.multiply(model.outputConnector, output), model.output);
-      for (var _i = 0, _max = equation.allMatrices.length; _i < _max; _i++) {
-        model.allMatrices.push(equation.allMatrices[_i]);
-      }
       model.equations.push(equation);
     }
   }, {
@@ -2610,7 +2610,6 @@ var RNN = function () {
       if (!model.output) throw new Error('net.model.output not set');
 
       allMatrices.push(model.outputConnector);
-      model.outputMatrixIndex = allMatrices.length;
       allMatrices.push(model.output);
     }
 
@@ -2646,10 +2645,9 @@ var RNN = function () {
       var max = input.length;
       var log2ppl = 0;
       var cost = 0;
-      var error = 0;
       var equation = void 0;
       while (model.equations.length <= input.length + 1) {
-        //first and last are zeros
+        //last is zero
         this.bindEquation();
       }
       for (var inputIndex = -1, inputMax = input.length; inputIndex < inputMax; inputIndex++) {
@@ -2667,7 +2665,7 @@ var RNN = function () {
         log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
         cost += -Math.log(probabilities.weights[target]);
         // write gradients into log probabilities
-        logProbabilities.recurrence = probabilities.weights;
+        logProbabilities.recurrence = probabilities.weights.slice(0);
         logProbabilities.recurrence[target] -= 1;
       }
 
@@ -2711,42 +2709,32 @@ var RNN = function () {
       var numClipped = 0;
       var numTot = 0;
       var allMatrices = model.allMatrices;
-      var outputMatrixIndex = model.outputMatrixIndex;
-      var matrixIndexes = allMatrices.length;
-      for (var matrixIndex = 0; matrixIndex < matrixIndexes; matrixIndex++) {
+      for (var matrixIndex = 0; matrixIndex < allMatrices.length; matrixIndex++) {
         var matrix = allMatrices[matrixIndex];
+        var weights = matrix.weights;
+        var recurrence = matrix.recurrence;
+
         if (!(matrixIndex in this.stepCache)) {
-          this.stepCache[matrixIndex] = new _matrix2.default(matrix.rows, matrix.columns);
+          this.stepCache[matrixIndex] = (0, _zeros2.default)(matrix.rows * matrix.columns);
         }
         var cache = this.stepCache[matrixIndex];
-
-        //if we are in an equation, reset the weights and recurrence to 0, to prevent exploding gradient problem
-        if (matrixIndex > outputMatrixIndex) {
-          for (var i = 0, n = matrix.weights.length; i < n; i++) {
-            matrix.weights[i] = 0;
-            matrix.recurrence[i] = 0;
-          }
-          continue;
-        }
-
-        for (var _i2 = 0, _n = matrix.weights.length; _i2 < _n; _i2++) {
+        for (var i = 0; i < weights.length; i++) {
+          var r = recurrence[i];
+          var w = weights[i];
           // rmsprop adaptive learning rate
-          var mdwi = matrix.recurrence[_i2];
-          cache.weights[_i2] = cache.weights[_i2] * this.decayRate + (1 - this.decayRate) * mdwi * mdwi;
+          cache[i] = cache[i] * this.decayRate + (1 - this.decayRate) * r * r;
           // gradient clip
-          if (mdwi > clipval) {
-            mdwi = clipval;
+          if (r > clipval) {
+            r = clipval;
             numClipped++;
           }
-          if (mdwi < -clipval) {
-            mdwi = -clipval;
+          if (r < -clipval) {
+            r = -clipval;
             numClipped++;
           }
           numTot++;
-
           // update (and regularize)
-          matrix.weights[_i2] = matrix.weights[_i2] + -stepSize * mdwi / Math.sqrt(cache.weights[_i2] + this.smoothEps) - regc * matrix.weights[_i2];
-          matrix.recurrence[_i2] = 0; // reset gradients for next iteration
+          weights[i] = w + -stepSize * r / Math.sqrt(cache[i] + this.smoothEps) - regc * w;
         }
       }
       this.ratioClipped = numClipped / numTot;
@@ -2953,7 +2941,6 @@ var RNN = function () {
       model.outputConnector = _matrix2.default.fromJSON(json.outputConnector);
       model.output = _matrix2.default.fromJSON(json.output);
       allMatrices.push(model.outputConnector);
-      model.outputMatrixIndex = allMatrices.length;
       allMatrices.push(model.output);
 
       for (var p in defaults) {
@@ -3056,7 +3043,7 @@ var RNN = function () {
         fnString = fnString.split('}');
         fnString.pop();
         // body
-        return fnString.join('}').split('\n').join('\n        ');
+        return fnString.join('}').split('\n').join('\n        ').replace(/[a-z]+[.]recurrence[\[][a-zA-Z]+[\]][\s]+[=][\s]+[0][;]/g, '');
       }
 
       function fileName(fnName) {
@@ -3117,16 +3104,16 @@ RNN.defaults = {
       }
       this.vocab = new _vocab2.default(values);
 
-      for (var _i3 = 0, max = data.length; _i3 < max; _i3++) {
-        result.push(this.formatDataIn(data[_i3]));
+      for (var _i = 0, max = data.length; _i < max; _i++) {
+        result.push(this.formatDataIn(data[_i]));
       }
     } else {
-      for (var _i4 = 0; _i4 < data.length; _i4++) {
-        values = values.concat(data[_i4].input, data[_i4].output);
+      for (var _i2 = 0; _i2 < data.length; _i2++) {
+        values = values.concat(data[_i2].input, data[_i2].output);
       }
       this.vocab = _vocab2.default.fromArrayInputOutput(values);
-      for (var _i5 = 0, _max2 = data.length; _i5 < _max2; _i5++) {
-        result.push(this.formatDataIn(data[_i5].input, data[_i5].output));
+      for (var _i3 = 0, _max = data.length; _i3 < _max; _i3++) {
+        result.push(this.formatDataIn(data[_i3].input, data[_i3].output));
       }
     }
     return result;

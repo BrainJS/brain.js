@@ -11,11 +11,12 @@ exports.default = maxI;
  */
 function maxI(m) {
   // argmax of array w
-  var w = m.weights;
-  var maxv = w[0];
+  var weights = m.weights;
+
+  var maxv = weights[0];
   var maxix = 0;
-  for (var i = 1, max = w.length; i < max; i++) {
-    var v = w[i];
+  for (var i = 1; i < weights.length; i++) {
+    var v = weights[i];
     if (v < maxv) continue;
 
     maxix = i;

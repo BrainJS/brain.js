@@ -11,8 +11,10 @@ exports.default = rowPluckB;
  * @param {Number} rowIndex
  */
 function rowPluckB(product, left, rowIndex) {
-  for (var column = 0, columns = left.columns; column < columns; column++) {
-    left.recurrence[columns * rowIndex + column] += product.recurrence[column];
+  var columns = left.columns;
+  var rowBase = columns * rowIndex;
+  for (var column = 0; column < columns; column++) {
+    left.recurrence[rowBase + column] = product.recurrence[column];
   }
 }
 //# sourceMappingURL=row-pluck-b.js.map

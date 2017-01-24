@@ -10,8 +10,8 @@ exports.default = reluB;
  * @param {Matrix} m
  */
 function reluB(product, left) {
-  for (var i = 0, max = product.recurrence.length; i < max; i++) {
-    left.recurrence[i] += left.weights[i] > 0 ? product.recurrence[i] : 0;
+  for (var i = 0; i < product.recurrence.length; i++) {
+    left.recurrence[i] = left.weights[i] > 0 ? product.recurrence[i] : 0;
   }
 }
 //# sourceMappingURL=relu-b.js.map

@@ -11,9 +11,9 @@ exports.default = multiplyElementB;
  * @param {Matrix} right
  */
 function multiplyElementB(product, left, right) {
-  for (var i = 0, weights = left.weights.length; i < weights; i++) {
-    left.recurrence[i] += right.weights[i] * product.recurrence[i];
-    right.recurrence[i] += left.weights[i] * product.recurrence[i];
+  for (var i = 0; i < left.weights.length; i++) {
+    left.recurrence[i] = right.weights[i] * product.recurrence[i];
+    right.recurrence[i] = left.weights[i] * product.recurrence[i];
   }
 }
 //# sourceMappingURL=multiply-element-b.js.map

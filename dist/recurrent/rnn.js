@@ -50,6 +50,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var RNN = function () {
   function RNN() {
+    var _this = this;
+
     var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
     _classCallCheck(this, RNN);
@@ -67,6 +69,9 @@ var RNN = function () {
     this.ratioClipped = null;
     this.model = null;
 
+    this.initialLayerInputs = this.hiddenSizes.map(function (size) {
+      return new _matrix2.default(_this.hiddenSizes[0], 1);
+    });
     this.inputLookup = null;
     this.outputLookup = null;
     this.initialize();
@@ -81,8 +86,7 @@ var RNN = function () {
         output: null,
         equations: [],
         allMatrices: [],
-        equationConnections: [],
-        outputMatrixIndex: -1
+        equationConnections: []
       };
 
       if (this.vocab !== null) {
@@ -179,9 +183,7 @@ var RNN = function () {
       var hiddenLayers = model.hiddenLayers;
       var equation = new _equation2.default();
       var outputs = [];
-      var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : hiddenSizes.map(function (size) {
-        return new _matrix2.default(hiddenSizes[0], 1);
-      });
+      var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs;
 
       // 0 index
       var output = this.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], hiddenLayers[0]);
@@ -194,9 +196,6 @@ var RNN = function () {
 
       model.equationConnections.push(outputs);
       equation.add(equation.multiply(model.outputConnector, output), model.output);
-      for (var _i = 0, _max = equation.allMatrices.length; _i < _max; _i++) {
-        model.allMatrices.push(equation.allMatrices[_i]);
-      }
       model.equations.push(equation);
     }
   }, {
@@ -225,7 +224,6 @@ var RNN = function () {
       if (!model.output) throw new Error('net.model.output not set');
 
       allMatrices.push(model.outputConnector);
-      model.outputMatrixIndex = allMatrices.length;
       allMatrices.push(model.output);
     }
 
@@ -261,10 +259,9 @@ var RNN = function () {
       var max = input.length;
       var log2ppl = 0;
       var cost = 0;
-      var error = 0;
       var equation = void 0;
       while (model.equations.length <= input.length + 1) {
-        //first and last are zeros
+        //last is zero
         this.bindEquation();
       }
       for (var inputIndex = -1, inputMax = input.length; inputIndex < inputMax; inputIndex++) {
@@ -282,7 +279,7 @@ var RNN = function () {
         log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
         cost += -Math.log(probabilities.weights[target]);
         // write gradients into log probabilities
-        logProbabilities.recurrence = probabilities.weights;
+        logProbabilities.recurrence = probabilities.weights.slice(0);
         logProbabilities.recurrence[target] -= 1;
       }
 
@@ -326,42 +323,32 @@ var RNN = function () {
       var numClipped = 0;
       var numTot = 0;
       var allMatrices = model.allMatrices;
-      var outputMatrixIndex = model.outputMatrixIndex;
-      var matrixIndexes = allMatrices.length;
-      for (var matrixIndex = 0; matrixIndex < matrixIndexes; matrixIndex++) {
+      for (var matrixIndex = 0; matrixIndex < allMatrices.length; matrixIndex++) {
         var matrix = allMatrices[matrixIndex];
+        var weights = matrix.weights;
+        var recurrence = matrix.recurrence;
+
         if (!(matrixIndex in this.stepCache)) {
-          this.stepCache[matrixIndex] = new _matrix2.default(matrix.rows, matrix.columns);
+          this.stepCache[matrixIndex] = (0, _zeros2.default)(matrix.rows * matrix.columns);
         }
         var cache = this.stepCache[matrixIndex];
-
-        //if we are in an equation, reset the weights and recurrence to 0, to prevent exploding gradient problem
-        if (matrixIndex > outputMatrixIndex) {
-          for (var i = 0, n = matrix.weights.length; i < n; i++) {
-            matrix.weights[i] = 0;
-            matrix.recurrence[i] = 0;
-          }
-          continue;
-        }
-
-        for (var _i2 = 0, _n = matrix.weights.length; _i2 < _n; _i2++) {
+        for (var i = 0; i < weights.length; i++) {
+          var r = recurrence[i];
+          var w = weights[i];
           // rmsprop adaptive learning rate
-          var mdwi = matrix.recurrence[_i2];
-          cache.weights[_i2] = cache.weights[_i2] * this.decayRate + (1 - this.decayRate) * mdwi * mdwi;
+          cache[i] = cache[i] * this.decayRate + (1 - this.decayRate) * r * r;
           // gradient clip
-          if (mdwi > clipval) {
-            mdwi = clipval;
+          if (r > clipval) {
+            r = clipval;
             numClipped++;
           }
-          if (mdwi < -clipval) {
-            mdwi = -clipval;
+          if (r < -clipval) {
+            r = -clipval;
             numClipped++;
           }
           numTot++;
-
           // update (and regularize)
-          matrix.weights[_i2] = matrix.weights[_i2] + -stepSize * mdwi / Math.sqrt(cache.weights[_i2] + this.smoothEps) - regc * matrix.weights[_i2];
-          matrix.recurrence[_i2] = 0; // reset gradients for next iteration
+          weights[i] = w + -stepSize * r / Math.sqrt(cache[i] + this.smoothEps) - regc * w;
         }
       }
       this.ratioClipped = numClipped / numTot;
@@ -568,7 +555,6 @@ var RNN = function () {
       model.outputConnector = _matrix2.default.fromJSON(json.outputConnector);
       model.output = _matrix2.default.fromJSON(json.output);
       allMatrices.push(model.outputConnector);
-      model.outputMatrixIndex = allMatrices.length;
       allMatrices.push(model.output);
 
       for (var p in defaults) {
@@ -671,7 +657,7 @@ var RNN = function () {
         fnString = fnString.split('}');
         fnString.pop();
         // body
-        return fnString.join('}').split('\n').join('\n        ');
+        return fnString.join('}').split('\n').join('\n        ').replace(/[a-z]+[.]recurrence[\[][a-zA-Z]+[\]][\s]+[=][\s]+[0][;]/g, '');
       }
 
       function fileName(fnName) {
@@ -732,16 +718,16 @@ RNN.defaults = {
       }
       this.vocab = new _vocab2.default(values);
 
-      for (var _i3 = 0, max = data.length; _i3 < max; _i3++) {
-        result.push(this.formatDataIn(data[_i3]));
+      for (var _i = 0, max = data.length; _i < max; _i++) {
+        result.push(this.formatDataIn(data[_i]));
       }
     } else {
-      for (var _i4 = 0; _i4 < data.length; _i4++) {
-        values = values.concat(data[_i4].input, data[_i4].output);
+      for (var _i2 = 0; _i2 < data.length; _i2++) {
+        values = values.concat(data[_i2].input, data[_i2].output);
       }
       this.vocab = _vocab2.default.fromArrayInputOutput(values);
-      for (var _i5 = 0, _max2 = data.length; _i5 < _max2; _i5++) {
-        result.push(this.formatDataIn(data[_i5].input, data[_i5].output));
+      for (var _i3 = 0, _max = data.length; _i3 < _max; _i3++) {
+        result.push(this.formatDataIn(data[_i3].input, data[_i3].output));
       }
     }
     return result;

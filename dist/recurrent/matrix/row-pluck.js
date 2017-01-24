@@ -10,8 +10,11 @@ exports.default = rowPluck;
  * @param {Number} rowPluckIndex
  */
 function rowPluck(product, left, rowPluckIndex) {
-  for (var column = 0, columns = left.columns; column < columns; column++) {
-    product.weights[column] = left.weights[columns * rowPluckIndex + column];
+  var columns = left.columns;
+  var rowBase = columns * rowPluckIndex;
+  for (var column = 0; column < columns; column++) {
+    product.weights[column] = left.weights[rowBase + column];
+    product.recurrence[column] = 0;
   }
 }
 //# sourceMappingURL=row-pluck.js.map

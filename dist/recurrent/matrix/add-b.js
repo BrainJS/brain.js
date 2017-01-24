@@ -11,9 +11,9 @@ exports.default = addB;
  * @param {Matrix} right
  */
 function addB(product, left, right) {
-  for (var i = 0, max = product.recurrence.length; i < max; i++) {
-    left.recurrence[i] += product.recurrence[i];
-    right.recurrence[i] += product.recurrence[i];
+  for (var i = 0; i < product.recurrence.length; i++) {
+    left.recurrence[i] = product.recurrence[i];
+    right.recurrence[i] = product.recurrence[i];
   }
 }
 //# sourceMappingURL=add-b.js.map

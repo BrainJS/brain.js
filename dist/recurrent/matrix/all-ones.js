@@ -9,7 +9,7 @@ exports.default = allOnes;
  * @param {Matrix} product
  */
 function allOnes(product) {
-  for (var i = 0, max = product.weights.length; i < max; i++) {
+  for (var i = 0; i < product.weights.length; i++) {
     product.weights[i] = 1;
     product.recurrence[i] = 0;
   }
