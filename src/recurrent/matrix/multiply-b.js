@@ -11,15 +11,19 @@ export default function multiplyB(product, left, right) {
 
   // loop over rows of left
   for(let leftRow = 0; leftRow < leftRows; leftRow++) {
-
+    const leftRowBase = leftColumns * leftRow;
+    const rightRowBase = rightColumns * leftRow;
     // loop over cols of right
     for(let rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
 
       //loop over columns of left
       for(let leftColumn = 0; leftColumn < leftColumns; leftColumn++) {
-        let backPropagateValue = product.recurrence[rightColumns * leftRow + rightColumn];
-        left.recurrence[leftColumns * leftRow + leftColumn] += right.weights[rightColumns * leftColumn + rightColumn] * backPropagateValue;
-        right.recurrence[rightColumns * leftColumn + rightColumn] += left.weights[leftColumns * leftRow + leftColumn] * backPropagateValue;
+        const rightColumnBase = rightColumns * leftColumn;
+        const leftRow = leftRowBase + leftColumn;
+        const rightRow = rightColumnBase + rightColumn;
+        const backPropagateValue = product.recurrence[rightRowBase + rightColumn];
+        left.recurrence[leftRow] += right.weights[rightRow] * backPropagateValue;
+        right.recurrence[rightRow] += left.weights[leftRow] * backPropagateValue;
       }
     }
   }

@@ -5,8 +5,8 @@
  * @param {Matrix} right
  */
 export default function addB(product, left, right) {
-  for(let i = 0, max = product.recurrence.length; i < max; i++) {
-    left.recurrence[i] += product.recurrence[i];
-    right.recurrence[i] += product.recurrence[i];
+  for(let i = 0; i < product.recurrence.length; i++) {
+    left.recurrence[i] = product.recurrence[i];
+    right.recurrence[i] = product.recurrence[i];
   }
 }

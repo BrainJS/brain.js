@@ -86,16 +86,16 @@ export default class Matrix {
    * @returns {Matrix}
    */
   static fromArray(weightRows, recurrenceRows) {
-    var rows = weightRows.length;
-    var columns = weightRows[0].length;
-    var m = new Matrix(rows, columns);
+    const rows = weightRows.length;
+    const columns = weightRows[0].length;
+    const m = new Matrix(rows, columns);
 
     recurrenceRows = recurrenceRows || weightRows;
 
-    for (var rowIndex = 0; rowIndex < rows; rowIndex++) {
-      var weightValues = weightRows[rowIndex];
-      var recurrentValues = recurrenceRows[rowIndex];
-      for (var columnIndex = 0; columnIndex < columns; columnIndex++) {
+    for (let rowIndex = 0; rowIndex < rows; rowIndex++) {
+      const weightValues = weightRows[rowIndex];
+      const recurrentValues = recurrenceRows[rowIndex];
+      for (let columnIndex = 0; columnIndex < columns; columnIndex++) {
         m.setWeight(rowIndex, columnIndex, weightValues[columnIndex]);
         m.setRecurrence(rowIndex, columnIndex, recurrentValues[columnIndex]);
       }

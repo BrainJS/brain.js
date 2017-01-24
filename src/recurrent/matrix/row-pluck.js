@@ -4,7 +4,10 @@
  * @param {Number} rowPluckIndex
  */
 export default function rowPluck(product, left, rowPluckIndex) {
-  for (let column = 0, columns = left.columns; column < columns; column++) {
-    product.weights[column] = left.weights[columns * rowPluckIndex + column];
+  const columns = left.columns;
+  const rowBase = columns * rowPluckIndex;
+  for (let column = 0; column < columns; column++) {
+    product.weights[column] = left.weights[rowBase + column];
+    product.recurrence[column] = 0;
   }
 }

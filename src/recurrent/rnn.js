@@ -24,6 +24,7 @@ export default class RNN {
     this.ratioClipped = null;
     this.model = null;
 
+    this.initialLayerInputs = this.hiddenSizes.map((size) => new Matrix(this.hiddenSizes[0], 1));
     this.inputLookup = null;
     this.outputLookup = null;
     this.initialize();
@@ -36,8 +37,7 @@ export default class RNN {
       output: null,
       equations: [],
       allMatrices: [],
-      equationConnections: [],
-      outputMatrixIndex: -1
+      equationConnections: []
     };
 
     if (this.vocab !== null) {
@@ -141,7 +141,7 @@ export default class RNN {
     let outputs = [];
     let equationConnection = model.equationConnections.length > 0
       ? model.equationConnections[model.equationConnections.length - 1]
-      : hiddenSizes.map((size) => new Matrix(hiddenSizes[0], 1))
+      : this.initialLayerInputs
       ;
 
       // 0 index
@@ -155,9 +155,6 @@ export default class RNN {
 
     model.equationConnections.push(outputs);
     equation.add(equation.multiply(model.outputConnector, output), model.output);
-    for (let i = 0, max = equation.allMatrices.length; i < max; i++) {
-      model.allMatrices.push(equation.allMatrices[i]);
-    }
     model.equations.push(equation);
   }
 
@@ -185,7 +182,6 @@ export default class RNN {
     if (!model.output) throw new Error('net.model.output not set');
 
     allMatrices.push(model.outputConnector);
-    model.outputMatrixIndex = allMatrices.length;
     allMatrices.push(model.output);
   }
 
@@ -213,9 +209,8 @@ export default class RNN {
     let max = input.length;
     let log2ppl = 0;
     let cost = 0;
-    let error = 0;
     let equation;
-    while (model.equations.length <= input.length + 1) {//first and last are zeros
+    while (model.equations.length <= input.length + 1) {//last is zero
       this.bindEquation();
     }
     for (let inputIndex = -1, inputMax = input.length; inputIndex < inputMax; inputIndex++) {
@@ -233,7 +228,7 @@ export default class RNN {
       log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
       cost += -Math.log(probabilities.weights[target]);
       // write gradients into log probabilities
-      logProbabilities.recurrence = probabilities.weights;
+      logProbabilities.recurrence = probabilities.weights.slice(0);
       logProbabilities.recurrence[target] -= 1;
     }
 
@@ -269,42 +264,30 @@ export default class RNN {
     let numClipped = 0;
     let numTot = 0;
     let allMatrices = model.allMatrices;
-    let outputMatrixIndex = model.outputMatrixIndex;
-    let matrixIndexes = allMatrices.length;
-    for (let matrixIndex = 0; matrixIndex < matrixIndexes; matrixIndex++) {
-      let matrix = allMatrices[matrixIndex];
+    for (let matrixIndex = 0; matrixIndex < allMatrices.length; matrixIndex++) {
+      const matrix = allMatrices[matrixIndex];
+      const { weights, recurrence }  = matrix;
       if (!(matrixIndex in this.stepCache)) {
-        this.stepCache[matrixIndex] = new Matrix(matrix.rows, matrix.columns);
+        this.stepCache[matrixIndex] = zeros(matrix.rows * matrix.columns);
       }
-      let cache = this.stepCache[matrixIndex];
-
-      //if we are in an equation, reset the weights and recurrence to 0, to prevent exploding gradient problem
-      if (matrixIndex > outputMatrixIndex) {
-        for (let i = 0, n = matrix.weights.length; i < n; i++) {
-          matrix.weights[i] = 0;
-          matrix.recurrence[i] = 0;
-        }
-        continue;
-      }
-
-      for (let i = 0, n = matrix.weights.length; i < n; i++) {
+      const cache = this.stepCache[matrixIndex];
+      for (let i = 0; i < weights.length; i++) {
+        let r = recurrence[i];
+        let w = weights[i];
         // rmsprop adaptive learning rate
-        let mdwi = matrix.recurrence[i];
-        cache.weights[i] = cache.weights[i] * this.decayRate + (1 - this.decayRate) * mdwi * mdwi;
+        cache[i] = cache[i] * this.decayRate + (1 - this.decayRate) * r * r;
         // gradient clip
-        if (mdwi > clipval) {
-          mdwi = clipval;
+        if (r > clipval) {
+          r = clipval;
           numClipped++;
         }
-        if (mdwi < -clipval) {
-          mdwi = -clipval;
+        if (r < -clipval) {
+          r = -clipval;
           numClipped++;
         }
         numTot++;
-
         // update (and regularize)
-        matrix.weights[i] = matrix.weights[i] + -stepSize * mdwi / Math.sqrt(cache.weights[i] + this.smoothEps) - regc * matrix.weights[i];
-        matrix.recurrence[i] = 0; // reset gradients for next iteration
+        weights[i] = w + -stepSize * r / Math.sqrt(cache[i] + this.smoothEps) - regc * w;
       }
     }
     this.ratioClipped = numClipped / numTot;
@@ -498,7 +481,6 @@ export default class RNN {
     model.outputConnector = Matrix.fromJSON(json.outputConnector);
     model.output = Matrix.fromJSON(json.output);
     allMatrices.push(model.outputConnector);
-    model.outputMatrixIndex = allMatrices.length;
     allMatrices.push(model.output);
 
     for (let p in defaults) {
@@ -597,7 +579,8 @@ export default class RNN {
       fnString = fnString.split('}');
       fnString.pop();
       // body
-      return fnString.join('}').split('\n').join('\n        ');
+      return fnString.join('}').split('\n').join('\n        ')
+        .replace(/[a-z]+[.]recurrence[\[][a-zA-Z]+[\]][\s]+[=][\s]+[0][;]/g, '');
     }
 
     function fileName(fnName) {

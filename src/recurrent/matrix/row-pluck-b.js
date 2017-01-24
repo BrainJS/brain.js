@@ -5,7 +5,9 @@
  * @param {Number} rowIndex
  */
 export default function rowPluckB(product, left, rowIndex) {
-  for (let column = 0, columns = left.columns; column < columns; column++) {
-    left.recurrence[columns * rowIndex + column] += product.recurrence[column];
+  const columns = left.columns;
+  const rowBase = columns * rowIndex;
+  for (let column = 0; column < columns; column++) {
+    left.recurrence[rowBase + column] = product.recurrence[column];
   }
 }
