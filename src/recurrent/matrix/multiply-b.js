@@ -5,9 +5,9 @@
  * @param {Matrix} right
  */
 export default function multiplyB(product, left, right) {
-  let leftRows = left.rows;
-  let leftColumns = left.columns;
-  let rightColumns = right.columns;
+  const leftRows = left.rows;
+  const leftColumns = left.columns;
+  const rightColumns = right.columns;
 
   // loop over rows of left
   for(let leftRow = 0; leftRow < leftRows; leftRow++) {

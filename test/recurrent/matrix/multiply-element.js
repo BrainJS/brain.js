@@ -7,15 +7,15 @@ describe('matrix', () => {
   describe('multiplyElement', () => {
     context('when given a left and right matrix both of 2 rows and 2 columns', () => {
       it('correctly multiplies the values', () => {
-        var m1 = Matrix.fromArray([
+        const m1 = Matrix.fromArray([
           [2, 2],
           [2, 2]
         ]);
-        var m2 = Matrix.fromArray([
+        const m2 = Matrix.fromArray([
           [2, 2],
           [2, 2]
         ]);
-        var result = Matrix.fromArray([
+        const result = Matrix.fromArray([
           [4, 4],
           [4, 4]
         ]);
@@ -32,27 +32,27 @@ describe('matrix', () => {
     //not even yet used
     context('when given a left and right matrix both of 2 rows and 2 columns', () => {
       it('correctly multiplies the values', () => {
-        var m1 = Matrix.fromArray([
+        const m1 = Matrix.fromArray([
           [2, 2],
           [2, 2]
         ]);
-        var m2 = Matrix.fromArray([
+        const m2 = Matrix.fromArray([
           [2, 2],
           [2, 2]
         ]);
-        var result = Matrix.fromArray([
+        const result = Matrix.fromArray([
           [4, 4],
           [4, 4]
         ]);
         multiplyElementB(result, m1, m2);
         assert.equal(m1.recurrence.length, 4);
         m1.recurrence.forEach((value, i) => {
-          assert.equal(value, 10);
+          assert.equal(value, 8);
         });
 
         assert.equal(m2.recurrence.length, 4);
         m2.recurrence.forEach((value, i) => {
-          assert.equal(value, 10);
+          assert.equal(value, 8);
         });
       });
     });
