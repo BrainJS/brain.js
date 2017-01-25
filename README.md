@@ -73,6 +73,7 @@ Another variation of the example above. Note that input objects do not need to b
 net.train([{input: { r: 0.03, g: 0.7 }, output: { black: 1 }},
            {input: { r: 0.16, b: 0.2 }, output: { white: 1 }},
            {input: { r: 0.5, g: 0.5, b: 1.0 }, output: { white: 1 }}]);
+
 var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.81, black: 0.18 }
 ```
 
@@ -87,7 +88,7 @@ net.train(data, {
   log: true,           // console.log() progress periodically
   logPeriod: 10,       // number of iterations between logging
   learningRate: 0.3    // learning rate
-})
+});
 ```
 
 The network will train until the training error has gone below the threshold (default `0.005`) or the max number of iterations (default `20000`) has been reached, whichever comes first.
@@ -117,7 +118,6 @@ Serialize or load in the state of a trained network with JSON:
 
 ```javascript
 var json = net.toJSON();
-
 net.fromJSON(json);
 ```
 
@@ -125,9 +125,7 @@ You can also get a custom standalone function from a trained network that acts j
 
 ```javascript
 var run = net.toFunction();
-
 var output = run({ r: 1, g: 0.4, b: 0 });
-
 console.log(run.toString()); // copy and paste! no need to import brain.js
 ```
 
