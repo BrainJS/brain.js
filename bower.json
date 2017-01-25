@@ -18,7 +18,13 @@
     "network",
     "neural-networks",
     "machine-learning",
-    "synapse"
+    "synapse",
+    "recurrent",
+    "long short term memory",
+    "gated recurrent unit",
+    "rnn",
+    "lstm",
+    "gru"
   ],
   "main": "./browser.min.js",
   "ignore": [

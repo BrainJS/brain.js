@@ -52,7 +52,7 @@ var RNN = function () {
   function RNN() {
     var _this = this;
 
-    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, RNN);
 
@@ -237,7 +237,7 @@ var RNN = function () {
   }, {
     key: 'trainPattern',
     value: function trainPattern(input) {
-      var learningRate = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+      var learningRate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       var error = this.runInput(input);
       this.runBackpropagate(input);
@@ -312,7 +312,7 @@ var RNN = function () {
   }, {
     key: 'step',
     value: function step() {
-      var learningRate = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+      var learningRate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
       // perform parameter update
       //TODO: still not sure if this is ready for learningRate
@@ -325,8 +325,8 @@ var RNN = function () {
       var allMatrices = model.allMatrices;
       for (var matrixIndex = 0; matrixIndex < allMatrices.length; matrixIndex++) {
         var matrix = allMatrices[matrixIndex];
-        var weights = matrix.weights;
-        var recurrence = matrix.recurrence;
+        var weights = matrix.weights,
+            recurrence = matrix.recurrence;
 
         if (!(matrixIndex in this.stepCache)) {
           this.stepCache[matrixIndex] = (0, _zeros2.default)(matrix.rows * matrix.columns);
@@ -366,10 +366,10 @@ var RNN = function () {
   }, {
     key: 'run',
     value: function run() {
-      var rawInput = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
-      var maxPredictionLength = arguments.length <= 1 || arguments[1] === undefined ? 100 : arguments[1];
-      var isSampleI = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-      var temperature = arguments.length <= 3 || arguments[3] === undefined ? 1 : arguments[3];
+      var rawInput = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      var maxPredictionLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 100;
+      var isSampleI = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+      var temperature = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
 
       var input = this.formatDataIn(rawInput);
       var model = this.model;
@@ -439,7 +439,7 @@ var RNN = function () {
   }, {
     key: 'train',
     value: function train(data) {
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       options = Object.assign({}, RNN.trainDefaults, options);
       var iterations = options.iterations;
@@ -739,7 +739,7 @@ RNN.defaults = {
    * @returns {Number[]}
    */
   formatDataIn: function formatDataIn(input) {
-    var output = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+    var output = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
     if (this.vocab !== null) {
       if (this.vocab.indexTable.hasOwnProperty('stop-input')) {

@@ -18,7 +18,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 var Vocab = function () {
   function Vocab(values) {
-    var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+    var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
     _classCallCheck(this, Vocab);
 
@@ -73,7 +73,7 @@ var Vocab = function () {
   }, {
     key: 'toIndexes',
     value: function toIndexes(value) {
-      var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
       var result = [];
       var indexTable = this.indexTable;
@@ -93,8 +93,8 @@ var Vocab = function () {
   }, {
     key: 'toIndexesInputOutput',
     value: function toIndexesInputOutput(value1) {
-      var value2 = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
-      var maxThreshold = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+      var value2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+      var maxThreshold = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
 
       var result = void 0;
       if (typeof value1 === 'string') {
@@ -114,7 +114,7 @@ var Vocab = function () {
   }, {
     key: 'toCharacters',
     value: function toCharacters(indices) {
-      var maxThreshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
       var result = [];
       var characterTable = this.characterTable;
@@ -151,7 +151,7 @@ var Vocab = function () {
   }], [{
     key: 'fromAllPrintable',
     value: function fromAllPrintable(maxThreshold) {
-      var values = arguments.length <= 1 || arguments[1] === undefined ? ['\n'] : arguments[1];
+      var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['\n'];
 
       for (var i = 32; i <= 126; i++) {
         values.push(String.fromCharCode(i));
@@ -161,7 +161,7 @@ var Vocab = function () {
   }, {
     key: 'fromAllPrintableInputOutput',
     value: function fromAllPrintableInputOutput(maxThreshold) {
-      var values = arguments.length <= 1 || arguments[1] === undefined ? ['\n'] : arguments[1];
+      var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['\n'];
 
       var vocab = Vocab.fromAllPrintable(maxThreshold, values);
       vocab.addSpecial('stop-input');

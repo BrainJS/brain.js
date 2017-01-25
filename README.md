@@ -45,18 +45,13 @@ If you have [node](http://nodejs.org/) you can install with [npm](http://npmjs.o
 ```
 npm install brain.js
 ```
-Alternatively, you can install with bower:
+Alternatively, you can install with [bower](https://bower.io/)):
 ```
 bower install brain.js
 ```
 
-For debian based Linux distribution, canvas dependency installation requires install of cairo package, like so:
-```
-apt-get install libcairo2-dev libjpeg-dev libgif-dev
-```
-
 ## Using in the browser
-Download the latest [brain.js](https://github.com/harthur-org/brain.js/tree/gh-pages). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
+Download the latest [brain.js for browser](https://raw.githubusercontent.com/harthur-org/brain.js/master/browser.js). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
 
 ## Training
 Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. The more training patterns, the longer it will probably take to train, but the better the network will be at classifiying new patterns.
