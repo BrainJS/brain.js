@@ -383,12 +383,13 @@ export default class RNN {
     let learningRate = options.learningRate || this.learningRate;
     let callback = options.callback;
     let callbackPeriod = options.callbackPeriod;
-    let error = 1;
+    let error = Infinity;
     let i;
 
     if (this.hasOwnProperty('setupData')) {
       data = this.setupData(data);
     }
+
     if (!options.keepNetworkIntact) {
       this.initialize();
     }
@@ -580,7 +581,11 @@ export default class RNN {
       fnString.pop();
       // body
       return fnString.join('}').split('\n').join('\n        ')
-        .replace(/[a-z]+[.]recurrence[\[][a-zA-Z]+[\]][\s]+[=][\s]+[0][;]/g, '');
+        .replace('product.recurrence[i] = 0;', '')
+        .replace('product.recurrence[column] = 0;', '')
+        .replace('left.recurrence[leftIndex] = 0;', '')
+        .replace('right.recurrence[rightIndex] = 0;', '')
+        .replace('product.recurrence = left.recurrence.slice(0);', '');
     }
 
     function fileName(fnName) {
@@ -677,7 +682,6 @@ ${ innerFunctionsSwitch.join('\n') }
     this.rows = rows;
     this.columns = columns;
     this.weights = zeros(rows * columns);
-    this.recurrence = zeros(rows * columns);
   }
   ${ this.vocab !== null && typeof this.formatDataIn === 'function'
       ? `function formatDataIn(input, output) { ${ toInner(this.formatDataIn.toString()).replace('this.vocab', 'json.options.vocab') } }`
@@ -724,19 +728,23 @@ RNN.defaults = {
     let values = [];
     const result = [];
     if (typeof data[0] === 'string' || Array.isArray(data[0])) {
-      for (let i = 0; i < data.length; i++) {
-        values = values.concat(data[i]);
+      if (!this.hasOwnProperty('vocab')) {
+        for (let i = 0; i < data.length; i++) {
+          values.push(data[i]);
+        }
+        this.vocab = new Vocab(values);
       }
-      this.vocab = new Vocab(values);
-
       for (let i = 0, max = data.length; i < max; i++) {
         result.push(this.formatDataIn(data[i]));
       }
     } else {
-      for (let i = 0; i < data.length; i++) {
-        values = values.concat(data[i].input, data[i].output);
+      if (!this.hasOwnProperty('vocab')) {
+        for (let i = 0; i < data.length; i++) {
+          values.push(data[i].input);
+          values.push(data[i].output);
+        }
+        this.vocab = Vocab.fromArrayInputOutput(values);
       }
-      this.vocab = Vocab.fromArrayInputOutput(values);
       for (let i = 0, max = data.length; i < max; i++) {
         result.push(this.formatDataIn(data[i].input, data[i].output));
       }
