@@ -76,7 +76,7 @@ export default class Vocab {
     } else {
       result = this.toIndexes(value1.concat(['stop-input', 'start-output']), maxThreshold);
     }
-
+    
     if (value2 === null) return result;
 
     if (typeof value2 === 'string') {
@@ -107,6 +107,11 @@ export default class Vocab {
     return this.toCharacters(indices, maxThreshold).join('');
   }
 
+  addInputOutput() {
+    this.addSpecial('stop-input');
+    this.addSpecial('start-output');
+  }
+
   static fromAllPrintable(maxThreshold, values = ['\n']) {
     for(let i = 32; i <= 126; i++) {
       values.push(String.fromCharCode(i));
@@ -116,23 +121,20 @@ export default class Vocab {
 
   static fromAllPrintableInputOutput(maxThreshold, values = ['\n']) {
     const vocab = Vocab.fromAllPrintable(maxThreshold, values);
-    vocab.addSpecial('stop-input');
-    vocab.addSpecial('start-output');
+    vocab.addInputOutput();
     return vocab;
   }
 
   static fromStringInputOutput(string, maxThreshold) {
     const values = String.prototype.concat(...new Set(string));
     const vocab = new Vocab(values, maxThreshold);
-    vocab.addSpecial('stop-input');
-    vocab.addSpecial('start-output');
+    vocab.addInputOutput();
     return vocab;
   }
 
   static fromArrayInputOutput(array, maxThreshold) {
     const vocab = new Vocab(array.filter((v, i, a) => a.indexOf(v) === i).sort(), maxThreshold);
-    vocab.addSpecial('stop-input');
-    vocab.addSpecial('start-output');
+    vocab.addInputOutput();
     return vocab;
   }
 
@@ -150,10 +152,13 @@ export default class Vocab {
     return vocab;
   }
 
-  addSpecial(special) {
-    let i = this.indexTable[special] = this.characters.length;
-    this.characterTable[i] = special;
-    this.characters.push(special);
+  addSpecial() {
+    for (let i = 0; i < arguments.length; i++) {
+      const special = arguments[i];
+      let specialIndex = this.indexTable[special] = this.characters.length;
+      this.characterTable[specialIndex] = special;
+      this.characters.push(special);
+    }
   }
 
   toFunctionString(vocabVariableName) {
