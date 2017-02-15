@@ -137,11 +137,20 @@ var Vocab = function () {
       return this.toCharacters(indices, maxThreshold).join('');
     }
   }, {
+    key: 'addInputOutput',
+    value: function addInputOutput() {
+      this.addSpecial('stop-input');
+      this.addSpecial('start-output');
+    }
+  }, {
     key: 'addSpecial',
-    value: function addSpecial(special) {
-      var i = this.indexTable[special] = this.characters.length;
-      this.characterTable[i] = special;
-      this.characters.push(special);
+    value: function addSpecial() {
+      for (var i = 0; i < arguments.length; i++) {
+        var special = arguments[i];
+        var specialIndex = this.indexTable[special] = this.characters.length;
+        this.characterTable[specialIndex] = special;
+        this.characters.push(special);
+      }
     }
   }, {
     key: 'toFunctionString',
@@ -164,8 +173,7 @@ var Vocab = function () {
       var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['\n'];
 
       var vocab = Vocab.fromAllPrintable(maxThreshold, values);
-      vocab.addSpecial('stop-input');
-      vocab.addSpecial('start-output');
+      vocab.addInputOutput();
       return vocab;
     }
   }, {
@@ -175,8 +183,7 @@ var Vocab = function () {
 
       var values = (_String$prototype = String.prototype).concat.apply(_String$prototype, _toConsumableArray(new Set(string)));
       var vocab = new Vocab(values, maxThreshold);
-      vocab.addSpecial('stop-input');
-      vocab.addSpecial('start-output');
+      vocab.addInputOutput();
       return vocab;
     }
   }, {
@@ -185,8 +192,7 @@ var Vocab = function () {
       var vocab = new Vocab(array.filter(function (v, i, a) {
         return a.indexOf(v) === i;
       }).sort(), maxThreshold);
-      vocab.addSpecial('stop-input');
-      vocab.addSpecial('start-output');
+      vocab.addInputOutput();
       return vocab;
     }
   }, {

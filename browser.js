@@ -457,15 +457,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @constructor
  */
 var NeuralNetwork = function () {
-  function NeuralNetwork(options) {
+  function NeuralNetwork() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     _classCallCheck(this, NeuralNetwork);
 
-    options = options || {};
-    this.learningRate = options.learningRate || 0.3;
-    this.momentum = options.momentum || 0.1;
+    Object.assign(this, NeuralNetwork.defaults, options);
     this.hiddenSizes = options.hiddenLayers;
-
-    this.binaryThresh = options.binaryThresh || 0.5;
 
     this.sizes = null;
     this.outputLayer = null;
@@ -1046,6 +1044,13 @@ NeuralNetwork.trainDefaults = {
   callback: null,
   callbackPeriod: 10,
   keepNetworkIntact: false
+};
+
+NeuralNetwork.defaults = {
+  learningRate: 0.3,
+  momentum: 0.1,
+  binaryThresh: 0.5,
+  hiddenLayers: null
 };
 
 },{"./lookup":3,"./train-stream":32,"./utilities/max":33,"./utilities/mse":34,"./utilities/randos":38,"./utilities/range":39,"./utilities/to-array":40,"./utilities/zeros":42}],5:[function(require,module,exports){
@@ -2835,12 +2840,13 @@ var RNN = function () {
       var learningRate = options.learningRate || this.learningRate;
       var callback = options.callback;
       var callbackPeriod = options.callbackPeriod;
-      var error = 1;
+      var error = Infinity;
       var i = void 0;
 
       if (this.hasOwnProperty('setupData')) {
         data = this.setupData(data);
       }
+
       if (!options.keepNetworkIntact) {
         this.initialize();
       }
@@ -3043,7 +3049,7 @@ var RNN = function () {
         fnString = fnString.split('}');
         fnString.pop();
         // body
-        return fnString.join('}').split('\n').join('\n        ').replace(/[a-z]+[.]recurrence[\[][a-zA-Z]+[\]][\s]+[=][\s]+[0][;]/g, '');
+        return fnString.join('}').split('\n').join('\n        ').replace('product.recurrence[i] = 0;', '').replace('product.recurrence[column] = 0;', '').replace('left.recurrence[leftIndex] = 0;', '').replace('right.recurrence[rightIndex] = 0;', '').replace('product.recurrence = left.recurrence.slice(0);', '');
       }
 
       function fileName(fnName) {
@@ -3066,7 +3072,7 @@ var RNN = function () {
         }
       }
 
-      return new Function('input', 'maxPredictionLength', 'isSampleI', 'temperature', '\n  if (typeof input === \'undefined\') input = [];\n  if (typeof maxPredictionLength === \'undefined\') maxPredictionLength = 100;\n  if (typeof isSampleI === \'undefined\') isSampleI = false;\n  if (typeof temperature === \'undefined\') temperature = 1;\n  \n  ' + (this.vocab !== null && typeof this.formatDataIn === 'function' ? 'input = formatDataIn(input);' : '') + '\n        \n  var json = ' + jsonString + ';\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ' + statesRaw.join(';\n    ') + ';\n    for (var stateIndex = 0, stateMax = ' + statesRaw.length + '; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      \n      switch (state.name) {\n' + innerFunctionsSwitch.join('\n') + '\n      }\n    }\n    \n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n    \n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ' + (this.vocab !== null && typeof this.formatDataOut === 'function' ? 'return formatDataOut(output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })') + ';\n  \n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n    this.recurrence = zeros(rows * columns);\n  }\n  ' + (this.vocab !== null && typeof this.formatDataIn === 'function' ? 'function formatDataIn(input, output) { ' + toInner(this.formatDataIn.toString()).replace('this.vocab', 'json.options.vocab') + ' }' : '') + '\n  ' + (this.vocab !== null && typeof this.formatDataOut === 'function' ? 'function formatDataOut(output) { ' + toInner(this.formatDataIn.toString()).replace('this.vocab', 'json.options.vocab') + ' }' : '') + '\n  ' + (this.vocab !== null ? this.vocab.toFunctionString('json.options.vocab') : '') + '\n  ' + _zeros2.default.toString() + '\n  ' + _softmax2.default.toString().replace('_2.default', 'Matrix') + '\n  ' + _random.randomF.toString() + '\n  ' + _sampleI2.default.toString() + '\n  ' + _maxI2.default.toString());
+      return new Function('input', 'maxPredictionLength', 'isSampleI', 'temperature', '\n  if (typeof input === \'undefined\') input = [];\n  if (typeof maxPredictionLength === \'undefined\') maxPredictionLength = 100;\n  if (typeof isSampleI === \'undefined\') isSampleI = false;\n  if (typeof temperature === \'undefined\') temperature = 1;\n  \n  ' + (this.vocab !== null && typeof this.formatDataIn === 'function' ? 'input = formatDataIn(input);' : '') + '\n        \n  var json = ' + jsonString + ';\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ' + statesRaw.join(';\n    ') + ';\n    for (var stateIndex = 0, stateMax = ' + statesRaw.length + '; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      \n      switch (state.name) {\n' + innerFunctionsSwitch.join('\n') + '\n      }\n    }\n    \n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n    \n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ' + (this.vocab !== null && typeof this.formatDataOut === 'function' ? 'return formatDataOut(output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })') + ';\n  \n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ' + (this.vocab !== null && typeof this.formatDataIn === 'function' ? 'function formatDataIn(input, output) { ' + toInner(this.formatDataIn.toString()).replace('this.vocab', 'json.options.vocab') + ' }' : '') + '\n  ' + (this.vocab !== null && typeof this.formatDataOut === 'function' ? 'function formatDataOut(output) { ' + toInner(this.formatDataIn.toString()).replace('this.vocab', 'json.options.vocab') + ' }' : '') + '\n  ' + (this.vocab !== null ? this.vocab.toFunctionString('json.options.vocab') : '') + '\n  ' + _zeros2.default.toString() + '\n  ' + _softmax2.default.toString().replace('_2.default', 'Matrix') + '\n  ' + _random.randomF.toString() + '\n  ' + _sampleI2.default.toString() + '\n  ' + _maxI2.default.toString());
     }
   }]);
 
@@ -3099,19 +3105,23 @@ RNN.defaults = {
     var values = [];
     var result = [];
     if (typeof data[0] === 'string' || Array.isArray(data[0])) {
-      for (var i = 0; i < data.length; i++) {
-        values = values.concat(data[i]);
+      if (!this.hasOwnProperty('vocab')) {
+        for (var i = 0; i < data.length; i++) {
+          values.push(data[i]);
+        }
+        this.vocab = new _vocab2.default(values);
       }
-      this.vocab = new _vocab2.default(values);
-
       for (var _i = 0, max = data.length; _i < max; _i++) {
         result.push(this.formatDataIn(data[_i]));
       }
     } else {
-      for (var _i2 = 0; _i2 < data.length; _i2++) {
-        values = values.concat(data[_i2].input, data[_i2].output);
+      if (!this.hasOwnProperty('vocab')) {
+        for (var _i2 = 0; _i2 < data.length; _i2++) {
+          values.push(data[_i2].input);
+          values.push(data[_i2].output);
+        }
+        this.vocab = _vocab2.default.fromArrayInputOutput(values);
       }
-      this.vocab = _vocab2.default.fromArrayInputOutput(values);
       for (var _i3 = 0, _max = data.length; _i3 < _max; _i3++) {
         result.push(this.formatDataIn(data[_i3].input, data[_i3].output));
       }
@@ -3706,11 +3716,20 @@ var Vocab = function () {
       return this.toCharacters(indices, maxThreshold).join('');
     }
   }, {
+    key: 'addInputOutput',
+    value: function addInputOutput() {
+      this.addSpecial('stop-input');
+      this.addSpecial('start-output');
+    }
+  }, {
     key: 'addSpecial',
-    value: function addSpecial(special) {
-      var i = this.indexTable[special] = this.characters.length;
-      this.characterTable[i] = special;
-      this.characters.push(special);
+    value: function addSpecial() {
+      for (var i = 0; i < arguments.length; i++) {
+        var special = arguments[i];
+        var specialIndex = this.indexTable[special] = this.characters.length;
+        this.characterTable[specialIndex] = special;
+        this.characters.push(special);
+      }
     }
   }, {
     key: 'toFunctionString',
@@ -3733,8 +3752,7 @@ var Vocab = function () {
       var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['\n'];
 
       var vocab = Vocab.fromAllPrintable(maxThreshold, values);
-      vocab.addSpecial('stop-input');
-      vocab.addSpecial('start-output');
+      vocab.addInputOutput();
       return vocab;
     }
   }, {
@@ -3744,8 +3762,7 @@ var Vocab = function () {
 
       var values = (_String$prototype = String.prototype).concat.apply(_String$prototype, _toConsumableArray(new Set(string)));
       var vocab = new Vocab(values, maxThreshold);
-      vocab.addSpecial('stop-input');
-      vocab.addSpecial('start-output');
+      vocab.addInputOutput();
       return vocab;
     }
   }, {
@@ -3754,8 +3771,7 @@ var Vocab = function () {
       var vocab = new Vocab(array.filter(function (v, i, a) {
         return a.indexOf(v) === i;
       }).sort(), maxThreshold);
-      vocab.addSpecial('stop-input');
-      vocab.addSpecial('start-output');
+      vocab.addInputOutput();
       return vocab;
     }
   }, {

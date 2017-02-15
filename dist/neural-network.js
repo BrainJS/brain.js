@@ -48,15 +48,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @constructor
  */
 var NeuralNetwork = function () {
-  function NeuralNetwork(options) {
+  function NeuralNetwork() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     _classCallCheck(this, NeuralNetwork);
 
-    options = options || {};
-    this.learningRate = options.learningRate || 0.3;
-    this.momentum = options.momentum || 0.1;
+    Object.assign(this, NeuralNetwork.defaults, options);
     this.hiddenSizes = options.hiddenLayers;
-
-    this.binaryThresh = options.binaryThresh || 0.5;
 
     this.sizes = null;
     this.outputLayer = null;
@@ -637,5 +635,12 @@ NeuralNetwork.trainDefaults = {
   callback: null,
   callbackPeriod: 10,
   keepNetworkIntact: false
+};
+
+NeuralNetwork.defaults = {
+  learningRate: 0.3,
+  momentum: 0.1,
+  binaryThresh: 0.5,
+  hiddenLayers: null
 };
 //# sourceMappingURL=neural-network.js.map
