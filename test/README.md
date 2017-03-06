@@ -12,24 +12,7 @@ Then you can run all tests (unit and cross-validation) using `npm test`.
 Run the unit tests with:
 
 ```
-grunt test
+npm run test
 ```
 
-or
-
-`npm run test-unit`
-
-# Cross-validation tests
-The cross-validation tests will actually test how good the neural network is at training by getting a bunch of training data, training it with some, and using the rest for verification.
-
-Cross-validation tests will take a long time to run, and in the end will give you a printout with the average error of the test data.
-
-Run these with:
-
-```
-mocha test/cross-validation/* --timeout 10000
-```
-
-or
-
-`npm run test-cv`
+See [package.json](../package.json) for more testing examples.
