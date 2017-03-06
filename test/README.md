@@ -6,13 +6,13 @@ To run the tests in this directory, make sure you've installed the dev dependenc
 npm install
 ```
 
-Then you can run all tests (unit and cross-validation) using `npm test`.
+Then you can run all tests using `npm test`.
 
 # Unit tests
 Run the unit tests with:
 
 ```
-npm run test
+npm test
 ```
 
 See [package.json](../package.json) for more testing examples.

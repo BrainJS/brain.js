@@ -39,7 +39,7 @@ describe('rnn', () => {
   describe('xor', () => {
     function xorNet() {
       return new RNN({
-        hiddenSizes: [20, 20],
+        hiddenSizes: [9, 9],
         inputSize: 3,
         inputRange: 3,
         outputSize: 3
