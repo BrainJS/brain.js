@@ -1,6 +1,6 @@
 import assert from 'assert';
 import LSTM from '../../src/recurrent/lstm';
-import Vocab from '../../src/utilities/vocab';
+import DataFormatter from '../../src/utilities/data-formatter';
 
 describe('lstm', () => {
   describe('math', () => {
@@ -56,27 +56,27 @@ describe('lstm', () => {
 
     describe('.fromJSON', () => {
       it('can import model from json', () => {
-        var vocab = new Vocab('abcdef'.split(''));
+        var dataFormatter = new DataFormatter('abcdef'.split(''));
         var jsonString = JSON.stringify(new LSTM({
           inputSize: 6, //<- length
-          inputRange: vocab.characters.length,
-          outputSize: vocab.characters.length //<- length
+          inputRange: dataFormatter.characters.length,
+          outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
         var clone = new LSTM({ json: JSON.parse(jsonString) });
 
         assert.equal(jsonString, JSON.stringify(clone.toJSON()));
         assert.equal(clone.inputSize, 6);
-        assert.equal(clone.inputRange, vocab.characters.length);
-        assert.equal(clone.outputSize, vocab.characters.length);
+        assert.equal(clone.inputRange, dataFormatter.characters.length);
+        assert.equal(clone.outputSize, dataFormatter.characters.length);
       });
 
       it('can import model from json and train again', () => {
-        var vocab = new Vocab('abcdef'.split(''));
+        var dataFormatter = new DataFormatter('abcdef'.split(''));
         var jsonString = JSON.stringify(new LSTM({
           inputSize: 6, //<- length
-          inputRange: vocab.characters.length,
-          outputSize: vocab.characters.length //<- length
+          inputRange: dataFormatter.characters.length,
+          outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
         var clone = new LSTM({ json: JSON.parse(jsonString) });
@@ -84,30 +84,30 @@ describe('lstm', () => {
 
         assert.notEqual(jsonString, JSON.stringify(clone.toJSON()));
         assert.equal(clone.inputSize, 6);
-        assert.equal(clone.inputRange, vocab.characters.length);
-        assert.equal(clone.outputSize, vocab.characters.length);
+        assert.equal(clone.inputRange, dataFormatter.characters.length);
+        assert.equal(clone.outputSize, dataFormatter.characters.length);
       });
     });
   });
 
   describe('.toFunction', () => {
     it('can output same as run method', () => {
-      const vocab = new Vocab(['h', 'i', ' ', 'm', 'o', '!']);
+      const dataFormatter = new DataFormatter(['h', 'i', ' ', 'm', 'o', '!']);
       var net = new LSTM({
         inputSize: 7,
-        inputRange: vocab.characters.length,
+        inputRange: dataFormatter.characters.length,
         outputSize: 7
       });
 
       for (var i = 0; i < 100; i++) {
-        net.trainPattern(vocab.toIndexes('hi mom!'));
+        net.trainPattern(dataFormatter.toIndexes('hi mom!'));
         if (i % 10) {
-          console.log(vocab.toCharacters(net.run()).join(''));
+          console.log(dataFormatter.toCharacters(net.run()).join(''));
         }
       }
 
-      var lastOutput = vocab.toCharacters(net.run()).join('');
-      assert.equal(vocab.toCharacters(net.toFunction()()).join(''), lastOutput);
+      var lastOutput = dataFormatter.toCharacters(net.run()).join('');
+      assert.equal(dataFormatter.toCharacters(net.toFunction()()).join(''), lastOutput);
     });
   });
 

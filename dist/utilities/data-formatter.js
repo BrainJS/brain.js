@@ -16,11 +16,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @param maxThreshold
  * @constructor
  */
-var Vocab = function () {
-  function Vocab(values) {
+var DataFormatter = function () {
+  function DataFormatter(values) {
     var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
-    _classCallCheck(this, Vocab);
+    _classCallCheck(this, DataFormatter);
 
     if (values === undefined) return;
 
@@ -34,12 +34,12 @@ var Vocab = function () {
     this.buildTables(maxThreshold);
   }
 
-  _createClass(Vocab, [{
+  _createClass(DataFormatter, [{
     key: 'buildCharactersFromIterable',
     value: function buildCharactersFromIterable(values) {
       var tempCharactersTable = {};
-      for (var vocabIndex = 0, vocabLength = values.length; vocabIndex < vocabLength; vocabIndex++) {
-        var characters = values[vocabIndex];
+      for (var dataFormatterIndex = 0, dataFormatterLength = values.length; dataFormatterIndex < dataFormatterLength; dataFormatterIndex++) {
+        var characters = values[dataFormatterIndex];
 
         if (characters.hasOwnProperty('length')) {
           for (var characterIndex = 0, charactersLength = characters.length; characterIndex < charactersLength; characterIndex++) {
@@ -49,9 +49,9 @@ var Vocab = function () {
             this.characters.push(character);
           }
         } else {
-          var _character = values[vocabIndex];
+          var _character = values[dataFormatterIndex];
           if (tempCharactersTable.hasOwnProperty(_character)) continue;
-          tempCharactersTable[vocabIndex] = true;
+          tempCharactersTable[dataFormatterIndex] = true;
           this.characters.push(_character);
         }
       }
@@ -64,7 +64,7 @@ var Vocab = function () {
       for (var characterIndex = 0; characterIndex < charactersLength; characterIndex++) {
         var character = this.characters[characterIndex];
         if (characterIndex >= maxThreshold) {
-          // add character to vocab
+          // add character to dataFormatter
           this.indexTable[character] = characterIndex;
           this.characterTable[characterIndex] = character;
         }
@@ -154,8 +154,8 @@ var Vocab = function () {
     }
   }, {
     key: 'toFunctionString',
-    value: function toFunctionString(vocabVariableName) {
-      return '\n' + this.toIndexes.toString().replace('this', vocabVariableName) + '\n' + this.toIndexesInputOutput.toString().replace('this', vocabVariableName) + '\n' + this.toCharacters.toString().replace('this', vocabVariableName) + '\n';
+    value: function toFunctionString(dataFormatterVariableName) {
+      return '\n' + this.toIndexes.toString().replace('this', dataFormatterVariableName) + '\n' + this.toIndexesInputOutput.toString().replace('this', dataFormatterVariableName) + '\n' + this.toCharacters.toString().replace('this', dataFormatterVariableName) + '\n';
     }
   }], [{
     key: 'fromAllPrintable',
@@ -165,16 +165,16 @@ var Vocab = function () {
       for (var i = 32; i <= 126; i++) {
         values.push(String.fromCharCode(i));
       }
-      return new Vocab(values, maxThreshold);
+      return new DataFormatter(values, maxThreshold);
     }
   }, {
     key: 'fromAllPrintableInputOutput',
     value: function fromAllPrintableInputOutput(maxThreshold) {
       var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['\n'];
 
-      var vocab = Vocab.fromAllPrintable(maxThreshold, values);
-      vocab.addInputOutput();
-      return vocab;
+      var dataFormatter = DataFormatter.fromAllPrintable(maxThreshold, values);
+      dataFormatter.addInputOutput();
+      return dataFormatter;
     }
   }, {
     key: 'fromStringInputOutput',
@@ -182,18 +182,18 @@ var Vocab = function () {
       var _String$prototype;
 
       var values = (_String$prototype = String.prototype).concat.apply(_String$prototype, _toConsumableArray(new Set(string)));
-      var vocab = new Vocab(values, maxThreshold);
-      vocab.addInputOutput();
-      return vocab;
+      var dataFormatter = new DataFormatter(values, maxThreshold);
+      dataFormatter.addInputOutput();
+      return dataFormatter;
     }
   }, {
     key: 'fromArrayInputOutput',
     value: function fromArrayInputOutput(array, maxThreshold) {
-      var vocab = new Vocab(array.filter(function (v, i, a) {
+      var dataFormatter = new DataFormatter(array.filter(function (v, i, a) {
         return a.indexOf(v) === i;
       }).sort(), maxThreshold);
-      vocab.addInputOutput();
-      return vocab;
+      dataFormatter.addInputOutput();
+      return dataFormatter;
     }
   }, {
     key: 'fromString',
@@ -201,22 +201,22 @@ var Vocab = function () {
       var _String$prototype2;
 
       var values = (_String$prototype2 = String.prototype).concat.apply(_String$prototype2, _toConsumableArray(new Set(string)));
-      return new Vocab(values, maxThreshold);
+      return new DataFormatter(values, maxThreshold);
     }
   }, {
     key: 'fromJSON',
     value: function fromJSON(json) {
-      var vocab = new Vocab();
-      vocab.indexTable = json.indexTable;
-      vocab.characterTable = json.characterTable;
-      vocab.values = json.values;
-      vocab.characters = json.characters;
-      return vocab;
+      var dataFormatter = new DataFormatter();
+      dataFormatter.indexTable = json.indexTable;
+      dataFormatter.characterTable = json.characterTable;
+      dataFormatter.values = json.values;
+      dataFormatter.characters = json.characters;
+      return dataFormatter;
     }
   }]);
 
-  return Vocab;
+  return DataFormatter;
 }();
 
-exports.default = Vocab;
-//# sourceMappingURL=vocab.js.map
+exports.default = DataFormatter;
+//# sourceMappingURL=data-formatter.js.map

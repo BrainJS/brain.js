@@ -7,7 +7,7 @@ import softmax from './matrix/softmax';
 import copy from './matrix/copy';
 import { randomF } from '../utilities/random';
 import zeros from '../utilities/zeros';
-import Vocab from '../utilities/vocab';
+import DataFormatter from '../utilities/data-formatter';
 
 export default class RNN {
   constructor(options = {}) {
@@ -40,10 +40,10 @@ export default class RNN {
       equationConnections: []
     };
 
-    if (this.vocab !== null) {
+    if (this.dataFormatter !== null) {
       this.inputSize =
       this.inputRange =
-      this.outputSize = this.vocab.characters.length;
+      this.outputSize = this.dataFormatter.characters.length;
     }
 
     if (this.json) {
@@ -489,9 +489,9 @@ export default class RNN {
       this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
     }
 
-    if (options.hasOwnProperty('vocab') && options.vocab !== null) {
-      this.vocab = Vocab.fromJSON(options.vocab);
-      delete options.vocab;
+    if (options.hasOwnProperty('dataFormatter') && options.dataFormatter !== null) {
+      this.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);
+      delete options.dataFormatter;
     }
 
     this.bindEquation();
@@ -622,7 +622,7 @@ export default class RNN {
   if (typeof temperature === 'undefined') temperature = 1;
   
   ${
-      (this.vocab !== null && typeof this.formatDataIn === 'function')
+      (this.dataFormatter !== null && typeof this.formatDataIn === 'function')
         ? 'input = formatDataIn(input);' 
         : ''
     }
@@ -674,7 +674,7 @@ ${ innerFunctionsSwitch.join('\n') }
 
     output.push(nextIndex);
   }
-  ${ (this.vocab !== null && typeof this.formatDataOut === 'function') 
+  ${ (this.dataFormatter !== null && typeof this.formatDataOut === 'function') 
       ? 'return formatDataOut(output.slice(input.length).map(function(value) { return value - 1; }))'
       : 'return output.slice(input.length).map(function(value) { return value - 1; })' };
   
@@ -683,13 +683,13 @@ ${ innerFunctionsSwitch.join('\n') }
     this.columns = columns;
     this.weights = zeros(rows * columns);
   }
-  ${ this.vocab !== null && typeof this.formatDataIn === 'function'
-      ? `function formatDataIn(input, output) { ${ toInner(this.formatDataIn.toString()).replace('this.vocab', 'json.options.vocab') } }`
+  ${ this.dataFormatter !== null && typeof this.formatDataIn === 'function'
+      ? `function formatDataIn(input, output) { ${ toInner(this.formatDataIn.toString()).replace('this.dataFormatter', 'json.options.dataFormatter') } }`
       : '' }
-  ${ this.vocab !== null && typeof this.formatDataOut === 'function'
-        ? `function formatDataOut(output) { ${ toInner(this.formatDataIn.toString()).replace('this.vocab', 'json.options.vocab') } }` 
+  ${ this.dataFormatter !== null && typeof this.formatDataOut === 'function'
+        ? `function formatDataOut(output) { ${ toInner(this.formatDataIn.toString()).replace('this.dataFormatter', 'json.options.dataFormatter') } }` 
         : '' }
-  ${ (this.vocab !== null) ? this.vocab.toFunctionString('json.options.vocab') : '' }
+  ${ (this.dataFormatter !== null) ? this.dataFormatter.toFunctionString('json.options.dataFormatter') : '' }
   ${ zeros.toString() }
   ${ softmax.toString().replace('_2.default', 'Matrix') }
   ${ randomF.toString() }
@@ -728,22 +728,22 @@ RNN.defaults = {
     let values = [];
     const result = [];
     if (typeof data[0] === 'string' || Array.isArray(data[0])) {
-      if (this.vocab === null) {
+      if (this.dataFormatter === null) {
         for (let i = 0; i < data.length; i++) {
           values.push(data[i]);
         }
-        this.vocab = new Vocab(values);
+        this.dataFormatter = new DataFormatter(values);
       }
       for (let i = 0, max = data.length; i < max; i++) {
         result.push(this.formatDataIn(data[i]));
       }
     } else {
-      if (this.vocab === null) {
+      if (this.dataFormatter === null) {
         for (let i = 0; i < data.length; i++) {
           values.push(data[i].input);
           values.push(data[i].output);
         }
-        this.vocab = Vocab.fromArrayInputOutput(values);
+        this.dataFormatter = DataFormatter.fromArrayInputOutput(values);
       }
       for (let i = 0, max = data.length; i < max; i++) {
         result.push(this.formatDataIn(data[i].input, data[i].output));
@@ -758,11 +758,11 @@ RNN.defaults = {
    * @returns {Number[]}
    */
   formatDataIn: function(input, output = null) {
-    if (this.vocab !== null) {
-      if (this.vocab.indexTable.hasOwnProperty('stop-input')) {
-        return this.vocab.toIndexesInputOutput(input, output);
+    if (this.dataFormatter !== null) {
+      if (this.dataFormatter.indexTable.hasOwnProperty('stop-input')) {
+        return this.dataFormatter.toIndexesInputOutput(input, output);
       } else {
-        return this.vocab.toIndexes(input);
+        return this.dataFormatter.toIndexes(input);
       }
     }
     return input;
@@ -774,14 +774,14 @@ RNN.defaults = {
    * @returns {*}
    */
   formatDataOut: function(input, output) {
-    if (this.vocab !== null) {
-      return this.vocab
+    if (this.dataFormatter !== null) {
+      return this.dataFormatter
         .toCharacters(output)
         .join('');
     }
     return output;
   },
-  vocab: null
+  dataFormatter: null
 };
 
 RNN.trainDefaults = {

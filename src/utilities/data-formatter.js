@@ -4,7 +4,7 @@
  * @param maxThreshold
  * @constructor
  */
-export default class Vocab {
+export default class DataFormatter {
   constructor(values, maxThreshold = 0) {
     if (values === undefined) return;
 
@@ -20,8 +20,8 @@ export default class Vocab {
 
   buildCharactersFromIterable(values) {
     let tempCharactersTable = {};
-    for (let vocabIndex = 0, vocabLength = values.length; vocabIndex < vocabLength; vocabIndex++) {
-      let characters = values[vocabIndex];
+    for (let dataFormatterIndex = 0, dataFormatterLength = values.length; dataFormatterIndex < dataFormatterLength; dataFormatterIndex++) {
+      let characters = values[dataFormatterIndex];
 
       if (characters.hasOwnProperty('length')) {
         for (let characterIndex = 0, charactersLength = characters.length; characterIndex < charactersLength; characterIndex++) {
@@ -31,9 +31,9 @@ export default class Vocab {
           this.characters.push(character);
         }
       } else {
-        let character = values[vocabIndex];
+        let character = values[dataFormatterIndex];
         if (tempCharactersTable.hasOwnProperty(character)) continue;
-        tempCharactersTable[vocabIndex] = true;
+        tempCharactersTable[dataFormatterIndex] = true;
         this.characters.push(character);
       }
     }
@@ -45,7 +45,7 @@ export default class Vocab {
     for(let characterIndex = 0; characterIndex < charactersLength; characterIndex++) {
       let character = this.characters[characterIndex];
       if(characterIndex >= maxThreshold) {
-        // add character to vocab
+        // add character to dataFormatter
         this.indexTable[character] = characterIndex;
         this.characterTable[characterIndex] = character;
       }
@@ -116,40 +116,40 @@ export default class Vocab {
     for(let i = 32; i <= 126; i++) {
       values.push(String.fromCharCode(i));
     }
-    return new Vocab(values, maxThreshold);
+    return new DataFormatter(values, maxThreshold);
   }
 
   static fromAllPrintableInputOutput(maxThreshold, values = ['\n']) {
-    const vocab = Vocab.fromAllPrintable(maxThreshold, values);
-    vocab.addInputOutput();
-    return vocab;
+    const dataFormatter = DataFormatter.fromAllPrintable(maxThreshold, values);
+    dataFormatter.addInputOutput();
+    return dataFormatter;
   }
 
   static fromStringInputOutput(string, maxThreshold) {
     const values = String.prototype.concat(...new Set(string));
-    const vocab = new Vocab(values, maxThreshold);
-    vocab.addInputOutput();
-    return vocab;
+    const dataFormatter = new DataFormatter(values, maxThreshold);
+    dataFormatter.addInputOutput();
+    return dataFormatter;
   }
 
   static fromArrayInputOutput(array, maxThreshold) {
-    const vocab = new Vocab(array.filter((v, i, a) => a.indexOf(v) === i).sort(), maxThreshold);
-    vocab.addInputOutput();
-    return vocab;
+    const dataFormatter = new DataFormatter(array.filter((v, i, a) => a.indexOf(v) === i).sort(), maxThreshold);
+    dataFormatter.addInputOutput();
+    return dataFormatter;
   }
 
   static fromString(string, maxThreshold) {
     const values = String.prototype.concat(...new Set(string));
-    return new Vocab(values, maxThreshold);
+    return new DataFormatter(values, maxThreshold);
   }
 
   static fromJSON(json) {
-    const vocab = new Vocab();
-    vocab.indexTable = json.indexTable;
-    vocab.characterTable = json.characterTable;
-    vocab.values = json.values;
-    vocab.characters = json.characters;
-    return vocab;
+    const dataFormatter = new DataFormatter();
+    dataFormatter.indexTable = json.indexTable;
+    dataFormatter.characterTable = json.characterTable;
+    dataFormatter.values = json.values;
+    dataFormatter.characters = json.characters;
+    return dataFormatter;
   }
 
   addSpecial() {
@@ -161,11 +161,11 @@ export default class Vocab {
     }
   }
 
-  toFunctionString(vocabVariableName) {
+  toFunctionString(dataFormatterVariableName) {
     return `
-${ this.toIndexes.toString().replace('this', vocabVariableName) }
-${ this.toIndexesInputOutput.toString().replace('this', vocabVariableName) }
-${ this.toCharacters.toString().replace('this', vocabVariableName) }
+${ this.toIndexes.toString().replace('this', dataFormatterVariableName) }
+${ this.toIndexesInputOutput.toString().replace('this', dataFormatterVariableName) }
+${ this.toCharacters.toString().replace('this', dataFormatterVariableName) }
 `;
   }
 }

@@ -1053,7 +1053,7 @@ NeuralNetwork.defaults = {
   hiddenLayers: null
 };
 
-},{"./lookup":3,"./train-stream":32,"./utilities/max":33,"./utilities/mse":34,"./utilities/randos":38,"./utilities/range":39,"./utilities/to-array":40,"./utilities/zeros":42}],5:[function(require,module,exports){
+},{"./lookup":3,"./train-stream":32,"./utilities/max":34,"./utilities/mse":35,"./utilities/randos":39,"./utilities/range":40,"./utilities/to-array":41,"./utilities/zeros":42}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2099,7 +2099,7 @@ var OnesMatrix = function (_Matrix) {
 
 exports.default = OnesMatrix;
 
-},{"../../utilities/ones":35,"./":13}],20:[function(require,module,exports){
+},{"../../utilities/ones":36,"./":13}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2148,7 +2148,7 @@ var RandomMatrix = function (_Matrix) {
 
 exports.default = RandomMatrix;
 
-},{"../../utilities/random":37,"./":13}],21:[function(require,module,exports){
+},{"../../utilities/random":38,"./":13}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2262,7 +2262,7 @@ function sampleI(m) {
   }
 }
 
-},{"../../utilities/random":37}],26:[function(require,module,exports){
+},{"../../utilities/random":38}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2431,9 +2431,9 @@ var _zeros = require('../utilities/zeros');
 
 var _zeros2 = _interopRequireDefault(_zeros);
 
-var _vocab = require('../utilities/vocab');
+var _dataFormatter = require('../utilities/data-formatter');
 
-var _vocab2 = _interopRequireDefault(_vocab);
+var _dataFormatter2 = _interopRequireDefault(_dataFormatter);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2480,8 +2480,8 @@ var RNN = function () {
         equationConnections: []
       };
 
-      if (this.vocab !== null) {
-        this.inputSize = this.inputRange = this.outputSize = this.vocab.characters.length;
+      if (this.dataFormatter !== null) {
+        this.inputSize = this.inputRange = this.outputSize = this.dataFormatter.characters.length;
       }
 
       if (this.json) {
@@ -2954,9 +2954,9 @@ var RNN = function () {
         this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
       }
 
-      if (options.hasOwnProperty('vocab') && options.vocab !== null) {
-        this.vocab = _vocab2.default.fromJSON(options.vocab);
-        delete options.vocab;
+      if (options.hasOwnProperty('dataFormatter') && options.dataFormatter !== null) {
+        this.dataFormatter = _dataFormatter2.default.fromJSON(options.dataFormatter);
+        delete options.dataFormatter;
       }
 
       this.bindEquation();
@@ -3072,7 +3072,7 @@ var RNN = function () {
         }
       }
 
-      return new Function('input', 'maxPredictionLength', 'isSampleI', 'temperature', '\n  if (typeof input === \'undefined\') input = [];\n  if (typeof maxPredictionLength === \'undefined\') maxPredictionLength = 100;\n  if (typeof isSampleI === \'undefined\') isSampleI = false;\n  if (typeof temperature === \'undefined\') temperature = 1;\n  \n  ' + (this.vocab !== null && typeof this.formatDataIn === 'function' ? 'input = formatDataIn(input);' : '') + '\n        \n  var json = ' + jsonString + ';\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ' + statesRaw.join(';\n    ') + ';\n    for (var stateIndex = 0, stateMax = ' + statesRaw.length + '; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      \n      switch (state.name) {\n' + innerFunctionsSwitch.join('\n') + '\n      }\n    }\n    \n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n    \n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ' + (this.vocab !== null && typeof this.formatDataOut === 'function' ? 'return formatDataOut(output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })') + ';\n  \n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ' + (this.vocab !== null && typeof this.formatDataIn === 'function' ? 'function formatDataIn(input, output) { ' + toInner(this.formatDataIn.toString()).replace('this.vocab', 'json.options.vocab') + ' }' : '') + '\n  ' + (this.vocab !== null && typeof this.formatDataOut === 'function' ? 'function formatDataOut(output) { ' + toInner(this.formatDataIn.toString()).replace('this.vocab', 'json.options.vocab') + ' }' : '') + '\n  ' + (this.vocab !== null ? this.vocab.toFunctionString('json.options.vocab') : '') + '\n  ' + _zeros2.default.toString() + '\n  ' + _softmax2.default.toString().replace('_2.default', 'Matrix') + '\n  ' + _random.randomF.toString() + '\n  ' + _sampleI2.default.toString() + '\n  ' + _maxI2.default.toString());
+      return new Function('input', 'maxPredictionLength', 'isSampleI', 'temperature', '\n  if (typeof input === \'undefined\') input = [];\n  if (typeof maxPredictionLength === \'undefined\') maxPredictionLength = 100;\n  if (typeof isSampleI === \'undefined\') isSampleI = false;\n  if (typeof temperature === \'undefined\') temperature = 1;\n  \n  ' + (this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? 'input = formatDataIn(input);' : '') + '\n        \n  var json = ' + jsonString + ';\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ' + statesRaw.join(';\n    ') + ';\n    for (var stateIndex = 0, stateMax = ' + statesRaw.length + '; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      \n      switch (state.name) {\n' + innerFunctionsSwitch.join('\n') + '\n      }\n    }\n    \n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n    \n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ' + (this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? 'return formatDataOut(output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })') + ';\n  \n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ' + (this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? 'function formatDataIn(input, output) { ' + toInner(this.formatDataIn.toString()).replace('this.dataFormatter', 'json.options.dataFormatter') + ' }' : '') + '\n  ' + (this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? 'function formatDataOut(output) { ' + toInner(this.formatDataIn.toString()).replace('this.dataFormatter', 'json.options.dataFormatter') + ' }' : '') + '\n  ' + (this.dataFormatter !== null ? this.dataFormatter.toFunctionString('json.options.dataFormatter') : '') + '\n  ' + _zeros2.default.toString() + '\n  ' + _softmax2.default.toString().replace('_2.default', 'Matrix') + '\n  ' + _random.randomF.toString() + '\n  ' + _sampleI2.default.toString() + '\n  ' + _maxI2.default.toString());
     }
   }]);
 
@@ -3105,22 +3105,22 @@ RNN.defaults = {
     var values = [];
     var result = [];
     if (typeof data[0] === 'string' || Array.isArray(data[0])) {
-      if (this.vocab === null) {
+      if (this.dataFormatter === null) {
         for (var i = 0; i < data.length; i++) {
           values.push(data[i]);
         }
-        this.vocab = new _vocab2.default(values);
+        this.dataFormatter = new _dataFormatter2.default(values);
       }
       for (var _i = 0, max = data.length; _i < max; _i++) {
         result.push(this.formatDataIn(data[_i]));
       }
     } else {
-      if (this.vocab === null) {
+      if (this.dataFormatter === null) {
         for (var _i2 = 0; _i2 < data.length; _i2++) {
           values.push(data[_i2].input);
           values.push(data[_i2].output);
         }
-        this.vocab = _vocab2.default.fromArrayInputOutput(values);
+        this.dataFormatter = _dataFormatter2.default.fromArrayInputOutput(values);
       }
       for (var _i3 = 0, _max = data.length; _i3 < _max; _i3++) {
         result.push(this.formatDataIn(data[_i3].input, data[_i3].output));
@@ -3137,11 +3137,11 @@ RNN.defaults = {
   formatDataIn: function formatDataIn(input) {
     var output = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-    if (this.vocab !== null) {
-      if (this.vocab.indexTable.hasOwnProperty('stop-input')) {
-        return this.vocab.toIndexesInputOutput(input, output);
+    if (this.dataFormatter !== null) {
+      if (this.dataFormatter.indexTable.hasOwnProperty('stop-input')) {
+        return this.dataFormatter.toIndexesInputOutput(input, output);
       } else {
-        return this.vocab.toIndexes(input);
+        return this.dataFormatter.toIndexes(input);
       }
     }
     return input;
@@ -3153,12 +3153,12 @@ RNN.defaults = {
    * @returns {*}
    */
   formatDataOut: function formatDataOut(input, output) {
-    if (this.vocab !== null) {
-      return this.vocab.toCharacters(output).join('');
+    if (this.dataFormatter !== null) {
+      return this.dataFormatter.toCharacters(output).join('');
     }
     return output;
   },
-  vocab: null
+  dataFormatter: null
 };
 
 RNN.trainDefaults = {
@@ -3172,7 +3172,7 @@ RNN.trainDefaults = {
   keepNetworkIntact: false
 };
 
-},{"../utilities/random":37,"../utilities/vocab":41,"../utilities/zeros":42,"./matrix":13,"./matrix/copy":11,"./matrix/equation":12,"./matrix/max-i":14,"./matrix/random-matrix":20,"./matrix/sample-i":25,"./matrix/softmax":28}],32:[function(require,module,exports){
+},{"../utilities/data-formatter":33,"../utilities/random":38,"../utilities/zeros":42,"./matrix":13,"./matrix/copy":11,"./matrix/equation":12,"./matrix/max-i":14,"./matrix/random-matrix":20,"./matrix/sample-i":25,"./matrix/softmax":28}],32:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3409,179 +3409,6 @@ function uniques(arr) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = max;
-
-var _toArray = require('./to-array');
-
-var _toArray2 = _interopRequireDefault(_toArray);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- *
- * @param values
- * @returns {number}
- */
-function max(values) {
-  return Math.max.apply(Math, (0, _toArray2.default)(values));
-}
-
-},{"./to-array":40}],34:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = mse;
-function mse(errors) {
-  // mean squared error
-  var sum = 0;
-  for (var i = 0; i < errors.length; i++) {
-    sum += Math.pow(errors[i], 2);
-  }
-  return sum / errors.length;
-}
-
-},{}],35:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = ones;
-function ones(size) {
-  if (typeof Float64Array !== 'undefined') return new Float64Array(size).fill(1);
-  var array = new Array(size);
-  for (var i = 0; i < size; i++) {
-    array[i] = i;
-  }
-  return array;
-}
-
-},{}],36:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = randomWeight;
-function randomWeight() {
-  return Math.random() * 0.4 - 0.2;
-}
-
-},{}],37:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.randomF = randomF;
-exports.randomI = randomI;
-exports.randomN = randomN;
-function randomF(a, b) {
-  return Math.random() * (b - a) + a;
-}
-
-function randomI(a, b) {
-  return Math.floor(Math.random() * (b - a) + a);
-}
-
-function randomN(mu, std) {
-  return mu + gaussRandom() * std;
-}
-
-// Random numbers utils
-function gaussRandom() {
-  if (gaussRandom.returnV) {
-    gaussRandom.returnV = false;
-    return gaussRandom.vVal;
-  }
-  var u = 2 * Math.random() - 1;
-  var v = 2 * Math.random() - 1;
-  var r = u * u + v * v;
-  if (r == 0 || r > 1) {
-    return gaussRandom();
-  }
-  var c = Math.sqrt(-2 * Math.log(r) / r);
-  gaussRandom.vVal = v * c; // cache this
-  gaussRandom.returnV = true;
-  return u * c;
-}
-gaussRandom.returnV = false;
-gaussRandom.vVal = 0;
-
-},{}],38:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = randos;
-
-var _randomWeight = require('./random-weight');
-
-var _randomWeight2 = _interopRequireDefault(_randomWeight);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function randos(size) {
-  var array = new Array(size);
-  for (var i = 0; i < size; i++) {
-    array[i] = (0, _randomWeight2.default)();
-  }
-  return array;
-}
-
-},{"./random-weight":36}],39:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = range;
-/**
- *
- * @param start
- * @param end
- * @returns {Array}
- */
-function range(start, end) {
-  var result = [];
-  for (; start < end; start++) {
-    result.push(start);
-  }
-  return result;
-}
-
-},{}],40:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = toArray;
-/**
- *
- * @param values
- * @returns {*}
- */
-function toArray(values) {
-  values = values || [];
-  if (values.constructor === Array) {
-    return values;
-  } else {
-    return Object.keys(values).map(function (key) {
-      return values[key];
-    });
-  }
-}
-
-},{}],41:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -3595,11 +3422,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @param maxThreshold
  * @constructor
  */
-var Vocab = function () {
-  function Vocab(values) {
+var DataFormatter = function () {
+  function DataFormatter(values) {
     var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
-    _classCallCheck(this, Vocab);
+    _classCallCheck(this, DataFormatter);
 
     if (values === undefined) return;
 
@@ -3613,12 +3440,12 @@ var Vocab = function () {
     this.buildTables(maxThreshold);
   }
 
-  _createClass(Vocab, [{
+  _createClass(DataFormatter, [{
     key: 'buildCharactersFromIterable',
     value: function buildCharactersFromIterable(values) {
       var tempCharactersTable = {};
-      for (var vocabIndex = 0, vocabLength = values.length; vocabIndex < vocabLength; vocabIndex++) {
-        var characters = values[vocabIndex];
+      for (var dataFormatterIndex = 0, dataFormatterLength = values.length; dataFormatterIndex < dataFormatterLength; dataFormatterIndex++) {
+        var characters = values[dataFormatterIndex];
 
         if (characters.hasOwnProperty('length')) {
           for (var characterIndex = 0, charactersLength = characters.length; characterIndex < charactersLength; characterIndex++) {
@@ -3628,9 +3455,9 @@ var Vocab = function () {
             this.characters.push(character);
           }
         } else {
-          var _character = values[vocabIndex];
+          var _character = values[dataFormatterIndex];
           if (tempCharactersTable.hasOwnProperty(_character)) continue;
-          tempCharactersTable[vocabIndex] = true;
+          tempCharactersTable[dataFormatterIndex] = true;
           this.characters.push(_character);
         }
       }
@@ -3643,7 +3470,7 @@ var Vocab = function () {
       for (var characterIndex = 0; characterIndex < charactersLength; characterIndex++) {
         var character = this.characters[characterIndex];
         if (characterIndex >= maxThreshold) {
-          // add character to vocab
+          // add character to dataFormatter
           this.indexTable[character] = characterIndex;
           this.characterTable[characterIndex] = character;
         }
@@ -3733,8 +3560,8 @@ var Vocab = function () {
     }
   }, {
     key: 'toFunctionString',
-    value: function toFunctionString(vocabVariableName) {
-      return '\n' + this.toIndexes.toString().replace('this', vocabVariableName) + '\n' + this.toIndexesInputOutput.toString().replace('this', vocabVariableName) + '\n' + this.toCharacters.toString().replace('this', vocabVariableName) + '\n';
+    value: function toFunctionString(dataFormatterVariableName) {
+      return '\n' + this.toIndexes.toString().replace('this', dataFormatterVariableName) + '\n' + this.toIndexesInputOutput.toString().replace('this', dataFormatterVariableName) + '\n' + this.toCharacters.toString().replace('this', dataFormatterVariableName) + '\n';
     }
   }], [{
     key: 'fromAllPrintable',
@@ -3744,16 +3571,16 @@ var Vocab = function () {
       for (var i = 32; i <= 126; i++) {
         values.push(String.fromCharCode(i));
       }
-      return new Vocab(values, maxThreshold);
+      return new DataFormatter(values, maxThreshold);
     }
   }, {
     key: 'fromAllPrintableInputOutput',
     value: function fromAllPrintableInputOutput(maxThreshold) {
       var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['\n'];
 
-      var vocab = Vocab.fromAllPrintable(maxThreshold, values);
-      vocab.addInputOutput();
-      return vocab;
+      var dataFormatter = DataFormatter.fromAllPrintable(maxThreshold, values);
+      dataFormatter.addInputOutput();
+      return dataFormatter;
     }
   }, {
     key: 'fromStringInputOutput',
@@ -3761,18 +3588,18 @@ var Vocab = function () {
       var _String$prototype;
 
       var values = (_String$prototype = String.prototype).concat.apply(_String$prototype, _toConsumableArray(new Set(string)));
-      var vocab = new Vocab(values, maxThreshold);
-      vocab.addInputOutput();
-      return vocab;
+      var dataFormatter = new DataFormatter(values, maxThreshold);
+      dataFormatter.addInputOutput();
+      return dataFormatter;
     }
   }, {
     key: 'fromArrayInputOutput',
     value: function fromArrayInputOutput(array, maxThreshold) {
-      var vocab = new Vocab(array.filter(function (v, i, a) {
+      var dataFormatter = new DataFormatter(array.filter(function (v, i, a) {
         return a.indexOf(v) === i;
       }).sort(), maxThreshold);
-      vocab.addInputOutput();
-      return vocab;
+      dataFormatter.addInputOutput();
+      return dataFormatter;
     }
   }, {
     key: 'fromString',
@@ -3780,24 +3607,197 @@ var Vocab = function () {
       var _String$prototype2;
 
       var values = (_String$prototype2 = String.prototype).concat.apply(_String$prototype2, _toConsumableArray(new Set(string)));
-      return new Vocab(values, maxThreshold);
+      return new DataFormatter(values, maxThreshold);
     }
   }, {
     key: 'fromJSON',
     value: function fromJSON(json) {
-      var vocab = new Vocab();
-      vocab.indexTable = json.indexTable;
-      vocab.characterTable = json.characterTable;
-      vocab.values = json.values;
-      vocab.characters = json.characters;
-      return vocab;
+      var dataFormatter = new DataFormatter();
+      dataFormatter.indexTable = json.indexTable;
+      dataFormatter.characterTable = json.characterTable;
+      dataFormatter.values = json.values;
+      dataFormatter.characters = json.characters;
+      return dataFormatter;
     }
   }]);
 
-  return Vocab;
+  return DataFormatter;
 }();
 
-exports.default = Vocab;
+exports.default = DataFormatter;
+
+},{}],34:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = max;
+
+var _toArray = require('./to-array');
+
+var _toArray2 = _interopRequireDefault(_toArray);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ *
+ * @param values
+ * @returns {number}
+ */
+function max(values) {
+  return Math.max.apply(Math, (0, _toArray2.default)(values));
+}
+
+},{"./to-array":41}],35:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = mse;
+function mse(errors) {
+  // mean squared error
+  var sum = 0;
+  for (var i = 0; i < errors.length; i++) {
+    sum += Math.pow(errors[i], 2);
+  }
+  return sum / errors.length;
+}
+
+},{}],36:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = ones;
+function ones(size) {
+  if (typeof Float64Array !== 'undefined') return new Float64Array(size).fill(1);
+  var array = new Array(size);
+  for (var i = 0; i < size; i++) {
+    array[i] = i;
+  }
+  return array;
+}
+
+},{}],37:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = randomWeight;
+function randomWeight() {
+  return Math.random() * 0.4 - 0.2;
+}
+
+},{}],38:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.randomF = randomF;
+exports.randomI = randomI;
+exports.randomN = randomN;
+function randomF(a, b) {
+  return Math.random() * (b - a) + a;
+}
+
+function randomI(a, b) {
+  return Math.floor(Math.random() * (b - a) + a);
+}
+
+function randomN(mu, std) {
+  return mu + gaussRandom() * std;
+}
+
+// Random numbers utils
+function gaussRandom() {
+  if (gaussRandom.returnV) {
+    gaussRandom.returnV = false;
+    return gaussRandom.vVal;
+  }
+  var u = 2 * Math.random() - 1;
+  var v = 2 * Math.random() - 1;
+  var r = u * u + v * v;
+  if (r == 0 || r > 1) {
+    return gaussRandom();
+  }
+  var c = Math.sqrt(-2 * Math.log(r) / r);
+  gaussRandom.vVal = v * c; // cache this
+  gaussRandom.returnV = true;
+  return u * c;
+}
+gaussRandom.returnV = false;
+gaussRandom.vVal = 0;
+
+},{}],39:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = randos;
+
+var _randomWeight = require('./random-weight');
+
+var _randomWeight2 = _interopRequireDefault(_randomWeight);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function randos(size) {
+  var array = new Array(size);
+  for (var i = 0; i < size; i++) {
+    array[i] = (0, _randomWeight2.default)();
+  }
+  return array;
+}
+
+},{"./random-weight":37}],40:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = range;
+/**
+ *
+ * @param start
+ * @param end
+ * @returns {Array}
+ */
+function range(start, end) {
+  var result = [];
+  for (; start < end; start++) {
+    result.push(start);
+  }
+  return result;
+}
+
+},{}],41:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = toArray;
+/**
+ *
+ * @param values
+ * @returns {*}
+ */
+function toArray(values) {
+  values = values || [];
+  if (values.constructor === Array) {
+    return values;
+  } else {
+    return Object.keys(values).map(function (key) {
+      return values[key];
+    });
+  }
+}
 
 },{}],42:[function(require,module,exports){
 'use strict';
@@ -3833,7 +3833,7 @@ var utilities = {
   randos: require('./dist/utilities/randos').default,
   range: require('./dist/utilities/range').default,
   toArray: require('./dist/utilities/to-array').default,
-  Vocab: require('./dist/utilities/vocab').default,
+  DataFormatter: require('./dist/utilities/data-formatter').default,
   zeros: require('./dist/utilities/zeros').default
 };
 
@@ -3856,7 +3856,7 @@ if (typeof window !== 'undefined') {
 } else {
   module.exports = brain;
 }
-},{"./dist/cross-validate":1,"./dist/likely":2,"./dist/lookup":3,"./dist/neural-network":4,"./dist/recurrent/gru":5,"./dist/recurrent/lstm":6,"./dist/recurrent/rnn":31,"./dist/train-stream":32,"./dist/utilities/max":33,"./dist/utilities/mse":34,"./dist/utilities/ones":35,"./dist/utilities/random":37,"./dist/utilities/random-weight":36,"./dist/utilities/randos":38,"./dist/utilities/range":39,"./dist/utilities/to-array":40,"./dist/utilities/vocab":41,"./dist/utilities/zeros":42}],44:[function(require,module,exports){
+},{"./dist/cross-validate":1,"./dist/likely":2,"./dist/lookup":3,"./dist/neural-network":4,"./dist/recurrent/gru":5,"./dist/recurrent/lstm":6,"./dist/recurrent/rnn":31,"./dist/train-stream":32,"./dist/utilities/data-formatter":33,"./dist/utilities/max":34,"./dist/utilities/mse":35,"./dist/utilities/ones":36,"./dist/utilities/random":38,"./dist/utilities/random-weight":37,"./dist/utilities/randos":39,"./dist/utilities/range":40,"./dist/utilities/to-array":41,"./dist/utilities/zeros":42}],44:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength

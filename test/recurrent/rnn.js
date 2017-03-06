@@ -1,6 +1,6 @@
 import assert from 'assert';
 import RNN from '../../src/recurrent/rnn';
-import Vocab from '../../src/utilities/vocab';
+import DataFormatter from '../../src/utilities/data-formatter';
 import rnnCheck from '../utilities/rnn-check';
 
 function notZero(v) {
@@ -327,27 +327,27 @@ describe('rnn', () => {
 
     describe('.fromJSON', () => {
       it('can import model from json', () => {
-        let vocab = new Vocab('abcdef'.split(''));
+        let dataFormatter = new DataFormatter('abcdef'.split(''));
         let jsonString = JSON.stringify(new RNN({
           inputSize: 6, //<- length
-          inputRange: vocab.characters.length,
-          outputSize: vocab.characters.length //<- length
+          inputRange: dataFormatter.characters.length,
+          outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
         let clone = new RNN({ json: JSON.parse(jsonString) });
 
         assert.equal(jsonString, JSON.stringify(clone.toJSON()));
         assert.equal(clone.inputSize, 6);
-        assert.equal(clone.inputRange, vocab.characters.length);
-        assert.equal(clone.outputSize, vocab.characters.length);
+        assert.equal(clone.inputRange, dataFormatter.characters.length);
+        assert.equal(clone.outputSize, dataFormatter.characters.length);
       });
 
       it('can import model from json and train again', () => {
-        let vocab = new Vocab('abcdef'.split(''));
+        let dataFormatter = new DataFormatter('abcdef'.split(''));
         let jsonString = JSON.stringify(new RNN({
           inputSize: 6, //<- length
-          inputRange: vocab.characters.length,
-          outputSize: vocab.characters.length //<- length
+          inputRange: dataFormatter.characters.length,
+          outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
         let clone = new RNN({ json: JSON.parse(jsonString) });
@@ -355,8 +355,8 @@ describe('rnn', () => {
 
         assert.notEqual(jsonString, JSON.stringify(clone.toJSON()));
         assert.equal(clone.inputSize, 6);
-        assert.equal(clone.inputRange, vocab.characters.length);
-        assert.equal(clone.outputSize, vocab.characters.length);
+        assert.equal(clone.inputRange, dataFormatter.characters.length);
+        assert.equal(clone.outputSize, dataFormatter.characters.length);
       });
     });
   });
@@ -364,7 +364,7 @@ describe('rnn', () => {
   describe('rnn.trainPattern', () => {
     it('changes the neural net when ran', () => {
       let net = new RNN({
-        vocab: new Vocab([0, 1]),
+        dataFormatter: new DataFormatter([0, 1]),
         hiddenLayers: [2]
       });
       var netBeforeTraining = JSON.stringify(net.toJSON());
@@ -382,22 +382,22 @@ describe('rnn', () => {
 
   describe('rnn.toFunction', () => {
     it('can output same as run method', () => {
-      const vocab = new Vocab(['h', 'i', ' ', 'm', 'o', '!']);
+      const dataFormatter = new DataFormatter(['h', 'i', ' ', 'm', 'o', '!']);
       let net = new RNN({
         inputSize: 7,
-        inputRange: vocab.characters.length,
+        inputRange: dataFormatter.characters.length,
         outputSize: 7
       });
 
       for (let i = 0; i < 100; i++) {
-        net.trainPattern(vocab.toIndexes('hi mom!'));
+        net.trainPattern(dataFormatter.toIndexes('hi mom!'));
         if (i % 10) {
-          console.log(vocab.toCharacters(net.run()).join(''));
+          console.log(dataFormatter.toCharacters(net.run()).join(''));
         }
       }
 
-      let lastOutput = vocab.toCharacters(net.run()).join('');
-      assert.equal(vocab.toCharacters(net.toFunction()()).join(''), lastOutput);
+      let lastOutput = dataFormatter.toCharacters(net.run()).join('');
+      assert.equal(dataFormatter.toCharacters(net.toFunction()()).join(''), lastOutput);
     });
   });
 });
