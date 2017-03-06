@@ -45,13 +45,13 @@ describe('matrix', () => {
           [4, 4]
         ]);
         multiplyElementB(result, m1, m2);
-        assert.equal(m1.recurrence.length, 4);
-        m1.recurrence.forEach((value, i) => {
+        assert.equal(m1.deltas.length, 4);
+        m1.deltas.forEach((value, i) => {
           assert.equal(value, 8);
         });
 
-        assert.equal(m2.recurrence.length, 4);
-        m2.recurrence.forEach((value, i) => {
+        assert.equal(m2.deltas.length, 4);
+        m2.deltas.forEach((value, i) => {
           assert.equal(value, 8);
         });
       });

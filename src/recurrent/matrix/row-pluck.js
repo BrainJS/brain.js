@@ -8,6 +8,6 @@ export default function rowPluck(product, left, rowPluckIndex) {
   const rowBase = columns * rowPluckIndex;
   for (let column = 0; column < columns; column++) {
     product.weights[column] = left.weights[rowBase + column];
-    product.recurrence[column] = 0;
+    product.deltas[column] = 0;
   }
 }

@@ -30,8 +30,8 @@ function multiply(product, left, right) {
         var leftIndex = leftRowBase + leftColumn;
         var rightIndex = rightColumnBase + rightColumn;
         dot += left.weights[leftIndex] * right.weights[rightIndex];
-        left.recurrence[leftIndex] = 0;
-        right.recurrence[rightIndex] = 0;
+        left.deltas[leftIndex] = 0;
+        right.deltas[rightIndex] = 0;
       }
       product.weights[rightRowBase + rightColumn] = dot;
     }

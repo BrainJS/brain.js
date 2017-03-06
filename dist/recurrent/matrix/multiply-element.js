@@ -14,7 +14,7 @@ function multiplyElement(product, left, right) {
 
   for (var i = 0; i < weights.length; i++) {
     product.weights[i] = left.weights[i] * right.weights[i];
-    product.recurrence[i] = 0;
+    product.deltas[i] = 0;
   }
 }
 //# sourceMappingURL=multiply-element.js.map

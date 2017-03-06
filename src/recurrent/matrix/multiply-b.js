@@ -1,5 +1,5 @@
 /**
- * multiplies {from} recurrence to {left} and {right}
+ * multiplies {from} deltas to {left} and {right}
  * @param {Matrix} product
  * @param {Matrix} left
  * @param {Matrix} right
@@ -21,9 +21,9 @@ export default function multiplyB(product, left, right) {
         const rightColumnBase = rightColumns * leftColumn;
         const leftRow = leftRowBase + leftColumn;
         const rightRow = rightColumnBase + rightColumn;
-        const backPropagateValue = product.recurrence[rightRowBase + rightColumn];
-        left.recurrence[leftRow] += right.weights[rightRow] * backPropagateValue;
-        right.recurrence[rightRow] += left.weights[leftRow] * backPropagateValue;
+        const backPropagateValue = product.deltas[rightRowBase + rightColumn];
+        left.deltas[leftRow] += right.weights[rightRow] * backPropagateValue;
+        right.deltas[rightRow] += left.weights[leftRow] * backPropagateValue;
       }
     }
   }

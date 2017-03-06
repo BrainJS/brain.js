@@ -19,21 +19,21 @@ export function allWeights(model, fn) {
   });
 }
 
-export function allRecurrences(model, fn) {
-  fn(model.input.recurrence);
+export function allDeltas(model, fn) {
+  fn(model.input.deltas);
   model.hiddenLayers.forEach((layer) => {
     for (let p in layer) {
       if (!layer.hasOwnProperty(p)) continue;
-      assert(fn(layer[p].recurrence));
+      assert(fn(layer[p].deltas));
     }
   });
-  fn(model.output.recurrence);
+  fn(model.output.deltas);
 
   model.equations.forEach((equation) => {
     equation.states.forEach((state) => {
-      if (state.left && state.left.recurrence) fn(state.left.recurrence);
-      if (state.right && state.right.recurrence) fn(state.right.recurrence);
-      if (state.product && state.product.recurrence) fn(state.product.recurrence);
+      if (state.left && state.left.deltas) fn(state.left.deltas);
+      if (state.right && state.right.deltas) fn(state.right.deltas);
+      if (state.product && state.product.deltas) fn(state.product.deltas);
     });
   });
 }
@@ -56,20 +56,20 @@ export function allMatrices(model, fn) {
     });
   });
 
-  fn(model.input.recurrence);
+  fn(model.input.deltas);
   model.hiddenLayers.forEach((layer) => {
     for (let p in layer) {
       if (!layer.hasOwnProperty(p)) continue;
-      fn(layer[p].recurrence);
+      fn(layer[p].deltas);
     }
   });
-  fn(model.output.recurrence);
+  fn(model.output.deltas);
 
   model.equations.forEach((equation, equationIndex) => {
     equation.states.forEach((state, stateIndex) => {
-      if (state.left && state.left.recurrence) fn(state.left.recurrence);
-      if (state.right && state.right.recurrence) fn(state.right.recurrence);
-      if (state.product && state.product.recurrence) fn(state.product.recurrence);
+      if (state.left && state.left.deltas) fn(state.left.deltas);
+      if (state.right && state.right.deltas) fn(state.right.deltas);
+      if (state.product && state.product.deltas) fn(state.product.deltas);
     });
   });
 }
@@ -77,5 +77,5 @@ export function allMatrices(model, fn) {
 export default {
   allMatrices,
   allWeights,
-  allRecurrences
+  allDeltas
 };

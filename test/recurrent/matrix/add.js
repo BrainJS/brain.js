@@ -36,15 +36,15 @@ describe('matrix', () => {
           [4, 6]
         ]);
         addB(result, m1, m2);
-        var recurrence = [0, 2, 4, 6];
+        var deltas = [0, 2, 4, 6];
 
-        assert.equal(m1.recurrence.length, 4);
-        m1.recurrence.forEach((value, i) => {
-          assert.equal(value, recurrence[i]);
+        assert.equal(m1.deltas.length, 4);
+        m1.deltas.forEach((value, i) => {
+          assert.equal(value, deltas[i]);
         });
-        assert.equal(m2.recurrence.length, 4);
-        m2.recurrence.forEach((value, i) => {
-          assert.equal(value, recurrence[i]);
+        assert.equal(m2.deltas.length, 4);
+        m2.deltas.forEach((value, i) => {
+          assert.equal(value, deltas[i]);
         });
       });
     });

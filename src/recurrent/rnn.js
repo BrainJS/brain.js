@@ -228,8 +228,8 @@ export default class RNN {
       log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
       cost += -Math.log(probabilities.weights[target]);
       // write gradients into log probabilities
-      logProbabilities.recurrence = probabilities.weights.slice(0);
-      logProbabilities.recurrence[target] -= 1;
+      logProbabilities.deltas = probabilities.weights.slice(0);
+      logProbabilities.deltas[target] -= 1;
     }
 
     this.totalCost = cost;
@@ -266,13 +266,13 @@ export default class RNN {
     let allMatrices = model.allMatrices;
     for (let matrixIndex = 0; matrixIndex < allMatrices.length; matrixIndex++) {
       const matrix = allMatrices[matrixIndex];
-      const { weights, recurrence }  = matrix;
+      const { weights, deltas }  = matrix;
       if (!(matrixIndex in this.stepCache)) {
         this.stepCache[matrixIndex] = zeros(matrix.rows * matrix.columns);
       }
       const cache = this.stepCache[matrixIndex];
       for (let i = 0; i < weights.length; i++) {
-        let r = recurrence[i];
+        let r = deltas[i];
         let w = weights[i];
         // rmsprop adaptive learning rate
         cache[i] = cache[i] * this.decayRate + (1 - this.decayRate) * r * r;
@@ -581,11 +581,11 @@ export default class RNN {
       fnString.pop();
       // body
       return fnString.join('}').split('\n').join('\n        ')
-        .replace('product.recurrence[i] = 0;', '')
-        .replace('product.recurrence[column] = 0;', '')
-        .replace('left.recurrence[leftIndex] = 0;', '')
-        .replace('right.recurrence[rightIndex] = 0;', '')
-        .replace('product.recurrence = left.recurrence.slice(0);', '');
+        .replace('product.deltas[i] = 0;', '')
+        .replace('product.deltas[column] = 0;', '')
+        .replace('left.deltas[leftIndex] = 0;', '')
+        .replace('right.deltas[rightIndex] = 0;', '')
+        .replace('product.deltas = left.deltas.slice(0);', '');
     }
 
     function fileName(fnName) {
@@ -728,7 +728,7 @@ RNN.defaults = {
     let values = [];
     const result = [];
     if (typeof data[0] === 'string' || Array.isArray(data[0])) {
-      if (!this.hasOwnProperty('vocab')) {
+      if (this.vocab === null) {
         for (let i = 0; i < data.length; i++) {
           values.push(data[i]);
         }
@@ -738,7 +738,7 @@ RNN.defaults = {
         result.push(this.formatDataIn(data[i]));
       }
     } else {
-      if (!this.hasOwnProperty('vocab')) {
+      if (this.vocab === null) {
         for (let i = 0; i < data.length; i++) {
           values.push(data[i].input);
           values.push(data[i].output);

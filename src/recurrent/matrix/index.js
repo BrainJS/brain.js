@@ -14,7 +14,7 @@ export default class Matrix {
     this.rows = rows;
     this.columns = columns;
     this.weights = zeros(rows * columns);
-    this.recurrence = zeros(rows * columns);
+    this.deltas = zeros(rows * columns);
   }
 
   /**
@@ -52,11 +52,11 @@ export default class Matrix {
    * @param v
    * @returns {Matrix}
    */
-  setRecurrence(row, col, v) {
+  setDeltas(row, col, v) {
     // slow but careful accessor function
     let ix = (this.columns * row) + col;
     if (ix < 0 && ix >= this.weights.length) throw new Error('set accessor is skewed');
-    this.recurrence[ix] = v;
+    this.deltas[ix] = v;
   }
 
   /**
@@ -82,22 +82,22 @@ export default class Matrix {
   /**
    *
    * @param weightRows
-   * @param [recurrenceRows]
+   * @param [deltasRows]
    * @returns {Matrix}
    */
-  static fromArray(weightRows, recurrenceRows) {
+  static fromArray(weightRows, deltasRows) {
     const rows = weightRows.length;
     const columns = weightRows[0].length;
     const m = new Matrix(rows, columns);
 
-    recurrenceRows = recurrenceRows || weightRows;
+    deltasRows = deltasRows || weightRows;
 
     for (let rowIndex = 0; rowIndex < rows; rowIndex++) {
       const weightValues = weightRows[rowIndex];
-      const recurrentValues = recurrenceRows[rowIndex];
+      const deltasValues = deltasRows[rowIndex];
       for (let columnIndex = 0; columnIndex < columns; columnIndex++) {
         m.setWeight(rowIndex, columnIndex, weightValues[columnIndex]);
-        m.setRecurrence(rowIndex, columnIndex, recurrentValues[columnIndex]);
+        m.setDeltas(rowIndex, columnIndex, deltasValues[columnIndex]);
       }
     }
 

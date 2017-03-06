@@ -10,10 +10,10 @@ exports.default = tanhB;
  * @param {Matrix} left
  */
 function tanhB(product, left) {
-  for (var i = 0; i < product.recurrence.length; i++) {
+  for (var i = 0; i < product.deltas.length; i++) {
     // grad for z = tanh(x) is (1 - z^2)
     var mwi = product.weights[i];
-    left.recurrence[i] = (1 - mwi * mwi) * product.recurrence[i];
+    left.deltas[i] = (1 - mwi * mwi) * product.deltas[i];
   }
 }
 //# sourceMappingURL=tanh-b.js.map

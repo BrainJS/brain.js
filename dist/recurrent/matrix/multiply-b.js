@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = multiplyB;
 /**
- * multiplies {from} recurrence to {left} and {right}
+ * multiplies {from} deltas to {left} and {right}
  * @param {Matrix} product
  * @param {Matrix} left
  * @param {Matrix} right
@@ -27,9 +27,9 @@ function multiplyB(product, left, right) {
         var rightColumnBase = rightColumns * leftColumn;
         var _leftRow = leftRowBase + leftColumn;
         var rightRow = rightColumnBase + rightColumn;
-        var backPropagateValue = product.recurrence[rightRowBase + rightColumn];
-        left.recurrence[_leftRow] += right.weights[rightRow] * backPropagateValue;
-        right.recurrence[rightRow] += left.weights[_leftRow] * backPropagateValue;
+        var backPropagateValue = product.deltas[rightRowBase + rightColumn];
+        left.deltas[_leftRow] += right.weights[rightRow] * backPropagateValue;
+        right.deltas[rightRow] += left.weights[_leftRow] * backPropagateValue;
       }
     }
   }

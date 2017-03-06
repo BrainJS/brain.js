@@ -12,6 +12,6 @@ export default class OnesMatrix extends Matrix {
     this.rows = rows;
     this.columns = columns;
     this.weights = ones(rows * columns);
-    this.recurrence = ones(rows * columns);
+    this.deltas = ones(rows * columns);
   }
 }

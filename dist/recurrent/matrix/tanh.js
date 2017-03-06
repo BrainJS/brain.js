@@ -12,7 +12,7 @@ function tanh(product, left) {
   // tanh nonlinearity
   for (var i = 0; i < left.weights.length; i++) {
     product.weights[i] = Math.tanh(left.weights[i]);
-    product.recurrence[i] = 0;
+    product.deltas[i] = 0;
   }
 }
 //# sourceMappingURL=tanh.js.map

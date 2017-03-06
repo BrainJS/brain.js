@@ -10,9 +10,9 @@ exports.default = sigmoidB;
  * @param {Matrix} left
  */
 function sigmoidB(product, left) {
-  for (var i = 0; i < product.recurrence.length; i++) {
+  for (var i = 0; i < product.deltas.length; i++) {
     var mwi = product.weights[i];
-    left.recurrence[i] = mwi * (1 - mwi) * product.recurrence[i];
+    left.deltas[i] = mwi * (1 - mwi) * product.deltas[i];
   }
 }
 //# sourceMappingURL=sigmoid-b.js.map

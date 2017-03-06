@@ -14,7 +14,7 @@ function rowPluck(product, left, rowPluckIndex) {
   var rowBase = columns * rowPluckIndex;
   for (var column = 0; column < columns; column++) {
     product.weights[column] = left.weights[rowBase + column];
-    product.recurrence[column] = 0;
+    product.deltas[column] = 0;
   }
 }
 //# sourceMappingURL=row-pluck.js.map

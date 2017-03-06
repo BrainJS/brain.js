@@ -13,7 +13,7 @@ exports.default = add;
 function add(product, left, right) {
   for (var i = 0; i < left.weights.length; i++) {
     product.weights[i] = left.weights[i] + right.weights[i];
-    product.recurrence[i] = 0;
+    product.deltas[i] = 0;
   }
 }
 //# sourceMappingURL=add.js.map

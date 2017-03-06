@@ -12,7 +12,7 @@ function sigmoid(product, left) {
   // sigmoid nonlinearity
   for (var i = 0; i < left.weights.length; i++) {
     product.weights[i] = 1 / (1 + Math.exp(-left.weights[i]));
-    product.recurrence[i] = 0;
+    product.deltas[i] = 0;
   }
 }
 

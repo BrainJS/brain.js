@@ -279,8 +279,8 @@ var RNN = function () {
         log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
         cost += -Math.log(probabilities.weights[target]);
         // write gradients into log probabilities
-        logProbabilities.recurrence = probabilities.weights.slice(0);
-        logProbabilities.recurrence[target] -= 1;
+        logProbabilities.deltas = probabilities.weights.slice(0);
+        logProbabilities.deltas[target] -= 1;
       }
 
       this.totalCost = cost;
@@ -326,14 +326,14 @@ var RNN = function () {
       for (var matrixIndex = 0; matrixIndex < allMatrices.length; matrixIndex++) {
         var matrix = allMatrices[matrixIndex];
         var weights = matrix.weights,
-            recurrence = matrix.recurrence;
+            deltas = matrix.deltas;
 
         if (!(matrixIndex in this.stepCache)) {
           this.stepCache[matrixIndex] = (0, _zeros2.default)(matrix.rows * matrix.columns);
         }
         var cache = this.stepCache[matrixIndex];
         for (var i = 0; i < weights.length; i++) {
-          var r = recurrence[i];
+          var r = deltas[i];
           var w = weights[i];
           // rmsprop adaptive learning rate
           cache[i] = cache[i] * this.decayRate + (1 - this.decayRate) * r * r;
@@ -658,7 +658,7 @@ var RNN = function () {
         fnString = fnString.split('}');
         fnString.pop();
         // body
-        return fnString.join('}').split('\n').join('\n        ').replace('product.recurrence[i] = 0;', '').replace('product.recurrence[column] = 0;', '').replace('left.recurrence[leftIndex] = 0;', '').replace('right.recurrence[rightIndex] = 0;', '').replace('product.recurrence = left.recurrence.slice(0);', '');
+        return fnString.join('}').split('\n').join('\n        ').replace('product.deltas[i] = 0;', '').replace('product.deltas[column] = 0;', '').replace('left.deltas[leftIndex] = 0;', '').replace('right.deltas[rightIndex] = 0;', '').replace('product.deltas = left.deltas.slice(0);', '');
       }
 
       function fileName(fnName) {
@@ -714,7 +714,7 @@ RNN.defaults = {
     var values = [];
     var result = [];
     if (typeof data[0] === 'string' || Array.isArray(data[0])) {
-      if (!this.hasOwnProperty('vocab')) {
+      if (this.vocab === null) {
         for (var i = 0; i < data.length; i++) {
           values.push(data[i]);
         }
@@ -724,7 +724,7 @@ RNN.defaults = {
         result.push(this.formatDataIn(data[_i]));
       }
     } else {
-      if (!this.hasOwnProperty('vocab')) {
+      if (this.vocab === null) {
         for (var _i2 = 0; _i2 < data.length; _i2++) {
           values.push(data[_i2].input);
           values.push(data[_i2].output);
