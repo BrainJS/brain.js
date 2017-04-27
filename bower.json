@@ -26,7 +26,7 @@
     "lstm",
     "gru"
   ],
-  "main": "./browser.min.js",
+  "main": "./browser.js",
   "ignore": [
     "node_modules",
     "test"
