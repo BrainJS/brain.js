@@ -1,7 +1,7 @@
 {
   "name": "brain.js",
   "description": "Neural network library",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": {
     "type": "git",
@@ -29,7 +29,9 @@
     "licensify": "^3.1.2",
     "mocha": "^3.0.2",
     "sinon": "^1.17.6",
-    "uglifyify": "^3.0.2"
+    "uglifyify": "^3.0.2",
+    "babel-plugin-transform-object-rest-spread": "^6.8.0",
+    "babel-polyfill": "^6.13.0"
   },
   "keywords": [
     "ai",
@@ -59,9 +61,5 @@
   "directories": {
     "test": "test"
   },
-  "license": "MIT",
-  "dependencies": {
-    "babel-plugin-transform-object-rest-spread": "^6.8.0",
-    "babel-polyfill": "^6.13.0"
-  }
+  "license": "MIT"
 }
