@@ -1,7 +1,7 @@
 ![](logo.png)
 # brain
 
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/harthur/brain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/harthur/brain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 `brain.js` is a library of JavaScript [neural networks](http://en.wikipedia.org/wiki/Artificial_neural_network).
 
@@ -49,6 +49,8 @@ Alternatively, you can install with [bower](https://bower.io/)):
 ```
 bower install brain.js
 ```
+At present NPM brain.js version is 0.7.0, featuring only Feed Forward NN. All other models are beta and soon be jazzed up and battle hardened.
+You can still download the latest. They are cool!
 
 ## Using in the browser
 Download the latest [brain.js for browser](https://raw.githubusercontent.com/harthur-org/brain.js/master/browser.js). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
