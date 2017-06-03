@@ -9,12 +9,10 @@ export default function likely(input, net) {
   let maxProp = null;
   let maxValue = -1;
   for (let prop in output) {
-    if (prop in output) {
-      let value = output[prop];
-      if (value > maxValue) {
-        maxProp = prop;
-        maxValue = value
-      }
+    let value = output[prop];
+    if (value > maxValue) {
+      maxProp = prop;
+      maxValue = value
     }
   }
   return maxProp;
