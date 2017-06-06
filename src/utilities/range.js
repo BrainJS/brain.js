@@ -5,9 +5,8 @@
  * @returns {Array}
  */
 export default function range(start, end) {
-  let result = [];
-  for (; start < end; start++) {
-    result.push(start);
-  }
+  let result = [...Array(end).keys()].filter((element) => {
+    return element >= start
+  });
   return result;
 }
