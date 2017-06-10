@@ -162,16 +162,11 @@ export default class TrainStream extends Writable {
 
 /**
  *
- * http://stackoverflow.com/a/21445415/1324039
+ * https://gist.github.com/telekosmos/3b62a31a5c43f40849bb
  * @param arr
  * @returns {Array}
  */
 function uniques(arr) {
-  let a = [];
-  for (let i=0, l=arr.length; i<l; i++) {
-    if (a.indexOf(arr[i]) === -1 && arr[i] !== '') {
-      a.push(arr[i]);
-    }
-  }
-  return a;
+  // Sets cannot contain duplicate elements, which is what we want
+  return [...new Set(arr)];
 }
