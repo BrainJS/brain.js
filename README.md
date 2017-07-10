@@ -8,7 +8,7 @@
 
 :bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
 
-Here's an example of using it to approximate the XOR function:
+Here's an example showcasing how to approximate the XOR function using `brain.js`:
 
 ```javascript
 //create a simple feed forward neural network with backpropagation
@@ -37,27 +37,36 @@ output = net.run([1, 0]);  // [1]
 output = net.run([1, 1]);  // [0]
 ```
 
-There's no reason to use a neural network to figure out XOR however (-: so here's a more involved, realistic example:
+However, There's no reason to use a neural network to figure out XOR. (-: So, here's a more involved, realistic example:
 [Demo: training a neural network to recognize color contrast](http://harthur-org.github.io/brain.js/)
 
-## Using in node
-If you have [node](http://nodejs.org/) you can install with [npm](http://npmjs.org):
+# Usage
+
+## node
+If you have [node](http://nodejs.org/), you can install `brain.js` with [npm](http://npmjs.org):
 
 ```
 npm install brain.js
 ```
-Alternatively, you can install with [bower](https://bower.io/)):
+
+Or if you prefer yarn:
+```
+yarn add brain.js
+```
+
+Alternatively, you can install `brain.js` with [bower](https://bower.io/)):
 ```
 bower install brain.js
 ```
+
 At present NPM brain.js version is approximately 1.0.0, featuring only Feed Forward NN. All other models are beta and soon be jazzed up and battle hardened.
 You can still download the latest. They are cool!
 
-## Using in the browser
-Download the latest [brain.js for browser](https://raw.githubusercontent.com/harthur-org/brain.js/master/browser.js). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network in to your website.
+## browser
+Download the latest [brain.js for browser](https://raw.githubusercontent.com/harthur-org/brain.js/master/browser.js). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network into your website.
 
 ## Training
-Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. The more training patterns, the longer it will probably take to train, but the better the network will be at classifiying new patterns.
+Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. The more training patterns, the longer it will probably take to train, but the better the network will be at classifying new patterns.
 
 #### Data format
 Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color contrast demo](http://harthur-org.github.io/brain.js/) it looks something like this:
@@ -71,7 +80,7 @@ net.train([{input: { r: 0.03, g: 0.7, b: 0.5 }, output: { black: 1 }},
 
 var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.99, black: 0.002 }
 ```
-Another variation of the example above. Note that input objects do not need to be similar.
+Here's another variation of the above example. (_Note_ that input objects do not need to be similar.)
 ```javascript
 net.train([{input: { r: 0.03, g: 0.7 }, output: { black: 1 }},
            {input: { r: 0.16, b: 0.2 }, output: { white: 1 }},
@@ -98,7 +107,7 @@ The network will train until the training error has gone below the threshold (de
 
 By default training won't let you know how its doing until the end, but set `log` to `true` to get periodic updates on the current training error of the network. The training error should decrease every time. The updates will be printed to console. If you set `log` to a function, this function will be called with the updates instead of printing to the console.
 
-The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data. The default learning rate is `0.3`.
+The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data.(_Overfitting_) The default learning rate is `0.3`.
 
 #### Methods
 ##### `train`
