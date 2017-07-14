@@ -2,6 +2,7 @@ var crossValidate = require('./dist/cross-validate').default;
 var likely = require('./dist/likely').default;
 var lookup = require('./dist/lookup').default;
 var NeuralNetwork = require('./dist/neural-network').default;
+var NeuralNetworkGPU = require('./dist/neural-network-gpu').default;
 var TrainStream = require('./dist/train-stream').default;
 var RNN = require('./dist/recurrent/rnn').default;
 var LSTM = require('./dist/recurrent/lstm').default;
@@ -24,6 +25,7 @@ var brain = {
   likely: likely,
   lookup: lookup,
   NeuralNetwork: NeuralNetwork,
+  NeuralNetworkGPU: NeuralNetworkGPU,
   TrainStream: TrainStream,
   recurrent: {
     RNN: RNN,
