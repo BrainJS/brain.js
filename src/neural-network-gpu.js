@@ -6,7 +6,6 @@ import randos from './utilities/randos';
 import range from './utilities/range';
 import toArray from './utilities/to-array';
 import zeros from './utilities/zeros';
-import ones from './utilities/ones';
 import GPU from 'gpu.js';
 
 /**
@@ -129,10 +128,10 @@ export default class NeuralNetworkGPU {
 
     let error = 1;
     let i;
-    for (i = 0; i < 5 && error > errorThresh; i++) {
+    for (i = 0; i < 1 && error > errorThresh; i++) {
       this.count++;
       let sum = 0;
-      for (let j = 0; j < data.length; j++) {
+      for (let j = 0; j < data.length - 2; j++) {
         let err = this.trainPattern(data[j].input, data[j].output, learningRate);
         sum += err;
       }
@@ -161,21 +160,22 @@ export default class NeuralNetworkGPU {
    */
   trainPattern(input, target, learningRate) {
     learningRate = learningRate || this.learningRate;
-    // // forward propagate
+    // forward propagate
     this.runInput(input);
 
-    // // backward propagate
+    // backward propagate
     this.calculateDeltas(target);
     this.getChanges(learningRate);
     this.changeBiases(learningRate);
-    if(this.count % 1 == 0){
+    // if(this.count % 1 == 0){
         for(let i = 0; i < this.errors.length; i++){
-          this.errors[i] = this.errors[i].toArray(this.gpu);
+          this.errors[i] = this.errors[i].toArray ? this.errors[i].toArray(this.gpu) : this.errors[i];
         }
-        let error = this.error =  mse(this.errors[this.outputLayer]);
+        let error = this.error = mse(this.errors[this.outputLayer]);
         return error;
-  }
-  return this.error;
+    // }else{/
+      // return this.error;
+    // }
   }
 
   // weights: [Layer1 - undefined, Layer2 - [[0,0], [0,0], [0,0]], Layer3 - [[0,0,0]]];
@@ -205,7 +205,7 @@ export default class NeuralNetworkGPU {
         }
       })
       .setDimensions([this.sizes[layer]])
-      .setOutputToTexture(true);
+      .setOutputToTexture(false);
       this.forwardPropagate[layer] = kernel;
     }
   }
@@ -247,7 +247,7 @@ export default class NeuralNetworkGPU {
       return error;
     }
 
-    for(var layer = this.outputLayer; layer >= 0; layer--){
+    for(var layer = this.outputLayer; layer > 0; layer--){
       if(layer == this.outputLayer){
         const kernel = this.gpu.createKernelMap({
           error: calcError,
@@ -255,30 +255,34 @@ export default class NeuralNetworkGPU {
         }, function(outputs, target){
           var output = outputs[this.thread.x];
           return calcDeltas(calcError(outputs, target), output);
-        }).setDimensions([this.weights[layer].length]);
+      })
+       .setDimensions([this.sizes[layer]]) 
+       .setOutputToTexture(false);
+        
         this.backwardPropagate[layer] = kernel;
 
       }else{
         const kernel = this.gpu.createKernelMap({
           error: calcErrorOutput,
-          deltas: calcDeltas
+          deltas: GPU.alias('delt',calcDeltas),
         }, function(nextWeights, outputs, nextDeltas){
           var output = outputs[this.thread.x];
-          return calcDeltas(calcErrorOutput(nextWeights, nextDeltas), output);
+          return delt(calcErrorOutput(nextWeights, nextDeltas), output);
         }, {
           constants: {
             size: this.deltas[layer + 1].length
           }
-        }).setDimensions([this.sizes[layer]])
-          .setOutputToTexture(true);
+        })
+        .setDimensions([this.sizes[layer]])
+        .setOutputToTexture(false);
         
         this.backwardPropagate[layer] = kernel;
       }
     }
   }
 
-  calculateDeltas(target){
-    for (var layer = this.outputLayer; layer >= 0; layer--) {
+  calculateDeltas(target,learningRate){
+    for (var layer = this.outputLayer; layer > 0; layer--) {
       let output;
       if(layer == this.outputLayer){
         output = this.backwardPropagate[layer](
@@ -288,17 +292,26 @@ export default class NeuralNetworkGPU {
         output = this.backwardPropagate[layer](
           this.weights[layer + 1],
           this.outputs[layer],
-          this.deltas[layer + 1]);
-      }
-      this.deltas[layer] = output.deltas;
-      this.errors[layer] = output.error;
+          this.deltas[layer + 1],
+        )}
+
+      this.errors[layer] = output.error.toArray ? output.error.toArray(this.gpu) : output.error;
+      console.log(this.errors[layer], 'errors');
+      this.deltas[layer] = output.result; 
+      console.log(this.deltas[layer], 'deltas');
     }
   }
 
   buildGetChanges(){
-    function calcChanges(previousChange, deltas, previousOutputs, learningRate, momentum){
-      return (learningRate * deltas[this.thread.y] * previousOutputs[this.thread.x])
-                   + (momentum * previousChange[this.thread.y][this.thread.x]);
+    function calcChanges(previousChange, deltas, previousOutputs, learningRate, momentum, x, y) {
+      var sum = (learningRate * deltas * previousOutputs[x]);
+      // sum += (momentum * previousChange[y][x]);
+      
+      for (var i = 0; i < size; i++) {
+        sum += (momentum * previousChange[y][i]);
+      }
+      
+      return sum;
     }
 
     function addWeights(change, weights, x, y){
@@ -308,11 +321,25 @@ export default class NeuralNetworkGPU {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
      const kernel = this.gpu.createKernelMap({addWeights, calcChanges},
         function(previousOutputs, deltas, weights, changes, learningRate, momentum){
-          var change = calcChanges(changes, deltas, previousOutputs, learningRate, momentum);
-          var weights = addWeights(change, weights, this.thread.x, this.thread.y);
-          return change;
-        }).setDimensions([this.sizes[layer -1], this.sizes[layer]])
-      .setOutputToTexture(true);
+          var delta = deltas[this.thread.y];
+          var change = calcChanges(
+            changes, 
+            delta, 
+            previousOutputs, 
+            learningRate, 
+            momentum, 
+            this.thread.x, 
+            this.thread.y);
+
+          return addWeights(change, weights, this.thread.x, this.thread.y);
+        },{
+          constants:{
+            size: this.outputs[layer - 1].length
+          }
+        })
+          .setDimensions([this.sizes[layer -1], this.sizes[layer]])
+          .setOutputToTexture(false)
+          // .setDebug(true);
         
       this.changesPropagate[layer] = kernel;
     }    
@@ -328,34 +355,42 @@ export default class NeuralNetworkGPU {
         learningRate,
         this.momentum
       );
-      this.changes[layer] = output.calcChanges;
-      this.weights[layer] = output.addWeights;
+
+      this.changes[layer] = output.calcChanges.toArray ? output.calcChanges.toArray(this.gpu) : output.calcChanges; 
+      console.log(this.changes[layer][0], 'changes')
+      this.weights[layer] = output.result;
+      console.log(this.weights[layer][0], 'weights')
     }
   }
 
-  buildChangeBiases(){
-    for(let layer = 1; layer <= this.outputLayer; layer++){
-      const kernel = this.gpu.createKernelMap(function(biases, deltas, learningRate){
-        var delta = deltas[this.thread.x];
-        return biases[this.thread.x] + (delta * learningRate);
-      }).setDimensions([this.sizes[layer]])
-      .setOutputToTexture(true);
-      
+  buildChangeBiases() {
+    function addBiases(biases, deltas, learningRate, x){
+      return biases[x] + (deltas[x] * learningRate);
+    }
+    for (let layer = 1; layer <= this.outputLayer; layer++) {
+    
+      const kernel = this.gpu.createKernelMap({
+        addBiases
+      },function (biases, deltas, learningRate) {
+        return addBiases(biases, deltas, learningRate, this.thread.x);
+      })
+        .setDimensions([this.sizes[layer]])
+        .setOutputToTexture(false);
+
       this.biasesPropagate[layer] = kernel;
     }
   }
 
-  changeBiases(learningRate){
-    for(let layer = 1; layer <= this.outputLayer; layer++){
+  changeBiases(learningRate) {
+    for (let layer = 1; layer <= this.outputLayer; layer++) {
       let output = this.biasesPropagate[layer](
         this.biases[layer],
         this.deltas[layer],
         learningRate
       );
-      this.biases[layer] = output;
+      this.biases[layer] = output.result;
     }
   }
-
 
   /**
    *
