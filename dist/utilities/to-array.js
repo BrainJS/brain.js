@@ -11,7 +11,7 @@ exports.default = toArray;
  */
 function toArray(values) {
   values = values || [];
-  if (values.constructor === Array) {
+  if (Array.isArray(values)) {
     return values;
   } else {
     return Object.keys(values).map(function (key) {
