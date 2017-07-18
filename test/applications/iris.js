@@ -24,7 +24,9 @@ function mapStringClassesToNumber() {
     names = [...names];
 
     trainingSet = trainingSet.map(row=>{
-        row.output[0] = names.indexOf(row.output[0]);
+        let index = names.indexOf(row.output[0]);
+        row.output = [0,0,0];
+        row.output[index] = 1;
         return row;
     });
 }
@@ -32,8 +34,9 @@ function mapStringClassesToNumber() {
 dressData();
 mapStringClassesToNumber();
 
-const net = new NeuralNetwork();
+console.log(trainingSet);
+// const net = new NeuralNetwork();
 
-net.train(trainingSet, {
-    log: true,
-});
+// net.train(trainingSet, {
+    // log: true,
+// });
