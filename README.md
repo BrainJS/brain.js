@@ -1,4 +1,4 @@
-![](logo.png)
+<img src="logo.svg" alt="Logo" style="width: 200px;"/>
 
 # brain
 
