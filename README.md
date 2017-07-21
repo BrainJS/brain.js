@@ -1,4 +1,4 @@
-<img src="logo.svg" alt="Logo" style="width: 200px;"/>
+<img src="https://cdn.rawgit.com/harthur-org/brain.js/ff595242/logo.svg" alt="Logo" width=200px/>
 
 # brain
 
