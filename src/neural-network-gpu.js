@@ -246,15 +246,17 @@ export default class NeuralNetworkGPU {
       return error;
     }
 
+    function createKernelCallback(outputs, target){
+          var output = outputs[this.thread.x];
+          return calcDeltas(calcError(output, target), output);
+    }
+
     for(var layer = this.outputLayer; layer > 0; layer--){
       if(layer == this.outputLayer){
         const kernel = this.gpu.createKernelMap({
           error: calcError,
           deltas: calcDeltas
-        }, function(outputs, target){
-          var output = outputs[this.thread.x];
-          return calcDeltas(calcError(output, target), output);
-      })
+        }, createKernelCallback)
        .setDimensions([this.sizes[layer]]) 
        .setOutputToTexture(true);
         
