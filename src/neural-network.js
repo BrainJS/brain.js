@@ -6,7 +6,6 @@ import randos from './utilities/randos';
 import range from './utilities/range';
 import toArray from './utilities/to-array';
 import zeros from './utilities/zeros';
-import GPU from 'gpu.js';
 
 /**
  *
@@ -28,11 +27,6 @@ export default class NeuralNetwork {
     this.deltas = null;
     this.changes = null; // for momentum
     this.errors = null;
-    this.gpu = null;
-
-    if(options.gpu){
-      this.gpu = new GPU({mode: 'gpu'});
-    }
   }
 
   /**
