@@ -7,3 +7,6 @@ npm-debug.log
 
 # Yarn
 yarn.lock
+
+# Package
+package-lock.json

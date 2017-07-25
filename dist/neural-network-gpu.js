@@ -295,15 +295,17 @@ var NeuralNetworkGPU = function () {
         return error;
       }
 
+      function createKernelCallback(outputs, target) {
+        var output = outputs[this.thread.x];
+        return calcDeltas(calcError(output, target), output);
+      }
+
       for (var layer = this.outputLayer; layer > 0; layer--) {
         if (layer == this.outputLayer) {
           var kernel = this.gpu.createKernelMap({
             error: calcError,
             deltas: calcDeltas
-          }, function (outputs, target) {
-            var output = outputs[this.thread.x];
-            return calcDeltas(calcError(output, target), output);
-          }).setDimensions([this.sizes[layer]]).setOutputToTexture(true);
+          }, createKernelCallback).setDimensions([this.sizes[layer]]).setOutputToTexture(true);
 
           this.backwardPropagate[layer] = kernel;
         } else {
