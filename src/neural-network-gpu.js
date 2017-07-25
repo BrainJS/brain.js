@@ -247,8 +247,8 @@ export default class NeuralNetworkGPU {
     }
 
     function createKernelCallback(outputs, target){
-          var output = outputs[this.thread.x];
-          return calcDeltas(calcError(output, target), output);
+      var output = outputs[this.thread.x];
+      return calcDeltas(calcError(output, target), output);
     }
 
     for(var layer = this.outputLayer; layer > 0; layer--){
