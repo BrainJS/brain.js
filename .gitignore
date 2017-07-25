@@ -10,3 +10,6 @@ yarn.lock
 
 # Package
 package-lock.json
+
+# Map files
+dist/*.js.map
