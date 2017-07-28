@@ -79,8 +79,8 @@ var NeuralNetworkGPU = function () {
     this.errors = null;
     this.count = 0;
     this.error = 1;
-    this.logCount = 200;
-    this.gpu = new _gpu2.default({ mode: 'gpu' });
+    this.logCount = options.logCount;
+    this.gpu = new _gpu2.default({ mode: options.mode });
   }
 
   /**
@@ -179,7 +179,7 @@ var NeuralNetworkGPU = function () {
 
       var error = 1;
       var i = void 0;
-      for (i = 1; i < iterations && error > errorThresh; i++) {
+      for (i = 1; i < 200 && error > errorThresh; i++) {
         this.count++;
         var sum = 0;
         for (var j = 0; j < data.length; j++) {

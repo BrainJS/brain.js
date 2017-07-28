@@ -37,8 +37,8 @@ export default class NeuralNetworkGPU {
     this.errors = null;
     this.count = 0;
     this.error = 1;
-    this.logCount = 200
-    this.gpu = new GPU({mode: 'gpu'});
+    this.logCount = options.logCount;
+    this.gpu = new GPU({mode: options.mode});
   }
 
   /**
@@ -129,7 +129,7 @@ export default class NeuralNetworkGPU {
 
     let error = 1;
     let i;
-    for (i = 1; i < iterations && error > errorThresh; i++) {
+    for (i = 1; i < 200 && error > errorThresh; i++) {
       this.count++;
       let sum = 0;
       for (let j = 0; j < data.length; j++) {

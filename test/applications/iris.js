@@ -1,5 +1,6 @@
 import iris from 'js-datasets-iris';
 import NeuralNetwork from '../../src/neural-network.js';
+import NeuralNetworkGPU from '../../src/neural-network-gpu.js';
 iris.shuffle();
 
 const data = iris.data;
@@ -34,9 +35,8 @@ function mapStringClassesToNumber() {
 dressData();
 mapStringClassesToNumber();
 
-console.log(trainingSet);
-// const net = new NeuralNetwork();
+const net = new NeuralNetworkGPU();
 
-// net.train(trainingSet, {
-    // log: true,
-// });
+net.train(trainingSet, {
+    log: true,
+});
