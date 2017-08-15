@@ -7,6 +7,7 @@ import range from './utilities/range';
 import toArray from './utilities/to-array';
 import zeros from './utilities/zeros';
 import GPU from 'gpu.js';
+import SigmoidLayer from './layer/sigmoid-layer';
 
 /**
  *
@@ -30,7 +31,6 @@ export default class NeuralNetworkGPU {
     this.weightsPropagate = [];
     this.biasesPropagate = [];
     this.weightsToFloat = [];
-    this.megaKernel = [];
     // state for training
     this.deltas = null;
     this.changes = null; // for momentum
@@ -193,7 +193,7 @@ export default class NeuralNetworkGPU {
     }
 
     for(var layer = 1; layer <= this.outputLayer; layer++){
-      const kernel = this.gpu.createKernelMap({weightedSum}, 
+      const kernel = this.gpu.createKernelMap({weightedSum},
         function(weights, biases, inputs){
           return weightedSum(weights, biases, this.thread.x, inputs);
         }, {
@@ -255,9 +255,9 @@ export default class NeuralNetworkGPU {
           var output = outputs[this.thread.x];
           return calcDeltas(calcError(output, target), output);
       })
-       .setDimensions([this.sizes[layer]]) 
+       .setDimensions([this.sizes[layer]])
        .setOutputToTexture(true);
-        
+
         this.backwardPropagate[layer] = kernel;
 
       }else{
@@ -274,7 +274,7 @@ export default class NeuralNetworkGPU {
         })
         .setDimensions([this.sizes[layer]])
         .setOutputToTexture(true);
-        
+
         this.backwardPropagate[layer] = kernel;
       }
     }
@@ -320,12 +320,12 @@ export default class NeuralNetworkGPU {
         function(previousOutputs, deltas, weights, changes, learningRate, momentum){
           var delta = deltas[this.thread.y];
           var change = calcChanges(
-            changes, 
-            delta, 
-            previousOutputs, 
-            learningRate, 
-            momentum, 
-            this.thread.x, 
+            changes,
+            delta,
+            previousOutputs,
+            learningRate,
+            momentum,
+            this.thread.x,
             this.thread.y);
 
           return addWeights(change, weights, this.thread.x, this.thread.y);
@@ -336,9 +336,9 @@ export default class NeuralNetworkGPU {
         })
           .setDimensions([this.sizes[layer -1], this.sizes[layer]])
           .setOutputToTexture(true)
-        
+
       this.changesPropagate[layer] = kernel;
-    }    
+    }
   }
   
   getChanges(learningRate){

@@ -14,6 +14,10 @@ import zeros from './utilities/zeros';
  */
 export default class NeuralNetwork {
   constructor(options = {}) {
+    this.learningRate = null;
+    this.momentum = null;
+    this.binaryThresh = null;
+    this.hiddenLayers = null;
     Object.assign(this, NeuralNetwork.defaults, options);
     this.hiddenSizes = options.hiddenLayers;
 
@@ -31,7 +35,7 @@ export default class NeuralNetwork {
 
   /**
    *
-   * @param {} sizes
+   * @param {Number[]} sizes
    * @param {Boolean} keepNetworkIntact
    */
   initialize(sizes, keepNetworkIntact) {
@@ -123,16 +127,16 @@ export default class NeuralNetwork {
    * @param options
    * @returns {{error: number, iterations: number}}
    */
-  train(data, _options = {}) {
-    const options = Object.assign({}, NeuralNetwork.trainDefaults, _options);
+  train(data, options = {}) {
+    const _options = Object.assign({}, NeuralNetwork.trainDefaults, options);
     data = this.formatData(data);
-    let iterations = options.iterations;
-    let errorThresh = options.errorThresh;
-    let log = options.log === true ? console.log : options.log;
-    let logPeriod = options.logPeriod;
-    let learningRate = _options.learningRate || this.learningRate || options.learningRate;
-    let callback = options.callback;
-    let callbackPeriod = options.callbackPeriod;
+    let iterations = _options.iterations;
+    let errorThresh = _options.errorThresh;
+    let log = _options.log === true ? console.log : options.log;
+    let logPeriod = _options.logPeriod;
+    let learningRate = _options.learningRate || this.learningRate || _options.learningRate;
+    let callback = _options.callback;
+    let callbackPeriod = _options.callbackPeriod;
     let sizes = [];
     let inputSize = data[0].input.length;
     let outputSize = data[0].output.length;
@@ -148,7 +152,7 @@ export default class NeuralNetwork {
     sizes.unshift(inputSize);
     sizes.push(outputSize);
 
-    this.initialize(sizes, options.keepNetworkIntact);
+    this.initialize(sizes, _options.keepNetworkIntact);
 
     let error = 1;
     let i;
@@ -160,10 +164,10 @@ export default class NeuralNetwork {
       }
       error = sum / data.length;
 
-      if (log && (i % logPeriod == 0)) {
+      if (log && (i % logPeriod === 0)) {
         log('iterations:', i, 'training error:', error);
       }
-      if (callback && (i % callbackPeriod == 0)) {
+      if (callback && (i % callbackPeriod === 0)) {
         callback({ error: error, iterations: i });
       }
     }
@@ -204,7 +208,7 @@ export default class NeuralNetwork {
         let output = this.outputs[layer][node];
 
         let error = 0;
-        if (layer == this.outputLayer) {
+        if (layer === this.outputLayer) {
           error = target[node] - output;
         }
         else {
@@ -293,7 +297,7 @@ export default class NeuralNetwork {
     data = this.formatData(data);
 
     // for binary classification problems with one output node
-    let isBinary = data[0].output.length == 1;
+    let isBinary = data[0].output.length === 1;
     let falsePos = 0;
     let falseNeg = 0;
     let truePos = 0;
@@ -319,7 +323,7 @@ export default class NeuralNetwork {
         expected = target.indexOf(max(target));
       }
 
-      if (actual != expected) {
+      if (actual !== expected) {
         let misclass = data[i];
         Object.assign(misclass, {
           actual: actual,
@@ -329,16 +333,16 @@ export default class NeuralNetwork {
       }
 
       if (isBinary) {
-        if (actual == 0 && expected == 0) {
+        if (actual === 0 && expected === 0) {
           trueNeg++;
         }
-        else if (actual == 1 && expected == 1) {
+        else if (actual === 1 && expected === 1) {
           truePos++;
         }
-        else if (actual == 0 && expected == 1) {
+        else if (actual === 0 && expected === 1) {
           falseNeg++;
         }
-        else if (actual == 1 && expected == 0) {
+        else if (actual === 1 && expected === 0) {
           falsePos++;
         }
       }
@@ -413,10 +417,10 @@ export default class NeuralNetwork {
 
       let nodes;
       // turn any internal arrays back into hashes for readable json
-      if (layer == 0 && this.inputLookup) {
+      if (layer === 0 && this.inputLookup) {
         nodes = Object.keys(this.inputLookup);
       }
-      else if (layer == this.outputLayer && this.outputLookup) {
+      else if (layer === this.outputLayer && this.outputLookup) {
         nodes = Object.keys(this.outputLookup);
       }
       else {
@@ -432,7 +436,7 @@ export default class NeuralNetwork {
           layers[layer][node].weights = {};
           for (let k in layers[layer - 1]) {
             let index = k;
-            if (layer == 1 && this.inputLookup) {
+            if (layer === 1 && this.inputLookup) {
               index = this.inputLookup[k];
             }
             layers[layer][node].weights[k] = this.weights[layer][j][index];
@@ -459,10 +463,10 @@ export default class NeuralNetwork {
 
     for (let i = 0; i <= this.outputLayer; i++) {
       let layer = json.layers[i];
-      if (i == 0 && (!layer[0] || json.inputLookup)) {
+      if (i === 0 && (!layer[0] || json.inputLookup)) {
         this.inputLookup = lookup.lookupFromHash(layer);
       }
-      else if (i == this.outputLayer && (!layer[0] || json.outputLookup)) {
+      else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
         this.outputLookup = lookup.lookupFromHash(layer);
       }
 
