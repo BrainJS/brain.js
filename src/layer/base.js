@@ -1,10 +1,28 @@
 'use strict';
 
 export default class BaseLayer {
-  constructor() {
-    this.output = null;
+  constructor(inputLayer, settings) {
+    //layers
+    this.inputLayer = inputLayer;
     this.nextLayer = null;
     this.previousLayer = null;
+
+    //size
+    this.width = settings.width;
+    this.height = settings.height;
+    this.depth = settings.width;
+
+    //methods
+    this.predictKernel = null;
+    this.compareKernel = null;
+    this.learnKernel = null;
+
+    //what matters :P
+    this.outputs = null;
+    this.errors = null;
+    this.deltas = null;
+    this.weights = null;
+    this.changes = null;
   }
 
   setNextLayer(nextLayer) {
@@ -13,6 +31,10 @@ export default class BaseLayer {
 
   setPreviousLayer(previousLayer) {
     this.previousLayer = previousLayer;
+  }
+
+  setupKernels() {
+    throw new Error('setupKernels not implemented on BaseLayer');
   }
 
   predict() {
@@ -28,6 +50,6 @@ export default class BaseLayer {
   }
 
   toArray() {
-    return this.output.toArray();
+    return this.outputs.toArray();
   }
 }

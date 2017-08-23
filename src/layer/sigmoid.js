@@ -4,28 +4,19 @@ import BaseLayer from './base';
 import makeKernel from '../utilities/make-kernel';
 
 export default class Sigmoid extends BaseLayer {
-  constructor(settings) {
-    super(settings);
-    this.outputs = null;
-    this.errors = null;
-    this.deltas = null;
-    this.weights = null;
-    this.changes = null;
-    this.predictKernel = null;
-    this.compareKernel = null;
-    this.learnKernel = null;
-    this.dimensions = settings.dimensions;
+  constructor(inputLayer, settings) {
+    super(inputLayer, settings);
     this.setupKernels();
   }
 
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
-      dimensions: this.dimensions,
+      output: [this.width, this.height, this.depth],
       functions: [sigmoid]
     });
 
     this.compareKernel = makeKernel(compare, {
-      dimensions: this.dimensions,
+      output: [this.width, this.height, this.depth],
       map: {
         errors: calcError,
         deltas: calcDeltas
@@ -33,7 +24,7 @@ export default class Sigmoid extends BaseLayer {
     });
 
     this.learnKernel = makeKernel(learn, {
-      dimensions: this.dimensions,
+      output: [this.width, this.height, this.depth],
       map: {
         weights: calcWeights,
         changes: calcChanges
