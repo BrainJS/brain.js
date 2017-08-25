@@ -154,32 +154,40 @@ export function predict(inputs, filters, biases) {
   return sum + biases[this.thread.z];
 }
 
-export function learnFilters(inputs, outputDeltas) {
+export function learnFilters(inputs, deltas) {
   let sum = 0;
+  let delta = deltas[this.thread.z][this.thread.y * this.constants.paddingY][this.thread.x * this.constants.paddingX];
   let inputXMax = this.constants.inputWidth + this.constants.paddingX;
   let inputYMax = this.constants.inputHeight + this.constants.paddingY;
-  for (let inputY = -this.constants.paddingY; inputY < inputYMax; inputY += this.constants.strideY) {
-    for (let inputX = -this.constants.paddingX; inputX < inputXMax; inputX += this.constants.strideX) {
-      for (let inputIndex = 0; inputIndex < this.constants.inputDepth; inputIndex++) {
-        sum += inputs[inputIndex][inputY][inputX];
+  for (let inputY = this.thread.y - this.constants.paddingY; inputY < inputYMax; inputY += this.constants.strideY) {
+    for (let inputX = this.thread.x - this.constants.paddingX; inputX < inputXMax; inputX += this.constants.strideX) {
+      if (
+        inputY >= 0
+        && inputY < this.constants.inputHeight
+        && inputX >= 0
+        && inputX < this.constants.inputWidth
+      ) {
+        for (let inputIndex = 0; inputIndex < this.constants.inputDepth; inputIndex++) {
+          sum += inputs[inputIndex][inputY][inputX] * delta;
+        }
       }
     }
   }
-  return sum + outputDeltas[this.thread.z][this.thread.y * this.constants.paddingY][this.thread.x * this.constants.paddingX];
+  return sum;
 }
 
-export function learnInputs(filters, outputDeltas) {
-  let filterX = this.thread.x - this.constants.strideX;
-  let filterY = this.thread.y - this.constants.strideY;
+export function learnInputs(filters, deltas) {
+  let filterX = this.thread.x - this.constants.paddingX;
+  let filterY = this.thread.y - this.constants.paddingY;
   let sum = 0;
   for (let filterIndex = 0; filterIndex < this.constants.filterCount; filterIndex++) {
-    for (; filterY < this.constants.strideY; filterY++) {
-      for (; filterX < this.constants.strideX; filterX++) {
+    for (; filterY < this.constants.strideY; filterY += this.constants.strideY) {
+      for (; filterX < this.constants.strideX; filterX += this.constants.strideX) {
         sum += filters[filterIndex][filterY][filterX];
       }
     }
   }
 
-  //const x =
-  return sum;// + outputDeltas[this.thread.z][this.thread.y - this.constants.paddingY][];
+  console.log(deltas[this.thread.z][this.thread.y - this.constants.paddingY][this.thread.x - this.constants.paddingX]);
+  return sum + deltas[this.thread.z][this.thread.y - this.constants.paddingY][this.thread.x - this.constants.paddingX];
 }
