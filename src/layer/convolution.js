@@ -110,13 +110,14 @@ export default class ConvolutionLayer extends BaseLayer {
     this.learnFilters = makeKernel(learnFilters, {
       output: [this.filterWidth, this.filterHeight, this.filterCount]
     });
+
     this.learnInputs = makeKernel(learnInputs, {
       output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth]
     });
   }
 
   predict() {
-    this.predictKernel();
+    this.outputs = this.predictKernel(this.inputs, this.filters, this.biases);
   }
 
   learn() {
@@ -125,19 +126,19 @@ export default class ConvolutionLayer extends BaseLayer {
   }
 }
 
-function predict(inputs, filters, biases) {
-  const x = ((this.thread.x * this.constants.strideX) - this.constants.paddingX) + this.thread.x;
-  const y = ((this.thread.y * this.constants.strideY) - this.constants.paddingY) + this.thread.y;
+export function predict(inputs, filters, biases) {
+  const x = (((100 / (this.output.x / this.thread.x)) / 100) * this.constants.inputWidth) - this.constants.paddingX;
+  const y = (((100 / (this.output.y / this.thread.y)) / 100) * this.constants.inputHeight) - this.constants.paddingY;
 
   // convolve centered at this particular location
   let sum = 0;
   for (let filterY = 0; filterY < this.constants.filterHeight; filterY++) {
     // coordinates in the original input array coordinates
-    let inputY = y + filterY;
+    let inputY = filterY + (this.constants.strideY * y);
     for (let filterX = 0; filterX < this.constants.filterWidth; filterX++) {
-      let inputX = x + this.thread.x + filterX;
+      let inputX = filterX + (this.constants.strideX * x);
       if (
-        inputX >= 0
+        inputY >= 0
         && inputY < this.constants.inputHeight
         && inputX >= 0
         && inputX < this.constants.inputWidth
@@ -153,7 +154,7 @@ function predict(inputs, filters, biases) {
   return sum + biases[this.thread.z];
 }
 
-function learnFilters(inputs, outputDeltas) {
+export function learnFilters(inputs, outputDeltas) {
   let sum = 0;
   let inputXMax = this.constants.inputWidth + this.constants.paddingX;
   let inputYMax = this.constants.inputHeight + this.constants.paddingY;
@@ -167,9 +168,9 @@ function learnFilters(inputs, outputDeltas) {
   return sum + outputDeltas[this.thread.z][this.thread.y * this.constants.paddingY][this.thread.x * this.constants.paddingX];
 }
 
-function learnInputs(filters) {
+export function learnInputs(filters, outputDeltas) {
   let filterX = this.thread.x - this.constants.strideX;
-  let filterY = this.thread.y = this.constants.strideY;
+  let filterY = this.thread.y - this.constants.strideY;
   let sum = 0;
   for (let filterIndex = 0; filterIndex < this.constants.filterCount; filterIndex++) {
     for (; filterY < this.constants.strideY; filterY++) {
@@ -178,5 +179,7 @@ function learnInputs(filters) {
       }
     }
   }
-  return sum;
+
+  //const x =
+  return sum;// + outputDeltas[this.thread.z][this.thread.y - this.constants.paddingY][];
 }
