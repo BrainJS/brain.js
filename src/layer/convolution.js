@@ -177,17 +177,14 @@ export function learnFilters(inputs, deltas) {
 }
 
 export function learnInputs(filters, deltas) {
-  let filterX = this.thread.x - this.constants.paddingX;
-  let filterY = this.thread.y - this.constants.paddingY;
   let sum = 0;
+  const delta = deltas[this.thread.z][this.thread.y][this.thread.x];
   for (let filterIndex = 0; filterIndex < this.constants.filterCount; filterIndex++) {
-    for (; filterY < this.constants.strideY; filterY += this.constants.strideY) {
-      for (; filterX < this.constants.strideX; filterX += this.constants.strideX) {
-        sum += filters[filterIndex][filterY][filterX];
+    for (let filterY = this.thread.y; filterY < this.constants.filterHeight; filterY++) {
+      for (let filterX = this.thread.x; filterX < this.constants.filterWidth; filterX++) {
+        sum += filters[filterIndex][filterY][filterX] * delta;
       }
     }
   }
-
-  console.log(deltas[this.thread.z][this.thread.y - this.constants.paddingY][this.thread.x - this.constants.paddingX]);
-  return sum + deltas[this.thread.z][this.thread.y - this.constants.paddingY][this.thread.x - this.constants.paddingX];
+  return sum;
 }
