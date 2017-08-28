@@ -2,7 +2,11 @@
 
 export default class BaseLayer {
   static get defaults() {
-    return {};
+    return {
+      width: 0,
+      height: 0,
+      depth: 0
+    };
   }
 
   constructor(inputLayer, settings) {
@@ -12,9 +16,9 @@ export default class BaseLayer {
     this.previousLayer = null;
 
     //size
-    this.width = settings.width;
-    this.height = settings.height;
-    this.depth = settings.width;
+    this.width = null;
+    this.height = null;
+    this.depth = null;
 
     //methods
     this.predictKernel = null;

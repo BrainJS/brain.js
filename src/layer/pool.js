@@ -37,8 +37,8 @@ export default class PoolLayer extends BaseLayer {
 }
 
 function predict(inputs) {
-  const x = (this.thread.x * this.constants.strideX) - this.constants.paddingX;
-  const y = (this.thread.y * this.constants.strideY) - this.constants.paddingY;
+  const x = (((100 / (this.output.x / this.thread.x)) / 100) * this.constants.inputWidth) - this.constants.paddingX;
+  const y = (((100 / (this.output.y / this.thread.y)) / 100) * this.constants.inputHeight) - this.constants.paddingY;
   let largestValue = -99999; // hopefully small enough ;\
   let largestX =- 1;
   let largestY =-1;
