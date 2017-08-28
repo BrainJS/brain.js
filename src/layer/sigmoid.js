@@ -4,11 +4,6 @@ import BaseLayer from './base';
 import makeKernel from '../utilities/make-kernel';
 
 export default class Sigmoid extends BaseLayer {
-  constructor(inputLayer, settings) {
-    super(inputLayer, settings);
-    this.setupKernels();
-  }
-
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
       output: [this.width, this.height, this.depth],

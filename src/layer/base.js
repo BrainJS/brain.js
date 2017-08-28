@@ -1,6 +1,10 @@
 'use strict';
 
 export default class BaseLayer {
+  static get defaults() {
+    return {};
+  }
+
   constructor(inputLayer, settings) {
     //layers
     this.inputLayer = inputLayer;
@@ -23,6 +27,16 @@ export default class BaseLayer {
     this.deltas = null;
     this.weights = null;
     this.changes = null;
+
+    const defaults = this.constructor.defaults;
+    for (let p in defaults) {
+      if (!defaults.hasOwnProperty(p)) continue;
+      this[p] = settings.hasOwnProperty(p)
+        ? settings[p]
+        : defaults[p];
+    }
+
+    this.setupKernels();
   }
 
   setNextLayer(nextLayer) {
