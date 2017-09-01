@@ -1,14 +1,23 @@
 'use strict';
 
-function reLU(weights) {
-  return Math.max(0, weights[this.thread.y][this.thread.x]);
-}
-
-function reLUDerivative(weights, deltas) {
-  return weights[this.thread.y][this.thread.x] > 0 ? deltas[this.thread.y][this.thread.x] : 0;
-}
-
 export default {
-  activate: reLU,
-  compare: reLUDerivative
+  /**
+   * Relu Activation, aka Rectified Linear Unit Activation
+   * @description https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
+   * @param weight
+   * @returns {number}
+   */
+  activate: function activate(weight) {
+    return Math.max(0, weight);
+  },
+
+  /**
+   * Leaky Relu derivative
+   * @param weight
+   * @param delta
+   * @returns {number}
+   */
+  derivative: function derivative(weight, delta) {
+    return weight > 0 ? delta : 0;
+  }
 };

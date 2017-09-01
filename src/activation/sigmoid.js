@@ -1,15 +1,22 @@
 'use strict';
 
-export function sigmoid(value) {
-  return 1 / (1 + Math.exp(-value));
-}
-
-export function sigmoidDerivative(weights, deltas) {
-  let mwi = weights[this.thread.y][this.thread.x];
-  return mwi * (1 - mwi) * deltas[this.thread.y][this.thread.x];
-}
-
 export default {
-  activate: sigmoid,
-  compare: sigmoidDerivative
+  /**
+   *
+   * @param value
+   * @returns {number}
+   */
+  activate: function activate(value) {
+    return 1 / (1 + Math.exp(-value));
+  },
+
+  /**
+   *
+   * @param weight
+   * @param delta
+   * @returns {number}
+   */
+  derivative: function derivative(weight, delta) {
+    return weight * (1 - weight) * delta;
+  }
 };

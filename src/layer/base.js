@@ -3,10 +3,14 @@
 export default class BaseLayer {
   static get defaults() {
     return {
-      width: 0,
-      height: 0,
-      depth: 0
+      width: 1,
+      height: 1,
+      depth: 1
     };
+  }
+
+  get inputs() {
+    return this.inputLayer.outputs;
   }
 
   constructor(inputLayer, settings) {

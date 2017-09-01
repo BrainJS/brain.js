@@ -2,20 +2,20 @@
 
 import BaseLayer from './base';
 import makeKernel from '../utilities/make-kernel';
-import sigmoid from '../activation/sigmoid';
+import relu from '../activation/relu';
 
-export default class SigmoidLayer extends BaseLayer {
+export default class ReluLayer extends BaseLayer {
   setupKernels() {
     this.predictKernel = makeKernel(function(inputs) {
       return activate(inputs[this.thread.y][this.thread.x]);
     }, {
-      functions: [sigmoid.activate]
+      functions: [relu.activate]
     });
 
     this.learnKernel = makeKernel(function(weights, deltas) {
       return derivative(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
     }, {
-      functions: [sigmoid.derivative]
+      functions: [relu.derivative]
     });
   }
 

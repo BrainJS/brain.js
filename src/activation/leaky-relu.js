@@ -1,17 +1,23 @@
 'use strict';
 
-export function leakyReLU(weights) {
-  const weight = weights[this.thread.y][this.thread.x];
-  return weight > 0 ? weight : 0.01 * weight;
-}
-
-export function leakyReLUDerivative(weights, deltas) {
-  const delta = deltas[this.thread.y][this.thread.x];
-  const weight = weights[this.thread.y][this.thread.x];
-  return weight > 0 ? delta : 0.01 * delta;
-}
-
 export default {
-  activate: leakyReLU,
-  compare: leakyReLUDerivative
+  /**
+   * Leaky Relu Activation, aka Leaky Rectified Linear Unit Activation
+   * @description https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
+   * @param weight
+   * @returns {number}
+   */
+  activate: function activate(weight) {
+    return weight > 0 ? weight : 0.01 * weight;
+  },
+
+  /**
+   * Leaky Relu derivative
+   * @param weight
+   * @param delta
+   * @returns {number}
+   */
+  derivative: function derivative(weight, delta) {
+    return weight > 0 ? delta : 0.01 * delta;
+  }
 };

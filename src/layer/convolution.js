@@ -2,12 +2,10 @@
 
 import BaseLayer from './base';
 import makeKernel from '../utilities/make-kernel';
-import relu from '../activation/relu';
 
 export default class ConvolutionLayer extends BaseLayer {
   static get defaults() {
     return {
-      activation: relu,
       stride: 0,
       padding: 0,
       bias: 0,

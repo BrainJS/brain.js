@@ -1,16 +1,22 @@
 'use strict';
 
-export function tanH(weights) {
-  return Math.tanh(weights[this.thread.y][this.thread.x]);
-}
-
-// grad for z = tanh(x) is (1 - z^2)
-export function tanHDerivative(weights, deltas) {
-  let mwi = weights[this.thread.y][this.thread.x];
-  return  (1 - mwi * mwi) * deltas[this.thread.y][this.thread.x];
-}
-
 export default {
-  activate: tanH,
-  compare: tanHDerivative
+  /**
+   *
+   * @param weight
+   * @returns {number}
+   */
+  activate: function activate(weight) {
+    return Math.tanh(weight);
+  },
+
+  /**
+   * @description grad for z = tanh(x) is (1 - z^2)
+   * @param weight
+   * @param delta
+   * @returns {number}
+   */
+  derivative: function derivative(weight, delta) {
+    return (1 - weight * weight) * delta;
+  }
 };
