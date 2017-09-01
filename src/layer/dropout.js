@@ -6,6 +6,9 @@ import makeKernel from '../utilities/make-kernel';
 export default class DropoutLayer extends BaseLayer {
   static get defaults() {
     return {
+      width: 0,
+      height: 0,
+      depth: 0,
       probability: 0.5,
       isTraining: false
     };

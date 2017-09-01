@@ -2,10 +2,12 @@
 
 import BaseLayer from './base';
 import makeKernel from '../utilities/make-kernel';
+import relu from '../activation/relu';
 
 export default class ConvolutionLayer extends BaseLayer {
   static get defaults() {
     return {
+      activation: relu,
       stride: 0,
       padding: 0,
       bias: 0,
@@ -18,10 +20,12 @@ export default class ConvolutionLayer extends BaseLayer {
   constructor(inputLayer, settings) {
     super(inputLayer, settings);
 
+    this.stride = null;
     this.strideX = null;
     this.strideY = null;
     this.setupStride(settings);
 
+    this.padding = null;
     this.paddingX = null;
     this.paddingY = null;
     this.setupPadding(settings);
@@ -32,6 +36,7 @@ export default class ConvolutionLayer extends BaseLayer {
 
     if (this.width !== undefined) throw new Error('ConvolutionLayer.width is calculated dynamically');
     if (this.height !== undefined) throw new Error('ConvolutionLayer.height is calculated dynamically');
+    if (this.depth !== undefined) throw new Error('ConvolutionLayer.depth is calculated dynamically');
 
     this.width = Math.floor((inputLayer.width + (this.paddingX * 2) - this.filterWidth) / this.strideX + 1);
     this.height = Math.floor((inputLayer.height + (this.paddingY * 2) - this.filterHeight) / this.strideY + 1);

@@ -53,7 +53,7 @@ export default class Sigmoid extends BaseLayer {
 
 function predict(inputs, x, weights, biases) {
   let sum = biases[x];
-  for (let k = 0; k < this.runDimensions.y; k++) {
+  for (let k = 0; k < this.output.y; k++) {
     sum += weights[x][k] * inputs[k];
   }
   return sigmoid(sum);
@@ -74,7 +74,7 @@ function calcDeltas(output, error) {
 
 function calcError(nextWeights, nextDeltas) {
   let error = 0;
-  for(let k = 0; k < this.runDimensions.x; k++){
+  for(let k = 0; k < this.output.x; k++){
     error += nextDeltas[k] * nextWeights[k][this.thread.x];
   }
   return error;
@@ -95,7 +95,7 @@ function learn(deltas, weights, previousLayerOutputs, previousLayerChanges, lear
 
 function calcChanges(previousChanges, delta, previousOutputs, learningRate, momentum) {
   let sum = 0;
-  for (let i = 0; i < this.runDimensions.x; i++) {
+  for (let i = 0; i < this.output.x; i++) {
     sum += (learningRate * delta * previousOutputs[this.thread.x])
       + (momentum * previousChanges[this.thread.y][i]);
   }

@@ -7,7 +7,7 @@ export default class FullyConnectedLayer extends BaseLayer {
   constructor(inputLayer, settings) {
     super(inputLayer, settings);
 
-    this.filterCount = this.inputLayer.width * this.inputLayer.height * this.inputLayer.depth;
+    this.width = this.inputLayer.width * this.inputLayer.height * this.inputLayer.depth;
     this.learnInputKernel = null;
     this.learnFiltersKernel = null;
     this.learnBiasKernel = null;
@@ -15,7 +15,7 @@ export default class FullyConnectedLayer extends BaseLayer {
 
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
-      output: [this.width, this.height, this.depth],
+      output: [this.width],
       constants: {
         inputDepth: this.inputLayer.depth,
         inputHeight: this.inputLayer.height,
@@ -24,10 +24,7 @@ export default class FullyConnectedLayer extends BaseLayer {
     });
 
     this.learnInputKernel = makeKernel(learnInput, {
-      output: [this.width, this.height, this.depth],
-      constants: {
-        filterCount: this.filterCount
-      }
+      output: [this.width]
     });
 
     this.learnFiltersKernel = makeKernel(learnFilters, {
