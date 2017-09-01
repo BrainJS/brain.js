@@ -1,7 +1,5 @@
-import _Matrix from './';
+import Matrix from './';
 
-//prevent parser from renaming when calling toString() method later
-const Matrix = _Matrix;
 /**
  *
  * @param {Matrix} m
@@ -10,22 +8,19 @@ const Matrix = _Matrix;
 export default function softmax(m) {
   let result = new Matrix(m.rows, m.columns); // probability volume
   let maxVal = -999999;
-  let i;
-  let max = m.weights.length;
-
-  for (i = 0; i < max; i++) {
+  for (let i = 0; i < m.weights.length; i++) {
     if(m.weights[i] > maxVal) {
       maxVal = m.weights[i];
     }
   }
 
   let s = 0;
-  for (i = 0; i < max; i++) {
+  for (let i = 0; i < m.weights.length; i++) {
     result.weights[i] = Math.exp(m.weights[i] - maxVal);
     s += result.weights[i];
   }
 
-  for (i = 0; i < max; i++) {
+  for (let i = 0; i < m.weights.length; i++) {
     result.weights[i] /= s;
   }
 

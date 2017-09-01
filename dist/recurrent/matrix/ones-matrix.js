@@ -36,7 +36,7 @@ var OnesMatrix = function (_Matrix) {
     _this.rows = rows;
     _this.columns = columns;
     _this.weights = (0, _ones2.default)(rows * columns);
-    _this.recurrence = (0, _ones2.default)(rows * columns);
+    _this.deltas = (0, _ones2.default)(rows * columns);
     return _this;
   }
 

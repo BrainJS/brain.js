@@ -10,8 +10,11 @@ exports.default = multiplyElement;
  * @param {Matrix} right
  */
 function multiplyElement(product, left, right) {
-  for (var i = 0, weights = left.weights.length; i < weights; i++) {
+  var weights = left.weights;
+
+  for (var i = 0; i < weights.length; i++) {
     product.weights[i] = left.weights[i] * right.weights[i];
+    product.deltas[i] = 0;
   }
 }
 //# sourceMappingURL=multiply-element.js.map

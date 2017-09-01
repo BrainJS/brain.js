@@ -1,6 +1,5 @@
 {
   "name": "brain.js",
-  "version": "1.0.0",
   "homepage": "https://github.com/harthur-org/brain.js",
   "authors": [
     "Heather Arthur <fayearthur@gmail.com>"
@@ -19,11 +18,18 @@
     "network",
     "neural-networks",
     "machine-learning",
-    "synapse"
+    "synapse",
+    "recurrent",
+    "long short term memory",
+    "gated recurrent unit",
+    "rnn",
+    "lstm",
+    "gru"
   ],
-  "main": "./browser.min.js",
+  "main": "./browser.js",
   "ignore": [
     "node_modules",
     "test"
-  ]
+  ],
+  "version": "1.0.0-rc.3"
 }

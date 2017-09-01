@@ -42,10 +42,10 @@ describe('matrix', () => {
           [3, 3]
         ]);
         multiplyB(result, m1, m2);
-        m1.recurrence.forEach((value) => {
+        m1.deltas.forEach((value) => {
           assert.equal(value, 21);
         });
-        m2.recurrence.forEach((value) => {
+        m2.deltas.forEach((value) => {
           assert.equal(value, 21);
         });
       });

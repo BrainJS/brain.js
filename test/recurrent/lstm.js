@@ -1,24 +1,26 @@
 import assert from 'assert';
 import LSTM from '../../src/recurrent/lstm';
-import Vocab from '../../src/utilities/vocab';
-import { vocab, build, train } from '../utilities/math-addition-vocab';
-
-function runAgainstMath(rnn) {
-  train(rnn);
-  var prediction = vocab.toCharacters(rnn.run()).join('');
-  console.log(prediction);
-  assert(/^[0-9]+[+][0-9]+[=][0-9]+$/.test(prediction));
-}
+import DataFormatter from '../../src/utilities/data-formatter';
 
 describe('lstm', () => {
   describe('math', () => {
-    it('can predict what a math problem is after being fed 1000 random math problems', (done) => {
-      var net = new LSTM({
-        inputSize: 6,
-        inputRange: vocab.characters.length,
-        outputSize: vocab.characters.length
-      });
-      runAgainstMath(net);
+    it('can predict math', function(done) {
+      this.timeout(15000);
+      const net = new LSTM();
+      const items = [];
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          items.push(`${i}+${j}=${i + j}`);
+          if (i === j) continue;
+          items.push(`${j}+${i}=${i + j}`);
+        }
+      }
+      net.train(items, { log: true, iterations: 100 });
+      for (let i = 0; i < 10; i++) {
+        const output = net.run();
+        console.log(output);
+        assert(/^[0-9]+[+][0-9]+[=][0-9]+$/.test(output));
+      }
       done();
     });
   });
@@ -54,27 +56,27 @@ describe('lstm', () => {
 
     describe('.fromJSON', () => {
       it('can import model from json', () => {
-        var vocab = new Vocab('abcdef'.split(''));
+        var dataFormatter = new DataFormatter('abcdef'.split(''));
         var jsonString = JSON.stringify(new LSTM({
           inputSize: 6, //<- length
-          inputRange: vocab.characters.length,
-          outputSize: vocab.characters.length //<- length
+          inputRange: dataFormatter.characters.length,
+          outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
         var clone = new LSTM({ json: JSON.parse(jsonString) });
 
         assert.equal(jsonString, JSON.stringify(clone.toJSON()));
         assert.equal(clone.inputSize, 6);
-        assert.equal(clone.inputRange, vocab.characters.length);
-        assert.equal(clone.outputSize, vocab.characters.length);
+        assert.equal(clone.inputRange, dataFormatter.characters.length);
+        assert.equal(clone.outputSize, dataFormatter.characters.length);
       });
 
       it('can import model from json and train again', () => {
-        var vocab = new Vocab('abcdef'.split(''));
+        var dataFormatter = new DataFormatter('abcdef'.split(''));
         var jsonString = JSON.stringify(new LSTM({
           inputSize: 6, //<- length
-          inputRange: vocab.characters.length,
-          outputSize: vocab.characters.length //<- length
+          inputRange: dataFormatter.characters.length,
+          outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
         var clone = new LSTM({ json: JSON.parse(jsonString) });
@@ -82,30 +84,83 @@ describe('lstm', () => {
 
         assert.notEqual(jsonString, JSON.stringify(clone.toJSON()));
         assert.equal(clone.inputSize, 6);
-        assert.equal(clone.inputRange, vocab.characters.length);
-        assert.equal(clone.outputSize, vocab.characters.length);
+        assert.equal(clone.inputRange, dataFormatter.characters.length);
+        assert.equal(clone.outputSize, dataFormatter.characters.length);
       });
     });
   });
 
   describe('.toFunction', () => {
     it('can output same as run method', () => {
-      const vocab = new Vocab(['h', 'i', ' ', 'm', 'o', '!']);
+      const dataFormatter = new DataFormatter(['h', 'i', ' ', 'm', 'o', '!']);
       var net = new LSTM({
         inputSize: 7,
-        inputRange: vocab.characters.length,
+        inputRange: dataFormatter.characters.length,
         outputSize: 7
       });
 
       for (var i = 0; i < 100; i++) {
-        net.trainPattern(vocab.toIndexes('hi mom!'));
+        net.trainPattern(dataFormatter.toIndexes('hi mom!'));
         if (i % 10) {
-          console.log(vocab.toCharacters(net.run()).join(''));
+          console.log(dataFormatter.toCharacters(net.run()).join(''));
         }
       }
 
-      var lastOutput = vocab.toCharacters(net.run()).join('');
-      assert.equal(vocab.toCharacters(net.toFunction()()).join(''), lastOutput);
+      var lastOutput = dataFormatter.toCharacters(net.run()).join('');
+      assert.equal(dataFormatter.toCharacters(net.toFunction()()).join(''), lastOutput);
+    });
+  });
+
+  describe('.run', () => {
+    it('can predict greetings in 100 trainings', () => {
+      const net = new LSTM({
+        //json: json
+      });
+      const trainingData = [{
+        input: 'hi',
+        output: 'mom'
+      }, {
+        input: 'howdy',
+        output: 'dad'
+      }, {
+        input: 'hello',
+        output: 'sis'
+      }, {
+        input: 'yo',
+        output: 'bro'
+      }];
+      net.train(trainingData, { iterations: 100, log: true });
+      assert.equal(net.run('hi'), 'mom');
+      assert.equal(net.run('howdy'), 'dad');
+      assert.equal(net.run('hello'), 'sis');
+      assert.equal(net.run('yo'), 'bro');
+    });
+    it('can predict a string from index in 100 trainings', () => {
+      const net = new LSTM();
+      const transationTypes = {
+        credit: 0,
+        debit: 1,
+        personalCard: 2,
+        other: 3
+      };
+      const trainingData = [{
+        input: [transationTypes.credit],
+        output: 'credit'
+      }, {
+        input: [transationTypes.debit],
+        output: 'debit'
+      }, {
+        input: [transationTypes.personalCard],
+        output: 'personal card'
+      }, {
+        input: [transationTypes.other],
+        output: 'other'
+      }];
+      net.train(trainingData, { iterations: 200, log: true });
+      assert.equal(net.run([transationTypes.credit]), 'credit');
+      assert.equal(net.run([transationTypes.debit]), 'debit');
+      assert.equal(net.run([transationTypes.personalCard]), 'personal card');
+      assert.equal(net.run([transationTypes.other]), 'other');
     });
   });
 });

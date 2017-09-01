@@ -20,7 +20,7 @@ function clone(product) {
   cloned.rows = parseInt(product.rows);
   cloned.columns = parseInt(product.columns);
   cloned.weights = product.weights.slice(0);
-  cloned.recurrence = product.recurrence.slice(0);
+  cloned.deltas = product.deltas.slice(0);
   return cloned;
 }
 //# sourceMappingURL=clone.js.map

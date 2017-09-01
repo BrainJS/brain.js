@@ -11,21 +11,25 @@ export default function multiply(product, left, right) {
 
   // loop over rows of left
   for(let leftRow = 0; leftRow < leftRows; leftRow++) {
-
+    const leftRowBase = leftColumns * leftRow;
+    const rightRowBase = rightColumns * leftRow;
     // loop over cols of right
     for(let rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
 
       // dot product loop
       let dot = 0;
-
       //loop over columns of left
       for(let leftColumn = 0; leftColumn < leftColumns; leftColumn++) {
+        const rightColumnBase = rightColumns * leftColumn;
+        const leftIndex = leftRowBase + leftColumn;
+        const rightIndex = rightColumnBase + rightColumn;
         dot +=
-            left.weights[leftColumns * leftRow + leftColumn]
-          * right.weights[rightColumns * leftColumn + rightColumn];
+            left.weights[leftIndex]
+          * right.weights[rightIndex];
+        left.deltas[leftIndex] = 0;
+        right.deltas[rightIndex] = 0;
       }
-      let i = rightColumns * leftRow + rightColumn;
-      product.weights[i] = dot;
+      product.weights[rightRowBase + rightColumn] = dot;
     }
   }
 }

@@ -1,25 +1,25 @@
-var crossValidate = require('./dist/cross-validate');
-var likely = require('./dist/likely');
-var lookup = require('./dist/lookup');
-var NeuralNetwork = require('./dist/neural-network');
-var TrainStream = require('./dist/train-stream');
-var RNN = require('./dist/recurrent/rnn');
-var LSTM = require('./dist/recurrent/lstm');
-var GRU = require('./dist/recurrent/gru');
+var crossValidate = require('./dist/cross-validate').default;
+var likely = require('./dist/likely').default;
+var lookup = require('./dist/lookup').default;
+var NeuralNetwork = require('./dist/neural-network').default;
+var TrainStream = require('./dist/train-stream').default;
+var RNN = require('./dist/recurrent/rnn').default;
+var LSTM = require('./dist/recurrent/lstm').default;
+var GRU = require('./dist/recurrent/gru').default;
 var utilities = {
-  max: require('./dist/utilities/max'),
-  mse: require('./dist/utilities/mse'),
-  ones: require('./dist/utilities/ones'),
-  random: require('./dist/utilities/random'),
-  randomWeight: require('./dist/utilities/random-weight'),
-  randos: require('./dist/utilities/randos'),
-  range: require('./dist/utilities/range'),
-  toArray: require('./dist/utilities/to-array'),
-  Vocab: require('./dist/utilities/vocab'),
-  zeros: require('./dist/utilities/zeros')
+  max: require('./dist/utilities/max').default,
+  mse: require('./dist/utilities/mse').default,
+  ones: require('./dist/utilities/ones').default,
+  random: require('./dist/utilities/random').default,
+  randomWeight: require('./dist/utilities/random-weight').default,
+  randos: require('./dist/utilities/randos').default,
+  range: require('./dist/utilities/range').default,
+  toArray: require('./dist/utilities/to-array').default,
+  DataFormatter: require('./dist/utilities/data-formatter').default,
+  zeros: require('./dist/utilities/zeros').default
 };
 
-module.exports = {
+var brain = {
   crossValidate: crossValidate,
   likely: likely,
   lookup: lookup,
@@ -34,16 +34,7 @@ module.exports = {
 };
 
 if (typeof window !== 'undefined') {
-  var brain = window.brain = {};
-  var i;
-
-  for (i in module.exports) {
-    brain[i] = module.exports[i].default || module.exports[i];
-  }
-  for (i in module.exports.utilities) {
-    brain.utilities[i] = module.exports.utilities[i].default || module.exports.utilities[i];
-  }
-  for (i in module.exports.recurrent) {
-    brain.recurrent[i] = module.exports.recurrent[i].default || module.exports.recurrent[i];
-  }
+  window.brain = brain;
+} else {
+  module.exports = brain;
 }

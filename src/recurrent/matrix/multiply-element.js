@@ -4,7 +4,9 @@
  * @param {Matrix} right
  */
 export default function multiplyElement(product, left, right) {
-  for(let i = 0, weights = left.weights.length; i < weights; i++) {
+  const { weights } = left;
+  for(let i = 0; i < weights.length; i++) {
     product.weights[i] = left.weights[i] * right.weights[i];
+    product.deltas[i] = 0;
   }
 }

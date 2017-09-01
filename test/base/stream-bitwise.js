@@ -1,58 +1,51 @@
 import assert from 'assert';
 import brain from '../../src';
 
-function StreamTester(opts) {
-  if (!(this instanceof StreamTester)) return new StreamTester(opts);
+class StreamTester {
+  constructor(opts) {
+    this.wiggle = opts.wiggle || 0.1;
+    this.op = opts.op;
 
-  let self = this;
+    this.testData = opts.testData;
+    this.fakeBuffer = [];
+    this.errorThresh = opts.errorThresh || 0.004;
 
-  this.wiggle = opts.wiggle || 0.1;
-  this.op = opts.op;
+    this.net = new brain.NeuralNetwork();
 
-  this.testData = opts.testData;
-  this.fakeBuffer = [];
-  this.errorThresh = opts.errorThresh || 0.004;
+    this.trainStream = this.net.createTrainStream({
+      floodCallback: this.flood.bind(this),
+      doneTrainingCallback: this.doneTraining.bind(this),
+      errorThresh: this.errorThresh // error threshold to reach
+    });
+    this.flood();
+  }
 
-  this.net = new brain.NeuralNetwork();
-
-  this.trainStream = this.net.createTrainStream({
-    floodCallback: self.flood.bind(self),
-    doneTrainingCallback: self.doneTraining.bind(self),
-    errorThresh: self.errorThresh // error threshold to reach
-  });
-  this.flood();
-}
-
-/*
-  Every time you finish an epoch of flood,
-  you must write null to the stream
-  to let it know we have reached the end of the epoch
- */
-StreamTester.prototype = {
-  flood: function() {
-    let self = this;
-
-    for (let i = self.testData.length - 1; i >= 0; i--) {
-      self.trainStream.write(self.testData[i]);
+  /**
+   * Every time you finish an epoch of flood, you must write null to the stream to let it know we have reached the end of the epoch
+   */
+  flood() {
+    const { testData } = this;
+    for (let i = testData.length - 1; i >= 0; i--) {
+      this.trainStream.write(testData[i]);
     }
-    self.trainStream.write(null);
-  },
 
-  doneTraining: function(info) {
-    let self = this;
+    this.trainStream.end();
+  }
 
-    for (let i in self.testData) {
-      let output = self.net.run(self.testData[i].input)[0];
-      let target = self.testData[i].output;
-      assert.ok(output < (target + self.wiggle) && output > (target - self.wiggle),
-        'failed to train ' + self.op + ' - output: ' + output + ' target: ' + target);
+  doneTraining(info) {
+    const { net, testData, wiggle, op } = this;
+    for (let i in testData) {
+      let output = net.run(testData[i].input)[0];
+      let target = testData[i].output;
+      assert.ok(output < (target + wiggle) && output > (target - wiggle),
+        `failed to train ${ op } - output: ${ output } target: ${ target }`);
     }
   }
-};
+}
 
 
 function testBitwise(data, op) {
-  let st = StreamTester({
+  new StreamTester({
     testData: data,
     op: op,
     wiggle: 0.1,

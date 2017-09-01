@@ -22,9 +22,6 @@ export default class Equation {
   constructor() {
     this.inputRow = 0;
     this.states = [];
-    this.previousResults = [];
-    this.previousResultInputs = [];
-    this.allMatrices = [];
   }
 
   /**
@@ -38,7 +35,6 @@ export default class Equation {
       throw new Error('misaligned matrices');
     }
     let product = new Matrix(left.rows, left.columns);
-    this.allMatrices.push(product);
     this.states.push({
       left: left,
       right: right,
@@ -57,7 +53,6 @@ export default class Equation {
    */
   allOnes(rows, columns) {
     let product = new Matrix(rows, columns);
-    this.allMatrices.push(product);
     this.states.push({
       left: product,
       product: product,
@@ -73,7 +68,6 @@ export default class Equation {
    */
   cloneNegative(m) {
     let product = new Matrix(m.rows, m.columns);
-    this.allMatrices.push(product);
     this.states.push({
       left: m,
       product: product,
@@ -106,7 +100,6 @@ export default class Equation {
       throw new Error('misaligned matrices');
     }
     let product = new Matrix(left.rows, right.columns);
-    this.allMatrices.push(product);
     this.states.push({
       left: left,
       right: right,
@@ -128,7 +121,6 @@ export default class Equation {
       throw new Error('misaligned matrices');
     }
     let product = new Matrix(left.rows, left.columns);
-    this.allMatrices.push(product);
     this.states.push({
       left: left,
       right: right,
@@ -146,7 +138,6 @@ export default class Equation {
    */
   relu(m) {
     let product = new Matrix(m.rows, m.columns);
-    this.allMatrices.push(product);
     this.states.push({
       left: m,
       product: product,
@@ -164,7 +155,6 @@ export default class Equation {
   inputMatrixToRow(m) {
     let self = this;
     let product = new Matrix(m.columns, 1);
-    this.allMatrices.push(product);
     this.states.push({
       left: m,
       get right () {
@@ -184,7 +174,6 @@ export default class Equation {
    */
   sigmoid(m) {
     let product = new Matrix(m.rows, m.columns);
-    this.allMatrices.push(product);
     this.states.push({
       left: m,
       product: product,
@@ -201,7 +190,6 @@ export default class Equation {
    */
   tanh(m) {
     let product = new Matrix(m.rows, m.columns);
-    this.allMatrices.push(product);
     this.states.push({
       left: m,
       product: product,

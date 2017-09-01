@@ -13,13 +13,9 @@ import zeros from './utilities/zeros';
  * @constructor
  */
 export default class NeuralNetwork {
-  constructor(options) {
-    options = options || {};
-    this.learningRate = options.learningRate || 0.3;
-    this.momentum = options.momentum || 0.1;
+  constructor(options = {}) {
+    Object.assign(this, NeuralNetwork.defaults, options);
     this.hiddenSizes = options.hiddenLayers;
-
-    this.binaryThresh = options.binaryThresh || 0.5;
 
     this.sizes = null;
     this.outputLayer = null;
@@ -531,28 +527,41 @@ export default class NeuralNetwork {
    * @returns {Function}
    */
   toFunction() {
-    const json = this.toJSON();
-    const jsonString = JSON.stringify(json);
-    // return standalone function that mimics run()
-    return new Function('input', `
-      var net = ${ jsonString };
-      for (var i = 1; i < net.layers.length; i++) {
-        var layer = net.layers[i];
-        var output = {};
-        
-        for (var id in layer) {
-          var node = layer[id];
-          var sum = node.bias;
-          
-          for (var iid in node.weights) {
-            sum += node.weights[iid] * input[iid];
-          }
-          output[id] = (1 / (1 + Math.exp(-sum)));
-        }
-        input = output;
+    function nodeHandle(layers, layerNumber, nodeKey) {
+      if (layerNumber === 0) {
+        return (typeof nodeKey === 'string'
+          ? `input['${nodeKey}']`
+          : `input[${nodeKey}]`);
       }
-      return output;
-    `);
+
+      const layer = layers[layerNumber];
+      const node = layer[nodeKey];
+      let result = [node.bias];
+      for (let w in node.weights) {
+        if (node.weights[w] < 0) {
+          result.push(`${node.weights[w]}*(${nodeHandle(layers, layerNumber - 1, w)})`);
+        } else {
+          result.push(`+${node.weights[w]}*(${nodeHandle(layers, layerNumber - 1, w)})`);
+        }
+      }
+      return `1/(1+1/Math.exp(${result.join('')}))`;
+    }
+
+    const layers = this.toJSON().layers;
+    const layersAsMath = [];
+    let result;
+    for (let i in layers[layers.length - 1]) {
+      layersAsMath.push(nodeHandle(layers, layers.length - 1, i));
+    }
+    if (this.outputLookup) {
+      result = `{${
+        Object.keys(this.outputLookup)
+          .map((key, i) => `'${key}':${layersAsMath[i]}`)
+      }}`;
+    } else {
+      result = `[${layersAsMath.join(',')}]`;
+    }
+    return new Function('input', `return ${result}`);
   }
 
   /**
@@ -578,4 +587,11 @@ NeuralNetwork.trainDefaults = {
   callbackPeriod: 10,
   keepNetworkIntact: false,
   activation: 'sigmoid'
+};
+
+NeuralNetwork.defaults = {
+  learningRate: 0.3,
+  momentum: 0.1,
+  binaryThresh: 0.5,
+  hiddenLayers: null
 };

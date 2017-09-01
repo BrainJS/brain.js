@@ -11,8 +11,9 @@ exports.default = relu;
  * @param {Matrix} left
  */
 function relu(product, left) {
-  for (var i = 0, max = left.weights.length; i < max; i++) {
+  for (var i = 0; i < left.weights.length; i++) {
     product.weights[i] = Math.max(0, left.weights[i]); // relu
+    product.deltas[i] = 0;
   }
 }
 //# sourceMappingURL=relu.js.map

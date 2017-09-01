@@ -204,7 +204,7 @@ describe('equation', () => {
         output = equation.run(1);
         assert.equal(output.weights.length, 2);
         output.weights.forEach((weight, i) => {
-          output.recurrence[i] = weight;
+          output.deltas[i] = weight;
         });
         equation.runBackpropagate(1);
         equation.runBackpropagate();
