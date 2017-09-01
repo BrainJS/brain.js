@@ -75,6 +75,31 @@ export default class NeuralNetwork {
         }
       }
     }
+
+    this.setActivation();
+  }
+
+  setActivation() {
+    switch (this.activation) {
+      case 'sigmoid':
+        this.runInput = this.runInput || this.runInputSigmoid;
+        this.calculateDeltas = this.calculateDeltas || this.calculateDeltasSigmoid;
+        break;
+      case 'relu':
+        this.runInput = this.runInput || this.runInputRelu;
+        this.calculateDeltas = this.calculateDeltas || this.calculateDeltasRelu;
+        break;
+      case 'leaky-relu':
+        this.runInput = this.runInput || this.runInputLeakyRelu;
+        this.calculateDeltas = this.calculateDeltas || this.calculateDeltasLeakyRelu;
+        break;
+      case 'tanh':
+        this.runInput = this.runInput || this.runInputTanh;
+        this.calculateDeltas = this.calculateDeltas || this.calculateDeltasTanh;
+        break;
+      default:
+        throw new Error('unknown activation ' + this.activation);
+    }
   }
 
   /**
@@ -87,7 +112,7 @@ export default class NeuralNetwork {
       input = lookup.toArray(this.inputLookup, input);
     }
 
-    let output = this.runInputTanh(input);
+    let output = this.runInput(input);
 
     if (this.outputLookup) {
       output = lookup.toHash(this.outputLookup, output);
@@ -206,29 +231,6 @@ export default class NeuralNetwork {
       hiddenSizes.forEach(size => {
         sizes.push(size);
       });
-    }
-
-    if (this.runInput === null && this.adjustWeights === null) {
-      switch (options.activation) {
-        case 'sigmoid':
-          this.runInput = this.runInputSigmoid;
-          this.calculateDeltas = this.calculateDeltasSigmoid;
-          break;
-        case 'relu':
-          this.runInput = this.runInputRelu;
-          this.calculateDeltas = this.calculateDeltasRelu;
-          break;
-        case 'leaky-relu':
-          this.runInput = this.runInputLeakyRelu;
-          this.calculateDeltas = this.calculateDeltasLeakyRelu;
-          break;
-        case 'tanh':
-          this.runInput = this.runInputTanh;
-          this.calculateDeltas = this.calculateDeltasTanh;
-          break;
-        default:
-          throw new Error('unknown activation ' + options.activation);
-      }
     }
 
     sizes.unshift(inputSize);
@@ -601,7 +603,7 @@ export default class NeuralNetwork {
         }
       }
     }
-    return { layers: layers, outputLookup:!!this.outputLookup, inputLookup:!!this.inputLookup };
+    return { layers: layers, outputLookup:!!this.outputLookup, inputLookup:!!this.inputLookup, activation: this.activation };
   }
 
   /**
@@ -639,6 +641,8 @@ export default class NeuralNetwork {
         this.weights[i][j] = toArray(layer[node].weights);
       }
     }
+
+    this.setActivation();
     return this;
   }
 
@@ -692,6 +696,7 @@ export default class NeuralNetwork {
   createTrainStream(opts) {
     opts = opts || {};
     opts.neuralNetwork = this;
+    this.setActivation();
     this.trainStream = new TrainStream(opts);
     return this.trainStream;
   }
@@ -705,13 +710,13 @@ NeuralNetwork.trainDefaults = {
   learningRate: 0.3,
   callback: null,
   callbackPeriod: 10,
-  keepNetworkIntact: false,
-  activation: 'sigmoid'
+  keepNetworkIntact: false
 };
 
 NeuralNetwork.defaults = {
   learningRate: 0.3,
   momentum: 0.1,
   binaryThresh: 0.5,
-  hiddenLayers: null
+  hiddenLayers: null,
+  activation: 'sigmoid'
 };
