@@ -27,6 +27,8 @@ export default class NeuralNetwork {
     this.deltas = null;
     this.changes = null; // for momentum
     this.errors = null;
+    this.runInput = null;
+    this.calculateDeltas = null;
   }
 
   /**
@@ -98,7 +100,7 @@ export default class NeuralNetwork {
    * @param input
    * @returns {*}
    */
-  runInput(input) {
+  runInputSigmoid(input) {
     this.outputs[0] = input;  // set output state of input layer
 
     let output = null;
@@ -132,6 +134,26 @@ export default class NeuralNetwork {
         }
         //relu
         this.outputs[layer][node] = (sum < 0 ? sum = 0 : sum);
+      }
+      output = input = this.outputs[layer];
+    }
+    return output;
+  }
+
+  runInputLeakyRelu(input) {
+    this.outputs[0] = input;  // set output state of input layer
+
+    let output = null;
+    for (let layer = 1; layer <= this.outputLayer; layer++) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let weights = this.weights[layer][node];
+
+        let sum = this.biases[layer][node];
+        for (let k = 0; k < weights.length; k++) {
+          sum += weights[k] * input[k];
+        }
+        //leaky relu
+        this.outputs[layer][node] = (sum < 0 ? sum = 0 : 0.01 * sum);
       }
       output = input = this.outputs[layer];
     }
@@ -184,6 +206,29 @@ export default class NeuralNetwork {
       hiddenSizes.forEach(size => {
         sizes.push(size);
       });
+    }
+
+    if (this.runInput === null && this.adjustWeights === null) {
+      switch (options.activation) {
+        case 'sigmoid':
+          this.runInput = this.runInputSigmoid;
+          this.calculateDeltas = this.calculateDeltasSigmoid;
+          break;
+        case 'relu':
+          this.runInput = this.runInputRelu;
+          this.calculateDeltas = this.calculateDeltasRelu;
+          break;
+        case 'leaky-relu':
+          this.runInput = this.runInputLeakyRelu;
+          this.calculateDeltas = this.calculateDeltasLeakyRelu;
+          break;
+        case 'tanh':
+          this.runInput = this.runInputTanh;
+          this.calculateDeltas = this.calculateDeltasTanh;
+          break;
+        default:
+          throw new Error('unknown activation ' + options.activation);
+      }
     }
 
     sizes.unshift(inputSize);
@@ -239,7 +284,7 @@ export default class NeuralNetwork {
    *
    * @param target
    */
-  calculateDeltas(target) {
+  calculateDeltasSigmoid(target) {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       for (let node = 0; node < this.sizes[layer]; node++) {
         let output = this.outputs[layer][node];
@@ -256,6 +301,81 @@ export default class NeuralNetwork {
         }
         this.errors[layer][node] = error;
         this.deltas[layer][node] = error * output * (1 - output);
+      }
+    }
+  }
+
+  /**
+   *
+   * @param target
+   */
+  calculateDeltasRelu(target) {
+    for (let layer = this.outputLayer; layer >= 0; layer--) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let output = this.outputs[layer][node];
+
+        let error = 0;
+        if (layer == this.outputLayer) {
+          error = target[node] - output;
+        }
+        else {
+          let deltas = this.deltas[layer + 1];
+          for (let k = 0; k < deltas.length; k++) {
+            error += deltas[k] * this.weights[layer + 1][k][node];
+          }
+        }
+        this.errors[layer][node] = error;
+        this.deltas[layer][node] = error > 0 ? output : 0;
+      }
+    }
+  }
+
+  /**
+   *
+   * @param target
+   */
+  calculateDeltasLeakyRelu(target) {
+    for (let layer = this.outputLayer; layer >= 0; layer--) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let output = this.outputs[layer][node];
+
+        let error = 0;
+        if (layer == this.outputLayer) {
+          error = target[node] - output;
+        }
+        else {
+          let deltas = this.deltas[layer + 1];
+          for (let k = 0; k < deltas.length; k++) {
+            error += deltas[k] * this.weights[layer + 1][k][node];
+          }
+        }
+        this.errors[layer][node] = error;
+        this.deltas[layer][node] = error > 0 ? output : 0.01 * output;
+      }
+    }
+  }
+
+  /**
+   *
+   * @param target
+   */
+  calculateDeltasTanh(target) {
+    for (let layer = this.outputLayer; layer >= 0; layer--) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let output = this.outputs[layer][node];
+
+        let error = 0;
+        if (layer == this.outputLayer) {
+          error = target[node] - output;
+        }
+        else {
+          let deltas = this.deltas[layer + 1];
+          for (let k = 0; k < deltas.length; k++) {
+            error += deltas[k] * this.weights[layer + 1][k][node];
+          }
+        }
+        this.errors[layer][node] = error;
+        this.deltas[layer][node] = (1 - output * output) * error;
       }
     }
   }
