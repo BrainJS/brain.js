@@ -158,7 +158,7 @@ export default class NeuralNetwork {
           sum += weights[k] * input[k];
         }
         //relu
-        this.outputs[layer][node] = (sum < 0 ? sum = 0 : sum);
+        this.outputs[layer][node] = (sum < 0 ? 0 : sum);
       }
       output = input = this.outputs[layer];
     }
@@ -178,7 +178,7 @@ export default class NeuralNetwork {
           sum += weights[k] * input[k];
         }
         //leaky relu
-        this.outputs[layer][node] = (sum < 0 ? sum = 0 : 0.01 * sum);
+        this.outputs[layer][node] = (sum < 0 ? 0 : 0.01 * sum);
       }
       output = input = this.outputs[layer];
     }
@@ -195,7 +195,7 @@ export default class NeuralNetwork {
 
         let sum = this.biases[layer][node];
         for (let k = 0; k < weights.length; k++) {
-          sum += Math.tanh(weights[k] * input[k]);
+          sum += weights[k] * input[k];
         }
         //tanh
         this.outputs[layer][node] = Math.tanh(sum);
@@ -272,7 +272,7 @@ export default class NeuralNetwork {
     learningRate = learningRate || this.learningRate;
 
     // forward propagate
-    this.runInputTanh(input);
+    this.runInput(input);
 
     // back propagate
     this.calculateDeltas(target);
@@ -327,7 +327,7 @@ export default class NeuralNetwork {
           }
         }
         this.errors[layer][node] = error;
-        this.deltas[layer][node] = error > 0 ? output : 0;
+        this.deltas[layer][node] = output > 0 ? error : 0;
       }
     }
   }
@@ -352,7 +352,7 @@ export default class NeuralNetwork {
           }
         }
         this.errors[layer][node] = error;
-        this.deltas[layer][node] = error > 0 ? output : 0.01 * output;
+        this.deltas[layer][node] = output > 0 ? error : 0.01 * error;
       }
     }
   }
@@ -469,7 +469,7 @@ export default class NeuralNetwork {
     // error and misclassification statistics
     let sum = 0;
     for (let i = 0; i < data.length; i++) {
-      let output = this.runInputTanh(data[i].input);
+      let output = this.runInput(data[i].input);
       let target = data[i].output;
 
       let actual, expected;
@@ -651,6 +651,7 @@ export default class NeuralNetwork {
    * @returns {Function}
    */
   toFunction() {
+    const activation = this.activation;
     function nodeHandle(layers, layerNumber, nodeKey) {
       if (layerNumber === 0) {
         return (typeof nodeKey === 'string'
@@ -668,7 +669,19 @@ export default class NeuralNetwork {
           result.push(`+${node.weights[w]}*(${nodeHandle(layers, layerNumber - 1, w)})`);
         }
       }
-      return `1/(1+1/Math.exp(${result.join('')}))`;
+
+      switch (activation) {
+        case 'sigmoid':
+          return `1/(1+1/Math.exp(${result.join('')}))`;
+        case 'relu':
+          return `var sum = ${result.join('')};(sum < 0 ? 0 : sum);`;
+        case 'leaky-relu':
+          return `var sum = ${result.join('')};(sum < 0 ? 0 : 0.01 * sum);`;
+        case 'tanh':
+          return `Math.tanh(${result.join('')});`;
+        default:
+          throw new Error('unknown activation type ' + activation);
+      }
     }
 
     const layers = this.toJSON().layers;
