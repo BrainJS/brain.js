@@ -214,10 +214,10 @@ var NeuralNetwork = function () {
         }
         error = sum / data.length;
 
-        if (log && i % logPeriod == 0) {
+        if (log && i % logPeriod === 0) {
           log('iterations:', i, 'training error:', error);
         }
-        if (callback && i % callbackPeriod == 0) {
+        if (callback && i % callbackPeriod === 0) {
           callback({ error: error, iterations: i });
         }
       }
@@ -264,7 +264,7 @@ var NeuralNetwork = function () {
           var output = this.outputs[layer][node];
 
           var error = 0;
-          if (layer == this.outputLayer) {
+          if (layer === this.outputLayer) {
             error = target[node] - output;
           } else {
             var deltas = this.deltas[layer + 1];
@@ -369,7 +369,7 @@ var NeuralNetwork = function () {
       data = this.formatData(data);
 
       // for binary classification problems with one output node
-      var isBinary = data[0].output.length == 1;
+      var isBinary = data[0].output.length === 1;
       var falsePos = 0;
       var falseNeg = 0;
       var truePos = 0;
@@ -396,7 +396,7 @@ var NeuralNetwork = function () {
           expected = target.indexOf((0, _max2.default)(target));
         }
 
-        if (actual != expected) {
+        if (actual !== expected) {
           var misclass = data[i];
           Object.assign(misclass, {
             actual: actual,
@@ -406,13 +406,13 @@ var NeuralNetwork = function () {
         }
 
         if (isBinary) {
-          if (actual == 0 && expected == 0) {
+          if (actual === 0 && expected === 0) {
             trueNeg++;
-          } else if (actual == 1 && expected == 1) {
+          } else if (actual === 1 && expected === 1) {
             truePos++;
-          } else if (actual == 0 && expected == 1) {
+          } else if (actual === 0 && expected === 1) {
             falseNeg++;
-          } else if (actual == 1 && expected == 0) {
+          } else if (actual === 1 && expected === 0) {
             falsePos++;
           }
         }
@@ -494,9 +494,9 @@ var NeuralNetwork = function () {
 
         var nodes = void 0;
         // turn any internal arrays back into hashes for readable json
-        if (layer == 0 && this.inputLookup) {
+        if (layer === 0 && this.inputLookup) {
           nodes = Object.keys(this.inputLookup);
-        } else if (layer == this.outputLayer && this.outputLookup) {
+        } else if (layer === this.outputLayer && this.outputLookup) {
           nodes = Object.keys(this.outputLookup);
         } else {
           nodes = (0, _range2.default)(0, this.sizes[layer]);
@@ -511,7 +511,7 @@ var NeuralNetwork = function () {
             layers[layer][node].weights = {};
             for (var k in layers[layer - 1]) {
               var index = k;
-              if (layer == 1 && this.inputLookup) {
+              if (layer === 1 && this.inputLookup) {
                 index = this.inputLookup[k];
               }
               layers[layer][node].weights[k] = this.weights[layer][j][index];
@@ -541,9 +541,9 @@ var NeuralNetwork = function () {
 
       for (var i = 0; i <= this.outputLayer; i++) {
         var layer = json.layers[i];
-        if (i == 0 && (!layer[0] || json.inputLookup)) {
+        if (i === 0 && (!layer[0] || json.inputLookup)) {
           this.inputLookup = _lookup2.default.lookupFromHash(layer);
-        } else if (i == this.outputLayer && (!layer[0] || json.outputLookup)) {
+        } else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
           this.outputLookup = _lookup2.default.lookupFromHash(layer);
         }
 

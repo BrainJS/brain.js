@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/harthur-org/brain.js#readme
- *   version: 1.0.0
+ *   version: 1.0.0-rc.3
  *
  * base64-js:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -193,13 +193,11 @@ function crossValidate(Classifier, data, opts, trainOpts, k) {
   if (data.constructor === Array) {
     shuffleArray(data);
   } else {
-    (function () {
-      var newData = {};
-      shuffleArray(Object.keys(data)).forEach(function (key) {
-        newData[key] = data[key];
-      });
-      data = newData;
-    })();
+    var newData = {};
+    shuffleArray(Object.keys(data)).forEach(function (key) {
+      newData[key] = data[key];
+    });
+    data = newData;
   }
 
   var avgs = {
@@ -287,12 +285,10 @@ function likely(input, net) {
   var maxProp = null;
   var maxValue = -1;
   for (var prop in output) {
-    if (prop in output) {
-      var value = output[prop];
-      if (value > maxValue) {
-        maxProp = prop;
-        maxValue = value;
-      }
+    var value = output[prop];
+    if (value > maxValue) {
+      maxProp = prop;
+      maxValue = value;
     }
   }
   return maxProp;
@@ -623,10 +619,10 @@ var NeuralNetwork = function () {
         }
         error = sum / data.length;
 
-        if (log && i % logPeriod == 0) {
+        if (log && i % logPeriod === 0) {
           log('iterations:', i, 'training error:', error);
         }
-        if (callback && i % callbackPeriod == 0) {
+        if (callback && i % callbackPeriod === 0) {
           callback({ error: error, iterations: i });
         }
       }
@@ -673,7 +669,7 @@ var NeuralNetwork = function () {
           var output = this.outputs[layer][node];
 
           var error = 0;
-          if (layer == this.outputLayer) {
+          if (layer === this.outputLayer) {
             error = target[node] - output;
           } else {
             var deltas = this.deltas[layer + 1];
@@ -778,7 +774,7 @@ var NeuralNetwork = function () {
       data = this.formatData(data);
 
       // for binary classification problems with one output node
-      var isBinary = data[0].output.length == 1;
+      var isBinary = data[0].output.length === 1;
       var falsePos = 0;
       var falseNeg = 0;
       var truePos = 0;
@@ -805,7 +801,7 @@ var NeuralNetwork = function () {
           expected = target.indexOf((0, _max2.default)(target));
         }
 
-        if (actual != expected) {
+        if (actual !== expected) {
           var misclass = data[i];
           Object.assign(misclass, {
             actual: actual,
@@ -815,13 +811,13 @@ var NeuralNetwork = function () {
         }
 
         if (isBinary) {
-          if (actual == 0 && expected == 0) {
+          if (actual === 0 && expected === 0) {
             trueNeg++;
-          } else if (actual == 1 && expected == 1) {
+          } else if (actual === 1 && expected === 1) {
             truePos++;
-          } else if (actual == 0 && expected == 1) {
+          } else if (actual === 0 && expected === 1) {
             falseNeg++;
-          } else if (actual == 1 && expected == 0) {
+          } else if (actual === 1 && expected === 0) {
             falsePos++;
           }
         }
@@ -903,9 +899,9 @@ var NeuralNetwork = function () {
 
         var nodes = void 0;
         // turn any internal arrays back into hashes for readable json
-        if (layer == 0 && this.inputLookup) {
+        if (layer === 0 && this.inputLookup) {
           nodes = Object.keys(this.inputLookup);
-        } else if (layer == this.outputLayer && this.outputLookup) {
+        } else if (layer === this.outputLayer && this.outputLookup) {
           nodes = Object.keys(this.outputLookup);
         } else {
           nodes = (0, _range2.default)(0, this.sizes[layer]);
@@ -920,7 +916,7 @@ var NeuralNetwork = function () {
             layers[layer][node].weights = {};
             for (var k in layers[layer - 1]) {
               var index = k;
-              if (layer == 1 && this.inputLookup) {
+              if (layer === 1 && this.inputLookup) {
                 index = this.inputLookup[k];
               }
               layers[layer][node].weights[k] = this.weights[layer][j][index];
@@ -950,9 +946,9 @@ var NeuralNetwork = function () {
 
       for (var i = 0; i <= this.outputLayer; i++) {
         var layer = json.layers[i];
-        if (i == 0 && (!layer[0] || json.inputLookup)) {
+        if (i === 0 && (!layer[0] || json.inputLookup)) {
           this.inputLookup = _lookup2.default.lookupFromHash(layer);
-        } else if (i == this.outputLayer && (!layer[0] || json.outputLookup)) {
+        } else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
           this.outputLookup = _lookup2.default.lookupFromHash(layer);
         }
 
@@ -3179,8 +3175,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _stream = require('stream');
@@ -3190,6 +3184,8 @@ var _lookup = require('./lookup');
 var _lookup2 = _interopRequireDefault(_lookup);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -3303,48 +3299,40 @@ var TrainStream = function (_Writable) {
   }, {
     key: 'finishStreamIteration',
     value: function finishStreamIteration() {
-      var _this2 = this;
-
       if (this.dataFormatDetermined && this.size !== this.count) {
         this.log('This iteration\'s data length was different from the first.');
       }
 
       if (!this.dataFormatDetermined) {
-        var _ret2 = function () {
-          // create the lookup
-          _this2.neuralNetwork.inputLookup = _lookup2.default.lookupFromArray(_this2.inputKeys);
-          if (_this2.firstDatum.output.constructor !== Array) {
-            _this2.neuralNetwork.outputLookup = _lookup2.default.lookupFromArray(_this2.outputKeys);
-          }
+        // create the lookup
+        this.neuralNetwork.inputLookup = _lookup2.default.lookupFromArray(this.inputKeys);
+        if (this.firstDatum.output.constructor !== Array) {
+          this.neuralNetwork.outputLookup = _lookup2.default.lookupFromArray(this.outputKeys);
+        }
 
-          var data = _this2.neuralNetwork.formatData(_this2.firstDatum);
-          var sizes = [];
-          var inputSize = data[0].input.length;
-          var outputSize = data[0].output.length;
-          var hiddenSizes = _this2.hiddenSizes;
-          if (!hiddenSizes) {
-            sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-          } else {
-            hiddenSizes.forEach(function (size) {
-              sizes.push(size);
-            });
-          }
+        var data = this.neuralNetwork.formatData(this.firstDatum);
+        var sizes = [];
+        var inputSize = data[0].input.length;
+        var outputSize = data[0].output.length;
+        var hiddenSizes = this.hiddenSizes;
+        if (!hiddenSizes) {
+          sizes.push(Math.max(3, Math.floor(inputSize / 2)));
+        } else {
+          hiddenSizes.forEach(function (size) {
+            sizes.push(size);
+          });
+        }
 
-          sizes.unshift(inputSize);
-          sizes.push(outputSize);
+        sizes.unshift(inputSize);
+        sizes.push(outputSize);
 
-          _this2.dataFormatDetermined = true;
-          _this2.neuralNetwork.initialize(sizes);
+        this.dataFormatDetermined = true;
+        this.neuralNetwork.initialize(sizes);
 
-          if (typeof _this2.floodCallback === 'function') {
-            _this2.floodCallback();
-          }
-          return {
-            v: void 0
-          };
-        }();
-
-        if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+        if (typeof this.floodCallback === 'function') {
+          this.floodCallback();
+        }
+        return;
       }
 
       var error = this.sum / this.size;
@@ -3386,7 +3374,7 @@ var TrainStream = function (_Writable) {
 
 /**
  *
- * http://stackoverflow.com/a/21445415/1324039
+ * https://gist.github.com/telekosmos/3b62a31a5c43f40849bb
  * @param arr
  * @returns {Array}
  */
@@ -3394,13 +3382,8 @@ var TrainStream = function (_Writable) {
 
 exports.default = TrainStream;
 function uniques(arr) {
-  var a = [];
-  for (var i = 0, l = arr.length; i < l; i++) {
-    if (a.indexOf(arr[i]) === -1 && arr[i] !== '') {
-      a.push(arr[i]);
-    }
-  }
-  return a;
+  // Sets cannot contain duplicate elements, which is what we want
+  return [].concat(_toConsumableArray(new Set(arr)));
 }
 
 },{"./lookup":3,"stream":67}],33:[function(require,module,exports){
@@ -3790,7 +3773,7 @@ exports.default = toArray;
  */
 function toArray(values) {
   values = values || [];
-  if (values.constructor === Array) {
+  if (Array.isArray(values)) {
     return values;
   } else {
     return Object.keys(values).map(function (key) {

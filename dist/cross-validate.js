@@ -85,13 +85,11 @@ function crossValidate(Classifier, data, opts, trainOpts, k) {
   if (data.constructor === Array) {
     shuffleArray(data);
   } else {
-    (function () {
-      var newData = {};
-      shuffleArray(Object.keys(data)).forEach(function (key) {
-        newData[key] = data[key];
-      });
-      data = newData;
-    })();
+    var newData = {};
+    shuffleArray(Object.keys(data)).forEach(function (key) {
+      newData[key] = data[key];
+    });
+    data = newData;
   }
 
   var avgs = {

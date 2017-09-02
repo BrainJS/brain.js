@@ -15,12 +15,10 @@ function likely(input, net) {
   var maxProp = null;
   var maxValue = -1;
   for (var prop in output) {
-    if (prop in output) {
-      var value = output[prop];
-      if (value > maxValue) {
-        maxProp = prop;
-        maxValue = value;
-      }
+    var value = output[prop];
+    if (value > maxValue) {
+      maxProp = prop;
+      maxValue = value;
     }
   }
   return maxProp;

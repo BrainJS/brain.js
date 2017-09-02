@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _stream = require('stream');
@@ -15,6 +13,8 @@ var _lookup = require('./lookup');
 var _lookup2 = _interopRequireDefault(_lookup);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -128,48 +128,40 @@ var TrainStream = function (_Writable) {
   }, {
     key: 'finishStreamIteration',
     value: function finishStreamIteration() {
-      var _this2 = this;
-
       if (this.dataFormatDetermined && this.size !== this.count) {
         this.log('This iteration\'s data length was different from the first.');
       }
 
       if (!this.dataFormatDetermined) {
-        var _ret2 = function () {
-          // create the lookup
-          _this2.neuralNetwork.inputLookup = _lookup2.default.lookupFromArray(_this2.inputKeys);
-          if (_this2.firstDatum.output.constructor !== Array) {
-            _this2.neuralNetwork.outputLookup = _lookup2.default.lookupFromArray(_this2.outputKeys);
-          }
+        // create the lookup
+        this.neuralNetwork.inputLookup = _lookup2.default.lookupFromArray(this.inputKeys);
+        if (this.firstDatum.output.constructor !== Array) {
+          this.neuralNetwork.outputLookup = _lookup2.default.lookupFromArray(this.outputKeys);
+        }
 
-          var data = _this2.neuralNetwork.formatData(_this2.firstDatum);
-          var sizes = [];
-          var inputSize = data[0].input.length;
-          var outputSize = data[0].output.length;
-          var hiddenSizes = _this2.hiddenSizes;
-          if (!hiddenSizes) {
-            sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-          } else {
-            hiddenSizes.forEach(function (size) {
-              sizes.push(size);
-            });
-          }
+        var data = this.neuralNetwork.formatData(this.firstDatum);
+        var sizes = [];
+        var inputSize = data[0].input.length;
+        var outputSize = data[0].output.length;
+        var hiddenSizes = this.hiddenSizes;
+        if (!hiddenSizes) {
+          sizes.push(Math.max(3, Math.floor(inputSize / 2)));
+        } else {
+          hiddenSizes.forEach(function (size) {
+            sizes.push(size);
+          });
+        }
 
-          sizes.unshift(inputSize);
-          sizes.push(outputSize);
+        sizes.unshift(inputSize);
+        sizes.push(outputSize);
 
-          _this2.dataFormatDetermined = true;
-          _this2.neuralNetwork.initialize(sizes);
+        this.dataFormatDetermined = true;
+        this.neuralNetwork.initialize(sizes);
 
-          if (typeof _this2.floodCallback === 'function') {
-            _this2.floodCallback();
-          }
-          return {
-            v: void 0
-          };
-        }();
-
-        if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+        if (typeof this.floodCallback === 'function') {
+          this.floodCallback();
+        }
+        return;
       }
 
       var error = this.sum / this.size;
@@ -211,7 +203,7 @@ var TrainStream = function (_Writable) {
 
 /**
  *
- * http://stackoverflow.com/a/21445415/1324039
+ * https://gist.github.com/telekosmos/3b62a31a5c43f40849bb
  * @param arr
  * @returns {Array}
  */
@@ -219,12 +211,7 @@ var TrainStream = function (_Writable) {
 
 exports.default = TrainStream;
 function uniques(arr) {
-  var a = [];
-  for (var i = 0, l = arr.length; i < l; i++) {
-    if (a.indexOf(arr[i]) === -1 && arr[i] !== '') {
-      a.push(arr[i]);
-    }
-  }
-  return a;
+  // Sets cannot contain duplicate elements, which is what we want
+  return [].concat(_toConsumableArray(new Set(arr)));
 }
 //# sourceMappingURL=train-stream.js.map
