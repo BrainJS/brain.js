@@ -34,17 +34,13 @@ export default class NeuralNetwork {
   /**
    *
    * @param {} sizes
-   * @param {Boolean} keepNetworkIntact
    */
-  initialize(sizes, keepNetworkIntact) {
+  initialize(sizes) {
     this.sizes = sizes;
     this.outputLayer = this.sizes.length - 1;
-
-    if (!keepNetworkIntact) {
-      this.biases = []; // weights for bias nodes
-      this.weights = [];
-      this.outputs = [];
-    }
+    this.biases = []; // weights for bias nodes
+    this.weights = [];
+    this.outputs = [];
 
     // state for training
     this.deltas = [];
@@ -55,22 +51,17 @@ export default class NeuralNetwork {
       let size = this.sizes[layer];
       this.deltas[layer] = zeros(size);
       this.errors[layer] = zeros(size);
-      if (!keepNetworkIntact) {
-        this.outputs[layer] = zeros(size);
-      }
+      this.outputs[layer] = zeros(size);
+
 
       if (layer > 0) {
         this.biases[layer] = randos(size);
-        if (!keepNetworkIntact) {
-          this.weights[layer] = new Array(size);
-        }
+        this.weights[layer] = new Array(size);
         this.changes[layer] = new Array(size);
 
         for (let node = 0; node < size; node++) {
           let prevSize = this.sizes[layer - 1];
-          if (!keepNetworkIntact) {
-            this.weights[layer][node] = randos(prevSize);
-          }
+          this.weights[layer][node] = randos(prevSize);
           this.changes[layer][node] = zeros(prevSize);
         }
       }
@@ -221,22 +212,24 @@ export default class NeuralNetwork {
     let learningRate = _options.learningRate || this.learningRate || options.learningRate;
     let callback = options.callback;
     let callbackPeriod = options.callbackPeriod;
-    let sizes = [];
-    let inputSize = data[0].input.length;
-    let outputSize = data[0].output.length;
-    let hiddenSizes = this.hiddenSizes;
-    if (!hiddenSizes) {
-      sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-    } else {
-      hiddenSizes.forEach(size => {
-        sizes.push(size);
-      });
+    if (!options.reinforce) {
+      let sizes = [];
+      let inputSize = data[0].input.length;
+      let outputSize = data[0].output.length;
+      let hiddenSizes = this.hiddenSizes;
+      if (!hiddenSizes) {
+        sizes.push(Math.max(3, Math.floor(inputSize / 2)));
+      } else {
+        hiddenSizes.forEach(size => {
+          sizes.push(size);
+        });
+      }
+
+      sizes.unshift(inputSize);
+      sizes.push(outputSize);
+
+      this.initialize(sizes);
     }
-
-    sizes.unshift(inputSize);
-    sizes.push(outputSize);
-
-    this.initialize(sizes, options.keepNetworkIntact);
 
     let error = 1;
     let i;
@@ -720,7 +713,7 @@ NeuralNetwork.trainDefaults = {
   learningRate: 0.3,
   callback: null,
   callbackPeriod: 10,
-  keepNetworkIntact: false
+  reinforce: false
 };
 
 NeuralNetwork.defaults = {
