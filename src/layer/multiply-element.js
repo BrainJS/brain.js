@@ -1,9 +1,9 @@
 'use strict';
 
-import BaseLayer from './base';
+import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
-export default class MultiplyElementLayer extends BaseLayer {
+export default class MultiplyElement extends Base {
   constructor(inputLayer, settings) {
     super(inputLayer, settings);
 

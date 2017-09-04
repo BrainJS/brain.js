@@ -1,9 +1,9 @@
 'use strict';
 
-import BaseLayer from './base';
+import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
-export default class MultiplyLayer extends BaseLayer {
+export default class Multiply extends Base {
   constructor(inputLayer, settings) {
     super(inputLayer, settings);
 
@@ -31,7 +31,7 @@ export default class MultiplyLayer extends BaseLayer {
   }
 }
 
-function predict(weights, inputs) {
+export function predict(weights, inputs) {
   let sum = 0;
   for(let i = 0; i < this.output.x; i++) {
     sum += weights[this.thread.y][i] * inputs[i][this.thread.x];
@@ -39,8 +39,8 @@ function predict(weights, inputs) {
   return sum;
 }
 
-function learn(inputs, deltas) {
-  const delta = deltas[this.thread.y];
+export function learn(inputs, deltas) {
+  const delta = deltas[this.thread.y][this.thread.x];
   let sum = 0;
   for(let i = 0; i < this.output.x; i++) {
     sum += inputs[this.thread.y][i] * delta;

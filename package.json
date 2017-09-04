@@ -9,6 +9,7 @@
   },
   "scripts": {
     "test-base": "find ./test/base/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
+    "test-layer": "find ./test/layer/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
     "test-recurrent": "find ./test/recurrent/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
     "test-rnn": "find ./test/recurrent/ -name 'rnn.js' | xargs mocha --compilers js:babel-core/register",
     "test-gru": "find ./test/recurrent/ -name 'gru.js' | xargs mocha --compilers js:babel-core/register",

@@ -1,9 +1,9 @@
 'use strict';
 
-import BaseLayer from './base';
+import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
-export default class ConvolutionLayer extends BaseLayer {
+export default class Convolution extends Base {
   static get defaults() {
     return {
       stride: 0,

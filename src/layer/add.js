@@ -1,9 +1,9 @@
 'use strict';
 
-import BaseLayer from './base';
+import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
-export default class AddLayer extends BaseLayer {
+export default class Add extends Base {
   constructor(inputLayer, settings) {
     super(inputLayer, settings);
 
@@ -31,6 +31,6 @@ export default class AddLayer extends BaseLayer {
   }
 }
 
-function predict(weights, inputs) {
+export function predict(weights, inputs) {
   return weights[this.thread.y][this.thread.x] + inputs[this.thread.y][this.thread.x];
 }

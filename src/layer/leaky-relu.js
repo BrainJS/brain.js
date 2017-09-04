@@ -1,10 +1,10 @@
 'use strict';
 
-import BaseLayer from './base';
+import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 import { activate, derivative } from '../activation/leaky-relu';
 
-export default class LeakyReluLayer extends BaseLayer {
+export default class LeakyRelu extends Base {
   setupKernels() {
     this.predictKernel = makeKernel(function(inputs) {
       return activate(inputs[this.thread.y][this.thread.x]);

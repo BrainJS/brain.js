@@ -1,9 +1,9 @@
 'use strict';
 
-import BaseLayer from './base';
+import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
-export default class InputLayer extends BaseLayer {
+export default class Input extends Base {
   constructor(settings) {
     super(null, settings);
   }

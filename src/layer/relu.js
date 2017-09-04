@@ -1,10 +1,10 @@
 'use strict';
 
-import BaseLayer from './base';
+import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 import { activate, derivative } from '../activation/relu';
 
-export default class ReluLayer extends BaseLayer {
+export default class Relu extends Base {
   setupKernels() {
     this.predictKernel = makeKernel(function(inputs) {
       return activate(inputs[this.thread.y][this.thread.x]);

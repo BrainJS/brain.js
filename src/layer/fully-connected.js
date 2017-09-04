@@ -1,9 +1,9 @@
 'use strict';
 
-import BaseLayer from './base';
+import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
-export default class FullyConnectedLayer extends BaseLayer {
+export default class FullyConnected extends Base {
   constructor(inputLayer, settings) {
     super(inputLayer, settings);
 

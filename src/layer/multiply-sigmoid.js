@@ -1,9 +1,9 @@
 'use strict';
 
-import BaseLayer from './base';
+import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
-export default class Sigmoid extends BaseLayer {
+export default class Sigmoid extends Base {
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
       output: [this.width, this.height, this.depth],

@@ -1,4 +1,5 @@
 import crossValidate from './cross-validate';
+import layer from './layer';
 import likely from './likely';
 import lookup from './lookup';
 import NeuralNetwork from './neural-network';
@@ -10,6 +11,7 @@ import GRU from './recurrent/gru';
 
 export default {
   crossValidate,
+  layer,
   likely,
   lookup,
   NeuralNetwork,

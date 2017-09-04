@@ -7,7 +7,6 @@ import range from './utilities/range';
 import toArray from './utilities/to-array';
 import zeros from './utilities/zeros';
 import GPU from 'gpu.js';
-import SigmoidLayer from './layer/sigmoid-layer';
 
 /**
  *

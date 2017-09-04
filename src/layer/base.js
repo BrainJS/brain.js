@@ -1,6 +1,6 @@
 'use strict';
 
-export default class BaseLayer {
+export default class Base {
   static get defaults() {
     return {
       width: 1,

@@ -1,9 +1,9 @@
 'use strict';
 
-import BaseLayer from './base';
+import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
-export default class OutputLayer extends BaseLayer {
+export default class Output extends Base {
   setupKernels() {
     this.predictKernel = makeKernel();
     this.learnKernel = makeKernel();
