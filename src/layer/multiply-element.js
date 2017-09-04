@@ -25,6 +25,14 @@ export default class MultiplyElementLayer extends BaseLayer {
       output: [this.width, this.height]
     });
   }
+
+  predict() {
+    this.outputs = this.predictKernel(this.weights, this.inputLayer.output);
+  }
+
+  learn() {
+    this.deltas = this.predictKernel(this.weights, this.deltas);
+  }
 }
 
 function predict(weights, inputs) {

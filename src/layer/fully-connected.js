@@ -32,7 +32,7 @@ export default class FullyConnectedLayer extends BaseLayer {
 
     });
 
-    this.learnBiasKernel = makeKernel(learnBias, {
+    this.learnBiasesKernel = makeKernel(learnBiases, {
       output: [this.width]
     });
 
@@ -41,6 +41,16 @@ export default class FullyConnectedLayer extends BaseLayer {
       this.learnFiltersKernel(this.inputs, this.deltas);
       this.learnBiasKernel(this.biases, this.deltas);
     };
+  }
+
+  predict() {
+    this.outputs = this.predictKernel(this.inputs, this.filters, this.biases);
+  }
+
+  learn() {
+    this.filterDeltas = this.learnFilters(this.inputLayer, this.deltas);
+    this.biases = this.learnBiasesKernel(this.bias, this.deltas);
+    this.deltas = this.learnInputs(this.filters);
   }
 }
 
@@ -83,6 +93,6 @@ function learnFilters(inputs, deltas) {
   return sum;
 }
 
-function learnBias(biases, deltas) {
+function learnBiases(biases, deltas) {
   return biases[this.output.x] * deltas[this.output.x];
 }

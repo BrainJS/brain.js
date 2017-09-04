@@ -2,20 +2,20 @@
 
 import BaseLayer from './base';
 import makeKernel from '../utilities/make-kernel';
-import leakyRelu from '../activation/leaky-relu';
+import { activate, derivative } from '../activation/leaky-relu';
 
 export default class LeakyReluLayer extends BaseLayer {
   setupKernels() {
     this.predictKernel = makeKernel(function(inputs) {
       return activate(inputs[this.thread.y][this.thread.x]);
     }, {
-      functions: [leakyRelu.activate]
+      functions: [activate]
     });
 
     this.learnKernel = makeKernel(function(weights, deltas) {
-      return sigmoidDerivative(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
+      return derivative(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
     }, {
-      functions: [leakyRelu.derivative]
+      functions: [derivative]
     });
   }
 
@@ -24,6 +24,6 @@ export default class LeakyReluLayer extends BaseLayer {
   }
 
   learn() {
-    this.learnKernel(this.weights, this.deltas);
+    this.deltas = this.learnKernel(this.weights, this.deltas);
   }
 }

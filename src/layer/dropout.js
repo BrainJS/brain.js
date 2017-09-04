@@ -33,6 +33,14 @@ export default class DropoutLayer extends BaseLayer {
       output: [this.width, this.height, this.depth]
     });
   }
+
+  predict() {
+    this.outputs = this.predictKernel(this.inputs);
+  }
+
+  learn() {
+    this.deltas = this.learnKernel(this.deltas);
+  }
 }
 
 function trainingPredict(inputs) {

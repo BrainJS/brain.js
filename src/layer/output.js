@@ -1,19 +1,23 @@
 'use strict';
 
-let predict = null;
-let learn = null;
+import BaseLayer from './base';
+import makeKernel from '../utilities/make-kernel';
 
-export default class OutputLayer {
-  setup(gpu, settings) {
-    learn = gpu.createKernelMap({
-      error: calcError,
-      deltas: calcDeltas
-    }, function(outputs, target){
-      let output = outputs[this.thread.x];
+export default class OutputLayer extends BaseLayer {
+  setupKernels() {
+    this.predictKernel = makeKernel();
+    this.learnKernel = makeKernel();
+  }
+
+  predict() {
+    this.outputs = this.previousLayer.outputs;
+  }
+
+  learn() {
+    this.learnKernel = makeKernel(function(outputs, target) {
+      const output = outputs[this.thread.x];
       return calcDeltas(calcError(output, target), output);
-    })
-      .setDimensions({ dimensions })
-      .setOutputToTexture(true);
+    });
   }
 }
 
@@ -23,7 +27,7 @@ function calcDeltas(error, output) {
 
 function calcError(weights, deltas) {
   let error = 0;
-  for(let k = 0; k < this.runDimensions.x; k++){
+  for(let k = 0; k < this.output.x; k++){
     error += deltas[k] * weights[k][this.thread.x];
   }
   return error;

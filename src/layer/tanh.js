@@ -2,7 +2,7 @@
 
 import BaseLayer from './base';
 import makeKernel from '../utilities/make-kernel';
-import tanh from '../activation/tanh';
+import { derivative } from '../activation/tanh';
 
 export default class Tanh extends BaseLayer {
   setupKernels() {
@@ -11,9 +11,9 @@ export default class Tanh extends BaseLayer {
     });
 
     this.learnKernel = makeKernel(function(weights, deltas) {
-      return sigmoidDerivative(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
+      return derivative(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
     }, {
-      functions: [tanh.derivative]
+      functions: [derivative]
     });
   }
 
