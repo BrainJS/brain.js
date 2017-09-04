@@ -6,15 +6,11 @@ import { activate, derivative } from '../activation/leaky-relu';
 
 export default class LeakyRelu extends Base {
   setupKernels() {
-    this.predictKernel = makeKernel(function(inputs) {
-      return activate(inputs[this.thread.y][this.thread.x]);
-    }, {
+    this.predictKernel = makeKernel(predict, {
       functions: [activate]
     });
 
-    this.learnKernel = makeKernel(function(weights, deltas) {
-      return derivative(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
-    }, {
+    this.learnKernel = makeKernel(learn, {
       functions: [derivative]
     });
   }
@@ -26,4 +22,12 @@ export default class LeakyRelu extends Base {
   learn() {
     this.deltas = this.learnKernel(this.weights, this.deltas);
   }
+}
+
+export function predict(inputs) {
+  return activate(inputs[this.thread.y][this.thread.x]);
+}
+
+export function learn(weights, deltas) {
+  return derivative(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
 }

@@ -6,13 +6,9 @@ import { derivative } from '../activation/tanh';
 
 export default class Tanh extends Base {
   setupKernels() {
-    this.predictKernel = makeKernel(function(inputs) {
-      return Math.tanh(inputs[this.thread.y][this.thread.x]);
-    });
+    this.predictKernel = makeKernel(predict);
 
-    this.learnKernel = makeKernel(function(weights, deltas) {
-      return derivative(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
-    }, {
+    this.learnKernel = makeKernel(learn, {
       functions: [derivative]
     });
   }
@@ -24,4 +20,12 @@ export default class Tanh extends Base {
   learn() {
     this.learnKernel(this.weights, this.deltas);
   }
+}
+
+export function predict(inputs) {
+  return Math.tanh(inputs[this.thread.y][this.thread.x]);
+}
+
+export function learn(weights, deltas) {
+  return derivative(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
 }

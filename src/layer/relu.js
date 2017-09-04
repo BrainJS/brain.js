@@ -6,15 +6,11 @@ import { activate, derivative } from '../activation/relu';
 
 export default class Relu extends Base {
   setupKernels() {
-    this.predictKernel = makeKernel(function(inputs) {
-      return activate(inputs[this.thread.y][this.thread.x]);
-    }, {
+    this.predictKernel = makeKernel(predict, {
       functions: [activate]
     });
 
-    this.learnKernel = makeKernel(function(weights, deltas) {
-      return derivative(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
-    }, {
+    this.learnKernel = makeKernel(learn, {
       functions: [derivative]
     });
   }
@@ -26,4 +22,12 @@ export default class Relu extends Base {
   learn() {
     this.learnKernel(this.weights, this.deltas);
   }
+}
+
+export function predict(inputs) {
+  return activate(inputs[this.thread.y][this.thread.x]);
+}
+
+export function learn(weights, deltas) {
+  return derivative(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
 }
