@@ -1,9 +1,9 @@
 'use strict';
 
-import Base from './base';
+import BaseLayer from './base';
 import makeKernel from '../utilities/make-kernel';
 
-export default class Convolution extends Base {
+export default class ConvolutionLayer extends BaseLayer {
   static get defaults() {
     return {
       stride: 0,
@@ -181,13 +181,16 @@ export function learnFilters(inputs, deltas) {
 
 export function learnInputs(filters, deltas) {
   let sum = 0;
-  const delta = deltas[this.thread.z][this.thread.y][this.thread.x];
-  for (let filterIndex = 0; filterIndex < this.constants.filterCount; filterIndex++) {
-    for (let filterY = this.thread.y; filterY < this.constants.filterHeight; filterY++) {
-      for (let filterX = this.thread.x; filterX < this.constants.filterWidth; filterX++) {
-        sum += filters[filterIndex][filterY][filterX] * delta;
+  for (let filterY = 0; filterY <= this.thread.y; filterY++) {
+    let offsetY = this.thread.y - filterY;
+    for (let filterX = 0; filterX <= this.thread.x; filterX++) {
+      let offsetX = this.thread.x - filterX;
+      for (let filterIndex = 0; filterIndex < this.constants.filterCount; filterIndex++) {
+        sum += filters[filterIndex][offsetY][offsetX] * deltas[filterIndex][filterY][filterX];
       }
+      offsetX--;
     }
+    offsetY--;
   }
   return sum;
 }
