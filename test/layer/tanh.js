@@ -1,6 +1,7 @@
 'use strict';
 
 import assert from 'assert';
+import gpuMock from 'gpu-mock.js';
 import { predict, learn } from '../../src/layer/tanh';
 
 describe('Tanh Layer', () => {
@@ -11,28 +12,7 @@ describe('Tanh Layer', () => {
         [.4, .5, .6],
         [.7, .8, .9]
       ];
-      const context = {
-        thread: {
-          x: 0,
-          y: 0
-        },
-        output: {
-          x: 3,
-          y: 3
-        }
-      };
-      const result = [];
-
-      for (let y = 0; y < input.length; y++) {
-        const row = [];
-        for (let x = 0; x < input[y].length; x++) {
-          context.thread.x = x;
-          context.thread.y = y;
-          const result = predict.call(context, input);
-          row.push(result);
-        }
-        result.push(row);
-      }
+      const result = gpuMock(predict, { output: [3,3] })(input);
 
       assert.deepEqual(result, [
         [0.0996679946249559, 0.19737532022490412, 0.291312612451591],
@@ -54,28 +34,7 @@ describe('Tanh Layer', () => {
         [1, 1, 1],
         [1, 1, 1]
       ];
-      const context = {
-        thread: {
-          x: 0,
-          y: 0
-        },
-        output: {
-          x: 3,
-          y: 3
-        }
-      };
-      const result = [];
-
-      for (let y = 0; y < input.length; y++) {
-        const row = [];
-        for (let x = 0; x < input[y].length; x++) {
-          context.thread.x = x;
-          context.thread.y = y;
-          const result = learn.call(context, input, delta);
-          row.push(result);
-        }
-        result.push(row);
-      }
+      const result = gpuMock(learn, { output: [3,3] })(input, delta);
 
       assert.deepEqual(result, [
         [ 0.99, 0.96, 0.91 ],

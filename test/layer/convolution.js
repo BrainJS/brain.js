@@ -1,6 +1,7 @@
 'use strict';
 
 import assert from 'assert';
+import gpuMock from 'gpu-mock.js';
 import { predict, learnFilters, learnInputs } from '../../src/layer/convolution';
 
 describe('Convolution Layer', () => {
@@ -17,7 +18,8 @@ describe('Convolution Layer', () => {
         [7,8,9]
       ]];
       const biases = [1,2,3];
-      const context = {
+      const result = gpuMock(predict, {
+        output: [3,3],
         constants: {
           strideX: 1,
           strideY: 1,
@@ -29,30 +31,8 @@ describe('Convolution Layer', () => {
           inputWidth: 3,
           inputHeight: 3,
           inputDepth: 1
-        },
-        output: {
-          x: 3,
-          y: 3,
-          z: 1
-        },
-        thread: {
-          x: 0,
-          y: 0,
-          z: 0
         }
-      };
-      const result = [];
-
-      for (let y = 0; y < inputs[0].length; y++) {
-        const row = [];
-        for (let x = 0; x < inputs[0][y].length; x++) {
-          context.thread.x = x;
-          context.thread.y = y;
-          const result = predict.call(context, filters, inputs, biases);
-          row.push(result);
-        }
-        result.push(row);
-      }
+      })(filters, inputs, biases);
 
       assert.deepEqual(result, [
         [286,187,91],
@@ -74,7 +54,8 @@ describe('Convolution Layer', () => {
         [4, 5, 6],
         [7, 8, 9]
       ]];
-      const context = {
+      const result = gpuMock(learnFilters, {
+        output: [3, 3],
         constants: {
           strideX: 1,
           strideY: 1,
@@ -86,29 +67,8 @@ describe('Convolution Layer', () => {
           inputWidth: 3,
           inputHeight: 3,
           inputDepth: 1
-        },
-        thread: {
-          z: 0,
-          x: 0,
-          y: 0
-        },
-        output: {
-          x: 3,
-          y: 3
         }
-      };
-      const result = [];
-
-      for (let y = 0; y < inputs[0].length; y++) {
-        const row = [];
-        for (let x = 0; x < inputs[0][y].length; x++) {
-          context.thread.x = x;
-          context.thread.y = y;
-          const result = learnFilters.call(context, inputs, deltas);
-          row.push(result);
-        }
-        result.push(row);
-      }
+      })(inputs, deltas);
 
       //TODO: likely incorrect
       assert.deepEqual(result, [
@@ -131,7 +91,8 @@ describe('Convolution Layer', () => {
         [4, 5, 6],
         [7, 8, 9]
       ]];
-      const context = {
+      const result = gpuMock(learnInputs, {
+        output: [3,3],
         constants: {
           strideX: 1,
           strideY: 1,
@@ -143,28 +104,8 @@ describe('Convolution Layer', () => {
           inputWidth: 3,
           inputHeight: 3,
           inputDepth: 1
-        },
-        thread: {
-          x: 0,
-          y: 0
-        },
-        output: {
-          x: 3,
-          y: 3
         }
-      };
-      const result = [];
-
-      for (let y = 0; y < input[0].length; y++) {
-        const row = [];
-        for (let x = 0; x < input[0][y].length; x++) {
-          context.thread.x = x;
-          context.thread.y = y;
-          const result = learnInputs.call(context, input, delta);
-          row.push(result);
-        }
-        result.push(row);
-      }
+      })(input, delta);
 
       assert.deepEqual(result, [
         [1,4,10],

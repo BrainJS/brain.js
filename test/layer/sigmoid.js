@@ -1,6 +1,7 @@
 'use strict';
 
 import assert from 'assert';
+import gpuMock from 'gpu-mock.js';
 import { predict, learn } from '../../src/layer/sigmoid';
 
 describe('Sigmoid Layer', () => {
@@ -11,29 +12,7 @@ describe('Sigmoid Layer', () => {
         [.4, .5, .6],
         [.7, .8, .9]
       ];
-      const context = {
-        thread: {
-          x: 0,
-          y: 0
-        },
-        output: {
-          x: 3,
-          y: 3
-        }
-      };
-      const result = [];
-
-      for (let y = 0; y < input.length; y++) {
-        const row = [];
-        for (let x = 0; x < input[y].length; x++) {
-          context.thread.x = x;
-          context.thread.y = y;
-          const result = predict.call(context, input);
-          row.push(result);
-        }
-        result.push(row);
-      }
-
+      const result = gpuMock(predict, { output: [3,3] })(input);
       assert.deepEqual(result, [
         [0.52497918747894, 0.549833997312478, 0.574442516811659],
         [0.5986876601124521, 0.6224593312018546, 0.6456563062257954],
@@ -54,28 +33,7 @@ describe('Sigmoid Layer', () => {
         [1, 1, 1],
         [1, 1, 1]
       ];
-      const context = {
-        thread: {
-          x: 0,
-          y: 0
-        },
-        output: {
-          x: 3,
-          y: 3
-        }
-      };
-      const result = [];
-
-      for (let y = 0; y < input.length; y++) {
-        const row = [];
-        for (let x = 0; x < input[y].length; x++) {
-          context.thread.x = x;
-          context.thread.y = y;
-          const result = learn.call(context, input, delta);
-          row.push(result);
-        }
-        result.push(row);
-      }
+      const result = gpuMock(learn, { output: [3,3] })(input, delta);
 
       assert.deepEqual(result, [
         [ 0.09000000000000001, 0.16000000000000003, 0.21 ],

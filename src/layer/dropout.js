@@ -43,7 +43,7 @@ export default class Dropout extends Base {
   }
 }
 
-function trainingPredict(inputs) {
+export function trainingPredict(inputs) {
   if (Math.random() < this.constants.probability) {
     return 0;
   } else {
@@ -51,12 +51,12 @@ function trainingPredict(inputs) {
   }
 }
 
-function predict(inputs) {
+export function predict(inputs) {
   return inputs[this.thread.z][this.thread.y][this.thread.x] * this.constants.probability;
 }
 
 //is this actually doing... anything???
-function learn(deltas) {
+export function learn(deltas) {
   const delta = deltas[this.thread.z][this.thread.y][this.thread.x];
   if(delta !== 0) {
     return delta;

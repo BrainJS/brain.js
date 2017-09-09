@@ -30,6 +30,7 @@
     "babel-polyfill": "^6.13.0",
     "babel-preset-es2015": "^6.14.0",
     "browserify": "^13.1.0",
+    "gpu-mock.js": "^1.0.1",
     "licensify": "^3.1.2",
     "mocha": "^3.0.2",
     "sinon": "^1.17.6",

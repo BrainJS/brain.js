@@ -1,6 +1,7 @@
 'use strict';
 
 import assert from 'assert';
+import gpuMock from 'gpu-mock.js';
 import { predict, learn } from '../../src/layer/multiply';
 
 describe('Multiply Layer', () => {
@@ -16,30 +17,15 @@ describe('Multiply Layer', () => {
         [4, 5, 6],
         [7, 8, 9]
       ];
-      const context = {
-        thread: {
-          x: 0,
-          y: 0
-        },
-        output: {
-          x: 3,
-          y: 3
-        }
-      };
-      const result = [];
+      const result = gpuMock(predict, {
+        output: [3,3]
+      })(input1, input2);
 
-      for (let y = 0; y < input1.length; y++) {
-        const row = [];
-        for (let x = 0; x < input1[y].length; x++) {
-          context.thread.x = x;
-          context.thread.y = y;
-          const result = predict.call(context, input1, input2);
-          row.push(result);
-        }
-        result.push(row);
-      }
-
-      assert.deepEqual(result, [[30, 36, 42], [66, 81, 96], [102, 126, 150]]);
+      assert.deepEqual(result, [
+        [30, 36, 42],
+        [66, 81, 96],
+        [102, 126, 150]
+      ]);
     });
   });
 
@@ -51,30 +37,13 @@ describe('Multiply Layer', () => {
         [102, 126, 150]
       ];
       const delta = [[1, 1, 1],[1, 1, 1],[1, 1, 1]];
-      const context = {
-        thread: {
-          x: 0,
-          y: 0
-        },
-        output: {
-          x: 3,
-          y: 3
-        }
-      };
-      const result = [];
+      const result = gpuMock(learn, { output: [3,3] })(input, delta);
 
-      for (let y = 0; y < input.length; y++) {
-        const row = [];
-        for (let x = 0; x < input[y].length; x++) {
-          context.thread.x = x;
-          context.thread.y = y;
-          const result = learn.call(context, input, delta);
-          row.push(result);
-        }
-        result.push(row);
-      }
-
-      assert.deepEqual(result, [ [ 108, 108, 108 ], [ 243, 243, 243 ], [ 378, 378, 378 ] ] );
+      assert.deepEqual(result, [
+        [108, 108, 108],
+        [243, 243, 243],
+        [378, 378, 378]
+      ]);
     });
   });
 });
