@@ -2,7 +2,7 @@
 
 import assert from 'assert';
 import gpuMock from 'gpu-mock.js';
-import Dropout, { trainingPredict, predict, learn } from '../../src/layer/dropout';
+import Dropout, { trainingPredict, predict } from '../../src/layer/dropout';
 
 describe('Dropout Layer', () => {
   describe('.trainingPredict (forward propagation)', () => {
