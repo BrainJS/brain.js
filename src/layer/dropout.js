@@ -28,10 +28,6 @@ export default class Dropout extends Base {
         output: [this.width, this.height, this.depth]
       });
     }
-
-    this.learnKernel = makeKernel(learn, {
-      output: [this.width, this.height, this.depth]
-    });
   }
 
   predict() {
@@ -47,20 +43,10 @@ export function trainingPredict(inputs) {
   if (Math.random() < this.constants.probability) {
     return 0;
   } else {
-    return inputs[this.thread.z][this.thread.y][this.thread.x];
+    return inputs[this.thread.y][this.thread.x];
   }
 }
 
 export function predict(inputs) {
-  return inputs[this.thread.z][this.thread.y][this.thread.x] * this.constants.probability;
-}
-
-//is this actually doing... anything???
-export function learn(deltas) {
-  const delta = deltas[this.thread.z][this.thread.y][this.thread.x];
-  if(delta !== 0) {
-    return delta;
-  } else {
-    return 0;
-  }
+  return inputs[this.thread.y][this.thread.x] * this.constants.probability;
 }
