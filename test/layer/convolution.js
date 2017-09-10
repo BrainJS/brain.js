@@ -18,7 +18,7 @@ describe('Convolution Layer', () => {
         [7,8,9]
       ]];
       const biases = [1,2,3];
-      const result = gpuMock(predict, {
+      const results = gpuMock(predict, {
         output: [3,3],
         constants: {
           strideX: 1,
@@ -34,7 +34,7 @@ describe('Convolution Layer', () => {
         }
       })(filters, inputs, biases);
 
-      assert.deepEqual(result, [
+      assert.deepEqual(results, [
         [286,187,91],
         [155, 95, 43],
         [51, 27, 10]
@@ -54,7 +54,7 @@ describe('Convolution Layer', () => {
         [4, 5, 6],
         [7, 8, 9]
       ]];
-      const result = gpuMock(learnFilters, {
+      const results = gpuMock(learnFilters, {
         output: [3, 3],
         constants: {
           strideX: 1,
@@ -71,7 +71,7 @@ describe('Convolution Layer', () => {
       })(inputs, deltas);
 
       //TODO: likely incorrect
-      assert.deepEqual(result, [
+      assert.deepEqual(results, [
         [45, 33, 18],
         [39, 28, 15],
         [24, 17, 9]
@@ -81,17 +81,17 @@ describe('Convolution Layer', () => {
 
   describe('.learnInputs (back propagation)', () => {
     it('can convolution a simple matrix', () => {
-      const input = [[
+      const inputs = [[
         [1, 2, 3],
         [4, 5, 6],
         [7, 8, 9]
       ]];
-      const delta = [[
+      const deltas = [[
         [1, 2, 3],
         [4, 5, 6],
         [7, 8, 9]
       ]];
-      const result = gpuMock(learnInputs, {
+      const results = gpuMock(learnInputs, {
         output: [3,3],
         constants: {
           strideX: 1,
@@ -105,9 +105,9 @@ describe('Convolution Layer', () => {
           inputHeight: 3,
           inputDepth: 1
         }
-      })(input, delta);
+      })(inputs, deltas);
 
-      assert.deepEqual(result, [
+      assert.deepEqual(results, [
         [1,4,10],
         [8, 26, 56],
         [30, 84, 165]

@@ -7,13 +7,13 @@ import { predict, learn } from '../../src/layer/relu';
 describe('Relu Layer', () => {
   describe('.predict (forward propagation)', () => {
     it('can relu a simple matrix', () => {
-      const input = [
+      const inputs = [
         [.1, -.2, .3],
         [-.4, .5, -.6],
         [.7, -.8, .9]
       ];
-      const result = gpuMock(predict, { output: [3,3] })(input);
-      assert.deepEqual(result, [
+      const results = gpuMock(predict, { output: [3,3] })(inputs);
+      assert.deepEqual(results, [
         [.1, 0, .3],
         [0, .5, 0],
         [.7, 0, .9]
@@ -23,18 +23,18 @@ describe('Relu Layer', () => {
 
   describe('.learn (back propagation)', () => {
     it('can relu a simple matrix', () => {
-      const input = [
+      const inputs = [
         [.1, -.2, .3],
         [-.4, .5, -.6],
         [.7, -.8, .9]
       ];
-      const delta = [
+      const deltas = [
         [1, 1, 1],
         [1, 1, 1],
         [1, 1, 1]
       ];
-      const result = gpuMock(learn, { output: [3,3] })(input, delta);
-      assert.deepEqual(result, [
+      const results = gpuMock(learn, { output: [3,3] })(inputs, deltas);
+      assert.deepEqual(results, [
         [1, 0, 1],
         [0, 1, 0],
         [1, 0, 1]

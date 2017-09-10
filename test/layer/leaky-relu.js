@@ -7,16 +7,16 @@ import { predict, learn } from '../../src/layer/leaky-relu';
 describe('Leaky Relu Layer', () => {
   describe('.predict (forward propagation)', () => {
     it('can leaky relu a simple matrix', () => {
-      const input = [
+      const inputs = [
         [.1, -.2, .3],
         [-.4, .5, -.6],
         [.7, -.8, .9]
       ];
-      const result = gpuMock(predict, {
+      const results = gpuMock(predict, {
         output: [3,3]
-      })(input);
+      })(inputs);
 
-      assert.deepEqual(result, [
+      assert.deepEqual(results, [
         [.1, -.002, .3],
         [-.004, .5, -.006],
         [.7, -.008, .9]
@@ -26,20 +26,20 @@ describe('Leaky Relu Layer', () => {
 
   describe('.learn (back propagation)', () => {
     it('can leaky relu a simple matrix', () => {
-      const input = [
+      const inputs = [
         [.1, -.2, .3],
         [-.4, .5, -.6],
         [.7, -.8, .9]
       ];
-      const delta = [
+      const deltas = [
         [1, 1, 1],
         [1, 1, 1],
         [1, 1, 1]
       ];
-      const result = gpuMock(learn, {
+      const results = gpuMock(learn, {
         output: [3,3]
-      })(input, delta);
-      assert.deepEqual(result, [
+      })(inputs, deltas);
+      assert.deepEqual(results, [
         [ 1, .01, 1 ],
         [ .01, 1, .01 ],
         [ 1, .01, 1 ]
