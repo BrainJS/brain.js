@@ -35,7 +35,6 @@ export default class Base {
     this.deltas = null;
     this.weights = null;
     this.changes = null;
-    this.activation = null;
 
     const defaults = this.constructor.defaults;
     for (let p in defaults) {
