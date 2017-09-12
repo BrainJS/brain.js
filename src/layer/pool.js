@@ -36,48 +36,55 @@ export default class Pool extends Base {
   }
 }
 
-function predict(inputs) {
-  const x = (((100 / (this.output.x / this.thread.x)) / 100) * this.constants.inputWidth) - this.constants.paddingX;
-  const y = (((100 / (this.output.y / this.thread.y)) / 100) * this.constants.inputHeight) - this.constants.paddingY;
+export function predict(inputs) {
+  const x = ((this.thread.x / this.output.x) * this.constants.inputWidth) - this.constants.paddingX;
+  const y = ((this.thread.y / this.output.y) * this.constants.inputHeight) - this.constants.paddingY;
   let largestValue = -99999; // hopefully small enough ;\
-  let largestX =- 1;
-  let largestY =-1;
+  let largestX = -1;
+  let largestY = -1;
 
   // convolve centered at this particular location
   for (let filterY = 0; filterY < this.constants.filterHeight; filterY++) {
     // coordinates in the original input array coordinates
-    let inputY = y + filterY;
+    let inputY = filterY + y;
     for (let filterX = 0; filterX < this.constants.filterWidth; filterX++) {
-      let inputX = x + filterX;
-      if (inputX >= 0 && inputY < this.constants.inputHeight && inputX >= 0 && inputX < this.constants.inputWidth) {
-        for (let filterIndex = 0; filterIndex < this.constants.filterCount; filterIndex++) {
-          const input = inputs[this.thread.z][this.thread.y][this.thread.x];
-          if (input > largestValue) {
-            largestValue = input;
-            largestX = inputX;
-            largestY = inputY;
-          }
+      let inputX = filterX + x;
+      if (
+        inputY >= 0
+        && inputY < this.constants.inputHeight
+        && inputX >= 0
+        && inputX < this.constants.inputWidth
+      ) {
+        const input = inputs[this.output.z][inputY][inputX];
+        if (input > largestValue) {
+          largestValue = input;
+          largestY = inputY;
+          largestX = inputX;
         }
       }
     }
   }
-  setSwitchX(largestX);
   setSwitchY(largestY);
+  setSwitchX(largestX);
   return largestValue;
-}
-
-function setSwitchX(value) {
-  return value;
 }
 
 function setSwitchY(value) {
   return value;
 }
 
-function learn(inputs, deltas) {
-  const inputX = this.switchX[this.thread.z][this.thread.y][this.thread.x];
-  const inputY = this.switchY[this.thread.z][this.thread.y][this.thread.x];
-  const input = inputs[this.thread.x][inputY][inputX];
-  const delta = deltas[this.thread.z][this.thread.y][this.thread.x];
-  return input * delta;
+function setSwitchX(value) {
+  return value;
+}
+
+export function learn(deltas, switchY, switchX) {
+  const x = Math.floor(((this.thread.x / this.output.x) * this.constants.outputWidth) - this.constants.paddingX);
+  const y = Math.floor(((this.thread.y / this.output.y) * this.constants.outputHeight) - this.constants.paddingY);
+  const deltaXIndex = switchX[y][x];
+  const deltaYIndex = switchY[y][x];
+
+  if (deltaXIndex !== this.thread.y) return 0;
+  if (deltaYIndex !== this.thread.x) return 0;
+
+  return deltas[y][x];
 }
