@@ -1,9 +1,9 @@
 'use strict';
 
-import BaseLayer from './base';
+import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
-export default class ConvolutionLayer extends BaseLayer {
+export default class Convolution extends Base {
   static get defaults() {
     return {
       stride: 0,
@@ -50,7 +50,7 @@ export default class ConvolutionLayer extends BaseLayer {
   }
 
   setupStride(settings) {
-    const defaults = ConvolutionLayer.defaults;
+    const defaults = Convolution.defaults;
     if (settings.hasOwnProperty('stride')) {
       this.strideX = settings.stride;
       this.strideY = settings.stride;
@@ -70,7 +70,7 @@ export default class ConvolutionLayer extends BaseLayer {
   }
 
   setupPadding(settings) {
-    const defaults = ConvolutionLayer.defaults;
+    const defaults = Convolution.defaults;
     if (settings.hasOwnProperty('padding')) {
       this.paddingX = settings.padding;
       this.paddingY = settings.padding;
@@ -130,16 +130,16 @@ export default class ConvolutionLayer extends BaseLayer {
 }
 
 export function predict(inputs, filters, biases) {
-  const x = (((100 / (this.output.x / this.thread.x)) / 100) * this.constants.inputWidth) - this.constants.paddingX;
-  const y = (((100 / (this.output.y / this.thread.y)) / 100) * this.constants.inputHeight) - this.constants.paddingY;
+  const x = (((this.thread.x / this.output.x) * this.constants.inputWidth) * this.constants.strideX) - this.constants.paddingX;
+  const y = (((this.thread.y / this.output.y) * this.constants.inputHeight) * this.constants.strideY) - this.constants.paddingY;
 
   // convolve centered at this particular location
   let sum = 0;
   for (let filterY = 0; filterY < this.constants.filterHeight; filterY++) {
     // coordinates in the original input array coordinates
-    let inputY = filterY + (this.constants.strideY * y);
+    let inputY = filterY + y;
     for (let filterX = 0; filterX < this.constants.filterWidth; filterX++) {
-      let inputX = filterX + (this.constants.strideX * x);
+      let inputX = filterX + x;
       if (
         inputY >= 0
         && inputY < this.constants.inputHeight
