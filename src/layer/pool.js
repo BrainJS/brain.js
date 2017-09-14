@@ -39,7 +39,7 @@ export default class Pool extends Base {
 export function predict(inputs) {
   const x = ((this.thread.x / this.output.x) * this.constants.inputWidth) - this.constants.paddingX;
   const y = ((this.thread.y / this.output.y) * this.constants.inputHeight) - this.constants.paddingY;
-  let largestValue = -99999; // hopefully small enough ;\
+  let largestValue = -Infinity;
   let largestX = -1;
   let largestY = -1;
 
