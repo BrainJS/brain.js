@@ -1,10 +1,13 @@
-![](logo.png)
 
-# brain
+# brain.js
+
+<img src="https://cdn.rawgit.com/harthur-org/brain.js/ff595242/logo.svg" alt="Logo" width=200px/>
+
+[![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js)
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/harthur/brain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-`brain.js` is a library of JavaScript [neural networks](http://en.wikipedia.org/wiki/Artificial_neural_network).
+`brain.js` is a library of [Neural Networks](http://en.wikipedia.org/wiki/Artificial_neural_network) written in JavaScript.
 
 :bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
 
@@ -38,7 +41,7 @@ output = net.run([1, 1]);  // [0]
 ```
 
 However, There's no reason to use a neural network to figure out XOR. (-: So, here's a more involved, realistic example:
-[Demo: training a neural network to recognize color contrast](http://harthur-org.github.io/brain.js/)
+[Demo: training a neural network to recognize color contrast](https://brain.js.org/)
 
 # Usage
 
@@ -54,13 +57,13 @@ Or if you prefer yarn:
 yarn add brain.js
 ```
 
-Alternatively, you can install `brain.js` with [bower](https://bower.io/)):
+Alternatively, you can install `brain.js` with [bower](https://bower.io/):
 ```
 bower install brain.js
 ```
 
-At present NPM brain.js version is approximately 1.0.0, featuring only Feed Forward NN. All other models are beta and soon be jazzed up and battle hardened.
-You can still download the latest. They are cool!
+At present, the npm version of brain.js is approximately 1.0.0, featuring only Feed forward NN. All other models are beta and are being jazzed up and battle hardened.
+You can still download the latest, though. They are cool!
 
 ## Browser
 Download the latest [brain.js for browser](https://raw.githubusercontent.com/harthur-org/brain.js/master/browser.js). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network into your website.
@@ -69,7 +72,7 @@ Download the latest [brain.js for browser](https://raw.githubusercontent.com/har
 Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. The more training patterns, the longer it will probably take to train, but the better the network will be at classifying new patterns.
 
 ### Data format
-Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color contrast demo](http://harthur-org.github.io/brain.js/) it looks something like this:
+Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color contrast demo](https://brain.js.org/) it looks something like this:
 
 ```javascript
 var net = new brain.NeuralNetwork();
@@ -146,13 +149,24 @@ console.log(run.toString()); // copy and paste! no need to import brain.js
 
 ```javascript
 var net = new brain.NeuralNetwork({
+  activation: 'sigmoid', // activation function
   hiddenLayers: [4],
   learningRate: 0.6 // global learning rate, useful when training using streams
 });
 ```
 
+### activation
+This parameter lets you specify which activation function your neural network should use. There are currently four supported activation functions, **sigmoid** being the default: 
+
+- [sigmoid](https://www.wikiwand.com/en/Sigmoid_function)
+- [relu](https://www.wikiwand.com/en/Rectifier_(neural_networks))
+- [leaky-relu](https://www.wikiwand.com/en/Rectifier_(neural_networks))
+- [tanh](https://theclevermachine.wordpress.com/tag/tanh-function/)
+
+Here's a table (Thanks, Wikipedia!) summarizing a plethora of activation functions — [Activation Function](https://www.wikiwand.com/en/Activation_function)
+
 ### hiddenLayers
-Specify the number of hidden layers in the network and the size of each layer. For example, if you want two hidden layers - the first with 3 nodes and the second with 4 nodes, you'd give:
+You can use this to specify the number of hidden layers in the network and the size of each layer. For example, if you want two hidden layers - the first with 3 nodes and the second with 4 nodes, you'd give:
 
 ```
 hiddenLayers: [3, 4]

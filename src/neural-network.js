@@ -27,22 +27,20 @@ export default class NeuralNetwork {
     this.deltas = null;
     this.changes = null; // for momentum
     this.errors = null;
+    this.runInput = null;
+    this.calculateDeltas = null;
   }
 
   /**
    *
    * @param {} sizes
-   * @param {Boolean} keepNetworkIntact
    */
-  initialize(sizes, keepNetworkIntact) {
+  initialize(sizes) {
     this.sizes = sizes;
     this.outputLayer = this.sizes.length - 1;
-
-    if (!keepNetworkIntact) {
-      this.biases = []; // weights for bias nodes
-      this.weights = [];
-      this.outputs = [];
-    }
+    this.biases = []; // weights for bias nodes
+    this.weights = [];
+    this.outputs = [];
 
     // state for training
     this.deltas = [];
@@ -53,25 +51,45 @@ export default class NeuralNetwork {
       let size = this.sizes[layer];
       this.deltas[layer] = zeros(size);
       this.errors[layer] = zeros(size);
-      if (!keepNetworkIntact) {
-        this.outputs[layer] = zeros(size);
-      }
+      this.outputs[layer] = zeros(size);
+
 
       if (layer > 0) {
         this.biases[layer] = randos(size);
-        if (!keepNetworkIntact) {
-          this.weights[layer] = new Array(size);
-        }
+        this.weights[layer] = new Array(size);
         this.changes[layer] = new Array(size);
 
         for (let node = 0; node < size; node++) {
           let prevSize = this.sizes[layer - 1];
-          if (!keepNetworkIntact) {
-            this.weights[layer][node] = randos(prevSize);
-          }
+          this.weights[layer][node] = randos(prevSize);
           this.changes[layer][node] = zeros(prevSize);
         }
       }
+    }
+
+    this.setActivation();
+  }
+
+  setActivation() {
+    switch (this.activation) {
+      case 'sigmoid':
+        this.runInput = this.runInput || this.runInputSigmoid;
+        this.calculateDeltas = this.calculateDeltas || this.calculateDeltasSigmoid;
+        break;
+      case 'relu':
+        this.runInput = this.runInput || this.runInputRelu;
+        this.calculateDeltas = this.calculateDeltas || this.calculateDeltasRelu;
+        break;
+      case 'leaky-relu':
+        this.runInput = this.runInput || this.runInputLeakyRelu;
+        this.calculateDeltas = this.calculateDeltas || this.calculateDeltasLeakyRelu;
+        break;
+      case 'tanh':
+        this.runInput = this.runInput || this.runInputTanh;
+        this.calculateDeltas = this.calculateDeltas || this.calculateDeltasTanh;
+        break;
+      default:
+        throw new Error('unknown activation ' + this.activation);
     }
   }
 
@@ -94,11 +112,11 @@ export default class NeuralNetwork {
   }
 
   /**
-   *
+   * trains via sigmoid
    * @param input
    * @returns {*}
    */
-  runInput(input) {
+  runInputSigmoid(input) {
     this.outputs[0] = input;  // set output state of input layer
 
     let output = null;
@@ -110,7 +128,68 @@ export default class NeuralNetwork {
         for (let k = 0; k < weights.length; k++) {
           sum += weights[k] * input[k];
         }
+        //sigmoid
         this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
+      }
+      output = input = this.outputs[layer];
+    }
+    return output;
+  }
+
+  runInputRelu(input) {
+    this.outputs[0] = input;  // set output state of input layer
+
+    let output = null;
+    for (let layer = 1; layer <= this.outputLayer; layer++) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let weights = this.weights[layer][node];
+
+        let sum = this.biases[layer][node];
+        for (let k = 0; k < weights.length; k++) {
+          sum += weights[k] * input[k];
+        }
+        //relu
+        this.outputs[layer][node] = (sum < 0 ? 0 : sum);
+      }
+      output = input = this.outputs[layer];
+    }
+    return output;
+  }
+
+  runInputLeakyRelu(input) {
+    this.outputs[0] = input;  // set output state of input layer
+
+    let output = null;
+    for (let layer = 1; layer <= this.outputLayer; layer++) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let weights = this.weights[layer][node];
+
+        let sum = this.biases[layer][node];
+        for (let k = 0; k < weights.length; k++) {
+          sum += weights[k] * input[k];
+        }
+        //leaky relu
+        this.outputs[layer][node] = (sum < 0 ? 0 : 0.01 * sum);
+      }
+      output = input = this.outputs[layer];
+    }
+    return output;
+  }
+
+  runInputTanh(input) {
+    this.outputs[0] = input;  // set output state of input layer
+
+    let output = null;
+    for (let layer = 1; layer <= this.outputLayer; layer++) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let weights = this.weights[layer][node];
+
+        let sum = this.biases[layer][node];
+        for (let k = 0; k < weights.length; k++) {
+          sum += weights[k] * input[k];
+        }
+        //tanh
+        this.outputs[layer][node] = Math.tanh(sum);
       }
       output = input = this.outputs[layer];
     }
@@ -120,7 +199,7 @@ export default class NeuralNetwork {
   /**
    *
    * @param data
-   * @param options
+   * @param _options
    * @returns {{error: number, iterations: number}}
    */
   train(data, _options = {}) {
@@ -133,22 +212,24 @@ export default class NeuralNetwork {
     let learningRate = _options.learningRate || this.learningRate || options.learningRate;
     let callback = options.callback;
     let callbackPeriod = options.callbackPeriod;
-    let sizes = [];
-    let inputSize = data[0].input.length;
-    let outputSize = data[0].output.length;
-    let hiddenSizes = this.hiddenSizes;
-    if (!hiddenSizes) {
-      sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-    } else {
-      hiddenSizes.forEach(size => {
-        sizes.push(size);
-      });
+    if (!options.reinforce) {
+      let sizes = [];
+      let inputSize = data[0].input.length;
+      let outputSize = data[0].output.length;
+      let hiddenSizes = this.hiddenSizes;
+      if (!hiddenSizes) {
+        sizes.push(Math.max(3, Math.floor(inputSize / 2)));
+      } else {
+        hiddenSizes.forEach(size => {
+          sizes.push(size);
+        });
+      }
+
+      sizes.unshift(inputSize);
+      sizes.push(outputSize);
+
+      this.initialize(sizes);
     }
-
-    sizes.unshift(inputSize);
-    sizes.push(outputSize);
-
-    this.initialize(sizes, options.keepNetworkIntact);
 
     let error = 1;
     let i;
@@ -160,10 +241,10 @@ export default class NeuralNetwork {
       }
       error = sum / data.length;
 
-      if (log && (i % logPeriod == 0)) {
+      if (log && (i % logPeriod === 0)) {
         log('iterations:', i, 'training error:', error);
       }
-      if (callback && (i % callbackPeriod == 0)) {
+      if (callback && (i % callbackPeriod === 0)) {
         callback({ error: error, iterations: i });
       }
     }
@@ -198,7 +279,32 @@ export default class NeuralNetwork {
    *
    * @param target
    */
-  calculateDeltas(target) {
+  calculateDeltasSigmoid(target) {
+    for (let layer = this.outputLayer; layer >= 0; layer--) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let output = this.outputs[layer][node];
+
+        let error = 0;
+        if (layer === this.outputLayer) {
+          error = target[node] - output;
+        }
+        else {
+          let deltas = this.deltas[layer + 1];
+          for (let k = 0; k < deltas.length; k++) {
+            error += deltas[k] * this.weights[layer + 1][k][node];
+          }
+        }
+        this.errors[layer][node] = error;
+        this.deltas[layer][node] = error * output * (1 - output);
+      }
+    }
+  }
+
+  /**
+   *
+   * @param target
+   */
+  calculateDeltasRelu(target) {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       for (let node = 0; node < this.sizes[layer]; node++) {
         let output = this.outputs[layer][node];
@@ -214,7 +320,57 @@ export default class NeuralNetwork {
           }
         }
         this.errors[layer][node] = error;
-        this.deltas[layer][node] = error * output * (1 - output);
+        this.deltas[layer][node] = output > 0 ? error : 0;
+      }
+    }
+  }
+
+  /**
+   *
+   * @param target
+   */
+  calculateDeltasLeakyRelu(target) {
+    for (let layer = this.outputLayer; layer >= 0; layer--) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let output = this.outputs[layer][node];
+
+        let error = 0;
+        if (layer == this.outputLayer) {
+          error = target[node] - output;
+        }
+        else {
+          let deltas = this.deltas[layer + 1];
+          for (let k = 0; k < deltas.length; k++) {
+            error += deltas[k] * this.weights[layer + 1][k][node];
+          }
+        }
+        this.errors[layer][node] = error;
+        this.deltas[layer][node] = output > 0 ? error : 0.01 * error;
+      }
+    }
+  }
+
+  /**
+   *
+   * @param target
+   */
+  calculateDeltasTanh(target) {
+    for (let layer = this.outputLayer; layer >= 0; layer--) {
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        let output = this.outputs[layer][node];
+
+        let error = 0;
+        if (layer == this.outputLayer) {
+          error = target[node] - output;
+        }
+        else {
+          let deltas = this.deltas[layer + 1];
+          for (let k = 0; k < deltas.length; k++) {
+            error += deltas[k] * this.weights[layer + 1][k][node];
+          }
+        }
+        this.errors[layer][node] = error;
+        this.deltas[layer][node] = (1 - output * output) * error;
       }
     }
   }
@@ -293,7 +449,7 @@ export default class NeuralNetwork {
     data = this.formatData(data);
 
     // for binary classification problems with one output node
-    let isBinary = data[0].output.length == 1;
+    let isBinary = data[0].output.length === 1;
     let falsePos = 0;
     let falseNeg = 0;
     let truePos = 0;
@@ -319,7 +475,7 @@ export default class NeuralNetwork {
         expected = target.indexOf(max(target));
       }
 
-      if (actual != expected) {
+      if (actual !== expected) {
         let misclass = data[i];
         Object.assign(misclass, {
           actual: actual,
@@ -329,16 +485,13 @@ export default class NeuralNetwork {
       }
 
       if (isBinary) {
-        if (actual == 0 && expected == 0) {
+        if (actual === 0 && expected === 0) {
           trueNeg++;
-        }
-        else if (actual == 1 && expected == 1) {
+        } else if (actual === 1 && expected === 1) {
           truePos++;
-        }
-        else if (actual == 0 && expected == 1) {
+        } else if (actual === 0 && expected === 1) {
           falseNeg++;
-        }
-        else if (actual == 1 && expected == 0) {
+        } else if (actual === 1 && expected === 0) {
           falsePos++;
         }
       }
@@ -413,10 +566,10 @@ export default class NeuralNetwork {
 
       let nodes;
       // turn any internal arrays back into hashes for readable json
-      if (layer == 0 && this.inputLookup) {
+      if (layer === 0 && this.inputLookup) {
         nodes = Object.keys(this.inputLookup);
       }
-      else if (layer == this.outputLayer && this.outputLookup) {
+      else if (layer === this.outputLayer && this.outputLookup) {
         nodes = Object.keys(this.outputLookup);
       }
       else {
@@ -432,7 +585,7 @@ export default class NeuralNetwork {
           layers[layer][node].weights = {};
           for (let k in layers[layer - 1]) {
             let index = k;
-            if (layer == 1 && this.inputLookup) {
+            if (layer === 1 && this.inputLookup) {
               index = this.inputLookup[k];
             }
             layers[layer][node].weights[k] = this.weights[layer][j][index];
@@ -440,7 +593,7 @@ export default class NeuralNetwork {
         }
       }
     }
-    return { layers: layers, outputLookup:!!this.outputLookup, inputLookup:!!this.inputLookup };
+    return { layers: layers, outputLookup:!!this.outputLookup, inputLookup:!!this.inputLookup, activation: this.activation };
   }
 
   /**
@@ -459,10 +612,10 @@ export default class NeuralNetwork {
 
     for (let i = 0; i <= this.outputLayer; i++) {
       let layer = json.layers[i];
-      if (i == 0 && (!layer[0] || json.inputLookup)) {
+      if (i === 0 && (!layer[0] || json.inputLookup)) {
         this.inputLookup = lookup.lookupFromHash(layer);
       }
-      else if (i == this.outputLayer && (!layer[0] || json.outputLookup)) {
+      else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
         this.outputLookup = lookup.lookupFromHash(layer);
       }
 
@@ -478,6 +631,8 @@ export default class NeuralNetwork {
         this.weights[i][j] = toArray(layer[node].weights);
       }
     }
+
+    this.setActivation();
     return this;
   }
 
@@ -486,6 +641,7 @@ export default class NeuralNetwork {
    * @returns {Function}
    */
   toFunction() {
+    const activation = this.activation;
     function nodeHandle(layers, layerNumber, nodeKey) {
       if (layerNumber === 0) {
         return (typeof nodeKey === 'string'
@@ -503,7 +659,19 @@ export default class NeuralNetwork {
           result.push(`+${node.weights[w]}*(${nodeHandle(layers, layerNumber - 1, w)})`);
         }
       }
-      return `1/(1+1/Math.exp(${result.join('')}))`;
+
+      switch (activation) {
+        case 'sigmoid':
+          return `1/(1+1/Math.exp(${result.join('')}))`;
+        case 'relu':
+          return `var sum = ${result.join('')};(sum < 0 ? 0 : sum);`;
+        case 'leaky-relu':
+          return `var sum = ${result.join('')};(sum < 0 ? 0 : 0.01 * sum);`;
+        case 'tanh':
+          return `Math.tanh(${result.join('')});`;
+        default:
+          throw new Error('unknown activation type ' + activation);
+      }
     }
 
     const layers = this.toJSON().layers;
@@ -531,6 +699,7 @@ export default class NeuralNetwork {
   createTrainStream(opts) {
     opts = opts || {};
     opts.neuralNetwork = this;
+    this.setActivation();
     this.trainStream = new TrainStream(opts);
     return this.trainStream;
   }
@@ -544,12 +713,13 @@ NeuralNetwork.trainDefaults = {
   learningRate: 0.3,
   callback: null,
   callbackPeriod: 10,
-  keepNetworkIntact: false
+  reinforce: false
 };
 
 NeuralNetwork.defaults = {
   learningRate: 0.3,
   momentum: 0.1,
   binaryThresh: 0.5,
-  hiddenLayers: null
+  hiddenLayers: null,
+  activation: 'sigmoid'
 };
