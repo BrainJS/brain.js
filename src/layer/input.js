@@ -4,10 +4,6 @@ import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
 export default class Input extends Base {
-  constructor(settings) {
-    super(null, settings);
-  }
-
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
       output: [this.width, this.height, this.depth]

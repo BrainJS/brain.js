@@ -2,7 +2,7 @@
 
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
-
+import { setStride, setPadding } from "../utilities/layer-setup"
 export default class Convolution extends Base {
   static get defaults() {
     return {
@@ -16,21 +16,7 @@ export default class Convolution extends Base {
   }
 
   constructor(inputLayer, settings) {
-    super(inputLayer, settings);
-
-    this.stride = null;
-    this.strideX = null;
-    this.strideY = null;
-    this.setupStride(settings);
-
-    this.padding = null;
-    this.paddingX = null;
-    this.paddingY = null;
-    this.setupPadding(settings);
-
-    this.filterCount = settings.filterCount;
-    this.filterWidth = settings.filterWidth;
-    this.filterHeight = settings.filterHeight;
+    super(settings);
 
     if (this.width !== undefined) throw new Error('ConvolutionLayer.width is calculated dynamically');
     if (this.height !== undefined) throw new Error('ConvolutionLayer.height is calculated dynamically');
@@ -40,6 +26,20 @@ export default class Convolution extends Base {
     this.height = Math.floor((inputLayer.height + (this.paddingY * 2) - this.filterHeight) / this.strideY + 1);
     this.depth = this.filterCount;
 
+    this.stride = null;
+    this.strideX = null;
+    this.strideY = null;
+    setStride(this, settings);
+
+    this.padding = null;
+    this.paddingX = null;
+    this.paddingY = null;
+    setPadding(this, settings);
+
+    this.filterCount = settings.filterCount;
+    this.filterWidth = settings.filterWidth;
+    this.filterHeight = settings.filterHeight;
+
     this.bias = settings.bias;
 
     this.filters = null;
@@ -47,46 +47,8 @@ export default class Convolution extends Base {
 
     this.learnFilters = null;
     this.learnInputs = null;
-  }
-
-  setupStride(settings) {
-    const defaults = Convolution.defaults;
-    if (settings.hasOwnProperty('stride')) {
-      this.strideX = settings.stride;
-      this.strideY = settings.stride;
-    } else {
-      if (settings.hasOwnProperty('strideX')) {
-        this.strideX = settings.strideX;
-      } else {
-        this.strideX = defaults.stride;
-      }
-
-      if (settings.hasOwnProperty('strideY')) {
-        this.strideY = settings.strideY;
-      } else {
-        this.strideY = defaults.stride;
-      }
-    }
-  }
-
-  setupPadding(settings) {
-    const defaults = Convolution.defaults;
-    if (settings.hasOwnProperty('padding')) {
-      this.paddingX = settings.padding;
-      this.paddingY = settings.padding;
-    } else {
-      if (settings.hasOwnProperty('paddingX')) {
-        this.paddingX = settings.paddingX;
-      } else {
-        this.paddingX = defaults.padding;
-      }
-
-      if (settings.hasOwnProperty('paddingY')) {
-        this.paddingY = settings.paddingY;
-      } else {
-        this.paddingY = defaults.padding;
-      }
-    }
+    this.inputLayer = inputLayer;
+    inputLayer.setNextLayer(this);
   }
 
   setupKernels() {
@@ -120,11 +82,11 @@ export default class Convolution extends Base {
   }
 
   predict() {
-    this.outputs = this.predictKernel(this.inputs, this.filters, this.biases);
+    this.outputs = this.predictKernel(this.inputLayer.outputs, this.filters, this.biases);
   }
 
   learn() {
-    this.filterDeltas = this.learnFilters(this.inputLayer, this.deltas);
+    this.filterDeltas = this.learnFilters(this.inputLayer.outputs, this.deltas);
     this.deltas = this.learnInputs(this.filters);
   }
 }

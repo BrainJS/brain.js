@@ -5,6 +5,10 @@ import makeKernel from '../utilities/make-kernel';
 import { activate, derivative } from '../activation/leaky-relu';
 
 export default class LeakyRelu extends Base {
+  constructor(inputLayer, settings) {
+    super(settings);
+    this.inputLayer = inputLayer;
+  }
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
       functions: [activate]
@@ -16,7 +20,7 @@ export default class LeakyRelu extends Base {
   }
 
   predict() {
-    this.outputs = this.predictKernel(this.inputs);
+    this.outputs = this.predictKernel(this.inputLayer.outputs);
   }
 
   learn() {

@@ -9,13 +9,8 @@ export default class Base {
     };
   }
 
-  get inputs() {
-    return this.inputLayer.outputs;
-  }
-
-  constructor(inputLayer, settings) {
+  constructor(settings) {
     //layers
-    this.inputLayer = inputLayer;
     this.nextLayer = null;
     this.previousLayer = null;
 

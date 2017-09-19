@@ -4,13 +4,19 @@ import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
 export default class Output extends Base {
+  constructor(inputLayer, settings) {
+    super(settings);
+    this.inputLayer = inputLayer;
+    inputLayer.setNextLayer(this);
+  }
+
   setupKernels() {
     this.predictKernel = makeKernel();
     this.learnKernel = makeKernel();
   }
 
   predict() {
-    this.outputs = this.previousLayer.outputs;
+    this.outputs = this.inputLayer.outputs;
   }
 
   learn() {

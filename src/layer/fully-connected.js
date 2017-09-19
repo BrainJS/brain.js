@@ -5,14 +5,17 @@ import makeKernel from '../utilities/make-kernel';
 
 export default class FullyConnected extends Base {
   constructor(inputLayer, settings) {
-    super(inputLayer, settings);
+    super(settings);
 
     if (this.inputLayer.depth !== 1) {
       //TODO: make go away and handle 3d, should be fairly easy
       throw new Error('depth of 1 only supported at this time');
     }
 
-    this.width = this.inputLayer.width * this.inputLayer.height * this.inputLayer.depth;
+
+    this.width = inputLayer.width * inputLayer.height * inputLayer.depth;
+    this.inputLayer = inputLayer;
+    inputLayer.setNextLayer(this);
     this.learnInputsKernel = null;
     this.learnFiltersKernel = null;
     this.learnBiasKernel = null;
@@ -57,13 +60,13 @@ export default class FullyConnected extends Base {
 
     this.learnKernel = () => {
       this.learnInputsKernel(this.filters, this.deltas);
-      this.learnFiltersKernel(this.inputs, this.deltas);
+      this.learnFiltersKernel(this.inputLayer.outputs, this.deltas);
       this.learnBiasKernel(this.biases, this.deltas);
     };
   }
 
   predict() {
-    this.outputs = this.predictKernel(this.inputs, this.filters, this.biases);
+    this.outputs = this.predictKernel(this.inputLayer.outputs, this.filters, this.biases);
   }
 
   learn() {

@@ -6,16 +6,16 @@
  * @param weight
  * @returns {number}
  */
-export function activate(weight) {
+export function relu(weight) {
   return Math.max(0, weight);
 }
 
 /**
  * Leaky Relu derivative
  * @param weight
- * @param delta
+ * @param error
  * @returns {number}
  */
-export function derivative(weight, delta) {
-  return weight > 0 ? delta : 0;
+export function reluDerivative(weight, error) {
+  return weight > 0 ? error : 0;
 }

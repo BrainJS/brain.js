@@ -1,6 +1,8 @@
 'use strict';
 
 import Base from './base';
+import { predict as multiply } from './multiply';
+import { sigmoid, sigmoidDerivative } from '../activation/sigmoid';
 import makeKernel from '../utilities/make-kernel';
 
 export default class Sigmoid extends Base {
@@ -59,17 +61,9 @@ function predict(inputs, x, weights, biases) {
   return sigmoid(sum);
 }
 
-function sigmoid(value) {
-  return 1 / (1 + Math.exp(-value));
-}
-
 function compare(outputs, nextLayerWeights, nextLayerDeltas) {
   let output = outputs[this.thread.x];
-  return calcDeltas(output, calcError(nextLayerWeights, nextLayerDeltas));
-}
-
-function calcDeltas(output, error) {
-  return error * output * (1 - output);
+  return sigmoidDerivative(output, calcError(nextLayerWeights, nextLayerDeltas));
 }
 
 function calcError(nextWeights, nextDeltas) {

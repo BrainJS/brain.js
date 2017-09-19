@@ -15,7 +15,9 @@ export default class Dropout extends Base {
   };
 
   constructor(inputLayer, settings) {
-    super(inputLayer, settings);
+    super(settings);
+    this.inputLayer = inputLayer;
+    inputLayer.setNextLayer(this);
   }
 
   setupKernels() {
@@ -31,7 +33,7 @@ export default class Dropout extends Base {
   }
 
   predict() {
-    this.outputs = this.predictKernel(this.inputs);
+    this.outputs = this.predictKernel(this.inputLayer.outputs);
   }
 
   learn() {
@@ -39,6 +41,7 @@ export default class Dropout extends Base {
   }
 }
 
+//TODO: implement random in glsl in gpu.js
 export function trainingPredict(inputs) {
   if (Math.random() < this.constants.probability) {
     return 0;

@@ -2,14 +2,24 @@
 
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
-
+import { setPadding, setStride } from "../utilities/layer-setup"
 export default class Pool extends Base {
+  static get defaults() {
+    return {
+      stride: 0,
+      padding: 0,
+      bias: 0
+    };
+  }
+
   constructor(inputLayer, settings) {
-    super(inputLayer, settings);
-    this.strideX = null;
-    this.strideY = null;
-    this.paddingX = null;
-    this.paddingY = null;
+    super(settings);
+    this.inputLayer = inputLayer;
+    inputLayer.setNextLayer(this);
+
+    setPadding(this, settings);
+    setStride(this, settings);
+
     this.switchX = null;
     this.switchY = null;
   }

@@ -5,16 +5,16 @@
  * @param value
  * @returns {number}
  */
-export function activate(value) {
+export function sigmoid(value) {
   return 1 / (1 + Math.exp(-value));
 }
 
 /**
  *
  * @param weight
- * @param delta
+ * @param error
  * @returns {number}
  */
-export function derivative(weight, delta) {
-  return weight * (1 - weight) * delta;
+export function sigmoidDerivative(weight, error) {
+  return weight * (1 - weight) * error;
 }

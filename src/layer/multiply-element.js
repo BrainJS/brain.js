@@ -4,16 +4,25 @@ import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
 export default class MultiplyElement extends Base {
-  constructor(inputLayer, settings) {
-    super(inputLayer, settings);
+  constructor(inputLayer1, inputLayer2, settings) {
+    super(settings);
 
-    if (inputLayer.width !== this.width) {
+    if (inputLayer1.width !== inputLayer2.width) {
       throw new Error('Layer width mismatch');
     }
 
-    if (inputLayer.height !== this.height) {
+    if (inputLayer1.height !== inputLayer2.height) {
       throw new Error('Layer height mismatch');
     }
+
+    this.width = inputLayer1.width;
+    this.height = inputLayer1.height;
+
+    this.inputLayer1 = inputLayer1;
+    this.inputLayer2 = inputLayer2;
+
+    inputLayer1.setNextLayer(this);
+    inputLayer2.setNextLayer(this);
   }
 
   setupKernels() {
