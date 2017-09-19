@@ -93,7 +93,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
         throw new Error('unknown activation ' + this.activation);
     }
 
-    for(var layer = 1; layer <= this.outputLayer; layer++){
+    for(let layer = 1; layer <= this.outputLayer; layer++){
       const kernel = this.gpu.createKernelMap({weightedSum}, 
         function(weights, biases, inputs){
           return weightedSum(weights, biases, this.thread.x, inputs);
