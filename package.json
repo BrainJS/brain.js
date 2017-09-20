@@ -5,7 +5,7 @@
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/harthur-org/brain.js.git"
+    "url": "git+ssh://git@github.com/brainjs/brain.js.git"
   },
   "scripts": {
     "test-base": "find ./test/base/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
@@ -58,9 +58,9 @@
     "gru"
   ],
   "bugs": {
-    "url": "https://github.com/harthur-org/brain.js/issues"
+    "url": "https://github.com/brainjs/brain.js/issues"
   },
-  "homepage": "https://github.com/harthur-org/brain.js#readme",
+  "homepage": "https://github.com/brainjs/brain.js#readme",
   "directories": {
     "test": "test"
   },
