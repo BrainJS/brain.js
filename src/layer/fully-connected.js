@@ -4,7 +4,7 @@ import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
 export default class FullyConnected extends Base {
-  constructor(inputLayer, settings) {
+  constructor(settings, inputLayer) {
     super(settings);
 
     if (this.inputLayer.depth !== 1) {
@@ -12,10 +12,8 @@ export default class FullyConnected extends Base {
       throw new Error('depth of 1 only supported at this time');
     }
 
-
     this.width = inputLayer.width * inputLayer.height * inputLayer.depth;
     this.inputLayer = inputLayer;
-    inputLayer.setNextLayer(this);
     this.learnInputsKernel = null;
     this.learnFiltersKernel = null;
     this.learnBiasKernel = null;

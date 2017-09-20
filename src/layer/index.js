@@ -17,59 +17,59 @@ import SoftMax from './soft-max';
 import SVM from './svm';
 import Tanh from './tanh';
 
-function add(inputLayer1, inputLayer2, settings) {
-  return new Add(inputLayer1, inputLayer2, settings);
+function add(settings, inputLayer1, inputLayer2) {
+  return new Add(settings, inputLayer1, inputLayer2);
 }
-function convolution(inputLayer, settings) {
-  return new Convolution(inputLayer, settings);
+function convolution(settings, inputLayer) {
+  return new Convolution(settings, inputLayer);
 }
-function dropout(inputLayer, settings) {
-  return new Dropout(inputLayer, settings);
+function dropout(settings, inputLayer) {
+  return new Dropout(settings, inputLayer);
 }
-function fullyConnected(inputLayer, settings) {
-  return new FullyConnected(inputLayer, settings);
+function fullyConnected(settings, inputLayer) {
+  return new FullyConnected(settings, inputLayer);
 }
 function input(settings) {
   return new Input(settings);
 }
-function leakyRelu(inputLayer, settings) {
-  return new LeakyRelu(inputLayer, settings);
+function leakyRelu(inputLayer) {
+  return new LeakyRelu(inputLayer);
 }
-function multiply(inputLayer1, inputLayer2, settings) {
-  return new Multiply(inputLayer1, inputLayer2, settings);
+function multiply(inputLayer1, inputLayer2) {
+  return new Multiply(inputLayer1, inputLayer2);
 }
-function multiplyElement(inputLayer1, inputLayer2, settings) {
-  return new MultiplyElement(inputLayer1, inputLayer2, settings);
+function multiplyElement(inputLayer1, inputLayer2) {
+  return new MultiplyElement(inputLayer1, inputLayer2);
 }
-function multiplyWeights(inputLayer, settings) {
-  return new MultiplyWeights(inputLayer, settings);
+function multiplyWeights(settings, inputLayer) {
+  return new MultiplyWeights(settings, inputLayer);
 }
-function output(inputLayer, settings) {
-  return new Output(inputLayer, settings);
+function output(settings, inputLayer) {
+  return new Output(settings, inputLayer);
 }
-function pool(inputLayer, settings) {
-  return new Pool(inputLayer, settings);
+function pool(settings, inputLayer) {
+  return new Pool(settings, inputLayer);
 }
-function regression(inputLayer, settings) {
-  return new Regression(inputLayer, settings);
+function regression(settings, inputLayer) {
+  return new Regression(settings, inputLayer);
 }
-function relu(inputLayer, settings) {
-  return new Relu(inputLayer, settings);
+function relu(inputLayer) {
+  return new Relu(inputLayer);
 }
-function sigmoid(inputLayer, settings) {
-  return new Sigmoid(inputLayer, settings);
+function sigmoid(inputLayer) {
+  return new Sigmoid(inputLayer);
 }
-function softMax(inputLayer, settings) {
-  return new SoftMax(inputLayer, settings);
+function softMax(settings, inputLayer) {
+  return new SoftMax(settings, inputLayer);
 }
-function svm(inputLayer, settings) {
-  return new SVM(inputLayer, settings);
+function svm(settings, inputLayer) {
+  return new SVM(settings, inputLayer);
 }
-function tanh(inputLayer, settings) {
-  return new Tanh(inputLayer, settings);
+function tanh(inputLayer) {
+  return new Tanh(inputLayer);
 }
 
-export default {
+export {
   Add,
   add,
   Base,

@@ -4,10 +4,9 @@ import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
 export default class Output extends Base {
-  constructor(inputLayer, settings) {
+  constructor(settings, inputLayer) {
     super(settings);
     this.inputLayer = inputLayer;
-    inputLayer.setNextLayer(this);
   }
 
   setupKernels() {

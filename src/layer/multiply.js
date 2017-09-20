@@ -4,7 +4,7 @@ import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
 export default class Multiply extends Base {
-  constructor(inputLayer1, inputLayer2, settings) {
+  constructor(settings, inputLayer1, inputLayer2) {
     super(settings);
 
     if (inputLayer1.width !== inputLayer2.height) {
@@ -15,8 +15,6 @@ export default class Multiply extends Base {
     this.inputLayer2 = inputLayer2;
     this.width = inputLayer1.width;
     this.height = inputLayer2.height;
-    inputLayer1.setNextLayer(this);
-    inputLayer2.setNextLayer(this);
   }
 
   setupKernels() {

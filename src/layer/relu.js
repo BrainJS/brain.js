@@ -5,12 +5,12 @@ import makeKernel from '../utilities/make-kernel';
 import { relu, reluDerivative } from '../activation/relu';
 
 export default class Relu extends Base {
-  constructor(inputLayer, settings) {
-    super(settings);
-
+  constructor(inputLayer) {
+    super();
+    this.width = inputLayer.width;
+    this.height = inputLayer.height;
+    this.depth = inputLayer.depth;
     this.inputLayer = inputLayer;
-
-    inputLayer.setNextLayer(this);
   }
 
   setupKernels() {

@@ -8,14 +8,15 @@ export default class Pool extends Base {
     return {
       stride: 0,
       padding: 0,
-      bias: 0
+      bias: 0,
+      filterWidth: 0,
+      filterHeight: 0
     };
   }
 
-  constructor(inputLayer, settings) {
+  constructor(settings, inputLayer) {
     super(settings);
     this.inputLayer = inputLayer;
-    inputLayer.setNextLayer(this);
 
     setPadding(this, settings);
     setStride(this, settings);

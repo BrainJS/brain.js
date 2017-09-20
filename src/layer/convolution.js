@@ -15,12 +15,8 @@ export default class Convolution extends Base {
     };
   }
 
-  constructor(inputLayer, settings) {
+  constructor(settings, inputLayer) {
     super(settings);
-
-    if (this.width !== undefined) throw new Error('ConvolutionLayer.width is calculated dynamically');
-    if (this.height !== undefined) throw new Error('ConvolutionLayer.height is calculated dynamically');
-    if (this.depth !== undefined) throw new Error('ConvolutionLayer.depth is calculated dynamically');
 
     this.width = Math.floor((inputLayer.width + (this.paddingX * 2) - this.filterWidth) / this.strideX + 1);
     this.height = Math.floor((inputLayer.height + (this.paddingY * 2) - this.filterHeight) / this.strideY + 1);
@@ -48,7 +44,6 @@ export default class Convolution extends Base {
     this.learnFilters = null;
     this.learnInputs = null;
     this.inputLayer = inputLayer;
-    inputLayer.setNextLayer(this);
   }
 
   setupKernels() {

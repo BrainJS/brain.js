@@ -3,19 +3,19 @@
 export function setStride(layer, settings) {
   const defaults = layer.constructor.defaults;
   if (settings.hasOwnProperty('stride')) {
-    this.strideX = settings.stride;
-    this.strideY = settings.stride;
+    layer.strideX = settings.stride;
+    layer.strideY = settings.stride;
   } else {
     if (settings.hasOwnProperty('strideX')) {
-      this.strideX = settings.strideX;
+      layer.strideX = settings.strideX;
     } else {
-      this.strideX = defaults.stride;
+      layer.strideX = defaults.stride;
     }
 
     if (settings.hasOwnProperty('strideY')) {
-      this.strideY = settings.strideY;
+      layer.strideY = settings.strideY;
     } else {
-      this.strideY = defaults.stride;
+      layer.strideY = defaults.stride;
     }
   }
 }
@@ -23,19 +23,19 @@ export function setStride(layer, settings) {
 export function setPadding(layer, settings) {
   const defaults = layer.constructor.defaults;
   if (settings.hasOwnProperty('padding')) {
-    this.paddingX = settings.padding;
-    this.paddingY = settings.padding;
+    layer.paddingX = settings.padding;
+    layer.paddingY = settings.padding;
   } else {
     if (settings.hasOwnProperty('paddingX')) {
-      this.paddingX = settings.paddingX;
+      layer.paddingX = settings.paddingX;
     } else {
-      this.paddingX = defaults.padding;
+      layer.paddingX = defaults.padding;
     }
 
     if (settings.hasOwnProperty('paddingY')) {
-      this.paddingY = settings.paddingY;
+      layer.paddingY = settings.paddingY;
     } else {
-      this.paddingY = defaults.padding;
+      layer.paddingY = defaults.padding;
     }
   }
 }

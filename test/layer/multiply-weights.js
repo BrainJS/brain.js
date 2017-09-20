@@ -2,9 +2,9 @@
 
 import assert from 'assert';
 import gpuMock from 'gpu-mock.js';
-import { predict, learn } from '../../src/layer/multiply';
+import { predict, learn } from '../../src/layer/multiply-weights';
 
-describe('Multiply Layer', () => {
+describe('Multiply Weights Layer', () => {
   describe('.predict (forward propagation)', () => {
     it('can multiply a simple matrix', () => {
       const inputs1 = [

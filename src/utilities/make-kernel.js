@@ -2,6 +2,7 @@
 let gpu = null;
 
 export default function(fn, settings) {
+  return;
   if (settings.hasOwnProperty('map')) {
     return gpu.createKernelMap(settings.map, fn, settings)
       .setOutputToTexture(true);

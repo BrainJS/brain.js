@@ -15,18 +15,42 @@ import zeros from './utilities/zeros';
 export default class FeedForward {
   constructor(options = {}) {
     Object.assign(this, FeedForward.defaults, options);
+    this.layers = null;
+    this.connectLayers();
   }
 
-  initialize(layers) {
-    this.layers = [];
-    for (let i = 0; i < layers.length; i++) {
-      this.layers.push(layers[i]());
+  connectLayers() {
+    const inputLayer = this.inputLayer();
+    this.layers = [inputLayer];
+    let previousLayer = inputLayer;
+    for (let i = 0; i < this.hiddenLayers.length; i++) {
+      const hiddenLayer = this.hiddenLayers[i](previousLayer);
+      this.layers.push(hiddenLayer);
+      previousLayer = hiddenLayer;
     }
+    this.layers.push(this.outputLayer(previousLayer));
 
-    for (let i = 1; i < layers.length; i++) {
-      this.layers[i].setPreviousLayer(this.layers[i - 1]);
-      this.layers[i].setNextLayer(this.layers[i + 1]);
+    this.connectNestedLayers();
+  }
+
+  connectNestedLayers() {
+    for (let i = 0; i < this.layers.length; i++) {
+      const layer = this.layers[i];
+      if (
+        layer.hasOwnProperty('inputLayer')
+        && this.layers.indexOf(layer.inputLayer) === -1) {
+        let nestedLayer = layer;
+        while (nestedLayer = nestedLayer.inputLayer) {
+          if (this.layers.indexOf(nestedLayer) === -1) {
+            this.layers.splice(i, 0, nestedLayer);
+          }
+        }
+      }
     }
+  }
+
+  initialize() {
+    throw new Error('not yet implemented');
   }
 
   /**
@@ -271,5 +295,6 @@ FeedForward.defaults = {
   momentum: 0.1,
   binaryThresh: 0.5,
   hiddenLayers: null,
-  layers: null
+  inputLayer: null,
+  outputLayer: null
 };

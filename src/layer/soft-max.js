@@ -1,7 +1,10 @@
 import Base from './base';
 
-class SoftMax extends Base {
-
+export default class SoftMax extends Base {
+  constructor(settings, inputLayer) {
+    super(settings);
+    this.inputLayer = inputLayer;
+  }
 }
 
 function getMaxInput(inputs) {

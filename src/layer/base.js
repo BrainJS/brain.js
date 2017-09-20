@@ -9,10 +9,10 @@ export default class Base {
     };
   }
 
-  constructor(settings) {
+  constructor(settings = {}) {
     //layers
-    this.nextLayer = null;
-    this.previousLayer = null;
+    this.inputLayer = null;
+    this.inputLayers = null;
 
     //size
     this.width = null;
@@ -38,8 +38,6 @@ export default class Base {
         ? settings[p]
         : defaults[p];
     }
-
-    this.setupKernels();
   }
 
   setNextLayer(nextLayer) {

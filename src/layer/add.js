@@ -4,7 +4,7 @@ import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
 export default class Add extends Base {
-  constructor(inputLayer1, inputLayer2, settings) {
+  constructor(settings, inputLayer1, inputLayer2) {
     super(settings);
 
     if (inputLayer1.width !== inputLayer2.width) {
@@ -20,9 +20,6 @@ export default class Add extends Base {
 
     this.inputLayer1 = inputLayer1;
     this.inputLayer2 = inputLayer2;
-
-    inputLayer1.setNextLayer(this);
-    inputLayer2.setNextLayer(this);
   }
 
   setupKernels() {

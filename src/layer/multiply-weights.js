@@ -4,11 +4,11 @@ import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
 export default class MultiplyWeights extends Base {
-  constructor(inputLayer, settings) {
+  constructor(settings, inputLayer) {
     super(settings);
     this.width = inputLayer.width;
     this.height = inputLayer.height;
-    inputLayer.setNextLayer(this);
+    this.inputLayer = inputLayer;
   }
 
   setupKernels() {
