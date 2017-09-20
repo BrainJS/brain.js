@@ -1,7 +1,7 @@
 'use strict';
 import assert from 'assert';
 import FeedForward from '../../src/feed-forward';
-import { input, output, convolution, relu, pool, softMax } from '../../src/layer';
+import { input, Input, output, Output, convolution, Convolution, relu, Relu, pool, Pool, softMax, SoftMax } from '../../src/layer';
 
 describe('FeedForward Neural Network', () => {
   describe('instantiation', () => {
@@ -22,6 +22,17 @@ describe('FeedForward Neural Network', () => {
         });
 
         assert.equal(net.layers.length, 9);
+        assert.deepEqual(net.layers.map(layer => layer.constructor), [
+          Input,
+          Convolution,
+          Relu,
+          Pool,
+          Convolution,
+          Relu,
+          Pool,
+          SoftMax,
+          Output
+        ]);
       });
     });
     describe('functional hiddenLayer option', () => {
@@ -45,6 +56,17 @@ describe('FeedForward Neural Network', () => {
         outputLayer: () => output({ width: 10 })
       });
       assert.equal(net.layers.length, 9);
+      assert.deepEqual(net.layers.map(layer => layer.constructor), [
+        Input,
+        Convolution,
+        Relu,
+        Pool,
+        Convolution,
+        Relu,
+        Pool,
+        SoftMax,
+        Output
+      ]);
     });
   });
 });
