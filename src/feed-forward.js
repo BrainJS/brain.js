@@ -38,13 +38,11 @@ export default class FeedForward {
       const layer = this.layers[i];
       if (
         layer.hasOwnProperty('inputLayer')
-        && this.layers.indexOf(layer.inputLayer) === -1) {
-        let nestedLayer = layer;
-        while (nestedLayer = nestedLayer.inputLayer) {
-          if (this.layers.indexOf(nestedLayer) === -1) {
-            this.layers.splice(i, 0, nestedLayer);
-          }
-        }
+        && this.layers.indexOf(layer.inputLayer) !== -1) continue;
+      let nestedLayer = layer;
+      while (nestedLayer = nestedLayer.inputLayer) {
+        if (this.layers.indexOf(nestedLayer) !== -1) continue;
+        this.layers.splice(i, 0, nestedLayer);
       }
     }
   }

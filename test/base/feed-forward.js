@@ -18,7 +18,7 @@ describe('FeedForward Neural Network', () => {
             (input) => pool({ width: 3, stride: 3 }, input),
             (input) => softMax({ width: 10 }, input)
           ],
-          outputLayer: () => output({ width: 10 })
+          outputLayer: (input) => output({ width: 10 }, input)
         });
 
         assert.equal(net.layers.length, 9);
@@ -53,7 +53,7 @@ describe('FeedForward Neural Network', () => {
             )
           )
         ],
-        outputLayer: () => output({ width: 10 })
+        outputLayer: (input) => output({ width: 10 }, input)
       });
       assert.equal(net.layers.length, 9);
       assert.deepEqual(net.layers.map(layer => layer.constructor), [
