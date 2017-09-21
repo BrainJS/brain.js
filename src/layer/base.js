@@ -40,14 +40,6 @@ export default class Base {
     }
   }
 
-  setNextLayer(nextLayer) {
-    this.nextLayer = nextLayer;
-  }
-
-  setPreviousLayer(previousLayer) {
-    this.previousLayer = previousLayer;
-  }
-
   setupKernels() {
     throw new Error('setupKernels not implemented on BaseLayer');
   }

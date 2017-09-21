@@ -16,7 +16,6 @@ export default class FeedForward {
   constructor(options = {}) {
     Object.assign(this, FeedForward.defaults, options);
     this.layers = null;
-    this.connectLayers();
   }
 
   connectLayers() {
@@ -48,7 +47,11 @@ export default class FeedForward {
   }
 
   initialize() {
-    throw new Error('not yet implemented');
+    this.connectLayers();
+    for (let i = 0; i < this.layers.length; i++) {
+      const layer = this.layers[i];
+      layer.setupKernels();
+    }
   }
 
   /**
@@ -69,12 +72,17 @@ export default class FeedForward {
     return output;
   }
 
-  runInput() {
-    throw new Error('not yet implemented');
+  runInput(input) {
+    this.layers[0].predict(input);
+    for (let i = 1; i < this.layers.length; i++) {
+      this.layers[i].predict();
+    }
   }
 
   calculateDeltas() {
-    throw new Error('not yet implemented');
+    for (let i = this.layers.length - 1; i > -1; i--) {
+      this.layers[i].compare();
+    }
   }
 
   /**
@@ -108,7 +116,7 @@ export default class FeedForward {
     this.calculateDeltas(target);
     this.adjustWeights(learningRate);
 
-    let error = mse(this.errors[this.outputLayer]);
+    let error = mse(this.outputLayer.errors.toArray());
     return error;
   }
 
@@ -117,7 +125,9 @@ export default class FeedForward {
    * @param learningRate
    */
   adjustWeights(learningRate) {
-    throw new Error('not yet implemented');
+    for (let i = 0; i < this.layers.length; i++) {
+      this.layers[i].learn(learningRate);
+    }
   }
 
   /**
