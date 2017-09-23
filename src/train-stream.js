@@ -27,6 +27,7 @@ export default class TrainStream extends Writable {
     this.outputKeys = []; // keeps track of keys seen
     this.i = 0; // keep track of the for loop i variable that we got rid of
     this.iterations = opts.iterations || 20000;
+    this.learningRate = opts.learningRate || 0.1;
     this.errorThresh = opts.errorThresh || 0.005;
     this.log = opts.log ? (typeof opts.log === 'function' ? opts.log : console.log) : false;
     this.logPeriod = opts.logPeriod || 10;
@@ -81,7 +82,7 @@ export default class TrainStream extends Writable {
    * @param datum
    */
   trainDatum(datum) {
-    let err = this.neuralNetwork.trainPattern(datum.input, datum.output);
+    let err = this.neuralNetwork.trainPattern(datum.input, datum.output, this.learningRate);
     this.sum += err;
   }
 
