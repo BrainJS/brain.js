@@ -2,10 +2,7 @@ import lookup from './lookup';
 import TrainStream from './train-stream';
 import max from './utilities/max';
 import mse from './utilities/mse';
-import randos from './utilities/randos';
-import range from './utilities/range';
-import toArray from './utilities/to-array';
-import zeros from './utilities/zeros';
+import layerFromJSON from './utilities/layer-from-json';
 
 /**
  *
@@ -19,15 +16,16 @@ export default class FeedForward {
   }
 
   connectLayers() {
-    const inputLayer = this.inputLayer();
-    this.layers = [inputLayer];
+    this.layers = [];
+    const inputLayer = this.inputLayer(null, this.layers.length);
+    this.layers.push(inputLayer);
     let previousLayer = inputLayer;
     for (let i = 0; i < this.hiddenLayers.length; i++) {
-      const hiddenLayer = this.hiddenLayers[i](previousLayer);
+      const hiddenLayer = this.hiddenLayers[i](previousLayer, this.layers.length);
       this.layers.push(hiddenLayer);
       previousLayer = hiddenLayer;
     }
-    this.layers.push(this.outputLayer(previousLayer));
+    this.layers.push(this.outputLayer(previousLayer, this.layers.length));
 
     this.connectNestedLayers();
   }
@@ -92,7 +90,36 @@ export default class FeedForward {
    * @returns {{error: number, iterations: number}}
    */
   train(data, _options = {}) {
-    throw new Error('not yet implemented');
+    const options = Object.assign({}, FeedForward.trainDefaults, _options);
+    data = this.formatData(data);
+    let iterations = options.iterations;
+    let errorThresh = options.errorThresh;
+    let log = options.log === true ? console.log : options.log;
+    let logPeriod = options.logPeriod;
+    let learningRate = _options.learningRate || this.learningRate || options.learningRate;
+    let callback = options.callback;
+    let callbackPeriod = options.callbackPeriod;
+    if (!options.reinforce) {
+      this.initialize();
+    }
+
+    let error = 1;
+    let i;
+    for (i = 0; i < iterations && error > errorThresh; i++) {
+      let sum = 0;
+      for (let j = 0; j < data.length; j++) {
+        let err = this.trainPattern(data[j].input, data[j].output, learningRate);
+        sum += err;
+      }
+      error = sum / data.length;
+
+      if (log && (i % logPeriod === 0)) {
+        log('iterations:', i, 'training error:', error);
+      }
+      if (callback && (i % callbackPeriod === 0)) {
+        callback({ error: error, iterations: i });
+      }
+    }
 
     return {
       error: error,
@@ -257,16 +284,54 @@ export default class FeedForward {
    *
    */
   toJSON() {
-    throw new Error('not yet implemented');
+    const jsonLayers = [];
+    for (let i = 0; i < this.layers.length; i++) {
+      const layer = this.layers[i];
+      const jsonLayer = {};
+      const jsonKeys = layer.constructor.jsonKeys;
+      for (let keyIndex = 0; keyIndex < jsonKeys.length; keyIndex++) {
+        const key = jsonKeys[keyIndex];
+        jsonLayer[key] = layer[key];
+      }
+      jsonLayer.type = layer.constructor.name;
+      if (layer.inputLayer) {
+        jsonLayer.inputLayerIndex = this.layers.indexOf(layer.inputLayer);
+      } else if (layer.inputLayers) {
+        jsonLayer.inputLayerIndexes = layer.inputLayers.map((inputLayer) => this.layers.indexOf(inputLayer));
+      }
+      jsonLayers.push(jsonLayer);
+    }
+    const json = {
+      layers: jsonLayers
+    };
+    return json;
   }
 
   /**
    *
    * @param json
-   * @returns {NeuralNetwork}
+   * @param [getLayer]
+   * @returns {FeedForward}
    */
-  fromJSON(json) {
-    throw new Error('not yet implemented');
+  static fromJSON(json, getLayer) {
+    const jsonLayers = json.layers;
+    const layers = [];
+    const inputLayer = layerFromJSON(jsonLayers[0]) || getLayer(jsonLayers[0]);
+    layers.push(inputLayer);
+    for (let i = 1; i < jsonLayers.length; i++) {
+      const jsonLayer = jsonLayers[i];
+      if (jsonLayer.hasOwnProperty('inputLayerIndex')) {
+        const inputLayer = layers[jsonLayer.inputLayerIndex];
+        layers.push(layerFromJSON(jsonLayer, inputLayer) || getLayer(jsonLayer, inputLayer));
+      } else if (jsonLayer.hasOwnProperty('inputLayerIndexes')) {
+        const inputLayers = jsonLayer.inputLayerIndexes.map((inputLayerIndex) => layers[inputLayerIndex]);
+        layers.push(layerFromJSON(jsonLayer, inputLayers) || getLayer(jsonLayer, inputLayers));
+      }
+    }
+
+    const net = new FeedForward(json);
+    net.layers = layers;
+    return net;
   }
 
   /**

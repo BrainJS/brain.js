@@ -9,6 +9,17 @@ export default class Base {
     };
   }
 
+  static get jsonKeys() {
+    return [
+      'width',
+      'height',
+      'depth',
+      'outputs',
+      'errors',
+      'weights'
+    ];
+  }
+
   constructor(settings = {}) {
     //layers
     this.inputLayer = null;

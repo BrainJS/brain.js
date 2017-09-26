@@ -4,22 +4,21 @@ import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
 export default class Add extends Base {
-  constructor(settings, inputLayer1, inputLayer2) {
+  constructor(settings, inputLayers) {
     super(settings);
 
-    if (inputLayer1.width !== inputLayer2.width) {
+    if (inputLayers[0].width !== inputLayers[1].width) {
       throw new Error('Layer width mismatch');
     }
 
-    if (inputLayer1.height !== inputLayer2.height) {
+    if (inputLayers[0].height !== inputLayers[1].height) {
       throw new Error('Layer height mismatch');
     }
 
-    this.width = inputLayer1.width;
-    this.height = inputLayer1.height;
+    this.width = inputLayers[0].width;
+    this.height = inputLayers[0].height;
 
-    this.inputLayer1 = inputLayer1;
-    this.inputLayer2 = inputLayer2;
+    this.inputLayers = inputLayers;
   }
 
   setupKernels() {
@@ -29,7 +28,7 @@ export default class Add extends Base {
   }
 
   predict() {
-    this.outputs = this.predictKernel(this.inputLayer1.outputs, this.inputLayer2.outputs);
+    this.outputs = this.predictKernel(this.inputLayers[0].outputs, this.inputLayers[1].outputs);
   }
 
   learn() {

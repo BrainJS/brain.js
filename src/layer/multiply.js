@@ -4,17 +4,15 @@ import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
 export default class Multiply extends Base {
-  constructor(settings, inputLayer1, inputLayer2) {
+  constructor(settings, inputLayers) {
     super(settings);
 
-    if (inputLayer1.width !== inputLayer2.height) {
+    if (inputLayers[0].width !== inputLayers[1].height) {
       throw new Error('Layer size mismatch');
     }
-
-    this.inputLayer1 = inputLayer1;
-    this.inputLayer2 = inputLayer2;
-    this.width = inputLayer1.width;
-    this.height = inputLayer2.height;
+    this.inputLayers = inputLayers;
+    this.width = inputLayers[0].width;
+    this.height = inputLayers[1].height;
   }
 
   setupKernels() {
@@ -24,7 +22,7 @@ export default class Multiply extends Base {
   }
 
   predict() {
-    this.outputs = this.predictKernel(this.inputLayer1.outputs, this.inputLayer2.outputs);
+    this.outputs = this.predictKernel(this.inputLayer[0].outputs, this.inputLayer[1].outputs);
   }
 
   learn() {

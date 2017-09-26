@@ -181,4 +181,110 @@ describe('FeedForward Neural Network', () => {
       assert.deepEqual(net.layers.map(layer => layer.called), [true, true, true, true, true]);
     });
   });
+  describe('.toJSON()', () => {
+    it('can serialize to json', () => {
+      class TestLayer extends Base {
+        static get jsonKeys() {
+          return [
+            'foo'
+          ];
+        }
+        constructor(settings, inputLayer) {
+          super(settings);
+          this.inputLayer = inputLayer;
+        }
+        setupKernels() {}
+        get foo() { return true; }
+      }
+
+      const net = new FeedForward({
+        inputLayer: () => new TestLayer(),
+        hiddenLayers: [
+          (input) => new TestLayer({}, input),
+          (input) => new TestLayer({}, input),
+        ],
+        outputLayer: (input) => new TestLayer({}, input)
+      });
+      net.initialize();
+
+      assert.deepEqual(net.toJSON(), {
+        layers: [
+          {
+            type: 'TestLayer',
+            foo: true
+          },
+          {
+            type: 'TestLayer',
+            foo: true,
+            inputLayerIndex: 0
+          },
+          {
+            type: 'TestLayer',
+            foo: true,
+            inputLayerIndex: 1
+          },
+          {
+            type: 'TestLayer',
+            foo: true,
+            inputLayerIndex: 2
+          }
+        ]
+      });
+    });
+  });
+  describe('.fromJSON()', () => {
+    it('can deserialize to object from json', () => {
+      class TestLayer extends Base {
+        static get jsonKeys() {
+          return [
+            'foo'
+          ];
+        }
+        constructor(settings, inputLayer) {
+          super(settings);
+          this.inputLayer = inputLayer;
+        }
+        setupKernels() {
+        }
+
+        get foo() {
+          return true;
+        }
+      }
+
+      const net = FeedForward.fromJSON({
+        layers: [
+          {
+            type: 'TestLayer',
+            foo: true
+          },
+          {
+            type: 'TestLayer',
+            foo: true,
+            inputLayerIndex: 0
+          },
+          {
+            type: 'TestLayer',
+            foo: true,
+            inputLayerIndex: 1
+          },
+          {
+            type: 'TestLayer',
+            foo: true,
+            inputLayerIndex: 2
+          }
+        ]
+      }, (jsonLayer, input) => {
+        switch (jsonLayer.type) {
+          case 'TestLayer':
+            return new TestLayer(jsonLayer, input);
+          default:
+            throw new Error(`unknown layer ${ jsonLayer.type }`);
+        }
+      });
+
+      assert.deepEqual(net.layers.map(layer => layer instanceof TestLayer), [true, true, true, true]);
+      assert.deepEqual(net.layers.map(layer => layer.inputLayer instanceof TestLayer), [false, true, true, true]);
+    });
+  });
 });
