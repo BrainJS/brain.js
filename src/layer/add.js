@@ -4,8 +4,8 @@ import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 
 export default class Add extends Base {
-  constructor(settings, inputLayers) {
-    super(settings);
+  constructor(inputLayers) {
+    super();
 
     if (inputLayers[0].width !== inputLayers[1].width) {
       throw new Error('Layer width mismatch');

@@ -17,8 +17,8 @@ import SoftMax from './soft-max';
 import SVM from './svm';
 import Tanh from './tanh';
 
-function add(settings, inputLayer1, inputLayer2) {
-  return new Add(settings, inputLayer1, inputLayer2);
+function add(inputLayer1, inputLayer2) {
+  return new Add([inputLayer1, inputLayer2]);
 }
 function convolution(settings, inputLayer) {
   return new Convolution(settings, inputLayer);
@@ -36,7 +36,7 @@ function leakyRelu(inputLayer) {
   return new LeakyRelu(inputLayer);
 }
 function multiply(inputLayer1, inputLayer2) {
-  return new Multiply(inputLayer1, inputLayer2);
+  return new Multiply([inputLayer1, inputLayer2]);
 }
 function multiplyElement(inputLayer1, inputLayer2) {
   return new MultiplyElement(inputLayer1, inputLayer2);
