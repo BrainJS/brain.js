@@ -1,17 +1,8 @@
-import Base from './base';
-
-export default class Group extends Base {
-  constructor() {
-    super();
-
-
+export default class Group {
+  constructor(settings) {
+    this.settings = settings;
   }
-
-  setNextLayer(nextLayer) {
-    this.nextLayer = nextLayer;
-  }
-
-  setPreviousLayer(previousLayer) {
-    this.previousLayer = previousLayer;
+  static setupKernel(settings) {
+    throw new Error('not implemented on Group');
   }
 }

@@ -1,17 +1,20 @@
 'use strict';
-let gpu = null;
+import GPU from 'gpu.js';
+let gpuInstance = null;
 
 export default function(fn, settings) {
-  return;
+  if (gpuInstance === null) {
+    setup(new GPU());
+  }
   if (settings.hasOwnProperty('map')) {
-    return gpu.createKernelMap(settings.map, fn, settings)
+    return gpuInstance.createKernelMap(settings.map, fn, settings)
       .setOutputToTexture(true);
   } else {
-    return gpu.createKernel(fn, settings)
+    return gpuInstance.createKernel(fn, settings)
       .setOutputToTexture(true);
   }
 };
 
-export function setup(gpuInstance) {
-  gpu = gpuInstance;
+export function setup(value) {
+  gpuInstance = value;
 }

@@ -35,8 +35,8 @@ export default class Sigmoid extends Base {
     this.outputs = this.predictKernel(this.inputLayer.outputs);
   }
 
-  compare() {
-    const { errors, deltas } = this.compareKernel(this.outputs, this.nextLayer.weights, this.nextLayer.deltas);
+  compare(previousLayer, nextLayer) {
+    const { errors, deltas } = this.compareKernel(this.outputs, nextLayer.weights, nextLayer.deltas);
     this.errors = errors;
     this.deltas = deltas;
   }

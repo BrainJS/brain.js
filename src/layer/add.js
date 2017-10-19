@@ -31,8 +31,8 @@ export default class Add extends Base {
     this.outputs = this.predictKernel(this.inputLayers[0].outputs, this.inputLayers[1].outputs);
   }
 
-  learn() {
-    this.deltas = this.nextLayer.deltas;
+  learn(previousLayer, nextLayer) {
+    this.deltas = nextLayer.deltas;
   }
 }
 

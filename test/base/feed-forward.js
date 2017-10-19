@@ -184,26 +184,23 @@ describe('FeedForward Neural Network', () => {
   describe('.toJSON()', () => {
     it('can serialize to json', () => {
       class TestLayer extends Base {
-        static get jsonKeys() {
-          return [
-            'foo'
-          ];
+        static get defaults() {
+          return { foo: null };
         }
         constructor(settings, inputLayer) {
           super(settings);
           this.inputLayer = inputLayer;
         }
         setupKernels() {}
-        get foo() { return true; }
       }
 
       const net = new FeedForward({
-        inputLayer: () => new TestLayer(),
+        inputLayer: () => new TestLayer({ foo: true }),
         hiddenLayers: [
-          (input) => new TestLayer({}, input),
-          (input) => new TestLayer({}, input),
+          (input) => new TestLayer({ foo: true }, input),
+          (input) => new TestLayer({ foo: true }, input),
         ],
-        outputLayer: (input) => new TestLayer({}, input)
+        outputLayer: (input) => new TestLayer({ foo: true }, input)
       });
       net.initialize();
 
@@ -235,21 +232,14 @@ describe('FeedForward Neural Network', () => {
   describe('.fromJSON()', () => {
     it('can deserialize to object from json', () => {
       class TestLayer extends Base {
-        static get jsonKeys() {
-          return [
-            'foo'
-          ];
+        static get defaults() {
+          return { foo: null };
         }
         constructor(settings, inputLayer) {
           super(settings);
           this.inputLayer = inputLayer;
         }
-        setupKernels() {
-        }
-
-        get foo() {
-          return true;
-        }
+        setupKernels() {}
       }
 
       const net = FeedForward.fromJSON({

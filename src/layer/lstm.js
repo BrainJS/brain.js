@@ -5,13 +5,13 @@ export default class LSTM extends Group {
   constructor(settings) {
     super(settings);
 
-    this.inputGate = new LSTMGate();
-    this.forgetGate = new LSTMGate();
-    this.outputGate = new LSTMGate();
-    this.memory = new LSTMGate();
+    this.inputGate = new LSTMCell();
+    this.forgetGate = new LSTMCell();
+    this.outputGate = new LSTMCell();
+    this.memory = new LSTMCell();
   }
 
-  static kernel(settings) {
+  static createKernel(settings) {
     return (layer, inputLayer, previousOutputs) => {
       const inputGate = sigmoid(
         add(
@@ -93,7 +93,7 @@ export default class LSTM extends Group {
   }
 }
 
-class LSTMGate {
+class LSTMCell {
   inputWeights = {};
   peepholeWeights = {};
   bias = {};

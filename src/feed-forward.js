@@ -79,7 +79,9 @@ export default class FeedForward {
 
   calculateDeltas() {
     for (let i = this.layers.length - 1; i > -1; i--) {
-      this.layers[i].compare();
+      const previousLayer = this.layers[i - 1];
+      const nextLayer = this.layers[i + 1];
+      this.layers[i].compare(previousLayer, nextLayer);
     }
   }
 
@@ -288,7 +290,7 @@ export default class FeedForward {
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i];
       const jsonLayer = {};
-      const jsonKeys = layer.constructor.jsonKeys;
+      const jsonKeys = Object.keys(layer.constructor.defaults);
       for (let keyIndex = 0; keyIndex < jsonKeys.length; keyIndex++) {
         const key = jsonKeys[keyIndex];
         jsonLayer[key] = layer[key];

@@ -5,20 +5,14 @@ export default class Base {
     return {
       width: 1,
       height: 1,
-      depth: 1
-    };
-  }
-
-  static get jsonKeys() {
-    return [
-      'width',
-      'height',
-      'depth',
-      'outputs',
-      'errors',
-      'weights'
-    ];
-  }
+      depth: 1,
+      outputs: null,
+      errors: null,
+      deltas: null,
+      weights: null,
+      changes: null
+    }
+  };
 
   constructor(settings = {}) {
     //layers
@@ -59,7 +53,7 @@ export default class Base {
     throw new Error('predict not implemented on BaseLayer');
   }
 
-  compare() {
+  compare(previousLayer, nextLayer) {
     throw new Error('compare not implemented on BaseLayer');
   }
 

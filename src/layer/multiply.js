@@ -25,8 +25,8 @@ export default class Multiply extends Base {
     this.outputs = this.predictKernel(this.inputLayer[0].outputs, this.inputLayer[1].outputs);
   }
 
-  learn() {
-    this.deltas = this.nextLayer.deltas;
+  learn(previousLayer, nextLayer) {
+    this.deltas = nextLayer.deltas;
   }
 }
 

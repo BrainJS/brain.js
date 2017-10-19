@@ -10,19 +10,25 @@ export default class Output extends Base {
   }
 
   setupKernels() {
-    this.predictKernel = makeKernel();
-    this.learnKernel = makeKernel();
+    this.compareKernel = makeKernel(function() {
+
+    });
+    this.learnKernel = makeKernel(function(outputs, target) {
+      const output = outputs[this.thread.x];
+      return calcDeltas(calcError(output, target), output);
+    });
   }
 
   predict() {
     this.outputs = this.inputLayer.outputs;
   }
 
+  compare() {
+
+  }
+
   learn() {
-    this.learnKernel = makeKernel(function(outputs, target) {
-      const output = outputs[this.thread.x];
-      return calcDeltas(calcError(output, target), output);
-    });
+
   }
 }
 
