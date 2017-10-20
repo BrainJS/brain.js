@@ -41,7 +41,11 @@ output = net.run([1, 1]);  // [0]
 ```
 
 However, There's no reason to use a neural network to figure out XOR. (-: So, here's a more involved, realistic example:
-[Demo: training a neural network to recognize color contrast](https://brain.js.org/)
+[Demo: training a neural network to recognize color contrast](https://brain.js.org/).
+
+You can also check out the following screencast, which explains how to train a neural network using a real world dataset:
+
+[How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb)
 
 # Usage
 
