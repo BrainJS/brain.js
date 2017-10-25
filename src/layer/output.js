@@ -12,10 +12,14 @@ export default class Output extends Base {
   setupKernels() {
     this.compareKernel = makeKernel(function() {
 
+    }, {
+      output: [this.inputLayer.width, this.inputLayer.height]
     });
     this.learnKernel = makeKernel(function(outputs, target) {
       const output = outputs[this.thread.x];
       return calcDeltas(calcError(output, target), output);
+    }, {
+      output: [this.inputLayer.width, this.inputLayer.height]
     });
   }
 

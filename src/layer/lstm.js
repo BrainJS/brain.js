@@ -94,10 +94,9 @@ export default class LSTM extends Group {
 }
 
 class LSTMCell {
-  inputWeights = {};
-  peepholeWeights = {};
-  bias = {};
   constructor() {
-    //TODO fill in above
+    this.inputWeights = {};
+    this.peepholeWeights = {};
+    this.bias = {};
   }
 }

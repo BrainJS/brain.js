@@ -66,26 +66,24 @@ var NeuralNetwork = function () {
     this.deltas = null;
     this.changes = null; // for momentum
     this.errors = null;
+    this.runInput = null;
+    this.calculateDeltas = null;
   }
 
   /**
    *
    * @param {} sizes
-   * @param {Boolean} keepNetworkIntact
    */
 
 
   _createClass(NeuralNetwork, [{
     key: 'initialize',
-    value: function initialize(sizes, keepNetworkIntact) {
+    value: function initialize(sizes) {
       this.sizes = sizes;
       this.outputLayer = this.sizes.length - 1;
-
-      if (!keepNetworkIntact) {
-        this.biases = []; // weights for bias nodes
-        this.weights = [];
-        this.outputs = [];
-      }
+      this.biases = []; // weights for bias nodes
+      this.weights = [];
+      this.outputs = [];
 
       // state for training
       this.deltas = [];
@@ -96,25 +94,45 @@ var NeuralNetwork = function () {
         var size = this.sizes[layer];
         this.deltas[layer] = (0, _zeros2.default)(size);
         this.errors[layer] = (0, _zeros2.default)(size);
-        if (!keepNetworkIntact) {
-          this.outputs[layer] = (0, _zeros2.default)(size);
-        }
+        this.outputs[layer] = (0, _zeros2.default)(size);
 
         if (layer > 0) {
           this.biases[layer] = (0, _randos2.default)(size);
-          if (!keepNetworkIntact) {
-            this.weights[layer] = new Array(size);
-          }
+          this.weights[layer] = new Array(size);
           this.changes[layer] = new Array(size);
 
           for (var node = 0; node < size; node++) {
             var prevSize = this.sizes[layer - 1];
-            if (!keepNetworkIntact) {
-              this.weights[layer][node] = (0, _randos2.default)(prevSize);
-            }
+            this.weights[layer][node] = (0, _randos2.default)(prevSize);
             this.changes[layer][node] = (0, _zeros2.default)(prevSize);
           }
         }
+      }
+
+      this.setActivation();
+    }
+  }, {
+    key: 'setActivation',
+    value: function setActivation() {
+      switch (this.activation) {
+        case 'sigmoid':
+          this.runInput = this.runInput || this.runInputSigmoid;
+          this.calculateDeltas = this.calculateDeltas || this.calculateDeltasSigmoid;
+          break;
+        case 'relu':
+          this.runInput = this.runInput || this.runInputRelu;
+          this.calculateDeltas = this.calculateDeltas || this.calculateDeltasRelu;
+          break;
+        case 'leaky-relu':
+          this.runInput = this.runInput || this.runInputLeakyRelu;
+          this.calculateDeltas = this.calculateDeltas || this.calculateDeltasLeakyRelu;
+          break;
+        case 'tanh':
+          this.runInput = this.runInput || this.runInputTanh;
+          this.calculateDeltas = this.calculateDeltas || this.calculateDeltasTanh;
+          break;
+        default:
+          throw new Error('unknown activation ' + this.activation);
       }
     }
 
@@ -140,14 +158,14 @@ var NeuralNetwork = function () {
     }
 
     /**
-     *
+     * trains via sigmoid
      * @param input
      * @returns {*}
      */
 
   }, {
-    key: 'runInput',
-    value: function runInput(input) {
+    key: 'runInputSigmoid',
+    value: function runInputSigmoid(input) {
       this.outputs[0] = input; // set output state of input layer
 
       var output = null;
@@ -159,7 +177,71 @@ var NeuralNetwork = function () {
           for (var k = 0; k < weights.length; k++) {
             sum += weights[k] * input[k];
           }
+          //sigmoid
           this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
+        }
+        output = input = this.outputs[layer];
+      }
+      return output;
+    }
+  }, {
+    key: 'runInputRelu',
+    value: function runInputRelu(input) {
+      this.outputs[0] = input; // set output state of input layer
+
+      var output = null;
+      for (var layer = 1; layer <= this.outputLayer; layer++) {
+        for (var node = 0; node < this.sizes[layer]; node++) {
+          var weights = this.weights[layer][node];
+
+          var sum = this.biases[layer][node];
+          for (var k = 0; k < weights.length; k++) {
+            sum += weights[k] * input[k];
+          }
+          //relu
+          this.outputs[layer][node] = sum < 0 ? 0 : sum;
+        }
+        output = input = this.outputs[layer];
+      }
+      return output;
+    }
+  }, {
+    key: 'runInputLeakyRelu',
+    value: function runInputLeakyRelu(input) {
+      this.outputs[0] = input; // set output state of input layer
+
+      var output = null;
+      for (var layer = 1; layer <= this.outputLayer; layer++) {
+        for (var node = 0; node < this.sizes[layer]; node++) {
+          var weights = this.weights[layer][node];
+
+          var sum = this.biases[layer][node];
+          for (var k = 0; k < weights.length; k++) {
+            sum += weights[k] * input[k];
+          }
+          //leaky relu
+          this.outputs[layer][node] = sum < 0 ? 0 : 0.01 * sum;
+        }
+        output = input = this.outputs[layer];
+      }
+      return output;
+    }
+  }, {
+    key: 'runInputTanh',
+    value: function runInputTanh(input) {
+      this.outputs[0] = input; // set output state of input layer
+
+      var output = null;
+      for (var layer = 1; layer <= this.outputLayer; layer++) {
+        for (var node = 0; node < this.sizes[layer]; node++) {
+          var weights = this.weights[layer][node];
+
+          var sum = this.biases[layer][node];
+          for (var k = 0; k < weights.length; k++) {
+            sum += weights[k] * input[k];
+          }
+          //tanh
+          this.outputs[layer][node] = Math.tanh(sum);
         }
         output = input = this.outputs[layer];
       }
@@ -169,7 +251,7 @@ var NeuralNetwork = function () {
     /**
      *
      * @param data
-     * @param options
+     * @param _options
      * @returns {{error: number, iterations: number}}
      */
 
@@ -187,22 +269,24 @@ var NeuralNetwork = function () {
       var learningRate = _options.learningRate || this.learningRate || options.learningRate;
       var callback = options.callback;
       var callbackPeriod = options.callbackPeriod;
-      var sizes = [];
-      var inputSize = data[0].input.length;
-      var outputSize = data[0].output.length;
-      var hiddenSizes = this.hiddenSizes;
-      if (!hiddenSizes) {
-        sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-      } else {
-        hiddenSizes.forEach(function (size) {
-          sizes.push(size);
-        });
+      if (!options.reinforce) {
+        var sizes = [];
+        var inputSize = data[0].input.length;
+        var outputSize = data[0].output.length;
+        var hiddenSizes = this.hiddenSizes;
+        if (!hiddenSizes) {
+          sizes.push(Math.max(3, Math.floor(inputSize / 2)));
+        } else {
+          hiddenSizes.forEach(function (size) {
+            sizes.push(size);
+          });
+        }
+
+        sizes.unshift(inputSize);
+        sizes.push(outputSize);
+
+        this.initialize(sizes);
       }
-
-      sizes.unshift(inputSize);
-      sizes.push(outputSize);
-
-      this.initialize(sizes, options.keepNetworkIntact);
 
       var error = 1;
       var i = void 0;
@@ -214,10 +298,10 @@ var NeuralNetwork = function () {
         }
         error = sum / data.length;
 
-        if (log && i % logPeriod == 0) {
+        if (log && i % logPeriod === 0) {
           log('iterations:', i, 'training error:', error);
         }
-        if (callback && i % callbackPeriod == 0) {
+        if (callback && i % callbackPeriod === 0) {
           callback({ error: error, iterations: i });
         }
       }
@@ -257,8 +341,35 @@ var NeuralNetwork = function () {
      */
 
   }, {
-    key: 'calculateDeltas',
-    value: function calculateDeltas(target) {
+    key: 'calculateDeltasSigmoid',
+    value: function calculateDeltasSigmoid(target) {
+      for (var layer = this.outputLayer; layer >= 0; layer--) {
+        for (var node = 0; node < this.sizes[layer]; node++) {
+          var output = this.outputs[layer][node];
+
+          var error = 0;
+          if (layer === this.outputLayer) {
+            error = target[node] - output;
+          } else {
+            var deltas = this.deltas[layer + 1];
+            for (var k = 0; k < deltas.length; k++) {
+              error += deltas[k] * this.weights[layer + 1][k][node];
+            }
+          }
+          this.errors[layer][node] = error;
+          this.deltas[layer][node] = error * output * (1 - output);
+        }
+      }
+    }
+
+    /**
+     *
+     * @param target
+     */
+
+  }, {
+    key: 'calculateDeltasRelu',
+    value: function calculateDeltasRelu(target) {
       for (var layer = this.outputLayer; layer >= 0; layer--) {
         for (var node = 0; node < this.sizes[layer]; node++) {
           var output = this.outputs[layer][node];
@@ -273,7 +384,61 @@ var NeuralNetwork = function () {
             }
           }
           this.errors[layer][node] = error;
-          this.deltas[layer][node] = error * output * (1 - output);
+          this.deltas[layer][node] = output > 0 ? error : 0;
+        }
+      }
+    }
+
+    /**
+     *
+     * @param target
+     */
+
+  }, {
+    key: 'calculateDeltasLeakyRelu',
+    value: function calculateDeltasLeakyRelu(target) {
+      for (var layer = this.outputLayer; layer >= 0; layer--) {
+        for (var node = 0; node < this.sizes[layer]; node++) {
+          var output = this.outputs[layer][node];
+
+          var error = 0;
+          if (layer == this.outputLayer) {
+            error = target[node] - output;
+          } else {
+            var deltas = this.deltas[layer + 1];
+            for (var k = 0; k < deltas.length; k++) {
+              error += deltas[k] * this.weights[layer + 1][k][node];
+            }
+          }
+          this.errors[layer][node] = error;
+          this.deltas[layer][node] = output > 0 ? error : 0.01 * error;
+        }
+      }
+    }
+
+    /**
+     *
+     * @param target
+     */
+
+  }, {
+    key: 'calculateDeltasTanh',
+    value: function calculateDeltasTanh(target) {
+      for (var layer = this.outputLayer; layer >= 0; layer--) {
+        for (var node = 0; node < this.sizes[layer]; node++) {
+          var output = this.outputs[layer][node];
+
+          var error = 0;
+          if (layer == this.outputLayer) {
+            error = target[node] - output;
+          } else {
+            var deltas = this.deltas[layer + 1];
+            for (var k = 0; k < deltas.length; k++) {
+              error += deltas[k] * this.weights[layer + 1][k][node];
+            }
+          }
+          this.errors[layer][node] = error;
+          this.deltas[layer][node] = (1 - output * output) * error;
         }
       }
     }
@@ -369,7 +534,7 @@ var NeuralNetwork = function () {
       data = this.formatData(data);
 
       // for binary classification problems with one output node
-      var isBinary = data[0].output.length == 1;
+      var isBinary = data[0].output.length === 1;
       var falsePos = 0;
       var falseNeg = 0;
       var truePos = 0;
@@ -396,7 +561,7 @@ var NeuralNetwork = function () {
           expected = target.indexOf((0, _max2.default)(target));
         }
 
-        if (actual != expected) {
+        if (actual !== expected) {
           var misclass = data[i];
           Object.assign(misclass, {
             actual: actual,
@@ -406,13 +571,13 @@ var NeuralNetwork = function () {
         }
 
         if (isBinary) {
-          if (actual == 0 && expected == 0) {
+          if (actual === 0 && expected === 0) {
             trueNeg++;
-          } else if (actual == 1 && expected == 1) {
+          } else if (actual === 1 && expected === 1) {
             truePos++;
-          } else if (actual == 0 && expected == 1) {
+          } else if (actual === 0 && expected === 1) {
             falseNeg++;
-          } else if (actual == 1 && expected == 0) {
+          } else if (actual === 1 && expected === 0) {
             falsePos++;
           }
         }
@@ -494,9 +659,9 @@ var NeuralNetwork = function () {
 
         var nodes = void 0;
         // turn any internal arrays back into hashes for readable json
-        if (layer == 0 && this.inputLookup) {
+        if (layer === 0 && this.inputLookup) {
           nodes = Object.keys(this.inputLookup);
-        } else if (layer == this.outputLayer && this.outputLookup) {
+        } else if (layer === this.outputLayer && this.outputLookup) {
           nodes = Object.keys(this.outputLookup);
         } else {
           nodes = (0, _range2.default)(0, this.sizes[layer]);
@@ -511,7 +676,7 @@ var NeuralNetwork = function () {
             layers[layer][node].weights = {};
             for (var k in layers[layer - 1]) {
               var index = k;
-              if (layer == 1 && this.inputLookup) {
+              if (layer === 1 && this.inputLookup) {
                 index = this.inputLookup[k];
               }
               layers[layer][node].weights[k] = this.weights[layer][j][index];
@@ -519,7 +684,7 @@ var NeuralNetwork = function () {
           }
         }
       }
-      return { layers: layers, outputLookup: !!this.outputLookup, inputLookup: !!this.inputLookup };
+      return { layers: layers, outputLookup: !!this.outputLookup, inputLookup: !!this.inputLookup, activation: this.activation };
     }
 
     /**
@@ -541,9 +706,9 @@ var NeuralNetwork = function () {
 
       for (var i = 0; i <= this.outputLayer; i++) {
         var layer = json.layers[i];
-        if (i == 0 && (!layer[0] || json.inputLookup)) {
+        if (i === 0 && (!layer[0] || json.inputLookup)) {
           this.inputLookup = _lookup2.default.lookupFromHash(layer);
-        } else if (i == this.outputLayer && (!layer[0] || json.outputLookup)) {
+        } else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
           this.outputLookup = _lookup2.default.lookupFromHash(layer);
         }
 
@@ -559,6 +724,8 @@ var NeuralNetwork = function () {
           this.weights[i][j] = (0, _toArray2.default)(layer[node].weights);
         }
       }
+
+      this.setActivation();
       return this;
     }
 
@@ -570,6 +737,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'toFunction',
     value: function toFunction() {
+      var activation = this.activation;
       function nodeHandle(layers, layerNumber, nodeKey) {
         if (layerNumber === 0) {
           return typeof nodeKey === 'string' ? 'input[\'' + nodeKey + '\']' : 'input[' + nodeKey + ']';
@@ -585,7 +753,19 @@ var NeuralNetwork = function () {
             result.push('+' + node.weights[w] + '*(' + nodeHandle(layers, layerNumber - 1, w) + ')');
           }
         }
-        return '1/(1+1/Math.exp(' + result.join('') + '))';
+
+        switch (activation) {
+          case 'sigmoid':
+            return '1/(1+1/Math.exp(' + result.join('') + '))';
+          case 'relu':
+            return 'var sum = ' + result.join('') + ';(sum < 0 ? 0 : sum);';
+          case 'leaky-relu':
+            return 'var sum = ' + result.join('') + ';(sum < 0 ? 0 : 0.01 * sum);';
+          case 'tanh':
+            return 'Math.tanh(' + result.join('') + ');';
+          default:
+            throw new Error('unknown activation type ' + activation);
+        }
       }
 
       var layers = this.toJSON().layers;
@@ -615,6 +795,7 @@ var NeuralNetwork = function () {
     value: function createTrainStream(opts) {
       opts = opts || {};
       opts.neuralNetwork = this;
+      this.setActivation();
       this.trainStream = new _trainStream2.default(opts);
       return this.trainStream;
     }
@@ -634,13 +815,14 @@ NeuralNetwork.trainDefaults = {
   learningRate: 0.3,
   callback: null,
   callbackPeriod: 10,
-  keepNetworkIntact: false
+  reinforce: false
 };
 
 NeuralNetwork.defaults = {
   learningRate: 0.3,
   momentum: 0.1,
   binaryThresh: 0.5,
-  hiddenLayers: null
+  hiddenLayers: null,
+  activation: 'sigmoid'
 };
 //# sourceMappingURL=neural-network.js.map

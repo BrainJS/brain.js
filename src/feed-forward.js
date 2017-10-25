@@ -75,6 +75,7 @@ export default class FeedForward {
     for (let i = 1; i < this.layers.length; i++) {
       this.layers[i].predict();
     }
+    return this.layers[this.layers.length - 1].outputs;
   }
 
   calculateDeltas() {

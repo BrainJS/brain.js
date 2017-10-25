@@ -15,6 +15,7 @@ export default class Sigmoid extends Base {
 
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
+      output: [this.width, this.height, this.depth],
       functions: [sigmoid]
     });
 
@@ -27,6 +28,7 @@ export default class Sigmoid extends Base {
     });
 
     this.learnKernel = makeKernel(learn, {
+      output: [this.width, this.height, this.depth],
       functions: [sigmoidDerivative]
     });
   }

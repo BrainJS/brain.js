@@ -1,9 +1,22 @@
 'use strict';
 import assert from 'assert';
-import FeedForward from '../../src/feed-forward';
-import { Base, input, Input, output, Output, convolution, Convolution, relu, Relu, pool, Pool, softMax, SoftMax } from '../../src/layer';
+import { FeedForward, layer } from '../../../src';
+const {
+  Base,
+  Convolution,
+  convolution,
+  Input,
+  input,
+  Output,
+  output,
+  Pool,
+  pool,
+  Relu,
+  relu,
+  SoftMax,
+  softMax } = layer;
 
-describe('FeedForward Neural Network', () => {
+describe('FeedForward Class: Unit', () => {
   describe('instantiation', () => {
     it('initially does not have any layers', () => {
       assert.equal(new FeedForward().layers, null);

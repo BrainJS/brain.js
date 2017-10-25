@@ -3,10 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.FeedForward = exports.layer = undefined;
 
 var _crossValidate = require('./cross-validate');
 
 var _crossValidate2 = _interopRequireDefault(_crossValidate);
+
+var _layer = require('./layer');
+
+var layer = _interopRequireWildcard(_layer);
 
 var _likely = require('./likely');
 
@@ -40,6 +45,12 @@ var _gru = require('./recurrent/gru');
 
 var _gru2 = _interopRequireDefault(_gru);
 
+var _feedForward = require('./feed-forward');
+
+var _feedForward2 = _interopRequireDefault(_feedForward);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
@@ -55,4 +66,6 @@ exports.default = {
     GRU: _gru2.default
   }
 };
+exports.layer = layer;
+exports.FeedForward = _feedForward2.default;
 //# sourceMappingURL=index.js.map
