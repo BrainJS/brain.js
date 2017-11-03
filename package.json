@@ -66,6 +66,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "gpu.js": "^1.0.0-rc.5",
     "js-datasets-iris": "^1.0.4"
   }
 }

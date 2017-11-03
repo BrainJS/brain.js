@@ -10,16 +10,12 @@ export default class Output extends Base {
   }
 
   setupKernels() {
-    this.compareKernel = makeKernel(function() {
-
-    }, {
-      output: [this.inputLayer.width, this.inputLayer.height]
-    });
-    this.learnKernel = makeKernel(function(outputs, target) {
-      const output = outputs[this.thread.x];
-      return calcDeltas(calcError(output, target), output);
-    }, {
-      output: [this.inputLayer.width, this.inputLayer.height]
+    this.compareKernel = makeKernel(compare, {
+      map: {
+        deltas: setDelta,
+        errors: setError
+      },
+      output: [this.width]
     });
   }
 
@@ -27,23 +23,26 @@ export default class Output extends Base {
     this.outputs = this.inputLayer.outputs;
   }
 
-  compare() {
-
+  compare(target) {
+    const { errors, deltas } = this.compareKernel(target, this.outputs);
+    this.errors = errors;
+    this.deltas = deltas;
   }
 
-  learn() {
-
-  }
+  learn(target) {}
 }
 
-function calcDeltas(error, output) {
-  return error * output * (1 - output);
+function setDelta(delta) {
+  return delta;
 }
 
-function calcError(weights, deltas) {
-  let error = 0;
-  for(let k = 0; k < this.output.x; k++){
-    error += deltas[k] * weights[k][this.thread.x];
-  }
+function setError(error) {
   return error;
+}
+
+function compare(target, outputs) {
+  const output = outputs[this.thread.x];
+  const error = target[this.thread.x] - output;
+  setDelta(error * output);
+  return setError(error);
 }

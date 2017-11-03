@@ -3,6 +3,8 @@
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 import { sigmoid, sigmoidDerivative } from '../activation/sigmoid';
+import randos from '../utilities/randos';
+import zeros from '../utilities/zeros';
 
 export default class Sigmoid extends Base {
   constructor(inputLayer) {
@@ -11,6 +13,12 @@ export default class Sigmoid extends Base {
     this.height = inputLayer.height;
     this.depth = inputLayer.depth;
     this.inputLayer = inputLayer;
+    const size = this.width * this.height * this.depth;
+    this.weights = randos(size);
+    this.biases = randos(this.width);
+    this.errors = zeros(size);
+    this.deltas = zeros(size);
+    this.outputs = zeros(size);
   }
 
   setupKernels() {
@@ -34,10 +42,13 @@ export default class Sigmoid extends Base {
   }
 
   predict() {
-    this.outputs = this.predictKernel(this.inputLayer.outputs);
+    const result = this.predictKernel(this.inputLayer.outputs);
+    console.log(result);
+    this.outputs = result;
   }
 
   compare(previousLayer, nextLayer) {
+    console.log(this.outputs, nextLayer.weights, nextLayer.deltas);
     const { errors, deltas } = this.compareKernel(this.outputs, nextLayer.weights, nextLayer.deltas);
     this.errors = errors;
     this.deltas = deltas;
