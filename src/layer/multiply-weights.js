@@ -2,6 +2,8 @@
 
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
+import randos from '../utilities/randos';
+import zeros from '../utilities/zeros';
 
 export default class MultiplyWeights extends Base {
   constructor(settings, inputLayer) {
@@ -9,6 +11,12 @@ export default class MultiplyWeights extends Base {
     this.width = inputLayer.width;
     this.height = inputLayer.height;
     this.inputLayer = inputLayer;
+    const size = this.width * this.height * this.depth;
+    this.weights = [randos(size)];
+    this.biases = randos(this.width);
+    this.errors = zeros(size);
+    this.deltas = zeros(size);
+    this.outputs = zeros(size);
   }
 
   setupKernels() {
@@ -22,8 +30,11 @@ export default class MultiplyWeights extends Base {
   }
 
   predict() {
-    this.outputs = this.predictKernel(this.inputLayer.outputs, this.weights);
+    const result = this.predictKernel(this.inputLayer.outputs, this.weights);
+    this.outputs = result;
   }
+
+  compare() {}
 
   learn() {
     this.deltas = this.learnKernel(this.inputLayer.outputs, this.deltas);
@@ -31,6 +42,8 @@ export default class MultiplyWeights extends Base {
 }
 
 export function predict(inputs, weights) {
+  debugger;
+
   let sum = 0;
   for(let i = 0; i < this.output.x; i++) {
     sum += weights[this.thread.y][i] * inputs[i][this.thread.x];

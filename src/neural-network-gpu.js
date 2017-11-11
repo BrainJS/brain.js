@@ -1,12 +1,6 @@
 import NeuralNetwork from './neural-network';
 import lookup from './lookup';
-import TrainStream from './train-stream';
-import max from './utilities/max';
 import mse from './utilities/mse';
-import randos from './utilities/randos';
-import range from './utilities/range';
-import toArray from './utilities/to-array';
-import zeros from './utilities/zeros';
 import GPU from 'gpu.js';
 
 /**
@@ -102,8 +96,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
           size: this.sizes[layer - 1]
         }
       })
-      .setOutput([this.sizes[layer]])
-      .setOutputToTexture(true);
+        .setOutput([this.sizes[layer]])
+        .setOutputToTexture(true);
       this.forwardPropagate[layer] = kernel;
     }
   }
@@ -152,14 +146,14 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     for (let layer = this.outputLayer; layer > 0; layer--) {
       if (layer === this.outputLayer){
         const kernel = this.gpu.createKernelMap({
-          error: calcError,
-          deltas: calcDeltas
-        }, function(outputs, target){
-          let output = outputs[this.thread.x];
-          return calcDeltas(calcError(output, target), output);
-      })
-       .setOutput([this.sizes[layer]])
-       .setOutputToTexture(true);
+            error: calcError,
+            deltas: calcDeltas
+          }, function(outputs, target){
+            let output = outputs[this.thread.x];
+            return calcDeltas(calcError(output, target), output);
+        })
+         .setOutput([this.sizes[layer]])
+         .setOutputToTexture(true);
         
         this.backwardPropagate[layer] = kernel;
 
@@ -175,8 +169,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
             size: this.deltas[layer + 1].length
           }
         })
-        .setOutput([this.sizes[layer]])
-        .setOutputToTexture(true);
+          .setOutput([this.sizes[layer]])
+          .setOutputToTexture(true);
         
         this.backwardPropagate[layer] = kernel;
       }
@@ -344,7 +338,7 @@ NeuralNetworkGPU.defaults = {
 
 function weightedSumSigmoid(weights, biases, x, inputs) {
   let sum = biases[x];
-  for (let k = 0; k < size; k++) {
+  for (let k = 0; k < this.constants.size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //sigmoid
@@ -353,7 +347,7 @@ function weightedSumSigmoid(weights, biases, x, inputs) {
 
 function weightedSumRelu(weights, biases, x, inputs) {
   let sum = biases[x];
-  for (let k = 0; k < size; k++) {
+  for (let k = 0; k < this.constants.size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //relu
@@ -362,7 +356,7 @@ function weightedSumRelu(weights, biases, x, inputs) {
 
 function weightedSumLeakyRelu(weights, biases, x, inputs) {
   let sum = biases[x];
-  for (let k = 0; k < size; k++) {
+  for (let k = 0; k < this.constants.size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //leaky relu
@@ -371,7 +365,7 @@ function weightedSumLeakyRelu(weights, biases, x, inputs) {
 
 function weightedSumTanh(weights, biases, x, inputs) {
   let sum = biases[x];
-  for (let k = 0; k < size; k++) {
+  for (let k = 0; k < this.constants.size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //tanh

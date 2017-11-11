@@ -16,7 +16,7 @@ export default class Sigmoid extends Base {
     const size = this.width * this.height * this.depth;
     this.weights = randos(size);
     this.biases = randos(this.width);
-    this.errors = zeros(size);
+    this.errors = [zeros(size)];
     this.deltas = zeros(size);
     this.outputs = zeros(size);
   }
@@ -32,7 +32,8 @@ export default class Sigmoid extends Base {
       map: {
         errors: calcError,
         deltas: sigmoidDerivative
-      }
+      },
+      constants: { width: this.width }
     });
 
     this.learnKernel = makeKernel(learn, {
@@ -42,13 +43,12 @@ export default class Sigmoid extends Base {
   }
 
   predict() {
+    console.log(this.inputLayer.outputs);
     const result = this.predictKernel(this.inputLayer.outputs);
-    console.log(result);
     this.outputs = result;
   }
 
   compare(previousLayer, nextLayer) {
-    console.log(this.outputs, nextLayer.weights, nextLayer.deltas);
     const { errors, deltas } = this.compareKernel(this.outputs, nextLayer.weights, nextLayer.deltas);
     this.errors = errors;
     this.deltas = deltas;
@@ -74,7 +74,7 @@ export function learn(weights, errors) {
 
 function calcError(nextWeights, nextDeltas) {
   let error = 0;
-  for(let k = 0; k < this.output.x; k++){
+  for(let k = 0; k < this.constants.width; k++) {
     error += nextDeltas[k] * nextWeights[k][this.thread.x];
   }
   return error;

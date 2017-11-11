@@ -2,11 +2,14 @@
 
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
+import randos from '../utilities/randos';
 
 export default class Output extends Base {
   constructor(settings, inputLayer) {
     super(settings);
     this.inputLayer = inputLayer;
+    const size = this.width * this.height * this.depth;
+    this.weights = [randos(size)];
   }
 
   setupKernels() {
@@ -15,7 +18,7 @@ export default class Output extends Base {
         deltas: setDelta,
         errors: setError
       },
-      output: [this.width]
+      output: [this.width, this.height]
     });
   }
 
@@ -23,8 +26,8 @@ export default class Output extends Base {
     this.outputs = this.inputLayer.outputs;
   }
 
-  compare(target) {
-    const { errors, deltas } = this.compareKernel(target, this.outputs);
+  compare(previousLayer) {
+    const { errors, deltas } = this.compareKernel(previousLayer.outputs, this.outputs);
     this.errors = errors;
     this.deltas = deltas;
   }
