@@ -119,7 +119,6 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
 
       output = input = this.outputs[layer];
     }
-      // console.log(this.outputs[2], 'Outputs')
     return output;
   }
 

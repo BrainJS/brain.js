@@ -3,16 +3,18 @@
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 import randos from '../utilities/randos';
+import randos2d from '../utilities/randos-2d';
 import zeros from '../utilities/zeros';
+import zeros2d from '../utilities/zeros-2d';
 
 export default class MultiplyWeights extends Base {
   constructor(settings, inputLayer) {
     super(settings);
-    this.width = inputLayer.width;
-    this.height = inputLayer.height;
+    const width = this.width = inputLayer.width;
+    const height = this.height = inputLayer.height;
     this.inputLayer = inputLayer;
-    const size = this.width * this.height * this.depth;
-    this.weights = [randos(size)];
+    const size = width * height;
+    this.weights = randos2d(width, height);
     this.biases = randos(this.width);
     this.errors = zeros(size);
     this.deltas = zeros(size);

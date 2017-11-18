@@ -4,31 +4,32 @@ import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 import { sigmoid, sigmoidDerivative } from '../activation/sigmoid';
 import randos from '../utilities/randos';
+import randos2d from '../utilities/randos-2d';
 import zeros from '../utilities/zeros';
+import zeros2d from '../utilities/zeros-2d';
 
 export default class Sigmoid extends Base {
   constructor(inputLayer) {
     super();
-    this.width = inputLayer.width;
-    this.height = inputLayer.height;
-    this.depth = inputLayer.depth;
+    const width = this.width = inputLayer.width;
+    const height = this.height = inputLayer.height;
     this.inputLayer = inputLayer;
-    const size = this.width * this.height * this.depth;
-    this.weights = randos(size);
-    this.biases = randos(this.width);
-    this.errors = [zeros(size)];
+    const size = this.width * this.height;
+    this.weights = randos2d(width, height);
+    this.biases = randos2d(width, height);
+    this.errors = zeros2d(width, height);
     this.deltas = zeros(size);
     this.outputs = zeros(size);
   }
 
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
-      output: [this.width, this.height, this.depth],
+      output: [this.width, this.height],
       functions: [sigmoid]
     });
 
     this.compareKernel = makeKernel(compare, {
-      output: [this.width, this.height, this.depth],
+      output: [this.width, this.height],
       map: {
         errors: calcError,
         deltas: sigmoidDerivative
@@ -37,13 +38,12 @@ export default class Sigmoid extends Base {
     });
 
     this.learnKernel = makeKernel(learn, {
-      output: [this.width, this.height, this.depth],
+      output: [this.width, this.height],
       functions: [sigmoidDerivative]
     });
   }
 
   predict() {
-    console.log(this.inputLayer.outputs);
     const result = this.predictKernel(this.inputLayer.outputs);
     this.outputs = result;
   }

@@ -13,11 +13,14 @@ export default class FeedForward {
   constructor(options = {}) {
     Object.assign(this, FeedForward.defaults, options);
     this.layers = null;
+    this._inputLayer = null;
+    this._outputLayer = null;
   }
 
   connectLayers() {
     this.layers = [];
     const inputLayer = this.inputLayer(null, this.layers.length);
+    this._inputLayer = inputLayer;
     this.layers.push(inputLayer);
     let previousLayer = inputLayer;
     for (let i = 0; i < this.hiddenLayers.length; i++) {
@@ -25,7 +28,8 @@ export default class FeedForward {
       this.layers.push(hiddenLayer);
       previousLayer = hiddenLayer;
     }
-    this.layers.push(this.outputLayer(previousLayer, this.layers.length));
+    this._outputLayer = this.outputLayer(previousLayer, this.layers.length);
+    this.layers.push(this._outputLayer);
 
     this.connectNestedLayers();
   }
@@ -146,7 +150,7 @@ export default class FeedForward {
     this.calculateDeltas(target);
     this.adjustWeights(learningRate);
 
-    let error = mse(this.outputLayer.errors.toArray());
+    let error = mse(this._outputLayer.errors.hasOwnProperty('toArray') ? this._outputLayer.errors.toArray() : this._outputLayer.errors);
     return error;
   }
 
