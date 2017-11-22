@@ -26,8 +26,8 @@ export default class Output extends Base {
     this.outputs = this.inputLayer.outputs;
   }
 
-  compare(previousLayer) {
-    const { errors, deltas } = this.compareKernel(previousLayer.outputs, this.outputs);
+  compare(target) {
+    const { errors, deltas } = this.compareKernel(target, this.outputs);
     this.errors = errors;
     this.deltas = deltas;
   }

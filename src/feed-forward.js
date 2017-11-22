@@ -1,7 +1,7 @@
 import lookup from './lookup';
 import TrainStream from './train-stream';
 import max from './utilities/max';
-import mse from './utilities/mse';
+import mse2d from './utilities/mse-2d';
 import layerFromJSON from './utilities/layer-from-json';
 
 /**
@@ -82,8 +82,9 @@ export default class FeedForward {
     return this.layers[this.layers.length - 1].outputs;
   }
 
-  calculateDeltas() {
-    for (let i = this.layers.length - 1; i > -1; i--) {
+  calculateDeltas(target) {
+    this._outputLayer.compare(target);
+    for (let i = this.layers.length - 2; i > -1; i--) {
       const previousLayer = this.layers[i - 1];
       const nextLayer = this.layers[i + 1];
       this.layers[i].compare(previousLayer, nextLayer);
@@ -150,7 +151,7 @@ export default class FeedForward {
     this.calculateDeltas(target);
     this.adjustWeights(learningRate);
 
-    let error = mse(this._outputLayer.errors.hasOwnProperty('toArray') ? this._outputLayer.errors.toArray() : this._outputLayer.errors);
+    let error = mse2d(this._outputLayer.errors.hasOwnProperty('toArray') ? this._outputLayer.errors.toArray() : this._outputLayer.errors);
     return error;
   }
 
