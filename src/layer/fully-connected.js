@@ -64,7 +64,7 @@ export default class FullyConnected extends Base {
   }
 
   predict() {
-    this.outputs = this.predictKernel(this.inputLayer.outputs, this.filters, this.biases);
+    this.weights = this.predictKernel(this.inputLayer.weights, this.filters, this.biases);
   }
 
   learn() {
@@ -84,17 +84,17 @@ export function predict(inputs, filters, biases) {
   return output + biases[this.thread.x];
 }
 
-export function learnInputs(filters, outputs) {
+export function learnInputs(filters, weights) {
   let filterDelta = 0;
   for (let y = 0; y < this.constants.inputWidth; y++) {
-    filterDelta += filters[this.thread.x][y] * outputs[this.thread.x];
+    filterDelta += filters[this.thread.x][y] * weights[this.thread.x];
   }
   return filterDelta;
 }
 
-export function learnFilters(inputs, outputs) {
+export function learnFilters(inputs, weights) {
   //0 here should probably be depth
-  return inputs[0][this.thread.y] * outputs[this.thread.x];
+  return inputs[0][this.thread.y] * weights[this.thread.x];
 }
 
 export function learnBiases(biases, deltas) {

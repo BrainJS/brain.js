@@ -7,7 +7,7 @@ export default class Input extends Base {
   setupKernels() {}
 
   predict(inputs) {
-    this.outputs = inputs;
+    this.weights = inputs;
   }
 
   compare() {}

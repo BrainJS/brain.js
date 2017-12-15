@@ -31,7 +31,7 @@ export default class MultiplyElement extends Base {
   }
 
   predict() {
-    this.outputs = this.predictKernel(this.weights, this.inputLayer.output);
+    this.weights = this.predictKernel(this.weights, this.inputLayer.weights);
   }
 
   learn() {

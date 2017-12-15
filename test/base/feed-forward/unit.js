@@ -1,20 +1,26 @@
 'use strict';
 import assert from 'assert';
-import { FeedForward, layer } from '../../../src';
 const {
+  Add,
   Base,
   Convolution,
   convolution,
+  feedForward,
   Input,
   input,
   Output,
   output,
   Pool,
   pool,
+  Random,
   Relu,
   relu,
+  Sigmoid,
   SoftMax,
-  softMax } = layer;
+  softMax,
+  Weigh
+} = layer;
+import { FeedForward, layer } from '../../../src';
 
 describe('FeedForward Class: Unit', () => {
   describe('instantiation', () => {
@@ -49,6 +55,26 @@ describe('FeedForward Class: Unit', () => {
           Relu,
           Pool,
           SoftMax,
+          Output
+        ]);
+      });
+      it('can setup and traverse entire network using layer composition', () => {
+        const net = new FeedForward({
+          inputLayer: () => input(),
+          hiddenLayers: [
+            (input) => feedForward({}, input)
+          ],
+          outputLayer: (input) => output({}, input)
+        });
+        net.connectLayers();
+        assert.equal(net.layers.length, 7);
+        assert.deepEqual(net.layers.map(layer => layer.constructor), [
+          Input,
+          Random,
+          Weigh,
+          Random,
+          Add,
+          Sigmoid,
           Output
         ]);
       });
@@ -202,7 +228,9 @@ describe('FeedForward Class: Unit', () => {
         }
         constructor(settings, inputLayer) {
           super(settings);
-          this.inputLayer = inputLayer;
+          if (inputLayer !== undefined) {
+            this.inputLayer = inputLayer;
+          }
         }
         setupKernels() {}
       }

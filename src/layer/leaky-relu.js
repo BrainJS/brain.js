@@ -23,7 +23,7 @@ export default class LeakyRelu extends Base {
   }
 
   predict() {
-    this.outputs = this.predictKernel(this.inputLayer.outputs);
+    this.weights = this.predictKernel(this.inputLayer.weights);
   }
 
   learn() {

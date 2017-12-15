@@ -5,10 +5,9 @@ const {
   Base,
   Convolution,
   convolution,
+  feedForward,
   Input,
   input,
-  MultiplyWeights,
-  multiplyWeights,
   Output,
   output,
   Pool,
@@ -27,15 +26,15 @@ describe('FeedForward Class: End to End', () => {
       const net = new FeedForward({
         inputLayer: () => input({ width: 1, height: 1 }),
         hiddenLayers: [
-          (input) => multiplyWeights({ width: 1, height: 1 }, input),
-          (input) => sigmoid(input)
+          (input) => feedForward({ width: 1, height: 1 }, input)
         ],
         outputLayer: (input) => output({ width: 1, height: 1 }, input)
       });
 
       net.initialize();
 
-      const result = net.runInput([[1]])[0][0][0];
+      const result = net.runInput([[1]]);
+      console.log(result);
       assert.equal(result < 1 && result > 0, true, 'that any number comes out');
     });
   });

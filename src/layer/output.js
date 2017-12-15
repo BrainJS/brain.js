@@ -3,13 +3,12 @@
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 import randos from '../utilities/randos';
-import randos2d from '../utilities/randos-2d';
 
 export default class Output extends Base {
   constructor(settings, inputLayer) {
     super(settings);
     this.inputLayer = inputLayer;
-    this.weights = randos2d(this.width, this.height);
+    this.weights = randos(this.width);
   }
 
   setupKernels() {
@@ -18,16 +17,16 @@ export default class Output extends Base {
         deltas: setDelta,
         errors: setError
       },
-      output: [this.width, this.height]
+      output: [this.width]
     });
   }
 
   predict() {
-    this.outputs = this.inputLayer.outputs;
+    this.weights = this.inputLayer.weights;
   }
 
   compare(target) {
-    const { errors, deltas } = this.compareKernel(target, this.outputs);
+    const { errors, deltas } = this.compareKernel(target, this.weights);
     this.errors = errors;
     this.deltas = deltas;
   }
@@ -43,9 +42,9 @@ function setError(error) {
   return error;
 }
 
-function compare(target, outputs) {
-  const output = outputs[this.thread.y][this.thread.x];
-  const error = target[this.thread.y][this.thread.x] - output;
-  setDelta(error * output);
+function compare(target, weights) {
+  const weight = weights[this.thread.x];
+  const error = target[this.thread.x] - weight;
+  setDelta(error * weight);
   return setError(error);
 }

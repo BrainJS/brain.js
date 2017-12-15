@@ -77,11 +77,11 @@ export default class Convolution extends Base {
   }
 
   predict() {
-    this.outputs = this.predictKernel(this.inputLayer.outputs, this.filters, this.biases);
+    this.weights = this.predictKernel(this.inputLayer.weights, this.filters, this.biases);
   }
 
   learn() {
-    this.filterDeltas = this.learnFilters(this.inputLayer.outputs, this.deltas);
+    this.filterDeltas = this.learnFilters(this.inputLayer.weights, this.deltas);
     this.deltas = this.learnInputs(this.filters);
   }
 }

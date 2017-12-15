@@ -2,7 +2,7 @@ import Base from './base';
 
 class Regression extends Base {
   predict() {
-    this.outputs = this.inputs;
+    this.weights = this.inputs;
   }
 
   learn() {

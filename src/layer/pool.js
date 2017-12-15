@@ -40,10 +40,10 @@ export default class Pool extends Base {
   }
 
   predict() {
-    const outputs = this.predictKernel(this.inputLayer);
-    this.switchX = outputs.switchX;
-    this.switchY = outputs.switchY;
-    return this.outputs = outputs;
+    const weights = this.predictKernel(this.inputLayer);
+    this.switchX = weights.switchX;
+    this.switchY = weights.switchY;
+    return this.weights = weights;
   }
 }
 

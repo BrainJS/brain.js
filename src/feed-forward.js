@@ -3,6 +3,7 @@ import TrainStream from './train-stream';
 import max from './utilities/max';
 import mse2d from './utilities/mse-2d';
 import layerFromJSON from './utilities/layer-from-json';
+import traverseLayersFrom from './utilities/traverse-layers-from';
 
 /**
  *
@@ -36,15 +37,13 @@ export default class FeedForward {
 
   connectNestedLayers() {
     for (let i = 0; i < this.layers.length; i++) {
-      const layer = this.layers[i];
-      if (
-        layer.hasOwnProperty('inputLayer')
-        && this.layers.indexOf(layer.inputLayer) !== -1) continue;
-      let nestedLayer = layer;
-      while (nestedLayer = nestedLayer.inputLayer) {
-        if (this.layers.indexOf(nestedLayer) !== -1) continue;
-        this.layers.splice(i, 0, nestedLayer);
-      }
+      let offset = 0;
+      traverseLayersFrom(this.layers[i], (layer) => {
+        if (this.layers.indexOf(layer) === -1) {
+          this.layers.splice(i + offset, 0, layer);
+          offset++;
+        }
+      });
     }
   }
 
@@ -52,6 +51,7 @@ export default class FeedForward {
     this.connectLayers();
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i];
+      layer.validate(this.layers[i - 1], this.layers[i + 1]);
       layer.setupKernels();
     }
   }
@@ -124,6 +124,7 @@ export default class FeedForward {
       if (log && (i % logPeriod === 0)) {
         log('iterations:', i, 'training error:', error);
       }
+      if (i % callbackPeriod === 0) console.log(error);
       if (callback && (i % callbackPeriod === 0)) {
         callback({ error: error, iterations: i });
       }

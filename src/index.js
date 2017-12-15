@@ -1,5 +1,6 @@
 import crossValidate from './cross-validate';
 import * as layer from './layer';
+import * as activation from './activation';
 import likely from './likely';
 import lookup from './lookup';
 import NeuralNetwork from './neural-network';
@@ -24,4 +25,4 @@ export default {
   }
 };
 
-export { layer, FeedForward };
+export { layer, FeedForward, activation };

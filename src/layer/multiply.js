@@ -22,7 +22,7 @@ export default class Multiply extends Base {
   }
 
   predict() {
-    this.outputs = this.predictKernel(this.inputLayer[0].outputs, this.inputLayer[1].outputs);
+    this.weights = this.predictKernel(this.inputLayer[0].weights, this.inputLayer[1].weights);
   }
 
   learn(previousLayer, nextLayer) {
