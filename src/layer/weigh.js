@@ -5,6 +5,9 @@ export default class Weigh extends Base {
     super();
     this.inputLayers = inputLayers;
 
+    if (inputLayers.height > 0) {
+      throw new Error('inputLayers[0] should be height of 1');
+    }
     //TODO: make this less sensitive
     this.width = inputLayers[1].width;
     this.height = 1;
@@ -14,8 +17,7 @@ export default class Weigh extends Base {
     this.predictKernel = makeKernel(predict, {
       output: [this.width, this.height],
       constants: {
-        weighWidth: this.inputLayers[1].width,
-        weighHeight: this.inputLayers[1].height
+        inputWidth: this.inputLayers[0].width
       }
     });
   }
@@ -27,10 +29,8 @@ export default class Weigh extends Base {
 
 export function predict(weights1, weights2) {
   let sum = 0;
-  for (let y = 0; y < this.constants.weighHeight; y++) {
-    for (let x = 0; x < this.constants.weighWidth; x++) {
-      sum += weights1[this.thread.y][this.thread.x] * weights2[y][x];
-    }
+  for (let index = 0; index < this.constants.inputWidth; index++) {
+    sum += weights1[0][index] * weights2[index][this.thread.x];
   }
   return sum;
 }
