@@ -1,102 +1,97 @@
-import Group from './base';
-import { sigmoid, add, multiply, multiplyElement, tanh } from './index';
+import {
+  add,
+  multiply,
+  multiplyElement,
+  random,
+  sigmoid,
+  tanh
+} from './index';
 
-export default class LSTM extends Group {
-  constructor(settings) {
-    super(settings);
-
-    this.inputGate = new LSTMCell();
-    this.forgetGate = new LSTMCell();
-    this.outputGate = new LSTMCell();
-    this.memory = new LSTMCell();
-  }
-
-  static createKernel(settings) {
-    return (layer, inputLayer, previousOutputs) => {
-      const inputGate = sigmoid(
-        add(
-          add(
-            multiply(
-              layer.inputGate.inputWeights,
-              inputLayer
-            ),
-            multiply(
-              layer.inputGate.peepholeWeights,
-              previousOutputs
-            )
-          ),
-          layer.inputGate.bias
+export default (settings, input, recurrentInput) => {
+  const inputGateWeights = random();
+  const inputGatePeepholes = random();
+  const inputGateBias = random();
+  const inputGate = sigmoid(
+    add(
+      add(
+        multiply(
+          inputGateWeights,
+          input
+        ),
+        multiply(
+          inputGatePeepholes,
+          recurrentInput
         )
-      );
+      ),
+      inputGateBias
+    )
+  );
 
-      const forgetGate = sigmoid(
-        add(
-          add(
-            multiply(
-              layer.forgetGate.inputWeights,
-              inputLayer
-            ),
-            multiply(
-              layer.forgetGate.peepholeWeights,
-              previousOutputs
-            )
-          ),
-          layer.forgetGate.bias
+  const forgetGateWeights = random();
+  const forgetGatePeepholes = random();
+  const forgetGateBias = random();
+  const forgetGate = sigmoid(
+    add(
+      add(
+        multiply(
+          forgetGateWeights,
+          input
+        ),
+        multiply(
+          forgetGatePeepholes,
+          recurrentInput
         )
-      );
+      ),
+      forgetGateBias
+    )
+  );
 
-      // output gate
-      const outputGate = sigmoid(
-        add(
-          add(
-            multiply(
-              layer.outputGate.inputWeights,
-              inputLayer
-            ),
-            multiply(
-              layer.outputGate.peepholeWeights,
-              previousOutputs
-            )
-          ),
-          layer.outputGate.bias
+  const outputGateWeights = random();
+  const outputGatePeepholes = random();
+  const outputGateBias = random();
+  const outputGate = sigmoid(
+    add(
+      add(
+        multiply(
+          outputGateWeights,
+          input
+        ),
+        multiply(
+          outputGatePeepholes,
+          recurrentInput
         )
-      );
+      ),
+      outputGateBias
+    )
+  );
 
-      // write operation on cells
-      const memory = tanh(
-        add(
-          add(
-            multiply(
-              layer.memory.inputWeights,
-              inputLayer
-            ),
-            multiply(
-              layer.memory.peepholeWeights,
-              previousOutputs
-            )
-          ),
-          layer.memory.bias
+  const memoryWeights = random();
+  const memoryPeepholes = random();
+  const memoryBias = random();
+  const memory = tanh(
+    add(
+      add(
+        multiply(
+          memoryWeights,
+          input
+        ),
+        multiply(
+          memoryPeepholes,
+          recurrentInput
         )
-      );
+      ),
+      memoryBias
+    )
+  );
 
-      // compute new cell activation
-      const retainCell = multiplyElement(forgetGate, inputLayer); // what do we keep from cell
-      const writeCell = multiplyElement(inputGate, memory); // what do we write to cell
-      const cell = add(retainCell, writeCell); // new cell contents
+  // compute new cell activation
+  const retainCell = multiplyElement(forgetGate, input); // what do we keep from cell
+  const writeCell = multiplyElement(inputGate, memory); // what do we write to cell
+  const cell = add(retainCell, writeCell); // new cell contents
 
-      // compute hidden state as gated, saturated cell activations
-      return multiplyElement(
-        outputGate,
-        tanh(cell)
-      );
-    };
-  }
-}
-
-class LSTMCell {
-  constructor() {
-    this.inputWeights = {};
-    this.peepholeWeights = {};
-    this.bias = {};
-  }
+  // compute hidden state as gated, saturated cell activations
+  return multiplyElement(
+    outputGate,
+    tanh(cell)
+  );
 }

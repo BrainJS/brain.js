@@ -28,7 +28,6 @@ export default class Add extends Base {
   }
 
   predict() {
-    console.log(this.inputLayers[0].weights, this.inputLayers[1].weights);
     this.weights = this.predictKernel(this.inputLayers[0].weights, this.inputLayers[1].weights);
   }
 
