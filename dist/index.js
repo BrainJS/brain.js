@@ -20,6 +20,10 @@ var _neuralNetwork = require('./neural-network');
 
 var _neuralNetwork2 = _interopRequireDefault(_neuralNetwork);
 
+var _neuralNetworkGpu = require('./neural-network-gpu');
+
+var _neuralNetworkGpu2 = _interopRequireDefault(_neuralNetworkGpu);
+
 var _trainStream = require('./train-stream');
 
 var _trainStream2 = _interopRequireDefault(_trainStream);
@@ -43,6 +47,7 @@ exports.default = {
   likely: _likely2.default,
   lookup: _lookup2.default,
   NeuralNetwork: _neuralNetwork2.default,
+  NeuralNetworkGPU: _neuralNetworkGpu2.default,
   TrainStream: _trainStream2.default,
   recurrent: {
     RNN: _rnn2.default,
