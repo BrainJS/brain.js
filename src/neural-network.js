@@ -14,7 +14,7 @@ import zeros from './utilities/zeros';
  */
 export default class NeuralNetwork {
   constructor(options = {}) {
-    Object.assign(this, NeuralNetwork.defaults, options);
+    Object.assign(this, this.constructor.defaults, options);
     this.hiddenSizes = options.hiddenLayers;
 
     this.sizes = null;
@@ -208,7 +208,7 @@ export default class NeuralNetwork {
    * @returns {{error: number, iterations: number}}
    */
   train(data, _options = {}) {
-    const options = Object.assign({}, NeuralNetwork.trainDefaults, _options);
+    const options = Object.assign({}, this.constructor.trainDefaults, _options);
     data = this.formatData(data);
     let iterations = options.iterations;
     let errorThresh = options.errorThresh;
@@ -315,7 +315,7 @@ export default class NeuralNetwork {
         let output = this.outputs[layer][node];
 
         let error = 0;
-        if (layer == this.outputLayer) {
+        if (layer === this.outputLayer) {
           error = target[node] - output;
         }
         else {
@@ -340,7 +340,7 @@ export default class NeuralNetwork {
         let output = this.outputs[layer][node];
 
         let error = 0;
-        if (layer == this.outputLayer) {
+        if (layer === this.outputLayer) {
           error = target[node] - output;
         }
         else {
@@ -365,7 +365,7 @@ export default class NeuralNetwork {
         let output = this.outputs[layer][node];
 
         let error = 0;
-        if (layer == this.outputLayer) {
+        if (layer === this.outputLayer) {
           error = target[node] - output;
         }
         else {

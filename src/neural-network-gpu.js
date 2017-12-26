@@ -22,10 +22,6 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     this.backwardPropagate = [];
     this.changesPropagate = [];
     this.biasesPropagate = [];
-
-    this.count = 0;
-    this.error = 1;
-    this.logCount = options.logCount;
     this.gpu = new GPU({mode: options.mode});
   }
 
@@ -59,18 +55,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     this.calculateDeltas(target);
     this.getChanges(learningRate);
     this.changeBiases(learningRate);
-    
-    if (this.count % this.logCount === 0 || this.count === 1 || this.iterations === this.count) {
-      for (let i = 0; i < this.errors.length; i++) {
-        this.errors[i] = this.errors[i].toArray
-          ? this.errors[i].toArray(this.gpu)
-          : this.errors[i];
-      }
-      let error = this.error = mse(this.errors[this.outputLayer]);
-      return error;
-    } else {
-      return this.error;
-    }
+
+    return mse(this.errors[this.outputLayer].toArray());
   }
 
   buildRunInput() {
@@ -125,7 +111,6 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
 
       output = input = this.outputs[layer];
     }
-      // console.log(this.outputs[2], 'Outputs')
     return output;
   }
 
@@ -177,7 +162,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
         })
         .setOutput([this.sizes[layer]])
         .setOutputToTexture(true);
-        
+
         this.backwardPropagate[layer] = kernel;
       }
     }
