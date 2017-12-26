@@ -360,24 +360,6 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
 exports.default = NeuralNetworkGPU;
 
 
-NeuralNetworkGPU.trainDefaults = {
-  iterations: 20000,
-  errorThresh: 0.005,
-  log: false,
-  logPeriod: 10,
-  learningRate: 0.3,
-  callback: null,
-  callbackPeriod: 10,
-  keepNetworkIntact: false
-};
-
-NeuralNetworkGPU.defaults = {
-  learningRate: 0.3,
-  momentum: 0.1,
-  binaryThresh: 0.5,
-  hiddenLayers: null
-};
-
 function weightedSumSigmoid(weights, biases, x, inputs) {
   var sum = biases[x];
   for (var k = 0; k < size; k++) {

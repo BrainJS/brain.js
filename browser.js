@@ -787,24 +787,6 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
 exports.default = NeuralNetworkGPU;
 
 
-NeuralNetworkGPU.trainDefaults = {
-  iterations: 20000,
-  errorThresh: 0.005,
-  log: false,
-  logPeriod: 10,
-  learningRate: 0.3,
-  callback: null,
-  callbackPeriod: 10,
-  keepNetworkIntact: false
-};
-
-NeuralNetworkGPU.defaults = {
-  learningRate: 0.3,
-  momentum: 0.1,
-  binaryThresh: 0.5,
-  hiddenLayers: null
-};
-
 function weightedSumSigmoid(weights, biases, x, inputs) {
   var sum = biases[x];
   for (var k = 0; k < size; k++) {
@@ -940,6 +922,33 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @constructor
  */
 var NeuralNetwork = function () {
+  _createClass(NeuralNetwork, null, [{
+    key: 'trainDefaults',
+    get: function get() {
+      return {
+        iterations: 20000,
+        errorThresh: 0.005,
+        log: false,
+        logPeriod: 10,
+        learningRate: 0.3,
+        callback: null,
+        callbackPeriod: 10,
+        reinforce: false
+      };
+    }
+  }, {
+    key: 'defaults',
+    get: function get() {
+      return {
+        learningRate: 0.3,
+        momentum: 0.1,
+        binaryThresh: 0.5,
+        hiddenLayers: null,
+        activation: 'sigmoid'
+      };
+    }
+  }]);
+
   function NeuralNetwork() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -1702,26 +1711,6 @@ var NeuralNetwork = function () {
 }();
 
 exports.default = NeuralNetwork;
-
-
-NeuralNetwork.trainDefaults = {
-  iterations: 20000,
-  errorThresh: 0.005,
-  log: false,
-  logPeriod: 10,
-  learningRate: 0.3,
-  callback: null,
-  callbackPeriod: 10,
-  reinforce: false
-};
-
-NeuralNetwork.defaults = {
-  learningRate: 0.3,
-  momentum: 0.1,
-  binaryThresh: 0.5,
-  hiddenLayers: null,
-  activation: 'sigmoid'
-};
 
 },{"./lookup":3,"./train-stream":33,"./utilities/max":35,"./utilities/mse":36,"./utilities/randos":40,"./utilities/range":41,"./utilities/to-array":42,"./utilities/zeros":43}],6:[function(require,module,exports){
 'use strict';

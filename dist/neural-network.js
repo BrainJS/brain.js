@@ -48,6 +48,33 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @constructor
  */
 var NeuralNetwork = function () {
+  _createClass(NeuralNetwork, null, [{
+    key: 'trainDefaults',
+    get: function get() {
+      return {
+        iterations: 20000,
+        errorThresh: 0.005,
+        log: false,
+        logPeriod: 10,
+        learningRate: 0.3,
+        callback: null,
+        callbackPeriod: 10,
+        reinforce: false
+      };
+    }
+  }, {
+    key: 'defaults',
+    get: function get() {
+      return {
+        learningRate: 0.3,
+        momentum: 0.1,
+        binaryThresh: 0.5,
+        hiddenLayers: null,
+        activation: 'sigmoid'
+      };
+    }
+  }]);
+
   function NeuralNetwork() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -810,24 +837,4 @@ var NeuralNetwork = function () {
 }();
 
 exports.default = NeuralNetwork;
-
-
-NeuralNetwork.trainDefaults = {
-  iterations: 20000,
-  errorThresh: 0.005,
-  log: false,
-  logPeriod: 10,
-  learningRate: 0.3,
-  callback: null,
-  callbackPeriod: 10,
-  reinforce: false
-};
-
-NeuralNetwork.defaults = {
-  learningRate: 0.3,
-  momentum: 0.1,
-  binaryThresh: 0.5,
-  hiddenLayers: null,
-  activation: 'sigmoid'
-};
 //# sourceMappingURL=neural-network.js.map

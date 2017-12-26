@@ -13,6 +13,29 @@ import zeros from './utilities/zeros';
  * @constructor
  */
 export default class NeuralNetwork {
+  static get trainDefaults() {
+    return {
+      iterations: 20000,
+      errorThresh: 0.005,
+      log: false,
+      logPeriod: 10,
+      learningRate: 0.3,
+      callback: null,
+      callbackPeriod: 10,
+      reinforce: false
+    };
+  }
+
+  static get defaults() {
+    return {
+      learningRate: 0.3,
+      momentum: 0.1,
+      binaryThresh: 0.5,
+      hiddenLayers: null,
+      activation: 'sigmoid'
+    };
+  }
+
   constructor(options = {}) {
     Object.assign(this, this.constructor.defaults, options);
     this.hiddenSizes = options.hiddenLayers;
@@ -709,22 +732,3 @@ export default class NeuralNetwork {
     return this.trainStream;
   }
 }
-
-NeuralNetwork.trainDefaults = {
-  iterations: 20000,
-  errorThresh: 0.005,
-  log: false,
-  logPeriod: 10,
-  learningRate: 0.3,
-  callback: null,
-  callbackPeriod: 10,
-  reinforce: false
-};
-
-NeuralNetwork.defaults = {
-  learningRate: 0.3,
-  momentum: 0.1,
-  binaryThresh: 0.5,
-  hiddenLayers: null,
-  activation: 'sigmoid'
-};
