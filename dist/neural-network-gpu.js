@@ -16,33 +16,9 @@ var _lookup = require('./lookup');
 
 var _lookup2 = _interopRequireDefault(_lookup);
 
-var _trainStream = require('./train-stream');
-
-var _trainStream2 = _interopRequireDefault(_trainStream);
-
-var _max = require('./utilities/max');
-
-var _max2 = _interopRequireDefault(_max);
-
 var _mse = require('./utilities/mse');
 
 var _mse2 = _interopRequireDefault(_mse);
-
-var _randos = require('./utilities/randos');
-
-var _randos2 = _interopRequireDefault(_randos);
-
-var _range = require('./utilities/range');
-
-var _range2 = _interopRequireDefault(_range);
-
-var _toArray = require('./utilities/to-array');
-
-var _toArray2 = _interopRequireDefault(_toArray);
-
-var _zeros = require('./utilities/zeros');
-
-var _zeros2 = _interopRequireDefault(_zeros);
 
 var _gpu = require('gpu.js');
 
@@ -118,7 +94,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       this.getChanges(learningRate);
       this.changeBiases(learningRate);
 
-      return (0, _mse2.default)(this.errors[this.outputLayer].toArray());
+      return (0, _mse2.default)(this.errors[this.outputLayer].toArray(this.gpu));
     }
   }, {
     key: 'buildRunInput',
