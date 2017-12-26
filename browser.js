@@ -497,6 +497,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       this.buildCalculateDeltas();
       this.buildGetChanges();
       this.buildChangeBiases();
+      this.buildGetMSE();
     }
   }, {
     key: 'setActivation',
@@ -521,7 +522,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       this.getChanges(learningRate);
       this.changeBiases(learningRate);
 
-      return (0, _mse2.default)(this.errors[this.outputLayer].toArray(this.gpu));
+      return this.getMSE(this.errors[this.outputLayer])[0];
     }
   }, {
     key: 'buildRunInput',
@@ -689,6 +690,14 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
         var output = this.biasesPropagate[layer](this.biases[layer], this.deltas[layer], learningRate);
         this.biases[layer] = output.result;
       }
+    }
+  }, {
+    key: 'buildGetMSE',
+    value: function buildGetMSE() {
+      var kernel = this.gpu.createKernel(_mse2.default, {
+        output: [1]
+      });
+      this.getMSE = kernel;
     }
 
     /**

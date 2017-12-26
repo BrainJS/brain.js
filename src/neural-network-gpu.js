@@ -30,6 +30,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     this.buildCalculateDeltas();
     this.buildGetChanges();
     this.buildChangeBiases();
+    this.buildGetMSE();
   }
 
   setActivation() {}
@@ -50,7 +51,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     this.getChanges(learningRate);
     this.changeBiases(learningRate);
 
-    return mse(this.errors[this.outputLayer].toArray(this.gpu));
+    return this.getMSE(this.errors[this.outputLayer])[0];
   }
 
   buildRunInput() {
@@ -248,6 +249,13 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
       );
       this.biases[layer] = output.result;
     }
+  }
+
+  buildGetMSE() {
+    const kernel = this.gpu.createKernel(mse, {
+      output: [1]
+    });
+    this.getMSE = kernel;
   }
 
   /**
