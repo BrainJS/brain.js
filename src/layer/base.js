@@ -1,4 +1,5 @@
 'use strict';
+import MomentumRootMeanSquaredPropagation from '../praxis/momentum-root-mean-squared-propagation';
 
 export default class Base {
   static get defaults() {
@@ -29,13 +30,7 @@ export default class Base {
     this.deltas = null;
     this.weights = null;
 
-    const defaults = this.constructor.defaults;
-    for (let p in defaults) {
-      if (!defaults.hasOwnProperty(p)) continue;
-      this[p] = settings.hasOwnProperty(p)
-        ? settings[p]
-        : defaults[p];
-    }
+    Object.assign(this, this.constructor.defaults, settings);
   }
 
   validate() {}
@@ -46,46 +41,11 @@ export default class Base {
 
   compare(previousLayer, nextLayer) {}
 
-  learn() {}
+  learn() {
+    this.weights = this.praxis.run(this.weights, this.deltas);
+  }
 
   toArray() {
     return this.weights.toArray();
   }
-}
-
-
-function learn(weights, deltas) {
-
-}
-
-function learnOld(weights, deltas, previousMomentums) {
-  let delta = deltas[this.thread.y][this.thread.x];
-  let weight = weights[this.thread.y][this.thread.x];
-  let previousMomentum = previousMomentums[this.thread.y][this.thread.x];
-  const maxDelta = this.constants.maxDelta;
-  // rmsprop adaptive learning rate
-  const momentum = setMomentum(previousMomentum * this.constants.decayRate + (1 - this.constants.decayRate) * delta * delta);
-  // gradient clip
-  if (delta > maxDelta) {
-    setDelta(maxDelta);
-    setNumClipped(numClipped + 1);
-  } else if (delta < -maxDelta) {
-    setDelta(-maxDelta);
-    setNumClipped(numClipped + 1);
-  } else {
-    setNumClipped(numClipped);
-  }
-  return weight + -this.constants.learningRate * deltas / Math.sqrt(momentum + this.constants.smoothEps) - regc * weight;
-}
-
-function setNumClipped(number) {
-  return number;
-}
-
-function setDelta(delta) {
-  return delta;
-}
-
-function setMomentum(momentum) {
-  return momentum;
 }

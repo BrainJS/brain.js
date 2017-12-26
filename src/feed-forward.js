@@ -12,7 +12,7 @@ import traverseLayersFrom from './utilities/traverse-layers-from';
  */
 export default class FeedForward {
   constructor(options = {}) {
-    Object.assign(this, FeedForward.defaults, options);
+    Object.assign(this, this.constructor.defaults, options);
     this.layers = null;
     this._inputLayer = null;
     this._outputLayer = null;
@@ -140,7 +140,7 @@ export default class FeedForward {
    *
    * @param input
    * @param target
-   * @param learningRate
+   * @param [learningRate]
    */
   trainPattern(input, target, learningRate) {
     learningRate = learningRate || this.learningRate;
