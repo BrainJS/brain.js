@@ -1,7 +1,7 @@
 {
   "name": "brain.js",
   "description": "Neural network library",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.4",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": {
     "type": "git",
@@ -16,7 +16,8 @@
     "test-lstm": "find ./test/recurrent/ -name 'lstm.js' | xargs mocha --compilers js:babel-core/register",
     "test-utilities": "find ./test/utilities/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
     "test-applications": "find ./test/applications -name '*.js' | xargs mocha --compilers js:babel-core/register",
-    "test": "npm run test-base && npm run test-recurrent && npm run test-utilities",
+    "test": "npm run test-base && npm run test-utilities",
+    "test-experimental": "npm run test-recurrent && npm run test-utilities",
     "dist": "babel src --out-dir dist --source-maps",
     "browser": "browserify ./index.js -p licensify -o browser.js",
     "browser-min": "browserify ./index.js -p licensify -g uglifyify -o browser.min.js",

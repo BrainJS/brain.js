@@ -2,7 +2,7 @@
 
 # brain
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/harthur/brain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brain-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 `brain.js` is a library of JavaScript [neural networks](http://en.wikipedia.org/wiki/Artificial_neural_network).
 
@@ -38,7 +38,9 @@ output = net.run([1, 1]);  // [0]
 ```
 
 However, There's no reason to use a neural network to figure out XOR. (-: So, here's a more involved, realistic example:
-[Demo: training a neural network to recognize color contrast](https://brain.js.org/)
+[Demo: training a neural network to recognize color contrast](https://brain.js.org/).
+
+You can also check out the following screencast, which explains how to train a neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
 
 # Usage
 
