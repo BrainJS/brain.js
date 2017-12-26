@@ -301,6 +301,10 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     }
     return data;
   }
+
+  toFunction() {
+    throw new Error('not implemented on NeuralNetworkGPU');
+  }
 }
 
 function weightedSumSigmoid(weights, biases, x, inputs) {

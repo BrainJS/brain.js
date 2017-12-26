@@ -755,6 +755,11 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       }
       return data;
     }
+  }, {
+    key: 'toFunction',
+    value: function toFunction() {
+      throw new Error('not implemented on NeuralNetworkGPU');
+    }
   }]);
 
   return NeuralNetworkGPU;
