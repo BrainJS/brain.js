@@ -53,7 +53,7 @@ var NeuralNetwork = function () {
 
     _classCallCheck(this, NeuralNetwork);
 
-    Object.assign(this, NeuralNetwork.defaults, options);
+    Object.assign(this, this.constructor.defaults, options);
     this.hiddenSizes = options.hiddenLayers;
 
     this.sizes = null;
@@ -265,7 +265,7 @@ var NeuralNetwork = function () {
     value: function train(data) {
       var _options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      var options = Object.assign({}, NeuralNetwork.trainDefaults, _options);
+      var options = Object.assign({}, this.constructor.trainDefaults, _options);
       data = this.formatData(data);
       var iterations = options.iterations;
       var errorThresh = options.errorThresh;
@@ -380,7 +380,7 @@ var NeuralNetwork = function () {
           var output = this.outputs[layer][node];
 
           var error = 0;
-          if (layer == this.outputLayer) {
+          if (layer === this.outputLayer) {
             error = target[node] - output;
           } else {
             var deltas = this.deltas[layer + 1];
@@ -407,7 +407,7 @@ var NeuralNetwork = function () {
           var output = this.outputs[layer][node];
 
           var error = 0;
-          if (layer == this.outputLayer) {
+          if (layer === this.outputLayer) {
             error = target[node] - output;
           } else {
             var deltas = this.deltas[layer + 1];
@@ -434,7 +434,7 @@ var NeuralNetwork = function () {
           var output = this.outputs[layer][node];
 
           var error = 0;
-          if (layer == this.outputLayer) {
+          if (layer === this.outputLayer) {
             error = target[node] - output;
           } else {
             var deltas = this.deltas[layer + 1];

@@ -75,10 +75,6 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     _this.backwardPropagate = [];
     _this.changesPropagate = [];
     _this.biasesPropagate = [];
-
-    _this.count = 0;
-    _this.error = 1;
-    _this.logCount = options.logCount;
     _this.gpu = new _gpu2.default({ mode: options.mode });
     return _this;
   }
@@ -122,15 +118,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       this.getChanges(learningRate);
       this.changeBiases(learningRate);
 
-      if (this.count % this.logCount === 0 || this.count === 1 || this.iterations === this.count) {
-        for (var i = 0; i < this.errors.length; i++) {
-          this.errors[i] = this.errors[i].toArray ? this.errors[i].toArray(this.gpu) : this.errors[i];
-        }
-        var error = this.error = (0, _mse2.default)(this.errors[this.outputLayer]);
-        return error;
-      } else {
-        return this.error;
-      }
+      return (0, _mse2.default)(this.errors[this.outputLayer].toArray());
     }
   }, {
     key: 'buildRunInput',
@@ -182,7 +170,6 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
 
         output = input = this.outputs[layer];
       }
-      // console.log(this.outputs[2], 'Outputs')
       return output;
     }
   }, {
