@@ -94,7 +94,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     }
 
     for(let layer = 1; layer <= this.outputLayer; layer++){
-      const kernel = this.gpu.createKernelMap({weightedSum}, 
+      const kernel = this.gpu.createKernelMap({ weightedSum: GPU.alias('weightedSum', weightedSum) },
         function(weights, biases, inputs){
           return weightedSum(weights, biases, this.thread.x, inputs);
         }, {
@@ -152,8 +152,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     for (let layer = this.outputLayer; layer > 0; layer--) {
       if (layer === this.outputLayer){
         const kernel = this.gpu.createKernelMap({
-          error: calcError,
-          deltas: calcDeltas
+          error: GPU.alias('calcError', calcError),
+          deltas: GPU.alias('calcDeltas', calcDeltas)
         }, function(outputs, target){
           let output = outputs[this.thread.x];
           return calcDeltas(calcError(output, target), output);
@@ -165,8 +165,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
 
       } else {
         const kernel = this.gpu.createKernelMap({
-          error: calcErrorOutput,
-          deltas: calcDeltas,
+          error: GPU.alias('calcErrorOutput', calcErrorOutput),
+          deltas: GPU.alias('calcDeltas', calcDeltas),
         }, function(nextWeights, outputs, nextDeltas){
           let output = outputs[this.thread.x];
           return calcDeltas(calcErrorOutput(nextWeights, nextDeltas), output);
@@ -204,7 +204,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
 
   buildGetChanges() {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
-     const kernel = this.gpu.createKernelMap({addWeights, calcChanges},
+     const kernel = this.gpu.createKernelMap({
+         addWeights, calcChanges},
         function(previousOutputs, deltas, weights, changes, learningRate, momentum){
           let delta = deltas[this.thread.y];
           let change = calcChanges(

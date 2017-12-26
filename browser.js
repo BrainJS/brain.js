@@ -582,7 +582,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       }
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
-        var kernel = this.gpu.createKernelMap({ weightedSum: weightedSum }, function (weights, biases, inputs) {
+        var kernel = this.gpu.createKernelMap({ weightedSum: _gpu2.default.alias('weightedSum', weightedSum) }, function (weights, biases, inputs) {
           return weightedSum(weights, biases, this.thread.x, inputs);
         }, {
           constants: {
@@ -637,8 +637,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       for (var layer = this.outputLayer; layer > 0; layer--) {
         if (layer === this.outputLayer) {
           var kernel = this.gpu.createKernelMap({
-            error: calcError,
-            deltas: calcDeltas
+            error: _gpu2.default.alias('calcError', calcError),
+            deltas: _gpu2.default.alias('calcDeltas', calcDeltas)
           }, function (outputs, target) {
             var output = outputs[this.thread.x];
             return calcDeltas(calcError(output, target), output);
@@ -647,8 +647,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
           this.backwardPropagate[layer] = kernel;
         } else {
           var _kernel = this.gpu.createKernelMap({
-            error: calcErrorOutput,
-            deltas: calcDeltas
+            error: _gpu2.default.alias('calcErrorOutput', calcErrorOutput),
+            deltas: _gpu2.default.alias('calcDeltas', calcDeltas)
           }, function (nextWeights, outputs, nextDeltas) {
             var output = outputs[this.thread.x];
             return calcDeltas(calcErrorOutput(nextWeights, nextDeltas), output);
@@ -681,7 +681,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     key: 'buildGetChanges',
     value: function buildGetChanges() {
       for (var layer = 1; layer <= this.outputLayer; layer++) {
-        var kernel = this.gpu.createKernelMap({ addWeights: addWeights, calcChanges: calcChanges }, function (previousOutputs, deltas, weights, changes, learningRate, momentum) {
+        var kernel = this.gpu.createKernelMap({
+          addWeights: addWeights, calcChanges: calcChanges }, function (previousOutputs, deltas, weights, changes, learningRate, momentum) {
           var delta = deltas[this.thread.y];
           var change = calcChanges(changes, delta, previousOutputs, learningRate, momentum, this.thread.x, this.thread.y);
 
@@ -970,8 +971,13 @@ var NeuralNetwork = function () {
     this.deltas = null;
     this.changes = null; // for momentum
     this.errors = null;
-    this.runInput = null;
-    this.calculateDeltas = null;
+
+    if (!this.constructor.prototype.hasOwnProperty('runInput')) {
+      this.runInput = null;
+    }
+    if (!this.constructor.prototype.hasOwnProperty('calculateDeltas')) {
+      this.calculateDeltas = null;
+    }
   }
 
   /**

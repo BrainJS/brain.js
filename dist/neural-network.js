@@ -66,8 +66,13 @@ var NeuralNetwork = function () {
     this.deltas = null;
     this.changes = null; // for momentum
     this.errors = null;
-    this.runInput = null;
-    this.calculateDeltas = null;
+
+    if (!this.constructor.prototype.hasOwnProperty('runInput')) {
+      this.runInput = null;
+    }
+    if (!this.constructor.prototype.hasOwnProperty('calculateDeltas')) {
+      this.calculateDeltas = null;
+    }
   }
 
   /**
