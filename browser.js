@@ -443,10 +443,6 @@ var _lookup = require('./lookup');
 
 var _lookup2 = _interopRequireDefault(_lookup);
 
-var _mse = require('./utilities/mse');
-
-var _mse2 = _interopRequireDefault(_mse);
-
 var _gpu = require('gpu.js');
 
 var _gpu2 = _interopRequireDefault(_gpu);
@@ -694,8 +690,11 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
   }, {
     key: 'buildGetMSE',
     value: function buildGetMSE() {
-      var kernel = this.gpu.createKernel(_mse2.default, {
-        output: [1]
+      var kernel = this.gpu.createKernel(mse, {
+        output: [1],
+        constants: {
+          size: this.outputLayer
+        }
       });
       this.getMSE = kernel;
     }
@@ -861,7 +860,16 @@ function addBiases(biases, deltas, learningRate, x) {
   return biases[x] + deltas[x] * learningRate;
 }
 
-},{"./lookup":3,"./neural-network":5,"./utilities/mse":36,"gpu.js":77}],5:[function(require,module,exports){
+// mean squared error, reimplemented for GPU
+function mse(errors) {
+  var sum = 0;
+  for (var i = 0; i < this.constants.size; i++) {
+    sum += Math.pow(errors[i], 2);
+  }
+  return sum / this.constants.size;
+}
+
+},{"./lookup":3,"./neural-network":5,"gpu.js":77}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

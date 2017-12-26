@@ -1,6 +1,5 @@
 import NeuralNetwork from './neural-network';
 import lookup from './lookup';
-import mse from './utilities/mse';
 import GPU from 'gpu.js';
 
 /**
@@ -253,7 +252,10 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
 
   buildGetMSE() {
     const kernel = this.gpu.createKernel(mse, {
-      output: [1]
+      output: [1],
+      constants: {
+        size: this.outputLayer
+      }
     });
     this.getMSE = kernel;
   }
@@ -398,4 +400,13 @@ function addWeights(change, weights, x, y){
 
 function addBiases(biases, deltas, learningRate, x){
   return biases[x] + (deltas[x] * learningRate);
+}
+
+// mean squared error, reimplemented for GPU
+function mse(errors) {
+  let sum = 0;
+  for (let i = 0; i < this.constants.size; i++) {
+    sum += Math.pow(errors[i], 2);
+  }
+  return sum / this.constants.size;
 }
