@@ -48,25 +48,25 @@ export default (settings, input, recurrentInput) => {
     )
   );
 
-  const memoryWeights = random();
-  const memoryPeepholes = random();
-  const memoryBias = random();
+  const cellWeights = random();
+  const cellPeepholes = random();
+  const cellBias = random();
   let cell = tanh(
     add(
       add(
         multiply(
-          memoryWeights,
+          cellWeights,
           input
         ),
         multiply(
-          memoryPeepholes,
+          cellPeepholes,
           multiplyElement(
             resetGate,
             recurrentInput
           )
         )
       ),
-      memoryBias
+      cellBias
     )
   );
 

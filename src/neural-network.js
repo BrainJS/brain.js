@@ -562,7 +562,7 @@ export default class NeuralNetwork {
   toJSON() {
     let layers = [];
     for (let layer = 0; layer <= this.outputLayer; layer++) {
-      layers[layer] = {};
+      layers[layer] = [];
 
       let nodes;
       // turn any internal arrays back into hashes for readable json
@@ -582,7 +582,7 @@ export default class NeuralNetwork {
 
         if (layer > 0) {
           layers[layer][node].bias = this.biases[layer][j];
-          layers[layer][node].weights = {};
+          layers[layer][node].weights = [];
           for (let k in layers[layer - 1]) {
             let index = k;
             if (layer === 1 && this.inputLookup) {

@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * a sigmoid activation
+ * sigmoid activation
  * @param value
  * @returns {number}
  */
@@ -10,7 +10,7 @@ export function activate(value) {
 }
 
 /**
- * a sigmoid derivative
+ * sigmoid derivative
  * @param weight
  * @param error
  * @returns {number}

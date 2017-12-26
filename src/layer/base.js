@@ -53,7 +53,12 @@ export default class Base {
   }
 }
 
-function learn(weights, deltas, previousMomentums) {
+
+function learn(weights, deltas) {
+
+}
+
+function learnOld(weights, deltas, previousMomentums) {
   let delta = deltas[this.thread.y][this.thread.x];
   let weight = weights[this.thread.y][this.thread.x];
   let previousMomentum = previousMomentums[this.thread.y][this.thread.x];
