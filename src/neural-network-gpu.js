@@ -283,14 +283,14 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
    * @returns {*}
    */
   formatData(data) {
-    if (data.constructor !== Array) { // turn stream datum into array
+    if (!Array.isArray(data)) { // turn stream datum into array
       let tmp = [];
       tmp.push(data);
       data = tmp;
     }
     // turn sparse hash input into arrays with 0s as filler
     let datum = data[0].input;
-    if (datum.constructor !== Array && !(datum instanceof Float64Array)) {
+    if (!Array.isArray(datum) && !(datum instanceof Float64Array)) {
       if (!this.inputLookup) {
         this.inputLookup = lookup.buildLookup(data.map(value => value['input']));
       }
@@ -300,7 +300,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
       }, this);
     }
 
-    if (data[0].output.constructor !== Array) {
+    if (!Array.isArray(data[0].output)) {
       if (!this.outputLookup) {
         this.outputLookup = lookup.buildLookup(data.map(value => value['output']));
       }

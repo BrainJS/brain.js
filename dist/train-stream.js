@@ -135,7 +135,7 @@ var TrainStream = function (_Writable) {
       if (!this.dataFormatDetermined) {
         // create the lookup
         this.neuralNetwork.inputLookup = _lookup2.default.lookupFromArray(this.inputKeys);
-        if (this.firstDatum.output.constructor !== Array) {
+        if (!Array.isArray(this.firstDatum.output)) {
           this.neuralNetwork.outputLookup = _lookup2.default.lookupFromArray(this.outputKeys);
         }
 
