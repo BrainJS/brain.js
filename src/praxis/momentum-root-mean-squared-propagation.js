@@ -1,5 +1,4 @@
 import makeKernel from '../utilities/make-kernel';
-import zeros from '../utilities/zeros';
 import zeros2d from "../utilities/zeros-2d";
 
 export default class MomentumRootMeanSquaredPropagation {
