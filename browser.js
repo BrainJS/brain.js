@@ -6,11 +6,11 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.0.0-rc.4
+ *   version: 1.0.0-rc.5
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   maintainers: marijn <marijnh@gmail.com>
+ *   maintainers: Marijn Haverbeke <marijnh@gmail.com>, Ingvar Stepanyan <me@rreverser.com>
  *   contributors: List of Acorn contributors. Updated before every release., Adrian Rakovsky, Alistair Braidwood, Amila Welihinda, Andres Suarez, Angelo, Aparajita Fishman, Arian Stolwijk, Artem Govorov, Bradley Heinz, Brandon Mills, Charles Hughes, Conrad Irwin, Daniel Tschinder, David Bonnet, Domenico Matteo, ehmicky, Forbes Lindesay, Gilad Peleg, impinball, Ingvar Stepanyan, Jackson Ray Hamilton, Jesse McCarthy, Jiaxing Wang, Joel Kemp, Johannes Herr, John-David Dalton, Jordan Klassen, Jürg Lehni, Kai Cataldo, keeyipchan, Keheliya Gallaba, Kevin Irish, Kevin Kwok, krator, Marek, Marijn Haverbeke, Martin Carlberg, Mat Garcia, Mathias Bynens, Mathieu 'p01' Henri, Matthew Bastien, Max Schaefer, Max Zerzouri, Mihai Bazon, Mike Rennie, naoh, Nicholas C. Zakas, Nick Fitzgerald, Olivier Thomann, Oskar Schöldström, Paul Harper, Peter Rust, PlNG, Prayag Verma, ReadmeCritic, r-e-d, Richard Gibson, Rich Harris, Sebastian McKenzie, Shahar Soel, Simen Bekkhus, Teddy Katz, Timothy Gu, Toru Nagashima, Victor Homyakov, Wexpo Lyu, zsjforcn
  *   homepage: https://github.com/ternjs/acorn
  *   version: 5.2.1
@@ -18,21 +18,12 @@
  * base64-js:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: T. Jameson Little <t.jameson.little@gmail.com>
- *   maintainers: beatgammit <t.jameson.little@gmail.com>, feross <feross@feross.org>
  *   homepage: https://github.com/beatgammit/base64-js
  *   version: 1.2.1
- *
- * browserify:
- *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: James Halliday <mail@substack.net>
- *   maintainers: domenic <d@domenic.me>, dominictarr <dominic.tarr@gmail.com>, feross <feross@feross.org>, jmm <npm-public@jessemccarthy.net>, mafintosh <mathiasbuus@gmail.com>, maxogden <max@maxogden.com>, mellowmelon <palmermebane@gmail.com>, substack <substack@gmail.com>, terinjokes <terinjokes@gmail.com>, thlorenz <thlorenz@gmx.de>, zertosh <zertosh@gmail.com>
- *   homepage: https://github.com/substack/node-browserify#readme
- *   version: 13.3.0
  *
  * buffer:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Feross Aboukhadijeh <feross@feross.org>
- *   maintainers: feross <feross@feross.org>
  *   contributors: Romain Beauxis <toots@rastageeks.org>, James Halliday <mail@substack.net>
  *   homepage: https://github.com/feross/buffer
  *   version: 4.9.1
@@ -40,88 +31,75 @@
  * core-util-is:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Isaac Z. Schlueter <i@izs.me>
- *   maintainers: isaacs <i@izs.me>
  *   homepage: https://github.com/isaacs/core-util-is#readme
  *   version: 1.0.2
  *
  * events:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Irakli Gozalishvili <rfobic@gmail.com>
- *   maintainers: gozala <rfobic@gmail.com>, defunctzombie <shtylman@gmail.com>
  *   homepage: https://github.com/Gozala/events#readme
  *   version: 1.1.1
  *
  * gpu.js:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: The gpu.js Team
- *   maintainers: robertleeplummerjr <robertleeplummerjr@gmail.com>
  *   homepage: http://gpu.rocks/
- *   version: 1.0.0-rc.8
+ *   version: 1.0.0
  *
  * ieee754:
  *   license: BSD-3-Clause (http://opensource.org/licenses/BSD-3-Clause)
  *   author: Feross Aboukhadijeh <feross@feross.org>
- *   maintainers: feross <feross@feross.org>
  *   contributors: Romain Beauxis <toots@rastageeks.org>
  *   homepage: https://github.com/feross/ieee754#readme
  *   version: 1.1.8
  *
  * inherits:
  *   license: ISC (http://opensource.org/licenses/ISC)
- *   maintainers: isaacs <i@izs.me>
  *   homepage: https://github.com/isaacs/inherits#readme
  *   version: 2.0.3
  *
  * isarray:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Julian Gruber <mail@juliangruber.com>
- *   maintainers: juliangruber <julian@juliangruber.com>
  *   homepage: https://github.com/juliangruber/isarray
  *   version: 1.0.0
  *
  * process:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Roman Shtylman <shtylman@gmail.com>
- *   maintainers: coolaj86 <coolaj86@gmail.com>, cwmma <calvin.metcalf@gmail.com>, defunctzombie <shtylman@gmail.com>
  *   homepage: https://github.com/shtylman/node-process#readme
  *   version: 0.11.10
  *
  * process-nextick-args:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   maintainers: cwmma <calvin.metcalf@gmail.com>
  *   homepage: https://github.com/calvinmetcalf/process-nextick-args
  *   version: 1.0.7
  *
  * readable-stream:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   maintainers: nodejs-foundation <build@iojs.org>, matteo.collina <hello@matteocollina.com>, cwmma <calvin.metcalf@gmail.com>, isaacs <i@izs.me>, tootallnate <nathan@tootallnate.net>, rvagg <rod@vagg.org>
  *   homepage: https://github.com/nodejs/readable-stream#readme
  *   version: 2.3.3
  *
  * safe-buffer:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Feross Aboukhadijeh <feross@feross.org>
- *   maintainers: feross <feross@feross.org>, mafintosh <mathiasbuus@gmail.com>
  *   homepage: https://github.com/feross/safe-buffer
  *   version: 5.1.1
  *
  * stream-browserify:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: James Halliday <mail@substack.net>
- *   maintainers: substack <substack@gmail.com>, feross <feross@feross.org>, stevemao <steve.mao@healthinteract.com.au>
  *   homepage: https://github.com/substack/stream-browserify
  *   version: 2.0.1
  *
  * string_decoder:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   maintainers: cwmma <calvin.metcalf@gmail.com>, matteo.collina <hello@matteocollina.com>, nodejs-foundation <build@iojs.org>, rvagg <rod@vagg.org>, substack <substack@gmail.com>
  *   homepage: https://github.com/rvagg/string_decoder
  *   version: 1.0.3
  *
  * util-deprecate:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Nathan Rajlich <nathan@tootallnate.net>
- *   maintainers: tootallnate <nathan@tootallnate.net>
  *   homepage: https://github.com/TooTallNate/util-deprecate
  *   version: 1.0.2
  *
@@ -730,7 +708,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     value: function formatData(data) {
       var _this2 = this;
 
-      if (data.constructor !== Array) {
+      if (!Array.isArray(data)) {
         // turn stream datum into array
         var tmp = [];
         tmp.push(data);
@@ -738,7 +716,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       }
       // turn sparse hash input into arrays with 0s as filler
       var datum = data[0].input;
-      if (datum.constructor !== Array && !(datum instanceof Float64Array)) {
+      if (!Array.isArray(datum) && !(datum instanceof Float64Array)) {
         if (!this.inputLookup) {
           this.inputLookup = _lookup2.default.buildLookup(data.map(function (value) {
             return value['input'];
@@ -750,7 +728,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
         }, this);
       }
 
-      if (data[0].output.constructor !== Array) {
+      if (!Array.isArray(data[0].output)) {
         if (!this.outputLookup) {
           this.outputLookup = _lookup2.default.buildLookup(data.map(function (value) {
             return value['output'];
@@ -869,7 +847,7 @@ function mse(errors) {
   return sum / this.constants.size;
 }
 
-},{"./lookup":3,"./neural-network":5,"gpu.js":77}],5:[function(require,module,exports){
+},{"./lookup":3,"./neural-network":5,"gpu.js":76}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1385,7 +1363,7 @@ var NeuralNetwork = function () {
     value: function formatData(data) {
       var _this = this;
 
-      if (data.constructor !== Array) {
+      if (!Array.isArray(data)) {
         // turn stream datum into array
         var tmp = [];
         tmp.push(data);
@@ -1393,7 +1371,7 @@ var NeuralNetwork = function () {
       }
       // turn sparse hash input into arrays with 0s as filler
       var datum = data[0].input;
-      if (datum.constructor !== Array && !(datum instanceof Float64Array)) {
+      if (!Array.isArray(datum) && !(datum instanceof Float64Array)) {
         if (!this.inputLookup) {
           this.inputLookup = _lookup2.default.buildLookup(data.map(function (value) {
             return value['input'];
@@ -1405,7 +1383,7 @@ var NeuralNetwork = function () {
         }, this);
       }
 
-      if (data[0].output.constructor !== Array) {
+      if (!Array.isArray(data[0].output)) {
         if (!this.outputLookup) {
           this.outputLookup = _lookup2.default.buildLookup(data.map(function (value) {
             return value['output'];
@@ -3967,7 +3945,7 @@ var TrainStream = function (_Writable) {
       if (!this.dataFormatDetermined) {
         // create the lookup
         this.neuralNetwork.inputLookup = _lookup2.default.lookupFromArray(this.inputKeys);
-        if (this.firstDatum.output.constructor !== Array) {
+        if (!Array.isArray(this.firstDatum.output)) {
           this.neuralNetwork.outputLookup = _lookup2.default.lookupFromArray(this.outputKeys);
         }
 
@@ -4047,7 +4025,7 @@ function uniques(arr) {
   return [].concat(_toConsumableArray(new Set(arr)));
 }
 
-},{"./lookup":3,"stream":98}],34:[function(require,module,exports){
+},{"./lookup":3,"stream":97}],34:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8388,8 +8366,6 @@ function fromByteArray (uint8) {
 },{}],47:[function(require,module,exports){
 
 },{}],48:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],49:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -10182,7 +10158,7 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":46,"ieee754":78,"isarray":81}],50:[function(require,module,exports){
+},{"base64-js":46,"ieee754":77,"isarray":80}],49:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -10293,7 +10269,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":80}],51:[function(require,module,exports){
+},{"../../is-buffer/index.js":79}],50:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -10597,7 +10573,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],52:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -10638,7 +10614,7 @@ module.exports = function (_FunctionBuilderBase) {
 
   return CPUFunctionBuilder;
 }(FunctionBuilderBase);
-},{"../function-builder-base":57,"./function-node":53}],53:[function(require,module,exports){
+},{"../function-builder-base":56,"./function-node":52}],52:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -10657,7 +10633,7 @@ var utils = require('../../core/utils');
  * 
  * @extends BaseFunctionNode
  *
- * @desc [INTERNAL] Represents a single function, inside JS, webGL, or openGL.
+ * @desc [INTERNAL] Represents a single function, inside JS
  *
  * <p>This handles all the raw state, converted state, etc. Of a single function.</p>
  *
@@ -10726,7 +10702,7 @@ module.exports = function (_BaseFunctionNode) {
    * @param {Array} retArr - return array string
    * @param {Function} funcParam - FunctionNode, that tracks compilation state
    *
-   * @returns {String} the prased openclgl string array
+   * @returns {Array} the parsed cpu string array
    */
 
 	}, {
@@ -11007,7 +10983,7 @@ module.exports = function (_BaseFunctionNode) {
 		key: 'astIdentifierExpression',
 		value: function astIdentifierExpression(idtNode, retArr, funcParam) {
 			if (idtNode.type !== 'Identifier') {
-				throw this.astErrorOutput('IdentifierExpression - not an Identifier', ast, funcParam);
+				throw this.astErrorOutput('IdentifierExpression - not an Identifier', idtNode, funcParam);
 			}
 
 			switch (idtNode.name) {
@@ -11056,14 +11032,14 @@ module.exports = function (_BaseFunctionNode) {
    * @param {Array} retArr - return array string
    * @param {Function} funcParam - FunctionNode, that tracks compilation state
    *
-   * @returns {String} the prased openclgl string
+   * @returns {Array} the parsed cpu string
    */
 
 	}, {
 		key: 'astForStatement',
 		value: function astForStatement(forNode, retArr, funcParam) {
 			if (forNode.type !== 'ForStatement') {
-				throw this.astErrorOutput('Invalid for statment', ast, funcParam);
+				throw this.astErrorOutput('Invalid for statment', forNode, funcParam);
 			}
 
 			if (forNode.test && forNode.test.type === 'BinaryExpression') {
@@ -11159,14 +11135,14 @@ module.exports = function (_BaseFunctionNode) {
    * @param {Array} retArr - return array string
    * @param {Function} funcParam - FunctionNode, that tracks compilation state
    *
-   * @returns {String} the parsed openclgl string
+   * @returns {Array} the parsed openclgl string
    */
 
 	}, {
 		key: 'astWhileStatement',
 		value: function astWhileStatement(whileNode, retArr, funcParam) {
 			if (whileNode.type !== 'WhileStatement') {
-				throw this.astErrorOutput('Invalid while statment', ast, funcParam);
+				throw this.astErrorOutput('Invalid while statment', whileNode, funcParam);
 			}
 
 			retArr.push('for (let i = 0; i < LOOP_MAX; i++) {');
@@ -11233,7 +11209,7 @@ module.exports = function (_BaseFunctionNode) {
    *
    * @desc Parses the abstract syntax tree for *Block* statement
    *
-   * @param {Object} bnode - the AST object to parse
+   * @param {Object} bNode - the AST object to parse
    * @param {Array} retArr - return array string
    * @param {Function} funcParam - FunctionNode, that tracks compilation state
    *
@@ -11659,7 +11635,7 @@ module.exports = function (_BaseFunctionNode) {
    *
    * @desc Parses the abstract syntax tree for *Array* Expression
    *
-   * @param {Object} ast - the AST object to parse
+   * @param {Object} arrNode - the AST object to parse
    * @param {Array} retArr - return array string
    * @param {Function} funcParam - FunctionNode, that tracks compilation state
    *
@@ -11728,7 +11704,7 @@ module.exports = function (_BaseFunctionNode) {
 
 	return CPUFunctionNode;
 }(BaseFunctionNode);
-},{"../../core/utils":76,"../function-node-base":58}],54:[function(require,module,exports){
+},{"../../core/utils":75,"../function-node-base":57}],53:[function(require,module,exports){
 'use strict';
 
 var utils = require('../../core/utils');
@@ -11737,7 +11713,7 @@ var kernelRunShortcut = require('../kernel-run-shortcut');
 module.exports = function (cpuKernel, name) {
   return '() => {\n    ' + kernelRunShortcut.toString() + ';\n    const utils = {\n      allPropertiesOf: function ' + utils.allPropertiesOf.toString() + ',\n      clone: function ' + utils.clone.toString() + ',\n      /*splitArray: function ' + utils.splitArray.toString() + ',\n      getArgumentType: function ' + utils.getArgumentType.toString() + ',\n      getOutput: function ' + utils.getOutput.toString() + ',\n      dimToTexSize: function ' + utils.dimToTexSize.toString() + ',\n      copyFlatten: function ' + utils.copyFlatten.toString() + ',\n      flatten: function ' + utils.flatten.toString() + ',\n      systemEndianness: \'' + utils.systemEndianness() + '\',\n      initWebGl: function ' + utils.initWebGl.toString() + ',\n      isArray: function ' + utils.isArray.toString() + '*/\n    };\n    class ' + (name || 'Kernel') + ' {\n      constructor() {        \n        this.argumentsLength = 0;\n        this._canvas = null;\n        this._webGl = null;\n        this.built = false;\n        this.program = null;\n        this.paramNames = ' + JSON.stringify(cpuKernel.paramNames) + ';\n        this.paramTypes = ' + JSON.stringify(cpuKernel.paramTypes) + ';\n        this.texSize = ' + JSON.stringify(cpuKernel.texSize) + ';\n        this.output = ' + JSON.stringify(cpuKernel.output) + ';\n        this._kernelString = `' + cpuKernel._kernelString + '`;\n        this.output = ' + JSON.stringify(cpuKernel.output) + ';\n\t\t    this.run = function() {\n          this.run = null;\n          this.build();\n          return this.run.apply(this, arguments);\n        }.bind(this);\n        this.thread = {\n          x: 0,\n          y: 0,\n          z: 0\n        };\n      }\n      setCanvas(canvas) { this._canvas = canvas; return this; }\n      setWebGl(webGl) { this._webGl = webGl; return this; }\n      ' + cpuKernel.build.toString() + '\n      run () { ' + cpuKernel.kernelString + ' }\n      getKernelString() { return this._kernelString; }\n    };\n    return kernelRunShortcut(new Kernel());\n  };';
 };
-},{"../../core/utils":76,"../kernel-run-shortcut":60}],55:[function(require,module,exports){
+},{"../../core/utils":75,"../kernel-run-shortcut":59}],54:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -12078,7 +12054,7 @@ module.exports = function (_KernelBase) {
 
 	return CPUKernel;
 }(KernelBase);
-},{"../../core/utils":76,"../kernel-base":59,"./kernel-string":54}],56:[function(require,module,exports){
+},{"../../core/utils":75,"../kernel-base":58,"./kernel-string":53}],55:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -12139,7 +12115,7 @@ module.exports = function (_RunnerBase) {
 
 	return CPURunner;
 }(RunnerBase);
-},{"../../core/utils":76,"../runner-base":61,"./function-builder":52,"./kernel":55}],57:[function(require,module,exports){
+},{"../../core/utils":75,"../runner-base":60,"./function-builder":51,"./kernel":54}],56:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -12504,7 +12480,7 @@ module.exports = function () {
 
 	return FunctionBuilderBase;
 }();
-},{}],58:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -12920,7 +12896,7 @@ module.exports = function () {
 
 	return BaseFunctionNode;
 }();
-},{"../core/utils":76,"acorn":45}],59:[function(require,module,exports){
+},{"../core/utils":75,"acorn":45}],58:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -13363,7 +13339,7 @@ module.exports = function () {
 
 	return BaseKernel;
 }();
-},{"../core/utils":76}],60:[function(require,module,exports){
+},{"../core/utils":75}],59:[function(require,module,exports){
 'use strict';
 
 var utils = require('../core/utils');
@@ -13398,7 +13374,7 @@ module.exports = function kernelRunShortcut(kernel) {
 
 	return shortcut;
 };
-},{"../core/utils":76}],61:[function(require,module,exports){
+},{"../core/utils":75}],60:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -13543,7 +13519,7 @@ module.exports = function () {
 
 	return BaseRunner;
 }();
-},{"../core/utils":76,"./kernel-run-shortcut":60}],62:[function(require,module,exports){
+},{"../core/utils":75,"./kernel-run-shortcut":59}],61:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -13614,7 +13590,7 @@ module.exports = function (_FunctionBuilderBase) {
 function _round(a) {
 	return Math.floor(a + 0.5);
 }
-},{"../function-builder-base":57,"./function-node":63}],63:[function(require,module,exports){
+},{"../function-builder-base":56,"./function-node":62}],62:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -13683,7 +13659,7 @@ module.exports = function (_FunctionNodeBase) {
    * @param {Array} retArr - return array string
    * @param {Function} funcParam - FunctionNode, that tracks compilation state
    *
-   * @returns {String} the prased openclgl string array
+   * @returns {Array} the parsed webgl string array
    */
 
 	}, {
@@ -14002,7 +13978,7 @@ module.exports = function (_FunctionNodeBase) {
 		key: 'astIdentifierExpression',
 		value: function astIdentifierExpression(idtNode, retArr, funcParam) {
 			if (idtNode.type !== 'Identifier') {
-				throw this.astErrorOutput('IdentifierExpression - not an Identifier', ast, funcParam);
+				throw this.astErrorOutput('IdentifierExpression - not an Identifier', idtNode, funcParam);
 			}
 
 			switch (idtNode.name) {
@@ -14051,14 +14027,14 @@ module.exports = function (_FunctionNodeBase) {
    * @param {Array} retArr - return array string
    * @param {Function} funcParam - FunctionNode, that tracks compilation state
    *
-   * @returns {String} the prased openclgl string
+   * @returns {Array} the parsed webgl string
    */
 
 	}, {
 		key: 'astForStatement',
 		value: function astForStatement(forNode, retArr, funcParam) {
 			if (forNode.type !== 'ForStatement') {
-				throw this.astErrorOutput('Invalid for statment', ast, funcParam);
+				throw this.astErrorOutput('Invalid for statment', forNode, funcParam);
 			}
 
 			if (forNode.test && forNode.test.type === 'BinaryExpression') {
@@ -14136,7 +14112,7 @@ module.exports = function (_FunctionNodeBase) {
 				}
 			}
 
-			throw this.astErrorOutput('Invalid for statement', ast, funcParam);
+			throw this.astErrorOutput('Invalid for statement', forNode, funcParam);
 		}
 
 		/**
@@ -14151,14 +14127,14 @@ module.exports = function (_FunctionNodeBase) {
    * @param {Array} retArr - return array string
    * @param {Function} funcParam - FunctionNode, that tracks compilation state
    *
-   * @returns {String} the parsed openclgl string
+   * @returns {Array} the parsed webgl string
    */
 
 	}, {
 		key: 'astWhileStatement',
 		value: function astWhileStatement(whileNode, retArr, funcParam) {
 			if (whileNode.type !== 'WhileStatement') {
-				throw this.astErrorOutput('Invalid while statment', ast, funcParam);
+				throw this.astErrorOutput('Invalid while statment', whileNode, funcParam);
 			}
 
 			retArr.push('for (float i = 0.0; i < LOOP_MAX; i++) {');
@@ -14812,11 +14788,11 @@ function ensureIndentifierType(paramName, expectedType, ast, funcParam) {
 	var start = ast.loc.start;
 
 	if (!isIdentifierKernelParam(paramName, funcParam) && expectedType !== 'float') {
-		throw 'Error unexpected identifier ' + paramName + ' on line ' + start.line;
+		throw new Error('Error unexpected identifier ' + paramName + ' on line ' + start.line);
 	} else {
 		var actualType = funcParam.paramTypes[funcParam.paramNames.indexOf(paramName)];
 		if (actualType !== expectedType) {
-			throw 'Error unexpected identifier ' + paramName + ' on line ' + start.line;
+			throw new Error('Error unexpected identifier ' + paramName + ' on line ' + start.line);
 		}
 	}
 }
@@ -14838,7 +14814,7 @@ function ensureIndentifierType(paramName, expectedType, ast, funcParam) {
 function webGlRegexOptimize(inStr) {
 	return inStr.replace(DECODE32_ENCODE32, '((').replace(ENCODE32_DECODE32, '((');
 }
-},{"../../core/utils":76,"../function-node-base":58}],64:[function(require,module,exports){
+},{"../../core/utils":75,"../function-node-base":57}],63:[function(require,module,exports){
 'use strict';
 
 var utils = require('../../core/utils');
@@ -14847,7 +14823,7 @@ var kernelRunShortcut = require('../kernel-run-shortcut');
 module.exports = function (gpuKernel, name) {
   return '() => {\n    ' + kernelRunShortcut.toString() + ';\n    const utils = {\n      allPropertiesOf: function ' + utils.allPropertiesOf.toString() + ',\n      clone: function ' + utils.clone.toString() + ',\n      splitArray: function ' + utils.splitArray.toString() + ',\n      getArgumentType: function ' + utils.getArgumentType.toString() + ',\n      getDimensions: function ' + utils.getDimensions.toString() + ',\n      dimToTexSize: function ' + utils.dimToTexSize.toString() + ',\n      copyFlatten: function ' + utils.copyFlatten.toString() + ',\n      flatten: function ' + utils.flatten.toString() + ',\n      systemEndianness: \'' + utils.systemEndianness() + '\',\n      initWebGl: function ' + utils.initWebGl.toString() + ',\n      isArray: function ' + utils.isArray.toString() + '\n    };\n    class ' + (name || 'Kernel') + ' {\n      constructor() {\n        this.argumentsLength = 0;\n        this._canvas = null;\n        this._webGl = null;\n        this.built = false;\n        this.program = null;\n        this.paramNames = ' + JSON.stringify(gpuKernel.paramNames) + ';\n        this.paramTypes = ' + JSON.stringify(gpuKernel.paramTypes) + ';\n        this.texSize = ' + JSON.stringify(gpuKernel.texSize) + ';\n        this.output = ' + JSON.stringify(gpuKernel.output) + ';\n        this.compiledFragShaderString = `' + gpuKernel.compiledFragShaderString + '`;\n\t\t    this.compiledVertShaderString = `' + gpuKernel.compiledVertShaderString + '`;\n\t\t    this.programUniformLocationCache = {};\n\t\t    this.textureCache = {};\n\t\t    this.subKernelOutputTextures = null;\n      }\n      ' + gpuKernel._getFragShaderString.toString() + '\n      ' + gpuKernel._getVertShaderString.toString() + '\n      validateOptions() {}\n      setupParams() {}\n      setCanvas(canvas) { this._canvas = canvas; return this; }\n      setWebGl(webGl) { this._webGl = webGl; return this; }\n      ' + gpuKernel.getUniformLocation.toString() + '\n      ' + gpuKernel.setupParams.toString() + '\n      ' + gpuKernel.build.toString() + '\n\t\t  ' + gpuKernel.run.toString() + '\n\t\t  ' + gpuKernel._addArgument.toString() + '\n\t\t  ' + gpuKernel.getArgumentTexture.toString() + '\n\t\t  ' + gpuKernel.getTextureCache.toString() + '\n\t\t  ' + gpuKernel.getOutputTexture.toString() + '\n\t\t  ' + gpuKernel.renderOutput.toString() + '\n    };\n    return kernelRunShortcut(new Kernel());\n  };';
 };
-},{"../../core/utils":76,"../kernel-run-shortcut":60}],65:[function(require,module,exports){
+},{"../../core/utils":75,"../kernel-run-shortcut":59}],64:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -14858,7 +14834,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var fs = require('fs');
 var KernelBase = require('../kernel-base');
 var utils = require('../../core/utils');
 var Texture = require('../../core/texture');
@@ -14867,6 +14842,7 @@ var vertShaderString = require('./shader-vert');
 var kernelString = require('./kernel-string');
 var canvases = [];
 var maxTexSizes = {};
+
 module.exports = function (_KernelBase) {
 	_inherits(WebGLKernel, _KernelBase);
 
@@ -14935,20 +14911,19 @@ module.exports = function (_KernelBase) {
 	_createClass(WebGLKernel, [{
 		key: 'validateOptions',
 		value: function validateOptions() {
-			var isReadPixel = utils.isFloatReadPixelsSupported();
+			var isFloatReadPixel = utils.isFloatReadPixelsSupported();
 			if (this.floatTextures === true && !utils.OES_texture_float) {
-				throw 'Float textures are not supported on this browser';
-			} else if (this.floatOutput === true && this.floatOutputForce !== true && !isReadPixel) {
-				throw 'Float texture outputs are not supported on this browser';
-			} else if (this.floatTextures === null && !isReadPixel && !this.graphical) {
-				//NOTE: handle
+				throw new Error('Float textures are not supported on this browser');
+			} else if (this.floatOutput === true && this.floatOutputForce !== true && !isFloatReadPixel) {
+				throw new Error('Float texture outputs are not supported on this browser');
+			} else if (this.floatTextures === undefined && utils.OES_texture_float) {
 				this.floatTextures = true;
-				this.floatOutput = false;
+				this.floatOutput = isFloatReadPixel;
 			}
 
 			if (!this.output || this.output.length === 0) {
 				if (arguments.length !== 1) {
-					throw 'Auto output only supported for kernels with only one input';
+					throw new Error('Auto output only supported for kernels with only one input');
 				}
 
 				var argType = utils.getArgumentType(arguments[0]);
@@ -14957,7 +14932,7 @@ module.exports = function (_KernelBase) {
 				} else if (argType === 'Texture') {
 					this.output = arguments[0].output;
 				} else {
-					throw 'Auto output not supported for input type: ' + argType;
+					throw new Error('Auto output not supported for input type: ' + argType);
 				}
 			}
 
@@ -14968,11 +14943,12 @@ module.exports = function (_KernelBase) {
 
 			if (this.graphical) {
 				if (this.output.length !== 2) {
-					throw 'Output must have 2 dimensions on graphical mode';
+					throw new Error('Output must have 2 dimensions on graphical mode');
 				}
 
 				if (this.floatOutput) {
-					throw 'Cannot use graphical mode and float output at the same time';
+					this.floatOutput = false;
+					console.warn('Cannot use graphical mode and float output at the same time');
 				}
 
 				this.texSize = utils.clone(this.output);
@@ -15045,12 +15021,12 @@ module.exports = function (_KernelBase) {
 			if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
 				console.log(compiledVertShaderString);
 				console.error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(vertShader));
-				throw 'Error compiling vertex shader';
+				throw new Error('Error compiling vertex shader');
 			}
 			if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
 				console.log(compiledFragShaderString);
 				console.error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(fragShader));
-				throw 'Error compiling fragment shader';
+				throw new Error('Error compiling fragment shader');
 			}
 
 			if (this.debug) {
@@ -15590,7 +15566,7 @@ module.exports = function (_KernelBase) {
 						break;
 					}
 				default:
-					throw 'Input type not supported (WebGL): ' + value;
+					throw new Error('Input type not supported (WebGL): ' + value);
 			}
 			this.argumentsLength++;
 		}
@@ -15906,6 +15882,7 @@ module.exports = function (_KernelBase) {
 		value: function _getMainResultString() {
 			var names = this.subKernelOutputVariableNames;
 			var result = [];
+
 			if (this.floatOutput) {
 				result.push('  index *= 4.0');
 			}
@@ -15913,20 +15890,33 @@ module.exports = function (_KernelBase) {
 			if (this.graphical) {
 				result.push('  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  gl_FragColor = actualColor');
 			} else if (this.floatOutput) {
-				result.push('  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  gl_FragColor.r = kernelResult', '  index += 1.0', '  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  gl_FragColor.g = kernelResult', '  index += 1.0', '  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  gl_FragColor.b = kernelResult', '  index += 1.0', '  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  gl_FragColor.a = kernelResult');
+				var channels = ['r', 'g', 'b', 'a'];
+
+				for (var i = 0; i < channels.length; ++i) {
+					result.push('  threadId = indexTo3D(index, uOutputDim)');
+					result.push('  kernel()');
+
+					if (names) {
+						result.push('  gl_FragData[0].' + channels[i] + ' = kernelResult');
+
+						for (var j = 0; j < names.length; ++j) {
+							result.push('  gl_FragData[' + (j + 1) + '].' + channels[i] + ' = ' + names[j]);
+						}
+					} else {
+						result.push('  gl_FragColor.' + channels[i] + ' = kernelResult');
+					}
+
+					if (i < channels.length - 1) {
+						result.push('  index += 1.0');
+					}
+				}
 			} else if (names !== null) {
 				result.push('  threadId = indexTo3D(index, uOutputDim)');
 				result.push('  kernel()');
 				result.push('  gl_FragData[0] = encode32(kernelResult)');
-				for (var i = 0; i < names.length; i++) {
-					result.push('  gl_FragData[' + (i + 1) + '] = encode32(' + names[i] + ')');
+				for (var _i3 = 0; _i3 < names.length; _i3++) {
+					result.push('  gl_FragData[' + (_i3 + 1) + '] = encode32(' + names[_i3] + ')');
 				}
-				/* this is v2 prep
-        * result.push('  kernel()');
-    result.push('  fragData0 = encode32(kernelResult)');
-    for (let i = 0; i < names.length; i++) {
-    	result.push(`  fragData${ i + 1 } = encode32(${ names[i] })`);
-    }*/
 			} else {
 				result.push('  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  gl_FragColor = encode32(kernelResult)');
 			}
@@ -16027,7 +16017,7 @@ module.exports = function (_KernelBase) {
 				if (!_ext) throw new Error('could not instantiate draw buffers extension');
 				this.subKernelOutputTextures = [];
 				this.subKernelOutputVariableNames = [];
-				var _i3 = 0;
+				var _i4 = 0;
 				for (var p in this.subKernelProperties) {
 					if (!this.subKernelProperties.hasOwnProperty(p)) continue;
 					var _subKernel = this.subKernelProperties[p];
@@ -16040,7 +16030,7 @@ module.exports = function (_KernelBase) {
 					});
 					this.subKernelOutputTextures.push(this.getSubKernelTexture(p));
 					this.subKernelOutputVariableNames.push(_subKernel.name + 'Result');
-					_i3++;
+					_i4++;
 				}
 			}
 		}
@@ -16115,7 +16105,7 @@ module.exports = function (_KernelBase) {
 
 	return WebGLKernel;
 }(KernelBase);
-},{"../../core/texture":74,"../../core/utils":76,"../kernel-base":59,"./kernel-string":64,"./shader-frag":67,"./shader-vert":68,"fs":48}],66:[function(require,module,exports){
+},{"../../core/texture":73,"../../core/utils":75,"../kernel-base":58,"./kernel-string":63,"./shader-frag":66,"./shader-vert":67}],65:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -16174,15 +16164,15 @@ module.exports = function (_RunnerBase) {
 
 	return WebGLRunner;
 }(RunnerBase);
-},{"../../core/utils":76,"../runner-base":61,"./function-builder":62,"./kernel":65}],67:[function(require,module,exports){
+},{"../../core/utils":75,"../runner-base":60,"./function-builder":61,"./kernel":64}],66:[function(require,module,exports){
 "use strict";
 
 module.exports = "__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst float LOOP_MAX = __LOOP_MAX__;\n#define EPSILON 0.0000001;\n\n__CONSTANTS__;\n\nvarying highp vec2 vTexCoord;\n\nvec4 round(vec4 x) {\n  return floor(x + 0.5);\n}\n\nhighp float round(highp float x) {\n  return floor(x + 0.5);\n}\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nhighp float integerMod(highp float x, highp float y) {\n  highp float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nhighp int integerMod(highp int x, highp int y) {\n  return int(integerMod(float(x), float(y)));\n}\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nhighp float decode32(highp vec4 rgba) {\n  __DECODE32_ENDIANNESS__;\n  rgba *= 255.0;\n  vec2 gte128;\n  gte128.x = rgba.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = rgba.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * rgba.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  rgba.b = rgba.b - 128.0 * gte128.x;\n  res = dot(rgba, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nhighp vec4 encode32(highp float f) {\n  highp float F = abs(f);\n  highp float sign = f < 0.0 ? 1.0 : 0.0;\n  highp float exponent = floor(log2(F));\n  highp float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 rgba = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  rgba.rg = integerMod(rgba.rg, 256.0);\n  rgba.b = integerMod(rgba.b, 128.0);\n  rgba.a = exponent*0.5 + 63.5;\n  rgba.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  rgba = floor(rgba);\n  rgba *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return rgba;\n}\n// Dragons end here\n\nhighp float index;\nhighp vec3 threadId;\n\nhighp vec3 indexTo3D(highp float idx, highp vec3 texDim) {\n  highp float z = floor(idx / (texDim.x * texDim.y));\n  idx -= z * texDim.x * texDim.y;\n  highp float y = floor(idx / texDim.x);\n  highp float x = integerMod(idx, texDim.x);\n  return vec3(x, y, z);\n}\n\nhighp float get(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float z, highp float y, highp float x) {\n  highp vec3 xyz = vec3(x, y, z);\n  xyz = floor(xyz + 0.5);\n  __GET_WRAPAROUND__;\n  highp float index = round(xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z));\n  __GET_TEXTURE_CHANNEL__;\n  highp float w = round(texSize.x);\n  vec2 st = vec2(integerMod(index, w), float(int(index) / int(w))) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  highp vec4 texel = texture2D(tex, st / texSize);\n  __GET_RESULT__;\n}\n\nhighp float get(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float y, highp float x) {\n  return get(tex, texSize, texDim, 0.0, y, x);\n}\n\nhighp float get(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float x) {\n  return get(tex, texSize, texDim, 0.0, 0.0, x);\n}\n\nhighp vec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\n__MAIN_PARAMS__;\n__MAIN_CONSTANTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = floor(vTexCoord.s * float(uTexSize.x)) + floor(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
-},{}],68:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 "use strict";
 
 module.exports = "precision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nattribute highp vec2 aPos;\nattribute highp vec2 aTexCoord;\n\nvarying highp vec2 vTexCoord;\nuniform vec2 ratio;\n\nvoid main(void) {\n  gl_Position = vec4((aPos + vec2(1)) * ratio + vec2(-1), 0, 1);\n  vTexCoord = aTexCoord;\n}";
-},{}],69:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -16231,7 +16221,7 @@ module.exports = function (_WebGLKernel) {
 
 	return WebGLValidatorKernel;
 }(WebGLKernel);
-},{"../../core/utils":76,"./kernel":65}],70:[function(require,module,exports){
+},{"../../core/utils":75,"./kernel":64}],69:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -16239,7 +16229,7 @@ module.exports = function alias(name, fn) {
 	var fnString = fn.toString();
 	return new Function('return function ' + name + ' (' + utils.getParamNamesFromString(fnString).join(', ') + ') {' + utils.getFunctionBodyFromString(fnString) + '}')();
 };
-},{"./utils":76}],71:[function(require,module,exports){
+},{"./utils":75}],70:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -16345,7 +16335,7 @@ module.exports = function () {
 
 	return GPUCore;
 }();
-},{"./utils-core":75}],72:[function(require,module,exports){
+},{"./utils-core":74}],71:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -16384,10 +16374,17 @@ var GPU = function (_GPUCore) {
 		settings = settings || {};
 		_this._canvas = settings.canvas || null;
 		_this._webGl = settings.webGl || null;
-		var mode = settings.mode || 'webgl';
+		var mode = settings.mode;
+		var detectedMode = void 0;
 		if (!utils.isWebGlSupported()) {
-			console.warn('Warning: gpu not supported, falling back to cpu support');
-			mode = 'cpu';
+			if (mode && mode !== 'cpu') {
+				throw new Error('A requested mode of "' + mode + '" and is not supported');
+			} else {
+				console.warn('Warning: gpu not supported, falling back to cpu support');
+				detectedMode = 'cpu';
+			}
+		} else {
+			detectedMode = mode || 'gpu';
 		}
 
 		_this.kernels = [];
@@ -16397,22 +16394,21 @@ var GPU = function (_GPUCore) {
 			webGl: _this._webGl
 		};
 
-		if (mode) {
-			switch (mode.toLowerCase()) {
-				case 'cpu':
-					_this._runner = new CPURunner(runnerSettings);
-					break;
-				case 'gpu':
-				case 'webgl':
-					_this._runner = new WebGLRunner(runnerSettings);
-					break;
-				case 'webgl-validator':
-					_this._runner = new WebGLRunner(runnerSettings);
-					_this._runner.Kernel = WebGLValidatorKernel;
-					break;
-				default:
-					throw new Error('"' + mode + '" mode is not defined');
-			}
+		switch (detectedMode) {
+			case 'cpu':
+				_this._runner = new CPURunner(runnerSettings);
+				break;
+			case 'webgl': // for testing
+			case 'gpu':
+				_this._runner = new WebGLRunner(runnerSettings);
+				break;
+			case 'webgl-validator':
+				// for internal
+				_this._runner = new WebGLRunner(runnerSettings);
+				_this._runner.Kernel = WebGLValidatorKernel;
+				break;
+			default:
+				throw new Error('"' + mode + '" mode is not defined');
 		}
 		return _this;
 	}
@@ -16424,13 +16420,13 @@ var GPU = function (_GPUCore) {
   * @function
   * @memberOf GPU##
   *
-  * @param {Function} inputFunction - The calling to perform the conversion
+  * @param {Function} fn - The calling to perform the conversion
   * @param {Object} settings - The parameter configuration object
   * @property {String} settings.dimensions - Thread dimension array (Defeaults to [1024])
   * @property {String} settings.mode - CPU / GPU configuration mode (Defaults to null)
   *
   * The following modes are supported
-  * *null* / *'auto'* : Attempts to build GPU mode, else fallbacks
+  * *'falsey'* : Attempts to build GPU mode, else fallbacks
   * *'gpu'* : Attempts to build GPU mode, else fallbacks
   * *'cpu'* : Forces JS fallback mode only
   *
@@ -16735,7 +16731,7 @@ var GPU = function (_GPUCore) {
 Object.assign(GPU, GPUCore);
 
 module.exports = GPU;
-},{"../backend/cpu/runner":56,"../backend/web-gl/runner":66,"../backend/web-gl/validator-kernel":69,"./gpu-core":71,"./utils":76}],73:[function(require,module,exports){
+},{"../backend/cpu/runner":55,"../backend/web-gl/runner":65,"../backend/web-gl/validator-kernel":68,"./gpu-core":70,"./utils":75}],72:[function(require,module,exports){
 "use strict";
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -16762,7 +16758,7 @@ module.exports = function Input(value, size) {
 		}
 	}
 };
-},{}],74:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -16834,7 +16830,7 @@ module.exports = function () {
 
 	return Texture;
 }();
-},{}],75:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 'use strict';
 
 /**
@@ -17082,7 +17078,7 @@ if (_isWebGlSupported) {
 }
 
 module.exports = UtilsCore;
-},{}],76:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 'use strict';
 
 /**
@@ -17130,6 +17126,15 @@ var _systemEndianness = function () {
 }();
 
 var _isFloatReadPixelsSupported = null;
+
+var _isMixedIdentifiersSupported = function () {
+	try {
+		new Function('let i = 1; const j = 1;')();
+		return true;
+	} catch (e) {
+		return false;
+	}
+}();
 
 var Utils = function (_UtilsCore) {
 	_inherits(Utils, _UtilsCore);
@@ -17450,6 +17455,11 @@ var Utils = function (_UtilsCore) {
 			return _isFloatReadPixelsSupported;
 		}
 	}, {
+		key: 'isMixedIdentifiersSupported',
+		value: function isMixedIdentifiersSupported() {
+			return _isMixedIdentifiersSupported;
+		}
+	}, {
 		key: 'dimToTexSize',
 		value: function dimToTexSize(opt, dimensions, output) {
 			var numTexels = dimensions[0];
@@ -17473,8 +17483,8 @@ var Utils = function (_UtilsCore) {
    *
    * Return the dimension of an array.
    * 
-   * @param {Array} x - The array
-   * @param {number} pad - To include padding in the dimension calculation [Optional]
+   * @param {Array|String} x - The array
+   * @param {number} [pad] - To include padding in the dimension calculation [Optional]
    *
    *
    *
@@ -17676,7 +17686,7 @@ var Utils = function (_UtilsCore) {
 Object.assign(Utils, UtilsCore);
 
 module.exports = Utils;
-},{"../index":77,"./input":73,"./texture":74,"./utils-core":75}],77:[function(require,module,exports){
+},{"../index":76,"./input":72,"./texture":73,"./utils-core":74}],76:[function(require,module,exports){
 'use strict';
 
 var GPU = require('./core/gpu');
@@ -17719,7 +17729,7 @@ if (typeof module !== 'undefined') {
 if (typeof window !== 'undefined') {
 	window.GPU = GPU;
 }
-},{"./backend/cpu/function-builder":52,"./backend/cpu/function-node":53,"./backend/cpu/kernel":55,"./backend/cpu/runner":56,"./backend/web-gl/function-builder":62,"./backend/web-gl/function-node":63,"./backend/web-gl/kernel":65,"./backend/web-gl/runner":66,"./core/alias":70,"./core/gpu":72,"./core/input":73,"./core/texture":74,"./core/utils":76}],78:[function(require,module,exports){
+},{"./backend/cpu/function-builder":51,"./backend/cpu/function-node":52,"./backend/cpu/kernel":54,"./backend/cpu/runner":55,"./backend/web-gl/function-builder":61,"./backend/web-gl/function-node":62,"./backend/web-gl/kernel":64,"./backend/web-gl/runner":65,"./core/alias":69,"./core/gpu":71,"./core/input":72,"./core/texture":73,"./core/utils":75}],77:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -17805,7 +17815,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],79:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -17830,7 +17840,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],80:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -17853,14 +17863,14 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],81:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],82:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -17907,7 +17917,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 }).call(this,require('_process'))
-},{"_process":83}],83:[function(require,module,exports){
+},{"_process":82}],82:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -18093,10 +18103,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],84:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 module.exports = require('./lib/_stream_duplex.js');
 
-},{"./lib/_stream_duplex.js":85}],85:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":84}],84:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -18221,7 +18231,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":87,"./_stream_writable":89,"core-util-is":50,"inherits":79,"process-nextick-args":82}],86:[function(require,module,exports){
+},{"./_stream_readable":86,"./_stream_writable":88,"core-util-is":49,"inherits":78,"process-nextick-args":81}],85:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -18269,7 +18279,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":88,"core-util-is":50,"inherits":79}],87:[function(require,module,exports){
+},{"./_stream_transform":87,"core-util-is":49,"inherits":78}],86:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -19279,7 +19289,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./_stream_duplex":85,"./internal/streams/BufferList":90,"./internal/streams/destroy":91,"./internal/streams/stream":92,"_process":83,"core-util-is":50,"events":51,"inherits":79,"isarray":81,"process-nextick-args":82,"safe-buffer":97,"string_decoder/":99,"util":47}],88:[function(require,module,exports){
+},{"./_stream_duplex":84,"./internal/streams/BufferList":89,"./internal/streams/destroy":90,"./internal/streams/stream":91,"_process":82,"core-util-is":49,"events":50,"inherits":78,"isarray":80,"process-nextick-args":81,"safe-buffer":96,"string_decoder/":98,"util":47}],87:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19494,7 +19504,7 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":85,"core-util-is":50,"inherits":79}],89:[function(require,module,exports){
+},{"./_stream_duplex":84,"core-util-is":49,"inherits":78}],88:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -20161,7 +20171,7 @@ Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./_stream_duplex":85,"./internal/streams/destroy":91,"./internal/streams/stream":92,"_process":83,"core-util-is":50,"inherits":79,"process-nextick-args":82,"safe-buffer":97,"util-deprecate":100}],90:[function(require,module,exports){
+},{"./_stream_duplex":84,"./internal/streams/destroy":90,"./internal/streams/stream":91,"_process":82,"core-util-is":49,"inherits":78,"process-nextick-args":81,"safe-buffer":96,"util-deprecate":99}],89:[function(require,module,exports){
 'use strict';
 
 /*<replacement>*/
@@ -20236,7 +20246,7 @@ module.exports = function () {
 
   return BufferList;
 }();
-},{"safe-buffer":97}],91:[function(require,module,exports){
+},{"safe-buffer":96}],90:[function(require,module,exports){
 'use strict';
 
 /*<replacement>*/
@@ -20309,13 +20319,13 @@ module.exports = {
   destroy: destroy,
   undestroy: undestroy
 };
-},{"process-nextick-args":82}],92:[function(require,module,exports){
+},{"process-nextick-args":81}],91:[function(require,module,exports){
 module.exports = require('events').EventEmitter;
 
-},{"events":51}],93:[function(require,module,exports){
+},{"events":50}],92:[function(require,module,exports){
 module.exports = require('./readable').PassThrough
 
-},{"./readable":94}],94:[function(require,module,exports){
+},{"./readable":93}],93:[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = exports;
 exports.Readable = exports;
@@ -20324,13 +20334,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":85,"./lib/_stream_passthrough.js":86,"./lib/_stream_readable.js":87,"./lib/_stream_transform.js":88,"./lib/_stream_writable.js":89}],95:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":84,"./lib/_stream_passthrough.js":85,"./lib/_stream_readable.js":86,"./lib/_stream_transform.js":87,"./lib/_stream_writable.js":88}],94:[function(require,module,exports){
 module.exports = require('./readable').Transform
 
-},{"./readable":94}],96:[function(require,module,exports){
+},{"./readable":93}],95:[function(require,module,exports){
 module.exports = require('./lib/_stream_writable.js');
 
-},{"./lib/_stream_writable.js":89}],97:[function(require,module,exports){
+},{"./lib/_stream_writable.js":88}],96:[function(require,module,exports){
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -20394,7 +20404,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":49}],98:[function(require,module,exports){
+},{"buffer":48}],97:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -20523,7 +20533,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":51,"inherits":79,"readable-stream/duplex.js":84,"readable-stream/passthrough.js":93,"readable-stream/readable.js":94,"readable-stream/transform.js":95,"readable-stream/writable.js":96}],99:[function(require,module,exports){
+},{"events":50,"inherits":78,"readable-stream/duplex.js":83,"readable-stream/passthrough.js":92,"readable-stream/readable.js":93,"readable-stream/transform.js":94,"readable-stream/writable.js":95}],98:[function(require,module,exports){
 'use strict';
 
 var Buffer = require('safe-buffer').Buffer;
@@ -20796,7 +20806,7 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"safe-buffer":97}],100:[function(require,module,exports){
+},{"safe-buffer":96}],99:[function(require,module,exports){
 (function (global){
 
 /**

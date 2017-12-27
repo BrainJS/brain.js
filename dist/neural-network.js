@@ -513,7 +513,7 @@ var NeuralNetwork = function () {
     value: function formatData(data) {
       var _this = this;
 
-      if (data.constructor !== Array) {
+      if (!Array.isArray(data)) {
         // turn stream datum into array
         var tmp = [];
         tmp.push(data);
@@ -521,7 +521,7 @@ var NeuralNetwork = function () {
       }
       // turn sparse hash input into arrays with 0s as filler
       var datum = data[0].input;
-      if (datum.constructor !== Array && !(datum instanceof Float64Array)) {
+      if (!Array.isArray(datum) && !(datum instanceof Float64Array)) {
         if (!this.inputLookup) {
           this.inputLookup = _lookup2.default.buildLookup(data.map(function (value) {
             return value['input'];
@@ -533,7 +533,7 @@ var NeuralNetwork = function () {
         }, this);
       }
 
-      if (data[0].output.constructor !== Array) {
+      if (!Array.isArray(data[0].output)) {
         if (!this.outputLookup) {
           this.outputLookup = _lookup2.default.buildLookup(data.map(function (value) {
             return value['output'];
