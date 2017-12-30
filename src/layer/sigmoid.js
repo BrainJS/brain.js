@@ -1,5 +1,3 @@
-'use strict';
-
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 import { activate, measure } from '../activation/sigmoid';

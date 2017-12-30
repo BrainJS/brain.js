@@ -1,4 +1,3 @@
-'use strict';
 import assert from 'assert';
 import { FeedForward, layer } from '../../../src';
 const {

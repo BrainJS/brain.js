@@ -655,7 +655,7 @@ var NeuralNetwork = function () {
     value: function toJSON() {
       var layers = [];
       for (var layer = 0; layer <= this.outputLayer; layer++) {
-        layers[layer] = {};
+        layers[layer] = [];
 
         var nodes = void 0;
         // turn any internal arrays back into hashes for readable json
@@ -673,7 +673,7 @@ var NeuralNetwork = function () {
 
           if (layer > 0) {
             layers[layer][node].bias = this.biases[layer][j];
-            layers[layer][node].weights = {};
+            layers[layer][node].weights = [];
             for (var k in layers[layer - 1]) {
               var index = k;
               if (layer === 1 && this.inputLookup) {

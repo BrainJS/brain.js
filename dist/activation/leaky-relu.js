@@ -1,17 +1,16 @@
-'use strict';
-
-/**
- * Leaky Relu Activation, aka Leaky Rectified Linear Unit Activation
- * @description https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
- * @param weight
- * @returns {number}
- */
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.leakyRelu = leakyRelu;
 exports.leakyReluDerivative = leakyReluDerivative;
+/**
+ * Leaky Relu Activation, aka Leaky Rectified Linear Unit Activation
+ * @description https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
+ * @param weight
+ * @returns {number}
+ */
 function leakyRelu(weight) {
   return weight > 0 ? weight : 0.01 * weight;
 }

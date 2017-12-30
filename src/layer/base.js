@@ -1,6 +1,3 @@
-'use strict';
-import MomentumRootMeanSquaredPropagation from '../praxis/momentum-root-mean-squared-propagation';
-
 export default class Base {
   static get defaults() {
     return {
@@ -11,8 +8,8 @@ export default class Base {
       errors: null,
       deltas: null,
       changes: null
-    }
-  };
+    };
+  }
 
   constructor(settings = {}) {
     //size
@@ -30,7 +27,13 @@ export default class Base {
     this.deltas = null;
     this.weights = null;
 
+    this.praxis = null;
     Object.assign(this, this.constructor.defaults, settings);
+
+    // special settings
+    if (settings.hasOwnProperty('praxis')) {
+      this.praxis = settings.praxis(this);
+    }
   }
 
   validate() {}

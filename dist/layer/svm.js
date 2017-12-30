@@ -26,7 +26,7 @@ var Regression = function (_Base) {
   _createClass(Regression, [{
     key: 'predict',
     value: function predict() {
-      this.outputs = this.inputs;
+      this.weights = this.inputs;
     }
   }, {
     key: 'learn',

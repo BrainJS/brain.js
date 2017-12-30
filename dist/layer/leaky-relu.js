@@ -56,7 +56,7 @@ var LeakyRelu = function (_Base) {
   }, {
     key: 'predict',
     value: function predict() {
-      this.outputs = this.predictKernel(this.inputLayer.outputs);
+      this.weights = this.predictKernel(this.inputLayer.weights);
     }
   }, {
     key: 'learn',

@@ -9,11 +9,11 @@ export default class MomentumRootMeanSquaredPropagation {
     };
   }
 
-  constructor(inputLayer, settings = {}) {
-    this.inputLayer = inputLayer;
-    this.width = inputLayer.width;
-    this.height = inputLayer.height;
-    this.momentums = zeros2d(inputLayer.width, inputLayer.height);
+  constructor(layer, settings = {}) {
+    this.layer = layer;
+    this.width = layer.width;
+    this.height = layer.height;
+    this.momentums = zeros2d(layer.width, layer.height);
     Object.assign(this, this.constructor.defaults, settings);
   }
 
@@ -51,7 +51,7 @@ function momentumRootMeanSquaredPropagation(weights, deltas, previousMomentums, 
   return weight + -this.constants.learningRate * delta / Math.sqrt(momentum + this.constants.smoothEps) - regularizationStrength * weight;
 }
 
-export function getMomentum(delta, decay, previousMomentum) {
+function getMomentum(delta, decay, previousMomentum) {
   return previousMomentum * decay + (1 - decay) * delta * delta;
 }
 

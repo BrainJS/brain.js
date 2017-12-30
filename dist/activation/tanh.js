@@ -1,16 +1,15 @@
-'use strict';
-
-/**
- *
- * @param weight
- * @returns {number}
- */
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.tanh = tanh;
 exports.tanhDerivative = tanhDerivative;
+/**
+ *
+ * @param weight
+ * @returns {number}
+ */
 function tanh(weight) {
   return Math.tanh(weight);
 }

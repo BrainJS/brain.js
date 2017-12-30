@@ -4,6 +4,7 @@ import max from './utilities/max';
 import mse2d from './utilities/mse-2d';
 import layerFromJSON from './utilities/layer-from-json';
 import traverseLayersFrom from './utilities/traverse-layers-from';
+import * as praxis from './praxis';
 
 /**
  *
@@ -53,6 +54,9 @@ export default class FeedForward {
       const layer = this.layers[i];
       layer.validate(this.layers[i - 1], this.layers[i + 1]);
       layer.setupKernels();
+      if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
+        layer.praxis = this.praxis(layer);
+      }
     }
   }
 
@@ -378,5 +382,6 @@ FeedForward.defaults = {
   binaryThresh: 0.5,
   hiddenLayers: null,
   inputLayer: null,
-  outputLayer: null
+  outputLayer: null,
+  praxis: (layer) => praxis.momentumRootMeanSquaredPropagation(layer)
 };

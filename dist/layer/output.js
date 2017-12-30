@@ -14,6 +14,10 @@ var _makeKernel = require('../utilities/make-kernel');
 
 var _makeKernel2 = _interopRequireDefault(_makeKernel);
 
+var _randos = require('../utilities/randos');
+
+var _randos2 = _interopRequireDefault(_randos);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -31,33 +35,39 @@ var Output = function (_Base) {
     var _this = _possibleConstructorReturn(this, (Output.__proto__ || Object.getPrototypeOf(Output)).call(this, settings));
 
     _this.inputLayer = inputLayer;
+    _this.weights = (0, _randos2.default)(_this.width);
     return _this;
   }
 
   _createClass(Output, [{
     key: 'setupKernels',
     value: function setupKernels() {
-      this.compareKernel = (0, _makeKernel2.default)(function () {}, {
-        output: [this.inputLayer.width, this.inputLayer.height]
-      });
-      this.learnKernel = (0, _makeKernel2.default)(function (outputs, target) {
-        var output = outputs[this.thread.x];
-        return calcDeltas(calcError(output, target), output);
-      }, {
-        output: [this.inputLayer.width, this.inputLayer.height]
+      this.compareKernel = (0, _makeKernel2.default)(compare, {
+        map: {
+          deltas: setDelta,
+          errors: setError
+        },
+        output: [this.width]
       });
     }
   }, {
     key: 'predict',
     value: function predict() {
-      this.outputs = this.inputLayer.outputs;
+      this.weights = this.inputLayer.weights;
     }
   }, {
     key: 'compare',
-    value: function compare() {}
+    value: function compare(target) {
+      var _compareKernel = this.compareKernel(target, this.weights),
+          errors = _compareKernel.errors,
+          deltas = _compareKernel.deltas;
+
+      this.errors = errors;
+      this.deltas = deltas;
+    }
   }, {
     key: 'learn',
-    value: function learn() {}
+    value: function learn(target) {}
   }]);
 
   return Output;
@@ -66,15 +76,18 @@ var Output = function (_Base) {
 exports.default = Output;
 
 
-function calcDeltas(error, output) {
-  return error * output * (1 - output);
+function setDelta(delta) {
+  return delta;
 }
 
-function calcError(weights, deltas) {
-  var error = 0;
-  for (var k = 0; k < this.output.x; k++) {
-    error += deltas[k] * weights[k][this.thread.x];
-  }
+function setError(error) {
   return error;
+}
+
+function compare(target, weights) {
+  var weight = weights[this.thread.x];
+  var error = target[this.thread.x] - weight;
+  setDelta(error * weight);
+  return setError(error);
 }
 //# sourceMappingURL=output.js.map

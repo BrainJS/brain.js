@@ -8,13 +8,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 exports.predict = predict;
 
-var _base = require('./base');
-
-var _base2 = _interopRequireDefault(_base);
-
 var _makeKernel = require('../utilities/make-kernel');
 
 var _makeKernel2 = _interopRequireDefault(_makeKernel);
+
+var _operatorBase = require('./operator-base');
+
+var _operatorBase2 = _interopRequireDefault(_operatorBase);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24,8 +24,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Multiply = function (_Base) {
-  _inherits(Multiply, _Base);
+var Multiply = function (_OperatorBase) {
+  _inherits(Multiply, _OperatorBase);
 
   function Multiply(inputLayers) {
     _classCallCheck(this, Multiply);
@@ -51,7 +51,7 @@ var Multiply = function (_Base) {
   }, {
     key: 'predict',
     value: function predict() {
-      this.outputs = this.predictKernel(this.inputLayer[0].outputs, this.inputLayer[1].outputs);
+      this.weights = this.predictKernel(this.inputLayer[0].weights, this.inputLayer[1].weights);
     }
   }, {
     key: 'learn',
@@ -61,7 +61,7 @@ var Multiply = function (_Base) {
   }]);
 
   return Multiply;
-}(_base2.default);
+}(_operatorBase2.default);
 
 exports.default = Multiply;
 function predict(inputs1, inputs2) {

@@ -1,4 +1,3 @@
-'use strict';
 import GPU from 'gpu.js';
 let gpuInstance = null;
 

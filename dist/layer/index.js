@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.tanh = exports.Tanh = exports.svm = exports.SVM = exports.softMax = exports.SoftMax = exports.sigmoid = exports.Sigmoid = exports.relu = exports.Relu = exports.regression = exports.Regression = exports.pool = exports.Pool = exports.output = exports.Output = exports.multiplyWeights = exports.MultiplyWeights = exports.multiplyElement = exports.MultiplyElement = exports.multiply = exports.Multiply = exports.leakyRelu = exports.LeakyRelu = exports.input = exports.Input = exports.fullyConnected = exports.FullyConnected = exports.dropout = exports.Dropout = exports.convolution = exports.Convolution = exports.Base = exports.add = exports.Add = undefined;
+exports.weigh = exports.Weigh = exports.tanh = exports.Tanh = exports.svm = exports.SVM = exports.softMax = exports.SoftMax = exports.sigmoid = exports.Sigmoid = exports.relu = exports.Relu = exports.regression = exports.Regression = exports.random = exports.Random = exports.pool = exports.Pool = exports.output = exports.Output = exports.OperatorBase = exports.multiplyElement = exports.MultiplyElement = exports.multiply = exports.Multiply = exports.leakyRelu = exports.LeakyRelu = exports.input = exports.Input = exports.fullyConnected = exports.FullyConnected = exports.feedForward = exports.dropout = exports.Dropout = exports.convolution = exports.Convolution = exports.Base = exports.add = exports.Add = undefined;
 
 var _add = require('./add');
 
@@ -21,6 +21,10 @@ var _dropout = require('./dropout');
 
 var _dropout2 = _interopRequireDefault(_dropout);
 
+var _feedForward = require('./feed-forward');
+
+var _feedForward2 = _interopRequireDefault(_feedForward);
+
 var _fullyConnected = require('./fully-connected');
 
 var _fullyConnected2 = _interopRequireDefault(_fullyConnected);
@@ -37,13 +41,13 @@ var _multiply = require('./multiply');
 
 var _multiply2 = _interopRequireDefault(_multiply);
 
-var _multiplyWeights = require('./multiply-weights');
-
-var _multiplyWeights2 = _interopRequireDefault(_multiplyWeights);
-
 var _multiplyElement = require('./multiply-element');
 
 var _multiplyElement2 = _interopRequireDefault(_multiplyElement);
+
+var _operatorBase = require('./operator-base');
+
+var _operatorBase2 = _interopRequireDefault(_operatorBase);
 
 var _output = require('./output');
 
@@ -56,6 +60,10 @@ var _pool2 = _interopRequireDefault(_pool);
 var _relu = require('./relu');
 
 var _relu2 = _interopRequireDefault(_relu);
+
+var _random = require('./random');
+
+var _random2 = _interopRequireDefault(_random);
 
 var _regression = require('./regression');
 
@@ -76,6 +84,10 @@ var _svm2 = _interopRequireDefault(_svm);
 var _tanh = require('./tanh');
 
 var _tanh2 = _interopRequireDefault(_tanh);
+
+var _weigh = require('./weigh');
+
+var _weigh2 = _interopRequireDefault(_weigh);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -103,14 +115,14 @@ function multiply(inputLayer1, inputLayer2) {
 function multiplyElement(inputLayer1, inputLayer2) {
   return new _multiplyElement2.default(inputLayer1, inputLayer2);
 }
-function multiplyWeights(settings, inputLayer) {
-  return new _multiplyWeights2.default(settings, inputLayer);
-}
 function output(settings, inputLayer) {
   return new _output2.default(settings, inputLayer);
 }
 function pool(settings, inputLayer) {
   return new _pool2.default(settings, inputLayer);
+}
+function random(settings) {
+  return new _random2.default(settings);
 }
 function regression(settings, inputLayer) {
   return new _regression2.default(settings, inputLayer);
@@ -130,7 +142,9 @@ function svm(settings, inputLayer) {
 function tanh(inputLayer) {
   return new _tanh2.default(inputLayer);
 }
-
+function weigh(inputLayer1, inputLayer2) {
+  return new _weigh2.default([inputLayer1, inputLayer2]);
+}
 exports.Add = _add2.default;
 exports.add = add;
 exports.Base = _base2.default;
@@ -138,6 +152,7 @@ exports.Convolution = _convolution2.default;
 exports.convolution = convolution;
 exports.Dropout = _dropout2.default;
 exports.dropout = dropout;
+exports.feedForward = _feedForward2.default;
 exports.FullyConnected = _fullyConnected2.default;
 exports.fullyConnected = fullyConnected;
 exports.Input = _input2.default;
@@ -148,12 +163,13 @@ exports.Multiply = _multiply2.default;
 exports.multiply = multiply;
 exports.MultiplyElement = _multiplyElement2.default;
 exports.multiplyElement = multiplyElement;
-exports.MultiplyWeights = _multiplyWeights2.default;
-exports.multiplyWeights = multiplyWeights;
+exports.OperatorBase = _operatorBase2.default;
 exports.Output = _output2.default;
 exports.output = output;
 exports.Pool = _pool2.default;
 exports.pool = pool;
+exports.Random = _random2.default;
+exports.random = random;
 exports.Regression = _regression2.default;
 exports.regression = regression;
 exports.Relu = _relu2.default;
@@ -166,4 +182,6 @@ exports.SVM = _svm2.default;
 exports.svm = svm;
 exports.Tanh = _tanh2.default;
 exports.tanh = tanh;
+exports.Weigh = _weigh2.default;
+exports.weigh = weigh;
 //# sourceMappingURL=index.js.map

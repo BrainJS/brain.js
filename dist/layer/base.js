@@ -16,10 +16,9 @@ var Base = function () {
         width: 1,
         height: 1,
         depth: 1,
-        outputs: null,
+        weights: null,
         errors: null,
         deltas: null,
-        weights: null,
         changes: null
       };
     }
@@ -29,10 +28,6 @@ var Base = function () {
     var settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, Base);
-
-    //layers
-    this.inputLayer = null;
-    this.inputLayers = null;
 
     //size
     this.width = null;
@@ -45,43 +40,40 @@ var Base = function () {
     this.learnKernel = null;
 
     //what matters :P
-    this.outputs = null;
     this.errors = null;
     this.deltas = null;
     this.weights = null;
-    this.changes = null;
 
-    var defaults = this.constructor.defaults;
-    for (var p in defaults) {
-      if (!defaults.hasOwnProperty(p)) continue;
-      this[p] = settings.hasOwnProperty(p) ? settings[p] : defaults[p];
+    this.praxis = null;
+    Object.assign(this, this.constructor.defaults, settings);
+
+    // special settings
+    if (settings.hasOwnProperty('praxis')) {
+      this.praxis = settings.praxis(this);
     }
   }
 
   _createClass(Base, [{
+    key: 'validate',
+    value: function validate() {}
+  }, {
     key: 'setupKernels',
-    value: function setupKernels() {
-      throw new Error('setupKernels not implemented on BaseLayer');
-    }
+    value: function setupKernels() {}
   }, {
     key: 'predict',
-    value: function predict() {
-      throw new Error('predict not implemented on BaseLayer');
-    }
+    value: function predict() {}
   }, {
     key: 'compare',
-    value: function compare(previousLayer, nextLayer) {
-      throw new Error('compare not implemented on BaseLayer');
-    }
+    value: function compare(previousLayer, nextLayer) {}
   }, {
     key: 'learn',
     value: function learn() {
-      throw new Error('learn not implemented on BaseLayer');
+      this.weights = this.praxis.run(this.weights, this.deltas);
     }
   }, {
     key: 'toArray',
     value: function toArray() {
-      return this.outputs.toArray();
+      return this.weights.toArray();
     }
   }]);
 

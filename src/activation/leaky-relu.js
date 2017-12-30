@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Leaky Relu Activation, aka Leaky Rectified Linear Unit Activation
  * @description https://en.wikipedia.org/wiki/Rectifier_(neural_networks)

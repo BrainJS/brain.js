@@ -1,5 +1,3 @@
-'use strict';
-
 const layer = require('../layer');
 
 export default function layerFromJSON(jsonLayer) {

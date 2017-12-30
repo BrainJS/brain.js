@@ -1,27 +1,26 @@
-'use strict';
-
-/**
- *
- * @param value
- * @returns {number}
- */
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.sigmoid = sigmoid;
-exports.sigmoidDerivative = sigmoidDerivative;
-function sigmoid(value) {
+exports.activate = activate;
+exports.measure = measure;
+/**
+ * sigmoid activation
+ * @param value
+ * @returns {number}
+ */
+function activate(value) {
   return 1 / (1 + Math.exp(-value));
 }
 
 /**
- *
+ * sigmoid derivative
  * @param weight
  * @param error
  * @returns {number}
  */
-function sigmoidDerivative(weight, error) {
+function measure(weight, error) {
   return weight * (1 - weight) * error;
 }
 //# sourceMappingURL=sigmoid.js.map

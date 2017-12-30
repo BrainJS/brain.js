@@ -98,7 +98,7 @@ var FullyConnected = function (_Base) {
   }, {
     key: 'predict',
     value: function predict() {
-      this.outputs = this.predictKernel(this.inputLayer.outputs, this.filters, this.biases);
+      this.weights = this.predictKernel(this.inputLayer.weights, this.filters, this.biases);
     }
   }, {
     key: 'learn',
@@ -123,17 +123,17 @@ function predict(inputs, filters, biases) {
   return output + biases[this.thread.x];
 }
 
-function learnInputs(filters, outputs) {
+function learnInputs(filters, weights) {
   var filterDelta = 0;
   for (var y = 0; y < this.constants.inputWidth; y++) {
-    filterDelta += filters[this.thread.x][y] * outputs[this.thread.x];
+    filterDelta += filters[this.thread.x][y] * weights[this.thread.x];
   }
   return filterDelta;
 }
 
-function learnFilters(inputs, outputs) {
+function learnFilters(inputs, weights) {
   //0 here should probably be depth
-  return inputs[0][this.thread.y] * outputs[this.thread.x];
+  return inputs[0][this.thread.y] * weights[this.thread.x];
 }
 
 function learnBiases(biases, deltas) {

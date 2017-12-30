@@ -25,35 +25,40 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Input = function (_Base) {
   _inherits(Input, _Base);
 
-  function Input() {
+  function Input(settings) {
     _classCallCheck(this, Input);
 
-    return _possibleConstructorReturn(this, (Input.__proto__ || Object.getPrototypeOf(Input)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Input.__proto__ || Object.getPrototypeOf(Input)).call(this, settings));
+
+    if (_this.height === 1) {
+      _this.predict = _this.predict1D;
+    }
+    return _this;
   }
 
   _createClass(Input, [{
     key: 'setupKernels',
-    value: function setupKernels() {
-      this.predictKernel = (0, _makeKernel2.default)(predict, {
-        output: [this.width, this.height, this.depth]
-      });
-
-      this.learnKernel = function () {};
-    }
+    value: function setupKernels() {}
   }, {
     key: 'predict',
     value: function predict(inputs) {
-      this.weights = this.predictKernel(inputs);
+      this.weights = inputs;
     }
+  }, {
+    key: 'predict1D',
+    value: function predict1D(inputs) {
+      this.weights = [inputs];
+    }
+  }, {
+    key: 'compare',
+    value: function compare() {}
+  }, {
+    key: 'learn',
+    value: function learn() {}
   }]);
 
   return Input;
 }(_base2.default);
 
 exports.default = Input;
-
-
-function predict(inputs) {
-  return inputs[this.thread.z][this.thread.y][this.thread.x];
-}
 //# sourceMappingURL=input.js.map

@@ -35,13 +35,10 @@ describe('JSON', () => {
     function normalize(v) {
       const result = {};
       for (let p in v) {
-        result[p] = v[p].toFixed(10);
+        result[p] = v[p].toFixed(7);
       }
       return result;
     }
-
-    console.log('output1', output1);
-    console.log('output2', output2);
 
     assert.equal(JSON.stringify(normalize(output2)), JSON.stringify(normalize(output1)),
       'standalone network function failed');

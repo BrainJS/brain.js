@@ -1,17 +1,16 @@
-'use strict';
-
-/**
- * Relu Activation, aka Rectified Linear Unit Activation
- * @description https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
- * @param weight
- * @returns {number}
- */
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.relu = relu;
 exports.reluDerivative = reluDerivative;
+/**
+ * Relu Activation, aka Rectified Linear Unit Activation
+ * @description https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
+ * @param weight
+ * @returns {number}
+ */
 function relu(weight) {
   return Math.max(0, weight);
 }

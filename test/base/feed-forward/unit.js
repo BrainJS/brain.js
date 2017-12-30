@@ -1,4 +1,3 @@
-'use strict';
 import assert from 'assert';
 const {
   Add,
@@ -8,6 +7,7 @@ const {
   feedForward,
   Input,
   input,
+  OperatorBase,
   Output,
   output,
   Pool,
@@ -142,7 +142,85 @@ describe('FeedForward Class: Unit', () => {
         true,
         true,
         true
-      ])
+      ]);
+    });
+    it('populates praxis on all layers when it is null', () => {
+      class TestLayer extends Base {
+        setupKernels() {
+          this.called = true;
+        }
+      }
+      class OperatorLayer extends OperatorBase {
+        setupKernels() {
+          this.called = true;
+        }
+      }
+
+      const net = new FeedForward({
+        inputLayer: () => new TestLayer(),
+        hiddenLayers: [
+          () => new TestLayer(),
+          () => new OperatorLayer(),
+          () => new TestLayer(),
+        ],
+        outputLayer: () => new TestLayer()
+      });
+      net.initialize();
+
+      assert.equal(net.layers.length, 5);
+      assert.deepEqual(net.layers.map(layer => layer.called), [
+        true,
+        true,
+        true,
+        true,
+        true
+      ]);
+      assert.deepEqual(net.layers.map(layer => Boolean(layer.praxis)), [
+        true,
+        true,
+        false,
+        true,
+        true
+      ]);
+    });
+    it('populates praxis when defined as setting on layer', () => {
+      class TestLayer extends Base {
+        setupKernels() {
+          this.called = true;
+        }
+      }
+      class OperatorLayer extends OperatorBase {
+        setupKernels() {
+          this.called = true;
+        }
+      }
+
+      const net = new FeedForward({
+        inputLayer: () => new TestLayer(),
+        hiddenLayers: [
+          () => new TestLayer({ praxis: () => true }),
+          () => new OperatorLayer(),
+          () => new TestLayer(),
+        ],
+        outputLayer: () => new TestLayer()
+      });
+      net.initialize();
+
+      assert.equal(net.layers.length, 5);
+      assert.deepEqual(net.layers.map(layer => layer.called), [
+        true,
+        true,
+        true,
+        true,
+        true
+      ]);
+      assert.deepEqual(net.layers.map(layer => layer.praxis === true), [
+        false,
+        true,
+        false,
+        false,
+        false
+      ]);
     });
   });
   describe('.runInput()', () => {

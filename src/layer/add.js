@@ -1,24 +1,23 @@
-'use strict';
-
-import Base from './base';
 import makeKernel from '../utilities/make-kernel';
+import OperatorBase from './operator-base';
 
-export default class Add extends Base {
+export default class Add extends OperatorBase {
   constructor(inputLayers) {
     super();
-
-    if (inputLayers[0].width !== inputLayers[1].width) {
-      throw new Error('Layer width mismatch');
-    }
-
-    if (inputLayers[0].height !== inputLayers[1].height) {
-      throw new Error('Layer height mismatch');
-    }
-
     this.width = inputLayers[0].width;
     this.height = inputLayers[0].height;
 
     this.inputLayers = inputLayers;
+  }
+
+  validate() {
+    if (this.inputLayers[0].width !== this.inputLayers[1].width) {
+      throw new Error('Layer width mismatch');
+    }
+
+    if (this.inputLayers[0].height !== this.inputLayers[1].height) {
+      throw new Error('Layer height mismatch');
+    }
   }
 
   setupKernels() {

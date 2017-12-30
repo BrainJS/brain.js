@@ -18,13 +18,23 @@ var _max = require('./utilities/max');
 
 var _max2 = _interopRequireDefault(_max);
 
-var _mse = require('./utilities/mse');
+var _mse2d = require('./utilities/mse-2d');
 
-var _mse2 = _interopRequireDefault(_mse);
+var _mse2d2 = _interopRequireDefault(_mse2d);
 
 var _layerFromJson = require('./utilities/layer-from-json');
 
 var _layerFromJson2 = _interopRequireDefault(_layerFromJson);
+
+var _traverseLayersFrom = require('./utilities/traverse-layers-from');
+
+var _traverseLayersFrom2 = _interopRequireDefault(_traverseLayersFrom);
+
+var _praxis2 = require('./praxis');
+
+var _praxis = _interopRequireWildcard(_praxis2);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -41,8 +51,10 @@ var FeedForward = function () {
 
     _classCallCheck(this, FeedForward);
 
-    Object.assign(this, FeedForward.defaults, options);
+    Object.assign(this, this.constructor.defaults, options);
     this.layers = null;
+    this._inputLayer = null;
+    this._outputLayer = null;
   }
 
   _createClass(FeedForward, [{
@@ -50,6 +62,7 @@ var FeedForward = function () {
     value: function connectLayers() {
       this.layers = [];
       var inputLayer = this.inputLayer(null, this.layers.length);
+      this._inputLayer = inputLayer;
       this.layers.push(inputLayer);
       var previousLayer = inputLayer;
       for (var i = 0; i < this.hiddenLayers.length; i++) {
@@ -57,21 +70,28 @@ var FeedForward = function () {
         this.layers.push(hiddenLayer);
         previousLayer = hiddenLayer;
       }
-      this.layers.push(this.outputLayer(previousLayer, this.layers.length));
+      this._outputLayer = this.outputLayer(previousLayer, this.layers.length);
+      this.layers.push(this._outputLayer);
 
       this.connectNestedLayers();
     }
   }, {
     key: 'connectNestedLayers',
     value: function connectNestedLayers() {
+      var _this = this;
+
+      var _loop = function _loop(i) {
+        var offset = 0;
+        (0, _traverseLayersFrom2.default)(_this.layers[i], function (layer) {
+          if (_this.layers.indexOf(layer) === -1) {
+            _this.layers.splice(i + offset, 0, layer);
+            offset++;
+          }
+        });
+      };
+
       for (var i = 0; i < this.layers.length; i++) {
-        var layer = this.layers[i];
-        if (layer.hasOwnProperty('inputLayer') && this.layers.indexOf(layer.inputLayer) !== -1) continue;
-        var nestedLayer = layer;
-        while (nestedLayer = nestedLayer.inputLayer) {
-          if (this.layers.indexOf(nestedLayer) !== -1) continue;
-          this.layers.splice(i, 0, nestedLayer);
-        }
+        _loop(i);
       }
     }
   }, {
@@ -80,7 +100,11 @@ var FeedForward = function () {
       this.connectLayers();
       for (var i = 0; i < this.layers.length; i++) {
         var layer = this.layers[i];
+        layer.validate(this.layers[i - 1], this.layers[i + 1]);
         layer.setupKernels();
+        if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
+          layer.praxis = this.praxis(layer);
+        }
       }
     }
 
@@ -115,8 +139,9 @@ var FeedForward = function () {
     }
   }, {
     key: 'calculateDeltas',
-    value: function calculateDeltas() {
-      for (var i = this.layers.length - 1; i > -1; i--) {
+    value: function calculateDeltas(target) {
+      this._outputLayer.compare(target);
+      for (var i = this.layers.length - 2; i > -1; i--) {
         var previousLayer = this.layers[i - 1];
         var nextLayer = this.layers[i + 1];
         this.layers[i].compare(previousLayer, nextLayer);
@@ -161,6 +186,7 @@ var FeedForward = function () {
         if (log && i % logPeriod === 0) {
           log('iterations:', i, 'training error:', error);
         }
+        if (i % callbackPeriod === 0) console.log(error);
         if (callback && i % callbackPeriod === 0) {
           callback({ error: error, iterations: i });
         }
@@ -176,7 +202,7 @@ var FeedForward = function () {
      *
      * @param input
      * @param target
-     * @param learningRate
+     * @param [learningRate]
      */
 
   }, {
@@ -191,7 +217,7 @@ var FeedForward = function () {
       this.calculateDeltas(target);
       this.adjustWeights(learningRate);
 
-      var error = (0, _mse2.default)(this.outputLayer.errors.toArray());
+      var error = (0, _mse2d2.default)(this._outputLayer.errors.hasOwnProperty('toArray') ? this._outputLayer.errors.toArray() : this._outputLayer.errors);
       return error;
     }
 
@@ -217,7 +243,7 @@ var FeedForward = function () {
   }, {
     key: 'formatData',
     value: function formatData(data) {
-      var _this = this;
+      var _this2 = this;
 
       if (data.constructor !== Array) {
         // turn stream datum into array
@@ -234,7 +260,7 @@ var FeedForward = function () {
           }));
         }
         data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this.inputLookup, datum.input);
+          var array = _lookup2.default.toArray(_this2.inputLookup, datum.input);
           return Object.assign({}, datum, { input: array });
         }, this);
       }
@@ -246,7 +272,7 @@ var FeedForward = function () {
           }));
         }
         data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this.outputLookup, datum.output);
+          var array = _lookup2.default.toArray(_this2.outputLookup, datum.output);
           return Object.assign({}, datum, { output: array });
         }, this);
       }
@@ -267,7 +293,7 @@ var FeedForward = function () {
   }, {
     key: 'test',
     value: function test(data) {
-      var _this2 = this;
+      var _this3 = this;
 
       data = this.formatData(data);
 
@@ -285,14 +311,14 @@ var FeedForward = function () {
       // error and misclassification statistics
       var sum = 0;
 
-      var _loop = function _loop(i) {
-        var output = _this2.runInput(data[i].input);
+      var _loop2 = function _loop2(i) {
+        var output = _this3.runInput(data[i].input);
         var target = data[i].output;
 
         var actual = void 0,
             expected = void 0;
         if (isBinary) {
-          actual = output[0] > _this2.binaryThresh ? 1 : 0;
+          actual = output[0] > _this3.binaryThresh ? 1 : 0;
           expected = target[0];
         } else {
           actual = output.indexOf((0, _max2.default)(output));
@@ -323,11 +349,11 @@ var FeedForward = function () {
         var errors = output.map(function (value, i) {
           return target[i] - value;
         });
-        sum += (0, _mse2.default)(errors);
+        sum += mse(errors);
       };
 
       for (var i = 0; i < data.length; i++) {
-        _loop(i);
+        _loop2(i);
       }
       var error = sum / data.length;
 
@@ -358,7 +384,7 @@ var FeedForward = function () {
   }, {
     key: 'toJSON',
     value: function toJSON() {
-      var _this3 = this;
+      var _this4 = this;
 
       var jsonLayers = [];
       for (var i = 0; i < this.layers.length; i++) {
@@ -374,7 +400,7 @@ var FeedForward = function () {
           jsonLayer.inputLayerIndex = this.layers.indexOf(layer.inputLayer);
         } else if (layer.inputLayers) {
           jsonLayer.inputLayerIndexes = layer.inputLayers.map(function (inputLayer) {
-            return _this3.layers.indexOf(inputLayer);
+            return _this4.layers.indexOf(inputLayer);
           });
         }
         jsonLayers.push(jsonLayer);
@@ -464,6 +490,9 @@ FeedForward.defaults = {
   binaryThresh: 0.5,
   hiddenLayers: null,
   inputLayer: null,
-  outputLayer: null
+  outputLayer: null,
+  praxis: function praxis(layer) {
+    return _praxis.momentumRootMeanSquaredPropagation(layer);
+  }
 };
 //# sourceMappingURL=feed-forward.js.map

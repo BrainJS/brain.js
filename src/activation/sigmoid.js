@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * sigmoid activation
  * @param value

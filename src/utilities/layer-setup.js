@@ -1,5 +1,3 @@
-'use strict';
-
 export function setStride(layer, settings) {
   const defaults = layer.constructor.defaults;
   if (settings.hasOwnProperty('stride')) {

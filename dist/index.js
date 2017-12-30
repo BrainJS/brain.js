@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.FeedForward = exports.layer = undefined;
+exports.activation = exports.FeedForward = exports.layer = undefined;
 
 var _crossValidate = require('./cross-validate');
 
@@ -12,6 +12,10 @@ var _crossValidate2 = _interopRequireDefault(_crossValidate);
 var _layer = require('./layer');
 
 var layer = _interopRequireWildcard(_layer);
+
+var _activation = require('./activation');
+
+var activation = _interopRequireWildcard(_activation);
 
 var _likely = require('./likely');
 
@@ -68,4 +72,5 @@ exports.default = {
 };
 exports.layer = layer;
 exports.FeedForward = _feedForward2.default;
+exports.activation = activation;
 //# sourceMappingURL=index.js.map

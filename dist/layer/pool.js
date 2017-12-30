@@ -76,10 +76,10 @@ var Pool = function (_Base) {
   }, {
     key: 'predict',
     value: function predict() {
-      var outputs = this.predictKernel(this.inputLayer);
-      this.switchX = outputs.switchX;
-      this.switchY = outputs.switchY;
-      return this.outputs = outputs;
+      var weights = this.predictKernel(this.inputLayer);
+      this.switchX = weights.switchX;
+      this.switchY = weights.switchY;
+      return this.weights = weights;
     }
   }]);
 

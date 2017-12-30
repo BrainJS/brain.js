@@ -1,5 +1,3 @@
-'use strict';
-
 import assert from 'assert';
 import gpuMock from 'gpu-mock.js';
 import Dropout, { trainingPredict, predict } from '../../src/layer/dropout';

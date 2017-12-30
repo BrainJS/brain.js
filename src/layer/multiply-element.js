@@ -1,9 +1,7 @@
-'use strict';
-
-import Base from './base';
 import makeKernel from '../utilities/make-kernel';
+import OperatorBase from './operator-base';
 
-export default class MultiplyElement extends Base {
+export default class MultiplyElement extends OperatorBase {
   constructor(settings, inputLayer) {
     super(settings);
 

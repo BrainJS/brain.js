@@ -8,13 +8,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 exports.predict = predict;
 
-var _base = require('./base');
-
-var _base2 = _interopRequireDefault(_base);
-
 var _makeKernel = require('../utilities/make-kernel');
 
 var _makeKernel2 = _interopRequireDefault(_makeKernel);
+
+var _operatorBase = require('./operator-base');
+
+var _operatorBase2 = _interopRequireDefault(_operatorBase);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24,21 +24,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Add = function (_Base) {
-  _inherits(Add, _Base);
+var Add = function (_OperatorBase) {
+  _inherits(Add, _OperatorBase);
 
   function Add(inputLayers) {
     _classCallCheck(this, Add);
 
     var _this = _possibleConstructorReturn(this, (Add.__proto__ || Object.getPrototypeOf(Add)).call(this));
-
-    if (inputLayers[0].width !== inputLayers[1].width) {
-      throw new Error('Layer width mismatch');
-    }
-
-    if (inputLayers[0].height !== inputLayers[1].height) {
-      throw new Error('Layer height mismatch');
-    }
 
     _this.width = inputLayers[0].width;
     _this.height = inputLayers[0].height;
@@ -48,6 +40,17 @@ var Add = function (_Base) {
   }
 
   _createClass(Add, [{
+    key: 'validate',
+    value: function validate() {
+      if (this.inputLayers[0].width !== this.inputLayers[1].width) {
+        throw new Error('Layer width mismatch');
+      }
+
+      if (this.inputLayers[0].height !== this.inputLayers[1].height) {
+        throw new Error('Layer height mismatch');
+      }
+    }
+  }, {
     key: 'setupKernels',
     value: function setupKernels() {
       this.predictKernel = (0, _makeKernel2.default)(predict, {
@@ -57,7 +60,7 @@ var Add = function (_Base) {
   }, {
     key: 'predict',
     value: function predict() {
-      this.outputs = this.predictKernel(this.inputLayers[0].outputs, this.inputLayers[1].outputs);
+      this.weights = this.predictKernel(this.inputLayers[0].weights, this.inputLayers[1].weights);
     }
   }, {
     key: 'learn',
@@ -67,7 +70,7 @@ var Add = function (_Base) {
   }]);
 
   return Add;
-}(_base2.default);
+}(_operatorBase2.default);
 
 exports.default = Add;
 function predict(inputs1, inputs2) {
