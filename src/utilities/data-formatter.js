@@ -170,7 +170,9 @@ ${ this.toIndexes.toString()
       .replace(/(let|var) indexTable = this[.]indexTable;\n/, '')
       .replace(/this[.]/g, '') }
 ${ this.toIndexesInputOutput.toString().replace(/this[.]/g, '') }
-${ this.toCharacters.toString().replace(/this[.]/, '') }
+${ this.toCharacters.toString()
+      .replace(/(let|var) characterTable = this[.]characterTable;\n/g, '')
+      .replace(/this[.]/, '') }
 `;
   }
 }

@@ -616,18 +616,17 @@ export default class RNN {
     }
 
     const src = `
-  if (typeof input === 'undefined') input = [];
+  if (typeof rawInput === 'undefined') rawInput = [];
   if (typeof maxPredictionLength === 'undefined') maxPredictionLength = 100;
   if (typeof isSampleI === 'undefined') isSampleI = false;
   if (typeof temperature === 'undefined') temperature = 1;
   ${ (this.dataFormatter !== null) ? this.dataFormatter.toFunctionString() : '' }
   
-  ${
+  var input = ${
       (this.dataFormatter !== null && typeof this.formatDataIn === 'function')
-        ? 'input = formatDataIn(input);' 
-        : ''
-    }
-        
+        ? 'formatDataIn(rawInput)' 
+        : 'rawInput'
+    };
   var json = ${ jsonString };
   var _i = 0;
   var output = [];
@@ -676,7 +675,7 @@ ${ innerFunctionsSwitch.join('\n') }
     output.push(nextIndex);
   }
   ${ (this.dataFormatter !== null && typeof this.formatDataOut === 'function') 
-      ? 'return formatDataOut(output.slice(input.length).map(function(value) { return value - 1; }))'
+      ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))'
       : 'return output.slice(input.length).map(function(value) { return value - 1; })' };
   function Matrix(rows, columns) {
     this.rows = rows;
@@ -686,13 +685,15 @@ ${ innerFunctionsSwitch.join('\n') }
   ${ this.dataFormatter !== null && typeof this.formatDataIn === 'function'
       ? `function formatDataIn(input, output) { ${
           toInner(this.formatDataIn.toString())
+            .replace(/this[.]dataFormatter[\n\s]+[.]/g, '')
             .replace(/this[.]dataFormatter[.]/g, '')
             .replace(/this[.]dataFormatter/g, 'true')
         } }`
       : '' }
   ${ this.dataFormatter !== null && typeof this.formatDataOut === 'function'
-        ? `function formatDataOut(output) { ${
-            toInner(this.formatDataIn.toString())
+        ? `function formatDataOut(input, output) { ${
+            toInner(this.formatDataOut.toString())
+              .replace(/this[.]dataFormatter[\n\s]+[.]/g, '')
               .replace(/this[.]dataFormatter[.]/g, '')
               .replace(/this[.]dataFormatter/g, 'true')
           } }` 
