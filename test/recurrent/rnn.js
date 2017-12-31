@@ -399,5 +399,11 @@ describe('rnn', () => {
       let lastOutput = dataFormatter.toCharacters(net.run()).join('');
       assert.equal(dataFormatter.toCharacters(net.toFunction()()).join(''), lastOutput);
     });
+    it('can include the DataFormatter', () => {
+      const net = new RNN();
+      net.train(['hi mom!'], { iterations: 1 });
+      const newNet = net.toFunction();
+      newNet('hi mom!');
+    });
   });
 });

@@ -21,7 +21,7 @@ export default class Matrix {
    *
    * @param {Number} row
    * @param {Number} col
-   * @returns {Float64Array|Array}
+   * @returns {Float32Array|Array}
    */
   getWeights(row, col) {
     // slow but careful accessor function

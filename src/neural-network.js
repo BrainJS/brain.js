@@ -441,7 +441,7 @@ export default class NeuralNetwork {
     }
     // turn sparse hash input into arrays with 0s as filler
     let datum = data[0].input;
-    if (!Array.isArray(datum) && !(datum instanceof Float64Array)) {
+    if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
       if (!this.inputLookup) {
         this.inputLookup = lookup.buildLookup(data.map(value => value['input']));
       }

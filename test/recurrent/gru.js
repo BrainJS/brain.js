@@ -159,5 +159,12 @@ describe('gru', () => {
       var lastOutput = dataFormatter.toCharacters(net.run()).join('');
       assert.equal(dataFormatter.toCharacters(net.toFunction()()).join(''), lastOutput);
     });
+
+    it('can include the DataFormatter', () => {
+      const net = new GRU();
+      net.train(['hi mom!'], { iterations: 1 });
+      const newNet = net.toFunction();
+      newNet('hi mom!');
+    });
   });
 });

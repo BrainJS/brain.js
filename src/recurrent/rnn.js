@@ -615,11 +615,12 @@ export default class RNN {
       }
     }
 
-    return new Function('input', 'maxPredictionLength', 'isSampleI', 'temperature', `
+    const src = `
   if (typeof input === 'undefined') input = [];
   if (typeof maxPredictionLength === 'undefined') maxPredictionLength = 100;
   if (typeof isSampleI === 'undefined') isSampleI = false;
   if (typeof temperature === 'undefined') temperature = 1;
+  ${ (this.dataFormatter !== null) ? this.dataFormatter.toFunctionString() : '' }
   
   ${
       (this.dataFormatter !== null && typeof this.formatDataIn === 'function')
@@ -677,24 +678,31 @@ ${ innerFunctionsSwitch.join('\n') }
   ${ (this.dataFormatter !== null && typeof this.formatDataOut === 'function') 
       ? 'return formatDataOut(output.slice(input.length).map(function(value) { return value - 1; }))'
       : 'return output.slice(input.length).map(function(value) { return value - 1; })' };
-  
   function Matrix(rows, columns) {
     this.rows = rows;
     this.columns = columns;
     this.weights = zeros(rows * columns);
   }
   ${ this.dataFormatter !== null && typeof this.formatDataIn === 'function'
-      ? `function formatDataIn(input, output) { ${ toInner(this.formatDataIn.toString()).replace('this.dataFormatter', 'json.options.dataFormatter') } }`
+      ? `function formatDataIn(input, output) { ${
+          toInner(this.formatDataIn.toString())
+            .replace(/this[.]dataFormatter[.]/g, '')
+            .replace(/this[.]dataFormatter/g, 'true')
+        } }`
       : '' }
   ${ this.dataFormatter !== null && typeof this.formatDataOut === 'function'
-        ? `function formatDataOut(output) { ${ toInner(this.formatDataIn.toString()).replace('this.dataFormatter', 'json.options.dataFormatter') } }` 
+        ? `function formatDataOut(output) { ${
+            toInner(this.formatDataIn.toString())
+              .replace(/this[.]dataFormatter[.]/g, '')
+              .replace(/this[.]dataFormatter/g, 'true')
+          } }` 
         : '' }
-  ${ (this.dataFormatter !== null) ? this.dataFormatter.toFunctionString('json.options.dataFormatter') : '' }
   ${ zeros.toString() }
   ${ softmax.toString().replace('_2.default', 'Matrix') }
   ${ randomF.toString() }
   ${ sampleI.toString() }
-  ${ maxI.toString() }`)
+  ${ maxI.toString() }`;
+    return new Function('rawInput', 'maxPredictionLength', 'isSampleI', 'temperature', src);
   }
 }
 
