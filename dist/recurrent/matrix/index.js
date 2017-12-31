@@ -37,7 +37,7 @@ var Matrix = function () {
    *
    * @param {Number} row
    * @param {Number} col
-   * @returns {Float64Array|Array}
+   * @returns {Float32Array|Array}
    */
 
 

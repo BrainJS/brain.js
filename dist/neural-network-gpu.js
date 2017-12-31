@@ -311,7 +311,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       }
       // turn sparse hash input into arrays with 0s as filler
       var datum = data[0].input;
-      if (!Array.isArray(datum) && !(datum instanceof Float64Array)) {
+      if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
         if (!this.inputLookup) {
           this.inputLookup = _lookup2.default.buildLookup(data.map(function (value) {
             return value['input'];
