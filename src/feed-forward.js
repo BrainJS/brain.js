@@ -83,7 +83,7 @@ export default class FeedForward {
     for (let i = 1; i < this.layers.length; i++) {
       this.layers[i].predict();
     }
-    return this.layers[this.layers.length - 1].outputs;
+    return this.layers[this.layers.length - 1].weights;
   }
 
   calculateDeltas(target) {
@@ -128,7 +128,6 @@ export default class FeedForward {
       if (log && (i % logPeriod === 0)) {
         log('iterations:', i, 'training error:', error);
       }
-      if (i % callbackPeriod === 0) console.log(error);
       if (callback && (i % callbackPeriod === 0)) {
         callback({ error: error, iterations: i });
       }
@@ -166,7 +165,7 @@ export default class FeedForward {
    */
   adjustWeights(learningRate) {
     for (let i = 0; i < this.layers.length; i++) {
-      this.layers[i].learn(learningRate);
+      this.layers[i].learn(this.layers[i-1], this.layers[i+1], learningRate);
     }
   }
 

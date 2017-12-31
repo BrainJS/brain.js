@@ -1,12 +1,19 @@
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
-import randos from '../utilities/randos';
+import randos2D from "../utilities/randos-2d";
+import zeros2D from "../utilities/zeros-2d";
 
 export default class Output extends Base {
   constructor(settings, inputLayer) {
     super(settings);
     this.inputLayer = inputLayer;
-    this.weights = randos(this.width);
+    this.weights = randos2D(this.width, this.height);
+    this.deltas = zeros2D(this.width, this.height);
+
+    if (this.height === 1) {
+      //this.predict = this.predict1D;
+      this.compare = this.compare1D;
+    }
   }
 
   setupKernels() {
@@ -20,7 +27,13 @@ export default class Output extends Base {
   }
 
   predict() {
-    this.weights = this.inputLayer.weights;
+    // this is where weights attach to deltas
+    this.deltas = this.inputLayer.weights;
+  }
+
+  predict1D() {
+    // this is where weights attach to deltas
+    this.deltas = this.inputLayer.weights[0];
   }
 
   compare(target) {
@@ -29,7 +42,13 @@ export default class Output extends Base {
     this.deltas = deltas;
   }
 
-  learn(target) {}
+  compare1D(target) {
+    const { errors, deltas } = this.compareKernel(target, this.weights);
+    this.errors = [errors];
+    this.deltas = [deltas];
+  }
+
+  learn(previousLayer, nextLayer, learningRate) {}
 }
 
 function setDelta(delta) {

@@ -1,11 +1,13 @@
 import makeKernel from '../utilities/make-kernel';
-import zeros2d from "../utilities/zeros-2d";
+import zeros2D from "../utilities/zeros-2d";
 
 export default class MomentumRootMeanSquaredPropagation {
   static get defaults() {
     return {
       decayRate: 0.999,
-      regularizationStrength: 0.00001
+      regularizationStrength: 0.00001,
+      learningRate: 0.01,
+      smoothEps: 1e-8
     };
   }
 
@@ -13,12 +15,13 @@ export default class MomentumRootMeanSquaredPropagation {
     this.layer = layer;
     this.width = layer.width;
     this.height = layer.height;
-    this.momentums = zeros2d(layer.width, layer.height);
+    this.momentums = zeros2D(layer.width, layer.height);
     Object.assign(this, this.constructor.defaults, settings);
+    this.setupKernels();
   }
 
-  run(weights, deltas) {
-    const output = this.momentumsKernel(weights, deltas, this.momentums, this.decayRate, this.regularizationStrength);
+  run(weights, deltas, learningRate) {
+    const output = this.momentumsKernel(weights, deltas, this.learningRate, this.momentums, this.decayRate, this.regularizationStrength);
     this.momentums = output.momentums;
     return output.result;
   }
@@ -26,6 +29,9 @@ export default class MomentumRootMeanSquaredPropagation {
   setupKernels() {
     this.momentumsKernel = makeKernel(momentumRootMeanSquaredPropagation, {
       output: [this.width, this.height],
+      constants: {
+        smoothEps: this.smoothEps
+      },
       map: {
         momentums: getMomentum
       }
@@ -43,12 +49,12 @@ const MRmsProp = MomentumRootMeanSquaredPropagation;
  * @description Momentum Root Mean Square Propagation Function
  * @returns {number}
  */
-function momentumRootMeanSquaredPropagation(weights, deltas, previousMomentums, decayRate, regularizationStrength) {
+function momentumRootMeanSquaredPropagation(weights, deltas, learningRate, previousMomentums, decayRate, regularizationStrength) {
   let delta = deltas[this.thread.y][this.thread.x];
   let weight = weights[this.thread.y][this.thread.x];
   let previousMomentum = previousMomentums[this.thread.y][this.thread.x];
   const momentum = getMomentum(delta, decayRate, previousMomentum);
-  return weight + -this.constants.learningRate * delta / Math.sqrt(momentum + this.constants.smoothEps) - regularizationStrength * weight;
+  return weight + -learningRate * delta / Math.sqrt(momentum + this.constants.smoothEps) - regularizationStrength * weight;
 }
 
 function getMomentum(delta, decay, previousMomentum) {

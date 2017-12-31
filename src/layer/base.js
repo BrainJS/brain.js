@@ -40,11 +40,15 @@ export default class Base {
 
   setupKernels() {}
 
-  predict() {}
+  predict() {
+    throw new Error('`predict` not defined on Base layer');
+  }
 
-  compare(previousLayer, nextLayer) {}
+  compare(previousLayer, nextLayer) {
+    throw new Error('`compare` not defined on Base layer');
+  }
 
-  learn() {
+  learn(previousLayer, nextLayer, learningRate) {
     this.weights = this.praxis.run(this.weights, this.deltas);
   }
 

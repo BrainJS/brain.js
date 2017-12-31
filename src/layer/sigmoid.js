@@ -1,18 +1,16 @@
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 import { activate, measure } from '../activation/sigmoid';
-import randos from '../utilities/randos';
-import randos2d from '../utilities/randos-2d';
-import zeros from '../utilities/zeros';
-import zeros2d from '../utilities/zeros-2d';
+import randos2D from '../utilities/randos-2d';
+import zeros2D from '../utilities/zeros-2d';
 
 export default class Sigmoid extends Base {
   constructor(inputLayer) {
     const { width, height} = inputLayer;
     super({ width, height });
     this.inputLayer = inputLayer;
-    this.weights = randos2d(width, height);
-    this.deltas = zeros(width);
+    this.weights = randos2D(width, height);
+    this.deltas = zeros2D(width, height);
   }
 
   setupKernels() {
@@ -57,7 +55,7 @@ export function predict(inputs) {
 }
 
 function compare(weights, nextLayerWeights, nextLayerDeltas) {
-  let weight = weights[this.thread.x];
+  let weight = weights[this.thread.y][this.thread.x];
   return measure(weight, calcError(nextLayerWeights, nextLayerDeltas));
 }
 
@@ -68,8 +66,7 @@ export function learn(weights, errors) {
 function calcError(nextWeights, nextDeltas) {
   let error = 0;
   for(let k = 0; k < this.constants.width; k++) {
-    debugger;
-    error += nextDeltas[k] * nextWeights[k][this.thread.x];
+    error += nextDeltas[k][this.thread.x] * nextWeights[k][this.thread.x];
   }
   return error;
 }

@@ -4,13 +4,15 @@ import OperatorBase from './operator-base';
 export default class Multiply extends OperatorBase {
   constructor(inputLayers) {
     super();
-
-    if (inputLayers[0].width !== inputLayers[1].height) {
-      throw new Error('Layer size mismatch');
-    }
     this.inputLayers = inputLayers;
     this.width = inputLayers[0].width;
     this.height = inputLayers[1].height;
+  }
+
+  validate() {
+    if (this.inputLayers[0].width !== this.inputLayers[1].height) {
+      throw new Error('Layer size mismatch');
+    }
   }
 
   setupKernels() {
@@ -23,8 +25,10 @@ export default class Multiply extends OperatorBase {
     this.weights = this.predictKernel(this.inputLayer[0].weights, this.inputLayer[1].weights);
   }
 
-  learn(previousLayer, nextLayer) {
+  learn(previousLayer, nextLayer, learningRate) {
     this.deltas = nextLayer.deltas;
+    this.inputLayers[0].deltas = this.deltas;
+    this.inputLayers[1].deltas = this.deltas;
   }
 }
 

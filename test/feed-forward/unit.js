@@ -20,10 +20,10 @@ const {
   softMax,
   Weigh
 } = layer;
-import { FeedForward, layer } from '../../../src';
+import { FeedForward, layer } from '../../src';
 
 describe('FeedForward Class: Unit', () => {
-  describe('instantiation', () => {
+  describe('.constructor()', () => {
     it('initially does not have any layers', () => {
       assert.equal(new FeedForward().layers, null);
     });
