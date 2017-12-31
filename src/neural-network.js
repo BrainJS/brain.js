@@ -13,8 +13,31 @@ import zeros from './utilities/zeros';
  * @constructor
  */
 export default class NeuralNetwork {
+  static get trainDefaults() {
+    return {
+      iterations: 20000,
+      errorThresh: 0.005,
+      log: false,
+      logPeriod: 10,
+      learningRate: 0.3,
+      callback: null,
+      callbackPeriod: 10,
+      reinforce: false
+    };
+  }
+
+  static get defaults() {
+    return {
+      learningRate: 0.3,
+      momentum: 0.1,
+      binaryThresh: 0.5,
+      hiddenLayers: null,
+      activation: 'sigmoid'
+    };
+  }
+
   constructor(options = {}) {
-    Object.assign(this, NeuralNetwork.defaults, options);
+    Object.assign(this, this.constructor.defaults, options);
     this.hiddenSizes = options.hiddenLayers;
 
     this.sizes = null;
@@ -27,8 +50,13 @@ export default class NeuralNetwork {
     this.deltas = null;
     this.changes = null; // for momentum
     this.errors = null;
-    this.runInput = null;
-    this.calculateDeltas = null;
+
+    if (!this.constructor.prototype.hasOwnProperty('runInput')) {
+      this.runInput = null;
+    }
+    if (!this.constructor.prototype.hasOwnProperty('calculateDeltas')) {
+      this.calculateDeltas = null;
+    }
   }
 
   /**
@@ -203,7 +231,7 @@ export default class NeuralNetwork {
    * @returns {{error: number, iterations: number}}
    */
   train(data, _options = {}) {
-    const options = Object.assign({}, NeuralNetwork.trainDefaults, _options);
+    const options = Object.assign({}, this.constructor.trainDefaults, _options);
     data = this.formatData(data);
     let iterations = options.iterations;
     let errorThresh = options.errorThresh;
@@ -310,7 +338,7 @@ export default class NeuralNetwork {
         let output = this.outputs[layer][node];
 
         let error = 0;
-        if (layer == this.outputLayer) {
+        if (layer === this.outputLayer) {
           error = target[node] - output;
         }
         else {
@@ -335,7 +363,7 @@ export default class NeuralNetwork {
         let output = this.outputs[layer][node];
 
         let error = 0;
-        if (layer == this.outputLayer) {
+        if (layer === this.outputLayer) {
           error = target[node] - output;
         }
         else {
@@ -360,7 +388,7 @@ export default class NeuralNetwork {
         let output = this.outputs[layer][node];
 
         let error = 0;
-        if (layer == this.outputLayer) {
+        if (layer === this.outputLayer) {
           error = target[node] - output;
         }
         else {
@@ -406,14 +434,14 @@ export default class NeuralNetwork {
    * @returns {*}
    */
   formatData(data) {
-    if (data.constructor !== Array) { // turn stream datum into array
+    if (!Array.isArray(data)) { // turn stream datum into array
       let tmp = [];
       tmp.push(data);
       data = tmp;
     }
     // turn sparse hash input into arrays with 0s as filler
     let datum = data[0].input;
-    if (datum.constructor !== Array && !(datum instanceof Float64Array)) {
+    if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
       if (!this.inputLookup) {
         this.inputLookup = lookup.buildLookup(data.map(value => value['input']));
       }
@@ -423,7 +451,7 @@ export default class NeuralNetwork {
       }, this);
     }
 
-    if (data[0].output.constructor !== Array) {
+    if (!Array.isArray(data[0].output)) {
       if (!this.outputLookup) {
         this.outputLookup = lookup.buildLookup(data.map(value => value['output']));
       }
@@ -704,22 +732,3 @@ export default class NeuralNetwork {
     return this.trainStream;
   }
 }
-
-NeuralNetwork.trainDefaults = {
-  iterations: 20000,
-  errorThresh: 0.005,
-  log: false,
-  logPeriod: 10,
-  learningRate: 0.3,
-  callback: null,
-  callbackPeriod: 10,
-  reinforce: false
-};
-
-NeuralNetwork.defaults = {
-  learningRate: 0.3,
-  momentum: 0.1,
-  binaryThresh: 0.5,
-  hiddenLayers: null,
-  activation: 'sigmoid'
-};

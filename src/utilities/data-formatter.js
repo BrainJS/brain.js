@@ -161,11 +161,18 @@ export default class DataFormatter {
     }
   }
 
-  toFunctionString(dataFormatterVariableName) {
+  toFunctionString() {
     return `
-${ this.toIndexes.toString().replace('this', dataFormatterVariableName) }
-${ this.toIndexesInputOutput.toString().replace('this', dataFormatterVariableName) }
-${ this.toCharacters.toString().replace('this', dataFormatterVariableName) }
+var characterTable = ${ JSON.stringify(this.characterTable) };
+var indexTable = ${ JSON.stringify(this.indexTable) };
+var characters = ${ JSON.stringify(this.characters) };
+${ this.toIndexes.toString()
+      .replace(/(let|var) indexTable = this[.]indexTable;\n/, '')
+      .replace(/this[.]/g, '') }
+${ this.toIndexesInputOutput.toString().replace(/this[.]/g, '') }
+${ this.toCharacters.toString()
+      .replace(/(let|var) characterTable = this[.]characterTable;\n/g, '')
+      .replace(/this[.]/, '') }
 `;
   }
 }

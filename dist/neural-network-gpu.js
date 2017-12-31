@@ -16,10 +16,6 @@ var _lookup = require('./lookup');
 
 var _lookup2 = _interopRequireDefault(_lookup);
 
-var _mse = require('./utilities/mse');
-
-var _mse2 = _interopRequireDefault(_mse);
-
 var _gpu = require('gpu.js');
 
 var _gpu2 = _interopRequireDefault(_gpu);
@@ -51,10 +47,6 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     _this.backwardPropagate = [];
     _this.changesPropagate = [];
     _this.biasesPropagate = [];
-
-    _this.count = 0;
-    _this.error = 1;
-    _this.logCount = options.logCount;
     _this.gpu = new _gpu2.default({ mode: options.mode });
     return _this;
   }
@@ -74,6 +66,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       this.buildCalculateDeltas();
       this.buildGetChanges();
       this.buildChangeBiases();
+      this.buildGetMSE();
     }
   }, {
     key: 'setActivation',
@@ -98,15 +91,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       this.getChanges(learningRate);
       this.changeBiases(learningRate);
 
-      if (this.count % this.logCount === 0 || this.count === 1 || this.iterations === this.count) {
-        for (var i = 0; i < this.errors.length; i++) {
-          this.errors[i] = this.errors[i].toArray ? this.errors[i].toArray(this.gpu) : this.errors[i];
-        }
-        var error = this.error = (0, _mse2.default)(this.errors[this.outputLayer]);
-        return error;
-      } else {
-        return this.error;
-      }
+      return this.getMSE(this.errors[this.outputLayer])[0];
     }
   }, {
     key: 'buildRunInput',
@@ -131,7 +116,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       }
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
-        var kernel = this.gpu.createKernelMap({ weightedSum: weightedSum }, function (weights, biases, inputs) {
+        var kernel = this.gpu.createKernelMap({ weightedSum: _gpu2.default.alias('weightedSum', weightedSum) }, function (weights, biases, inputs) {
           return weightedSum(weights, biases, this.thread.x, inputs);
         }, {
           constants: {
@@ -185,8 +170,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       for (var layer = this.outputLayer; layer > 0; layer--) {
         if (layer === this.outputLayer) {
           var kernel = this.gpu.createKernelMap({
-            error: calcError,
-            deltas: calcDeltas
+            error: _gpu2.default.alias('calcError', calcError),
+            deltas: _gpu2.default.alias('calcDeltas', calcDeltas)
           }, function (outputs, target) {
             var output = outputs[this.thread.x];
             return calcDeltas(calcError(output, target), output);
@@ -195,8 +180,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
           this.backwardPropagate[layer] = kernel;
         } else {
           var _kernel = this.gpu.createKernelMap({
-            error: calcErrorOutput,
-            deltas: calcDeltas
+            error: _gpu2.default.alias('calcErrorOutput', calcErrorOutput),
+            deltas: _gpu2.default.alias('calcDeltas', calcDeltas)
           }, function (nextWeights, outputs, nextDeltas) {
             var output = outputs[this.thread.x];
             return calcDeltas(calcErrorOutput(nextWeights, nextDeltas), output);
@@ -229,7 +214,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     key: 'buildGetChanges',
     value: function buildGetChanges() {
       for (var layer = 1; layer <= this.outputLayer; layer++) {
-        var kernel = this.gpu.createKernelMap({ addWeights: addWeights, calcChanges: calcChanges }, function (previousOutputs, deltas, weights, changes, learningRate, momentum) {
+        var kernel = this.gpu.createKernelMap({
+          addWeights: addWeights, calcChanges: calcChanges }, function (previousOutputs, deltas, weights, changes, learningRate, momentum) {
           var delta = deltas[this.thread.y];
           var change = calcChanges(changes, delta, previousOutputs, learningRate, momentum, this.thread.x, this.thread.y);
 
@@ -274,6 +260,17 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
         this.biases[layer] = output.result;
       }
     }
+  }, {
+    key: 'buildGetMSE',
+    value: function buildGetMSE() {
+      var kernel = this.gpu.createKernel(mse, {
+        output: [1],
+        constants: {
+          size: this.outputLayer
+        }
+      });
+      this.getMSE = kernel;
+    }
 
     /**
      *
@@ -306,7 +303,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     value: function formatData(data) {
       var _this2 = this;
 
-      if (data.constructor !== Array) {
+      if (!Array.isArray(data)) {
         // turn stream datum into array
         var tmp = [];
         tmp.push(data);
@@ -314,7 +311,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       }
       // turn sparse hash input into arrays with 0s as filler
       var datum = data[0].input;
-      if (datum.constructor !== Array && !(datum instanceof Float64Array)) {
+      if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
         if (!this.inputLookup) {
           this.inputLookup = _lookup2.default.buildLookup(data.map(function (value) {
             return value['input'];
@@ -326,7 +323,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
         }, this);
       }
 
-      if (data[0].output.constructor !== Array) {
+      if (!Array.isArray(data[0].output)) {
         if (!this.outputLookup) {
           this.outputLookup = _lookup2.default.buildLookup(data.map(function (value) {
             return value['output'];
@@ -339,6 +336,11 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       }
       return data;
     }
+  }, {
+    key: 'toFunction',
+    value: function toFunction() {
+      throw new Error('not implemented on NeuralNetworkGPU');
+    }
   }]);
 
   return NeuralNetworkGPU;
@@ -347,27 +349,9 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
 exports.default = NeuralNetworkGPU;
 
 
-NeuralNetworkGPU.trainDefaults = {
-  iterations: 20000,
-  errorThresh: 0.005,
-  log: false,
-  logPeriod: 10,
-  learningRate: 0.3,
-  callback: null,
-  callbackPeriod: 10,
-  keepNetworkIntact: false
-};
-
-NeuralNetworkGPU.defaults = {
-  learningRate: 0.3,
-  momentum: 0.1,
-  binaryThresh: 0.5,
-  hiddenLayers: null
-};
-
 function weightedSumSigmoid(weights, biases, x, inputs) {
   var sum = biases[x];
-  for (var k = 0; k < this.constants.size; k++) {
+  for (var k = 0; k < size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //sigmoid
@@ -376,7 +360,7 @@ function weightedSumSigmoid(weights, biases, x, inputs) {
 
 function weightedSumRelu(weights, biases, x, inputs) {
   var sum = biases[x];
-  for (var k = 0; k < this.constants.size; k++) {
+  for (var k = 0; k < size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //relu
@@ -385,7 +369,7 @@ function weightedSumRelu(weights, biases, x, inputs) {
 
 function weightedSumLeakyRelu(weights, biases, x, inputs) {
   var sum = biases[x];
-  for (var k = 0; k < this.constants.size; k++) {
+  for (var k = 0; k < size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //leaky relu
@@ -394,7 +378,7 @@ function weightedSumLeakyRelu(weights, biases, x, inputs) {
 
 function weightedSumTanh(weights, biases, x, inputs) {
   var sum = biases[x];
-  for (var k = 0; k < this.constants.size; k++) {
+  for (var k = 0; k < size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //tanh
@@ -447,5 +431,14 @@ function addWeights(change, weights, x, y) {
 
 function addBiases(biases, deltas, learningRate, x) {
   return biases[x] + deltas[x] * learningRate;
+}
+
+// mean squared error, reimplemented for GPU
+function mse(errors) {
+  var sum = 0;
+  for (var i = 0; i < this.constants.size; i++) {
+    sum += Math.pow(errors[i], 2);
+  }
+  return sum / this.constants.size;
 }
 //# sourceMappingURL=neural-network-gpu.js.map

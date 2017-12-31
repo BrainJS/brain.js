@@ -97,7 +97,7 @@ export default class TrainStream extends Writable {
     if (!this.dataFormatDetermined) {
       // create the lookup
       this.neuralNetwork.inputLookup = lookup.lookupFromArray(this.inputKeys);
-      if(this.firstDatum.output.constructor !== Array){
+      if(!Array.isArray(this.firstDatum.output)){
         this.neuralNetwork.outputLookup = lookup.lookupFromArray(this.outputKeys);
       }
 

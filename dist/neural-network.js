@@ -48,12 +48,39 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @constructor
  */
 var NeuralNetwork = function () {
+  _createClass(NeuralNetwork, null, [{
+    key: 'trainDefaults',
+    get: function get() {
+      return {
+        iterations: 20000,
+        errorThresh: 0.005,
+        log: false,
+        logPeriod: 10,
+        learningRate: 0.3,
+        callback: null,
+        callbackPeriod: 10,
+        reinforce: false
+      };
+    }
+  }, {
+    key: 'defaults',
+    get: function get() {
+      return {
+        learningRate: 0.3,
+        momentum: 0.1,
+        binaryThresh: 0.5,
+        hiddenLayers: null,
+        activation: 'sigmoid'
+      };
+    }
+  }]);
+
   function NeuralNetwork() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, NeuralNetwork);
 
-    Object.assign(this, NeuralNetwork.defaults, options);
+    Object.assign(this, this.constructor.defaults, options);
     this.hiddenSizes = options.hiddenLayers;
 
     this.sizes = null;
@@ -66,8 +93,13 @@ var NeuralNetwork = function () {
     this.deltas = null;
     this.changes = null; // for momentum
     this.errors = null;
-    this.runInput = null;
-    this.calculateDeltas = null;
+
+    if (!this.constructor.prototype.hasOwnProperty('runInput')) {
+      this.runInput = null;
+    }
+    if (!this.constructor.prototype.hasOwnProperty('calculateDeltas')) {
+      this.calculateDeltas = null;
+    }
   }
 
   /**
@@ -260,7 +292,7 @@ var NeuralNetwork = function () {
     value: function train(data) {
       var _options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      var options = Object.assign({}, NeuralNetwork.trainDefaults, _options);
+      var options = Object.assign({}, this.constructor.trainDefaults, _options);
       data = this.formatData(data);
       var iterations = options.iterations;
       var errorThresh = options.errorThresh;
@@ -375,7 +407,7 @@ var NeuralNetwork = function () {
           var output = this.outputs[layer][node];
 
           var error = 0;
-          if (layer == this.outputLayer) {
+          if (layer === this.outputLayer) {
             error = target[node] - output;
           } else {
             var deltas = this.deltas[layer + 1];
@@ -402,7 +434,7 @@ var NeuralNetwork = function () {
           var output = this.outputs[layer][node];
 
           var error = 0;
-          if (layer == this.outputLayer) {
+          if (layer === this.outputLayer) {
             error = target[node] - output;
           } else {
             var deltas = this.deltas[layer + 1];
@@ -429,7 +461,7 @@ var NeuralNetwork = function () {
           var output = this.outputs[layer][node];
 
           var error = 0;
-          if (layer == this.outputLayer) {
+          if (layer === this.outputLayer) {
             error = target[node] - output;
           } else {
             var deltas = this.deltas[layer + 1];
@@ -481,7 +513,7 @@ var NeuralNetwork = function () {
     value: function formatData(data) {
       var _this = this;
 
-      if (data.constructor !== Array) {
+      if (!Array.isArray(data)) {
         // turn stream datum into array
         var tmp = [];
         tmp.push(data);
@@ -489,7 +521,7 @@ var NeuralNetwork = function () {
       }
       // turn sparse hash input into arrays with 0s as filler
       var datum = data[0].input;
-      if (datum.constructor !== Array && !(datum instanceof Float64Array)) {
+      if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
         if (!this.inputLookup) {
           this.inputLookup = _lookup2.default.buildLookup(data.map(function (value) {
             return value['input'];
@@ -501,7 +533,7 @@ var NeuralNetwork = function () {
         }, this);
       }
 
-      if (data[0].output.constructor !== Array) {
+      if (!Array.isArray(data[0].output)) {
         if (!this.outputLookup) {
           this.outputLookup = _lookup2.default.buildLookup(data.map(function (value) {
             return value['output'];
@@ -805,24 +837,4 @@ var NeuralNetwork = function () {
 }();
 
 exports.default = NeuralNetwork;
-
-
-NeuralNetwork.trainDefaults = {
-  iterations: 20000,
-  errorThresh: 0.005,
-  log: false,
-  logPeriod: 10,
-  learningRate: 0.3,
-  callback: null,
-  callbackPeriod: 10,
-  reinforce: false
-};
-
-NeuralNetwork.defaults = {
-  learningRate: 0.3,
-  momentum: 0.1,
-  binaryThresh: 0.5,
-  hiddenLayers: null,
-  activation: 'sigmoid'
-};
 //# sourceMappingURL=neural-network.js.map

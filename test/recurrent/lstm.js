@@ -107,7 +107,15 @@ describe('lstm', () => {
       }
 
       var lastOutput = dataFormatter.toCharacters(net.run()).join('');
+      assert(lastOutput.length > 0);
       assert.equal(dataFormatter.toCharacters(net.toFunction()()).join(''), lastOutput);
+    });
+    it.only('can include the DataFormatter', () => {
+      const net = new LSTM();
+      net.train(['hi mom!'], { iterations: 1 });
+      const newNet = net.toFunction();
+      const output = newNet('hi mom!');
+      assert(output.length > 0);
     });
   });
 
