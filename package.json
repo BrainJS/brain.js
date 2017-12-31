@@ -1,7 +1,7 @@
 {
   "name": "brain.js",
   "description": "Neural network library",
-  "version": "1.0.0-rc.9",
+  "version": "1.0.0",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
     "babel-polyfill": "^6.13.0",
     "babel-preset-es2015": "^6.14.0",
     "browserify": "^13.1.0",
+    "js-datasets-iris": "^1.0.4",
     "licensify": "^3.1.2",
     "mocha": "^3.0.2",
     "sinon": "^1.17.6",
@@ -65,7 +66,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "gpu.js": "^1.0.0",
-    "js-datasets-iris": "^1.0.4"
+    "gpu.js": "^1.0.0"
   }
 }
