@@ -65,7 +65,7 @@ export default class FullyConnected extends Base {
     this.weights = this.predictKernel(this.inputLayer.weights, this.filters, this.biases);
   }
 
-  learn() {
+  compare() {
     this.filterDeltas = this.learnFilters(this.inputLayer, this.deltas);
     this.biases = this.learnBiasesKernel(this.bias, this.deltas);
     this.deltas = this.learnInputs(this.filters);

@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { FeedForward, layer } from '../../src';
-import randos2D from '../../src/utilities/randos-2d';
+import zeros2D from '../../src/utilities/zeros-2d';
 const {
   Base,
   Convolution,
@@ -67,7 +67,8 @@ describe('FeedForward Class: End to End', () => {
       class SuperOutput extends Output {
         constructor(settings, inputLayer) {
           super(settings);
-          this.deltas = randos2D();
+          this.deltas = zeros2D(this.width, this.height);
+          this.inputLayer = inputLayer;
         }
       }
 
@@ -80,8 +81,25 @@ describe('FeedForward Class: End to End', () => {
       });
 
       net.initialize();
+      net.layers.forEach((layer, layerIndex) => {
+        //inputs?
+        if (!layer.deltas) return;
+        layer.deltas.forEach((row, rowIndex) => {
+          row.forEach((delta, deltaIndex) => {
+            assert.equal(delta, 0, `delta is ${ delta } of layer type ${ layer.constructor.name } with layerIndex of ${ layerIndex }, rowIndex of ${ rowIndex }, and deltaIndex of ${ deltaIndex }`);
+          })
+        })
+      });
       net.calculateDeltas([[1]]);
-      console.log('hi mom');
+      net.layers.forEach((layer, layerIndex) => {
+        //inputs?
+        if (!layer.deltas) return;
+        layer.deltas.forEach((row, rowIndex) => {
+          row.forEach((delta, deltaIndex) => {
+            assert.notEqual(delta, 0, `delta is ${ delta } of layer type ${ layer.constructor.name } with layerIndex of ${ layerIndex }, rowIndex of ${ rowIndex }, and deltaIndex of ${ deltaIndex }`);
+          })
+        })
+      });
     });
   });
 });

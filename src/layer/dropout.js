@@ -33,7 +33,7 @@ export default class Dropout extends Base {
     this.weights = this.predictKernel(this.inputLayer.weights);
   }
 
-  learn() {
+  compare() {
     this.deltas = this.learnKernel(this.deltas);
   }
 }

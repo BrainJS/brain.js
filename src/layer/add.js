@@ -33,8 +33,9 @@ export default class Add extends OperatorBase {
     this.weights = this.predictKernel(this.inputLayers[0].weights, this.inputLayers[1].weights);
   }
 
-  learn(previousLayer, nextLayer, learningRate) {
-    this.deltas = nextLayer.deltas;
+  compare(previousLayer, nextLayer, learningRate) {
+    this.inputLayers[0] = this.deltas;
+    this.inputLayers[1] = this.deltas;
   }
 }
 

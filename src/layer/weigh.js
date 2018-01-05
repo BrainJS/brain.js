@@ -16,6 +16,7 @@ export default class Weigh extends OperatorBase {
     this.height = 1;
     this.deltas = zeros2D(this.width, this.height);
     this.weights = randos2D(this.width, this.height);
+    this.compareKernels = [];
   }
 
   setupKernels() {
@@ -25,14 +26,21 @@ export default class Weigh extends OperatorBase {
         inputWidth: this.inputLayers[0].width
       }
     });
+    this.compareKernels[0] = makeKernel(compare, {
+      size: [this.inputLayers[0].width, this.inputLayers[0].height]
+    });
+    this.compareKernels[1] = makeKernel(compare, {
+      size: [this.inputLayers[1].width, this.inputLayers[1].height]
+    });
   }
 
   predict() {
     this.weights = this.predictKernel(this.inputLayers[0].weights, this.inputLayers[1].weights);
   }
 
-  learn(previousLayer, nextLayer, learningRate) {
-    this.deltas = nextLayer.deltas;
+  compare(previousLayer, nextLayer) {
+    this.inputLayers[0].deltas = this.compareKernels[0](this.deltas, this.inputLayers[1].weights, this.inputLayers[1].deltas);
+    this.inputLayers[1].deltas = this.compareKernels[1](this.deltas, this.inputLayers[0].weights, this.inputLayers[0].deltas);
   }
 }
 
@@ -42,4 +50,13 @@ export function predict(weights1, weights2) {
     sum += weights1[0][index] * weights2[index][this.thread.x];
   }
   return sum;
+}
+
+export function compare(deltas, inputWeights, inputDeltas) {
+  const delta = deltas[this.thread.y][this.thread.x];
+  let newInputDeltas = inputDeltas[this.thread.y][this.thread.x];
+  for (let index = 0; index < this.constants.inputWidth; index++) {
+    newInputDeltas += inputWeights[0][index] * delta;
+  }
+  return newInputDeltas;
 }

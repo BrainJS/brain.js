@@ -13,6 +13,6 @@ export default class Random extends Base {
 
   predict() {}
   compare(previousLayer, nextLayer) {
-    this.deltas = nextLayer.deltas;
+    debugger;
   }
 }

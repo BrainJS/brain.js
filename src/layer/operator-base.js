@@ -2,5 +2,7 @@ export default class OperatorBase {
   constructor(inputLayers) {}
   validate() {}
   setupKernels() {}
-  compare() {}
+  compare() {
+    throw new Error('compare not defined on OperatorBase');
+  }
 }

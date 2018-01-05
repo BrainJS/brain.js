@@ -24,7 +24,7 @@ export default class LeakyRelu extends Base {
     this.weights = this.predictKernel(this.inputLayer.weights);
   }
 
-  learn() {
+  compare() {
     this.deltas = this.learnKernel(this.weights, this.deltas);
   }
 }

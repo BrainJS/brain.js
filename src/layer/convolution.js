@@ -78,7 +78,7 @@ export default class Convolution extends Base {
     this.weights = this.predictKernel(this.inputLayer.weights, this.filters, this.biases);
   }
 
-  learn() {
+  compare() {
     this.filterDeltas = this.learnFilters(this.inputLayer.weights, this.deltas);
     this.deltas = this.learnInputs(this.filters);
   }

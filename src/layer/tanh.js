@@ -23,7 +23,7 @@ export default class Tanh extends Base {
     this.weights = this.predictKernel(this.inputLayer.weights);
   }
 
-  learn() {
+  compare() {
     this.deltas = this.learnKernel(this.weights, this.errors);
   }
 }

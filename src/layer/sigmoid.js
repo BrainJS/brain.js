@@ -44,10 +44,6 @@ export default class Sigmoid extends Base {
     this.errors = errors;
     this.deltas = deltas;
   }
-
-  learn() {
-    this.deltas = this.learnKernel(this.weights, this.errors);
-  }
 }
 
 export function predict(inputs) {
