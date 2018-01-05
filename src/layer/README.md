@@ -37,5 +37,5 @@ const net = new FeedForward({
 });
 ```
 In this example both `add` and `random` are composed together, ie `layer composition`.  This simple means of composing
-both layers and networks makes created simple (rnn) or complex (lstm) networks without.
+layers and in turn networks works with both simple (feedforward) or complex (lstm) networks.
 
