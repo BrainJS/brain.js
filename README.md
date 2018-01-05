@@ -43,7 +43,9 @@ output = net.run([1, 1]);  // [0]
 However, There's no reason to use a neural network to figure out XOR. (-: So, here's a more involved, realistic example:
 [Demo: training a neural network to recognize color contrast](https://brain.js.org/).
 
-You can also check out the following screencast, which explains how to train a neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
+# Examples
+You check out this fantastic screencast, which explains how to train a simple neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
+* [writing a children's book using a recurrent neural neural network](./examples/childrens-book.js)
 
 # Usage
 
@@ -179,8 +181,8 @@ By default `brain.js` uses one hidden layer with size proportionate to the size 
 # Streams
 The network now has a [WriteStream](http://nodejs.org/api/stream.html#stream_class_stream_writable). You can train the network by using `pipe()` to send the training data to the network.
 
-# Example
-Refer to `stream-example.js` for an example on how to train the network with a stream.
+### Example
+Refer to [`stream-example.js`](./examples/cli/stream-example.js) for an example on how to train the network with a stream.
 
 ### Initialization
 To train the network using a stream you must first create the stream by calling `net.createTrainStream()` which takes the following options:
