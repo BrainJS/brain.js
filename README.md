@@ -49,7 +49,7 @@ You check out this fantastic screencast, which explains how to train a simple ne
 
 # Usage
 
-## Node
+### Node
 If you have [node](http://nodejs.org/), you can install `brain.js` with [npm](http://npmjs.org):
 
 ```
@@ -69,7 +69,7 @@ bower install brain.js
 At present, the npm version of brain.js is approximately 1.0.0, featuring only Feed forward NN. All other models are beta and are being jazzed up and battle hardened.
 You can still download the latest, though. They are cool!
 
-## Browser
+### Browser
 Download the latest [brain.js for browser](https://raw.githubusercontent.com/harthur-org/brain.js/master/browser.js). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network into your website.
 
 # Training
@@ -181,8 +181,10 @@ By default `brain.js` uses one hidden layer with size proportionate to the size 
 # Streams
 The network now has a [WriteStream](http://nodejs.org/api/stream.html#stream_class_stream_writable). You can train the network by using `pipe()` to send the training data to the network.
 
+
 ### Example
 Refer to [`stream-example.js`](./examples/cli/stream-example.js) for an example on how to train the network with a stream.
+
 
 ### Initialization
 To train the network using a stream you must first create the stream by calling `net.createTrainStream()` which takes the following options:
