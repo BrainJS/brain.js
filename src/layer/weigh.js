@@ -16,21 +16,28 @@ export default class Weigh extends OperatorBase {
     this.height = 1;
     this.deltas = zeros2D(this.width, this.height);
     this.weights = randos2D(this.width, this.height);
-    this.compareKernels = [];
+    this.compareKernel0 = null;
+    this.compareKernel1 = null;
   }
 
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
       output: [this.width, this.height],
       constants: {
-        inputWidth: this.inputLayers[0].width
+        inputWidth: this.inputLayers[0].width,
       }
     });
-    this.compareKernels[0] = makeKernel(compare, {
-      size: [this.inputLayers[0].width, this.inputLayers[0].height]
+    this.compareKernel0 = makeKernel(compare, {
+      output: [this.inputLayers[0].width, this.inputLayers[0].height],
+      constants: {
+        inputWidth: this.width
+      }
     });
-    this.compareKernels[1] = makeKernel(compare, {
-      size: [this.inputLayers[1].width, this.inputLayers[1].height]
+    this.compareKernel1 = makeKernel(compare, {
+      output: [this.inputLayers[1].width, this.inputLayers[1].height],
+      constants: {
+        inputWidth: this.width
+      }
     });
   }
 
@@ -39,8 +46,11 @@ export default class Weigh extends OperatorBase {
   }
 
   compare(previousLayer, nextLayer) {
-    this.inputLayers[0].deltas = this.compareKernels[0](this.deltas, this.inputLayers[1].weights, this.inputLayers[1].deltas);
-    this.inputLayers[1].deltas = this.compareKernels[1](this.deltas, this.inputLayers[0].weights, this.inputLayers[0].deltas);
+    const newInputLayerDeltas0 = this.compareKernel0(this.deltas, this.inputLayers[1].weights, this.inputLayers[1].deltas);
+    const newInputLayerDeltas1 = this.compareKernel1(this.deltas, this.inputLayers[0].weights, this.inputLayers[0].deltas);
+
+    this.inputLayers[0].deltas = newInputLayerDeltas0;
+    this.inputLayers[1].deltas = newInputLayerDeltas1;
   }
 }
 

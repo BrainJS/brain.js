@@ -79,8 +79,8 @@ describe('FeedForward Class: End to End', () => {
         ],
         outputLayer: (input) => new SuperOutput({ width: 1, height: 1 }, input)
       });
-
       net.initialize();
+      net.layers[0].weights = [[1]];
       net.layers.forEach((layer, layerIndex) => {
         //inputs?
         if (!layer.deltas) return;
@@ -92,8 +92,8 @@ describe('FeedForward Class: End to End', () => {
       });
       net.calculateDeltas([[1]]);
       net.layers.forEach((layer, layerIndex) => {
-        //inputs?
         if (!layer.deltas) return;
+        if (layerIndex === net.layers.length - 1) return;
         layer.deltas.forEach((row, rowIndex) => {
           row.forEach((delta, deltaIndex) => {
             assert.notEqual(delta, 0, `delta is ${ delta } of layer type ${ layer.constructor.name } with layerIndex of ${ layerIndex }, rowIndex of ${ rowIndex }, and deltaIndex of ${ deltaIndex }`);

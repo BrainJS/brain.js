@@ -34,8 +34,8 @@ export default class Add extends OperatorBase {
   }
 
   compare(previousLayer, nextLayer, learningRate) {
-    this.inputLayers[0] = this.deltas;
-    this.inputLayers[1] = this.deltas;
+    this.inputLayers[0].deltas = this.deltas;
+    this.inputLayers[1].deltas = this.deltas;
   }
 }
 

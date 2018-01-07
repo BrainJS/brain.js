@@ -10,9 +10,6 @@ export default class Random extends Base {
   }
 
   setupKernels() {}
-
   predict() {}
-  compare(previousLayer, nextLayer) {
-    debugger;
-  }
+  compare(previousLayer, nextLayer) {}
 }
