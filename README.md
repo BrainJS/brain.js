@@ -35,7 +35,7 @@
 - [Neural Network Types](#neural-network-types)
     + [Why different Neural Network Types?](#why-different-neural-network-types-)
     
-#Examples
+# Examples
 Here's an example showcasing how to approximate the XOR function using `brain.js`:
 
 ```javascript
