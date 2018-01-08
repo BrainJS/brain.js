@@ -12,18 +12,18 @@
 :bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
 
 - [Examples](#examples)
-    + [More Examples](#move-examples)
+    + [More Examples](#more-examples)
 - [Usage](#usage)
     + [Node](#node)
     + [Browser](#browser)
 - [Training](#training)
     + [Data format](#data-format)
-    + [Options](#options)
+    + [Training Options](#training-options)
 - [Methods](#methods)
     + [`train`](#-train-)
 - [Failing](#failing)
 - [JSON](#json)
-- [Options](#options-1)
+- [Options](#options)
     + [activation](#activation)
     + [hiddenLayers](#hiddenlayers)
 - [Streams](#streams)
@@ -123,7 +123,7 @@ var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.81, black: 0.18 }
 ```
 
 
-### Options
+### Training Options
 `train()` takes a hash of options as its second argument:
 
 ```javascript
