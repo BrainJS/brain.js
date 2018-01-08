@@ -20,7 +20,7 @@
     + [Data format](#data-format)
     + [Training Options](#training-options)
 - [Methods](#methods)
-    + [`train`](#-train-)
+    + [train](#train)
 - [Failing](#failing)
 - [JSON](#json)
 - [Options](#options)
@@ -143,7 +143,7 @@ By default training won't let you know how its doing until the end, but set `log
 The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data.(_Overfitting_) The default learning rate is `0.3`.
 
 # Methods
-### `train`
+### train
 The output of `train()` is a hash of information about how the training went:
 
 ```javascript
