@@ -46,6 +46,7 @@ However, There's no reason to use a neural network to figure out XOR. (-: So, he
 # Examples
 You check out this fantastic screencast, which explains how to train a simple neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
 * [writing a children's book using a recurrent neural neural network](./examples/childrens-book.js)
+* [simple letter detection](./examples/which-letter-simple.js)
 
 # Usage
 
