@@ -1,9 +1,9 @@
 import makeKernel from '../utilities/make-kernel';
-import OperatorBase from './operator-base';
+import Base from './base';
 
-export default class Multiply extends OperatorBase {
-  constructor(inputLayers) {
-    super();
+export default class Multiply extends Base {
+  constructor(inputLayers, settings) {
+    super(settings);
     this.inputLayers = inputLayers;
     this.width = inputLayers[0].width;
     this.height = inputLayers[1].height;

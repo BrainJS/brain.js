@@ -8,7 +8,6 @@ import Input from './input';
 import LeakyRelu from './leaky-relu';
 import Multiply from './multiply';
 import MultiplyElement from './multiply-element';
-import OperatorBase from './operator-base';
 import Output from './output';
 import Pool from './pool';
 import Relu from './relu';
@@ -93,7 +92,6 @@ export {
   multiply,
   MultiplyElement,
   multiplyElement,
-  OperatorBase,
   Output,
   output,
   Pool,

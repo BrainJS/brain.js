@@ -1,11 +1,11 @@
 import makeKernel from '../utilities/make-kernel';
-import OperatorBase from './operator-base';
+import Base from './base';
 import zeros2D from '../utilities/zeros-2d';
 import randos2D from '../utilities/randos-2d';
 
-export default class Add extends OperatorBase {
-  constructor(inputLayers) {
-    super();
+export default class Add extends Base {
+  constructor(inputLayers, settings) {
+    super(settings);
     this.width = inputLayers[0].width;
     this.height = inputLayers[0].height;
     this.inputLayers = inputLayers;

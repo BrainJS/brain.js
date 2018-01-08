@@ -5,9 +5,7 @@ export default class Base {
       height: 1,
       depth: 1,
       weights: null,
-      errors: null,
-      deltas: null,
-      changes: null
+      deltas: null
     };
   }
 

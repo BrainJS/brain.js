@@ -1,8 +1,8 @@
 import makeKernel from '../utilities/make-kernel';
-import OperatorBase from './operator-base';
+import Base from './base';
 
-export default class MultiplyElement extends OperatorBase {
-  constructor(settings, inputLayer) {
+export default class MultiplyElement extends Base {
+  constructor(inputLayers, settings) {
     super(settings);
 
     if (inputLayer.width !== inputLayer.width) {
