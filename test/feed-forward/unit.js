@@ -1,4 +1,6 @@
 import assert from 'assert';
+import { FeedForward, layer } from '../../src';
+
 const {
   Add,
   Base,
@@ -7,7 +9,6 @@ const {
   feedForward,
   Input,
   input,
-  OperatorBase,
   Output,
   output,
   Pool,
@@ -20,7 +21,6 @@ const {
   softMax,
   Weigh
 } = layer;
-import { FeedForward, layer } from '../../src';
 
 describe('FeedForward Class: Unit', () => {
   describe('.constructor()', () => {
@@ -150,17 +150,12 @@ describe('FeedForward Class: Unit', () => {
           this.called = true;
         }
       }
-      class OperatorLayer extends OperatorBase {
-        setupKernels() {
-          this.called = true;
-        }
-      }
 
       const net = new FeedForward({
         inputLayer: () => new TestLayer(),
         hiddenLayers: [
           () => new TestLayer(),
-          () => new OperatorLayer(),
+          () => new TestLayer(),
           () => new TestLayer(),
         ],
         outputLayer: () => new TestLayer()
@@ -178,7 +173,7 @@ describe('FeedForward Class: Unit', () => {
       assert.deepEqual(net.layers.map(layer => Boolean(layer.praxis)), [
         true,
         true,
-        false,
+        true,
         true,
         true
       ]);
@@ -189,17 +184,12 @@ describe('FeedForward Class: Unit', () => {
           this.called = true;
         }
       }
-      class OperatorLayer extends OperatorBase {
-        setupKernels() {
-          this.called = true;
-        }
-      }
 
       const net = new FeedForward({
         inputLayer: () => new TestLayer(),
         hiddenLayers: [
           () => new TestLayer({ praxis: () => true }),
-          () => new OperatorLayer(),
+          () => new TestLayer(),
           () => new TestLayer(),
         ],
         outputLayer: () => new TestLayer()

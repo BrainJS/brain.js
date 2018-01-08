@@ -33,7 +33,7 @@ describe('FeedForward Class: End to End', () => {
       net.initialize();
 
       const result = net.runInput([[1]]);
-      assert.equal(result[0][0] < 1 && result[0][0] > 0, true, 'that any number comes out');
+      assert.equal(result[0][0] !== 0 && typeof result[0][0] === 'number', true, 'that any number comes out');
     });
   });
   describe('.train()', () => {
@@ -63,7 +63,7 @@ describe('FeedForward Class: End to End', () => {
     });
   });
   describe('.calculateDeltas()', () => {
-    it.only('populates deltas from output to input', () => {
+    it('populates deltas from output to input', () => {
       class SuperOutput extends Output {
         constructor(settings, inputLayer) {
           super(settings);
