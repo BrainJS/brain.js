@@ -11,6 +11,31 @@
 
 :bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
 
+- [Examples](#examples)
+    + [More Examples](#move-examples)
+- [Usage](#usage)
+    + [Node](#node)
+    + [Browser](#browser)
+- [Training](#training)
+    + [Data format](#data-format)
+    + [Options](#options)
+- [Methods](#methods)
+    + [`train`](#-train-)
+- [Failing](#failing)
+- [JSON](#json)
+- [Options](#options-1)
+    + [activation](#activation)
+    + [hiddenLayers](#hiddenlayers)
+- [Streams](#streams)
+    + [Example](#example)
+    + [Initialization](#initialization)
+    + [Transform](#transform)
+- [Utilities](#utilities)
+    + [`likely`](#-likely-)
+- [Neural Network Types](#neural-network-types)
+    + [Why different Neural Network Types?](#why-different-neural-network-types-)
+    
+#Examples
 Here's an example showcasing how to approximate the XOR function using `brain.js`:
 
 ```javascript
@@ -43,7 +68,7 @@ output = net.run([1, 1]);  // [0]
 However, There's no reason to use a neural network to figure out XOR. (-: So, here's a more involved, realistic example:
 [Demo: training a neural network to recognize color contrast](https://brain.js.org/).
 
-# Examples
+## More Examples
 You check out this fantastic screencast, which explains how to train a simple neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
 * [writing a children's book using a recurrent neural neural network](./examples/childrens-book.js)
 * [simple letter detection](./examples/which-letter-simple.js)
@@ -209,7 +234,7 @@ Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transfor
 var likely = require('brain/likely');
 var key = likely(input, net);
 ```
-See: https://github.com/harthur-org/brain.js/blob/master/test/base/likely.js
+Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 
 # Neural Network Types
 * [`brain.NeuralNetwork`](src/neural-network.js) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation
