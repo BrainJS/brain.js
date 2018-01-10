@@ -6,14 +6,13 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.0.0-rc.8
+ *   version: 1.0.0
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   maintainers: marijn <marijnh@gmail.com>
- *   contributors: List of Acorn contributors. Updated before every release., Adrian Rakovsky, Alistair Braidwood, Amila Welihinda, Andres Suarez, Angelo, Aparajita Fishman, Arian Stolwijk, Artem Govorov, Bradley Heinz, Brandon Mills, Charles Hughes, Conrad Irwin, Daniel Tschinder, David Bonnet, Domenico Matteo, ehmicky, Forbes Lindesay, Gilad Peleg, impinball, Ingvar Stepanyan, Jackson Ray Hamilton, Jesse McCarthy, Jiaxing Wang, Joel Kemp, Johannes Herr, John-David Dalton, Jordan Klassen, Jürg Lehni, Kai Cataldo, keeyipchan, Keheliya Gallaba, Kevin Irish, Kevin Kwok, krator, Marek, Marijn Haverbeke, Martin Carlberg, Mat Garcia, Mathias Bynens, Mathieu 'p01' Henri, Matthew Bastien, Max Schaefer, Max Zerzouri, Mihai Bazon, Mike Rennie, naoh, Nicholas C. Zakas, Nick Fitzgerald, Olivier Thomann, Oskar Schöldström, Paul Harper, Peter Rust, PlNG, Prayag Verma, ReadmeCritic, r-e-d, Richard Gibson, Rich Harris, Sebastian McKenzie, Shahar Soel, Simen Bekkhus, Teddy Katz, Timothy Gu, Toru Nagashima, Victor Homyakov, Wexpo Lyu, zsjforcn
- *   homepage: https://github.com/ternjs/acorn
- *   version: 5.2.1
+ *   maintainers: Marijn Haverbeke <marijnh@gmail.com>, Ingvar Stepanyan <me@rreverser.com>
+ *   homepage: https://github.com/acornjs/acorn
+ *   version: 5.3.0
  *
  * base64-js:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -41,7 +40,6 @@
  * gpu.js:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: The gpu.js Team
- *   maintainers: robertleeplummerjr <robertleeplummerjr@gmail.com>
  *   homepage: http://gpu.rocks/
  *   version: 1.0.0
  *
@@ -751,7 +749,7 @@ exports.default = NeuralNetworkGPU;
 
 function weightedSumSigmoid(weights, biases, x, inputs) {
   var sum = biases[x];
-  for (var k = 0; k < size; k++) {
+  for (var k = 0; k < this.constants.size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //sigmoid
@@ -760,7 +758,7 @@ function weightedSumSigmoid(weights, biases, x, inputs) {
 
 function weightedSumRelu(weights, biases, x, inputs) {
   var sum = biases[x];
-  for (var k = 0; k < size; k++) {
+  for (var k = 0; k < this.constants.size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //relu
@@ -769,7 +767,7 @@ function weightedSumRelu(weights, biases, x, inputs) {
 
 function weightedSumLeakyRelu(weights, biases, x, inputs) {
   var sum = biases[x];
-  for (var k = 0; k < size; k++) {
+  for (var k = 0; k < this.constants.size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //leaky relu
@@ -778,7 +776,7 @@ function weightedSumLeakyRelu(weights, biases, x, inputs) {
 
 function weightedSumTanh(weights, biases, x, inputs) {
   var sum = biases[x];
-  for (var k = 0; k < size; k++) {
+  for (var k = 0; k < this.constants.size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //tanh
@@ -811,7 +809,7 @@ function calcDeltasTanh(error, output) {
 
 function calcErrorOutput(nextWeights, nextDeltas) {
   var error = 0;
-  for (var k = 0; k < size; k++) {
+  for (var k = 0; k < this.constants.size; k++) {
     error += nextDeltas[k] * nextWeights[k][this.thread.x];
   }
   return error;
@@ -13962,7 +13960,7 @@ if (typeof window !== 'undefined') {
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(factory((global.acorn = global.acorn || {})));
+	(factory((global.acorn = {})));
 }(this, (function (exports) { 'use strict';
 
 // Reserved word lists for various dialects of the language
@@ -13983,6 +13981,8 @@ var keywords = {
   5: ecma5AndLessKeywords,
   6: ecma5AndLessKeywords + " const class extends export import super"
 };
+
+var keywordRelationalOperator = /^in(stanceof)?$/;
 
 // ## Character categories
 
@@ -14537,13 +14537,15 @@ pp.eat = function(type) {
 // Tests whether parsed token is a contextual keyword.
 
 pp.isContextual = function(name) {
-  return this.type === types.name && this.value === name
+  return this.type === types.name && this.value === name && !this.containsEsc
 };
 
 // Consumes contextual keyword if possible.
 
 pp.eatContextual = function(name) {
-  return this.value === name && this.eat(types.name)
+  if (!this.isContextual(name)) { return false }
+  this.next();
+  return true
 };
 
 // Asserts that following token is given contextual keyword.
@@ -14603,6 +14605,7 @@ function DestructuringErrors() {
   this.trailingComma =
   this.parenthesizedAssign =
   this.parenthesizedBind =
+  this.doubleProto =
     -1;
 }
 
@@ -14615,9 +14618,14 @@ pp.checkPatternErrors = function(refDestructuringErrors, isAssign) {
 };
 
 pp.checkExpressionErrors = function(refDestructuringErrors, andThrow) {
-  var pos = refDestructuringErrors ? refDestructuringErrors.shorthandAssign : -1;
-  if (!andThrow) { return pos >= 0 }
-  if (pos > -1) { this.raise(pos, "Shorthand property assignments are valid only in destructuring patterns"); }
+  if (!refDestructuringErrors) { return false }
+  var shorthandAssign = refDestructuringErrors.shorthandAssign;
+  var doubleProto = refDestructuringErrors.doubleProto;
+  if (!andThrow) { return shorthandAssign >= 0 || doubleProto >= 0 }
+  if (shorthandAssign >= 0)
+    { this.raise(shorthandAssign, "Shorthand property assignments are valid only in destructuring patterns"); }
+  if (doubleProto >= 0)
+    { this.raiseRecoverable(doubleProto, "Redefinition of __proto__ property"); }
 };
 
 pp.checkYieldAwaitInDefaultParams = function() {
@@ -14663,7 +14671,7 @@ var loopLabel = {kind: "loop"};
 var switchLabel = {kind: "switch"};
 
 pp$1.isLet = function() {
-  if (this.type !== types.name || this.options.ecmaVersion < 6 || this.value != "let") { return false }
+  if (this.options.ecmaVersion < 6 || !this.isContextual("let")) { return false }
   skipWhiteSpace.lastIndex = this.pos;
   var skip = skipWhiteSpace.exec(this.input);
   var next = this.pos + skip[0].length, nextCh = this.input.charCodeAt(next);
@@ -14672,7 +14680,7 @@ pp$1.isLet = function() {
     var pos = next + 1;
     while (isIdentifierChar(this.input.charCodeAt(pos), true)) { ++pos; }
     var ident = this.input.slice(next, pos);
-    if (!this.isKeyword(ident)) { return true }
+    if (!keywordRelationalOperator.test(ident)) { return true }
   }
   return false
 };
@@ -14681,7 +14689,7 @@ pp$1.isLet = function() {
 // - 'async /*foo*/ function' is OK.
 // - 'async /*\n*/ function' is invalid.
 pp$1.isAsyncFunction = function() {
-  if (this.type !== types.name || this.options.ecmaVersion < 8 || this.value != "async")
+  if (this.options.ecmaVersion < 8 || !this.isContextual("async"))
     { return false }
 
   skipWhiteSpace.lastIndex = this.pos;
@@ -14751,7 +14759,8 @@ pp$1.parseStatement = function(declaration, topLevel, exports) {
     // next token is a colon and the expression was a simple
     // Identifier node, we switch to interpreting it as a label.
   default:
-    if (this.isAsyncFunction() && declaration) {
+    if (this.isAsyncFunction()) {
+      if (!declaration) { this.unexpected(); }
       this.next();
       return this.parseFunctionStatement(node, true)
     }
@@ -14837,9 +14846,8 @@ pp$1.parseForStatement = function(node) {
   var refDestructuringErrors = new DestructuringErrors;
   var init = this.parseExpression(true, refDestructuringErrors);
   if (this.type === types._in || (this.options.ecmaVersion >= 6 && this.isContextual("of"))) {
-    this.toAssignable(init);
+    this.toAssignable(init, false, refDestructuringErrors);
     this.checkLVal(init);
-    this.checkPatternErrors(refDestructuringErrors, true);
     return this.parseForIn(node, init)
   } else {
     this.checkExpressionErrors(refDestructuringErrors, true);
@@ -14852,16 +14860,12 @@ pp$1.parseFunctionStatement = function(node, isAsync) {
   return this.parseFunction(node, true, false, isAsync)
 };
 
-pp$1.isFunction = function() {
-  return this.type === types._function || this.isAsyncFunction()
-};
-
 pp$1.parseIfStatement = function(node) {
   this.next();
   node.test = this.parseParenExpression();
   // allow function declarations in branches, but only in non-strict mode
-  node.consequent = this.parseStatement(!this.strict && this.isFunction());
-  node.alternate = this.eat(types._else) ? this.parseStatement(!this.strict && this.isFunction()) : null;
+  node.consequent = this.parseStatement(!this.strict && this.type == types._function);
+  node.alternate = this.eat(types._else) ? this.parseStatement(!this.strict && this.type == types._function) : null;
   return this.finishNode(node, "IfStatement")
 };
 
@@ -14999,6 +15003,7 @@ pp$1.parseLabeledStatement = function(node, maybeName, expr) {
   for (var i = this.labels.length - 1; i >= 0; i--) {
     var label$1 = this$1.labels[i];
     if (label$1.statementStart == node.start) {
+      // Update information about previous labels on this node
       label$1.statementStart = this$1.start;
       label$1.kind = kind;
     } else { break }
@@ -15067,8 +15072,14 @@ pp$1.parseFor = function(node, init) {
 pp$1.parseForIn = function(node, init) {
   var type = this.type === types._in ? "ForInStatement" : "ForOfStatement";
   this.next();
+  if (type == "ForInStatement") {
+    if (init.type === "AssignmentPattern" ||
+      (init.type === "VariableDeclaration" && init.declarations[0].init != null &&
+       (this.strict || init.declarations[0].id.type !== "Identifier")))
+      { this.raise(init.start, "Invalid assignment in for-in loop head"); }
+  }
   node.left = init;
-  node.right = this.parseExpression();
+  node.right = type == "ForInStatement" ? this.parseExpression() : this.parseMaybeAssign();
   this.expect(types.parenR);
   this.exitLexicalScope();
   node.body = this.parseStatement(false);
@@ -15167,60 +15178,68 @@ pp$1.parseClass = function(node, isStatement) {
   classBody.body = [];
   this.expect(types.braceL);
   while (!this.eat(types.braceR)) {
-    if (this$1.eat(types.semi)) { continue }
-    var method = this$1.startNode();
-    var isGenerator = this$1.eat(types.star);
-    var isAsync = false;
-    var isMaybeStatic = this$1.type === types.name && this$1.value === "static";
-    this$1.parsePropertyName(method);
-    method.static = isMaybeStatic && this$1.type !== types.parenL;
-    if (method.static) {
-      if (isGenerator) { this$1.unexpected(); }
-      isGenerator = this$1.eat(types.star);
-      this$1.parsePropertyName(method);
-    }
-    if (this$1.options.ecmaVersion >= 8 && !isGenerator && !method.computed &&
-        method.key.type === "Identifier" && method.key.name === "async" && this$1.type !== types.parenL &&
-        !this$1.canInsertSemicolon()) {
-      isAsync = true;
-      this$1.parsePropertyName(method);
-    }
-    method.kind = "method";
-    var isGetSet = false;
-    if (!method.computed) {
-      var key = method.key;
-      if (!isGenerator && !isAsync && key.type === "Identifier" && this$1.type !== types.parenL && (key.name === "get" || key.name === "set")) {
-        isGetSet = true;
-        method.kind = key.name;
-        key = this$1.parsePropertyName(method);
-      }
-      if (!method.static && (key.type === "Identifier" && key.name === "constructor" ||
-          key.type === "Literal" && key.value === "constructor")) {
-        if (hadConstructor) { this$1.raise(key.start, "Duplicate constructor in the same class"); }
-        if (isGetSet) { this$1.raise(key.start, "Constructor can't have get/set modifier"); }
-        if (isGenerator) { this$1.raise(key.start, "Constructor can't be a generator"); }
-        if (isAsync) { this$1.raise(key.start, "Constructor can't be an async method"); }
-        method.kind = "constructor";
-        hadConstructor = true;
-      }
-    }
-    this$1.parseClassMethod(classBody, method, isGenerator, isAsync);
-    if (isGetSet) {
-      var paramCount = method.kind === "get" ? 0 : 1;
-      if (method.value.params.length !== paramCount) {
-        var start = method.value.start;
-        if (method.kind === "get")
-          { this$1.raiseRecoverable(start, "getter should have no params"); }
-        else
-          { this$1.raiseRecoverable(start, "setter should have exactly one param"); }
-      } else {
-        if (method.kind === "set" && method.value.params[0].type === "RestElement")
-          { this$1.raiseRecoverable(method.value.params[0].start, "Setter cannot use rest params"); }
-      }
+    var member = this$1.parseClassMember(classBody);
+    if (member && member.type === "MethodDefinition" && member.kind === "constructor") {
+      if (hadConstructor) { this$1.raise(member.start, "Duplicate constructor in the same class"); }
+      hadConstructor = true;
     }
   }
   node.body = this.finishNode(classBody, "ClassBody");
   return this.finishNode(node, isStatement ? "ClassDeclaration" : "ClassExpression")
+};
+
+pp$1.parseClassMember = function(classBody) {
+  var this$1 = this;
+
+  if (this.eat(types.semi)) { return null }
+
+  var method = this.startNode();
+  var tryContextual = function (k, noLineBreak) {
+    if ( noLineBreak === void 0 ) noLineBreak = false;
+
+    var start = this$1.start, startLoc = this$1.startLoc;
+    if (!this$1.eatContextual(k)) { return false }
+    if (this$1.type !== types.parenL && (!noLineBreak || !this$1.canInsertSemicolon())) { return true }
+    if (method.key) { this$1.unexpected(); }
+    method.computed = false;
+    method.key = this$1.startNodeAt(start, startLoc);
+    method.key.name = k;
+    this$1.finishNode(method.key, "Identifier");
+    return false
+  };
+
+  method.kind = "method";
+  method.static = tryContextual("static");
+  var isGenerator = this.eat(types.star);
+  var isAsync = false;
+  if (!isGenerator) {
+    if (this.options.ecmaVersion >= 8 && tryContextual("async", true)) {
+      isAsync = true;
+    } else if (tryContextual("get")) {
+      method.kind = "get";
+    } else if (tryContextual("set")) {
+      method.kind = "set";
+    }
+  }
+  if (!method.key) { this.parsePropertyName(method); }
+  var key = method.key;
+  if (!method.computed && !method.static && (key.type === "Identifier" && key.name === "constructor" ||
+      key.type === "Literal" && key.value === "constructor")) {
+    if (method.kind !== "method") { this.raise(key.start, "Constructor can't have get/set modifier"); }
+    if (isGenerator) { this.raise(key.start, "Constructor can't be a generator"); }
+    if (isAsync) { this.raise(key.start, "Constructor can't be an async method"); }
+    method.kind = "constructor";
+  } else if (method.static && key.type === "Identifier" && key.name === "prototype") {
+    this.raise(key.start, "Classes may not have a static property named prototype");
+  }
+  this.parseClassMethod(classBody, method, isGenerator, isAsync);
+  if (method.kind === "get" && method.value.params.length !== 0)
+    { this.raiseRecoverable(method.value.start, "getter should have no params"); }
+  if (method.kind === "set" && method.value.params.length !== 1)
+    { this.raiseRecoverable(method.value.start, "setter should have exactly one param"); }
+  if (method.kind === "set" && method.value.params[0].type === "RestElement")
+    { this.raiseRecoverable(method.value.params[0].start, "Setter cannot use rest params"); }
+  return method
 };
 
 pp$1.parseClassMethod = function(classBody, method, isGenerator, isAsync) {
@@ -15245,7 +15264,8 @@ pp$1.parseExport = function(node, exports) {
   // export * from '...'
   if (this.eat(types.star)) {
     this.expectContextual("from");
-    node.source = this.type === types.string ? this.parseExprAtom() : this.unexpected();
+    if (this.type !== types.string) { this.unexpected(); }
+    node.source = this.parseExprAtom();
     this.semicolon();
     return this.finishNode(node, "ExportAllDeclaration")
   }
@@ -15279,7 +15299,8 @@ pp$1.parseExport = function(node, exports) {
     node.declaration = null;
     node.specifiers = this.parseExportSpecifiers(exports);
     if (this.eatContextual("from")) {
-      node.source = this.type === types.string ? this.parseExprAtom() : this.unexpected();
+      if (this.type !== types.string) { this.unexpected(); }
+      node.source = this.parseExprAtom();
     } else {
       // check for keywords used as local names
       for (var i = 0, list = node.specifiers; i < list.length; i += 1) {
@@ -15453,7 +15474,7 @@ var pp$2 = Parser.prototype;
 // Convert existing expression atom to assignable pattern
 // if possible.
 
-pp$2.toAssignable = function(node, isBinding) {
+pp$2.toAssignable = function(node, isBinding, refDestructuringErrors) {
   var this$1 = this;
 
   if (this.options.ecmaVersion >= 6 && node) {
@@ -15465,33 +15486,45 @@ pp$2.toAssignable = function(node, isBinding) {
 
     case "ObjectPattern":
     case "ArrayPattern":
+    case "RestElement":
       break
 
     case "ObjectExpression":
       node.type = "ObjectPattern";
-      for (var i = 0, list = node.properties; i < list.length; i += 1) {
-        var prop = list[i];
+      if (refDestructuringErrors) { this.checkPatternErrors(refDestructuringErrors, true); }
+      for (var i = 0, list = node.properties; i < list.length; i += 1)
+        {
+      var prop = list[i];
 
-      if (prop.kind !== "init") { this$1.raise(prop.key.start, "Object pattern can't contain getter or setter"); }
-        this$1.toAssignable(prop.value, isBinding);
-      }
+      this$1.toAssignable(prop, isBinding);
+    }
+      break
+
+    case "Property":
+      // AssignmentProperty has type == "Property"
+      if (node.kind !== "init") { this.raise(node.key.start, "Object pattern can't contain getter or setter"); }
+      this.toAssignable(node.value, isBinding);
       break
 
     case "ArrayExpression":
       node.type = "ArrayPattern";
+      if (refDestructuringErrors) { this.checkPatternErrors(refDestructuringErrors, true); }
       this.toAssignableList(node.elements, isBinding);
       break
 
+    case "SpreadElement":
+      node.type = "RestElement";
+      this.toAssignable(node.argument, isBinding);
+      if (node.argument.type === "AssignmentPattern")
+        { this.raise(node.argument.start, "Rest elements cannot have a default value"); }
+      break
+
     case "AssignmentExpression":
-      if (node.operator === "=") {
-        node.type = "AssignmentPattern";
-        delete node.operator;
-        this.toAssignable(node.left, isBinding);
-        // falls through to AssignmentPattern
-      } else {
-        this.raise(node.left.end, "Only '=' operator can be used for specifying default value.");
-        break
-      }
+      if (node.operator !== "=") { this.raise(node.left.end, "Only '=' operator can be used for specifying default value."); }
+      node.type = "AssignmentPattern";
+      delete node.operator;
+      this.toAssignable(node.left, isBinding);
+      // falls through to AssignmentPattern
 
     case "AssignmentPattern":
       break
@@ -15506,7 +15539,7 @@ pp$2.toAssignable = function(node, isBinding) {
     default:
       this.raise(node.start, "Assigning to rvalue");
     }
-  }
+  } else if (refDestructuringErrors) { this.checkPatternErrors(refDestructuringErrors, true); }
   return node
 };
 
@@ -15516,23 +15549,14 @@ pp$2.toAssignableList = function(exprList, isBinding) {
   var this$1 = this;
 
   var end = exprList.length;
-  if (end) {
-    var last = exprList[end - 1];
-    if (last && last.type == "RestElement") {
-      --end;
-    } else if (last && last.type == "SpreadElement") {
-      last.type = "RestElement";
-      var arg = last.argument;
-      this.toAssignable(arg, isBinding);
-      --end;
-    }
-
-    if (this.options.ecmaVersion === 6 && isBinding && last && last.type === "RestElement" && last.argument.type !== "Identifier")
-      { this.unexpected(last.argument.start); }
-  }
   for (var i = 0; i < end; i++) {
     var elt = exprList[i];
     if (elt) { this$1.toAssignable(elt, isBinding); }
+  }
+  if (end) {
+    var last = exprList[end - 1];
+    if (this.options.ecmaVersion === 6 && isBinding && last && last.type === "RestElement" && last.argument.type !== "Identifier")
+      { this.unexpected(last.argument.start); }
   }
   return exprList
 };
@@ -15654,7 +15678,7 @@ pp$2.checkLVal = function(expr, bindingType, checkClashes) {
     break
 
   case "MemberExpression":
-    if (bindingType) { this.raiseRecoverable(expr.start, (bindingType ? "Binding" : "Assigning to") + " member expression"); }
+    if (bindingType) { this.raiseRecoverable(expr.start, "Binding member expression"); }
     break
 
   case "ObjectPattern":
@@ -15662,8 +15686,13 @@ pp$2.checkLVal = function(expr, bindingType, checkClashes) {
       {
     var prop = list[i];
 
-    this$1.checkLVal(prop.value, bindingType, checkClashes);
+    this$1.checkLVal(prop, bindingType, checkClashes);
   }
+    break
+
+  case "Property":
+    // AssignmentProperty has type == "Property"
+    this.checkLVal(expr.value, bindingType, checkClashes);
     break
 
   case "ArrayPattern":
@@ -15716,7 +15745,7 @@ var pp$3 = Parser.prototype;
 // either with each other or with an init property — and in
 // strict mode, init properties are also not allowed to be repeated.
 
-pp$3.checkPropClash = function(prop, propHash) {
+pp$3.checkPropClash = function(prop, propHash, refDestructuringErrors) {
   if (this.options.ecmaVersion >= 6 && (prop.computed || prop.method || prop.shorthand))
     { return }
   var key = prop.key;
@@ -15729,7 +15758,11 @@ pp$3.checkPropClash = function(prop, propHash) {
   var kind = prop.kind;
   if (this.options.ecmaVersion >= 6) {
     if (name === "__proto__" && kind === "init") {
-      if (propHash.proto) { this.raiseRecoverable(key.start, "Redefinition of __proto__ property"); }
+      if (propHash.proto) {
+        if (refDestructuringErrors && refDestructuringErrors.doubleProto < 0) { refDestructuringErrors.doubleProto = key.start; }
+        // Backwards-compat kludge. Can be removed in version 6.0
+        else { this.raiseRecoverable(key.start, "Redefinition of __proto__ property"); }
+      }
       propHash.proto = true;
     }
     return
@@ -15806,11 +15839,10 @@ pp$3.parseMaybeAssign = function(noIn, refDestructuringErrors, afterLeftParse) {
   var left = this.parseMaybeConditional(noIn, refDestructuringErrors);
   if (afterLeftParse) { left = afterLeftParse.call(this, left, startPos, startLoc); }
   if (this.type.isAssign) {
-    this.checkPatternErrors(refDestructuringErrors, true);
-    if (!ownDestructuringErrors) { DestructuringErrors.call(refDestructuringErrors); }
     var node = this.startNodeAt(startPos, startLoc);
     node.operator = this.value;
-    node.left = this.type === types.eq ? this.toAssignable(left) : left;
+    node.left = this.type === types.eq ? this.toAssignable(left, false, refDestructuringErrors) : left;
+    if (!ownDestructuringErrors) { DestructuringErrors.call(refDestructuringErrors); }
     refDestructuringErrors.shorthandAssign = -1; // reset because shorthand default was used correctly
     this.checkLVal(left);
     this.next();
@@ -15941,7 +15973,7 @@ pp$3.parseSubscripts = function(base, startPos, startLoc, noCalls) {
   var this$1 = this;
 
   var maybeAsyncArrow = this.options.ecmaVersion >= 8 && base.type === "Identifier" && base.name === "async" &&
-      this.lastTokEnd == base.end && !this.canInsertSemicolon();
+      this.lastTokEnd == base.end && !this.canInsertSemicolon() && this.input.slice(base.start, base.end) === "async";
   for (var computed = (void 0);;) {
     if ((computed = this$1.eat(types.bracketL)) || this$1.eat(types.dot)) {
       var node = this$1.startNodeAt(startPos, startLoc);
@@ -16009,14 +16041,14 @@ pp$3.parseExprAtom = function(refDestructuringErrors) {
     return this.finishNode(node, "ThisExpression")
 
   case types.name:
-    var startPos = this.start, startLoc = this.startLoc;
+    var startPos = this.start, startLoc = this.startLoc, containsEsc = this.containsEsc;
     var id = this.parseIdent(this.type !== types.name);
-    if (this.options.ecmaVersion >= 8 && id.name === "async" && !this.canInsertSemicolon() && this.eat(types._function))
+    if (this.options.ecmaVersion >= 8 && !containsEsc && id.name === "async" && !this.canInsertSemicolon() && this.eat(types._function))
       { return this.parseFunction(this.startNodeAt(startPos, startLoc), false, false, true) }
     if (canBeArrow && !this.canInsertSemicolon()) {
       if (this.eat(types.arrow))
         { return this.parseArrowExpression(this.startNodeAt(startPos, startLoc), [id], false) }
-      if (this.options.ecmaVersion >= 8 && id.name === "async" && this.type === types.name) {
+      if (this.options.ecmaVersion >= 8 && id.name === "async" && this.type === types.name && !containsEsc) {
         id = this.parseIdent();
         if (this.canInsertSemicolon() || !this.eat(types.arrow))
           { this.unexpected(); }
@@ -16103,7 +16135,7 @@ pp$3.parseParenAndDistinguishExpression = function(canBeArrow) {
 
     var innerStartPos = this.start, innerStartLoc = this.startLoc;
     var exprList = [], first = true, lastIsComma = false;
-    var refDestructuringErrors = new DestructuringErrors, oldYieldPos = this.yieldPos, oldAwaitPos = this.awaitPos, spreadStart, innerParenStart;
+    var refDestructuringErrors = new DestructuringErrors, oldYieldPos = this.yieldPos, oldAwaitPos = this.awaitPos, spreadStart;
     this.yieldPos = 0;
     this.awaitPos = 0;
     while (this.type !== types.parenR) {
@@ -16117,9 +16149,6 @@ pp$3.parseParenAndDistinguishExpression = function(canBeArrow) {
         if (this$1.type === types.comma) { this$1.raise(this$1.start, "Comma is not permitted after the rest element"); }
         break
       } else {
-        if (this$1.type === types.parenL && !innerParenStart) {
-          innerParenStart = this$1.start;
-        }
         exprList.push(this$1.parseMaybeAssign(false, refDestructuringErrors, this$1.parseParenItem));
       }
     }
@@ -16129,7 +16158,6 @@ pp$3.parseParenAndDistinguishExpression = function(canBeArrow) {
     if (canBeArrow && !this.canInsertSemicolon() && this.eat(types.arrow)) {
       this.checkPatternErrors(refDestructuringErrors, false);
       this.checkYieldAwaitInDefaultParams();
-      if (innerParenStart) { this.unexpected(innerParenStart); }
       this.yieldPos = oldYieldPos;
       this.awaitPos = oldAwaitPos;
       return this.parseParenArrowList(startPos, startLoc, exprList)
@@ -16182,8 +16210,9 @@ pp$3.parseNew = function() {
   var meta = this.parseIdent(true);
   if (this.options.ecmaVersion >= 6 && this.eat(types.dot)) {
     node.meta = meta;
+    var containsEsc = this.containsEsc;
     node.property = this.parseIdent(true);
-    if (node.property.name !== "target")
+    if (node.property.name !== "target" || containsEsc)
       { this.raiseRecoverable(node.property.start, "The only valid meta property for new is new.target"); }
     if (!this.inFunction)
       { this.raiseRecoverable(node.start, "new.target can only be used in functions"); }
@@ -16262,7 +16291,7 @@ pp$3.parseObj = function(isPattern, refDestructuringErrors) {
     } else { first = false; }
 
     var prop = this$1.parseProperty(isPattern, refDestructuringErrors);
-    this$1.checkPropClash(prop, propHash);
+    if (!isPattern) { this$1.checkPropClash(prop, propHash, refDestructuringErrors); }
     node.properties.push(prop);
   }
   return this.finishNode(node, isPattern ? "ObjectPattern" : "ObjectExpression")
@@ -16280,18 +16309,19 @@ pp$3.parseProperty = function(isPattern, refDestructuringErrors) {
     if (!isPattern)
       { isGenerator = this.eat(types.star); }
   }
+  var containsEsc = this.containsEsc;
   this.parsePropertyName(prop);
-  if (!isPattern && this.options.ecmaVersion >= 8 && !isGenerator && this.isAsyncProp(prop)) {
+  if (!isPattern && !containsEsc && this.options.ecmaVersion >= 8 && !isGenerator && this.isAsyncProp(prop)) {
     isAsync = true;
     this.parsePropertyName(prop, refDestructuringErrors);
   } else {
     isAsync = false;
   }
-  this.parsePropertyValue(prop, isPattern, isGenerator, isAsync, startPos, startLoc, refDestructuringErrors);
+  this.parsePropertyValue(prop, isPattern, isGenerator, isAsync, startPos, startLoc, refDestructuringErrors, containsEsc);
   return this.finishNode(prop, "Property")
 };
 
-pp$3.parsePropertyValue = function(prop, isPattern, isGenerator, isAsync, startPos, startLoc, refDestructuringErrors) {
+pp$3.parsePropertyValue = function(prop, isPattern, isGenerator, isAsync, startPos, startLoc, refDestructuringErrors, containsEsc) {
   if ((isGenerator || isAsync) && this.type === types.colon)
     { this.unexpected(); }
 
@@ -16303,7 +16333,7 @@ pp$3.parsePropertyValue = function(prop, isPattern, isGenerator, isAsync, startP
     prop.kind = "init";
     prop.method = true;
     prop.value = this.parseMethod(isGenerator, isAsync);
-  } else if (!isPattern &&
+  } else if (!isPattern && !containsEsc &&
              this.options.ecmaVersion >= 5 && !prop.computed && prop.key.type === "Identifier" &&
              (prop.key.name === "get" || prop.key.name === "set") &&
              (this.type != types.comma && this.type != types.braceR)) {
@@ -16537,8 +16567,11 @@ pp$3.checkUnreserved = function(ref) {
   if (this.options.ecmaVersion < 6 &&
     this.input.slice(start, end).indexOf("\\") != -1) { return }
   var re = this.strict ? this.reservedWordsStrict : this.reservedWords;
-  if (re.test(name))
-    { this.raiseRecoverable(start, ("The keyword '" + name + "' is reserved")); }
+  if (re.test(name)) {
+    if (!this.inAsync && name === "await")
+      { this.raiseRecoverable(start, "Can not use keyword 'await' outside an async function"); }
+    this.raiseRecoverable(start, ("The keyword '" + name + "' is reserved"));
+  }
 };
 
 // Parse the next token as an identifier. If `liberal` is true (used
@@ -16553,7 +16586,7 @@ pp$3.parseIdent = function(liberal, isBinding) {
   } else if (this.type.keyword) {
     node.name = this.type.keyword;
 
-    // To fix https://github.com/ternjs/acorn/issues/575
+    // To fix https://github.com/acornjs/acorn/issues/575
     // `class` and `function` keywords push new context into this.context.
     // But there is no chance to pop the context if the keyword is consumed as an identifier such as a property name.
     // If the previous token is a dot, this does not apply because the context-managing code already ignored the keyword
@@ -17181,12 +17214,12 @@ pp$8.readToken_eq_excl = function(code) { // '=!'
 
 pp$8.getTokenFromCode = function(code) {
   switch (code) {
-    // The interpretation of a dot depends on whether it is followed
-    // by a digit or another two dots.
+  // The interpretation of a dot depends on whether it is followed
+  // by a digit or another two dots.
   case 46: // '.'
     return this.readToken_dot()
 
-    // Punctuation tokens.
+  // Punctuation tokens.
   case 40: ++this.pos; return this.finishToken(types.parenL)
   case 41: ++this.pos; return this.finishToken(types.parenR)
   case 59: ++this.pos; return this.finishToken(types.semi)
@@ -17210,19 +17243,20 @@ pp$8.getTokenFromCode = function(code) {
       if (next === 111 || next === 79) { return this.readRadixNumber(8) } // '0o', '0O' - octal number
       if (next === 98 || next === 66) { return this.readRadixNumber(2) } // '0b', '0B' - binary number
     }
-    // Anything else beginning with a digit is an integer, octal
-    // number, or float.
+
+  // Anything else beginning with a digit is an integer, octal
+  // number, or float.
   case 49: case 50: case 51: case 52: case 53: case 54: case 55: case 56: case 57: // 1-9
     return this.readNumber(false)
 
-    // Quotes produce strings.
+  // Quotes produce strings.
   case 34: case 39: // '"', "'"
     return this.readString(code)
 
-    // Operators are parsed inline in tiny state machines. '=' (61) is
-    // often referred to. `finishOp` simply skips the amount of
-    // characters it is given as second argument, and returns a token
-    // of the type given by its first argument.
+  // Operators are parsed inline in tiny state machines. '=' (61) is
+  // often referred to. `finishOp` simply skips the amount of
+  // characters it is given as second argument, and returns a token
+  // of the type given by its first argument.
 
   case 47: // '/'
     return this.readToken_slash()
@@ -17299,6 +17333,7 @@ pp$8.readRegexp = function() {
   if (mods) {
     var validFlags = /^[gim]*$/;
     if (this.options.ecmaVersion >= 6) { validFlags = /^[gimuy]*$/; }
+    if (this.options.ecmaVersion >= 9) { validFlags = /^[gimsuy]*$/; }
     if (!validFlags.test(mods)) { this.raise(start, "Invalid regular expression flag"); }
     if (mods.indexOf("u") >= 0) {
       if (regexpUnicodeSupport) {
@@ -17369,30 +17404,26 @@ pp$8.readRadixNumber = function(radix) {
 // Read an integer, octal integer, or floating-point number.
 
 pp$8.readNumber = function(startsWithDot) {
-  var start = this.pos, isFloat = false, octal = this.input.charCodeAt(this.pos) === 48;
+  var start = this.pos;
   if (!startsWithDot && this.readInt(10) === null) { this.raise(start, "Invalid number"); }
-  if (octal && this.pos == start + 1) { octal = false; }
+  var octal = this.pos - start >= 2 && this.input.charCodeAt(start) === 48;
+  if (octal && this.strict) { this.raise(start, "Invalid number"); }
+  if (octal && /[89]/.test(this.input.slice(start, this.pos))) { octal = false; }
   var next = this.input.charCodeAt(this.pos);
   if (next === 46 && !octal) { // '.'
     ++this.pos;
     this.readInt(10);
-    isFloat = true;
     next = this.input.charCodeAt(this.pos);
   }
   if ((next === 69 || next === 101) && !octal) { // 'eE'
     next = this.input.charCodeAt(++this.pos);
     if (next === 43 || next === 45) { ++this.pos; } // '+-'
     if (this.readInt(10) === null) { this.raise(start, "Invalid number"); }
-    isFloat = true;
   }
   if (isIdentifierStart(this.fullCharCodeAtPos())) { this.raise(this.pos, "Identifier directly after number"); }
 
-  var str = this.input.slice(start, this.pos), val;
-  if (isFloat) { val = parseFloat(str); }
-  else if (!octal || str.length === 1) { val = parseInt(str, 10); }
-  else if (this.strict) { this.raise(start, "Invalid number"); }
-  else if (/[89]/.test(str)) { val = parseInt(str, 10); }
-  else { val = parseInt(str, 8); }
+  var str = this.input.slice(start, this.pos);
+  var val = octal ? parseInt(str, 8) : parseFloat(str);
   return this.finishToken(types.num, val)
 };
 
@@ -17643,11 +17674,11 @@ pp$8.readWord = function() {
 // Git repositories for Acorn are available at
 //
 //     http://marijnhaverbeke.nl/git/acorn
-//     https://github.com/ternjs/acorn.git
+//     https://github.com/acornjs/acorn.git
 //
 // Please use the [github bug tracker][ghbt] to report issues.
 //
-// [ghbt]: https://github.com/ternjs/acorn/issues
+// [ghbt]: https://github.com/acornjs/acorn/issues
 //
 // This file defines the main parser interface. The library also comes
 // with a [error-tolerant parser][dammit] and an
@@ -17656,7 +17687,7 @@ pp$8.readWord = function() {
 // [dammit]: acorn_loose.js
 // [walk]: util/walk.js
 
-var version = "5.2.1";
+var version = "5.3.0";
 
 // The main exported interface (under `self.acorn` when in the
 // browser) is a `parse` function that takes a code string and
