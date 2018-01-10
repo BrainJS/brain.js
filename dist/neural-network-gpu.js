@@ -351,7 +351,7 @@ exports.default = NeuralNetworkGPU;
 
 function weightedSumSigmoid(weights, biases, x, inputs) {
   var sum = biases[x];
-  for (var k = 0; k < size; k++) {
+  for (var k = 0; k < this.constants.size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //sigmoid
@@ -360,7 +360,7 @@ function weightedSumSigmoid(weights, biases, x, inputs) {
 
 function weightedSumRelu(weights, biases, x, inputs) {
   var sum = biases[x];
-  for (var k = 0; k < size; k++) {
+  for (var k = 0; k < this.constants.size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //relu
@@ -369,7 +369,7 @@ function weightedSumRelu(weights, biases, x, inputs) {
 
 function weightedSumLeakyRelu(weights, biases, x, inputs) {
   var sum = biases[x];
-  for (var k = 0; k < size; k++) {
+  for (var k = 0; k < this.constants.size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //leaky relu
@@ -378,7 +378,7 @@ function weightedSumLeakyRelu(weights, biases, x, inputs) {
 
 function weightedSumTanh(weights, biases, x, inputs) {
   var sum = biases[x];
-  for (var k = 0; k < size; k++) {
+  for (var k = 0; k < this.constants.size; k++) {
     sum += weights[x][k] * inputs[k];
   }
   //tanh
@@ -411,7 +411,7 @@ function calcDeltasTanh(error, output) {
 
 function calcErrorOutput(nextWeights, nextDeltas) {
   var error = 0;
-  for (var k = 0; k < size; k++) {
+  for (var k = 0; k < this.constants.size; k++) {
     error += nextDeltas[k] * nextWeights[k][this.thread.x];
   }
   return error;
