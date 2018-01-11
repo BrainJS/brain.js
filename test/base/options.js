@@ -38,12 +38,19 @@ describe('neural network options', () => {
                 {input: [1, 1], output: [1]}];
 
     let net1 = new brain.NeuralNetwork();
-    let iters1 = net1.train(data, { learningRate: 0.5 }).iterations;
-
     let net2 = new brain.NeuralNetwork();
-    let iters2 = net2.train(data, { learningRate: 0.8 }).iterations;
 
-    assert.ok(iters1 > (iters2 * 1.1), iters1 + ' !> ' + iters2 * 1.1);
+    net1.train(data, {
+      learningRate: 0.5,
+      doneCallback: (res) => {
+        net2.train(data, {
+          learningRate: 0.8,
+          doneCallback: (res2) => {
+            assert.ok(res.iterations > (res2.iterations * 1.1), res.iterations + ' !> ' + res2.iterations * 1.1);
+          }
+        });
+      }
+    });
   });
 
   it('learningRate - backwards compatibility', () => {
@@ -53,12 +60,17 @@ describe('neural network options', () => {
                 {input: [1, 1], output: [1]}];
 
     let net1 = new brain.NeuralNetwork({ learningRate: 0.5 });
-    let iters1 = net1.train(data).iterations;
-
     let net2 = new brain.NeuralNetwork( { learningRate: 0.8 });
-    let iters2 = net2.train(data).iterations;
 
-    assert.ok(iters1 > (iters2 * 1.1), iters1 + ' !> ' + iters2 * 1.1);
+    net1.train(data, {
+      doneCallback: (res) => {
+        net2.train(data, {
+          doneCallback: (res2) => {
+            assert.ok(res.iterations > (res2.iterations * 1.1), res.iterations + ' !> ' + res2.iterations * 1.1);
+          }
+        });
+      }
+    });
   });
 
   it('momentum - higher momentum should train faster', () => {
@@ -68,12 +80,18 @@ describe('neural network options', () => {
                 {input: [1, 1], output: [1]}];
 
     let net1 = new brain.NeuralNetwork({ momentum: 0.1 });
-    let iters1 = net1.train(data).iterations;
-
     let net2 = new brain.NeuralNetwork({ momentum: 0.5 });
-    let iters2 = net2.train(data).iterations;
 
-    assert.ok(iters1 > (iters2 * 1.1), iters1 + ' !> ' + (iters2 * 1.1));
+    net1.train(data, {
+      doneCallback: (res) => {
+        net2.train(data, {
+          doneCallback: (res2) => {
+            assert.ok(res.iterations > (res2.iterations * 1.1), res.iterations + ' !> ' + (res2.iterations * 1.1));
+          }
+        });
+      }
+    });
+
   });
 
   describe('log', () => {
@@ -89,10 +107,10 @@ describe('neural network options', () => {
 
     function trainWithLog(log) {
       let net = new brain.NeuralNetwork();
-      net.train([{input: [0], output: [0]}],
-        {
+      net.train([{input: [0], output: [0]}], {
           log: log,
-          logPeriod: 1
+          logPeriod: 1,
+          doneCallback: () => { assert.equal(logCalled, true); }
         });
     }
 
@@ -103,13 +121,10 @@ describe('neural network options', () => {
       trainWithLog(true);
 
       console.log = originalLog;
-      assert.equal(logCalled, true);
     });
 
     it('should call the given log function', () => {
       trainWithLog(logFunction);
-
-      assert.equal(logCalled, true);
     })
   })
 });

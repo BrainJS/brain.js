@@ -6,9 +6,9 @@ import randos from './utilities/randos';
 import range from './utilities/range';
 import toArray from './utilities/to-array';
 import zeros from './utilities/zeros';
+import Thaw from 'thaw.js';
 
 /**
- *
  * @param {object} options
  * @constructor
  */
@@ -22,7 +22,8 @@ export default class NeuralNetwork {
       learningRate: 0.3,
       callback: null,
       callbackPeriod: 10,
-      reinforce: false
+      doneCallback: null,
+      trainTimeMs: -1
     };
   }
 
@@ -239,7 +240,8 @@ export default class NeuralNetwork {
     let learningRate = _options.learningRate || this.learningRate || options.learningRate;
     let callback = options.callback;
     let callbackPeriod = options.callbackPeriod;
-    if (!options.reinforce) {
+    let doneCallback = options.doneCallback;
+    if (this.sizes === null) {
       let sizes = [];
       let inputSize = data[0].input.length;
       let outputSize = data[0].output.length;
@@ -258,30 +260,44 @@ export default class NeuralNetwork {
       this.initialize(sizes);
     }
 
+    let endTime = options.trainTimeMs > 0 ? Date.now() + options.trainTimeMs : Infinity;
     let error = 1;
     let i;
-    for (i = 0; i < iterations && error > errorThresh; i++) {
-      let sum = 0;
-      for (let j = 0; j < data.length; j++) {
-        let err = this.trainPattern(data[j].input, data[j].output, learningRate);
-        sum += err;
-      }
-      error = sum / data.length;
 
-      if (log && (i % logPeriod === 0)) {
-        log('iterations:', i, 'training error:', error);
-      }
-      if (callback && (i % callbackPeriod === 0)) {
-        callback({ error: error, iterations: i });
-      }
-    }
+    const items = new Array(iterations);
+    const thaw  = new Thaw (items, {
+      delay: true,
+      each: () => {
+        i++;
+        let sum = 0;
+        data.forEach (d => {
+          sum += this.trainPattern(d.input, d.output, learningRate);
+        });
 
-    return {
-      error: error,
-      iterations: i
-    };
+        error = sum / data.length;
+
+        if (log && (i % logPeriod === 0)) {
+          log('iterations:', i, 'training error:', error);
+        }
+
+        if (callback && (i % callbackPeriod === 0)) {
+          callback({ error: error, iterations: i });
+        }
+
+        if (error < errorThresh || Date.now () > endTime) {
+          thaw.stop();
+        }
+      },
+      done: () => {
+        if (doneCallback) doneCallback({
+          error: error,
+          iterations: i
+        });
+      }
+    });
+
+    thaw.tick();
   }
-
   /**
    *
    * @param input

@@ -7,3 +7,5 @@ npm-debug.log
 
 # Yarn
 yarn.lock
+
+/dist**
