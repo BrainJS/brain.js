@@ -104,7 +104,7 @@ var NeuralNetwork = function () {
 
   /**
    *
-   * @param {} sizes
+   * @param {Number[]} sizes
    */
 
 
@@ -716,7 +716,13 @@ var NeuralNetwork = function () {
           }
         }
       }
-      return { layers: layers, outputLookup: !!this.outputLookup, inputLookup: !!this.inputLookup, activation: this.activation };
+      return {
+        sizes: this.sizes,
+        layers: layers,
+        outputLookup: !!this.outputLookup,
+        inputLookup: !!this.inputLookup,
+        activation: this.activation
+      };
     }
 
     /**
@@ -728,13 +734,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'fromJSON',
     value: function fromJSON(json) {
-      var size = json.layers.length;
-      this.outputLayer = size - 1;
-
-      this.sizes = new Array(size);
-      this.weights = new Array(size);
-      this.biases = new Array(size);
-      this.outputs = new Array(size);
+      this.initialize(json.sizes);
 
       for (var i = 0; i <= this.outputLayer; i++) {
         var layer = json.layers[i];
@@ -743,17 +743,14 @@ var NeuralNetwork = function () {
         } else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
           this.outputLookup = _lookup2.default.lookupFromHash(layer);
         }
-
-        var nodes = Object.keys(layer);
-        this.sizes[i] = nodes.length;
-        this.weights[i] = [];
-        this.biases[i] = [];
-        this.outputs[i] = [];
-
-        for (var j in nodes) {
-          var node = nodes[j];
-          this.biases[i][j] = layer[node].bias;
-          this.weights[i][j] = (0, _toArray2.default)(layer[node].weights);
+        if (layer > 0) {
+          var nodes = Object.keys(layer);
+          this.sizes[i] = nodes.length;
+          for (var j in nodes) {
+            var node = nodes[j];
+            this.biases[i] = layer[node].bias;
+            this.weights[i][j] = (0, _toArray2.default)(layer[node].weights);
+          }
         }
       }
 
