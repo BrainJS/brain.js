@@ -1,5 +1,5 @@
 import makeKernel from '../utilities/make-kernel';
-import zeros2D from "../utilities/zeros-2d";
+import zeros2D from '../utilities/zeros-2d';
 
 export default class MomentumRootMeanSquaredPropagation {
   static get defaults() {
@@ -7,7 +7,8 @@ export default class MomentumRootMeanSquaredPropagation {
       decayRate: 0.999,
       regularizationStrength: 0.00001,
       learningRate: 0.01,
-      smoothEps: 1e-8
+      smoothEps: 1e-8,
+      clipValue: 5
     };
   }
 
@@ -21,7 +22,15 @@ export default class MomentumRootMeanSquaredPropagation {
   }
 
   run(weights, deltas, learningRate) {
-    const output = this.momentumsKernel(weights, deltas, this.learningRate, this.momentums, this.decayRate, this.regularizationStrength);
+    const output = this.momentumsKernel(
+      weights,
+      deltas,
+      this.learningRate,
+      this.momentums,
+      this.decayRate,
+      this.regularizationStrength,
+      this.clipValue
+    );
     this.momentums = output.momentums;
     return output.result;
   }
@@ -32,6 +41,9 @@ export default class MomentumRootMeanSquaredPropagation {
       constants: {
         smoothEps: this.smoothEps
       },
+      functions: [
+        clipByValue
+      ],
       map: {
         momentums: getMomentum
       }
@@ -49,8 +61,9 @@ const MRmsProp = MomentumRootMeanSquaredPropagation;
  * @description Momentum Root Mean Square Propagation Function
  * @returns {number}
  */
-function momentumRootMeanSquaredPropagation(weights, deltas, learningRate, previousMomentums, decayRate, regularizationStrength) {
-  const delta = deltas[this.thread.y][this.thread.x];
+function momentumRootMeanSquaredPropagation(
+  weights, deltas, learningRate, previousMomentums, decayRate, regularizationStrength, clipValue) {
+  const delta = clipByValue(deltas[this.thread.y][this.thread.x], clipValue, -clipValue);
   const weight = weights[this.thread.y][this.thread.x];
   const previousMomentum = previousMomentums[this.thread.y][this.thread.x];
   const momentum = getMomentum(delta, decayRate, previousMomentum);
@@ -59,6 +72,26 @@ function momentumRootMeanSquaredPropagation(weights, deltas, learningRate, previ
 
 function getMomentum(delta, decay, previousMomentum) {
   return previousMomentum * decay + (1 - decay) * delta * delta;
+}
+
+export function clipByValue(value, max, min) {
+  if (value > max) {
+    return max;
+  }
+  if (value < min) {
+    return min;
+  }
+  return value;
+}
+
+export function isClippedByValue(value, max, min) {
+  if (value > max) {
+    return 1;
+  }
+  if (value < min) {
+    return 1;
+  }
+  return 0;
 }
 
 export {
