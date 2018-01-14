@@ -61,7 +61,7 @@ export default class NeuralNetwork {
 
   /**
    *
-   * @param {} sizes
+   * @param {Number[]} sizes
    */
   initialize(sizes) {
     this.sizes = sizes;
@@ -80,7 +80,6 @@ export default class NeuralNetwork {
       this.deltas[layer] = zeros(size);
       this.errors[layer] = zeros(size);
       this.outputs[layer] = zeros(size);
-
 
       if (layer > 0) {
         this.biases[layer] = randos(size);
@@ -621,7 +620,13 @@ export default class NeuralNetwork {
         }
       }
     }
-    return { layers: layers, outputLookup:!!this.outputLookup, inputLookup:!!this.inputLookup, activation: this.activation };
+    return {
+      sizes: this.sizes,
+      layers,
+      outputLookup:!!this.outputLookup,
+      inputLookup:!!this.inputLookup,
+      activation: this.activation
+    };
   }
 
   /**
@@ -630,13 +635,7 @@ export default class NeuralNetwork {
    * @returns {NeuralNetwork}
    */
   fromJSON(json) {
-    let size = json.layers.length;
-    this.outputLayer = size - 1;
-
-    this.sizes = new Array(size);
-    this.weights = new Array(size);
-    this.biases = new Array(size);
-    this.outputs = new Array(size);
+    this.initialize(json.sizes);
 
     for (let i = 0; i <= this.outputLayer; i++) {
       let layer = json.layers[i];
@@ -646,17 +645,14 @@ export default class NeuralNetwork {
       else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
         this.outputLookup = lookup.lookupFromHash(layer);
       }
-
-      let nodes = Object.keys(layer);
-      this.sizes[i] = nodes.length;
-      this.weights[i] = [];
-      this.biases[i] = [];
-      this.outputs[i] = [];
-
-      for (let j in nodes) {
-        let node = nodes[j];
-        this.biases[i][j] = layer[node].bias;
-        this.weights[i][j] = toArray(layer[node].weights);
+      if (layer > 0) {
+        const nodes = Object.keys(layer);
+        this.sizes[i] = nodes.length;
+        for (let j in nodes) {
+          const node = nodes[j];
+          this.biases[i] = layer[node].bias;
+          this.weights[i][j] = toArray(layer[node].weights);
+        }
       }
     }
 
