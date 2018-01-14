@@ -9,16 +9,34 @@ export default class Output extends Base {
     this.inputLayer = inputLayer;
     this.weights = randos2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
+    this.errors = zeros2D(this.width, this.height);
   }
 
-  setupKernels() {}
+  setupKernels() {
+    const compareFn = this.height === 1
+      ? compare1D
+      : compare2D;
+    this.compareKernel = makeKernel(compareFn, {
+      output: [this.width, this.height]
+    });
+  }
 
   predict() {}
 
-  compare(target) {
+  compare(targetValues) {
     // this is where weights attach to deltas
-    this.inputLayer.deltas = this.inputLayer.weights;
+    this.weights = this.inputLayer.weights;
+    this.inputLayer.deltas = this.weights;
+    this.errors = this.compareKernel(this.weights, targetValues);
   }
 
   learn(previousLayer, nextLayer, learningRate) {}
+}
+
+function compare1D(weights, targetValues) {
+  return weights[this.thread.y][this.thread.x] - targetValues[this.thread.x];
+}
+
+function compare2D(weights, targetValues) {
+  return weights[this.thread.y][this.thread.x] - targetValues[this.thread.y][this.thread.x];
 }

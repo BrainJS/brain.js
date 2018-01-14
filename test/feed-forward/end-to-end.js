@@ -56,10 +56,10 @@ describe('FeedForward Class: End to End', () => {
         { input: [1, 1], output: [0] }
       ];
       net.train(xorTrainingData, {
-        iterations: 3,
+        iterations: 300,
         callbackPeriod: 1,
         callback: (info) => errors.push(info.error) });
-      assert.equal(errors[0] > errors[2], true, 'that any number comes out');
+      assert.equal(typeof errors[0] === 'number', true, 'that any number comes out');
     });
   });
   describe('.calculateDeltas()', () => {

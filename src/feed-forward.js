@@ -12,6 +12,31 @@ import * as praxis from './praxis';
  * @constructor
  */
 export default class FeedForward {
+  static get trainDefaults() {
+    return {
+      iterations: 20000,
+      errorThresh: 0.005,
+      log: false,
+      logPeriod: 10,
+      learningRate: 0.3,
+      callback: null,
+      callbackPeriod: 10,
+      reinforce: false
+    };
+  }
+
+  static get defaults() {
+    return {
+      learningRate: 0.3,
+        momentum: 0.1,
+      binaryThresh: 0.5,
+      hiddenLayers: null,
+      inputLayer: null,
+      outputLayer: null,
+      praxis: (layer) => praxis.momentumRootMeanSquaredPropagation(layer)
+    };
+  }
+
   constructor(options = {}) {
     Object.assign(this, this.constructor.defaults, options);
     this.layers = null;
@@ -102,7 +127,7 @@ export default class FeedForward {
    * @returns {{error: number, iterations: number}}
    */
   train(data, _options = {}) {
-    const options = Object.assign({}, FeedForward.trainDefaults, _options);
+    const options = Object.assign({}, this.constructor.trainDefaults, _options);
     data = this.formatData(data);
     let iterations = options.iterations;
     let errorThresh = options.errorThresh;
@@ -363,24 +388,3 @@ export default class FeedForward {
     throw new Error('not yet implemented');
   }
 }
-
-FeedForward.trainDefaults = {
-  iterations: 20000,
-  errorThresh: 0.005,
-  log: false,
-  logPeriod: 10,
-  learningRate: 0.3,
-  callback: null,
-  callbackPeriod: 10,
-  reinforce: false
-};
-
-FeedForward.defaults = {
-  learningRate: 0.3,
-  momentum: 0.1,
-  binaryThresh: 0.5,
-  hiddenLayers: null,
-  inputLayer: null,
-  outputLayer: null,
-  praxis: (layer) => praxis.momentumRootMeanSquaredPropagation(layer)
-};
