@@ -246,3 +246,9 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 Different neural nets do different things well.  For example:
 * A Feedforward Neural Network can classify simple things very well, but it has no memory of previous actions and has infinite variation of results.
 * A Recurrent Neural Network _remembers_, and has a finite set of results.
+
+# Get Involved!
+### Issues
+If you have an issue, either a bug or a feature you think would benefit your project let us know and we will do our best.
+
+Create issues [here](https://github.com/BrainJS/brain.js/issues) and follow the template.

@@ -30,12 +30,10 @@
 - [ ] My code focuses on the main motivation and avoids scope creep.
 - [ ] My code passes current tests and adds new tests where possible.
 - [ ] My code is [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)) and [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
-
-#### If my change requires a change to the documentation.
-- [ ] I have updated the documentation accordingly.
+- [ ] I have updated the documentation as needed.
 
 ## Reviewer's Checklist:
-- [ ] I kept my comments to the author positive and producive.
+- [ ] I kept my comments to the author positive, specific, and producive.
 - [ ] I tested the code and didn't find any new problems.
 - [ ] I think the motivation is good for the project.
 - [ ] I think the code works to satisfies the motivation.
