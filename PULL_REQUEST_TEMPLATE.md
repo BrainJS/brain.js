@@ -33,7 +33,7 @@
 - [ ] I have updated the documentation as needed.
 
 ## Reviewer's Checklist:
-- [ ] I kept my comments to the author positive, specific, and producive.
+- [ ] I kept my comments to the author positive, specific, and productive.
 - [ ] I tested the code and didn't find any new problems.
 - [ ] I think the motivation is good for the project.
 - [ ] I think the code works to satisfies the motivation.
