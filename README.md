@@ -8,6 +8,31 @@
 
 :bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
 
+- [Examples](#examples)
+    + [More Examples](#more-examples)
+- [Usage](#usage)
+    + [Node](#node)
+    + [Browser](#browser)
+- [Training](#training)
+    + [Data format](#data-format)
+    + [Training Options](#training-options)
+- [Methods](#methods)
+    + [train](#train)
+- [Failing](#failing)
+- [JSON](#json)
+- [Options](#options)
+    + [activation](#activation)
+    + [hiddenLayers](#hiddenlayers)
+- [Streams](#streams)
+    + [Example](#example)
+    + [Initialization](#initialization)
+    + [Transform](#transform)
+- [Utilities](#utilities)
+    + [`likely`](#-likely-)
+- [Neural Network Types](#neural-network-types)
+    + [Why different Neural Network Types?](#why-different-neural-network-types-)
+    
+# Examples
 Here's an example showcasing how to approximate the XOR function using `brain.js`:
 
 ```javascript
@@ -40,11 +65,14 @@ output = net.run([1, 1]);  // [0]
 However, There's no reason to use a neural network to figure out XOR. (-: So, here's a more involved, realistic example:
 [Demo: training a neural network to recognize color contrast](https://brain.js.org/).
 
-You can also check out the following screencast, which explains how to train a neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
+## More Examples
+You check out this fantastic screencast, which explains how to train a simple neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
+* [writing a children's book using a recurrent neural neural network](./examples/childrens-book.js)
+* [simple letter detection](./examples/which-letter-simple.js)
 
 # Usage
 
-## Node
+### Node
 If you have [node](http://nodejs.org/), you can install `brain.js` with [npm](http://npmjs.org):
 
 ```
@@ -64,7 +92,7 @@ bower install brain.js
 At present NPM brain.js version is approximately 1.0.0, featuring only Feed Forward NN. All other models are beta and soon be jazzed up and battle hardened.
 You can still download the latest. They are cool!
 
-## Browser
+### Browser
 Download the latest [brain.js for browser](https://raw.githubusercontent.com/harthur-org/brain.js/master/browser.js). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network into your website.
 
 # Training
@@ -92,7 +120,7 @@ var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.81, black: 0.18 }
 ```
 
 
-### Options
+### Training Options
 `train()` takes a hash of options as its second argument:
 
 ```javascript
@@ -112,7 +140,7 @@ By default training won't let you know how its doing until the end, but set `log
 The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data.(_Overfitting_) The default learning rate is `0.3`.
 
 # Methods
-### `train`
+### train
 The output of `train()` is a hash of information about how the training went:
 
 ```javascript
@@ -165,8 +193,10 @@ By default `brain.js` uses one hidden layer with size proportionate to the size 
 # Streams
 The network now has a [WriteStream](http://nodejs.org/api/stream.html#stream_class_stream_writable). You can train the network by using `pipe()` to send the training data to the network.
 
-# Example
-Refer to `stream-example.js` for an example on how to train the network with a stream.
+
+### Example
+Refer to [`stream-example.js`](./examples/cli/stream-example.js) for an example on how to train the network with a stream.
+
 
 ### Initialization
 To train the network using a stream you must first create the stream by calling `net.createTrainStream()` which takes the following options:
@@ -190,7 +220,7 @@ Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transfor
 var likely = require('brain/likely');
 var key = likely(input, net);
 ```
-See: https://github.com/harthur-org/brain.js/blob/master/test/base/likely.js
+Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 
 # Neural Network Types
 * [`brain.NeuralNetwork`](src/neural-network.js) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation
