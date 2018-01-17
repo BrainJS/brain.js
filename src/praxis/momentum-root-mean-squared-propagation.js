@@ -63,11 +63,12 @@ const MRmsProp = MomentumRootMeanSquaredPropagation;
  */
 function momentumRootMeanSquaredPropagation(
   weights, deltas, learningRate, previousMomentums, decayRate, regularizationStrength, clipValue) {
-  const delta = clipByValue(deltas[this.thread.y][this.thread.x], clipValue, -clipValue);
+  const delta = deltas[this.thread.y][this.thread.x];
+  const clippedDelta = clipByValue(delta, clipValue, -clipValue);
   const weight = weights[this.thread.y][this.thread.x];
   const previousMomentum = previousMomentums[this.thread.y][this.thread.x];
   const momentum = getMomentum(delta, decayRate, previousMomentum);
-  return weight + -learningRate * delta / Math.sqrt(momentum + this.constants.smoothEps) - regularizationStrength * weight;
+  return weight + -learningRate * clippedDelta / Math.sqrt(momentum + this.constants.smoothEps) - regularizationStrength * weight;
 }
 
 function getMomentum(delta, decay, previousMomentum) {

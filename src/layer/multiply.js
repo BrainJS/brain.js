@@ -21,31 +21,46 @@ export default class Multiply extends Base {
     this.predictKernel = makeKernel(predict, {
       output: [this.width, this.height]
     });
-    this.compareKernel0 = makeKernel();
-    this.compareKernel1 = makeKernel();
+    this.compareKernel0 = makeKernel(compareFromX, {
+      output: [this.inputLayers[0].width, this.inputLayers[0].height]
+    });
+    this.compareKernel1 = makeKernel(compareFromY, {
+      output: [this.inputLayers[1].width, this.inputLayers[1].height]
+    });
+  }
+
+  predict() {
+    this.weights = this.predictKernel(this.inputLayers[0].weights, this.inputLayers[1].weights);
   }
 
   compare() {
-    this.inputLayers[0].deltas = null;
-    this.inputLayers[1].deltas = null;
-    // const backPropagateValue = product.deltas[rightRowBase + rightColumn];
-    // left.deltas[leftRow] += right.weights[rightRow] * backPropagateValue;
-    // right.deltas[rightRow] += left.weights[leftRow] * backPropagateValue;
+    const newDeltas0 = this.compareKernel0(this.deltas, this.inputLayers[0].deltas, this.inputLayers[1].weights);
+    const newDeltas1 = this.compareKernel1(this.deltas, this.inputLayers[1].deltas, this.inputLayers[0].weights);
+    this.inputLayers[0].deltas = newDeltas0;
+    this.inputLayers[1].deltas = newDeltas1;
   }
 }
 
-export function predict(inputs1, inputs2) {
+export function predict(weights1, weights2) {
   let sum = 0;
-  for(let i = 0; i < this.output.x; i++) {
-    sum += inputs1[this.thread.y][i] * inputs2[i][this.thread.x];
+  for(let i = 0; i < this.constants.size; i++) {
+    sum += weights1[this.thread.x][i] * weights2[i][this.thread.y];
   }
   return sum;
 }
 
-export function compare(deltas, inputs1, inputs2) {
-  let sum = 0;
-  for(let i = 0; i < this.output.x; i++) {
-    sum += inputs1[this.thread.y][i] * inputs2[i][this.thread.x];
+export function compareFromX(nextDeltas, deltas, weights) {
+  let sum = deltas[this.thread.y][this.thread.x];
+  for(let i = 0; i < this.constants.size; i++) {
+    sum += nextDeltas[this.thread.y][i] * weights[this.thread.x][i];
+  }
+  return sum;
+}
+
+export function compareFromY(nextDeltas, deltas, weights) {
+  let sum = deltas[this.thread.y][this.thread.x];
+  for(let i = 0; i < this.constants.size; i++) {
+    sum += nextDeltas[i][this.thread.x] * weights[i][this.thread.y];
   }
   return sum;
 }

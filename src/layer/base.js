@@ -15,11 +15,6 @@ export default class Base {
     this.height = null;
     this.depth = null;
 
-    //methods
-    this.predictKernel = null;
-    this.compareKernel = null;
-    this.learnKernel = null;
-
     //what matters :P
     this.errors = null;
     this.deltas = null;
