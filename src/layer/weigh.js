@@ -4,8 +4,8 @@ import zeros2D from '../utilities/zeros-2d';
 import randos2D from '../utilities/randos-2d';
 
 export default class Weigh extends Base {
-  constructor(inputLayers, settings) {
-    super(settings);
+  constructor(inputLayers) {
+    super();
     this.inputLayers = inputLayers;
 
     if (inputLayers.height > 0) {
@@ -24,19 +24,19 @@ export default class Weigh extends Base {
     this.predictKernel = makeKernel(predict, {
       output: [this.width, this.height],
       constants: {
-        inputWidth: this.inputLayers[0].width,
+        size: this.inputLayers[1].width
       }
     });
     this.compareKernel0 = makeKernel(compare, {
       output: [this.inputLayers[0].width, this.inputLayers[0].height],
       constants: {
-        inputWidth: this.width
+        size: this.inputLayers[0].width
       }
     });
     this.compareKernel1 = makeKernel(compare, {
       output: [this.inputLayers[1].width, this.inputLayers[1].height],
       constants: {
-        inputWidth: this.width
+        size: this.inputLayers[1].width
       }
     });
   }
@@ -56,17 +56,16 @@ export default class Weigh extends Base {
 
 export function predict(weights1, weights2) {
   let sum = 0;
-  for (let index = 0; index < this.constants.inputWidth; index++) {
-    sum += weights1[0][index] * weights2[index][this.thread.x];
+  for (let index = 0; index < this.constants.size; index++) {
+    sum += weights1[this.thread.x][index] * weights2[this.thread.y][index];
   }
   return sum;
 }
 
-export function compare(deltas, inputWeights, inputDeltas) {
-  const delta = deltas[this.thread.y][this.thread.x];
-  let newInputDeltas = inputDeltas[this.thread.y][this.thread.x];
-  for (let index = 0; index < this.constants.inputWidth; index++) {
-    newInputDeltas += inputWeights[0][index] * delta;
+export function compare(deltas, weights) {
+  let sum = 0;
+  for (let index = 0; index < this.constants.size; index++) {
+    sum += deltas[this.thread.y][index] * weights[this.thread.x][index];
   }
-  return newInputDeltas;
+  return sum;
 }
