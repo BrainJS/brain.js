@@ -63,22 +63,7 @@ export default class NeuralNetwork {
    *
    * @param {Number[]} sizes
    */
-  initialize(data) {
-    let sizes = [];
-    let inputSize = data[0].input.length;
-    let outputSize = data[0].output.length;
-    let hiddenSizes = this.hiddenSizes;
-    if (!hiddenSizes) {
-      sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-    } else {
-      hiddenSizes.forEach(size => {
-        sizes.push(size);
-      });
-    }
-
-    sizes.unshift(inputSize);
-    sizes.push(outputSize);
-
+  initialize (sizes) {
     this.sizes = sizes;
     this.outputLayer = this.sizes.length - 1;
     this.biases = []; // weights for bias nodes
@@ -241,6 +226,29 @@ export default class NeuralNetwork {
   /**
    *
    * @param data
+   * @returns sizes
+   */
+  _getSizesFromData (data) {
+    let sizes = [];
+    let inputSize = data[0].input.length;
+    let outputSize = data[0].output.length;
+    let hiddenSizes = this.hiddenSizes;
+    if (!hiddenSizes) {
+      sizes.push(Math.max(3, Math.floor(inputSize / 2)));
+    } else {
+      hiddenSizes.forEach(size => {
+        sizes.push(size);
+      });
+    }
+
+    sizes.unshift(inputSize);
+    sizes.push(outputSize);
+    return sizes;
+  }
+
+  /**
+   *
+   * @param data
    * @param _options
    * @returns {{error: number, iterations: number}}
    */
@@ -261,7 +269,8 @@ export default class NeuralNetwork {
     };
 
     if (this.sizes === null) {
-      this.initialize(data);
+      let sizes = this._getSizesFromData (data);
+      this.initialize (sizes);
     }
 
     while (res.iterations < iterations && res.error > errorThresh && Date.now () > endTime) {
@@ -313,7 +322,8 @@ export default class NeuralNetwork {
     };
 
     if (this.sizes === null) {
-      this.initialize (data);
+      let sizes = this._getSizesFromData (data);
+      this.initialize (sizes);
     }
 
     const items = new Array(iterations);
@@ -703,8 +713,8 @@ export default class NeuralNetwork {
    * @param json
    * @returns {NeuralNetwork}
    */
-  fromJSON(json) {
-    this.initialize(json.sizes);
+  fromJSON (json) {
+    this.initialize (json.sizes);
 
     for (let i = 0; i <= this.outputLayer; i++) {
       let layer = json.layers[i];
