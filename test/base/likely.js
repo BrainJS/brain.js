@@ -2,7 +2,7 @@ import assert from 'assert';
 import brain from '../../src';
 import likely from '../../dist/likely';
 
-describe('likely', () => {
+describe('likely', function () {
   let a = character(
     '.#####.' +
     '#.....#' +
@@ -39,70 +39,62 @@ describe('likely', () => {
 
   let net = new brain.NeuralNetwork();
 
-  net.train([
+  net.train ([
     { input: a, output: { a: 1 } },
     { input: b, output: { b: 1 } },
     { input: c, output: { c: 1 } }
-  ], {
-    doneCallback: test
-  });
+  ]);
 
-  it('should be able to find a "a"', () => {
-    test = () => {
+  it('should be able to find a "a"', function () {
     /**
      * Predict the letter A, even with a pixel off.
      */
-      let result = likely(character(
-        '.#####.' +
-        '#.....#' +
-        '#.....#' +
-        '###.###' +
-        '#.....#' +
-        '#.....#' +
-        '#.....#'
-      ), net);
+    let result = likely(character(
+      '.#####.' +
+      '#.....#' +
+      '#.....#' +
+      '###.###' +
+      '#.....#' +
+      '#.....#' +
+      '#.....#'
+    ), net);
 
-      assert.ok(result === 'a');
-    };
+    assert.ok(result === 'a');
   });
 
-  it('should be able to find a "b"', () => {
-    test = () => {
+  it('should be able to find a "b"', function () {
     /**
      * Predict the letter B, even with a pixel off.
      */
-        let result = likely(character(
-          '######.' +
-          '#.....#' +
-          '#.....#' +
-          '######.' +
-          '#..#..#' +
-          '#.....#' +
-          '###.##.'
-        ), net);
+      let result = likely(character(
+        '######.' +
+        '#.....#' +
+        '#.....#' +
+        '######.' +
+        '#..#..#' +
+        '#.....#' +
+        '###.##.'
+      ), net);
 
-        assert.ok(result === 'b');
-     };
+      assert.ok(result === 'b');
   });
 
-  it('should be able to find a "c"', () => {
-    test = () => {
+  it('should be able to find a "c"', function () {
     /**
      * Predict the letter C, even with a pixel off.
      */
 
-      let result = likely(character(
-        '#######' +
-        '#......' +
-        '#......' +
-        '#......' +
-        '#......' +
-        '##.....' +
-        '#######'
-      ), net);
+    let result = likely(character(
+      '#######' +
+      '#......' +
+      '#......' +
+      '#......' +
+      '#......' +
+      '##.....' +
+      '#######'
+    ), net);
 
-      assert.ok(result === 'c');
-    };
+    assert.ok(result === 'c');
   });
 });
 

@@ -1,40 +1,37 @@
 import assert from 'assert';
 import NeuralNetwork from './../../src/neural-network';
 
-describe('JSON', () => {
+describe('JSON', function () {
   let net = new NeuralNetwork();
   let test;
   let serialized;
   let net2;
   let input = {'0' : Math.random(), b: Math.random()};
 
-  net.train([
-    {
+  net.train ([{
       input: {'0': Math.random(), b: Math.random()},
       output: {c: Math.random(), '0': Math.random()}
-    },
-    {
+    }, {
       input: {'0': Math.random(), b: Math.random()},
       output: {c: Math.random(), '0': Math.random()}
     }
-  ], { doneCallback: () => {
-      serialized = net.toJSON();
-      net2 = new NeuralNetwork().fromJSON(serialized);
-      test();
-    }});
+  ]);
 
-  it('toJSON()/fromJSON()', () => {
-    test = () => {
+  serialized = net.toJSON();
+  net2 = new NeuralNetwork().fromJSON(serialized);
+
+  it('toJSON()/fromJSON()', function () {
+    test = function () {
       let output1 = net.run(input);
       let output2 = net2.run(input);
       assert.equal(JSON.stringify(output2), JSON.stringify(output1), 'loading json serialized network failed');
-    }
+    };
   });
 
-  it('toFunction()', () => {
-    test = () => {
+  it('toFunction()', function () {
+    test = function () {
       const output1 = net.run(input);
-      const output2 = net.toFunction()(input);
+      const output2 = net.toFunction (input);
 
       function normalize(v) {
         const result = {};
@@ -44,6 +41,6 @@ describe('JSON', () => {
         return result;
       }
       assert.equal(JSON.stringify(normalize(output2)), JSON.stringify(normalize(output1)), 'standalone network function failed');
-    }
-  })
+    };
+  });
 });

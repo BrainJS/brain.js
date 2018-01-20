@@ -22,8 +22,7 @@ export default class NeuralNetwork {
       learningRate: 0.3,
       callback: null,
       callbackPeriod: 10,
-      doneCallback: null,
-      trainTimeMs: -1
+      trainTimeMs: -Infinity
     };
   }
 
@@ -64,7 +63,22 @@ export default class NeuralNetwork {
    *
    * @param {Number[]} sizes
    */
-  initialize(sizes) {
+  initialize(data) {
+    let sizes = [];
+    let inputSize = data[0].input.length;
+    let outputSize = data[0].output.length;
+    let hiddenSizes = this.hiddenSizes;
+    if (!hiddenSizes) {
+      sizes.push(Math.max(3, Math.floor(inputSize / 2)));
+    } else {
+      hiddenSizes.forEach(size => {
+        sizes.push(size);
+      });
+    }
+
+    sizes.unshift(inputSize);
+    sizes.push(outputSize);
+
     this.sizes = sizes;
     this.outputLayer = this.sizes.length - 1;
     this.biases = []; // weights for bias nodes
@@ -230,7 +244,7 @@ export default class NeuralNetwork {
    * @param _options
    * @returns {{error: number, iterations: number}}
    */
-  train(data, _options = {}) {
+  train (data, _options = {}) {
     const options = Object.assign({}, this.constructor.trainDefaults, _options);
     data = this.formatData(data);
     let iterations = options.iterations;
@@ -240,71 +254,110 @@ export default class NeuralNetwork {
     let learningRate = _options.learningRate || this.learningRate || options.learningRate;
     let callback = options.callback;
     let callbackPeriod = options.callbackPeriod;
-    let doneCallback = options.doneCallback;
+    let endTime = Date.now() + options.trainTimeMs;
+    var res = {
+      error: 1,
+      iterations: 0
+    };
+
     if (this.sizes === null) {
-      let sizes = [];
-      let inputSize = data[0].input.length;
-      let outputSize = data[0].output.length;
-      let hiddenSizes = this.hiddenSizes;
-      if (!hiddenSizes) {
-        sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-      } else {
-        hiddenSizes.forEach(size => {
-          sizes.push(size);
-        });
-      }
-
-      sizes.unshift(inputSize);
-      sizes.push(outputSize);
-
-      this.initialize(sizes);
+      this.initialize(data);
     }
 
-    let endTime = options.trainTimeMs > 0 ? Date.now() + options.trainTimeMs : Infinity;
-    let error = 1;
-    let i;
+    while (res.iterations < iterations && res.error > errorThresh && Date.now () > endTime) {
+      res.iterations++;
+      let sum = 0;
+      for (var i = 0; i < data.length; ++i) {
+        sum += this.trainPattern (data[i].input, data[i].output, learningRate);
+      }
+
+      res.error = sum / data.length;
+
+      if (log && (res.iterations % logPeriod === 0)) {
+        log('iterations:', res.iterations, 'training error:', res.error);
+      }
+
+      if (callback && (res.iterations % callbackPeriod === 0)) {
+        // JSON.parse/stringify to clone the object so the callback doesn't have side effects to training
+        callback (JSON.parse (JSON.stringify (res)));
+      }
+    }
+    return res;
+  }
+
+  /**
+   *
+   * @param data
+   * @param _options
+   * @param cb
+   * @returns {{error: number, iterations: number}}
+   */
+  trainAsync (data, _options = {}, cb = function() {}) {
+    if (typeof _options === "function") {
+      cb = _options;
+      _options = {};
+    }
+    const options = Object.assign({}, this.constructor.trainDefaults, _options);
+    data = this.formatData(data);
+    let iterations = options.iterations;
+    let errorThresh = options.errorThresh;
+    let log = options.log === true ? console.log : options.log;
+    let logPeriod = options.logPeriod;
+    let learningRate = _options.learningRate || this.learningRate || options.learningRate;
+    let callback = options.callback;
+    let callbackPeriod = options.callbackPeriod;
+    let endTime = Date.now() + options.trainTimeMs;
+    let res = {
+      error: 1,
+      iterations: 0
+    };
+
+    if (this.sizes === null) {
+      this.initialize (data);
+    }
 
     const items = new Array(iterations);
     const thaw  = new Thaw (items, {
       delay: true,
       each: () => {
-        i++;
+        res.iterations++;
         let sum = 0;
-        data.forEach (d => {
-          sum += this.trainPattern(d.input, d.output, learningRate);
-        });
-
-        error = sum / data.length;
-
-        if (log && (i % logPeriod === 0)) {
-          log('iterations:', i, 'training error:', error);
+        for (var i = 0; i < data.length; ++i) {
+          sum += this.trainPattern (data[i].input, data[i].output, learningRate);
         }
 
-        if (callback && (i % callbackPeriod === 0)) {
-          callback({ error: error, iterations: i });
+        res.error = sum / data.length;
+
+        if (log && (res.iterations % logPeriod === 0)) {
+          log(`iterations: ${res.iterations} training error: ${res.error}`);
         }
 
-        if (error < errorThresh || Date.now () > endTime) {
+        if (callback && (res.iterations % callbackPeriod === 0)) {
+          // JSON.parse/stringify to clone the object so the callback doesn't have side effects to training
+          callback(JSON.parse(JSON.stringify(res)));
+        }
+
+        if (res.error < errorThresh || (endTime > 0 && Date.now () > endTime)) {
           thaw.stop();
         }
       },
       done: () => {
-        if (doneCallback) doneCallback({
-          error: error,
-          iterations: i
-        });
+        if (cb && typeof cb === "function") {
+          cb (res);
+        }
       }
     });
 
     thaw.tick();
   }
+
   /**
    *
    * @param input
    * @param target
    * @param learningRate
    */
-  trainPattern(input, target, learningRate) {
+  trainPattern (input, target, learningRate) {
     learningRate = learningRate || this.learningRate;
 
     // forward propagate
