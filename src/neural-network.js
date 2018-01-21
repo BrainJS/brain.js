@@ -249,21 +249,47 @@ export default class NeuralNetwork {
   /**
    *
    * @param data
+   * @param learning Rate
+   * @returns error
+   */
+  _calculateTrainingError (data, learningRate) {
+    let sum = 0;
+    for (let i = 0; i < data.length; ++i) {
+      sum += this.trainPattern (data[i].input, data[i].output, learningRate);
+    }
+    return sum / data.length;
+  }
+
+  /**
+   *
+   * @param status { iterations: number, error: number}
+   * @param options
+   */
+  _checkTrainingTick (data, status, options) {
+    status.iterations++;
+    status.error = this._calculateTrainingError(data, options.learningRate);
+
+    if (options.log && (status.iterations % options.logPeriod === 0)) {
+      console.log (`iterations: ${status.iterations}, training error: ${status.error}`);
+    }
+
+    if (options.callback && (status.iterations % options.callbackPeriod === 0)) {
+      options.callback(Object.assign(status));
+    }
+  }
+
+  /**
+   *
+   * @param data
    * @param _options
    * @returns {{error: number, iterations: number}}
    */
   train (data, _options = {}) {
     const options = Object.assign({}, this.constructor.trainDefaults, _options);
     data = this.formatData(data);
-    let iterations = options.iterations;
-    let errorThresh = options.errorThresh;
-    let log = options.log === true ? console.log : options.log;
-    let logPeriod = options.logPeriod;
-    let learningRate = _options.learningRate || this.learningRate || options.learningRate;
-    let callback = options.callback;
-    let callbackPeriod = options.callbackPeriod;
+    options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
     let endTime = Date.now() + options.trainTimeMs;
-    var res = {
+    var status = {
       error: 1,
       iterations: 0
     };
@@ -272,26 +298,10 @@ export default class NeuralNetwork {
       let sizes = this._getSizesFromData (data);
       this.initialize (sizes);
     }
-
-    while (res.iterations < iterations && res.error > errorThresh && Date.now () > endTime) {
-      res.iterations++;
-      let sum = 0;
-      for (var i = 0; i < data.length; ++i) {
-        sum += this.trainPattern (data[i].input, data[i].output, learningRate);
-      }
-
-      res.error = sum / data.length;
-
-      if (log && (res.iterations % logPeriod === 0)) {
-        log('iterations:', res.iterations, 'training error:', res.error);
-      }
-
-      if (callback && (res.iterations % callbackPeriod === 0)) {
-        // JSON.parse/stringify to clone the object so the callback doesn't have side effects to training
-        callback (JSON.parse (JSON.stringify (res)));
-      }
+    while ( status.iterations < options.iterations && status.error > options.errorThresh && Date.now () > endTime ) {
+      this._checkTrainingTick (data, status, options);
     }
-    return res;
+    return status;
   }
 
   /**
@@ -302,21 +312,16 @@ export default class NeuralNetwork {
    * @returns {{error: number, iterations: number}}
    */
   trainAsync (data, _options = {}, cb = function() {}) {
-    if (typeof _options === "function") {
+    if (typeof _options === 'function') {
       cb = _options;
       _options = {};
     }
     const options = Object.assign({}, this.constructor.trainDefaults, _options);
     data = this.formatData(data);
-    let iterations = options.iterations;
-    let errorThresh = options.errorThresh;
-    let log = options.log === true ? console.log : options.log;
-    let logPeriod = options.logPeriod;
-    let learningRate = _options.learningRate || this.learningRate || options.learningRate;
-    let callback = options.callback;
-    let callbackPeriod = options.callbackPeriod;
+    options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
     let endTime = Date.now() + options.trainTimeMs;
-    let res = {
+
+    let status = {
       error: 1,
       iterations: 0
     };
@@ -326,34 +331,19 @@ export default class NeuralNetwork {
       this.initialize (sizes);
     }
 
-    const items = new Array(iterations);
+    const items = new Array(options.iterations);
     const thaw  = new Thaw (items, {
       delay: true,
       each: () => {
-        res.iterations++;
-        let sum = 0;
-        for (var i = 0; i < data.length; ++i) {
-          sum += this.trainPattern (data[i].input, data[i].output, learningRate);
-        }
+        this._checkTrainingTick (data, status, options);
 
-        res.error = sum / data.length;
-
-        if (log && (res.iterations % logPeriod === 0)) {
-          log(`iterations: ${res.iterations} training error: ${res.error}`);
-        }
-
-        if (callback && (res.iterations % callbackPeriod === 0)) {
-          // JSON.parse/stringify to clone the object so the callback doesn't have side effects to training
-          callback(JSON.parse(JSON.stringify(res)));
-        }
-
-        if (res.error < errorThresh || (endTime > 0 && Date.now () > endTime)) {
+        if (status.error < options.errorThresh || Date.now () < endTime) {
           thaw.stop();
         }
       },
       done: () => {
-        if (cb && typeof cb === "function") {
-          cb (res);
+        if (cb && typeof cb === 'function') {
+          cb (status);
         }
       }
     });

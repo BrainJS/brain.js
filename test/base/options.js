@@ -51,7 +51,7 @@ describe('neural network options', function () {
     let net2 = new brain.NeuralNetwork();
     let res2 = net2.train (data, { learningRate: 0.8 });
 
-    assert.ok(res.iterations > (res2.iterations * 1.1), `${res.iterations} !> ${res2.iterations * 1.1}`);
+    assert.ok(res.iterations > (res2.iterations * 1.1), `${res.iterations} should be greater than ${res2.iterations * 1.1}`);
   });
 
   it('learningRate ASYNC - higher learning rate should train faster', (done) => {

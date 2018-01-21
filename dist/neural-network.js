@@ -115,22 +115,7 @@ var NeuralNetwork = function () {
 
   _createClass(NeuralNetwork, [{
     key: 'initialize',
-    value: function initialize(data) {
-      var sizes = [];
-      var inputSize = data[0].input.length;
-      var outputSize = data[0].output.length;
-      var hiddenSizes = this.hiddenSizes;
-      if (!hiddenSizes) {
-        sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-      } else {
-        hiddenSizes.forEach(function (size) {
-          sizes.push(size);
-        });
-      }
-
-      sizes.unshift(inputSize);
-      sizes.push(outputSize);
-
+    value: function initialize(sizes) {
       this.sizes = sizes;
       this.outputLayer = this.sizes.length - 1;
       this.biases = []; // weights for bias nodes
@@ -303,6 +288,70 @@ var NeuralNetwork = function () {
     /**
      *
      * @param data
+     * @returns sizes
+     */
+
+  }, {
+    key: '_getSizesFromData',
+    value: function _getSizesFromData(data) {
+      var sizes = [];
+      var inputSize = data[0].input.length;
+      var outputSize = data[0].output.length;
+      var hiddenSizes = this.hiddenSizes;
+      if (!hiddenSizes) {
+        sizes.push(Math.max(3, Math.floor(inputSize / 2)));
+      } else {
+        hiddenSizes.forEach(function (size) {
+          sizes.push(size);
+        });
+      }
+
+      sizes.unshift(inputSize);
+      sizes.push(outputSize);
+      return sizes;
+    }
+
+    /**
+     *
+     * @param data
+     * @param learning Rate
+     * @returns error
+     */
+
+  }, {
+    key: '_calculateTrainingError',
+    value: function _calculateTrainingError(data, learningRate) {
+      var sum = 0;
+      for (var i = 0; i < data.length; ++i) {
+        sum += this.trainPattern(data[i].input, data[i].output, learningRate);
+      }
+      return sum / data.length;
+    }
+
+    /**
+     *
+     * @param status { iterations: number, error: number}
+     * @param options
+     */
+
+  }, {
+    key: '_checkTrainingTick',
+    value: function _checkTrainingTick(data, status, options) {
+      status.iterations++;
+      status.error = this._calculateTrainingError(data, options.learningRate);
+
+      if (options.log && status.iterations % options.logPeriod === 0) {
+        console.log('iterations: ' + status.iterations + ', training error: ' + status.error);
+      }
+
+      if (options.callback && status.iterations % options.callbackPeriod === 0) {
+        options.callback(Object.assign(status));
+      }
+    }
+
+    /**
+     *
+     * @param data
      * @param _options
      * @returns {{error: number, iterations: number}}
      */
@@ -314,42 +363,21 @@ var NeuralNetwork = function () {
 
       var options = Object.assign({}, this.constructor.trainDefaults, _options);
       data = this.formatData(data);
-      var iterations = options.iterations;
-      var errorThresh = options.errorThresh;
-      var log = options.log === true ? console.log : options.log;
-      var logPeriod = options.logPeriod;
-      var learningRate = _options.learningRate || this.learningRate || options.learningRate;
-      var callback = options.callback;
-      var callbackPeriod = options.callbackPeriod;
+      options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
       var endTime = Date.now() + options.trainTimeMs;
-      var res = {
+      var status = {
         error: 1,
         iterations: 0
       };
 
       if (this.sizes === null) {
-        this.initialize(data);
+        var sizes = this._getSizesFromData(data);
+        this.initialize(sizes);
       }
-
-      while (res.iterations < iterations && res.error > errorThresh && Date.now() > endTime) {
-        res.iterations++;
-        var sum = 0;
-        for (var i = 0; i < data.length; ++i) {
-          sum += this.trainPattern(data[i].input, data[i].output, learningRate);
-        }
-
-        res.error = sum / data.length;
-
-        if (log && res.iterations % logPeriod === 0) {
-          log('iterations:', res.iterations, 'training error:', res.error);
-        }
-
-        if (callback && res.iterations % callbackPeriod === 0) {
-          // JSON.parse/stringify to clone the object so the callback doesn't have side effects to training
-          callback(JSON.parse(JSON.stringify(res)));
-        }
+      while (status.iterations < options.iterations && status.error > options.errorThresh && Date.now() > endTime) {
+        this._checkTrainingTick(data, status, options);
       }
-      return res;
+      return status;
     }
 
     /**
@@ -369,57 +397,38 @@ var NeuralNetwork = function () {
 
       var cb = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
 
-      if (typeof _options === "function") {
+      if (typeof _options === 'function') {
         cb = _options;
         _options = {};
       }
       var options = Object.assign({}, this.constructor.trainDefaults, _options);
       data = this.formatData(data);
-      var iterations = options.iterations;
-      var errorThresh = options.errorThresh;
-      var log = options.log === true ? console.log : options.log;
-      var logPeriod = options.logPeriod;
-      var learningRate = _options.learningRate || this.learningRate || options.learningRate;
-      var callback = options.callback;
-      var callbackPeriod = options.callbackPeriod;
+      options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
       var endTime = Date.now() + options.trainTimeMs;
-      var res = {
+
+      var status = {
         error: 1,
         iterations: 0
       };
 
       if (this.sizes === null) {
-        this.initialize(data);
+        var sizes = this._getSizesFromData(data);
+        this.initialize(sizes);
       }
 
-      var items = new Array(iterations);
+      var items = new Array(options.iterations);
       var thaw = new _thaw2.default(items, {
         delay: true,
         each: function each() {
-          res.iterations++;
-          var sum = 0;
-          for (var i = 0; i < data.length; ++i) {
-            sum += _this.trainPattern(data[i].input, data[i].output, learningRate);
-          }
+          _this._checkTrainingTick(data, status, options);
 
-          res.error = sum / data.length;
-
-          if (log && res.iterations % logPeriod === 0) {
-            log('iterations: ' + res.iterations + ' training error: ' + res.error);
-          }
-
-          if (callback && res.iterations % callbackPeriod === 0) {
-            // JSON.parse/stringify to clone the object so the callback doesn't have side effects to training
-            callback(JSON.parse(JSON.stringify(res)));
-          }
-
-          if (res.error < errorThresh || endTime > 0 && Date.now() > endTime) {
+          if (status.error < options.errorThresh || Date.now() < endTime) {
             thaw.stop();
           }
         },
         done: function done() {
-          if (cb && typeof cb === "function") {
-            cb(res);
+          if (cb && typeof cb === 'function') {
+            cb(status);
           }
         }
       });
