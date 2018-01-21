@@ -395,45 +395,39 @@ var NeuralNetwork = function () {
 
       var _options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      var cb = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
+      return new Promise(function (resolve, reject) {
+        var options = Object.assign({}, _this.constructor.trainDefaults, _options);
+        data = _this.formatData(data);
+        options.learningRate = _options.learningRate || _this.learningRate || options.learningRate;
+        var endTime = Date.now() + options.trainTimeMs;
 
-      if (typeof _options === 'function') {
-        cb = _options;
-        _options = {};
-      }
-      var options = Object.assign({}, this.constructor.trainDefaults, _options);
-      data = this.formatData(data);
-      options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
-      var endTime = Date.now() + options.trainTimeMs;
+        var status = {
+          error: 1,
+          iterations: 0
+        };
 
-      var status = {
-        error: 1,
-        iterations: 0
-      };
-
-      if (this.sizes === null) {
-        var sizes = this._getSizesFromData(data);
-        this.initialize(sizes);
-      }
-
-      var items = new Array(options.iterations);
-      var thaw = new _thaw2.default(items, {
-        delay: true,
-        each: function each() {
-          _this._checkTrainingTick(data, status, options);
-
-          if (status.error < options.errorThresh || Date.now() < endTime) {
-            thaw.stop();
-          }
-        },
-        done: function done() {
-          if (cb && typeof cb === 'function') {
-            cb(status);
-          }
+        if (_this.sizes === null) {
+          var sizes = _this._getSizesFromData(data);
+          _this.initialize(sizes);
         }
-      });
 
-      thaw.tick();
+        var items = new Array(options.iterations);
+        var thaw = new _thaw2.default(items, {
+          delay: true,
+          each: function each() {
+            _this._checkTrainingTick(data, status, options);
+
+            if (status.error < options.errorThresh || Date.now() < endTime) {
+              thaw.stop();
+            }
+          },
+          done: function done() {
+            resolve(status);
+          }
+        });
+
+        thaw.tick();
+      });
     }
 
     /**

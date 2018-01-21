@@ -2,7 +2,7 @@ import assert from 'assert';
 import brain from '../../src';
 import likely from '../../dist/likely';
 
-describe('likely', function () {
+describe('likely', () => {
   let a = character(
     '.#####.' +
     '#.....#' +
@@ -45,7 +45,7 @@ describe('likely', function () {
     { input: c, output: { c: 1 } }
   ]);
 
-  it('should be able to find a "a"', function () {
+  it('should be able to find a "a"', () => {
     /**
      * Predict the letter A, even with a pixel off.
      */
@@ -62,7 +62,7 @@ describe('likely', function () {
     assert.ok(result === 'a');
   });
 
-  it('should be able to find a "b"', function () {
+  it('should be able to find a "b"', () => {
     /**
      * Predict the letter B, even with a pixel off.
      */
@@ -79,7 +79,7 @@ describe('likely', function () {
       assert.ok(result === 'b');
   });
 
-  it('should be able to find a "c"', function () {
+  it('should be able to find a "c"', () => {
     /**
      * Predict the letter C, even with a pixel off.
      */

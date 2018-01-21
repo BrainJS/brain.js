@@ -95,7 +95,7 @@ describe('async hash input and output', () => {
         assert.ok (output[0] > 0.9, 'output: ' + output[0]);
         done ();
       });
-  }).timeout (10000);
+  }).timeout (15000);
 
  it ('runs correctly with hash input', (done) => {
     let net = new brain.NeuralNetwork ();
@@ -111,7 +111,7 @@ describe('async hash input and output', () => {
       assert.ok (output[0] > 0.9, 'output: ' + output[0]);
       done ();
     });
-  }).timeout (10000);
+  }).timeout (15000);
 
  it ('runs correctly with hash output', (done) => {
     let net = new brain.NeuralNetwork();
@@ -126,7 +126,7 @@ describe('async hash input and output', () => {
       assert.ok (output.answer > 0.9, 'output: ' + output.answer);
       done ();
     });
-  }).timeout (10000);
+  }).timeout (15000);
 
   it ('runs correctly with hash input and output', (done) => {
     let net = new brain.NeuralNetwork();
@@ -141,7 +141,7 @@ describe('async hash input and output', () => {
       assert.ok (output.answer > 0.9, 'output: ' + output.answer);
       done ();
     });
-  }).timeout (10000);
+  }).timeout (15000);
 
   it ('runs correctly with sparse hashes', (done) => {
     let net = new brain.NeuralNetwork ();
@@ -156,7 +156,7 @@ describe('async hash input and output', () => {
       assert.ok (output.answer > 0.9);
       done ();
     });
-  }).timeout (10000);
+  }).timeout (15000);
 
   it ('runs correctly with unseen input', (done) => {
     let net = new brain.NeuralNetwork ();
@@ -171,5 +171,5 @@ describe('async hash input and output', () => {
       assert.ok (output.answer > 0.9);
       done ();
     });
-  }).timeout (10000);
+  }).timeout (15000);
 });

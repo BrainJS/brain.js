@@ -1,7 +1,7 @@
 import assert from 'assert';
 import NeuralNetwork from './../../src/neural-network';
 
-describe('JSON', function () {
+describe('JSON', () => {
   let net = new NeuralNetwork();
   let test;
   let serialized;
@@ -20,16 +20,16 @@ describe('JSON', function () {
   serialized = net.toJSON();
   net2 = new NeuralNetwork().fromJSON(serialized);
 
-  it('toJSON()/fromJSON()', function () {
-    test = function () {
+  it('toJSON()/fromJSON()', () => {
+    test = () => {
       let output1 = net.run(input);
       let output2 = net2.run(input);
       assert.equal(JSON.stringify(output2), JSON.stringify(output1), 'loading json serialized network failed');
     };
   });
 
-  it('toFunction()', function () {
-    test = function () {
+  it('toFunction()', () => {
+    test = () => {
       const output1 = net.run(input);
       const output2 = net.toFunction (input);
 
