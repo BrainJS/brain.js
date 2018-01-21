@@ -1,10 +1,9 @@
 import assert from 'assert';
 import brain from '../../src';
 
-describe('neural network options', function () {
-  this.timeout(15000);
+describe('neural network options', () => {
 
-  it('hiddenLayers', function () {
+  it('hiddenLayers', () => {
     let net = new brain.NeuralNetwork({ hiddenLayers: [8, 7] });
 
     net.train([
@@ -21,7 +20,7 @@ describe('neural network options', function () {
     assert.equal(Object.keys(json.layers[2]).length, 7);
   });
 
-  it('hiddenLayers default expand to input size', function () {
+  it('hiddenLayers default expand to input size', () => {
     let net = new brain.NeuralNetwork();
 
     net.train ([
@@ -37,7 +36,7 @@ describe('neural network options', function () {
     assert.equal(Object.keys(json.layers[1]).length, 4, `9 input units should be 4 hidden not ${Object.keys(json.layers[1]).length}`);
   });
 
-  it('learningRate - higher learning rate should train faster', function () {
+  it('learningRate - higher learning rate should train faster', () => {
     let data = [
       { input: [0, 0], output: [0] },
       { input: [0, 1], output: [1] },
@@ -54,26 +53,8 @@ describe('neural network options', function () {
     assert.ok(res.iterations > (res2.iterations * 1.1), `${res.iterations} should be greater than ${res2.iterations * 1.1}`);
   });
 
-  it('learningRate ASYNC - higher learning rate should train faster', (done) => {
-    let data = [
-      { input: [0, 0], output: [0] },
-      { input: [0, 1], output: [1] },
-      { input: [1, 0], output: [1] },
-      { input: [1, 1], output: [1] }
-    ];
 
-    let net = new brain.NeuralNetwork();
-    let net2 = new brain.NeuralNetwork();
-
-    net.trainAsync (data, { learningRate: 0.5 }, (res) => {
-      net2.trainAsync (data, { learningRate: 0.8 }, (res2) => {
-        assert.ok(res.iterations > (res2.iterations * 1.1), `${res.iterations} !> ${res2.iterations * 1.1}`);
-        done ();
-      });
-    });
-  }).timeout(5000);
-
-  it('momentum - higher momentum should train faster', function () {
+  it('momentum - higher momentum should train faster', () => {
     let data = [
       { input: [0, 0], output: [0] },
       { input: [0, 1], output: [1] },
@@ -89,6 +70,37 @@ describe('neural network options', function () {
 
     assert.ok(res.iterations > (res2.iterations * 1.1), `${res.iterations} !> ${res2.iterations * 1.1}`);
   });
+});
+
+
+
+describe ('async neural network options', () => {
+  it('learningRate ASYNC - higher learning rate should train faster', (done) => {
+    let data = [
+      { input: [0, 0], output: [0] },
+      { input: [0, 1], output: [1] },
+      { input: [1, 0], output: [1] },
+      { input: [1, 1], output: [1] }
+    ];
+
+    let net = new brain.NeuralNetwork();
+    let net2 = new brain.NeuralNetwork();
+
+    let p1 = net.trainAsync (data, { learningRate: 0.5 });
+    let p2 = net2.trainAsync (data, { learningRate: 0.8 });
+
+    Promise
+      .all ([p1, p2])
+      .then (values => {
+        let res = values[0];
+        let res2 = values[1];
+        assert.ok (res.iterations > (res2.iterations * 1.1), `${res.iterations} !> ${res2.iterations * 1.1}`);
+        done ();
+      })
+      .catch (err => {
+        assert.ok (false, err.toString())
+      });
+  }).timeout(5000);
 
   it('momentum ASYNC - higher momentum should train faster', (done) => {
     let data = [
@@ -101,23 +113,31 @@ describe('neural network options', function () {
     let net = new brain.NeuralNetwork({ momentum: 0.1 });
     let net2 = new brain.NeuralNetwork({ momentum: 0.5 });
 
-    net.trainAsync (data, (res) => {
-      net2.trainAsync (data, (res2) => {
+    let p1 = net.trainAsync (data);
+    let p2 = net2.trainAsync (data);
+
+    Promise.all([p1, p2])
+      .then (values => {
+        let res = values[0];
+        let res2 = values[1];
         assert.ok(res.iterations > (res2.iterations * 1.1), `${res.iterations} !> ${res2.iterations * 1.1}`);
         done ();
+      }).catch (err => {
+        assert.ok (false, err.toString())
       });
-    });
-  });
-}).timeout(5000);
 
-describe('log', function () {
+  }).timeout(5000);
+})
+
+
+describe('log', () => {
   let logCalled;
   let oldLog;
 
-  beforeEach (function () { logCalled = false; });
+  beforeEach (() => { logCalled = false; });
 
-  before (function () { oldLog = console.log; console.log = logFunction; });
-  after (function () { console.log = oldLog; });
+  before (() => { oldLog = console.log; console.log = logFunction; });
+  after (() => { console.log = oldLog; });
 
   function logFunction(str) {
     if (typeof str === "string" && !str.includes('iterations:') && !str.includes('training error:')) {
@@ -138,17 +158,21 @@ describe('log', function () {
 
   function trainWithLogAsync (log, expected, done) {
     let net = new brain.NeuralNetwork();
-    net.trainAsync (
-      [ {input: [0], output: [0]} ],
-      { log: log, logPeriod: 1, iterations: 1 },
-      function (_) { assert.equal (logCalled, expected); done (); }
-    );
+    net
+      .trainAsync ([ {input: [0], output: [0]} ], { log: log, logPeriod: 1, iterations: 1 })
+      .then (res => {
+        assert.equal (logCalled, expected);
+        done ();
+      })
+      .catch (err => {
+        assert.ok (false, err.toString())
+      });
   }
 
   // TODO fix this test :(
-  it('should call console.log if log === true', function () { trainWithLog (true, true); });
-  it('should call console.log if log === false', function () { trainWithLog (false, false); });
+  it('should call console.log if log === true', () => { trainWithLog (true, true); });
+  it('should call console.log if log === false', () => { trainWithLog (false, false); });
 
-  it('ASYNC should call console.log if log === true', function (done) { trainWithLogAsync (true, true, done); }).timeout(5000);
-  it('ASYNC should call console.log if log === false', function (done) { trainWithLogAsync (false, false, done); }).timeout(5000);
+  it('ASYNC should call console.log if log === true', done => { trainWithLogAsync (true, true, done); }).timeout(5000);
+  it('ASYNC should call console.log if log === false', done => { trainWithLogAsync (false, false, done); }).timeout(5000);
 });

@@ -285,7 +285,7 @@ export default class NeuralNetwork {
    * @returns {{error: number, iterations: number}}
    */
   train (data, _options = {}) {
-    const options = Object.assign({}, this.constructor.trainDefaults, _options);
+    let options = Object.assign({}, this.constructor.trainDefaults, _options);
     data = this.formatData(data);
     options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
     let endTime = Date.now() + options.trainTimeMs;
@@ -311,44 +311,40 @@ export default class NeuralNetwork {
    * @param cb
    * @returns {{error: number, iterations: number}}
    */
-  trainAsync (data, _options = {}, cb = function() {}) {
-    if (typeof _options === 'function') {
-      cb = _options;
-      _options = {};
-    }
-    const options = Object.assign({}, this.constructor.trainDefaults, _options);
-    data = this.formatData(data);
-    options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
-    let endTime = Date.now() + options.trainTimeMs;
+  trainAsync (data, _options = {}) {
+    return new Promise ((resolve, reject) => {
+      let options = Object.assign({}, this.constructor.trainDefaults, _options);
+      data = this.formatData(data);
+      options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
+      let endTime = Date.now() + options.trainTimeMs;
 
-    let status = {
-      error: 1,
-      iterations: 0
-    };
+      let status = {
+        error: 1,
+        iterations: 0
+      };
 
-    if (this.sizes === null) {
-      let sizes = this._getSizesFromData (data);
-      this.initialize (sizes);
-    }
-
-    const items = new Array(options.iterations);
-    const thaw  = new Thaw (items, {
-      delay: true,
-      each: () => {
-        this._checkTrainingTick (data, status, options);
-
-        if (status.error < options.errorThresh || Date.now () < endTime) {
-          thaw.stop();
-        }
-      },
-      done: () => {
-        if (cb && typeof cb === 'function') {
-          cb (status);
-        }
+      if (this.sizes === null) {
+        let sizes = this._getSizesFromData (data);
+        this.initialize (sizes);
       }
-    });
 
-    thaw.tick();
+      const items = new Array(options.iterations);
+      const thaw  = new Thaw (items, {
+        delay: true,
+        each: () => {
+          this._checkTrainingTick (data, status, options);
+
+          if (status.error < options.errorThresh || Date.now () < endTime) {
+            thaw.stop();
+          }
+        },
+        done: () => {
+          resolve (status);
+        }
+      });
+
+      thaw.tick();
+    });
   }
 
   /**

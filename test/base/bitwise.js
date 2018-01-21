@@ -3,6 +3,12 @@ import brain from '../../src';
 
 let wiggle = 0.1;
 
+function isAround (actual, expected) {
+  if (actual > (expected + wiggle)) return false;
+  if (actual < (expected - wiggle)) return false;
+  return true;
+}
+
 function testBitwise(data, op) {
   let net = new brain.NeuralNetwork();
   let res = net.train (data, { errorThresh: 0.003 });
@@ -10,19 +16,25 @@ function testBitwise(data, op) {
   data.forEach(d => {
     var actual = net.run(d.input)
     var expected = d.output;
-    assert.ok(actual < (expected + wiggle) && actual < (expected + wiggle), `failed to train "${op}" - expected: ${expected}, actual: ${actual}`);
+    assert.ok(isAround (actual, expected), `failed to train "${op}" - expected: ${expected}, actual: ${actual}`);
   });
 }
 
-function testBitwiseAsync (data, op) {
+function testBitwiseAsync (data, op, done) {
   let net = new brain.NeuralNetwork();
-  net.trainAsync (data, { errorThresh: 0.003 }, res => {
-    data.forEach(d => {
-      var actual = net.run(d.input)
-      var expected = d.output;
-      assert.ok(actual < (expected + wiggle) && actual < (expected + wiggle), `failed to train "${op}" - expected: ${expected}, actual: ${actual}`);
+  net
+    .trainAsync (data, { errorThresh: 0.003 })
+    .then (res => {
+      data.forEach(d => {
+        var actual = net.run(d.input)
+        var expected = d.output;
+        assert.ok(isAround (actual, expected), `failed to train "${op}" - expected: ${expected}, actual: ${actual}`);
+      });
+      done ();
+    })
+    .catch (err => {
+      assert.ok (false, err.toString())
     });
-  });
 }
 
 describe('bitwise functions sync training', function () {
@@ -59,34 +71,34 @@ describe('bitwise functions sync training', function () {
 
 describe('bitwise functions async training', function () {
 
-  it('NOT function', function () {
+  it('NOT function', function (done) {
     let not = [{input: [0], output: [1]},
                {input: [1], output: [0]}];
-    testBitwiseAsync (not, 'not');
-  });
+    testBitwiseAsync (not, 'not', done);
+  }).timeout (10000);
 
-  it('XOR function', function () {
+  it('XOR function', function (done) {
     let xor = [{input: [0, 0], output: [0]},
                {input: [0, 1], output: [1]},
                {input: [1, 0], output: [1]},
                {input: [1, 1], output: [0]}];
-    testBitwiseAsync (xor, 'xor');
-  });
+    testBitwiseAsync (xor, 'xor', done);
+  }).timeout (10000);
 
-  it('OR function', function () {
+  it('OR function', function (done) {
     let or = [{input: [0, 0], output: [0]},
               {input: [0, 1], output: [1]},
               {input: [1, 0], output: [1]},
               {input: [1, 1], output: [1]}];
-    testBitwiseAsync (or, 'or');
-  });
+    testBitwiseAsync (or, 'or', done);
+  }).timeout (10000);
 
-  it('AND function', function () {
+  it('AND function', function (done) {
     let and = [{input: [0, 0], output: [0]},
                {input: [0, 1], output: [0]},
                {input: [1, 0], output: [0]},
                {input: [1, 1], output: [1]}];
-    testBitwiseAsync (and, 'and');
-  });
+    testBitwiseAsync (and, 'and', done);
+  }).timeout (10000);
 });
 
