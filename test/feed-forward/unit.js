@@ -18,8 +18,7 @@ const {
   relu,
   Sigmoid,
   SoftMax,
-  softMax,
-  Weigh
+  softMax
 } = layer;
 
 describe('FeedForward Class: Unit', () => {
@@ -71,7 +70,6 @@ describe('FeedForward Class: Unit', () => {
         assert.deepEqual(net.layers.map(layer => layer.constructor), [
           Input,
           Random,
-          Weigh,
           Random,
           Add,
           Sigmoid,

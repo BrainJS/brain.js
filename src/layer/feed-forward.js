@@ -1,19 +1,22 @@
 import {
   add,
-  weigh,
+  multiply,
   random,
   sigmoid
-} from './';
+} from './index';
 
 export default function feedForward(settings, input) {
-  const { width } = settings;
+  const { width, height } = settings;
 
-  const weights = random({ width, height: input.width + 0 });
-  const bias = random({ width });
+  const weights = random({ width, height });
+  const bias = random({
+    width: input.height,
+    height: weights.width
+  });
 
   return sigmoid(
     add(
-      weigh(
+      multiply(
         input,
         weights
       ),

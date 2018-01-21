@@ -70,9 +70,6 @@ function svm(settings, inputLayer) {
 function tanh(inputLayer) {
   return new Tanh(inputLayer);
 }
-function weigh(inputLayer1, inputLayer2) {
-  return new Weigh([inputLayer1, inputLayer2]);
-}
 export {
   Add,
   add,
@@ -109,7 +106,5 @@ export {
   SVM,
   svm,
   Tanh,
-  tanh,
-  Weigh,
-  weigh
+  tanh
 };

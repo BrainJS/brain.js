@@ -37,13 +37,13 @@ describe('FeedForward Class: End to End', () => {
     });
   });
   describe('.train()', () => {
-    it('outputs a number that is smaller than when it started', () => {
+    it.only('outputs a number that is smaller than when it started', () => {
       const net = new FeedForward({
-        inputLayer: () => input({ width: 1, height: 1 }),
+        inputLayer: () => input({ width: 2 }),
         hiddenLayers: [
-          (input) => feedForward({ width: 1, height: 1 }, input)
+          (input) => feedForward({ width: 3, height: 2 }, input)
         ],
-        outputLayer: (input) => output({ width: 1, height: 1 }, input)
+        outputLayer: (input) => output({ width: 1 }, input)
       });
 
       net.initialize();
@@ -59,7 +59,18 @@ describe('FeedForward Class: End to End', () => {
         iterations: 300,
         callbackPeriod: 1,
         callback: (info) => errors.push(info.error) });
-      assert.equal(typeof errors[0] === 'number', true, 'that any number comes out');
+      assert.equal(
+        typeof errors[0] === 'number'
+        && typeof errors[1] === 'number'
+        && typeof errors[2] === 'number'
+        && typeof errors[3] === 'number'
+        && typeof errors[4] === 'number'
+        && typeof errors[5] === 'number'
+        && typeof errors[6] === 'number'
+        && typeof errors[7] === 'number'
+        && typeof errors[8] === 'number'
+        && typeof errors[9] === 'number', true, 'training produces numerical errors');
+      assert.equal(errors[0] > errors[299], true, 'error rate falls');
     });
   });
   describe('.calculateDeltas()', () => {

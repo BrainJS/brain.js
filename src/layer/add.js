@@ -15,11 +15,11 @@ export default class Add extends Base {
 
   validate() {
     if (this.inputLayers[0].width !== this.inputLayers[1].width) {
-      throw new Error('Layer width mismatch');
+      throw new Error(`Layer width mismatch of ${this.inputLayers[0].width} and ${this.inputLayers[1].width}`);
     }
 
     if (this.inputLayers[0].height !== this.inputLayers[1].height) {
-      throw new Error('Layer height mismatch');
+      throw new Error(`Layer height mismatch of ${this.inputLayers[0].height} and ${this.inputLayers[1].height}`);
     }
   }
 
