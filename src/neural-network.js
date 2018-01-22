@@ -246,6 +246,21 @@ export default class NeuralNetwork {
     return sizes;
   }
 
+
+  /**
+   *
+   * @param log
+   * if true passed in console.log is used
+   * if a method is passed in method is used
+   * if false passed in nothing is logged
+   * @returns error
+   */
+  _setLogMethod (log) {
+    if (typeof log === 'function') return log;
+    if (log) return console.log;
+    return false;
+  }
+
   /**
    *
    * @param data
@@ -270,7 +285,7 @@ export default class NeuralNetwork {
     status.error = this._calculateTrainingError(data, options.learningRate);
 
     if (options.log && (status.iterations % options.logPeriod === 0)) {
-      console.log (`iterations: ${status.iterations}, training error: ${status.error}`);
+      options.log (`iterations: ${status.iterations}, training error: ${status.error}`);
     }
 
     if (options.callback && (status.iterations % options.callbackPeriod === 0)) {
@@ -287,6 +302,7 @@ export default class NeuralNetwork {
   train (data, _options = {}) {
     let options = Object.assign({}, this.constructor.trainDefaults, _options);
     data = this.formatData(data);
+    options.log = this._setLogMethod(options.log);
     options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
     let endTime = Date.now() + options.trainTimeMs;
     var status = {
@@ -315,6 +331,7 @@ export default class NeuralNetwork {
     return new Promise ((resolve, reject) => {
       let options = Object.assign({}, this.constructor.trainDefaults, _options);
       data = this.formatData(data);
+      options.log = this._setLogMethod(options.log);
       options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
       let endTime = Date.now() + options.trainTimeMs;
 

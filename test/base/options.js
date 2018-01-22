@@ -131,20 +131,12 @@ describe ('async neural network options', () => {
 
 
 describe('log', () => {
-  let logCalled;
-  let oldLog;
+  let logCalled = false;
 
   beforeEach (() => { logCalled = false; });
 
-  before (() => { oldLog = console.log; console.log = logFunction; });
-  after (() => { console.log = oldLog; });
-
   function logFunction(str) {
-    if (typeof str === "string" && !str.includes('iterations:') && !str.includes('training error:')) {
-      oldLog(str);
-    } else {
-      logCalled = true;
-    }
+    logCalled = true;
   }
 
   function trainWithLog (log, expected) {
@@ -159,7 +151,10 @@ describe('log', () => {
   function trainWithLogAsync (log, expected, done) {
     let net = new brain.NeuralNetwork();
     net
-      .trainAsync ([ {input: [0], output: [0]} ], { log: log, logPeriod: 1, iterations: 1 })
+      .trainAsync (
+        [ {input: [0], output: [0]} ],
+        { log: log, logPeriod: 1, iterations: 1 }
+      )
       .then (res => {
         assert.equal (logCalled, expected);
         done ();
@@ -169,10 +164,9 @@ describe('log', () => {
       });
   }
 
-  // TODO fix this test :(
-  it('should call console.log if log === true', () => { trainWithLog (true, true); });
-  it('should call console.log if log === false', () => { trainWithLog (false, false); });
+  it('should call log method', () => { trainWithLog (logFunction, true); });
+  it('should not call log method', () => { trainWithLog (false, false); });
 
-  it('ASYNC should call console.log if log === true', done => { trainWithLogAsync (true, true, done); }).timeout(5000);
-  it('ASYNC should call console.log if log === false', done => { trainWithLogAsync (false, false, done); }).timeout(5000);
+  it('ASYNC should call log method', done => { trainWithLogAsync (logFunction, true, done); }).timeout(5000);
+  it('ASYNC should not call log method', done => { trainWithLogAsync (false, false, done); }).timeout(5000);
 });
