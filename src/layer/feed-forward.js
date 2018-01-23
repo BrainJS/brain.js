@@ -7,18 +7,16 @@ import {
 
 export default function feedForward(settings, input) {
   const { width } = settings;
-
-  const weights = random({ width, height: input.width });
+  const weights = random({ height: width, width: input.height });
   const bias = random({
-    width: input.height,
-    height: weights.width
+    height: width
   });
 
   return sigmoid(
     add(
       multiply(
-        input,
-        weights
+        weights,
+        input
       ),
       bias
     )

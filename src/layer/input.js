@@ -6,6 +6,8 @@ export default class Input extends Base {
     super(settings);
     if (this.height === 1) {
       this.predict = this.predict1D;
+      this.height = this.width;
+      this.width = 1;
     }
     this.deltas = zeros2D(this.width, this.height);
   }
@@ -17,7 +19,10 @@ export default class Input extends Base {
   }
 
   predict1D(inputs) {
-    this.weights = [inputs];
+    this.weights = [];
+    for (let y = 0; y < inputs.length; y++) {
+      this.weights.push([inputs[y]]);
+    }
   }
 
   compare() {}

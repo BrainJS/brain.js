@@ -148,6 +148,8 @@ describe('Multiply Layer', () => {
         input.predict([0, 1]);
         random.predict();
         multiply.predict();
+        assert.equal(multiply.width, 3);
+        assert.equal(multiply.height, 1);
       });
     });
   })

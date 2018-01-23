@@ -5,8 +5,8 @@ export default class Multiply extends Base {
   constructor(inputLayers, settings) {
     super(settings);
     this.inputLayers = inputLayers;
-    this.width = inputLayers[0].height;
-    this.height = inputLayers[1].width;
+    this.width = inputLayers[1].width;
+    this.height = inputLayers[0].height;
     this.compareKernel0 = null;
     this.compareKernel1 = null;
   }
@@ -62,6 +62,7 @@ export function predict(weights1, weights2) {
 }
 
 export function compareFromX(deltas, inputDeltas, inputWeights) {
+
   let sum = inputDeltas[this.thread.y][this.thread.x];
   for(let i = 0; i < this.constants.size; i++) {
     sum += deltas[i][this.thread.y] * inputWeights[this.thread.x][i];
