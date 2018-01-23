@@ -132,8 +132,21 @@ describe('async neural network options', () => {
 
 describe('log', () => {
   let logCalled = false;
+  let oldLog;
 
   beforeEach(() => { logCalled = false; });
+
+  before(() => {
+    oldLog = console.log;
+    console.log = () => {
+      oldLog(arguments);
+      logCalled = true;
+    }
+  })
+
+  after(() => {
+    console.log = oldLog;
+  })
 
   function logFunction(str) {
     logCalled = true;

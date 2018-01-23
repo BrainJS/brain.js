@@ -21,8 +21,7 @@ export default class NeuralNetwork {
       logPeriod: 10,
       learningRate: 0.3,
       callback: null,
-      callbackPeriod: 10,
-      trainTimeMs: -Infinity
+      callbackPeriod: 10
     };
   }
 
@@ -250,13 +249,11 @@ export default class NeuralNetwork {
   /**
    *
    * @param log
-   * if true passed in console.log is used
    * if a method is passed in method is used
    * if false passed in nothing is logged
    * @returns error
    */
   _setLogMethod(log) {
-    if (typeof log === 'function') return log;
     if (log) return console.log;
     return false;
   }
@@ -304,7 +301,6 @@ export default class NeuralNetwork {
     data = this.formatData(data);
     options.log = this._setLogMethod(options.log);
     options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
-    let endTime = Date.now() + options.trainTimeMs;
     var status = {
       error: 1,
       iterations: 0
@@ -314,9 +310,11 @@ export default class NeuralNetwork {
       let sizes = this._getSizesFromData(data);
       this.initialize(sizes);
     }
-    while ( status.iterations < options.iterations && status.error > options.errorThresh && Date.now() > endTime ) {
+
+    while ( status.iterations < options.iterations && status.error > options.errorThresh) {
       this._checkTrainingTick(data, status, options);
     }
+
     return status;
   }
 
@@ -351,7 +349,7 @@ export default class NeuralNetwork {
         each: () => {
           this._checkTrainingTick(data, status, options);
 
-          if (status.error < options.errorThresh || Date.now() < endTime) {
+          if (status.error < options.errorThresh) {
             thaw.stop();
           }
         },
