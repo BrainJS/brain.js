@@ -7,17 +7,17 @@ describe('matrix', () => {
   describe('multiply', () => {
     context('when given a left and right matrix both of 2 rows and 2 columns', () => {
       it('correctly multiplies the values', () => {
-        var m1 = Matrix.fromArray([
+        const m1 = Matrix.fromArray([
           [2, 2],
           [2, 2]
         ]);
-        var m2 = Matrix.fromArray([
+        const m2 = Matrix.fromArray([
           [2, 2],
           [2, 2]
         ]);
-        var result = new Matrix(2, 2);
+        const result = new Matrix(2, 2);
         multiply(result, m1, m2);
-        var weights = [8, 8, 8, 8];
+        const weights = [8, 8, 8, 8];
         assert.equal(result.weights.length, 4);
         result.weights.forEach((value, i) => {
           assert.equal(value, weights[i]);
@@ -29,15 +29,15 @@ describe('matrix', () => {
   describe('multiplyB', () => {
     context('when given a left and right matrix both of 2 rows and 2 columns', () => {
       it('correctly multiplies the values', () => {
-        var m1 = Matrix.fromArray([
+        const m1 = Matrix.fromArray([
           [3, 3],
           [3, 3]
         ]);
-        var m2 = Matrix.fromArray([
+        const m2 = Matrix.fromArray([
           [3, 3],
           [3, 3]
         ]);
-        var result = Matrix.fromArray([
+        const result = Matrix.fromArray([
           [3, 3],
           [3, 3]
         ]);
@@ -48,6 +48,47 @@ describe('matrix', () => {
         m2.deltas.forEach((value) => {
           assert.equal(value, 21);
         });
+      });
+    });
+    context('when given two different size left and right', () => {
+      it('calculates both values in different sizes correctly', () => {
+        const productWeights = [
+          [0],
+          [0],
+          [0]
+        ];
+        const productDeltas = [
+          [1],
+          [2],
+          [3]
+        ];
+        const leftInputWeights = [
+          [1, 2],
+          [3, 4],
+          [5, 6]
+        ];
+        const leftInputDeltas = [
+          [1, 2],
+          [3, 4],
+          [5, 6]
+        ];
+        const rightInputWeights = [
+          [1],
+          [2]
+        ];
+        const rightInputDeltas = [
+          [1],
+          [2]
+        ];
+
+        const product = Matrix.fromArray(productWeights, productDeltas);
+        const left = Matrix.fromArray(leftInputWeights, leftInputDeltas);
+        const right = Matrix.fromArray(rightInputWeights, rightInputDeltas);
+
+        multiplyB(product, left, right);
+
+        assert.deepEqual(left.deltasToArray(), [ [2, 4], [5, 8], [8, 12] ]);
+        assert.deepEqual(right.deltasToArray(), [ [23], [30] ]);
       });
     });
   });
