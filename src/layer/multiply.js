@@ -39,13 +39,7 @@ export default class Multiply extends Base {
   }
 
   predict() {
-    try {
-      this.weights = this.predictKernel(this.inputLayers[0].weights, this.inputLayers[1].weights);
-    } catch(e) {
-      //This explodes
-      console.log(e);
-      debugger;
-    }
+    this.weights = this.predictKernel(this.inputLayers[0].weights, this.inputLayers[1].weights);
   }
 
   compare() {
