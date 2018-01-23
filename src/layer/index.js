@@ -17,7 +17,7 @@ import Sigmoid from './sigmoid';
 import SoftMax from './soft-max';
 import SVM from './svm';
 import Tanh from './tanh';
-import Weigh from './weigh';
+import Transpose from './transpose';
 
 function add(inputLayer1, inputLayer2) {
   return new Add([inputLayer1, inputLayer2]);
@@ -70,6 +70,9 @@ function svm(settings, inputLayer) {
 function tanh(inputLayer) {
   return new Tanh(inputLayer);
 }
+function transpose(inputLayer) {
+  return new Transpose(inputLayer);
+}
 export {
   Add,
   add,
@@ -106,5 +109,7 @@ export {
   SVM,
   svm,
   Tanh,
-  tanh
+  tanh,
+  Transpose,
+  transpose
 };

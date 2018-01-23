@@ -19,7 +19,10 @@ export default class Multiply extends Base {
 
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
-      output: [this.width, this.height]
+      output: [this.width, this.height],
+      constants: {
+        size: this.inputLayers[1].height
+      }
     });
     this.compareKernel0 = makeKernel(compareFromX, {
       output: [this.inputLayers[0].width, this.inputLayers[0].height],
@@ -36,7 +39,13 @@ export default class Multiply extends Base {
   }
 
   predict() {
-    this.weights = this.predictKernel(this.inputLayers[0].weights, this.inputLayers[1].weights);
+    try {
+      this.weights = this.predictKernel(this.inputLayers[0].weights, this.inputLayers[1].weights);
+    } catch(e) {
+      //This explodes
+      console.log(e);
+      debugger;
+    }
   }
 
   compare() {
@@ -49,8 +58,11 @@ export default class Multiply extends Base {
 
 export function predict(weights1, weights2) {
   let sum = 0;
-  for(let i = 0; i < this.output.x; i++) {
-    sum += weights1[this.thread.x][i] * weights2[i][this.thread.y];
+  for(let i = 0; i < this.constants.size; i++) {
+    sum += weights1[this.thread.y][i] * weights2[i][this.thread.x];
+  }
+  if (isNaN(sum)) {
+    debugger;
   }
   return sum;
 }
@@ -60,6 +72,9 @@ export function compareFromX(deltas, inputDeltas, inputWeights) {
   for(let i = 0; i < this.constants.size; i++) {
     sum += deltas[i][this.thread.y] * inputWeights[this.thread.x][i];
   }
+  if (isNaN(sum)) {
+    debugger;
+  }
   return sum;
 }
 
@@ -67,6 +82,9 @@ export function compareFromY(deltas, inputDeltas, inputWeights) {
   let sum = inputDeltas[this.thread.y][this.thread.x];
   for(let i = 0; i < this.constants.size; i++) {
     sum += deltas[this.thread.x][i] * inputWeights[i][this.thread.y];
+  }
+  if (isNaN(sum)) {
+    debugger;
   }
   return sum;
 }

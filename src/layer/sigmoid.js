@@ -41,7 +41,7 @@ export function predict(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-function compare(weights, deltas) {
+export function compare(weights, deltas) {
   let weight = weights[this.thread.y][this.thread.x];
   let delta = deltas[this.thread.y][this.thread.x];
   return measure(weight, delta);

@@ -1,6 +1,6 @@
 import assert from 'assert';
 import gpuMock from 'gpu-mock.js';
-import { predict, compareX, compareY } from '../../src/layer/multiply';
+import { predict, compareFromX, compareFromY } from '../../src/layer/multiply';
 
 describe('Multiply Layer', () => {
   describe('.predict (forward propagation)', () => {
@@ -21,60 +21,56 @@ describe('Multiply Layer', () => {
         }
       })(inputs1, inputs2);
 
-      assert.deepEqual(results, [[58, 139], [64, 154]]);
+      assert.deepEqual(results, [
+        [58, 64],
+        [139, 154]
+      ]);
     });
   });
-  describe('.compare (back propagation)', () => {
+  describe('.compareFromX (back propagation)', () => {
     it('can multiply a simple matrix', () => {
-      const nextDeltas = [
-        [1, 2],
-        [3, 4]
+      const m1 = [
+        [3, 3],
+        [3, 3]
       ];
-      const weights0 = [
-        [1, 2, 3],
-        [4, 5, 6]
+      const m2 = [
+        [3, 3],
+        [3, 3]
       ];
-      const deltas0 = [
-        [0, 0, 0],
-        [0, 0, 0]
+      const deltas = [
+        [3, 3],
+        [3, 3]
       ];
-      const newDeltas0 = [
-        [23, 29, 35],
-        [53, 67, 81]
-      ];
-      const weights1 = [
-        [7, 8],
-        [9, 10],
-        [11, 12]
-      ];
-      const deltas1 = [
-        [0, 0],
-        [0, 0],
-        [0, 0]
-      ];
-      const newDeltas1 = [
-        [13, 18],
-        [17, 24],
-        [21, 30]
-      ];
-
-      const results0 = gpuMock(compareX, {
-        output: [3, 2],
+      const result = gpuMock(compareFromX, {
+        output: [2, 2],
         constants: {
-          size: nextDeltas.length
+          size: 2
         }
-      })(nextDeltas, deltas0, weights1);
-
-      assert.deepEqual(results0, newDeltas0);
-
-      const results1 = gpuMock(compareY, {
-        output: [2, 3],
+      })(deltas, m1, m2);
+      assert.deepEqual(result, [[21, 21], [21, 21]]);
+    });
+  });
+  describe('.compareFromY (back propagation)', () => {
+    it('can multiply a simple matrix', () => {
+      const m1 = [
+        [3, 3],
+        [3, 3]
+      ];
+      const m2 = [
+        [3, 3],
+        [3, 3]
+      ];
+      const deltas = [
+        [3, 3],
+        [3, 3]
+      ];
+      const result = gpuMock(compareFromY, {
+        output: [2, 2],
         constants: {
-          size: nextDeltas.length
+          size: 2
         }
-      })(nextDeltas, deltas1, weights0);
-
-      assert.deepEqual(results1, newDeltas1);
+      })(deltas, m1, m2);
+      assert.deepEqual(result, [[21, 21], [21, 21]]);
     });
   });
 });

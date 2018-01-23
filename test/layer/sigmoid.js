@@ -1,6 +1,6 @@
 import assert from 'assert';
 import gpuMock from 'gpu-mock.js';
-import { predict, learn } from '../../src/layer/sigmoid';
+import { predict, compare } from '../../src/layer/sigmoid';
 
 describe('Sigmoid Layer', () => {
   describe('.predict (forward propagation)', () => {
@@ -19,7 +19,7 @@ describe('Sigmoid Layer', () => {
     });
   });
 
-  describe('.learn (back propagation)', () => {
+  describe('.compare (back propagation)', () => {
     it('can sigmoid a simple matrix', () => {
       const inputs = [
         [.1, .2, .3],
@@ -31,7 +31,7 @@ describe('Sigmoid Layer', () => {
         [1, 1, 1],
         [1, 1, 1]
       ];
-      const results = gpuMock(learn, { output: [3,3] })(inputs, deltas);
+      const results = gpuMock(compare, { output: [3,3] })(inputs, deltas);
 
       assert.deepEqual(results, [
         [ 0.09000000000000001, 0.16000000000000003, 0.21 ],

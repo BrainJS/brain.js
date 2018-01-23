@@ -1,12 +1,14 @@
-import Base from './base';
 import makeKernel from '../utilities/make-kernel';
-import randos2D from "../utilities/randos-2d";
-import zeros2D from "../utilities/zeros-2d";
+import randos2D from '../utilities/randos-2d';
+import zeros2D from '../utilities/zeros-2d';
+import Base from './base';
 
 export default class Output extends Base {
   constructor(settings, inputLayer) {
     super(settings);
     this.inputLayer = inputLayer;
+    this.width = inputLayer.width;
+    this.height = inputLayer.height;
     this.weights = randos2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
     this.errors = zeros2D(this.width, this.height);

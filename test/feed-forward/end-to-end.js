@@ -8,10 +8,12 @@ const {
   feedForward,
   Input,
   input,
+  multiply,
   Output,
   output,
   Pool,
   pool,
+  random,
   Relu,
   relu,
   Sigmoid,
@@ -41,9 +43,16 @@ describe('FeedForward Class: End to End', () => {
       const net = new FeedForward({
         inputLayer: () => input({ width: 2 }),
         hiddenLayers: [
-          (input) => feedForward({ width: 3, height: 2 }, input)
+          (input) => feedForward({ width: 3 }, input)
         ],
-        outputLayer: (input) => output({ width: 1 }, input)
+        outputLayer: (input) => {
+          const outputGate = random({ width: 3, height: 1 });
+          const outputConnector = multiply(
+            outputGate,
+            input
+          );
+          return output({}, outputConnector)
+        }
       });
 
       net.initialize();
@@ -57,6 +66,7 @@ describe('FeedForward Class: End to End', () => {
       ];
       net.train(xorTrainingData, {
         iterations: 300,
+        threshold: 0.5,
         callbackPeriod: 1,
         callback: (info) => errors.push(info.error) });
       assert.equal(
@@ -70,7 +80,12 @@ describe('FeedForward Class: End to End', () => {
         && typeof errors[7] === 'number'
         && typeof errors[8] === 'number'
         && typeof errors[9] === 'number', true, 'training produces numerical errors');
+      console.log(net.run([0, 0]));
+      console.log(net.run([0, 1]));
+      console.log(net.run([1, 0]));
+      console.log(net.run([1, 1]));
       assert.equal(errors[0] > errors[299], true, 'error rate falls');
+
     });
   });
   describe('.calculateDeltas()', () => {
