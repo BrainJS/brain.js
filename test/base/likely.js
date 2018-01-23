@@ -39,7 +39,7 @@ describe('likely', () => {
 
   let net = new brain.NeuralNetwork();
 
-  net.train ([
+  net.train([
     { input: a, output: { a: 1 } },
     { input: b, output: { b: 1 } },
     { input: c, output: { c: 1 } }

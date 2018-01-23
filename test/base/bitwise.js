@@ -3,7 +3,7 @@ import brain from '../../src';
 
 let wiggle = 0.1;
 
-function isAround (actual, expected) {
+function isAround(actual, expected) {
   if (actual > (expected + wiggle)) return false;
   if (actual < (expected - wiggle)) return false;
   return true;
@@ -11,29 +11,29 @@ function isAround (actual, expected) {
 
 function testBitwise(data, op) {
   let net = new brain.NeuralNetwork();
-  let res = net.train (data, { errorThresh: 0.003 });
+  let res = net.train(data, { errorThresh: 0.003 });
 
   data.forEach(d => {
     var actual = net.run(d.input)
     var expected = d.output;
-    assert.ok(isAround (actual, expected), `failed to train "${op}" - expected: ${expected}, actual: ${actual}`);
+    assert.ok(isAround(actual, expected), `failed to train "${op}" - expected: ${expected}, actual: ${actual}`);
   });
 }
 
-function testBitwiseAsync (data, op, done) {
+function testBitwiseAsync(data, op, done) {
   let net = new brain.NeuralNetwork();
   net
-    .trainAsync (data, { errorThresh: 0.003 })
-    .then (res => {
+    .trainAsync(data, { errorThresh: 0.003 })
+    .then(res => {
       data.forEach(d => {
         var actual = net.run(d.input)
         var expected = d.output;
-        assert.ok(isAround (actual, expected), `failed to train "${op}" - expected: ${expected}, actual: ${actual}`);
+        assert.ok(isAround(actual, expected), `failed to train "${op}" - expected: ${expected}, actual: ${actual}`);
       });
-      done ();
+      done();
     })
-    .catch (err => {
-      assert.ok (false, err.toString())
+    .catch(err => {
+      assert.ok(false, err.toString())
     });
 }
 
@@ -41,7 +41,7 @@ describe('bitwise functions sync training', () => {
   it('NOT function', () => {
     let not = [{input: [0], output: [1]},
                {input: [1], output: [0]}];
-    testBitwise (not, 'not');
+    testBitwise(not, 'not');
   });
 
   it('XOR function', () => {
@@ -49,7 +49,7 @@ describe('bitwise functions sync training', () => {
                {input: [0, 1], output: [1]},
                {input: [1, 0], output: [1]},
                {input: [1, 1], output: [0]}];
-    testBitwise (xor, 'xor');
+    testBitwise(xor, 'xor');
   });
 
   it('OR function', () => {
@@ -57,7 +57,7 @@ describe('bitwise functions sync training', () => {
               {input: [0, 1], output: [1]},
               {input: [1, 0], output: [1]},
               {input: [1, 1], output: [1]}];
-    testBitwise (or, 'or');
+    testBitwise(or, 'or');
   });
 
   it('AND function', () => {
@@ -65,7 +65,7 @@ describe('bitwise functions sync training', () => {
                {input: [0, 1], output: [0]},
                {input: [1, 0], output: [0]},
                {input: [1, 1], output: [1]}];
-    testBitwise (and, 'and');
+    testBitwise(and, 'and');
   });
 });
 
@@ -74,31 +74,31 @@ describe('bitwise functions async training', () => {
   it('NOT function', (done) => {
     let not = [{input: [0], output: [1]},
                {input: [1], output: [0]}];
-    testBitwiseAsync (not, 'not', done);
-  }).timeout (10000);
+    testBitwiseAsync(not, 'not', done);
+  }).timeout(10000);
 
   it('XOR function', (done) => {
     let xor = [{input: [0, 0], output: [0]},
                {input: [0, 1], output: [1]},
                {input: [1, 0], output: [1]},
                {input: [1, 1], output: [0]}];
-    testBitwiseAsync (xor, 'xor', done);
-  }).timeout (10000);
+    testBitwiseAsync(xor, 'xor', done);
+  }).timeout(10000);
 
   it('OR function', (done) => {
     let or = [{input: [0, 0], output: [0]},
               {input: [0, 1], output: [1]},
               {input: [1, 0], output: [1]},
               {input: [1, 1], output: [1]}];
-    testBitwiseAsync (or, 'or', done);
-  }).timeout (10000);
+    testBitwiseAsync(or, 'or', done);
+  }).timeout(10000);
 
   it('AND function', (done) => {
     let and = [{input: [0, 0], output: [0]},
                {input: [0, 1], output: [0]},
                {input: [1, 0], output: [0]},
                {input: [1, 1], output: [1]}];
-    testBitwiseAsync (and, 'and', done);
-  }).timeout (10000);
+    testBitwiseAsync(and, 'and', done);
+  }).timeout(10000);
 });
 

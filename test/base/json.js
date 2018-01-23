@@ -8,7 +8,7 @@ describe('JSON', () => {
   let net2;
   let input = {'0' : Math.random(), b: Math.random()};
 
-  net.train ([{
+  net.train([{
       input: {'0': Math.random(), b: Math.random()},
       output: {c: Math.random(), '0': Math.random()}
     }, {
@@ -31,7 +31,7 @@ describe('JSON', () => {
   it('toFunction()', () => {
     test = () => {
       const output1 = net.run(input);
-      const output2 = net.toFunction (input);
+      const output2 = net.toFunction(input);
 
       function normalize(v) {
         const result = {};
