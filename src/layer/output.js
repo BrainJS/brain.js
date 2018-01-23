@@ -23,11 +23,12 @@ export default class Output extends Base {
     });
   }
 
-  predict() {}
+  predict() {
+    this.weights = this.inputLayer.weights;
+  }
 
   compare(targetValues) {
     // this is where weights attach to deltas
-    this.weights = this.inputLayer.weights;
     this.inputLayer.deltas = this.weights;
     this.errors = this.compareKernel(this.weights, targetValues);
   }

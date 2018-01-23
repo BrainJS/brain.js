@@ -65,10 +65,7 @@ export function compareFromX(deltas, inputDeltas, inputWeights) {
 
   let sum = inputDeltas[this.thread.y][this.thread.x];
   for(let i = 0; i < this.constants.size; i++) {
-    sum += deltas[i][this.thread.y] * inputWeights[this.thread.x][i];
-  }
-  if (isNaN(sum)) {
-    debugger;
+    sum += deltas[this.thread.y][i] * inputWeights[this.thread.x][i];
   }
   return sum;
 }
@@ -76,10 +73,7 @@ export function compareFromX(deltas, inputDeltas, inputWeights) {
 export function compareFromY(deltas, inputDeltas, inputWeights) {
   let sum = inputDeltas[this.thread.y][this.thread.x];
   for(let i = 0; i < this.constants.size; i++) {
-    sum += deltas[this.thread.x][i] * inputWeights[i][this.thread.y];
-  }
-  if (isNaN(sum)) {
-    debugger;
+    sum += deltas[i][this.thread.x] * inputWeights[i][this.thread.y];
   }
   return sum;
 }

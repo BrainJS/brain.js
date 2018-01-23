@@ -19,7 +19,9 @@ const {
   Sigmoid,
   sigmoid,
   SoftMax,
-  softMax } = layer;
+  softMax,
+  Zeros,
+  zeros } = layer;
 
 describe('FeedForward Class: End to End', () => {
   describe('.runInput()', () => {

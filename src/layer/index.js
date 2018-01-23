@@ -18,6 +18,7 @@ import SoftMax from './soft-max';
 import SVM from './svm';
 import Tanh from './tanh';
 import Transpose from './transpose';
+import Zeros from './zeros';
 
 function add(inputLayer1, inputLayer2) {
   return new Add([inputLayer1, inputLayer2]);
@@ -73,6 +74,9 @@ function tanh(inputLayer) {
 function transpose(inputLayer) {
   return new Transpose(inputLayer);
 }
+function zeros(settings) {
+  return new Zeros(settings);
+}
 export {
   Add,
   add,
@@ -111,5 +115,7 @@ export {
   Tanh,
   tanh,
   Transpose,
-  transpose
+  transpose,
+  Zeros,
+  zeros,
 };

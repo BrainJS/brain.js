@@ -51,6 +51,21 @@ describe('Multiply Layer', () => {
       })(deltas, m1, m2);
       assert.deepEqual(result, [[21, 21], [21, 21]]);
     });
+    it('test with Garrett, to be named', () => {
+      const deltas = [ [ -0.002445658488246267 ],
+        [ 0.002188939203621896 ],
+        [ 0.0026931707597484585 ] ];
+      const inputDeltas = [ [ 0, 0 ],
+        [ 0, 0 ],
+        [ 0, 0 ] ];
+      const inputWeight = [ [ 0 ], [ 0 ] ];
+      const result = gpuMock(compareFromX, {
+        output: [2, 3],
+        constants: {
+          size: 1
+        }
+      })(deltas, inputDeltas, inputWeight);
+    });
   });
   describe('.compareFromY (back propagation)', () => {
     it('can multiply a simple matrix', () => {
@@ -132,15 +147,15 @@ describe('Multiply Layer', () => {
     });
     context('when used with Input layer', () => {
       it('is compatible', () => {
+        const random = new Random({ height: 3, width: 2 });
         const input = new Input({ width: 2 });
-        const random = new Random({ width: 3, height: 2 });
-        const multiply = new Multiply([input, random]);
-
-        input.validate();
-        input.setupKernels();
+        const multiply = new Multiply([random, input]);
 
         random.validate();
         random.setupKernels();
+
+        input.validate();
+        input.setupKernels();
 
         multiply.validate();
         multiply.setupKernels();
@@ -148,8 +163,8 @@ describe('Multiply Layer', () => {
         input.predict([0, 1]);
         random.predict();
         multiply.predict();
-        assert.equal(multiply.width, 3);
-        assert.equal(multiply.height, 1);
+        assert.equal(multiply.width, 1);
+        assert.equal(multiply.height, 3);
       });
     });
   })
