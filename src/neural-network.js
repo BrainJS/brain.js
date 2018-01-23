@@ -130,7 +130,7 @@ export default class NeuralNetwork {
       input = lookup.toArray(this.inputLookup, input);
     }
 
-    let output = this.runInput(input);
+    let output = [...this.runInput(input)];
 
     if (this.outputLookup) {
       output = lookup.toHash(this.outputLookup, output);
