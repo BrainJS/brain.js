@@ -51,20 +51,28 @@ describe('Multiply Layer', () => {
       })(deltas, m1, m2);
       assert.deepEqual(result, [[21, 21], [21, 21]]);
     });
-    it('test with Garrett, to be named', () => {
-      const deltas = [ [ -0.002445658488246267 ],
-        [ 0.002188939203621896 ],
-        [ 0.0026931707597484585 ] ];
-      const inputDeltas = [ [ 0, 0 ],
-        [ 0, 0 ],
-        [ 0, 0 ] ];
-      const inputWeight = [ [ 0 ], [ 0 ] ];
+    it('can compare a simple matrix', () => {
+      const deltas = [
+        [ 1 ],
+        [ 2 ],
+        [ 3 ]
+      ];
+      const inputDeltas = [
+        [ 1, 2 ],
+        [ 3, 4 ],
+        [ 5, 6 ]
+      ];
+      const inputWeights = [
+        [ 1 ],
+        [ 2 ]
+      ];
       const result = gpuMock(compareFromX, {
         output: [2, 3],
         constants: {
           size: 1
         }
-      })(deltas, inputDeltas, inputWeight);
+      })(deltas, inputDeltas, inputWeights);
+      assert.deepEqual(result, [ [ 2, 4 ], [ 5, 8 ], [ 8, 12 ] ]);
     });
   });
   describe('.compareFromY (back propagation)', () => {
@@ -88,6 +96,29 @@ describe('Multiply Layer', () => {
         }
       })(deltas, m1, m2);
       assert.deepEqual(result, [[21, 21], [21, 21]]);
+    });
+    it('can compare a simple matrix', () => {
+      const deltas = [
+        [ 1 ],
+        [ 2 ],
+        [ 3 ]
+      ];
+      const inputDeltas = [
+        [ 1 ],
+        [ 2 ]
+      ];
+      const inputWeights = [
+        [ 1, 2 ],
+        [ 3, 4 ],
+        [ 5, 6 ]
+      ];
+      const result = gpuMock(compareFromY, {
+        output: [1, 2],
+        constants: {
+          size: 3
+        }
+      })(deltas, inputDeltas, inputWeights);
+      assert.deepEqual(result, [ [ 23], [ 30 ] ]);
     });
   });
   describe('.validate', () => {
