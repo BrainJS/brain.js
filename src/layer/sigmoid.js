@@ -21,8 +21,7 @@ export default class Sigmoid extends Base {
 
     this.compareKernel = makeKernel(compare, {
       output: [this.width, this.height],
-      functions: [measure],
-      constants: { width: this.width }
+      functions: [measure]
     });
   }
 
