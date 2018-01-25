@@ -1,9 +1,12 @@
 export default function traverseLayersFrom(layer, cb) {
-  if (layer.hasOwnProperty('inputLayer') && layer.inputLayer !== undefined) {
+  if (layer.hasOwnProperty('inputLayer')) {
     traverseLayersFrom(layer.inputLayer, cb);
-  } else if (layer.hasOwnProperty('inputLayers') && layer.inputLayers !== undefined) {
-    for (let i = 0; i < layer.inputLayers.length; i++) {
-      traverseLayersFrom(layer.inputLayers[i], cb);
+  } else {
+    if (layer.hasOwnProperty('inputLayer1')) {
+      traverseLayersFrom(layer.inputLayer1, cb);
+    }
+    if (layer.hasOwnProperty('inputLayer2')) {
+      traverseLayersFrom(layer.inputLayer2, cb);
     }
   }
   cb(layer);

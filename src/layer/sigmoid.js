@@ -27,13 +27,12 @@ export default class Sigmoid extends Base {
   }
 
   predict() {
-    const weights = this.predictKernel(this.inputLayer.weights);
-    this.weights = weights;
+    this.deltas = zeros2D(this.width, this.height);
+    this.weights = this.predictKernel(this.inputLayer.weights);
   }
 
   compare(previousLayer, nextLayer) {
-    const deltas = this.compareKernel(this.weights, this.deltas);
-    this.inputLayer.deltas = deltas;
+    this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
   }
 }
 

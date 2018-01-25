@@ -3,7 +3,6 @@ export default class Base {
     return {
       width: 1,
       height: 1,
-      depth: 1,
       weights: null,
       deltas: null
     };
@@ -47,5 +46,18 @@ export default class Base {
 
   toArray() {
     return this.weights.toArray();
+  }
+
+  toJSON() {
+    const jsonLayer = {};
+    const { defaults, name } = this.constructor;
+    const keys = Object.keys(defaults);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (key === 'deltas') continue;
+      jsonLayer[key] = this[key];
+    }
+    jsonLayer.type = name;
+    return jsonLayer;
   }
 }

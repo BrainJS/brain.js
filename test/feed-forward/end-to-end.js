@@ -41,14 +41,14 @@ describe('FeedForward Class: End to End', () => {
     });
   });
   describe('.train()', () => {
-    it.only('outputs a number that is smaller than when it started', () => {
+    it('outputs a number that is smaller than when it started', () => {
       const net = new FeedForward({
         inputLayer: () => input({ width: 2 }),
         hiddenLayers: [
           (input) => feedForward({ width: 3 }, input)
         ],
         outputLayer: (input) => {
-          const outputGate = random({ width: 3, height: 1 });
+          const outputGate = random({ width: input.height, height: 1 });
           const outputConnector = multiply(
             outputGate,
             input
@@ -87,14 +87,13 @@ describe('FeedForward Class: End to End', () => {
       console.log(net.run([1, 0]));
       console.log(net.run([1, 1]));
       assert.equal(errors[0] > errors[299], true, 'error rate falls');
-
     });
   });
   describe('.calculateDeltas()', () => {
     it('populates deltas from output to input', () => {
       class SuperOutput extends Output {
         constructor(settings, inputLayer) {
-          super(settings);
+          super(settings, inputLayer);
           this.deltas = zeros2D(this.width, this.height);
           this.inputLayer = inputLayer;
         }
@@ -110,8 +109,7 @@ describe('FeedForward Class: End to End', () => {
       net.initialize();
       net.layers[0].weights = [[1]];
       net.layers.forEach((layer, layerIndex) => {
-        //inputs?
-        if (!layer.deltas) return;
+        if (layerIndex === 0) return;
         layer.deltas.forEach((row, rowIndex) => {
           row.forEach((delta, deltaIndex) => {
             assert.equal(delta, 0, `delta is ${ delta } of layer type ${ layer.constructor.name } with layerIndex of ${ layerIndex }, rowIndex of ${ rowIndex }, and deltaIndex of ${ deltaIndex }`);

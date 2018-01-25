@@ -126,10 +126,8 @@ describe('Multiply Layer', () => {
       it('throws error', () => {
         assert.throws(() => {
           Multiply.prototype.validate.call({
-            inputLayers: [
-              { width: 1 },
-              { height: 2 }
-            ]
+            inputLayer1: { width: 1 },
+            inputLayer2: { height: 2 }
           });
         }, Error);
       });
@@ -137,10 +135,8 @@ describe('Multiply Layer', () => {
     context('when dimension are compatible', () => {
       it('validates', () => {
         Multiply.prototype.validate.call({
-          inputLayers: [
-            { width: 1 },
-            { height: 1 }
-          ]
+          inputLayer1: { width: 1 },
+          inputLayer2: { height: 1 }
         });
       });
     });
@@ -165,7 +161,7 @@ describe('Multiply Layer', () => {
             [11, 12]
           ]
         };
-        const multiplyLayer = new Multiply([inputLayer1, inputLayer2]);
+        const multiplyLayer = new Multiply(inputLayer1, inputLayer2);
         multiplyLayer.validate();
         multiplyLayer.setupKernels();
         multiplyLayer.predict();
@@ -180,7 +176,7 @@ describe('Multiply Layer', () => {
       it('is compatible', () => {
         const random = new Random({ height: 3, width: 2 });
         const input = new Input({ width: 2 });
-        const multiply = new Multiply([random, input]);
+        const multiply = new Multiply(random, input);
 
         random.validate();
         random.setupKernels();

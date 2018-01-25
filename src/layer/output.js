@@ -9,7 +9,7 @@ export default class Output extends Base {
     this.inputLayer = inputLayer;
     this.width = inputLayer.width;
     this.height = inputLayer.height;
-    this.weights = randos2D(this.width, this.height);
+    this.weights = zeros2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
     this.errors = zeros2D(this.width, this.height);
   }
@@ -24,6 +24,7 @@ export default class Output extends Base {
   }
 
   predict() {
+    this.deltas = zeros2D(this.width, this.height);
     this.weights = this.inputLayer.weights;
   }
 
@@ -32,8 +33,6 @@ export default class Output extends Base {
     this.inputLayer.deltas = this.weights;
     this.errors = this.compareKernel(this.weights, targetValues);
   }
-
-  learn(previousLayer, nextLayer, learningRate) {}
 }
 
 function compare1D(weights, targetValues) {

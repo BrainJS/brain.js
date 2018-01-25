@@ -9,6 +9,7 @@ const {
   feedForward,
   Input,
   input,
+  Multiply,
   Output,
   output,
   Pool,
@@ -70,6 +71,7 @@ describe('FeedForward Class: Unit', () => {
         assert.deepEqual(net.layers.map(layer => layer.constructor), [
           Input,
           Random,
+          Multiply,
           Random,
           Add,
           Sigmoid,

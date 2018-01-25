@@ -324,24 +324,22 @@ export default class FeedForward {
     const jsonLayers = [];
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i];
-      const jsonLayer = {};
-      const jsonKeys = Object.keys(layer.constructor.defaults);
-      for (let keyIndex = 0; keyIndex < jsonKeys.length; keyIndex++) {
-        const key = jsonKeys[keyIndex];
-        jsonLayer[key] = layer[key];
-      }
-      jsonLayer.type = layer.constructor.name;
-      if (layer.inputLayer) {
+      const jsonLayer = layer.toJSON();
+      if (layer.hasOwnProperty('inputLayer')) {
         jsonLayer.inputLayerIndex = this.layers.indexOf(layer.inputLayer);
-      } else if (layer.inputLayers) {
-        jsonLayer.inputLayerIndexes = layer.inputLayers.map((inputLayer) => this.layers.indexOf(inputLayer));
+      } else {
+        if (layer.hasOwnProperty('inputLayer1')) {
+          jsonLayer.inputLayer1Index = this.layers.indexOf(layer.inputLayer1);
+        }
+        if (layer.hasOwnProperty('inputLayer2')) {
+          jsonLayer.inputLayer2Index = this.layers.indexOf(layer.inputLayer2);
+        }
       }
       jsonLayers.push(jsonLayer);
     }
-    const json = {
+    return  {
       layers: jsonLayers
     };
-    return json;
   }
 
   /**
@@ -360,9 +358,15 @@ export default class FeedForward {
       if (jsonLayer.hasOwnProperty('inputLayerIndex')) {
         const inputLayer = layers[jsonLayer.inputLayerIndex];
         layers.push(layerFromJSON(jsonLayer, inputLayer) || getLayer(jsonLayer, inputLayer));
-      } else if (jsonLayer.hasOwnProperty('inputLayerIndexes')) {
-        const inputLayers = jsonLayer.inputLayerIndexes.map((inputLayerIndex) => layers[inputLayerIndex]);
-        layers.push(layerFromJSON(jsonLayer, inputLayers) || getLayer(jsonLayer, inputLayers));
+      } else {
+        if (jsonLayer.hasOwnProperty('inputLayer1Index')) {
+          const inputLayer = layers[jsonLayer.inputLayer1Index];
+          layers.push(layerFromJSON(jsonLayer, inputLayer) || getLayer(jsonLayer, inputLayer));
+        }
+        if (jsonLayer.hasOwnProperty('inputLayer2Index')) {
+          const inputLayer = layers[jsonLayer.inputLayer2Index];
+          layers.push(layerFromJSON(jsonLayer, inputLayer) || getLayer(jsonLayer, inputLayer));
+        }
       }
     }
 

@@ -4,22 +4,23 @@ import zeros2D from '../utilities/zeros-2d';
 import randos2D from '../utilities/randos-2d';
 
 export default class Add extends Base {
-  constructor(inputLayers, settings) {
-    super(settings);
-    this.width = inputLayers[0].width;
-    this.height = inputLayers[0].height;
-    this.inputLayers = inputLayers;
+  constructor(inputLayer1, inputLayer2) {
+    super();
+    this.width = inputLayer1.width;
+    this.height = inputLayer1.height;
+    this.inputLayer1 = inputLayer1;
+    this.inputLayer2 = inputLayer2;
     this.deltas = zeros2D(this.width, this.height);
     this.weights = randos2D(this.width, this.height);
   }
 
   validate() {
-    if (this.inputLayers[0].width !== this.inputLayers[1].width) {
-      throw new Error(`Layer width mismatch of ${this.inputLayers[0].width} and ${this.inputLayers[1].width}`);
+    if (this.inputLayer1.width !== this.inputLayer2.width) {
+      throw new Error(`Layer width mismatch of ${this.inputLayer1.width} and ${this.inputLayer2.width}`);
     }
 
-    if (this.inputLayers[0].height !== this.inputLayers[1].height) {
-      throw new Error(`Layer height mismatch of ${this.inputLayers[0].height} and ${this.inputLayers[1].height}`);
+    if (this.inputLayer1.height !== this.inputLayer2.height) {
+      throw new Error(`Layer height mismatch of ${this.inputLayer1.height} and ${this.inputLayer2.height}`);
     }
   }
 
@@ -30,15 +31,16 @@ export default class Add extends Base {
   }
 
   predict() {
-    this.weights = this.predictKernel(this.inputLayers[0].weights, this.inputLayers[1].weights);
+    this.deltas = zeros2D(this.width, this.height);
+    this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
   }
 
   compare(previousLayer, nextLayer, learningRate) {
-    this.inputLayers[0].deltas = this.deltas;
-    this.inputLayers[1].deltas = this.deltas;
+    this.inputLayer1.deltas = this.deltas;
+    this.inputLayer2.deltas = this.deltas;
   }
 }
 
-export function predict(inputs1, inputs2) {
-  return inputs1[this.thread.y][this.thread.x] + inputs2[this.thread.y][this.thread.x];
+export function predict(inputWeights1, inputWeights2) {
+  return inputWeights1[this.thread.y][this.thread.x] + inputWeights2[this.thread.y][this.thread.x];
 }
