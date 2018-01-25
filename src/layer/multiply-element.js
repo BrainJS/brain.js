@@ -34,8 +34,8 @@ export default class MultiplyElement extends Base {
   }
 
   predict() {
-    this.deltas = zeros2D(this.width, this.height);
     this.weights = this.predictKernel(this.weights, this.inputLayer.weights);
+    this.deltas = zeros2D(this.width, this.height);
   }
 
   compare() {

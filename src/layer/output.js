@@ -24,14 +24,14 @@ export default class Output extends Base {
   }
 
   predict() {
-    this.deltas = zeros2D(this.width, this.height);
     this.weights = this.inputLayer.weights;
+    this.deltas = zeros2D(this.width, this.height);
   }
 
   compare(targetValues) {
     // this is where weights attach to deltas
     this.inputLayer.deltas = this.weights;
-    this.errors = this.compareKernel(this.weights, targetValues);
+    this.inputLayer.deltas = this.errors = this.compareKernel(this.weights, targetValues);
   }
 }
 

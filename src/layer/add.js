@@ -31,8 +31,8 @@ export default class Add extends Base {
   }
 
   predict() {
-    this.deltas = zeros2D(this.width, this.height);
     this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
+    this.deltas = zeros2D(this.width, this.height);
   }
 
   compare(previousLayer, nextLayer, learningRate) {

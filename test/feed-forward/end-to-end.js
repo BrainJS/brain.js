@@ -67,7 +67,7 @@ describe('FeedForward Class: End to End', () => {
         { input: [1, 1], output: [0] }
       ];
       net.train(xorTrainingData, {
-        iterations: 300,
+        iterations: 500,
         threshold: 0.5,
         callbackPeriod: 1,
         callback: (info) => errors.push(info.error) });
@@ -82,10 +82,11 @@ describe('FeedForward Class: End to End', () => {
         && typeof errors[7] === 'number'
         && typeof errors[8] === 'number'
         && typeof errors[9] === 'number', true, 'training produces numerical errors');
-      console.log(net.run([0, 0]));
-      console.log(net.run([0, 1]));
-      console.log(net.run([1, 0]));
-      console.log(net.run([1, 1]));
+
+      assert.equal(net.run([0, 0])[0][0] < 0.5, true);
+      assert.equal(net.run([0, 1])[0][0] > 0.5, true);
+      assert.equal(net.run([1, 0])[0][0] > 0.5, true);
+      assert.equal(net.run([1, 1])[0][0] < 0.5, true);
       assert.equal(errors[0] > errors[299], true, 'error rate falls');
     });
   });
