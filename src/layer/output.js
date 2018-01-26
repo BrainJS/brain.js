@@ -9,7 +9,7 @@ export default class Output extends Base {
     this.inputLayer = inputLayer;
     this.width = inputLayer.width;
     this.height = inputLayer.height;
-    this.weights = zeros2D(this.width, this.height);
+    this.weights = null;
     this.deltas = zeros2D(this.width, this.height);
     this.errors = zeros2D(this.width, this.height);
   }
@@ -30,7 +30,6 @@ export default class Output extends Base {
 
   compare(targetValues) {
     // this is where weights attach to deltas
-    this.inputLayer.deltas = this.weights;
     this.inputLayer.deltas = this.errors = this.compareKernel(this.weights, targetValues);
   }
 }

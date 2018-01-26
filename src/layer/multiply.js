@@ -12,8 +12,8 @@ export default class Multiply extends Base {
     this.height = inputLayer1.height;
     this.compareKernel1 = null;
     this.compareKernel2 = null;
-    this.deltas = zeros2D(this.width, this.height);
     this.weights = randos2D(this.width, this.height);
+    this.deltas = zeros2D(this.width, this.height);
   }
 
   validate() {

@@ -10,8 +10,8 @@ export default class Add extends Base {
     this.height = inputLayer1.height;
     this.inputLayer1 = inputLayer1;
     this.inputLayer2 = inputLayer2;
-    this.deltas = zeros2D(this.width, this.height);
     this.weights = randos2D(this.width, this.height);
+    this.deltas = zeros2D(this.width, this.height);
   }
 
   validate() {
