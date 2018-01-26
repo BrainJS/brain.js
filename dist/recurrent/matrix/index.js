@@ -99,6 +99,44 @@ var Matrix = function () {
         weights: this.weights.slice(0)
       };
     }
+  }, {
+    key: 'weightsToArray',
+    value: function weightsToArray() {
+      var deltas = [];
+      var row = 0;
+      var column = 0;
+      for (var i = 0; i < this.weights.length; i++) {
+        if (column === 0) {
+          deltas.push([]);
+        }
+        deltas[row].push(this.weights[i]);
+        column++;
+        if (column >= this.columns) {
+          column = 0;
+          row++;
+        }
+      }
+      return deltas;
+    }
+  }, {
+    key: 'deltasToArray',
+    value: function deltasToArray() {
+      var deltas = [];
+      var row = 0;
+      var column = 0;
+      for (var i = 0; i < this.deltas.length; i++) {
+        if (column === 0) {
+          deltas.push([]);
+        }
+        deltas[row].push(this.deltas[i]);
+        column++;
+        if (column >= this.columns) {
+          column = 0;
+          row++;
+        }
+      }
+      return deltas;
+    }
   }], [{
     key: 'fromJSON',
     value: function fromJSON(json) {
