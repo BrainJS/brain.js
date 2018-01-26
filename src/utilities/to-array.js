@@ -4,10 +4,14 @@
  * @returns {*}
  */
 export default function toArray(values) {
-  values = values || [];
   if (Array.isArray(values)) {
     return values;
   } else {
-    return Object.keys(values).map(key => values[key]);
+    const keys = Object.keys(values);
+    const result = new Float32Array(keys.length);
+    for (let i in keys) {
+      result[i] = values[keys[i]];
+    }
+    return result;
   }
 }
