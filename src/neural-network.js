@@ -15,29 +15,34 @@ import Thaw from 'thaw.js';
 export default class NeuralNetwork {
   static get trainDefaults() {
     return {
-      iterations: 20000,
-      errorThresh: 0.005,
-      log: false,
-      logPeriod: 10,
-      learningRate: 0.3,
-      callback: null,
-      callbackPeriod: 10
+      iterations: 20000,    // the maximum times to iterate the training data
+      errorThresh: 0.005,   // the acceptable error percentage from training data
+      log: false,           // true to use console.log, when a function is supplied it is used
+      logPeriod: 10,        // iterations between logging out
+      learningRate: 0.3,    // multiply's against the input and the delta then adds to momentum
+      momentum: 0.1,        // multiply's against the specified "change" then adds to learning rate for change
+      callback: null,       // a periodic call back that can be triggered while training
+      callbackPeriod: 10,   // the number of iterations through the training data between callback calls
+      timeout: Infinity     // the max number of milliseconds to train for
     };
   }
 
   static get defaults() {
     return {
-      learningRate: 0.3,
-      momentum: 0.1,
-      binaryThresh: 0.5,
-      hiddenLayers: null,
-      activation: 'sigmoid'
+      binaryThresh: 0.5,     // ¯\_(ツ)_/¯
+      hiddenLayers: [3],     // array of ints for the sizes of the hidden layers in the network
+      activation: 'sigmoid'  // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
     };
   }
 
   constructor(options = {}) {
     Object.assign(this, this.constructor.defaults, options);
     this.hiddenSizes = options.hiddenLayers;
+
+    let backCompat = {};
+    if (options.learningRate) backCompat.learningRate = options.learningRate;
+    if (options.momentum) backCompat.momentum = options.momentum;
+    this.trainOpts = Object.assign({}, this.constructor.trainDefaults, backCompat);
 
     this.sizes = null;
     this.outputLayer = null;
@@ -60,10 +65,11 @@ export default class NeuralNetwork {
 
   /**
    *
-   * @param {Number[]} sizes
+   * Expects this.sizes to have been set
    */
-  initialize(sizes) {
-    this.sizes = sizes;
+  _initialize() {
+    if (!this.sizes) throw new Error ('Sizes must be set before initializing')
+
     this.outputLayer = this.sizes.length - 1;
     this.biases = []; // weights for bias nodes
     this.weights = [];
@@ -96,6 +102,10 @@ export default class NeuralNetwork {
     this.setActivation();
   }
 
+  /**
+   *
+   * @param supported input: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+   */
   setActivation() {
     switch (this.activation) {
       case 'sigmoid':
@@ -255,26 +265,66 @@ export default class NeuralNetwork {
   /**
    *
    * @param data
-   * @returns sizes
+   * Verifies network sizes are initilaized
+   * If they are not it will initialize them based off the data set.
    */
-  _getSizesFromData(data) {
-    let sizes = [];
-    let inputSize = data[0].input.length;
-    let outputSize = data[0].output.length;
-    let hiddenSizes = this.hiddenSizes;
-    if (!hiddenSizes) {
-      sizes.push(Math.max(3, Math.floor(inputSize / 2)));
+  _verifyIsInitialized(data) {
+    if (this.sizes) return;
+
+    this.sizes = [];
+    this.sizes.push(data[0].input.length);
+    if (!this.hiddenSizes) {
+      this.sizes.push(Math.max(3, Math.floor(data[0].input.length / 2)));
     } else {
-      hiddenSizes.forEach(size => {
-        sizes.push(size);
+      this.hiddenSizes.forEach(size => {
+        this.sizes.push(size);
       });
     }
+    this.sizes.push(data[0].output.length)
 
-    sizes.unshift(inputSize);
-    sizes.push(outputSize);
-    return sizes;
+    this._initialize();
   }
 
+  /**
+   *
+   * @param options
+   *    Supports all `trainDefaults` properties
+   *    also supports:
+   *       learningRate: (number),
+   *       momentum: (number),
+   *       activation: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+   */
+  _updateTrainingOptions(opts) {
+    if (opts.iterations) { this.trainOpts.iterations = opts.iterations; }
+    if (opts.errorThresh) { this.trainOpts.errorThresh = opts.errorThresh; }
+    if (opts.log) { this._setLogMethod(opts.log); }
+    if (opts.logPeriod) { this.trainOpts.logPeriod = opts.logPeriod; }
+    if (opts.learningRate) { this.trainOpts.learningRate = opts.learningRate; }
+    if (opts.momentum) { this.trainOpts.momentum = opts.momentum; }
+    if (opts.callback) { this.trainOpts.callback = opts.callback; }
+    if (opts.callbackPeriod) { this.trainOpts.callbackPeriod = opts.callbackPeriod; }
+    if (opts.timeout) { this.trainOpts.callbackPeriod = opts.timeout; }
+    if (opts.activation) { this.activation = opts.activation; }
+  }
+
+  /**
+   *
+   *  Gets JSON of trainOpts object
+   *    NOTE: Activation is stored directly on JSON object and not in the training options
+   */
+  _getTrainOptsJSON() {
+    let results = {}
+    if (this.trainOpts.iterations) { results.iterations = this.trainOpts.iterations; }
+    if (this.trainOpts.errorThresh) { results.errorThresh = this.trainOpts.errorThresh; }
+    if (this.trainOpts.logPeriod) { results.logPeriod = this.trainOpts.logPeriod; }
+    if (this.trainOpts.learningRate) { results.learningRate = this.trainOpts.learningRate; }
+    if (this.trainOpts.momentum) { results.momentum = this.trainOpts.momentum; }
+    if (this.trainOpts.callback) { results.callback = this.trainOpts.callback; }
+    if (this.trainOpts.callbackPeriod) { results.callbackPeriod = this.trainOpts.callbackPeriod; }
+    if (this.trainOpts.timeout) { results.timeout = this.trainOpts.timeout; }
+    if (this.trainOpts.log) { results.log = true; }
+    return results;
+  }
 
   /**
    *
@@ -284,8 +334,13 @@ export default class NeuralNetwork {
    * @returns error
    */
   _setLogMethod(log) {
-    if (log) return console.log;
-    return false;
+    if (typeof log === 'function'){
+      this.trainOpts.log = log;
+    } else if (log) {
+      this.trainOpts.log = console.log;
+    } else {
+      this.trainOpts.log = false;
+    }
   }
 
   /**
@@ -294,10 +349,10 @@ export default class NeuralNetwork {
    * @param learning Rate
    * @returns error
    */
-  _calculateTrainingError(data, learningRate) {
+  _calculateTrainingError(data) {
     let sum = 0;
     for (let i = 0; i < data.length; ++i) {
-      sum += this.trainPattern(data[i].input, data[i].output, learningRate);
+      sum += this._trainPattern(data[i].input, data[i].output);
     }
     return sum / data.length;
   }
@@ -307,42 +362,39 @@ export default class NeuralNetwork {
    * @param status { iterations: number, error: number}
    * @param options
    */
-  _checkTrainingTick(data, status, options) {
+  _trainingTick(data, status) {
     status.iterations++;
-    status.error = this._calculateTrainingError(data, options.learningRate);
+    status.error = this._calculateTrainingError(data);
 
-    if (options.log && (status.iterations % options.logPeriod === 0)) {
-      options.log(`iterations: ${status.iterations}, training error: ${status.error}`);
+    if (this.trainOpts.log && (status.iterations % this.trainOpts.logPeriod === 0)) {
+      this.trainOpts.log(`iterations: ${status.iterations}, training error: ${status.error}`);
     }
 
-    if (options.callback && (status.iterations % options.callbackPeriod === 0)) {
-      options.callback(Object.assign(status));
+    if (this.trainOpts.callback && (status.iterations % this.trainOpts.callbackPeriod === 0)) {
+      this.trainOpts.callback(Object.assign(status));
     }
   }
 
   /**
    *
    * @param data
-   * @param _options
+   * @param options
    * @returns {{error: number, iterations: number}}
    */
-  train(data, _options = {}) {
-    const options = Object.assign({}, this.constructor.trainDefaults, _options);
+  train(data, options = {}) {
+    this._updateTrainingOptions(options);
     data = this.formatData(data);
-    options.log = this._setLogMethod(options.log);
-    options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
-    var status = {
+    const endTime = Date.now() + this.trainOpts.timeout;
+
+    const status = {
       error: 1,
       iterations: 0
     };
 
-    if (this.sizes === null) {
-      let sizes = this._getSizesFromData(data);
-      this.initialize(sizes);
-    }
+    this._verifyIsInitialized(data);
 
-    while ( status.iterations < options.iterations && status.error > options.errorThresh) {
-      this._checkTrainingTick(data, status, options);
+    while (status.iterations < this.trainOpts.iterations && status.error > this.trainOpts.errorThresh && Date.now() < endTime) {
+      this._trainingTick(data, status);
     }
 
     return status;
@@ -351,41 +403,33 @@ export default class NeuralNetwork {
   /**
    *
    * @param data
-   * @param _options
+   * @param options
    * @param cb
    * @returns {{error: number, iterations: number}}
    */
-  trainAsync(data, _options = {}) {
+  trainAsync(data, options = {}) {
     return new Promise((resolve, reject) => {
-      const options = Object.assign({}, this.constructor.trainDefaults, _options);
+      this._updateTrainingOptions(options);
       data = this.formatData(data);
-      options.log = this._setLogMethod(options.log);
-      options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
-      let endTime = Date.now() + options.trainTimeMs;
+      const endTime = Date.now() + this.trainOpts.timeout;
 
-      let status = {
+      const status = {
         error: 1,
         iterations: 0
       };
 
-      if (this.sizes === null) {
-        let sizes = this._getSizesFromData(data);
-        this.initialize(sizes);
-      }
+      this._verifyIsInitialized(data);
 
-      const items = new Array(options.iterations);
+      const items = new Array(this.trainOpts.iterations);
       const thaw  = new Thaw(items, {
         delay: true,
         each: () => {
-          this._checkTrainingTick(data, status, options);
-
-          if (status.error < options.errorThresh) {
+          this._trainingTick(data, status);
+          if (status.error < this.trainOpts.errorThresh || Date.now() > endTime) {
             thaw.stop();
           }
         },
-        done: () => {
-          resolve(status);
-        }
+        done: () => { resolve(status); }
       });
 
       thaw.tick();
@@ -396,17 +440,15 @@ export default class NeuralNetwork {
    *
    * @param input
    * @param target
-   * @param learningRate
    */
-  trainPattern(input, target, learningRate) {
-    learningRate = learningRate || this.learningRate;
+  _trainPattern(input, target) {
 
     // forward propagate
     this.runInput(input);
 
     // back propagate
     this.calculateDeltas(target);
-    this.adjustWeights(learningRate);
+    this.adjustWeights();
 
     let error = mse(this.errors[this.outputLayer]);
     return error;
@@ -514,9 +556,9 @@ export default class NeuralNetwork {
 
   /**
    *
-   * @param learningRate
+   * Changes weights of networks
    */
-  adjustWeights(learningRate) {
+  adjustWeights() {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       let incoming = this.outputs[layer - 1];
 
@@ -526,13 +568,13 @@ export default class NeuralNetwork {
         for (let k = 0; k < incoming.length; k++) {
           let change = this.changes[layer][node][k];
 
-          change = (learningRate * delta * incoming[k])
-            + (this.momentum * change);
+          change = (this.trainOpts.learningRate * delta * incoming[k])
+            + (this.trainOpts.momentum * change);
 
           this.changes[layer][node][k] = change;
           this.weights[layer][node][k] += change;
         }
-        this.biases[layer][node] += learningRate * delta;
+        this.biases[layer][node] += this.trainOpts.learningRate * delta;
       }
     }
   }
@@ -735,7 +777,8 @@ export default class NeuralNetwork {
       layers,
       outputLookup:!!this.outputLookup,
       inputLookup:!!this.inputLookup,
-      activation: this.activation
+      activation: this.activation,
+      trainOpts: this._getTrainOptsJSON()
     };
   }
 
@@ -745,7 +788,8 @@ export default class NeuralNetwork {
    * @returns {NeuralNetwork}
    */
   fromJSON (json) {
-    this.initialize (json.sizes);
+    this.sizes = json.sizes
+    this._initialize();
 
     for (let i = 0; i <= this.outputLayer; i++) {
       let layer = json.layers[i];
@@ -765,7 +809,7 @@ export default class NeuralNetwork {
         }
       }
     }
-
+    this._updateTrainingOptions(json.trainOpts)
     this.setActivation();
     return this;
   }
