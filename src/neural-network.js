@@ -645,12 +645,12 @@ export default class NeuralNetwork {
       else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
         this.outputLookup = lookup.lookupFromHash(layer);
       }
-      if (layer > 0) {
+      if (i > 0) {
         const nodes = Object.keys(layer);
         this.sizes[i] = nodes.length;
         for (let j in nodes) {
           const node = nodes[j];
-          this.biases[i] = layer[node].bias;
+          this.biases[i][j] = layer[node].bias;
           this.weights[i][j] = toArray(layer[node].weights);
         }
       }

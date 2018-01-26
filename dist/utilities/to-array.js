@@ -10,13 +10,15 @@ exports.default = toArray;
  * @returns {*}
  */
 function toArray(values) {
-  values = values || [];
   if (Array.isArray(values)) {
     return values;
   } else {
-    return Object.keys(values).map(function (key) {
-      return values[key];
-    });
+    var keys = Object.keys(values);
+    var result = new Float32Array(keys.length);
+    for (var i in keys) {
+      result[i] = values[keys[i]];
+    }
+    return result;
   }
 }
 //# sourceMappingURL=to-array.js.map

@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.0.2
+ *   version: 1.0.3
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -1581,12 +1581,12 @@ var NeuralNetwork = function () {
         } else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
           this.outputLookup = _lookup2.default.lookupFromHash(layer);
         }
-        if (layer > 0) {
+        if (i > 0) {
           var nodes = Object.keys(layer);
           this.sizes[i] = nodes.length;
           for (var j in nodes) {
             var node = nodes[j];
-            this.biases[i] = layer[node].bias;
+            this.biases[i][j] = layer[node].bias;
             this.weights[i][j] = (0, _toArray2.default)(layer[node].weights);
           }
         }
@@ -2478,6 +2478,44 @@ var Matrix = function () {
         columns: this.columns,
         weights: this.weights.slice(0)
       };
+    }
+  }, {
+    key: 'weightsToArray',
+    value: function weightsToArray() {
+      var deltas = [];
+      var row = 0;
+      var column = 0;
+      for (var i = 0; i < this.weights.length; i++) {
+        if (column === 0) {
+          deltas.push([]);
+        }
+        deltas[row].push(this.weights[i]);
+        column++;
+        if (column >= this.columns) {
+          column = 0;
+          row++;
+        }
+      }
+      return deltas;
+    }
+  }, {
+    key: 'deltasToArray',
+    value: function deltasToArray() {
+      var deltas = [];
+      var row = 0;
+      var column = 0;
+      for (var i = 0; i < this.deltas.length; i++) {
+        if (column === 0) {
+          deltas.push([]);
+        }
+        deltas[row].push(this.deltas[i]);
+        column++;
+        if (column >= this.columns) {
+          column = 0;
+          row++;
+        }
+      }
+      return deltas;
     }
   }], [{
     key: 'fromJSON',
@@ -4356,7 +4394,7 @@ var _randomWeight2 = _interopRequireDefault(_randomWeight);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function randos(size) {
-  var array = new Array(size);
+  var array = new Float32Array(size);
   for (var i = 0; i < size; i++) {
     array[i] = (0, _randomWeight2.default)();
   }
@@ -4397,30 +4435,27 @@ exports.default = toArray;
  * @returns {*}
  */
 function toArray(values) {
-  values = values || [];
   if (Array.isArray(values)) {
     return values;
   } else {
-    return Object.keys(values).map(function (key) {
-      return values[key];
-    });
+    var keys = Object.keys(values);
+    var result = new Float32Array(keys.length);
+    for (var i in keys) {
+      result[i] = values[keys[i]];
+    }
+    return result;
   }
 }
 
 },{}],43:[function(require,module,exports){
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = zeros;
 function zeros(size) {
-  if (typeof Float32Array !== 'undefined') return new Float32Array(size);
-  var array = new Array(size);
-  for (var i = 0; i < size; i++) {
-    array[i] = 0;
-  }
-  return array;
+  return new Float32Array(size);
 }
 
 },{}],44:[function(require,module,exports){
