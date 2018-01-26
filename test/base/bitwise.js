@@ -5,12 +5,10 @@ let wiggle = 0.1;
 
 function testBitwise(data, op) {
   let net = new brain.NeuralNetwork();
-  console.log(data);
   net.train(data, { errorThresh: 0.003 });
 
   for (let i in data) {
     let output = net.run(data[i].input);
-    console.log('output', output);
     let target = data[i].output;
     assert.ok(output < (target + wiggle) && output > (target - wiggle), 'failed to train ' + op + ' - output: ' + output + ' target: ' + target);
   }
