@@ -8,8 +8,7 @@ describe('JSON', () => {
     {
       input: {'0': Math.random(), b: Math.random()},
       output: {c: Math.random(), '0': Math.random()}
-    },
-    {
+    }, {
       input: {'0': Math.random(), b: Math.random()},
       output: {c: Math.random(), '0': Math.random()}
     }

@@ -6,9 +6,9 @@ import randos from './utilities/randos';
 import range from './utilities/range';
 import toArray from './utilities/to-array';
 import zeros from './utilities/zeros';
+import Thaw from 'thaw.js';
 
 /**
- *
  * @param {object} options
  * @constructor
  */
@@ -21,8 +21,7 @@ export default class NeuralNetwork {
       logPeriod: 10,
       learningRate: 0.3,
       callback: null,
-      callbackPeriod: 10,
-      reinforce: false
+      callbackPeriod: 10
     };
   }
 
@@ -226,60 +225,141 @@ export default class NeuralNetwork {
   /**
    *
    * @param data
+   * @returns sizes
+   */
+  _getSizesFromData(data) {
+    let sizes = [];
+    let inputSize = data[0].input.length;
+    let outputSize = data[0].output.length;
+    let hiddenSizes = this.hiddenSizes;
+    if (!hiddenSizes) {
+      sizes.push(Math.max(3, Math.floor(inputSize / 2)));
+    } else {
+      hiddenSizes.forEach(size => {
+        sizes.push(size);
+      });
+    }
+
+    sizes.unshift(inputSize);
+    sizes.push(outputSize);
+    return sizes;
+  }
+
+
+  /**
+   *
+   * @param log
+   * if a method is passed in method is used
+   * if false passed in nothing is logged
+   * @returns error
+   */
+  _setLogMethod(log) {
+    if (log) return console.log;
+    return false;
+  }
+
+  /**
+   *
+   * @param data
+   * @param learning Rate
+   * @returns error
+   */
+  _calculateTrainingError(data, learningRate) {
+    let sum = 0;
+    for (let i = 0; i < data.length; ++i) {
+      sum += this.trainPattern(data[i].input, data[i].output, learningRate);
+    }
+    return sum / data.length;
+  }
+
+  /**
+   *
+   * @param status { iterations: number, error: number}
+   * @param options
+   */
+  _checkTrainingTick(data, status, options) {
+    status.iterations++;
+    status.error = this._calculateTrainingError(data, options.learningRate);
+
+    if (options.log && (status.iterations % options.logPeriod === 0)) {
+      options.log(`iterations: ${status.iterations}, training error: ${status.error}`);
+    }
+
+    if (options.callback && (status.iterations % options.callbackPeriod === 0)) {
+      options.callback(Object.assign(status));
+    }
+  }
+
+  /**
+   *
+   * @param data
    * @param _options
    * @returns {{error: number, iterations: number}}
    */
   train(data, _options = {}) {
     const options = Object.assign({}, this.constructor.trainDefaults, _options);
     data = this.formatData(data);
-    let iterations = options.iterations;
-    let errorThresh = options.errorThresh;
-    let log = options.log === true ? console.log : options.log;
-    let logPeriod = options.logPeriod;
-    let learningRate = _options.learningRate || this.learningRate || options.learningRate;
-    let callback = options.callback;
-    let callbackPeriod = options.callbackPeriod;
-    if (!options.reinforce) {
-      let sizes = [];
-      let inputSize = data[0].input.length;
-      let outputSize = data[0].output.length;
-      let hiddenSizes = this.hiddenSizes;
-      if (!hiddenSizes) {
-        sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-      } else {
-        hiddenSizes.forEach(size => {
-          sizes.push(size);
-        });
-      }
+    options.log = this._setLogMethod(options.log);
+    options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
+    var status = {
+      error: 1,
+      iterations: 0
+    };
 
-      sizes.unshift(inputSize);
-      sizes.push(outputSize);
-
+    if (this.sizes === null) {
+      let sizes = this._getSizesFromData(data);
       this.initialize(sizes);
     }
 
-    let error = 1;
-    let i;
-    for (i = 0; i < iterations && error > errorThresh; i++) {
-      let sum = 0;
-      for (let j = 0; j < data.length; j++) {
-        let err = this.trainPattern(data[j].input, data[j].output, learningRate);
-        sum += err;
-      }
-      error = sum / data.length;
-
-      if (log && (i % logPeriod === 0)) {
-        log('iterations:', i, 'training error:', error);
-      }
-      if (callback && (i % callbackPeriod === 0)) {
-        callback({ error: error, iterations: i });
-      }
+    while ( status.iterations < options.iterations && status.error > options.errorThresh) {
+      this._checkTrainingTick(data, status, options);
     }
 
-    return {
-      error: error,
-      iterations: i
-    };
+    return status;
+  }
+
+  /**
+   *
+   * @param data
+   * @param _options
+   * @param cb
+   * @returns {{error: number, iterations: number}}
+   */
+  trainAsync(data, _options = {}) {
+    return new Promise((resolve, reject) => {
+      const options = Object.assign({}, this.constructor.trainDefaults, _options);
+      data = this.formatData(data);
+      options.log = this._setLogMethod(options.log);
+      options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
+      let endTime = Date.now() + options.trainTimeMs;
+
+      let status = {
+        error: 1,
+        iterations: 0
+      };
+
+      if (this.sizes === null) {
+        let sizes = this._getSizesFromData(data);
+        this.initialize(sizes);
+      }
+
+      const items = new Array(options.iterations);
+      const thaw  = new Thaw(items, {
+        delay: true,
+        each: () => {
+          this._checkTrainingTick(data, status, options);
+
+          if (status.error < options.errorThresh) {
+            thaw.stop();
+          }
+        },
+        done: () => {
+          resolve(status);
+        }
+      });
+
+      thaw.tick();
+    });
   }
 
   /**
@@ -634,8 +714,8 @@ export default class NeuralNetwork {
    * @param json
    * @returns {NeuralNetwork}
    */
-  fromJSON(json) {
-    this.initialize(json.sizes);
+  fromJSON (json) {
+    this.initialize (json.sizes);
 
     for (let i = 0; i <= this.outputLayer; i++) {
       let layer = json.layers[i];

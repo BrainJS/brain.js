@@ -38,6 +38,10 @@ var _zeros = require('./utilities/zeros');
 
 var _zeros2 = _interopRequireDefault(_zeros);
 
+var _thaw = require('thaw.js');
+
+var _thaw2 = _interopRequireDefault(_thaw);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -45,7 +49,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- *
  * @param {object} options
  * @constructor
  */
@@ -61,7 +64,7 @@ var NeuralNetwork = function () {
         learningRate: 0.3,
         callback: null,
         callbackPeriod: 10,
-        reinforce: false
+        trainTimeMs: -Infinity
       };
     }
   }, {
@@ -285,6 +288,87 @@ var NeuralNetwork = function () {
     /**
      *
      * @param data
+     * @returns sizes
+     */
+
+  }, {
+    key: '_getSizesFromData',
+    value: function _getSizesFromData(data) {
+      var sizes = [];
+      var inputSize = data[0].input.length;
+      var outputSize = data[0].output.length;
+      var hiddenSizes = this.hiddenSizes;
+      if (!hiddenSizes) {
+        sizes.push(Math.max(3, Math.floor(inputSize / 2)));
+      } else {
+        hiddenSizes.forEach(function (size) {
+          sizes.push(size);
+        });
+      }
+
+      sizes.unshift(inputSize);
+      sizes.push(outputSize);
+      return sizes;
+    }
+
+    /**
+     *
+     * @param log
+     * if true passed in console.log is used
+     * if a method is passed in method is used
+     * if false passed in nothing is logged
+     * @returns error
+     */
+
+  }, {
+    key: '_setLogMethod',
+    value: function _setLogMethod(log) {
+      if (typeof log === 'function') return log;
+      if (log) return console.log;
+      return false;
+    }
+
+    /**
+     *
+     * @param data
+     * @param learning Rate
+     * @returns error
+     */
+
+  }, {
+    key: '_calculateTrainingError',
+    value: function _calculateTrainingError(data, learningRate) {
+      var sum = 0;
+      for (var i = 0; i < data.length; ++i) {
+        sum += this.trainPattern(data[i].input, data[i].output, learningRate);
+      }
+      return sum / data.length;
+    }
+
+    /**
+     *
+     * @param status { iterations: number, error: number}
+     * @param options
+     */
+
+  }, {
+    key: '_checkTrainingTick',
+    value: function _checkTrainingTick(data, status, options) {
+      status.iterations++;
+      status.error = this._calculateTrainingError(data, options.learningRate);
+
+      if (options.log && status.iterations % options.logPeriod === 0) {
+        options.log('iterations: ' + status.iterations + ', training error: ' + status.error);
+      }
+
+      if (options.callback && status.iterations % options.callbackPeriod === 0) {
+        options.callback(Object.assign(status));
+      }
+    }
+
+    /**
+     *
+     * @param data
      * @param _options
      * @returns {{error: number, iterations: number}}
      */
@@ -296,54 +380,73 @@ var NeuralNetwork = function () {
 
       var options = Object.assign({}, this.constructor.trainDefaults, _options);
       data = this.formatData(data);
-      var iterations = options.iterations;
-      var errorThresh = options.errorThresh;
-      var log = options.log === true ? console.log : options.log;
-      var logPeriod = options.logPeriod;
-      var learningRate = _options.learningRate || this.learningRate || options.learningRate;
-      var callback = options.callback;
-      var callbackPeriod = options.callbackPeriod;
-      if (!options.reinforce) {
-        var sizes = [];
-        var inputSize = data[0].input.length;
-        var outputSize = data[0].output.length;
-        var hiddenSizes = this.hiddenSizes;
-        if (!hiddenSizes) {
-          sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-        } else {
-          hiddenSizes.forEach(function (size) {
-            sizes.push(size);
-          });
-        }
+      options.log = this._setLogMethod(options.log);
+      options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
+      var endTime = Date.now() + options.trainTimeMs;
+      var status = {
+        error: 1,
+        iterations: 0
+      };
 
-        sizes.unshift(inputSize);
-        sizes.push(outputSize);
-
+      if (this.sizes === null) {
+        var sizes = this._getSizesFromData(data);
         this.initialize(sizes);
       }
-
-      var error = 1;
-      var i = void 0;
-      for (i = 0; i < iterations && error > errorThresh; i++) {
-        var sum = 0;
-        for (var j = 0; j < data.length; j++) {
-          var err = this.trainPattern(data[j].input, data[j].output, learningRate);
-          sum += err;
-        }
-        error = sum / data.length;
-
-        if (log && i % logPeriod === 0) {
-          log('iterations:', i, 'training error:', error);
-        }
-        if (callback && i % callbackPeriod === 0) {
-          callback({ error: error, iterations: i });
-        }
+      while (status.iterations < options.iterations && status.error > options.errorThresh && Date.now() > endTime) {
+        this._checkTrainingTick(data, status, options);
       }
+      return status;
+    }
 
-      return {
-        error: error,
-        iterations: i
-      };
+    /**
+     *
+     * @param data
+     * @param _options
+     * @param cb
+     * @returns {{error: number, iterations: number}}
+     */
+
+  }, {
+    key: 'trainAsync',
+    value: function trainAsync(data) {
+      var _this = this;
+
+      var _options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      return new Promise(function (resolve, reject) {
+        var options = Object.assign({}, _this.constructor.trainDefaults, _options);
+        data = _this.formatData(data);
+        options.log = _this._setLogMethod(options.log);
+        options.learningRate = _options.learningRate || _this.learningRate || options.learningRate;
+        var endTime = Date.now() + options.trainTimeMs;
+
+        var status = {
+          error: 1,
+          iterations: 0
+        };
+
+        if (_this.sizes === null) {
+          var sizes = _this._getSizesFromData(data);
+          _this.initialize(sizes);
+        }
+
+        var items = new Array(options.iterations);
+        var thaw = new _thaw2.default(items, {
+          delay: true,
+          each: function each() {
+            _this._checkTrainingTick(data, status, options);
+
+            if (status.error < options.errorThresh || Date.now() < endTime) {
+              thaw.stop();
+            }
+          },
+          done: function done() {
+            resolve(status);
+          }
+        });
+
+        thaw.tick();
+      });
     }
 
     /**
@@ -513,7 +616,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'formatData',
     value: function formatData(data) {
-      var _this = this;
+      var _this2 = this;
 
       if (!Array.isArray(data)) {
         // turn stream datum into array
@@ -530,7 +633,7 @@ var NeuralNetwork = function () {
           }));
         }
         data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this.inputLookup, datum.input);
+          var array = _lookup2.default.toArray(_this2.inputLookup, datum.input);
           return Object.assign({}, datum, { input: array });
         }, this);
       }
@@ -542,7 +645,7 @@ var NeuralNetwork = function () {
           }));
         }
         data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this.outputLookup, datum.output);
+          var array = _lookup2.default.toArray(_this2.outputLookup, datum.output);
           return Object.assign({}, datum, { output: array });
         }, this);
       }
@@ -563,7 +666,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'test',
     value: function test(data) {
-      var _this2 = this;
+      var _this3 = this;
 
       data = this.formatData(data);
 
@@ -582,13 +685,13 @@ var NeuralNetwork = function () {
       var sum = 0;
 
       var _loop = function _loop(i) {
-        var output = _this2.runInput(data[i].input);
+        var output = _this3.runInput(data[i].input);
         var target = data[i].output;
 
         var actual = void 0,
             expected = void 0;
         if (isBinary) {
-          actual = output[0] > _this2.binaryThresh ? 1 : 0;
+          actual = output[0] > _this3.binaryThresh ? 1 : 0;
           expected = target[0];
         } else {
           actual = output.indexOf((0, _max2.default)(output));
