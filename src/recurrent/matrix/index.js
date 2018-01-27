@@ -103,4 +103,40 @@ export default class Matrix {
 
     return m;
   }
+
+  weightsToArray() {
+    const deltas = [];
+    let row = 0;
+    let column = 0;
+    for (let i = 0; i < this.weights.length; i++) {
+      if (column === 0) {
+        deltas.push([]);
+      }
+      deltas[row].push(this.weights[i]);
+      column++;
+      if (column >= this.columns) {
+        column = 0;
+        row++;
+      }
+    }
+    return deltas;
+  }
+
+  deltasToArray() {
+    const deltas = [];
+    let row = 0;
+    let column = 0;
+    for (let i = 0; i < this.deltas.length; i++) {
+      if (column === 0) {
+        deltas.push([]);
+      }
+      deltas[row].push(this.deltas[i]);
+      column++;
+      if (column >= this.columns) {
+        column = 0;
+        row++;
+      }
+    }
+    return deltas;
+  }
 }
