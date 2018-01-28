@@ -2,7 +2,7 @@ import assert from 'assert';
 import brain from '../../src';
 
 describe('hash input and output', () => {
-  it ('runs correctly with array input and output', () => {
+  it('runs correctly with array input and output', () => {
     let net = new brain.NeuralNetwork();
 
     net.train([

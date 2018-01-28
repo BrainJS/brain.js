@@ -12,7 +12,7 @@ Then you can run all tests using `npm test`.
 Run the unit tests with:
 
 ```
-npm test
+npm run test
 ```
 
 See [package.json](../package.json) for more testing examples.

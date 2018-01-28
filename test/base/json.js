@@ -20,12 +20,14 @@ describe('JSON', () => {
   const input = {'0' : Math.random(), b: Math.random()};
   describe('.toJSON()', () => {
     describe('.layers', () => {
+
       it('layer count is correct', () => {
         assert.equal(serialized.layers.length, 3);
         originalNet.sizes.forEach((size, i) => {
           assert.equal(size, Object.keys(serialized.layers[i]).length);
         });
       });
+
       describe('input layer', () => {
         const inputLayer = serialized.layers[0];
         it('is empty, but describes input', () => {
@@ -37,6 +39,7 @@ describe('JSON', () => {
           assert(Object.keys(inputLayer['b']).length === 0);
         });
       });
+
       describe('hidden layers', () => {
         it('are populated exactly from original net', () => {
           assert.equal(serialized.layers[1][0].bias, originalNet.biases[1][0]);
@@ -47,12 +50,14 @@ describe('JSON', () => {
         });
       });
     });
+
     describe('.activation', () => {
       it('exports correctly', () => {
         assert.equal(serialized.activation, originalNet.activation);
       });
     });
   });
+
   describe('.fromJSON()', () => {
     describe('importing values', () => {
       describe('.layers', () => {
@@ -61,6 +66,7 @@ describe('JSON', () => {
           assert.equal(serializedNet.biases['1'].length, 3);
           assert.equal(serializedNet.weights.length, 3);
         });
+
         describe('hidden layers', () => {
           it('are populated exactly from serialized', () => {
             assert.equal(serializedNet.biases[1][0], serialized.layers[1][0].bias);
@@ -71,12 +77,14 @@ describe('JSON', () => {
           });
         });
       });
+
       describe('.activation', () => {
         it('exports correctly', () => {
           assert.equal(serializedNet.activation, serialized.activation);
         });
       });
     });
+
     it('can run originalNet, and serializedNet, with same output', () => {
       const output1 = originalNet.run(input);
       const output2 = serializedNet.run(input);
