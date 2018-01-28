@@ -1,6 +1,25 @@
 import assert from 'assert';
 import NeuralNetwork from './../../src/neural-network';
 
+let jsonNetwork = { sizes: [ 3, 3, 2 ],
+  layers: 
+   [ { r: {}, g: {}, b: {} },
+     { '0': [Object], '1': [Object], '2': [Object] },
+     { black: [Object], white: [Object] } ],
+  outputLookup: true,
+  inputLookup: true,
+  activation: 'relu',
+  trainOpts: {
+    iterations: 200,
+    errorThresh: 0.025,
+    logPeriod: 6,
+    learningRate: 0.4,
+    momentum: 0.2,
+    callbackPeriod: 3,
+    timeout: 500
+  }
+};
+
 describe('JSON', () => {
   const originalNet = new NeuralNetwork();
 
