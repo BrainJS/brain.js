@@ -16,6 +16,7 @@
 - [Training](#training)
     + [Data format](#data-format)
     + [Training Options](#training-options)
+    + [Async Training](#async-training)
 - [Methods](#methods)
     + [train](#train)
 - [Failing](#failing)
@@ -139,6 +140,40 @@ By default training won't let you know how its doing until the end, but set `log
 
 The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data.(_Overfitting_) The default learning rate is `0.3`.
 
+
+### Async Training
+`trainAsync()` takes the same arguments as train (data and options).  Instead of returning the results object from training it returns a promise that when resolved will return the training results object.
+
+```javascript
+  let net = new brain.NeuralNetwork();
+  net
+    .trainAsync(data, options)
+    .then(res => {
+      // do something with my trained network
+    })
+    .catch(handleError);
+```
+
+With multiple networks you can train in parallel like this:
+
+```javascript
+  var net = new brain.NeuralNetwork();
+  var net2 = new brain.NeuralNetwork();
+
+  var p1 = net.trainAsync(data, options);
+  var p2 = net2.trainAsync(data, options);
+
+  Promise
+    .all([p1, p2])
+    .then(values => {
+      var res = values[0];
+      var res2 = values[1];
+      console.log(`net trained in ${res.iterations} and net2 trained in ${res2.iterations}`);
+      // do something super cool with my 2 trained networks
+    })
+    .catch(handleError);
+```
+
 # Methods
 ### train
 The output of `train()` is a hash of information about how the training went:
@@ -232,3 +267,9 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 Different neural nets do different things well.  For example:
 * A Feedforward Neural Network can classify simple things very well, but it has no memory of previous actions and has infinite variation of results.
 * A Recurrent Neural Network _remembers_, and has a finite set of results.
+
+# Get Involved!
+### Issues
+If you have an issue, either a bug or a feature you think would benefit your project let us know and we will do our best.
+
+Create issues [here](https://github.com/BrainJS/brain.js/issues) and follow the template.

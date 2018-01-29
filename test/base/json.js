@@ -1,46 +1,87 @@
 import assert from 'assert';
 import NeuralNetwork from './../../src/neural-network';
 
-function normalize(v) {
-  const result = {};
-  for (let p in v) {
-    result[p] = v[p].toFixed(7);
-  }
-  return result;
-}
-
 describe('JSON', () => {
-  let net = new NeuralNetwork();
+  const originalNet = new NeuralNetwork();
 
-  net.train([
+  originalNet.train([
     {
-      input: {'0': 1, b: 1},
-      output: {c: .5, '0': .5}
-    },
-    {
-      input: {'0': .5, b: .5},
-      output: {c: 0, '0': 0}
+      input: {'0': Math.random(), b: Math.random()},
+      output: {c: Math.random(), '0': Math.random()}
+    }, {
+      input: {'0': Math.random(), b: Math.random()},
+      output: {c: Math.random(), '0': Math.random()}
     }
   ]);
 
-  let serialized = net.toJSON();
-  let net2 = new NeuralNetwork().fromJSON(serialized);
+  const serialized = originalNet.toJSON();
+  const serializedNet = new NeuralNetwork().fromJSON(serialized);
 
-  let input = {'0' : 1, b: 1};
-
-  it('toJSON()/fromJSON()', () => {
-    let output1 = net.run(input);
-    let output2 = net2.run(input);
-
-    assert.deepEqual(output2, output1,
-      'loading json serialized network failed');
+  const input = {'0' : Math.random(), b: Math.random()};
+  describe('.toJSON()', () => {
+    describe('.layers', () => {
+      it('layer count is correct', () => {
+        assert.equal(serialized.layers.length, 3);
+        originalNet.sizes.forEach((size, i) => {
+          assert.equal(size, Object.keys(serialized.layers[i]).length);
+        });
+      });
+      describe('input layer', () => {
+        const inputLayer = serialized.layers[0];
+        it('is empty, but describes input', () => {
+          const keys = Object.keys(inputLayer);
+          assert(keys.length === 2);
+          assert(inputLayer.hasOwnProperty('0'));
+          assert(inputLayer.hasOwnProperty('b'));
+          assert(Object.keys(inputLayer['0']).length === 0);
+          assert(Object.keys(inputLayer['b']).length === 0);
+        });
+      });
+      describe('hidden layers', () => {
+        it('are populated exactly from original net', () => {
+          assert.equal(serialized.layers[1][0].bias, originalNet.biases[1][0]);
+          assert.equal(serialized.layers[1][1].bias, originalNet.biases[1][1]);
+          assert.equal(serialized.layers[1][2].bias, originalNet.biases[1][2]);
+          assert.equal(serialized.layers[2]['0'].bias, originalNet.biases[2][0]);
+          assert.equal(serialized.layers[2]['c'].bias, originalNet.biases[2][1]);
+        });
+      });
+    });
+    describe('.activation', () => {
+      it('exports correctly', () => {
+        assert.equal(serialized.activation, originalNet.activation);
+      });
+    });
   });
-
-  it('toFunction()', () => {
-    const output1 = net.run(input);
-    const output2 = net.toFunction()(input);
-
-    assert.equal(JSON.stringify(normalize(output2)), JSON.stringify(normalize(output1)),
-      'standalone network function failed');
-  })
+  describe('.fromJSON()', () => {
+    describe('importing values', () => {
+      describe('.layers', () => {
+        it('layer count is correct', () => {
+          assert.equal(serializedNet.biases.length, 3);
+          assert.equal(serializedNet.biases['1'].length, 3);
+          assert.equal(serializedNet.weights.length, 3);
+        });
+        describe('hidden layers', () => {
+          it('are populated exactly from serialized', () => {
+            assert.equal(serializedNet.biases[1][0], serialized.layers[1][0].bias);
+            assert.equal(serializedNet.biases[1][1], serialized.layers[1][1].bias);
+            assert.equal(serializedNet.biases[1][2], serialized.layers[1][2].bias);
+            assert.equal(serializedNet.biases[2][0], serialized.layers[2]['0'].bias);
+            assert.equal(serializedNet.biases[2][1], serialized.layers[2]['c'].bias);
+          });
+        });
+      });
+      describe('.activation', () => {
+        it('exports correctly', () => {
+          assert.equal(serializedNet.activation, serialized.activation);
+        });
+      });
+    });
+    it('can run originalNet, and serializedNet, with same output', () => {
+      const output1 = originalNet.run(input);
+      const output2 = serializedNet.run(input);
+      assert.deepEqual(output2, output1,
+        'loading json serialized network failed');
+    });
+  });
 });

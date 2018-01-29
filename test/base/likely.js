@@ -34,7 +34,11 @@ describe('likely', () => {
   /**
    * Learn the letters A through C.
    */
+
+  let test;
+
   let net = new brain.NeuralNetwork();
+
   net.train([
     { input: a, output: { a: 1 } },
     { input: b, output: { b: 1 } },
@@ -62,23 +66,24 @@ describe('likely', () => {
     /**
      * Predict the letter B, even with a pixel off.
      */
-    let result = likely(character(
-      '######.' +
-      '#.....#' +
-      '#.....#' +
-      '######.' +
-      '#..#..#' +
-      '#.....#' +
-      '###.##.'
-    ), net);
+      let result = likely(character(
+        '######.' +
+        '#.....#' +
+        '#.....#' +
+        '######.' +
+        '#..#..#' +
+        '#.....#' +
+        '###.##.'
+      ), net);
 
-    assert.ok(result === 'b');
+      assert.ok(result === 'b');
   });
 
   it('should be able to find a "c"', () => {
     /**
      * Predict the letter C, even with a pixel off.
      */
+
     let result = likely(character(
       '#######' +
       '#......' +
