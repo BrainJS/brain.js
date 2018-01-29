@@ -278,6 +278,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
   }, {
     key: 'run',
     value: function run(input) {
+      if (!this.isRunnable) return null;
       if (this.inputLookup) {
         input = _lookup2.default.toArray(this.inputLookup, input);
       }

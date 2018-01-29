@@ -121,10 +121,40 @@ export default class NeuralNetwork {
 
   /**
    *
+   * @returns boolean
+   */
+  get isRunnable(){
+    if(!this.runInput){
+      console.error('Activation function has not been initialized, did you run train()?');
+      return false;
+    }
+
+    const checkFns = [
+      'sizes',
+      'outputLayer',
+      'biases',
+      'weights',
+      'outputs',
+      'deltas',
+      'changes',
+      'errors',
+    ].map(c => this[c]).every(fn => fn !== null);
+
+    if(!checkFns){
+      console.error('Some settings have not been initialized correctly, did you run train()?');
+      return false;
+    }
+    return true;
+  }
+
+
+  /**
+   *
    * @param input
    * @returns {*}
    */
   run(input) {
+    if (!this.isRunnable) return null;
     if (this.inputLookup) {
       input = lookup.toArray(this.inputLookup, input);
     }
