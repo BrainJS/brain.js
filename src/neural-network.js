@@ -138,10 +138,10 @@ export default class NeuralNetwork {
       'deltas',
       'changes',
       'errors',
-    ].map(c => this[c]).every(fn => fn !== null);
+    ].filter(c => this[c] === null);
 
-    if(!checkFns){
-      console.error('Some settings have not been initialized correctly, did you run train()?');
+    if(checkFns.length > 0){
+      console.error(`Some settings have not been initialized correctly, did you run train()? Found issues with: ${checkFns.join(', ')}`);
       return false;
     }
     return true;

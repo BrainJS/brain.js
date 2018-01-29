@@ -948,14 +948,12 @@ var NeuralNetwork = function () {
         return false;
       }
 
-      var checkFns = ['sizes', 'outputLayer', 'biases', 'weights', 'outputs', 'deltas', 'changes', 'errors'].map(function (c) {
-        return _this4[c];
-      }).every(function (fn) {
-        return fn !== null;
+      var checkFns = ['sizes', 'outputLayer', 'biases', 'weights', 'outputs', 'deltas', 'changes', 'errors'].filter(function (c) {
+        return _this4[c] === null;
       });
 
-      if (!checkFns) {
-        console.error('Some settings have not been initialized correctly, did you run train()?');
+      if (checkFns.length > 0) {
+        console.error('Some settings have not been initialized correctly, did you run train()? Found issues with: ' + checkFns.join(', '));
         return false;
       }
       return true;
