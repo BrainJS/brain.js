@@ -28,7 +28,7 @@ export default class FeedForward {
   static get defaults() {
     return {
       learningRate: 0.3,
-        momentum: 0.1,
+      momentum: 0.1,
       binaryThresh: 0.5,
       hiddenLayers: null,
       inputLayer: null,

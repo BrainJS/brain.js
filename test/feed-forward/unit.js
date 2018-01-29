@@ -19,7 +19,8 @@ const {
   relu,
   Sigmoid,
   SoftMax,
-  softMax
+  softMax,
+  Target
 } = layer;
 
 describe('FeedForward Class: Unit', () => {
@@ -45,7 +46,7 @@ describe('FeedForward Class: Unit', () => {
           outputLayer: (input) => output({ width: 10 }, input)
         });
         net.connectLayers();
-        assert.equal(net.layers.length, 9);
+        assert.equal(net.layers.length, 11);
         assert.deepEqual(net.layers.map(layer => layer.constructor), [
           Input,
           Convolution,
@@ -55,7 +56,9 @@ describe('FeedForward Class: Unit', () => {
           Relu,
           Pool,
           SoftMax,
-          Output
+          Random,
+          Multiply,
+          Target
         ]);
       });
       it('can setup and traverse entire network using layer composition', () => {
@@ -67,7 +70,7 @@ describe('FeedForward Class: Unit', () => {
           outputLayer: (input) => output({}, input)
         });
         net.connectLayers();
-        assert.equal(net.layers.length, 7);
+        assert.equal(net.layers.length, 9);
         assert.deepEqual(net.layers.map(layer => layer.constructor), [
           Input,
           Random,
@@ -75,7 +78,9 @@ describe('FeedForward Class: Unit', () => {
           Random,
           Add,
           Sigmoid,
-          Output
+          Random,
+          Multiply,
+          Target
         ]);
       });
     });
@@ -101,7 +106,7 @@ describe('FeedForward Class: Unit', () => {
           outputLayer: (input) => output({width: 10}, input)
         });
         net.connectLayers();
-        assert.equal(net.layers.length, 9);
+        assert.equal(net.layers.length, 11);
         assert.deepEqual(net.layers.map(layer => layer.constructor), [
           Input,
           Convolution,
@@ -111,7 +116,9 @@ describe('FeedForward Class: Unit', () => {
           Relu,
           Pool,
           SoftMax,
-          Output
+          Random,
+          Multiply,
+          Target
         ]);
       });
     });

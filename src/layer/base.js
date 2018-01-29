@@ -41,7 +41,7 @@ export default class Base {
   }
 
   learn(previousLayer, nextLayer, learningRate) {
-    this.weights = this.praxis.run(this.weights, this.deltas, learningRate);
+    this.weights = this.praxis.run(previousLayer, nextLayer, learningRate);
   }
 
   toArray() {

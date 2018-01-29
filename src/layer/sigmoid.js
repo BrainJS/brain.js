@@ -6,7 +6,7 @@ import zeros2D from '../utilities/zeros-2d';
 
 export default class Sigmoid extends Base {
   constructor(inputLayer) {
-    const { width, height} = inputLayer;
+    const { width, height } = inputLayer;
     super({ width, height });
     this.inputLayer = inputLayer;
     this.weights = randos2D(width, height);
@@ -26,8 +26,8 @@ export default class Sigmoid extends Base {
   }
 
   predict() {
-    this.deltas = zeros2D(this.width, this.height);
     this.weights = this.predictKernel(this.inputLayer.weights);
+    this.deltas = zeros2D(this.width, this.height);
   }
 
   compare(previousLayer, nextLayer) {

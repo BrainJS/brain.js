@@ -21,10 +21,10 @@ export default class MomentumRootMeanSquaredPropagation {
     this.setupKernels();
   }
 
-  run(weights, deltas, learningRate) {
-    const output = this.momentumsKernel(
-      weights,
-      deltas,
+  run(previousLayer, nextLayer, learningRate) {
+    const output = this.kernel(
+      this.layer.weights,
+      this.layer.deltas,
       this.learningRate,
       this.momentums,
       this.decayRate,
@@ -36,7 +36,7 @@ export default class MomentumRootMeanSquaredPropagation {
   }
 
   setupKernels() {
-    this.momentumsKernel = makeKernel(momentumRootMeanSquaredPropagation, {
+    this.kernel = makeKernel(momentumRootMeanSquaredPropagation, {
       output: [this.width, this.height],
       constants: {
         smoothEps: this.smoothEps

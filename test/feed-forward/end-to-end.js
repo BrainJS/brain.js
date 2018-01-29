@@ -20,6 +20,7 @@ const {
   sigmoid,
   SoftMax,
   softMax,
+  Target,
   Zeros,
   zeros } = layer;
 
@@ -37,37 +38,27 @@ describe('FeedForward Class: End to End', () => {
       net.initialize();
 
       const result = net.runInput([[1]]);
-      assert.equal(result[0][0] !== 0 && typeof result[0][0] === 'number', true, 'that any number comes out');
+      assert.equal(typeof result[0][0] === 'number', true, 'that any number comes out');
     });
   });
   describe('.train()', () => {
+    const xorTrainingData = [
+      { input: [0, 0], output: [0] },
+      { input: [0, 1], output: [1] },
+      { input: [1, 0], output: [1] },
+      { input: [1, 1], output: [0] }
+    ];
     it('outputs a number that is smaller than when it started', () => {
       const net = new FeedForward({
         inputLayer: () => input({ width: 2 }),
         hiddenLayers: [
           (input) => feedForward({ width: 3 }, input)
         ],
-        outputLayer: (input) => {
-          const outputGate = random({ width: input.height, height: 1 });
-          const outputConnector = multiply(
-            outputGate,
-            input
-          );
-          return output({}, outputConnector)
-        }
+        outputLayer: (input) => output({ width: 1 }, input)
       });
-
-      net.initialize();
-
       const errors = [];
-      const xorTrainingData = [
-        { input: [0, 0], output: [0] },
-        { input: [0, 1], output: [1] },
-        { input: [1, 0], output: [1] },
-        { input: [1, 1], output: [0] }
-      ];
       net.train(xorTrainingData, {
-        iterations: 500,
+        iterations: 10,
         threshold: 0.5,
         callbackPeriod: 1,
         callback: (info) => errors.push(info.error) });
@@ -82,17 +73,36 @@ describe('FeedForward Class: End to End', () => {
         && typeof errors[7] === 'number'
         && typeof errors[8] === 'number'
         && typeof errors[9] === 'number', true, 'training produces numerical errors');
+      assert(errors[0] > errors[9]);
+    });
+    it('can learn xor', () => {
+      const net = new FeedForward({
+        inputLayer: () => input({ width: 2 }),
+        hiddenLayers: [
+          (input) => feedForward({ width: 3 }, input)
+        ],
+        outputLayer: (input) => output({ width: 1 }, input)
+      });
+      net.train(xorTrainingData, {
+        iterations: 1000,
+        threshold: 0.5
+      });
+      let result = net.run([0, 0])[0][0];
+      assert.equal(result < 0.5, true, `with input of [0, 0], output is ${result}, but should be < 0.5`);
 
-      assert.equal(net.run([0, 0])[0][0] < 0.5, true);
-      assert.equal(net.run([0, 1])[0][0] > 0.5, true);
-      assert.equal(net.run([1, 0])[0][0] > 0.5, true);
-      assert.equal(net.run([1, 1])[0][0] < 0.5, true);
-      assert.equal(errors[0] > errors[299], true, 'error rate falls');
+      result = net.run([0, 1])[0][0];
+      assert.equal(result > 0.5, true, `with input of [0, 1], output is ${result}, but should be > 0.5`);
+
+      result = net.run([1, 0])[0][0];
+      assert.equal(result > 0.5, true, `with input of [1, 0], output is ${result}, but should be > 0.5`);
+
+      result = net.run([1, 1])[0][0];
+      assert.equal(result < 0.5, true, `with input of [1, 1], output is ${result}, but should be < 0.5`);
     });
   });
   describe('.calculateDeltas()', () => {
     it('populates deltas from output to input', () => {
-      class SuperOutput extends Output {
+      class SuperOutput extends Target {
         constructor(settings, inputLayer) {
           super(settings, inputLayer);
           this.deltas = zeros2D(this.width, this.height);

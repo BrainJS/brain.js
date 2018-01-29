@@ -11,9 +11,13 @@ export function relu(weight) {
 /**
  * Leaky Relu derivative
  * @param weight
- * @param error
+ * @param delta
  * @returns {number}
  */
-export function reluDerivative(weight, error) {
-  return weight > 0 ? error : 0;
+export function reluDerivative(weight, delta) {
+  if (weight <= 0) {
+    return 0;
+  } else {
+    return delta;
+  }
 }

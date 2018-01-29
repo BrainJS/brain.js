@@ -8,7 +8,7 @@ import Input from './input';
 import LeakyRelu from './leaky-relu';
 import Multiply from './multiply';
 import MultiplyElement from './multiply-element';
-import Output from './output';
+import output from './output';
 import Pool from './pool';
 import Relu from './relu';
 import Random from './random';
@@ -17,6 +17,7 @@ import Sigmoid from './sigmoid';
 import SoftMax from './soft-max';
 import SVM from './svm';
 import Tanh from './tanh';
+import Target from './target';
 import Transpose from './transpose';
 import Zeros from './zeros';
 
@@ -44,9 +45,6 @@ function multiply(inputLayer1, inputLayer2) {
 function multiplyElement(inputLayer1, inputLayer2) {
   return new MultiplyElement(inputLayer1, inputLayer2);
 }
-function output(settings, inputLayer) {
-  return new Output(settings, inputLayer);
-}
 function pool(settings, inputLayer) {
   return new Pool(settings, inputLayer);
 }
@@ -70,6 +68,9 @@ function svm(settings, inputLayer) {
 }
 function tanh(inputLayer) {
   return new Tanh(inputLayer);
+}
+function target(settings, inputLayer) {
+  return new Target(settings, inputLayer);
 }
 function transpose(inputLayer) {
   return new Transpose(inputLayer);
@@ -96,7 +97,6 @@ export {
   multiply,
   MultiplyElement,
   multiplyElement,
-  Output,
   output,
   Pool,
   pool,
@@ -114,6 +114,8 @@ export {
   svm,
   Tanh,
   tanh,
+  Target,
+  target,
   Transpose,
   transpose,
   Zeros,
