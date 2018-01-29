@@ -63,8 +63,7 @@ var NeuralNetwork = function () {
         logPeriod: 10,
         learningRate: 0.3,
         callback: null,
-        callbackPeriod: 10,
-        trainTimeMs: -Infinity
+        callbackPeriod: 10
       };
     }
   }, {
@@ -175,13 +174,20 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param input
-     * @returns {*}
+     * @returns boolean
      */
 
   }, {
     key: 'run',
+
+
+    /**
+     *
+     * @param input
+     * @returns {*}
+     */
     value: function run(input) {
+      if (!this.isRunnable) return null;
       if (this.inputLookup) {
         input = _lookup2.default.toArray(this.inputLookup, input);
       }
@@ -314,7 +320,6 @@ var NeuralNetwork = function () {
     /**
      *
      * @param log
-     * if true passed in console.log is used
      * if a method is passed in method is used
      * if false passed in nothing is logged
      * @returns error
@@ -323,7 +328,6 @@ var NeuralNetwork = function () {
   }, {
     key: '_setLogMethod',
     value: function _setLogMethod(log) {
-      if (typeof log === 'function') return log;
       if (log) return console.log;
       return false;
     }
@@ -382,7 +386,6 @@ var NeuralNetwork = function () {
       data = this.formatData(data);
       options.log = this._setLogMethod(options.log);
       options.learningRate = _options.learningRate || this.learningRate || options.learningRate;
-      var endTime = Date.now() + options.trainTimeMs;
       var status = {
         error: 1,
         iterations: 0
@@ -392,9 +395,11 @@ var NeuralNetwork = function () {
         var sizes = this._getSizesFromData(data);
         this.initialize(sizes);
       }
-      while (status.iterations < options.iterations && status.error > options.errorThresh && Date.now() > endTime) {
+
+      while (status.iterations < options.iterations && status.error > options.errorThresh) {
         this._checkTrainingTick(data, status, options);
       }
+
       return status;
     }
 
@@ -436,7 +441,7 @@ var NeuralNetwork = function () {
           each: function each() {
             _this._checkTrainingTick(data, status, options);
 
-            if (status.error < options.errorThresh || Date.now() < endTime) {
+            if (status.error < options.errorThresh) {
               thaw.stop();
             }
           },
@@ -848,12 +853,12 @@ var NeuralNetwork = function () {
         } else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
           this.outputLookup = _lookup2.default.lookupFromHash(layer);
         }
-        if (layer > 0) {
+        if (i > 0) {
           var nodes = Object.keys(layer);
           this.sizes[i] = nodes.length;
           for (var j in nodes) {
             var node = nodes[j];
-            this.biases[i] = layer[node].bias;
+            this.biases[i][j] = layer[node].bias;
             this.weights[i][j] = (0, _toArray2.default)(layer[node].weights);
           }
         }
@@ -932,6 +937,26 @@ var NeuralNetwork = function () {
       this.setActivation();
       this.trainStream = new _trainStream2.default(opts);
       return this.trainStream;
+    }
+  }, {
+    key: 'isRunnable',
+    get: function get() {
+      var _this4 = this;
+
+      if (!this.runInput) {
+        console.error('Activation function has not been initialized, did you run train()?');
+        return false;
+      }
+
+      var checkFns = ['sizes', 'outputLayer', 'biases', 'weights', 'outputs', 'deltas', 'changes', 'errors'].filter(function (c) {
+        return _this4[c] === null;
+      });
+
+      if (checkFns.length > 0) {
+        console.error('Some settings have not been initialized correctly, did you run train()? Found issues with: ' + checkFns.join(', '));
+        return false;
+      }
+      return true;
     }
   }]);
 

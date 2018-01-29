@@ -247,6 +247,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
    * @returns {*}
    */
   run(input) {
+    if (!this.isRunnable) return null;
     if (this.inputLookup) {
       input = lookup.toArray(this.inputLookup, input);
     }

@@ -293,6 +293,21 @@ export default class RNN {
     this.ratioClipped = numClipped / numTot;
   }
 
+
+  /**
+   *
+   * @returns boolean
+   */
+  get isRunnable(){
+    if(this.model.equations.length === 0){
+      console.error(`No equations bound, did you run train()?`);
+      return false;
+    }
+
+    return true;
+  }
+
+
   /**
    *
    * @param {Number[]|*} [rawInput]
@@ -302,6 +317,7 @@ export default class RNN {
    * @returns {*}
    */
   run(rawInput = [], maxPredictionLength = 100, isSampleI = false, temperature = 1) {
+    if (!this.isRunnable) return null;
     const input = this.formatDataIn(rawInput);
     const model = this.model;
     const output = [];
