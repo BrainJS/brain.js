@@ -85,7 +85,7 @@ describe('async train() options', () => {
         done();
       })
       .catch(err => { assert.ok(false, err.toString()) });
-  });
+  }).timeout(10000);
 
   it('train until max iterations reached', (done) => {
     let net = new brain.NeuralNetwork();
@@ -96,7 +96,7 @@ describe('async train() options', () => {
         done();
       })
       .catch(err => { assert.ok(false, err.toString()) });
-  });
+  }).timeout(10000);
 
   it('asyinc training callback called with training stats', (done) => {
     let iters = 100;
@@ -119,7 +119,7 @@ describe('async train() options', () => {
       done();
     })
     .catch(err => { assert.ok(false, err.toString()) });
-  });
+  }).timeout(10000);
 
   it('learningRate ASYNC - higher learning rate should train faster', (done) => {
     let data = [
@@ -146,7 +146,7 @@ describe('async train() options', () => {
       .catch(err => {
         assert.ok(false, err.toString())
       });
-  }).timeout(5000);
+  }).timeout(10000);
 
   it('momentum ASYNC - higher momentum should train faster', (done) => {
     let data = [
@@ -171,5 +171,5 @@ describe('async train() options', () => {
       }).catch(err => {
         assert.ok(false, err.toString())
       });
-  }).timeout(5000);
+  }).timeout(10000);
 });

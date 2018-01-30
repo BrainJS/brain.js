@@ -1012,23 +1012,23 @@ var NeuralNetwork = function () {
       this.activation = activation ? activation : this.activation;
       switch (this.activation) {
         case 'sigmoid':
-          this.runInput = this.runInput || this.runInputSigmoid;
-          this.calculateDeltas = this.calculateDeltas || this.calculateDeltasSigmoid;
+          this.runInput = this.runInput || this._runInputSigmoid;
+          this.calculateDeltas = this.calculateDeltas || this._calculateDeltasSigmoid;
           break;
         case 'relu':
-          this.runInput = this.runInput || this.runInputRelu;
-          this.calculateDeltas = this.calculateDeltas || this.calculateDeltasRelu;
+          this.runInput = this.runInput || this._runInputRelu;
+          this.calculateDeltas = this.calculateDeltas || this._calculateDeltasRelu;
           break;
         case 'leaky-relu':
-          this.runInput = this.runInput || this.runInputLeakyRelu;
-          this.calculateDeltas = this.calculateDeltas || this.calculateDeltasLeakyRelu;
+          this.runInput = this.runInput || this._runInputLeakyRelu;
+          this.calculateDeltas = this.calculateDeltas || this._calculateDeltasLeakyRelu;
           break;
         case 'tanh':
-          this.runInput = this.runInput || this.runInputTanh;
-          this.calculateDeltas = this.calculateDeltas || this.calculateDeltasTanh;
+          this.runInput = this.runInput || this._runInputTanh;
+          this.calculateDeltas = this.calculateDeltas || this._calculateDeltasTanh;
           break;
         default:
-          throw new Error('unknown activation ' + this.activation);
+          throw new Error('unknown activation ' + this.activation + ', The activation should be one of [\'sigmoid\', \'relu\', \'leaky-relu\', \'tanh\']');
       }
     }
 
@@ -1067,8 +1067,8 @@ var NeuralNetwork = function () {
      */
 
   }, {
-    key: 'runInputSigmoid',
-    value: function runInputSigmoid(input) {
+    key: '_runInputSigmoid',
+    value: function _runInputSigmoid(input) {
       this.outputs[0] = input; // set output state of input layer
 
       var output = null;
@@ -1088,8 +1088,8 @@ var NeuralNetwork = function () {
       return output;
     }
   }, {
-    key: 'runInputRelu',
-    value: function runInputRelu(input) {
+    key: '_runInputRelu',
+    value: function _runInputRelu(input) {
       this.outputs[0] = input; // set output state of input layer
 
       var output = null;
@@ -1109,8 +1109,8 @@ var NeuralNetwork = function () {
       return output;
     }
   }, {
-    key: 'runInputLeakyRelu',
-    value: function runInputLeakyRelu(input) {
+    key: '_runInputLeakyRelu',
+    value: function _runInputLeakyRelu(input) {
       this.outputs[0] = input; // set output state of input layer
 
       var output = null;
@@ -1130,8 +1130,8 @@ var NeuralNetwork = function () {
       return output;
     }
   }, {
-    key: 'runInputTanh',
-    value: function runInputTanh(input) {
+    key: '_runInputTanh',
+    value: function _runInputTanh(input) {
       this.outputs[0] = input; // set output state of input layer
 
       var output = null;
@@ -1335,7 +1335,7 @@ var NeuralNetwork = function () {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       this.updateTrainingOptions(options);
-      data = this.formatData(data);
+      data = this._formatData(data);
       var endTime = Date.now() + this.trainOpts.timeout;
 
       var status = {
@@ -1369,7 +1369,7 @@ var NeuralNetwork = function () {
 
       return new Promise(function (resolve, reject) {
         _this2.updateTrainingOptions(options);
-        data = _this2.formatData(data);
+        data = _this2._formatData(data);
         var endTime = Date.now() + _this2.trainOpts.timeout;
 
         var status = {
@@ -1412,7 +1412,7 @@ var NeuralNetwork = function () {
 
       // back propagate
       this.calculateDeltas(target);
-      this.adjustWeights();
+      this._adjustWeights();
 
       var error = (0, _mse2.default)(this.errors[this.outputLayer]);
       return error;
@@ -1424,8 +1424,8 @@ var NeuralNetwork = function () {
      */
 
   }, {
-    key: 'calculateDeltasSigmoid',
-    value: function calculateDeltasSigmoid(target) {
+    key: '_calculateDeltasSigmoid',
+    value: function _calculateDeltasSigmoid(target) {
       for (var layer = this.outputLayer; layer >= 0; layer--) {
         for (var node = 0; node < this.sizes[layer]; node++) {
           var output = this.outputs[layer][node];
@@ -1451,8 +1451,8 @@ var NeuralNetwork = function () {
      */
 
   }, {
-    key: 'calculateDeltasRelu',
-    value: function calculateDeltasRelu(target) {
+    key: '_calculateDeltasRelu',
+    value: function _calculateDeltasRelu(target) {
       for (var layer = this.outputLayer; layer >= 0; layer--) {
         for (var node = 0; node < this.sizes[layer]; node++) {
           var output = this.outputs[layer][node];
@@ -1478,8 +1478,8 @@ var NeuralNetwork = function () {
      */
 
   }, {
-    key: 'calculateDeltasLeakyRelu',
-    value: function calculateDeltasLeakyRelu(target) {
+    key: '_calculateDeltasLeakyRelu',
+    value: function _calculateDeltasLeakyRelu(target) {
       for (var layer = this.outputLayer; layer >= 0; layer--) {
         for (var node = 0; node < this.sizes[layer]; node++) {
           var output = this.outputs[layer][node];
@@ -1505,8 +1505,8 @@ var NeuralNetwork = function () {
      */
 
   }, {
-    key: 'calculateDeltasTanh',
-    value: function calculateDeltasTanh(target) {
+    key: '_calculateDeltasTanh',
+    value: function _calculateDeltasTanh(target) {
       for (var layer = this.outputLayer; layer >= 0; layer--) {
         for (var node = 0; node < this.sizes[layer]; node++) {
           var output = this.outputs[layer][node];
@@ -1532,8 +1532,8 @@ var NeuralNetwork = function () {
      */
 
   }, {
-    key: 'adjustWeights',
-    value: function adjustWeights() {
+    key: '_adjustWeights',
+    value: function _adjustWeights() {
       for (var layer = 1; layer <= this.outputLayer; layer++) {
         var incoming = this.outputs[layer - 1];
 
@@ -1560,8 +1560,8 @@ var NeuralNetwork = function () {
      */
 
   }, {
-    key: 'formatData',
-    value: function formatData(data) {
+    key: '_formatData',
+    value: function _formatData(data) {
       var _this3 = this;
 
       if (!Array.isArray(data)) {
@@ -1614,7 +1614,7 @@ var NeuralNetwork = function () {
     value: function test(data) {
       var _this4 = this;
 
-      data = this.formatData(data);
+      data = this._formatData(data);
 
       // for binary classification problems with one output node
       var isBinary = data[0].output.length === 1;

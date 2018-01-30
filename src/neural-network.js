@@ -107,23 +107,23 @@ export default class NeuralNetwork {
     this.activation = (activation) ? activation : this.activation;
     switch (this.activation) {
       case 'sigmoid':
-        this.runInput = this.runInput || this.runInputSigmoid;
-        this.calculateDeltas = this.calculateDeltas || this.calculateDeltasSigmoid;
+        this.runInput = this.runInput || this._runInputSigmoid;
+        this.calculateDeltas = this.calculateDeltas || this._calculateDeltasSigmoid;
         break;
       case 'relu':
-        this.runInput = this.runInput || this.runInputRelu;
-        this.calculateDeltas = this.calculateDeltas || this.calculateDeltasRelu;
+        this.runInput = this.runInput || this._runInputRelu;
+        this.calculateDeltas = this.calculateDeltas || this._calculateDeltasRelu;
         break;
       case 'leaky-relu':
-        this.runInput = this.runInput || this.runInputLeakyRelu;
-        this.calculateDeltas = this.calculateDeltas || this.calculateDeltasLeakyRelu;
+        this.runInput = this.runInput || this._runInputLeakyRelu;
+        this.calculateDeltas = this.calculateDeltas || this._calculateDeltasLeakyRelu;
         break;
       case 'tanh':
-        this.runInput = this.runInput || this.runInputTanh;
-        this.calculateDeltas = this.calculateDeltas || this.calculateDeltasTanh;
+        this.runInput = this.runInput || this._runInputTanh;
+        this.calculateDeltas = this.calculateDeltas || this._calculateDeltasTanh;
         break;
       default:
-        throw new Error('unknown activation ' + this.activation);
+        throw new Error('unknown activation ' + this.activation + ', The activation should be one of [\'sigmoid\', \'relu\', \'leaky-relu\', \'tanh\']');
     }
   }
 
@@ -180,7 +180,7 @@ export default class NeuralNetwork {
    * @param input
    * @returns {*}
    */
-  runInputSigmoid(input) {
+  _runInputSigmoid(input) {
     this.outputs[0] = input;  // set output state of input layer
 
     let output = null;
@@ -200,7 +200,7 @@ export default class NeuralNetwork {
     return output;
   }
 
-  runInputRelu(input) {
+  _runInputRelu(input) {
     this.outputs[0] = input;  // set output state of input layer
 
     let output = null;
@@ -220,7 +220,7 @@ export default class NeuralNetwork {
     return output;
   }
 
-  runInputLeakyRelu(input) {
+  _runInputLeakyRelu(input) {
     this.outputs[0] = input;  // set output state of input layer
 
     let output = null;
@@ -240,7 +240,7 @@ export default class NeuralNetwork {
     return output;
   }
 
-  runInputTanh(input) {
+  _runInputTanh(input) {
     this.outputs[0] = input;  // set output state of input layer
 
     let output = null;
@@ -381,7 +381,7 @@ export default class NeuralNetwork {
    */
   train(data, options = {}) {
     this.updateTrainingOptions(options);
-    data = this.formatData(data);
+    data = this._formatData(data);
     const endTime = Date.now() + this.trainOpts.timeout;
 
     const status = {
@@ -408,7 +408,7 @@ export default class NeuralNetwork {
   trainAsync(data, options = {}) {
     return new Promise((resolve, reject) => {
       this.updateTrainingOptions(options);
-      data = this.formatData(data);
+      data = this._formatData(data);
       const endTime = Date.now() + this.trainOpts.timeout;
 
       const status = {
@@ -446,7 +446,7 @@ export default class NeuralNetwork {
 
     // back propagate
     this.calculateDeltas(target);
-    this.adjustWeights();
+    this._adjustWeights();
 
     let error = mse(this.errors[this.outputLayer]);
     return error;
@@ -456,7 +456,7 @@ export default class NeuralNetwork {
    *
    * @param target
    */
-  calculateDeltasSigmoid(target) {
+  _calculateDeltasSigmoid(target) {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       for (let node = 0; node < this.sizes[layer]; node++) {
         let output = this.outputs[layer][node];
@@ -481,7 +481,7 @@ export default class NeuralNetwork {
    *
    * @param target
    */
-  calculateDeltasRelu(target) {
+  _calculateDeltasRelu(target) {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       for (let node = 0; node < this.sizes[layer]; node++) {
         let output = this.outputs[layer][node];
@@ -506,7 +506,7 @@ export default class NeuralNetwork {
    *
    * @param target
    */
-  calculateDeltasLeakyRelu(target) {
+  _calculateDeltasLeakyRelu(target) {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       for (let node = 0; node < this.sizes[layer]; node++) {
         let output = this.outputs[layer][node];
@@ -531,7 +531,7 @@ export default class NeuralNetwork {
    *
    * @param target
    */
-  calculateDeltasTanh(target) {
+  _calculateDeltasTanh(target) {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       for (let node = 0; node < this.sizes[layer]; node++) {
         let output = this.outputs[layer][node];
@@ -556,7 +556,7 @@ export default class NeuralNetwork {
    *
    * Changes weights of networks
    */
-  adjustWeights() {
+  _adjustWeights() {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       let incoming = this.outputs[layer - 1];
 
@@ -582,7 +582,7 @@ export default class NeuralNetwork {
    * @param data
    * @returns {*}
    */
-  formatData(data) {
+  _formatData(data) {
     if (!Array.isArray(data)) { // turn stream datum into array
       let tmp = [];
       tmp.push(data);
@@ -623,7 +623,7 @@ export default class NeuralNetwork {
    * }
    */
   test(data) {
-    data = this.formatData(data);
+    data = this._formatData(data);
 
     // for binary classification problems with one output node
     let isBinary = data[0].output.length === 1;
