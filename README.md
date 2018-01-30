@@ -149,7 +149,7 @@ The learning rate is a parameter that influences how quickly the network trains.
 
 The momentum is similar to learning rate, expecting a value from `0` to `1` as well but it is multiplied against the next level's change value.  The default value is `0.1`
 
-Any of these training options can be passed into the constructor or passed into the `updateTrainingOptions(opts)` method and they will be saved on the network and used any time you trian.  If you save your network to json, these training options are saved and restored as well (except for callback and if the log is set restored log will be console.log).
+Any of these training options can be passed into the constructor or passed into the `updateTrainingOptions(opts)` method and they will be saved on the network and used any time you trian.  If you save your network to json, these training options are saved and restored as well (except for callback and log, callback will be forgoten and log will be restored using console.log).
 
 ### Async Training
 `trainAsync()` takes the same arguments as train (data and options).  Instead of returning the results object from training it returns a promise that when resolved will return the training results object.
