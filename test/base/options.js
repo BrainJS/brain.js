@@ -5,7 +5,6 @@ describe('neural network options', () => {
 
   it('hiddenLayers', () => {
     let net = new brain.NeuralNetwork({ hiddenLayers: [8, 7] });
-
     net.train([
       { input: [0, 0], output: [0] },
       { input: [0, 1], output: [1] },
@@ -14,7 +13,6 @@ describe('neural network options', () => {
     ]);
 
     let json = net.toJSON();
-
     assert.equal(json.layers.length, 4);
     assert.equal(Object.keys(json.layers[1]).length, 8);
     assert.equal(Object.keys(json.layers[2]).length, 7);
@@ -22,7 +20,6 @@ describe('neural network options', () => {
 
   it('hiddenLayers default expand to input size', () => {
     let net = new brain.NeuralNetwork();
-
     net.train([
       { input: [0, 0, 1, 1, 1, 1, 1, 1, 1], output: [0]},
       { input: [0, 1, 1, 1, 1, 1, 1, 1, 1], output: [1]},
@@ -31,155 +28,84 @@ describe('neural network options', () => {
     ]);
 
     let json = net.toJSON();
-
     assert.equal(json.layers.length, 3);
     assert.equal(Object.keys(json.layers[1]).length, 4, `9 input units should be 4 hidden not ${Object.keys(json.layers[1]).length}`);
   });
-
-  it('learningRate - higher learning rate should train faster', () => {
-    let data = [
-      { input: [0, 0], output: [0] },
-      { input: [0, 1], output: [1] },
-      { input: [1, 0], output: [1] },
-      { input: [1, 1], output: [1] }
-    ];
-
-    let net = new brain.NeuralNetwork();
-    let res = net.train(data, { learningRate: 0.5 });
-
-    let net2 = new brain.NeuralNetwork();
-    let res2 = net2.train(data, { learningRate: 0.8 });
-
-    assert.ok(res.iterations > (res2.iterations * 1.1), `${res.iterations} should be greater than ${res2.iterations * 1.1}`);
-  });
-
-
-  it('momentum - higher momentum should train faster', () => {
-    let data = [
-      { input: [0, 0], output: [0] },
-      { input: [0, 1], output: [1] },
-      { input: [1, 0], output: [1] },
-      { input: [1, 1], output: [1] }
-    ];
-
-    let net = new brain.NeuralNetwork({ momentum: 0.1 });
-    let res = net.train(data)
-
-    let net2 = new brain.NeuralNetwork({ momentum: 0.5 });
-    let res2 = net2.train(data)
-
-    assert.ok(res.iterations > (res2.iterations * 1.1), `${res.iterations} !> ${res2.iterations * 1.1}`);
-  });
-});
-
-
-
-describe('async neural network options', () => {
-  it('learningRate ASYNC - higher learning rate should train faster', (done) => {
-    let data = [
-      { input: [0, 0], output: [0] },
-      { input: [0, 1], output: [1] },
-      { input: [1, 0], output: [1] },
-      { input: [1, 1], output: [1] }
-    ];
-
-    let net = new brain.NeuralNetwork();
-    let net2 = new brain.NeuralNetwork();
-
-    let p1 = net.trainAsync(data, { learningRate: 0.5 });
-    let p2 = net2.trainAsync(data, { learningRate: 0.8 });
-
-    Promise
-      .all([p1, p2])
-      .then(values => {
-        let res = values[0];
-        let res2 = values[1];
-        assert.ok(res.iterations > (res2.iterations * 1.1), `${res.iterations} !> ${res2.iterations * 1.1}`);
-        done();
-      })
-      .catch(err => {
-        assert.ok(false, err.toString())
-      });
-  }).timeout(5000);
-
-  it('momentum ASYNC - higher momentum should train faster', (done) => {
-    let data = [
-      { input: [0, 0], output: [0] },
-      { input: [0, 1], output: [1] },
-      { input: [1, 0], output: [1] },
-      { input: [1, 1], output: [1] }
-    ];
-
-    let net = new brain.NeuralNetwork({ momentum: 0.1 });
-    let net2 = new brain.NeuralNetwork({ momentum: 0.5 });
-
-    let p1 = net.trainAsync(data);
-    let p2 = net2.trainAsync(data);
-
-    Promise.all([p1, p2])
-      .then(values => {
-        let res = values[0];
-        let res2 = values[1];
-        assert.ok(res.iterations > (res2.iterations * 1.1), `${res.iterations} !> ${res2.iterations * 1.1}`);
-        done();
-      }).catch(err => {
-        assert.ok(false, err.toString())
-      });
-
-  }).timeout(5000);
 })
 
 
-describe('log', () => {
-  let logCalled = false;
-  let oldLog;
-
-  beforeEach(() => { logCalled = false; });
-
-  before(() => {
-    oldLog = console.log;
-    console.log = () => {
-      oldLog(arguments);
-      logCalled = true;
-    }
+describe ('neural network constructor values', () => {
+  it('iterations should be settable in the constructor', () => {
+    let opts = { iterations: 5};
+    var net = new brain.NeuralNetwork(opts);
+    assert.equal(opts.iterations, net.trainOpts.iterations, `iterations => ${net.trainOpts.iterations} but should be ${opts.iterations}`);
   })
 
-  after(() => {
-    console.log = oldLog;
+  it('errorThresh should be settable in the constructor', () => {
+    let opts = { errorThresh: 0.1 };
+    var net = new brain.NeuralNetwork(opts);
+    assert.equal(opts.errorThresh, net.trainOpts.errorThresh, `errorThresh => ${net.trainOpts.errorThresh} but should be ${opts.errorThresh}`);
   })
 
-  function logFunction(str) {
-    logCalled = true;
-  }
+  it('log should allow setting the training options to the constructor', () => {
+    let log = function (res) {};
+    let opts = { log: log };
+    var net = new brain.NeuralNetwork(opts);
+    assert.ok(typeof net.trainOpts.log  === 'function', `log => ${net.trainOpts.log} but should be ${opts.log}`);
+  })
 
-  function trainWithLog(log, expected) {
-    let net = new brain.NeuralNetwork();
-    net.train(
-      [ { input: [0], output: [0] } ],
-      { log: log, logPeriod: 1, iterations: 1 }
-    );
-    assert.equal(logCalled, expected)
-  }
+  it('logPeriod should be settable in the constructor', () => {
+    let opts = { logPeriod: 5 };
+    var net = new brain.NeuralNetwork(opts);
+    assert.equal(opts.logPeriod, net.trainOpts.logPeriod, `logPeriod => ${net.trainOpts.logPeriod} but should be ${opts.logPeriod}`);
+  })
 
-  function trainWithLogAsync(log, expected, done) {
-    let net = new brain.NeuralNetwork();
-    net
-      .trainAsync(
-        [ {input: [0], output: [0]} ],
-        { log: log, logPeriod: 1, iterations: 1 }
-      )
-      .then(res => {
-        assert.equal(logCalled, expected);
-        done();
-      })
-      .catch(err => {
-        assert.ok(false, err.toString())
-      });
-  }
+  it('learningRate should be settable in the constructor', () => {
+    let opts = { learningRate: 0.5 };
+    var net = new brain.NeuralNetwork(opts);
+    assert.equal(opts.learningRate, net.trainOpts.learningRate, `learningRate => ${net.trainOpts.learningRate} but should be ${opts.learningRate}`);
+  })
 
-  it('should call log method', () => { trainWithLog(logFunction, true); });
-  it('should not call log method', () => { trainWithLog(false, false); });
+  it('momentum should be settable in the constructor', () => {
+    let opts = { momentum: 0.2 };
+    var net = new brain.NeuralNetwork(opts);
+    assert.equal(opts.momentum, net.trainOpts.momentum, `momentum => ${net.trainOpts.momentum} but should be ${opts.momentum}`);
+  })
 
-  it('ASYNC should call log method', done => { trainWithLogAsync(logFunction, true, done); }).timeout(5000);
-  it('ASYNC should not call log method', done => { trainWithLogAsync(false, false, done); }).timeout(5000);
+  it('callback should be settable in the constructor', () => {
+    let cb = function (res) {};
+    let opts = { callback: cb };
+    var net = new brain.NeuralNetwork(opts);
+    assert.ok(typeof net.trainOpts.callback  === 'function', `callback => ${net.trainOpts.callback} but should be ${opts.callback}`);
+  })
+
+  it('callbackPeriod should be settable in the constructor', () => {
+    let opts = { callbackPeriod: 2 };
+    var net = new brain.NeuralNetwork(opts);
+    assert.equal(opts.callbackPeriod, net.trainOpts.callbackPeriod, `callbackPeriod => ${net.trainOpts.callbackPeriod} but should be ${opts.callbackPeriod}`);
+  })
+
+  it('timeout should be settable in the constructor', () => {
+    let opts = { timeout: 1500 };
+    var net = new brain.NeuralNetwork(opts);
+    assert.equal(opts.timeout, net.trainOpts.timeout, `timeout => ${net.trainOpts.timeout} but should be ${opts.timeout}`);
+  })
+
+  it('binaryThresh should be settable in the constructor', () => {
+    let opts = { binaryThresh: 0.2 };
+    var net = new brain.NeuralNetwork(opts);
+    assert.equal(opts.binaryThresh, net.binaryThresh, `binaryThresh => ${net.binaryThresh} but should be ${opts.binaryThresh}`);
+  })
+
+  it('hiddenLayers should be settable in the constructor', () => {
+    let opts = { hiddenLayers: [2, 3, 4] };
+    var net = new brain.NeuralNetwork(opts);
+    assert.equal(JSON.stringify(opts.hiddenLayers), JSON.stringify(net.hiddenLayers), `hiddenLayers => ${net.hiddenLayers} but should be ${opts.hiddenLayers}`);
+  })
+
+  it('activation should be settable in the constructor', () => {
+    let opts = { activation: 'relu' };
+    var net = new brain.NeuralNetwork(opts);
+    assert.equal(opts.activation, net.activation, `activation => ${net.activation} but should be ${opts.activation}`);
+  })
 });

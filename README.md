@@ -129,11 +129,15 @@ var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.81, black: 0.18 }
 
 ```javascript
 net.train(data, {
-  errorThresh: 0.005,  // error threshold to reach
-  iterations: 20000,   // maximum training iterations
-  log: true,           // console.log() progress periodically
-  logPeriod: 10,       // number of iterations between logging
-  learningRate: 0.3    // learning rate
+      iterations: 20000,    // the maximum times to iterate the training data
+      errorThresh: 0.005,   // the acceptable error percentage from training data
+      log: false,           // true to use console.log, when a function is supplied it is used
+      logPeriod: 10,        // iterations between logging out
+      learningRate: 0.3,    // scales with delta to effect traiing rate
+      momentum: 0.1,        // scales with next layer's change value 
+      callback: null,       // a periodic call back that can be triggered while training
+      callbackPeriod: 10,   // the number of iterations through the training data between callback calls
+      timeout: Infinity     // the max number of milliseconds to train for
 });
 ```
 
@@ -143,6 +147,9 @@ By default training won't let you know how its doing until the end, but set `log
 
 The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data.(_Overfitting_) The default learning rate is `0.3`.
 
+The momentum is similar to learning rate, expecting a value from `0` to `1` as well but it is multiplied against the next level's change value.  The default value is `0.1`
+
+Any of these training options can be passed into the constructor or passed into the `updateTrainingOptions(opts)` method and they will be saved on the network and used any time you trian.  If you save your network to json, these training options are saved and restored as well (except for callback and log, callback will be forgoten and log will be restored using console.log).
 
 ### Async Training
 `trainAsync()` takes the same arguments as train (data and options).  Instead of returning the results object from training it returns a promise that when resolved will return the training results object.
@@ -156,7 +163,6 @@ The learning rate is a parameter that influences how quickly the network trains.
     })
     .catch(handleError);
 ```
-
 With multiple networks you can train in parallel like this:
 
 ```javascript
