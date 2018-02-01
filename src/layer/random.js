@@ -10,8 +10,6 @@ export default class Random extends Base {
   }
 
   setupKernels() {}
-  predict() {
-    this.deltas = zeros2D(this.width, this.height);
-  }
-  compare(previousLayer, nextLayer) {}
+  predict() {}
+  compare() {}
 }

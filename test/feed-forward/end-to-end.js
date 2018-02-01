@@ -84,20 +84,17 @@ describe('FeedForward Class: End to End', () => {
         outputLayer: (input) => output({ width: 1 }, input)
       });
       net.train(xorTrainingData, {
-        iterations: 1000,
+        iterations: 200,
         threshold: 0.5
       });
-      let result = net.run([0, 0])[0][0];
-      assert.equal(result < 0.5, true, `with input of [0, 0], output is ${result}, but should be < 0.5`);
-
-      result = net.run([0, 1])[0][0];
-      assert.equal(result > 0.5, true, `with input of [0, 1], output is ${result}, but should be > 0.5`);
-
-      result = net.run([1, 0])[0][0];
-      assert.equal(result > 0.5, true, `with input of [1, 0], output is ${result}, but should be > 0.5`);
-
-      result = net.run([1, 1])[0][0];
-      assert.equal(result < 0.5, true, `with input of [1, 1], output is ${result}, but should be < 0.5`);
+      const result1 = net.run([0, 0])[0][0];
+      const result2 = net.run([0, 1])[0][0];
+      const result3 = net.run([1, 0])[0][0];
+      const result4 = net.run([1, 1])[0][0];
+      assert.equal(result1 < 0.5, true, `with input of [0, 0], output is ${result1}, but should be < 0.5`);
+      assert.equal(result2 > 0.5, true, `with input of [0, 1], output is ${result2}, but should be > 0.5`);
+      assert.equal(result3 > 0.5, true, `with input of [1, 0], output is ${result3}, but should be > 0.5`);
+      assert.equal(result4 < 0.5, true, `with input of [1, 1], output is ${result4}, but should be < 0.5`);
     });
   });
   describe('.calculateDeltas()', () => {
@@ -124,8 +121,8 @@ describe('FeedForward Class: End to End', () => {
         layer.deltas.forEach((row, rowIndex) => {
           row.forEach((delta, deltaIndex) => {
             assert.equal(delta, 0, `delta is ${ delta } of layer type ${ layer.constructor.name } with layerIndex of ${ layerIndex }, rowIndex of ${ rowIndex }, and deltaIndex of ${ deltaIndex }`);
-          })
-        })
+          });
+        });
       });
       net.calculateDeltas([[1]]);
       net.layers.forEach((layer, layerIndex) => {
@@ -134,8 +131,8 @@ describe('FeedForward Class: End to End', () => {
         layer.deltas.forEach((row, rowIndex) => {
           row.forEach((delta, deltaIndex) => {
             assert.notEqual(delta, 0, `delta is ${ delta } of layer type ${ layer.constructor.name } with layerIndex of ${ layerIndex }, rowIndex of ${ rowIndex }, and deltaIndex of ${ deltaIndex }`);
-          })
-        })
+          });
+        });
       });
     });
   });

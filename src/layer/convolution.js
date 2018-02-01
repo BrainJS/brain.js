@@ -16,10 +16,6 @@ export default class Convolution extends Base {
   constructor(settings, inputLayer) {
     super(settings);
 
-    this.width = Math.floor((inputLayer.width + (this.paddingX * 2) - this.filterWidth) / this.strideX + 1);
-    this.height = Math.floor((inputLayer.height + (this.paddingY * 2) - this.filterHeight) / this.strideY + 1);
-    this.depth = this.filterCount;
-
     this.stride = null;
     this.strideX = null;
     this.strideY = null;
@@ -33,6 +29,10 @@ export default class Convolution extends Base {
     this.filterCount = settings.filterCount;
     this.filterWidth = settings.filterWidth;
     this.filterHeight = settings.filterHeight;
+
+    this.width = Math.floor((inputLayer.width + (this.paddingX * 2) - this.filterWidth) / this.strideX + 1);
+    this.height = Math.floor((inputLayer.height + (this.paddingY * 2) - this.filterHeight) / this.strideY + 1);
+    this.depth = this.filterCount;
 
     this.bias = settings.bias;
 

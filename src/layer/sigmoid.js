@@ -27,7 +27,6 @@ export default class Sigmoid extends Base {
 
   predict() {
     this.weights = this.predictKernel(this.inputLayer.weights);
-    this.deltas = zeros2D(this.width, this.height);
   }
 
   compare(previousLayer, nextLayer) {

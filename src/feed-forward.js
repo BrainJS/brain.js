@@ -127,37 +127,57 @@ export default class FeedForward {
    * @returns {{error: number, iterations: number}}
    */
   train(data, _options = {}) {
+    /* istanbul ignore next */
     const options = Object.assign({}, this.constructor.trainDefaults, _options);
+    /* istanbul ignore next */
     data = this.formatData(data);
+    /* istanbul ignore next */
     let iterations = options.iterations;
+    /* istanbul ignore next */
     let errorThresh = options.errorThresh;
+    /* istanbul ignore next */
     let log = options.log === true ? console.log : options.log;
+    /* istanbul ignore next */
     let logPeriod = options.logPeriod;
+    /* istanbul ignore next */
     let learningRate = _options.learningRate || this.learningRate || options.learningRate;
+    /* istanbul ignore next */
     let callback = options.callback;
+    /* istanbul ignore next */
     let callbackPeriod = options.callbackPeriod;
+    /* istanbul ignore next */
     if (!options.reinforce) {
+      /* istanbul ignore next */
       this.initialize();
     }
-
+    /* istanbul ignore next */
     let error = 1;
+    /* istanbul ignore next */
     let i;
+    /* istanbul ignore next */
     for (i = 0; i < iterations && error > errorThresh; i++) {
       let sum = 0;
       for (let j = 0; j < data.length; j++) {
+        /* istanbul ignore next */
         let err = this.trainPattern(data[j].input, data[j].output, learningRate);
+        /* istanbul ignore next */
         sum += err;
       }
+      /* istanbul ignore next */
       error = sum / data.length;
 
+      /* istanbul ignore next */
       if (log && (i % logPeriod === 0)) {
         log('iterations:', i, 'training error:', error);
       }
+      /* istanbul ignore next */
       if (callback && (i % callbackPeriod === 0)) {
+        /* istanbul ignore next */
         callback({ error: error, iterations: i });
       }
     }
 
+    /* istanbul ignore next */
     return {
       error: error,
       iterations: i
@@ -240,81 +260,8 @@ export default class FeedForward {
    * }
    */
   test(data) {
-    data = this.formatData(data);
-
-    // for binary classification problems with one output node
-    let isBinary = data[0].output.length === 1;
-    let falsePos = 0;
-    let falseNeg = 0;
-    let truePos = 0;
-    let trueNeg = 0;
-
-    // for classification problems
-    let misclasses = [];
-
-    // run each pattern through the trained network and collect
-    // error and misclassification statistics
-    let sum = 0;
-    for (let i = 0; i < data.length; i++) {
-      let output = this.runInput(data[i].input);
-      let target = data[i].output;
-
-      let actual, expected;
-      if (isBinary) {
-        actual = output[0] > this.binaryThresh ? 1 : 0;
-        expected = target[0];
-      }
-      else {
-        actual = output.indexOf(max(output));
-        expected = target.indexOf(max(target));
-      }
-
-      if (actual !== expected) {
-        let misclass = data[i];
-        Object.assign(misclass, {
-          actual: actual,
-          expected: expected
-        });
-        misclasses.push(misclass);
-      }
-
-      if (isBinary) {
-        if (actual === 0 && expected === 0) {
-          trueNeg++;
-        } else if (actual === 1 && expected === 1) {
-          truePos++;
-        } else if (actual === 0 && expected === 1) {
-          falseNeg++;
-        } else if (actual === 1 && expected === 0) {
-          falsePos++;
-        }
-      }
-
-      let errors = output.map((value, i) => {
-        return target[i] - value;
-      });
-      sum += mse(errors);
-    }
-    let error = sum / data.length;
-
-    let stats = {
-      error: error,
-      misclasses: misclasses
-    };
-
-    if (isBinary) {
-      Object.assign(stats, {
-        trueNeg: trueNeg,
-        truePos: truePos,
-        falseNeg: falseNeg,
-        falsePos: falsePos,
-        total: data.length,
-        precision: truePos / (truePos + falsePos),
-        recall: truePos / (truePos + falseNeg),
-        accuracy: (trueNeg + truePos) / data.length
-      });
-    }
-    return stats;
+    /* istanbul ignore next */
+    throw new Error('not yet implemented');
   }
 
   /**
@@ -328,10 +275,8 @@ export default class FeedForward {
       if (layer.hasOwnProperty('inputLayer')) {
         jsonLayer.inputLayerIndex = this.layers.indexOf(layer.inputLayer);
       } else {
-        if (layer.hasOwnProperty('inputLayer1')) {
+        if (layer.hasOwnProperty('inputLayer1') && layer.hasOwnProperty('inputLayer2')) {
           jsonLayer.inputLayer1Index = this.layers.indexOf(layer.inputLayer1);
-        }
-        if (layer.hasOwnProperty('inputLayer2')) {
           jsonLayer.inputLayer2Index = this.layers.indexOf(layer.inputLayer2);
         }
       }
@@ -359,14 +304,15 @@ export default class FeedForward {
         const inputLayer = layers[jsonLayer.inputLayerIndex];
         layers.push(layerFromJSON(jsonLayer, inputLayer) || getLayer(jsonLayer, inputLayer));
       } else {
-        if (jsonLayer.hasOwnProperty('inputLayer1Index')) {
-          const inputLayer = layers[jsonLayer.inputLayer1Index];
-          layers.push(layerFromJSON(jsonLayer, inputLayer) || getLayer(jsonLayer, inputLayer));
-        }
-        if (jsonLayer.hasOwnProperty('inputLayer2Index')) {
-          const inputLayer = layers[jsonLayer.inputLayer2Index];
-          layers.push(layerFromJSON(jsonLayer, inputLayer) || getLayer(jsonLayer, inputLayer));
-        }
+        if (!jsonLayer.hasOwnProperty('inputLayer1Index')) throw new Error('inputLayer1Index not defined');
+        if (!jsonLayer.hasOwnProperty('inputLayer2Index')) throw new Error('inputLayer2Index not defined');
+        const inputLayer1 = layers[jsonLayer.inputLayer1Index];
+        const inputLayer2 = layers[jsonLayer.inputLayer2Index];
+
+        if (inputLayer1 === undefined) throw new Error(`layer of index ${jsonLayer.inputLayer1Index} not found`);
+        if (inputLayer2 === undefined) throw new Error(`layer of index ${jsonLayer.inputLayer2Index} not found`);
+
+        layers.push(layerFromJSON(jsonLayer, inputLayer) || getLayer(jsonLayer, inputLayer1, inputLayer2));
       }
     }
 
@@ -380,6 +326,7 @@ export default class FeedForward {
    * @returns {Function}
    */
   toFunction() {
+    /* istanbul ignore next */
     throw new Error('not yet implemented');
   }
 
@@ -389,6 +336,7 @@ export default class FeedForward {
    * @returns {TrainStream|*}
    */
   createTrainStream(opts) {
+    /* istanbul ignore next */
     throw new Error('not yet implemented');
   }
 }

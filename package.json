@@ -23,7 +23,8 @@
     "dist": "babel src --out-dir dist --source-maps",
     "browser": "browserify ./index.js -p licensify -o browser.js",
     "browser-min": "browserify ./index.js -p licensify -g uglifyify -o browser.min.js",
-    "make": "rm -fr ./dist && npm run dist && git add ./dist && npm run browser && npm run browser-min"
+    "make": "rm -fr ./dist && npm run dist && git add ./dist && npm run browser && npm run browser-min",
+    "codecov": "node ./node_modules/.bin/nyc yarn test-feed-forward"
   },
   "main": "./index.js",
   "devDependencies": {
@@ -37,6 +38,7 @@
     "js-datasets-iris": "^1.0.4",
     "licensify": "^3.1.2",
     "mocha": "^3.0.2",
+    "nyc": "^11.4.1",
     "sinon": "^1.17.6",
     "uglifyify": "^3.0.2"
   },
@@ -72,5 +74,8 @@
   "dependencies": {
     "gpu.js": "^1.0.0",
     "thaw.js": "^2.0.0"
+  },
+  "nyc": {
+    "include": "src/feed-forward.js"
   }
 }

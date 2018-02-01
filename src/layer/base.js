@@ -1,3 +1,5 @@
+import zeros2D from '../utilities/zeros-2d';
+
 export default class Base {
   static get defaults() {
     return {
@@ -12,7 +14,6 @@ export default class Base {
     //size
     this.width = null;
     this.height = null;
-    this.depth = null;
 
     //what matters :P
     this.errors = null;
@@ -20,6 +21,9 @@ export default class Base {
     this.weights = null;
 
     this.praxis = null;
+    if (this.constructor !== Base) {
+      Object.assign(this, Base.defaults, settings);
+    }
     Object.assign(this, this.constructor.defaults, settings);
 
     // special settings
@@ -42,6 +46,7 @@ export default class Base {
 
   learn(previousLayer, nextLayer, learningRate) {
     this.weights = this.praxis.run(previousLayer, nextLayer, learningRate);
+    this.deltas = zeros2D(this.width, this.height);
   }
 
   toArray() {
@@ -51,6 +56,9 @@ export default class Base {
   toJSON() {
     const jsonLayer = {};
     const { defaults, name } = this.constructor;
+    if (this.constructor !== Base) {
+      Object.assign(defaults, Base.defaults, defaults);
+    }
     const keys = Object.keys(defaults);
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
