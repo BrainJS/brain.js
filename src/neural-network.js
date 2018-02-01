@@ -360,7 +360,11 @@ export default class NeuralNetwork {
    * @param status { iterations: number, error: number}
    * @param options
    */
-  _trainingTick(data, status) {
+  _trainingTick(data, status, endTime) {
+    if (status.iterations >= this.trainOpts.iterations || status.error <= this.trainOpts.errorThresh || Date.now() >= endTime) {
+      return false;
+    }
+
     status.iterations++;
     status.error = this._calculateTrainingError(data);
 
@@ -371,6 +375,7 @@ export default class NeuralNetwork {
     if (this.trainOpts.callback && (status.iterations % this.trainOpts.callbackPeriod === 0)) {
       this.trainOpts.callback(Object.assign(status));
     }
+    return true;
   }
 
   /**
@@ -392,19 +397,13 @@ export default class NeuralNetwork {
 
     this._verifyIsInitialized(data);
 
-    const runTrainingTick = () => {
-      if (status.iterations < this.trainOpts.iterations && status.error > this.trainOpts.errorThresh && Date.now() < endTime) {
-        this._trainingTick(data, status);
-        return true;
-      }
-      return false;
-    };
-
     return {
-      runTrainingTick,
-      status
+      data,
+      status,
+      endTime
     }
   }
+
   /**
    *
    * @param data
@@ -412,9 +411,10 @@ export default class NeuralNetwork {
    * @returns {{error: number, iterations: number}}
    */
   train(data, options = {}) {
-    const { runTrainingTick, status } = this._prepTraining(data, options);
+    let status, endTime;
+    ({ data, status, endTime } = this._prepTraining(data, options));
 
-    while (runTrainingTick());
+    while (this._trainingTick(data, status, endTime));
     return status;
   }
 
@@ -427,13 +427,14 @@ export default class NeuralNetwork {
    * @rejects {{trainError: string, status: {error: number, iterations: number}}
    */
   trainAsync(data, options = {}) {
-    const {runTrainingTick, status} = this._prepTraining(data, options);
+    let status, endTime;
+    ({ data, status, endTime } = this._prepTraining(data, options));
 
     return new Promise((resolve, reject) => {
       try {
         const thawedTrain = new Thaw(new Array(this.trainOpts.iterations), {
           delay: true,
-          each: () => runTrainingTick() ? null : thawedTrain.stop(),
+          each: () => this._trainingTick(data, status, endTime) || thawedTrain.stop(),
           done: () => resolve(status)
         });
         thawedTrain.tick();
