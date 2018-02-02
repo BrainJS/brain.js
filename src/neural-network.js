@@ -374,7 +374,7 @@ export default class NeuralNetwork {
    * @return {{runTrainingTick: function, status: {error: number, iterations: number}}}
    */
   _prepTraining(data, options) {
-    this.updateTrainingOptions(options);
+    this._updateTrainingOptions(options);
     data = this._formatData(data);
     const endTime = Date.now() + this.trainOpts.timeout;
 
