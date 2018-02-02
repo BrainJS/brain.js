@@ -39,7 +39,7 @@ export default class NeuralNetwork {
     Object.assign(this, this.constructor.defaults, options);
     this.hiddenSizes = options.hiddenLayers;
     this.trainOpts = {};
-    this.updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
+    this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
 
     this.sizes = null;
     this.outputLayer = null;
@@ -292,17 +292,10 @@ export default class NeuralNetwork {
    *       momentum: (number),
    *       activation: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
    */
-  updateTrainingOptions(opts) {
-    if (opts.iterations) { this.trainOpts.iterations = opts.iterations; }
-    if (opts.errorThresh) { this.trainOpts.errorThresh = opts.errorThresh; }
-    if (opts.log) { this._setLogMethod(opts.log); }
-    if (opts.logPeriod) { this.trainOpts.logPeriod = opts.logPeriod; }
-    if (opts.learningRate) { this.trainOpts.learningRate = opts.learningRate; }
-    if (opts.momentum) { this.trainOpts.momentum = opts.momentum; }
-    if (opts.callback) { this.trainOpts.callback = opts.callback; }
-    if (opts.callbackPeriod) { this.trainOpts.callbackPeriod = opts.callbackPeriod; }
-    if (opts.timeout) { this.trainOpts.timeout = opts.timeout; }
-    if (opts.activation) { this.activation = opts.activation; }
+  _updateTrainingOptions(opts) {
+    Object.keys(NeuralNetwork.trainDefaults).forEach(opt => this.trainOpts[opt] = opts[opt] || this.trainOpts[opt]);
+    this._setLogMethod(opts.log || this.trainOpts.log);
+    this.activation = opts.activation || this.activation;
   }
 
   /**
@@ -311,17 +304,12 @@ export default class NeuralNetwork {
    *    NOTE: Activation is stored directly on JSON object and not in the training options
    */
   _getTrainOptsJSON() {
-    let results = {}
-    if (this.trainOpts.iterations) { results.iterations = this.trainOpts.iterations; }
-    if (this.trainOpts.errorThresh) { results.errorThresh = this.trainOpts.errorThresh; }
-    if (this.trainOpts.logPeriod) { results.logPeriod = this.trainOpts.logPeriod; }
-    if (this.trainOpts.learningRate) { results.learningRate = this.trainOpts.learningRate; }
-    if (this.trainOpts.momentum) { results.momentum = this.trainOpts.momentum; }
-    if (this.trainOpts.callback) { results.callback = this.trainOpts.callback; }
-    if (this.trainOpts.callbackPeriod) { results.callbackPeriod = this.trainOpts.callbackPeriod; }
-    if (this.trainOpts.timeout) { results.timeout = this.trainOpts.timeout; }
-    if (this.trainOpts.log) { results.log = true; }
-    return results;
+    return Object.keys(NeuralNetwork.trainDefaults)
+      .reduce((opts, opt) => {
+        if (this.trainOpts[opt]) opts[opt] = this.trainOpts[opt];
+        if (opt === 'log') opts.log = typeof opts.log === 'function';
+        return opts;
+      }, {});
   }
 
   /**
@@ -386,7 +374,7 @@ export default class NeuralNetwork {
    * @return {{runTrainingTick: function, status: {error: number, iterations: number}}}
    */
   _prepTraining(data, options) {
-    this.updateTrainingOptions(options);
+    this._updateTrainingOptions(options);
     data = this._formatData(data);
     const endTime = Date.now() + this.trainOpts.timeout;
 
@@ -817,7 +805,7 @@ export default class NeuralNetwork {
         }
       }
     }
-    this.updateTrainingOptions(json.trainOpts)
+    this._updateTrainingOptions(json.trainOpts)
     this.setActivation();
     return this;
   }
