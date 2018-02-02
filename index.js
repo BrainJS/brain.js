@@ -37,6 +37,10 @@ var brain = {
 
 if (typeof window !== 'undefined') {
   window.brain = brain;
-} else {
+}
+if (typeof self !== 'undefined') {
+  self.brain = brain;
+}
+if (typeof module !== 'undefined') {
   module.exports = brain;
 }
