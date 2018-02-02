@@ -1,4 +1,4 @@
-importScripts("brain-0.6.3.js");
+importScripts("browser.js");
 
 onmessage = function(event) {
   var data = JSON.parse(event.data);
