@@ -459,7 +459,11 @@ var NeuralNetwork = function () {
 
   }, {
     key: '_trainingTick',
-    value: function _trainingTick(data, status) {
+    value: function _trainingTick(data, status, endTime) {
+      if (status.iterations >= this.trainOpts.iterations || status.error <= this.trainOpts.errorThresh || Date.now() >= endTime) {
+        return false;
+      }
+
       status.iterations++;
       status.error = this._calculateTrainingError(data);
 
@@ -470,6 +474,36 @@ var NeuralNetwork = function () {
       if (this.trainOpts.callback && status.iterations % this.trainOpts.callbackPeriod === 0) {
         this.trainOpts.callback(Object.assign(status));
       }
+      return true;
+    }
+
+    /**
+     *
+     * @param data
+     * @param options
+     * @private
+     * @return {{runTrainingTick: function, status: {error: number, iterations: number}}}
+     */
+
+  }, {
+    key: '_prepTraining',
+    value: function _prepTraining(data, options) {
+      this.updateTrainingOptions(options);
+      data = this._formatData(data);
+      var endTime = Date.now() + this.trainOpts.timeout;
+
+      var status = {
+        error: 1,
+        iterations: 0
+      };
+
+      this._verifyIsInitialized(data);
+
+      return {
+        data: data,
+        status: status,
+        endTime: endTime
+      };
     }
 
     /**
@@ -484,21 +518,17 @@ var NeuralNetwork = function () {
     value: function train(data) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      this.updateTrainingOptions(options);
-      data = this._formatData(data);
-      var endTime = Date.now() + this.trainOpts.timeout;
+      var status = void 0,
+          endTime = void 0;
 
-      var status = {
-        error: 1,
-        iterations: 0
-      };
+      var _prepTraining2 = this._prepTraining(data, options);
 
-      this._verifyIsInitialized(data);
+      data = _prepTraining2.data;
+      status = _prepTraining2.status;
+      endTime = _prepTraining2.endTime;
 
-      while (status.iterations < this.trainOpts.iterations && status.error > this.trainOpts.errorThresh && Date.now() < endTime) {
-        this._trainingTick(data, status);
-      }
 
+      while (this._trainingTick(data, status, endTime)) {}
       return status;
     }
 
@@ -506,8 +536,9 @@ var NeuralNetwork = function () {
      *
      * @param data
      * @param options
-     * @param cb
-     * @returns {{error: number, iterations: number}}
+     * @returns {Promise}
+     * @resolves {{error: number, iterations: number}}
+     * @rejects {{trainError: string, status: {error: number, iterations: number}}
      */
 
   }, {
@@ -517,33 +548,31 @@ var NeuralNetwork = function () {
 
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
+      var status = void 0,
+          endTime = void 0;
+
+      var _prepTraining3 = this._prepTraining(data, options);
+
+      data = _prepTraining3.data;
+      status = _prepTraining3.status;
+      endTime = _prepTraining3.endTime;
+
+
       return new Promise(function (resolve, reject) {
-        _this2.updateTrainingOptions(options);
-        data = _this2._formatData(data);
-        var endTime = Date.now() + _this2.trainOpts.timeout;
-
-        var status = {
-          error: 1,
-          iterations: 0
-        };
-
-        _this2._verifyIsInitialized(data);
-
-        var items = new Array(_this2.trainOpts.iterations);
-        var thaw = new _thaw2.default(items, {
-          delay: true,
-          each: function each() {
-            _this2._trainingTick(data, status);
-            if (status.error < _this2.trainOpts.errorThresh || Date.now() > endTime) {
-              thaw.stop();
+        try {
+          var thawedTrain = new _thaw2.default(new Array(_this2.trainOpts.iterations), {
+            delay: true,
+            each: function each() {
+              return _this2._trainingTick(data, status, endTime) || thawedTrain.stop();
+            },
+            done: function done() {
+              return resolve(status);
             }
-          },
-          done: function done() {
-            resolve(status);
-          }
-        });
-
-        thaw.tick();
+          });
+          thawedTrain.tick();
+        } catch (trainError) {
+          reject({ trainError: trainError, status: status });
+        }
       });
     }
 

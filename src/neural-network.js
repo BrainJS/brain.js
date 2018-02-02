@@ -360,7 +360,11 @@ export default class NeuralNetwork {
    * @param status { iterations: number, error: number}
    * @param options
    */
-  _trainingTick(data, status) {
+  _trainingTick(data, status, endTime) {
+    if (status.iterations >= this.trainOpts.iterations || status.error <= this.trainOpts.errorThresh || Date.now() >= endTime) {
+      return false;
+    }
+
     status.iterations++;
     status.error = this._calculateTrainingError(data);
 
@@ -371,15 +375,17 @@ export default class NeuralNetwork {
     if (this.trainOpts.callback && (status.iterations % this.trainOpts.callbackPeriod === 0)) {
       this.trainOpts.callback(Object.assign(status));
     }
+    return true;
   }
 
   /**
    *
    * @param data
    * @param options
-   * @returns {{error: number, iterations: number}}
+   * @private
+   * @return {{runTrainingTick: function, status: {error: number, iterations: number}}}
    */
-  train(data, options = {}) {
+  _prepTraining(data, options) {
     this.updateTrainingOptions(options);
     data = this._formatData(data);
     const endTime = Date.now() + this.trainOpts.timeout;
@@ -391,10 +397,24 @@ export default class NeuralNetwork {
 
     this._verifyIsInitialized(data);
 
-    while (status.iterations < this.trainOpts.iterations && status.error > this.trainOpts.errorThresh && Date.now() < endTime) {
-      this._trainingTick(data, status);
+    return {
+      data,
+      status,
+      endTime
     }
+  }
 
+  /**
+   *
+   * @param data
+   * @param options
+   * @returns {{error: number, iterations: number}}
+   */
+  train(data, options = {}) {
+    let status, endTime;
+    ({ data, status, endTime } = this._prepTraining(data, options));
+
+    while (this._trainingTick(data, status, endTime));
     return status;
   }
 
@@ -402,35 +422,25 @@ export default class NeuralNetwork {
    *
    * @param data
    * @param options
-   * @param cb
-   * @returns {{error: number, iterations: number}}
+   * @returns {Promise}
+   * @resolves {{error: number, iterations: number}}
+   * @rejects {{trainError: string, status: {error: number, iterations: number}}
    */
   trainAsync(data, options = {}) {
+    let status, endTime;
+    ({ data, status, endTime } = this._prepTraining(data, options));
+
     return new Promise((resolve, reject) => {
-      this.updateTrainingOptions(options);
-      data = this._formatData(data);
-      const endTime = Date.now() + this.trainOpts.timeout;
-
-      const status = {
-        error: 1,
-        iterations: 0
-      };
-
-      this._verifyIsInitialized(data);
-
-      const items = new Array(this.trainOpts.iterations);
-      const thaw  = new Thaw(items, {
-        delay: true,
-        each: () => {
-          this._trainingTick(data, status);
-          if (status.error < this.trainOpts.errorThresh || Date.now() > endTime) {
-            thaw.stop();
-          }
-        },
-        done: () => { resolve(status); }
-      });
-
-      thaw.tick();
+      try {
+        const thawedTrain = new Thaw(new Array(this.trainOpts.iterations), {
+          delay: true,
+          each: () => this._trainingTick(data, status, endTime) || thawedTrain.stop(),
+          done: () => resolve(status)
+        });
+        thawedTrain.tick();
+      } catch (trainError) {
+        reject({trainError, status});
+      }
     });
   }
 
