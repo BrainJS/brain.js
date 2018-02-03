@@ -13,7 +13,7 @@ describe('JSON', () => {
     momentum: 0.01,
     callbackPeriod: 5,
     timeout: 3000 
-  }
+  };
   originalNet.train([
     {
       input: {'0': Math.random(), b: Math.random()},
@@ -32,7 +32,6 @@ describe('JSON', () => {
   const input = {'0' : Math.random(), b: Math.random()};
   describe('.toJSON()', () => {
     describe('.layers', () => {
-
       it('layer count is correct', () => {
         assert.equal(serialized.layers.length, 3);
         originalNet.sizes.forEach((size, i) => {
@@ -62,6 +61,15 @@ describe('JSON', () => {
         });
       });
     });
+
+    describe('.trainingQuality', () => {
+      it('is the same as original net', () => {
+        assert.equal(serialized.trainingQuality, originalNet.trainingQuality);
+      });
+      it('saves all locally run trainingSets as local', () => {
+        serialized.trainingQuality.trainingSets.forEach(set => assert.equal(set.local, true));
+      })
+    })
 
     describe('.activation', () => {
       it('exports correctly', () => {
@@ -173,6 +181,21 @@ describe('JSON', () => {
           assert.equal(trainingOpts.timeout, serializedNet.trainOpts.timeout, `trainingOpts.are: ${trainingOpts.timeout} serializedNet should be the same but are: ${serializedNet.trainOpts.timeout}`);
         });
       });
+
+      describe('.trainingQuality', () => {
+        it('imports', () => {
+          const origQuality = originalNet.trainingQuality;
+          const serializedQuality = serializedNet.trainingQuality;
+          const origFirstTrainSet = origQuality.trainingSets[0];
+          const serializedFirstTrainSet = serializedQuality.trainingSets[0];
+          assert.equal(origQuality.error, serializedQuality.error);
+          assert.equal(origQuality.iterations, serializedQuality.iterations);
+          assert.equal(origQuality.trainingSets.length, serializedQuality.trainingSets.length);
+          assert.equal(origFirstTrainSet.error, serializedFirstTrainSet.error);
+          assert.equal(origFirstTrainSet.iterations, serializedFirstTrainSet.iterations);
+          assert.equal(serializedFirstTrainSet.local, false);
+        })
+      })
     });
 
     it('can run originalNet, and serializedNet, with same output', () => {

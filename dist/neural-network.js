@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _lookup = require('./lookup');
@@ -37,6 +39,10 @@ var _toArray2 = _interopRequireDefault(_toArray);
 var _zeros = require('./utilities/zeros');
 
 var _zeros2 = _interopRequireDefault(_zeros);
+
+var _deepClone = require('./utilities/deepClone');
+
+var _deepClone2 = _interopRequireDefault(_deepClone);
 
 var _thaw = require('thaw.js');
 
@@ -88,6 +94,7 @@ var NeuralNetwork = function () {
     this.hiddenSizes = options.hiddenLayers;
     this.trainOpts = {};
     this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
+    this.trainingQuality = { error: null, iterations: 0, trainingSets: [] };
 
     this.sizes = null;
     this.outputLayer = null;
@@ -434,6 +441,26 @@ var NeuralNetwork = function () {
 
     /**
      *
+     * @param {{error: number, iterations: number}} status
+     * @param {[]} data
+     * @private
+     * @returns {{error: number, iterations: number}}
+     */
+
+  }, {
+    key: '_updateTrainingQuality',
+    value: function _updateTrainingQuality(status, data) {
+      this.trainingQuality.iterations += status.iterations;
+      this.trainingQuality.error = status.error;
+      this.trainingQuality.trainingSets.push(_extends({}, status, {
+        trainingSetLength: data.length,
+        local: true
+      }));
+      return status;
+    }
+
+    /**
+     *
      * @param data
      * @param options
      * @private
@@ -443,7 +470,7 @@ var NeuralNetwork = function () {
   }, {
     key: '_prepTraining',
     value: function _prepTraining(data, options) {
-      this.updateTrainingOptions(options);
+      this._updateTrainingOptions(options);
       data = this._formatData(data);
       var endTime = Date.now() + this.trainOpts.timeout;
 
@@ -484,7 +511,7 @@ var NeuralNetwork = function () {
 
 
       while (this._trainingTick(data, status, endTime)) {}
-      return status;
+      return this._updateTrainingQuality(status, data);
     }
 
     /**
@@ -521,7 +548,7 @@ var NeuralNetwork = function () {
               return _this4._trainingTick(data, status, endTime) || thawedTrain.stop();
             },
             done: function done() {
-              return resolve(status);
+              return resolve(_this4._updateTrainingQuality(status, data));
             }
           });
           thawedTrain.tick();
@@ -907,7 +934,8 @@ var NeuralNetwork = function () {
         outputLookup: !!this.outputLookup,
         inputLookup: !!this.inputLookup,
         activation: this.activation,
-        trainOpts: this._getTrainOptsJSON()
+        trainOpts: this._getTrainOptsJSON(),
+        trainingQuality: this.trainingQuality
       };
     }
 
@@ -919,7 +947,8 @@ var NeuralNetwork = function () {
 
   }, {
     key: 'fromJSON',
-    value: function fromJSON(json) {
+    value: function fromJSON(userJSON) {
+      var json = (0, _deepClone2.default)(userJSON);
       this.sizes = json.sizes;
       this._initialize();
 
@@ -940,6 +969,12 @@ var NeuralNetwork = function () {
           }
         }
       }
+
+      json.trainingQuality.trainingSets.forEach(function (set) {
+        return set.local = false;
+      });
+      this.trainingQuality = json.trainingQuality;
+
       this._updateTrainingOptions(json.trainOpts);
       this.setActivation();
       return this;

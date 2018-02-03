@@ -6,6 +6,7 @@ import randos from './utilities/randos';
 import range from './utilities/range';
 import toArray from './utilities/to-array';
 import zeros from './utilities/zeros';
+import deepClone from './utilities/deepClone';
 import Thaw from 'thaw.js';
 
 /**
@@ -40,6 +41,7 @@ export default class NeuralNetwork {
     this.hiddenSizes = options.hiddenLayers;
     this.trainOpts = {};
     this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
+    this.trainingQuality = { error: null, iterations: 0, trainingSets: [] };
 
     this.sizes = null;
     this.outputLayer = null;
@@ -366,6 +368,25 @@ export default class NeuralNetwork {
     return true;
   }
 
+
+  /**
+   *
+   * @param {{error: number, iterations: number}} status
+   * @param {[]} data
+   * @private
+   * @returns {{error: number, iterations: number}}
+   */
+  _updateTrainingQuality(status, data){
+    this.trainingQuality.iterations += status.iterations;
+    this.trainingQuality.error = status.error;
+    this.trainingQuality.trainingSets.push({
+      ...status,
+      trainingSetLength: data.length,
+      local: true,
+    });
+    return status;
+  }
+
   /**
    *
    * @param data
@@ -403,7 +424,7 @@ export default class NeuralNetwork {
     ({ data, status, endTime } = this._prepTraining(data, options));
 
     while (this._trainingTick(data, status, endTime));
-    return status;
+    return this._updateTrainingQuality(status, data);
   }
 
   /**
@@ -423,7 +444,7 @@ export default class NeuralNetwork {
         const thawedTrain = new Thaw(new Array(this.trainOpts.iterations), {
           delay: true,
           each: () => this._trainingTick(data, status, endTime) || thawedTrain.stop(),
-          done: () => resolve(status)
+          done: () => resolve(this._updateTrainingQuality(status, data))
         });
         thawedTrain.tick();
       } catch (trainError) {
@@ -774,7 +795,8 @@ export default class NeuralNetwork {
       outputLookup:!!this.outputLookup,
       inputLookup:!!this.inputLookup,
       activation: this.activation,
-      trainOpts: this._getTrainOptsJSON()
+      trainOpts: this._getTrainOptsJSON(),
+      trainingQuality:  this.trainingQuality,
     };
   }
 
@@ -783,8 +805,9 @@ export default class NeuralNetwork {
    * @param json
    * @returns {NeuralNetwork}
    */
-  fromJSON (json) {
-    this.sizes = json.sizes
+  fromJSON (userJSON) {
+    const json = deepClone(userJSON);
+    this.sizes = json.sizes;
     this._initialize();
 
     for (let i = 0; i <= this.outputLayer; i++) {
@@ -805,7 +828,11 @@ export default class NeuralNetwork {
         }
       }
     }
-    this._updateTrainingOptions(json.trainOpts)
+
+    json.trainingQuality.trainingSets.forEach(set => set.local = false);
+    this.trainingQuality = json.trainingQuality;
+
+    this._updateTrainingOptions(json.trainOpts);
     this.setActivation();
     return this;
   }
