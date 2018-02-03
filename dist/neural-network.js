@@ -54,6 +54,53 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 var NeuralNetwork = function () {
   _createClass(NeuralNetwork, null, [{
+    key: '_validateTrainingOptions',
+
+
+    /**
+     *
+     * @param options
+     * @param boolean
+     * @private
+     */
+    value: function _validateTrainingOptions(options, shouldThrow) {
+      var validations = {
+        iterations: function iterations(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        errorThresh: function errorThresh(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        log: function log(val) {
+          return typeof val === 'function' || typeof val === 'boolean';
+        },
+        logPeriod: function logPeriod(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        learningRate: function learningRate(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        momentum: function momentum(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        callback: function callback(val) {
+          return typeof val === 'function' || val === null;
+        },
+        callbackPeriod: function callbackPeriod(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        timeout: function timeout(val) {
+          return typeof val === 'number' && val > 0;
+        }
+      };
+      Object.keys(options).forEach(function (key) {
+        if (validations[key] && !validations[key](options[key])) {
+          var message = '[' + key + ', ' + options[key] + '] is out of normal range';
+          if (shouldThrow) throw new Error(message);else console.warn(message);
+        }
+      });
+    }
+  }, {
     key: 'trainDefaults',
     get: function get() {
       return {
@@ -89,6 +136,7 @@ var NeuralNetwork = function () {
     this.trainOpts = {};
     this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
 
+    this.invalidTrainOptsShouldThrow = true;
     this.sizes = null;
     this.outputLayer = null;
     this.biases = null; // weights for bias nodes
@@ -344,6 +392,7 @@ var NeuralNetwork = function () {
     value: function _updateTrainingOptions(opts) {
       var _this2 = this;
 
+      NeuralNetwork._validateTrainingOptions(opts, this.invalidTrainOptsShouldThrow);
       Object.keys(NeuralNetwork.trainDefaults).forEach(function (opt) {
         return _this2.trainOpts[opt] = opts[opt] || _this2.trainOpts[opt];
       });
