@@ -60,9 +60,9 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
 
 
   _createClass(NeuralNetworkGPU, [{
-    key: 'initialize',
-    value: function initialize(sizes) {
-      _get(NeuralNetworkGPU.prototype.__proto__ || Object.getPrototypeOf(NeuralNetworkGPU.prototype), 'initialize', this).call(this, sizes);
+    key: '_initialize',
+    value: function _initialize(sizes) {
+      _get(NeuralNetworkGPU.prototype.__proto__ || Object.getPrototypeOf(NeuralNetworkGPU.prototype), '_initialize', this).call(this, sizes);
       this.buildRunInput();
       this.buildCalculateDeltas();
       this.buildGetChanges();
@@ -81,9 +81,9 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
      */
 
   }, {
-    key: 'trainPattern',
-    value: function trainPattern(input, target, learningRate) {
-      learningRate = learningRate || this.learningRate;
+    key: '_trainPattern',
+    value: function _trainPattern(input, target, learningRate) {
+      learningRate = learningRate || this.trainOpts.learningRate;
       // forward propagate
       this.runInput(input);
 
@@ -235,7 +235,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     key: 'getChanges',
     value: function getChanges(learningRate) {
       for (var layer = 1; layer <= this.outputLayer; layer++) {
-        var output = this.changesPropagate[layer](this.outputs[layer - 1], this.deltas[layer], this.weights[layer], this.changes[layer], learningRate, this.momentum);
+        var output = this.changesPropagate[layer](this.outputs[layer - 1], this.deltas[layer], this.weights[layer], this.changes[layer], learningRate, this.trainOpts.momentum);
 
         this.changes[layer] = output.changes;
         this.weights[layer] = output.weights;
@@ -297,8 +297,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
      */
 
   }, {
-    key: 'formatData',
-    value: function formatData(data) {
+    key: '_formatData',
+    value: function _formatData(data) {
       var _this2 = this;
 
       if (!Array.isArray(data)) {
