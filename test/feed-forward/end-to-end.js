@@ -84,8 +84,7 @@ describe('FeedForward Class: End to End', () => {
         outputLayer: (input) => output({ width: 1 }, input)
       });
       net.train(xorTrainingData, {
-        iterations: 200,
-        threshold: 0.5
+        iterations: 1000
       });
       const result1 = net.run([0, 0])[0][0];
       const result2 = net.run([0, 1])[0][0];
