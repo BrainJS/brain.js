@@ -443,7 +443,7 @@ var NeuralNetwork = function () {
   }, {
     key: '_prepTraining',
     value: function _prepTraining(data, options) {
-      this.updateTrainingOptions(options);
+      this._updateTrainingOptions(options);
       data = this._formatData(data);
       var endTime = Date.now() + this.trainOpts.timeout;
 
