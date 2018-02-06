@@ -1,26 +1,18 @@
 import FeedForward from './feed-forward';
 
-
 export default class Recurrent extends FeedForward {
   constructor(settings) {
     super(settings);
+    this.recurrentLayers = [];
+    this.weightsCache = [];
+    this.deltasCache = [];
   }
 
-  connectLayers() {
-    this.layers = [];
-    const inputLayer = this.inputLayer(null, this.layers.length);
-    this._inputLayer = inputLayer;
-    this.layers.push(inputLayer);
-    let previousLayer = inputLayer;
-    for (let i = 0; i < this.hiddenLayers.length; i++) {
-      const hiddenLayer = this.hiddenLayers[i](previousLayer, this.layers.length);
-      this.layers.push(hiddenLayer);
-      previousLayer = hiddenLayer;
+  initialize() {
+    super.initialize();
+    for (let i = this._hiddenLayerStartingIndex; i < this._hiddenLayerEndingIndex; i++) {
+      this.recurrentLayers.push(this.layers[i]);
     }
-    this._outputLayer = this.outputLayer(previousLayer, this.layers.length);
-    this.layers.push(this._outputLayer);
-
-    this.connectNestedLayers();
   }
 
   //TODO this is pseudo scripted
@@ -38,5 +30,61 @@ export default class Recurrent extends FeedForward {
     // loopholes
     layer.compare(prevLayer, nextLayer);
     layer.learn();
+  }
+
+  runInput(input) {
+    this.layers[0].predict(input[0]);
+    for (let x = 1; x < input.length; x++) {
+      for (let i = 1; i <= this._inputLayerEndingIndex; i++) {
+        this.layers[i].predict(input[x]);
+      }
+      for (let i = this._hiddenLayerStartingIndex; i <= this._hiddenLayerEndingIndex; i++) {
+        this.layers[i].predict();
+      }
+      this.cacheWeights();
+    }
+    for (let i = this._outputLayerStartingIndex; i <= this._outputLayerEndingIndex; i++) {
+      this.layers[i].predict();
+    }
+    return this.layers[this.layers.length - 1].weights;
+  }
+
+  calculateDeltas(target) {
+    this._outputLayer.compare(target);
+    for (let i = this.layers.length - 2; i > -1; i--) {
+      const previousLayer = this.layers[i - 1];
+      const nextLayer = this.layers[i + 1];
+      this.layers[i].compare(previousLayer, nextLayer);
+    }
+  }
+
+  cacheWeights() {
+    const cache = [];
+    for (let i = 0; i < this.recurrentLayers.length; i++) {
+      cache.push(this.recurrentLayers.weights);
+    }
+    this.weightsCache.push(cache);
+  }
+
+  cacheDeltas() {
+    const cache = [];
+    for (let i = 0; i < this.recurrentLayers.length; i++) {
+      cache.push(this.recurrentLayers.deltas);
+    }
+    this.deltasCache.push(cache);
+  }
+
+  uncacheWeights() {
+    const cache = this.weightsCache.pop();
+    for (let i = 0; i < this.recurrentLayers.length; i++) {
+      this.recurrentLayers.weights = cache[i];
+    }
+  }
+
+  uncacheDeltas() {
+    const cache = this.deltasCache.pop();
+    for (let i = 0; i < this.recurrentLayers.length; i++) {
+      this.recurrentLayers.deltas = cache[i];
+    }
   }
 }

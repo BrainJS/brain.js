@@ -30,23 +30,24 @@ describe('FeedForward Class: Unit', () => {
       assert.equal(new FeedForward().layers, null);
     });
   });
-  describe('.connectLayers()', () => {
-    describe('flat hiddenLayer option', () => {
+  describe('layer composition', () => {
+    describe('flat', () => {
       it('can setup and traverse entire network as needed', () => {
         const net = new FeedForward({
           inputLayer: () => input(),
           hiddenLayers: [
-            (input) => convolution({ filterCount: 8, filterWidth: 5, filterHeight: 5, padding: 2, stride: 1 }, input),
+            (input) => convolution({filterCount: 8, filterWidth: 5, filterHeight: 5, padding: 2, stride: 1}, input),
             (input) => relu(input),
-            (input) => pool({ padding: 2, stride: 2 }, input),
-            (input) => convolution({ padding: 2, stride: 1, filterCount: 16, filterWidth: 5, filterHeight: 5 }, input),
+            (input) => pool({padding: 2, stride: 2}, input),
+            (input) => convolution({padding: 2, stride: 1, filterCount: 16, filterWidth: 5, filterHeight: 5}, input),
             (input) => relu(input),
-            (input) => pool({ width: 3, stride: 3 }, input),
-            (input) => softMax({ width: 10 }, input)
+            (input) => pool({width: 3, stride: 3}, input),
+            (input) => softMax({width: 10}, input)
           ],
-          outputLayer: (input) => output({ width: 10 }, input)
+          outputLayer: (input) => output({width: 10}, input)
         });
         net.connectLayers();
+        net.flattenLayers();
         assert.equal(net.layers.length, 11);
         assert.deepEqual(net.layers.map(layer => layer.constructor), [
           Input,
@@ -62,7 +63,7 @@ describe('FeedForward Class: Unit', () => {
           Target
         ]);
       });
-      it('can setup and traverse entire network using layer composition', () => {
+      it('can setup and traverse entire network using layer composed of layers', () => {
         const net = new FeedForward({
           inputLayer: () => input(),
           hiddenLayers: [
@@ -71,6 +72,7 @@ describe('FeedForward Class: Unit', () => {
           outputLayer: (input) => output({}, input)
         });
         net.connectLayers();
+        net.flattenLayers();
         assert.equal(net.layers.length, 9);
         assert.deepEqual(net.layers.map(layer => layer.constructor), [
           Input,
@@ -85,7 +87,7 @@ describe('FeedForward Class: Unit', () => {
         ]);
       });
     });
-    describe('functional hiddenLayer option', () => {
+    describe('functional', () => {
       it('can setup and traverse entire network as needed', () => {
         const net = new FeedForward({
           inputLayer: () => input(),
@@ -107,6 +109,7 @@ describe('FeedForward Class: Unit', () => {
           outputLayer: (input) => output({width: 10}, input)
         });
         net.connectLayers();
+        net.flattenLayers();
         assert.equal(net.layers.length, 11);
         assert.deepEqual(net.layers.map(layer => layer.constructor), [
           Input,
@@ -143,6 +146,12 @@ describe('FeedForward Class: Unit', () => {
       });
       net.initialize();
 
+      assert(net._inputLayerEndingIndex === 0);
+      assert(net._inputLayerStartingIndex === 0);
+      assert(net._hiddenLayerStartingIndex === 1);
+      assert(net._hiddenLayerEndingIndex === 3);
+      assert(net._outputLayerEndingIndex === 4);
+      assert(net._outputLayerStartingIndex === 4);
       assert.equal(net.layers.length, 5);
       assert.deepEqual(net.layers.map(layer => layer.called), [
         true,
@@ -442,7 +451,7 @@ describe('FeedForward Class: Unit', () => {
       assert.deepEqual(net.layers.map(layer => layer instanceof TestLayer), [true, true, true, true]);
       assert.deepEqual(net.layers.map(layer => layer.inputLayer instanceof TestLayer), [false, true, true, true]);
     });
-    it('can deserialize to object from json using inputLayerIndex', () => {
+    it('can deserialize to object from json using inputLayer1Index & inputLayer2Index', () => {
       class TestLayer extends Base {
         static get defaults() {
           return { foo: null };

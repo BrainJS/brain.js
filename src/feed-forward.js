@@ -42,6 +42,13 @@ export default class FeedForward {
     this.layers = null;
     this._inputLayer = null;
     this._outputLayer = null;
+    this._lastHiddenLayer = null;
+    this._inputLayerStartingIndex = null;
+    this._inputLayerEndingIndex = null;
+    this._hiddenLayerStartingIndex = null;
+    this._hiddenLayerEndingIndex = null;
+    this._outputLayerStartingIndex = null;
+    this._outputLayerEndingIndex = null;
   }
 
   connectLayers() {
@@ -52,16 +59,15 @@ export default class FeedForward {
     let previousLayer = inputLayer;
     for (let i = 0; i < this.hiddenLayers.length; i++) {
       const hiddenLayer = this.hiddenLayers[i](previousLayer, this.layers.length);
+      this._lastHiddenLayer = hiddenLayer;
       this.layers.push(hiddenLayer);
       previousLayer = hiddenLayer;
     }
     this._outputLayer = this.outputLayer(previousLayer, this.layers.length);
     this.layers.push(this._outputLayer);
-
-    this.connectNestedLayers();
   }
 
-  connectNestedLayers() {
+  flattenLayers() {
     for (let i = 0; i < this.layers.length; i++) {
       let offset = 0;
       traverseLayersFrom(this.layers[i], (layer) => {
@@ -73,8 +79,19 @@ export default class FeedForward {
     }
   }
 
+  indexLayers() {
+    this._inputLayerStartingIndex = 0;
+    this._inputLayerEndingIndex = this.layers.indexOf(this._inputLayer);
+    this._hiddenLayerStartingIndex = this._inputLayerEndingIndex + 1;
+    this._hiddenLayerEndingIndex = this.layers.indexOf(this._lastHiddenLayer);
+    this._outputLayerStartingIndex = this._hiddenLayerEndingIndex + 1;
+    this._outputLayerEndingIndex = this.layers.length - 1;
+  }
+
   initialize() {
     this.connectLayers();
+    this.flattenLayers();
+    this.indexLayers();
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i];
       layer.validate(this.layers[i - 1], this.layers[i + 1]);
@@ -84,7 +101,6 @@ export default class FeedForward {
       }
     }
   }
-
   /**
    *
    * @param input
