@@ -1,15 +1,10 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = zeros;
 function zeros(size) {
-  if (typeof Float32Array !== 'undefined') return new Float32Array(size);
-  var array = new Array(size);
-  for (var i = 0; i < size; i++) {
-    array[i] = 0;
-  }
-  return array;
+  return new Float32Array(size);
 }
 //# sourceMappingURL=zeros.js.map

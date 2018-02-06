@@ -22,8 +22,8 @@
     "test": "npm run test-base && npm run test-utilities",
     "test-experimental": "npm run test-recurrent-matrix && npm run test-recurrent && npm run test-utilities",
     "dist": "babel src --out-dir dist --source-maps",
-    "browser": "browserify ./index.js -p licensify -o browser.js",
-    "browser-min": "browserify ./index.js -p licensify -g uglifyify -o browser.min.js",
+    "browser": "browserify ./index.js -p licensify -o browser.js -s brain",
+    "browser-min": "browserify ./index.js -p licensify -s brain -g uglifyify -o browser.min.js",
     "make": "rm -fr ./dist && npm run dist && git add ./dist && npm run browser && npm run browser-min",
     "codecov": "node ./node_modules/.bin/nyc yarn test-feed-forward"
   },

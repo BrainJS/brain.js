@@ -22,8 +22,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
    *
    * @param {Number[]} sizes
    */
-  initialize(sizes) {
-    super.initialize(sizes);
+  _initialize(sizes) {
+    super._initialize(sizes);
     this.buildRunInput();
     this.buildCalculateDeltas();
     this.buildGetChanges();
@@ -39,8 +39,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
    * @param target
    * @param learningRate
    */
-  trainPattern(input, target, learningRate) {
-    learningRate = learningRate || this.learningRate;
+  _trainPattern(input, target, learningRate) {
+    learningRate = learningRate || this.trainOpts.learningRate;
     // forward propagate
     this.runInput(input);
 
@@ -205,7 +205,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
         this.weights[layer],
         this.changes[layer],
         learningRate,
-        this.momentum
+        this.trainOpts.momentum
       );
       
       this.changes[layer] = output.changes;
@@ -247,6 +247,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
    * @returns {*}
    */
   run(input) {
+    if (!this.isRunnable) return null;
     if (this.inputLookup) {
       input = lookup.toArray(this.inputLookup, input);
     }
@@ -263,7 +264,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
    * @param data
    * @returns {*}
    */
-  formatData(data) {
+  _formatData(data) {
     if (!Array.isArray(data)) { // turn stream datum into array
       let tmp = [];
       tmp.push(data);
