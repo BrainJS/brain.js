@@ -22,8 +22,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
    *
    * @param {Number[]} sizes
    */
-  _initialize(sizes) {
-    super._initialize(sizes);
+  _initialize() {
+    super._initialize();
     this.buildRunInput();
     this.buildCalculateDeltas();
     this.buildGetChanges();
@@ -251,12 +251,42 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     if (this.inputLookup) {
       input = lookup.toArray(this.inputLookup, input);
     }
-    let output = [...this.runInput(input).toArray(this.gpu)];
+    const inputTexture = this._texturizeInputData(input);
+    const outputTextures = this.runInput(inputTexture);
+    let output = [...outputTextures.toArray(this.gpu)];
 
     if (this.outputLookup) {
       output = lookup.toHash(this.outputLookup, output);
     }
     return output;
+  }
+
+
+  /**
+   *
+   * @param data
+   * Verifies network sizes are initilaized
+   * If they are not it will initialize them based off the data set.
+   */
+  _verifyIsInitialized(data) {
+    if (this.sizes) return;
+
+    this.sizes = [];
+    if (!data[0].size) {
+      data[0].size = { input: data[0].input.length, output: data[0].output.length };
+    }
+
+    this.sizes.push(data[0].size.input);
+    if (!this.hiddenSizes) {
+      this.sizes.push(Math.max(3, Math.floor(data[0].size.input / 2)));
+    } else {
+      this.hiddenSizes.forEach(size => {
+        this.sizes.push(size);
+      });
+    }
+    this.sizes.push(data[0].size.output);
+
+    this._initialize();
   }
 
   /**
@@ -265,38 +295,32 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
    * @returns {*}
    */
   _formatData(data) {
-    if (!Array.isArray(data)) { // turn stream datum into array
-      let tmp = [];
-      tmp.push(data);
-      data = tmp;
-    }
-    // turn sparse hash input into arrays with 0s as filler
-    let datum = data[0].input;
-    if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
-      if (!this.inputLookup) {
-        this.inputLookup = lookup.buildLookup(data.map(value => value['input']));
-      }
-      data = data.map(datum => {
-        let array = lookup.toArray(this.inputLookup, datum.input);
-        return Object.assign({}, datum, { input: array });
-      }, this);
-    }
+    data = super._formatData(data);
 
-    if (!Array.isArray(data[0].output)) {
-      if (!this.outputLookup) {
-        this.outputLookup = lookup.buildLookup(data.map(value => value['output']));
-      }
-      data = data.map(datum => {
-        let array = lookup.toArray(this.outputLookup, datum.output);
-        return Object.assign({}, datum, { output: array });
-      }, this);
-    }
+    this._texturizeInputData = this.gpu.createKernel(function(value) {
+      return value[this.thread.x];
+    }, {
+      output: [data[0].input.length],
+      outputToTexture: true
+    });
+    const texturizeOutputData = this.gpu.createKernel(function(value) {
+      return value[this.thread.x];
+    }, {
+      output: [data[0].output.length],
+      outputToTexture: true
+    });
+    data.forEach(d => {
+      d.size = {input: d.input.length, output: d.output.length};
+      d.input = this._texturizeInputData(d.input);
+      d.output = texturizeOutputData(d.output);
+    });
     return data;
   }
 
   toFunction() {
     throw new Error('not implemented on NeuralNetworkGPU');
   }
+
 }
 
 function weightedSumSigmoid(weights, biases, inputs) {

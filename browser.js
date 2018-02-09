@@ -465,8 +465,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
 
   _createClass(NeuralNetworkGPU, [{
     key: '_initialize',
-    value: function _initialize(sizes) {
-      _get(NeuralNetworkGPU.prototype.__proto__ || Object.getPrototypeOf(NeuralNetworkGPU.prototype), '_initialize', this).call(this, sizes);
+    value: function _initialize() {
+      _get(NeuralNetworkGPU.prototype.__proto__ || Object.getPrototypeOf(NeuralNetworkGPU.prototype), '_initialize', this).call(this);
       this.buildRunInput();
       this.buildCalculateDeltas();
       this.buildGetChanges();
@@ -686,12 +686,46 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       if (this.inputLookup) {
         input = _lookup2.default.toArray(this.inputLookup, input);
       }
-      var output = [].concat(_toConsumableArray(this.runInput(input).toArray(this.gpu)));
+      var inputTexture = this._texturizeInputData(input);
+      var outputTextures = this.runInput(inputTexture);
+      var output = [].concat(_toConsumableArray(outputTextures.toArray(this.gpu)));
 
       if (this.outputLookup) {
         output = _lookup2.default.toHash(this.outputLookup, output);
       }
       return output;
+    }
+
+    /**
+     *
+     * @param data
+     * Verifies network sizes are initilaized
+     * If they are not it will initialize them based off the data set.
+     */
+
+  }, {
+    key: '_verifyIsInitialized',
+    value: function _verifyIsInitialized(data) {
+      var _this2 = this;
+
+      if (this.sizes) return;
+
+      this.sizes = [];
+      if (!data[0].size) {
+        data[0].size = { input: data[0].input.length, output: data[0].output.length };
+      }
+
+      this.sizes.push(data[0].size.input);
+      if (!this.hiddenSizes) {
+        this.sizes.push(Math.max(3, Math.floor(data[0].size.input / 2)));
+      } else {
+        this.hiddenSizes.forEach(function (size) {
+          _this2.sizes.push(size);
+        });
+      }
+      this.sizes.push(data[0].size.output);
+
+      this._initialize();
     }
 
     /**
@@ -703,39 +737,27 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
   }, {
     key: '_formatData',
     value: function _formatData(data) {
-      var _this2 = this;
+      var _this3 = this;
 
-      if (!Array.isArray(data)) {
-        // turn stream datum into array
-        var tmp = [];
-        tmp.push(data);
-        data = tmp;
-      }
-      // turn sparse hash input into arrays with 0s as filler
-      var datum = data[0].input;
-      if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
-        if (!this.inputLookup) {
-          this.inputLookup = _lookup2.default.buildLookup(data.map(function (value) {
-            return value['input'];
-          }));
-        }
-        data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this2.inputLookup, datum.input);
-          return Object.assign({}, datum, { input: array });
-        }, this);
-      }
+      data = _get(NeuralNetworkGPU.prototype.__proto__ || Object.getPrototypeOf(NeuralNetworkGPU.prototype), '_formatData', this).call(this, data);
 
-      if (!Array.isArray(data[0].output)) {
-        if (!this.outputLookup) {
-          this.outputLookup = _lookup2.default.buildLookup(data.map(function (value) {
-            return value['output'];
-          }));
-        }
-        data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this2.outputLookup, datum.output);
-          return Object.assign({}, datum, { output: array });
-        }, this);
-      }
+      this._texturizeInputData = this.gpu.createKernel(function (value) {
+        return value[this.thread.x];
+      }, {
+        output: [data[0].input.length],
+        outputToTexture: true
+      });
+      var texturizeOutputData = this.gpu.createKernel(function (value) {
+        return value[this.thread.x];
+      }, {
+        output: [data[0].output.length],
+        outputToTexture: true
+      });
+      data.forEach(function (d) {
+        d.size = { input: d.input.length, output: d.output.length };
+        d.input = _this3._texturizeInputData(d.input);
+        d.output = texturizeOutputData(d.output);
+      });
       return data;
     }
   }, {
