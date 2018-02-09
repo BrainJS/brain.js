@@ -56,15 +56,18 @@ export default class FeedForward {
     const inputLayer = this.inputLayer(null, this.layers.length);
     this._inputLayer = inputLayer;
     this.layers.push(inputLayer);
-    let previousLayer = inputLayer;
+    this.connectHiddenLayers();
+    this._outputLayer = this.outputLayer(this.layers[this.layers.length - 1], this.layers.length);
+    this.layers.push(this._outputLayer);
+  }
+
+  connectHiddenLayers() {
     for (let i = 0; i < this.hiddenLayers.length; i++) {
+      const previousLayer = this.layers[this.layers.length - 1];
       const hiddenLayer = this.hiddenLayers[i](previousLayer, this.layers.length);
       this._lastHiddenLayer = hiddenLayer;
       this.layers.push(hiddenLayer);
-      previousLayer = hiddenLayer;
     }
-    this._outputLayer = this.outputLayer(previousLayer, this.layers.length);
-    this.layers.push(this._outputLayer);
   }
 
   flattenLayers() {

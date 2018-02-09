@@ -1,18 +1,20 @@
 import {
   add,
-  cloneNegative,
+  negative,
   multiply,
   multiplyElement,
   ones,
   sigmoid,
   random,
-  tanh
+  tanh,
+  zeros
 } from './';
 
-export default (settings, input, recurrentInput) => {
-  const updateGateWeights = random();
-  const updateGatePeepholes = random();
-  const updateGateBias = random();
+export default (settings, recurrentInput, input) => {
+  const { height } = settings;
+  const updateGateWeights = random({ height, width: input.height });
+  const updateGatePeepholes = random({ width: height, height });
+  const updateGateBias = zeros({ height });
   const updateGate = sigmoid(
     add(
       add(
@@ -29,9 +31,9 @@ export default (settings, input, recurrentInput) => {
     )
   );
 
-  const resetGateWeights = random();
-  const resetGatePeepholes = random();
-  const resetGateBias = random();
+  const resetGateWeights = random({ height, width: input.height });
+  const resetGatePeepholes = random({ width: height, height });
+  const resetGateBias = zeros({ height });
   let resetGate = sigmoid(
     add(
       add(
@@ -48,9 +50,9 @@ export default (settings, input, recurrentInput) => {
     )
   );
 
-  const cellWeights = random();
-  const cellPeepholes = random();
-  const cellBias = random();
+  const cellWeights = random({ height, width: input.height });
+  const cellPeepholes = random({ width: height, height });
+  const cellBias = zeros({ height });
   let cell = tanh(
     add(
       add(
@@ -76,7 +78,7 @@ export default (settings, input, recurrentInput) => {
     multiplyElement(
       add(
         ones(updateGate.rows, updateGate.columns),
-        cloneNegative(updateGate)
+        negative(updateGate)
       ),
       cell
     ),

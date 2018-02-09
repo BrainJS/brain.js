@@ -10,6 +10,8 @@ import RNN from './recurrent/rnn';
 import LSTM from './recurrent/lstm';
 import GRU from './recurrent/gru';
 import FeedForward from './feed-forward';
+import Recurrent from './recurrent';
+import praxis from './praxis';
 
 export default {
   crossValidate,
@@ -25,4 +27,10 @@ export default {
   }
 };
 
-export { layer, FeedForward, activation };
+export {
+  FeedForward,
+  Recurrent,
+  activation,
+  layer,
+  praxis
+};

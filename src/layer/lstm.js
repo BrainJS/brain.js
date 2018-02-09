@@ -4,13 +4,15 @@ import {
   multiplyElement,
   random,
   sigmoid,
-  tanh
+  tanh,
+  zeros
 } from './index';
 
-export default (settings, input, recurrentInput) => {
-  const inputGateWeights = random();
-  const inputGatePeepholes = random();
-  const inputGateBias = random();
+export default (settings, recurrentInput, input) => {
+  const { height } = settings;
+  const inputGateWeights = random({ height, width: input.height });
+  const inputGatePeepholes = random({ width: height, height });
+  const inputGateBias = zeros({ height });
   const inputGate = sigmoid(
     add(
       add(
@@ -27,9 +29,9 @@ export default (settings, input, recurrentInput) => {
     )
   );
 
-  const forgetGateWeights = random();
-  const forgetGatePeepholes = random();
-  const forgetGateBias = random();
+  const forgetGateWeights = random({ height, width: input.height });
+  const forgetGatePeepholes = random({ width: height, height });
+  const forgetGateBias = zeros({ height });
   const forgetGate = sigmoid(
     add(
       add(
@@ -46,9 +48,9 @@ export default (settings, input, recurrentInput) => {
     )
   );
 
-  const outputGateWeights = random();
-  const outputGatePeepholes = random();
-  const outputGateBias = random();
+  const outputGateWeights = random({ height, width: input.height });
+  const outputGatePeepholes = random({ width: height, height });
+  const outputGateBias = zeros({ height });
   const outputGate = sigmoid(
     add(
       add(
@@ -65,9 +67,9 @@ export default (settings, input, recurrentInput) => {
     )
   );
 
-  const memoryWeights = random();
-  const memoryPeepholes = random();
-  const memoryBias = random();
+  const memoryWeights = random({ height, width: input.height });
+  const memoryPeepholes = random({ width: height, height });
+  const memoryBias = zeros({ height });
   const memory = tanh(
     add(
       add(

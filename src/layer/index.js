@@ -4,15 +4,20 @@ import Convolution from './convolution';
 import Dropout from './dropout';
 import feedForward from './feed-forward';
 import FullyConnected from './fully-connected';
+import gru from './gru';
 import Input from './input';
 import LeakyRelu from './leaky-relu';
+import lstm from './lstm';
 import Multiply from './multiply';
 import MultiplyElement from './multiply-element';
+import Negative from './negative';
+import Ones from './ones';
 import output from './output';
 import Pool from './pool';
-import Relu from './relu';
 import Random from './random';
+import recurrent from './recurrent';
 import Regression from './regression';
+import Relu from './relu';
 import Sigmoid from './sigmoid';
 import SoftMax from './soft-max';
 import SVM from './svm';
@@ -44,6 +49,12 @@ function multiply(inputLayer1, inputLayer2) {
 }
 function multiplyElement(inputLayer1, inputLayer2) {
   return new MultiplyElement(inputLayer1, inputLayer2);
+}
+function negative(settings, inputLayer) {
+  return new Negative(settings, inputLayer);
+}
+function ones(settings) {
+  return new Ones(settings);
 }
 function pool(settings, inputLayer) {
   return new Pool(settings, inputLayer);
@@ -89,19 +100,26 @@ export {
   feedForward,
   FullyConnected,
   fullyConnected,
+  gru,
   Input,
   input,
   LeakyRelu,
   leakyRelu,
+  lstm,
   Multiply,
   multiply,
   MultiplyElement,
   multiplyElement,
+  Negative,
+  negative,
+  Ones,
+  ones,
   output,
   Pool,
   pool,
   Random,
   random,
+  recurrent,
   Regression,
   regression,
   Relu,

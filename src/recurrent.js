@@ -1,3 +1,4 @@
+import RecurrentInput from './layer/recurrent-input';
 import FeedForward from './feed-forward';
 
 export default class Recurrent extends FeedForward {
@@ -8,10 +9,16 @@ export default class Recurrent extends FeedForward {
     this.deltasCache = [];
   }
 
-  initialize() {
-    super.initialize();
-    for (let i = this._hiddenLayerStartingIndex; i < this._hiddenLayerEndingIndex; i++) {
-      this.recurrentLayers.push(this.layers[i]);
+  connectHiddenLayers() {
+    for (let i = 0; i < this.hiddenLayers.length; i++) {
+      const previousLayer = this.layers[this.layers.length - 1];
+      const recurrentInput = new RecurrentInput();
+      const hiddenLayer = this.hiddenLayers[i](previousLayer, recurrentInput, this.layers.length);
+      const { width, height } = hiddenLayer;
+      recurrentInput.width = width;
+      recurrentInput.height = height;
+      this._lastHiddenLayer = hiddenLayer;
+      this.layers.push(hiddenLayer);
     }
   }
 
@@ -34,15 +41,19 @@ export default class Recurrent extends FeedForward {
 
   runInput(input) {
     this.layers[0].predict(input[0]);
+    for (let i = 1; i <= this._hiddenLayerEndingIndex; i++) {
+      this.layers[i].predict();
+    }
+    let cache = this.cacheWeights();
+
     for (let x = 1; x < input.length; x++) {
-      for (let i = 1; i <= this._inputLayerEndingIndex; i++) {
-        this.layers[i].predict(input[x]);
-      }
-      for (let i = this._hiddenLayerStartingIndex; i <= this._hiddenLayerEndingIndex; i++) {
+      this.layers[0].predict(input[x]);
+      for (let i = 1; i <= this._hiddenLayerEndingIndex; i++) {
         this.layers[i].predict();
       }
-      this.cacheWeights();
+      cache = this.cacheWeights();
     }
+
     for (let i = this._outputLayerStartingIndex; i <= this._outputLayerEndingIndex; i++) {
       this.layers[i].predict();
     }
@@ -64,6 +75,7 @@ export default class Recurrent extends FeedForward {
       cache.push(this.recurrentLayers.weights);
     }
     this.weightsCache.push(cache);
+    return cache;
   }
 
   cacheDeltas() {

@@ -6,21 +6,22 @@ import zeros2D from "../utilities/zeros-2d";
 export default class MultiplyElement extends Base {
   constructor(inputLayer1, inputLayer2) {
     super();
-
-    if (inputLayer1.width !== inputLayer2.width) {
-      throw new Error('Layer width mismatch');
-    }
-
-    if (inputLayer1.height !== inputLayer2.height) {
-      throw new Error('Layer height mismatch');
-    }
-
     this.width = inputLayer1.width;
     this.height = inputLayer1.height;
     this.inputLayer1 = inputLayer1;
     this.inputLayer2 = inputLayer2;
     this.deltas = zeros2D(this.width, this.height);
     this.weights = randos2D(this.width, this.height);
+  }
+
+  validate() {
+    if (this.inputLayer1.width !== this.inputLayer2.width) {
+      throw new Error(`Layer width mismatch of ${this.inputLayer1.width} and ${this.inputLayer2.width}`);
+    }
+
+    if (this.inputLayer1.height !== this.inputLayer2.height) {
+      throw new Error(`Layer height mismatch of ${this.inputLayer1.height} and ${this.inputLayer2.height}`);
+    }
   }
 
   setupKernels() {
