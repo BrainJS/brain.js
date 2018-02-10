@@ -41,7 +41,7 @@ export default class NeuralNetwork {
    * @param boolean
    * @private
    */
-  static _validateTrainingOptions(options, shouldThrow) {
+  static _validateTrainingOptions(options) {
     var validations = {
       iterations: (val) => { return typeof val === 'number' && val > 0; },
       errorThresh: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
@@ -53,11 +53,9 @@ export default class NeuralNetwork {
       callbackPeriod: (val) => { return typeof val === 'number' && val > 0; },
       timeout: (val) => { return typeof val === 'number' && val > 0 }
     };
-    Object.keys(options).forEach(key => {
-      if (validations[key] && !validations[key](options[key])) {
-        let message = `[${key}, ${options[key]}] is out of normal range`;
-        if (shouldThrow) throw new Error (message);
-        else console.warn(message);
+    Object.keys(NeuralNetwork.trainDefaults).forEach(key => {
+      if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
+        throw new Error(`[${key}, ${options[key]}] is out of normal training range, your network will probably not train.`);
       }
     });
   }
@@ -68,7 +66,6 @@ export default class NeuralNetwork {
     this.trainOpts = {};
     this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
 
-    this.invalidTrainOptsShouldThrow = true;
     this.sizes = null;
     this.outputLayer = null;
     this.biases = null; // weights for bias nodes
@@ -321,8 +318,8 @@ export default class NeuralNetwork {
    *       activation: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
    */
   _updateTrainingOptions(opts) {
-    NeuralNetwork._validateTrainingOptions(opts, this.invalidTrainOptsShouldThrow);
-    Object.keys(NeuralNetwork.trainDefaults).forEach(opt => this.trainOpts[opt] = opts[opt] || this.trainOpts[opt]);
+    Object.keys(NeuralNetwork.trainDefaults).forEach(opt => this.trainOpts[opt] = (opts.hasOwnProperty(opt)) ? opts[opt] : this.trainOpts[opt]);
+    NeuralNetwork._validateTrainingOptions(this.trainOpts);
     this._setLogMethod(opts.log || this.trainOpts.log);
     this.activation = opts.activation || this.activation;
   }

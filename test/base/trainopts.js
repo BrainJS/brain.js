@@ -252,16 +252,6 @@ describe('training options validation', () => {
     assert.doesNotThrow(() => { net._updateTrainingOptions({ timeout: 40 }) });
   });
 
-  it('invalidTrainOptsShouldThrow works as expected', () => {
-    let net = new brain.NeuralNetwork();
-    assert.throws(() => { net._updateTrainingOptions({ timeout: 'no strings' }) });
-    net.invalidTrainOptsShouldThrow = false;
-    let log = console.log;
-    console.warn = () => {};
-    assert.doesNotThrow(() => { net._updateTrainingOptions({ timeout: 'no strings' }) });
-    console.warn = log;
-  })
-
   it('should handle unsupported options', () => {
     let net = new brain.NeuralNetwork();
     assert.doesNotThrow(() => { net._updateTrainingOptions({ fakeProperty: 'should be handled fine' }) });
