@@ -1,6 +1,7 @@
 import RecurrentInput from './layer/recurrent-input';
 import FeedForward from './feed-forward';
 import randos2D from './utilities/randos-2d';
+import zeros2D from './utilities/zeros-2d';
 
 export default class Recurrent extends FeedForward {
   constructor(settings) {
@@ -62,12 +63,27 @@ export default class Recurrent extends FeedForward {
   }
 
   calculateDeltas(target) {
-    this._outputLayer.compare(target);
-    for (let i = this.layers.length - 2; i > -1; i--) {
-      const previousLayer = this.layers[i - 1];
-      const nextLayer = this.layers[i + 1];
-      this.layers[i].compare(previousLayer, nextLayer);
+    const lastLayer = this.layers[this.layers.length - 1];
+    lastLayer.deltas = lastLayer.weights;
+    lastLayer.compare(target[0]);
+    for (let i = this._hiddenLayerEndingIndex; i >= 0; i--) {
+      this.layers[i].compare();
     }
+
+    for (let x = 1; x < target.length; x++) {
+      this.cacheDeltas();
+      this.layers[0].compare(target[x]);
+      for (let i = 1; i <= this._hiddenLayerEndingIndex; i++) {
+        const layer = this.layers[i];
+        layer.deltas = zeros2D(layer.width, layer.height);
+        layer.compare();
+      }
+    }
+
+    for (let i = this._outputLayerStartingIndex; i <= this._outputLayerEndingIndex; i++) {
+      this.layers[i].compare();
+    }
+    return this.layers[this.layers.length - 1].weights;
   }
 
   cacheWeights() {
