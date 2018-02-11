@@ -264,7 +264,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       this.getMSE = this.gpu.createKernel(mse, {
         output: [1],
         constants: {
-          size: this.outputLayer
+          size: this.sizes[this.outputLayer]
         }
       });
     }
