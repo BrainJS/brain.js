@@ -236,7 +236,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     this.getMSE = this.gpu.createKernel(mse, {
       output: [1],
       constants: {
-        size: this.outputLayer
+        size: this.sizes[this.outputLayer]
       }
     });
   }
