@@ -1,5 +1,6 @@
 import RecurrentInput from './layer/recurrent-input';
 import FeedForward from './feed-forward';
+import randos2D from './utilities/randos-2d';
 
 export default class Recurrent extends FeedForward {
   constructor(settings) {
@@ -15,8 +16,7 @@ export default class Recurrent extends FeedForward {
       const recurrentInput = new RecurrentInput();
       const hiddenLayer = this.hiddenLayers[i](previousLayer, recurrentInput, this.layers.length);
       const { width, height } = hiddenLayer;
-      recurrentInput.width = width;
-      recurrentInput.height = height;
+      recurrentInput.setDimensions(width, height);
       this._lastHiddenLayer = hiddenLayer;
       this.layers.push(hiddenLayer);
     }
@@ -44,14 +44,15 @@ export default class Recurrent extends FeedForward {
     for (let i = 1; i <= this._hiddenLayerEndingIndex; i++) {
       this.layers[i].predict();
     }
-    let cache = this.cacheWeights();
 
     for (let x = 1; x < input.length; x++) {
+      this.cacheWeights();
       this.layers[0].predict(input[x]);
       for (let i = 1; i <= this._hiddenLayerEndingIndex; i++) {
-        this.layers[i].predict();
+        const layer = this.layers[i];
+        layer.weights = randos2D(layer.width, layer.height);
+        layer.predict();
       }
-      cache = this.cacheWeights();
     }
 
     for (let i = this._outputLayerStartingIndex; i <= this._outputLayerEndingIndex; i++) {
@@ -71,11 +72,10 @@ export default class Recurrent extends FeedForward {
 
   cacheWeights() {
     const cache = [];
-    for (let i = 0; i < this.recurrentLayers.length; i++) {
-      cache.push(this.recurrentLayers.weights);
+    for (let i = 0; i < this._hiddenLayerEndingIndex; i++) {
+      cache.push(this.layers[i].weights);
     }
     this.weightsCache.push(cache);
-    return cache;
   }
 
   cacheDeltas() {
