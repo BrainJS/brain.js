@@ -332,15 +332,24 @@ export default class NeuralNetwork {
   /**
    *
    * @param data
-   * @param learning Rate
    * @returns error
    */
   _calculateTrainingError(data) {
     let sum = 0;
     for (let i = 0; i < data.length; ++i) {
-      sum += this._trainPattern(data[i].input, data[i].output);
+      sum += this._trainPattern(data[i].input, data[i].output, true);
     }
     return sum / data.length;
+  }
+
+  /**
+   * @param data
+   * @private
+   */
+  _trainPatterns(data) {
+    for (let i = 0; i < data.length; ++i) {
+      this._trainPattern(data[i].input, data[i].output, false);
+    }
   }
 
   /**
@@ -354,10 +363,12 @@ export default class NeuralNetwork {
     }
 
     status.iterations++;
-    status.error = this._calculateTrainingError(data);
 
     if (this.trainOpts.log && (status.iterations % this.trainOpts.logPeriod === 0)) {
+      status.error = this._calculateTrainingError(data);
       this.trainOpts.log(`iterations: ${status.iterations}, training error: ${status.error}`);
+    } else {
+      this._trainPatterns(data);
     }
 
     if (this.trainOpts.callback && (status.iterations % this.trainOpts.callbackPeriod === 0)) {
@@ -402,7 +413,11 @@ export default class NeuralNetwork {
     let status, endTime;
     ({ data, status, endTime } = this._prepTraining(data, options));
 
-    while (this._trainingTick(data, status, endTime));
+    const tick = () => {
+      this._trainingTick(data, status, endTime);
+      setTimeout(tick, 0);
+    };
+    tick();
     return status;
   }
 
@@ -437,7 +452,7 @@ export default class NeuralNetwork {
    * @param input
    * @param target
    */
-  _trainPattern(input, target) {
+  _trainPattern(input, target, logErrorRate) {
 
     // forward propagate
     this.runInput(input);
@@ -446,8 +461,11 @@ export default class NeuralNetwork {
     this.calculateDeltas(target);
     this._adjustWeights();
 
-    let error = mse(this.errors[this.outputLayer]);
-    return error;
+    if  (logErrorRate) {
+      return mse(this.errors[this.outputLayer]);
+    } else {
+      return null;
+    }
   }
 
   /**

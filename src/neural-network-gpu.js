@@ -37,19 +37,22 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
    *
    * @param input
    * @param target
-   * @param learningRate
+   * @param logErrorRate
    */
-  _trainPattern(input, target, learningRate) {
-    learningRate = learningRate || this.trainOpts.learningRate;
+  _trainPattern(input, target, logErrorRate) {
     // forward propagate
     this.runInput(input);
 
     // backward propagate
     this.calculateDeltas(target);
-    this.getChanges(learningRate);
-    this.changeBiases(learningRate);
+    this.getChanges();
+    this.changeBiases();
 
-    return this.getMSE(this.errors[this.outputLayer])[0];
+    if (logErrorRate) {
+      return this.getMSE(this.errors[this.outputLayer])[0];
+    } else {
+      return null;
+    }
   }
 
   buildRunInput() {
@@ -76,6 +79,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
       this.forwardPropagate[layer] = this.gpu.createKernel(weightedSum, {
         output: [this.sizes[layer]],
         outputToTexture: true,
+        outputImmutable: true,
         constants: {
           size: this.sizes[layer - 1]
         }
@@ -133,7 +137,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
             return calcDeltas(calcErrorOutput(output, targets), output);
           }, {
             output: [this.sizes[layer]],
-            outputToTexture: true
+            outputToTexture: true,
+            outputImmutable: true
           });
       } else {
         this.backwardPropagate[layer] = this.gpu.createKernelMap({
@@ -145,6 +150,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
           }, {
             output: [this.sizes[layer]],
             outputToTexture: true,
+            outputImmutable: true,
             constants: {
               size: this.deltas[layer + 1].length
             }
@@ -153,10 +159,10 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     }
   }
 
-  calculateDeltas(target, learningRate) {
+  calculateDeltas(target) {
     for (let layer = this.outputLayer; layer > 0; layer--) {
       let output;
-      if (layer === this.outputLayer){
+      if (layer === this.outputLayer) {
         output = this.backwardPropagate[layer](
           this.outputs[layer],
           target);
@@ -188,7 +194,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
 
             return addWeights(change, weights);
         }, {
-          output: [this.sizes[layer -1], this.sizes[layer]],
+          output: [this.sizes[layer - 1], this.sizes[layer]],
           outputToTexture: true,
           constants:{
             size: this.outputs[layer - 1].length
@@ -197,14 +203,14 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     }    
   }
   
-  getChanges(learningRate) {
+  getChanges() {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       let output = this.changesPropagate[layer](
         this.outputs[layer - 1],
         this.deltas[layer],
         this.weights[layer],
         this.changes[layer],
-        learningRate,
+        this.trainOpts.learningRate,
         this.trainOpts.momentum
       );
       
@@ -217,17 +223,18 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       this.biasesPropagate[layer] = this.gpu.createKernel(addBiases, {
         output: [this.sizes[layer]],
-        outputToTexture: true
+        outputToTexture: true,
+        outputImmutable: true
       });
     }
   }
 
-  changeBiases(learningRate) {
+  changeBiases() {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       this.biases[layer] = this.biasesPropagate[layer](
         this.biases[layer],
         this.deltas[layer],
-        learningRate
+        this.trainOpts.learningRate
       );
     }
   }
@@ -236,7 +243,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     this.getMSE = this.gpu.createKernel(mse, {
       output: [1],
       constants: {
-        size: this.outputLayer
+        size: this.sizes[this.outputLayer]
       }
     });
   }
@@ -253,7 +260,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     }
     const inputTexture = this._texturizeInputData(input);
     const outputTextures = this.runInput(inputTexture);
-    let output = [...outputTextures.toArray(this.gpu)];
+    let output = [...outputTextures];
 
     if (this.outputLookup) {
       output = lookup.toHash(this.outputLookup, output);
@@ -301,13 +308,15 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
       return value[this.thread.x];
     }, {
       output: [data[0].input.length],
-      outputToTexture: true
+      outputToTexture: true,
+      outputImmutable: true
     });
     const texturizeOutputData = this.gpu.createKernel(function(value) {
       return value[this.thread.x];
     }, {
       output: [data[0].output.length],
-      outputToTexture: true
+      outputToTexture: true,
+      outputImmutable: true
     });
     data.forEach(d => {
       d.size = {input: d.input.length, output: d.output.length};
@@ -391,7 +400,13 @@ function calcError(nextWeights, nextDeltas){
   return error;
 }
 
-function calcChanges(previousChanges, deltas, previousOutputs, learningRate, momentum) {
+function calcChanges(
+  previousChanges,
+  deltas,
+  previousOutputs,
+  learningRate,
+  momentum
+) {
   return (learningRate * deltas[this.thread.y] * previousOutputs[this.thread.x])
       + (momentum * previousChanges[this.thread.y][this.thread.x]);
 }
