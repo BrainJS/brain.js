@@ -450,7 +450,7 @@ var NeuralNetwork = function () {
      *
      * @param data
      * @param options
-     * @private
+     * @protected
      * @return {{runTrainingTick: function, status: {error: number, iterations: number}}}
      */
 
@@ -485,8 +485,6 @@ var NeuralNetwork = function () {
   }, {
     key: 'train',
     value: function train(data) {
-      var _this4 = this;
-
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       var status = void 0,
@@ -499,11 +497,7 @@ var NeuralNetwork = function () {
       endTime = _prepTraining2.endTime;
 
 
-      var tick = function tick() {
-        _this4._trainingTick(data, status, endTime);
-        setTimeout(tick, 0);
-      };
-      tick();
+      while (this._trainingTick(data, status, endTime)) {}
       return status;
     }
 
@@ -519,7 +513,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'trainAsync',
     value: function trainAsync(data) {
-      var _this5 = this;
+      var _this4 = this;
 
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -535,10 +529,10 @@ var NeuralNetwork = function () {
 
       return new Promise(function (resolve, reject) {
         try {
-          var thawedTrain = new _thaw2.default(new Array(_this5.trainOpts.iterations), {
+          var thawedTrain = new _thaw2.default(new Array(_this4.trainOpts.iterations), {
             delay: true,
             each: function each() {
-              return _this5._trainingTick(data, status, endTime) || thawedTrain.stop();
+              return _this4._trainingTick(data, status, endTime) || thawedTrain.stop();
             },
             done: function done() {
               return resolve(status);
@@ -719,7 +713,7 @@ var NeuralNetwork = function () {
   }, {
     key: '_formatData',
     value: function _formatData(data) {
-      var _this6 = this;
+      var _this5 = this;
 
       if (!Array.isArray(data)) {
         // turn stream datum into array
@@ -736,7 +730,7 @@ var NeuralNetwork = function () {
           }));
         }
         data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this6.inputLookup, datum.input);
+          var array = _lookup2.default.toArray(_this5.inputLookup, datum.input);
           return Object.assign({}, datum, { input: array });
         }, this);
       }
@@ -748,7 +742,7 @@ var NeuralNetwork = function () {
           }));
         }
         data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this6.outputLookup, datum.output);
+          var array = _lookup2.default.toArray(_this5.outputLookup, datum.output);
           return Object.assign({}, datum, { output: array });
         }, this);
       }
@@ -769,7 +763,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'test',
     value: function test(data) {
-      var _this7 = this;
+      var _this6 = this;
 
       data = this._formatData(data);
 
@@ -788,13 +782,13 @@ var NeuralNetwork = function () {
       var sum = 0;
 
       var _loop = function _loop(i) {
-        var output = _this7.runInput(data[i].input);
+        var output = _this6.runInput(data[i].input);
         var target = data[i].output;
 
         var actual = void 0,
             expected = void 0;
         if (isBinary) {
-          actual = output[0] > _this7.binaryThresh ? 1 : 0;
+          actual = output[0] > _this6.binaryThresh ? 1 : 0;
           expected = target[0];
         } else {
           actual = output.indexOf((0, _max2.default)(output));
@@ -1041,7 +1035,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'isRunnable',
     get: function get() {
-      var _this8 = this;
+      var _this7 = this;
 
       if (!this.runInput) {
         console.error('Activation function has not been initialized, did you run train()?');
@@ -1049,7 +1043,7 @@ var NeuralNetwork = function () {
       }
 
       var checkFns = ['sizes', 'outputLayer', 'biases', 'weights', 'outputs', 'deltas', 'changes', 'errors'].filter(function (c) {
-        return _this8[c] === null;
+        return _this7[c] === null;
       });
 
       if (checkFns.length > 0) {

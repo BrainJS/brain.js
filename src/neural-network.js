@@ -381,7 +381,7 @@ export default class NeuralNetwork {
    *
    * @param data
    * @param options
-   * @private
+   * @protected
    * @return {{runTrainingTick: function, status: {error: number, iterations: number}}}
    */
   _prepTraining(data, options) {
@@ -413,11 +413,7 @@ export default class NeuralNetwork {
     let status, endTime;
     ({ data, status, endTime } = this._prepTraining(data, options));
 
-    const tick = () => {
-      this._trainingTick(data, status, endTime);
-      setTimeout(tick, 0);
-    };
-    tick();
+    while(this._trainingTick(data, status, endTime));
     return status;
   }
 
