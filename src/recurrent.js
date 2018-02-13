@@ -49,46 +49,38 @@ export default class Recurrent extends FeedForward {
     for (let x = 1; x < input.length; x++) {
       this.cacheWeights();
       this.layers[0].predict(input[x]);
-      for (let i = 1; i <= this._hiddenLayerEndingIndex; i++) {
+      for (let i = 1; i <= this._outputLayerEndingIndex; i++) {
         const layer = this.layers[i];
         layer.weights = randos2D(layer.width, layer.height);
         layer.predict();
       }
     }
 
-    for (let i = this._outputLayerStartingIndex; i <= this._outputLayerEndingIndex; i++) {
-      this.layers[i].predict();
-    }
     return this.layers[this.layers.length - 1].weights;
   }
 
   calculateDeltas(target) {
-    const lastLayer = this.layers[this.layers.length - 1];
-    lastLayer.deltas = lastLayer.weights;
-    lastLayer.compare(target[0]);
-    for (let i = this._hiddenLayerEndingIndex; i >= 0; i--) {
-      this.layers[i].compare();
+    this._outputLayer.compare(target[target.length - 1]);
+    for (let i = this.layers.length - 2; i > -1; i--) {
+      const previousLayer = this.layers[i - 1];
+      const nextLayer = this.layers[i + 1];
+      this.layers[i].compare(previousLayer, nextLayer);
     }
 
-    for (let x = 1; x < target.length; x++) {
+    for (let x = target.length - 2; x >= 0; x--) {
       this.cacheDeltas();
-      this.layers[0].compare(target[x]);
-      for (let i = 1; i <= this._hiddenLayerEndingIndex; i++) {
-        const layer = this.layers[i];
-        layer.deltas = zeros2D(layer.width, layer.height);
-        layer.compare();
+      this._outputLayer.compare(target[x]);
+      for (let i = this.layers.length - 2; i > -1; i--) {
+        const previousLayer = this.layers[i - 1];
+        const nextLayer = this.layers[i + 1];
+        this.layers[i].compare(previousLayer, nextLayer);
       }
     }
-
-    for (let i = this._outputLayerStartingIndex; i <= this._outputLayerEndingIndex; i++) {
-      this.layers[i].compare();
-    }
-    return this.layers[this.layers.length - 1].weights;
   }
 
   cacheWeights() {
     const cache = [];
-    for (let i = 0; i < this._hiddenLayerEndingIndex; i++) {
+    for (let i = 0; i < this.layers.length; i++) {
       cache.push(this.layers[i].weights);
     }
     this.weightsCache.push(cache);
@@ -96,10 +88,10 @@ export default class Recurrent extends FeedForward {
 
   cacheDeltas() {
     const cache = [];
-    for (let i = 0; i < this.recurrentLayers.length; i++) {
-      cache.push(this.recurrentLayers.deltas);
+    for (let i = 0; i < this.layers.length; i++) {
+      cache.push(this.layers[i].deltas);
     }
-    this.deltasCache.push(cache);
+    this.deltasCache.unshift(cache);
   }
 
   uncacheWeights() {

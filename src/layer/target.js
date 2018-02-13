@@ -28,7 +28,7 @@ export default class Target extends Base {
 
   compare(targetValues) {
     // this is where weights attach to deltas
-    this.inputLayer.deltas = this.errors = this.compareKernel(this.weights, targetValues);
+    this.inputLayer.deltas = this.deltas = this.errors = this.compareKernel(this.weights, targetValues);
   }
 }
 

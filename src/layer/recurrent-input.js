@@ -9,4 +9,5 @@ export default class RecurrentInput extends Base {
     this.deltas = new zeros2D(width, height);
   }
   predict() {}
+  compare() {}
 }
