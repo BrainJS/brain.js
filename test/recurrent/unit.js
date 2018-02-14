@@ -171,7 +171,7 @@ describe('Recurrent Class: Unit', () => {
     });
   });
   describe('.adjustWeights()', () => {
-    it('uncaches deltas and weights together', () => {
+    it('uncaches deltas and weights together and adjust weights', () => {
       const net = new Recurrent({
         inputLayer: () => input({ width: 2 }),
         hiddenLayers: [
