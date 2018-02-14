@@ -23,23 +23,6 @@ export default class Recurrent extends FeedForward {
     }
   }
 
-  //TODO this is pseudo scripted
-  laterOnWhenTraining() {
-    const { prevWeights, prevDeltas } = this.hiddenCache[i - 1];
-    const { weights, deltas } = this.hiddenCache[i];
-    const { nextWeights, nextDeltas } = this.hiddenCache[i + 1];
-    const prevLayer = this.layers[i - 1];
-    const layer = this.layers[i];
-    const nextLayer = this.layers[i + 1];
-    layer.weights = weights;
-    layer.deltas = deltas;
-    layer.predict();
-
-    // loopholes
-    layer.compare(prevLayer, nextLayer);
-    layer.learn();
-  }
-
   runInput(input) {
     this.layers[0].predict(input[0]);
     for (let i = 1; i <= this._hiddenLayerEndingIndex; i++) {
@@ -52,6 +35,7 @@ export default class Recurrent extends FeedForward {
       for (let i = 1; i <= this._outputLayerEndingIndex; i++) {
         const layer = this.layers[i];
         layer.weights = randos2D(layer.width, layer.height);
+        layer.deltas = zeros2D(layer.width, layer.height);
         layer.predict();
       }
     }
@@ -78,6 +62,17 @@ export default class Recurrent extends FeedForward {
     }
   }
 
+  adjustWeights(learningRate) {
+    if (this.deltasCache.length !== this.weightsCache.length) {
+      throw new Error('deltaCache and weightsCache do not match length');
+    }
+    do {
+      for (let i = 0; i < this.layers.length; i++) {
+        this.layers[i].learn(this.layers[i - 1], this.layers[i + 1], learningRate);
+      }
+    } while(this.uncache());
+  }
+
   cacheWeights() {
     const cache = [];
     for (let i = 0; i < this.layers.length; i++) {
@@ -94,17 +89,15 @@ export default class Recurrent extends FeedForward {
     this.deltasCache.unshift(cache);
   }
 
-  uncacheWeights() {
-    const cache = this.weightsCache.pop();
-    for (let i = 0; i < this.recurrentLayers.length; i++) {
-      this.recurrentLayers.weights = cache[i];
+  uncache() {
+    if (this.deltasCache.length < 1) return false;
+    const deltasCache = this.deltasCache.pop();
+    const weightsCache = this.weightsCache.pop();
+    for (let i = 0; i < this.layers.length; i++) {
+      const layer = this.layers[i];
+      layer.deltas = deltasCache[i];
+      layer.weights = weightsCache[i];
     }
-  }
-
-  uncacheDeltas() {
-    const cache = this.deltasCache.pop();
-    for (let i = 0; i < this.recurrentLayers.length; i++) {
-      this.recurrentLayers.deltas = cache[i];
-    }
+    return true;
   }
 }

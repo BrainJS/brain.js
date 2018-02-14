@@ -49,7 +49,7 @@ describe('Recurrent Class: Unit', () => {
       });
 
       net.initialize();
-      net.runInput([[0, 1], [0, 1]]);
+      net.runInput([[0, 1], [1, 0]]);
       assert.equal(net.weightsCache.length, 1);
       assert.equal(net.weightsCache[0].length, 8);
       assert.equal(net.layers.length, 8);
@@ -74,14 +74,14 @@ describe('Recurrent Class: Unit', () => {
       assert.equal(layers[6].weights[0].length, weightsCache[6][0].length);
       assert.equal(layers[7].weights[0].length, weightsCache[7][0].length);
 
-      assert.deepEqual(layers[0].weights, weightsCache[0]);
-      assert.deepEqual(layers[1].weights, weightsCache[1]);
-      assert.deepEqual(layers[2].weights, weightsCache[2]);
-      assert.deepEqual(layers[3].weights, weightsCache[3]);
-      assert.deepEqual(layers[4].weights, weightsCache[4]);
-      assert.deepEqual(layers[5].weights, weightsCache[5]);
-      assert.deepEqual(layers[6].weights, weightsCache[6]);
-      assert.deepEqual(layers[7].weights, weightsCache[7]);
+      assert.notDeepEqual(layers[0].weights, weightsCache[0]);
+      assert.notDeepEqual(layers[1].weights, weightsCache[1]);
+      assert.notDeepEqual(layers[2].weights, weightsCache[2]);
+      assert.notDeepEqual(layers[3].weights, weightsCache[3]);
+      assert.notDeepEqual(layers[4].weights, weightsCache[4]);
+      assert.notDeepEqual(layers[5].weights, weightsCache[5]);
+      assert.notDeepEqual(layers[6].weights, weightsCache[6]);
+      assert.notDeepEqual(layers[7].weights, weightsCache[7]);
     });
   });
   describe('.cacheWeights()', () => {
@@ -135,7 +135,7 @@ describe('Recurrent Class: Unit', () => {
       });
 
       net.initialize();
-      net.runInput([[0, 1], [0, 1]]);
+      net.runInput([[0, 0], [0, 1]]);
       assert.equal(net.layers.length, 8);
       assert(net.layers[0].deltas.every(row => row.every(delta => delta === 0)));
       assert(net.layers[1].deltas.every(row => row.every(delta => delta === 0)));
@@ -171,7 +171,7 @@ describe('Recurrent Class: Unit', () => {
     });
   });
   describe('.adjustWeights()', () => {
-    it('', () => {
+    it('uncaches deltas and weights together', () => {
       const net = new Recurrent({
         inputLayer: () => input({ width: 2 }),
         hiddenLayers: [
@@ -181,7 +181,16 @@ describe('Recurrent Class: Unit', () => {
       });
 
       net.initialize();
+      net.runInput([[0, 1], [1, 0]]);
+      net.calculateDeltas([[0, 0], [0, 1]]);
+      assert.equal(net.weightsCache.length, 1);
+      assert.equal(net.deltasCache.length, 1);
+      const weights = net.layers.map(layer => layer.weights);
+      const cachedWeights = net.weightsCache[0];
       net.adjustWeights();
+      assert.notDeepEqual(weights, net.layers.map(layer => layer.weights));
+      assert.notDeepEqual(weights, cachedWeights);
+      assert(weights.map(row => row.some(weight => weight !== 0)));
     });
   });
 });
