@@ -6,7 +6,8 @@ export default class Base {
       width: 1,
       height: 1,
       weights: null,
-      deltas: null
+      deltas: null,
+      name: null
     };
   }
 
@@ -32,7 +33,20 @@ export default class Base {
     }
   }
 
-  validate() {}
+  validate() {
+    if (isNaN(this.height)) {
+      throw new Error(`${this.constructor.name} layer height is not a number`)
+    }
+    if (isNaN(this.width)) {
+      throw new Error(`${this.constructor.name} layer width is not a number`)
+    }
+    if (this.height < 1) {
+      throw new Error(`${this.constructor.name} layer height is less than 1`);
+    }
+    if (this.width < 1) {
+      throw new Error(`${this.constructor.name} layer width is less than 1`);
+    }
+  }
 
   setupKernels() {}
 
@@ -63,6 +77,7 @@ export default class Base {
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       if (key === 'deltas') continue;
+      if (key === 'name' && this[key] === null) continue;
       jsonLayer[key] = this[key];
     }
     jsonLayer.type = name;

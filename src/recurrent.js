@@ -24,14 +24,34 @@ export default class Recurrent extends FeedForward {
   }
 
   runInput(input) {
-    this.layers[0].predict(input[0]);
+    this.layers[0].predict([input[0]]);
     for (let i = 1; i <= this._hiddenLayerEndingIndex; i++) {
       this.layers[i].predict();
     }
 
     for (let x = 1; x < input.length; x++) {
       this.cacheWeights();
-      this.layers[0].predict(input[x]);
+      this.layers[0].predict([input[x]]);
+      for (let i = 1; i <= this._outputLayerEndingIndex; i++) {
+        const layer = this.layers[i];
+        layer.weights = randos2D(layer.width, layer.height);
+        layer.deltas = zeros2D(layer.width, layer.height);
+        layer.predict();
+      }
+    }
+
+    return this.layers[this.layers.length - 1].weights;
+  }
+
+  predict(input) {
+    this.layers[0].predict([input[0]]);
+    for (let i = 1; i <= this._hiddenLayerEndingIndex; i++) {
+      this.layers[i].predict();
+    }
+
+    for (let x = 1; x < input.length; x++) {
+      this.cacheWeights();
+      this.layers[0].predict([input[x]]);
       for (let i = 1; i <= this._outputLayerEndingIndex; i++) {
         const layer = this.layers[i];
         layer.weights = randos2D(layer.width, layer.height);
@@ -44,7 +64,7 @@ export default class Recurrent extends FeedForward {
   }
 
   calculateDeltas(target) {
-    this._outputLayer.compare(target[target.length - 1]);
+    this._outputLayer.compare([target[target.length - 1]]);
     for (let i = this.layers.length - 2; i > -1; i--) {
       const previousLayer = this.layers[i - 1];
       const nextLayer = this.layers[i + 1];
@@ -53,7 +73,7 @@ export default class Recurrent extends FeedForward {
 
     for (let x = target.length - 2; x >= 0; x--) {
       this.cacheDeltas();
-      this._outputLayer.compare(target[x]);
+      this._outputLayer.compare([target[x]]);
       for (let i = this.layers.length - 2; i > -1; i--) {
         const previousLayer = this.layers[i - 1];
         const nextLayer = this.layers[i + 1];

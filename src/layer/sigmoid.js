@@ -1,7 +1,6 @@
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 import { activate, measure } from '../activation/sigmoid';
-import randos2D from '../utilities/randos-2d';
 import zeros2D from '../utilities/zeros-2d';
 
 export default class Sigmoid extends Base {
@@ -9,7 +8,7 @@ export default class Sigmoid extends Base {
     const { width, height } = inputLayer;
     super({ width, height });
     this.inputLayer = inputLayer;
-    this.weights = randos2D(width, height);
+    this.weights = zeros2D(width, height);
     this.deltas = zeros2D(width, height);
   }
 

@@ -1,15 +1,14 @@
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
 import { relu, reluDerivative } from '../activation/relu';
-import randos2D from "../utilities/randos-2d";
-import zeros2D from "../utilities/zeros-2d";
+import zeros2D from '../utilities/zeros-2d';
 
 export default class Relu extends Base {
   constructor(inputLayer) {
     const { width, height } = inputLayer;
     super({ width, height });
     this.inputLayer = inputLayer;
-    this.weights = randos2D(width, height);
+    this.weights = zeros2D(width, height);
     this.deltas = zeros2D(width, height);
   }
 

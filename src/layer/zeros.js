@@ -9,4 +9,5 @@ export default class Zeros extends Base {
   }
 
   predict() {}
+  compare() {}
 }
