@@ -79,89 +79,78 @@ describe('train() and trainAsync() use the same private methods', () => {
   let trainingData = [{ input: [0, 0], output: [0] }];
   let opts = { iterations:1 };
   let net = new brain.NeuralNetwork();
+  let methodsChecked = [
+    '_prepTraining',
+    '_updateTrainingOptions',
+    '_formatData',
+    '_verifyIsInitialized',
+    '_trainingTick'
+  ];
 
-  function getSpy (net, func) {
-    sinon.spy(net, func);
-  }
-
-  function killSpy (net, func) {
-    net[func].restore();
-  }
+  beforeEach(() => { methodsChecked.forEach(m => sinon.spy(net, m)); })
+  afterEach(() => { methodsChecked.forEach(m => net[m].restore()); })
 
   it('_prepTraining()', (done) => {
-    getSpy(net, '_prepTraining');
     net.train(trainingData, opts);
     assert(net._prepTraining.calledOnce, `_prepTraining was expected to be called once but was called ${net._prepTraining.callCount}`);
     net
       .trainAsync(trainingData, opts)
       .then(() => {
         assert(net._prepTraining.calledTwice, `_prepTraining was expected to be called twice but was called ${net._prepTraining.callCount}`);
-        killSpy(net, '_prepTraining');
         done();
       })
       .catch(e => {
         assert.ok(false, e.toString());
-        killSpy(net, '_prepTraining');
         done()
       });
   });
 
   it('_updateTrainingOptions()', (done) => {
-    getSpy(net, '_updateTrainingOptions');
     net.train(trainingData, opts);
     assert(net._updateTrainingOptions.calledOnce, `_updateTrainingOptions was expected to be called once but was called ${net._updateTrainingOptions.callCount}`);
     net
       .trainAsync(trainingData, opts)
       .then(() => {
         assert(net._updateTrainingOptions.calledTwice, `_updateTrainingOptions was expected to be called twice but was called ${net._prepTraining.callCount}`);
-        killSpy(net, '_updateTrainingOptions');
         done();
       })
       .catch(e => {
         assert.ok(false, e.toString());
-        killSpy(net, '_updateTrainingOptions');
         done()
       });
   });
 
   it('_formatData()', (done) => {
-    getSpy(net, '_formatData');
     net.train(trainingData, opts);
     assert(net._formatData.calledOnce, `_formatData was expected to be called once but was called ${net._formatData.callCount}`);
     net
       .trainAsync(trainingData, opts)
       .then(() => {
         assert(net._formatData.calledTwice, `_formatData was expected to be called twice but was called ${net._prepTraining.callCount}`);
-        killSpy(net, '_formatData');
         done();
       })
       .catch(e => {
         assert.ok(false, e.toString());
-        killSpy(net, '_formatData');
         done()
       });
   });
 
   it('_verifyIsInitialized()', (done) => {
-    getSpy(net, '_verifyIsInitialized');
     net.train(trainingData, opts);
     assert(net._verifyIsInitialized.calledOnce, `_verifyIsInitialized was expected to be called once but was called ${net._verifyIsInitialized.callCount}`);
     net
       .trainAsync(trainingData, opts)
       .then(() => {
         assert(net._verifyIsInitialized.calledTwice, `_verifyIsInitialized was expected to be called twice but was called ${net._prepTraining.callCount}`);
-        killSpy(net, '_verifyIsInitialized');
         done();
       })
       .catch(e => {
         assert.ok(false, e.toString());
-        killSpy(net, '_verifyIsInitialized');
         done()
       });
   });
 
   it('_trainingTick()', (done) => {
-    getSpy(net, '_trainingTick');
     net.train(trainingData, opts);
     // The loop calls _trainingTick twice and returns imidiatly on second call
     assert(net._trainingTick.calledTwice, `_trainingTick was expected to be called twice but was called ${net._prepTraining.callCount}`);
@@ -170,12 +159,10 @@ describe('train() and trainAsync() use the same private methods', () => {
       .then(() => {
         // trainAsync only calls _trainingTick once
         assert(net._trainingTick.calledThrice, `_trainingTick was expected to be called thrice but was called ${net._prepTraining.callCount}`);
-        killSpy(net, '_trainingTick');
         done();
       })
       .catch(e => {
         assert.ok(false, e.toString());
-        killSpy(net, '_trainingTick');
         done()
       });
   });
