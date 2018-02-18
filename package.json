@@ -30,6 +30,7 @@
   },
   "main": "./index.js",
   "devDependencies": {
+    "almost-equal": "^1.1.0",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.14.0",
     "babel-plugin-transform-object-rest-spread": "^6.8.0",

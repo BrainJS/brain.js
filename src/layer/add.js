@@ -1,7 +1,6 @@
 import makeKernel from '../utilities/make-kernel';
 import Base from './base';
 import zeros2D from '../utilities/zeros-2d';
-import randos2D from '../utilities/randos-2d';
 
 export default class Add extends Base {
   constructor(inputLayer1, inputLayer2) {

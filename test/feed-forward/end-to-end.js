@@ -1,5 +1,5 @@
+import almostEqual from 'almost-equal';
 import assert from 'assert';
-import sinon from 'sinon';
 import NeuralNetwork from '../../src/neural-network';
 import FeedForward from '../../src/feed-forward';
 import * as layer from '../../src/layer/index';
@@ -37,7 +37,7 @@ const xorTrainingData = [
 
 describe('FeedForward Class: End to End', () => {
   describe('when configured like NeuralNetwork', () => {
-    it.only('outputs the exact same values', () => {
+    it('outputs the exact same values', () => {
       const standardNet = new NeuralNetwork([2, 3, 1]);
       const ffNet = new FeedForward({
         inputLayer: () => input({ width: 2 }),
@@ -77,27 +77,36 @@ describe('FeedForward Class: End to End', () => {
           deltas[i] = 0;
         }
       });
-
+      standardNet.outputs[1][0] = 0;
+      standardNet.outputs[1][1] = 0;
+      standardNet.outputs[1][2] = 0;
+      standardNet.outputs[2][0] = 0;
+      standardNet.errors[0][0] = 0;
+      standardNet.errors[0][1] = 0;
+      standardNet.errors[1][0] = 0;
+      standardNet.errors[1][1] = 0;
+      standardNet.errors[1][2] = 0;
+      standardNet.errors[2][0] = 0;
       // set biases
-      standardNet.biases[1][0] = biasLayers[0].weights[0][0] = -0.15;
-      standardNet.biases[1][1] = biasLayers[0].weights[1][0] -0.17;
-      standardNet.biases[1][2] = biasLayers[0].weights[2][0] -0.12;
-      standardNet.biases[2][0] = biasLayers[1].weights[0][0] = 0.17;
+      standardNet.biases[1][0] = biasLayers[0].weights[0][0] = 5;
+      standardNet.biases[1][1] = biasLayers[0].weights[1][0] = 7;
+      standardNet.biases[1][2] = biasLayers[0].weights[2][0] = 2;
+      standardNet.biases[2][0] = biasLayers[1].weights[0][0] = 7;
 
       // set weights
       standardNet.outputs[0][0] = ffNet._inputLayer.weights[0][0] = 1;
       standardNet.outputs[0][1] = ffNet._inputLayer.weights[1][0] = 1;
 
-      standardNet.weights[1][0][0] = weightLayers[0].weights[0][0] = -0.15;
-      standardNet.weights[1][0][1] = weightLayers[0].weights[0][1] = 0.10;
-      standardNet.weights[1][1][0] = weightLayers[0].weights[1][0] = -0.13;
-      standardNet.weights[1][1][1] = weightLayers[0].weights[1][1] = 0.01;
-      standardNet.weights[1][2][0] = weightLayers[0].weights[2][0] = 0.08;
-      standardNet.weights[1][2][1] = weightLayers[0].weights[2][1] = -0.14;
+      standardNet.weights[1][0][0] = weightLayers[0].weights[0][0] = 5;
+      standardNet.weights[1][0][1] = weightLayers[0].weights[0][1] = 10;
+      standardNet.weights[1][1][0] = weightLayers[0].weights[1][0] = 3;
+      standardNet.weights[1][1][1] = weightLayers[0].weights[1][1] = 1;
+      standardNet.weights[1][2][0] = weightLayers[0].weights[2][0] = 8;
+      standardNet.weights[1][2][1] = weightLayers[0].weights[2][1] = 4;
 
-      standardNet.weights[2][0][0] = weightLayers[1].weights[0][0] = -0.12;
-      standardNet.weights[2][0][1] = weightLayers[1].weights[0][1] = -0.6;
-      standardNet.weights[2][0][2] = weightLayers[1].weights[0][2] = 0.13;
+      standardNet.weights[2][0][0] = weightLayers[1].weights[0][0] = 2;
+      standardNet.weights[2][0][1] = weightLayers[1].weights[0][1] = 6;
+      standardNet.weights[2][0][2] = weightLayers[1].weights[0][2] = 3;
 
       standardNet.train([{ input: [1, 1], output: [0] }], {
         iterations: 1
@@ -107,12 +116,10 @@ describe('FeedForward Class: End to End', () => {
         reinforce: true
       });
 
-      assert.equal(standardNet.outputs[1][0].toFixed(6), sigmoidLayers[0].weights[0][0].toFixed(6));
-      assert.equal(standardNet.outputs[1][1].toFixed(6), sigmoidLayers[0].weights[1][0].toFixed(6));
-      assert.equal(standardNet.outputs[1][2].toFixed(6), sigmoidLayers[0].weights[2][0].toFixed(6));
-      assert.equal(standardNet.outputs[2][0].toFixed(6), sigmoidLayers[1].weights[0][0].toFixed(6));
-      console.log(JSON.stringify(standardNet.toJSON(), null, 2));
-      console.log(JSON.stringify(ffNet.toJSON(), null, 2));
+      almostEqual(standardNet.outputs[1][0], sigmoidLayers[0].weights[0][0]);
+      almostEqual(standardNet.outputs[1][1], sigmoidLayers[0].weights[1][0]);
+      almostEqual(standardNet.outputs[1][2], sigmoidLayers[0].weights[2][0]);
+      almostEqual(standardNet.outputs[2][0], sigmoidLayers[1].weights[0][0]);
     });
   });
   describe('.runInput()', () => {
@@ -161,27 +168,23 @@ describe('FeedForward Class: End to End', () => {
       assert(errors[0] > errors[9]);
     });
     it('can learn xor', () => {
+      const errors = [];
       const net = new FeedForward({
         inputLayer: () => input({ width: 2 }),
         hiddenLayers: [
           (input) => feedForward({ width: 3 }, input),
           (input) => feedForward({ width: 1 }, input)
         ],
-        outputLayer: (input) => target({ width: 1 }, input)
+        outputLayer: (input) => target({ width: 1 }, input),
       });
-      const errors = [];
       net.train(xorTrainingData, {
-        iterations: 1000,
         callbackPeriod: 1,
         callback: (info) => errors.push(info.error)
       });
-      const json = net.toJSON();
-      //console.log(JSON.stringify(json, null, 2));
       const result1 = net.run([0, 0]);
       const result2 = net.run([0, 1]);
       const result3 = net.run([1, 0]);
       const result4 = net.run([1, 1]);
-      console.log(result1, result2, result3, result4);
       assert.equal(result1[0][0] < 0.5, true, `with input of [0, 0], output is ${result1}, but should be < 0.5`);
       assert.equal(result2[0][0] > 0.5, true, `with input of [0, 1], output is ${result2}, but should be > 0.5`);
       assert.equal(result3[0][0] > 0.5, true, `with input of [1, 0], output is ${result3}, but should be > 0.5`);
@@ -208,17 +211,15 @@ describe('FeedForward Class: End to End', () => {
       net.initialize();
       net.layers[0].weights = [[1]];
       net.layers.forEach((layer, layerIndex) => {
-        if (layerIndex === 0) return;
         layer.deltas.forEach((row, rowIndex) => {
           row.forEach((delta, deltaIndex) => {
             assert.equal(delta, 0, `delta is ${ delta } of layer type ${ layer.constructor.name } with layerIndex of ${ layerIndex }, rowIndex of ${ rowIndex }, and deltaIndex of ${ deltaIndex }`);
           });
         });
       });
+      net.runInput([[1]]);
       net.calculateDeltas([[1]]);
       net.layers.forEach((layer, layerIndex) => {
-        if (!layer.deltas) return;
-        if (layerIndex === net.layers.length - 1) return;
         layer.deltas.forEach((row, rowIndex) => {
           row.forEach((delta, deltaIndex) => {
             assert.notEqual(delta, 0, `delta is ${ delta } of layer type ${ layer.constructor.name } with layerIndex of ${ layerIndex }, rowIndex of ${ rowIndex }, and deltaIndex of ${ deltaIndex }`);

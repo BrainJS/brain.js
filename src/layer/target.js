@@ -1,5 +1,4 @@
 import makeKernel from '../utilities/make-kernel';
-import randos2D from '../utilities/randos-2d';
 import zeros2D from '../utilities/zeros-2d';
 import Base from './base';
 
@@ -8,19 +7,12 @@ export default class Target extends Base {
     super(settings);
     this.compareKernelOutput = null;
     this.inputLayer = inputLayer;
+    // TODO: properly handle dimensions
     this.width = inputLayer.width;
     this.height = inputLayer.height;
     this.weights = zeros2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
     this.errors = zeros2D(this.width, this.height);
-  }
-
-  get weights() {
-    return this._weights;
-  }
-
-  set weights(value) {
-    this._weights = value;
   }
 
   validate() {
@@ -48,7 +40,10 @@ export default class Target extends Base {
     });
   }
 
-  predict() {}
+  predict() {
+    // NOTE: this looks like it shouldn't be, but the weights are immutable, and this is where they are reused.
+    this.weights = this.inputLayer.weights;
+  }
 
   compare(targetValues) {
     // this is where weights attach to deltas
