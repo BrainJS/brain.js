@@ -129,15 +129,16 @@ var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.81, black: 0.18 }
 
 ```javascript
 net.train(data, {
-      iterations: 20000,    // the maximum times to iterate the training data
-      errorThresh: 0.005,   // the acceptable error percentage from training data
-      log: false,           // true to use console.log, when a function is supplied it is used
-      logPeriod: 10,        // iterations between logging out
-      learningRate: 0.3,    // scales with delta to effect traiing rate
-      momentum: 0.1,        // scales with next layer's change value 
-      callback: null,       // a periodic call back that can be triggered while training
-      callbackPeriod: 10,   // the number of iterations through the training data between callback calls
-      timeout: Infinity     // the max number of milliseconds to train for
+                            // Defaults values --> expected validation
+      iterations: 20000,    // the maximum times to iterate the training data --> number greater than 0
+      errorThresh: 0.005,   // the acceptable error percentage from training data --> number between 0 and 1
+      log: false,           // true to use console.log, when a function is supplied it is used --> Either true or a function
+      logPeriod: 10,        // iterations between logging out --> number greater than 0
+      learningRate: 0.3,    // scales with delta to effect traiing rate --> number between 0 and 1
+      momentum: 0.1,        // scales with next layer's change value --> number between 0 and 1
+      callback: null,       // a periodic call back that can be triggered while training --> null or function
+      callbackPeriod: 10,   // the number of iterations through the training data between callback calls --> number greater than 0
+      timeout: Infinity     // the max number of milliseconds to train for --> number greater than 0
 });
 ```
 
@@ -150,6 +151,8 @@ The learning rate is a parameter that influences how quickly the network trains.
 The momentum is similar to learning rate, expecting a value from `0` to `1` as well but it is multiplied against the next level's change value.  The default value is `0.1`
 
 Any of these training options can be passed into the constructor or passed into the `updateTrainingOptions(opts)` method and they will be saved on the network and used any time you trian.  If you save your network to json, these training options are saved and restored as well (except for callback and log, callback will be forgoten and log will be restored using console.log).
+
+There is a boolean property called `invalidTrainOptsShouldThrow` that by default is set to true.  While true if you enter a training option that is outside the normal range an error will be thrown with a message about the option you sent.  When set to false no error is sent but a message is still sent to `console.warn` with the information.
 
 ### Async Training
 `trainAsync()` takes the same arguments as train (data and options).  Instead of returning the results object from training it returns a promise that when resolved will return the training results object.

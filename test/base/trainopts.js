@@ -167,3 +167,93 @@ describe('train() and trainAsync() use the same private methods', () => {
       });
   });
 });
+
+describe('training options validation', () => {
+  it('iterations validation', () => {
+    let net = new brain.NeuralNetwork();
+    assert.throws(() => { net._updateTrainingOptions({ iterations: 'should be a string' }) });
+    assert.throws(() => { net._updateTrainingOptions({ iterations: () => {} }) });
+    assert.throws(() => { net._updateTrainingOptions({ iterations: false }) });
+    assert.throws(() => { net._updateTrainingOptions({ iterations: -1 }) });
+    assert.doesNotThrow(() => { net._updateTrainingOptions({ iterations: 5000 }) });
+  });
+
+  it('errorThresh validation', () => {
+    let net = new brain.NeuralNetwork();
+    assert.throws(() => { net._updateTrainingOptions({ errorThresh: 'no strings'}) });
+    assert.throws(() => { net._updateTrainingOptions({ errorThresh: () => {} }) });
+    assert.throws(() => { net._updateTrainingOptions({ errorThresh: 5}) });
+    assert.throws(() => { net._updateTrainingOptions({ errorThresh: -1}) });
+    assert.throws(() => { net._updateTrainingOptions({ errorThresh: false}) });
+    assert.doesNotThrow(() => { net._updateTrainingOptions({ errorThresh: 0.008}) });
+  });
+
+  it('log validation', () => {
+    let net = new brain.NeuralNetwork();
+    assert.throws(() => { net._updateTrainingOptions({ log: 'no strings' }) });
+    assert.throws(() => { net._updateTrainingOptions({ log: 4 }) });
+    assert.doesNotThrow(() => { net._updateTrainingOptions({ log: false }) });
+    assert.doesNotThrow(() => { net._updateTrainingOptions({ log: () => {} }) });
+  });
+
+  it('logPeriod validation', () => {
+    let net = new brain.NeuralNetwork();
+    assert.throws(() => { net._updateTrainingOptions({ logPeriod: 'no strings' }) });
+    assert.throws(() => { net._updateTrainingOptions({ logPeriod: -50 }) });
+    assert.throws(() => { net._updateTrainingOptions({ logPeriod: () => {} }) });
+    assert.throws(() => { net._updateTrainingOptions({ logPeriod: false }) });
+    assert.doesNotThrow(() => { net._updateTrainingOptions({ logPeriod: 40 }) });
+  });
+
+  it('learningRate validation', () => {
+    let net = new brain.NeuralNetwork();
+    assert.throws(() => { net._updateTrainingOptions({ learningRate: 'no strings' }) });
+    assert.throws(() => { net._updateTrainingOptions({ learningRate: -50 }) });
+    assert.throws(() => { net._updateTrainingOptions({ learningRate: 50 }) });
+    assert.throws(() => { net._updateTrainingOptions({ learningRate: () => {} }) });
+    assert.throws(() => { net._updateTrainingOptions({ learningRate: false }) });
+    assert.doesNotThrow(() => { net._updateTrainingOptions({ learningRate: 0.5 }) });
+  });
+
+  it('momentum validation', () => {
+    let net = new brain.NeuralNetwork();
+    assert.throws(() => { net._updateTrainingOptions({ momentum: 'no strings' }) });
+    assert.throws(() => { net._updateTrainingOptions({ momentum: -50 }) });
+    assert.throws(() => { net._updateTrainingOptions({ momentum: 50 }) });
+    assert.throws(() => { net._updateTrainingOptions({ momentum: () => {} }) });
+    assert.throws(() => { net._updateTrainingOptions({ momentum: false }) });
+    assert.doesNotThrow(() => { net._updateTrainingOptions({ momentum: 0.8 }) });
+  });
+
+  it('callback validation', () => {
+    let net = new brain.NeuralNetwork();
+    assert.throws(() => { net._updateTrainingOptions({ callback: 'no strings' }) });
+    assert.throws(() => { net._updateTrainingOptions({ callback: 4 }) });
+    assert.throws(() => { net._updateTrainingOptions({ callback: false }) });
+    assert.doesNotThrow(() => { net._updateTrainingOptions({ callback: null }) });
+    assert.doesNotThrow(() => { net._updateTrainingOptions({ callback: () => {} }) });
+  });
+
+  it('callbackPeriod validation', () => {
+    let net = new brain.NeuralNetwork();
+    assert.throws(() => { net._updateTrainingOptions({ callbackPeriod: 'no strings' }) });
+    assert.throws(() => { net._updateTrainingOptions({ callbackPeriod: -50 }) });
+    assert.throws(() => { net._updateTrainingOptions({ callbackPeriod: () => {} }) });
+    assert.throws(() => { net._updateTrainingOptions({ callbackPeriod: false }) });
+    assert.doesNotThrow(() => { net._updateTrainingOptions({ callbackPeriod: 40 }) });
+  });
+
+  it('timeout validation', () => {
+    let net = new brain.NeuralNetwork();
+    assert.throws(() => { net._updateTrainingOptions({ timeout: 'no strings' }) });
+    assert.throws(() => { net._updateTrainingOptions({ timeout: -50 }) });
+    assert.throws(() => { net._updateTrainingOptions({ timeout: () => {} }) });
+    assert.throws(() => { net._updateTrainingOptions({ timeout: false }) });
+    assert.doesNotThrow(() => { net._updateTrainingOptions({ timeout: 40 }) });
+  });
+
+  it('should handle unsupported options', () => {
+    let net = new brain.NeuralNetwork();
+    assert.doesNotThrow(() => { net._updateTrainingOptions({ fakeProperty: 'should be handled fine' }) });
+  })
+});
