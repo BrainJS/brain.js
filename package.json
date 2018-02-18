@@ -67,6 +67,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "clone-deep": "^3.0.1",
     "gpu.js": "^1.0.0",
     "thaw.js": "^2.0.0"
   }

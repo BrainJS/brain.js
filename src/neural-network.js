@@ -6,7 +6,7 @@ import randos from './utilities/randos';
 import range from './utilities/range';
 import toArray from './utilities/to-array';
 import zeros from './utilities/zeros';
-import deepClone from './utilities/deepClone';
+import cloneDeep from 'clone-deep';
 import Thaw from 'thaw.js';
 
 /**
@@ -806,7 +806,7 @@ export default class NeuralNetwork {
    * @returns {NeuralNetwork}
    */
   fromJSON (userJSON) {
-    const json = deepClone(userJSON);
+    const json = cloneDeep(userJSON);
     this.sizes = json.sizes;
     this._initialize();
 

@@ -40,9 +40,9 @@ var _zeros = require('./utilities/zeros');
 
 var _zeros2 = _interopRequireDefault(_zeros);
 
-var _deepClone = require('./utilities/deepClone');
+var _cloneDeep = require('clone-deep');
 
-var _deepClone2 = _interopRequireDefault(_deepClone);
+var _cloneDeep2 = _interopRequireDefault(_cloneDeep);
 
 var _thaw = require('thaw.js');
 
@@ -948,7 +948,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'fromJSON',
     value: function fromJSON(userJSON) {
-      var json = (0, _deepClone2.default)(userJSON);
+      var json = (0, _cloneDeep2.default)(userJSON);
       this.sizes = json.sizes;
       this._initialize();
 
