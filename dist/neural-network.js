@@ -63,7 +63,7 @@ var NeuralNetwork = function () {
      * @param boolean
      * @private
      */
-    value: function _validateTrainingOptions(options, shouldThrow) {
+    value: function _validateTrainingOptions(options) {
       var validations = {
         iterations: function iterations(val) {
           return typeof val === 'number' && val > 0;
@@ -93,10 +93,9 @@ var NeuralNetwork = function () {
           return typeof val === 'number' && val > 0;
         }
       };
-      Object.keys(options).forEach(function (key) {
-        if (validations[key] && !validations[key](options[key])) {
-          var message = '[' + key + ', ' + options[key] + '] is out of normal range';
-          if (shouldThrow) throw new Error(message);else console.warn(message);
+      Object.keys(NeuralNetwork.trainDefaults).forEach(function (key) {
+        if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
+          throw new Error('[' + key + ', ' + options[key] + '] is out of normal training range, your network will probably not train.');
         }
       });
     }
@@ -136,7 +135,6 @@ var NeuralNetwork = function () {
     this.trainOpts = {};
     this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
 
-    this.invalidTrainOptsShouldThrow = true;
     this.sizes = null;
     this.outputLayer = null;
     this.biases = null; // weights for bias nodes
@@ -392,10 +390,10 @@ var NeuralNetwork = function () {
     value: function _updateTrainingOptions(opts) {
       var _this2 = this;
 
-      NeuralNetwork._validateTrainingOptions(opts, this.invalidTrainOptsShouldThrow);
       Object.keys(NeuralNetwork.trainDefaults).forEach(function (opt) {
-        return _this2.trainOpts[opt] = opts[opt] || _this2.trainOpts[opt];
+        return _this2.trainOpts[opt] = opts.hasOwnProperty(opt) ? opts[opt] : _this2.trainOpts[opt];
       });
+      NeuralNetwork._validateTrainingOptions(this.trainOpts);
       this._setLogMethod(opts.log || this.trainOpts.log);
       this.activation = opts.activation || this.activation;
     }
