@@ -68,37 +68,3 @@ describe('bitwise functions sync training', () => {
     testBitwise(and, 'and');
   });
 });
-
-describe('bitwise functions async training', () => {
-
-  it('NOT function', (done) => {
-    let not = [{input: [0], output: [1]},
-               {input: [1], output: [0]}];
-    testBitwiseAsync(not, 'not', done);
-  }).timeout(10000);
-
-  it('XOR function', (done) => {
-    let xor = [{input: [0, 0], output: [0]},
-               {input: [0, 1], output: [1]},
-               {input: [1, 0], output: [1]},
-               {input: [1, 1], output: [0]}];
-    testBitwiseAsync(xor, 'xor', done);
-  }).timeout(10000);
-
-  it('OR function', (done) => {
-    let or = [{input: [0, 0], output: [0]},
-              {input: [0, 1], output: [1]},
-              {input: [1, 0], output: [1]},
-              {input: [1, 1], output: [1]}];
-    testBitwiseAsync(or, 'or', done);
-  }).timeout(10000);
-
-  it('AND function', (done) => {
-    let and = [{input: [0, 0], output: [0]},
-               {input: [0, 1], output: [0]},
-               {input: [1, 0], output: [0]},
-               {input: [1, 1], output: [1]}];
-    testBitwiseAsync(and, 'and', done);
-  }).timeout(10000);
-});
-
