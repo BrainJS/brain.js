@@ -32,7 +32,7 @@
     + [Initialization](#initialization)
     + [Transform](#transform)
 - [Utilities](#utilities)
-    + [`likely`](#-likely-)
+    + [`likely`](#likely)
 - [Neural Network Types](#neural-network-types)
     + [Why different Neural Network Types?](#why-different-neural-network-types-)
     
