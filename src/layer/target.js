@@ -40,6 +40,11 @@ export default class Target extends Base {
     });
   }
 
+  reuseKernels(layer) {
+    super.reuseKernels(layer);
+    this.compareKernelOutput = layer.compareKernelOutput;
+  }
+
   predict() {
     // NOTE: this looks like it shouldn't be, but the weights are immutable, and this is where they are reused.
     this.weights = this.inputLayer.weights;

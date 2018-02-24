@@ -4,7 +4,7 @@
  * @param weight
  * @returns {number}
  */
-export function relu(weight) {
+export function activate(weight) {
   return Math.max(0, weight);
 }
 
@@ -14,7 +14,7 @@ export function relu(weight) {
  * @param delta
  * @returns {number}
  */
-export function reluDerivative(weight, delta) {
+export function measure(weight, delta) {
   if (weight <= 0) {
     return 0;
   } else {

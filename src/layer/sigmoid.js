@@ -8,8 +8,8 @@ export default class Sigmoid extends Base {
     const { width, height } = inputLayer;
     super({ width, height });
     this.inputLayer = inputLayer;
-    this.weights = zeros2D(width, height);
-    this.deltas = zeros2D(width, height);
+    this.weights = zeros2D(this.width, this.height);
+    this.deltas = zeros2D(this.width, this.height);
   }
 
   setupKernels() {

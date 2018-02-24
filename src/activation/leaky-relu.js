@@ -4,7 +4,7 @@
  * @param weight
  * @returns {number}
  */
-export function leakyRelu(weight) {
+export function activation(weight) {
   return weight > 0 ? weight : 0.01 * weight;
 }
 
@@ -14,6 +14,6 @@ export function leakyRelu(weight) {
  * @param delta
  * @returns {number}
  */
-export function leakyReluDerivative(weight, error) {
+export function measure(weight, error) {
   return weight > 0 ? error : 0.01 * error;
 }

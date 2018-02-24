@@ -43,6 +43,11 @@ export default class Multiply extends Base {
       }
     });
   }
+  reuseKernels(layer) {
+    super.reuseKernels(layer);
+    this.compareKernel1 = layer.compareKernel1;
+    this.compareKernel2 = layer.compareKernel2;
+  }
 
   predict() {
     this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);

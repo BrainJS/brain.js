@@ -49,6 +49,14 @@ export default class Base {
   }
 
   setupKernels() {}
+  reuseKernels(layer) {
+    if (layer.hasOwnProperty('predictKernel')) {
+      this.predictKernel = layer.predictKernel;
+    }
+    if (layer.hasOwnProperty('compareKernel')) {
+      this.compareKernel = layer.compareKernel;
+    }
+  }
 
   predict() {
     throw new Error('`predict` not defined on Base layer');

@@ -9,10 +9,9 @@ export default class Input extends Base {
       this.height = this.width;
       this.width = 1;
     }
+    this.weights = null;
     this.deltas = zeros2D(this.width, this.height);
   }
-
-  setupKernels() {}
 
   predict(inputs) {
     this.weights = inputs;
@@ -20,8 +19,8 @@ export default class Input extends Base {
 
   predict1D(inputs) {
     this.weights = [];
-    for (let y = 0; y < inputs.length; y++) {
-      this.weights.push([inputs[y]]);
+    for (let x = 0; x < inputs.length; x++) {
+      this.weights.push([inputs[x]]);
     }
   }
 

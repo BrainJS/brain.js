@@ -1,6 +1,6 @@
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
-import { relu, reluDerivative } from '../activation/relu';
+import { activate, measure } from '../activation/relu';
 import zeros2D from '../utilities/zeros-2d';
 
 export default class Relu extends Base {
@@ -8,19 +8,19 @@ export default class Relu extends Base {
     const { width, height } = inputLayer;
     super({ width, height });
     this.inputLayer = inputLayer;
-    this.weights = zeros2D(width, height);
-    this.deltas = zeros2D(width, height);
+    this.weights = zeros2D(this.width, this.height);
+    this.deltas = zeros2D(this.width, this.height);
   }
 
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
       output: [this.width, this.height],
-      functions: [relu]
+      functions: [activate]
     });
 
-    this.learnKernel = makeKernel(learn, {
+    this.compareKernel = makeKernel(compare, {
       output: [this.width, this.height],
-      functions: [reluDerivative]
+      functions: [measure]
     });
   }
 
@@ -29,14 +29,14 @@ export default class Relu extends Base {
   }
 
   compare() {
-    this.inputLayer.deltas = this.learnKernel(this.weights, this.deltas);
+    this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
   }
 }
 
 export function predict(inputs) {
-  return relu(inputs[this.thread.y][this.thread.x]);
+  return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-export function learn(weights, deltas) {
-  return reluDerivative(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
+export function compare(weights, deltas) {
+  return measure(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
 }

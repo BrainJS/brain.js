@@ -269,7 +269,7 @@ describe('rnn', () => {
       }
     });
 
-    it('can learn xor (error goes down)', () => {
+    it.only('can learn xor (error goes down)', () => {
       let net = xorNet();
       let initialError;
       let error;

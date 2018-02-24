@@ -1,10 +1,9 @@
 import lookup from './lookup';
 import TrainStream from './train-stream';
-import max from './utilities/max';
 import mse2d from './utilities/mse-2d';
 import layerFromJSON from './utilities/layer-from-json';
-import traverseLayersFrom from './utilities/traverse-layers-from';
 import * as praxis from './praxis';
+import flattenLayers from './utilities/flatten-layers';
 
 /**
  *
@@ -37,18 +36,14 @@ export default class FeedForward {
     };
   }
 
-  constructor(options = {}) {
-    Object.assign(this, this.constructor.defaults, options);
+  constructor(settings = {}) {
+    this.inputLayer = null;
+    this.hiddenLayers = null;
+    this.outputLayer = null;
+    Object.assign(this, this.constructor.defaults, settings);
     this.layers = null;
     this._inputLayer = null;
     this._outputLayer = null;
-    this._lastHiddenLayer = null;
-    this._inputLayerStartingIndex = null;
-    this._inputLayerEndingIndex = null;
-    this._hiddenLayerStartingIndex = null;
-    this._hiddenLayerEndingIndex = null;
-    this._outputLayerStartingIndex = null;
-    this._outputLayerEndingIndex = null;
   }
 
   connectLayers() {
@@ -65,39 +60,16 @@ export default class FeedForward {
     for (let i = 0; i < this.hiddenLayers.length; i++) {
       const previousLayer = this.layers[this.layers.length - 1];
       const hiddenLayer = this.hiddenLayers[i](previousLayer, this.layers.length);
-      this._lastHiddenLayer = hiddenLayer;
       this.layers.push(hiddenLayer);
     }
   }
 
-  flattenLayers() {
-    for (let i = 0; i < this.layers.length; i++) {
-      let offset = 0;
-      traverseLayersFrom(this.layers[i], (layer) => {
-        if (this.layers.indexOf(layer) === -1) {
-          this.layers.splice(i + offset, 0, layer);
-          offset++;
-        }
-      });
-    }
-  }
-
-  indexLayers() {
-    this._inputLayerStartingIndex = 0;
-    this._inputLayerEndingIndex = this.layers.indexOf(this._inputLayer);
-    this._hiddenLayerStartingIndex = this._inputLayerEndingIndex + 1;
-    this._hiddenLayerEndingIndex = this.layers.indexOf(this._lastHiddenLayer);
-    this._outputLayerStartingIndex = this._hiddenLayerEndingIndex + 1;
-    this._outputLayerEndingIndex = this.layers.length - 1;
-  }
-
   initialize() {
     this.connectLayers();
-    this.flattenLayers();
-    this.indexLayers();
+    flattenLayers(this.layers);
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i];
-      layer.validate(this.layers[i - 1], this.layers[i + 1]);
+      layer.validate();
       layer.setupKernels();
       if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
         layer.praxis = this.praxis(layer);

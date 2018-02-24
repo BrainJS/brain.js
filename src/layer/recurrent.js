@@ -1,13 +1,13 @@
 import { relu, add, multiply, random, zeros } from './';
 
-export default (settings, recurrentInput, input) => {
+export default (settings, input, recurrentInput) => {
   const { height } = settings;
   //wxh
   const weight = random({ height, width: input.height });
   //whh
-  const transition = random({ width: height, height });
+  const transition = random({ height, width: height });
   //bhh
-  const bias = zeros({ height });
+  const bias = random({ height });
 
   return relu(
     add(
