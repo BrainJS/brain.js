@@ -35,4 +35,12 @@ var brain = {
   utilities: utilities
 };
 
-module.exports = brain;
+if (typeof window !== 'undefined') {
+  window.brain = brain;
+}
+if (typeof self !== 'undefined') {
+  self.brain = brain;
+}
+if (typeof module !== 'undefined') {
+  module.exports = brain;
+}
