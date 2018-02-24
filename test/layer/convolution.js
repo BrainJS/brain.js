@@ -1,6 +1,6 @@
 import assert from 'assert';
 import gpuMock from 'gpu-mock.js';
-import { predict, learnFilters, learnInputs } from '../../src/layer/convolution';
+import { predict, compare, compareInputs } from '../../src/layer/convolution';
 
 describe('Convolution Layer', () => {
   describe('.predict (forward propagation)', () => {
@@ -40,7 +40,7 @@ describe('Convolution Layer', () => {
     });
   });
 
-  describe('.learnFilters (back propagation)', () => {
+  describe('.compare (back propagation)', () => {
     it('can convolution a simple matrix', () => {
       const inputs = [[
         [1, 2, 3],
@@ -52,7 +52,7 @@ describe('Convolution Layer', () => {
         [4, 5, 6],
         [7, 8, 9]
       ]];
-      const results = gpuMock(learnFilters, {
+      const results = gpuMock(compare, {
         output: [3, 3],
         constants: {
           strideX: 1,
@@ -89,7 +89,7 @@ describe('Convolution Layer', () => {
         [4, 5, 6],
         [7, 8, 9]
       ]];
-      const results = gpuMock(learnInputs, {
+      const results = gpuMock(compareInputs, {
         output: [3,3],
         constants: {
           strideX: 1,

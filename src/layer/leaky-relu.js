@@ -1,6 +1,6 @@
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
-import { leakyRelu, leakyReluDerivative } from '../activation/leaky-relu';
+import { activate, measure } from '../activation/leaky-relu';
 
 export default class LeakyRelu extends Base {
   constructor(inputLayer) {
@@ -12,11 +12,11 @@ export default class LeakyRelu extends Base {
   }
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
-      functions: [leakyRelu]
+      functions: [activate]
     });
 
     this.learnKernel = makeKernel(learn, {
-      functions: [leakyReluDerivative]
+      functions: [measure]
     });
   }
 
@@ -30,9 +30,9 @@ export default class LeakyRelu extends Base {
 }
 
 export function predict(inputs) {
-  return leakyRelu(inputs[this.thread.y][this.thread.x]);
+  return activate(inputs[this.thread.y][this.thread.x]);
 }
 
 export function learn(weights, deltas) {
-  return leakyReluDerivative(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
+  return measure(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
 }

@@ -1,6 +1,6 @@
 import assert from 'assert';
 import gpuMock from 'gpu-mock.js';
-import { predict, learn } from '../../src/layer/relu';
+import { predict, compare } from '../../src/layer/relu';
 
 describe('Relu Layer', () => {
   describe('.predict (forward propagation)', () => {
@@ -19,7 +19,7 @@ describe('Relu Layer', () => {
     });
   });
 
-  describe('.learn (back propagation)', () => {
+  describe('.compare (back propagation)', () => {
     it('can relu a simple matrix', () => {
       const inputs = [
         [.1, -.2, .3],
@@ -31,7 +31,7 @@ describe('Relu Layer', () => {
         [1, 1, 1],
         [1, 1, 1]
       ];
-      const results = gpuMock(learn, { output: [3,3] })(inputs, deltas);
+      const results = gpuMock(compare, { output: [3,3] })(inputs, deltas);
       assert.deepEqual(results, [
         [1, 0, 1],
         [0, 1, 0],

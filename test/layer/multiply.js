@@ -126,8 +126,10 @@ describe('Multiply Layer', () => {
       it('throws error', () => {
         assert.throws(() => {
           Multiply.prototype.validate.call({
-            inputLayer1: { width: 1 },
-            inputLayer2: { height: 2 }
+            inputLayer1: { width: 1, height: 1 },
+            inputLayer2: { width: 1, height: 2 },
+            height: 1,
+            width: 1
           });
         }, Error);
       });
@@ -135,8 +137,10 @@ describe('Multiply Layer', () => {
     context('when dimension are compatible', () => {
       it('validates', () => {
         Multiply.prototype.validate.call({
-          inputLayer1: { width: 1 },
-          inputLayer2: { height: 1 }
+          inputLayer1: { width: 1, height: 1 },
+          inputLayer2: { width: 1, height: 1 },
+          height: 1,
+          width: 1
         });
       });
     });

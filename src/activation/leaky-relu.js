@@ -4,7 +4,7 @@
  * @param weight
  * @returns {number}
  */
-export function activation(weight) {
+export function activate(weight) {
   return weight > 0 ? weight : 0.01 * weight;
 }
 
