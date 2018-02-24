@@ -46,8 +46,7 @@ describe('FeedForward Class: Unit', () => {
           ],
           outputLayer: (input) => output({width: 10}, input)
         });
-        net.connectLayers();
-        net.flattenLayers();
+        net.initialize();
         assert.equal(net.layers.length, 11);
         assert.deepEqual(net.layers.map(layer => layer.constructor), [
           Input,
@@ -67,12 +66,11 @@ describe('FeedForward Class: Unit', () => {
         const net = new FeedForward({
           inputLayer: () => input(),
           hiddenLayers: [
-            (input) => feedForward({}, input)
+            (input) => feedForward({ width: 1 }, input)
           ],
-          outputLayer: (input) => output({}, input)
+          outputLayer: (input) => output({ width: 1 }, input)
         });
-        net.connectLayers();
-        net.flattenLayers();
+        net.initialize();
         assert.equal(net.layers.length, 9);
         assert.deepEqual(net.layers.map(layer => layer.constructor), [
           Input,
@@ -108,8 +106,7 @@ describe('FeedForward Class: Unit', () => {
           ],
           outputLayer: (input) => output({width: 10}, input)
         });
-        net.connectLayers();
-        net.flattenLayers();
+        net.initialize();
         assert.equal(net.layers.length, 11);
         assert.deepEqual(net.layers.map(layer => layer.constructor), [
           Input,
@@ -146,12 +143,6 @@ describe('FeedForward Class: Unit', () => {
       });
       net.initialize();
 
-      assert(net._inputLayerEndingIndex === 0);
-      assert(net._inputLayerStartingIndex === 0);
-      assert(net._hiddenLayerStartingIndex === 1);
-      assert(net._hiddenLayerEndingIndex === 3);
-      assert(net._outputLayerEndingIndex === 4);
-      assert(net._outputLayerStartingIndex === 4);
       assert.equal(net.layers.length, 5);
       assert.deepEqual(net.layers.map(layer => layer.called), [
         true,

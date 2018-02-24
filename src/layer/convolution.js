@@ -65,11 +65,7 @@ export default class Convolution extends Base {
       output: [this.width, this.height, this.depth]
     });
 
-    this.learnFilters = makeKernel(learnFilters, {
-      output: [this.filterWidth, this.filterHeight, this.filterCount]
-    });
-
-    this.learnInputs = makeKernel(learnInputs, {
+    this.compareInputsKernel = makeKernel(compareInputs, {
       output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth]
     });
   }
@@ -79,8 +75,8 @@ export default class Convolution extends Base {
   }
 
   compare() {
-    this.filterDeltas = this.learnFilters(this.inputLayer.weights, this.deltas);
-    this.deltas = this.learnInputs(this.filters);
+    this.deltas = this.compareKernel(this.inputLayer.weights, this.deltas);
+    this.inputLayer.deltas = this.compareInputsKernel(this.filters, this.inputLayer.deltas);
   }
 }
 
@@ -112,7 +108,7 @@ export function predict(inputs, filters, biases) {
   return sum + biases[this.thread.z];
 }
 
-export function learnFilters(inputs, deltas) {
+export function compare(inputs, deltas) {
   let sum = 0;
   let delta = deltas[this.thread.z][this.thread.y * this.constants.paddingY][this.thread.x * this.constants.paddingX];
   let inputXMax = this.constants.inputWidth + this.constants.paddingX;
@@ -134,7 +130,7 @@ export function learnFilters(inputs, deltas) {
   return sum;
 }
 
-export function learnInputs(filters, deltas) {
+export function compareInputs(filters, deltas) {
   let sum = 0;
   for (let filterY = 0; filterY <= this.thread.y; filterY++) {
     let offsetY = this.thread.y - filterY;
