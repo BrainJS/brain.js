@@ -35,7 +35,4 @@ describe('log', () => {
 
   it('should call log method', () => { trainWithLog(logFunction, true); });
   it('should not call log method', () => { trainWithLog(false, false); });
-
-  it('ASYNC should call log method', done => { trainWithLogAsync(logFunction, true, done); }).timeout(5000);
-  it('ASYNC should not call log method', done => { trainWithLogAsync(false, false, done); }).timeout(5000);
 });
