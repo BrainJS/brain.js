@@ -1,7 +1,6 @@
 import NeuralNetwork from './neural-network';
 import lookup from './lookup';
 import GPU from 'gpu.js';
-import Thaw from "thaw.js";
 
 /**
  *
@@ -55,20 +54,20 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     }
   }
 
-  train() {}
-
   trainAsync(data, options) {
     let status, endTime;
     ({ data, status, endTime } = this._prepTraining(data, options));
 
-    const train = () => {
-      if (this._trainingTick(data, status, endTime)) {
-        options.done();
-      } else {
-        requestAnimationFrame(train);
-      }
-    };
-    train();
+    return new Promise((resolve, reject) => {
+      const train = () => {
+        if (this._trainingTick(data, status, endTime)) {
+          requestAnimationFrame(train);
+        } else {
+          resolve(status);
+        }
+      };
+      train();
+    });
   }
 
   buildRunInput() {
@@ -99,7 +98,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
         hardcodeConstants: true,
         constants: {
           size: this.sizes[layer - 1]
-        }
+        },
+        floatTextures: true
       });
     }
   }
@@ -156,7 +156,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
             output: [this.sizes[layer]],
             outputToTexture: true,
             outputImmutable: true,
-            hardcodeConstants: true
+            hardcodeConstants: true,
+            floatTextures: true
           });
       } else {
         this.backwardPropagate[layer] = this.gpu.createKernelMap({
@@ -172,7 +173,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
             hardcodeConstants: true,
             constants: {
               size: this.deltas[layer + 1].length
-            }
+            },
+            floatTextures: true
           });
       }
     }
@@ -220,7 +222,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
             size: this.outputs[layer - 1].length,
             learningRate: this.trainOpts.learningRate,
             momentum: this.trainOpts.momentum
-          }
+          },
+          floatTextures: true
         });
     }    
   }
@@ -247,7 +250,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
         hardcodeConstants: true,
         constants: {
           learningRate: this.trainOpts.learningRate
-        }
+        },
+        floatTextures: true
       });
     }
   }
@@ -266,7 +270,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
       output: [1],
       constants: {
         size: this.sizes[this.outputLayer]
-      }
+      },
+      floatTextures: true
     });
   }
 

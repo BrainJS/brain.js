@@ -5,7 +5,7 @@
 <script src="browser.js"></script>
 <script>
     const net = new brain.NeuralNetworkGPU();
-    net.trainAsync([
+    net.train([
       {input: [0, 0], output: [0]},
       {input: [0, 1], output: [1]},
       {input: [1, 0], output: [1]},
@@ -15,13 +15,13 @@
         console.log(details);
       },
       logPeriod: 500,
-      iterations: 5000,
-      done: () => {
-        console.log(net.run([0, 0]),
-          net.run([0, 1]),
-          net.run([1, 0]),
-          net.run([1, 1]));
-      }
+      iterations: 500,
     });
+
+    console.log(status);
+    console.log(net.run([0, 0]),
+      net.run([0, 1]),
+      net.run([1, 0]),
+      net.run([1, 1]));
 </script>
 </html>

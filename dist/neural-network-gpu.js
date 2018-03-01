@@ -20,10 +20,6 @@ var _gpu = require('gpu.js');
 
 var _gpu2 = _interopRequireDefault(_gpu);
 
-var _thaw = require('thaw.js');
-
-var _thaw2 = _interopRequireDefault(_thaw);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -100,9 +96,6 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       }
     }
   }, {
-    key: 'train',
-    value: function train() {}
-  }, {
     key: 'trainAsync',
     value: function trainAsync(data, options) {
       var _this2 = this;
@@ -117,14 +110,16 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       endTime = _prepTraining.endTime;
 
 
-      var train = function train() {
-        if (_this2._trainingTick(data, status, endTime)) {
-          options.done();
-        } else {
-          requestAnimationFrame(train);
-        }
-      };
-      train();
+      return new Promise(function (resolve, reject) {
+        var train = function train() {
+          if (_this2._trainingTick(data, status, endTime)) {
+            requestAnimationFrame(train);
+          } else {
+            resolve(status);
+          }
+        };
+        train();
+      });
     }
   }, {
     key: 'buildRunInput',
@@ -156,7 +151,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
           hardcodeConstants: true,
           constants: {
             size: this.sizes[layer - 1]
-          }
+          },
+          floatTextures: true
         });
       }
     }
@@ -213,7 +209,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
             output: [this.sizes[layer]],
             outputToTexture: true,
             outputImmutable: true,
-            hardcodeConstants: true
+            hardcodeConstants: true,
+            floatTextures: true
           });
         } else {
           this.backwardPropagate[layer] = this.gpu.createKernelMap({
@@ -229,7 +226,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
             hardcodeConstants: true,
             constants: {
               size: this.deltas[layer + 1].length
-            }
+            },
+            floatTextures: true
           });
         }
       }
@@ -269,7 +267,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
             size: this.outputs[layer - 1].length,
             learningRate: this.trainOpts.learningRate,
             momentum: this.trainOpts.momentum
-          }
+          },
+          floatTextures: true
         });
       }
     }
@@ -293,7 +292,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
           hardcodeConstants: true,
           constants: {
             learningRate: this.trainOpts.learningRate
-          }
+          },
+          floatTextures: true
         });
       }
     }
@@ -311,7 +311,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
         output: [1],
         constants: {
           size: this.sizes[this.outputLayer]
-        }
+        },
+        floatTextures: true
       });
     }
 
