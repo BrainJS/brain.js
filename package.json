@@ -67,7 +67,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "gpu.js": "https://github.com/gpujs/gpu.js.git#255-ouput-immutable",
+    "gpu.js": "https://github.com/gpujs/gpu.js.git#f0d06303843ee79543bd0e98ef368a30d34f6863",
     "thaw.js": "^2.0.0"
   }
 }

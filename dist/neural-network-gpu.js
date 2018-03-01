@@ -20,9 +20,11 @@ var _gpu = require('gpu.js');
 
 var _gpu2 = _interopRequireDefault(_gpu);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _thaw = require('thaw.js');
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+var _thaw2 = _interopRequireDefault(_thaw);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -96,6 +98,33 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       } else {
         return null;
       }
+    }
+  }, {
+    key: 'train',
+    value: function train() {}
+  }, {
+    key: 'trainAsync',
+    value: function trainAsync(data, options) {
+      var _this2 = this;
+
+      var status = void 0,
+          endTime = void 0;
+
+      var _prepTraining = this._prepTraining(data, options);
+
+      data = _prepTraining.data;
+      status = _prepTraining.status;
+      endTime = _prepTraining.endTime;
+
+
+      var train = function train() {
+        if (_this2._trainingTick(data, status, endTime)) {
+          options.done();
+        } else {
+          requestAnimationFrame(train);
+        }
+      };
+      train();
     }
   }, {
     key: 'buildRunInput',
@@ -234,6 +263,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
         }, {
           output: [this.sizes[layer - 1], this.sizes[layer]],
           outputToTexture: true,
+          outputImmutable: true,
           hardcodeConstants: true,
           constants: {
             size: this.outputs[layer - 1].length,
@@ -248,7 +278,6 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     value: function getChanges() {
       for (var layer = 1; layer <= this.outputLayer; layer++) {
         var output = this.changesPropagate[layer](this.outputs[layer - 1], this.deltas[layer], this.weights[layer], this.changes[layer]);
-
         this.changes[layer] = output.changes;
         this.weights[layer] = output.weights;
       }
@@ -301,7 +330,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       }
       var inputTexture = this._texturizeInputData(input);
       var outputTextures = this.runInput(inputTexture);
-      var output = [].concat(_toConsumableArray(outputTextures));
+      var output = outputTextures.toArray(this.gpu);
 
       if (this.outputLookup) {
         output = _lookup2.default.toHash(this.outputLookup, output);
@@ -319,7 +348,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
   }, {
     key: '_verifyIsInitialized',
     value: function _verifyIsInitialized(data) {
-      var _this2 = this;
+      var _this3 = this;
 
       if (this.sizes) return;
 
@@ -333,7 +362,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
         this.sizes.push(Math.max(3, Math.floor(data[0].size.input / 2)));
       } else {
         this.hiddenSizes.forEach(function (size) {
-          _this2.sizes.push(size);
+          _this3.sizes.push(size);
         });
       }
       this.sizes.push(data[0].size.output);
@@ -350,7 +379,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
   }, {
     key: '_formatData',
     value: function _formatData(data) {
-      var _this3 = this;
+      var _this4 = this;
 
       data = _get(NeuralNetworkGPU.prototype.__proto__ || Object.getPrototypeOf(NeuralNetworkGPU.prototype), '_formatData', this).call(this, data);
 
@@ -372,7 +401,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       });
       data.forEach(function (d) {
         d.size = { input: d.input.length, output: d.output.length };
-        d.input = _this3._texturizeInputData(d.input);
+        d.input = _this4._texturizeInputData(d.input);
         d.output = texturizeOutputData(d.output);
       });
       return data;

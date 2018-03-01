@@ -437,7 +437,11 @@ var NeuralNetwork = function () {
         status.error = this._calculateTrainingError(data);
         this.trainOpts.log('iterations: ' + status.iterations + ', training error: ' + status.error);
       } else {
-        this._trainPatterns(data);
+        if (status.iterations % 100 === 0) {
+          status.error = this._calculateTrainingError(data);
+        } else {
+          this._trainPatterns(data);
+        }
       }
 
       if (this.trainOpts.callback && status.iterations % this.trainOpts.callbackPeriod === 0) {

@@ -1,6 +1,7 @@
 import NeuralNetwork from './neural-network';
 import lookup from './lookup';
 import GPU from 'gpu.js';
+import Thaw from "thaw.js";
 
 /**
  *
@@ -52,6 +53,22 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     } else {
       return null;
     }
+  }
+
+  train() {}
+
+  trainAsync(data, options) {
+    let status, endTime;
+    ({ data, status, endTime } = this._prepTraining(data, options));
+
+    const train = () => {
+      if (this._trainingTick(data, status, endTime)) {
+        options.done();
+      } else {
+        requestAnimationFrame(train);
+      }
+    };
+    train();
   }
 
   buildRunInput() {
@@ -128,7 +145,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     }
 
     for (let layer = this.outputLayer; layer > 0; layer--) {
-      if (layer === this.outputLayer){
+      if (layer === this.outputLayer) {
         this.backwardPropagate[layer] = this.gpu.createKernelMap({
             error: GPU.alias('calcErrorOutput', calcErrorOutput),
             deltas: GPU.alias('calcDeltas', calcDeltas)
@@ -173,7 +190,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
           this.weights[layer + 1],
           this.outputs[layer],
           this.deltas[layer + 1],
-        )}
+        );
+      }
 
       this.deltas[layer] = output.deltas;
       this.errors[layer] = output.error;
@@ -196,6 +214,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
         }, {
           output: [this.sizes[layer - 1], this.sizes[layer]],
           outputToTexture: true,
+          outputImmutable: true,
           hardcodeConstants: true,
           constants:{
             size: this.outputs[layer - 1].length,
@@ -214,7 +233,6 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
         this.weights[layer],
         this.changes[layer]
       );
-      
       this.changes[layer] = output.changes;
       this.weights[layer] = output.weights;
     }
@@ -264,7 +282,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     }
     const inputTexture = this._texturizeInputData(input);
     const outputTextures = this.runInput(inputTexture);
-    let output = [...outputTextures];
+    let output = outputTextures.toArray(this.gpu);
 
     if (this.outputLookup) {
       output = lookup.toHash(this.outputLookup, output);
