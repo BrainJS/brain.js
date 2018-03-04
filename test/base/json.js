@@ -181,5 +181,14 @@ describe('JSON', () => {
       assert.deepEqual(output2, output1,
         'loading json serialized network failed');
     });
+
+    it('if json.trainOpts is not set, ._updateTrainingOptions() is not called abd activation defaults to sigmoid', () => {
+      const net = new NeuralNetwork();
+      net._updateTrainingOptions = () => {
+        throw new Error('_updateTrainingOptions was called');
+      };
+      net.fromJSON({ sizes: [], layers: [] });
+      assert(net.activation === 'sigmoid');
+    })
   });
 });
