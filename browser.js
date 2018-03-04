@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.1.0
+ *   version: 1.1.1
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -903,7 +903,6 @@ var NeuralNetwork = function () {
     /**
      *
      * @param options
-     * @param boolean
      * @private
      */
     value: function _validateTrainingOptions(options) {
@@ -1042,7 +1041,7 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param supported input: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+     * @param activation supported inputs: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
      */
 
   }, {
@@ -1220,12 +1219,12 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param options
+     * @param opts
      *    Supports all `trainDefaults` properties
      *    also supports:
      *       learningRate: (number),
      *       momentum: (number),
-     *       activation: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+     *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
      */
 
   }, {
@@ -1282,8 +1281,7 @@ var NeuralNetwork = function () {
     /**
      *
      * @param data
-     * @param learning Rate
-     * @returns error
+     * @returns number
      */
 
   }, {
@@ -1298,8 +1296,9 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param status { iterations: number, error: number}
-     * @param options
+     * @param {object} data
+     * @param {object} status { iterations: number, error: number }
+     * @param endTime
      */
 
   }, {
@@ -1327,7 +1326,7 @@ var NeuralNetwork = function () {
      * @param data
      * @param options
      * @private
-     * @return {{runTrainingTick: function, status: {error: number, iterations: number}}}
+     * @return {object}
      */
 
   }, {
@@ -1438,8 +1437,7 @@ var NeuralNetwork = function () {
       this.calculateDeltas(target);
       this._adjustWeights();
 
-      var error = (0, _mse2.default)(this.errors[this.outputLayer]);
-      return error;
+      return (0, _mse2.default)(this.errors[this.outputLayer]);
     }
 
     /**
@@ -1830,8 +1828,10 @@ var NeuralNetwork = function () {
           }
         }
       }
-      this._updateTrainingOptions(json.trainOpts);
-      this.setActivation();
+      if (json.hasOwnProperty('trainOpts')) {
+        this._updateTrainingOptions(json.trainOpts);
+      }
+      this.setActivation(this.activation || 'sigmoid');
       return this;
     }
 
@@ -13286,7 +13286,6 @@ module.exports = function () {
 		this.addFunction = null;
 		this.functions = null;
 		this.nativeFunctions = null;
-		this.copyData = true;
 		this.subKernels = null;
 		this.subKernelProperties = null;
 		this.subKernelNames = null;
@@ -13547,12 +13546,6 @@ module.exports = function () {
 		key: 'setWebGl',
 		value: function setWebGl(webGl) {
 			this._webGl = webGl;
-			return this;
-		}
-	}, {
-		key: 'setCopyData',
-		value: function setCopyData(copyData) {
-			this.copyData = copyData;
 			return this;
 		}
 
@@ -15473,7 +15466,7 @@ module.exports = function (_KernelBase) {
 					var output = [];
 					output.result = this.renderOutput(outputTexture);
 					for (var _i = 0; _i < this.subKernels.length; _i++) {
-						output.push(new Texture(this.subKernelOutputTextures[_i], texSize, this.output, this._webGl));
+						output.push(new Texture(this.subKernelOutputTextures[_i], texSize, this.threadDim, this.output, this._webGl));
 					}
 					return output;
 				} else if (this.subKernelProperties !== null) {
@@ -15483,7 +15476,7 @@ module.exports = function (_KernelBase) {
 					var _i2 = 0;
 					for (var p in this.subKernelProperties) {
 						if (!this.subKernelProperties.hasOwnProperty(p)) continue;
-						_output[p] = new Texture(this.subKernelOutputTextures[_i2], texSize, this.output, this._webGl);
+						_output[p] = new Texture(this.subKernelOutputTextures[_i2], texSize, this.threadDim, this.output, this._webGl);
 						_i2++;
 					}
 					return _output;
@@ -15520,7 +15513,7 @@ module.exports = function (_KernelBase) {
 			var threadDim = this.threadDim;
 			var output = this.output;
 			if (this.outputToTexture) {
-				return new Texture(outputTexture, texSize, output, this._webGl);
+				return new Texture(outputTexture, texSize, this.threadDim, output, this._webGl);
 			} else {
 				var result = void 0;
 				if (this.floatOutput) {
@@ -15646,25 +15639,6 @@ module.exports = function (_KernelBase) {
 
 		/**
    * @memberOf WebGLKernel#
-   * @name getSubKernelTexture
-   * @function
-   *
-   * @desc This uses *getTextureCache* to get the Texture Cache of the sub-kernel
-   *
-   * @param {String} name - Name of the subKernel
-   *
-   * @returns {Object} Texture cache for the subKernel
-   *
-   */
-
-	}, {
-		key: 'getSubKernelTexture',
-		value: function getSubKernelTexture(name) {
-			return this.getTextureCache('SUB_KERNEL_' + name);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
    * @name getTextureCache
    * @function
    *
@@ -15679,10 +15653,6 @@ module.exports = function (_KernelBase) {
 	}, {
 		key: 'getTextureCache',
 		value: function getTextureCache(name) {
-			if (this.outputToTexture) {
-				// Don't retain a handle on the output texture, we might need to render on the same texture later
-				return this._webGl.createTexture();
-			}
 			if (this.textureCache.hasOwnProperty(name)) {
 				return this.textureCache[name];
 			}
@@ -15873,8 +15843,7 @@ module.exports = function (_KernelBase) {
 				case 'Texture':
 					{
 						var inputTexture = value;
-						var _dim2 = utils.getDimensions(inputTexture, true);
-
+						var _dim2 = inputTexture.dimensions;
 						var _size2 = inputTexture.size;
 
 						gl.activeTexture(gl.TEXTURE0 + this.argumentsLength);
@@ -17076,16 +17045,18 @@ module.exports = function () {
 	/**
   * @desc WebGl Texture implementation in JS
   * @constructor Texture
-  * @param {Object} texture 
-  * @param {Array} size 
+  * @param {Object} texture
+  * @param {Array} size
+  * @param dimensions
   * @param {Array} output
   * @param {Object} webGl
   */
-	function Texture(texture, size, output, webGl) {
+	function Texture(texture, size, dimensions, output, webGl) {
 		_classCallCheck(this, Texture);
 
 		this.texture = texture;
 		this.size = size;
+		this.dimensions = dimensions;
 		this.output = output;
 		this.webGl = webGl;
 		this.kernel = null;
