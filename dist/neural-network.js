@@ -409,6 +409,7 @@ var NeuralNetwork = function () {
       var _this3 = this;
 
       return Object.keys(NeuralNetwork.trainDefaults).reduce(function (opts, opt) {
+        if (opt === 'timeout' && _this3.trainOpts[opt] === Infinity) return opts;
         if (_this3.trainOpts[opt]) opts[opt] = _this3.trainOpts[opt];
         if (opt === 'log') opts.log = typeof opts.log === 'function';
         return opts;
@@ -986,9 +987,6 @@ var NeuralNetwork = function () {
         }
       }
       if (json.hasOwnProperty('trainOpts')) {
-        if (!json.trainOpts.timeout) {
-          json.trainOpts.timeout = Infinity;
-        }
         this._updateTrainingOptions(json.trainOpts);
       }
       this.setActivation(this.activation || 'sigmoid');
