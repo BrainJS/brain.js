@@ -986,6 +986,9 @@ var NeuralNetwork = function () {
         }
       }
       if (json.hasOwnProperty('trainOpts')) {
+        if (!json.trainOpts.timeout) {
+          json.trainOpts.timeout = Infinity;
+        }
         this._updateTrainingOptions(json.trainOpts);
       }
       this.setActivation(this.activation || 'sigmoid');
