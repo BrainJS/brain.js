@@ -331,6 +331,7 @@ export default class NeuralNetwork {
   _getTrainOptsJSON() {
     return Object.keys(NeuralNetwork.trainDefaults)
       .reduce((opts, opt) => {
+        if (opt === 'timeout' && this.trainOpts[opt] === Infinity) return opts;
         if (this.trainOpts[opt]) opts[opt] = this.trainOpts[opt];
         if (opt === 'log') opts.log = typeof opts.log === 'function';
         return opts;
