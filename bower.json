@@ -1,6 +1,6 @@
 {
   "name": "brain.js",
-  "homepage": "https://github.com/harthur-org/brain.js",
+  "homepage": "https://github.com/brainjs/brain.js",
   "authors": [
     "Heather Arthur <fayearthur@gmail.com>"
   ],
@@ -31,5 +31,5 @@
     "node_modules",
     "test"
   ],
-  "version": "1.0.0-rc.5"
+  "version": "1.1.1"
 }

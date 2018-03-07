@@ -54,6 +54,51 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 var NeuralNetwork = function () {
   _createClass(NeuralNetwork, null, [{
+    key: '_validateTrainingOptions',
+
+
+    /**
+     *
+     * @param options
+     * @private
+     */
+    value: function _validateTrainingOptions(options) {
+      var validations = {
+        iterations: function iterations(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        errorThresh: function errorThresh(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        log: function log(val) {
+          return typeof val === 'function' || typeof val === 'boolean';
+        },
+        logPeriod: function logPeriod(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        learningRate: function learningRate(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        momentum: function momentum(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        callback: function callback(val) {
+          return typeof val === 'function' || val === null;
+        },
+        callbackPeriod: function callbackPeriod(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        timeout: function timeout(val) {
+          return typeof val === 'number' && val > 0;
+        }
+      };
+      Object.keys(NeuralNetwork.trainDefaults).forEach(function (key) {
+        if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
+          throw new Error('[' + key + ', ' + options[key] + '] is out of normal training range, your network will probably not train.');
+        }
+      });
+    }
+  }, {
     key: 'trainDefaults',
     get: function get() {
       return {
@@ -153,7 +198,7 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param supported input: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+     * @param activation supported inputs: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
      */
 
   }, {
@@ -331,12 +376,12 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param options
+     * @param opts
      *    Supports all `trainDefaults` properties
      *    also supports:
      *       learningRate: (number),
      *       momentum: (number),
-     *       activation: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+     *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
      */
 
   }, {
@@ -345,8 +390,9 @@ var NeuralNetwork = function () {
       var _this2 = this;
 
       Object.keys(NeuralNetwork.trainDefaults).forEach(function (opt) {
-        return _this2.trainOpts[opt] = opts[opt] || _this2.trainOpts[opt];
+        return _this2.trainOpts[opt] = opts.hasOwnProperty(opt) ? opts[opt] : _this2.trainOpts[opt];
       });
+      NeuralNetwork._validateTrainingOptions(this.trainOpts);
       this._setLogMethod(opts.log || this.trainOpts.log);
       this.activation = opts.activation || this.activation;
     }
@@ -363,6 +409,7 @@ var NeuralNetwork = function () {
       var _this3 = this;
 
       return Object.keys(NeuralNetwork.trainDefaults).reduce(function (opts, opt) {
+        if (opt === 'timeout' && _this3.trainOpts[opt] === Infinity) return opts;
         if (_this3.trainOpts[opt]) opts[opt] = _this3.trainOpts[opt];
         if (opt === 'log') opts.log = typeof opts.log === 'function';
         return opts;
@@ -392,7 +439,7 @@ var NeuralNetwork = function () {
     /**
      *
      * @param data
-     * @returns error
+     * @returns number
      */
 
   }, {
@@ -400,28 +447,16 @@ var NeuralNetwork = function () {
     value: function _calculateTrainingError(data) {
       var sum = 0;
       for (var i = 0; i < data.length; ++i) {
-        sum += this._trainPattern(data[i].input, data[i].output, true);
+        sum += this._trainPattern(data[i].input, data[i].output);
       }
       return sum / data.length;
     }
 
     /**
-     * @param data
-     * @private
-     */
-
-  }, {
-    key: '_trainPatterns',
-    value: function _trainPatterns(data) {
-      for (var i = 0; i < data.length; ++i) {
-        this._trainPattern(data[i].input, data[i].output, false);
-      }
-    }
-
-    /**
      *
-     * @param status { iterations: number, error: number}
-     * @param options
+     * @param {object} data
+     * @param {object} status { iterations: number, error: number }
+     * @param endTime
      */
 
   }, {
@@ -432,16 +467,10 @@ var NeuralNetwork = function () {
       }
 
       status.iterations++;
+      status.error = this._calculateTrainingError(data);
 
       if (this.trainOpts.log && status.iterations % this.trainOpts.logPeriod === 0) {
-        // status.error = this._calculateTrainingError(data);
         this.trainOpts.log('iterations: ' + status.iterations + ', training error: ' + status.error);
-      } else {
-        // if (status.iterations % 100 === 0) {
-        //   status.error = this._calculateTrainingError(data);
-        // } else {
-        this._trainPatterns(data);
-        // }
       }
 
       if (this.trainOpts.callback && status.iterations % this.trainOpts.callbackPeriod === 0) {
@@ -454,8 +483,8 @@ var NeuralNetwork = function () {
      *
      * @param data
      * @param options
-     * @protected
-     * @return {{runTrainingTick: function, status: {error: number, iterations: number}}}
+     * @private
+     * @return {object}
      */
 
   }, {
@@ -557,7 +586,7 @@ var NeuralNetwork = function () {
 
   }, {
     key: '_trainPattern',
-    value: function _trainPattern(input, target, logErrorRate) {
+    value: function _trainPattern(input, target) {
 
       // forward propagate
       this.runInput(input);
@@ -566,11 +595,7 @@ var NeuralNetwork = function () {
       this.calculateDeltas(target);
       this._adjustWeights();
 
-      if (logErrorRate) {
-        return (0, _mse2.default)(this.errors[this.outputLayer]);
-      } else {
-        return null;
-      }
+      return (0, _mse2.default)(this.errors[this.outputLayer]);
     }
 
     /**
@@ -961,8 +986,10 @@ var NeuralNetwork = function () {
           }
         }
       }
-      this._updateTrainingOptions(json.trainOpts);
-      this.setActivation();
+      if (json.hasOwnProperty('trainOpts')) {
+        this._updateTrainingOptions(json.trainOpts);
+      }
+      this.setActivation(this.activation || 'sigmoid');
       return this;
     }
 

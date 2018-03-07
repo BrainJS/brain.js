@@ -270,8 +270,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
       output: [1],
       constants: {
         size: this.sizes[this.outputLayer]
-      },
-      floatTextures: true
+      }
     });
   }
 
