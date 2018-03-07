@@ -69,7 +69,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "gpu.js": "https://github.com/gpujs/gpu.js.git#f0d06303843ee79543bd0e98ef368a30d34f6863",
+    "gpu.js": "https://github.com/gpujs/gpu.js.git#c94ee123ffac980353664c678c12f5736c0e6eff",
     "thaw.js": "^2.0.0"
   }
 }

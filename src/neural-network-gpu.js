@@ -14,12 +14,18 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     this.backwardPropagate = [];
     this.changesPropagate = [];
     this.biasesPropagate = [];
+    this.biasCopies = [];
+    this.copyBias = [];
+    this.changesCopies = [];
+    this.copyChanges = [];
+    this.weightsCopies = [];
+    this.copyWeights = [];
+    this.errorCheckInterval = 100;
     this.gpu = new GPU({mode: options.mode});
   }
 
   /**
    *
-   * @param {Number[]} sizes
    */
   _initialize() {
     super._initialize();
@@ -54,22 +60,6 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     }
   }
 
-  trainAsync(data, options) {
-    let status, endTime;
-    ({ data, status, endTime } = this._prepTraining(data, options));
-
-    return new Promise((resolve, reject) => {
-      const train = () => {
-        if (this._trainingTick(data, status, endTime)) {
-          requestAnimationFrame(train);
-        } else {
-          resolve(status);
-        }
-      };
-      train();
-    });
-  }
-
   buildRunInput() {
     let weightedSum = null;
 
@@ -94,14 +84,21 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
       this.forwardPropagate[layer] = this.gpu.createKernel(weightedSum, {
         output: [this.sizes[layer]],
         outputToTexture: true,
-        outputImmutable: true,
         hardcodeConstants: true,
         constants: {
           size: this.sizes[layer - 1]
-        },
-        floatTextures: true
+        }
       });
     }
+
+    this._texturizeInputData = this.gpu.createKernel(function(value) {
+      return value[this.thread.x];
+    }, {
+      output: [this.sizes[1]],
+      outputToTexture: true,
+      hardcodeConstants: true,
+      outputImmutable: true
+    });
   }
 
   /**
@@ -118,7 +115,6 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
         this.biases[layer], 
         input
       );
-
       output = input = this.outputs[layer];
     }
     return output;
@@ -155,9 +151,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
           }, {
             output: [this.sizes[layer]],
             outputToTexture: true,
-            outputImmutable: true,
-            hardcodeConstants: true,
-            floatTextures: true
+            hardcodeConstants: true
           });
       } else {
         this.backwardPropagate[layer] = this.gpu.createKernelMap({
@@ -169,12 +163,10 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
           }, {
             output: [this.sizes[layer]],
             outputToTexture: true,
-            outputImmutable: true,
             hardcodeConstants: true,
             constants: {
               size: this.deltas[layer + 1].length
-            },
-            floatTextures: true
+            }
           });
       }
     }
@@ -183,6 +175,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
   calculateDeltas(target) {
     for (let layer = this.outputLayer; layer > 0; layer--) {
       let output;
+
       if (layer === this.outputLayer) {
         output = this.backwardPropagate[layer](
           this.outputs[layer],
@@ -216,15 +209,29 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
         }, {
           output: [this.sizes[layer - 1], this.sizes[layer]],
           outputToTexture: true,
-          outputImmutable: true,
           hardcodeConstants: true,
           constants:{
             size: this.outputs[layer - 1].length,
             learningRate: this.trainOpts.learningRate,
             momentum: this.trainOpts.momentum
-          },
-          floatTextures: true
+          }
         });
+
+      this.copyChanges[layer] = this.gpu.createKernel(function(value) {
+        return value[this.thread.y][this.thread.x];
+      }, {
+        output: this.changesPropagate[layer].output,
+        outputToTexture: true,
+        hardCodeConstants: true
+      });
+
+      this.copyWeights[layer] = this.gpu.createKernel(function(value) {
+        return value[this.thread.y][this.thread.x];
+      }, {
+        output: this.changesPropagate[layer].output,
+        outputToTexture: true,
+        hardCodeConstants: true
+      });
     }    
   }
   
@@ -233,11 +240,14 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
       let output = this.changesPropagate[layer](
         this.outputs[layer - 1],
         this.deltas[layer],
-        this.weights[layer],
-        this.changes[layer]
+        this.weightsCopies[layer] || this.weights[layer],
+        this.changesCopies[layer] || this.changes[layer]
       );
       this.changes[layer] = output.changes;
       this.weights[layer] = output.weights;
+
+      this.changesCopies[layer] = this.copyChanges[layer](output.changes);
+      this.weightsCopies[layer] = this.copyWeights[layer](output.weights);
     }
   }
 
@@ -246,12 +256,17 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
       this.biasesPropagate[layer] = this.gpu.createKernel(addBiases, {
         output: [this.sizes[layer]],
         outputToTexture: true,
-        outputImmutable: true,
         hardcodeConstants: true,
         constants: {
           learningRate: this.trainOpts.learningRate
-        },
-        floatTextures: true
+        }
+      });
+      this.copyBias[layer] = this.gpu.createKernel(function(value) {
+        return value[this.thread.x];
+      }, {
+        output: this.biasesPropagate[layer].output,
+        outputToTexture: true,
+        hardCodeConstants: true
       });
     }
   }
@@ -259,15 +274,17 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
   changeBiases() {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       this.biases[layer] = this.biasesPropagate[layer](
-        this.biases[layer],
+        this.biasCopies[layer] || this.biases[layer],
         this.deltas[layer]
       );
+      this.biasCopies[layer] = this.copyBias[layer](this.biases[layer]);
     }
   }
 
   buildGetMSE() {
     this.getMSE = this.gpu.createKernel(mse, {
       output: [1],
+      hardcodeConstants: true,
       constants: {
         size: this.sizes[this.outputLayer]
       }
@@ -325,33 +342,42 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
   /**
    *
    * @param data
-   * @returns {*}
+   * @param options
+   * @protected
+   * @return { data, status, endTime }
    */
-  _formatData(data) {
-    data = super._formatData(data);
+  _prepTraining(data, options) {
+    this._updateTrainingOptions(options);
+    data = this._formatData(data);
+    const endTime = Date.now() + this.trainOpts.timeout;
 
-    this._texturizeInputData = this.gpu.createKernel(function(value) {
-      return value[this.thread.x];
-    }, {
-      output: [data[0].input.length],
-      outputToTexture: true,
-      outputImmutable: true,
-      hardcodeConstants: true
-    });
+    const status = {
+      error: 1,
+      iterations: 0
+    };
+
+    this._verifyIsInitialized(data);
+
     const texturizeOutputData = this.gpu.createKernel(function(value) {
       return value[this.thread.x];
     }, {
       output: [data[0].output.length],
       outputToTexture: true,
-      outputImmutable: true,
-      hardcodeConstants: true
+      hardcodeConstants: true,
+      outputImmutable: true
     });
-    data.forEach(d => {
-      d.size = {input: d.input.length, output: d.output.length};
-      d.input = this._texturizeInputData(d.input);
-      d.output = texturizeOutputData(d.output);
-    });
-    return data;
+
+    return {
+      data: data.map((set) => {
+        return {
+          size: set.size,
+          input: this._texturizeInputData(set.input),
+          output: texturizeOutputData(set.output)
+        }
+      }),
+      status,
+      endTime
+    };
   }
 
   toFunction() {
