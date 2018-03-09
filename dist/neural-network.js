@@ -144,7 +144,7 @@ var NeuralNetwork = function () {
     this.deltas = null;
     this.changes = null; // for momentum
     this.errors = null;
-
+    this.errorCheckInterval = 1;
     if (!this.constructor.prototype.hasOwnProperty('runInput')) {
       this.runInput = null;
     }
@@ -482,11 +482,11 @@ var NeuralNetwork = function () {
       status.iterations++;
 
       if (this.trainOpts.log && status.iterations % this.trainOpts.logPeriod === 0) {
-        //status.error = this._calculateTrainingError(data);
+        status.error = this._calculateTrainingError(data);
         this.trainOpts.log('iterations: ' + status.iterations + ', training error: ' + status.error);
       } else {
-        if (status.iterations % 100 === 0) {
-          //status.error = this._calculateTrainingError(data);
+        if (status.iterations % this.errorCheckInterval === 0) {
+          status.error = this._calculateTrainingError(data);
         } else {
           this._trainPatterns(data);
         }

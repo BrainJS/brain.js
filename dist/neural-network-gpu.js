@@ -53,6 +53,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     _this.copyChanges = [];
     _this.weightsCopies = [];
     _this.copyWeights = [];
+    _this.errorCheckInterval = 100;
     _this.gpu = new _gpu2.default({ mode: options.mode });
     return _this;
   }
