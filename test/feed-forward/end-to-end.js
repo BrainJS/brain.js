@@ -149,6 +149,7 @@ describe('FeedForward Class: End to End', () => {
         outputLayer: (input) => target({ width: 1 }, input)
       });
       const errors = [];
+      net.errorCheckInterval = 1;
       net.train(xorTrainingData, {
         iterations: 10,
         threshold: 0.5,
@@ -191,7 +192,7 @@ describe('FeedForward Class: End to End', () => {
       assert.equal(result4[0][0] < 0.5, true, `with input of [1, 1], output is ${result4}, but should be < 0.5`);
     });
   });
-  describe('.calculateDeltas()', () => {
+  describe('._calculateDeltas()', () => {
     it('populates deltas from output to input', () => {
       class SuperOutput extends Target {
         constructor(settings, inputLayer) {
@@ -218,7 +219,7 @@ describe('FeedForward Class: End to End', () => {
         });
       });
       net.runInput([[1]]);
-      net.calculateDeltas([[1]]);
+      net._calculateDeltas([[1]]);
       net.layers.forEach((layer, layerIndex) => {
         layer.deltas.forEach((row, rowIndex) => {
           row.forEach((delta, deltaIndex) => {

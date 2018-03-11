@@ -245,7 +245,7 @@ describe('FeedForward Class: Unit', () => {
       assert.deepEqual(net.layers.map(layer => layer.called), [true, true, true, true, true]);
     });
   });
-  describe('.calculateDeltas()', () => {
+  describe('._calculateDeltas()', () => {
     it('calls .compare() on all layers', () => {
       class TestLayer extends Base {
         setupKernels() {}
@@ -266,11 +266,11 @@ describe('FeedForward Class: Unit', () => {
       });
 
       net.initialize();
-      net.calculateDeltas();
+      net._calculateDeltas();
       assert.deepEqual(net.layers.map(layer => layer.called), [true, true, true, true, true]);
     });
   });
-  describe('.adjustWeights()', () => {
+  describe('._adjustWeights()', () => {
     it('calls .learn() on all layers', () => {
       class TestLayer extends Base {
         setupKernels() {}
@@ -292,7 +292,7 @@ describe('FeedForward Class: Unit', () => {
       });
 
       net.initialize();
-      net.adjustWeights();
+      net._adjustWeights();
       assert.deepEqual(net.layers.map(layer => layer.called), [true, true, true, true, true]);
     });
   });
@@ -503,17 +503,17 @@ describe('FeedForward Class: Unit', () => {
       assert(net.layers[2].inputLayer2 === net.layers[1]);
     });
   });
-  describe('.trainPattern()', () => {
+  describe('._trainPattern()', () => {
     it('calls training methods and mse2d and returns value', () => {
       const net = new FeedForward();
       net._outputLayer = { errors: [0] };
       net.runInput = sinon.spy();
-      net.calculateDeltas = sinon.spy();
-      net.adjustWeights = sinon.spy();
-      net.trainPattern();
+      net._calculateDeltas = sinon.spy();
+      net._adjustWeights = sinon.spy();
+      net._trainPattern();
       assert(net.runInput.called);
-      assert(net.calculateDeltas.called);
-      assert(net.calculateDeltas.called);
+      assert(net._calculateDeltas.called);
+      assert(net._adjustWeights.called);
     });
   });
 });

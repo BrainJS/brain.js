@@ -5,11 +5,6 @@ import layerFromJSON from './utilities/layer-from-json';
 import * as praxis from './praxis';
 import flattenLayers from './utilities/flatten-layers';
 
-/**
- *
- * @param {object} options
- * @constructor
- */
 export default class FeedForward {
   static get trainDefaults() {
     return {
@@ -36,17 +31,82 @@ export default class FeedForward {
     };
   }
 
-  constructor(settings = {}) {
+  /**
+   *
+   * @param options
+   * @private
+   */
+  static _validateTrainingOptions(options) {
+    const validations = {
+      iterations: (val) => { return typeof val === 'number' && val > 0; },
+      errorThresh: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
+      log: (val) => { return typeof val === 'function' || typeof val === 'boolean'; },
+      logPeriod: (val) => { return typeof val === 'number' && val > 0; },
+      learningRate: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
+      momentum: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
+      callback: (val) => { return typeof val === 'function' || val === null },
+      callbackPeriod: (val) => { return typeof val === 'number' && val > 0; },
+      timeout: (val) => { return typeof val === 'number' && val > 0 }
+    };
+    Object.keys(FeedForward.trainDefaults).forEach(key => {
+      if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
+        throw new Error(`[${key}, ${options[key]}] is out of normal training range, your network will probably not train.`);
+      }
+    });
+  }
+
+  /**
+   *
+   * @param log
+   * if a method is passed in method is used
+   * if false passed in nothing is logged
+   * @returns error
+   */
+  _setLogMethod(log) {
+    if (typeof log === 'function'){
+      this.trainOpts.log = log;
+    } else if (log) {
+      this.trainOpts.log = console.log;
+    } else {
+      this.trainOpts.log = false;
+    }
+  }
+
+  /**
+   *
+   * @param opts
+   *    Supports all `trainDefaults` properties
+   *    also supports:
+   *       learningRate: (number),
+   *       momentum: (number),
+   *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
+   */
+  _updateTrainingOptions(opts) {
+    Object.keys(this.constructor.trainDefaults).forEach(opt => this.trainOpts[opt] = (opts.hasOwnProperty(opt)) ? opts[opt] : this.trainOpts[opt]);
+    this.constructor._validateTrainingOptions(this.trainOpts);
+    this._setLogMethod(opts.log || this.trainOpts.log);
+    this.activation = opts.activation || this.activation;
+  }
+
+  /**
+   *
+   * @param {object} options
+   * @constructor
+   */
+  constructor(options = {}) {
     this.inputLayer = null;
     this.hiddenLayers = null;
     this.outputLayer = null;
-    Object.assign(this, this.constructor.defaults, settings);
+    this.errorCheckInterval = 100;
+    Object.assign(this, this.constructor.defaults, options);
+    this.trainOpts = {};
+    this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
     this.layers = null;
     this._inputLayer = null;
     this._outputLayer = null;
   }
 
-  connectLayers() {
+  _connectLayers() {
     this.layers = [];
     const inputLayer = this.inputLayer(null, this.layers.length);
     this._inputLayer = inputLayer;
@@ -65,7 +125,7 @@ export default class FeedForward {
   }
 
   initialize() {
-    this.connectLayers();
+    this._connectLayers();
     flattenLayers(this.layers);
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i];
@@ -102,7 +162,121 @@ export default class FeedForward {
     return this.layers[this.layers.length - 1].weights;
   }
 
-  calculateDeltas(target) {
+  /**
+   *
+   * @param data
+   * @param options
+   * @returns {{error: number, iterations: number}}
+   */
+  train(data, options = {}) {
+    let status, endTime;
+    ({ data, status, endTime } = this._prepTraining(data, options));
+
+    while (this._trainingTick(data, status, endTime));
+    return status;
+  }
+
+  /**
+   *
+   * @param {object} data
+   * @param {object} status { iterations: number, error: number }
+   * @param endTime
+   */
+  _trainingTick(data, status, endTime) {
+    if (status.iterations >= this.trainOpts.iterations || status.error <= this.trainOpts.errorThresh || Date.now() >= endTime) {
+      return false;
+    }
+
+    status.iterations++;
+
+    if (this.trainOpts.log && (status.iterations % this.trainOpts.logPeriod === 0)) {
+      status.error = this._calculateTrainingError(data);
+      this.trainOpts.log(`iterations: ${status.iterations}, training error: ${status.error}`);
+    } else {
+      if (status.iterations % this.errorCheckInterval === 0) {
+        status.error = this._calculateTrainingError(data);
+      } else {
+        this._trainPatterns(data);
+      }
+    }
+
+    if (this.trainOpts.callback && (status.iterations % this.trainOpts.callbackPeriod === 0)) {
+      this.trainOpts.callback(Object.assign(status));
+    }
+    return true;
+  }
+
+  /**
+   *
+   * @param data
+   * @param options
+   * @protected
+   * @return { data, status, endTime }
+   */
+  _prepTraining(data, options) {
+    this._updateTrainingOptions(options);
+    data = this._formatData(data);
+    const endTime = Date.now() + this.trainOpts.timeout;
+
+    const status = {
+      error: 1,
+      iterations: 0
+    };
+
+    this.initialize();
+
+    return {
+      data,
+      status,
+      endTime
+    };
+  }
+
+  /**
+   *
+   * @param data
+   * @returns {Number} error
+   */
+  _calculateTrainingError(data) {
+    let sum = 0;
+    for (let i = 0; i < data.length; ++i) {
+      sum += this._trainPattern(data[i].input, data[i].output, true);
+    }
+    return sum / data.length;
+  }
+
+  /**
+   * @param data
+   * @private
+   */
+  _trainPatterns(data) {
+    for (let i = 0; i < data.length; ++i) {
+      this._trainPattern(data[i].input, data[i].output, false);
+    }
+  }
+
+  /**
+   *
+   * @param input
+   * @param target
+   */
+  _trainPattern(input, target, logErrorRate) {
+
+    // forward propagate
+    this.runInput(input);
+
+    // back propagate
+    this._calculateDeltas(target);
+    this._adjustWeights();
+
+    if (logErrorRate) {
+      return mse2d(this._outputLayer.errors.hasOwnProperty('toArray') ? this._outputLayer.errors.toArray() : this._outputLayer.errors);
+    } else {
+      return null
+    }
+  }
+
+  _calculateDeltas(target) {
     this._outputLayer.compare(target);
     for (let i = this.layers.length - 2; i > -1; i--) {
       const previousLayer = this.layers[i - 1];
@@ -113,95 +287,10 @@ export default class FeedForward {
 
   /**
    *
-   * @param data
-   * @param _options
-   * @returns {{error: number, iterations: number}}
    */
-  train(data, _options = {}) {
-    /* istanbul ignore next */
-    const options = Object.assign({}, this.constructor.trainDefaults, _options);
-    /* istanbul ignore next */
-    data = this.formatData(data);
-    /* istanbul ignore next */
-    let iterations = options.iterations;
-    /* istanbul ignore next */
-    let errorThresh = options.errorThresh;
-    /* istanbul ignore next */
-    let log = options.log === true ? console.log : options.log;
-    /* istanbul ignore next */
-    let logPeriod = options.logPeriod;
-    /* istanbul ignore next */
-    let learningRate = _options.learningRate || this.learningRate || options.learningRate;
-    /* istanbul ignore next */
-    let callback = options.callback;
-    /* istanbul ignore next */
-    let callbackPeriod = options.callbackPeriod;
-    /* istanbul ignore next */
-    if (!options.reinforce) {
-      /* istanbul ignore next */
-      this.initialize();
-    }
-    /* istanbul ignore next */
-    let error = 1;
-    /* istanbul ignore next */
-    let i;
-    /* istanbul ignore next */
-    for (i = 0; i < iterations && error > errorThresh; i++) {
-      let sum = 0;
-      for (let j = 0; j < data.length; j++) {
-        /* istanbul ignore next */
-        let err = this.trainPattern(data[j].input, data[j].output, learningRate);
-        /* istanbul ignore next */
-        sum += err;
-      }
-      /* istanbul ignore next */
-      error = sum / data.length;
-
-      /* istanbul ignore next */
-      if (log && (i % logPeriod === 0)) {
-        log('iterations:', i, 'training error:', error);
-      }
-      /* istanbul ignore next */
-      if (callback && (i % callbackPeriod === 0)) {
-        /* istanbul ignore next */
-        callback({ error: error, iterations: i });
-      }
-    }
-
-    /* istanbul ignore next */
-    return {
-      error: error,
-      iterations: i
-    };
-  }
-
-  /**
-   *
-   * @param input
-   * @param target
-   * @param [learningRate]
-   */
-  trainPattern(input, target, learningRate) {
-    learningRate = learningRate || this.learningRate;
-
-    // forward propagate
-    this.runInput(input);
-
-    // back propagate
-    this.calculateDeltas(target);
-    this.adjustWeights(learningRate);
-
-    let error = mse2d(this._outputLayer.errors.hasOwnProperty('toArray') ? this._outputLayer.errors.toArray() : this._outputLayer.errors);
-    return error;
-  }
-
-  /**
-   *
-   * @param learningRate
-   */
-  adjustWeights(learningRate) {
+  _adjustWeights() {
     for (let i = 0; i < this.layers.length; i++) {
-      this.layers[i].learn(this.layers[i-1], this.layers[i+1], learningRate);
+      this.layers[i].learn(this.layers[i-1], this.layers[i+1], this.trainOpts.learningRate);
     }
   }
 
@@ -210,15 +299,15 @@ export default class FeedForward {
    * @param data
    * @returns {*}
    */
-  formatData(data) {
-    if (data.constructor !== Array) { // turn stream datum into array
+  _formatData(data) {
+    if (!Array.isArray(data)) { // turn stream datum into array
       let tmp = [];
       tmp.push(data);
       data = tmp;
     }
     // turn sparse hash input into arrays with 0s as filler
     let datum = data[0].input;
-    if (datum.constructor !== Array && !(datum instanceof Float64Array)) {
+    if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
       if (!this.inputLookup) {
         this.inputLookup = lookup.buildLookup(data.map(value => value['input']));
       }
@@ -228,7 +317,7 @@ export default class FeedForward {
       }, this);
     }
 
-    if (data[0].output.constructor !== Array) {
+    if (!Array.isArray(data[0].output)) {
       if (!this.outputLookup) {
         this.outputLookup = lookup.buildLookup(data.map(value => value['output']));
       }
