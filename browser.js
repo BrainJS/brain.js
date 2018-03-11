@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.0.2
+ *   version: 1.1.2
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -668,7 +668,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       this.getMSE = this.gpu.createKernel(mse, {
         output: [1],
         constants: {
-          size: this.outputLayer
+          size: this.sizes[this.outputLayer]
         }
       });
     }
@@ -903,7 +903,6 @@ var NeuralNetwork = function () {
     /**
      *
      * @param options
-     * @param boolean
      * @private
      */
     value: function _validateTrainingOptions(options) {
@@ -1042,7 +1041,7 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param supported input: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+     * @param activation supported inputs: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
      */
 
   }, {
@@ -1220,12 +1219,12 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param options
+     * @param opts
      *    Supports all `trainDefaults` properties
      *    also supports:
      *       learningRate: (number),
      *       momentum: (number),
-     *       activation: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+     *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
      */
 
   }, {
@@ -1253,6 +1252,7 @@ var NeuralNetwork = function () {
       var _this3 = this;
 
       return Object.keys(NeuralNetwork.trainDefaults).reduce(function (opts, opt) {
+        if (opt === 'timeout' && _this3.trainOpts[opt] === Infinity) return opts;
         if (_this3.trainOpts[opt]) opts[opt] = _this3.trainOpts[opt];
         if (opt === 'log') opts.log = typeof opts.log === 'function';
         return opts;
@@ -1282,8 +1282,7 @@ var NeuralNetwork = function () {
     /**
      *
      * @param data
-     * @param learning Rate
-     * @returns error
+     * @returns number
      */
 
   }, {
@@ -1298,8 +1297,9 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param status { iterations: number, error: number}
-     * @param options
+     * @param {object} data
+     * @param {object} status { iterations: number, error: number }
+     * @param endTime
      */
 
   }, {
@@ -1327,7 +1327,7 @@ var NeuralNetwork = function () {
      * @param data
      * @param options
      * @private
-     * @return {{runTrainingTick: function, status: {error: number, iterations: number}}}
+     * @return {object}
      */
 
   }, {
@@ -1438,8 +1438,7 @@ var NeuralNetwork = function () {
       this.calculateDeltas(target);
       this._adjustWeights();
 
-      var error = (0, _mse2.default)(this.errors[this.outputLayer]);
-      return error;
+      return (0, _mse2.default)(this.errors[this.outputLayer]);
     }
 
     /**
@@ -1830,8 +1829,10 @@ var NeuralNetwork = function () {
           }
         }
       }
-      this._updateTrainingOptions(json.trainOpts);
-      this.setActivation();
+      if (json.hasOwnProperty('trainOpts')) {
+        this._updateTrainingOptions(json.trainOpts);
+      }
+      this.setActivation(this.activation || 'sigmoid');
       return this;
     }
 
@@ -4772,7 +4773,15 @@ var brain = {
   utilities: utilities
 };
 
-module.exports = brain;
+if (typeof window !== 'undefined') {
+  window.brain = brain;
+}
+if (typeof self !== 'undefined') {
+  self.brain = brain;
+}
+if (typeof module !== 'undefined') {
+  module.exports = brain;
+}
 
 },{"./dist/cross-validate":1,"./dist/likely":2,"./dist/lookup":3,"./dist/neural-network":5,"./dist/neural-network-gpu":4,"./dist/recurrent/gru":6,"./dist/recurrent/lstm":7,"./dist/recurrent/rnn":32,"./dist/train-stream":33,"./dist/utilities/data-formatter":34,"./dist/utilities/max":35,"./dist/utilities/mse":36,"./dist/utilities/ones":37,"./dist/utilities/random":39,"./dist/utilities/random-weight":38,"./dist/utilities/randos":40,"./dist/utilities/range":41,"./dist/utilities/to-array":42,"./dist/utilities/zeros":43}],45:[function(require,module,exports){
 (function (global, factory) {

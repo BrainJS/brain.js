@@ -60,7 +60,6 @@ var NeuralNetwork = function () {
     /**
      *
      * @param options
-     * @param boolean
      * @private
      */
     value: function _validateTrainingOptions(options) {
@@ -199,7 +198,7 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param supported input: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+     * @param activation supported inputs: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
      */
 
   }, {
@@ -377,12 +376,12 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param options
+     * @param opts
      *    Supports all `trainDefaults` properties
      *    also supports:
      *       learningRate: (number),
      *       momentum: (number),
-     *       activation: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+     *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
      */
 
   }, {
@@ -410,6 +409,7 @@ var NeuralNetwork = function () {
       var _this3 = this;
 
       return Object.keys(NeuralNetwork.trainDefaults).reduce(function (opts, opt) {
+        if (opt === 'timeout' && _this3.trainOpts[opt] === Infinity) return opts;
         if (_this3.trainOpts[opt]) opts[opt] = _this3.trainOpts[opt];
         if (opt === 'log') opts.log = typeof opts.log === 'function';
         return opts;
@@ -439,8 +439,7 @@ var NeuralNetwork = function () {
     /**
      *
      * @param data
-     * @param learning Rate
-     * @returns error
+     * @returns number
      */
 
   }, {
@@ -455,8 +454,9 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param status { iterations: number, error: number}
-     * @param options
+     * @param {object} data
+     * @param {object} status { iterations: number, error: number }
+     * @param endTime
      */
 
   }, {
@@ -484,7 +484,7 @@ var NeuralNetwork = function () {
      * @param data
      * @param options
      * @private
-     * @return {{runTrainingTick: function, status: {error: number, iterations: number}}}
+     * @return {object}
      */
 
   }, {
@@ -595,8 +595,7 @@ var NeuralNetwork = function () {
       this.calculateDeltas(target);
       this._adjustWeights();
 
-      var error = (0, _mse2.default)(this.errors[this.outputLayer]);
-      return error;
+      return (0, _mse2.default)(this.errors[this.outputLayer]);
     }
 
     /**
@@ -987,8 +986,10 @@ var NeuralNetwork = function () {
           }
         }
       }
-      this._updateTrainingOptions(json.trainOpts);
-      this.setActivation();
+      if (json.hasOwnProperty('trainOpts')) {
+        this._updateTrainingOptions(json.trainOpts);
+      }
+      this.setActivation(this.activation || 'sigmoid');
       return this;
     }
 
