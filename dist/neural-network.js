@@ -144,7 +144,7 @@ var NeuralNetwork = function () {
     this.deltas = null;
     this.changes = null; // for momentum
     this.errors = null;
-
+    this.errorCheckInterval = 1;
     if (!this.constructor.prototype.hasOwnProperty('runInput')) {
       this.runInput = null;
     }
@@ -439,7 +439,7 @@ var NeuralNetwork = function () {
     /**
      *
      * @param data
-     * @returns number
+     * @returns {Number} error
      */
 
   }, {
@@ -447,9 +447,22 @@ var NeuralNetwork = function () {
     value: function _calculateTrainingError(data) {
       var sum = 0;
       for (var i = 0; i < data.length; ++i) {
-        sum += this._trainPattern(data[i].input, data[i].output);
+        sum += this._trainPattern(data[i].input, data[i].output, true);
       }
       return sum / data.length;
+    }
+
+    /**
+     * @param data
+     * @private
+     */
+
+  }, {
+    key: '_trainPatterns',
+    value: function _trainPatterns(data) {
+      for (var i = 0; i < data.length; ++i) {
+        this._trainPattern(data[i].input, data[i].output, false);
+      }
     }
 
     /**
@@ -467,10 +480,16 @@ var NeuralNetwork = function () {
       }
 
       status.iterations++;
-      status.error = this._calculateTrainingError(data);
 
       if (this.trainOpts.log && status.iterations % this.trainOpts.logPeriod === 0) {
+        status.error = this._calculateTrainingError(data);
         this.trainOpts.log('iterations: ' + status.iterations + ', training error: ' + status.error);
+      } else {
+        if (status.iterations % this.errorCheckInterval === 0) {
+          status.error = this._calculateTrainingError(data);
+        } else {
+          this._trainPatterns(data);
+        }
       }
 
       if (this.trainOpts.callback && status.iterations % this.trainOpts.callbackPeriod === 0) {
@@ -483,8 +502,8 @@ var NeuralNetwork = function () {
      *
      * @param data
      * @param options
-     * @private
-     * @return {object}
+     * @protected
+     * @return { data, status, endTime }
      */
 
   }, {
@@ -586,7 +605,7 @@ var NeuralNetwork = function () {
 
   }, {
     key: '_trainPattern',
-    value: function _trainPattern(input, target) {
+    value: function _trainPattern(input, target, logErrorRate) {
 
       // forward propagate
       this.runInput(input);
@@ -595,7 +614,11 @@ var NeuralNetwork = function () {
       this.calculateDeltas(target);
       this._adjustWeights();
 
-      return (0, _mse2.default)(this.errors[this.outputLayer]);
+      if (logErrorRate) {
+        return (0, _mse2.default)(this.errors[this.outputLayer]);
+      } else {
+        return null;
+      }
     }
 
     /**
