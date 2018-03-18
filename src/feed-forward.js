@@ -22,7 +22,6 @@ export default class FeedForward {
   static get defaults() {
     return {
       learningRate: 0.3,
-      momentum: 0.1,
       binaryThresh: 0.5,
       hiddenLayers: null,
       inputLayer: null,
@@ -43,7 +42,6 @@ export default class FeedForward {
       log: (val) => { return typeof val === 'function' || typeof val === 'boolean'; },
       logPeriod: (val) => { return typeof val === 'number' && val > 0; },
       learningRate: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
-      momentum: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
       callback: (val) => { return typeof val === 'function' || val === null },
       callbackPeriod: (val) => { return typeof val === 'number' && val > 0; },
       timeout: (val) => { return typeof val === 'number' && val > 0 }
@@ -77,17 +75,21 @@ export default class FeedForward {
    * @param opts
    *    Supports all `trainDefaults` properties
    *    also supports:
-   *       learningRate: (number),
-   *       momentum: (number),
-   *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
+   *       learningRate: (number)
    */
   _updateTrainingOptions(opts) {
     Object.keys(this.constructor.trainDefaults).forEach(opt => this.trainOpts[opt] = (opts.hasOwnProperty(opt)) ? opts[opt] : this.trainOpts[opt]);
     this.constructor._validateTrainingOptions(this.trainOpts);
     this._setLogMethod(opts.log || this.trainOpts.log);
-    this.activation = opts.activation || this.activation;
   }
 
+  static get structure() {
+    return {
+      layers: null,
+      _inputLayer: null,
+      _outputLayer: null
+    };
+  }
   /**
    *
    * @param {object} options
@@ -101,34 +103,38 @@ export default class FeedForward {
     Object.assign(this, this.constructor.defaults, options);
     this.trainOpts = {};
     this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
-    this.layers = null;
-    this._inputLayer = null;
-    this._outputLayer = null;
+    Object.assign(this, this.constructor.structure);
   }
 
   _connectLayers() {
-    this.layers = [];
-    const inputLayer = this.inputLayer(null, this.layers.length);
-    this._inputLayer = inputLayer;
-    this.layers.push(inputLayer);
-    this.connectHiddenLayers();
-    this._outputLayer = this.outputLayer(this.layers[this.layers.length - 1], this.layers.length);
-    this.layers.push(this._outputLayer);
+    const layers = [];
+    this._inputLayer = this.inputLayer();
+    const hiddenLayers = this._connectHiddenLayers(this._inputLayer);
+    this._outputLayer = this.outputLayer(hiddenLayers[hiddenLayers.length - 1], hiddenLayers.length);
+    layers.push(this._inputLayer);
+    layers.push.apply(layers, hiddenLayers);
+    layers.push(this._outputLayer);
+    this.layers = flattenLayers(layers);
   }
 
-  connectHiddenLayers() {
+  _connectHiddenLayers(previousLayer) {
+    const hiddenLayers = [];
     for (let i = 0; i < this.hiddenLayers.length; i++) {
-      const previousLayer = this.layers[this.layers.length - 1];
-      const hiddenLayer = this.hiddenLayers[i](previousLayer, this.layers.length);
-      this.layers.push(hiddenLayer);
+      const hiddenLayer = this.hiddenLayers[i](previousLayer, i);
+      hiddenLayers.push(hiddenLayer);
+      previousLayer = hiddenLayer;
     }
+    return hiddenLayers;
   }
 
   initialize() {
     this._connectLayers();
-    flattenLayers(this.layers);
-    for (let i = 0; i < this.layers.length; i++) {
-      const layer = this.layers[i];
+    this.initializeLayers(this.layers);
+  }
+
+  initializeLayers(layers) {
+    for (let i = 0; i < layers.length; i++) {
+      const layer = layers[i];
       layer.validate();
       layer.setupKernels();
       if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
@@ -136,6 +142,7 @@ export default class FeedForward {
       }
     }
   }
+
   /**
    *
    * @param input
@@ -259,6 +266,7 @@ export default class FeedForward {
    *
    * @param input
    * @param target
+   * @param {Boolean} logErrorRate
    */
   _trainPattern(input, target, logErrorRate) {
 

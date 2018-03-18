@@ -1,174 +1,175 @@
 import RecurrentInput from './layer/recurrent-input';
 import RecurrentZeros from './layer/recurrent-zeros';
 import flattenLayers from './utilities/flatten-layers';
-import * as praxis from "./praxis";
-import mse2d from "./utilities/mse-2d";
+import flattenLayersExcluding from './utilities/flatten-layers-excluding';
+import mse2d from './utilities/mse-2d';
+import FeedForward from './feed-forward';
 
-export default class Recurrent {
-  static get defaults() {
+export default class Recurrent extends FeedForward {
+  static get structure() {
     return {
-      learningRate: 0.3,
-      momentum: 0.1,
-      binaryThresh: 0.5,
-      hiddenLayers: null,
-      inputLayer: null,
-      outputLayer: null,
-      praxis: (layer) => praxis.momentumRootMeanSquaredPropagation(layer)
+      /**
+       *
+       * _inputLayers are a 1 dimensional array of input layers defined once
+       * @type Layer[]
+       * @private
+       */
+      _inputLayers: null,
+
+      /**
+       * _hiddenLayers are a 2 dimensional array of hidden layers defined for each recursion
+       * @type Layer[][]
+       * @private
+       */
+      _hiddenLayers: null,
+
+      /**
+       * _outputLayers are a 1 dimensional array of output layers defined once
+       * @type Layer[]
+       * @private
+       */
+      _outputLayers: null,
+      _praxises: null
     };
   }
-  constructor(settings) {
-    this.layers = null;
-    this._inputLayers = null;
-    this._hiddenLayers = null;
-    this._outputLayers = null;
-    this._praxises = null;
 
-    Object.assign(this, this.constructor.defaults, settings);
+  _connectLayers() {
+    const initialLayers = [];
+    const inputLayer = this.inputLayer();
+    const hiddenLayers = this._connectHiddenLayers(inputLayer);
+    const outputLayer = this.outputLayer(
+      hiddenLayers[hiddenLayers.length - 1],
+      hiddenLayers.length
+    );
+    initialLayers.push(inputLayer);
+    initialLayers.push.apply(initialLayers, hiddenLayers);
+    initialLayers.push(outputLayer);
+    const flattenedLayers = flattenLayers(initialLayers);
+    this._inputLayers = flattenedLayers.slice(0, flattenedLayers.indexOf(inputLayer) + 1);
+    this._hiddenLayers = [flattenedLayers.slice(flattenedLayers.indexOf(inputLayer) + 1, flattenedLayers.indexOf(hiddenLayers[hiddenLayers.length - 1]) + 1)];
+    this._outputLayers = flattenedLayers.slice(flattenedLayers.indexOf(hiddenLayers[hiddenLayers.length - 1]) + 1);
   }
 
-  connectLayers() {
-    const layers = [];
-    const inputLayer = this.inputLayer(null, layers.length);
-    this._inputLayers.push(inputLayer);
-    layers.push(inputLayer);
-    this.connectHiddenLayers(layers, inputLayer);
-    const outputLayer = this.outputLayer(layers[layers.length - 1], layers.length);
-    this._outputLayers.push(outputLayer);
-    layers.push(outputLayer);
-    return layers;
-  }
-
-  connectLayersDeep() {
-    const layers = [];
-    const inputLayer = this.inputLayer(null, layers.length);
-    this._inputLayers.push(inputLayer);
-    layers.push(inputLayer);
-    this.connectHiddenLayersDeep(layers, inputLayer);
-    const outputLayer = this.outputLayer(layers[layers.length - 1], layers.length);
-    this._outputLayers.push(outputLayer);
-    layers.push(outputLayer);
-    return layers;
-  }
-
-  connectHiddenLayers(layers, previousLayer) {
+  _connectHiddenLayers(previousLayer) {
     const hiddenLayers = [];
     for (let i = 0; i < this.hiddenLayers.length; i++) {
       const recurrentInput = new RecurrentZeros();
-      const hiddenLayer = this.hiddenLayers[i](previousLayer, recurrentInput, layers.length);
+      const hiddenLayer = this.hiddenLayers[i](previousLayer, recurrentInput, i);
       previousLayer = hiddenLayer;
       const { width, height } = hiddenLayer;
       recurrentInput.setDimensions(width, height);
-      layers.push(hiddenLayer);
       hiddenLayers.push(hiddenLayer);
     }
-    this._hiddenLayers = [hiddenLayers];
+    return hiddenLayers;
   }
 
-  connectHiddenLayersDeep(layers, previousLayer) {
+  _connectHiddenLayersDeep(previousLayer) {
     const hiddenLayers = [];
     const previousHiddenLayers = this._hiddenLayers[this._hiddenLayers.length - 1];
     for (let i = 0; i < this.hiddenLayers.length; i++) {
       const recurrentInput = new RecurrentInput();
-      const hiddenLayer = this.hiddenLayers[i](previousLayer, recurrentInput, layers.length);
+      const hiddenLayer = this.hiddenLayers[i](
+        previousLayer,
+        recurrentInput,
+        i
+      );
       previousLayer = hiddenLayer;
       const { width, height } = hiddenLayer;
+      hiddenLayers.push(hiddenLayer);
       recurrentInput.setDimensions(width, height);
       recurrentInput.setRecurrentInput(previousHiddenLayers[i]);
-      layers.push(hiddenLayer);
-      hiddenLayers.push(hiddenLayer);
+
     }
-    this._hiddenLayers.push(hiddenLayers);
+    const flattenedHiddenLayers = flattenLayersExcluding(hiddenLayers, this._inputLayers[this._inputLayers.length - 1], previousHiddenLayers[previousHiddenLayers.length - 1]);
+    this._hiddenLayers.push(flattenedHiddenLayers);
+    return flattenedHiddenLayers;
   }
 
   initialize() {
     this._praxises = [];
-    this._inputLayers = [];
-    this._hiddenLayers = [];
-    this._outputLayers = [];
-    this.layers = [];
-    const layers = flattenLayers(this.connectLayers());
-    for (let i = 0; i < layers.length; i++) {
-      const layer = layers[i];
-      layer.validate();
-      layer.setupKernels();
-      if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
-        layer.praxis = this.praxis(layer);
-      }
-      this._praxises.push(layer.praxis);
-    }
-    this.layers.push(layers);
-    return layers;
+    this._connectLayers();
+    this.initializeLayers(this._inputLayers);
+    this.initializeLayers(this._hiddenLayers[0]);
+    this.initializeLayers(this._outputLayers);
   }
 
   initializeDeep() {
-    const layers = flattenLayers(this.connectLayersDeep());
-    for (let i = 0; i < layers.length; i++) {
-      const layer = layers[i];
-      layer.reuseKernels(this.layers[0][i]);
-      layer.praxis = this.layers[0][i].praxis;
+    const lastHiddenLayers = this._hiddenLayers[this._hiddenLayers.length - 1];
+    const hiddenLayers = this._connectHiddenLayersDeep(lastHiddenLayers[lastHiddenLayers.length - 1]);
+    for (let i = 0; i < hiddenLayers.length; i++) {
+      const hiddenLayer = hiddenLayers[i];
+      hiddenLayer.reuseKernels(this._hiddenLayers[0][i]);
+      hiddenLayer.praxis = this._hiddenLayers[0][i].praxis;
     }
-    this.layers.push(layers);
-    return layers;
-  }
-
-  train(input) {
-    while (input.length < this.layers.length) {
-      this.initializeDeep();
-    }
-    const initialLayers = this.initialize();
-    this.layers = [initialLayers];
-
-    this.layers.push(this.initializeDeep());
   }
 
   runInput(input) {
     for (let x = 0; x < input.length; x++) {
-      const layers = this.layers[x];
-      layers[0].predict([input[x]]);
-      for (let i = 1; i < layers.length; i++) {
-        const previousLayer = layers[i - 1];
-        const nextLayer = layers[i + 1];
-        layers[i].predict(previousLayer, nextLayer);
+      this._inputLayers[0].predict(input[x]);
+      for (let i = 1; i < this._inputLayers.length; i++) {
+        this._inputLayers[i].predict();
+      }
+      for (let i = 0; i < this._hiddenLayers[x].length; i++) {
+        this._hiddenLayers[x][i].predict();
+      }
+      for (let i = 0; i < this._outputLayers.length; i++) {
+        this._outputLayers[i].predict();
       }
     }
-
-    const lastLayers = this.layers[this.layers.length - 1];
-    return lastLayers[lastLayers.length - 1].weights;
+    return this._outputLayers[this._outputLayers.length - 1].weights;
   }
 
-  calculateDeltas(target) {
+  _calculateDeltas(target, offset) {
     for (let x = target.length - 1; x >= 0; x--) {
-      const layers = this.layers[x];
-      layers[layers.length - 1].compare([target[x]]);
-      for (let i = layers.length - 2; i > -1; i--) {
-        const previousLayer = layers[i - 1];
-        const nextLayer = layers[i + 1];
-        layers[i].compare(previousLayer, nextLayer);
+      this._outputLayers[this._outputLayers.length - 1].compare([target[x]]);
+      for (let i = this._outputLayers.length - 2; i >= 0; i--) {
+        console.log(i, x, [target[x]]);
+        this._outputLayers[i].compare();
+      }
+      for (let i = this._hiddenLayers[0].length - 1; i >= 0; i--) {
+        this._hiddenLayers[offset + x][i].compare();
+      }
+      for (let i = this._inputLayers.length - 1; i >= 0; i--) {
+        this._inputLayers[i].compare();
       }
     }
   }
 
-  adjustWeights(learningRate) {
-    for (let x = 0; x < this.layers.length; x++) {
-      const layers = this.layers[x];
-      for (let i = 0; i < layers.length; i++) {
-        layers[i].learn(layers[i - 1], layers[i + 1], learningRate);
-      }
+  _adjustWeights() {
+    for (let i = 1; i < this._inputLayers.length; i++) {
+      this._inputLayers[i].learn();
+    }
+    for (let i = 0; i < this._hiddenLayers[0].length; i++) {
+      this._hiddenLayers[0][i].learn();
+    }
+    for (let i = 0; i < this._outputLayers.length; i++) {
+      this._outputLayers[i].learn();
     }
   }
 
-  trainPattern(input, learningRate) {
-    learningRate = learningRate || this.learningRate;
+  /**
+   *
+   * @param input
+   * @param target
+   * @param {Boolean} logErrorRate
+   */
+  trainPattern(input, target, logErrorRate) {
 
     // forward propagate
-    this.runInput(input);
+    this.runInput([input]);
 
     // back propagate
-    this.calculateDeltas(input);
-    this.adjustWeights(learningRate);
+    console.log('target');
+    this._calculateDeltas(target, input.length - 1);
+    console.log('input');
+    this._calculateDeltas(input, 0);
+    this._adjustWeights();
 
-    const outputLayer = this._outputLayers[this._outputLayers.length - 1];
-    let error = mse2d(outputLayer.errors.hasOwnProperty('toArray') ? outputLayer.errors.toArray() : outputLayer.errors);
-    return error;
+    if (logErrorRate) {
+      const outputLayer = this._outputLayers[this._outputLayers.length - 1];
+      return mse2d(outputLayer.errors.hasOwnProperty('toArray') ? outputLayer.errors.toArray() : outputLayer.errors);
+    } else {
+      return null
+    }
   }
 }

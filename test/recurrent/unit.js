@@ -41,9 +41,9 @@ describe('Recurrent Class: Unit', () => {
   describe('.runInput()', () => {
     it('forward propagates', () => {
       const net = new Recurrent({
-        inputLayer: () => input({ width: 2 }),
+        inputLayer: () => input({ width: 1 }),
         hiddenLayers: [
-          (input, recurrentInput) => multiply(multiply(random({ width: 2, height: input.width }), input), recurrentInput),
+          (input, recurrentInput) => multiply(multiply(random({ width: 1, height: input.width }), input), recurrentInput),
         ],
         outputLayer: input => output({ width: 1, height: input.width }, input)
       });
@@ -51,7 +51,9 @@ describe('Recurrent Class: Unit', () => {
       net.initialize();
       net.initializeDeep();
       net.runInput([0, 1]);
-      assert.equal(net.layers.length, 8);
+      assert.equal(net.layers.length, 2);
+      assert.equal(net.layers[0].length, 8);
+      assert.equal(net.layers[1].length, 8);
     });
   });
   describe('.calculateDeltas()', () => {
@@ -78,7 +80,7 @@ describe('Recurrent Class: Unit', () => {
       assert(net.layers[0][6].deltas.every(row => row.every(delta => delta === 0)));
       assert(net.layers[0][7].deltas.every(row => row.every(delta => delta === 0)));
 
-      net.calculateDeltas([1, 1, 1]);
+      net._calculateDeltas([1, 1, 1]);
 
       assert(net.layers[0][0].deltas.every(row => row.some(delta => delta !== 0)));
       assert(net.layers[0][1].deltas.every(row => row.some(delta => delta !== 0)));
@@ -132,7 +134,7 @@ describe('Recurrent Class: Unit', () => {
       assert(net.layers[0][6].deltas.every(row => row.every(delta => delta === 0)));
       assert(net.layers[0][7].deltas.every(row => row.every(delta => delta === 0)));
 
-      net.calculateDeltas([1, 1, 1]);
+      net._calculateDeltas([1, 1, 1]);
 
       assert(net.layers[0][0].deltas.every(row => row.some(delta => delta !== 0)));
       assert(net.layers[0][1].deltas.every(row => row.some(delta => delta !== 0)));
@@ -161,7 +163,7 @@ describe('Recurrent Class: Unit', () => {
       assert(net.layers[2][6].deltas.every(row => row.some(delta => delta !== 0)));
       assert(net.layers[2][7].deltas.every(row => row.some(delta => delta !== 0)));
 
-      net.adjustWeights();
+      net._adjustWeights();
     });
   });
 });
