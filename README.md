@@ -150,7 +150,7 @@ The learning rate is a parameter that influences how quickly the network trains.
 
 The momentum is similar to learning rate, expecting a value from `0` to `1` as well but it is multiplied against the next level's change value.  The default value is `0.1`
 
-Any of these training options can be passed into the constructor or passed into the `updateTrainingOptions(opts)` method and they will be saved on the network and used any time you trian.  If you save your network to json, these training options are saved and restored as well (except for callback and log, callback will be forgoten and log will be restored using console.log).
+Any of these training options can be passed into the constructor or passed into the `updateTrainingOptions(opts)` method and they will be saved on the network and used any time you train.  If you save your network to json, these training options are saved and restored as well (except for callback and log, callback will be forgotten and log will be restored using console.log).
 
 There is a boolean property called `invalidTrainOptsShouldThrow` that by default is set to true.  While true if you enter a training option that is outside the normal range an error will be thrown with a message about the option you sent.  When set to false no error is sent but a message is still sent to `console.warn` with the information.
 
