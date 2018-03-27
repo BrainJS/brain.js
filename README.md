@@ -148,14 +148,14 @@ By default training won't let you know how its doing until the end, but set `log
 
 The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data.(_Overfitting_) The default learning rate is `0.3`.
 
-The momentum is similar to learning rate, expecting a value from `0` to `1` as well but it is multiplied against the next level's change value.  The default value is `0.1`
+The momentum is similar to learning rate, expecting a value from `0` to `1` as well but it is multiplied against the next level's change value. The default value is `0.1`
 
-Any of these training options can be passed into the constructor or passed into the `updateTrainingOptions(opts)` method and they will be saved on the network and used any time you trian.  If you save your network to json, these training options are saved and restored as well (except for callback and log, callback will be forgoten and log will be restored using console.log).
+Any of these training options can be passed into the constructor or passed into the `updateTrainingOptions(opts)` method and they will be saved on the network and used any time you train. If you save your network to json, these training options are saved and restored as well (except for callback and log, callback will be forgotten and log will be restored using console.log).
 
-There is a boolean property called `invalidTrainOptsShouldThrow` that by default is set to true.  While true if you enter a training option that is outside the normal range an error will be thrown with a message about the option you sent.  When set to false no error is sent but a message is still sent to `console.warn` with the information.
+There is a boolean property called `invalidTrainOptsShouldThrow` that by default is set to true. While true if you enter a training option that is outside the normal range an error will be thrown with a message about the option you sent. When set to false no error is sent but a message is still sent to `console.warn` with the information.
 
 ### Async Training
-`trainAsync()` takes the same arguments as train (data and options).  Instead of returning the results object from training it returns a promise that when resolved will return the training results object.
+`trainAsync()` takes the same arguments as train (data and options). Instead of returning the results object from training it returns a promise that when resolved will return the training results object.
 
 ```javascript
   let net = new brain.NeuralNetwork();
@@ -287,7 +287,7 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 * [`brain.recurrent.GRU`](src/recurrent/gru.js) - [Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
 
 ### Why different Neural Network Types?
-Different neural nets do different things well.  For example:
+Different neural nets do different things well. For example:
 * A Feedforward Neural Network can classify simple things very well, but it has no memory of previous actions and has infinite variation of results.
 * A Recurrent Neural Network _remembers_, and has a finite set of results.
 
