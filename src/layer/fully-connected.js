@@ -10,11 +10,13 @@ export default class FullyConnected extends Base {
       throw new Error('depth of 1 only supported at this time');
     }
 
-    this.width = inputLayer.width * inputLayer.height * inputLayer.depth;
     this.inputLayer = inputLayer;
     this.learnInputsKernel = null;
     this.learnFiltersKernel = null;
     this.learnBiasKernel = null;
+
+    const { width, height, depth } = inputLayer;
+    this.width = width * height * depth;
   }
 
   setupKernels() {

@@ -5,9 +5,12 @@ import zeros2D from '../utilities/zeros-2d';
 
 export default class Sigmoid extends Base {
   constructor(inputLayer) {
-    const { width, height } = inputLayer;
-    super({ width, height });
+    super();
     this.inputLayer = inputLayer;
+
+    const { width, height } = inputLayer;
+    this.width = width;
+    this.height = height;
     this.weights = zeros2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
   }

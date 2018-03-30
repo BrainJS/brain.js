@@ -4,6 +4,7 @@ import mse2d from './utilities/mse-2d';
 import layerFromJSON from './utilities/layer-from-json';
 import * as praxis from './praxis';
 import flattenLayers from './utilities/flatten-layers';
+import RecurrentInput from "./layer/recurrent-input";
 
 export default class FeedForward {
   static get trainDefaults() {

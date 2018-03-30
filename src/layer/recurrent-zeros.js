@@ -10,4 +10,5 @@ export default class RecurrentZeros extends Base {
   }
   predict() {}
   compare() {}
+  validate() {}
 }

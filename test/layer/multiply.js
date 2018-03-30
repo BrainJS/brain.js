@@ -76,7 +76,7 @@ describe('Multiply Layer', () => {
     });
   });
   describe('.compareFromY (back propagation)', () => {
-    it('can multiply a simple matrix', () => {
+    it('can multiply a simple matrix 2x2 * 2x2 = 2x2', () => {
       const m1 = [
         [3, 3],
         [3, 3]
@@ -97,7 +97,7 @@ describe('Multiply Layer', () => {
       })(deltas, m1, m2);
       assert.deepEqual(result, [[21, 21], [21, 21]]);
     });
-    it('can compare a simple matrix', () => {
+    it('can compare a simple matrix 3x1 * 2x1 = 3x2', () => {
       const deltas = [
         [ 1 ],
         [ 2 ],
@@ -119,6 +119,26 @@ describe('Multiply Layer', () => {
         }
       })(deltas, inputDeltas, inputWeights);
       assert.deepEqual(result, [ [ 23], [ 30 ] ]);
+    });
+    it.only('can compare a simple matrix 3x1 * 1x3 = 3x1', () => {
+      const deltas = [
+        [1, 2, 3]
+      ];
+      const inputDeltas = [
+        [1],
+        [2],
+        [3]
+      ];
+      const inputWeights = [
+        [1, 2, 3]
+      ];
+      const result = gpuMock(compareFromY, {
+        output: [1, 3],
+        constants: {
+          size: 1
+        }
+      })(deltas, inputDeltas, inputWeights);
+      assert.deepEqual(result, [[2], [4], [6]]);
     });
   });
   describe('.validate', () => {

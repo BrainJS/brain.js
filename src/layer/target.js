@@ -7,22 +7,13 @@ export default class Target extends Base {
     super(settings);
     this.compareKernelOutput = null;
     this.inputLayer = inputLayer;
+
     // TODO: properly handle dimensions
     this.width = inputLayer.width;
     this.height = inputLayer.height;
     this.weights = zeros2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
     this.errors = zeros2D(this.width, this.height);
-  }
-
-  validate() {
-    super.validate();
-    if (this.width !== this.inputLayer.width) {
-      throw new Error(`Layer width mismatch of ${this.inputLayer1.width} and ${this.inputLayer2.width}`);
-    }
-    if (this.height !== this.inputLayer.height) {
-      throw new Error(`Layer width mismatch of ${this.inputLayer1.height} and ${this.inputLayer2.height}`);
-    }
   }
 
   setupKernels() {

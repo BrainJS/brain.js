@@ -1,6 +1,6 @@
 import Base from './base';
 import makeKernel from '../utilities/make-kernel';
-import { setPadding, setStride } from "../utilities/layer-setup"
+import { setPadding, setStride } from '../utilities/layer-setup';
 export default class Pool extends Base {
   static get defaults() {
     return {

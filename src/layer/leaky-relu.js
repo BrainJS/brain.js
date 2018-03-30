@@ -5,10 +5,11 @@ import { activate, measure } from '../activation/leaky-relu';
 export default class LeakyRelu extends Base {
   constructor(inputLayer) {
     super();
-    this.width = inputLayer.width;
-    this.height = inputLayer.height;
-    this.depth = inputLayer.depth;
     this.inputLayer = inputLayer;
+    const { width, height, depth } = inputLayer;
+    this.width = width;
+    this.height = height;
+    this.depth = depth;
   }
   setupKernels() {
     this.predictKernel = makeKernel(predict, {

@@ -56,8 +56,6 @@ export default class Recurrent extends FeedForward {
       const recurrentInput = new RecurrentZeros();
       const hiddenLayer = this.hiddenLayers[i](previousLayer, recurrentInput, i);
       previousLayer = hiddenLayer;
-      const { width, height } = hiddenLayer;
-      recurrentInput.setDimensions(width, height);
       hiddenLayers.push(hiddenLayer);
     }
     return hiddenLayers;
@@ -74,10 +72,9 @@ export default class Recurrent extends FeedForward {
         i
       );
       previousLayer = hiddenLayer;
-      const { width, height } = hiddenLayer;
       hiddenLayers.push(hiddenLayer);
-      recurrentInput.setDimensions(width, height);
       recurrentInput.setRecurrentInput(previousHiddenLayers[i]);
+      recurrentInput.validate();
 
     }
     const flattenedHiddenLayers = flattenLayersExcluding(hiddenLayers, this._inputLayers[this._inputLayers.length - 1], previousHiddenLayers[previousHiddenLayers.length - 1]);
@@ -91,21 +88,26 @@ export default class Recurrent extends FeedForward {
     this.initializeLayers(this._inputLayers);
     this.initializeLayers(this._hiddenLayers[0]);
     this.initializeLayers(this._outputLayers);
+
+    this._hiddenLayers[0].forEach((layer, i) => {
+      if (layer.hasOwnProperty('compareKernel2')) {
+        layer.compareKernel2.i = i;
+      }
+    });
   }
 
   initializeDeep() {
-    const lastHiddenLayers = this._hiddenLayers[this._hiddenLayers.length - 1];
-    const hiddenLayers = this._connectHiddenLayersDeep(lastHiddenLayers[lastHiddenLayers.length - 1]);
+    const input = this._inputLayers[this._inputLayers.length - 1];
+    const hiddenLayers = this._connectHiddenLayersDeep(input);
     for (let i = 0; i < hiddenLayers.length; i++) {
       const hiddenLayer = hiddenLayers[i];
       hiddenLayer.reuseKernels(this._hiddenLayers[0][i]);
-      hiddenLayer.praxis = this._hiddenLayers[0][i].praxis;
     }
   }
 
   runInput(input) {
     for (let x = 0; x < input.length; x++) {
-      this._inputLayers[0].predict(input[x]);
+      this._inputLayers[0].predict([input[x]]);
       for (let i = 1; i < this._inputLayers.length; i++) {
         this._inputLayers[i].predict();
       }
@@ -122,14 +124,17 @@ export default class Recurrent extends FeedForward {
   _calculateDeltas(target, offset) {
     for (let x = target.length - 1; x >= 0; x--) {
       this._outputLayers[this._outputLayers.length - 1].compare([target[x]]);
+      console.log('output', this._outputLayers.length - 1);
       for (let i = this._outputLayers.length - 2; i >= 0; i--) {
-        console.log(i, x, [target[x]]);
+        console.log('output', i);
         this._outputLayers[i].compare();
       }
       for (let i = this._hiddenLayers[0].length - 1; i >= 0; i--) {
+        console.log('hidden', offset + x, i);
         this._hiddenLayers[offset + x][i].compare();
       }
       for (let i = this._inputLayers.length - 1; i >= 0; i--) {
+        console.log('input', i);
         this._inputLayers[i].compare();
       }
     }
@@ -156,12 +161,10 @@ export default class Recurrent extends FeedForward {
   trainPattern(input, target, logErrorRate) {
 
     // forward propagate
-    this.runInput([input]);
+    this.runInput(input);
 
     // back propagate
-    console.log('target');
     this._calculateDeltas(target, input.length - 1);
-    console.log('input');
     this._calculateDeltas(input, 0);
     this._adjustWeights();
 

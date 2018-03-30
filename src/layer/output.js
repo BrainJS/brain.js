@@ -1,6 +1,7 @@
 import { multiply, random, target } from './index';
 export default (settings, inputLayer) => {
-  const outputGate = random({ width: inputLayer.height, height: 1 });
+  const { width, height } = settings;
+  const outputGate = random({ width: height, width: height });
   const outputGateConnector = multiply(
     outputGate,
     inputLayer

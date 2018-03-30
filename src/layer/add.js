@@ -5,10 +5,10 @@ import zeros2D from '../utilities/zeros-2d';
 export default class Add extends Base {
   constructor(inputLayer1, inputLayer2) {
     super();
-    this.width = inputLayer1.width;
-    this.height = inputLayer1.height;
     this.inputLayer1 = inputLayer1;
     this.inputLayer2 = inputLayer2;
+    this.width = this.inputLayer1.width;
+    this.height = this.inputLayer1.height;
     this.weights = zeros2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
   }

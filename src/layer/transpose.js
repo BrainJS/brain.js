@@ -4,9 +4,13 @@ import makeKernel from '../utilities/make-kernel';
 export default class Transpose extends Base {
   constructor(inputLayer) {
     super();
-    this.width = inputLayer.height;
-    this.height = inputLayer.width;
     this.inputLayer = inputLayer;
+  }
+
+  validate() {
+    super.validate();
+    this.width = this.inputLayer.height;
+    this.height = this.inputLayer.width;
   }
 
   setupKernels() {

@@ -5,10 +5,12 @@ import { tanh, tanhDerivative } from '../activation/tanh';
 export default class Tanh extends Base {
   constructor(inputLayer) {
     super();
-    this.width = inputLayer.width;
-    this.height = inputLayer.height;
-    this.depth = inputLayer.depth;
     this.inputLayer = inputLayer;
+
+    const { width, height, depth } = this.inputLayer;
+    this.width = width;
+    this.height = height;
+    this.depth = depth;
   }
 
   setupKernels() {

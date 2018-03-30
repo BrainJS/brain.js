@@ -1,17 +1,17 @@
 import makeKernel from '../utilities/make-kernel';
 import Base from './base';
-import zeros2D from "../utilities/zeros-2d";
-import randos2D from "../utilities/randos-2d";
+import zeros2D from '../utilities/zeros-2d';
 
 export default class Multiply extends Base {
   constructor(inputLayer1, inputLayer2) {
     super();
     this.inputLayer1 = inputLayer1;
     this.inputLayer2 = inputLayer2;
-    this.width = inputLayer2.width;
-    this.height = inputLayer1.height;
     this.compareKernel1 = null;
     this.compareKernel2 = null;
+
+    this.width = inputLayer2.width;
+    this.height = inputLayer1.height;
     this.weights = zeros2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
   }
@@ -42,6 +42,7 @@ export default class Multiply extends Base {
         size: this.inputLayer1.height
       }
     });
+    this.compareKernel2.myName = this.inputLayer2.constructor.name;
   }
   reuseKernels(layer) {
     super.reuseKernels(layer);
@@ -56,8 +57,8 @@ export default class Multiply extends Base {
   compare() {
     const newDeltas1 = this.compareKernel1(this.deltas, this.inputLayer1.deltas, this.inputLayer2.weights);
     const newDeltas2 = this.compareKernel2(this.deltas, this.inputLayer2.deltas, this.inputLayer1.weights);
-    this.inputLayer1.deltas = newDeltas1;
     this.inputLayer2.deltas = newDeltas2;
+    this.inputLayer1.deltas = newDeltas1;
   }
 }
 

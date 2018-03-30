@@ -25,11 +25,7 @@ export default class MomentumRootMeanSquaredPropagation {
     const output = this.kernel(
       this.layer.weights,
       this.layer.deltas,
-      this.learningRate,
-      this.momentums,
-      this.decayRate,
-      this.regularizationStrength,
-      this.clipValue
+      this.momentums
     );
     this.momentums = output.momentums;
     return output.result;
@@ -39,6 +35,10 @@ export default class MomentumRootMeanSquaredPropagation {
     this.kernel = makeKernel(momentumRootMeanSquaredPropagation, {
       output: [this.width, this.height],
       constants: {
+        clipValue: this.clipValue,
+        decayRate: this.decayRate,
+        learningRate: this.learningRate,
+        regularizationStrength: this.regularizationStrength,
         smoothEps: this.smoothEps
       },
       functions: [
@@ -62,13 +62,13 @@ const MRmsProp = MomentumRootMeanSquaredPropagation;
  * @returns {number}
  */
 function momentumRootMeanSquaredPropagation(
-  weights, deltas, learningRate, previousMomentums, decayRate, regularizationStrength, clipValue) {
+  weights, deltas, previousMomentums) {
   const delta = deltas[this.thread.y][this.thread.x];
-  const clippedDelta = clipByValue(delta, clipValue, -clipValue);
+  const clippedDelta = clipByValue(delta, this.constants.clipValue, -this.constants.clipValue);
   const weight = weights[this.thread.y][this.thread.x];
   const previousMomentum = previousMomentums[this.thread.y][this.thread.x];
-  const momentum = getMomentum(delta, decayRate, previousMomentum);
-  return weight + -learningRate * clippedDelta / Math.sqrt(momentum + this.constants.smoothEps) - regularizationStrength * weight;
+  const momentum = getMomentum(delta, this.constants.decayRate, previousMomentum);
+  return weight + -this.constants.learningRate * clippedDelta / Math.sqrt(momentum + this.constants.smoothEps) - this.constants.regularizationStrength * weight;
 }
 
 function getMomentum(delta, decay, previousMomentum) {

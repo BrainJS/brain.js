@@ -18,10 +18,11 @@ export default class Input extends Base {
   }
 
   predict1D(inputs) {
-    this.weights = [];
+    const weights = [];
     for (let x = 0; x < inputs.length; x++) {
-      this.weights.push([inputs[x]]);
+      weights.push([inputs[x]]);
     }
+    this.weights = weights;
   }
 
   compare() {}

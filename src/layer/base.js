@@ -17,7 +17,6 @@ export default class Base {
     this.height = null;
 
     //what matters :P
-    this.errors = null;
     this.deltas = null;
     this.weights = null;
 
@@ -31,6 +30,37 @@ export default class Base {
     if (settings.hasOwnProperty('praxis')) {
       this.praxis = settings.praxis(this);
     }
+  }
+  get weights() {
+    return this._weights;
+  }
+
+  set weights(value) {
+    if (value) {
+      if (value[0].length !== this.width) {
+        throw new Error(`${this.constructor.name}.weights being set with improper value width`);
+      }
+      if (value.length !== this.height) {
+        throw new Error(`${this.constructor.name}.weights being set with improper value height`);
+      }
+    }
+    this._weights = value;
+  }
+
+  get deltas() {
+    return this._deltas;
+  }
+
+  set deltas(value) {
+    if (value) {
+      if (value[0].length !== this.width) {
+        throw new Error(`${this.constructor.name}.deltas being set with improper value width`);
+      }
+      if (value.length !== this.height) {
+        throw new Error(`${this.constructor.name}.deltas being set with improper value height`);
+      }
+    }
+    this._deltas = value;
   }
 
   validate() {
@@ -50,12 +80,22 @@ export default class Base {
 
   setupKernels() {}
   reuseKernels(layer) {
+    if (layer.constructor !== this.constructor) {
+      console.warn(`${layer.constructor.name} layer mismatch with ${this.constructor.name}`);
+    }
+    if (layer.width !== this.width) {
+      throw new Error(`${this.constructor.name} kernel width mismatch ${layer.width} is not ${this.width}`);
+    }
+    if (layer.height !== this.height) {
+      throw new Error(`${this.constructor.name} kernel width mismatch ${layer.height} is not ${this.height}`);
+    }
     if (layer.hasOwnProperty('predictKernel')) {
       this.predictKernel = layer.predictKernel;
     }
     if (layer.hasOwnProperty('compareKernel')) {
       this.compareKernel = layer.compareKernel;
     }
+    this.praxis = layer.praxis;
   }
 
   predict() {
