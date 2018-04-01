@@ -1,0 +1,15 @@
+{
+  "name": "brainjsreactnative",
+  "version": "1.0.0",
+  "description": "React Native implentation of Brain.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Justin Middler - 2018",
+  "license": "MIT",
+  "dependencies": {
+    "brain.js": "^1.1.2",
+    "sharp": "^0.20.1"
+  }
+}
