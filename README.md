@@ -63,7 +63,7 @@ output = net.run([1, 0]);  // [1]
 output = net.run([1, 1]);  // [0]
 ```
 
-However, There's no reason to use a neural network to figure out XOR. (-: So, here's a more involved, realistic example:
+However, there is no reason to use a neural network to figure out XOR. (-: So, here is a more involved, realistic example:
 [Demo: training a neural network to recognize color contrast](https://brain.js.org/).
 
 ## More Examples
@@ -97,7 +97,8 @@ You can still download the latest. They are cool!
 Download the latest [brain.js for browser](https://raw.githubusercontent.com/harthur-org/brain.js/master/browser.js). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network into your website.
 
 # Training
-Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. The more training patterns, the longer it will probably take to train, but the better the network will be at classifying new patterns.
+Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. More training patterns will probably take longer to train, but will usually result in a network better
+at classifying new patterns.
 
 ### Data format
 Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color contrast demo](https://brain.js.org/) it looks something like this:
@@ -131,7 +132,7 @@ net.train(data, {
       errorThresh: 0.005,   // the acceptable error percentage from training data --> number between 0 and 1
       log: false,           // true to use console.log, when a function is supplied it is used --> Either true or a function
       logPeriod: 10,        // iterations between logging out --> number greater than 0
-      learningRate: 0.3,    // scales with delta to effect traiing rate --> number between 0 and 1
+      learningRate: 0.3,    // scales with delta to effect training rate --> number between 0 and 1
       momentum: 0.1,        // scales with next layer's change value --> number between 0 and 1
       callback: null,       // a periodic call back that can be triggered while training --> null or function
       callbackPeriod: 10,   // the number of iterations through the training data between callback calls --> number greater than 0
@@ -139,20 +140,20 @@ net.train(data, {
 });
 ```
 
-The network will train until the training error has gone below the threshold (default `0.005`) or the max number of iterations (default `20000`) has been reached, whichever comes first.
+The network will stop training whenever one of the two criteria is met: the training error has gone below the threshold (default `0.005`), or the max number of iterations (default `20000`) has been reached.
 
-By default training won't let you know how its doing until the end, but set `log` to `true` to get periodic updates on the current training error of the network. The training error should decrease every time. The updates will be printed to console. If you set `log` to a function, this function will be called with the updates instead of printing to the console.
+By default training will not let you know how its doing until the end, but set `log` to `true` to get periodic updates on the current training error of the network. The training error should decrease every time. The updates will be printed to console. If you set `log` to a function, this function will be called with the updates instead of printing to the console.
 
-The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0` it will take longer to train. If the learning rate is closer to `1` it will train faster but it's in danger of training to a local minimum and performing badly on new data.(_Overfitting_) The default learning rate is `0.3`.
+The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0`, it will take longer to train. If the learning rate is closer to `1`, it will train faster, but training results may be constrained to a local minimum and perform badly on new data.(_Overfitting_) The default learning rate is `0.3`.
 
-The momentum is similar to learning rate, expecting a value from `0` to `1` as well but it is multiplied against the next level's change value.  The default value is `0.1`
+The momentum is similar to learning rate, expecting a value from `0` to `1` as well, but it is multiplied against the next level's change value. The default value is `0.1`
 
-Any of these training options can be passed into the constructor or passed into the `updateTrainingOptions(opts)` method and they will be saved on the network and used any time you trian.  If you save your network to json, these training options are saved and restored as well (except for callback and log, callback will be forgoten and log will be restored using console.log).
+Any of these training options can be passed into the constructor or passed into the `updateTrainingOptions(opts)` method and they will be saved on the network and used during the training time. If you save your network to json, these training options are saved and restored as well (except for callback and log, callback will be forgotten and log will be restored using console.log).
 
-There is a boolean property called `invalidTrainOptsShouldThrow` that by default is set to true.  While true if you enter a training option that is outside the normal range an error will be thrown with a message about the option you sent.  When set to false no error is sent but a message is still sent to `console.warn` with the information.
+A boolean property called `invalidTrainOptsShouldThrow` is set to `true` by default. While the option is `true`, if you enter a training option that is outside the normal range, an error will be thrown with a message about the abnormal option. When the option is set to `false`, no error will be sent, but a message will still be sent to `console.warn` with the related information.
 
 ### Async Training
-`trainAsync()` takes the same arguments as train (data and options).  Instead of returning the results object from training it returns a promise that when resolved will return the training results object.
+`trainAsync()` takes the same arguments as train (data and options). Instead of returning the results object from training, it returns a promise that when resolved will return the training results object.
 
 ```javascript
   let net = new brain.NeuralNetwork();
@@ -195,9 +196,9 @@ The output of `train()` is a hash of information about how the training went:
 ```
 
 # Failing
-If the network failed to train, the error will be above the error threshold. This could happen because the training data is too noisy (most likely), the network doesn't have enough hidden layers or nodes to handle the complexity of the data, or it hasn't trained for enough iterations.
+If the network failed to train, the error will be above the error threshold. This could happen if the training data is too noisy (most likely), the network does not have enough hidden layers or nodes to handle the complexity of the data, or it has not been trained for enough iterations.
 
-If the training error is still something huge like `0.4` after 20000 iterations, it's a good sign that the network can't make sense of the data you're giving it.
+If the training error is still something huge like `0.4` after 20000 iterations, it's a good sign that the network can't make sense of the given data.
 
 # JSON
 Serialize or load in the state of a trained network with JSON:
@@ -273,7 +274,7 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 * [`brain.recurrent.GRU`](src/recurrent/gru.js) - [Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
 
 ### Why different Neural Network Types?
-Different neural nets do different things well.  For example:
+Different neural nets do different things well. For example:
 * A Feedforward Neural Network can classify simple things very well, but it has no memory of previous actions and has infinite variation of results.
 * A Recurrent Neural Network _remembers_, and has a finite set of results.
 
