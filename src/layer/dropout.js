@@ -15,6 +15,7 @@ export default class Dropout extends Base {
   constructor(settings, inputLayer) {
     super(settings);
     this.inputLayer = inputLayer;
+    this.validate();
   }
 
   setupKernels() {

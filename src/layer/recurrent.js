@@ -1,16 +1,16 @@
 import { relu, add, multiply, random } from './';
 
 export default (settings, input, recurrentInput) => {
-  const { width, height } = settings;
+  const { height } = settings;
 
-  recurrentInput.setDimensions(height, width);
+  recurrentInput.setDimensions(1, height);
 
   //wxh
-  const weight = random({ width: height, height: width });
+  const weight = random({ height, width: input.height });
   //whh
-  const transition = random({ width, height: width });
+  const transition = random({ height, width: height });
   //bhh
-  const bias = random({ height: width });
+  const bias = random({ height });
 
   return relu(
     add(

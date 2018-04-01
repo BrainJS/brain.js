@@ -11,6 +11,7 @@ export default class Relu extends Base {
     const { width, height } = inputLayer;
     this.width = width;
     this.height = height;
+    this.validate();
     this.weights = zeros2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
   }

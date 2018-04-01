@@ -6,9 +6,9 @@ import {
 } from './index';
 
 export default function feedForward(settings, input) {
-  const { width } = settings;
-  const weights = random({ name: 'weights', height: width, width: input.height });
-  const biases = random({ name: 'biases', height: width });
+  const { height } = settings;
+  const weights = random({ name: 'weights', height, width: input.height });
+  const biases = random({ name: 'biases', height });
 
   return sigmoid(
     add(

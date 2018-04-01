@@ -31,6 +31,8 @@ export default class Base {
       this.praxis = settings.praxis(this);
     }
   }
+
+  /*
   get weights() {
     return this._weights;
   }
@@ -61,7 +63,7 @@ export default class Base {
       }
     }
     this._deltas = value;
-  }
+  }*/
 
   validate() {
     if (isNaN(this.height)) {
@@ -80,9 +82,6 @@ export default class Base {
 
   setupKernels() {}
   reuseKernels(layer) {
-    if (layer.constructor !== this.constructor) {
-      console.warn(`${layer.constructor.name} layer mismatch with ${this.constructor.name}`);
-    }
     if (layer.width !== this.width) {
       throw new Error(`${this.constructor.name} kernel width mismatch ${layer.width} is not ${this.width}`);
     }

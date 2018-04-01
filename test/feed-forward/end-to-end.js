@@ -40,12 +40,12 @@ describe('FeedForward Class: End to End', () => {
     it('outputs the exact same values', () => {
       const standardNet = new NeuralNetwork([2, 3, 1]);
       const ffNet = new FeedForward({
-        inputLayer: () => input({ width: 2 }),
+        inputLayer: () => input({ height: 2 }),
         hiddenLayers: [
-          (input) => feedForward({ width: 3 }, input),
-          (input) => feedForward({ width: 1 }, input)
+          (input) => feedForward({ height: 3 }, input),
+          (input) => feedForward({ height: 1 }, input)
         ],
-        outputLayer: (input) => target({ width: 1 }, input)
+        outputLayer: (input) => target({ height: 1 }, input)
       });
 
       ffNet.initialize();
@@ -141,12 +141,12 @@ describe('FeedForward Class: End to End', () => {
   describe('.train()', () => {
     it('outputs a number that is smaller than when it started', () => {
       const net = new FeedForward({
-        inputLayer: () => input({ width: 2 }),
+        inputLayer: () => input({ height: 2 }),
         hiddenLayers: [
-          (input) => feedForward({ width: 3 }, input),
-          (input) => feedForward({ width: 1 }, input)
+          (input) => feedForward({ height: 3 }, input),
+          (input) => feedForward({ height: 1 }, input)
         ],
-        outputLayer: (input) => target({ width: 1 }, input)
+        outputLayer: (input) => target({ height: 1 }, input)
       });
       const errors = [];
       net.errorCheckInterval = 1;
@@ -171,14 +171,14 @@ describe('FeedForward Class: End to End', () => {
     it('can learn xor', () => {
       const errors = [];
       const net = new FeedForward({
-        inputLayer: () => input({ width: 2 }),
+        inputLayer: () => input({ height: 2 }),
         hiddenLayers: [
-          (input) => feedForward({ width: 3 }, input),
-          (input) => feedForward({ width: 1 }, input)
+          (input) => feedForward({ height: 3 }, input),
+          (input) => feedForward({ height: 1 }, input)
         ],
-        outputLayer: (input) => target({ width: 1 }, input),
+        outputLayer: (input) => target({ height: 1 }, input),
       });
-      net.train(xorTrainingData, {
+      const results = net.train(xorTrainingData, {
         callbackPeriod: 1,
         callback: (info) => errors.push(info.error)
       });

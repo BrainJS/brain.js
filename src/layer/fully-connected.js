@@ -17,6 +17,7 @@ export default class FullyConnected extends Base {
 
     const { width, height, depth } = inputLayer;
     this.width = width * height * depth;
+    this.validate();
   }
 
   setupKernels() {

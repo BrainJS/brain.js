@@ -11,6 +11,7 @@ export default class Tanh extends Base {
     this.width = width;
     this.height = height;
     this.depth = depth;
+    this.validate();
   }
 
   setupKernels() {

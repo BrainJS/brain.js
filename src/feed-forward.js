@@ -4,7 +4,6 @@ import mse2d from './utilities/mse-2d';
 import layerFromJSON from './utilities/layer-from-json';
 import * as praxis from './praxis';
 import flattenLayers from './utilities/flatten-layers';
-import RecurrentInput from "./layer/recurrent-input";
 
 export default class FeedForward {
   static get trainDefaults() {
@@ -136,7 +135,6 @@ export default class FeedForward {
   initializeLayers(layers) {
     for (let i = 0; i < layers.length; i++) {
       const layer = layers[i];
-      layer.validate();
       layer.setupKernels();
       if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
         layer.praxis = this.praxis(layer);

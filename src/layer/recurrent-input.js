@@ -4,6 +4,7 @@ import Base from './base';
 export default class RecurrentInput extends Base {
   setRecurrentInput(recurrentInput) {
     this.recurrentInput = recurrentInput;
+    this.validate();
   }
   validate() {
     super.validate();

@@ -5,12 +5,9 @@ export default class Transpose extends Base {
   constructor(inputLayer) {
     super();
     this.inputLayer = inputLayer;
-  }
-
-  validate() {
-    super.validate();
     this.width = this.inputLayer.height;
     this.height = this.inputLayer.width;
+    this.validate();
   }
 
   setupKernels() {

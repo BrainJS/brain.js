@@ -41,10 +41,10 @@ describe('FeedForward Class: Unit', () => {
             (input) => pool({padding: 2, stride: 2}, input),
             (input) => convolution({padding: 2, stride: 1, filterCount: 16, filterWidth: 5, filterHeight: 5}, input),
             (input) => relu(input),
-            (input) => pool({width: 3, stride: 3}, input),
-            (input) => softMax({width: 10}, input)
+            (input) => pool({height: 3, stride: 3}, input),
+            (input) => softMax({height: 10}, input)
           ],
-          outputLayer: (input) => output({width: 10}, input)
+          outputLayer: (input) => output({height: 10}, input)
         });
         net.initialize();
         assert.equal(net.layers.length, 11);
@@ -64,11 +64,11 @@ describe('FeedForward Class: Unit', () => {
       });
       it('can setup and traverse entire network using layer composed of layers', () => {
         const net = new FeedForward({
-          inputLayer: () => input(),
+          inputLayer: () => input({ height: 1 }),
           hiddenLayers: [
-            (input) => feedForward({ width: 1 }, input)
+            (input) => feedForward({ height: 1 }, input)
           ],
-          outputLayer: (input) => output({ width: 1 }, input)
+          outputLayer: (input) => output({ height: 1 }, input)
         });
         net.initialize();
         assert.equal(net.layers.length, 9);
@@ -90,8 +90,8 @@ describe('FeedForward Class: Unit', () => {
         const net = new FeedForward({
           inputLayer: () => input(),
           hiddenLayers: [
-            (input) => softMax({width: 10},
-              pool({width: 3, stride: 3},
+            (input) => softMax({height: 10},
+              pool({height: 3, stride: 3},
                 relu(
                   convolution({padding: 2, stride: 1, filterCount: 16, filterWidth: 5, filterHeight: 5},
                     pool({padding: 2, stride: 2},
@@ -104,7 +104,7 @@ describe('FeedForward Class: Unit', () => {
               )
             )
           ],
-          outputLayer: (input) => output({width: 10}, input)
+          outputLayer: (input) => output({height: 10}, input)
         });
         net.initialize();
         assert.equal(net.layers.length, 11);

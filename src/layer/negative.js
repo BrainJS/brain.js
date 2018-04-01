@@ -5,6 +5,7 @@ export default class Negative extends Base {
   constructor(settings, inputLayer) {
     super(settings);
     this.inputLayer = inputLayer;
+    this.validate();
   }
 
   setupKernels() {

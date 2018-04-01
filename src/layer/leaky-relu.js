@@ -10,6 +10,7 @@ export default class LeakyRelu extends Base {
     this.width = width;
     this.height = height;
     this.depth = depth;
+    this.validate();
   }
   setupKernels() {
     this.predictKernel = makeKernel(predict, {

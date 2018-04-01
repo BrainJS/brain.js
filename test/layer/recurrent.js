@@ -1,7 +1,7 @@
 import assert from 'assert';
-import feedForward from '../../src/layer/feed-forward';
+import recurrent from '../../src/layer/recurrent';
 
-describe('FeedForward Layer', () => {
+describe('Recurrent Layer', () => {
   it('properly sets width and height', () => {
     const input = { width: 1, height: 3 };
 
@@ -13,7 +13,7 @@ describe('FeedForward Layer', () => {
       }
     };
 
-    const layer = feedForward(
+    const layer = recurrent(
       settings,
       input,
       recurrentInput

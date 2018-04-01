@@ -42,6 +42,7 @@ export default class Convolution extends Base {
     this.learnFilters = null;
     this.learnInputs = null;
     this.inputLayer = inputLayer;
+    this.validate();
   }
 
   setupKernels() {

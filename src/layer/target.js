@@ -11,13 +11,14 @@ export default class Target extends Base {
     // TODO: properly handle dimensions
     this.width = inputLayer.width;
     this.height = inputLayer.height;
+    this.validate();
     this.weights = zeros2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
     this.errors = zeros2D(this.width, this.height);
   }
 
   setupKernels() {
-    const compareFn = this.height === 1
+    const compareFn = this.width === 1
       ? compare1D
       : compare2D;
     this.compareKernel = makeKernel(compareFn, {

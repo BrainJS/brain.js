@@ -120,7 +120,7 @@ describe('Multiply Layer', () => {
       })(deltas, inputDeltas, inputWeights);
       assert.deepEqual(result, [ [ 23], [ 30 ] ]);
     });
-    it.only('can compare a simple matrix 3x1 * 1x3 = 3x1', () => {
+    it('can compare a simple matrix 3x1 * 1x3 = 3x1', () => {
       const deltas = [
         [1, 2, 3]
       ];

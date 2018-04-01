@@ -12,6 +12,7 @@ export default class Multiply extends Base {
 
     this.width = inputLayer2.width;
     this.height = inputLayer1.height;
+    this.validate();
     this.weights = zeros2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
   }

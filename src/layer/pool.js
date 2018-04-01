@@ -21,6 +21,7 @@ export default class Pool extends Base {
 
     this.switchX = null;
     this.switchY = null;
+    this.validate();
   }
 
   setupKernels() {
