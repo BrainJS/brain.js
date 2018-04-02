@@ -22,7 +22,8 @@
     "dist": "babel src --out-dir dist --source-maps",
     "browser": "browserify ./index.js -p licensify -o browser.js -s brain",
     "browser-min": "browserify ./index.js -p licensify -s brain -g uglifyify -o browser.min.js",
-    "make": "rm -fr ./dist && npm run dist && git add ./dist && npm run browser && npm run browser-min"
+    "make": "rimraf dist && npm run dist && git add ./dist && npm run browser && npm run browser-min",
+    "clean": "rimraf node_modules"
   },
   "main": "./index.js",
   "devDependencies": {
@@ -37,7 +38,8 @@
     "mocha": "^3.0.2",
     "sinon": "^1.17.6",
     "testee": "^0.7.0",
-    "uglifyify": "^3.0.2"
+    "uglifyify": "^3.0.2",
+    "rimraf": "^2.6.2"
   },
   "keywords": [
     "ai",
