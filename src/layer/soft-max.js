@@ -1,6 +1,6 @@
-import Base from './base';
+import { Filter } from './types';
 
-export default class SoftMax extends Base {
+export default class SoftMax extends Filter {
   constructor(settings, inputLayer) {
     super(settings);
     this.inputLayer = inputLayer;

@@ -1,7 +1,8 @@
-import Base from './base';
 import makeKernel from '../utilities/make-kernel';
-import { setStride, setPadding } from "../utilities/layer-setup"
-export default class Convolution extends Base {
+import { setStride, setPadding } from '../utilities/layer-setup';
+import { Filter } from './types';
+
+export default class Convolution extends Filter {
   static get defaults() {
     return {
       stride: 0,

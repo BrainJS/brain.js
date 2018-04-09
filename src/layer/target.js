@@ -1,8 +1,8 @@
 import makeKernel from '../utilities/make-kernel';
 import zeros2D from '../utilities/zeros-2d';
-import Base from './base';
+import { Filter } from './types';
 
-export default class Target extends Base {
+export default class Target extends Filter {
   constructor(settings, inputLayer) {
     super(settings);
     this.compareKernelOutput = null;

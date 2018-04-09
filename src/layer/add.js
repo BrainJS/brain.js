@@ -1,8 +1,8 @@
 import makeKernel from '../utilities/make-kernel';
-import Base from './base';
 import zeros2D from '../utilities/zeros-2d';
+import { Operator } from './types';
 
-export default class Add extends Base {
+export default class Add extends Operator {
   constructor(inputLayer1, inputLayer2) {
     super();
     this.inputLayer1 = inputLayer1;

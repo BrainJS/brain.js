@@ -1,9 +1,9 @@
-import Base from './base';
+import { Activation } from './types';
 import makeKernel from '../utilities/make-kernel';
 import { activate, measure } from '../activation/relu';
 import zeros2D from '../utilities/zeros-2d';
 
-export default class Relu extends Base {
+export default class Relu extends Activation {
   constructor(inputLayer) {
     super();
     this.inputLayer = inputLayer;

@@ -2,6 +2,7 @@ import assert from 'assert';
 import sinon from 'sinon';
 import { Recurrent, layer } from '../../src/index';
 import RecurrentConnection from "../../src/layer/recurrent-connection";
+import {Model} from "../../src/layer/types";
 const {
   add,
   input,
@@ -153,64 +154,28 @@ describe('Recurrent Class: Unit', () => {
       const outputLayers2Weights = net._outputLayers[2].weights;
       const outputLayers3Weights = net._outputLayers[3].weights;
 
-      assert(net._inputLayers[0].deltas.every(row => row.every(delta => delta === 0)));
-
-      assert(net._hiddenLayers[0][0].deltas.every(row => row.every(delta => delta === 0)));
-      assert(net._hiddenLayers[0][1].deltas.every(row => row.every(delta => delta === 0)));
-      assert(net._hiddenLayers[0][2].deltas.every(row => row.every(delta => delta === 0)));
-      assert(net._hiddenLayers[0][3].deltas.every(row => row.every(delta => delta === 0)));
-
-      assert(net._hiddenLayers[1][0].deltas.every(row => row.every(delta => delta === 0)));
-      assert(net._hiddenLayers[1][1].deltas.every(row => row.every(delta => delta === 0)));
-      assert(net._hiddenLayers[1][2].deltas.every(row => row.every(delta => delta === 0)));
-      assert(net._hiddenLayers[1][3].deltas.every(row => row.every(delta => delta === 0)));
-
-      assert(net._outputLayers[0].deltas.every(row => row.every(delta => delta === 0)));
-      assert(net._outputLayers[1].deltas.every(row => row.every(delta => delta === 0)));
-      assert(net._outputLayers[2].deltas.every(row => row.every(delta => delta === 0)));
-      assert(net._outputLayers[3].deltas.every(row => row.every(delta => delta === 0)));
-
-      net._calculateDeltas([0], 1);
-      net._calculateDeltas([1], 0);
-
-      assert(net._inputLayers[0].deltas.every(row => row.some(delta => delta !== 0)));
-
-      // first hidden layer
-      assert(net._hiddenLayers[0][0].deltas.every(row => row.some(delta => delta !== 0)));
-      assert(net._hiddenLayers[0][1].deltas.every(row => row.some(delta => delta !== 0)));
-      assert(net._hiddenLayers[0][2].deltas.every(row => row.some(delta => delta !== 0)));
-      assert(net._hiddenLayers[0][3].deltas.every(row => row.some(delta => delta !== 0)));
-
-      // second hidden layer
-      assert(net._hiddenLayers[1][0].deltas.every(row => row.some(delta => delta !== 0)));
-      assert(net._hiddenLayers[1][1].deltas.every(row => row.some(delta => delta !== 0)));
-      assert(net._hiddenLayers[1][2].deltas.every(row => row.some(delta => delta !== 0)));
-      assert(net._hiddenLayers[1][3].deltas.every(row => row.some(delta => delta !== 0)));
-
-      assert(net._outputLayers[0].deltas.every(row => row.some(delta => delta !== 0)));
-      assert(net._outputLayers[1].deltas.every(row => row.some(delta => delta !== 0)));
-      assert(net._outputLayers[2].deltas.every(row => row.some(delta => delta !== 0)));
-
       net._adjustWeights();
 
-      assert.notDeepEqual(hiddenLayers00Weights, net._hiddenLayers[0][0].weights);
-      assert.notDeepEqual(hiddenLayers01Weights, net._hiddenLayers[0][1].weights);
-      assert.notDeepEqual(hiddenLayers02Weights, net._hiddenLayers[0][2].weights);
-      assert.notDeepEqual(hiddenLayers03Weights, net._hiddenLayers[0][3].weights);
-      assert.notDeepEqual(hiddenLayers10Weights, net._hiddenLayers[1][0].weights);
-      assert.notDeepEqual(hiddenLayers11Weights, net._hiddenLayers[1][1].weights);
-      assert.notDeepEqual(hiddenLayers12Weights, net._hiddenLayers[1][2].weights);
-      assert.notDeepEqual(hiddenLayers13Weights, net._hiddenLayers[1][3].weights);
-      assert.notDeepEqual(outputLayers0Weights, net._outputLayers[0].weights);
-      assert.notDeepEqual(outputLayers1Weights, net._outputLayers[1].weights);
-      assert.notDeepEqual(outputLayers2Weights, net._outputLayers[2].weights);
-      assert.notDeepEqual(outputLayers3Weights, net._outputLayers[3].weights);
+      // weights are adjusted
+      assert.notEqual(hiddenLayers00Weights, net._hiddenLayers[0][0].weights);
+      assert.notEqual(hiddenLayers01Weights, net._hiddenLayers[0][1].weights);
+      assert.notEqual(hiddenLayers02Weights, net._hiddenLayers[0][2].weights);
+      assert.notEqual(hiddenLayers03Weights, net._hiddenLayers[0][3].weights);
+      assert.notEqual(hiddenLayers10Weights, net._hiddenLayers[1][0].weights);
+      assert.notEqual(hiddenLayers11Weights, net._hiddenLayers[1][1].weights);
+      assert.notEqual(hiddenLayers12Weights, net._hiddenLayers[1][2].weights);
+      assert.notEqual(hiddenLayers13Weights, net._hiddenLayers[1][3].weights);
+      assert.notEqual(outputLayers0Weights, net._outputLayers[0].weights);
+      assert.notEqual(outputLayers1Weights, net._outputLayers[1].weights);
+      assert.notEqual(outputLayers2Weights, net._outputLayers[2].weights);
+      assert.notEqual(outputLayers3Weights, net._outputLayers[3].weights);
     });
   });
   describe('.trainPattern()', () => {
     it('steps back through values correctly', () => {
-      class SuperLayer {
+      class SuperLayer extends Model {
         constructor() {
+          super();
           this.width = 1;
           this.height = 1;
         }
@@ -219,6 +184,7 @@ describe('Recurrent Class: Unit', () => {
         predict() {}
         compare() {}
         learn() {}
+        reset() {}
       }
       const net = new Recurrent({
         inputLayer: () => new SuperLayer(),
@@ -237,8 +203,37 @@ describe('Recurrent Class: Unit', () => {
       net.runInput([0, 1]);
       net.trainPattern([0, 1], [2]);
 
+      assert.equal(net._outputLayers[0].compare.callCount, 2);
       assert.deepEqual(net._outputLayers[0].compare.firstCall.args, [[2]]);
       assert.deepEqual(net._outputLayers[0].compare.secondCall.args, [[1]]);
+    });
+    describe('when called more than once', () => {
+      it('continuously updates output layer', () => {
+        const net = new Recurrent({
+          inputLayer: () => input({ height: 1 }),
+          hiddenLayers: [
+            (input, recurrentInput) => recurrent({ height: 3 }, input, recurrentInput)
+          ],
+          outputLayer: input => output({ height: 1 }, input)
+        });
+        net.initialize();
+        net.initializeDeep();
+
+        const lastOutputLayer = net._outputLayers[net._outputLayers.length - 1];
+        assert.deepEqual(lastOutputLayer.weights, [[0]]);
+        net.trainPattern([0, 0], [0]);
+        const weights1 = lastOutputLayer.weights;
+        assert.notDeepEqual(weights1, [[0]]);
+        net.trainPattern([0, 1], [1]);
+        const weights2 = lastOutputLayer.weights;
+        assert.notDeepEqual(weights1, weights2);
+        net.trainPattern([1, 0], [1]);
+        const weights3 = lastOutputLayer.weights;
+        assert.notDeepEqual(weights2, weights3);
+        net.trainPattern([1, 1], [0]);
+        const weights4 = lastOutputLayer.weights;
+        assert.notDeepEqual(weights3, weights4);
+      });
     });
   });
 });

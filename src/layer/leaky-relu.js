@@ -1,8 +1,8 @@
-import Base from './base';
+import { Activation } from './types';
 import makeKernel from '../utilities/make-kernel';
 import { activate, measure } from '../activation/leaky-relu';
 
-export default class LeakyRelu extends Base {
+export default class LeakyRelu extends Activation {
   constructor(inputLayer) {
     super();
     this.inputLayer = inputLayer;

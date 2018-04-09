@@ -1,8 +1,9 @@
-import Base from './base';
+import { Activation } from './types';
 import makeKernel from '../utilities/make-kernel';
 import { tanh, tanhDerivative } from '../activation/tanh';
+import zeros2D from "../utilities/zeros-2d";
 
-export default class Tanh extends Base {
+export default class Tanh extends Activation {
   constructor(inputLayer) {
     super();
     this.inputLayer = inputLayer;
@@ -12,12 +13,17 @@ export default class Tanh extends Base {
     this.height = height;
     this.depth = depth;
     this.validate();
+    this.weights = zeros2D(this.width, this.height);
+    this.deltas = zeros2D(this.width, this.height);
   }
 
   setupKernels() {
-    this.predictKernel = makeKernel(predict);
+    this.predictKernel = makeKernel(predict, {
+      output: [this.width, this.height]
+    });
 
-    this.learnKernel = makeKernel(learn, {
+    this.compareKernel = makeKernel(compare, {
+      output: [this.width, this.height],
       functions: [tanhDerivative]
     });
   }
@@ -27,7 +33,7 @@ export default class Tanh extends Base {
   }
 
   compare() {
-    this.deltas = this.learnKernel(this.weights, this.errors);
+    this.deltas = this.compareKernel(this.weights, this.deltas);
   }
 }
 
@@ -35,6 +41,6 @@ export function predict(inputs) {
   return Math.tanh(inputs[this.thread.y][this.thread.x]);
 }
 
-export function learn(weights, errors) {
+export function compare(weights, errors) {
   return tanhDerivative(weights[this.thread.y][this.thread.x], errors[this.thread.y][this.thread.x]);
 }

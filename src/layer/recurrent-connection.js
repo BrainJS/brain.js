@@ -1,13 +1,18 @@
-export default class RecurrentConnection {
+import { Internal } from './types';
+import zeros2D from "../utilities/zeros-2d";
+
+export default class RecurrentConnection extends Internal {
   setLayer(layer) {
     this.layer = layer;
   }
   get width() {
     return this.layer.width;
   }
+  set width(value) {}
   get height() {
     return this.layer.height;
   }
+  set height(value) {}
   get deltas() {
     return this.layer.deltas;
   }
@@ -22,7 +27,9 @@ export default class RecurrentConnection {
   }
   predict() {}
   compare() {}
-  learn() {}
+  learn() {
+    this.layer.deltas = zeros2D(this.width, this.height);
+  }
   setupKernels() {}
   reuseKernels() {}
 }

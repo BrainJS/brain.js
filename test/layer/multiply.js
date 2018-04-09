@@ -199,7 +199,7 @@ describe('Multiply Layer', () => {
     context('when used with Input layer', () => {
       it('is compatible', () => {
         const random = new Random({ height: 3, width: 2 });
-        const input = new Input({ width: 2 });
+        const input = new Input({ height: 2 });
         const multiply = new Multiply(random, input);
 
         random.validate();

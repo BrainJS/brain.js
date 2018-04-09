@@ -1,7 +1,7 @@
-import Base from './base';
+import { Filter } from './types';
 import makeKernel from '../utilities/make-kernel';
 import { setPadding, setStride } from '../utilities/layer-setup';
-export default class Pool extends Base {
+export default class Pool extends Filter {
   static get defaults() {
     return {
       stride: 0,

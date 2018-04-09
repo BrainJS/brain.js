@@ -1,8 +1,8 @@
 import ones2D from '../utilities/ones-2d';
 import zeros2D from '../utilities/zeros-2d';
-import Base from './base';
+import { Model } from './types';
 
-export default class Ones extends Base {
+export default class Ones extends Model {
   constructor(settings) {
     super(settings);
     this.validate();

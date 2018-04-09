@@ -2,9 +2,9 @@ import RecurrentConnection from './layer/recurrent-connection';
 import RecurrentInput from './layer/recurrent-input';
 import RecurrentZeros from './layer/recurrent-zeros';
 import flattenLayers from './utilities/flatten-layers';
-import flattenLayersExcluding from './utilities/flatten-layers-excluding';
 import mse2d from './utilities/mse-2d';
 import FeedForward from './feed-forward';
+import Base from "./layer/base";
 
 export default class Recurrent extends FeedForward {
   static get structure() {
@@ -30,8 +30,10 @@ export default class Recurrent extends FeedForward {
        * @private
        */
       _outputLayers: null,
-      _praxises: null,
-      _outputConnection: null
+      _outputConnection: null,
+      _previousInputs: null,
+      _model: null,
+      _recurrentIndices: null
     };
   }
 
@@ -52,6 +54,10 @@ export default class Recurrent extends FeedForward {
     this._hiddenLayers = [flattenedLayers.slice(flattenedLayers.indexOf(inputLayer) + 1, flattenedLayers.indexOf(hiddenLayers[hiddenLayers.length - 1]) + 1)];
     this._outputLayers = flattenedLayers.slice(flattenedLayers.indexOf(hiddenLayers[hiddenLayers.length - 1]) + 1);
     this._outputLayers.unshift();
+    this._recurrentIndices = [];
+    for (let i = 0; i < hiddenLayers.length; i++) {
+      this._recurrentIndices.push(this._hiddenLayers[0].indexOf(hiddenLayers[i]));
+    }
   }
 
   _connectHiddenLayers(previousLayer) {
@@ -65,29 +71,68 @@ export default class Recurrent extends FeedForward {
     return hiddenLayers;
   }
 
-  _connectHiddenLayersDeep(previousLayer) {
+  _connectHiddenLayersDeep() {
     const hiddenLayers = [];
     const previousHiddenLayers = this._hiddenLayers[this._hiddenLayers.length - 1];
-    for (let i = 0; i < this.hiddenLayers.length; i++) {
-      const recurrentInput = new RecurrentInput();
-      const hiddenLayer = this.hiddenLayers[i](
-        previousLayer,
-        recurrentInput,
-        i
-      );
-      previousLayer = hiddenLayer;
-      hiddenLayers.push(hiddenLayer);
-      recurrentInput.setRecurrentInput(previousHiddenLayers[i]);
-      recurrentInput.validate();
+    const firstLayer = this._hiddenLayers[0];
+    let recurrentIndex = 0;
+    for (let i = 0; i < previousHiddenLayers.length; i++) {
+      const previousHiddenLayer = previousHiddenLayers[i];
+      let layer = null;
+      switch (Object.getPrototypeOf(firstLayer[i].constructor).name) {
+        case 'Activation': {
+          const inputLayer = hiddenLayers[previousHiddenLayers.indexOf(previousHiddenLayer.inputLayer)] || previousHiddenLayer.inputLayer;
+          layer = new previousHiddenLayer.constructor(inputLayer);
+          break;
+        }
+        case 'Filter': {
+          const settings = previousHiddenLayer;
+          const inputLayer = hiddenLayers[previousHiddenLayers.indexOf(previousHiddenLayer.inputLayer)] || previousHiddenLayer.inputLayer;
+          layer = new previousHiddenLayer.constructor(settings, inputLayer);
+          break;
+        }
+        case 'Internal': {
+          switch (previousHiddenLayer.constructor.name) {
+            case 'RecurrentConnection':
+              break;
+            case 'RecurrentInput':
+            case 'RecurrentZeros':
+              layer = new RecurrentInput();
+              layer.setDimensions(previousHiddenLayer.width, previousHiddenLayer.height);
+              layer.setRecurrentInput(previousHiddenLayers[this._recurrentIndices[recurrentIndex]]);
+              recurrentIndex++;
+              break;
+          }
+          break;
+        }
+        case 'Model': {
+          const settings = previousHiddenLayer;
+          layer = new previousHiddenLayer.constructor(settings);
+          break;
+        }
+        case 'Modifier': {
+          const inputLayer = hiddenLayers[previousHiddenLayers.indexOf(previousHiddenLayer.inputLayer)] || previousHiddenLayer.inputLayer;
+          layer = new previousHiddenLayer.constructor(inputLayer);
+          break;
+        }
+        case 'Operator': {
+          const inputLayer1 = hiddenLayers[previousHiddenLayers.indexOf(previousHiddenLayer.inputLayer1)] || previousHiddenLayer.inputLayer1;
+          const inputLayer2 = hiddenLayers[previousHiddenLayers.indexOf(previousHiddenLayer.inputLayer2)] || previousHiddenLayer.inputLayer2;
+          layer = new previousHiddenLayer.constructor(inputLayer1, inputLayer2);
+          break;
+        }
+        default:
+          throw new Error(`hidden layer ${previousHiddenLayer.constructor.name} extends unknown hidden layer ${ Object.getPrototypeOf(previousHiddenLayer.constructor).name }`);
+      }
 
+      hiddenLayers[i] = layer;
     }
-    const flattenedHiddenLayers = flattenLayersExcluding(hiddenLayers, this._inputLayers[this._inputLayers.length - 1], previousHiddenLayers[previousHiddenLayers.length - 1]);
-    this._hiddenLayers.push(flattenedHiddenLayers);
-    return flattenedHiddenLayers;
+    this._hiddenLayers.push(hiddenLayers);
+    return hiddenLayers;
   }
 
   initialize() {
-    this._praxises = [];
+    this._previousInputs = [];
     this._outputConnection = new RecurrentConnection();
     this._connectLayers();
     this.initializeLayers(this._inputLayers);
@@ -96,8 +141,7 @@ export default class Recurrent extends FeedForward {
   }
 
   initializeDeep() {
-    const input = this._inputLayers[this._inputLayers.length - 1];
-    const hiddenLayers = this._connectHiddenLayersDeep(input);
+    const hiddenLayers = this._connectHiddenLayersDeep();
     for (let i = 0; i < hiddenLayers.length; i++) {
       const hiddenLayer = hiddenLayers[i];
       hiddenLayer.reuseKernels(this._hiddenLayers[0][i]);
@@ -106,9 +150,12 @@ export default class Recurrent extends FeedForward {
 
   runInput(input) {
     for (let x = 0; x < input.length; x++) {
-      const hiddenConnection = this._hiddenLayers[x][this._hiddenLayers[x].length - 1];
+      const hiddenLayers = this._hiddenLayers[x];
+      const hiddenConnection = hiddenLayers[hiddenLayers.length - 1];
       this._outputConnection.setLayer(hiddenConnection);
+
       this._inputLayers[0].predict([input[x]]);
+      this._previousInputs.push(this._inputLayers[0].weights);
       for (let i = 1; i < this._inputLayers.length; i++) {
         this._inputLayers[i].predict();
       }
@@ -125,16 +172,21 @@ export default class Recurrent extends FeedForward {
   _calculateDeltas(target, offset) {
     for (let x = target.length - 1; x >= 0; x--) {
       const hiddenLayersIndex = offset + x;
-      const hiddenConnection = this._hiddenLayers[hiddenLayersIndex][this._hiddenLayers[hiddenLayersIndex].length - 1];
+      const hiddenLayers = this._hiddenLayers[hiddenLayersIndex];
+      const hiddenConnection = hiddenLayers[hiddenLayers.length - 1];
       this._outputConnection.setLayer(hiddenConnection);
+      if (this._previousInputs.length > 0) {
+        this._inputLayers[0].weights = this._previousInputs.pop();
+      }
+
       this._outputLayers[this._outputLayers.length - 1].compare([target[x]]);
       for (let i = this._outputLayers.length - 2; i >= 0; i--) {
         this._outputLayers[i].compare();
       }
-      for (let i = this._hiddenLayers[hiddenLayersIndex].length - 1; i >= 0; i--) {
-        this._hiddenLayers[hiddenLayersIndex][i].compare();
+      for (let i = hiddenLayers.length - 1; i >= 0; i--) {
+        hiddenLayers[i].compare();
       }
-      for (let i = this._inputLayers.length - 1; i >= 0; i--) {
+      for (let i = this._inputLayers.length - 1; i >= 1; i--) {
         this._inputLayers[i].compare();
       }
     }
@@ -142,14 +194,17 @@ export default class Recurrent extends FeedForward {
 
   _adjustWeights() {
     for (let hiddenLayersIndex = 0; hiddenLayersIndex < this._hiddenLayers.length; hiddenLayersIndex++) {
-      const hiddenConnection = this._hiddenLayers[hiddenLayersIndex][this._hiddenLayers[hiddenLayersIndex].length - 1];
+      const hiddenLayers = this._hiddenLayers[hiddenLayersIndex];
+      const hiddenConnection = hiddenLayers[hiddenLayers.length - 1];
       this._outputConnection.setLayer(hiddenConnection);
-      for (let i = 1; i < this._inputLayers.length; i++) {
+      for (let i = 0; i < this._inputLayers.length; i++) {
         this._inputLayers[i].learn();
       }
-      for (let i = 0; i < this._hiddenLayers[hiddenLayersIndex].length; i++) {
-        this._hiddenLayers[hiddenLayersIndex][i].learn();
+
+      for (let i = 0; i < hiddenLayers.length; i++) {
+        hiddenLayers[i].learn();
       }
+
       for (let i = 0; i < this._outputLayers.length; i++) {
         this._outputLayers[i].learn();
       }

@@ -21,7 +21,12 @@ import tanhB from './tanh-b';
 export default class Equation {
   constructor() {
     this.inputRow = 0;
+    this.inputValue = null;
     this.states = [];
+  }
+
+  setPreviousOutput(output) {
+    this.previousOutput = output;
   }
 
   /**
@@ -57,6 +62,21 @@ export default class Equation {
       left: product,
       product: product,
       forwardFn: allOnes
+    });
+    return product;
+  }
+
+  copy(m) {
+    let product = new Matrix(m.rows, m.columns);
+    this.states.push({
+      left: m,
+      product: product,
+      forwardFn: copy,
+      // backpropagationFn: () => {
+      //   for (let i = 0; i < product.deltas.length; i++) {
+      //     m.deltas[i] = product.deltas[i];
+      //   }
+      // }
     });
     return product;
   }
@@ -148,6 +168,24 @@ export default class Equation {
   }
 
   /**
+   * copy a matrix
+   * @param {number} rows
+   * @param {number} columns
+   * @returns {Matrix}
+   */
+  input(rows, columns) {
+    const product = new Matrix(rows, columns);
+    const self = this;
+    this.states.push({
+      product: product,
+      forwardFn: () => {
+        product.weights[0] = self.inputValue;
+      }
+    });
+    return product;
+  }
+
+  /**
    * connects a matrix via a row
    * @param {Matrix} m
    * @returns {Matrix}
@@ -224,6 +262,24 @@ export default class Equation {
    */
   run(rowIndex = 0) {
     this.inputRow = rowIndex;
+    let state;
+    for (let i = 0, max = this.states.length; i < max; i++) {
+      state = this.states[i];
+      if (!state.hasOwnProperty('forwardFn')) {
+        continue;
+      }
+      state.forwardFn(state.product, state.left, state.right);
+    }
+
+    return state.product;
+  }
+
+  /**
+   * @patam {Number} [rowIndex]
+   * @output {Matrix}
+   */
+  runInput(inputValue) {
+    this.inputValue = inputValue;
     let state;
     for (let i = 0, max = this.states.length; i < max; i++) {
       state = this.states[i];

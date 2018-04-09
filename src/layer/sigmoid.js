@@ -1,9 +1,9 @@
-import Base from './base';
+import { Activation } from './types';
 import makeKernel from '../utilities/make-kernel';
 import { activate, measure } from '../activation/sigmoid';
 import zeros2D from '../utilities/zeros-2d';
 
-export default class Sigmoid extends Base {
+export default class Sigmoid extends Activation {
   constructor(inputLayer) {
     super();
     this.inputLayer = inputLayer;

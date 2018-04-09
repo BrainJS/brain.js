@@ -1,7 +1,7 @@
-import Base from './base';
+import { Model } from './types';
 import zeros2D from '../utilities/zeros-2d';
 
-export default class Input extends Base {
+export default class Input extends Model {
   constructor(settings) {
     super(settings);
     if (this.width === 1) {
