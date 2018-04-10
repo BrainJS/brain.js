@@ -55,6 +55,13 @@ export default class Recurrent extends FeedForward {
     this._outputLayers = flattenedLayers.slice(flattenedLayers.indexOf(hiddenLayers[hiddenLayers.length - 1]) + 1);
     this._outputLayers.unshift();
     this._recurrentIndices = [];
+    this._model = [];
+    for (let i = 0; i < this._hiddenLayers[0].length; i++) {
+      if (Object.getPrototypeOf(this._hiddenLayers[0][i].constructor).name === 'Model') {
+        this._model.push(this._hiddenLayers[0][i]);
+        this._hiddenLayers[0].splice(i, 1);
+      }
+    }
     for (let i = 0; i < hiddenLayers.length; i++) {
       this._recurrentIndices.push(this._hiddenLayers[0].indexOf(hiddenLayers[i]));
     }
@@ -134,6 +141,7 @@ export default class Recurrent extends FeedForward {
     this._previousInputs = [];
     this._outputConnection = new RecurrentConnection();
     this._connectLayers();
+    this.initializeLayers(this._model);
     this.initializeLayers(this._inputLayers);
     this.initializeLayers(this._hiddenLayers[0]);
     this.initializeLayers(this._outputLayers);
@@ -206,6 +214,10 @@ export default class Recurrent extends FeedForward {
 
       for (let i = 0; i < this._outputLayers.length; i++) {
         this._outputLayers[i].learn();
+      }
+
+      for (let i = 0; i < this._model.length; i++) {
+        this._model[i].learn();
       }
     }
   }

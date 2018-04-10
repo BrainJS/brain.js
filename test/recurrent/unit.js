@@ -2,7 +2,7 @@ import assert from 'assert';
 import sinon from 'sinon';
 import { Recurrent, layer } from '../../src/index';
 import RecurrentConnection from "../../src/layer/recurrent-connection";
-import {Model} from "../../src/layer/types";
+import {Filter, Model} from "../../src/layer/types";
 const {
   add,
   input,
@@ -31,13 +31,10 @@ describe('Recurrent Class: Unit', () => {
         'Input'
       ]);
       assert.deepEqual(net._hiddenLayers[0].map(layer => layer.constructor.name), [
-        'Random',
         'Multiply',
-        'Random',
         'RecurrentZeros',
         'Multiply',
         'Add',
-        'Random',
         'Add',
         'Relu'
       ]);
@@ -65,9 +62,10 @@ describe('Recurrent Class: Unit', () => {
       net.initialize();
       net.initializeDeep();
       net.runInput([0, 1]);
+      assert.equal(net._model.length, 1);
       assert.equal(net._inputLayers.length, 1);
-      assert.equal(net._hiddenLayers[0].length, 4);
-      assert.equal(net._hiddenLayers[1].length, 4);
+      assert.equal(net._hiddenLayers[0].length, 3);
+      assert.equal(net._hiddenLayers[1].length, 3);
     });
   });
   describe('.calculateDeltas()', () => {
@@ -86,23 +84,26 @@ describe('Recurrent Class: Unit', () => {
       net.initialize();
       net.initializeDeep();
       net.runInput([1, 1]);
+      assert.equal(net._model.length, 1);
       assert.equal(net._hiddenLayers.length, 2);
-      assert.equal(net._hiddenLayers[0].length, 4);
+      assert.equal(net._hiddenLayers[0].length, 3);
+
+      assert(net._model[0].deltas.every(row => row.every(delta => delta === 0)));
 
       assert(net._inputLayers[0].deltas.every(row => row.every(delta => delta === 0)));
 
       assert(net._hiddenLayers[0][0].deltas.every(row => row.every(delta => delta === 0)));
       assert(net._hiddenLayers[0][1].deltas.every(row => row.every(delta => delta === 0)));
       assert(net._hiddenLayers[0][2].deltas.every(row => row.every(delta => delta === 0)));
-      assert(net._hiddenLayers[0][3].deltas.every(row => row.every(delta => delta === 0)));
 
       assert(net._outputLayers[0].deltas.every(row => row.every(delta => delta === 0)));
       assert(net._outputLayers[1].deltas.every(row => row.every(delta => delta === 0)));
       assert(net._outputLayers[2].deltas.every(row => row.every(delta => delta === 0)));
-      assert(net._outputLayers[3].deltas.every(row => row.every(delta => delta === 0)));
 
       net._calculateDeltas([0], 1);
       net._calculateDeltas([1], 0);
+
+      assert(net._model[0].deltas.every(row => row.some(delta => delta !== 0)));
 
       // first layer
       assert(net._inputLayers[0].deltas.every(row => row.some(delta => delta !== 0)));
@@ -110,18 +111,16 @@ describe('Recurrent Class: Unit', () => {
       assert(net._hiddenLayers[0][0].deltas.every(row => row.some(delta => delta !== 0)));
       assert(net._hiddenLayers[0][1].deltas.every(row => row.some(delta => delta !== 0)));
       assert(net._hiddenLayers[0][2].deltas.every(row => row.some(delta => delta !== 0)));
-      assert(net._hiddenLayers[0][3].deltas.every(row => row.some(delta => delta !== 0)));
-
-      assert(net._outputLayers[0].deltas.every(row => row.some(delta => delta !== 0)));
-      assert(net._outputLayers[1].deltas.every(row => row.some(delta => delta !== 0)));
-      assert(net._outputLayers[2].deltas.every(row => row.some(delta => delta !== 0)));
-
 
       // second layer
       assert(net._hiddenLayers[1][0].deltas.every(row => row.some(delta => delta !== 0)));
       assert(net._hiddenLayers[1][1].deltas.every(row => row.some(delta => delta !== 0)));
       assert(net._hiddenLayers[1][2].deltas.every(row => row.some(delta => delta !== 0)));
-      assert(net._hiddenLayers[1][3].deltas.every(row => row.some(delta => delta !== 0)));
+
+      // output layer
+      assert(net._outputLayers[0].deltas.every(row => row.some(delta => delta !== 0)));
+      assert(net._outputLayers[1].deltas.every(row => row.some(delta => delta !== 0)));
+      assert(net._outputLayers[2].deltas.every(row => row.some(delta => delta !== 0)));
     });
   });
   describe('.adjustWeights()', () => {
@@ -140,15 +139,15 @@ describe('Recurrent Class: Unit', () => {
       net.initialize();
       net.initializeDeep();
       net.runInput([1, 1]);
-      assert.equal(net._hiddenLayers[0].length, 4);
+      assert.equal(net._model.length, 1);
+      assert.equal(net._hiddenLayers[0].length, 3);
+      const model0Weights = net._model[0].weights;
       const hiddenLayers00Weights = net._hiddenLayers[0][0].weights;
       const hiddenLayers01Weights = net._hiddenLayers[0][1].weights;
       const hiddenLayers02Weights = net._hiddenLayers[0][2].weights;
-      const hiddenLayers03Weights = net._hiddenLayers[0][3].weights;
       const hiddenLayers10Weights = net._hiddenLayers[1][0].weights;
       const hiddenLayers11Weights = net._hiddenLayers[1][1].weights;
       const hiddenLayers12Weights = net._hiddenLayers[1][2].weights;
-      const hiddenLayers13Weights = net._hiddenLayers[1][3].weights;
       const outputLayers0Weights = net._outputLayers[0].weights;
       const outputLayers1Weights = net._outputLayers[1].weights;
       const outputLayers2Weights = net._outputLayers[2].weights;
@@ -157,14 +156,13 @@ describe('Recurrent Class: Unit', () => {
       net._adjustWeights();
 
       // weights are adjusted
+      assert.notEqual(model0Weights, net._model[0].weights);
       assert.notEqual(hiddenLayers00Weights, net._hiddenLayers[0][0].weights);
       assert.notEqual(hiddenLayers01Weights, net._hiddenLayers[0][1].weights);
       assert.notEqual(hiddenLayers02Weights, net._hiddenLayers[0][2].weights);
-      assert.notEqual(hiddenLayers03Weights, net._hiddenLayers[0][3].weights);
       assert.notEqual(hiddenLayers10Weights, net._hiddenLayers[1][0].weights);
       assert.notEqual(hiddenLayers11Weights, net._hiddenLayers[1][1].weights);
       assert.notEqual(hiddenLayers12Weights, net._hiddenLayers[1][2].weights);
-      assert.notEqual(hiddenLayers13Weights, net._hiddenLayers[1][3].weights);
       assert.notEqual(outputLayers0Weights, net._outputLayers[0].weights);
       assert.notEqual(outputLayers1Weights, net._outputLayers[1].weights);
       assert.notEqual(outputLayers2Weights, net._outputLayers[2].weights);
@@ -173,7 +171,7 @@ describe('Recurrent Class: Unit', () => {
   });
   describe('.trainPattern()', () => {
     it('steps back through values correctly', () => {
-      class SuperLayer extends Model {
+      class SuperLayer extends Filter {
         constructor() {
           super();
           this.width = 1;
@@ -184,7 +182,6 @@ describe('Recurrent Class: Unit', () => {
         predict() {}
         compare() {}
         learn() {}
-        reset() {}
       }
       const net = new Recurrent({
         inputLayer: () => new SuperLayer(),
