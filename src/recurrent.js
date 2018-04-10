@@ -106,8 +106,7 @@ export default class Recurrent extends FeedForward {
           break;
         }
         case 'Model': {
-          const settings = previousHiddenLayer;
-          layer = new previousHiddenLayer.constructor(settings);
+          layer = previousHiddenLayer;
           break;
         }
         case 'Modifier': {

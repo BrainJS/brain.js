@@ -133,7 +133,7 @@ describe('Recurrent Class: End to End', () => {
   });
   describe('.initializeDeep()', () => {
     describe('structure', () => {
-      it.only('can create new hidden layers in the correct structure', () => {
+      it('can create new hidden layers in the correct structure', () => {
         const model = {
           inputLayer: input({ height: 1 }),
           weights: random({ height: 3 })
@@ -154,7 +154,7 @@ describe('Recurrent Class: End to End', () => {
         assert.equal(net._inputLayers.length, 1);
         assert.equal(net._inputLayers[0], model.inputLayer);
         assert.equal(net._hiddenLayers.length, 1);
-        
+
         // double
         net.initializeDeep();
         assert.equal(net._hiddenLayers.length, 2);
@@ -165,12 +165,14 @@ describe('Recurrent Class: End to End', () => {
 
         assert.equal(net._hiddenLayers[0].length, 4);
         assert.equal(net._hiddenLayers[0][0].constructor.name, 'Random');
+        assert.equal(net._hiddenLayers[0][0], model.weights);
         assert.equal(net._hiddenLayers[0][1].constructor.name, 'Multiply');
         assert.equal(net._hiddenLayers[0][2].constructor.name, 'RecurrentZeros');
         assert.equal(net._hiddenLayers[0][3].constructor.name, 'Add');
 
         assert.equal(net._hiddenLayers[1].length, 4);
         assert.equal(net._hiddenLayers[1][0].constructor.name, 'Random');
+        assert.equal(net._hiddenLayers[1][0], model.weights);
         assert.equal(net._hiddenLayers[1][1].constructor.name, 'Multiply');
         assert.equal(net._hiddenLayers[1][2].constructor.name, 'RecurrentInput');
         assert.equal(net._hiddenLayers[1][3].constructor.name, 'Add');
@@ -181,6 +183,7 @@ describe('Recurrent Class: End to End', () => {
 
         assert.equal(net._hiddenLayers[2].length, 4);
         assert.equal(net._hiddenLayers[2][0].constructor.name, 'Random');
+        assert.equal(net._hiddenLayers[2][0], model.weights);
         assert.equal(net._hiddenLayers[2][1].constructor.name, 'Multiply');
         assert.equal(net._hiddenLayers[2][2].constructor.name, 'RecurrentInput');
         assert.equal(net._hiddenLayers[2][3].constructor.name, 'Add');
