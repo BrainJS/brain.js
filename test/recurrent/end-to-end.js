@@ -270,7 +270,7 @@ describe('Recurrent Class: End to End', () => {
     assert.equal(net._hiddenLayers[0].length, 6);
     assert.equal(net._hiddenLayers[1].length, 6);
     let error;
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 100; i++) {
       error = net.trainPattern([0, 0], [0], true);
       error += net.trainPattern([0, 1], [1], true);
       error += net.trainPattern([1, 0], [1], true);

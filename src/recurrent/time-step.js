@@ -324,7 +324,7 @@ export default class TimeStep {
      * then the output looks like: [4, 2, 9,...]
      * so we then remove the erroneous data to get our true output
      */
-    return output.slice(input.length - 2);
+    return output;
   }
 
   /**
