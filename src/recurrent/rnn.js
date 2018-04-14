@@ -11,7 +11,7 @@ import DataFormatter from '../utilities/data-formatter';
 
 export default class RNN {
   constructor(options = {}) {
-    const defaults = RNN.defaults;
+    const defaults = this.constructor.defaults;
 
     for (let p in defaults) {
       if (!defaults.hasOwnProperty(p)) continue;
@@ -391,7 +391,7 @@ export default class RNN {
    * @returns {{error: number, iterations: number}}
    */
   train(data, options = {}) {
-    options = Object.assign({}, RNN.trainDefaults, options);
+    options = Object.assign({}, this.constructor.trainDefaults, options);
     let iterations = options.iterations;
     let errorThresh = options.errorThresh;
     let log = options.log === true ? console.log : options.log;
@@ -452,7 +452,7 @@ export default class RNN {
    * @returns {Object}
    */
   toJSON() {
-    const defaults = RNN.defaults;
+    const defaults = this.constructor.defaults;
     let model = this.model;
     let options = {};
     for (let p in defaults) {
@@ -481,7 +481,7 @@ export default class RNN {
 
   fromJSON(json) {
     this.json = json;
-    const defaults = RNN.defaults;
+    const defaults = this.constructor.defaults;
     let model = this.model;
     let options = json.options;
     let allMatrices = model.allMatrices;
