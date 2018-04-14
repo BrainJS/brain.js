@@ -40,6 +40,18 @@ var _gru = require('./recurrent/gru');
 
 var _gru2 = _interopRequireDefault(_gru);
 
+var _rnnTimeStep = require('./recurrent/rnn-time-step');
+
+var _rnnTimeStep2 = _interopRequireDefault(_rnnTimeStep);
+
+var _lstmTimeStep = require('./recurrent/lstm-time-step');
+
+var _lstmTimeStep2 = _interopRequireDefault(_lstmTimeStep);
+
+var _gruTimeStep = require('./recurrent/gru-time-step');
+
+var _gruTimeStep2 = _interopRequireDefault(_gruTimeStep);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
@@ -52,7 +64,10 @@ exports.default = {
   recurrent: {
     RNN: _rnn2.default,
     LSTM: _lstm2.default,
-    GRU: _gru2.default
+    GRU: _gru2.default,
+    RNNTimeStep: _rnnTimeStep2.default,
+    LSTMTimeStep: _lstmTimeStep2.default,
+    GRUTimeStep: _gruTimeStep2.default
   }
 };
 //# sourceMappingURL=index.js.map
