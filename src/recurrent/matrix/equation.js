@@ -173,7 +173,7 @@ export default class Equation {
     this.states.push({
       product: input,
       forwardFn: () => {
-        input.weights[0] = self.inputValue;
+        input.weights = self.inputValue;
       }
     });
     return input;

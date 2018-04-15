@@ -1,19 +1,15 @@
 import Matrix from './matrix';
 import RandomMatrix from './matrix/random-matrix';
 import Equation from './matrix/equation';
-import sampleI from './matrix/sample-i';
-import maxI from './matrix/max-i';
-import softmax from './matrix/softmax';
-import copy from './matrix/copy';
-import { randomF } from '../utilities/random';
-import zeros from '../utilities/zeros';
-import DataFormatter from '../utilities/data-formatter';
 import RNN from './rnn';
 
 export default class RNNTimeStep extends RNN {
+  constructor(options) {
+    super(options);
+  }
+
   createInputMatrix() {
-    //0 is end, so add 1 to offset
-    this.model.input = new RandomMatrix(1, this.inputSize, 0.08);
+    this.model.input = new RandomMatrix(this.inputSize, 1, 0.08);
   }
 
   createOutputMatrix() {
@@ -66,23 +62,44 @@ export default class RNNTimeStep extends RNN {
       this.bindEquation();
     }
     const outputs = [];
-    for (let inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
-      // start and end tokens are zeros
-      equation = model.equations[inputIndex];
 
-      const current = input[inputIndex];
-      const next = input[inputIndex + 1];
-      const output = equation.runInput(current);
-      const error = output.weights[0] - next;
+    if (this.inputSize === 1) {
+      for (let inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
+        // start and end tokens are zeros
+        equation = model.equations[inputIndex];
 
-      // set gradients into log probabilities
-      errorSum += Math.abs(error);
+        const current = input[inputIndex];
+        const next = input[inputIndex + 1];
+        const output = equation.runInput([current]);
+        for (let i = 0; i < output.weights.length; i++) {
+          const error = output.weights[i] - next;
+          // set gradients into log probabilities
+          errorSum += Math.abs(error);
 
-      // write gradients into log probabilities
-      output.deltas[0] = error;
-      outputs.push(output.weights[0]);
+          // write gradients into log probabilities
+          output.deltas[i] = error;
+          outputs.push(output.weights);
+        }
+      }
+    } else {
+      for (let inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
+        // start and end tokens are zeros
+        equation = model.equations[inputIndex];
+
+        const current = input[inputIndex];
+        const next = input[inputIndex + 1];
+        const output = equation.runInput(current);
+        for (let i = 0; i < output.weights.length; i++) {
+          const error = output.weights[i] - next[i];
+          // set gradients into log probabilities
+          errorSum += Math.abs(error);
+
+          // write gradients into log probabilities
+          output.deltas[i] = error;
+          outputs.push(output.weights);
+        }
+      }
     }
-
     //this.model.equations.length - 1;
     this.totalCost = errorSum;
     return errorSum;
@@ -97,11 +114,11 @@ export default class RNNTimeStep extends RNN {
 
   /**
    *
-   * @param {Number[]|*} [rawInput]
+   * @param {Number[]|Number} [input]
    * @param {Number} [maxPredictionLength]
    * @param {Boolean} [isSampleI]
    * @param {Number} temperature
-   * @returns {*}
+   * @returns {Number[]|Number}
    */
   run(input = [], maxPredictionLength = 1, isSampleI = false, temperature = 1) {
     if (!this.isRunnable) return null;
@@ -110,9 +127,19 @@ export default class RNNTimeStep extends RNN {
       this.bindEquation();
     }
     let lastOutput;
-    for (let i = 0; i < input.length; i++) {
-      let outputMatrix = model.equations[i].runInput(input[i]);
-      lastOutput = outputMatrix.weights[0];
+    if (this.inputSize === 1) {
+      for (let i = 0; i < input.length; i++) {
+        let outputMatrix = model.equations[i].runInput([input[i]]);
+        lastOutput = outputMatrix.weights;
+      }
+    } else {
+      for (let i = 0; i < input.length; i++) {
+        let outputMatrix = model.equations[i].runInput(input[i]);
+        lastOutput = outputMatrix.weights;
+      }
+    }
+    if (this.outputSize === 1) {
+      return lastOutput[0]
     }
     return lastOutput;
   }

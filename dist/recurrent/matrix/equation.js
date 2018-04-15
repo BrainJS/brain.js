@@ -269,7 +269,7 @@ var Equation = function () {
       this.states.push({
         product: _input,
         forwardFn: function forwardFn() {
-          _input.weights[0] = self.inputValue;
+          _input.weights = self.inputValue;
         }
       });
       return _input;

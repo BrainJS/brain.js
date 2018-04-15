@@ -2641,7 +2641,7 @@ var Equation = function () {
       this.states.push({
         product: _input,
         forwardFn: function forwardFn() {
-          _input.weights[0] = self.inputValue;
+          _input.weights = self.inputValue;
         }
       });
       return _input;
@@ -3533,7 +3533,7 @@ var RNN = function () {
 
     _classCallCheck(this, RNN);
 
-    var defaults = RNN.defaults;
+    var defaults = this.constructor.defaults;
 
     for (var p in defaults) {
       if (!defaults.hasOwnProperty(p)) continue;
@@ -3925,7 +3925,7 @@ var RNN = function () {
     value: function train(data) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      options = Object.assign({}, RNN.trainDefaults, options);
+      options = Object.assign({}, this.constructor.trainDefaults, options);
       var iterations = options.iterations;
       var errorThresh = options.errorThresh;
       var log = options.log === true ? console.log : options.log;
@@ -3992,7 +3992,7 @@ var RNN = function () {
   }, {
     key: 'toJSON',
     value: function toJSON() {
-      var defaults = RNN.defaults;
+      var defaults = this.constructor.defaults;
       var model = this.model;
       var options = {};
       for (var p in defaults) {
@@ -4023,7 +4023,7 @@ var RNN = function () {
     key: 'fromJSON',
     value: function fromJSON(json) {
       this.json = json;
-      var defaults = RNN.defaults;
+      var defaults = this.constructor.defaults;
       var model = this.model;
       var options = json.options;
       var allMatrices = model.allMatrices;
