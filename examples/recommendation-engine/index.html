@@ -39,17 +39,17 @@
 
 		function nextTry(rating){	
 			document.getElementById('result').innerHTML = '';
-		
+
+            if(undefined !== ratingItem){
+                trainingData.push({ input: ratingItem.trainingInformation, output: { wanted: rating / 4 } });
+            }
+
 			const network = new brain.NeuralNetwork({
 				activation: 'sigmoid',
 				hiddenLayers: [4]
 			});
 			network.train(trainingData);
-					
-			if(undefined !== ratingItem){
-				trainingData.push({ input: ratingItem.trainingInformation, output: { wanted: rating / 4 } });
-			}
-			
+
 			let suggestionItemsText = '';
 			let suggestionItems = [];
 			for(i=0;i<itemsInStock.length;i++){
