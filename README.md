@@ -18,7 +18,8 @@
     + [Browser](#browser)
 - [Training](#training)
     + [Data format](#data-format)
-      + [For training with NeuralNetwork](#For-training-with-NeuralNetwork)
+      + [For training with NeuralNetwork](#for-training-with-neuralnetwork)
+      + [For training with `RNN`, `LSTM` and `GRU`](#for-training-with-rnn-lstm-and-gpu)
     + [Training Options](#training-options)
     + [Async Training](#async-training)
 - [Methods](#methods)
@@ -136,7 +137,7 @@ CAUTION: When using an array of values, you can use ANY value, however, the valu
 
 Example using direct strings:
 ```javascript
-var net = new brain.NeuralNetwork();
+var net = new brain.recurrent.LSTM();
 
 net.train([
   'doe, a deer, a female deer',
