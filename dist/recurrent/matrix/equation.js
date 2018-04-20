@@ -14,9 +14,9 @@ var _onesMatrix = require('./ones-matrix');
 
 var _onesMatrix2 = _interopRequireDefault(_onesMatrix);
 
-var _copy2 = require('./copy');
+var _copy = require('./copy');
 
-var _copy3 = _interopRequireDefault(_copy2);
+var _copy2 = _interopRequireDefault(_copy);
 
 var _cloneNegative2 = require('./clone-negative');
 
@@ -135,22 +135,6 @@ var Equation = function () {
         left: product,
         product: product,
         forwardFn: _allOnes3.default
-      });
-      return product;
-    }
-  }, {
-    key: 'copy',
-    value: function copy(m) {
-      var product = new _2.default(m.rows, m.columns);
-      this.states.push({
-        left: m,
-        product: product,
-        forwardFn: _copy3.default
-        // backpropagationFn: () => {
-        //   for (let i = 0; i < product.deltas.length; i++) {
-        //     m.deltas[i] = product.deltas[i];
-        //   }
-        // }
       });
       return product;
     }

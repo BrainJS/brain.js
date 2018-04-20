@@ -3,9 +3,9 @@ import RnnTimeStep from '../../src/recurrent/rnn-time-step';
 import LSTMTimeStep from "../../src/recurrent/lstm-time-step";
 
 /* NOTE: TimeStep here is deprecated though being committed as something new, it is the first feature we want using
- recurrent.js because it is simple one of the simplest recurrent neural networks and serves as a baseline to completing
+ recurrent.js because it is simply one of the simplest recurrent neural networks and serves as a baseline to completing
  the GPU architecture.   This test is written so as to create the baseline we can measure against.
- We get this working, we have a baseline, we finish recurrent.js, we change the world.
+ We get this working, we have a baseline, we finish recurrent.js.
   */
 describe('RnnTimeStep', () => {
   describe('.runInput()', () => {

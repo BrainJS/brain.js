@@ -62,21 +62,6 @@ export default class Equation {
     return product;
   }
 
-  copy(m) {
-    let product = new Matrix(m.rows, m.columns);
-    this.states.push({
-      left: m,
-      product: product,
-      forwardFn: copy,
-      // backpropagationFn: () => {
-      //   for (let i = 0; i < product.deltas.length; i++) {
-      //     m.deltas[i] = product.deltas[i];
-      //   }
-      // }
-    });
-    return product;
-  }
-
   /**
    *
    * @param {Matrix} m
