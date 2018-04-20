@@ -19,6 +19,7 @@
 - [Training](#training)
     + [Data format](#data-format)
       + [For training with NeuralNetwork](#for-training-with-neuralnetwork)
+      + [For training with `RNNTimeStep`, `LSTMTimeStep` and `GRUTimeStep`](#for-training-with-rnntimestep-lstmtimestep-and-gputimestep)
       + [For training with `RNN`, `LSTM` and `GRU`](#for-training-with-rnn-lstm-and-gpu)
     + [Training Options](#training-options)
     + [Async Training](#async-training)
@@ -126,6 +127,38 @@ net.train([{input: { r: 0.03, g: 0.7 }, output: { black: 1 }},
 
 var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.81, black: 0.18 }
 ```
+
+#### For training with `RNNTimeStep`, `LSTMTimeStep` and `GRUTimeStep`
+Eeach training pattern can either:
+* Be an array of numbers
+* Be an array of arrays of numbers
+
+Example using an array of numbers:
+```javascript
+var net = new brain.recurrent.LSTMTimeStep();
+
+net.train([
+  1,
+  2,
+  3,
+]);
+
+var output = net.run([1, 2]);  // 3
+```
+
+Example using an array of arrays of numbers:
+```javascript
+var net = new brain.recurrent.LSTMTimeStep();
+
+net.train([
+  [1, 3],
+  [2, 2],
+  [3, 1],
+]);
+
+var output = net.run([[1, 3], [2, 2]]);  // [3, 1]
+```
+
 #### For training with `RNN`, `LSTM` and `GRU`
 Each training pattern can either:
 * Be an array of values
