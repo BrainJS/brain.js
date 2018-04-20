@@ -150,7 +150,7 @@ var output = net.run('doe');  // ', a deer, a female deer'
 
 Example using strings with inputs and outputs:
 ```javascript
-var net = new brain.NeuralNetwork();
+var net = new brain.recurrent.LSTM();
 
 net.train([
   { input: 'I feel great about the world!', output: 'happy' },
