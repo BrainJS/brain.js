@@ -20,6 +20,8 @@
     + [Browser](#browser)
 - [Training](#training)
     + [Data format](#data-format)
+      + [For training with NeuralNetwork](#for-training-with-neuralnetwork)
+      + [For training with `RNN`, `LSTM` and `GRU`](#for-training-with-rnn-lstm-and-gpu)
     + [Training Options](#training-options)
     + [Async Training](#async-training)
 - [Methods](#methods)
@@ -106,6 +108,7 @@ Use `train()` to train the network with an array of training data. The network h
 at classifying new patterns.
 
 ### Data format
+#### For training with `NeuralNetwork`
 Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color contrast demo](https://brain.js.org/) it looks something like this:
 
 ```javascript
@@ -124,6 +127,39 @@ net.train([{input: { r: 0.03, g: 0.7 }, output: { black: 1 }},
            {input: { r: 0.5, g: 0.5, b: 1.0 }, output: { white: 1 }}]);
 
 var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.81, black: 0.18 }
+```
+#### For training with `RNN`, `LSTM` and `GRU`
+Each training pattern can either:
+* Be an array of values
+* Be a string
+* Have an `input` and an `output`
+  * Either of which can an array of values or a string
+
+CAUTION: When using an array of values, you can use ANY value, however, the values are represented in the neural network by a single input.  So the more _distinct values_ has _the larger your input layer_.  If you have a hundreds, thousands, or millions of floating point values _THIS IS NOT THE RIGHT CLASS FOR THE JOB_.  Also, when deviating from strings, this gets into beta
+
+Example using direct strings:
+```javascript
+var net = new brain.recurrent.LSTM();
+
+net.train([
+  'doe, a deer, a female deer',
+  'ray, a drop of golden sun',
+  'me, a name I call myself',
+]);
+
+var output = net.run('doe');  // ', a deer, a female deer'
+```
+
+Example using strings with inputs and outputs:
+```javascript
+var net = new brain.recurrent.LSTM();
+
+net.train([
+  { input: 'I feel great about the world!', output: 'happy' },
+  { input: 'The world is a terrible place!', output: 'sad' },
+]);
+
+var output = net.run('I feel great about the world!');  // 'happy'
 ```
 
 
