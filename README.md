@@ -21,6 +21,7 @@
 - [Training](#training)
     + [Data format](#data-format)
       + [For training with NeuralNetwork](#for-training-with-neuralnetwork)
+      + [For training with `RNNTimeStep`, `LSTMTimeStep` and `GRUTimeStep`](#for-training-with-rnntimestep-lstmtimestep-and-gputimestep)
       + [For training with `RNN`, `LSTM` and `GRU`](#for-training-with-rnn-lstm-and-gpu)
     + [Training Options](#training-options)
     + [Async Training](#async-training)
@@ -128,6 +129,38 @@ net.train([{input: { r: 0.03, g: 0.7 }, output: { black: 1 }},
 
 var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.81, black: 0.18 }
 ```
+
+#### For training with `RNNTimeStep`, `LSTMTimeStep` and `GRUTimeStep`
+Eeach training pattern can either:
+* Be an array of numbers
+* Be an array of arrays of numbers
+
+Example using an array of numbers:
+```javascript
+var net = new brain.recurrent.LSTMTimeStep();
+
+net.train([
+  1,
+  2,
+  3,
+]);
+
+var output = net.run([1, 2]);  // 3
+```
+
+Example using an array of arrays of numbers:
+```javascript
+var net = new brain.recurrent.LSTMTimeStep();
+
+net.train([
+  [1, 3],
+  [2, 2],
+  [3, 1],
+]);
+
+var output = net.run([[1, 3], [2, 2]]);  // [3, 1]
+```
+
 #### For training with `RNN`, `LSTM` and `GRU`
 Each training pattern can either:
 * Be an array of values
@@ -321,6 +354,9 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 
 # Neural Network Types
 * [`brain.NeuralNetwork`](src/neural-network.js) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation
+* [`brain.recurrent.RNNTimeStep`](src/recurrent/rnn-time-step.js) - [Time Step Recurrent Neural Network or "RNN"](https://en.wikipedia.org/wiki/Recurrent_neural_network)
+* [`brain.recurrent.LSTMTimeStep`](src/recurrent/lstm-time-step.js) - [Time Step Long Short Term Memory Neural Network or "LSTM"](https://en.wikipedia.org/wiki/Long_short-term_memory)
+* [`brain.recurrent.GRUTimeStep`](src/recurrent/gru-time-step.js) - [Time Step Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
 * [`brain.recurrent.RNN`](src/recurrent/rnn.js) - [Recurrent Neural Network or "RNN"](https://en.wikipedia.org/wiki/Recurrent_neural_network)
 * [`brain.recurrent.LSTM`](src/recurrent/lstm.js) - [Long Short Term Memory Neural Network or "LSTM"](https://en.wikipedia.org/wiki/Long_short-term_memory)
 * [`brain.recurrent.GRU`](src/recurrent/gru.js) - [Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
@@ -328,6 +364,7 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 ### Why different Neural Network Types?
 Different neural nets do different things well. For example:
 * A Feedforward Neural Network can classify simple things very well, but it has no memory of previous actions and has infinite variation of results.
+* A Time Step Recurrent Neural Network _remembers_, and can predict future values.
 * A Recurrent Neural Network _remembers_, and has a finite set of results.
 
 # Get Involved!

@@ -1,15 +1,8 @@
-import fs from 'fs';
 import assert from 'assert';
 import sinon from 'sinon';
 import Matrix from '../../src/recurrent/matrix';
 import OnesMatrix from '../../src/recurrent/matrix/ones-matrix';
 import Equation from '../../src/recurrent/matrix/equation';
-
-function randomMath() {
-  var left = Math.floor(Math.random() * 10);
-  var right = Math.floor(Math.random() * 10);
-  return left + '+' + right + '=' + (left + right);
-}
 
 function fourSquareMatrix(value) {
   var result = new Matrix(4, 4);

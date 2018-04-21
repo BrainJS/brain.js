@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.1.3
+ *   version: 1.2.0
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -2463,6 +2463,7 @@ var Equation = function () {
     _classCallCheck(this, Equation);
 
     this.inputRow = 0;
+    this.inputValue = null;
     this.states = [];
   }
 
@@ -2612,6 +2613,25 @@ var Equation = function () {
     }
 
     /**
+     * copy a matrix
+     * @param {Matrix} input
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'input',
+    value: function input(_input) {
+      var self = this;
+      this.states.push({
+        product: _input,
+        forwardFn: function forwardFn() {
+          _input.weights = self.inputValue;
+        }
+      });
+      return _input;
+    }
+
+    /**
      * connects a matrix via a row
      * @param {Matrix} m
      * @returns {Matrix}
@@ -2705,6 +2725,27 @@ var Equation = function () {
       var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
       this.inputRow = rowIndex;
+      var state = void 0;
+      for (var i = 0, max = this.states.length; i < max; i++) {
+        state = this.states[i];
+        if (!state.hasOwnProperty('forwardFn')) {
+          continue;
+        }
+        state.forwardFn(state.product, state.left, state.right);
+      }
+
+      return state.product;
+    }
+
+    /**
+     * @patam {Number} [rowIndex]
+     * @output {Matrix}
+     */
+
+  }, {
+    key: 'runInput',
+    value: function runInput(inputValue) {
+      this.inputValue = inputValue;
       var state = void 0;
       for (var i = 0, max = this.states.length; i < max; i++) {
         state = this.states[i];
@@ -3476,7 +3517,7 @@ var RNN = function () {
 
     _classCallCheck(this, RNN);
 
-    var defaults = RNN.defaults;
+    var defaults = this.constructor.defaults;
 
     for (var p in defaults) {
       if (!defaults.hasOwnProperty(p)) continue;
@@ -3868,7 +3909,7 @@ var RNN = function () {
     value: function train(data) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      options = Object.assign({}, RNN.trainDefaults, options);
+      options = Object.assign({}, this.constructor.trainDefaults, options);
       var iterations = options.iterations;
       var errorThresh = options.errorThresh;
       var log = options.log === true ? console.log : options.log;
@@ -3935,7 +3976,7 @@ var RNN = function () {
   }, {
     key: 'toJSON',
     value: function toJSON() {
-      var defaults = RNN.defaults;
+      var defaults = this.constructor.defaults;
       var model = this.model;
       var options = {};
       for (var p in defaults) {
@@ -3966,7 +4007,7 @@ var RNN = function () {
     key: 'fromJSON',
     value: function fromJSON(json) {
       this.json = json;
-      var defaults = RNN.defaults;
+      var defaults = this.constructor.defaults;
       var model = this.model;
       var options = json.options;
       var allMatrices = model.allMatrices;
