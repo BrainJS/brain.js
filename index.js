@@ -4,6 +4,9 @@ var lookup = require('./dist/lookup').default;
 var NeuralNetwork = require('./dist/neural-network').default;
 var NeuralNetworkGPU = require('./dist/neural-network-gpu').default;
 var TrainStream = require('./dist/train-stream').default;
+var RNNTimeStep = require('./dist/recurrent/rnn-time-step').default;
+var LSTMTimeStep = require('./dist/recurrent/lstm-time-step').default;
+var GRUTimeStep = require('./dist/recurrent/gru-time-step').default;
 var RNN = require('./dist/recurrent/rnn').default;
 var LSTM = require('./dist/recurrent/lstm').default;
 var GRU = require('./dist/recurrent/gru').default;
@@ -28,6 +31,9 @@ var brain = {
   NeuralNetworkGPU: NeuralNetworkGPU,
   TrainStream: TrainStream,
   recurrent: {
+    RNNTimeStep: RNNTimeStep,
+    LSTMTimeStep: LSTMTimeStep,
+    GRUTimeStep: GRUTimeStep,
     RNN: RNN,
     LSTM: LSTM,
     GRU: GRU,
