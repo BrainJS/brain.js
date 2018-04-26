@@ -131,7 +131,7 @@ var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.81, black: 0.18 }
 ```
 
 #### For training with `RNNTimeStep`, `LSTMTimeStep` and `GRUTimeStep`
-Eeach training pattern can either:
+Each training pattern can either:
 * Be an array of numbers
 * Be an array of arrays of numbers
 
