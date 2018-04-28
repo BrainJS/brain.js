@@ -43,8 +43,15 @@
     
 # Examples
 Here's an example showcasing how to approximate the XOR function using `brain.js`:
+More info on config [here](https://github.com/BrainJS/brain.js/blob/develop/src/neural-network.js#L31).
 
 ```javascript
+//provide optional config object (or undefined). Defaults shown.
+var config = {
+    binaryThresh: 0.5,     // ¯\_(ツ)_/¯
+    hiddenLayers: [3],     // array of ints for the sizes of the hidden layers in the network
+    activation: 'sigmoid' // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+}
 //create a simple feed forward neural network with backpropagation
 var net = new brain.NeuralNetwork();
 
@@ -56,9 +63,19 @@ net.train([{input: [0, 0], output: [0]},
 var output = net.run([1, 0]);  // [0.987]
 ```
 or
+More info on config [here](https://github.com/BrainJS/brain.js/blob/develop/src/recurrent/rnn.js#L726).
 ```javascript
+//provide optional config object, defaults shown.
+var config = {
+    inputSize: 20,
+    inputRange: 20,
+    hiddenSizes:[20,20],
+    outputSize: 20,
+    learningRate: 0.01,
+    decayRate: 0.999,
+}
 //create a simple recurrent neural network
-var net = new brain.recurrent.RNN();
+var net = new brain.recurrent.RNN(config);
 
 net.train([{input: [0, 0], output: [0]},
            {input: [0, 1], output: [1]},
