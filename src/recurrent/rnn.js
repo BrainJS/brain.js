@@ -13,10 +13,7 @@ export default class RNN {
   constructor(options = {}) {
     const defaults = this.constructor.defaults;
 
-    for (let p in defaults) {
-      if (!defaults.hasOwnProperty(p)) continue;
-      this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
-    }
+    Object.assign(this, defaults, options)
 
     this.stepCache = {};
     this.runs = 0;
