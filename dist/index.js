@@ -3,19 +3,10 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.activation = exports.FeedForward = exports.layer = undefined;
 
 var _crossValidate = require('./cross-validate');
 
 var _crossValidate2 = _interopRequireDefault(_crossValidate);
-
-var _layer = require('./layer');
-
-var layer = _interopRequireWildcard(_layer);
-
-var _activation = require('./activation');
-
-var activation = _interopRequireWildcard(_activation);
 
 var _likely = require('./likely');
 
@@ -49,11 +40,17 @@ var _gru = require('./recurrent/gru');
 
 var _gru2 = _interopRequireDefault(_gru);
 
-var _feedForward = require('./feed-forward');
+var _rnnTimeStep = require('./recurrent/rnn-time-step');
 
-var _feedForward2 = _interopRequireDefault(_feedForward);
+var _rnnTimeStep2 = _interopRequireDefault(_rnnTimeStep);
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _lstmTimeStep = require('./recurrent/lstm-time-step');
+
+var _lstmTimeStep2 = _interopRequireDefault(_lstmTimeStep);
+
+var _gruTimeStep = require('./recurrent/gru-time-step');
+
+var _gruTimeStep2 = _interopRequireDefault(_gruTimeStep);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -67,10 +64,10 @@ exports.default = {
   recurrent: {
     RNN: _rnn2.default,
     LSTM: _lstm2.default,
-    GRU: _gru2.default
+    GRU: _gru2.default,
+    RNNTimeStep: _rnnTimeStep2.default,
+    LSTMTimeStep: _lstmTimeStep2.default,
+    GRUTimeStep: _gruTimeStep2.default
   }
 };
-exports.layer = layer;
-exports.FeedForward = _feedForward2.default;
-exports.activation = activation;
 //# sourceMappingURL=index.js.map

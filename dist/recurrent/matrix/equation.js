@@ -91,6 +91,7 @@ var Equation = function () {
     _classCallCheck(this, Equation);
 
     this.inputRow = 0;
+    this.inputValue = null;
     this.states = [];
   }
 
@@ -240,6 +241,25 @@ var Equation = function () {
     }
 
     /**
+     * copy a matrix
+     * @param {Matrix} input
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: 'input',
+    value: function input(_input) {
+      var self = this;
+      this.states.push({
+        product: _input,
+        forwardFn: function forwardFn() {
+          _input.weights = self.inputValue;
+        }
+      });
+      return _input;
+    }
+
+    /**
      * connects a matrix via a row
      * @param {Matrix} m
      * @returns {Matrix}
@@ -333,6 +353,27 @@ var Equation = function () {
       var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
       this.inputRow = rowIndex;
+      var state = void 0;
+      for (var i = 0, max = this.states.length; i < max; i++) {
+        state = this.states[i];
+        if (!state.hasOwnProperty('forwardFn')) {
+          continue;
+        }
+        state.forwardFn(state.product, state.left, state.right);
+      }
+
+      return state.product;
+    }
+
+    /**
+     * @patam {Number} [rowIndex]
+     * @output {Matrix}
+     */
+
+  }, {
+    key: 'runInput',
+    value: function runInput(inputValue) {
+      this.inputValue = inputValue;
       var state = void 0;
       for (var i = 0, max = this.states.length; i < max; i++) {
         state = this.states[i];

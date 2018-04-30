@@ -25,10 +25,6 @@ export default class Equation {
     this.states = [];
   }
 
-  setPreviousOutput(output) {
-    this.previousOutput = output;
-  }
-
   /**
    * connects two matrices together by add
    * @param {Matrix} left
@@ -62,21 +58,6 @@ export default class Equation {
       left: product,
       product: product,
       forwardFn: allOnes
-    });
-    return product;
-  }
-
-  copy(m) {
-    let product = new Matrix(m.rows, m.columns);
-    this.states.push({
-      left: m,
-      product: product,
-      forwardFn: copy,
-      // backpropagationFn: () => {
-      //   for (let i = 0; i < product.deltas.length; i++) {
-      //     m.deltas[i] = product.deltas[i];
-      //   }
-      // }
     });
     return product;
   }
@@ -169,20 +150,18 @@ export default class Equation {
 
   /**
    * copy a matrix
-   * @param {number} rows
-   * @param {number} columns
+   * @param {Matrix} input
    * @returns {Matrix}
    */
-  input(rows, columns) {
-    const product = new Matrix(rows, columns);
+  input(input) {
     const self = this;
     this.states.push({
-      product: product,
+      product: input,
       forwardFn: () => {
-        product.weights[0] = self.inputValue;
+        input.weights = self.inputValue;
       }
     });
-    return product;
+    return input;
   }
 
   /**

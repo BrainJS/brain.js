@@ -9,6 +9,9 @@ import TrainStream from './train-stream';
 import RNN from './recurrent/rnn';
 import LSTM from './recurrent/lstm';
 import GRU from './recurrent/gru';
+import RNNTimeStep from './recurrent/rnn-time-step';
+import LSTMTimeStep from './recurrent/lstm-time-step';
+import GRUTimeStep from './recurrent/gru-time-step';
 import FeedForward from './feed-forward';
 import Recurrent from './recurrent';
 import praxis from './praxis';
@@ -23,7 +26,10 @@ export default {
   recurrent: {
     RNN,
     LSTM,
-    GRU
+    GRU,
+    RNNTimeStep,
+    LSTMTimeStep,
+    GRUTimeStep
   }
 };
 
