@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.2.0
+ *   version: 1.2.1
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -2073,8 +2073,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var GRUTimeStep = function (_RnnTimeStep) {
-  _inherits(GRUTimeStep, _RnnTimeStep);
+var GRUTimeStep = function (_RNNTimeStep) {
+  _inherits(GRUTimeStep, _RNNTimeStep);
 
   function GRUTimeStep() {
     _classCallCheck(this, GRUTimeStep);
@@ -2246,8 +2246,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var LSTMTimeStep = function (_RnnTimeStep) {
-  _inherits(LSTMTimeStep, _RnnTimeStep);
+var LSTMTimeStep = function (_RNNTimeStep) {
+  _inherits(LSTMTimeStep, _RNNTimeStep);
 
   function LSTMTimeStep() {
     _classCallCheck(this, LSTMTimeStep);
@@ -3872,10 +3872,7 @@ var RNN = function () {
 
     var defaults = this.constructor.defaults;
 
-    for (var p in defaults) {
-      if (!defaults.hasOwnProperty(p)) continue;
-      this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
-    }
+    Object.assign(this, defaults, options);
 
     this.stepCache = {};
     this.runs = 0;

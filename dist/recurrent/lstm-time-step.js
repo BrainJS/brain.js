@@ -26,8 +26,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var LSTMTimeStep = function (_RnnTimeStep) {
-  _inherits(LSTMTimeStep, _RnnTimeStep);
+var LSTMTimeStep = function (_RNNTimeStep) {
+  _inherits(LSTMTimeStep, _RNNTimeStep);
 
   function LSTMTimeStep() {
     _classCallCheck(this, LSTMTimeStep);
