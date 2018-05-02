@@ -157,9 +157,7 @@ Example using an array of numbers:
 var net = new brain.recurrent.LSTMTimeStep();
 
 net.train([
-  1,
-  2,
-  3,
+  [1, 2, 3]
 ]);
 
 var output = net.run([1, 2]);  // 3

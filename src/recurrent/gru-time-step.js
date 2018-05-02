@@ -1,8 +1,8 @@
 import Matrix from './matrix';
 import GRU from './gru';
-import RnnTimeStep from './rnn-time-step';
+import RNNTimeStep from './rnn-time-step';
 
-export default class GRUTimeStep extends RnnTimeStep {
+export default class GRUTimeStep extends RNNTimeStep {
   getModel(hiddenSize, prevSize) {
     return GRU.prototype.getModel(hiddenSize, prevSize);
   }
