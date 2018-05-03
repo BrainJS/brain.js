@@ -1,11 +1,12 @@
 import assert from 'assert';
 import Recurrent from '../../src/recurrent';
-import TimeStep from '../../src/recurrent/time-step';
+import RNNTimeStep from '../../src/recurrent/rnn-time-step';
 
 import {layer} from '../../src';
 import Equation from "../../src/recurrent/matrix/equation";
 import RandomMatrix from "../../src/recurrent/matrix/random-matrix";
 import Matrix from "../../src/recurrent/matrix";
+import zeros2D from "../../src/utilities/zeros-2d";
 const {
   add,
   input,
@@ -21,6 +22,121 @@ describe('Recurrent Class: End to End', () => {
     { input: [1, 0], output: [1] },
     { input: [1, 1], output: [0] }
   ];
+  describe('when configured like RNNTimeStep', () => {
+    it.only('outputs the exact same values', () => {
+      const timeStep = new RNNTimeStep({
+        inputSize: 1,
+        hiddenSizes: [3],
+        outputSize: 1
+      });
+      const recurrentNet = new Recurrent({
+        inputLayer: () => input({ height: 1 }),
+        hiddenLayers: [
+          (input, recurrentInput) => recurrent({ width: 1, height: 3 }, input, recurrentInput),
+        ],
+        outputLayer: (input) => output({ height: 1 }, input)
+      });
+      timeStep.initialize();
+      recurrentNet.initialize();
+
+      assert.equal(
+        [
+          timeStep.model.hiddenLayers[0].bias, timeStep.model.hiddenLayers[0].transition, timeStep.model.hiddenLayers[0].weight,
+        ].length,
+        recurrentNet._model.length
+      );
+      // set both nets exactly the same, then train them once, and compare
+      // zero out
+      recurrentNet._inputLayers.forEach((layer, i) => {
+        layer.deltas = zeros2D(layer.width, layer.height);
+        layer.weights = zeros2D(layer.width, layer.height);
+      });
+      recurrentNet._hiddenLayers[0].forEach((layer, i) => {
+        layer.deltas = zeros2D(layer.width, layer.height) ;
+        layer.weights = zeros2D(layer.width, layer.height);
+      });
+      recurrentNet._outputLayers.forEach((layer, i) => {
+        layer.deltas = zeros2D(layer.width, layer.height);
+        layer.weights = zeros2D(layer.width, layer.height);
+      });
+      timeStep.model.input.weights.forEach((weight, i) => {
+        timeStep.model.input.weights[i] = 0;
+        timeStep.model.input.deltas[i] = 0;
+      });
+      timeStep.model.hiddenLayers.forEach((layer) => {
+        layer.bias.weights.forEach((weight, i) => {
+          layer.bias.weights[i] = 0;
+          layer.bias.deltas[i] = 0;
+        });
+        layer.transition.weights.forEach((weight, i) => {
+          layer.transition.weights[i] = 0;
+          layer.transition.deltas[i] = 0;
+        });
+        layer.weight.weights.forEach((weight, i) => {
+          layer.weight.weights[i] = 0;
+          layer.weight.deltas[i] = 0;
+        });
+      });
+      timeStep.model.output.weights.forEach((weight, i) => {
+        timeStep.model.output.weights[i] = 0;
+        timeStep.model.output.deltas[i] = 0;
+      });
+
+      const recurrentWeightLayers = recurrentNet._model.filter(layer => layer.name === 'weight');
+      const recurrentTransitionLayers = recurrentNet._model.filter(layer => layer.name === 'transition');
+      const recurrentBiasLayers = recurrentNet._model.filter(layer => layer.name === 'bias');
+
+      const timeStepWeightLayers = timeStep.model.hiddenLayers.map(hiddenLayers => hiddenLayers.weight);
+      const timeStepTransitionLayers = timeStep.model.hiddenLayers.map(hiddenLayers => hiddenLayers.transition);
+      const timeStepBiasLayers = timeStep.model.hiddenLayers.map(hiddenLayers => hiddenLayers.bias);
+
+      assert.equal(recurrentWeightLayers.length, timeStepWeightLayers.length);
+      assert.equal(recurrentTransitionLayers.length, timeStepTransitionLayers.length);
+      assert.equal(recurrentBiasLayers.length, timeStepBiasLayers.length);
+
+      // set weights
+      recurrentWeightLayers[0].weights[0][0] = timeStepWeightLayers[0].weights[0] = 19;
+      recurrentWeightLayers[0].weights[1][0] = timeStepWeightLayers[0].weights[1] = 16;
+      recurrentWeightLayers[0].weights[2][0] = timeStepWeightLayers[0].weights[2] = 5;
+
+      // set transition
+      recurrentTransitionLayers[0].weights[0][0] = timeStepTransitionLayers[0].weights[0] = 12;
+      recurrentTransitionLayers[0].weights[0][1] = timeStepTransitionLayers[0].weights[1] = 7;
+      recurrentTransitionLayers[0].weights[0][2] = timeStepTransitionLayers[0].weights[2] = 7;
+      recurrentTransitionLayers[0].weights[1][0] = timeStepTransitionLayers[0].weights[3] = 4;
+      recurrentTransitionLayers[0].weights[1][1] = timeStepTransitionLayers[0].weights[4] = 14;
+      recurrentTransitionLayers[0].weights[1][2] = timeStepTransitionLayers[0].weights[5] = 6;
+      recurrentTransitionLayers[0].weights[2][0] = timeStepTransitionLayers[0].weights[6] = 3;
+      recurrentTransitionLayers[0].weights[2][1] = timeStepTransitionLayers[0].weights[7] = 7;
+      recurrentTransitionLayers[0].weights[2][2] = timeStepTransitionLayers[0].weights[8] = 19;
+
+      timeStep.runInput([2, 3]);
+      recurrentNet.run([2, 3]);
+
+      assert.equal(recurrentNet._inputLayers[0].weights[0], timeStep.model.input.weights[0]);
+
+      assert.equal(recurrentNet._hiddenLayers[0][0].weights[0][0], timeStep.model.equations[0].states[1].product.weights[0]);
+      assert.equal(recurrentNet._hiddenLayers[0][0].weights[1][0], timeStep.model.equations[0].states[1].product.weights[1]);
+      assert.equal(recurrentNet._hiddenLayers[0][0].weights[2][0], timeStep.model.equations[0].states[1].product.weights[2]);
+
+      assert.equal(recurrentNet._hiddenLayers[0][2].weights[0][0], timeStep.model.equations[0].states[2].product.weights[0]);
+      assert.equal(recurrentNet._hiddenLayers[0][2].weights[1][0], timeStep.model.equations[0].states[2].product.weights[1]);
+      assert.equal(recurrentNet._hiddenLayers[0][2].weights[2][0], timeStep.model.equations[0].states[2].product.weights[2]);
+
+      assert.equal(recurrentNet._hiddenLayers[0][3].weights[0][0], timeStep.model.equations[0].states[3].product.weights[0]);
+      assert.equal(recurrentNet._hiddenLayers[0][3].weights[1][0], timeStep.model.equations[0].states[3].product.weights[1]);
+      assert.equal(recurrentNet._hiddenLayers[0][3].weights[2][0], timeStep.model.equations[0].states[3].product.weights[2]);
+
+      assert.equal(recurrentNet._hiddenLayers[0][4].weights[0][0], timeStep.model.equations[0].states[4].product.weights[0]);
+      assert.equal(recurrentNet._hiddenLayers[0][4].weights[1][0], timeStep.model.equations[0].states[4].product.weights[1]);
+      assert.equal(recurrentNet._hiddenLayers[0][4].weights[2][0], timeStep.model.equations[0].states[4].product.weights[2]);
+
+      assert.equal(recurrentNet._hiddenLayers[0][5].weights[0][0], timeStep.model.equations[0].states[5].product.weights[0]);
+      assert.equal(recurrentNet._hiddenLayers[0][5].weights[1][0], timeStep.model.equations[0].states[5].product.weights[1]);
+      assert.equal(recurrentNet._hiddenLayers[0][5].weights[2][0], timeStep.model.equations[0].states[5].product.weights[2]);
+      console.log(recurrentNet);
+    });
+  });
   describe('training life-cycle', () => {
     it('properly instantiates starts with random weights and zero deltas and back propagates values through weights', () => {
       const net = new Recurrent({
@@ -255,7 +371,31 @@ describe('Recurrent Class: End to End', () => {
     }, 'net could not initialize');
   });
 
-  it.only('can learn xor', () => {
+  it('can learn to increment', () => {
+    const net = new Recurrent({
+      inputLayer: () => input({ height: 1 }),
+      hiddenLayers: [
+        (input, recurrentInput) => recurrent({ height: 3 }, input, recurrentInput)
+      ],
+      outputLayer: input => output({ height: 1 }, input)
+    });
+    net.initialize();
+    net.initializeDeep();
+    assert.equal(net._model.length, 3);
+    assert.equal(net._hiddenLayers.length, 2);
+    assert.equal(net._hiddenLayers[0].length, 6);
+    assert.equal(net._hiddenLayers[1].length, 6);
+    let error;
+    for (let i = 0; i < 100; i++) {
+      error = net.trainPattern([0, 1], [2], true);
+      console.log(error);
+    }
+    net.log = true;
+    console.log(net.runInput([0, 1]));
+    assert(error < 0.005);
+  });
+
+  it('can learn xor', () => {
     const net = new Recurrent({
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [

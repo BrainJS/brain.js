@@ -43,7 +43,6 @@ export default class Multiply extends Operator {
         size: this.inputLayer1.height
       }
     });
-    this.compareKernel2.myName = this.inputLayer2.constructor.name;
   }
   reuseKernels(layer) {
     super.reuseKernels(layer);

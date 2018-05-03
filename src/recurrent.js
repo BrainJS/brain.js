@@ -156,7 +156,8 @@ export default class Recurrent extends FeedForward {
   }
 
   runInput(input) {
-    for (let x = 0; x < input.length; x++) {
+    const max = input.length - 1;
+    for (let x = 0; x < max; x++) {
       const hiddenLayers = this._hiddenLayers[x];
       const hiddenConnection = hiddenLayers[hiddenLayers.length - 1];
       this._outputConnection.setLayer(hiddenConnection);

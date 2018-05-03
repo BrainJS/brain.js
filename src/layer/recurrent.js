@@ -1,4 +1,4 @@
-import { relu, add, multiply, random } from './';
+import { relu, add, multiply, random, zeros } from './';
 
 export default (settings, input, recurrentInput) => {
   const { height } = settings;
@@ -6,11 +6,11 @@ export default (settings, input, recurrentInput) => {
   recurrentInput.setDimensions(1, height);
 
   //wxh
-  const weight = random({ height, width: input.height });
+  const weight = random({ name: 'weight', height, width: input.height });
   //whh
-  const transition = random({ height, width: height });
+  const transition = random({ name: 'transition', height, width: height });
   //bhh
-  const bias = random({ height });
+  const bias = zeros({ name: 'bias', height });
 
   return relu(
     add(
