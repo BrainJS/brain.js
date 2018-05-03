@@ -58,10 +58,7 @@ var RNN = function () {
 
     var defaults = this.constructor.defaults;
 
-    for (var p in defaults) {
-      if (!defaults.hasOwnProperty(p)) continue;
-      this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
-    }
+    Object.assign(this, defaults, options);
 
     this.stepCache = {};
     this.runs = 0;

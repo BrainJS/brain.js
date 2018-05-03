@@ -1,8 +1,8 @@
 import Matrix from './matrix';
 import LSTM from './lstm';
-import RnnTimeStep from './rnn-time-step';
+import RNNTimeStep from './rnn-time-step';
 
-export default class LSTMTimeStep extends RnnTimeStep {
+export default class LSTMTimeStep extends RNNTimeStep {
   getModel(hiddenSize, prevSize) {
     return LSTM.prototype.getModel.call(this, hiddenSize, prevSize);
   }

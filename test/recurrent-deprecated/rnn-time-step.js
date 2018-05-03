@@ -1,5 +1,5 @@
 import assert from 'assert';
-import RnnTimeStep from '../../src/recurrent/rnn-time-step';
+import RNNTimeStep from '../../src/recurrent/rnn-time-step';
 import LSTMTimeStep from "../../src/recurrent/lstm-time-step";
 
 /* NOTE: TimeStep here is deprecated though being committed as something new, it is the first feature we want using
@@ -7,10 +7,10 @@ import LSTMTimeStep from "../../src/recurrent/lstm-time-step";
  the GPU architecture.   This test is written so as to create the baseline we can measure against.
  We get this working, we have a baseline, we finish recurrent.js.
   */
-describe('RnnTimeStep', () => {
+describe('RNNTimeStep', () => {
   describe('.runInput()', () => {
     it('creates the correct size equations', () => {
-      const net = new RnnTimeStep({
+      const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [20],
         outputSize: 1
@@ -22,7 +22,7 @@ describe('RnnTimeStep', () => {
       assert.equal(net.model.equations.length, 2);
     });
     it('copies weights to deltas on end of equation', () => {
-      const net = new RnnTimeStep({
+      const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [20],
         outputSize: 1
@@ -43,7 +43,7 @@ describe('RnnTimeStep', () => {
       assert.notDeepEqual(equationOutput0.product.deltas, equationOutput1.product.deltas);
     });
     it('forward propagates weights', () => {
-      const net = new RnnTimeStep({
+      const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [20],
         outputSize: 1
@@ -63,7 +63,7 @@ describe('RnnTimeStep', () => {
             assert.notEqual(weight, 0, `equation is 0 on equation ${ equation } ${ equationIndex}, state ${ stateIndex }, weight ${ weightIndex }`))));
     });
     it('back propagates deltas', () => {
-      const net = new RnnTimeStep({
+      const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [20],
         outputSize: 1
@@ -82,7 +82,7 @@ describe('RnnTimeStep', () => {
           stateIndex === equation.states.length - 1
             ? null
             : state.product.deltas.forEach((delta, deltaIndex) =>
-              assert.equal(delta, 0, `equation is not 0 on equation ${ equation } ${ equationIndex}, state ${ stateIndex }, delta ${ deltaIndex }`))));
+              assert.equal(delta, 0, `equation is not 0 on equation ${ equationIndex}, state ${ stateIndex }, delta ${ deltaIndex }`))));
 
       net.runBackpropagate();
 
@@ -91,7 +91,7 @@ describe('RnnTimeStep', () => {
       net.model.equations.forEach((equation, equationIndex) =>
         equation.states.forEach((state, stateIndex) =>
           state.product.deltas.forEach((delta, deltaIndex) =>
-            assert.notEqual(delta, 0, `equation is 0 on equation ${ equation } ${ equationIndex}, state ${ stateIndex }, delta ${ deltaIndex }`))));
+            assert.notEqual(delta, 0, `equation is 0 on equation ${ equationIndex}, state ${ stateIndex }, delta ${ deltaIndex }`))));
     });
   });
   it('can learn to predict forwards and backwards', () => {
