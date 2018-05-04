@@ -149,7 +149,6 @@ describe('Recurrent Class: End to End', () => {
       assert.equal(recurrentNet._hiddenLayers[0][5].weights[2][0], timeStep.model.equations[0].states[5].product.weights[2]);
 
       assert.equal(recurrentNet._outputLayers[3].weights[0], timeStep.model.equations[0].states[7].product.weights[0]);
-      console.log(recurrentNet);
     });
   });
   describe('training life-cycle', () => {
