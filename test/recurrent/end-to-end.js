@@ -23,7 +23,7 @@ describe('Recurrent Class: End to End', () => {
     { input: [1, 1], output: [0] }
   ];
   describe('when configured like RNNTimeStep', () => {
-    it.only('outputs the exact same values', () => {
+    it.only('forward propagates equivalent to baseline', () => {
       const timeStep = new RNNTimeStep({
         inputSize: 1,
         hiddenSizes: [3],
@@ -85,10 +85,15 @@ describe('Recurrent Class: End to End', () => {
       const recurrentWeightLayers = recurrentNet._model.filter(layer => layer.name === 'weight');
       const recurrentTransitionLayers = recurrentNet._model.filter(layer => layer.name === 'transition');
       const recurrentBiasLayers = recurrentNet._model.filter(layer => layer.name === 'bias');
+      const recurrentOutputLayer = recurrentNet._outputLayers[0];
+      const recurrentRecurrentLayer = recurrentNet._hiddenLayers[0][1];
 
+      timeStep.bindEquation();
       const timeStepWeightLayers = timeStep.model.hiddenLayers.map(hiddenLayers => hiddenLayers.weight);
       const timeStepTransitionLayers = timeStep.model.hiddenLayers.map(hiddenLayers => hiddenLayers.transition);
       const timeStepBiasLayers = timeStep.model.hiddenLayers.map(hiddenLayers => hiddenLayers.bias);
+      const timeStepOutputLayer = timeStep.model.allMatrices[4];
+      const timeStepRecurrentLayer = timeStep.model.equations[0].states[2].right;
 
       assert.equal(recurrentWeightLayers.length, timeStepWeightLayers.length);
       assert.equal(recurrentTransitionLayers.length, timeStepTransitionLayers.length);
@@ -109,6 +114,14 @@ describe('Recurrent Class: End to End', () => {
       recurrentTransitionLayers[0].weights[2][0] = timeStepTransitionLayers[0].weights[6] = 3;
       recurrentTransitionLayers[0].weights[2][1] = timeStepTransitionLayers[0].weights[7] = 7;
       recurrentTransitionLayers[0].weights[2][2] = timeStepTransitionLayers[0].weights[8] = 19;
+
+      recurrentOutputLayer.weights[0][0] = timeStepOutputLayer.weights[0] = 5;
+      recurrentOutputLayer.weights[0][1] = timeStepOutputLayer.weights[1] = 3;
+      recurrentOutputLayer.weights[0][2] = timeStepOutputLayer.weights[2] = 1;
+
+      recurrentRecurrentLayer.weights[0][0] = timeStepRecurrentLayer.weights[0] = 4;
+      recurrentRecurrentLayer.weights[1][0] = timeStepRecurrentLayer.weights[1] = 8;
+      recurrentRecurrentLayer.weights[2][0] = timeStepRecurrentLayer.weights[2] = 12;
 
       timeStep.runInput([2, 3]);
       recurrentNet.run([2, 3]);
@@ -134,6 +147,8 @@ describe('Recurrent Class: End to End', () => {
       assert.equal(recurrentNet._hiddenLayers[0][5].weights[0][0], timeStep.model.equations[0].states[5].product.weights[0]);
       assert.equal(recurrentNet._hiddenLayers[0][5].weights[1][0], timeStep.model.equations[0].states[5].product.weights[1]);
       assert.equal(recurrentNet._hiddenLayers[0][5].weights[2][0], timeStep.model.equations[0].states[5].product.weights[2]);
+
+      assert.equal(recurrentNet._outputLayers[3].weights[0], timeStep.model.equations[0].states[7].product.weights[0]);
       console.log(recurrentNet);
     });
   });
@@ -423,5 +438,28 @@ describe('Recurrent Class: End to End', () => {
     console.log(net.runInput([1, 0]));
     console.log(net.runInput([1, 1]));
     assert(error / 4 < 0.005);
+  });
+  it('can learn 1,2,3', () => {
+    const net = new Recurrent({
+      inputLayer: () => input({ height: 1 }),
+      hiddenLayers: [
+        (input, recurrentInput) => recurrent({ height: 3 }, input, recurrentInput)
+      ],
+      outputLayer: input => output({ height: 1 }, input)
+    });
+    net.initialize();
+    net.initializeDeep();
+    assert.equal(net._model.length, 3);
+    assert.equal(net._hiddenLayers.length, 2);
+    assert.equal(net._hiddenLayers[0].length, 6);
+    assert.equal(net._hiddenLayers[1].length, 6);
+    let error;
+    for (let i = 0; i < 100; i++) {
+      error = net.trainPattern([1, 2], [3], true);
+      console.log(error);
+    }
+    net.log = true;
+    console.log(net.runInput([1, 2]));
+    assert(error < 0.005);
   });
 });
