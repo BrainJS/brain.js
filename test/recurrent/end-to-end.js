@@ -148,7 +148,43 @@ describe('Recurrent Class: End to End', () => {
       assert.equal(recurrentNet._hiddenLayers[0][5].weights[1][0], timeStep.model.equations[0].states[5].product.weights[1]);
       assert.equal(recurrentNet._hiddenLayers[0][5].weights[2][0], timeStep.model.equations[0].states[5].product.weights[2]);
 
-      assert.equal(recurrentNet._outputLayers[3].weights[0], timeStep.model.equations[0].states[7].product.weights[0]);
+      //assert.equal(recurrentNet._outputLayers[0].weights, timeStep.model.);
+      assert.equal(recurrentNet._outputLayers[1].weights[0][0], timeStep.model.equations[0].states[5].product.weights[0]);
+      assert.equal(recurrentNet._outputLayers[1].weights[1][0], timeStep.model.equations[0].states[5].product.weights[1]);
+      assert.equal(recurrentNet._outputLayers[1].weights[2][0], timeStep.model.equations[0].states[5].product.weights[2]);
+      assert.equal(recurrentNet._outputLayers[2].weights[0], timeStep.model.equations[0].states[6].product.weights[0]);
+      assert.equal(recurrentNet._outputLayers[4].weights[0], timeStep.model.equations[0].states[7].product.weights[0]);
+
+      recurrentNet._calculateDeltas([3], 0);
+      timeStep.runBackpropagate();
+
+      assert.equal(recurrentNet._outputLayers[5].deltas[0], timeStep.model.equations[0].states[7].product.deltas[0]);
+      assert.equal(recurrentNet._outputLayers[4].deltas[0], timeStep.model.equations[0].states[6].product.deltas[0]);
+      assert.equal(recurrentNet._outputLayers[1].deltas[0][0], timeStep.model.equations[0].states[5].product.deltas[0]);
+      assert.equal(recurrentNet._outputLayers[1].deltas[1][0], timeStep.model.equations[0].states[5].product.deltas[1]);
+      assert.equal(recurrentNet._outputLayers[1].deltas[2][0], timeStep.model.equations[0].states[5].product.deltas[2]);
+
+      assert.equal(recurrentNet._hiddenLayers[0][5].deltas[0][0], timeStep.model.equations[0].states[5].product.deltas[0]);
+      assert.equal(recurrentNet._hiddenLayers[0][5].deltas[1][0], timeStep.model.equations[0].states[5].product.deltas[1]);
+      assert.equal(recurrentNet._hiddenLayers[0][5].deltas[2][0], timeStep.model.equations[0].states[5].product.deltas[2]);
+
+      assert.equal(recurrentNet._hiddenLayers[0][4].deltas[0][0], timeStep.model.equations[0].states[4].product.deltas[0]);
+      assert.equal(recurrentNet._hiddenLayers[0][4].deltas[1][0], timeStep.model.equations[0].states[4].product.deltas[1]);
+      assert.equal(recurrentNet._hiddenLayers[0][4].deltas[2][0], timeStep.model.equations[0].states[4].product.deltas[2]);
+
+      assert.equal(recurrentNet._hiddenLayers[0][3].deltas[0][0], timeStep.model.equations[0].states[3].product.deltas[0]);
+      assert.equal(recurrentNet._hiddenLayers[0][3].deltas[1][0], timeStep.model.equations[0].states[3].product.deltas[1]);
+      assert.equal(recurrentNet._hiddenLayers[0][3].deltas[2][0], timeStep.model.equations[0].states[3].product.deltas[2]);
+
+      assert.equal(recurrentNet._hiddenLayers[0][2].deltas[0][0], timeStep.model.equations[0].states[2].product.deltas[0]);
+      assert.equal(recurrentNet._hiddenLayers[0][2].deltas[1][0], timeStep.model.equations[0].states[2].product.deltas[1]);
+      assert.equal(recurrentNet._hiddenLayers[0][2].deltas[2][0], timeStep.model.equations[0].states[2].product.deltas[2]);
+
+      assert.equal(recurrentNet._hiddenLayers[0][0].deltas[0][0], timeStep.model.equations[0].states[1].product.deltas[0]);
+      assert.equal(recurrentNet._hiddenLayers[0][0].deltas[1][0], timeStep.model.equations[0].states[1].product.deltas[1]);
+      assert.equal(recurrentNet._hiddenLayers[0][0].deltas[2][0], timeStep.model.equations[0].states[1].product.deltas[2]);
+
+      assert.equal(recurrentNet._inputLayers[0].deltas[0], timeStep.model.input.deltas[0]);
     });
   });
   describe('training life-cycle', () => {
