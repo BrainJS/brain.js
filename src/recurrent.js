@@ -177,6 +177,12 @@ export default class Recurrent extends FeedForward {
     return this._outputLayers[this._outputLayers.length - 1].weights;
   }
 
+  _prepTraining(data, options) {
+    const stats = super._prepTraining(data, options);
+    this.initializeDeep();
+    return stats;
+  }
+
   _calculateDeltas(target, offset) {
     for (let x = target.length - 1; x >= 0; x--) {
       const hiddenLayersIndex = offset + x;
@@ -229,7 +235,7 @@ export default class Recurrent extends FeedForward {
    * @param {number[]} target
    * @param {Boolean} [logErrorRate]
    */
-  trainPattern(input, target, logErrorRate) {
+  _trainPattern(input, target, logErrorRate) {
 
     // forward propagate
     this.runInput(input);

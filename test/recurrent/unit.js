@@ -171,7 +171,7 @@ describe('Recurrent Class: Unit', () => {
       assert.notEqual(outputLayers3Weights, net._outputLayers[3].weights);
     });
   });
-  describe('.trainPattern()', () => {
+  describe('._trainPattern()', () => {
     it('steps back through values correctly', () => {
       class SuperLayer extends Filter {
         constructor() {
@@ -200,7 +200,7 @@ describe('Recurrent Class: Unit', () => {
       net._hiddenLayers[1][0].compare = sinon.spy();
       net._outputLayers[0].compare = sinon.spy();
       net.runInput([0, 1]);
-      net.trainPattern([0, 1], [2]);
+      net._trainPattern([0, 1], [2]);
 
       assert.equal(net._outputLayers[0].compare.callCount, 2);
       assert.deepEqual(net._outputLayers[0].compare.firstCall.args, [[2]]);
@@ -220,16 +220,16 @@ describe('Recurrent Class: Unit', () => {
 
         const lastOutputLayer = net._outputLayers[net._outputLayers.length - 1];
         assert.deepEqual(lastOutputLayer.weights, [[0]]);
-        net.trainPattern([1, 2], [3]);
+        net._trainPattern([1, 2], [3]);
         const weights1 = lastOutputLayer.weights;
         assert.notDeepEqual(weights1, [[0]]);
-        net.trainPattern([3, 2], [1]);
+        net._trainPattern([3, 2], [1]);
         const weights2 = lastOutputLayer.weights;
         assert.notDeepEqual(weights1, weights2);
-        net.trainPattern([1, 1], [1]);
+        net._trainPattern([1, 1], [1]);
         const weights3 = lastOutputLayer.weights;
         assert.notDeepEqual(weights2, weights3);
-        net.trainPattern([3, 3], [3]);
+        net._trainPattern([3, 3], [3]);
         const weights4 = lastOutputLayer.weights;
         assert.notDeepEqual(weights3, weights4);
       });

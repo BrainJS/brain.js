@@ -399,7 +399,7 @@ describe('Recurrent Class: End to End', () => {
     assert.equal(net._hiddenLayers[1].length, 6);
     const errors = [];
     for (let i = 0; i < 20; i++) {
-      errors.push(net.trainPattern([1, 2], [3], true));
+      errors.push(net._trainPattern([1, 2], [3], true));
     }
     assert(errors[0] > errors[errors.length - 1]);
   });
@@ -438,7 +438,7 @@ describe('Recurrent Class: End to End', () => {
     assert.equal(net._hiddenLayers[1].length, 6);
     let error;
     for (let i = 0; i < 100; i++) {
-      error = net.trainPattern([0, 1], [2], true);
+      error = net._trainPattern([0, 1], [2], true);
     }
     assert(error < 0.005);
 
@@ -460,10 +460,10 @@ describe('Recurrent Class: End to End', () => {
   //   assert.equal(net._hiddenLayers[1].length, 6);
   //   let error;
   //   for (let i = 0; i < 100; i++) {
-  //     error = net.trainPattern([0, 0], [0], true);
-  //     error += net.trainPattern([0, 1], [1], true);
-  //     error += net.trainPattern([1, 0], [1], true);
-  //     error += net.trainPattern([1, 1], [0], true);
+  //     error = net._trainPattern([0, 0], [0], true);
+  //     error += net._trainPattern([0, 1], [1], true);
+  //     error += net._trainPattern([1, 0], [1], true);
+  //     error += net._trainPattern([1, 1], [0], true);
   //     console.log(error / 4);
   //   }
   //   console.log(net.runInput([0, 0]));
@@ -488,8 +488,24 @@ describe('Recurrent Class: End to End', () => {
     assert.equal(net._hiddenLayers[1].length, 6);
     let error = Infinity;
     for (let i = 0; i < 100 && error > 0.005; i++) {
-      error = net.trainPattern([1, 2], [3], true);
+      error = net._trainPattern([1, 2], [3], true);
     }
     assert(error < 0.005);
+  });
+  it('can learn 1,2,3 using .train()', () => {
+    const net = new Recurrent({
+      inputLayer: () => input({ height: 1 }),
+      hiddenLayers: [
+        (input, recurrentInput) => recurrent({ height: 3 }, input, recurrentInput)
+      ],
+      outputLayer: input => output({ height: 1 }, input)
+    });
+    const results = net.train([
+      {
+        input: [1, 2],
+        output: [3]
+      }
+    ]);
+    assert(results.error < 0.01);
   });
 });
