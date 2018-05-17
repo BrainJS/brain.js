@@ -1,13 +1,16 @@
 import makeKernel from '../utilities/make-kernel';
 import { setStride, setPadding } from '../utilities/layer-setup';
 import { Filter } from './types';
+import randos2D from '../utilities/randos-2d';
+import zeros2D from '../utilities/zeros-2d';
+import randos from "../utilities/randos";
 
 export default class Convolution extends Filter {
   static get defaults() {
     return {
       stride: 0,
       padding: 0,
-      bias: 0,
+      bias: 0.1,
       filterCount: 1,
       filterWidth: 0,
       filterHeight: 0
@@ -35,10 +38,17 @@ export default class Convolution extends Filter {
     this.height = Math.floor((inputLayer.height + (this.paddingY * 2) - this.filterHeight) / this.strideY + 1);
     this.depth = this.filterCount;
 
-    this.bias = settings.bias;
+    this.biases = new Array(this.depth);
+    this.biases.fill(this.bias);
+    this.biasDeltas = randos(this.depth);
 
-    this.filters = null;
-    this.filterDeltas = null;
+    this.filters = [];
+    this.filterDeltas = [];
+
+    for (let i = 0; i < this.filterCount; i++) {
+      this.filters.push(randos2D(this.filterWidth, this.filterHeight));
+      this.filterDeltas.push(zeros2D(this.filterWidth, this.filterHeight));
+    }
 
     this.learnFilters = null;
     this.learnInputs = null;
@@ -63,12 +73,16 @@ export default class Convolution extends Filter {
       output: [this.width, this.height, this.depth]
     });
 
-    this.compareKernel = makeKernel(compare, {
+    this.compareFiltersKernel = makeKernel(compareFilters, {
       output: [this.width, this.height, this.depth]
     });
 
     this.compareInputsKernel = makeKernel(compareInputs, {
       output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth]
+    });
+
+    this.compareBiasesKernel = makeKernel(compareBiases, {
+      output: [1, 1, this.inputLayer.depth]
     });
   }
 
@@ -77,8 +91,15 @@ export default class Convolution extends Filter {
   }
 
   compare() {
-    this.deltas = this.compareKernel(this.inputLayer.weights, this.deltas);
-    this.inputLayer.deltas = this.compareInputsKernel(this.filters, this.inputLayer.deltas);
+    this.filterDeltas = this.compareFiltersKernel(this.inputLayer.weights, this.deltas);
+    this.biasDeltas = this.compareBiasesKernel(this.biasDeltas, this.deltas);
+    this.inputLayer.deltas = this.deltas = this.compareInputsKernel(this.filters, this.inputLayer.deltas);
+  }
+
+  learn(previousLayer, nextLayer, learningRate) {
+    // TODO: handle filters
+    this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
+    this.deltas = zeros2D(this.width, this.height);
   }
 }
 
@@ -110,7 +131,7 @@ export function predict(inputs, filters, biases) {
   return sum + biases[this.thread.z];
 }
 
-export function compare(inputs, deltas) {
+export function compareFilters(inputs, deltas) {
   let sum = 0;
   let delta = deltas[this.thread.z][this.thread.y * this.constants.paddingY][this.thread.x * this.constants.paddingX];
   let inputXMax = this.constants.inputWidth + this.constants.paddingX;
@@ -146,4 +167,14 @@ export function compareInputs(filters, deltas) {
     offsetY--;
   }
   return sum;
+}
+
+export function compareBiases(biasDeltas, deltas) {
+  let sum = 0;
+  for (let y = 0; y < this.constants.y; y++) {
+    for (let x = 0; x < this.constants.x; x++) {
+      sum += deltas[this.thread.z][y][x];
+    }
+  }
+  return biasDeltas[this.thread.z] + sum;
 }
