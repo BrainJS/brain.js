@@ -885,9 +885,9 @@ export default class NeuralNetwork {
         case 'sigmoid':
           return `1/(1+1/Math.exp(${result.join('')}))`;
         case 'relu':
-          return `var sum = ${result.join('')};(sum < 0 ? 0 : sum);`;
+          return `(function () { var sum = ${result.join('')};(sum < 0 ? 0 : sum);})()`;
         case 'leaky-relu':
-          return `var sum = ${result.join('')};(sum < 0 ? 0 : 0.01 * sum);`;
+          return `(function () { var sum = ${result.join('')};(sum < 0 ? 0 : 0.01 * sum);})()`;
         case 'tanh':
           return `Math.tanh(${result.join('')});`;
         default:
