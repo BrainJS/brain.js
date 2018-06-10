@@ -1,9 +1,14 @@
+var activation = require('./dist/activation');
 var crossValidate = require('./dist/cross-validate').default;
+var layer = require('./dist/layer');
 var likely = require('./dist/likely').default;
 var lookup = require('./dist/lookup').default;
+var praxis = require('./dist/praxis');
+var FeedForward = require('./dist/feed-forward').default;
 var NeuralNetwork = require('./dist/neural-network').default;
 var NeuralNetworkGPU = require('./dist/neural-network-gpu').default;
 var TrainStream = require('./dist/train-stream').default;
+var Recurrent = require('./dist/recurrent').default;
 var RNNTimeStep = require('./dist/recurrent/rnn-time-step').default;
 var LSTMTimeStep = require('./dist/recurrent/lstm-time-step').default;
 var GRUTimeStep = require('./dist/recurrent/gru-time-step').default;
@@ -24,11 +29,16 @@ var utilities = {
 };
 
 var brain = {
+  activation: activation,
   crossValidate: crossValidate,
   likely: likely,
+  layer: layer,
   lookup: lookup,
+  praxis: praxis,
+  FeedForward: FeedForward,
   NeuralNetwork: NeuralNetwork,
   NeuralNetworkGPU: NeuralNetworkGPU,
+  Recurrent: Recurrent,
   TrainStream: TrainStream,
   recurrent: {
     RNNTimeStep: RNNTimeStep,
