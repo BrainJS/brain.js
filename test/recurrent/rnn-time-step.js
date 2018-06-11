@@ -113,7 +113,7 @@ describe('RNNTimeStep', () => {
     assert(Math.round(closeToFive) === 5, `${ closeToFive } does not round to 5`);
     assert(Math.round(closeToOne) === 1, `${ closeToOne } does not round to 1`);
   });
-  it.only('can learn more than one to predict forwards and backwards', (done) => {
+  it('can learn more than one to predict forwards and backwards', (done) => {
     const net = new LSTMTimeStep({
       inputSize: 2,
       hiddenLayers: [10],
