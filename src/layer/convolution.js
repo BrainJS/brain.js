@@ -74,10 +74,25 @@ export default class Convolution extends Filter {
     });
 
     this.compareFiltersKernel = makeKernel(compareFilters, {
+      constants: {
+        inputWidth: this.inputLayer.width,
+        inputHeight: this.inputLayer.height,
+        inputDepth: this.inputLayer.depth,
+        strideX: this.strideX,
+        strideY: this.strideY,
+        paddingX: this.paddingX,
+        paddingY: this.paddingY,
+        filterCount: this.filterCount,
+        filterWidth: this.filterWidth,
+        filterHeight: this.filterHeight
+      },
       output: [this.width, this.height, this.depth]
     });
 
     this.compareInputsKernel = makeKernel(compareInputs, {
+      constants: {
+        filterCount: this.filterCount
+      },
       output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth]
     });
 
