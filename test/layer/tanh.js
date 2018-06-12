@@ -1,6 +1,6 @@
 import assert from 'assert';
 import gpuMock from 'gpu-mock.js';
-import { predict, learn } from '../../src/layer/tanh';
+import { predict, compare } from '../../src/layer/tanh';
 
 describe('Tanh Layer', () => {
   describe('.predict (forward propagation)', () => {
@@ -20,7 +20,7 @@ describe('Tanh Layer', () => {
     });
   });
 
-  describe('.learn (back propagation)', () => {
+  describe('.compare (back propagation)', () => {
     it('can tanh a simple matrix', () => {
       const inputs = [
         [.1, .2, .3],
@@ -32,7 +32,7 @@ describe('Tanh Layer', () => {
         [1, 1, 1],
         [1, 1, 1]
       ];
-      const results = gpuMock(learn, { output: [3,3] })(inputs, deltas);
+      const results = gpuMock(compare, { output: [3,3] })(inputs, deltas);
 
       assert.deepEqual(shave(results), shave([
         [ 0.99, 0.96, 0.91 ],
