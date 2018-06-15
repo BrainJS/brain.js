@@ -1,7 +1,7 @@
 {
   "name": "brain.js",
   "description": "Neural network library",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": {
     "type": "git",
@@ -85,6 +85,7 @@
     "gpu.js": "^1.4.3",
     "thaw.js": "^2.0.0"
   },
+  "typings": "./index.d.ts",
   "nyc": {
     "include": "src/feed-forward.js"
   }
