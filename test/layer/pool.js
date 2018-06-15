@@ -1,6 +1,6 @@
 import assert from 'assert';
 import gpuMock from 'gpu-mock.js';
-import { predict, learn } from '../../src/layer/pool';
+import { predict, compare } from '../../src/layer/pool';
 
 describe('Pool Layer', () => {
   describe('.predict (forward propagation)', () => {
@@ -32,12 +32,12 @@ describe('Pool Layer', () => {
     });
   });
 
-  describe('.learn (back propagation)', () => {
+  describe('.compare (back propagation)', () => {
     it('can pool a simple matrix', () => {
       const deltas = [[9]];
       const switchX = [[0]];
       const switchY = [[0]];
-      const results = gpuMock(learn, {
+      const results = gpuMock(compare, {
         output: [3,3,0],
         constants: {
           strideX: 1,

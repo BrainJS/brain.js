@@ -1,6 +1,6 @@
 import assert from 'assert';
 import gpuMock from 'gpu-mock.js';
-import { predict, learn } from '../../src/layer/leaky-relu';
+import { predict, compare } from '../../src/layer/leaky-relu';
 
 describe('Leaky Relu Layer', () => {
   describe('.predict (forward propagation)', () => {
@@ -22,7 +22,7 @@ describe('Leaky Relu Layer', () => {
     });
   });
 
-  describe('.learn (back propagation)', () => {
+  describe('.compare (back propagation)', () => {
     it('can leaky relu a simple matrix', () => {
       const inputs = [
         [.1, -.2, .3],
@@ -34,7 +34,7 @@ describe('Leaky Relu Layer', () => {
         [1, 1, 1],
         [1, 1, 1]
       ];
-      const results = gpuMock(learn, {
+      const results = gpuMock(compare, {
         output: [3,3]
       })(inputs, deltas);
       assert.deepEqual(results, [

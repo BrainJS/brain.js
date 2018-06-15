@@ -82,7 +82,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "gpu.js": "^1.2.0",
+    "gpu.js": "^1.4.3",
     "thaw.js": "^2.0.0"
   },
   "nyc": {

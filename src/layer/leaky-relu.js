@@ -17,7 +17,7 @@ export default class LeakyRelu extends Activation {
       functions: [activate]
     });
 
-    this.learnKernel = makeKernel(learn, {
+    this.compareKernel = makeKernel(compare, {
       functions: [measure]
     });
   }
@@ -27,7 +27,7 @@ export default class LeakyRelu extends Activation {
   }
 
   compare() {
-    this.deltas = this.learnKernel(this.weights, this.deltas);
+    this.deltas = this.compareKernel(this.weights, this.deltas);
   }
 }
 
@@ -35,6 +35,6 @@ export function predict(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-export function learn(weights, deltas) {
+export function compare(weights, deltas) {
   return measure(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
 }
