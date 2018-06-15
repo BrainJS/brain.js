@@ -40,7 +40,10 @@ export default class Pool extends Filter {
     });
 
     this.compareKernel = makeKernel(compare, {
-      output: [this.width, this.height, this.depth]
+      output: [this.width, this.height, this.depth],
+      constants: {
+
+      }
     });
   }
 
@@ -49,6 +52,10 @@ export default class Pool extends Filter {
     this.switchX = weights.switchX;
     this.switchY = weights.switchY;
     return this.weights = weights.result;
+  }
+
+  compare() {
+    this.deltas = this.compareKernel(this.inputLayer.deltas, this.switchX, this.switchY);
   }
 }
 
