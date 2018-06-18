@@ -36,7 +36,7 @@ var RandomMatrix = function (_Matrix) {
     _this.columns = columns;
     _this.std = std;
     for (var i = 0, max = _this.weights.length; i < max; i++) {
-      _this.weights[i] = (0, _random.randomF)(-std, std);
+      _this.weights[i] = (0, _random.randomFloat)(-std, std);
     }
     return _this;
   }

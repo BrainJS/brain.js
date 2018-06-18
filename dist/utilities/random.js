@@ -3,14 +3,14 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.randomF = randomF;
-exports.randomI = randomI;
+exports.randomFloat = randomFloat;
+exports.randomInteger = randomInteger;
 exports.randomN = randomN;
-function randomF(a, b) {
+function randomFloat(a, b) {
   return Math.random() * (b - a) + a;
 }
 
-function randomI(a, b) {
+function randomInteger(a, b) {
   return Math.floor(Math.random() * (b - a) + a);
 }
 

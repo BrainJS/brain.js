@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../src/layer/operator-base.js"],"names":["OperatorBase","inputLayers"],"mappings":";;;;;;;;;;IAAqBA,Y;AACnB,wBAAYC,WAAZ,EAAyB;AAAA;AAAE;;;;+BAChB,CAAE;;;mCACE,CAAE;;;;;;kBAHED,Y","file":"operator-base.js","sourcesContent":["export default class OperatorBase {\n  constructor(inputLayers) {}\n  validate() {}\n  setupKernels() {}\n}"]}

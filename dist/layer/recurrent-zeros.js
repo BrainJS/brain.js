@@ -6,15 +6,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-exports.predict = predict;
+var _zeros2d = require('../utilities/zeros-2d');
 
-var _base = require('./base');
+var _zeros2d2 = _interopRequireDefault(_zeros2d);
 
-var _base2 = _interopRequireDefault(_base);
-
-var _makeKernel = require('../utilities/make-kernel');
-
-var _makeKernel2 = _interopRequireDefault(_makeKernel);
+var _types = require('./types');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24,51 +20,52 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Weigh = function (_Base) {
-  _inherits(Weigh, _Base);
+var RecurrentZeros = function (_Internal) {
+  _inherits(RecurrentZeros, _Internal);
 
-  function Weigh(inputLayers) {
-    _classCallCheck(this, Weigh);
+  function RecurrentZeros() {
+    _classCallCheck(this, RecurrentZeros);
 
-    var _this = _possibleConstructorReturn(this, (Weigh.__proto__ || Object.getPrototypeOf(Weigh)).call(this));
-
-    _this.inputLayers = inputLayers;
-
-    if (inputLayers.height > 0) {
-      throw new Error('inputLayers[0] should be height of 1');
-    }
-    //TODO: make this less sensitive
-    _this.width = inputLayers[1].width;
-    _this.height = 1;
-    return _this;
+    return _possibleConstructorReturn(this, (RecurrentZeros.__proto__ || Object.getPrototypeOf(RecurrentZeros)).apply(this, arguments));
   }
 
-  _createClass(Weigh, [{
-    key: 'setupKernels',
-    value: function setupKernels() {
-      this.predictKernel = (0, _makeKernel2.default)(predict, {
-        output: [this.width, this.height],
-        constants: {
-          inputWidth: this.inputLayers[0].width
-        }
-      });
+  _createClass(RecurrentZeros, [{
+    key: 'setDimensions',
+    value: function setDimensions(width, height) {
+      this.praxis = null;
+      this.width = width;
+      this.height = height;
+      this.weights = new _zeros2d2.default(width, height);
+      this.deltas = new _zeros2d2.default(width, height);
     }
   }, {
+    key: 'setupKernels',
+    value: function setupKernels() {}
+  }, {
+    key: 'reuseKernels',
+    value: function reuseKernels() {}
+  }, {
     key: 'predict',
-    value: function predict() {
-      this.weights = this.predictKernel(this.inputLayers[0].weights, this.inputLayers[1].weights);
+    value: function predict() {}
+  }, {
+    key: 'compare',
+    value: function compare() {}
+  }, {
+    key: 'learn',
+    value: function learn(previousLayer, nextLayer, learningRate) {
+      this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
+      this.deltas = (0, _zeros2d2.default)(this.width, this.height);
     }
+  }, {
+    key: 'validate',
+    value: function validate() {}
+  }, {
+    key: 'reset',
+    value: function reset() {}
   }]);
 
-  return Weigh;
-}(_base2.default);
+  return RecurrentZeros;
+}(_types.Internal);
 
-exports.default = Weigh;
-function predict(weights1, weights2) {
-  var sum = 0;
-  for (var index = 0; index < this.constants.inputWidth; index++) {
-    sum += weights1[0][index] * weights2[index][this.thread.x];
-  }
-  return sum;
-}
-//# sourceMappingURL=weigh.js.map
+exports.default = RecurrentZeros;
+//# sourceMappingURL=recurrent-zeros.js.map

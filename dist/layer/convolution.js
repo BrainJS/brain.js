@@ -7,18 +7,29 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 exports.predict = predict;
-exports.learnFilters = learnFilters;
-exports.learnInputs = learnInputs;
-
-var _base = require('./base');
-
-var _base2 = _interopRequireDefault(_base);
+exports.compareFilters = compareFilters;
+exports.compareInputs = compareInputs;
+exports.compareBiases = compareBiases;
 
 var _makeKernel = require('../utilities/make-kernel');
 
 var _makeKernel2 = _interopRequireDefault(_makeKernel);
 
 var _layerSetup = require('../utilities/layer-setup');
+
+var _types = require('./types');
+
+var _randos2d = require('../utilities/randos-2d');
+
+var _randos2d2 = _interopRequireDefault(_randos2d);
+
+var _zeros2d = require('../utilities/zeros-2d');
+
+var _zeros2d2 = _interopRequireDefault(_zeros2d);
+
+var _randos = require('../utilities/randos');
+
+var _randos2 = _interopRequireDefault(_randos);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28,8 +39,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Convolution = function (_Base) {
-  _inherits(Convolution, _Base);
+var Convolution = function (_Filter) {
+  _inherits(Convolution, _Filter);
 
   _createClass(Convolution, null, [{
     key: 'defaults',
@@ -37,7 +48,7 @@ var Convolution = function (_Base) {
       return {
         stride: 0,
         padding: 0,
-        bias: 0,
+        bias: 0.1,
         filterCount: 1,
         filterWidth: 0,
         filterHeight: 0
@@ -49,10 +60,6 @@ var Convolution = function (_Base) {
     _classCallCheck(this, Convolution);
 
     var _this = _possibleConstructorReturn(this, (Convolution.__proto__ || Object.getPrototypeOf(Convolution)).call(this, settings));
-
-    _this.width = Math.floor((inputLayer.width + _this.paddingX * 2 - _this.filterWidth) / _this.strideX + 1);
-    _this.height = Math.floor((inputLayer.height + _this.paddingY * 2 - _this.filterHeight) / _this.strideY + 1);
-    _this.depth = _this.filterCount;
 
     _this.stride = null;
     _this.strideX = null;
@@ -68,14 +75,26 @@ var Convolution = function (_Base) {
     _this.filterWidth = settings.filterWidth;
     _this.filterHeight = settings.filterHeight;
 
-    _this.bias = settings.bias;
+    _this.width = Math.floor((inputLayer.width + _this.paddingX * 2 - _this.filterWidth) / _this.strideX + 1);
+    _this.height = Math.floor((inputLayer.height + _this.paddingY * 2 - _this.filterHeight) / _this.strideY + 1);
+    _this.depth = _this.filterCount;
 
-    _this.filters = null;
-    _this.filterDeltas = null;
+    _this.biases = new Array(_this.depth);
+    _this.biases.fill(_this.bias);
+    _this.biasDeltas = (0, _randos2.default)(_this.depth);
+
+    _this.filters = [];
+    _this.filterDeltas = [];
+
+    for (var i = 0; i < _this.filterCount; i++) {
+      _this.filters.push((0, _randos2d2.default)(_this.filterWidth, _this.filterHeight));
+      _this.filterDeltas.push((0, _zeros2d2.default)(_this.filterWidth, _this.filterHeight));
+    }
 
     _this.learnFilters = null;
     _this.learnInputs = null;
     _this.inputLayer = inputLayer;
+    _this.validate();
     return _this;
   }
 
@@ -98,16 +117,31 @@ var Convolution = function (_Base) {
         output: [this.width, this.height, this.depth]
       });
 
-      this.compareKernel = (0, _makeKernel2.default)(compare, {
+      this.compareFiltersKernel = (0, _makeKernel2.default)(compareFilters, {
+        constants: {
+          inputWidth: this.inputLayer.width,
+          inputHeight: this.inputLayer.height,
+          inputDepth: this.inputLayer.depth,
+          strideX: this.strideX,
+          strideY: this.strideY,
+          paddingX: this.paddingX,
+          paddingY: this.paddingY,
+          filterCount: this.filterCount,
+          filterWidth: this.filterWidth,
+          filterHeight: this.filterHeight
+        },
         output: [this.width, this.height, this.depth]
       });
 
-      this.learnFilters = (0, _makeKernel2.default)(learnFilters, {
-        output: [this.filterWidth, this.filterHeight, this.filterCount]
+      this.compareInputsKernel = (0, _makeKernel2.default)(compareInputs, {
+        constants: {
+          filterCount: this.filterCount
+        },
+        output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth]
       });
 
-      this.learnInputs = (0, _makeKernel2.default)(learnInputs, {
-        output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth]
+      this.compareBiasesKernel = (0, _makeKernel2.default)(compareBiases, {
+        output: [1, 1, this.inputLayer.depth]
       });
     }
   }, {
@@ -116,15 +150,23 @@ var Convolution = function (_Base) {
       this.weights = this.predictKernel(this.inputLayer.weights, this.filters, this.biases);
     }
   }, {
+    key: 'compare',
+    value: function compare() {
+      this.filterDeltas = this.compareFiltersKernel(this.inputLayer.weights, this.deltas);
+      this.biasDeltas = this.compareBiasesKernel(this.biasDeltas, this.deltas);
+      this.inputLayer.deltas = this.deltas = this.compareInputsKernel(this.filters, this.inputLayer.deltas);
+    }
+  }, {
     key: 'learn',
-    value: function learn() {
-      this.filterDeltas = this.learnFilters(this.inputLayer.weights, this.deltas);
-      this.deltas = this.learnInputs(this.filters);
+    value: function learn(previousLayer, nextLayer, learningRate) {
+      // TODO: handle filters
+      this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
+      this.deltas = (0, _zeros2d2.default)(this.width, this.height);
     }
   }]);
 
   return Convolution;
-}(_base2.default);
+}(_types.Filter);
 
 exports.default = Convolution;
 function predict(inputs, filters, biases) {
@@ -150,7 +192,7 @@ function predict(inputs, filters, biases) {
   return sum + biases[this.thread.z];
 }
 
-function learnFilters(inputs, deltas) {
+function compareFilters(inputs, deltas) {
   var sum = 0;
   var delta = deltas[this.thread.z][this.thread.y * this.constants.paddingY][this.thread.x * this.constants.paddingX];
   var inputXMax = this.constants.inputWidth + this.constants.paddingX;
@@ -167,7 +209,7 @@ function learnFilters(inputs, deltas) {
   return sum;
 }
 
-function learnInputs(filters, deltas) {
+function compareInputs(filters, deltas) {
   var sum = 0;
   for (var filterY = 0; filterY <= this.thread.y; filterY++) {
     var offsetY = this.thread.y - filterY;
@@ -181,5 +223,15 @@ function learnInputs(filters, deltas) {
     offsetY--;
   }
   return sum;
+}
+
+function compareBiases(biasDeltas, deltas) {
+  var sum = 0;
+  for (var y = 0; y < this.constants.y; y++) {
+    for (var x = 0; x < this.constants.x; x++) {
+      sum += deltas[this.thread.z][y][x];
+    }
+  }
+  return biasDeltas[this.thread.z] + sum;
 }
 //# sourceMappingURL=convolution.js.map

@@ -7,11 +7,9 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 exports.predict = predict;
-exports.learn = learn;
+exports.compare = compare;
 
-var _base = require('./base');
-
-var _base2 = _interopRequireDefault(_base);
+var _types = require('./types');
 
 var _makeKernel = require('../utilities/make-kernel');
 
@@ -27,18 +25,23 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var LeakyRelu = function (_Base) {
-  _inherits(LeakyRelu, _Base);
+var LeakyRelu = function (_Activation) {
+  _inherits(LeakyRelu, _Activation);
 
   function LeakyRelu(inputLayer) {
     _classCallCheck(this, LeakyRelu);
 
     var _this = _possibleConstructorReturn(this, (LeakyRelu.__proto__ || Object.getPrototypeOf(LeakyRelu)).call(this));
 
-    _this.width = inputLayer.width;
-    _this.height = inputLayer.height;
-    _this.depth = inputLayer.depth;
     _this.inputLayer = inputLayer;
+    var width = inputLayer.width,
+        height = inputLayer.height,
+        depth = inputLayer.depth;
+
+    _this.width = width;
+    _this.height = height;
+    _this.depth = depth;
+    _this.validate();
     return _this;
   }
 
@@ -46,11 +49,11 @@ var LeakyRelu = function (_Base) {
     key: 'setupKernels',
     value: function setupKernels() {
       this.predictKernel = (0, _makeKernel2.default)(predict, {
-        functions: [_leakyRelu.leakyRelu]
+        functions: [_leakyRelu.activate]
       });
 
-      this.learnKernel = (0, _makeKernel2.default)(learn, {
-        functions: [_leakyRelu.leakyReluDerivative]
+      this.compareKernel = (0, _makeKernel2.default)(compare, {
+        functions: [_leakyRelu.measure]
       });
     }
   }, {
@@ -59,21 +62,21 @@ var LeakyRelu = function (_Base) {
       this.weights = this.predictKernel(this.inputLayer.weights);
     }
   }, {
-    key: 'learn',
-    value: function learn() {
-      this.deltas = this.learnKernel(this.weights, this.deltas);
+    key: 'compare',
+    value: function compare() {
+      this.deltas = this.compareKernel(this.weights, this.deltas);
     }
   }]);
 
   return LeakyRelu;
-}(_base2.default);
+}(_types.Activation);
 
 exports.default = LeakyRelu;
 function predict(inputs) {
-  return (0, _leakyRelu.leakyRelu)(inputs[this.thread.y][this.thread.x]);
+  return (0, _leakyRelu.activate)(inputs[this.thread.y][this.thread.x]);
 }
 
-function learn(weights, deltas) {
-  return (0, _leakyRelu.leakyReluDerivative)(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
+function compare(weights, deltas) {
+  return (0, _leakyRelu.measure)(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
 }
 //# sourceMappingURL=leaky-relu.js.map

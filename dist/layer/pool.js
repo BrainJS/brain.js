@@ -7,11 +7,9 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 exports.predict = predict;
-exports.learn = learn;
+exports.compare = compare;
 
-var _base = require('./base');
-
-var _base2 = _interopRequireDefault(_base);
+var _types = require('./types');
 
 var _makeKernel = require('../utilities/make-kernel');
 
@@ -27,14 +25,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Pool = function (_Base) {
-  _inherits(Pool, _Base);
+var Pool = function (_Filter) {
+  _inherits(Pool, _Filter);
 
   _createClass(Pool, null, [{
     key: 'defaults',
     get: function get() {
       return {
-        stride: 0,
         padding: 0,
         bias: 0,
         filterWidth: 0,
@@ -51,10 +48,10 @@ var Pool = function (_Base) {
     _this.inputLayer = inputLayer;
 
     (0, _layerSetup.setPadding)(_this, settings);
-    (0, _layerSetup.setStride)(_this, settings);
 
     _this.switchX = null;
     _this.switchY = null;
+    _this.validate();
     return _this;
   }
 
@@ -66,25 +63,44 @@ var Pool = function (_Base) {
         map: {
           switchX: setSwitchX,
           switchY: setSwitchY
+        },
+        constants: {
+          inputWidth: this.inputLayer.width,
+          inputHeight: this.inputLayer.height,
+          paddingX: this.paddingX,
+          paddingY: this.paddingY,
+          filterHeight: this.filterHeight,
+          filterWidth: this.filterWidth
         }
       });
 
-      this.learnKernel = (0, _makeKernel2.default)(learn, {
-        output: [this.width, this.height, this.depth]
+      this.compareKernel = (0, _makeKernel2.default)(compare, {
+        output: [this.width, this.height, this.depth],
+        constants: {
+          outputWidth: this.width,
+          outputHeight: this.height,
+          paddingX: this.paddingX,
+          paddingY: this.paddingY
+        }
       });
     }
   }, {
     key: 'predict',
     value: function predict() {
-      var weights = this.predictKernel(this.inputLayer);
+      var weights = this.predictKernel(this.inputLayer.weights);
       this.switchX = weights.switchX;
       this.switchY = weights.switchY;
-      return this.weights = weights;
+      return this.weights = weights.result;
+    }
+  }, {
+    key: 'compare',
+    value: function compare() {
+      this.inputLayer.deltas = this.compareKernel(this.deltas, this.switchX, this.switchY);
     }
   }]);
 
   return Pool;
-}(_base2.default);
+}(_types.Filter);
 
 exports.default = Pool;
 function predict(inputs) {
@@ -123,7 +139,7 @@ function setSwitchX(value) {
   return value;
 }
 
-function learn(deltas, switchY, switchX) {
+function compare(deltas, switchY, switchX) {
   var x = Math.floor(this.thread.x / this.output.x * this.constants.outputWidth - this.constants.paddingX);
   var y = Math.floor(this.thread.y / this.output.y * this.constants.outputHeight - this.constants.paddingY);
   var deltaXIndex = switchX[y][x];

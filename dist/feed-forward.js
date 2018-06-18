@@ -14,10 +14,6 @@ var _trainStream = require('./train-stream');
 
 var _trainStream2 = _interopRequireDefault(_trainStream);
 
-var _max = require('./utilities/max');
-
-var _max2 = _interopRequireDefault(_max);
-
 var _mse2d = require('./utilities/mse-2d');
 
 var _mse2d2 = _interopRequireDefault(_mse2d);
@@ -26,13 +22,13 @@ var _layerFromJson = require('./utilities/layer-from-json');
 
 var _layerFromJson2 = _interopRequireDefault(_layerFromJson);
 
-var _traverseLayersFrom = require('./utilities/traverse-layers-from');
-
-var _traverseLayersFrom2 = _interopRequireDefault(_traverseLayersFrom);
-
 var _praxis2 = require('./praxis');
 
 var _praxis = _interopRequireWildcard(_praxis2);
+
+var _flattenLayers = require('./utilities/flatten-layers');
+
+var _flattenLayers2 = _interopRequireDefault(_flattenLayers);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -40,67 +36,183 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**
- *
- * @param {object} options
- * @constructor
- */
 var FeedForward = function () {
+  _createClass(FeedForward, [{
+    key: '_setLogMethod',
+
+
+    /**
+     *
+     * @param log
+     * if a method is passed in method is used
+     * if false passed in nothing is logged
+     * @returns error
+     */
+    value: function _setLogMethod(log) {
+      if (typeof log === 'function') {
+        this.trainOpts.log = log;
+      } else if (log) {
+        this.trainOpts.log = console.log;
+      } else {
+        this.trainOpts.log = false;
+      }
+    }
+
+    /**
+     *
+     * @param opts
+     *    Supports all `trainDefaults` properties
+     *    also supports:
+     *       learningRate: (number)
+     */
+
+  }, {
+    key: '_updateTrainingOptions',
+    value: function _updateTrainingOptions(opts) {
+      var _this = this;
+
+      Object.keys(this.constructor.trainDefaults).forEach(function (opt) {
+        return _this.trainOpts[opt] = opts.hasOwnProperty(opt) ? opts[opt] : _this.trainOpts[opt];
+      });
+      this.constructor._validateTrainingOptions(this.trainOpts);
+      this._setLogMethod(opts.log || this.trainOpts.log);
+    }
+  }], [{
+    key: '_validateTrainingOptions',
+
+
+    /**
+     *
+     * @param options
+     * @private
+     */
+    value: function _validateTrainingOptions(options) {
+      var validations = {
+        iterations: function iterations(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        errorThresh: function errorThresh(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        log: function log(val) {
+          return typeof val === 'function' || typeof val === 'boolean';
+        },
+        logPeriod: function logPeriod(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        learningRate: function learningRate(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        callback: function callback(val) {
+          return typeof val === 'function' || val === null;
+        },
+        callbackPeriod: function callbackPeriod(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        timeout: function timeout(val) {
+          return typeof val === 'number' && val > 0;
+        }
+      };
+      Object.keys(FeedForward.trainDefaults).forEach(function (key) {
+        if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
+          throw new Error('[' + key + ', ' + options[key] + '] is out of normal training range, your network will probably not train.');
+        }
+      });
+    }
+  }, {
+    key: 'trainDefaults',
+    get: function get() {
+      return {
+        iterations: 20000,
+        errorThresh: 0.005,
+        log: false,
+        logPeriod: 10,
+        learningRate: 0.3,
+        callback: null,
+        callbackPeriod: 10,
+        reinforce: false
+      };
+    }
+  }, {
+    key: 'defaults',
+    get: function get() {
+      return {
+        learningRate: 0.3,
+        binaryThresh: 0.5,
+        hiddenLayers: null,
+        inputLayer: null,
+        outputLayer: null,
+        praxis: function praxis(layer) {
+          return _praxis.momentumRootMeanSquaredPropagation(layer);
+        }
+      };
+    }
+  }, {
+    key: 'structure',
+    get: function get() {
+      return {
+        layers: null,
+        _inputLayer: null,
+        _outputLayer: null
+      };
+    }
+    /**
+     *
+     * @param {object} options
+     * @constructor
+     */
+
+  }]);
+
   function FeedForward() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, FeedForward);
 
+    this.inputLayer = null;
+    this.hiddenLayers = null;
+    this.outputLayer = null;
+    this.errorCheckInterval = 100;
     Object.assign(this, this.constructor.defaults, options);
-    this.layers = null;
-    this._inputLayer = null;
-    this._outputLayer = null;
+    this.trainOpts = {};
+    this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
+    Object.assign(this, this.constructor.structure);
   }
 
   _createClass(FeedForward, [{
-    key: 'connectLayers',
-    value: function connectLayers() {
-      this.layers = [];
-      var inputLayer = this.inputLayer(null, this.layers.length);
-      this._inputLayer = inputLayer;
-      this.layers.push(inputLayer);
-      var previousLayer = inputLayer;
-      for (var i = 0; i < this.hiddenLayers.length; i++) {
-        var hiddenLayer = this.hiddenLayers[i](previousLayer, this.layers.length);
-        this.layers.push(hiddenLayer);
-        previousLayer = hiddenLayer;
-      }
-      this._outputLayer = this.outputLayer(previousLayer, this.layers.length);
-      this.layers.push(this._outputLayer);
-
-      this.connectNestedLayers();
+    key: '_connectLayers',
+    value: function _connectLayers() {
+      var layers = [];
+      this._inputLayer = this.inputLayer();
+      var hiddenLayers = this._connectHiddenLayers(this._inputLayer);
+      this._outputLayer = this.outputLayer(hiddenLayers[hiddenLayers.length - 1], hiddenLayers.length);
+      layers.push(this._inputLayer);
+      layers.push.apply(layers, hiddenLayers);
+      layers.push(this._outputLayer);
+      this.layers = (0, _flattenLayers2.default)(layers);
     }
   }, {
-    key: 'connectNestedLayers',
-    value: function connectNestedLayers() {
-      var _this = this;
-
-      var _loop = function _loop(i) {
-        var offset = 0;
-        (0, _traverseLayersFrom2.default)(_this.layers[i], function (layer) {
-          if (_this.layers.indexOf(layer) === -1) {
-            _this.layers.splice(i + offset, 0, layer);
-            offset++;
-          }
-        });
-      };
-
-      for (var i = 0; i < this.layers.length; i++) {
-        _loop(i);
+    key: '_connectHiddenLayers',
+    value: function _connectHiddenLayers(previousLayer) {
+      var hiddenLayers = [];
+      for (var i = 0; i < this.hiddenLayers.length; i++) {
+        var hiddenLayer = this.hiddenLayers[i](previousLayer, i);
+        hiddenLayers.push(hiddenLayer);
+        previousLayer = hiddenLayer;
       }
+      return hiddenLayers;
     }
   }, {
     key: 'initialize',
     value: function initialize() {
-      this.connectLayers();
-      for (var i = 0; i < this.layers.length; i++) {
-        var layer = this.layers[i];
-        layer.validate(this.layers[i - 1], this.layers[i + 1]);
+      this._connectLayers();
+      this.initializeLayers(this.layers);
+    }
+  }, {
+    key: 'initializeLayers',
+    value: function initializeLayers(layers) {
+      for (var i = 0; i < layers.length; i++) {
+        var layer = layers[i];
         layer.setupKernels();
         if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
           layer.praxis = this.praxis(layer);
@@ -135,11 +247,153 @@ var FeedForward = function () {
       for (var i = 1; i < this.layers.length; i++) {
         this.layers[i].predict();
       }
-      return this.layers[this.layers.length - 1].outputs;
+      return this.layers[this.layers.length - 1].weights;
+    }
+
+    /**
+     *
+     * @param data
+     * @param options
+     * @returns {{error: number, iterations: number}}
+     */
+
+  }, {
+    key: 'train',
+    value: function train(data) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      var status = void 0,
+          endTime = void 0;
+
+      var _prepTraining2 = this._prepTraining(data, options);
+
+      data = _prepTraining2.data;
+      status = _prepTraining2.status;
+      endTime = _prepTraining2.endTime;
+
+
+      while (this._trainingTick(data, status, endTime)) {}
+      return status;
+    }
+
+    /**
+     *
+     * @param {object} data
+     * @param {object} status { iterations: number, error: number }
+     * @param endTime
+     */
+
+  }, {
+    key: '_trainingTick',
+    value: function _trainingTick(data, status, endTime) {
+      if (status.iterations >= this.trainOpts.iterations || status.error <= this.trainOpts.errorThresh || Date.now() >= endTime) {
+        return false;
+      }
+
+      status.iterations++;
+
+      if (this.trainOpts.log && status.iterations % this.trainOpts.logPeriod === 0) {
+        status.error = this._calculateTrainingError(data);
+        this.trainOpts.log('iterations: ' + status.iterations + ', training error: ' + status.error);
+      } else {
+        if (status.iterations % this.errorCheckInterval === 0) {
+          status.error = this._calculateTrainingError(data);
+        } else {
+          this._trainPatterns(data);
+        }
+      }
+
+      if (this.trainOpts.callback && status.iterations % this.trainOpts.callbackPeriod === 0) {
+        this.trainOpts.callback(Object.assign(status));
+      }
+      return true;
+    }
+
+    /**
+     *
+     * @param data
+     * @param options
+     * @protected
+     * @return { data, status, endTime }
+     */
+
+  }, {
+    key: '_prepTraining',
+    value: function _prepTraining(data, options) {
+      this._updateTrainingOptions(options);
+      data = this._formatData(data);
+      var endTime = Date.now() + this.trainOpts.timeout;
+
+      var status = {
+        error: 1,
+        iterations: 0
+      };
+
+      this.initialize();
+
+      return {
+        data: data,
+        status: status,
+        endTime: endTime
+      };
+    }
+
+    /**
+     *
+     * @param data
+     * @returns {Number} error
+     */
+
+  }, {
+    key: '_calculateTrainingError',
+    value: function _calculateTrainingError(data) {
+      var sum = 0;
+      for (var i = 0; i < data.length; ++i) {
+        sum += this._trainPattern(data[i].input, data[i].output, true);
+      }
+      return sum / data.length;
+    }
+
+    /**
+     * @param data
+     * @private
+     */
+
+  }, {
+    key: '_trainPatterns',
+    value: function _trainPatterns(data) {
+      for (var i = 0; i < data.length; ++i) {
+        this._trainPattern(data[i].input, data[i].output, false);
+      }
+    }
+
+    /**
+     *
+     * @param input
+     * @param target
+     * @param {Boolean} logErrorRate
+     */
+
+  }, {
+    key: '_trainPattern',
+    value: function _trainPattern(input, target, logErrorRate) {
+
+      // forward propagate
+      this.runInput(input);
+
+      // back propagate
+      this._calculateDeltas(target);
+      this._adjustWeights();
+
+      if (logErrorRate) {
+        return (0, _mse2d2.default)(this._outputLayer.errors.hasOwnProperty('toArray') ? this._outputLayer.errors.toArray() : this._outputLayer.errors);
+      } else {
+        return null;
+      }
     }
   }, {
-    key: 'calculateDeltas',
-    value: function calculateDeltas(target) {
+    key: '_calculateDeltas',
+    value: function _calculateDeltas(target) {
       this._outputLayer.compare(target);
       for (var i = this.layers.length - 2; i > -1; i--) {
         var previousLayer = this.layers[i - 1];
@@ -150,87 +404,13 @@ var FeedForward = function () {
 
     /**
      *
-     * @param data
-     * @param _options
-     * @returns {{error: number, iterations: number}}
      */
 
   }, {
-    key: 'train',
-    value: function train(data) {
-      var _options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      var options = Object.assign({}, FeedForward.trainDefaults, _options);
-      data = this.formatData(data);
-      var iterations = options.iterations;
-      var errorThresh = options.errorThresh;
-      var log = options.log === true ? console.log : options.log;
-      var logPeriod = options.logPeriod;
-      var learningRate = _options.learningRate || this.learningRate || options.learningRate;
-      var callback = options.callback;
-      var callbackPeriod = options.callbackPeriod;
-      if (!options.reinforce) {
-        this.initialize();
-      }
-
-      var error = 1;
-      var i = void 0;
-      for (i = 0; i < iterations && error > errorThresh; i++) {
-        var sum = 0;
-        for (var j = 0; j < data.length; j++) {
-          var err = this.trainPattern(data[j].input, data[j].output, learningRate);
-          sum += err;
-        }
-        error = sum / data.length;
-
-        if (log && i % logPeriod === 0) {
-          log('iterations:', i, 'training error:', error);
-        }
-        if (i % callbackPeriod === 0) console.log(error);
-        if (callback && i % callbackPeriod === 0) {
-          callback({ error: error, iterations: i });
-        }
-      }
-
-      return {
-        error: error,
-        iterations: i
-      };
-    }
-
-    /**
-     *
-     * @param input
-     * @param target
-     * @param [learningRate]
-     */
-
-  }, {
-    key: 'trainPattern',
-    value: function trainPattern(input, target, learningRate) {
-      learningRate = learningRate || this.learningRate;
-
-      // forward propagate
-      this.runInput(input);
-
-      // back propagate
-      this.calculateDeltas(target);
-      this.adjustWeights(learningRate);
-
-      var error = (0, _mse2d2.default)(this._outputLayer.errors.hasOwnProperty('toArray') ? this._outputLayer.errors.toArray() : this._outputLayer.errors);
-      return error;
-    }
-
-    /**
-     *
-     * @param learningRate
-     */
-
-  }, {
-    key: 'adjustWeights',
-    value: function adjustWeights(learningRate) {
+    key: '_adjustWeights',
+    value: function _adjustWeights() {
       for (var i = 0; i < this.layers.length; i++) {
-        this.layers[i].learn(learningRate);
+        this.layers[i].learn(this.layers[i - 1], this.layers[i + 1], this.trainOpts.learningRate);
       }
     }
 
@@ -241,11 +421,11 @@ var FeedForward = function () {
      */
 
   }, {
-    key: 'formatData',
-    value: function formatData(data) {
+    key: '_formatData',
+    value: function _formatData(data) {
       var _this2 = this;
 
-      if (data.constructor !== Array) {
+      if (!Array.isArray(data)) {
         // turn stream datum into array
         var tmp = [];
         tmp.push(data);
@@ -253,7 +433,7 @@ var FeedForward = function () {
       }
       // turn sparse hash input into arrays with 0s as filler
       var datum = data[0].input;
-      if (datum.constructor !== Array && !(datum instanceof Float64Array)) {
+      if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
         if (!this.inputLookup) {
           this.inputLookup = _lookup2.default.buildLookup(data.map(function (value) {
             return value['input'];
@@ -265,7 +445,7 @@ var FeedForward = function () {
         }, this);
       }
 
-      if (data[0].output.constructor !== Array) {
+      if (!Array.isArray(data[0].output)) {
         if (!this.outputLookup) {
           this.outputLookup = _lookup2.default.buildLookup(data.map(function (value) {
             return value['output'];
@@ -293,88 +473,8 @@ var FeedForward = function () {
   }, {
     key: 'test',
     value: function test(data) {
-      var _this3 = this;
-
-      data = this.formatData(data);
-
-      // for binary classification problems with one output node
-      var isBinary = data[0].output.length === 1;
-      var falsePos = 0;
-      var falseNeg = 0;
-      var truePos = 0;
-      var trueNeg = 0;
-
-      // for classification problems
-      var misclasses = [];
-
-      // run each pattern through the trained network and collect
-      // error and misclassification statistics
-      var sum = 0;
-
-      var _loop2 = function _loop2(i) {
-        var output = _this3.runInput(data[i].input);
-        var target = data[i].output;
-
-        var actual = void 0,
-            expected = void 0;
-        if (isBinary) {
-          actual = output[0] > _this3.binaryThresh ? 1 : 0;
-          expected = target[0];
-        } else {
-          actual = output.indexOf((0, _max2.default)(output));
-          expected = target.indexOf((0, _max2.default)(target));
-        }
-
-        if (actual !== expected) {
-          var misclass = data[i];
-          Object.assign(misclass, {
-            actual: actual,
-            expected: expected
-          });
-          misclasses.push(misclass);
-        }
-
-        if (isBinary) {
-          if (actual === 0 && expected === 0) {
-            trueNeg++;
-          } else if (actual === 1 && expected === 1) {
-            truePos++;
-          } else if (actual === 0 && expected === 1) {
-            falseNeg++;
-          } else if (actual === 1 && expected === 0) {
-            falsePos++;
-          }
-        }
-
-        var errors = output.map(function (value, i) {
-          return target[i] - value;
-        });
-        sum += mse(errors);
-      };
-
-      for (var i = 0; i < data.length; i++) {
-        _loop2(i);
-      }
-      var error = sum / data.length;
-
-      var stats = {
-        error: error,
-        misclasses: misclasses
-      };
-
-      if (isBinary) {
-        Object.assign(stats, {
-          trueNeg: trueNeg,
-          truePos: truePos,
-          falseNeg: falseNeg,
-          falsePos: falsePos,
-          total: data.length,
-          precision: truePos / (truePos + falsePos),
-          recall: truePos / (truePos + falseNeg),
-          accuracy: (trueNeg + truePos) / data.length
-        });
-      }
-      return stats;
+      /* istanbul ignore next */
+      throw new Error('not yet implemented');
     }
 
     /**
@@ -384,31 +484,23 @@ var FeedForward = function () {
   }, {
     key: 'toJSON',
     value: function toJSON() {
-      var _this4 = this;
-
       var jsonLayers = [];
       for (var i = 0; i < this.layers.length; i++) {
         var layer = this.layers[i];
-        var jsonLayer = {};
-        var jsonKeys = Object.keys(layer.constructor.defaults);
-        for (var keyIndex = 0; keyIndex < jsonKeys.length; keyIndex++) {
-          var key = jsonKeys[keyIndex];
-          jsonLayer[key] = layer[key];
-        }
-        jsonLayer.type = layer.constructor.name;
-        if (layer.inputLayer) {
+        var jsonLayer = layer.toJSON();
+        if (layer.hasOwnProperty('inputLayer')) {
           jsonLayer.inputLayerIndex = this.layers.indexOf(layer.inputLayer);
-        } else if (layer.inputLayers) {
-          jsonLayer.inputLayerIndexes = layer.inputLayers.map(function (inputLayer) {
-            return _this4.layers.indexOf(inputLayer);
-          });
+        } else {
+          if (layer.hasOwnProperty('inputLayer1') && layer.hasOwnProperty('inputLayer2')) {
+            jsonLayer.inputLayer1Index = this.layers.indexOf(layer.inputLayer1);
+            jsonLayer.inputLayer2Index = this.layers.indexOf(layer.inputLayer2);
+          }
         }
         jsonLayers.push(jsonLayer);
       }
-      var json = {
+      return {
         layers: jsonLayers
       };
-      return json;
     }
 
     /**
@@ -427,6 +519,7 @@ var FeedForward = function () {
      * @returns {Function}
      */
     value: function toFunction() {
+      /* istanbul ignore next */
       throw new Error('not yet implemented');
     }
 
@@ -439,6 +532,7 @@ var FeedForward = function () {
   }, {
     key: 'createTrainStream',
     value: function createTrainStream(opts) {
+      /* istanbul ignore next */
       throw new Error('not yet implemented');
     }
   }], [{
@@ -453,11 +547,16 @@ var FeedForward = function () {
         if (jsonLayer.hasOwnProperty('inputLayerIndex')) {
           var _inputLayer = layers[jsonLayer.inputLayerIndex];
           layers.push((0, _layerFromJson2.default)(jsonLayer, _inputLayer) || getLayer(jsonLayer, _inputLayer));
-        } else if (jsonLayer.hasOwnProperty('inputLayerIndexes')) {
-          var inputLayers = jsonLayer.inputLayerIndexes.map(function (inputLayerIndex) {
-            return layers[inputLayerIndex];
-          });
-          layers.push((0, _layerFromJson2.default)(jsonLayer, inputLayers) || getLayer(jsonLayer, inputLayers));
+        } else {
+          if (!jsonLayer.hasOwnProperty('inputLayer1Index')) throw new Error('inputLayer1Index not defined');
+          if (!jsonLayer.hasOwnProperty('inputLayer2Index')) throw new Error('inputLayer2Index not defined');
+          var inputLayer1 = layers[jsonLayer.inputLayer1Index];
+          var inputLayer2 = layers[jsonLayer.inputLayer2Index];
+
+          if (inputLayer1 === undefined) throw new Error('layer of index ' + jsonLayer.inputLayer1Index + ' not found');
+          if (inputLayer2 === undefined) throw new Error('layer of index ' + jsonLayer.inputLayer2Index + ' not found');
+
+          layers.push((0, _layerFromJson2.default)(jsonLayer, inputLayer) || getLayer(jsonLayer, inputLayer1, inputLayer2));
         }
       }
 
@@ -471,28 +570,4 @@ var FeedForward = function () {
 }();
 
 exports.default = FeedForward;
-
-
-FeedForward.trainDefaults = {
-  iterations: 20000,
-  errorThresh: 0.005,
-  log: false,
-  logPeriod: 10,
-  learningRate: 0.3,
-  callback: null,
-  callbackPeriod: 10,
-  reinforce: false
-};
-
-FeedForward.defaults = {
-  learningRate: 0.3,
-  momentum: 0.1,
-  binaryThresh: 0.5,
-  hiddenLayers: null,
-  inputLayer: null,
-  outputLayer: null,
-  praxis: function praxis(layer) {
-    return _praxis.momentumRootMeanSquaredPropagation(layer);
-  }
-};
 //# sourceMappingURL=feed-forward.js.map

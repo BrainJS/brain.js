@@ -5,15 +5,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = feedForward;
 
-var _ = require('./');
+var _index = require('./index');
 
 function feedForward(settings, input) {
-  var width = settings.width;
+  var height = settings.height;
 
+  var weights = (0, _index.random)({ name: 'weights', height: height, width: input.height });
+  var biases = (0, _index.random)({ name: 'biases', height: height });
 
-  var weights = (0, _.random)({ width: width, height: input.width + 0 });
-  var bias = (0, _.random)({ width: width });
-
-  return (0, _.sigmoid)((0, _.add)((0, _.weigh)(input, weights), bias));
+  return (0, _index.sigmoid)((0, _index.add)((0, _index.multiply)(weights, input), biases));
 }
 //# sourceMappingURL=feed-forward.js.map

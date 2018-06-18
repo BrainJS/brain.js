@@ -9,9 +9,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 exports.trainingPredict = trainingPredict;
 exports.predict = predict;
 
-var _base = require('./base');
-
-var _base2 = _interopRequireDefault(_base);
+var _types = require('./types');
 
 var _makeKernel = require('../utilities/make-kernel');
 
@@ -25,8 +23,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Dropout = function (_Base) {
-  _inherits(Dropout, _Base);
+var Dropout = function (_Filter) {
+  _inherits(Dropout, _Filter);
 
   _createClass(Dropout, null, [{
     key: 'defaults',
@@ -47,6 +45,7 @@ var Dropout = function (_Base) {
     var _this = _possibleConstructorReturn(this, (Dropout.__proto__ || Object.getPrototypeOf(Dropout)).call(this, settings));
 
     _this.inputLayer = inputLayer;
+    _this.validate();
     return _this;
   }
 
@@ -69,14 +68,14 @@ var Dropout = function (_Base) {
       this.weights = this.predictKernel(this.inputLayer.weights);
     }
   }, {
-    key: 'learn',
-    value: function learn() {
+    key: 'compare',
+    value: function compare() {
       this.deltas = this.learnKernel(this.deltas);
     }
   }]);
 
   return Dropout;
-}(_base2.default);
+}(_types.Filter);
 
 //TODO: implement random in glsl in gpu.js
 

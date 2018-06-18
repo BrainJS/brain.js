@@ -6,25 +6,27 @@ Object.defineProperty(exports, "__esModule", {
 
 var _index = require('./index');
 
-exports.default = function (settings, input, recurrentInput) {
-  var inputGateWeights = (0, _index.random)();
-  var inputGatePeepholes = (0, _index.random)();
-  var inputGateBias = (0, _index.random)();
+exports.default = function (settings, recurrentInput, input) {
+  var height = settings.height;
+
+  var inputGateWeights = (0, _index.random)({ height: height, width: input.height });
+  var inputGatePeepholes = (0, _index.random)({ width: height, height: height });
+  var inputGateBias = (0, _index.zeros)({ height: height });
   var inputGate = (0, _index.sigmoid)((0, _index.add)((0, _index.add)((0, _index.multiply)(inputGateWeights, input), (0, _index.multiply)(inputGatePeepholes, recurrentInput)), inputGateBias));
 
-  var forgetGateWeights = (0, _index.random)();
-  var forgetGatePeepholes = (0, _index.random)();
-  var forgetGateBias = (0, _index.random)();
+  var forgetGateWeights = (0, _index.random)({ height: height, width: input.height });
+  var forgetGatePeepholes = (0, _index.random)({ width: height, height: height });
+  var forgetGateBias = (0, _index.zeros)({ height: height });
   var forgetGate = (0, _index.sigmoid)((0, _index.add)((0, _index.add)((0, _index.multiply)(forgetGateWeights, input), (0, _index.multiply)(forgetGatePeepholes, recurrentInput)), forgetGateBias));
 
-  var outputGateWeights = (0, _index.random)();
-  var outputGatePeepholes = (0, _index.random)();
-  var outputGateBias = (0, _index.random)();
+  var outputGateWeights = (0, _index.random)({ height: height, width: input.height });
+  var outputGatePeepholes = (0, _index.random)({ width: height, height: height });
+  var outputGateBias = (0, _index.zeros)({ height: height });
   var outputGate = (0, _index.sigmoid)((0, _index.add)((0, _index.add)((0, _index.multiply)(outputGateWeights, input), (0, _index.multiply)(outputGatePeepholes, recurrentInput)), outputGateBias));
 
-  var memoryWeights = (0, _index.random)();
-  var memoryPeepholes = (0, _index.random)();
-  var memoryBias = (0, _index.random)();
+  var memoryWeights = (0, _index.random)({ height: height, width: input.height });
+  var memoryPeepholes = (0, _index.random)({ width: height, height: height });
+  var memoryBias = (0, _index.zeros)({ height: height });
   var memory = (0, _index.tanh)((0, _index.add)((0, _index.add)((0, _index.multiply)(memoryWeights, input), (0, _index.multiply)(memoryPeepholes, recurrentInput)), memoryBias));
 
   // compute new cell activation

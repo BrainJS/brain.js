@@ -27,6 +27,7 @@ var Regression = function (_Base) {
     key: 'predict',
     value: function predict() {
       this.weights = this.inputs;
+      this.validate();
     }
   }, {
     key: 'learn',

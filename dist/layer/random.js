@@ -6,9 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _base = require('./base');
-
-var _base2 = _interopRequireDefault(_base);
+var _types = require('./types');
 
 var _randos2d = require('../utilities/randos-2d');
 
@@ -26,26 +24,30 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Random = function (_Base) {
-  _inherits(Random, _Base);
+var Random = function (_Model) {
+  _inherits(Random, _Model);
 
   function Random(settings) {
     _classCallCheck(this, Random);
 
     var _this = _possibleConstructorReturn(this, (Random.__proto__ || Object.getPrototypeOf(Random)).call(this, settings));
 
-    _this.deltas = (0, _zeros2d2.default)(_this.width, _this.height);
+    _this.validate();
     _this.weights = (0, _randos2d2.default)(_this.width, _this.height);
+    _this.deltas = (0, _zeros2d2.default)(_this.width, _this.height);
     return _this;
   }
 
   _createClass(Random, [{
-    key: 'setupKernels',
-    value: function setupKernels() {}
+    key: 'predict',
+    value: function predict() {}
+  }, {
+    key: 'compare',
+    value: function compare() {}
   }]);
 
   return Random;
-}(_base2.default);
+}(_types.Model);
 
 exports.default = Random;
 //# sourceMappingURL=random.js.map

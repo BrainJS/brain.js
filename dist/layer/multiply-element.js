@@ -6,13 +6,17 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _makeKernel = require('../utilities/make-kernel');
 
 var _makeKernel2 = _interopRequireDefault(_makeKernel);
 
-var _operatorBase = require('./operator-base');
+var _types = require('./types');
 
-var _operatorBase2 = _interopRequireDefault(_operatorBase);
+var _zeros2d = require('../utilities/zeros-2d');
+
+var _zeros2d2 = _interopRequireDefault(_zeros2d);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22,36 +26,45 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var MultiplyElement = function (_OperatorBase) {
-  _inherits(MultiplyElement, _OperatorBase);
+var MultiplyElement = function (_Operator) {
+  _inherits(MultiplyElement, _Operator);
 
-  function MultiplyElement(settings, inputLayer) {
+  function MultiplyElement(inputLayer1, inputLayer2) {
     _classCallCheck(this, MultiplyElement);
 
-    var _this = _possibleConstructorReturn(this, (MultiplyElement.__proto__ || Object.getPrototypeOf(MultiplyElement)).call(this, settings));
+    var _this = _possibleConstructorReturn(this, (MultiplyElement.__proto__ || Object.getPrototypeOf(MultiplyElement)).call(this));
 
-    if (inputLayer.width !== inputLayer.width) {
-      throw new Error('Layer width mismatch');
-    }
+    _this.inputLayer1 = inputLayer1;
+    _this.inputLayer2 = inputLayer2;
 
-    if (inputLayer.height !== inputLayer.height) {
-      throw new Error('Layer height mismatch');
-    }
-
-    _this.width = inputLayer.width;
-    _this.height = inputLayer.height;
-    _this.inputLayer = inputLayer;
+    _this.width = inputLayer1.width;
+    _this.height = inputLayer1.height;
+    _this.validate();
+    _this.weights = (0, _zeros2d2.default)(_this.width, _this.height);
+    _this.deltas = (0, _zeros2d2.default)(_this.width, _this.height);
     return _this;
   }
 
   _createClass(MultiplyElement, [{
+    key: 'validate',
+    value: function validate() {
+      _get(MultiplyElement.prototype.__proto__ || Object.getPrototypeOf(MultiplyElement.prototype), 'validate', this).call(this);
+      if (this.inputLayer1.width !== this.inputLayer2.width) {
+        throw new Error('Layer width mismatch of ' + this.inputLayer1.width + ' and ' + this.inputLayer2.width);
+      }
+
+      if (this.inputLayer1.height !== this.inputLayer2.height) {
+        throw new Error('Layer height mismatch of ' + this.inputLayer1.height + ' and ' + this.inputLayer2.height);
+      }
+    }
+  }, {
     key: 'setupKernels',
     value: function setupKernels() {
       this.predictKernel = (0, _makeKernel2.default)(predict, {
         output: [this.width, this.height]
       });
 
-      this.learnKernel = (0, _makeKernel2.default)(learn, {
+      this.compareKernel = (0, _makeKernel2.default)(compare, {
         output: [this.width, this.height]
       });
     }
@@ -61,23 +74,23 @@ var MultiplyElement = function (_OperatorBase) {
       this.weights = this.predictKernel(this.weights, this.inputLayer.weights);
     }
   }, {
-    key: 'learn',
-    value: function learn() {
-      this.deltas = this.predictKernel(this.weights, this.deltas);
+    key: 'compare',
+    value: function compare() {
+      this.deltas = this.compareKernel(this.weights, this.deltas);
     }
   }]);
 
   return MultiplyElement;
-}(_operatorBase2.default);
+}(_types.Operator);
 
 exports.default = MultiplyElement;
 
 
-function predict(weights, inputs) {
-  return weights[this.thread.y][this.thread.x] * inputs[this.thread.y][this.thread.x];
+function predict(weights, inputLayerWeights) {
+  return weights[this.thread.y][this.thread.x] * inputLayerWeights[this.thread.y][this.thread.x];
 }
 
-function learn(weights, deltas) {
+function compare(weights, deltas) {
   return weights[this.thread.y][this.thread.x] * deltas[this.thread.y][this.thread.x];
 }
 //# sourceMappingURL=multiply-element.js.map

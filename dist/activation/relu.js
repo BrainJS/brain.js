@@ -3,25 +3,29 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.relu = relu;
-exports.reluDerivative = reluDerivative;
+exports.activate = activate;
+exports.measure = measure;
 /**
  * Relu Activation, aka Rectified Linear Unit Activation
  * @description https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
  * @param weight
  * @returns {number}
  */
-function relu(weight) {
+function activate(weight) {
   return Math.max(0, weight);
 }
 
 /**
  * Leaky Relu derivative
  * @param weight
- * @param error
+ * @param delta
  * @returns {number}
  */
-function reluDerivative(weight, error) {
-  return weight > 0 ? error : 0;
+function measure(weight, delta) {
+  if (weight <= 0) {
+    return 0;
+  } else {
+    return delta;
+  }
 }
 //# sourceMappingURL=relu.js.map

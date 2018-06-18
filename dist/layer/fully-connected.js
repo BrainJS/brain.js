@@ -11,9 +11,7 @@ exports.learnInputs = learnInputs;
 exports.learnFilters = learnFilters;
 exports.learnBiases = learnBiases;
 
-var _base = require('./base');
-
-var _base2 = _interopRequireDefault(_base);
+var _types = require('./types');
 
 var _makeKernel = require('../utilities/make-kernel');
 
@@ -27,8 +25,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var FullyConnected = function (_Base) {
-  _inherits(FullyConnected, _Base);
+var FullyConnected = function (_Filter) {
+  _inherits(FullyConnected, _Filter);
 
   function FullyConnected(settings, inputLayer) {
     _classCallCheck(this, FullyConnected);
@@ -40,11 +38,17 @@ var FullyConnected = function (_Base) {
       throw new Error('depth of 1 only supported at this time');
     }
 
-    _this.width = inputLayer.width * inputLayer.height * inputLayer.depth;
     _this.inputLayer = inputLayer;
     _this.learnInputsKernel = null;
     _this.learnFiltersKernel = null;
     _this.learnBiasKernel = null;
+
+    var width = inputLayer.width,
+        height = inputLayer.height,
+        depth = inputLayer.depth;
+
+    _this.width = width * height * depth;
+    _this.validate();
     return _this;
   }
 
@@ -101,8 +105,8 @@ var FullyConnected = function (_Base) {
       this.weights = this.predictKernel(this.inputLayer.weights, this.filters, this.biases);
     }
   }, {
-    key: 'learn',
-    value: function learn() {
+    key: 'compare',
+    value: function compare() {
       this.filterDeltas = this.learnFilters(this.inputLayer, this.deltas);
       this.biases = this.learnBiasesKernel(this.bias, this.deltas);
       this.deltas = this.learnInputs(this.filters);
@@ -110,7 +114,7 @@ var FullyConnected = function (_Base) {
   }]);
 
   return FullyConnected;
-}(_base2.default);
+}(_types.Filter);
 
 exports.default = FullyConnected;
 function predict(inputs, filters, biases) {

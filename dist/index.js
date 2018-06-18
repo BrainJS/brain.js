@@ -3,10 +3,19 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.praxis = exports.layer = exports.activation = exports.Recurrent = exports.FeedForward = undefined;
 
 var _crossValidate = require('./cross-validate');
 
 var _crossValidate2 = _interopRequireDefault(_crossValidate);
+
+var _layer = require('./layer');
+
+var layer = _interopRequireWildcard(_layer);
+
+var _activation = require('./activation');
+
+var activation = _interopRequireWildcard(_activation);
 
 var _likely = require('./likely');
 
@@ -52,6 +61,20 @@ var _gruTimeStep = require('./recurrent/gru-time-step');
 
 var _gruTimeStep2 = _interopRequireDefault(_gruTimeStep);
 
+var _feedForward = require('./feed-forward');
+
+var _feedForward2 = _interopRequireDefault(_feedForward);
+
+var _recurrent = require('./recurrent');
+
+var _recurrent2 = _interopRequireDefault(_recurrent);
+
+var _praxis = require('./praxis');
+
+var _praxis2 = _interopRequireDefault(_praxis);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
@@ -70,4 +93,9 @@ exports.default = {
     GRUTimeStep: _gruTimeStep2.default
   }
 };
+exports.FeedForward = _feedForward2.default;
+exports.Recurrent = _recurrent2.default;
+exports.activation = activation;
+exports.layer = layer;
+exports.praxis = _praxis2.default;
 //# sourceMappingURL=index.js.map

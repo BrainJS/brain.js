@@ -17,10 +17,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Regression = function (_Base) {
   _inherits(Regression, _Base);
 
-  function Regression() {
+  function Regression(settings) {
     _classCallCheck(this, Regression);
 
-    return _possibleConstructorReturn(this, (Regression.__proto__ || Object.getPrototypeOf(Regression)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Regression.__proto__ || Object.getPrototypeOf(Regression)).call(this, settings));
+
+    _this.validate();
+    return _this;
   }
 
   _createClass(Regression, [{

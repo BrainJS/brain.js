@@ -7,29 +7,15 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 exports.predict = predict;
-exports.learn = learn;
+exports.compare = compare;
 
-var _base = require('./base');
-
-var _base2 = _interopRequireDefault(_base);
+var _types = require('./types');
 
 var _makeKernel = require('../utilities/make-kernel');
 
 var _makeKernel2 = _interopRequireDefault(_makeKernel);
 
 var _sigmoid = require('../activation/sigmoid');
-
-var _randos = require('../utilities/randos');
-
-var _randos2 = _interopRequireDefault(_randos);
-
-var _randos2d = require('../utilities/randos-2d');
-
-var _randos2d2 = _interopRequireDefault(_randos2d);
-
-var _zeros = require('../utilities/zeros');
-
-var _zeros2 = _interopRequireDefault(_zeros);
 
 var _zeros2d = require('../utilities/zeros-2d');
 
@@ -43,20 +29,24 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Sigmoid = function (_Base) {
-  _inherits(Sigmoid, _Base);
+var Sigmoid = function (_Activation) {
+  _inherits(Sigmoid, _Activation);
 
   function Sigmoid(inputLayer) {
     _classCallCheck(this, Sigmoid);
 
+    var _this = _possibleConstructorReturn(this, (Sigmoid.__proto__ || Object.getPrototypeOf(Sigmoid)).call(this));
+
+    _this.inputLayer = inputLayer;
+
     var width = inputLayer.width,
         height = inputLayer.height;
 
-    var _this = _possibleConstructorReturn(this, (Sigmoid.__proto__ || Object.getPrototypeOf(Sigmoid)).call(this, { width: width, height: height }));
-
-    _this.inputLayer = inputLayer;
-    _this.weights = (0, _randos2d2.default)(width, height);
-    _this.deltas = (0, _zeros2.default)(width);
+    _this.width = width;
+    _this.height = height;
+    _this.validate();
+    _this.weights = (0, _zeros2d2.default)(_this.width, _this.height);
+    _this.deltas = (0, _zeros2d2.default)(_this.width, _this.height);
     return _this;
   }
 
@@ -70,64 +60,32 @@ var Sigmoid = function (_Base) {
 
       this.compareKernel = (0, _makeKernel2.default)(compare, {
         output: [this.width, this.height],
-        map: {
-          errors: calcError,
-          deltas: _sigmoid.measure
-        },
-        constants: { width: this.width }
-      });
-
-      this.learnKernel = (0, _makeKernel2.default)(learn, {
-        output: [this.width, this.height],
         functions: [_sigmoid.measure]
       });
     }
   }, {
     key: 'predict',
     value: function predict() {
-      var result = this.predictKernel(this.inputLayer.weights);
-      this.weights = result;
+      this.weights = this.predictKernel(this.inputLayer.weights);
     }
   }, {
     key: 'compare',
     value: function compare(previousLayer, nextLayer) {
-      var _compareKernel = this.compareKernel(this.weights, nextLayer.weights, nextLayer.deltas),
-          errors = _compareKernel.errors,
-          deltas = _compareKernel.deltas;
-
-      this.errors = errors;
-      this.deltas = deltas;
-    }
-  }, {
-    key: 'learn',
-    value: function learn() {
-      this.deltas = this.learnKernel(this.weights, this.errors);
+      this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
     }
   }]);
 
   return Sigmoid;
-}(_base2.default);
+}(_types.Activation);
 
 exports.default = Sigmoid;
 function predict(inputs) {
   return (0, _sigmoid.activate)(inputs[this.thread.y][this.thread.x]);
 }
 
-function compare(weights, nextLayerWeights, nextLayerDeltas) {
-  var weight = weights[this.thread.x];
-  return (0, _sigmoid.measure)(weight, calcError(nextLayerWeights, nextLayerDeltas));
-}
-
-function learn(weights, errors) {
-  return (0, _sigmoid.measure)(weights[this.thread.y][this.thread.x], errors[this.thread.y][this.thread.x]);
-}
-
-function calcError(nextWeights, nextDeltas) {
-  var error = 0;
-  for (var k = 0; k < this.constants.width; k++) {
-    debugger;
-    error += nextDeltas[k] * nextWeights[k][this.thread.x];
-  }
-  return error;
+function compare(weights, deltas) {
+  var weight = weights[this.thread.y][this.thread.x];
+  var delta = deltas[this.thread.y][this.thread.x];
+  return (0, _sigmoid.measure)(weight, delta);
 }
 //# sourceMappingURL=sigmoid.js.map

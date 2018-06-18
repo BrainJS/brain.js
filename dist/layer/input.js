@@ -6,13 +6,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _base = require('./base');
+var _types = require('./types');
 
-var _base2 = _interopRequireDefault(_base);
+var _zeros2d = require('../utilities/zeros-2d');
 
-var _makeKernel = require('../utilities/make-kernel');
-
-var _makeKernel2 = _interopRequireDefault(_makeKernel);
+var _zeros2d2 = _interopRequireDefault(_zeros2d);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22,24 +20,24 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Input = function (_Base) {
-  _inherits(Input, _Base);
+var Input = function (_Model) {
+  _inherits(Input, _Model);
 
   function Input(settings) {
     _classCallCheck(this, Input);
 
     var _this = _possibleConstructorReturn(this, (Input.__proto__ || Object.getPrototypeOf(Input)).call(this, settings));
 
-    if (_this.height === 1) {
+    if (_this.width === 1) {
       _this.predict = _this.predict1D;
     }
+    _this.validate();
+    _this.weights = null;
+    _this.deltas = (0, _zeros2d2.default)(_this.width, _this.height);
     return _this;
   }
 
   _createClass(Input, [{
-    key: 'setupKernels',
-    value: function setupKernels() {}
-  }, {
     key: 'predict',
     value: function predict(inputs) {
       this.weights = inputs;
@@ -47,18 +45,45 @@ var Input = function (_Base) {
   }, {
     key: 'predict1D',
     value: function predict1D(inputs) {
-      this.weights = [inputs];
+      var weights = [];
+      for (var x = 0; x < inputs.length; x++) {
+        weights.push([inputs[x]]);
+      }
+      this.weights = weights;
     }
   }, {
     key: 'compare',
     value: function compare() {}
   }, {
     key: 'learn',
-    value: function learn() {}
+    value: function learn() {
+      this.deltas = (0, _zeros2d2.default)(this.width, this.height);
+    }
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      var jsonLayer = {};
+      var _constructor = this.constructor,
+          defaults = _constructor.defaults,
+          name = _constructor.name;
+
+      var keys = Object.keys(defaults);
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        switch (key) {
+          case 'deltas':
+          case 'weights':
+            continue;
+        }
+        jsonLayer[key] = this[key];
+      }
+      jsonLayer.type = name;
+      return jsonLayer;
+    }
   }]);
 
   return Input;
-}(_base2.default);
+}(_types.Model);
 
 exports.default = Input;
 //# sourceMappingURL=input.js.map
