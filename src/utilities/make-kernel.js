@@ -3,7 +3,7 @@ let gpuInstance = null;
 
 export default function(fn, settings) {
   if (gpuInstance === null) {
-    setup(new GPU());
+    setup(new GPU({ mode: 'cpu' }));
   }
   if (settings.hasOwnProperty('map')) {
     return gpuInstance.createKernelMap(settings.map, fn, settings)

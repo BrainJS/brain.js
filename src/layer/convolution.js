@@ -97,7 +97,11 @@ export default class Convolution extends Filter {
     });
 
     this.compareBiasesKernel = makeKernel(compareBiases, {
-      output: [1, 1, this.inputLayer.depth]
+      output: [1, 1, this.inputLayer.depth],
+      constants: {
+        x: 1,
+        y: 1
+      }
     });
   }
 

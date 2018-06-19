@@ -1,6 +1,8 @@
 import { Filter } from './types';
 import makeKernel from '../utilities/make-kernel';
 import { setPadding } from '../utilities/layer-setup';
+import zeros2D from '../utilities/zeros-2d';
+
 export default class Pool extends Filter {
   static get defaults() {
     return {
@@ -20,6 +22,8 @@ export default class Pool extends Filter {
     this.switchX = null;
     this.switchY = null;
     this.validate();
+    this.weights = zeros2D(this.width, this.height);
+    this.deltas = zeros2D(this.width, this.height);
   }
 
   setupKernels() {
