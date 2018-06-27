@@ -397,7 +397,7 @@ var lookup = function () {
 }();
 
 exports.default = lookup;
-},{}],60:[function(require,module,exports) {
+},{}],51:[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -663,7 +663,7 @@ function isObject(arg) {
 function isUndefined(arg) {
   return arg === void 0;
 }
-},{}],61:[function(require,module,exports) {
+},{}],57:[function(require,module,exports) {
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -688,7 +688,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],125:[function(require,module,exports) {
+},{}],118:[function(require,module,exports) {
 
 // shim for using process in browser
 var process = module.exports = {};
@@ -875,7 +875,7 @@ process.chdir = function (dir) {
 process.umask = function () {
     return 0;
 };
-},{}],119:[function(require,module,exports) {
+},{}],111:[function(require,module,exports) {
 var process = require("process");
 'use strict';
 
@@ -922,17 +922,17 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 
-},{"process":125}],123:[function(require,module,exports) {
+},{"process":118}],128:[function(require,module,exports) {
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],120:[function(require,module,exports) {
+},{}],115:[function(require,module,exports) {
 module.exports = require('stream');
 
-},{"stream":47}],137:[function(require,module,exports) {
+},{"stream":47}],134:[function(require,module,exports) {
 'use strict'
 
 exports.byteLength = byteLength
@@ -1085,7 +1085,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],136:[function(require,module,exports) {
+},{}],133:[function(require,module,exports) {
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -1171,7 +1171,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],133:[function(require,module,exports) {
+},{}],130:[function(require,module,exports) {
 
 var global = arguments[3];
 /*!
@@ -2964,7 +2964,7 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":137,"ieee754":136,"isarray":123,"buffer":133}],124:[function(require,module,exports) {
+},{"base64-js":134,"ieee754":133,"isarray":128,"buffer":130}],120:[function(require,module,exports) {
 
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
@@ -3029,7 +3029,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":133}],118:[function(require,module,exports) {
+},{"buffer":130}],110:[function(require,module,exports) {
 var Buffer = require("buffer").Buffer;
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -3139,9 +3139,9 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
-},{"buffer":133}],126:[function(require,module,exports) {
+},{"buffer":130}],127:[function(require,module,exports) {
 
-},{}],121:[function(require,module,exports) {
+},{}],126:[function(require,module,exports) {
 
 'use strict';
 
@@ -3222,7 +3222,7 @@ if (util && util.inspect && util.inspect.custom) {
     return this.constructor.name + ' ' + obj;
   };
 }
-},{"safe-buffer":124,"util":126}],122:[function(require,module,exports) {
+},{"safe-buffer":120,"util":127}],116:[function(require,module,exports) {
 'use strict';
 
 /*<replacement>*/
@@ -3297,7 +3297,7 @@ module.exports = {
   destroy: destroy,
   undestroy: undestroy
 };
-},{"process-nextick-args":119}],128:[function(require,module,exports) {
+},{"process-nextick-args":111}],119:[function(require,module,exports) {
 var global = arguments[3];
 
 /**
@@ -3367,7 +3367,7 @@ function config (name) {
   return String(val).toLowerCase() === 'true';
 }
 
-},{}],85:[function(require,module,exports) {
+},{}],82:[function(require,module,exports) {
 var process = require("process");
 
 var global = arguments[3];
@@ -4058,7 +4058,7 @@ Writable.prototype._destroy = function (err, cb) {
   this.end();
   cb(err);
 };
-},{"process-nextick-args":119,"core-util-is":118,"inherits":61,"util-deprecate":128,"./internal/streams/stream":120,"safe-buffer":124,"./internal/streams/destroy":122,"./_stream_duplex":86,"process":125}],86:[function(require,module,exports) {
+},{"process-nextick-args":111,"core-util-is":110,"inherits":57,"util-deprecate":119,"./internal/streams/stream":115,"safe-buffer":120,"./internal/streams/destroy":116,"./_stream_duplex":81,"process":118}],81:[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4190,7 +4190,7 @@ Duplex.prototype._destroy = function (err, cb) {
 
   pna.nextTick(cb, err);
 };
-},{"process-nextick-args":119,"core-util-is":118,"inherits":61,"./_stream_readable":84,"./_stream_writable":85}],127:[function(require,module,exports) {
+},{"process-nextick-args":111,"core-util-is":110,"inherits":57,"./_stream_readable":83,"./_stream_writable":82}],129:[function(require,module,exports) {
 
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -4488,7 +4488,7 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"safe-buffer":124}],84:[function(require,module,exports) {
+},{"safe-buffer":120}],83:[function(require,module,exports) {
 
 var global = arguments[3];
 var process = require("process");
@@ -5511,7 +5511,7 @@ function indexOf(xs, x) {
   }
   return -1;
 }
-},{"process-nextick-args":119,"isarray":123,"events":60,"./internal/streams/stream":120,"safe-buffer":124,"core-util-is":118,"inherits":61,"util":126,"./internal/streams/BufferList":121,"./internal/streams/destroy":122,"./_stream_duplex":86,"string_decoder/":127,"process":125}],87:[function(require,module,exports) {
+},{"process-nextick-args":111,"isarray":128,"events":51,"./internal/streams/stream":115,"safe-buffer":120,"core-util-is":110,"inherits":57,"util":127,"./internal/streams/BufferList":126,"./internal/streams/destroy":116,"./_stream_duplex":81,"string_decoder/":129,"process":118}],84:[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5726,7 +5726,7 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":86,"core-util-is":118,"inherits":61}],88:[function(require,module,exports) {
+},{"./_stream_duplex":81,"core-util-is":110,"inherits":57}],85:[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5774,7 +5774,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":87,"core-util-is":118,"inherits":61}],62:[function(require,module,exports) {
+},{"./_stream_transform":84,"core-util-is":110,"inherits":57}],58:[function(require,module,exports) {
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = exports;
 exports.Readable = exports;
@@ -5783,19 +5783,19 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_readable.js":84,"./lib/_stream_writable.js":85,"./lib/_stream_duplex.js":86,"./lib/_stream_transform.js":87,"./lib/_stream_passthrough.js":88}],65:[function(require,module,exports) {
+},{"./lib/_stream_readable.js":83,"./lib/_stream_writable.js":82,"./lib/_stream_duplex.js":81,"./lib/_stream_transform.js":84,"./lib/_stream_passthrough.js":85}],61:[function(require,module,exports) {
 module.exports = require('./lib/_stream_writable.js');
 
-},{"./lib/_stream_writable.js":85}],64:[function(require,module,exports) {
+},{"./lib/_stream_writable.js":82}],59:[function(require,module,exports) {
 module.exports = require('./lib/_stream_duplex.js');
 
-},{"./lib/_stream_duplex.js":86}],63:[function(require,module,exports) {
+},{"./lib/_stream_duplex.js":81}],60:[function(require,module,exports) {
 module.exports = require('./readable').Transform
 
-},{"./readable":62}],66:[function(require,module,exports) {
+},{"./readable":58}],62:[function(require,module,exports) {
 module.exports = require('./readable').PassThrough
 
-},{"./readable":62}],47:[function(require,module,exports) {
+},{"./readable":58}],47:[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5924,7 +5924,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":60,"inherits":61,"readable-stream/readable.js":62,"readable-stream/writable.js":65,"readable-stream/duplex.js":64,"readable-stream/transform.js":63,"readable-stream/passthrough.js":66}],8:[function(require,module,exports) {
+},{"events":51,"inherits":57,"readable-stream/readable.js":58,"readable-stream/writable.js":61,"readable-stream/duplex.js":59,"readable-stream/transform.js":60,"readable-stream/passthrough.js":62}],8:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6263,7 +6263,7 @@ exports.default = zeros;
 function zeros(size) {
   return new Float32Array(size);
 }
-},{}],89:[function(require,module,exports) {
+},{}],86:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6508,7 +6508,7 @@ function thaw(items) {
   return new Thaw(items, options);
 }
 //# sourceMappingURL=thaw.js.map
-},{}],90:[function(require,module,exports) {
+},{}],87:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6648,7 +6648,7 @@ var Block = function () {
 exports.default = Block;
 ;
 //# sourceMappingURL=block.js.map
-},{"./":58}],58:[function(require,module,exports) {
+},{"./":56}],56:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6675,7 +6675,7 @@ if (typeof window !== 'undefined') {
   window.Thaw.Block = _block2.default;
 }
 //# sourceMappingURL=index.js.map
-},{"./thaw":89,"./block":90}],6:[function(require,module,exports) {
+},{"./thaw":86,"./block":87}],6:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7790,7 +7790,7 @@ var NeuralNetwork = function () {
 }();
 
 exports.default = NeuralNetwork;
-},{"./lookup":5,"./train-stream":8,"./utilities/max":15,"./utilities/mse":16,"./utilities/randos":20,"./utilities/range":21,"./utilities/to-array":22,"./utilities/zeros":24,"thaw.js":58}],113:[function(require,module,exports) {
+},{"./lookup":5,"./train-stream":8,"./utilities/max":15,"./utilities/mse":16,"./utilities/randos":20,"./utilities/range":21,"./utilities/to-array":22,"./utilities/zeros":24,"thaw.js":56}],112:[function(require,module,exports) {
 'use strict';
 
 /**
@@ -8073,7 +8073,7 @@ if (_isWebGlSupported) {
 }
 
 module.exports = UtilsCore;
-},{}],70:[function(require,module,exports) {
+},{}],66:[function(require,module,exports) {
 "use strict";
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -8100,7 +8100,7 @@ module.exports = function Input(value, size) {
 		}
 	}
 };
-},{}],71:[function(require,module,exports) {
+},{}],67:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -8174,7 +8174,7 @@ module.exports = function () {
 
 	return Texture;
 }();
-},{}],69:[function(require,module,exports) {
+},{}],65:[function(require,module,exports) {
 'use strict';
 
 /**
@@ -8825,7 +8825,7 @@ var Utils = function (_UtilsCore) {
 Object.assign(Utils, UtilsCore);
 
 module.exports = Utils;
-},{"./utils-core":113,"./input":70,"./texture":71,"../index":49}],134:[function(require,module,exports) {
+},{"./utils-core":112,"./input":66,"./texture":67,"../index":48}],131:[function(require,module,exports) {
 'use strict';
 
 var utils = require('../core/utils');
@@ -8860,7 +8860,7 @@ module.exports = function kernelRunShortcut(kernel) {
 
 	return shortcut;
 };
-},{"../core/utils":69}],109:[function(require,module,exports) {
+},{"../core/utils":65}],109:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -9004,7 +9004,7 @@ module.exports = function () {
 
 	return BaseRunner;
 }();
-},{"../core/utils":69,"./kernel-run-shortcut":134}],114:[function(require,module,exports) {
+},{"../core/utils":65,"./kernel-run-shortcut":131}],113:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -9447,15 +9447,15 @@ module.exports = function () {
 
 	return BaseKernel;
 }();
-},{"../core/utils":69}],130:[function(require,module,exports) {
+},{"../core/utils":65}],123:[function(require,module,exports) {
 "use strict";
 
 module.exports = "__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst float LOOP_MAX = __LOOP_MAX__;\n#define EPSILON 0.0000001;\n\n__CONSTANTS__;\n\nvarying highp vec2 vTexCoord;\n\nvec4 round(vec4 x) {\n  return floor(x + 0.5);\n}\n\nhighp float round(highp float x) {\n  return floor(x + 0.5);\n}\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nhighp float integerMod(highp float x, highp float y) {\n  highp float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nhighp int integerMod(highp int x, highp int y) {\n  return int(integerMod(float(x), float(y)));\n}\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nhighp float decode32(highp vec4 rgba) {\n  __DECODE32_ENDIANNESS__;\n  rgba *= 255.0;\n  vec2 gte128;\n  gte128.x = rgba.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = rgba.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * rgba.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  rgba.b = rgba.b - 128.0 * gte128.x;\n  res = dot(rgba, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nhighp vec4 encode32(highp float f) {\n  highp float F = abs(f);\n  highp float sign = f < 0.0 ? 1.0 : 0.0;\n  highp float exponent = floor(log2(F));\n  highp float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 rgba = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  rgba.rg = integerMod(rgba.rg, 256.0);\n  rgba.b = integerMod(rgba.b, 128.0);\n  rgba.a = exponent*0.5 + 63.5;\n  rgba.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  rgba = floor(rgba);\n  rgba *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return rgba;\n}\n// Dragons end here\n\nhighp float index;\nhighp vec3 threadId;\n\nhighp vec3 indexTo3D(highp float idx, highp vec3 texDim) {\n  highp float z = floor(idx / (texDim.x * texDim.y));\n  idx -= z * texDim.x * texDim.y;\n  highp float y = floor(idx / texDim.x);\n  highp float x = integerMod(idx, texDim.x);\n  return vec3(x, y, z);\n}\n\nhighp float get(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float z, highp float y, highp float x) {\n  highp vec3 xyz = vec3(x, y, z);\n  xyz = floor(xyz + 0.5);\n  __GET_WRAPAROUND__;\n  highp float index = round(xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z));\n  __GET_TEXTURE_CHANNEL__;\n  highp float w = round(texSize.x);\n  vec2 st = vec2(integerMod(index, w), float(int(index) / int(w))) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  highp vec4 texel = texture2D(tex, st / texSize);\n  __GET_RESULT__;\n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float z, highp float y, highp float x) {\n  highp vec3 xyz = vec3(x, y, z);\n  xyz = floor(xyz + 0.5);\n  __GET_WRAPAROUND__;\n  highp float index = round(xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z));\n  __GET_TEXTURE_CHANNEL__;\n  highp float w = round(texSize.x);\n  vec2 st = vec2(integerMod(index, w), float(int(index) / int(w))) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture2D(tex, st / texSize);\n}\n\nhighp float get(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float y, highp float x) {\n  return get(tex, texSize, texDim, 0.0, y, x);\n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float y, highp float x) {\n  return getImage2D(tex, texSize, texDim, 0.0, y, x);\n}\n\nhighp float get(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float x) {\n  return get(tex, texSize, texDim, 0.0, 0.0, x);\n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float x) {\n  return getImage2D(tex, texSize, texDim, 0.0, 0.0, x);\n}\n\nhighp vec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\nvoid color(sampler2D image) {\n  actualColor = texture2D(image, vTexCoord);\n}\n\n__MAIN_PARAMS__;\n__MAIN_CONSTANTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = floor(vTexCoord.s * float(uTexSize.x)) + floor(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
-},{}],131:[function(require,module,exports) {
+},{}],125:[function(require,module,exports) {
 "use strict";
 
 module.exports = "precision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nattribute highp vec2 aPos;\nattribute highp vec2 aTexCoord;\n\nvarying highp vec2 vTexCoord;\nuniform vec2 ratio;\n\nvoid main(void) {\n  gl_Position = vec4((aPos + vec2(1)) * ratio + vec2(-1), 0, 1);\n  vTexCoord = aTexCoord;\n}";
-},{}],132:[function(require,module,exports) {
+},{}],124:[function(require,module,exports) {
 'use strict';
 
 var utils = require('../../core/utils');
@@ -9475,7 +9475,7 @@ function removeNoise(str) {
 module.exports = function (gpuKernel, name) {
   return '() => {\n    ' + kernelRunShortcut.toString() + ';\n    const utils = {\n      allPropertiesOf: ' + removeNoise(utils.allPropertiesOf.toString()) + ',\n      clone: ' + removeNoise(utils.clone.toString()) + ',\n      splitArray: ' + removeNoise(utils.splitArray.toString()) + ',\n      getArgumentType: ' + removeNoise(utils.getArgumentType.toString()) + ',\n      getDimensions: ' + removeNoise(utils.getDimensions.toString()) + ',\n      dimToTexSize: ' + removeNoise(utils.dimToTexSize.toString()) + ',\n      flattenTo: ' + removeNoise(utils.flattenTo.toString()) + ',\n      flatten2dArrayTo: ' + removeNoise(utils.flatten2dArrayTo.toString()) + ',\n      flatten3dArrayTo: ' + removeNoise(utils.flatten3dArrayTo.toString()) + ',\n      systemEndianness: \'' + removeNoise(utils.systemEndianness()) + '\',\n      initWebGl: ' + removeNoise(utils.initWebGl.toString()) + ',\n      isArray: ' + removeNoise(utils.isArray.toString()) + '\n    };\n    const Utils = utils;\n    const canvases = [];\n    const maxTexSizes = {};\n    class ' + (name || 'Kernel') + ' {\n      constructor() {\n        this.maxTexSize = null;\n        this.argumentsLength = 0;\n        this._canvas = null;\n        this._webGl = null;\n        this.built = false;\n        this.program = null;\n        this.paramNames = ' + JSON.stringify(gpuKernel.paramNames) + ';\n        this.paramTypes = ' + JSON.stringify(gpuKernel.paramTypes) + ';\n        this.texSize = ' + JSON.stringify(gpuKernel.texSize) + ';\n        this.output = ' + JSON.stringify(gpuKernel.output) + ';\n        this.compiledFragShaderString = `' + gpuKernel.compiledFragShaderString + '`;\n\t\t    this.compiledVertShaderString = `' + gpuKernel.compiledVertShaderString + '`;\n\t\t    this.programUniformLocationCache = {};\n\t\t    this.textureCache = {};\n\t\t    this.subKernelOutputTextures = null;\n\t\t    this.subKernelOutputVariableNames = null;\n\t\t    this.uniform1fCache = {};\n\t\t    this.uniform1iCache = {};\n\t\t    this.uniform2fCache = {};\n\t\t    this.uniform2fvCache = {};\n\t\t    this.uniform3fvCache = {};\n      }\n      ' + removeFnNoise(gpuKernel._getFragShaderString.toString()) + '\n      ' + removeFnNoise(gpuKernel._getVertShaderString.toString()) + '\n      validateOptions() {}\n      setupParams() {}\n      setCanvas(canvas) { this._canvas = canvas; return this; }\n      setWebGl(webGl) { this._webGl = webGl; return this; }\n      ' + removeFnNoise(gpuKernel.getUniformLocation.toString()) + '\n      ' + removeFnNoise(gpuKernel.setupParams.toString()) + '\n      ' + removeFnNoise(gpuKernel.build.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.run.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel._addArgument.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.getArgumentTexture.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.getTextureCache.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.getOutputTexture.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.renderOutput.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.updateMaxTexSize.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel._setupOutputTexture.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.detachTextureCache.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform1f.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform1i.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform2f.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform2fv.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform3fv.toString()) + ' \n    };\n    return kernelRunShortcut(new Kernel());\n  };';
 };
-},{"../../core/utils":69,"../kernel-run-shortcut":134}],78:[function(require,module,exports) {
+},{"../../core/utils":65,"../kernel-run-shortcut":131}],74:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -10817,7 +10817,7 @@ module.exports = function (_KernelBase) {
 
 	return WebGLKernel;
 }(KernelBase);
-},{"../kernel-base":114,"../../core/utils":69,"../../core/texture":71,"./shader-frag":130,"./shader-vert":131,"./kernel-string":132}],108:[function(require,module,exports) {
+},{"../kernel-base":113,"../../core/utils":65,"../../core/texture":67,"./shader-frag":123,"./shader-vert":125,"./kernel-string":124}],108:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -11177,7 +11177,7 @@ module.exports = function () {
 
 	return FunctionBuilderBase;
 }();
-},{}],135:[function(require,module,exports) {
+},{}],132:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16548,7 +16548,7 @@ exports.isNewLine = isNewLine;
 exports.lineBreak = lineBreak;
 exports.lineBreakG = lineBreakG;
 exports.nonASCIIwhitespace = nonASCIIwhitespace;
-},{}],129:[function(require,module,exports) {
+},{}],117:[function(require,module,exports) {
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -16968,7 +16968,7 @@ module.exports = function () {
 
 	return BaseFunctionNode;
 }();
-},{"../core/utils":69,"acorn":135}],77:[function(require,module,exports) {
+},{"../core/utils":65,"acorn":132}],73:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -18299,7 +18299,7 @@ function ensureIndentifierType(paramName, expectedType, ast, funcParam) {
 function webGlRegexOptimize(inStr) {
 	return inStr.replace(DECODE32_ENCODE32, '((').replace(ENCODE32_DECODE32, '((');
 }
-},{"../function-node-base":129,"../../core/utils":69}],76:[function(require,module,exports) {
+},{"../function-node-base":117,"../../core/utils":65}],72:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -18370,7 +18370,7 @@ module.exports = function (_FunctionBuilderBase) {
 function _round(a) {
 	return Math.floor(a + 0.5);
 }
-},{"../function-builder-base":108,"./function-node":77}],79:[function(require,module,exports) {
+},{"../function-builder-base":108,"./function-node":73}],75:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -18429,7 +18429,7 @@ module.exports = function (_RunnerBase) {
 
 	return WebGLRunner;
 }(RunnerBase);
-},{"../runner-base":109,"./kernel":78,"../../core/utils":69,"./function-builder":76}],81:[function(require,module,exports) {
+},{"../runner-base":109,"./kernel":74,"../../core/utils":65,"./function-builder":72}],77:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -18632,7 +18632,7 @@ module.exports = function (_WebGLFunctionNode) {
 function webGlRegexOptimize(inStr) {
 	return inStr.replace(DECODE32_ENCODE32, '((').replace(ENCODE32_DECODE32, '((');
 }
-},{"../web-gl/function-node":77}],80:[function(require,module,exports) {
+},{"../web-gl/function-node":73}],76:[function(require,module,exports) {
 'use strict';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -18666,15 +18666,15 @@ module.exports = function (_FunctionBuilderBase) {
 
   return WebGL2FunctionBuilder;
 }(FunctionBuilderBase);
-},{"../function-builder-base":108,"./function-node":81}],116:[function(require,module,exports) {
+},{"../function-builder-base":108,"./function-node":77}],121:[function(require,module,exports) {
 "use strict";
 
 module.exports = "#version 300 es\n__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst float LOOP_MAX = __LOOP_MAX__;\n#define EPSILON 0.0000001;\n\n__CONSTANTS__;\n\nin highp vec2 vTexCoord;\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nhighp float integerMod(highp float x, highp float y) {\n  highp float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nhighp int integerMod(highp int x, highp int y) {\n  return int(integerMod(float(x), float(y)));\n}\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nhighp float decode32(highp vec4 rgba) {\n  __DECODE32_ENDIANNESS__;\n  rgba *= 255.0;\n  vec2 gte128;\n  gte128.x = rgba.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = rgba.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * rgba.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  rgba.b = rgba.b - 128.0 * gte128.x;\n  res = dot(rgba, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nhighp vec4 encode32(highp float f) {\n  highp float F = abs(f);\n  highp float sign = f < 0.0 ? 1.0 : 0.0;\n  highp float exponent = floor(log2(F));\n  highp float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 rgba = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  rgba.rg = integerMod(rgba.rg, 256.0);\n  rgba.b = integerMod(rgba.b, 128.0);\n  rgba.a = exponent*0.5 + 63.5;\n  rgba.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  rgba = floor(rgba);\n  rgba *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return rgba;\n}\n// Dragons end here\n\nhighp float index;\nhighp vec3 threadId;\n\nhighp vec3 indexTo3D(highp float idx, highp vec3 texDim) {\n  highp float z = floor(idx / (texDim.x * texDim.y));\n  idx -= z * texDim.x * texDim.y;\n  highp float y = floor(idx / texDim.x);\n  highp float x = integerMod(idx, texDim.x);\n  return vec3(x, y, z);\n}\n\nhighp float get(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float z, highp float y, highp float x) {\n  highp vec3 xyz = vec3(x, y, z);\n  xyz = floor(xyz + 0.5);\n  __GET_WRAPAROUND__;\n  highp float index = round(xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z));\n  __GET_TEXTURE_CHANNEL__;\n  highp float w = round(texSize.x);\n  vec2 st = vec2(integerMod(index, w), float(int(index) / int(w))) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  highp vec4 texel = texture(tex, st / texSize);\n  __GET_RESULT__;\n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float z, highp float y, highp float x) {\n  highp vec3 xyz = vec3(x, y, z);\n  xyz = floor(xyz + 0.5);\n  __GET_WRAPAROUND__;\n  highp float index = round(xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z));\n  __GET_TEXTURE_CHANNEL__;\n  highp float w = round(texSize.x);\n  vec2 st = vec2(integerMod(index, w), float(int(index) / int(w))) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture(tex, st / texSize);\n}\n\nhighp vec4 getImage3D(highp sampler2DArray tex, highp vec2 texSize, highp vec3 texDim, highp float z, highp float y, highp float x) {\n  highp vec3 xyz = vec3(x, y, z);\n  xyz = floor(xyz + 0.5);\n  __GET_WRAPAROUND__;\n  highp float index = round(xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z));\n  __GET_TEXTURE_CHANNEL__;\n  highp float w = round(texSize.x);\n  vec2 st = vec2(integerMod(index, w), float(int(index) / int(w))) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture(tex, vec3(st / texSize, z));\n}\n\nhighp float get(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float y, highp float x) {\n  return get(tex, texSize, texDim, 0.0, y, x);\n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float y, highp float x) {\n  return getImage2D(tex, texSize, texDim, 0.0, y, x);\n}\n\nhighp float get(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float x) {\n  return get(tex, texSize, texDim, 0.0, 0.0, x);\n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp vec2 texSize, highp vec3 texDim, highp float x) {\n  return getImage2D(tex, texSize, texDim, 0.0, 0.0, x);\n}\n\nhighp vec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\n__MAIN_PARAMS__;\n__MAIN_CONSTANTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = floor(vTexCoord.s * float(uTexSize.x)) + floor(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
-},{}],117:[function(require,module,exports) {
+},{}],122:[function(require,module,exports) {
 "use strict";
 
 module.exports = "#version 300 es\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nin highp vec2 aPos;\nin highp vec2 aTexCoord;\n\nout highp vec2 vTexCoord;\nuniform vec2 ratio;\n\nvoid main(void) {\n  gl_Position = vec4((aPos + vec2(1)) * ratio + vec2(-1), 0, 1);\n  vTexCoord = aTexCoord;\n}";
-},{}],82:[function(require,module,exports) {
+},{}],78:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -19400,7 +19400,7 @@ module.exports = function (_WebGLKernel) {
 
 	return WebGL2Kernel;
 }(WebGLKernel);
-},{"../web-gl/kernel":78,"../../core/utils":69,"../../core/texture":71,"./shader-frag":116,"./shader-vert":117}],83:[function(require,module,exports) {
+},{"../web-gl/kernel":74,"../../core/utils":65,"../../core/texture":67,"./shader-frag":121,"./shader-vert":122}],79:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -19458,7 +19458,7 @@ module.exports = function (_RunnerBase) {
 
 	return WebGL2Runner;
 }(RunnerBase);
-},{"../runner-base":109,"./function-builder":80,"./kernel":82}],115:[function(require,module,exports) {
+},{"../runner-base":109,"./function-builder":76,"./kernel":78}],114:[function(require,module,exports) {
 'use strict';
 
 var utils = require('../../core/utils');
@@ -19478,7 +19478,7 @@ function removeNoise(str) {
 module.exports = function (cpuKernel, name) {
   return '() => {\n    ' + kernelRunShortcut.toString() + ';\n    const utils = {\n      allPropertiesOf: ' + removeNoise(utils.allPropertiesOf.toString()) + ',\n      clone: ' + removeNoise(utils.clone.toString()) + '\n    };\n    const Utils = utils;\n    class ' + (name || 'Kernel') + ' {\n      constructor() {        \n        this.argumentsLength = 0;\n        this._canvas = null;\n        this._webGl = null;\n        this.built = false;\n        this.program = null;\n        this.paramNames = ' + JSON.stringify(cpuKernel.paramNames) + ';\n        this.paramTypes = ' + JSON.stringify(cpuKernel.paramTypes) + ';\n        this.texSize = ' + JSON.stringify(cpuKernel.texSize) + ';\n        this.output = ' + JSON.stringify(cpuKernel.output) + ';\n        this._kernelString = `' + cpuKernel._kernelString + '`;\n        this.output = ' + JSON.stringify(cpuKernel.output) + ';\n\t\t    this.run = function() {\n          this.run = null;\n          this.build();\n          return this.run.apply(this, arguments);\n        }.bind(this);\n        this.thread = {\n          x: 0,\n          y: 0,\n          z: 0\n        };\n      }\n      setCanvas(canvas) { this._canvas = canvas; return this; }\n      setWebGl(webGl) { this._webGl = webGl; return this; }\n      ' + removeFnNoise(cpuKernel.build.toString()) + '\n      ' + removeFnNoise(cpuKernel.setupParams.toString()) + '\n      run () { ' + cpuKernel.kernelString + ' }\n      getKernelString() { return this._kernelString; }\n    };\n    return kernelRunShortcut(new Kernel());\n  };';
 };
-},{"../../core/utils":69,"../kernel-run-shortcut":134}],74:[function(require,module,exports) {
+},{"../../core/utils":65,"../kernel-run-shortcut":131}],70:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -19868,7 +19868,7 @@ module.exports = function (_KernelBase) {
 
 	return CPUKernel;
 }(KernelBase);
-},{"../kernel-base":114,"../../core/utils":69,"./kernel-string":115}],73:[function(require,module,exports) {
+},{"../kernel-base":113,"../../core/utils":65,"./kernel-string":114}],69:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -20996,7 +20996,7 @@ module.exports = function (_BaseFunctionNode) {
 
 	return CPUFunctionNode;
 }(BaseFunctionNode);
-},{"../function-node-base":129,"../../core/utils":69}],72:[function(require,module,exports) {
+},{"../function-node-base":117,"../../core/utils":65}],68:[function(require,module,exports) {
 'use strict';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -21030,7 +21030,7 @@ module.exports = function (_FunctionBuilderBase) {
 
   return CPUFunctionBuilder;
 }(FunctionBuilderBase);
-},{"../function-builder-base":108,"./function-node":73}],75:[function(require,module,exports) {
+},{"../function-builder-base":108,"./function-node":69}],71:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -21091,7 +21091,7 @@ module.exports = function (_RunnerBase) {
 
 	return CPURunner;
 }(RunnerBase);
-},{"../../core/utils":69,"../runner-base":109,"./kernel":74,"./function-builder":72}],111:[function(require,module,exports) {
+},{"../../core/utils":65,"../runner-base":109,"./kernel":70,"./function-builder":68}],90:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -21140,7 +21140,7 @@ module.exports = function (_WebGLKernel) {
 
 	return WebGLValidatorKernel;
 }(WebGLKernel);
-},{"./kernel":78,"../../core/utils":69}],112:[function(require,module,exports) {
+},{"./kernel":74,"../../core/utils":65}],89:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -21190,7 +21190,7 @@ module.exports = function (_WebGLKernel) {
 
 	return WebGL2ValidatorKernel;
 }(WebGLKernel);
-},{"./kernel":82,"../../core/utils":69}],110:[function(require,module,exports) {
+},{"./kernel":78,"../../core/utils":65}],88:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -21296,7 +21296,7 @@ module.exports = function () {
 
 	return GPUCore;
 }();
-},{"./utils-core":113}],67:[function(require,module,exports) {
+},{"./utils-core":112}],63:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -21714,7 +21714,7 @@ var GPU = function (_GPUCore) {
 Object.assign(GPU, GPUCore);
 
 module.exports = GPU;
-},{"./utils":69,"../backend/web-gl/runner":79,"../backend/web-gl2/runner":83,"../backend/cpu/runner":75,"../backend/web-gl/validator-kernel":111,"../backend/web-gl2/validator-kernel":112,"./gpu-core":110}],68:[function(require,module,exports) {
+},{"./utils":65,"../backend/web-gl/runner":75,"../backend/web-gl2/runner":79,"../backend/cpu/runner":71,"../backend/web-gl/validator-kernel":90,"../backend/web-gl2/validator-kernel":89,"./gpu-core":88}],64:[function(require,module,exports) {
 'use strict';
 
 var utils = require('./utils');
@@ -21722,7 +21722,7 @@ module.exports = function alias(name, fn) {
 	var fnString = fn.toString();
 	return new Function('return function ' + name + ' (' + utils.getParamNamesFromString(fnString).join(', ') + ') {' + utils.getFunctionBodyFromString(fnString) + '}')();
 };
-},{"./utils":69}],49:[function(require,module,exports) {
+},{"./utils":65}],48:[function(require,module,exports) {
 'use strict';
 
 var GPU = require('./core/gpu');
@@ -21775,7 +21775,7 @@ if (typeof module !== 'undefined') {
 if (typeof window !== 'undefined') {
 	window.GPU = GPU;
 }
-},{"./core/gpu":67,"./core/alias":68,"./core/utils":69,"./core/input":70,"./core/texture":71,"./backend/cpu/function-builder":72,"./backend/cpu/function-node":73,"./backend/cpu/kernel":74,"./backend/cpu/runner":75,"./backend/web-gl/function-builder":76,"./backend/web-gl/function-node":77,"./backend/web-gl/kernel":78,"./backend/web-gl/runner":79,"./backend/web-gl2/function-builder":80,"./backend/web-gl2/function-node":81,"./backend/web-gl2/kernel":82,"./backend/web-gl2/runner":83}],7:[function(require,module,exports) {
+},{"./core/gpu":63,"./core/alias":64,"./core/utils":65,"./core/input":66,"./core/texture":67,"./backend/cpu/function-builder":68,"./backend/cpu/function-node":69,"./backend/cpu/kernel":70,"./backend/cpu/runner":71,"./backend/web-gl/function-builder":72,"./backend/web-gl/function-node":73,"./backend/web-gl/kernel":74,"./backend/web-gl/runner":75,"./backend/web-gl2/function-builder":76,"./backend/web-gl2/function-node":77,"./backend/web-gl2/kernel":78,"./backend/web-gl2/runner":79}],7:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22301,7 +22301,7 @@ function mse(errors) {
   }
   return sum / this.constants.size;
 }
-},{"./neural-network":6,"./lookup":5,"gpu.js":49}],59:[function(require,module,exports) {
+},{"./neural-network":6,"./lookup":5,"gpu.js":48}],80:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22524,7 +22524,7 @@ function gaussRandom() {
 }
 gaussRandom.returnV = false;
 gaussRandom.vVal = 0;
-},{}],50:[function(require,module,exports) {
+},{}],49:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22572,7 +22572,7 @@ var RandomMatrix = function (_Matrix) {
 }(_2.default);
 
 exports.default = RandomMatrix;
-},{"./":59,"../../utilities/random":18}],17:[function(require,module,exports) {
+},{"./":80,"../../utilities/random":18}],17:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22634,7 +22634,7 @@ var OnesMatrix = function (_Matrix) {
 }(_2.default);
 
 exports.default = OnesMatrix;
-},{"./":59,"../../utilities/ones":17}],57:[function(require,module,exports) {
+},{"./":80,"../../utilities/ones":17}],55:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22693,7 +22693,7 @@ function add(product, left, right) {
     product.deltas[i] = 0;
   }
 }
-},{}],94:[function(require,module,exports) {
+},{}],95:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22712,7 +22712,7 @@ function addB(product, left, right) {
     right.deltas[i] = product.deltas[i];
   }
 }
-},{}],95:[function(require,module,exports) {
+},{}],94:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22999,7 +22999,7 @@ function tanhB(product, left) {
     left.deltas[i] = (1 - mwi * mwi) * product.deltas[i];
   }
 }
-},{}],52:[function(require,module,exports) {
+},{}],50:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23418,7 +23418,7 @@ var Equation = function () {
 }();
 
 exports.default = Equation;
-},{"./":59,"./ones-matrix":91,"./copy":57,"./clone-negative":92,"./add":93,"./add-b":94,"./all-ones":95,"./multiply":96,"./multiply-b":97,"./multiply-element":98,"./multiply-element-b":99,"./relu":100,"./relu-b":101,"./row-pluck":102,"./row-pluck-b":103,"./sigmoid":104,"./sigmoid-b":105,"./tanh":106,"./tanh-b":107}],54:[function(require,module,exports) {
+},{"./":80,"./ones-matrix":91,"./copy":55,"./clone-negative":92,"./add":93,"./add-b":95,"./all-ones":94,"./multiply":96,"./multiply-b":97,"./multiply-element":98,"./multiply-element-b":99,"./relu":100,"./relu-b":101,"./row-pluck":102,"./row-pluck-b":103,"./sigmoid":104,"./sigmoid-b":105,"./tanh":106,"./tanh-b":107}],52:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23451,7 +23451,7 @@ function sampleI(m) {
     i++;
   }
 }
-},{"../../utilities/random":18}],55:[function(require,module,exports) {
+},{"../../utilities/random":18}],53:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23478,7 +23478,7 @@ function maxI(m) {
   }
   return maxix;
 };
-},{}],56:[function(require,module,exports) {
+},{}],54:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23521,7 +23521,7 @@ function softmax(m) {
   // to set gradients directly on m
   return result;
 }
-},{"./":59}],23:[function(require,module,exports) {
+},{"./":80}],23:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24541,7 +24541,7 @@ RNN.trainDefaults = {
   callbackPeriod: 10,
   keepNetworkIntact: false
 };
-},{"./matrix":59,"./matrix/random-matrix":50,"./matrix/equation":52,"./matrix/sample-i":54,"./matrix/max-i":55,"./matrix/softmax":56,"./matrix/copy":57,"../utilities/random":18,"../utilities/zeros":24,"../utilities/data-formatter":23}],10:[function(require,module,exports) {
+},{"./matrix":80,"./matrix/random-matrix":49,"./matrix/equation":50,"./matrix/sample-i":52,"./matrix/max-i":53,"./matrix/softmax":54,"./matrix/copy":55,"../utilities/random":18,"../utilities/zeros":24,"../utilities/data-formatter":23}],10:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24657,7 +24657,7 @@ var LSTM = function (_RNN) {
 }(_rnn2.default);
 
 exports.default = LSTM;
-},{"./matrix":59,"./matrix/random-matrix":50,"./rnn":9}],11:[function(require,module,exports) {
+},{"./matrix":80,"./matrix/random-matrix":49,"./rnn":9}],11:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24764,7 +24764,7 @@ var GRU = function (_RNN) {
 }(_rnn2.default);
 
 exports.default = GRU;
-},{"./matrix":59,"./matrix/random-matrix":50,"./rnn":9}],12:[function(require,module,exports) {
+},{"./matrix":80,"./matrix/random-matrix":49,"./rnn":9}],12:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24986,7 +24986,7 @@ RNNTimeStep.defaults = {
 };
 
 RNNTimeStep.trainDefaults = _rnn2.default.trainDefaults;
-},{"./matrix":59,"./matrix/random-matrix":50,"./matrix/equation":52,"./rnn":9}],13:[function(require,module,exports) {
+},{"./matrix":80,"./matrix/random-matrix":49,"./matrix/equation":50,"./rnn":9}],13:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -25050,7 +25050,7 @@ var LSTMTimeStep = function (_RNNTimeStep) {
 }(_rnnTimeStep2.default);
 
 exports.default = LSTMTimeStep;
-},{"./matrix":59,"./lstm":10,"./rnn-time-step":12}],14:[function(require,module,exports) {
+},{"./matrix":80,"./lstm":10,"./rnn-time-step":12}],14:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -25114,7 +25114,7 @@ var GRUTimeStep = function (_RNNTimeStep) {
 }(_rnnTimeStep2.default);
 
 exports.default = GRUTimeStep;
-},{"./matrix":59,"./gru":11,"./rnn-time-step":12}],1:[function(require,module,exports) {
+},{"./matrix":80,"./gru":11,"./rnn-time-step":12}],1:[function(require,module,exports) {
 'use strict';
 
 var _crossValidate = require('./cross-validate');
