@@ -56,12 +56,9 @@ var RNN = function () {
 
     _classCallCheck(this, RNN);
 
-    var defaults = RNN.defaults;
+    var defaults = this.constructor.defaults;
 
-    for (var p in defaults) {
-      if (!defaults.hasOwnProperty(p)) continue;
-      this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
-    }
+    Object.assign(this, defaults, options);
 
     this.stepCache = {};
     this.runs = 0;
@@ -448,7 +445,7 @@ var RNN = function () {
     value: function train(data) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      options = Object.assign({}, RNN.trainDefaults, options);
+      options = Object.assign({}, this.constructor.trainDefaults, options);
       var iterations = options.iterations;
       var errorThresh = options.errorThresh;
       var log = options.log === true ? console.log : options.log;
@@ -515,7 +512,7 @@ var RNN = function () {
   }, {
     key: 'toJSON',
     value: function toJSON() {
-      var defaults = RNN.defaults;
+      var defaults = this.constructor.defaults;
       var model = this.model;
       var options = {};
       for (var p in defaults) {
@@ -546,7 +543,7 @@ var RNN = function () {
     key: 'fromJSON',
     value: function fromJSON(json) {
       this.json = json;
-      var defaults = RNN.defaults;
+      var defaults = this.constructor.defaults;
       var model = this.model;
       var options = json.options;
       var allMatrices = model.allMatrices;

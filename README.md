@@ -7,6 +7,8 @@
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brain-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+[![Slack](https://slack.bri.im/badge.svg)](https://slack.bri.im)
+
 `brain.js` is a library of [Neural Networks](http://en.wikipedia.org/wiki/Artificial_neural_network) written in JavaScript.
 
 :bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
@@ -18,6 +20,9 @@
     + [Browser](#browser)
 - [Training](#training)
     + [Data format](#data-format)
+      + [For training with NeuralNetwork](#for-training-with-neuralnetwork)
+      + [For training with `RNNTimeStep`, `LSTMTimeStep` and `GRUTimeStep`](#for-training-with-rnntimestep-lstmtimestep-and-grutimestep)
+      + [For training with `RNN`, `LSTM` and `GRU`](#for-training-with-rnn-lstm-and-gru)
     + [Training Options](#training-options)
     + [Async Training](#async-training)
 - [Methods](#methods)
@@ -38,8 +43,15 @@
     
 # Examples
 Here's an example showcasing how to approximate the XOR function using `brain.js`:
+More info on config [here](https://github.com/BrainJS/brain.js/blob/develop/src/neural-network.js#L31).
 
 ```javascript
+//provide optional config object (or undefined). Defaults shown.
+var config = {
+    binaryThresh: 0.5,     // ¯\_(ツ)_/¯
+    hiddenLayers: [3],     // array of ints for the sizes of the hidden layers in the network
+    activation: 'sigmoid' // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+}
 //create a simple feed forward neural network with backpropagation
 var net = new brain.NeuralNetwork();
 
@@ -51,9 +63,19 @@ net.train([{input: [0, 0], output: [0]},
 var output = net.run([1, 0]);  // [0.987]
 ```
 or
+More info on config [here](https://github.com/BrainJS/brain.js/blob/develop/src/recurrent/rnn.js#L726).
 ```javascript
+//provide optional config object, defaults shown.
+var config = {
+    inputSize: 20,
+    inputRange: 20,
+    hiddenSizes:[20,20],
+    outputSize: 20,
+    learningRate: 0.01,
+    decayRate: 0.999,
+}
 //create a simple recurrent neural network
-var net = new brain.recurrent.RNN();
+var net = new brain.recurrent.RNN(config);
 
 net.train([{input: [0, 0], output: [0]},
            {input: [0, 1], output: [1]},
@@ -97,13 +119,14 @@ At present, the npm version of brain.js is approximately 1.0.0, featuring only F
 You can still download the latest, though. They are cool!
 
 ### Browser
-Download the latest [brain.js for browser](https://raw.githubusercontent.com/harthur-org/brain.js/master/browser.js). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network into your website.
+Download the latest [brain.js for browser](https://cdn.rawgit.com/BrainJS/brain.js/master/browser.js). Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network into your website.
 
 # Training
 Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. More training patterns will probably take longer to train, but will usually result in a network better
 at classifying new patterns.
 
 ### Data format
+#### For training with `NeuralNetwork`
 Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color contrast demo](https://brain.js.org/) it looks something like this:
 
 ```javascript
@@ -122,6 +145,69 @@ net.train([{input: { r: 0.03, g: 0.7 }, output: { black: 1 }},
            {input: { r: 0.5, g: 0.5, b: 1.0 }, output: { white: 1 }}]);
 
 var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.81, black: 0.18 }
+```
+
+#### For training with `RNNTimeStep`, `LSTMTimeStep` and `GRUTimeStep`
+Each training pattern can either:
+* Be an array of numbers
+* Be an array of arrays of numbers
+
+Example using an array of numbers:
+```javascript
+var net = new brain.recurrent.LSTMTimeStep();
+
+net.train([
+  [1, 2, 3]
+]);
+
+var output = net.run([1, 2]);  // 3
+```
+
+Example using an array of arrays of numbers:
+```javascript
+var net = new brain.recurrent.LSTMTimeStep();
+
+net.train([
+  [1, 3],
+  [2, 2],
+  [3, 1],
+]);
+
+var output = net.run([[1, 3], [2, 2]]);  // [3, 1]
+```
+
+#### For training with `RNN`, `LSTM` and `GRU`
+Each training pattern can either:
+* Be an array of values
+* Be a string
+* Have an `input` and an `output`
+  * Either of which can an array of values or a string
+
+CAUTION: When using an array of values, you can use ANY value, however, the values are represented in the neural network by a single input.  So the more _distinct values_ has _the larger your input layer_.  If you have a hundreds, thousands, or millions of floating point values _THIS IS NOT THE RIGHT CLASS FOR THE JOB_.  Also, when deviating from strings, this gets into beta
+
+Example using direct strings:
+```javascript
+var net = new brain.recurrent.LSTM();
+
+net.train([
+  'doe, a deer, a female deer',
+  'ray, a drop of golden sun',
+  'me, a name I call myself',
+]);
+
+var output = net.run('doe');  // ', a deer, a female deer'
+```
+
+Example using strings with inputs and outputs:
+```javascript
+var net = new brain.recurrent.LSTM();
+
+net.train([
+  { input: 'I feel great about the world!', output: 'happy' },
+  { input: 'The world is a terrible place!', output: 'sad' },
+]);
+
+var output = net.run('I feel great about the world!');  // 'happy'
 ```
 
 
@@ -283,6 +369,9 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 
 # Neural Network Types
 * [`brain.NeuralNetwork`](src/neural-network.js) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation
+* [`brain.recurrent.RNNTimeStep`](src/recurrent/rnn-time-step.js) - [Time Step Recurrent Neural Network or "RNN"](https://en.wikipedia.org/wiki/Recurrent_neural_network)
+* [`brain.recurrent.LSTMTimeStep`](src/recurrent/lstm-time-step.js) - [Time Step Long Short Term Memory Neural Network or "LSTM"](https://en.wikipedia.org/wiki/Long_short-term_memory)
+* [`brain.recurrent.GRUTimeStep`](src/recurrent/gru-time-step.js) - [Time Step Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
 * [`brain.recurrent.RNN`](src/recurrent/rnn.js) - [Recurrent Neural Network or "RNN"](https://en.wikipedia.org/wiki/Recurrent_neural_network)
 * [`brain.recurrent.LSTM`](src/recurrent/lstm.js) - [Long Short Term Memory Neural Network or "LSTM"](https://en.wikipedia.org/wiki/Long_short-term_memory)
 * [`brain.recurrent.GRU`](src/recurrent/gru.js) - [Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
@@ -290,6 +379,7 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 ### Why different Neural Network Types?
 Different neural nets do different things well. For example:
 * A Feedforward Neural Network can classify simple things very well, but it has no memory of previous actions and has infinite variation of results.
+* A Time Step Recurrent Neural Network _remembers_, and can predict future values.
 * A Recurrent Neural Network _remembers_, and has a finite set of results.
 
 # Get Involved!

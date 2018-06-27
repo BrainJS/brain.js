@@ -21,6 +21,7 @@ import tanhB from './tanh-b';
 export default class Equation {
   constructor() {
     this.inputRow = 0;
+    this.inputValue = null;
     this.states = [];
   }
 
@@ -148,6 +149,22 @@ export default class Equation {
   }
 
   /**
+   * copy a matrix
+   * @param {Matrix} input
+   * @returns {Matrix}
+   */
+  input(input) {
+    const self = this;
+    this.states.push({
+      product: input,
+      forwardFn: () => {
+        input.weights = self.inputValue;
+      }
+    });
+    return input;
+  }
+
+  /**
    * connects a matrix via a row
    * @param {Matrix} m
    * @returns {Matrix}
@@ -224,6 +241,24 @@ export default class Equation {
    */
   run(rowIndex = 0) {
     this.inputRow = rowIndex;
+    let state;
+    for (let i = 0, max = this.states.length; i < max; i++) {
+      state = this.states[i];
+      if (!state.hasOwnProperty('forwardFn')) {
+        continue;
+      }
+      state.forwardFn(state.product, state.left, state.right);
+    }
+
+    return state.product;
+  }
+
+  /**
+   * @patam {Number} [rowIndex]
+   * @output {Matrix}
+   */
+  runInput(inputValue) {
+    this.inputValue = inputValue;
     let state;
     for (let i = 0, max = this.states.length; i < max; i++) {
       state = this.states[i];
