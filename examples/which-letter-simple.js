@@ -1,31 +1,31 @@
-import brain from 'brain.js';
+import brain from '../src';
 
 const a = character(
   '.#####.' +
-  '#.....#' +
-  '#.....#' +
-  '#######' +
-  '#.....#' +
-  '#.....#' +
-  '#.....#'
+    '#.....#' +
+    '#.....#' +
+    '#######' +
+    '#.....#' +
+    '#.....#' +
+    '#.....#'
 );
 const b = character(
   '######.' +
-  '#.....#' +
-  '#.....#' +
-  '######.' +
-  '#.....#' +
-  '#.....#' +
-  '######.'
+    '#.....#' +
+    '#.....#' +
+    '######.' +
+    '#.....#' +
+    '#.....#' +
+    '######.'
 );
 const c = character(
   '#######' +
-  '#......' +
-  '#......' +
-  '#......' +
-  '#......' +
-  '#......' +
-  '#######'
+    '#......' +
+    '#......' +
+    '#......' +
+    '#......' +
+    '#......' +
+    '#######'
 );
 
 /**
@@ -35,25 +35,26 @@ const net = new brain.NeuralNetwork();
 net.train([
   { input: a, output: { a: 1 } },
   { input: b, output: { b: 1 } },
-  { input: c, output: { c: 1 } }
+  { input: c, output: { c: 1 } },
 ]);
 
 /**
  * Predict the letter A, even with a pixel off.
  */
-const result = brain.likely(character(
-  '.#####.' +
-  '#.....#' +
-  '#.....#' +
-  '###.###' +
-  '#.....#' +
-  '#.....#' +
-  '#.....#'
-), net);
+const result = brain.likely(
+  character(
+    '.#####.' +
+      '#.....#' +
+      '#.....#' +
+      '###.###' +
+      '#.....#' +
+      '#.....#' +
+      '#.....#'
+  ),
+  net
+);
 
 console.log(result); // 'a'
-
-
 
 /**
  * Turn the # into 1s and . into 0s. for whole string

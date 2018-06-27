@@ -1,11 +1,12 @@
 var assert = require('assert');
-var brain = require('../dist/brain');
+var brain = require('../../src/');
+
 var net = new brain.NeuralNetwork();
 var xor = [
-  { input: [0, 0], output: [0]},
-  { input: [0, 1], output: [1]},
-  { input: [1, 0], output: [1]},
-  { input: [1, 1], output: [0]}
+  { input: [0, 0], output: [0] },
+  { input: [0, 1], output: [1] },
+  { input: [1, 0], output: [1] },
+  { input: [1, 1], output: [0] },
 ];
 
 var trainStream = net.createTrainStream({
@@ -20,13 +21,14 @@ var trainStream = net.createTrainStream({
    * Called when the network is done training.
    */
   doneTrainingCallback: function(obj) {
-    console.log('trained in ' + obj.iterations + ' iterations with error: '
-                + obj.error);
+    console.log(
+      'trained in ' + obj.iterations + ' iterations with error: ' + obj.error
+    );
 
     var result = net.run([0, 1]);
 
-    console.log('0 XOR 1: ', result);  // 0.987
-  }
+    console.log('0 XOR 1: ', result); // 0.987
+  },
 });
 
 // kick it off
