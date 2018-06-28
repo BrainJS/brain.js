@@ -1,10 +1,10 @@
-import * as brain from '../';
+import brain from '../../src';
 
 const trainingData = [
   'Jane saw Doug.',
   'Doug saw Jane.',
   'Spot saw Doug and Jane looking at each other.',
-  'It was love at first sight, and Spot had a frontrow seat. It was a very special moment for all.'
+  'It was love at first sight, and Spot had a frontrow seat. It was a very special moment for all.',
 ];
 
 const lstm = new brain.recurrent.LSTM();

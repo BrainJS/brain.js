@@ -1,4 +1,4 @@
-import brain from '../src';
+import * as brain from '../../';
 
 const trainingData = [
   'Jane saw Doug.',

@@ -28,13 +28,13 @@
   "main": "./src/index.js",
   "browser": "dist/brain.js",
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-plugin-transform-object-rest-spread": "^6.8.0",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "js-datasets-iris": "^1.0.4",
-    "mocha": "^3.0.2",
-    "sinon": "^1.17.6",
-    "testee": "^0.7.0",
+    "mocha": "^5.2.0",
+    "sinon": "^6.0.1",
+    "testee": "^0.8.1",
     "rimraf": "^2.6.2",
     "parcel-bundler": "^1.9.3"
   },
@@ -75,7 +75,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "gpu.js": "^1.2.0",
+    "gpu.js": "^1.4.3",
     "thaw.js": "^2.0.0"
   },
   "typings": "./src/index.d.ts"

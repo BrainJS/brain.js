@@ -1,4 +1,4 @@
-import brain from '../src';
+import brain from '../../src';
 
 const a = character(
   '.#####.' +
