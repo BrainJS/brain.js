@@ -8,10 +8,11 @@
     "url": "git+ssh://git@github.com/brainjs/brain.js.git"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest -o",
+    "test:all": "jest",
     "bundle": "parcel build ./src/index.js --out-dir ./dist --out-file brain.js --no-minify",
-    "bundle-minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain.min.js",
-    "dist": "npm run bundle && npm run bundle-minified",
+    "bundle:minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain.min.js",
+    "dist": "npm run bundle && npm run bundle:minified",
     "build": "npm run dist"
   },
   "main": "./src/index.js",
