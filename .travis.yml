@@ -8,5 +8,5 @@ cache:
 install:
   - npm install
 script:
-  - npm run test
+  - npm run test:all
 sudo: false
