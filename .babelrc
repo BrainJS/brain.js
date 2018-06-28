@@ -5,7 +5,8 @@
       "env",
       {
         "targets": {
-          "browsers": ["last 3 versions", "safari >= 6"]
+          "browsers": ["last 3 versions", "safari >= 6"],
+          "node": "6.14.3"
         }
       }
     ]
