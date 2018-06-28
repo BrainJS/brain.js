@@ -8,21 +8,18 @@
     "url": "git+ssh://git@github.com/brainjs/brain.js.git"
   },
   "scripts": {
-    "test-browser:chrome": "testee test/browser/index.html --browsers chrome --reporter Spec",
-    "test-browser": "testee test/browser/index.html --browsers firefox --reporter Spec",
     "test": "jest",
     "bundle": "parcel build ./src/index.js --out-dir ./dist --out-file brain.js --no-minify",
     "bundle-minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain.min.js",
     "dist": "npm run bundle && npm run bundle-minified"
   },
   "main": "./src/index.js",
-  "browser": "dist/brain.js",
+  "browser": "./dist/brain.js",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "js-datasets-iris": "^1.0.4",
-    "testee": "^0.8.1",
     "jest": "^23.2.0",
     "parcel-bundler": "^1.9.3"
   },
