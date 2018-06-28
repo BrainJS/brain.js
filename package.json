@@ -1,6 +1,6 @@
 {
   "name": "brain.js",
-  "description": "Neural network library",
+  "description": "Neural networks in JavaScript",
   "version": "1.2.2",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": {
@@ -11,12 +11,13 @@
     "test": "jest",
     "bundle": "parcel build ./src/index.js --out-dir ./dist --out-file brain.js --no-minify",
     "bundle-minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain.min.js",
-    "dist": "npm run bundle && npm run bundle-minified"
+    "dist": "npm run bundle && npm run bundle-minified",
+    "build": "npm run dist"
   },
   "main": "./src/index.js",
   "browser": "./dist/brain.js",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "js-datasets-iris": "^1.0.4",
