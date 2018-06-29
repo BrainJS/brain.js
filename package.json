@@ -1,29 +1,41 @@
 {
-  "name": "brain.js",
-  "description": "Neural networks in JavaScript",
-  "version": "1.2.2",
   "author": "Heather Arthur <fayearthur@gmail.com>",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/brainjs/brain.js.git"
-  },
-  "scripts": {
-    "test": "jest --watch",
-    "test:all": "jest",
-    "bundle": "parcel build ./src/index.js --out-dir ./dist --out-file brain.js --no-minify",
-    "bundle:minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain.min.js",
-    "dist": "npm run bundle && npm run bundle:minified",
-    "build": "npm run dist"
-  },
-  "main": "./src/index.js",
   "browser": "./dist/brain.js",
+  "bugs": {
+    "url": "https://github.com/brainjs/brain.js/issues"
+  },
+  "dependencies": {
+    "gpu.js": "^1.4.3",
+    "thaw.js": "^2.0.0"
+  },
+  "description": "Neural networks in JavaScript",
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
-    "js-datasets-iris": "^1.0.4",
     "jest": "^23.2.0",
+    "js-datasets-iris": "^1.0.4",
     "parcel-bundler": "^1.9.3"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "files": [
+    "src/",
+    "dist/"
+  ],
+  "homepage": "https://github.com/brainjs/brain.js#readme",
+  "jest": {
+    "bail": true,
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/index.d.ts"
+    ],
+    "coverageDirectory": "__coverage__",
+    "globalSetup": "",
+    "globals": {},
+    "setupFiles": []
   },
   "keywords": [
     "ai",
@@ -49,21 +61,21 @@
     "lstm",
     "gru"
   ],
-  "bugs": {
-    "url": "https://github.com/brainjs/brain.js/issues"
-  },
-  "homepage": "https://github.com/brainjs/brain.js#readme",
-  "files": [
-    "src/",
-    "dist/"
-  ],
-  "directories": {
-    "test": "test"
-  },
   "license": "MIT",
-  "dependencies": {
-    "gpu.js": "^1.4.3",
-    "thaw.js": "^2.0.0"
+  "main": "./src/index.js",
+  "name": "brain.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/brainjs/brain.js.git"
   },
-  "typings": "./src/index.d.ts"
+  "scripts": {
+    "build": "npm run dist",
+    "bundle": "parcel build ./src/index.js --out-dir ./dist --out-file brain.js --no-minify",
+    "bundle:minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain.min.js",
+    "dist": "npm run bundle && npm run bundle:minified",
+    "test": "jest --watch",
+    "test:all": "jest"
+  },
+  "typings": "./src/index.d.ts",
+  "version": "1.2.2"
 }

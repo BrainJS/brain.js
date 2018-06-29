@@ -1,9 +1,0 @@
-{
-  "bail": true,
-  "collectCoverage": true,
-  "collectCoverageFrom": ["src/**/*.js", "!src/index.d.ts"],
-  "coverageDirectory": "__coverage__",
-  "globals": {},
-  "globalSetup": "",
-  "setupFiles": []
-}
