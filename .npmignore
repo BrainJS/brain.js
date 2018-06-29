@@ -8,3 +8,6 @@
 test/
 coverage/
 .github/
+__tests__
+__coverage__
+.cache

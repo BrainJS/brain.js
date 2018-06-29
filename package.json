@@ -13,9 +13,15 @@
     "babel-core": "^6.26.3",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "eslint": "^5.0.1",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.10.0",
     "jest": "^23.2.0",
-    "js-datasets-iris": "^1.0.4",
-    "parcel-bundler": "^1.9.3"
+    "parcel-bundler": "^1.9.3",
+    "prettier": "^1.13.7"
   },
   "directories": {
     "test": "test"
@@ -29,13 +35,15 @@
     "bail": true,
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.js",
-      "!src/index.d.ts"
+      "src/**/*.js"
     ],
     "coverageDirectory": "__coverage__",
     "globalSetup": "",
     "globals": {},
-    "setupFiles": []
+    "setupFiles": [],
+    "testPathIgnorePatterns": [
+      "__tests__/.eslintrc.js"
+    ]
   },
   "keywords": [
     "ai",
@@ -73,6 +81,9 @@
     "bundle": "parcel build ./src/index.js --out-dir ./dist --out-file brain.js --no-minify",
     "bundle:minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain.min.js",
     "dist": "npm run bundle && npm run bundle:minified",
+    "lint": "eslint --ext .js ./src",
+    "lint:fix": "eslint --ext .js --fix ./src",
+    "prettier": "prettier --write ./src/**/*.js",
     "test": "jest --watch",
     "test:all": "jest"
   },
