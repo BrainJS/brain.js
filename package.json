@@ -8,7 +8,7 @@
     "url": "git+ssh://git@github.com/brainjs/brain.js.git"
   },
   "scripts": {
-    "test": "jest -o",
+    "test": "jest --watch",
     "test:all": "jest",
     "bundle": "parcel build ./src/index.js --out-dir ./dist --out-file brain.js --no-minify",
     "bundle:minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain.min.js",
