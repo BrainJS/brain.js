@@ -1,8 +1,8 @@
-import { randomF, randomI, randomN } from '../../src/utilities/random'
+import { randomFloat, randomInteger, randomN } from '../../src/utilities/random'
 
 describe('random', () => {
   test('randomF', () => {
-    const val = randomF(0, 10)
+    const val = randomFloat(0, 10)
 
     expect(typeof val).toBe('number')
     expect(val).toBeGreaterThan(0)
@@ -10,7 +10,7 @@ describe('random', () => {
   })
 
   test('randomI', () => {
-    const val = randomI(0, 10)
+    const val = randomInteger(0, 10)
 
     expect(typeof val).toBe('number')
     expect(val).toBeGreaterThanOrEqual(0)

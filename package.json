@@ -83,7 +83,8 @@
     "lint": "eslint --ext .js ./src",
     "lint:fix": "eslint --ext .js --fix ./src",
     "prettier": "prettier --write ./src/**/*.js",
-    "test": "jest --coverage",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
     "test:watch": "jest --watch"
   },
   "typings": "./src/index.d.ts",
