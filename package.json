@@ -33,7 +33,7 @@
   "homepage": "https://github.com/brainjs/brain.js#readme",
   "jest": {
     "bail": true,
-    "collectCoverage": true,
+    "collectCoverage": false,
     "collectCoverageFrom": [
       "src/**/*.js"
     ],
@@ -84,8 +84,8 @@
     "lint": "eslint --ext .js ./src",
     "lint:fix": "eslint --ext .js --fix ./src",
     "prettier": "prettier --write ./src/**/*.js",
-    "test": "jest --watch",
-    "test:all": "jest"
+    "test": "jest --coverage",
+    "test:watch": "jest --watch"
   },
   "typings": "./src/index.d.ts",
   "version": "1.2.2"
