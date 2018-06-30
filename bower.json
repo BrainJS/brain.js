@@ -1,9 +1,7 @@
 {
   "name": "brain.js",
   "homepage": "https://github.com/brainjs/brain.js",
-  "authors": [
-    "Heather Arthur <fayearthur@gmail.com>"
-  ],
+  "authors": ["Heather Arthur <fayearthur@gmail.com>"],
   "description": "Neural network library",
   "keywords": [
     "ai",
@@ -26,10 +24,13 @@
     "lstm",
     "gru"
   ],
-  "main": "./browser.js",
+  "main": "./dist/brain.js",
   "ignore": [
+    ".cache",
     "node_modules",
-    "test"
+    "test",
+    "examples",
+    "examples-typescript"
   ],
   "version": "1.1.1"
 }

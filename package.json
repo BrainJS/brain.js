@@ -1,45 +1,48 @@
 {
-  "name": "brain.js",
-  "description": "Neural network library",
-  "version": "1.2.2",
   "author": "Heather Arthur <fayearthur@gmail.com>",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/brainjs/brain.js.git"
+  "browser": "./dist/brain.js",
+  "bugs": {
+    "url": "https://github.com/brainjs/brain.js/issues"
   },
-  "scripts": {
-    "test-browser": "testee test/browser/index.html --browsers firefox --reporter Spec",
-    "test-base": "find ./test/base/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
-    "test-recurrent": "find ./test/recurrent/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
-    "test-recurrent-matrix": "find ./test/recurrent/matrix -name '*.js' | xargs mocha --compilers js:babel-core/register",
-    "test-rnn": "find ./test/recurrent/ -name 'rnn.js' | xargs mocha --compilers js:babel-core/register",
-    "test-gru": "find ./test/recurrent/ -name 'gru.js' | xargs mocha --compilers js:babel-core/register",
-    "test-lstm": "find ./test/recurrent/ -name 'lstm.js' | xargs mocha --compilers js:babel-core/register",
-    "test-utilities": "find ./test/utilities/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
-    "test-applications": "find ./test/applications -name '*.js' | xargs mocha --compilers js:babel-core/register",
-    "test": "npm run test-base && npm run test-utilities",
-    "test-experimental": "npm run test-recurrent-matrix && npm run test-recurrent && npm run test-utilities",
-    "dist": "babel src --out-dir dist --source-maps",
-    "browser": "browserify ./index.js -p licensify -o browser.js -s brain",
-    "browser-min": "browserify ./index.js -p licensify -s brain -g uglifyify -o browser.min.js",
-    "make": "rimraf dist && npm run dist && git add ./dist && npm run browser && npm run browser-min",
-    "clean": "rimraf node_modules"
+  "dependencies": {
+    "gpu.js": "^1.4.4",
+    "thaw.js": "^2.0.0"
   },
-  "main": "./index.js",
+  "description": "Neural networks in JavaScript",
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-core": "^6.14.0",
-    "babel-plugin-transform-object-rest-spread": "^6.8.0",
-    "babel-polyfill": "^6.13.0",
-    "babel-preset-es2015": "^6.14.0",
-    "browserify": "^13.1.0",
-    "js-datasets-iris": "^1.0.4",
-    "licensify": "^3.1.2",
-    "mocha": "^3.0.2",
-    "sinon": "^1.17.6",
-    "testee": "^0.7.0",
-    "uglifyify": "^3.0.2",
-    "rimraf": "^2.6.2"
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "eslint": "^5.0.1",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.10.0",
+    "jest": "^23.2.0",
+    "parcel-bundler": "^1.9.3",
+    "prettier": "^1.13.7"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "files": [
+    "dist/"
+  ],
+  "homepage": "https://github.com/brainjs/brain.js#readme",
+  "jest": {
+    "bail": true,
+    "collectCoverage": false,
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "coverageDirectory": "__coverage__",
+    "globalSetup": "",
+    "globals": {},
+    "setupFiles": [],
+    "testPathIgnorePatterns": [
+      "__tests__/.eslintrc.js"
+    ]
   },
   "keywords": [
     "ai",
@@ -65,17 +68,25 @@
     "lstm",
     "gru"
   ],
-  "bugs": {
-    "url": "https://github.com/brainjs/brain.js/issues"
-  },
-  "homepage": "https://github.com/brainjs/brain.js#readme",
-  "directories": {
-    "test": "test"
-  },
   "license": "MIT",
-  "dependencies": {
-    "gpu.js": "^1.2.0",
-    "thaw.js": "^2.0.0"
+  "main": "./dist/brain.js",
+  "name": "brain.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/brainjs/brain.js.git"
   },
-  "typings": "./index.d.ts"
+  "scripts": {
+    "build": "npm run dist",
+    "bundle": "parcel build ./src/index.js --out-dir ./dist --out-file brain.js --no-minify",
+    "bundle:minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain.min.js",
+    "dist": "npm run bundle && npm run bundle:minified",
+    "lint": "eslint --ext .js ./src",
+    "lint:fix": "eslint --ext .js --fix ./src",
+    "prettier": "prettier --write ./src/**/*.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch"
+  },
+  "typings": "./src/index.d.ts",
+  "version": "1.2.2"
 }

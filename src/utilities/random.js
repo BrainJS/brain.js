@@ -1,8 +1,8 @@
-export function randomF(a, b) {
+export function randomFloat(a, b) {
   return Math.random() * (b - a) + a;
 }
 
-export function randomI(a, b) {
+export function randomInteger(a, b) {
   return Math.floor(Math.random() * (b - a) + a);
 }
 

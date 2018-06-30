@@ -1,5 +1,5 @@
 import Matrix from './';
-import { randomF } from '../../utilities/random';
+import { randomFloat } from '../../utilities/random';
 
 /** return Matrix but filled with random numbers from gaussian
  * @param {Number} [rows]
@@ -14,7 +14,7 @@ export default class RandomMatrix extends Matrix {
     this.columns = columns;
     this.std = std;
     for(let i = 0, max = this.weights.length; i < max; i++) {
-      this.weights[i] = randomF(-std, std);
+      this.weights[i] = randomFloat(-std, std);
     }
   }
 }

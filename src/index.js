@@ -1,29 +1,70 @@
-import crossValidate from './cross-validate';
-import likely from './likely';
-import lookup from './lookup';
-import NeuralNetwork from './neural-network';
-import NeuralNetworkGPU from './neural-network-gpu';
-import TrainStream from './train-stream';
-import RNN from './recurrent/rnn';
-import LSTM from './recurrent/lstm';
-import GRU from './recurrent/gru';
-import RNNTimeStep from './recurrent/rnn-time-step';
-import LSTMTimeStep from './recurrent/lstm-time-step';
-import GRUTimeStep from './recurrent/gru-time-step';
+const activation = require('./activation')
+const crossValidate = require('./cross-validate')
+const layer = require('./layer')
+const likely = require('./likely')
+const lookup = require('./lookup')
+const praxis = require('./praxis')
+const FeedForward = require('./feed-forward')
+const NeuralNetwork = require('./neural-network')
+const NeuralNetworkGPU = require('./neural-network-gpu')
+const TrainStream = require('./train-stream')
+const Recurrent = require('./recurrent')
+const RNNTimeStep = require('./recurrent/rnn-time-step')
+const LSTMTimeStep = require('./recurrent/lstm-time-step')
+const GRUTimeStep = require('./recurrent/gru-time-step')
+const RNN = require('./recurrent/rnn')
+const LSTM = require('./recurrent/lstm')
+const GRU = require('./recurrent/gru')
 
-export default {
+const max = require('./utilities/max')
+const mse = require('./utilities/mse')
+const ones = require('./utilities/ones')
+const random = require('./utilities/random')
+const randomWeight = require('./utilities/random-weight')
+const randos = require('./utilities/randos')
+const range = require('./utilities/range')
+const toArray = require('./utilities/to-array')
+const DataFormatter = require('./utilities/data-formatter')
+const zeros = require('./utilities/zeros')
+
+const brain = {
+  activation,
   crossValidate,
   likely,
+  layer,
   lookup,
+  praxis,
+  FeedForward,
   NeuralNetwork,
   NeuralNetworkGPU,
+  Recurrent,
   TrainStream,
   recurrent: {
+    RNNTimeStep,
+    LSTMTimeStep,
+    GRUTimeStep,
     RNN,
     LSTM,
     GRU,
-    RNNTimeStep,
-    LSTMTimeStep,
-    GRUTimeStep
-  }
-};
+  },
+  utilities: {
+    max,
+    mse,
+    ones,
+    random,
+    randomWeight,
+    randos,
+    range,
+    toArray,
+    DataFormatter,
+    zeros,
+  },
+}
+
+if (typeof window !== 'undefined') {
+  window.brain = brain
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = brain
+}

@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../src/utilities/zeros.js"],"names":["zeros","size","Float32Array"],"mappings":";;;;;kBAAwBA,K;AAAT,SAASA,KAAT,CAAeC,IAAf,EAAqB;AAClC,SAAO,IAAIC,YAAJ,CAAiBD,IAAjB,CAAP;AACD","file":"zeros.js","sourcesContent":["export default function zeros(size) {\n  return new Float32Array(size);\n}\n"]}
