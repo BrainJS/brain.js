@@ -1,4 +1,6 @@
 import crossValidate from './cross-validate';
+import * as layer from './layer';
+import * as activation from './activation';
 import likely from './likely';
 import lookup from './lookup';
 import NeuralNetwork from './neural-network';
@@ -7,11 +9,11 @@ import TrainStream from './train-stream';
 import RNN from './recurrent/rnn';
 import LSTM from './recurrent/lstm';
 import GRU from './recurrent/gru';
-import RNNTimeStep from './recurrent/rnn-time-step';
-import LSTMTimeStep from './recurrent/lstm-time-step';
-import GRUTimeStep from './recurrent/gru-time-step';
+import FeedForward from './feed-forward';
+import Recurrent from './recurrent';
+import praxis from './praxis';
 
-var utilities = {
+const utilities = {
   max: require('./utilities/max').default,
   mse: require('./utilities/mse').default,
   ones: require('./utilities/ones').default,
@@ -24,32 +26,28 @@ var utilities = {
   zeros: require('./utilities/zeros').default,
 };
 
-var brain = {
-  crossValidate: crossValidate,
-  likely: likely,
-  lookup: lookup,
-  NeuralNetwork: NeuralNetwork,
-  NeuralNetworkGPU: NeuralNetworkGPU,
-  TrainStream: TrainStream,
+const brain = {
+  crossValidate,
+  likely,
+  lookup,
+  NeuralNetwork,
+  NeuralNetworkGPU,
+  TrainStream,
   recurrent: {
-    RNNTimeStep: RNNTimeStep,
-    LSTMTimeStep: LSTMTimeStep,
-    GRUTimeStep: GRUTimeStep,
-    RNN: RNN,
-    LSTM: LSTM,
-    GRU: GRU,
+    RNNTimeStep,
+    LSTMTimeStep,
+    GRUTimeStep,
+    RNN,
+    LSTM,
+    GRU,
   },
-  utilities: utilities,
+  utilities,
 };
 
-if (typeof window !== 'undefined') {
-  window.brain = brain;
-}
-
-if (typeof self !== 'undefined') {
-  self.brain = brain;
-}
-
-if (typeof module !== 'undefined') {
-  module.exports = brain;
-}
+export {
+  FeedForward,
+  Recurrent,
+  activation,
+  layer,
+  praxis
+};

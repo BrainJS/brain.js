@@ -55,18 +55,18 @@ var config = {
   binaryThresh: 0.5, // ¯\_(ツ)_/¯
   hiddenLayers: [3], // array of ints for the sizes of the hidden layers in the network
   activation: 'sigmoid', // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
-};
+}
 //create a simple feed forward neural network with backpropagation
-var net = new brain.NeuralNetwork();
+var net = new brain.NeuralNetwork()
 
 net.train([
   { input: [0, 0], output: [0] },
   { input: [0, 1], output: [1] },
   { input: [1, 0], output: [1] },
   { input: [1, 1], output: [0] },
-]);
+])
 
-var output = net.run([1, 0]); // [0.987]
+var output = net.run([1, 0]) // [0.987]
 ```
 
 or
@@ -81,21 +81,21 @@ var config = {
   outputSize: 20,
   learningRate: 0.01,
   decayRate: 0.999,
-};
+}
 //create a simple recurrent neural network
-var net = new brain.recurrent.RNN(config);
+var net = new brain.recurrent.RNN(config)
 
 net.train([
   { input: [0, 0], output: [0] },
   { input: [0, 1], output: [1] },
   { input: [1, 0], output: [1] },
   { input: [1, 1], output: [0] },
-]);
+])
 
-var output = net.run([0, 0]); // [0]
-output = net.run([0, 1]); // [1]
-output = net.run([1, 0]); // [1]
-output = net.run([1, 1]); // [0]
+var output = net.run([0, 0]) // [0]
+output = net.run([0, 1]) // [1]
+output = net.run([1, 0]) // [1]
+output = net.run([1, 1]) // [0]
 ```
 
 However, there is no reason to use a neural network to figure out XOR. (-: So, here is a more involved, realistic example:
@@ -158,15 +158,15 @@ at classifying new patterns.
 Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color contrast demo](https://brain.js.org/) it looks something like this:
 
 ```javascript
-var net = new brain.NeuralNetwork();
+var net = new brain.NeuralNetwork()
 
 net.train([
   { input: { r: 0.03, g: 0.7, b: 0.5 }, output: { black: 1 } },
   { input: { r: 0.16, g: 0.09, b: 0.2 }, output: { white: 1 } },
   { input: { r: 0.5, g: 0.5, b: 1.0 }, output: { white: 1 } },
-]);
+])
 
-var output = net.run({ r: 1, g: 0.4, b: 0 }); // { white: 0.99, black: 0.002 }
+var output = net.run({ r: 1, g: 0.4, b: 0 }) // { white: 0.99, black: 0.002 }
 ```
 
 Here's another variation of the above example. (_Note_ that input objects do not need to be similar.)
@@ -176,9 +176,9 @@ net.train([
   { input: { r: 0.03, g: 0.7 }, output: { black: 1 } },
   { input: { r: 0.16, b: 0.2 }, output: { white: 1 } },
   { input: { r: 0.5, g: 0.5, b: 1.0 }, output: { white: 1 } },
-]);
+])
 
-var output = net.run({ r: 1, g: 0.4, b: 0 }); // { white: 0.81, black: 0.18 }
+var output = net.run({ r: 1, g: 0.4, b: 0 }) // { white: 0.81, black: 0.18 }
 ```
 
 #### For training with `RNNTimeStep`, `LSTMTimeStep` and `GRUTimeStep`
@@ -191,21 +191,21 @@ Each training pattern can either:
 Example using an array of numbers:
 
 ```javascript
-var net = new brain.recurrent.LSTMTimeStep();
+var net = new brain.recurrent.LSTMTimeStep()
 
-net.train([[1, 2, 3]]);
+net.train([[1, 2, 3]])
 
-var output = net.run([1, 2]); // 3
+var output = net.run([1, 2]) // 3
 ```
 
 Example using an array of arrays of numbers:
 
 ```javascript
-var net = new brain.recurrent.LSTMTimeStep();
+var net = new brain.recurrent.LSTMTimeStep()
 
-net.train([[1, 3], [2, 2], [3, 1]]);
+net.train([[1, 3], [2, 2], [3, 1]])
 
-var output = net.run([[1, 3], [2, 2]]); // [3, 1]
+var output = net.run([[1, 3], [2, 2]]) // [3, 1]
 ```
 
 #### For training with `RNN`, `LSTM` and `GRU`
@@ -222,28 +222,28 @@ CAUTION: When using an array of values, you can use ANY value, however, the valu
 Example using direct strings:
 
 ```javascript
-var net = new brain.recurrent.LSTM();
+var net = new brain.recurrent.LSTM()
 
 net.train([
   'doe, a deer, a female deer',
   'ray, a drop of golden sun',
   'me, a name I call myself',
-]);
+])
 
-var output = net.run('doe'); // ', a deer, a female deer'
+var output = net.run('doe') // ', a deer, a female deer'
 ```
 
 Example using strings with inputs and outputs:
 
 ```javascript
-var net = new brain.recurrent.LSTM();
+var net = new brain.recurrent.LSTM()
 
 net.train([
   { input: 'I feel great about the world!', output: 'happy' },
   { input: 'The world is a terrible place!', output: 'sad' },
-]);
+])
 
-var output = net.run('I feel great about the world!'); // 'happy'
+var output = net.run('I feel great about the world!') // 'happy'
 ```
 
 ### Training Options
@@ -262,7 +262,7 @@ net.train(data, {
   callback: null, // a periodic call back that can be triggered while training --> null or function
   callbackPeriod: 10, // the number of iterations through the training data between callback calls --> number greater than 0
   timeout: Infinity, // the max number of milliseconds to train for --> number greater than 0
-});
+})
 ```
 
 The network will stop training whenever one of the two criteria is met: the training error has gone below the threshold (default `0.005`), or the max number of iterations (default `20000`) has been reached.
@@ -282,34 +282,34 @@ A boolean property called `invalidTrainOptsShouldThrow` is set to `true` by defa
 `trainAsync()` takes the same arguments as train (data and options). Instead of returning the results object from training, it returns a promise that when resolved will return the training results object.
 
 ```javascript
-let net = new brain.NeuralNetwork();
+let net = new brain.NeuralNetwork()
 net
   .trainAsync(data, options)
   .then(res => {
     // do something with my trained network
   })
-  .catch(handleError);
+  .catch(handleError)
 ```
 
 With multiple networks you can train in parallel like this:
 
 ```javascript
-var net = new brain.NeuralNetwork();
-var net2 = new brain.NeuralNetwork();
+var net = new brain.NeuralNetwork()
+var net2 = new brain.NeuralNetwork()
 
-var p1 = net.trainAsync(data, options);
-var p2 = net2.trainAsync(data, options);
+var p1 = net.trainAsync(data, options)
+var p2 = net2.trainAsync(data, options)
 
 Promise.all([p1, p2])
   .then(values => {
-    var res = values[0];
-    var res2 = values[1];
+    var res = values[0]
+    var res2 = values[1]
     console.log(
       `net trained in ${res.iterations} and net2 trained in ${res2.iterations}`
-    );
+    )
     // do something super cool with my 2 trained networks
   })
-  .catch(handleError);
+  .catch(handleError)
 ```
 
 # Methods
@@ -336,17 +336,17 @@ If the training error is still something huge like `0.4` after 20000 iterations,
 Serialize or load in the state of a trained network with JSON:
 
 ```javascript
-var json = net.toJSON();
+var json = net.toJSON()
 // when required
-net.fromJSON(json);
+net.fromJSON(json)
 ```
 
 You can also get a custom standalone function from a trained network that acts just like `run()`:
 
 ```javascript
-var run = net.toFunction();
-var output = run({ r: 1, g: 0.4, b: 0 });
-console.log(run.toString()); // copy and paste! no need to import brain.js
+var run = net.toFunction()
+var output = run({ r: 1, g: 0.4, b: 0 })
+console.log(run.toString()) // copy and paste! no need to import brain.js
 ```
 
 # Options
@@ -355,10 +355,9 @@ console.log(run.toString()); // copy and paste! no need to import brain.js
 
 ```javascript
 var net = new brain.NeuralNetwork({
-  activation: 'sigmoid', // activation function
   hiddenLayers: [4],
   learningRate: 0.6, // global learning rate, useful when training using streams
-});
+})
 ```
 
 ### activation
@@ -413,8 +412,8 @@ Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transfor
 ### `likely`
 
 ```js
-var likely = require('brain/likely');
-var key = likely(input, net);
+var likely = require('brain/likely')
+var key = likely(input, net)
 ```
 
 Likely example see: [simple letter detection](./examples/which-letter-simple.js)

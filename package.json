@@ -27,7 +27,6 @@
     "test": "test"
   },
   "files": [
-    "src/",
     "dist/"
   ],
   "homepage": "https://github.com/brainjs/brain.js#readme",
@@ -70,7 +69,7 @@
     "gru"
   ],
   "license": "MIT",
-  "main": "./src/index.js",
+  "main": "./dist/brain.js",
   "name": "brain.js",
   "repository": {
     "type": "git",
