@@ -1,5 +1,5 @@
 import { Activation } from './types';
-import makeKernel from '../utilities/make-kernel';
+import { makeKernel } from '../utilities/kernel';
 import { activate, measure } from '../activation/relu';
 import zeros2D from '../utilities/zeros-2d';
 

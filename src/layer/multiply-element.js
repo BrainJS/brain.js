@@ -1,4 +1,4 @@
-import makeKernel from '../utilities/make-kernel';
+import { makeKernel } from '../utilities/kernel';
 import { Operator } from './types';
 import zeros2D from "../utilities/zeros-2d";
 

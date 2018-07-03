@@ -1,5 +1,5 @@
 import { Activation } from './types';
-import makeKernel from '../utilities/make-kernel';
+import { makeKernel } from '../utilities/kernel';
 import { tanh, tanhDerivative } from '../activation/tanh';
 import zeros2D from "../utilities/zeros-2d";
 

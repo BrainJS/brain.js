@@ -1,5 +1,5 @@
 import { Modifier } from './types';
-import makeKernel from '../utilities/make-kernel';
+import { makeKernel } from '../utilities/kernel';
 
 export default class Transpose extends Modifier {
   constructor(inputLayer) {

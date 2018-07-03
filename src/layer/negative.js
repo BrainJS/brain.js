@@ -1,4 +1,4 @@
-import makeKernel from '../utilities/make-kernel';
+import { makeKernel } from '../utilities/kernel';
 import { Modifier } from './types';
 
 export default class Negative extends Modifier {

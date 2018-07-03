@@ -1,5 +1,5 @@
 import { Filter } from './types';
-import makeKernel from '../utilities/make-kernel';
+import { makeKernel } from '../utilities/kernel';
 
 export default class Dropout extends Filter {
   static get defaults() {

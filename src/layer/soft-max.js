@@ -1,4 +1,4 @@
-import makeKernel from '../utilities/make-kernel';
+import { makeKernel } from '../utilities/kernel';
 import { Filter } from './types';
 
 export default class SoftMax extends Filter {

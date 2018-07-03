@@ -1,5 +1,5 @@
 import { Filter } from './types';
-import makeKernel from '../utilities/make-kernel';
+import { makeKernel } from '../utilities/kernel';
 import { setPadding } from '../utilities/layer-setup';
 import zeros2D from '../utilities/zeros-2d';
 

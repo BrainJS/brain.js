@@ -1,4 +1,4 @@
-import makeKernel from '../utilities/make-kernel';
+import { makeKernel } from '../utilities/kernel';
 import { setStride, setPadding } from '../utilities/layer-setup';
 import { Filter } from './types';
 import randos2D from '../utilities/randos-2d';
