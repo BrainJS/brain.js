@@ -1,4 +1,4 @@
-import makeKernel from '../utilities/make-kernel';
+import { makeKernel } from '../utilities/kernel';
 import Base from './base';
 import randos2D from "../utilities/randos-2d";
 import zeros2D from "../utilities/zeros-2d";

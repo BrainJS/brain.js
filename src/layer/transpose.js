@@ -1,5 +1,5 @@
 import Base from './base';
-import makeKernel from '../utilities/make-kernel';
+import { makeKernel } from '../utilities/kernel';
 
 export default class Transpose extends Base {
   constructor(inputLayer) {

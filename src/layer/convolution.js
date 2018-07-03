@@ -1,6 +1,6 @@
 import Base from './base';
-import makeKernel from '../utilities/make-kernel';
-import { setStride, setPadding } from "../utilities/layer-setup"
+import { makeKernel } from '../utilities/kernel';
+import { setStride, setPadding } from '../utilities/layer-setup';
 export default class Convolution extends Base {
   static get defaults() {
     return {

@@ -1,5 +1,5 @@
 import Base from './base';
-import makeKernel from '../utilities/make-kernel';
+import { makeKernel } from '../utilities/kernel';
 import { tanh, tanhDerivative } from '../activation/tanh';
 
 export default class Tanh extends Base {

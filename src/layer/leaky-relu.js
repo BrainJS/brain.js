@@ -1,5 +1,5 @@
 import Base from './base';
-import makeKernel from '../utilities/make-kernel';
+import { makeKernel } from '../utilities/kernel';
 import { activate, measure } from '../activation/leaky-relu';
 
 export default class LeakyRelu extends Base {

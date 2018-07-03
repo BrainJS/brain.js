@@ -1,5 +1,6 @@
 import Base from './base';
 import zeros2D from '../utilities/zeros-2d';
+import { kernelInput } from '../utilities/kernel';
 
 export default class Input extends Base {
   constructor(settings) {
@@ -13,7 +14,13 @@ export default class Input extends Base {
   }
 
   predict(inputs) {
-    this.weights = inputs;
+    if (inputs.length === this.height * this.width) {
+      this.weights = kernelInput(inputs, [this.width, this.height]);
+    } else if (input.length === this.height && input[0].length === this.width) {
+      this.weights = inputs;
+    } else {
+      throw new Error('Inputs are not of sized correctly');
+    }
   }
 
   predict1D(inputs) {

@@ -1,7 +1,7 @@
 import GPU from 'gpu.js';
 let gpuInstance = null;
 
-export default function(fn, settings) {
+export function makeKernel(fn, settings) {
   if (gpuInstance === null) {
     setup(new GPU());
   }
@@ -12,7 +12,11 @@ export default function(fn, settings) {
     return gpuInstance.createKernel(fn, settings)
       .setOutputToTexture(true);
   }
-};
+}
+
+export function kernelInput(input) {
+  return GPU.input(input);
+}
 
 export function setup(value) {
   gpuInstance = value;
