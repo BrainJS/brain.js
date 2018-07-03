@@ -21,10 +21,10 @@ export default class MomentumRootMeanSquaredPropagation {
     this.setupKernels();
   }
 
-  run(previousLayer, nextLayer, learningRate) {
+  run(layer, previousLayer, nextLayer, learningRate) {
     const output = this.kernel(
-      this.layer.weights,
-      this.layer.deltas,
+      layer.weights,
+      layer.deltas,
       this.momentums
     );
     this.momentums = output.momentums;

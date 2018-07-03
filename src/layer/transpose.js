@@ -1,7 +1,7 @@
-import Base from './base';
-import { makeKernel } from '../utilities/kernel';
+import { Modifier } from './types';
+import makeKernel from '../utilities/make-kernel';
 
-export default class Transpose extends Base {
+export default class Transpose extends Modifier {
   constructor(inputLayer) {
     super();
     this.inputLayer = inputLayer;

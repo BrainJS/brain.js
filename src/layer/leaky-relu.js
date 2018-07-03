@@ -1,8 +1,8 @@
-import Base from './base';
-import { makeKernel } from '../utilities/kernel';
+import { Activation } from './types';
+import makeKernel from '../utilities/make-kernel';
 import { activate, measure } from '../activation/leaky-relu';
 
-export default class LeakyRelu extends Base {
+export default class LeakyRelu extends Activation {
   constructor(inputLayer) {
     super();
     this.inputLayer = inputLayer;
@@ -17,7 +17,7 @@ export default class LeakyRelu extends Base {
       functions: [activate]
     });
 
-    this.learnKernel = makeKernel(learn, {
+    this.compareKernel = makeKernel(compare, {
       functions: [measure]
     });
   }
@@ -27,7 +27,7 @@ export default class LeakyRelu extends Base {
   }
 
   compare() {
-    this.deltas = this.learnKernel(this.weights, this.deltas);
+    this.deltas = this.compareKernel(this.weights, this.deltas);
   }
 }
 
@@ -35,6 +35,6 @@ export function predict(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-export function learn(weights, deltas) {
+export function compare(weights, deltas) {
   return measure(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
 }

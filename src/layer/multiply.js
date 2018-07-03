@@ -1,8 +1,8 @@
-import { makeKernel } from '../utilities/kernel';
-import Base from './base';
+import makeKernel from '../utilities/make-kernel';
 import zeros2D from '../utilities/zeros-2d';
+import { Operator } from './types';
 
-export default class Multiply extends Base {
+export default class Multiply extends Operator {
   constructor(inputLayer1, inputLayer2) {
     super();
     this.inputLayer1 = inputLayer1;
@@ -43,7 +43,6 @@ export default class Multiply extends Base {
         size: this.inputLayer1.height
       }
     });
-    this.compareKernel2.myName = this.inputLayer2.constructor.name;
   }
   reuseKernels(layer) {
     super.reuseKernels(layer);

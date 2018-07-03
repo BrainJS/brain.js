@@ -1,7 +1,7 @@
-import { makeKernel } from '../utilities/kernel';
-import Base from './base';
+import makeKernel from '../utilities/make-kernel';
+import { Modifier } from './types';
 
-export default class Negative extends Base {
+export default class Negative extends Modifier {
   constructor(settings, inputLayer) {
     super(settings);
     this.inputLayer = inputLayer;

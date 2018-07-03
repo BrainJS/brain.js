@@ -1,13 +1,26 @@
 import zeros2D from '../utilities/zeros-2d';
+import { Internal } from './types';
 import Base from './base';
 
-export default class RecurrentInput extends Base {
+export default class RecurrentInput extends Internal {
   setRecurrentInput(recurrentInput) {
     this.recurrentInput = recurrentInput;
     this.validate();
   }
+  get deltas() {
+    return this.recurrentInput.deltas;
+  }
+  set deltas(deltas) {
+    this.recurrentInput.deltas = deltas;
+  }
+  get weights() {
+    return this.recurrentInput.weights;
+  }
+  set weights(weights) {
+    this.recurrentInput.weights = weights;
+  }
   validate() {
-    super.validate();
+    Base.prototype.validate.call(this);
     if (this.width !== this.recurrentInput.width) {
       throw new Error(`${this.constructor.name} layer width ${this.width} and ${this.recurrentInput.constructor.name} width (${this.recurrentInput.width}) are not same`);
     }
@@ -19,12 +32,11 @@ export default class RecurrentInput extends Base {
   setDimensions(width, height) {
     this.width = width;
     this.height = height;
-    this.weights = new zeros2D(width, height);
-    this.deltas = new zeros2D(width, height);
   }
 
-  predict() {
-    this.weights = this.recurrentInput.weights;
-  }
+  predict() {}
   compare() {}
+  learn() {}
+  setupKernels() {}
+  reuseKernels() {}
 }

@@ -1,7 +1,7 @@
-import Base from './base';
-import { makeKernel } from '../utilities/kernel';
+import { Filter } from './types';
+import makeKernel from '../utilities/make-kernel';
 
-export default class FullyConnected extends Base {
+export default class FullyConnected extends Filter {
   constructor(settings, inputLayer) {
     super(settings);
 

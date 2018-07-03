@@ -1,7 +1,7 @@
 import zeros2D from '../utilities/zeros-2d';
-import Base from './base';
+import { Model } from './types';
 
-export default class Zeros extends Base {
+export default class Zeros extends Model {
   constructor(settings) {
     super(settings);
     this.validate();

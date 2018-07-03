@@ -1,10 +1,11 @@
-import Base from './base';
-import { makeKernel } from '../utilities/kernel';
-import { setPadding, setStride } from '../utilities/layer-setup';
-export default class Pool extends Base {
+import { Filter } from './types';
+import makeKernel from '../utilities/make-kernel';
+import { setPadding } from '../utilities/layer-setup';
+import zeros2D from '../utilities/zeros-2d';
+
+export default class Pool extends Filter {
   static get defaults() {
     return {
-      stride: 0,
       padding: 0,
       bias: 0,
       filterWidth: 0,
@@ -17,11 +18,12 @@ export default class Pool extends Base {
     this.inputLayer = inputLayer;
 
     setPadding(this, settings);
-    setStride(this, settings);
 
     this.switchX = null;
     this.switchY = null;
     this.validate();
+    this.weights = zeros2D(this.width, this.height);
+    this.deltas = zeros2D(this.width, this.height);
   }
 
   setupKernels() {
@@ -30,19 +32,37 @@ export default class Pool extends Base {
       map: {
         switchX: setSwitchX,
         switchY: setSwitchY
+      },
+      constants: {
+        inputWidth: this.inputLayer.width,
+        inputHeight: this.inputLayer.height,
+        paddingX: this.paddingX,
+        paddingY: this.paddingY,
+        filterHeight: this.filterHeight,
+        filterWidth: this.filterWidth
       }
     });
 
-    this.learnKernel = makeKernel(learn, {
-      output: [this.width, this.height, this.depth]
+    this.compareKernel = makeKernel(compare, {
+      output: [this.width, this.height, this.depth],
+      constants: {
+        outputWidth: this.width,
+        outputHeight: this.height,
+        paddingX: this.paddingX,
+        paddingY: this.paddingY
+      }
     });
   }
 
   predict() {
-    const weights = this.predictKernel(this.inputLayer);
+    const weights = this.predictKernel(this.inputLayer.weights);
     this.switchX = weights.switchX;
     this.switchY = weights.switchY;
-    return this.weights = weights;
+    return this.weights = weights.result;
+  }
+
+  compare() {
+    this.inputLayer.deltas = this.compareKernel(this.deltas, this.switchX, this.switchY);
   }
 }
 
@@ -87,7 +107,7 @@ function setSwitchX(value) {
   return value;
 }
 
-export function learn(deltas, switchY, switchX) {
+export function compare(deltas, switchY, switchX) {
   const x = Math.floor(((this.thread.x / this.output.x) * this.constants.outputWidth) - this.constants.paddingX);
   const y = Math.floor(((this.thread.y / this.output.y) * this.constants.outputHeight) - this.constants.paddingY);
   const deltaXIndex = switchX[y][x];

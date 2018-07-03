@@ -1,9 +1,8 @@
-import { makeKernel } from '../utilities/kernel';
-import Base from './base';
-import randos2D from "../utilities/randos-2d";
+import makeKernel from '../utilities/make-kernel';
+import { Operator } from './types';
 import zeros2D from "../utilities/zeros-2d";
 
-export default class MultiplyElement extends Base {
+export default class MultiplyElement extends Operator {
   constructor(inputLayer1, inputLayer2) {
     super();
     this.inputLayer1 = inputLayer1;

@@ -1,11 +1,10 @@
 import { makeKernel } from '../utilities/kernel';
 import zeros2D from '../utilities/zeros-2d';
-import Base from './base';
+import { Filter } from './types';
 
-export default class Target extends Base {
+export default class Target extends Filter {
   constructor(settings, inputLayer) {
     super(settings);
-    this.compareKernelOutput = null;
     this.inputLayer = inputLayer;
 
     // TODO: properly handle dimensions
@@ -24,17 +23,6 @@ export default class Target extends Base {
     this.compareKernel = makeKernel(compareFn, {
       output: [this.width, this.height]
     });
-    this.compareKernelOutput = makeKernel(compareOutput, {
-      output: [this.inputLayer.width, this.inputLayer.height],
-      constants: {
-        size: this.height
-      }
-    });
-  }
-
-  reuseKernels(layer) {
-    super.reuseKernels(layer);
-    this.compareKernelOutput = layer.compareKernelOutput;
   }
 
   predict() {
@@ -45,8 +33,7 @@ export default class Target extends Base {
   compare(targetValues) {
     // this is where weights attach to deltas
     // deltas will be zero on learn, so save it in error for comparing to mse later
-    this.deltas = this.errors = this.compareKernel(this.weights, targetValues);
-    this.inputLayer.deltas = this.compareKernelOutput(this.weights, this.deltas);
+    this.inputLayer.deltas = this.deltas = this.errors = this.compareKernel(this.weights, targetValues);
   }
 }
 
@@ -56,12 +43,4 @@ function compare1D(weights, targetValues) {
 
 function compare2D(weights, targetValues) {
   return weights[this.thread.y][this.thread.x] - targetValues[this.thread.y][this.thread.x];
-}
-
-function compareOutput(outputWeights, outputDeltas) {
-  let sum = 0;
-  for (let i = 0; i < this.constants.size; i++) {
-    sum += outputWeights[i][this.thread.x] * outputDeltas[i][this.thread.x];
-  }
-  return sum;
 }

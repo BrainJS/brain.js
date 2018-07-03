@@ -5,6 +5,7 @@ export default class Base {
     return {
       width: 1,
       height: 1,
+      depth: 1,
       weights: null,
       deltas: null,
       name: null
@@ -28,7 +29,14 @@ export default class Base {
 
     // special settings
     if (settings.hasOwnProperty('praxis')) {
-      this.praxis = settings.praxis(this);
+      if (typeof settings.praxis === 'function') {
+        this.praxis = settings.praxis(Object.assign({
+          height: this.height,
+          width: this.width
+        }, settings));
+      } else {
+        this.praxis = settings.praxis;
+      }
     }
   }
 
@@ -106,7 +114,7 @@ export default class Base {
   }
 
   learn(previousLayer, nextLayer, learningRate) {
-    this.weights = this.praxis.run(previousLayer, nextLayer, learningRate);
+    this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
     this.deltas = zeros2D(this.width, this.height);
   }
 

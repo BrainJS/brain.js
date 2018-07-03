@@ -1,7 +1,7 @@
-import Base from './base';
-import { makeKernel } from '../utilities/kernel';
+import { Filter } from './types';
+import makeKernel from '../utilities/make-kernel';
 
-export default class Dropout extends Base {
+export default class Dropout extends Filter {
   static get defaults() {
     return {
       width: 0,
