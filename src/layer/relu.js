@@ -2,30 +2,50 @@ import { Activation } from './types';
 import { makeKernel } from '../utilities/kernel';
 import { activate, measure } from '../activation/relu';
 import zeros2D from '../utilities/zeros-2d';
+import zeros3D from '../utilities/zeros-3d';
 
 export default class Relu extends Activation {
   constructor(inputLayer) {
     super();
     this.inputLayer = inputLayer;
 
-    const { width, height } = inputLayer;
+    const { width, height, depth } = inputLayer;
     this.width = width;
     this.height = height;
     this.validate();
-    this.weights = zeros2D(this.width, this.height);
-    this.deltas = zeros2D(this.width, this.height);
+    if (depth && depth > 1) {
+      this.depth = depth;
+      this.weights = zeros3D(width, height, depth);
+      this.deltas = zeros3D(width, height, depth);
+    } else {
+      this.depth = 1;
+      this.weights = zeros2D(width, height);
+      this.deltas = zeros2D(width, height);
+    }
   }
 
   setupKernels() {
-    this.predictKernel = makeKernel(predict, {
-      output: [this.width, this.height],
-      functions: [activate]
-    });
+    if (this.depth > 1) {
+      this.predictKernel = makeKernel(predict3D, {
+        output: [this.width, this.height, this.depth],
+        functions: [activate]
+      });
 
-    this.compareKernel = makeKernel(compare, {
-      output: [this.width, this.height],
-      functions: [measure]
-    });
+      this.compareKernel = makeKernel(compare3D, {
+        output: [this.width, this.height, this.depth],
+        functions: [measure]
+      });
+    } else {
+      this.predictKernel = makeKernel(predict, {
+        output: [this.width, this.height],
+        functions: [activate]
+      });
+
+      this.compareKernel = makeKernel(compare, {
+        output: [this.width, this.height],
+        functions: [measure]
+      });
+    }
   }
 
   predict() {
@@ -43,4 +63,12 @@ export function predict(inputs) {
 
 export function compare(weights, deltas) {
   return measure(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
+}
+
+export function predict3D(inputs) {
+  return activate(inputs[this.thread.z][this.thread.y][this.thread.x]);
+}
+
+export function compare3D(weights, deltas) {
+  return measure(weights[this.thread.z][this.thread.y][this.thread.x], deltas[this.thread.z][this.thread.y][this.thread.x]);
 }

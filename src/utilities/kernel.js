@@ -14,8 +14,8 @@ export function makeKernel(fn, settings) {
   }
 }
 
-export function kernelInput(input) {
-  return GPU.input(input);
+export function kernelInput(input, size) {
+  return GPU.input(input, size);
 }
 
 export function setup(value) {
