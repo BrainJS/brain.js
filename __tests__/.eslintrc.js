@@ -4,4 +4,5 @@ module.exports = {
     jest: true,
   },
   extends: ['../.eslintrc.js'],
+  plugins: ['jest'],
 }
