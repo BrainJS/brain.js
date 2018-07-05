@@ -25,8 +25,18 @@ import range from './utilities/range'
 import toArray from './utilities/to-array'
 import DataFormatter from './utilities/data-formatter'
 import zeros from './utilities/zeros'
+
+// layer deps
+import feedForward from './layer/feed-forward'
+import gru from './layer/gru'
+import lstm from './layer/lstm'
+import recurrent from './layer/recurrent'
 import output from './layer/output'
 
+layer.feedForward = feedForward
+layer.gru = gru
+layer.lstm = lstm
+layer.recurrent = recurrent
 layer.output = output
 
 const brain = {
