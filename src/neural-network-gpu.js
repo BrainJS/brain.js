@@ -248,7 +248,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
             error: GPU.alias('calcErrorOutput', calcErrorOutput),
             deltas: GPU.alias('calcDeltas', calcDeltas),
           },
-          function(outputs, targets) {
+          (outputs, targets) => {
             const output = outputs[this.thread.x]
             return calcDeltas(calcErrorOutput(output, targets), output)
           },
@@ -264,7 +264,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
             error: GPU.alias('calcError', calcError),
             deltas: GPU.alias('calcDeltas', calcDeltas),
           },
-          function(nextWeights, outputs, nextDeltas) {
+          (nextWeights, outputs, nextDeltas) => {
             const output = outputs[this.thread.x]
             return calcDeltas(calcError(nextWeights, nextDeltas), output)
           },
@@ -325,9 +325,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
       )
 
       this.copyChanges[layer] = this.gpu.createKernel(
-        function(value) {
-          return value[this.thread.y][this.thread.x]
-        },
+        value => value[this.thread.y][this.thread.x],
         {
           output: this.changesPropagate[layer].output,
           outputToTexture: true,
@@ -336,9 +334,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
       )
 
       this.copyWeights[layer] = this.gpu.createKernel(
-        function(value) {
-          return value[this.thread.y][this.thread.x]
-        },
+        value => value[this.thread.y][this.thread.x],
         {
           output: this.changesPropagate[layer].output,
           outputToTexture: true,
@@ -375,9 +371,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
         },
       })
       this.copyBias[layer] = this.gpu.createKernel(
-        function(value) {
-          return value[this.thread.x]
-        },
+        value => value[this.thread.x],
         {
           output: this.biasesPropagate[layer].output,
           outputToTexture: true,
@@ -477,9 +471,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     this._verifyIsInitialized(data)
 
     const texturizeOutputData = this.gpu.createKernel(
-      function(value) {
-        return value[this.thread.x]
-      },
+      value => value[this.thread.x],
       {
         output: [data[0].output.length],
         outputToTexture: true,
@@ -500,6 +492,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
   }
 
   toFunction() {
-    throw new Error('not implemented on NeuralNetworkGPU')
+    throw new Error(
+      `${this.constructor.name}-toFunction is not yet implemented`
+    )
   }
 }

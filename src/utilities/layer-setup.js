@@ -1,5 +1,6 @@
 export function setStride(layer, settings) {
-  const defaults = layer.constructor.defaults
+  const { defaults } = layer.constructor
+
   if (settings.hasOwnProperty('stride')) {
     layer.strideX = settings.stride
     layer.strideY = settings.stride
@@ -19,7 +20,8 @@ export function setStride(layer, settings) {
 }
 
 export function setPadding(layer, settings) {
-  const defaults = layer.constructor.defaults
+  const { defaults } = layer.constructor
+
   if (settings.hasOwnProperty('padding')) {
     layer.paddingX = settings.padding
     layer.paddingY = settings.padding

@@ -1,6 +1,60 @@
 import { makeKernel } from '../utilities/kernel'
 import Zeros2D from '../utilities/zeros-2d'
 
+function getMomentum(delta, decay, previousMomentum) {
+  return previousMomentum * decay + (1 - decay) * delta * delta
+}
+
+export function clipByValue(value, max, min) {
+  if (value > max) {
+    return max
+  }
+  if (value < min) {
+    return min
+  }
+  return value
+}
+
+/**
+ * @description Momentum Root Mean Square Propagation Function
+ * @returns {number}
+ */
+function momentumRootMeanSquaredPropagation(
+  weights,
+  deltas,
+  previousMomentums
+) {
+  const delta = deltas[this.thread.y][this.thread.x]
+  const clippedDelta = clipByValue(
+    delta,
+    this.constants.clipValue,
+    -this.constants.clipValue
+  )
+  const weight = weights[this.thread.y][this.thread.x]
+  const previousMomentum = previousMomentums[this.thread.y][this.thread.x]
+  const momentum = getMomentum(
+    delta,
+    this.constants.decayRate,
+    previousMomentum
+  )
+  return (
+    weight +
+    (-this.constants.learningRate * clippedDelta) /
+      Math.sqrt(momentum + this.constants.smoothEps) -
+    this.constants.regularizationStrength * weight
+  )
+}
+
+export function isClippedByValue(value, max, min) {
+  if (value > max) {
+    return 1
+  }
+  if (value < min) {
+    return 1
+  }
+  return 0
+}
+
 export default class MomentumRootMeanSquaredPropagation {
   static get defaults() {
     return {
@@ -50,59 +104,5 @@ export default class MomentumRootMeanSquaredPropagation {
  * @type {MomentumRootMeanSquaredPropagation}
  */
 const MRmsProp = MomentumRootMeanSquaredPropagation
-
-/**
- * @description Momentum Root Mean Square Propagation Function
- * @returns {number}
- */
-function momentumRootMeanSquaredPropagation(
-  weights,
-  deltas,
-  previousMomentums
-) {
-  const delta = deltas[this.thread.y][this.thread.x]
-  const clippedDelta = clipByValue(
-    delta,
-    this.constants.clipValue,
-    -this.constants.clipValue
-  )
-  const weight = weights[this.thread.y][this.thread.x]
-  const previousMomentum = previousMomentums[this.thread.y][this.thread.x]
-  const momentum = getMomentum(
-    delta,
-    this.constants.decayRate,
-    previousMomentum
-  )
-  return (
-    weight +
-    (-this.constants.learningRate * clippedDelta) /
-      Math.sqrt(momentum + this.constants.smoothEps) -
-    this.constants.regularizationStrength * weight
-  )
-}
-
-function getMomentum(delta, decay, previousMomentum) {
-  return previousMomentum * decay + (1 - decay) * delta * delta
-}
-
-export function clipByValue(value, max, min) {
-  if (value > max) {
-    return max
-  }
-  if (value < min) {
-    return min
-  }
-  return value
-}
-
-export function isClippedByValue(value, max, min) {
-  if (value > max) {
-    return 1
-  }
-  if (value < min) {
-    return 1
-  }
-  return 0
-}
 
 export { getMomentum, MRmsProp }

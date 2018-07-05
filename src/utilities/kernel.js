@@ -2,6 +2,10 @@ import GPU from 'gpu.js'
 
 let gpuInstance = null
 
+export function setup(value) {
+  gpuInstance = value
+}
+
 export function makeKernel(fn, settings) {
   if (gpuInstance === null) {
     setup(new GPU({ mode: 'cpu' }))
@@ -16,8 +20,4 @@ export function makeKernel(fn, settings) {
 
 export function kernelInput(input, size) {
   return GPU.input(input, size)
-}
-
-export function setup(value) {
-  gpuInstance = value
 }

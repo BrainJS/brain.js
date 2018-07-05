@@ -6,7 +6,7 @@ import { layer } from '../../src'
 import Equation from '../../src/recurrent/matrix/equation'
 import RandomMatrix from '../../src/recurrent/matrix/random-matrix'
 import Matrix from '../../src/recurrent/matrix'
-import zeros2D from '../../src/utilities/zeros-2d'
+import Zeros2D from '../../src/utilities/zeros-2d'
 
 const { add, input, multiply, output, random, recurrent } = layer
 
@@ -46,16 +46,16 @@ describe('Recurrent Class: End to End', () => {
       // set both nets exactly the same, then train them once, and compare
       // zero out
       recurrentNet._inputLayers.forEach((layer, i) => {
-        layer.deltas = zeros2D(layer.width, layer.height)
-        layer.weights = zeros2D(layer.width, layer.height)
+        layer.deltas = Zeros2D(layer.width, layer.height)
+        layer.weights = Zeros2D(layer.width, layer.height)
       })
       recurrentNet._hiddenLayers[0].forEach((layer, i) => {
-        layer.deltas = zeros2D(layer.width, layer.height)
-        layer.weights = zeros2D(layer.width, layer.height)
+        layer.deltas = Zeros2D(layer.width, layer.height)
+        layer.weights = Zeros2D(layer.width, layer.height)
       })
       recurrentNet._outputLayers.forEach((layer, i) => {
-        layer.deltas = zeros2D(layer.width, layer.height)
-        layer.weights = zeros2D(layer.width, layer.height)
+        layer.deltas = Zeros2D(layer.width, layer.height)
+        layer.weights = Zeros2D(layer.width, layer.height)
       })
       timeStep.model.input.weights.forEach((weight, i) => {
         timeStep.model.input.weights[i] = 0

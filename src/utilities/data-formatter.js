@@ -66,7 +66,7 @@ export default class DataFormatter {
 
   toIndexes(value, maxThreshold = 0) {
     const result = []
-    const indexTable = this.indexTable
+    const { indexTable } = this
 
     for (let i = 0, max = value.length; i < max; i++) {
       const character = value[i]
@@ -105,7 +105,7 @@ export default class DataFormatter {
 
   toCharacters(indices, maxThreshold = 0) {
     const result = []
-    const characterTable = this.characterTable
+    const { characterTable } = this
 
     for (let i = 0, max = indices.length; i < max; i++) {
       const index = indices[i]
@@ -172,10 +172,11 @@ export default class DataFormatter {
     return dataFormatter
   }
 
-  addSpecial() {
-    for (let i = 0; i < arguments.length; i++) {
-      const special = arguments[i]
-      const specialIndex = (this.indexTable[special] = this.characters.length)
+  addSpecial(...args) {
+    for (let i = 0; i < args.length; i++) {
+      const special = args[i]
+      this.indexTable[special] = this.characters.length
+      const specialIndex = this.indexTable[special]
       this.characterTable[specialIndex] = special
       this.characters.push(special)
     }

@@ -3,30 +3,22 @@ import RandomMatrix from './matrix/random-matrix'
 import RNN from './rnn'
 
 export default class GRU extends RNN {
-  getModel(hiddenSize, prevSize) {
+  static getModel(hiddenSize, prevSize) {
     return {
       // update Gate
       // wzxh
-      updateGateInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      // wzhh
-      updateGateHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      // bz
+      updateGateInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wzhh
+      updateGateHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bz
       updateGateBias: new Matrix(hiddenSize, 1),
-
       // reset Gate
       // wrxh
-      resetGateInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      // wrhh
-      resetGateHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      // br
+      resetGateInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wrhh
+      resetGateHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // br
       resetGateBias: new Matrix(hiddenSize, 1),
-
       // cell write parameters
       // wcxh
-      cellWriteInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      // wchh
-      cellWriteHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      // bc
+      cellWriteInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wchh
+      cellWriteHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bc
       cellWriteBias: new Matrix(hiddenSize, 1),
     }
   }
@@ -39,7 +31,7 @@ export default class GRU extends RNN {
    * @param {Object} hiddenLayer
    * @returns {Matrix}
    */
-  getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+  static getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
     const sigmoid = equation.sigmoid.bind(equation)
     const add = equation.add.bind(equation)
     const multiply = equation.multiply.bind(equation)

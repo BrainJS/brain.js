@@ -3,6 +3,17 @@ import lookup from './lookup'
 
 /**
  *
+ * https://gist.github.com/telekosmos/3b62a31a5c43f40849bb
+ * @param arr
+ * @returns {Array}
+ */
+function uniques(arr) {
+  // Sets cannot contain duplicate elements, which is what we want
+  return [...new Set(arr)]
+}
+
+/**
+ *
  * @param opts
  * @returns {TrainStream}
  * @constructor
@@ -28,10 +39,11 @@ export default class TrainStream extends Writable {
     this.i = 0 // keep track of the for loop i variable that we got rid of
     this.iterations = opts.iterations || 20000
     this.errorThresh = opts.errorThresh || 0.005
+    // eslint-disable-next-line
     this.log = opts.log
       ? typeof opts.log === 'function'
         ? opts.log
-        : console.log
+        : console.log //eslint-disable-line
       : false
     this.logPeriod = opts.logPeriod || 10
     this.callback = opts.callback
@@ -82,7 +94,7 @@ export default class TrainStream extends Writable {
     this.trainDatum(data[0])
 
     // tell the Readable Stream that we are ready for more data
-    next()
+    return next()
   }
 
   /**
@@ -116,7 +128,8 @@ export default class TrainStream extends Writable {
       const sizes = []
       const inputSize = data[0].input.length
       const outputSize = data[0].output.length
-      const hiddenSizes = this.hiddenSizes
+      const { hiddenSizes } = this
+
       if (!hiddenSizes) {
         sizes.push(Math.max(3, Math.floor(inputSize / 2)))
       } else {
@@ -139,10 +152,10 @@ export default class TrainStream extends Writable {
 
     const error = this.sum / this.size
 
-    if (this.log && this.i % this.logPeriod == 0) {
+    if (this.log && this.i % this.logPeriod === 0) {
       this.log('iterations:', this.i, 'training error:', error)
     }
-    if (this.callback && this.i % this.callbackPeriod == 0) {
+    if (this.callback && this.i % this.callbackPeriod === 0) {
       this.callback({
         error,
         iterations: this.i,
@@ -157,27 +170,17 @@ export default class TrainStream extends Writable {
     // do a check here to see if we need the stream again
     if (this.i < this.iterations && error > this.errorThresh) {
       if (typeof this.floodCallback === 'function') {
+        // eslint-disable-next-line
         return this.floodCallback()
       }
-    } else {
-      // done training
-      if (typeof this.doneTrainingCallback === 'function') {
-        return this.doneTrainingCallback({
-          error,
-          iterations: this.i,
-        })
-      }
+    }
+    // done training
+    else if (typeof this.doneTrainingCallback === 'function') {
+      // eslint-disable-next-line
+      return this.doneTrainingCallback({
+        error,
+        iterations: this.i,
+      })
     }
   }
-}
-
-/**
- *
- * https://gist.github.com/telekosmos/3b62a31a5c43f40849bb
- * @param arr
- * @returns {Array}
- */
-function uniques(arr) {
-  // Sets cannot contain duplicate elements, which is what we want
-  return [...new Set(arr)]
 }

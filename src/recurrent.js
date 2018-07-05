@@ -4,7 +4,7 @@ import RecurrentZeros from './layer/recurrent-zeros'
 import flattenLayers from './utilities/flatten-layers'
 import mse2d from './utilities/mse-2d'
 import FeedForward from './feed-forward'
-import Base from './layer/base'
+// import Base from './layer/base'
 
 export default class Recurrent extends FeedForward {
   static get structure() {
@@ -127,6 +127,7 @@ export default class Recurrent extends FeedForward {
               break
             case 'RecurrentInput':
             case 'RecurrentZeros':
+            default:
               layer = new RecurrentInput()
               layer.setDimensions(
                 previousHiddenLayer.width,

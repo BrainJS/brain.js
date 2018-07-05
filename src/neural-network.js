@@ -508,7 +508,7 @@ export default class NeuralNetwork {
         })
         thawedTrain.tick()
       } catch (trainError) {
-        reject({ trainError, status })
+        reject(new Error({ trainError, status }))
       }
     })
   }
@@ -667,8 +667,8 @@ export default class NeuralNetwork {
       data = tmp
     }
     // turn sparse hash input into arrays with 0s as filler
-    const datum = data[0].input
-    if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
+    const datumCheck = data[0].input
+    if (!Array.isArray(datumCheck) && !(datumCheck instanceof Float32Array)) {
       if (!this.inputLookup) {
         this.inputLookup = lookup.buildLookup(data.map(value => value.input))
       }
@@ -724,6 +724,7 @@ export default class NeuralNetwork {
       let expected
       if (isBinary) {
         actual = output[0] > this.binaryThresh ? 1 : 0
+        // eslint-disable-next-line
         expected = target[0]
       } else {
         actual = output.indexOf(max(output))
@@ -751,7 +752,7 @@ export default class NeuralNetwork {
         }
       }
 
-      const errors = output.map((value, i) => target[i] - value)
+      const errors = output.map((value, j) => target[j] - value)
       sum += mse(errors)
     }
     const error = sum / data.length
@@ -834,13 +835,14 @@ export default class NeuralNetwork {
         if (layer > 0) {
           layers[layer][node].bias = this.biases[layer][j]
           layers[layer][node].weights = []
-          for (const k in layers[layer - 1]) {
+
+          Object.keys(layers[layer - 1]).forEach(k => {
             let index = k
             if (layer === 1 && this.inputLookup) {
               index = this.inputLookup[k]
             }
             layers[layer][node].weights[k] = this.weights[layer][j][index]
-          }
+          })
         }
       }
     }
@@ -873,11 +875,12 @@ export default class NeuralNetwork {
       if (i > 0) {
         const nodes = Object.keys(layer)
         this.sizes[i] = nodes.length
-        for (const j in nodes) {
+
+        Object.keys(nodes).forEach(j => {
           const node = nodes[j]
           this.biases[i][j] = layer[node].bias
           this.weights[i][j] = toArray(layer[node].weights)
-        }
+        })
       }
     }
     if (json.hasOwnProperty('trainOpts')) {
@@ -892,7 +895,7 @@ export default class NeuralNetwork {
    * @returns {Function}
    */
   toFunction() {
-    const activation = this.activation
+    const { activation } = this
     function nodeHandle(layers, layerNumber, nodeKey) {
       if (layerNumber === 0) {
         return typeof nodeKey === 'string'
@@ -903,7 +906,8 @@ export default class NeuralNetwork {
       const layer = layers[layerNumber]
       const node = layer[nodeKey]
       const result = [node.bias]
-      for (const w in node.weights) {
+
+      Object.keys(node.weights).forEach(w => {
         if (node.weights[w] < 0) {
           result.push(
             `${node.weights[w]}*(${nodeHandle(layers, layerNumber - 1, w)})`
@@ -913,7 +917,7 @@ export default class NeuralNetwork {
             `+${node.weights[w]}*(${nodeHandle(layers, layerNumber - 1, w)})`
           )
         }
-      }
+      })
 
       switch (activation) {
         case 'sigmoid':
@@ -929,12 +933,14 @@ export default class NeuralNetwork {
       }
     }
 
-    const layers = this.toJSON().layers
+    const { layers } = this.toJSON()
     const layersAsMath = []
     let result
-    for (const i in layers[layers.length - 1]) {
-      layersAsMath.push(nodeHandle(layers, layers.length - 1, i))
-    }
+
+    Object.keys(layers[layers.length - 1]).forEach(l => {
+      layersAsMath.push(nodeHandle(layers, layers.length - 1, l))
+    })
+
     if (this.outputLookup) {
       result = `{${Object.keys(this.outputLookup).map(
         (key, i) => `'${key}':${layersAsMath[i]}`
@@ -942,6 +948,7 @@ export default class NeuralNetwork {
     } else {
       result = `[${layersAsMath.join(',')}]`
     }
+    // eslint-disable-next-line
     return new Function('input', `return ${result}`)
   }
 

@@ -4,6 +4,7 @@ import Equation from './matrix/equation'
 import RNN from './rnn'
 
 export default class RNNTimeStep extends RNN {
+  // eslint-disable-next-line
   constructor(options) {
     super(options)
   }
@@ -13,8 +14,7 @@ export default class RNNTimeStep extends RNN {
   }
 
   createOutputMatrix() {
-    const model = this.model
-    const outputSize = this.outputSize
+    const { model, outputSize } = this
     const lastHiddenSize = this.hiddenSizes[this.hiddenSizes.length - 1]
 
     // whd
@@ -24,9 +24,8 @@ export default class RNNTimeStep extends RNN {
   }
 
   bindEquation() {
-    const model = this.model
-    const hiddenSizes = this.hiddenSizes
-    const hiddenLayers = model.hiddenLayers
+    const { model, hiddenSizes } = this
+    const { hiddenLayers } = model
     const equation = new Equation()
     const outputs = []
     const equationConnection =
@@ -65,7 +64,7 @@ export default class RNNTimeStep extends RNN {
    */
   runInput(input) {
     this.runs++
-    const model = this.model
+    const { model } = this
     let errorSum = 0
     let equation
     while (model.equations.length < input.length - 1) {
@@ -139,7 +138,7 @@ export default class RNNTimeStep extends RNN {
    */
   run(input = [], maxPredictionLength = 1, isSampleI = false, temperature = 1) {
     if (!this.isRunnable) return null
-    const model = this.model
+    const { model } = this
     while (model.equations.length < maxPredictionLength) {
       this.bindEquation()
     }
@@ -166,7 +165,9 @@ export default class RNNTimeStep extends RNN {
    * @returns {Function}
    */
   toFunction() {
-    throw new Error('not implemented')
+    throw new Error(
+      `${this.constructor.name}-toFunction is not yet implemented`
+    )
   }
 }
 

@@ -3,36 +3,25 @@ import RandomMatrix from './matrix/random-matrix'
 import RNN from './rnn'
 
 export default class LSTM extends RNN {
-  getModel(hiddenSize, prevSize) {
+  static getModel(hiddenSize, prevSize) {
     return {
       // gates parameters
       // wix
-      inputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      // wih
-      inputHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      // bi
+      inputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wih
+      inputHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bi
       inputBias: new Matrix(hiddenSize, 1),
-
       // wfx
-      forgetMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      // wfh
-      forgetHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      // bf
+      forgetMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wfh
+      forgetHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bf
       forgetBias: new Matrix(hiddenSize, 1),
-
       // wox
-      outputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      // woh
-      outputHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      // bo
+      outputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // woh
+      outputHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bo
       outputBias: new Matrix(hiddenSize, 1),
-
       // cell write params
       // wcx
-      cellActivationMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      // wch
-      cellActivationHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      // bc
+      cellActivationMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wch
+      cellActivationHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bc
       cellActivationBias: new Matrix(hiddenSize, 1),
     }
   }
@@ -45,7 +34,7 @@ export default class LSTM extends RNN {
    * @param {Object} hiddenLayer
    * @returns {Matrix}
    */
-  getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+  static getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
     const sigmoid = equation.sigmoid.bind(equation)
     const add = equation.add.bind(equation)
     const multiply = equation.multiply.bind(equation)

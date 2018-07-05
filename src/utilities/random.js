@@ -2,14 +2,6 @@ export function randomFloat(a, b) {
   return Math.random() * (b - a) + a
 }
 
-export function randomInteger(a, b) {
-  return Math.floor(Math.random() * (b - a) + a)
-}
-
-export function randomN(mu, std) {
-  return mu + gaussRandom() * std
-}
-
 // Random numbers utils
 function gaussRandom() {
   if (gaussRandom.returnV) {
@@ -19,7 +11,7 @@ function gaussRandom() {
   const u = 2 * Math.random() - 1
   const v = 2 * Math.random() - 1
   const r = u * u + v * v
-  if (r == 0 || r > 1) {
+  if (r === 0 || r > 1) {
     return gaussRandom()
   }
   const c = Math.sqrt((-2 * Math.log(r)) / r)
@@ -27,5 +19,14 @@ function gaussRandom() {
   gaussRandom.returnV = true
   return u * c
 }
+
+export function randomInteger(a, b) {
+  return Math.floor(Math.random() * (b - a) + a)
+}
+
+export function randomN(mu, std) {
+  return mu + gaussRandom() * std
+}
+
 gaussRandom.returnV = false
 gaussRandom.vVal = 0

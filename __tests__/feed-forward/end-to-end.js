@@ -3,7 +3,7 @@ import assert from 'assert'
 import NeuralNetwork from '../../src/neural-network'
 import FeedForward from '../../src/feed-forward'
 import * as layer from '../../src/layer/index'
-import zeros2D from '../../src/utilities/zeros-2d'
+import Zeros2D from '../../src/utilities/zeros-2d'
 
 const {
   Base,
@@ -75,8 +75,8 @@ describe('FeedForward Class: End to End', () => {
 
       // zero out
       ffNet.layers.forEach((layer, i) => {
-        layer.deltas = zeros2D(layer.width, layer.height)
-        layer.weights = zeros2D(layer.width, layer.height)
+        layer.deltas = Zeros2D(layer.width, layer.height)
+        layer.weights = Zeros2D(layer.width, layer.height)
       })
       standardNet.deltas.forEach(deltas => {
         for (let i = 0; i < deltas.length; i++) {
@@ -225,7 +225,7 @@ describe('FeedForward Class: End to End', () => {
       class SuperOutput extends Target {
         constructor(settings, inputLayer) {
           super(settings, inputLayer)
-          this.deltas = zeros2D(this.width, this.height)
+          this.deltas = Zeros2D(this.width, this.height)
           this.inputLayer = inputLayer
         }
       }

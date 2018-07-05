@@ -10,9 +10,9 @@ export default function multiplyB(product, left, right) {
   const rightColumns = right.columns
 
   // loop over rows of left
-  for (let leftRow = 0; leftRow < leftRows; leftRow++) {
-    const leftRowBase = leftColumns * leftRow
-    const rightRowBase = rightColumns * leftRow
+  for (let leftRowRoot = 0; leftRowRoot < leftRows; leftRowRoot++) {
+    const leftRowBase = leftColumns * leftRowRoot
+    const rightRowBase = rightColumns * leftRowRoot
     // loop over cols of right
     for (let rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
       // loop over columns of left
