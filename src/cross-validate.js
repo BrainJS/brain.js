@@ -8,23 +8,23 @@
  * @returns {void|*}
  */
 export function testPartition(Classifier, opts, trainOpts, trainSet, testSet) {
-  let classifier = new Classifier(opts);
-  let beginTrain = Date.now();
-  let trainingStats = classifier.train(trainSet, trainOpts);
-  let beginTest = Date.now();
-  let testStats = classifier.test(testSet);
-  let endTest = Date.now();
-  let stats = Object.assign({}, testStats, {
-    trainTime : beginTest - beginTrain,
-    testTime : endTest - beginTest,
+  const classifier = new Classifier(opts)
+  const beginTrain = Date.now()
+  const trainingStats = classifier.train(trainSet, trainOpts)
+  const beginTest = Date.now()
+  const testStats = classifier.test(testSet)
+  const endTest = Date.now()
+  const stats = Object.assign({}, testStats, {
+    trainTime: beginTest - beginTrain,
+    testTime: endTest - beginTest,
     iterations: trainingStats.iterations,
     trainError: trainingStats.error,
     learningRate: trainOpts.learningRate,
     hidden: classifier.hiddenSizes,
-    network: classifier.toJSON()
-  });
+    network: classifier.toJSON(),
+  })
 
-  return stats;
+  return stats
 }
 
 /**
@@ -34,12 +34,12 @@ export function testPartition(Classifier, opts, trainOpts, trainSet, testSet) {
  */
 export function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
-    let temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
+    const j = Math.floor(Math.random() * (i + 1))
+    const temp = array[i]
+    array[i] = array[j]
+    array[j] = temp
   }
-  return array;
+  return array
 }
 
 /**
@@ -71,82 +71,72 @@ export function shuffleArray(array) {
  * }
  */
 export default function crossValidate(Classifier, data, opts, trainOpts, k) {
-  k = k || 4;
-  let size = data.length / k;
+  k = k || 4
+  const size = data.length / k
 
   if (data.constructor === Array) {
-    shuffleArray(data);
+    shuffleArray(data)
   } else {
-    let newData = {};
-    shuffleArray(Object.keys(data)).forEach((key) => {
-      newData[key] = data[key];
-    });
-    data = newData;
+    const newData = {}
+    shuffleArray(Object.keys(data)).forEach(key => {
+      newData[key] = data[key]
+    })
+    data = newData
   }
 
-  let avgs = {
-    error : 0,
-    trainTime : 0,
-    testTime : 0,
+  const avgs = {
+    error: 0,
+    trainTime: 0,
+    testTime: 0,
     iterations: 0,
-    trainError: 0
-  };
+    trainError: 0,
+  }
 
-  let stats = {
+  const stats = {
     truePos: 0,
     trueNeg: 0,
     falsePos: 0,
     falseNeg: 0,
-    total: 0
-  };
+    total: 0,
+  }
 
-  let misclasses = [];
-  let results = [];
-  let stat;
-  let sum;
+  const misclasses = []
+  const results = []
 
   for (let i = 0; i < k; i++) {
-    let dclone = data.slice(0);
-    let testSet = dclone.splice(i * size, size);
-    let trainSet = dclone;
-    let result = testPartition(Classifier, opts, trainOpts, trainSet, testSet);
-    for (stat in avgs) {
-      if (stat in avgs) {
-        sum = avgs[stat];
-        avgs[stat] = sum + result[stat];
-      }
-    }
+    const dclone = data.slice(0)
+    const testSet = dclone.splice(i * size, size)
+    const trainSet = dclone
+    const result = testPartition(Classifier, opts, trainOpts, trainSet, testSet)
 
-    for (stat in stats) {
-      if (stat in stats) {
-        sum = stats[stat];
-        stats[stat] = sum + result[stat];
-      }
-    }
+    Object.keys(avgs).forEach(avg => {
+      avgs[avg] += result[avg]
+    })
 
-    misclasses.concat(results.misclasses);
+    Object.keys(stats).forEach(stat => {
+      stats[stat] += result[stat]
+    })
 
-    results.push(result);
+    misclasses.concat(results.misclasses)
+
+    results.push(result)
   }
 
-  for (stat in avgs) {
-    if (stat in avgs) {
-      sum = avgs[stat];
-      avgs[stat] = sum / k;
-    }
-  }
+  Object.keys(avgs).forEach(avg => {
+    avgs[avg] /= k
+  })
 
-  stats.precision = stats.truePos / (stats.truePos + stats.falsePos);
-  stats.recall = stats.truePos / (stats.truePos + stats.falseNeg);
-  stats.accuracy = (stats.trueNeg + stats.truePos) / stats.total;
+  stats.precision = stats.truePos / (stats.truePos + stats.falsePos)
+  stats.recall = stats.truePos / (stats.truePos + stats.falseNeg)
+  stats.accuracy = (stats.trueNeg + stats.truePos) / stats.total
 
-  stats.testSize = size;
-  stats.trainSize = data.length - size;
+  stats.testSize = size
+  stats.trainSize = data.length - size
 
   return {
-    avgs: avgs,
-    stats: stats,
+    avgs,
+    stats,
     sets: results,
-    misclasses: misclasses
-  };
+    misclasses,
+  }
 }

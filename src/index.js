@@ -61,7 +61,7 @@ const brain = {
 }
 
 if (typeof window !== 'undefined') {
-  window.brain = brain
+  window.brain = brain //eslint-disable-line
 }
 
 if (typeof module !== 'undefined') {

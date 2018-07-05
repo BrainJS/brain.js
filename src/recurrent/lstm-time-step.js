@@ -1,10 +1,10 @@
-import Matrix from './matrix';
-import LSTM from './lstm';
-import RNNTimeStep from './rnn-time-step';
+import Matrix from './matrix'
+import LSTM from './lstm'
+import RNNTimeStep from './rnn-time-step'
 
 export default class LSTMTimeStep extends RNNTimeStep {
   getModel(hiddenSize, prevSize) {
-    return LSTM.prototype.getModel.call(this, hiddenSize, prevSize);
+    return LSTM.prototype.getModel.call(this, hiddenSize, prevSize)
   }
 
   /**
@@ -16,6 +16,12 @@ export default class LSTMTimeStep extends RNNTimeStep {
    * @returns {Matrix}
    */
   getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-    return LSTM.prototype.getEquation.call(this, equation, inputMatrix, previousResult, hiddenLayer);
+    return LSTM.prototype.getEquation.call(
+      this,
+      equation,
+      inputMatrix,
+      previousResult,
+      hiddenLayer
+    )
   }
 }

@@ -1,17 +1,13 @@
-import assert from 'assert';
-import gpuMock from 'gpu-mock.js';
-import { predict, compare } from '../../src/layer/pool';
+import assert from 'assert'
+import gpuMock from 'gpu-mock.js'
+import { predict, compare } from '../../src/layer/pool'
 
 describe('Pool Layer', () => {
   describe('.predict (forward propagation)', () => {
     it('can pool a simple matrix', () => {
-      const inputs = [[
-        [1,2,3],
-        [4,5,6],
-        [7,8,9]
-      ]];
+      const inputs = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
       const results = gpuMock(predict, {
-        output: [1,1,0],
+        output: [1, 1, 0],
         constants: {
           strideX: 1,
           strideY: 1,
@@ -22,23 +18,21 @@ describe('Pool Layer', () => {
           paddingY: 0,
           filterWidth: 3,
           filterHeight: 3,
-          filterCount: 1
-        }
-      })(inputs);
+          filterCount: 1,
+        },
+      })(inputs)
 
-      assert.deepEqual(results, [
-        [9]
-      ]);
-    });
-  });
+      assert.deepEqual(results, [[9]])
+    })
+  })
 
   describe('.compare (back propagation)', () => {
     it('can pool a simple matrix', () => {
-      const deltas = [[9]];
-      const switchX = [[0]];
-      const switchY = [[0]];
+      const deltas = [[9]]
+      const switchX = [[0]]
+      const switchY = [[0]]
       const results = gpuMock(compare, {
-        output: [3,3,0],
+        output: [3, 3, 0],
         constants: {
           strideX: 1,
           strideY: 1,
@@ -51,15 +45,11 @@ describe('Pool Layer', () => {
           paddingY: 0,
           filterWidth: 3,
           filterHeight: 3,
-          filterCount: 1
-        }
-      })(deltas, switchX, switchY);
+          filterCount: 1,
+        },
+      })(deltas, switchX, switchY)
 
-      assert.deepEqual(results, [
-        [9,0,0],
-        [0,0,0],
-        [0,0,0]
-      ]);
-    });
-  });
-});
+      assert.deepEqual(results, [[9, 0, 0], [0, 0, 0], [0, 0, 0]])
+    })
+  })
+})

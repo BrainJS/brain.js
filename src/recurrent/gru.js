@@ -1,34 +1,34 @@
-import Matrix from './matrix';
-import RandomMatrix from './matrix/random-matrix';
-import RNN from './rnn';
+import Matrix from './matrix'
+import RandomMatrix from './matrix/random-matrix'
+import RNN from './rnn'
 
 export default class GRU extends RNN {
   getModel(hiddenSize, prevSize) {
     return {
       // update Gate
-      //wzxh
+      // wzxh
       updateGateInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      //wzhh
+      // wzhh
       updateGateHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      //bz
+      // bz
       updateGateBias: new Matrix(hiddenSize, 1),
 
       // reset Gate
-      //wrxh
+      // wrxh
       resetGateInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      //wrhh
+      // wrhh
       resetGateHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      //br
+      // br
       resetGateBias: new Matrix(hiddenSize, 1),
 
       // cell write parameters
-      //wcxh
+      // wcxh
       cellWriteInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      //wchh
+      // wchh
       cellWriteHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      //bc
-      cellWriteBias: new Matrix(hiddenSize, 1)
-    };
+      // bc
+      cellWriteBias: new Matrix(hiddenSize, 1),
+    }
   }
 
   /**
@@ -40,67 +40,49 @@ export default class GRU extends RNN {
    * @returns {Matrix}
    */
   getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-    let sigmoid = equation.sigmoid.bind(equation);
-    let add = equation.add.bind(equation);
-    let multiply = equation.multiply.bind(equation);
-    let multiplyElement = equation.multiplyElement.bind(equation);
-    let tanh = equation.tanh.bind(equation);
-    let allOnes = equation.allOnes.bind(equation);
-    let cloneNegative = equation.cloneNegative.bind(equation);
+    const sigmoid = equation.sigmoid.bind(equation)
+    const add = equation.add.bind(equation)
+    const multiply = equation.multiply.bind(equation)
+    const multiplyElement = equation.multiplyElement.bind(equation)
+    const tanh = equation.tanh.bind(equation)
+    const allOnes = equation.allOnes.bind(equation)
+    const cloneNegative = equation.cloneNegative.bind(equation)
 
     // update gate
-    let updateGate = sigmoid(
+    const updateGate = sigmoid(
       add(
         add(
-          multiply(
-            hiddenLayer.updateGateInputMatrix,
-            inputMatrix
-          ),
-          multiply(
-            hiddenLayer.updateGateHiddenMatrix,
-            previousResult
-          )
+          multiply(hiddenLayer.updateGateInputMatrix, inputMatrix),
+          multiply(hiddenLayer.updateGateHiddenMatrix, previousResult)
         ),
         hiddenLayer.updateGateBias
       )
-    );
+    )
 
     // reset gate
-    let resetGate = sigmoid(
-        add(
-          add(
-            multiply(
-              hiddenLayer.resetGateInputMatrix,
-              inputMatrix
-            ),
-            multiply(
-              hiddenLayer.resetGateHiddenMatrix,
-              previousResult
-            )
-          ),
-          hiddenLayer.resetGateBias
-        )
-    );
-
-    // cell
-    let cell = tanh(
+    const resetGate = sigmoid(
       add(
         add(
-          multiply(
-            hiddenLayer.cellWriteInputMatrix,
-            inputMatrix
-          ),
+          multiply(hiddenLayer.resetGateInputMatrix, inputMatrix),
+          multiply(hiddenLayer.resetGateHiddenMatrix, previousResult)
+        ),
+        hiddenLayer.resetGateBias
+      )
+    )
+
+    // cell
+    const cell = tanh(
+      add(
+        add(
+          multiply(hiddenLayer.cellWriteInputMatrix, inputMatrix),
           multiply(
             hiddenLayer.cellWriteHiddenMatrix,
-            multiplyElement(
-              resetGate,
-              previousResult
-            )
+            multiplyElement(resetGate, previousResult)
           )
         ),
         hiddenLayer.cellWriteBias
       )
-    );
+    )
 
     // compute hidden state as gated, saturated cell activations
     // negate updateGate
@@ -112,10 +94,7 @@ export default class GRU extends RNN {
         ),
         cell
       ),
-      multiplyElement(
-        previousResult,
-        updateGate
-      )
-    );
+      multiplyElement(previousResult, updateGate)
+    )
   }
 }

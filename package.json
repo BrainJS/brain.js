@@ -11,18 +11,17 @@
   "description": "Neural networks in JavaScript",
   "devDependencies": {
     "babel-core": "^6.26.3",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "eslint": "^5.0.1",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-jest": "^21.17.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-jsx-a11y": "^6.1.0",
     "eslint-plugin-react": "^7.10.0",
     "gpu-mock.js": "^1.0.1",
-    "jest": "^23.2.0",
-    "parcel-bundler": "^1.9.3",
+    "jest": "^23.3.0",
+    "parcel-bundler": "^1.9.4",
     "prettier": "^1.13.7"
   },
   "files": [
@@ -81,7 +80,7 @@
     "dist": "npm run bundle && npm run bundle:minified",
     "lint": "eslint --ext .js ./src ./__tests__",
     "lint:fix": "eslint --ext .js --fix ./src ./__tests__",
-    "prettier": "prettier --write ./src/**/*.js",
+    "prettier": "prettier --write {src,__tests__}/**/*.js",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch"

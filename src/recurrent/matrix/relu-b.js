@@ -4,7 +4,7 @@
  * @param {Matrix} m
  */
 export default function reluB(product, left) {
-  for(let i = 0; i < product.deltas.length; i++) {
-    left.deltas[i] = left.weights[i] > 0 ? product.deltas[i] : 0;
+  for (let i = 0; i < product.deltas.length; i++) {
+    left.deltas[i] = left.weights[i] > 0 ? product.deltas[i] : 0
   }
 }

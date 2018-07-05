@@ -1,9 +1,9 @@
-import zeros from './zeros';
+import zeros from './zeros'
 
-export default function zeros2D(width, height) {
-  const result = new Array(height);
+export default function Zeros2D(width, height) {
+  const result = new Array(height)
   for (let y = 0; y < height; y++) {
-    result[y] = zeros(width);
+    result[y] = zeros(width)
   }
-  return result;
+  return result
 }

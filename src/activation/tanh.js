@@ -4,7 +4,7 @@
  * @returns {number}
  */
 export function tanh(weight) {
-  return Math.tanh(weight);
+  return Math.tanh(weight)
 }
 
 /**
@@ -14,5 +14,5 @@ export function tanh(weight) {
  * @returns {number}
  */
 export function tanhDerivative(weight, error) {
-  return (1 - weight * weight) * error;
+  return (1 - weight * weight) * error
 }

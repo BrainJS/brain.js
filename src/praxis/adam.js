@@ -1,7 +1,5 @@
-//TODO: implement and test
-export default class Adam {
-
-}
+// TODO: implement and test
+export default class Adam {}
 
 function adam() {
   // gradient = grad_fun(theta)
@@ -15,7 +13,6 @@ function adam() {
   //   moment1 / (epsilon + np.sqrt(moment2)) )
   // yield theta
   // t += 1
-
   // adam update
   // gsumi[j] = gsumi[j] * this.beta1 + (1- this.beta1) * gij; // update biased first moment estimate
   // xsumi[j] = xsumi[j] * this.beta2 + (1-this.beta2) * gij * gij; // update biased second moment estimate

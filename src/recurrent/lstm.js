@@ -1,40 +1,40 @@
-import Matrix from './matrix';
-import RandomMatrix from './matrix/random-matrix';
-import RNN from './rnn';
+import Matrix from './matrix'
+import RandomMatrix from './matrix/random-matrix'
+import RNN from './rnn'
 
 export default class LSTM extends RNN {
   getModel(hiddenSize, prevSize) {
     return {
       // gates parameters
-      //wix
+      // wix
       inputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      //wih
+      // wih
       inputHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      //bi
+      // bi
       inputBias: new Matrix(hiddenSize, 1),
 
-      //wfx
+      // wfx
       forgetMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      //wfh
+      // wfh
       forgetHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      //bf
+      // bf
       forgetBias: new Matrix(hiddenSize, 1),
 
-      //wox
+      // wox
       outputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      //woh
+      // woh
       outputHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      //bo
+      // bo
       outputBias: new Matrix(hiddenSize, 1),
 
       // cell write params
-      //wcx
+      // wcx
       cellActivationMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08),
-      //wch
+      // wch
       cellActivationHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-      //bc
-      cellActivationBias: new Matrix(hiddenSize, 1)
-    };
+      // bc
+      cellActivationBias: new Matrix(hiddenSize, 1),
+    }
   }
 
   /**
@@ -46,87 +46,60 @@ export default class LSTM extends RNN {
    * @returns {Matrix}
    */
   getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-    let sigmoid = equation.sigmoid.bind(equation);
-    let add = equation.add.bind(equation);
-    let multiply = equation.multiply.bind(equation);
-    let multiplyElement = equation.multiplyElement.bind(equation);
-    let tanh = equation.tanh.bind(equation);
+    const sigmoid = equation.sigmoid.bind(equation)
+    const add = equation.add.bind(equation)
+    const multiply = equation.multiply.bind(equation)
+    const multiplyElement = equation.multiplyElement.bind(equation)
+    const tanh = equation.tanh.bind(equation)
 
-    let inputGate = sigmoid(
+    const inputGate = sigmoid(
       add(
         add(
-          multiply(
-            hiddenLayer.inputMatrix,
-            inputMatrix
-          ),
-          multiply(
-            hiddenLayer.inputHidden,
-            previousResult
-          )
+          multiply(hiddenLayer.inputMatrix, inputMatrix),
+          multiply(hiddenLayer.inputHidden, previousResult)
         ),
         hiddenLayer.inputBias
       )
-    );
+    )
 
-    let forgetGate = sigmoid(
+    const forgetGate = sigmoid(
       add(
         add(
-          multiply(
-            hiddenLayer.forgetMatrix,
-            inputMatrix
-          ),
-          multiply(
-            hiddenLayer.forgetHidden,
-            previousResult
-          )
+          multiply(hiddenLayer.forgetMatrix, inputMatrix),
+          multiply(hiddenLayer.forgetHidden, previousResult)
         ),
         hiddenLayer.forgetBias
       )
-    );
+    )
 
     // output gate
-    let outputGate = sigmoid(
+    const outputGate = sigmoid(
       add(
         add(
-          multiply(
-            hiddenLayer.outputMatrix,
-            inputMatrix
-          ),
-          multiply(
-            hiddenLayer.outputHidden,
-            previousResult
-          )
+          multiply(hiddenLayer.outputMatrix, inputMatrix),
+          multiply(hiddenLayer.outputHidden, previousResult)
         ),
         hiddenLayer.outputBias
       )
-    );
+    )
 
     // write operation on cells
-    let cellWrite = tanh(
+    const cellWrite = tanh(
       add(
         add(
-          multiply(
-            hiddenLayer.cellActivationMatrix,
-            inputMatrix
-          ),
-          multiply(
-            hiddenLayer.cellActivationHidden,
-            previousResult
-          )
+          multiply(hiddenLayer.cellActivationMatrix, inputMatrix),
+          multiply(hiddenLayer.cellActivationHidden, previousResult)
         ),
         hiddenLayer.cellActivationBias
       )
-    );
+    )
 
     // compute new cell activation
-    let retainCell = multiplyElement(forgetGate, previousResult); // what do we keep from cell
-    let writeCell = multiplyElement(inputGate, cellWrite); // what do we write to cell
-    let cell = add(retainCell, writeCell); // new cell contents
+    const retainCell = multiplyElement(forgetGate, previousResult) // what do we keep from cell
+    const writeCell = multiplyElement(inputGate, cellWrite) // what do we write to cell
+    const cell = add(retainCell, writeCell) // new cell contents
 
     // compute hidden state as gated, saturated cell activations
-    return multiplyElement(
-      outputGate,
-      tanh(cell)
-    );
+    return multiplyElement(outputGate, tanh(cell))
   }
 }

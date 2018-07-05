@@ -1,10 +1,10 @@
-import Matrix from './matrix';
-import GRU from './gru';
-import RNNTimeStep from './rnn-time-step';
+import Matrix from './matrix'
+import GRU from './gru'
+import RNNTimeStep from './rnn-time-step'
 
 export default class GRUTimeStep extends RNNTimeStep {
   getModel(hiddenSize, prevSize) {
-    return GRU.prototype.getModel(hiddenSize, prevSize);
+    return GRU.prototype.getModel(hiddenSize, prevSize)
   }
 
   /**
@@ -16,6 +16,11 @@ export default class GRUTimeStep extends RNNTimeStep {
    * @returns {Matrix}
    */
   getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-    return GRU.prototype.getEquation(equation, inputMatrix, previousResult, hiddenLayer);
+    return GRU.prototype.getEquation(
+      equation,
+      inputMatrix,
+      previousResult,
+      hiddenLayer
+    )
   }
 }

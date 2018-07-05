@@ -1,13 +1,13 @@
-import Base from './base';
+import Base from './base'
 
 class Regression extends Base {
   predict() {
-    this.weights = this.inputs;
-    this.validate();
+    this.weights = this.inputs
+    this.validate()
   }
 
   learn() {
-
+    throw new Error(`${this.constructor.name}-learn is not yet implemented`)
   }
 }
 
