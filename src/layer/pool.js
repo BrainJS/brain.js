@@ -1,7 +1,8 @@
 import { Filter } from './types';
 import { makeKernel } from '../utilities/kernel';
-import { setPadding } from '../utilities/layer-setup';
+import { setPadding, setStride } from '../utilities/layer-setup';
 import zeros2D from '../utilities/zeros-2d';
+import randos2D from '../utilities/randos-2d';
 
 export default class Pool extends Filter {
   static get defaults() {
@@ -9,21 +10,44 @@ export default class Pool extends Filter {
       padding: 0,
       bias: 0,
       filterWidth: 0,
-      filterHeight: 0
+      filterHeight: 0,
+      filterCount: 0
     };
   }
 
   constructor(settings, inputLayer) {
     super(settings);
-    this.inputLayer = inputLayer;
 
+    this.stride = null;
+    this.strideX = null;
+    this.strideY = null;
+    setStride(this, settings);
+
+    this.padding = null;
+    this.paddingX = null;
+    this.paddingY = null;
     setPadding(this, settings);
 
-    this.switchX = null;
-    this.switchY = null;
+    this.filterCount = settings.filterCount;
+    this.filterWidth = settings.filterWidth;
+    this.filterHeight = settings.filterHeight;
+
+    this.width = Math.floor((inputLayer.width + (this.paddingX * 2) - this.filterWidth) / this.strideX + 1);
+    this.height = Math.floor((inputLayer.height + (this.paddingY * 2) - this.filterHeight) / this.strideY + 1);
+    this.depth = this.filterCount;
+
+    this.filters = [];
+    this.filterDeltas = [];
+
+    for (let i = 0; i < this.filterCount; i++) {
+      this.filters.push(randos2D(this.filterWidth, this.filterHeight));
+      this.filterDeltas.push(zeros2D(this.filterWidth, this.filterHeight));
+    }
+
+    this.learnFilters = null;
+    this.learnInputs = null;
+    this.inputLayer = inputLayer;
     this.validate();
-    this.weights = zeros2D(this.width, this.height);
-    this.deltas = zeros2D(this.width, this.height);
   }
 
   setupKernels() {
@@ -67,8 +91,8 @@ export default class Pool extends Filter {
 }
 
 export function predict(inputs) {
-  const x = ((this.thread.x / this.output.x) * this.constants.inputWidth) - this.constants.paddingX;
-  const y = ((this.thread.y / this.output.y) * this.constants.inputHeight) - this.constants.paddingY;
+  const x = Math.floor(((this.thread.x / this.output.x) * this.constants.inputWidth) - this.constants.paddingX);
+  const y = Math.floor(((this.thread.y / this.output.y) * this.constants.inputHeight) - this.constants.paddingY);
   let largestValue = -Infinity;
   let largestX = -1;
   let largestY = -1;
@@ -85,7 +109,7 @@ export function predict(inputs) {
         && inputX >= 0
         && inputX < this.constants.inputWidth
       ) {
-        const input = inputs[this.output.z][inputY][inputX];
+        const input = inputs[this.thread.z][inputY][inputX];
         if (input > largestValue) {
           largestValue = input;
           largestY = inputY;
