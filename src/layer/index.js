@@ -12,7 +12,7 @@ import Multiply from './multiply'
 import MultiplyElement from './multiply-element'
 import Negative from './negative'
 import Ones from './ones'
-import output from './output'
+// import output from './output'
 import Pool from './pool'
 import Random from './random'
 // import recurrent from './recurrent'
@@ -110,7 +110,7 @@ function zeros(settings) {
   return new Zeros(settings)
 }
 
-export default {
+export {
   Add,
   add,
   Base,

@@ -1,7 +1,5 @@
 import { add, multiply, random, target, zeros } from '.'
 
-console.log(add, multiply, random, target, zeros)
-
 export default (settings, inputLayer) => {
   const { height } = settings
   const outputGate = random({ height, width: inputLayer.height })

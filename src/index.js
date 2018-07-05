@@ -1,6 +1,6 @@
 import activation from './activation'
 import crossValidate from './cross-validate'
-import layer from './layer'
+import * as layer from './layer'
 import likely from './likely'
 import lookup from './lookup'
 import praxis from './praxis'
@@ -25,6 +25,9 @@ import range from './utilities/range'
 import toArray from './utilities/to-array'
 import DataFormatter from './utilities/data-formatter'
 import zeros from './utilities/zeros'
+import output from './layer/output'
+
+layer.output = output
 
 const brain = {
   activation,
