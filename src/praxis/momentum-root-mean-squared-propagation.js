@@ -1,5 +1,5 @@
 import { makeKernel } from '../utilities/kernel'
-import Zeros2D from '../utilities/zeros-2d'
+import zeros2D from '../utilities/zeros-2d'
 
 function getMomentum(delta, decay, previousMomentum) {
   return previousMomentum * decay + (1 - decay) * delta * delta

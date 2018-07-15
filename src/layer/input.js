@@ -1,5 +1,5 @@
 import { Model } from './types'
-import Zeros2D from '../utilities/zeros-2d'
+import zeros2D from '../utilities/zeros-2d'
 import { kernelInput } from '../utilities/kernel'
 
 export default class Input extends Model {

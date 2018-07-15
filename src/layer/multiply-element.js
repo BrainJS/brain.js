@@ -1,6 +1,6 @@
 import { makeKernel } from '../utilities/kernel'
 import { Operator } from './types'
-import Zeros2D from '../utilities/zeros-2d'
+import zeros2D from '../utilities/zeros-2d'
 
 function predict(weights, inputLayerWeights) {
   return (

@@ -1,4 +1,4 @@
-import Zeros2D from '../utilities/zeros-2d'
+import zeros2D from '../utilities/zeros-2d'
 
 export default class Base {
   static get defaults() {

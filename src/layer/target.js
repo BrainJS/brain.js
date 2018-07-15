@@ -1,5 +1,5 @@
 import { makeKernel } from '../utilities/kernel'
-import Zeros2D from '../utilities/zeros-2d'
+import zeros2D from '../utilities/zeros-2d'
 import { Filter } from './types'
 
 function compare1D(weights, targetValues) {

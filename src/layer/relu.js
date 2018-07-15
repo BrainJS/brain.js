@@ -1,7 +1,7 @@
 import { Activation } from './types'
 import { makeKernel } from '../utilities/kernel'
 import { activate, measure } from '../activation/relu'
-import Zeros2D from '../utilities/zeros-2d'
+import zeros2D from '../utilities/zeros-2d'
 import zeros3D from '../utilities/zeros-3d'
 
 export function predict(inputs) {

@@ -1,4 +1,4 @@
-import Zeros2D from '../utilities/zeros-2d'
+import zeros2D from '../utilities/zeros-2d'
 import { Model } from './types'
 
 export default class Zeros extends Model {

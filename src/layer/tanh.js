@@ -1,7 +1,7 @@
 import { Activation } from './types'
 import { makeKernel } from '../utilities/kernel'
 import { tanhDerivative } from '../activation/tanh'
-import Zeros2D from '../utilities/zeros-2d'
+import zeros2D from '../utilities/zeros-2d'
 
 export function predict(inputs) {
   return Math.tanh(inputs[this.thread.y][this.thread.x])

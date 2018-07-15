@@ -6,7 +6,7 @@ import { layer } from '../../src'
 import Equation from '../../src/recurrent/matrix/equation'
 import RandomMatrix from '../../src/recurrent/matrix/random-matrix'
 import Matrix from '../../src/recurrent/matrix'
-import Zeros2D from '../../src/utilities/zeros-2d'
+import zeros2D from '../../src/utilities/zeros-2d'
 
 const { add, input, multiply, output, random, recurrent } = layer
 

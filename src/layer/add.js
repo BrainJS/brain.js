@@ -1,5 +1,5 @@
 import { makeKernel } from '../utilities/kernel'
-import Zeros2D from '../utilities/zeros-2d'
+import zeros2D from '../utilities/zeros-2d'
 import { Operator } from './types'
 
 export function predict(inputWeights1, inputWeights2) {

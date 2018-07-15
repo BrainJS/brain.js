@@ -1,7 +1,7 @@
 import { Filter } from './types'
 import { makeKernel } from '../utilities/kernel'
 import { setPadding, setStride } from '../utilities/layer-setup'
-import Zeros2D from '../utilities/zeros-2d'
+import zeros2D from '../utilities/zeros-2d'
 import randos2D from '../utilities/randos-2d'
 
 function setSwitchY(value) {

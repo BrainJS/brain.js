@@ -3,7 +3,7 @@ import assert from 'assert'
 import NeuralNetwork from '../../src/neural-network'
 import FeedForward from '../../src/feed-forward'
 import * as layer from '../../src/layer/index'
-import Zeros2D from '../../src/utilities/zeros-2d'
+import zeros2D from '../../src/utilities/zeros-2d'
 
 const {
   Base,

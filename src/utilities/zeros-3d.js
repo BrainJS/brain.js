@@ -1,4 +1,4 @@
-import Zeros2D from './zeros-2d'
+import zeros2D from './zeros-2d'
 
 export default function zeros3D(width, height, depth) {
   const result = new Array(depth)
