@@ -71,19 +71,19 @@ describe('FeedForward Class: Unit', () => {
         net.initialize()
 
         expect(net.layers.length).toBe(11)
-        expect(net.layers.map(l => l.constructor)).toEqual([
-          Input,
-          Convolution,
-          Relu,
-          Pool,
-          Convolution,
-          Relu,
-          Pool,
-          SoftMax,
-          Random,
-          Multiply,
-          Target,
-        ])
+        expect(net.layers.map(l => l.constructor).sort()).toEqual(
+          [
+            Input,
+            Random,
+            Multiply,
+            Random,
+            Add,
+            Sigmoid,
+            Random,
+            Multiply,
+            Target,
+          ].sort()
+        )
       })
 
       it('can setup and traverse entire network using layer composed of layers', () => {
@@ -95,18 +95,20 @@ describe('FeedForward Class: Unit', () => {
 
         net.initialize()
 
-        expect(net.layers.length).toBe(9)
-        expect(net.layers.map(l => l.constructor)).toEqual([
-          Input,
-          Random,
-          Multiply,
-          Random,
-          Add,
-          Sigmoid,
-          Random,
-          Multiply,
-          Target,
-        ])
+        expect(net.layers.length).toBe(11)
+        expect(net.layers.map(l => l.constructor).sort()).toEqual(
+          [
+            Input,
+            Random,
+            Multiply,
+            Random,
+            Add,
+            Sigmoid,
+            Random,
+            Multiply,
+            Target,
+          ].sort()
+        )
       })
     })
 
@@ -191,7 +193,7 @@ describe('FeedForward Class: Unit', () => {
       net.initialize()
 
       expect(net.layers.length).toBe(5)
-      expect(net.layers.map(l => l.constructor)).toEqual([
+      expect(net.layers.map(l => l.constructor !== undefined)).toEqual([
         true,
         true,
         true,
@@ -260,7 +262,7 @@ describe('FeedForward Class: Unit', () => {
         true,
         true,
       ])
-      expect(net.layers.map(l => l.praxis)).toEqual([
+      expect(net.layers.map(l => l.praxis === true)).toEqual([
         false,
         true,
         false,
@@ -456,6 +458,7 @@ describe('FeedForward Class: Unit', () => {
         weights: [0, 1, 3, 4, 5, 6, 7, 8, 9],
         width: 10,
         height: 1,
+        depth: 1,
       })
       expect(json.layers[1]).toEqual({
         type: 'TestLayer1',
@@ -464,6 +467,7 @@ describe('FeedForward Class: Unit', () => {
         foo: true,
         width: 1,
         height: 1,
+        depth: 1,
       })
       expect(json.layers[2]).toEqual({
         type: 'TestLayer2',
@@ -471,6 +475,7 @@ describe('FeedForward Class: Unit', () => {
         inputLayerIndex: 0,
         width: 1,
         height: 1,
+        depth: 1,
       })
       expect(json.layers[3]).toEqual({
         type: 'TestOperatorLayer',
@@ -479,6 +484,7 @@ describe('FeedForward Class: Unit', () => {
         inputLayer2Index: 2,
         width: 1,
         height: 1,
+        depth: 1,
       })
       expect(json.layers[4]).toEqual({
         height: 5,
@@ -486,6 +492,7 @@ describe('FeedForward Class: Unit', () => {
         type: 'TestOutputLayer',
         weights: null,
         width: 10,
+        depth: 1,
       })
     })
   })

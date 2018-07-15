@@ -94,9 +94,7 @@ export default class Base {
   }
 
   setupKernels() {
-    throw new Error(
-      `${this.constructor.name}-setupKernels is not yet implemented`
-    )
+    console.log(`${this.constructor.name}-setupKernels is not yet implemented`)
   }
 
   reuseKernels(layer) {
