@@ -70,7 +70,7 @@ export default class MomentumRootMeanSquaredPropagation {
     this.layer = layer
     this.width = layer.width
     this.height = layer.height
-    this.momentums = Zeros2D(layer.width, layer.height)
+    this.momentums = zeros2D(layer.width, layer.height)
     Object.assign(this, this.constructor.defaults, settings)
     this.setupKernels()
   }

@@ -10,7 +10,7 @@ export default class Input extends Model {
     }
     this.validate()
     this.weights = null
-    this.deltas = Zeros2D(this.width, this.height)
+    this.deltas = zeros2D(this.width, this.height)
   }
 
   predict(inputs) {
@@ -39,7 +39,7 @@ export default class Input extends Model {
   }
 
   learn() {
-    this.deltas = Zeros2D(this.width, this.height)
+    this.deltas = zeros2D(this.width, this.height)
   }
 
   toJSON() {

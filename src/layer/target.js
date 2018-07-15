@@ -22,9 +22,9 @@ export default class Target extends Filter {
     this.width = inputLayer.width
     this.height = inputLayer.height
     this.validate()
-    this.weights = Zeros2D(this.width, this.height)
-    this.deltas = Zeros2D(this.width, this.height)
-    this.errors = Zeros2D(this.width, this.height)
+    this.weights = zeros2D(this.width, this.height)
+    this.deltas = zeros2D(this.width, this.height)
+    this.errors = zeros2D(this.width, this.height)
   }
 
   setupKernels() {

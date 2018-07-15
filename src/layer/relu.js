@@ -41,8 +41,8 @@ export default class Relu extends Activation {
       this.deltas = zeros3D(width, height, depth)
     } else {
       this.depth = 1
-      this.weights = Zeros2D(width, height)
-      this.deltas = Zeros2D(width, height)
+      this.weights = zeros2D(width, height)
+      this.deltas = zeros2D(width, height)
     }
   }
 

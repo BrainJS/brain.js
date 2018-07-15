@@ -134,7 +134,7 @@ export default class Base {
 
   learn(previousLayer, nextLayer, learningRate) {
     this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate)
-    this.deltas = Zeros2D(this.width, this.height)
+    this.deltas = zeros2D(this.width, this.height)
   }
 
   toArray() {

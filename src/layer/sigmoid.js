@@ -22,8 +22,8 @@ export default class Sigmoid extends Activation {
     this.width = width
     this.height = height
     this.validate()
-    this.weights = Zeros2D(this.width, this.height)
-    this.deltas = Zeros2D(this.width, this.height)
+    this.weights = zeros2D(this.width, this.height)
+    this.deltas = zeros2D(this.width, this.height)
   }
 
   setupKernels() {

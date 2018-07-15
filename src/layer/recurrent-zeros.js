@@ -6,8 +6,8 @@ export default class RecurrentZeros extends Internal {
     this.praxis = null
     this.width = width
     this.height = height
-    this.weights = new Zeros2D(width, height)
-    this.deltas = new Zeros2D(width, height)
+    this.weights = new zeros2D(width, height)
+    this.deltas = new zeros2D(width, height)
   }
 
   setupKernels() {
@@ -32,7 +32,7 @@ export default class RecurrentZeros extends Internal {
 
   learn(previousLayer, nextLayer, learningRate) {
     this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate)
-    this.deltas = Zeros2D(this.width, this.height)
+    this.deltas = zeros2D(this.width, this.height)
   }
 
   validate() {

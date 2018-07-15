@@ -169,7 +169,7 @@ export default class Convolution extends Filter {
 
     for (let i = 0; i < this.filterCount; i++) {
       this.filters.push(randos2D(this.filterWidth, this.filterHeight))
-      this.filterDeltas.push(Zeros2D(this.filterWidth, this.filterHeight))
+      this.filterDeltas.push(zeros2D(this.filterWidth, this.filterHeight))
     }
 
     this.learnFilters = null
@@ -252,6 +252,6 @@ export default class Convolution extends Filter {
   learn(previousLayer, nextLayer, learningRate) {
     // TODO: handle filters
     this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate)
-    this.deltas = Zeros2D(this.width, this.height)
+    this.deltas = zeros2D(this.width, this.height)
   }
 }

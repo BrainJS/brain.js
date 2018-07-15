@@ -17,8 +17,8 @@ export default class Add extends Operator {
     this.width = this.inputLayer1.width
     this.height = this.inputLayer1.height
     this.validate()
-    this.weights = Zeros2D(this.width, this.height)
-    this.deltas = Zeros2D(this.width, this.height)
+    this.weights = zeros2D(this.width, this.height)
+    this.deltas = zeros2D(this.width, this.height)
   }
 
   validate() {

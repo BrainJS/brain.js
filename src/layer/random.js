@@ -7,7 +7,7 @@ export default class Random extends Model {
     super(settings)
     this.validate()
     this.weights = randos2D(this.width, this.height)
-    this.deltas = Zeros2D(this.width, this.height)
+    this.deltas = zeros2D(this.width, this.height)
   }
 
   predict() {

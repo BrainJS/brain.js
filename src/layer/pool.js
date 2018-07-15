@@ -113,7 +113,7 @@ export default class Pool extends Filter {
 
     for (let i = 0; i < this.filterCount; i++) {
       this.filters.push(randos2D(this.filterWidth, this.filterHeight))
-      this.filterDeltas.push(Zeros2D(this.filterWidth, this.filterHeight))
+      this.filterDeltas.push(zeros2D(this.filterWidth, this.filterHeight))
     }
 
     this.learnFilters = null

@@ -47,7 +47,7 @@ export default class RecurrentConnection extends Internal {
   }
 
   learn() {
-    this.layer.deltas = Zeros2D(this.width, this.height)
+    this.layer.deltas = zeros2D(this.width, this.height)
   }
 
   setupKernels() {

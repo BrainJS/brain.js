@@ -46,16 +46,16 @@ describe('Recurrent Class: End to End', () => {
       // set both nets exactly the same, then train them once, and compare
       // zero out
       recurrentNet._inputLayers.forEach((layer, i) => {
-        layer.deltas = Zeros2D(layer.width, layer.height)
-        layer.weights = Zeros2D(layer.width, layer.height)
+        layer.deltas = zeros2D(layer.width, layer.height)
+        layer.weights = zeros2D(layer.width, layer.height)
       })
       recurrentNet._hiddenLayers[0].forEach((layer, i) => {
-        layer.deltas = Zeros2D(layer.width, layer.height)
-        layer.weights = Zeros2D(layer.width, layer.height)
+        layer.deltas = zeros2D(layer.width, layer.height)
+        layer.weights = zeros2D(layer.width, layer.height)
       })
       recurrentNet._outputLayers.forEach((layer, i) => {
-        layer.deltas = Zeros2D(layer.width, layer.height)
-        layer.weights = Zeros2D(layer.width, layer.height)
+        layer.deltas = zeros2D(layer.width, layer.height)
+        layer.weights = zeros2D(layer.width, layer.height)
       })
       timeStep.model.input.weights.forEach((weight, i) => {
         timeStep.model.input.weights[i] = 0
