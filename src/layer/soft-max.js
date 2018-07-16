@@ -42,7 +42,10 @@ function predict(exponentials, exponentialsSum) {
 }
 
 function compare(target, exponentials) {
-  const indicator = this.thread.x === target ? 1 : 0
+  let indicator = 0
+  if (this.thread.x === target) {
+    indicator = 1
+  }
   return -(indicator - exponentials[target])
 }
 
@@ -71,11 +74,7 @@ export default class SoftMax extends Filter {
       output: [1, 1, this.depth],
     })
     this.predictKernel = makeKernel(predict, {
-      output: [
-        this.inputLayer.width,
-        this.inputLayer.height,
-        this.inputLayer.depth,
-      ],
+      output: [this.width, this.height, this.depth],
     })
     this.compareKernel = makeKernel(compare, {
       output: [this.width, this.height, this.depth],
@@ -92,8 +91,8 @@ export default class SoftMax extends Filter {
     this.weights = this.predictKernel(exponentials, exponentialsSum)
   }
 
-  compare() {
-    this.inputLayer.deltas = this.deltas
+  compare(targetValues) {
+    this.inputLayer.deltas = this.compareKernel(targetValues[0], this.deltas)
   }
 }
 

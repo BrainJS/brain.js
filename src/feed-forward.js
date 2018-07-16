@@ -312,11 +312,8 @@ export default class FeedForward {
   }
 
   _calculateDeltas(target) {
-    this._outputLayer.compare(target)
-    for (let i = this.layers.length - 2; i > -1; i--) {
-      const previousLayer = this.layers[i - 1]
-      const nextLayer = this.layers[i + 1]
-      this.layers[i].compare(previousLayer, nextLayer)
+    for (let i = this.layers.length - 1; i > -1; i--) {
+      this.layers[i].compare(target)
     }
   }
 

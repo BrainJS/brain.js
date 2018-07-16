@@ -13,6 +13,8 @@ export default class Input extends Model {
     this.deltas = zeros2D(this.width, this.height)
   }
 
+  setupKernels() {}
+
   predict(inputs) {
     if (inputs.length === this.height * this.width) {
       this.weights = kernelInput(inputs, [this.width, this.height])

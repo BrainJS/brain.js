@@ -126,7 +126,7 @@ export default class Base {
   }
 
   // eslint-disable-next-line
-  compare(previousLayer, nextLayer) {
+  compare() {
     throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 

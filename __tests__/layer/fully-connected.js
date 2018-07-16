@@ -2,8 +2,8 @@ import assert from 'assert'
 import gpuMock from 'gpu-mock.js'
 import {
   predict,
-  learnFilters,
-  learnInputs,
+  compareFilters,
+  compareInputs,
 } from '../../src/layer/fully-connected'
 
 describe('FullyConnected Layer', () => {
@@ -35,11 +35,11 @@ describe('FullyConnected Layer', () => {
     })
   })
 
-  describe('.learnFilters (back propagation)', () => {
+  describe('.compareFilters (back propagation)', () => {
     it('can convolution a simple matrix', () => {
       const inputs = [[0, 1, 2, 3, 4, 5, 6, 7, 8]]
       const outputs = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-      const results = gpuMock(learnFilters, {
+      const results = gpuMock(compareFilters, {
         output: [9, 9],
         constants: {
           inputWidth: 9,
@@ -62,7 +62,7 @@ describe('FullyConnected Layer', () => {
     })
   })
 
-  describe('.learnInputs (back propagation)', () => {
+  describe('.compareInputs (back propagation)', () => {
     it('can convolution a simple matrix', () => {
       const filters = [
         [0, 1, 2, 3, 4, 5, 6, 7, 8],
@@ -76,7 +76,7 @@ describe('FullyConnected Layer', () => {
         [0, 1, 2, 3, 4, 5, 6, 7, 8],
       ]
       const outputs = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-      const results = gpuMock(learnInputs, {
+      const results = gpuMock(compareInputs, {
         output: [9],
         constants: {
           inputWidth: 9,

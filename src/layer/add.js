@@ -54,7 +54,7 @@ export default class Add extends Operator {
   }
 
   // eslint-disable-next-line
-  compare(previousLayer, nextLayer, learningRate) {
+  compare() {
     this.inputLayer1.deltas = this.deltas
     this.inputLayer2.deltas = this.deltas
   }

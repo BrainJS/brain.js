@@ -1,8 +1,24 @@
 import assert from 'assert'
 import gpuMock from 'gpu-mock.js'
-import { predict, compare } from '../../src/layer/pool'
+import Pool, { predict, compare } from '../../src/layer/pool'
 
 describe('Pool Layer', () => {
+  describe('constructor', () => {
+    it('correctly sets dimensions', () => {
+      const layer = new Pool({
+        filterWidth: 2,
+        filterHeight: 2,
+        filterCount: 8,
+        stride: 2,
+      }, {
+        width: 24,
+        height: 24
+      })
+      assert.equal(layer.width, 12)
+      assert.equal(layer.height, 12)
+      assert.equal(layer.depth, 8)
+    })
+  });
   describe('.predict (forward propagation)', () => {
     it('can pool a simple matrix', () => {
       const inputs = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]

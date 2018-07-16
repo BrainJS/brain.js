@@ -42,7 +42,7 @@ export default class Sigmoid extends Activation {
     this.weights = this.predictKernel(this.inputLayer.weights)
   }
 
-  compare(previousLayer, nextLayer) {
+  compare() {
     this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas)
   }
 }

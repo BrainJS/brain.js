@@ -2,6 +2,7 @@ import { Filter } from './types'
 import { makeKernel } from '../utilities/kernel'
 import { setPadding, setStride } from '../utilities/layer-setup'
 import zeros2D from '../utilities/zeros-2d'
+import zeros3D from '../utilities/zeros-3d'
 import randos2D from '../utilities/randos-2d'
 
 function setSwitchY(value) {
@@ -107,6 +108,9 @@ export default class Pool extends Filter {
         1
     )
     this.depth = this.filterCount
+
+    this.weights = zeros3D(this.width, this.height, this.depth)
+    this.deltas = zeros3D(this.width, this.height, this.depth)
 
     this.filters = []
     this.filterDeltas = []
