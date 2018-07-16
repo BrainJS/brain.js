@@ -9,6 +9,8 @@
 
 [![Slack](https://slack.bri.im/badge.svg)](https://slack.bri.im)
 
+[![Backers on Open Collective](https://opencollective.com/brainjs/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/brainjs/sponsors/badge.svg)](#sponsors) 
+
 `brain.js` is a library of [Neural Networks](http://en.wikipedia.org/wiki/Artificial_neural_network) written in JavaScript.
 
 :bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
@@ -387,3 +389,33 @@ Different neural nets do different things well. For example:
 If you have an issue, either a bug or a feature you think would benefit your project let us know and we will do our best.
 
 Create issues [here](https://github.com/BrainJS/brain.js/issues) and follow the template.
+
+### Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="graphs/contributors"><img src="https://opencollective.com/brainjs/contributors.svg?width=890&button=false" /></a>
+
+
+### Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/brainjs#backer)]
+
+<a href="https://opencollective.com/brainjs#backers" target="_blank"><img src="https://opencollective.com/brainjs/backers.svg?width=890"></a>
+
+
+### Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/brainjs#sponsor)]
+
+<a href="https://opencollective.com/brainjs/sponsor/0/website" target="_blank"><img src="https://opencollective.com/brainjs/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/brainjs/sponsor/1/website" target="_blank"><img src="https://opencollective.com/brainjs/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/brainjs/sponsor/2/website" target="_blank"><img src="https://opencollective.com/brainjs/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/brainjs/sponsor/3/website" target="_blank"><img src="https://opencollective.com/brainjs/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/brainjs/sponsor/4/website" target="_blank"><img src="https://opencollective.com/brainjs/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/brainjs/sponsor/5/website" target="_blank"><img src="https://opencollective.com/brainjs/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/brainjs/sponsor/6/website" target="_blank"><img src="https://opencollective.com/brainjs/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/brainjs/sponsor/7/website" target="_blank"><img src="https://opencollective.com/brainjs/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/brainjs/sponsor/8/website" target="_blank"><img src="https://opencollective.com/brainjs/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/brainjs/sponsor/9/website" target="_blank"><img src="https://opencollective.com/brainjs/sponsor/9/avatar.svg"></a>
+
+
