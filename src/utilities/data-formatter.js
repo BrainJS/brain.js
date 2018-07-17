@@ -60,7 +60,11 @@ export default class DataFormatter {
       let character = value[i];
       let index = indexTable[character];
       if (index === undefined) {
-        throw new Error(`unrecognized character "${ character }"`);
+        if (indexTable['unrecognized']) {
+          index = indexTable['unrecognized'];
+        } else {
+          throw new Error(`unrecognized character "${ character }"`);
+        }
       }
       if (index < maxThreshold) continue;
       result.push(index);
@@ -87,15 +91,20 @@ export default class DataFormatter {
   }
 
   toCharacters(indices, maxThreshold = 0) {
-    let result = [];
-    let characterTable = this.characterTable;
+    const result = [];
+    const characterTable = this.characterTable;
+    const indexTable = this.indexTable;
 
     for (let i = 0, max = indices.length; i < max; i++) {
       let index = indices[i];
       if (index < maxThreshold) continue;
       let character = characterTable[index];
       if (character === undefined) {
-        throw new Error(`unrecognized index "${ index }"`);
+        if (indexTable['unrecognized']) {
+          index = characterTable[indexTable['unrecognized']];
+        } else {
+          throw new Error(`unrecognized index "${ index }"`);
+        }
       }
       result.push(character);
     }
@@ -110,6 +119,10 @@ export default class DataFormatter {
   addInputOutput() {
     this.addSpecial('stop-input');
     this.addSpecial('start-output');
+  }
+
+  addUnrecognized() {
+    this.addSpecial('unrecognized');
   }
 
   static fromAllPrintable(maxThreshold, values = ['\n']) {
