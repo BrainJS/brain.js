@@ -8,3 +8,4 @@
 test/
 coverage/
 .github/
+.cache/
