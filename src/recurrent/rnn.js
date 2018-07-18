@@ -766,6 +766,7 @@ RNN.defaults = {
           values.push(data[i].output);
         }
         this.dataFormatter = DataFormatter.fromArrayInputOutput(values);
+        this.dataFormatter.addUnrecognized();
       }
       for (let i = 0, max = data.length; i < max; i++) {
         result.push(this.formatDataIn(data[i].input, data[i].output));

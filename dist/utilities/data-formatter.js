@@ -82,7 +82,11 @@ var DataFormatter = function () {
         var character = value[i];
         var index = indexTable[character];
         if (index === undefined) {
-          throw new Error('unrecognized character "' + character + '"');
+          if (indexTable['unrecognized']) {
+            index = indexTable['unrecognized'];
+          } else {
+            throw new Error('unrecognized character "' + character + '"');
+          }
         }
         if (index < maxThreshold) continue;
         result.push(index);
@@ -118,13 +122,18 @@ var DataFormatter = function () {
 
       var result = [];
       var characterTable = this.characterTable;
+      var indexTable = this.indexTable;
 
       for (var i = 0, max = indices.length; i < max; i++) {
         var index = indices[i];
         if (index < maxThreshold) continue;
         var character = characterTable[index];
         if (character === undefined) {
-          throw new Error('unrecognized index "' + index + '"');
+          if (indexTable['unrecognized']) {
+            character = characterTable[indexTable['unrecognized']];
+          } else {
+            throw new Error('unrecognized index "' + index + '"');
+          }
         }
         result.push(character);
       }
@@ -141,6 +150,11 @@ var DataFormatter = function () {
     value: function addInputOutput() {
       this.addSpecial('stop-input');
       this.addSpecial('start-output');
+    }
+  }, {
+    key: 'addUnrecognized',
+    value: function addUnrecognized() {
+      this.addSpecial('unrecognized');
     }
   }, {
     key: 'addSpecial',

@@ -35,6 +35,17 @@ describe('rnn', () => {
       net.runBackpropagate([1, 1, 0]);
       assert(net.model.input.deltas.some(notZero));
     });
+    it('can handle unrecognized input characters', () => {
+      var net = new RNN({ hiddenSizes: [3] });
+      net.train([
+        { input: '1', output: '2' },
+        { input: '2', output: '3' },
+      ]);
+
+      assert.doesNotThrow(() => {
+        net.run('7');
+      });
+    });
   });
   describe('xor', () => {
     function xorNet() {
