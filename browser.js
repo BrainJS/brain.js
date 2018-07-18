@@ -4969,7 +4969,7 @@ var DataFormatter = function () {
         var character = characterTable[index];
         if (character === undefined) {
           if (indexTable['unrecognized']) {
-            index = characterTable[indexTable['unrecognized']];
+            character = characterTable[indexTable['unrecognized']];
           } else {
             throw new Error('unrecognized index "' + index + '"');
           }

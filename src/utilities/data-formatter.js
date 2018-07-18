@@ -101,7 +101,7 @@ export default class DataFormatter {
       let character = characterTable[index];
       if (character === undefined) {
         if (indexTable['unrecognized']) {
-          index = characterTable[indexTable['unrecognized']];
+          character = characterTable[indexTable['unrecognized']];
         } else {
           throw new Error(`unrecognized index "${ index }"`);
         }
