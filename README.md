@@ -55,7 +55,7 @@ var config = {
     activation: 'sigmoid' // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
 }
 //create a simple feed forward neural network with backpropagation
-var net = new brain.NeuralNetwork();
+var net = new brain.NeuralNetwork(config);
 
 net.train([{input: [0, 0], output: [0]},
            {input: [0, 1], output: [1]},
