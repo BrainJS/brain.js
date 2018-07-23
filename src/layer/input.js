@@ -37,7 +37,7 @@ export default class Input extends Model {
   }
 
   compare() {
-    throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+    // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 
   learn() {

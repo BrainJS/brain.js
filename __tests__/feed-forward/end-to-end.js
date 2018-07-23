@@ -1,33 +1,31 @@
-import almostEqual from 'almost-equal'
-import assert from 'assert'
-import NeuralNetwork from '../../src/neural-network'
-import FeedForward from '../../src/feed-forward'
-import * as layer from '../../src/layer/index'
+import brain from '../../src'
 import zeros2D from '../../src/utilities/zeros-2d'
 
+const { layer, NeuralNetwork, FeedForward } = brain
+
 const {
-  Base,
-  Convolution,
-  convolution,
+  // Base,
+  // Convolution,
+  // convolution,
   feedForward,
-  Input,
+  // Input,
   input,
-  multiply,
-  Output,
+  // multiply,
+  // Output,
   output,
-  Pool,
-  pool,
-  random,
-  Relu,
-  relu,
+  // Pool,
+  // pool,
+  // random,
+  // Relu,
+  // relu,
   Sigmoid,
-  sigmoid,
-  SoftMax,
-  softMax,
+  // sigmoid,
+  // SoftMax,
+  // softMax,
   Target,
   target,
-  Zeros,
-  zeros,
+  // Zeros,
+  // zeros,
 } = layer
 
 const xorTrainingData = [
@@ -37,6 +35,8 @@ const xorTrainingData = [
   { input: [1, 1], output: [0] },
 ]
 
+/* eslint-disable no-multi-assign */
+
 describe('FeedForward Class: End to End', () => {
   describe('when configured like NeuralNetwork', () => {
     it('outputs the exact same values', () => {
@@ -44,18 +44,18 @@ describe('FeedForward Class: End to End', () => {
       const ffNet = new FeedForward({
         inputLayer: () => input({ height: 2 }),
         hiddenLayers: [
-          input => feedForward({ height: 3 }, input),
-          input => feedForward({ height: 1 }, input),
+          inputLayer => feedForward({ height: 3 }, inputLayer),
+          inputLayer => feedForward({ height: 1 }, inputLayer),
         ],
-        outputLayer: input => target({ height: 1 }, input),
+        outputLayer: inputLayer => target({ height: 1 }, inputLayer),
       })
 
       ffNet.initialize()
       // learning deviates, which we'll test elsewhere, for the time being, just don't learn
       standardNet._adjustWeights = () => {}
-      ffNet.layers.forEach(layer => {
-        layer.praxis.run = () => {}
-        layer.learn = () => {}
+      ffNet.layers.forEach(l => {
+        l.praxis.run = () => {}
+        l.learn = () => {}
       })
       standardNet.train([{ input: [1, 1], output: [0] }], {
         iterations: 1,
@@ -65,19 +65,16 @@ describe('FeedForward Class: End to End', () => {
       })
 
       // set both nets exactly the same, then train them once, and compare
-      const biasLayers = ffNet.layers.filter(layer => layer.name === 'biases')
-      const weightLayers = ffNet.layers.filter(
-        layer => layer.name === 'weights'
-      )
-      const sigmoidLayers = ffNet.layers.filter(
-        layer => layer.constructor === Sigmoid
-      )
+      const biasLayers = ffNet.layers.filter(l => l.name === 'biases')
+      const weightLayers = ffNet.layers.filter(l => l.name === 'weights')
+      const sigmoidLayers = ffNet.layers.filter(l => l.constructor === Sigmoid)
 
       // zero out
-      ffNet.layers.forEach((layer, i) => {
-        layer.deltas = zeros2D(layer.width, layer.height)
-        layer.weights = zeros2D(layer.width, layer.height)
+      ffNet.layers.forEach(l => {
+        l.deltas = zeros2D(l.width, l.height)
+        l.weights = zeros2D(l.width, l.height)
       })
+
       standardNet.deltas.forEach(deltas => {
         for (let i = 0; i < deltas.length; i++) {
           deltas[i] = 0
@@ -93,6 +90,7 @@ describe('FeedForward Class: End to End', () => {
       standardNet.errors[1][1] = 0
       standardNet.errors[1][2] = 0
       standardNet.errors[2][0] = 0
+
       // set biases
       standardNet.biases[1][0] = biasLayers[0].weights[0][0] = 5
       standardNet.biases[1][1] = biasLayers[0].weights[1][0] = 7
@@ -117,44 +115,54 @@ describe('FeedForward Class: End to End', () => {
       standardNet.train([{ input: [1, 1], output: [0] }], {
         iterations: 1,
       })
+
       ffNet.train([{ input: [1, 1], output: [0] }], {
         iterations: 1,
         reinforce: true,
       })
 
-      almostEqual(standardNet.outputs[1][0], sigmoidLayers[0].weights[0][0])
-      almostEqual(standardNet.outputs[1][1], sigmoidLayers[0].weights[1][0])
-      almostEqual(standardNet.outputs[1][2], sigmoidLayers[0].weights[2][0])
-      almostEqual(standardNet.outputs[2][0], sigmoidLayers[1].weights[0][0])
+      // TODO: Test fails
+      expect(standardNet.outputs[1][0]).toBeCloseTo(
+        sigmoidLayers[0].weights[0][0]
+      )
+      expect(standardNet.outputs[1][1]).toBeCloseTo(
+        sigmoidLayers[0].weights[1][0]
+      )
+      expect(standardNet.outputs[1][2]).toBeCloseTo(
+        sigmoidLayers[0].weights[2][0]
+      )
+      expect(standardNet.outputs[2][0]).toBeCloseTo(
+        sigmoidLayers[0].weights[0][0]
+      )
     })
   })
+
   describe('.runInput()', () => {
     it('outputs a number', () => {
       const net = new FeedForward({
         inputLayer: () => input({ width: 1, height: 1 }),
-        hiddenLayers: [input => feedForward({ width: 1, height: 1 }, input)],
-        outputLayer: input => output({ width: 1, height: 1 }, input),
+        hiddenLayers: [
+          inputLayer => feedForward({ width: 1, height: 1 }, inputLayer),
+        ],
+        outputLayer: inputLayer => output({ width: 1, height: 1 }, inputLayer),
       })
 
       net.initialize()
-
       const result = net.runInput([[1]])
-      assert.equal(
-        typeof result[0][0] === 'number',
-        true,
-        'that any number comes out'
-      )
+
+      expect(typeof result[0][0] === 'number').toBeTruthy()
     })
   })
+
   describe('.train()', () => {
     it('outputs a number that is smaller than when it started', () => {
       const net = new FeedForward({
         inputLayer: () => input({ height: 2 }),
         hiddenLayers: [
-          input => feedForward({ height: 3 }, input),
-          input => feedForward({ height: 1 }, input),
+          inputLayer => feedForward({ height: 3 }, inputLayer),
+          inputLayer => feedForward({ height: 1 }, inputLayer),
         ],
-        outputLayer: input => target({ height: 1 }, input),
+        outputLayer: inputLayer => target({ height: 1 }, inputLayer),
       })
       const errors = []
       net.errorCheckInterval = 1
@@ -164,62 +172,65 @@ describe('FeedForward Class: End to End', () => {
         callbackPeriod: 1,
         callback: info => errors.push(info.error),
       })
-      assert.equal(
-        typeof errors[0] === 'number' &&
-          typeof errors[1] === 'number' &&
-          typeof errors[2] === 'number' &&
-          typeof errors[3] === 'number' &&
-          typeof errors[4] === 'number' &&
-          typeof errors[5] === 'number' &&
-          typeof errors[6] === 'number' &&
-          typeof errors[7] === 'number' &&
-          typeof errors[8] === 'number' &&
-          typeof errors[9] === 'number',
-        true,
-        'training produces numerical errors'
-      )
-      assert(errors[0] > errors[9])
+
+      expect(
+        errors.reduce((prev, cur) => prev && typeof cur === 'number', true)
+      ).toBeTruthy()
+
+      expect(errors[0]).toBeGreaterThan(errors[9])
     })
+
     it('can learn xor', () => {
       const errors = []
       const net = new FeedForward({
-        inputLayer: () => input({ height: 2 }),
+        inputLayer: () =>
+          input({
+            height: 2,
+          }),
         hiddenLayers: [
-          input => feedForward({ height: 3 }, input),
-          input => feedForward({ height: 1 }, input),
+          inputLayer =>
+            feedForward(
+              {
+                height: 3,
+              },
+              inputLayer
+            ),
+          inputLayer =>
+            feedForward(
+              {
+                height: 1,
+              },
+              inputLayer
+            ),
         ],
-        outputLayer: input => target({ height: 1 }, input),
+        outputLayer: inputLayer =>
+          target(
+            {
+              height: 1,
+            },
+            inputLayer
+          ),
       })
-      const results = net.train(xorTrainingData, {
+
+      net.train(xorTrainingData, {
         callbackPeriod: 1,
         callback: info => errors.push(info.error),
       })
+
       const result1 = net.run([0, 0])
       const result2 = net.run([0, 1])
       const result3 = net.run([1, 0])
       const result4 = net.run([1, 1])
-      assert.equal(
-        result1[0][0] < 0.5,
-        true,
-        `with input of [0, 0], output is ${result1}, but should be < 0.5`
-      )
-      assert.equal(
-        result2[0][0] > 0.5,
-        true,
-        `with input of [0, 1], output is ${result2}, but should be > 0.5`
-      )
-      assert.equal(
-        result3[0][0] > 0.5,
-        true,
-        `with input of [1, 0], output is ${result3}, but should be > 0.5`
-      )
-      assert.equal(
-        result4[0][0] < 0.5,
-        true,
-        `with input of [1, 1], output is ${result4}, but should be < 0.5`
-      )
+
+      // TODO: Test fails
+
+      expect(result1[0][0]).toBeLessThan(0.5)
+      expect(result2[0][0]).toBeGreaterThan(0.5)
+      expect(result3[0][0]).toBeGreaterThan(0.5)
+      expect(result4[0][0]).toBeLessThan(0.5)
     })
   })
+
   describe('._calculateDeltas()', () => {
     it('populates deltas from output to input', () => {
       class SuperOutput extends Target {
@@ -232,36 +243,29 @@ describe('FeedForward Class: End to End', () => {
 
       const net = new FeedForward({
         inputLayer: () => input({ width: 1, height: 1 }),
-        hiddenLayers: [input => feedForward({ width: 1, height: 1 }, input)],
-        outputLayer: input => new SuperOutput({ width: 1, height: 1 }, input),
+        hiddenLayers: [
+          inputLayer => feedForward({ width: 1, height: 1 }, inputLayer),
+        ],
+        outputLayer: inputLayer =>
+          new SuperOutput({ width: 1, height: 1 }, inputLayer),
       })
       net.initialize()
       net.layers[0].weights = [[1]]
-      net.layers.forEach((layer, layerIndex) => {
-        layer.deltas.forEach((row, rowIndex) => {
-          row.forEach((delta, deltaIndex) => {
-            assert.equal(
-              delta,
-              0,
-              `delta is ${delta} of layer type ${
-                layer.constructor.name
-              } with layerIndex of ${layerIndex}, rowIndex of ${rowIndex}, and deltaIndex of ${deltaIndex}`
-            )
+
+      net.layers.forEach(layerLayer => {
+        layerLayer.deltas.forEach(row => {
+          row.forEach(delta => {
+            expect(delta).toBe(0)
           })
         })
       })
       net.runInput([[1]])
       net._calculateDeltas([[1]])
-      net.layers.forEach((layer, layerIndex) => {
-        layer.deltas.forEach((row, rowIndex) => {
-          row.forEach((delta, deltaIndex) => {
-            assert.notEqual(
-              delta,
-              0,
-              `delta is ${delta} of layer type ${
-                layer.constructor.name
-              } with layerIndex of ${layerIndex}, rowIndex of ${rowIndex}, and deltaIndex of ${deltaIndex}`
-            )
+
+      net.layers.forEach(l => {
+        l.deltas.forEach(row => {
+          row.forEach(delta => {
+            expect(delta === 0).toBeFalsy()
           })
         })
       })

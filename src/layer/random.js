@@ -15,6 +15,6 @@ export default class Random extends Model {
   }
 
   compare() {
-    throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+    // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 }

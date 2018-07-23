@@ -10,10 +10,10 @@ export default class Zeros extends Model {
   }
 
   predict() {
-    throw new Error(`${this.constructor.name}-predict is not yet implemented`)
+    // throw new Error(`${this.constructor.name}-predict is not yet implemented`)
   }
 
   compare() {
-    throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+    // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 }
