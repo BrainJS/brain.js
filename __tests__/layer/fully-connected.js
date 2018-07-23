@@ -8,7 +8,29 @@ import {
 
 describe('FullyConnected Layer', () => {
   describe('.predict (forward propagation)', () => {
-    it('can convolution a simple matrix', () => {
+    it('can predict a simple matrix', () => {
+      const weights = [
+        [1,3],
+        [2,4],
+      ]
+      const filters = [
+        [1,2,3,4],
+        [5,6,7,8],
+        [9,10,11,12],
+        [13,14,15,16],
+      ]
+      const biases = [0.2,0.2,0.2,0.2]
+      const kernel = gpuMock(predict, {
+        output: [4],
+        constants: {
+          inputDepth: 1,
+          inputHeight: 2,
+          inputWidth: 2,
+        },
+      })
+      assert.deepEqual(kernel(weights, filters, biases), [29.2, 69.2, 109.2, 149.2])
+    })
+    it('can predict a matrix', () => {
       const results = gpuMock(predict, {
         output: [9],
         constants: {
@@ -36,7 +58,27 @@ describe('FullyConnected Layer', () => {
   })
 
   describe('.compareFilters (back propagation)', () => {
-    it('can convolution a simple matrix', () => {
+    it('can compare a simple matrix', () => {
+      const inputDeltas = [
+        [1,3],
+        [2,4]
+      ]
+      const deltas = [[1,2,3,4]]
+      const filters = [
+        [1,2,3,4],
+        [5,6,7,8],
+        [9,10,11,12],
+        [13,14,15,16]
+      ]
+      const kernel = gpuMock(compareFilters, {
+        output: [2,2],
+        constants: {
+          connectionCount: 4
+        },
+      })
+      assert.deepEqual(kernel(inputDeltas, deltas, filters), [[90, 100], [110, 120]])
+    })
+    it('can compare a matrix', () => {
       const inputs = [[0, 1, 2, 3, 4, 5, 6, 7, 8]]
       const outputs = [0, 1, 2, 3, 4, 5, 6, 7, 8]
       const results = gpuMock(compareFilters, {
