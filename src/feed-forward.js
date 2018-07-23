@@ -294,6 +294,10 @@ export default class FeedForward {
    * @param {Boolean} logErrorRate
    */
   _trainPattern(input, target, logErrorRate) {
+    console.log(input)
+    console.log(target)
+    console.log(logErrorRate)
+
     // forward propagate
     this.runInput(input)
 

@@ -11,7 +11,7 @@ export default class Random extends Model {
   }
 
   predict() {
-    throw new Error(`${this.constructor.name}-predict is not yet implemented`)
+    // throw new Error(`${this.constructor.name}-predict is not yet implemented`)
   }
 
   compare() {
