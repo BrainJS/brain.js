@@ -6,6 +6,10 @@ export function setup(value) {
   gpuInstance = value
 }
 
+export function teardown() {
+  gpuInstance = null
+}
+
 export function makeKernel(fn, settings) {
   if (gpuInstance === null) {
     setup(new GPU({ mode: 'cpu' }))
