@@ -86,8 +86,8 @@ describe('FullyConnected Layer', () => {
   describe('.compareFilterDeltas (back propagation)', () => {
     it('can compare a simplge matrix', () => {
       const inputWeights = [
-        [1,3],
-        [2,4]
+        [1,2],
+        [3,4]
       ]
       const deltas = [[1,2,3,4]]
       const filterDeltas = [
@@ -103,16 +103,16 @@ describe('FullyConnected Layer', () => {
         },
       })
       assert.deepEqual(kernel(filterDeltas, inputWeights, deltas), [
-        [1,3,2,4],
-        [2,6,4,8],
-        [3,9,6,12],
-        [4,12,8,16]
+        [1,2,3,4],
+        [2,4,6,8],
+        [3,6,9,12],
+        [4,8,12,16]
       ])
     })
     it('can add a simplge matrix', () => {
       const inputWeights = [
-        [1,3],
-        [2,4]
+        [1,2],
+        [3,4]
       ]
       const deltas = [[1,2,3,4]]
       const filterDeltas = [
@@ -128,10 +128,10 @@ describe('FullyConnected Layer', () => {
         },
       })
       assert.deepEqual(kernel(filterDeltas, inputWeights, deltas), [
-        [2, 5, 5, 8],
-        [7, 12, 11, 16],
-        [12, 19, 17, 24],
-        [17, 26, 23, 32]
+        [2, 4, 6, 8],
+        [7, 10, 13, 16],
+        [12, 16, 20, 24],
+        [17, 22, 27, 32]
       ])
     })
   })
@@ -159,8 +159,8 @@ describe('FullyConnected Layer', () => {
     })
     it('can add a simple matrix', () => {
       const inputDeltas = [
-        [1,3],
-        [2,4]
+        [1,2],
+        [3,4]
       ]
       const deltas = [[1,2,3,4]]
       const filters = [
@@ -175,7 +175,7 @@ describe('FullyConnected Layer', () => {
           connectionCount: 4
         },
       })
-      assert.deepEqual(kernel(inputDeltas, deltas, filters), [[91, 103], [112, 124]])
+      assert.deepEqual(kernel(inputDeltas, deltas, filters), [[91, 102], [113, 124]])
     })
   })
 })
