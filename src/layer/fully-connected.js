@@ -15,25 +15,23 @@ export function predict(inputs, filters, biases) {
   return output + biases[this.thread.x]
 }
 
-export function compareInputs(filters, weights) {
-  let filterDelta = 0
-  for (let y = 0; y < this.constants.inputWidth; y++) {
-    filterDelta += filters[this.thread.x][y] * weights[this.thread.x]
-  }
-  return filterDelta
-}
-
-export function compareFilters(inputDeltas, deltas, filters) {
+export function compareInputDeltas(inputDeltas, deltas, filters) {
   let sum = 0
   const filterIndex = this.thread.x + (this.thread.y * this.output.x);
   for (let x = 0; x < this.constants.connectionCount; x++) {
     sum += filters[x][filterIndex] * deltas[0][x]
   }
-  return sum
+  return sum + inputDeltas[this.thread.y][this.thread.x]
 }
 
 export function compareBiases(biases, deltas) {
-  return biases[this.output.x] * deltas[this.output.x]
+  return biases[this.thread.y][this.thread.x] + deltas[this.thread.y][this.thread.x]
+}
+
+export function compareFilterDeltas(filterDeltas, inputWeights, deltas) {
+  const inputY = Math.floor(this.thread.x / this.constants.inputWidth)
+  const inputX = this.thread.x % this.constants.inputWidth
+  return filterDeltas[this.thread.y][this.thread.x] + (inputWeights[inputY][inputX] * deltas[0][this.thread.y])
 }
 
 export default class FullyConnected extends Filter {
@@ -45,8 +43,8 @@ export default class FullyConnected extends Filter {
   constructor(settings, inputLayer) {
     super(settings)
     this.inputLayer = inputLayer
-    this.compareInputsKernel = null
-    this.compareFiltersKernel = null
+    this.compareFilterDeltasKernel = null
+    this.compareInputDeltasKernel = null
     this.compareBiasesKernel = null
 
     if (inputLayer.depth > 1) throw new Error('depth not yet supported')
@@ -55,7 +53,7 @@ export default class FullyConnected extends Filter {
 
     this.biases = new Array(this.depth)
     this.biases.fill(this.bias)
-    this.biasDeltas = randos(this.depth)
+    this.biasDeltas = randos2D(this.depth)
 
     this.filters = randos2D(connections, this.height)
     this.filterDeltas = zeros2D(connections, this.height)
@@ -73,15 +71,11 @@ export default class FullyConnected extends Filter {
       },
     })
 
-    this.compareInputsKernel = makeKernel(compareInputs, {
-      output: [this.width, this.height],
-      constants: {
-        inputHeight: inputLayer.height,
-        inputWidth: inputLayer.width,
-      },
+    this.compareFilterDeltasKernel = makeKernel(compareFilterDeltas, {
+      output: [inputLayer.width * inputLayer.height, this.height]
     })
 
-    this.compareFiltersKernel = makeKernel(compareFilters, {
+    this.compareInputDeltasKernel = makeKernel(compareInputDeltas, {
       output: [inputLayer.width, inputLayer.height],
       constants: {
         connectionCount: inputLayer.width * inputLayer.height
@@ -90,10 +84,6 @@ export default class FullyConnected extends Filter {
 
     this.compareBiasesKernel = makeKernel(compareBiases, {
       output: [this.width, this.height],
-      constants: {
-        inputHeight: this.inputLayer.height,
-        inputWidth: this.inputLayer.width,
-      },
     })
   }
 
@@ -106,12 +96,19 @@ export default class FullyConnected extends Filter {
   }
 
   compare() {
-    this.filterDeltas = this.compareFiltersKernel(
+    this.inputLayer.deltas = this.compareInputDeltasKernel(
       this.inputLayer.deltas,
       this.deltas,
       this.filters
     )
-    this.biasDeltas = this.compareBiasesKernel(this.bias, this.deltas)
-    this.deltas = this.compareInputsKernel(this.filters)
+    //TODO: handle biasDeltas learn
+    this.biasDeltas = this.compareBiasesKernel(this.biases, this.deltas)
+
+    //TODO: handle filterDeltas learn
+    this.filterDeltas = this.compareFilterDeltasKernel(
+      this.filterDeltas,
+      this.inputLayer.weights,
+      this.deltas
+    )
   }
 }
