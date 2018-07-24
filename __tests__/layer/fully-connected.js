@@ -113,7 +113,7 @@ describe('FullyConnected Layer', () => {
   })
   describe('.compareBiases (back propagation)', () => {
     it('can compare a simple matrix', () => {
-      const biases = [[0,0,0,0]]
+      const biases = [0,0,0,0]
       const deltas = [[1,2,3,4]]
       const kernel = gpuMock(compareBiases, {
         output: [4],
@@ -124,7 +124,7 @@ describe('FullyConnected Layer', () => {
       assert.deepEqual(kernel(biases, deltas), [1,2,3,4])
     })
     it('can add a simple matrix', () => {
-      const biases = [[1,2,3,4]]
+      const biases = [1,2,3,4]
       const deltas = [[1,2,3,4]]
       const kernel = gpuMock(compareBiases, {
         output: [4],
@@ -265,7 +265,7 @@ describe('FullyConnected Layer', () => {
       const kernel = gpuMock(compareInputDeltas, {
         output: [2,2],
         constants: {
-          connectionCount: 4
+          filterCount: 4
         },
       })
       assert.deepEqual(kernel(inputDeltas, deltas, filters), [[90, 100], [110, 120]])
@@ -285,7 +285,7 @@ describe('FullyConnected Layer', () => {
       const kernel = gpuMock(compareInputDeltas, {
         output: [2,2],
         constants: {
-          connectionCount: 4
+          filterCount: 4
         },
       })
       assert.deepEqual(kernel(inputDeltas, deltas, filters), [[91, 102], [113, 124]])
@@ -309,7 +309,7 @@ describe('FullyConnected Layer', () => {
       const kernel = gpuMock(compareInputDeltas3D, {
         output: [2,2,1],
         constants: {
-          connectionCount: 4
+          filterCount: 4
         },
       })
       assert.deepEqual(kernel(inputDeltas, deltas, filters), [[[90, 100], [110, 120]]])
@@ -331,7 +331,7 @@ describe('FullyConnected Layer', () => {
       const kernel = gpuMock(compareInputDeltas3D, {
         output: [2,2,1],
         constants: {
-          connectionCount: 4
+          filterCount: 4
         },
       })
       assert.deepEqual(kernel(inputDeltas, deltas, filters), [[[91, 102], [113, 124]]])

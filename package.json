@@ -5,7 +5,7 @@
     "url": "https://github.com/brainjs/brain.js/issues"
   },
   "dependencies": {
-    "gpu.js": "^1.5.3",
+    "gpu.js": "^1.5.4",
     "thaw.js": "^2.0.0"
   },
   "description": "Neural networks in JavaScript",
