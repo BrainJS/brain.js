@@ -4,6 +4,7 @@ import Convolution from './convolution'
 import Dropout from './dropout'
 // import feedForward from './feed-forward'
 import FullyConnected from './fully-connected'
+import FullyConnected3D from './fully-connected-3d'
 // import gru from './gru'
 import Input from './input'
 import LeakyRelu from './leaky-relu'
@@ -40,6 +41,10 @@ function dropout(settings, inputLayer) {
 
 function fullyConnected(settings, inputLayer) {
   return new FullyConnected(settings, inputLayer)
+}
+
+function fullyConnected3D(settings, inputLayer) {
+  return new FullyConnected3D(settings, inputLayer)
 }
 
 function input(settings) {
@@ -121,6 +126,8 @@ export {
   // feedForward,
   FullyConnected,
   fullyConnected,
+  FullyConnected3D,
+  fullyConnected3D,
   // gru,
   Input,
   input,

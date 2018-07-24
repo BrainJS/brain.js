@@ -8,10 +8,12 @@ import zeros from '../utilities/zeros'
 export function predict(inputs, filters, biases) {
   let output = 0
   let i = 0
-  for (let y = 0; y < this.constants.inputHeight; y++) {
-    for (let x = 0; x < this.constants.inputWidth; x++) {
-      output += inputs[y][x] * filters[this.thread.x][i]
-      i++
+  for (let z = 0; z < this.constants.inputDepth; z++) {
+    for (let y = 0; y < this.constants.inputHeight; y++) {
+      for (let x = 0; x < this.constants.inputWidth; x++) {
+        output += inputs[z][y][x] * filters[this.thread.x][i]
+        i++
+      }
     }
   }
   return output + biases[this.thread.x]
@@ -23,7 +25,7 @@ export function compareInputDeltas(inputDeltas, deltas, filters) {
   for (let x = 0; x < this.constants.connectionCount; x++) {
     sum += filters[x][filterIndex] * deltas[0][x]
   }
-  return sum + inputDeltas[this.thread.y][this.thread.x]
+  return sum + inputDeltas[this.thread.z][this.thread.y][this.thread.x]
 }
 
 export function compareBiases(biases, deltas) {
@@ -31,9 +33,10 @@ export function compareBiases(biases, deltas) {
 }
 
 export function compareFilterDeltas(filterDeltas, inputWeights, deltas) {
+  const inputZ = Math.floor(this.thread.x / (this.constants.inputWidth * this.constants.inputHeight))
   const inputY = Math.floor(this.thread.x / this.constants.inputWidth)
   const inputX = this.thread.x % this.constants.inputWidth
-  return filterDeltas[this.thread.y][this.thread.x] + (inputWeights[inputY][inputX] * deltas[0][this.thread.y])
+  return filterDeltas[this.thread.y][this.thread.x] + (inputWeights[inputZ][inputY][inputX] * deltas[0][this.thread.y])
 }
 
 export default class FullyConnected extends Filter {
@@ -50,7 +53,7 @@ export default class FullyConnected extends Filter {
     this.compareInputDeltasKernel = null
     this.compareBiasesKernel = null
 
-    const connectionCount = inputLayer.width * inputLayer.height
+    const connectionCount = inputLayer.width * inputLayer.height * inputLayer.depth
 
     this.biases = values(this.height, this.bias)
     this.biasDeltas = zeros(this.height)
@@ -61,13 +64,12 @@ export default class FullyConnected extends Filter {
 
   validate() {
     super.validate()
-    if (this.inputLayer.depth > 1) throw new Error('inputLayer depth not supported on a 2d layer')
-    if (this.depth > 1) throw new Error('depth not supported on a 2d layer')
+    if (this.depth > 1) throw new Error('depth not yet supported')
   }
 
   setupKernels() {
     const { inputLayer } = this;
-    const connectionCount = inputLayer.width * inputLayer.height;
+    const connectionCount = inputLayer.width * inputLayer.height * inputLayer.depth;
 
     this.predictKernel = makeKernel(predict, {
       output: [this.width, this.height],
@@ -80,6 +82,7 @@ export default class FullyConnected extends Filter {
     this.compareFilterDeltasKernel = makeKernel(compareFilterDeltas, {
       output: [connectionCount, this.height],
       constants: {
+        inputHeight: inputLayer.height,
         inputWidth: inputLayer.width,
       },
     })
