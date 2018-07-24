@@ -6,11 +6,12 @@ export default class lookup {
    * @returns {Object}
    */
   static buildLookup(hashes) {
-    let hash = hashes.reduce((memo, hash) => {
-      return Object.assign(memo, hash);
-    }, {});
+    const reducedHash = hashes.reduce(
+      (memo, hash) => Object.assign(memo, hash),
+      {}
+    )
 
-    return lookup.lookupFromHash(hash);
+    return lookup.lookupFromHash(reducedHash)
   }
 
   /**
@@ -19,12 +20,15 @@ export default class lookup {
    * @returns {Object}
    */
   static lookupFromHash(hash) {
-    let lookup = {};
-    let index = 0;
-    for (let i in hash) {
-      lookup[i] = index++;
-    }
-    return lookup;
+    const lookupHash = {}
+    let index = 0
+
+    Object.keys(hash).forEach(i => {
+      index += 1
+      lookupHash[i] = index
+    })
+
+    return lookupHash
   }
 
   /**
@@ -33,26 +37,30 @@ export default class lookup {
    * @param {*} hash
    * @returns {Array}
    */
-  static toArray(lookup, hash) {
-    let array = [];
-    for (let i in lookup) {
-      array[lookup[i]] = hash[i] || 0;
-    }
-    return array;
+  static toArray(lookupHash, hash) {
+    const array = []
+
+    Object.keys(lookupHash).forEach(i => {
+      array[lookupHash[i]] = hash[i] || 0
+    })
+
+    return array
   }
 
   /**
    * performs `{a: 0, b: 1}, [6, 7] -> {a: 6, b: 7}`
-   * @param {Object} lookup
+   * @param {Object} lookupHash
    * @param {Array} array
    * @returns {Object}
    */
-  static toHash(lookup, array) {
-    let hash = {};
-    for (let i in lookup) {
-      hash[i] = array[lookup[i]];
-    }
-    return hash;
+  static toHash(lookupHash, array) {
+    const hash = {}
+
+    Object.keys(lookupHash).forEach(i => {
+      hash[i] = array[lookupHash[i]]
+    })
+
+    return hash
   }
 
   /**
@@ -61,12 +69,14 @@ export default class lookup {
    * @returns {*}
    */
   static lookupFromArray(array) {
-    let lookup = {};
-    let z = 0;
-    let i = array.length;
+    const lookupHash = {}
+    let z = 0
+    let i = array.length
+
     while (i-- > 0) {
-      lookup[array[i]] = z++;
+      lookupHash[array[i]] = z++
     }
-    return lookup;
+
+    return lookupHash
   }
 }

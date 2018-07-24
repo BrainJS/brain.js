@@ -5,6 +5,7 @@
 <img src="https://cdn.rawgit.com/harthur-org/brain.js/ff595242/logo.svg" alt="Logo" width=200px/>
 
 [![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js)
+[![Build Status](https://travis-ci.org/BrainJS/brain.js.svg?branch=develop)](https://travis-ci.org/BrainJS/brain.js)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brain-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Slack](https://slack.bri.im/badge.svg)](https://slack.bri.im)
 

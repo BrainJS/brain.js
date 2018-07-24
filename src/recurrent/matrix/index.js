@@ -1,4 +1,4 @@
-import zeros from '../../utilities/zeros';
+import zeros from '../../utilities/zeros'
 
 /**
  * A matrix
@@ -8,13 +8,13 @@ import zeros from '../../utilities/zeros';
  */
 export default class Matrix {
   constructor(rows, columns) {
-    if (rows === undefined) return;
-    if (columns === undefined) return;
+    if (rows === undefined) return
+    if (columns === undefined) return
 
-    this.rows = rows;
-    this.columns = columns;
-    this.weights = zeros(rows * columns);
-    this.deltas = zeros(rows * columns);
+    this.rows = rows
+    this.columns = columns
+    this.weights = zeros(rows * columns)
+    this.deltas = zeros(rows * columns)
   }
 
   /**
@@ -26,9 +26,10 @@ export default class Matrix {
   getWeights(row, col) {
     // slow but careful accessor function
     // we want row-major order
-    let ix = (this.columns * row) + col;
-    if (ix < 0 && ix >= this.weights.length) throw new Error('get accessor is skewed');
-    return this.weights[ix];
+    const ix = this.columns * row + col
+    if (ix < 0 && ix >= this.weights.length)
+      throw new Error('get accessor is skewed')
+    return this.weights[ix]
   }
 
   /**
@@ -40,9 +41,10 @@ export default class Matrix {
    */
   setWeight(row, col, v) {
     // slow but careful accessor function
-    let ix = (this.columns * row) + col;
-    if (ix < 0 && ix >= this.weights.length) throw new Error('set accessor is skewed');
-    this.weights[ix] = v;
+    const ix = this.columns * row + col
+    if (ix < 0 && ix >= this.weights.length)
+      throw new Error('set accessor is skewed')
+    this.weights[ix] = v
   }
 
   /**
@@ -54,9 +56,10 @@ export default class Matrix {
    */
   setDeltas(row, col, v) {
     // slow but careful accessor function
-    let ix = (this.columns * row) + col;
-    if (ix < 0 && ix >= this.weights.length) throw new Error('set accessor is skewed');
-    this.deltas[ix] = v;
+    const ix = this.columns * row + col
+    if (ix < 0 && ix >= this.weights.length)
+      throw new Error('set accessor is skewed')
+    this.deltas[ix] = v
   }
 
   /**
@@ -67,16 +70,16 @@ export default class Matrix {
     return {
       rows: this.rows,
       columns: this.columns,
-      weights: this.weights.slice(0)
-    };
+      weights: this.weights.slice(0),
+    }
   }
 
   static fromJSON(json) {
-    let matrix = new Matrix(json.rows, json.columns);
+    const matrix = new Matrix(json.rows, json.columns)
     for (let i = 0, max = json.rows * json.columns; i < max; i++) {
-      matrix.weights[i] = json.weights[i]; // copy over weights
+      matrix.weights[i] = json.weights[i] // copy over weights
     }
-    return matrix;
+    return matrix
   }
 
   /**
@@ -86,57 +89,57 @@ export default class Matrix {
    * @returns {Matrix}
    */
   static fromArray(weightRows, deltasRows) {
-    const rows = weightRows.length;
-    const columns = weightRows[0].length;
-    const m = new Matrix(rows, columns);
+    const rows = weightRows.length
+    const columns = weightRows[0].length
+    const m = new Matrix(rows, columns)
 
-    deltasRows = deltasRows || weightRows;
+    deltasRows = deltasRows || weightRows
 
     for (let rowIndex = 0; rowIndex < rows; rowIndex++) {
-      const weightValues = weightRows[rowIndex];
-      const deltasValues = deltasRows[rowIndex];
+      const weightValues = weightRows[rowIndex]
+      const deltasValues = deltasRows[rowIndex]
       for (let columnIndex = 0; columnIndex < columns; columnIndex++) {
-        m.setWeight(rowIndex, columnIndex, weightValues[columnIndex]);
-        m.setDeltas(rowIndex, columnIndex, deltasValues[columnIndex]);
+        m.setWeight(rowIndex, columnIndex, weightValues[columnIndex])
+        m.setDeltas(rowIndex, columnIndex, deltasValues[columnIndex])
       }
     }
 
-    return m;
+    return m
   }
 
   weightsToArray() {
-    const deltas = [];
-    let row = 0;
-    let column = 0;
+    const deltas = []
+    let row = 0
+    let column = 0
     for (let i = 0; i < this.weights.length; i++) {
       if (column === 0) {
-        deltas.push([]);
+        deltas.push([])
       }
-      deltas[row].push(this.weights[i]);
-      column++;
+      deltas[row].push(this.weights[i])
+      column++
       if (column >= this.columns) {
-        column = 0;
-        row++;
+        column = 0
+        row++
       }
     }
-    return deltas;
+    return deltas
   }
 
   deltasToArray() {
-    const deltas = [];
-    let row = 0;
-    let column = 0;
+    const deltas = []
+    let row = 0
+    let column = 0
     for (let i = 0; i < this.deltas.length; i++) {
       if (column === 0) {
-        deltas.push([]);
+        deltas.push([])
       }
-      deltas[row].push(this.deltas[i]);
-      column++;
+      deltas[row].push(this.deltas[i])
+      column++
       if (column >= this.columns) {
-        column = 0;
-        row++;
+        column = 0
+        row++
       }
     }
-    return deltas;
+    return deltas
   }
 }

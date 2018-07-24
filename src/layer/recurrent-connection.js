@@ -1,35 +1,64 @@
-import { Internal } from './types';
-import zeros2D from "../utilities/zeros-2d";
+import { Internal } from './types'
+import zeros2D from '../utilities/zeros-2d'
 
 export default class RecurrentConnection extends Internal {
   setLayer(layer) {
-    this.layer = layer;
+    this.layer = layer
   }
+
   get width() {
-    return this.layer.width;
+    return this.layer.width
   }
-  set width(value) {}
+
+  set width(value) {
+    throw new Error(`${this.constructor.name}-width is not yet implemented`)
+  }
+
   get height() {
-    return this.layer.height;
+    return this.layer.height
   }
-  set height(value) {}
+
+  set height(value) {
+    throw new Error(`${this.constructor.name}-height is not yet implemented`)
+  }
+
   get deltas() {
-    return this.layer.deltas;
+    return this.layer.deltas
   }
+
   set deltas(deltas) {
-    this.layer.deltas = deltas;
+    this.layer.deltas = deltas
   }
+
   get weights() {
-    return this.layer.weights;
+    return this.layer.weights
   }
+
   set weights(weights) {
-    this.layer.weights = weights;
+    this.layer.weights = weights
   }
-  predict() {}
-  compare() {}
+
+  predict() {
+    throw new Error(`${this.constructor.name}-predict is not yet implemented`)
+  }
+
+  compare() {
+    throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+  }
+
   learn() {
-    this.layer.deltas = zeros2D(this.width, this.height);
+    this.layer.deltas = zeros2D(this.width, this.height)
   }
-  setupKernels() {}
-  reuseKernels() {}
+
+  setupKernels() {
+    throw new Error(
+      `${this.constructor.name}-setupKernels is not yet implemented`
+    )
+  }
+
+  reuseKernels() {
+    throw new Error(
+      `${this.constructor.name}-reuseKernels is not yet implemented`
+    )
+  }
 }

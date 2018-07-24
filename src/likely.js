@@ -5,15 +5,17 @@
  * @returns {*}
  */
 export default function likely(input, net) {
-  let output = net.run(input);
-  let maxProp = null;
-  let maxValue = -1;
-  for (let prop in output) {
-    let value = output[prop];
+  const output = net.run(input)
+  let maxProp = null
+  let maxValue = -1
+
+  Object.keys(output).forEach(key => {
+    const value = output[key]
     if (value > maxValue) {
-      maxProp = prop;
+      maxProp = key
       maxValue = value
     }
-  }
-  return maxProp;
+  })
+
+  return maxProp
 }

@@ -1,26 +1,48 @@
-import { Activation } from './types';
-import { makeKernel } from '../utilities/kernel';
-import { activate, measure } from '../activation/relu';
-import zeros2D from '../utilities/zeros-2d';
-import zeros3D from '../utilities/zeros-3d';
+import { Activation } from './types'
+import { makeKernel } from '../utilities/kernel'
+import { activate, measure } from '../activation/relu'
+import zeros2D from '../utilities/zeros-2d'
+import zeros3D from '../utilities/zeros-3d'
+
+export function predict(inputs) {
+  return activate(inputs[this.thread.y][this.thread.x])
+}
+
+export function compare(weights, deltas) {
+  return measure(
+    weights[this.thread.y][this.thread.x],
+    deltas[this.thread.y][this.thread.x]
+  )
+}
+
+export function predict3D(inputs) {
+  return activate(inputs[this.thread.z][this.thread.y][this.thread.x])
+}
+
+export function compare3D(weights, deltas) {
+  return measure(
+    weights[this.thread.z][this.thread.y][this.thread.x],
+    deltas[this.thread.z][this.thread.y][this.thread.x]
+  )
+}
 
 export default class Relu extends Activation {
   constructor(inputLayer) {
-    super();
-    this.inputLayer = inputLayer;
+    super()
+    this.inputLayer = inputLayer
 
-    const { width, height, depth } = inputLayer;
-    this.width = width;
-    this.height = height;
-    this.validate();
+    const { width, height, depth } = inputLayer
+    this.width = width
+    this.height = height
+    this.validate()
     if (depth && depth > 1) {
-      this.depth = depth;
-      this.weights = zeros3D(width, height, depth);
-      this.deltas = zeros3D(width, height, depth);
+      this.depth = depth
+      this.weights = zeros3D(width, height, depth)
+      this.deltas = zeros3D(width, height, depth)
     } else {
-      this.depth = 1;
-      this.weights = zeros2D(width, height);
-      this.deltas = zeros2D(width, height);
+      this.depth = 1
+      this.weights = zeros2D(width, height)
+      this.deltas = zeros2D(width, height)
     }
   }
 
@@ -28,47 +50,31 @@ export default class Relu extends Activation {
     if (this.depth > 1) {
       this.predictKernel = makeKernel(predict3D, {
         output: [this.width, this.height, this.depth],
-        functions: [activate]
-      });
+        functions: [activate],
+      })
 
       this.compareKernel = makeKernel(compare3D, {
         output: [this.width, this.height, this.depth],
-        functions: [measure]
-      });
+        functions: [measure],
+      })
     } else {
       this.predictKernel = makeKernel(predict, {
         output: [this.width, this.height],
-        functions: [activate]
-      });
+        functions: [activate],
+      })
 
       this.compareKernel = makeKernel(compare, {
         output: [this.width, this.height],
-        functions: [measure]
-      });
+        functions: [measure],
+      })
     }
   }
 
   predict() {
-    this.weights = this.predictKernel(this.inputLayer.weights);
+    this.weights = this.predictKernel(this.inputLayer.weights)
   }
 
   compare() {
-    this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
+    this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas)
   }
-}
-
-export function predict(inputs) {
-  return activate(inputs[this.thread.y][this.thread.x]);
-}
-
-export function compare(weights, deltas) {
-  return measure(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
-}
-
-export function predict3D(inputs) {
-  return activate(inputs[this.thread.z][this.thread.y][this.thread.x]);
-}
-
-export function compare3D(weights, deltas) {
-  return measure(weights[this.thread.z][this.thread.y][this.thread.x], deltas[this.thread.z][this.thread.y][this.thread.x]);
 }

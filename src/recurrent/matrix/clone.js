@@ -1,14 +1,14 @@
-import Matrix from './';
+import Matrix from '.'
 
 /**
  *
  * @param {Matrix} product
  */
 export default function clone(product) {
-  let cloned = new Matrix();
-  cloned.rows = parseInt(product.rows);
-  cloned.columns = parseInt(product.columns);
-  cloned.weights = product.weights.slice(0);
-  cloned.deltas = product.deltas.slice(0);
-  return cloned;
+  const cloned = new Matrix()
+  cloned.rows = parseInt(product.rows, 10)
+  cloned.columns = parseInt(product.columns, 10)
+  cloned.weights = product.weights.slice(0)
+  cloned.deltas = product.deltas.slice(0)
+  return cloned
 }

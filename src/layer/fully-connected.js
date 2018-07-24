@@ -1,103 +1,123 @@
-import { Filter } from './types';
-import { makeKernel } from '../utilities/kernel';
+import { Filter } from './types'
+import { makeKernel } from '../utilities/kernel'
+import randos2D from '../utilities/randos-2d'
+import values from '../utilities/values'
+import zeros2D from '../utilities/zeros-2d'
+import zeros from '../utilities/zeros'
+
+export function predict(inputs, filters, biases) {
+  let output = 0
+  let i = 0
+  for (let y = 0; y < this.constants.inputHeight; y++) {
+    for (let x = 0; x < this.constants.inputWidth; x++) {
+      output += inputs[y][x] * filters[this.thread.x][i]
+      i++
+    }
+  }
+  return output + biases[this.thread.x]
+}
+
+export function compareInputDeltas(inputDeltas, deltas, filters) {
+  let sum = 0
+  const filterIndex = this.thread.x + (this.thread.y * this.output.x);
+  for (let x = 0; x < this.constants.connectionCount; x++) {
+    sum += filters[x][filterIndex] * deltas[0][x]
+  }
+  return sum + inputDeltas[this.thread.y][this.thread.x]
+}
+
+export function compareBiases(biases, deltas) {
+  return biases[this.thread.y][this.thread.x] + deltas[this.thread.y][this.thread.x]
+}
+
+export function compareFilterDeltas(filterDeltas, inputWeights, deltas) {
+  const inputY = Math.floor(this.thread.x / this.constants.inputWidth)
+  const inputX = this.thread.x % this.constants.inputWidth
+  return filterDeltas[this.thread.y][this.thread.x] + (inputWeights[inputY][inputX] * deltas[0][this.thread.y])
+}
 
 export default class FullyConnected extends Filter {
-  constructor(settings, inputLayer) {
-    super(settings);
-
-    if (this.inputLayer.depth !== 1) {
-      //TODO: make go away and handle 3d, should be fairly easy
-      throw new Error('depth of 1 only supported at this time');
+  static get defaults() {
+    return {
+      bias: 0.1,
     }
+  }
+  constructor(settings, inputLayer) {
+    super(settings)
+    this.inputLayer = inputLayer
+    this.validate()
+    this.compareFilterDeltasKernel = null
+    this.compareInputDeltasKernel = null
+    this.compareBiasesKernel = null
 
-    this.inputLayer = inputLayer;
-    this.learnInputsKernel = null;
-    this.learnFiltersKernel = null;
-    this.learnBiasKernel = null;
+    const connectionCount = inputLayer.width * inputLayer.height
 
-    const { width, height, depth } = inputLayer;
-    this.width = width * height * depth;
-    this.validate();
+    this.biases = values(this.height, this.bias)
+    this.biasDeltas = zeros(this.height)
+
+    this.filters = randos2D(connectionCount, this.height)
+    this.filterDeltas = zeros2D(connectionCount, this.height)
+  }
+
+  validate() {
+    super.validate()
+    if (this.inputLayer.depth > 1) throw new Error('inputLayer depth not supported on a 2d layer')
+    if (this.depth > 1) throw new Error('depth not supported on a 2d layer')
   }
 
   setupKernels() {
+    const { inputLayer } = this;
+    const connectionCount = inputLayer.width * inputLayer.height;
+
     this.predictKernel = makeKernel(predict, {
-      output: [this.width],
+      output: [this.width, this.height],
       constants: {
-        inputDepth: this.inputLayer.depth,
-        inputHeight: this.inputLayer.height,
-        inputWidth: this.inputLayer.width
-      }
-    });
+        inputHeight: inputLayer.height,
+        inputWidth: inputLayer.width,
+      },
+    })
 
-    this.learnInputsKernel = makeKernel(learnInputs, {
-      output: [this.width],
+    this.compareFilterDeltasKernel = makeKernel(compareFilterDeltas, {
+      output: [connectionCount, this.height],
       constants: {
-        inputDepth: this.inputLayer.depth,
-        inputHeight: this.inputLayer.height,
-        inputWidth: this.inputLayer.width
-      }
-    });
+        inputWidth: inputLayer.width,
+      },
+    })
 
-    this.learnFiltersKernel = makeKernel(learnFilters, {
-      output: [this.width],
+    this.compareInputDeltasKernel = makeKernel(compareInputDeltas, {
+      output: [inputLayer.width, inputLayer.height, inputLayer.depth],
       constants: {
-        inputDepth: this.inputLayer.depth,
-        inputHeight: this.inputLayer.height,
-        inputWidth: this.inputLayer.width
-      }
-    });
+        connectionCount,
+      },
+    })
 
-    this.learnBiasesKernel = makeKernel(learnBiases, {
-      output: [this.width],
-      constants: {
-        inputDepth: this.inputLayer.depth,
-        inputHeight: this.inputLayer.height,
-        inputWidth: this.inputLayer.width
-      }
-    });
-
-    this.learnKernel = () => {
-      this.learnInputsKernel(this.filters, this.deltas);
-      this.learnFiltersKernel(this.inputLayer.outputs, this.deltas);
-      this.learnBiasKernel(this.biases, this.deltas);
-    };
+    this.compareBiasesKernel = makeKernel(compareBiases, {
+      output: [this.width, this.height],
+    })
   }
 
   predict() {
-    this.weights = this.predictKernel(this.inputLayer.weights, this.filters, this.biases);
+    this.weights = this.predictKernel(
+      this.inputLayer.weights,
+      this.filters,
+      this.biases
+    )
   }
 
   compare() {
-    this.filterDeltas = this.learnFilters(this.inputLayer, this.deltas);
-    this.biases = this.learnBiasesKernel(this.bias, this.deltas);
-    this.deltas = this.learnInputs(this.filters);
+    this.inputLayer.deltas = this.compareInputDeltasKernel(
+      this.inputLayer.deltas,
+      this.deltas,
+      this.filters
+    )
+    //TODO: handle biasDeltas learn
+    this.biasDeltas = this.compareBiasesKernel(this.biases, this.deltas)
+
+    //TODO: handle filterDeltas learn
+    this.filterDeltas = this.compareFilterDeltasKernel(
+      this.filterDeltas,
+      this.inputLayer.weights,
+      this.deltas
+    )
   }
-}
-
-export function predict(inputs, filters, biases) {
-  let output = 0;
-  for (let y = 0; y < this.constants.inputHeight; y++) {
-    for (let x = 0; x < this.constants.inputWidth; x++) {
-      output += inputs[y][x] * filters[y][x];
-    }
-  }
-  return output + biases[this.thread.x];
-}
-
-export function learnInputs(filters, weights) {
-  let filterDelta = 0;
-  for (let y = 0; y < this.constants.inputWidth; y++) {
-    filterDelta += filters[this.thread.x][y] * weights[this.thread.x];
-  }
-  return filterDelta;
-}
-
-export function learnFilters(inputs, weights) {
-  //0 here should probably be depth
-  return inputs[0][this.thread.y] * weights[this.thread.x];
-}
-
-export function learnBiases(biases, deltas) {
-  return biases[this.output.x] * deltas[this.output.x];
 }
