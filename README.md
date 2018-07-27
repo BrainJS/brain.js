@@ -3,17 +3,18 @@
 
 <img src="https://cdn.rawgit.com/harthur-org/brain.js/ff595242/logo.svg" alt="Logo" width=200px/>
 
-[![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js)
-
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brain-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-[![Slack](https://slack.bri.im/badge.svg)](https://slack.bri.im)
-
+[![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js) 
 [![Backers on Open Collective](https://opencollective.com/brainjs/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/brainjs/sponsors/badge.svg)](#sponsors) 
+
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brain-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Slack](https://slack.bri.im/badge.svg)](https://slack.bri.im)
+
+## About
 
 `brain.js` is a library of [Neural Networks](http://en.wikipedia.org/wiki/Artificial_neural_network) written in JavaScript.
 
 :bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
+
+## Table of Contents
 
 - [Examples](#examples)
     + [More Examples](#more-examples)
@@ -45,56 +46,59 @@
     
 # Examples
 Here's an example showcasing how to approximate the XOR function using `brain.js`:
-More info on config [here](https://github.com/BrainJS/brain.js/blob/develop/src/neural-network.js#L31).
+more info on config [here](https://github.com/BrainJS/brain.js/blob/develop/src/neural-network.js#L31).
 
 ```javascript
-//provide optional config object (or undefined). Defaults shown.
-var config = {
+// provide optional config object (or undefined). Defaults shown.
+const config = {
     binaryThresh: 0.5,     // ¯\_(ツ)_/¯
     hiddenLayers: [3],     // array of ints for the sizes of the hidden layers in the network
-    activation: 'sigmoid' // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
-}
-//create a simple feed forward neural network with backpropagation
-var net = new brain.NeuralNetwork(config);
+    activation: 'sigmoid'  // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+};
+
+// create a simple feed forward neural network with backpropagation
+const net = new brain.NeuralNetwork(config);
 
 net.train([{input: [0, 0], output: [0]},
            {input: [0, 1], output: [1]},
            {input: [1, 0], output: [1]},
            {input: [1, 1], output: [0]}]);
 
-var output = net.run([1, 0]);  // [0.987]
+const output = net.run([1, 0]);  // [0.987]
 ```
 or
-More info on config [here](https://github.com/BrainJS/brain.js/blob/develop/src/recurrent/rnn.js#L726).
+more info on config [here](https://github.com/BrainJS/brain.js/blob/develop/src/recurrent/rnn.js#L726).
+
 ```javascript
-//provide optional config object, defaults shown.
-var config = {
+// provide optional config object, defaults shown.
+const config = {
     inputSize: 20,
     inputRange: 20,
-    hiddenSizes:[20,20],
+    hiddenSizes: [20,20],
     outputSize: 20,
     learningRate: 0.01,
     decayRate: 0.999,
-}
-//create a simple recurrent neural network
-var net = new brain.recurrent.RNN(config);
+};
+
+// create a simple recurrent neural network
+const net = new brain.recurrent.RNN(config);
 
 net.train([{input: [0, 0], output: [0]},
            {input: [0, 1], output: [1]},
            {input: [1, 0], output: [1]},
            {input: [1, 1], output: [0]}]);
 
-var output = net.run([0, 0]);  // [0]
-output = net.run([0, 1]);  // [1]
-output = net.run([1, 0]);  // [1]
-output = net.run([1, 1]);  // [0]
+let output = net.run([0, 0]);  // [0]
+output = net.run([0, 1]);      // [1]
+output = net.run([1, 0]);      // [1]
+output = net.run([1, 1]);      // [0]
 ```
 
 However, there is no reason to use a neural network to figure out XOR. (-: So, here is a more involved, realistic example:
 [Demo: training a neural network to recognize color contrast](https://brain.js.org/).
 
 ## More Examples
-You check out this fantastic screencast, which explains how to train a simple neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
+You can check out this fantastic screencast, which explains how to train a simple neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
 * [writing a children's book using a recurrent neural neural network](./examples/childrens-book.js)
 * [simple letter detection](./examples/which-letter-simple.js)
 
@@ -112,12 +116,7 @@ Or if you prefer yarn:
 yarn add brain.js
 ```
 
-Alternatively, you can install `brain.js` with [bower](https://bower.io/):
-```
-bower install brain.js
-```
-
-At present, the npm version of brain.js is approximately 1.0.0, featuring only Feed forward NN. All other models are beta and are being jazzed up and battle hardened.
+At present, the published version of brain.js is approximately 1.0.0, featuring only Feed-forward NN. All other models are beta and are being jazzed up and battle hardened.
 You can still download the latest, though. They are cool!
 
 ### Browser
@@ -258,17 +257,17 @@ A boolean property called `invalidTrainOptsShouldThrow` is set to `true` by defa
 With multiple networks you can train in parallel like this:
 
 ```javascript
-  var net = new brain.NeuralNetwork();
-  var net2 = new brain.NeuralNetwork();
+  const net = new brain.NeuralNetwork();
+  const net2 = new brain.NeuralNetwork();
 
-  var p1 = net.trainAsync(data, options);
-  var p2 = net2.trainAsync(data, options);
+  const p1 = net.trainAsync(data, options);
+  const p2 = net2.trainAsync(data, options);
 
   Promise
     .all([p1, p2])
     .then(values => {
-      var res = values[0];
-      var res2 = values[1];
+      const res = values[0];
+      const res2 = values[1];
       console.log(`net trained in ${res.iterations} and net2 trained in ${res2.iterations}`);
       // do something super cool with my 2 trained networks
     })
@@ -295,15 +294,15 @@ If the training error is still something huge like `0.4` after 20000 iterations,
 Serialize or load in the state of a trained network with JSON:
 
 ```javascript
-var json = net.toJSON();
+const json = net.toJSON();
 net.fromJSON(json);
 ```
 
 You can also get a custom standalone function from a trained network that acts just like `run()`:
 
 ```javascript
-var run = net.toFunction();
-var output = run({ r: 1, g: 0.4, b: 0 });
+const run = net.toFunction();
+const output = run({ r: 1, g: 0.4, b: 0 });
 console.log(run.toString()); // copy and paste! no need to import brain.js
 ```
 
@@ -311,7 +310,7 @@ console.log(run.toString()); // copy and paste! no need to import brain.js
 `NeuralNetwork()` takes a hash of options:
 
 ```javascript
-var net = new brain.NeuralNetwork({
+const net = new brain.NeuralNetwork({
   activation: 'sigmoid', // activation function
   hiddenLayers: [4],
   learningRate: 0.6 // global learning rate, useful when training using streams
@@ -326,7 +325,7 @@ This parameter lets you specify which activation function your neural network sh
 - [leaky-relu](https://www.wikiwand.com/en/Rectifier_(neural_networks))
 - [tanh](https://theclevermachine.wordpress.com/tag/tanh-function/)
 
-Here's a table (Thanks, Wikipedia!) summarizing a plethora of activation functions — [Activation Function](https://www.wikiwand.com/en/Activation_function)
+Here's a table (thanks, Wikipedia!) summarizing a plethora of activation functions — [Activation Function](https://www.wikiwand.com/en/Activation_function)
 
 ### hiddenLayers
 You can use this to specify the number of hidden layers in the network and the size of each layer. For example, if you want two hidden layers - the first with 3 nodes and the second with 4 nodes, you'd give:
@@ -362,11 +361,14 @@ To train the network using a stream you must first create the stream by calling 
 Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transform) to coerce the data into the correct format. You might also use a Transform stream to normalize your data on the fly.
 
 # Utilities
+
 ### `likely`
+
 ```js
-var likely = require('brain/likely');
-var key = likely(input, net);
+const likely = require('brain/likely');
+const key = likely(input, net);
 ```
+
 Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 
 # Neural Network Types
@@ -385,7 +387,9 @@ Different neural nets do different things well. For example:
 * A Recurrent Neural Network _remembers_, and has a finite set of results.
 
 # Get Involved!
+
 ### Issues
+
 If you have an issue, either a bug or a feature you think would benefit your project let us know and we will do our best.
 
 Create issues [here](https://github.com/BrainJS/brain.js/issues) and follow the template.
@@ -417,5 +421,3 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 <a href="https://opencollective.com/brainjs/sponsor/7/website" target="_blank"><img src="https://opencollective.com/brainjs/sponsor/7/avatar.svg"></a>
 <a href="https://opencollective.com/brainjs/sponsor/8/website" target="_blank"><img src="https://opencollective.com/brainjs/sponsor/8/avatar.svg"></a>
 <a href="https://opencollective.com/brainjs/sponsor/9/website" target="_blank"><img src="https://opencollective.com/brainjs/sponsor/9/avatar.svg"></a>
-
-
