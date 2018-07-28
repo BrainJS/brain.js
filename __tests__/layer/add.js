@@ -1,4 +1,3 @@
-import assert from 'assert'
 import gpuMock from 'gpu-mock.js'
 import { predict } from '../../src/layer/add'
 
@@ -11,7 +10,7 @@ describe('Add Layer', () => {
         output: [3, 3],
       })(inputs1, inputs2)
 
-      assert.deepEqual(results, [[2, 4, 6], [8, 10, 12], [14, 16, 18]])
+      expect(results).toEqual([[2, 4, 6], [8, 10, 12], [14, 16, 18]])
     })
   })
 })

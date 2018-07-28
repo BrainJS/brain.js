@@ -1,4 +1,3 @@
-import assert from 'assert'
 import gpuMock from 'gpu-mock.js'
 import { predict, compare } from '../../src/layer/leaky-relu'
 
@@ -10,7 +9,7 @@ describe('Leaky Relu Layer', () => {
         output: [3, 3],
       })(inputs)
 
-      assert.deepEqual(results, [
+      expect(results).toEqual([
         [0.1, -0.002, 0.3],
         [-0.004, 0.5, -0.006],
         [0.7, -0.008, 0.9],
@@ -25,7 +24,8 @@ describe('Leaky Relu Layer', () => {
       const results = gpuMock(compare, {
         output: [3, 3],
       })(inputs, deltas)
-      assert.deepEqual(results, [[1, 0.01, 1], [0.01, 1, 0.01], [1, 0.01, 1]])
+
+      expect(results).toEqual([[1, 0.01, 1], [0.01, 1, 0.01], [1, 0.01, 1]])
     })
   })
 })

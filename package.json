@@ -40,7 +40,8 @@
     "setupFiles": [],
     "testPathIgnorePatterns": [
       "__tests__/.eslintrc.js"
-    ]
+    ],
+    "verbose": false
   },
   "keywords": [
     "ai",
@@ -81,9 +82,9 @@
     "lint": "eslint --ext .js ./src ./__tests__",
     "lint:fix": "eslint --ext .js --fix ./src ./__tests__",
     "prettier": "prettier --write {src,__tests__}/**/*.js",
-    "test": "jest",
-    "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test": "jest --env=node",
+    "test:coverage": "jest --coverage --env=node",
+    "test:watch": "jest --watch --env=node"
   },
   "typings": "./src/index.d.ts",
   "version": "1.2.2"

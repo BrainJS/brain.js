@@ -1,4 +1,3 @@
-import assert from 'assert'
 import gpuMock from 'gpu-mock.js'
 import {
   predict,
@@ -13,6 +12,7 @@ describe('Convolution Layer', () => {
       const inputs = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
       const filters = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
       const biases = [1, 2, 3]
+
       const results = gpuMock(predict, {
         output: [3, 3],
         constants: {
@@ -29,7 +29,7 @@ describe('Convolution Layer', () => {
         },
       })(filters, inputs, biases)
 
-      assert.deepEqual(results, [[286, 187, 91], [155, 95, 43], [51, 27, 10]])
+      expect(results).toEqual([[286, 187, 91], [155, 95, 43], [51, 27, 10]])
     })
   })
 
@@ -54,7 +54,7 @@ describe('Convolution Layer', () => {
       })(inputs, deltas)
 
       // TODO: likely incorrect
-      assert.deepEqual(results, [[45, 33, 18], [39, 28, 15], [24, 17, 9]])
+      expect(results).toEqual([[45, 33, 18], [39, 28, 15], [24, 17, 9]])
     })
   })
 
@@ -78,7 +78,7 @@ describe('Convolution Layer', () => {
         },
       })(inputs, deltas)
 
-      assert.deepEqual(results, [[1, 4, 10], [8, 26, 56], [30, 84, 165]])
+      expect(results).toEqual([[1, 4, 10], [8, 26, 56], [30, 84, 165]])
     })
   })
 
@@ -113,7 +113,8 @@ describe('Convolution Layer', () => {
         [[72]],
         [[76]],
       ]
-      assert.deepEqual(result, expectedBiasDeltas)
+
+      expect(result).toEqual(expectedBiasDeltas)
     })
     it('accumulates values from deltas correctly from greater than 0', () => {
       const biasDeltas = [0, 1, 2, 3, 4, 5, 6, 7]
@@ -135,7 +136,8 @@ describe('Convolution Layer', () => {
         [[78]],
         [[83]],
       ]
-      assert.deepEqual(result, expectedBiasDeltas)
+
+      expect(result).toEqual(expectedBiasDeltas)
     })
   })
 })

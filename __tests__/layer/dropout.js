@@ -1,4 +1,3 @@
-import assert from 'assert'
 import gpuMock from 'gpu-mock.js'
 import Dropout, { trainingPredict, predict } from '../../src/layer/dropout'
 
@@ -24,13 +23,14 @@ describe('Dropout Layer', () => {
           const value = row[x]
           if (value === 0) {
             hasZero = true
-          } else if (!isNaN(value)) {
+          } else if (!Number.isNaN(value)) {
             hasNumber = true
           }
         }
       }
-      assert(hasZero)
-      assert(hasNumber)
+
+      expect(hasZero).toBeTruthy()
+      expect(hasNumber).toBeTruthy()
     })
   })
   describe('.training (forward propagation)', () => {
@@ -44,7 +44,8 @@ describe('Dropout Layer', () => {
           probability: Dropout.defaults.probability,
         },
       })(inputs)
-      assert.deepEqual(results, [[0.5, 1, 1.5], [2, 2.5, 3], [3.5, 4, 4.5]])
+
+      expect(results).toEqual([[0.5, 1, 1.5], [2, 2.5, 3], [3.5, 4, 4.5]])
     })
   })
 })

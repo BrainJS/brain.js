@@ -1,4 +1,3 @@
-import assert from 'assert'
 import gpuMock from 'gpu-mock.js'
 import Input from '../../src/layer/input'
 import Multiply, {
@@ -20,7 +19,7 @@ describe('Multiply Layer', () => {
         },
       })(inputs1, inputs2)
 
-      assert.deepEqual(results, [[58, 64], [139, 154]])
+      expect(results).toEqual([[58, 64], [139, 154]])
     })
   })
   describe('.compareFromX (back propagation)', () => {
@@ -34,7 +33,8 @@ describe('Multiply Layer', () => {
           size: 2,
         },
       })(deltas, m1, m2)
-      assert.deepEqual(result, [[21, 21], [21, 21]])
+
+      expect(result).toEqual([[21, 21], [21, 21]])
     })
     it('can compare a simple matrix', () => {
       const deltas = [[1], [2], [3]]
@@ -46,7 +46,8 @@ describe('Multiply Layer', () => {
           size: 1,
         },
       })(deltas, inputDeltas, inputWeights)
-      assert.deepEqual(result, [[2, 4], [5, 8], [8, 12]])
+
+      expect(result).toEqual([[2, 4], [5, 8], [8, 12]])
     })
   })
   describe('.compareFromY (back propagation)', () => {
@@ -60,7 +61,8 @@ describe('Multiply Layer', () => {
           size: 2,
         },
       })(deltas, m1, m2)
-      assert.deepEqual(result, [[21, 21], [21, 21]])
+
+      expect(result).toEqual([[21, 21], [21, 21]])
     })
     it('can compare a simple matrix 3x1 * 2x1 = 3x2', () => {
       const deltas = [[1], [2], [3]]
@@ -72,7 +74,8 @@ describe('Multiply Layer', () => {
           size: 3,
         },
       })(deltas, inputDeltas, inputWeights)
-      assert.deepEqual(result, [[23], [30]])
+
+      expect(result).toEqual([[23], [30]])
     })
     it('can compare a simple matrix 3x1 * 1x3 = 3x1', () => {
       const deltas = [[1, 2, 3]]
@@ -84,33 +87,32 @@ describe('Multiply Layer', () => {
           size: 1,
         },
       })(deltas, inputDeltas, inputWeights)
-      assert.deepEqual(result, [[2], [4], [6]])
+
+      expect(result).toEqual([[2], [4], [6]])
     })
   })
   describe('.validate', () => {
-    context('when dimension are incompatible', () => {
-      it('throws error', () => {
-        assert.throws(() => {
-          Multiply.prototype.validate.call({
-            inputLayer1: { width: 1, height: 1 },
-            inputLayer2: { width: 1, height: 2 },
-            height: 1,
-            width: 1,
-          })
-        }, Error)
-      })
-    })
-    context('when dimension are compatible', () => {
-      it('validates', () => {
+    it('throws error when dimension are incompatible', () => {
+      assert.throws(() => {
         Multiply.prototype.validate.call({
           inputLayer1: { width: 1, height: 1 },
-          inputLayer2: { width: 1, height: 1 },
+          inputLayer2: { width: 1, height: 2 },
           height: 1,
           width: 1,
         })
+      }, Error)
+    })
+
+    it('validates when dimension are compatible', () => {
+      Multiply.prototype.validate.call({
+        inputLayer1: { width: 1, height: 1 },
+        inputLayer2: { width: 1, height: 1 },
+        height: 1,
+        width: 1,
       })
     })
   })
+
   describe('instance', () => {
     describe('.predict method', () => {
       it('validates, multiplies, and sets .weights', () => {
