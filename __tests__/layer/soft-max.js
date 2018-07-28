@@ -1,6 +1,6 @@
 import gpuMock from 'gpu-mock.js'
 import {
-  compare,
+  // compare,
   getExponentials,
   getExponentials3D,
   getMaxValue,

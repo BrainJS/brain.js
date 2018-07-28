@@ -1,6 +1,17 @@
 import gpuMock from 'gpu-mock.js'
 import { predict, compare } from '../../src/layer/tanh'
 
+function shave(array) {
+  const result = []
+  for (let i = 0; i < array.length; i++) {
+    if (Array.isArray(array[i])) {
+      result.push(shave(array[i]))
+    } else {
+      result.push(array[i].toFixed(16))
+    }
+  }
+}
+
 describe('Tanh Layer', () => {
   describe('.predict (forward propagation)', () => {
     test('can tanh a simple matrix', () => {
@@ -33,14 +44,3 @@ describe('Tanh Layer', () => {
     })
   })
 })
-
-function shave(array) {
-  const result = []
-  for (let i = 0; i < array.length; i++) {
-    if (Array.isArray(array[i])) {
-      result.push(shave(array[i]))
-    } else {
-      result.push(array[i].toFixed(16))
-    }
-  }
-}
