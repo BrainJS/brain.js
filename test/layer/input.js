@@ -1,4 +1,4 @@
-import assert from 'assert';
+import {assert} from 'chai';
 import Input from '../../src/layer/input';
 
 describe('Input Layer', () => {

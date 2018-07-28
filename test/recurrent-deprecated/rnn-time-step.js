@@ -1,4 +1,4 @@
-import assert from 'assert';
+import {assert} from 'chai';
 import RNNTimeStep from '../../src/recurrent/rnn-time-step';
 import LSTMTimeStep from "../../src/recurrent/lstm-time-step";
 

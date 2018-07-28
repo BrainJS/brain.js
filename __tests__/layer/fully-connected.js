@@ -11,7 +11,7 @@ import {
 
 describe('FullyConnected Layer', () => {
   describe('.predict (forward propagation)', () => {
-    it('can predict a simple matrix', () => {
+    test('can predict a simple matrix', () => {
       const weights = [[1, 2], [3, 4]]
       const filters = [
         [1, 2, 3, 4],
@@ -37,7 +37,7 @@ describe('FullyConnected Layer', () => {
       ])
     })
 
-    it('can predict a matrix', () => {
+    test('can predict a matrix', () => {
       const results = gpuMock(predict, {
         output: [9],
         constants: {
@@ -66,7 +66,7 @@ describe('FullyConnected Layer', () => {
   })
 
   describe('.predict3D (forward propagation)', () => {
-    it('can predict a simple matrix', () => {
+    test('can predict a simple matrix', () => {
       const weights = [[[1, 2], [3, 4]]]
       const filters = [
         [1, 2, 3, 4],
@@ -89,7 +89,7 @@ describe('FullyConnected Layer', () => {
       ])
     })
 
-    it('can predict a matrix', () => {
+    test('can predict a matrix', () => {
       const results = gpuMock(predict3D, {
         output: [9, 1],
         constants: {
@@ -118,7 +118,7 @@ describe('FullyConnected Layer', () => {
   })
 
   describe('.compareBiases (back propagation)', () => {
-    it('can compare a simple matrix', () => {
+    test('can compare a simple matrix', () => {
       const biases = [0, 0, 0, 0]
       const deltas = [[1, 2, 3, 4]]
       const kernel = gpuMock(compareBiases, {
@@ -131,7 +131,7 @@ describe('FullyConnected Layer', () => {
       expect(kernel(biases, deltas)).toEqual([1, 2, 3, 4])
     })
 
-    it('can add a simple matrix', () => {
+    test('can add a simple matrix', () => {
       const biases = [1, 2, 3, 4]
       const deltas = [[1, 2, 3, 4]]
       const kernel = gpuMock(compareBiases, {
@@ -146,7 +146,7 @@ describe('FullyConnected Layer', () => {
   })
 
   describe('.compareFilterDeltas (back propagation)', () => {
-    it('can compare a simplge matrix', () => {
+    test('can compare a simplge matrix', () => {
       const inputWeights = [[1, 2], [3, 4]]
       const deltas = [[1, 2, 3, 4]]
       const filterDeltas = [
@@ -171,7 +171,7 @@ describe('FullyConnected Layer', () => {
       ])
     })
 
-    it('can add a simplge matrix', () => {
+    test('can add a simplge matrix', () => {
       const inputWeights = [[1, 2], [3, 4]]
       const deltas = [[1, 2, 3, 4]]
       const filterDeltas = [
@@ -198,7 +198,7 @@ describe('FullyConnected Layer', () => {
   })
 
   describe('.compareFilterDeltas3D (back propagation)', () => {
-    it('can compare a simplge matrix', () => {
+    test('can compare a simplge matrix', () => {
       const inputWeights = [[[1, 2], [3, 4]]]
       const deltas = [[1, 2, 3, 4]]
       const filterDeltas = [
@@ -223,7 +223,7 @@ describe('FullyConnected Layer', () => {
       ])
     })
 
-    it('can add a simplge matrix', () => {
+    test('can add a simplge matrix', () => {
       const inputWeights = [[[1, 2], [3, 4]]]
       const deltas = [[1, 2, 3, 4]]
       const filterDeltas = [
@@ -249,7 +249,7 @@ describe('FullyConnected Layer', () => {
     })
   })
   describe('.compareInputDeltas (back propagation)', () => {
-    it('can compare a simple matrix', () => {
+    test('can compare a simple matrix', () => {
       const inputDeltas = [[0, 0], [0, 0]]
       const deltas = [[1, 2, 3, 4]]
       const filters = [
@@ -271,7 +271,7 @@ describe('FullyConnected Layer', () => {
       ])
     })
 
-    it('can add a simple matrix', () => {
+    test('can add a simple matrix', () => {
       const inputDeltas = [[1, 2], [3, 4]]
       const deltas = [[1, 2, 3, 4]]
       const filters = [
@@ -294,7 +294,7 @@ describe('FullyConnected Layer', () => {
     })
   })
   describe('.compareInputDeltas3D (back propagation)', () => {
-    it('can compare a simple matrix', () => {
+    test('can compare a simple matrix', () => {
       const inputDeltas = [[[0, 0], [0, 0]]]
       const deltas = [[1, 2, 3, 4]]
       const filters = [
@@ -314,7 +314,7 @@ describe('FullyConnected Layer', () => {
         [[90, 100], [110, 120]],
       ])
     })
-    it('can add a simple matrix', () => {
+    test('can add a simple matrix', () => {
       const inputDeltas = [[[1, 2], [3, 4]]]
       const deltas = [[1, 2, 3, 4]]
       const filters = [

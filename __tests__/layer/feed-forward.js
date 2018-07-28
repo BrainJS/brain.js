@@ -1,7 +1,7 @@
 import feedForward from '../../src/layer/feed-forward'
 
 describe('FeedForward Layer', () => {
-  it('properly sets width and height', () => {
+  test('properly sets width and height', () => {
     const input = { width: 1, height: 3 }
 
     const settings = { height: 3 }

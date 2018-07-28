@@ -1,4 +1,4 @@
-import assert from 'assert';
+import {assert} from 'chai';
 import gpuMock from 'gpu-mock.js';
 import Input from '../../src/layer/input';
 import Multiply, { predict, compareFromX, compareFromY } from '../../src/layer/multiply';

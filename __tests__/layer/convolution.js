@@ -8,7 +8,7 @@ import {
 
 describe('Convolution Layer', () => {
   describe('.predict (forward propagation)', () => {
-    it('can convolution a simple matrix', () => {
+    test('can convolution a simple matrix', () => {
       const inputs = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
       const filters = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
       const biases = [1, 2, 3]
@@ -34,7 +34,7 @@ describe('Convolution Layer', () => {
   })
 
   describe('.compare (back propagation)', () => {
-    it('can convolution a simple matrix', () => {
+    test('can convolution a simple matrix', () => {
       const inputs = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
       const deltas = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
       const results = gpuMock(compareFilters, {
@@ -59,7 +59,7 @@ describe('Convolution Layer', () => {
   })
 
   describe('.learnInputs (back propagation)', () => {
-    it('can convolution a simple matrix', () => {
+    test('can convolution a simple matrix', () => {
       const inputs = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
       const deltas = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
       const results = gpuMock(compareInputs, {
@@ -93,7 +93,7 @@ describe('Convolution Layer', () => {
       [[6, 22], [14, 30]],
       [[7, 23], [15, 31]],
     ]
-    it('accumulates values from deltas correctly from 0', () => {
+    test('accumulates values from deltas correctly from 0', () => {
       const biasDeltas = [0, 0, 0, 0, 0, 0, 0, 0]
       const kernel = gpuMock(compareBiases, {
         output: [1, 1, 8],
@@ -116,7 +116,7 @@ describe('Convolution Layer', () => {
 
       expect(result).toEqual(expectedBiasDeltas)
     })
-    it('accumulates values from deltas correctly from greater than 0', () => {
+    test('accumulates values from deltas correctly from greater than 0', () => {
       const biasDeltas = [0, 1, 2, 3, 4, 5, 6, 7]
       const kernel = gpuMock(compareBiases, {
         output: [1, 1, 8],

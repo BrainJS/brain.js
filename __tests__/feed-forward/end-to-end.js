@@ -39,7 +39,7 @@ const xorTrainingData = [
 
 describe('FeedForward Class: End to End', () => {
   describe('when configured like NeuralNetwork', () => {
-    it('outputs the exact same values', () => {
+    test('outputs the exact same values', () => {
       const standardNet = new NeuralNetwork([2, 3, 1])
       const ffNet = new FeedForward({
         inputLayer: () => input({ height: 2 }),
@@ -138,7 +138,7 @@ describe('FeedForward Class: End to End', () => {
   })
 
   describe('.runInput()', () => {
-    it('outputs a number', () => {
+    test('outputs a number', () => {
       const net = new FeedForward({
         inputLayer: () => input({ width: 1, height: 1 }),
         hiddenLayers: [
@@ -155,7 +155,7 @@ describe('FeedForward Class: End to End', () => {
   })
 
   describe('.train()', () => {
-    it('outputs a number that is smaller than when it started', () => {
+    test('outputs a number that is smaller than when it started', () => {
       const net = new FeedForward({
         inputLayer: () => input({ height: 2 }),
         hiddenLayers: [
@@ -180,7 +180,7 @@ describe('FeedForward Class: End to End', () => {
       expect(errors[0]).toBeGreaterThan(errors[9])
     })
 
-    it('can learn xor', () => {
+    test('can learn xor', () => {
       const errors = []
       const net = new FeedForward({
         inputLayer: () =>
@@ -232,7 +232,7 @@ describe('FeedForward Class: End to End', () => {
   })
 
   describe('._calculateDeltas()', () => {
-    it('populates deltas from output to input', () => {
+    test('populates deltas from output to input', () => {
       class SuperOutput extends Target {
         constructor(settings, inputLayer) {
           super(settings, inputLayer)

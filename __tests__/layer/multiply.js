@@ -9,7 +9,7 @@ import Random from '../../src/layer/random'
 
 describe('Multiply Layer', () => {
   describe('.predict (forward propagation)', () => {
-    it('can multiply a simple matrix', () => {
+    test('can multiply a simple matrix', () => {
       const inputs1 = [[1, 2, 3], [4, 5, 6]]
       const inputs2 = [[7, 8], [9, 10], [11, 12]]
       const results = gpuMock(predict, {
@@ -23,7 +23,7 @@ describe('Multiply Layer', () => {
     })
   })
   describe('.compareFromX (back propagation)', () => {
-    it('can multiply a simple matrix', () => {
+    test('can multiply a simple matrix', () => {
       const m1 = [[3, 3], [3, 3]]
       const m2 = [[3, 3], [3, 3]]
       const deltas = [[3, 3], [3, 3]]
@@ -36,7 +36,7 @@ describe('Multiply Layer', () => {
 
       expect(result).toEqual([[21, 21], [21, 21]])
     })
-    it('can compare a simple matrix', () => {
+    test('can compare a simple matrix', () => {
       const deltas = [[1], [2], [3]]
       const inputDeltas = [[1, 2], [3, 4], [5, 6]]
       const inputWeights = [[1], [2]]
@@ -51,7 +51,7 @@ describe('Multiply Layer', () => {
     })
   })
   describe('.compareFromY (back propagation)', () => {
-    it('can multiply a simple matrix 2x2 * 2x2 = 2x2', () => {
+    test('can multiply a simple matrix 2x2 * 2x2 = 2x2', () => {
       const m1 = [[3, 3], [3, 3]]
       const m2 = [[3, 3], [3, 3]]
       const deltas = [[3, 3], [3, 3]]
@@ -64,7 +64,7 @@ describe('Multiply Layer', () => {
 
       expect(result).toEqual([[21, 21], [21, 21]])
     })
-    it('can compare a simple matrix 3x1 * 2x1 = 3x2', () => {
+    test('can compare a simple matrix 3x1 * 2x1 = 3x2', () => {
       const deltas = [[1], [2], [3]]
       const inputDeltas = [[1], [2]]
       const inputWeights = [[1, 2], [3, 4], [5, 6]]
@@ -77,7 +77,7 @@ describe('Multiply Layer', () => {
 
       expect(result).toEqual([[23], [30]])
     })
-    it('can compare a simple matrix 3x1 * 1x3 = 3x1', () => {
+    test('can compare a simple matrix 3x1 * 1x3 = 3x1', () => {
       const deltas = [[1, 2, 3]]
       const inputDeltas = [[1], [2], [3]]
       const inputWeights = [[1, 2, 3]]
@@ -92,18 +92,18 @@ describe('Multiply Layer', () => {
     })
   })
   describe('.validate', () => {
-    it('throws error when dimension are incompatible', () => {
-      assert.throws(() => {
+    test('throws error when dimension are incompatible', () => {
+      expect(() => {
         Multiply.prototype.validate.call({
           inputLayer1: { width: 1, height: 1 },
           inputLayer2: { width: 1, height: 2 },
           height: 1,
           width: 1,
         })
-      }, Error)
+      }).toThrow()
     })
 
-    it('validates when dimension are compatible', () => {
+    test('validates when dimension are compatible', () => {
       Multiply.prototype.validate.call({
         inputLayer1: { width: 1, height: 1 },
         inputLayer2: { width: 1, height: 1 },
@@ -115,7 +115,7 @@ describe('Multiply Layer', () => {
 
   describe('instance', () => {
     describe('.predict method', () => {
-      it('validates, multiplies, and sets .weights', () => {
+      test('validates, multiplies, and sets .weights', () => {
         const inputLayer1 = {
           width: 3,
           height: 2,
@@ -131,11 +131,11 @@ describe('Multiply Layer', () => {
         multiplyLayer.setupKernels()
         multiplyLayer.predict()
 
-        assert.deepEqual(multiplyLayer.weights, [[58, 64], [139, 154]])
+        expect(multiplyLayer.weights).toEqual([[58, 64], [139, 154]])
       })
     })
-    context('when used with Input layer', () => {
-      it('is compatible', () => {
+    describe('when used with Input layer', () => {
+      test('is compatible', () => {
         const random = new Random({ height: 3, width: 2 })
         const input = new Input({ height: 2 })
         const multiply = new Multiply(random, input)
@@ -152,8 +152,8 @@ describe('Multiply Layer', () => {
         input.predict([0, 1])
         random.predict()
         multiply.predict()
-        assert.equal(multiply.width, 1)
-        assert.equal(multiply.height, 3)
+        expect(multiply.width).toEqual(1)
+        expect(multiply.height).toEqual(3)
       })
     })
   })

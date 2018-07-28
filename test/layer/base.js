@@ -1,5 +1,5 @@
 import Base from '../../src/layer/base';
-import assert from 'assert';
+import {assert} from 'chai';
 describe('Base Layer', () => {
   describe('dimensions', () => {
     describe('when given undefined for width, height, and depth', () => {

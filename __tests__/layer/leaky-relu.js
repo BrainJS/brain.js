@@ -3,7 +3,7 @@ import { predict, compare } from '../../src/layer/leaky-relu'
 
 describe('Leaky Relu Layer', () => {
   describe('.predict (forward propagation)', () => {
-    it('can leaky relu a simple matrix', () => {
+    test('can leaky relu a simple matrix', () => {
       const inputs = [[0.1, -0.2, 0.3], [-0.4, 0.5, -0.6], [0.7, -0.8, 0.9]]
       const results = gpuMock(predict, {
         output: [3, 3],
@@ -18,7 +18,7 @@ describe('Leaky Relu Layer', () => {
   })
 
   describe('.compare (back propagation)', () => {
-    it('can leaky relu a simple matrix', () => {
+    test('can leaky relu a simple matrix', () => {
       const inputs = [[0.1, -0.2, 0.3], [-0.4, 0.5, -0.6], [0.7, -0.8, 0.9]]
       const deltas = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
       const results = gpuMock(compare, {

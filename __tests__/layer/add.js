@@ -3,7 +3,7 @@ import { predict } from '../../src/layer/add'
 
 describe('Add Layer', () => {
   describe('.predict (forward propagation)', () => {
-    it('can add a simple matrix', () => {
+    test('can add a simple matrix', () => {
       const inputs1 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
       const inputs2 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
       const results = gpuMock(predict, {

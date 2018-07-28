@@ -3,7 +3,7 @@ import Dropout, { trainingPredict, predict } from '../../src/layer/dropout'
 
 describe('Dropout Layer', () => {
   describe('.trainingPredict (forward propagation)', () => {
-    it('can dropout a simple matrix', () => {
+    test('can dropout a simple matrix', () => {
       const inputs = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 
       const results = gpuMock(trainingPredict, {
@@ -34,7 +34,7 @@ describe('Dropout Layer', () => {
     })
   })
   describe('.training (forward propagation)', () => {
-    it('can dropout a simple matrix', () => {
+    test('can dropout a simple matrix', () => {
       const inputs = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 
       const results = gpuMock(predict, {

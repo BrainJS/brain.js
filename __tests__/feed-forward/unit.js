@@ -27,14 +27,14 @@ const {
 
 describe('FeedForward Class: Unit', () => {
   describe('.constructor()', () => {
-    it('initially does not have any layers', () => {
+    test('initially does not have any layers', () => {
       expect(new FeedForward().layers).toBeNull()
     })
   })
 
   describe('layer composition', () => {
     describe('flat', () => {
-      it('can setup and traverse entire network as needed', () => {
+      test('can setup and traverse entire network as needed', () => {
         const net = new FeedForward({
           inputLayer: () => input(),
           hiddenLayers: [
@@ -112,7 +112,7 @@ describe('FeedForward Class: Unit', () => {
         )
       })
 
-      it('can setup and traverse entire network using layer composed of layers', () => {
+      test('can setup and traverse entire network using layer composed of layers', () => {
         const net = new FeedForward({
           inputLayer: () => input({ height: 1 }),
           hiddenLayers: [inputLayer => feedForward({ height: 1 }, inputLayer)],
@@ -141,7 +141,7 @@ describe('FeedForward Class: Unit', () => {
     })
 
     describe('functional', () => {
-      it('can setup and traverse entire network as needed', () => {
+      test('can setup and traverse entire network as needed', () => {
         const net = new FeedForward({
           inputLayer: () => input(),
           hiddenLayers: [
@@ -216,7 +216,7 @@ describe('FeedForward Class: Unit', () => {
   })
 
   describe('.initialize()', () => {
-    it('initializes all layers', () => {
+    test('initializes all layers', () => {
       class TestLayer extends Base {
         setupKernels() {
           this.called = true
@@ -244,7 +244,7 @@ describe('FeedForward Class: Unit', () => {
       ])
     })
 
-    it('populates praxis on all layers when it is null', () => {
+    test('populates praxis on all layers when it is null', () => {
       class TestLayer extends Base {
         setupKernels() {
           this.called = true
@@ -278,7 +278,7 @@ describe('FeedForward Class: Unit', () => {
         true,
       ])
     })
-    it('populates praxis when defined as setting on layer', () => {
+    test('populates praxis when defined as setting on layer', () => {
       class TestLayer extends Base {
         setupKernels() {
           this.called = true
@@ -315,7 +315,7 @@ describe('FeedForward Class: Unit', () => {
   })
 
   describe('.runInput()', () => {
-    it('calls .predict() on all layers', () => {
+    test('calls .predict() on all layers', () => {
       class TestLayer extends Base {
         // eslint-disable-next-line
         setupKernels() {}
@@ -349,7 +349,7 @@ describe('FeedForward Class: Unit', () => {
   })
 
   describe('._calculateDeltas()', () => {
-    it('calls .compare() on all layers', () => {
+    test('calls .compare() on all layers', () => {
       class TestLayer extends Base {
         // eslint-disable-next-line
         setupKernels() {}
@@ -386,7 +386,7 @@ describe('FeedForward Class: Unit', () => {
   })
 
   describe('._adjustWeights()', () => {
-    it('calls .learn() on all layers', () => {
+    test('calls .learn() on all layers', () => {
       class TestLayer extends Base {
         // eslint-disable-next-line
         setupKernels() {}
@@ -426,7 +426,7 @@ describe('FeedForward Class: Unit', () => {
   })
 
   describe('.toJSON()', () => {
-    it('can serialize to json', () => {
+    test('can serialize to json', () => {
       class TestInputLayer extends Base {
         constructor(settings) {
           super(settings)
@@ -540,7 +540,7 @@ describe('FeedForward Class: Unit', () => {
   })
 
   describe('.fromJSON()', () => {
-    it('can deserialize to object from json using inputLayerIndex', () => {
+    test('can deserialize to object from json using inputLayerIndex', () => {
       class TestLayer extends Base {
         static get defaults() {
           return { foo: null }
@@ -603,7 +603,7 @@ describe('FeedForward Class: Unit', () => {
       ])
     })
 
-    it('can deserialize to object from json using inputLayer1Index & inputLayer2Index', () => {
+    test('can deserialize to object from json using inputLayer1Index & inputLayer2Index', () => {
       class TestLayer extends Base {
         static get defaults() {
           return { foo: null }
@@ -676,7 +676,7 @@ describe('FeedForward Class: Unit', () => {
   })
 
   describe('._trainPattern()', () => {
-    it('calls training methods and mse2d and returns value', () => {
+    test('calls training methods and mse2d and returns value', () => {
       const net = new FeedForward({
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [inputLayer => feedForward({ height: 1 }, inputLayer)],

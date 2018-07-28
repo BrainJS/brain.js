@@ -1,4 +1,4 @@
-import assert from 'assert';
+import {assert} from 'chai';
 import TimeStep from '../../src/recurrent/time-step';
 
 /* NOTE: TimeStep here is deprecated though being committed as something new, it is the first feature we want using

@@ -1,5 +1,3 @@
-import assert from 'assert'
-import sinon from 'sinon'
 import { Recurrent, layer } from '../../src/index'
 import RecurrentConnection from '../../src/layer/recurrent-connection'
 import { Filter, Model } from '../../src/layer/types'
@@ -8,7 +6,7 @@ const { add, input, multiply, output, random, recurrent } = layer
 
 describe('Recurrent Class: Unit', () => {
   describe('.initialize()', () => {
-    it('can validate a simple recurrent neural network', () => {
+    test('can validate a simple recurrent neural network', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 2 }),
         hiddenLayers: [
@@ -22,14 +20,13 @@ describe('Recurrent Class: Unit', () => {
 
       net.initialize()
 
-      assert.deepEqual(net._inputLayers.map(layer => layer.constructor.name), [
+      expect(net._inputLayers.map(layer => layer.constructor.name)).toEqual([
         'Input',
       ])
-      assert.deepEqual(
-        net._hiddenLayers[0].map(layer => layer.constructor.name),
+      expect(net._hiddenLayers[0].map(layer => layer.constructor.name)).toEqual(
         ['Multiply', 'RecurrentZeros', 'Multiply', 'Add', 'Add', 'Relu']
       )
-      assert.deepEqual(net._outputLayers.map(layer => layer.constructor.name), [
+      expect(net._outputLayers.map(layer => layer.constructor.name)).toEqual([
         'Random',
         'RecurrentConnection',
         'Multiply',
@@ -40,7 +37,7 @@ describe('Recurrent Class: Unit', () => {
     })
   })
   describe('.runInput()', () => {
-    it('forward propagates', () => {
+    test('forward propagates', () => {
       const net = new Recurrent({
         inputLayer: () => input({ width: 1 }),
         hiddenLayers: [
@@ -58,14 +55,14 @@ describe('Recurrent Class: Unit', () => {
       net.initialize()
       net.initializeDeep()
       net.runInput([0, 1])
-      assert.equal(net._model.length, 1)
-      assert.equal(net._inputLayers.length, 1)
-      assert.equal(net._hiddenLayers[0].length, 3)
-      assert.equal(net._hiddenLayers[1].length, 3)
+      expect(net._model.length).toEqual(1)
+      expect(net._inputLayers.length).toEqual(1)
+      expect(net._hiddenLayers[0].length).toEqual(3)
+      expect(net._hiddenLayers[1].length).toEqual(3)
     })
   })
   describe('.calculateDeltas()', () => {
-    it('back propagates values through deltas', () => {
+    test('back propagates values through deltas', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
@@ -80,105 +77,109 @@ describe('Recurrent Class: Unit', () => {
       net.initialize()
       net.initializeDeep()
       net.runInput([1, 1])
-      assert.equal(net._model.length, 1)
-      assert.equal(net._hiddenLayers.length, 2)
-      assert.equal(net._hiddenLayers[0].length, 3)
+      expect(net._model.length).toEqual(1)
+      expect(net._hiddenLayers.length).toEqual(2)
+      expect(net._hiddenLayers[0].length).toEqual(3)
 
-      assert(net._model[0].deltas.every(row => row.every(delta => delta === 0)))
+      expect(
+        net._model[0].deltas.every(row => row.every(delta => delta === 0))
+      ).toBeTruthy()
 
-      assert(
+      expect(
         net._inputLayers[0].deltas.every(row => row.every(delta => delta === 0))
-      )
+      ).toBeTruthy()
 
-      assert(
+      expect(
         net._hiddenLayers[0][0].deltas.every(row =>
           row.every(delta => delta === 0)
         )
-      )
-      assert(
+      ).toBeTruthy()
+      expect(
         net._hiddenLayers[0][1].deltas.every(row =>
           row.every(delta => delta === 0)
         )
-      )
-      assert(
+      ).toBeTruthy()
+      expect(
         net._hiddenLayers[0][2].deltas.every(row =>
           row.every(delta => delta === 0)
         )
-      )
+      ).toBeTruthy()
 
-      assert(
+      expect(
         net._outputLayers[0].deltas.every(row =>
           row.every(delta => delta === 0)
         )
-      )
-      assert(
+      ).toBeTruthy()
+      expect(
         net._outputLayers[1].deltas.every(row =>
           row.every(delta => delta === 0)
         )
-      )
-      assert(
+      ).toBeTruthy()
+      expect(
         net._outputLayers[2].deltas.every(row =>
           row.every(delta => delta === 0)
         )
-      )
+      ).toBeTruthy()
 
       net._calculateDeltas([0], 1)
       net._calculateDeltas([1], 0)
 
-      assert(net._model[0].deltas.every(row => row.some(delta => delta !== 0)))
+      expect(
+        net._model[0].deltas.every(row => row.some(delta => delta !== 0))
+      ).toBeTruthy()
 
       // first layer
-      assert(
+      expect(
         net._inputLayers[0].deltas.every(row => row.some(delta => delta !== 0))
-      )
+      ).toBeTruthy()
 
-      assert(
+      expect(
         net._hiddenLayers[0][0].deltas.every(row =>
           row.some(delta => delta !== 0)
         )
-      )
-      assert(
+      ).toBeTruthy()
+      expect(
         net._hiddenLayers[0][1].deltas.every(row =>
           row.some(delta => delta !== 0)
         )
-      )
-      assert(
+      ).toBeTruthy()
+      expect(
         net._hiddenLayers[0][2].deltas.every(row =>
           row.some(delta => delta !== 0)
         )
-      )
+      ).toBeTruthy()
 
       // second layer
-      assert(
+      expect(
         net._hiddenLayers[1][0].deltas.every(row =>
           row.some(delta => delta !== 0)
         )
-      )
-      assert(
+      ).toBeTruthy()
+      expect(
         net._hiddenLayers[1][1].deltas.every(row =>
           row.some(delta => delta !== 0)
         )
-      )
-      assert(
+      ).toBeTruthy()
+      expect(
         net._hiddenLayers[1][2].deltas.every(row =>
           row.some(delta => delta !== 0)
         )
-      )
+      ).toBeTruthy()
 
       // output layer
-      assert(
+      expect(
         net._outputLayers[0].deltas.every(row => row.some(delta => delta !== 0))
-      )
-      assert(
+      ).toBeTruthy()
+      expect(
         net._outputLayers[1].deltas.every(row => row.some(delta => delta !== 0))
-      )
-      assert(
+      ).toBeTruthy()
+      expect(
         net._outputLayers[2].deltas.every(row => row.some(delta => delta !== 0))
-      )
+      ).toBeTruthy()
     })
   })
   describe('.adjustWeights()', () => {
-    it('back propagates values through weights', () => {
+    test('back propagates values through weights', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
@@ -193,8 +194,8 @@ describe('Recurrent Class: Unit', () => {
       net.initialize()
       net.initializeDeep()
       net.runInput([1, 1])
-      assert.equal(net._model.length, 1)
-      assert.equal(net._hiddenLayers[0].length, 3)
+      expect(net._model.length).toEqual(1)
+      expect(net._hiddenLayers[0].length).toEqual(3)
       const model0Weights = net._model[0].weights
       const hiddenLayers00Weights = net._hiddenLayers[0][0].weights
       const hiddenLayers01Weights = net._hiddenLayers[0][1].weights
@@ -210,21 +211,21 @@ describe('Recurrent Class: Unit', () => {
       net._adjustWeights()
 
       // weights are adjusted
-      assert.notEqual(model0Weights, net._model[0].weights)
-      assert.notEqual(hiddenLayers00Weights, net._hiddenLayers[0][0].weights)
-      assert.notEqual(hiddenLayers01Weights, net._hiddenLayers[0][1].weights)
-      assert.notEqual(hiddenLayers02Weights, net._hiddenLayers[0][2].weights)
-      assert.notEqual(hiddenLayers10Weights, net._hiddenLayers[1][0].weights)
-      assert.notEqual(hiddenLayers11Weights, net._hiddenLayers[1][1].weights)
-      assert.notEqual(hiddenLayers12Weights, net._hiddenLayers[1][2].weights)
-      assert.notEqual(outputLayers0Weights, net._outputLayers[0].weights)
-      assert.notEqual(outputLayers1Weights, net._outputLayers[1].weights)
-      assert.notEqual(outputLayers2Weights, net._outputLayers[2].weights)
-      assert.notEqual(outputLayers3Weights, net._outputLayers[3].weights)
+      expect(model0Weights).not.toEqual(net._model[0].weights)
+      expect(hiddenLayers00Weights).not.toEqual(net._hiddenLayers[0][0].weights)
+      expect(hiddenLayers01Weights).not.toEqual(net._hiddenLayers[0][1].weights)
+      expect(hiddenLayers02Weights).not.toEqual(net._hiddenLayers[0][2].weights)
+      expect(hiddenLayers10Weights).not.toEqual(net._hiddenLayers[1][0].weights)
+      expect(hiddenLayers11Weights).not.toEqual(net._hiddenLayers[1][1].weights)
+      expect(hiddenLayers12Weights).not.toEqual(net._hiddenLayers[1][2].weights)
+      expect(outputLayers0Weights).not.toEqual(net._outputLayers[0].weights)
+      expect(outputLayers1Weights).not.toEqual(net._outputLayers[1].weights)
+      expect(outputLayers2Weights).not.toEqual(net._outputLayers[2].weights)
+      expect(outputLayers3Weights).not.toEqual(net._outputLayers[3].weights)
     })
   })
   describe('._trainPattern()', () => {
-    it('steps back through values correctly', () => {
+    test('steps back through values correctly', () => {
       class SuperLayer extends Filter {
         constructor() {
           super()
@@ -250,19 +251,19 @@ describe('Recurrent Class: Unit', () => {
 
       net.initialize()
       net.initializeDeep()
-      net._inputLayers[0].compare = sinon.spy()
-      net._hiddenLayers[0][0].compare = sinon.spy()
-      net._hiddenLayers[1][0].compare = sinon.spy()
-      net._outputLayers[0].compare = sinon.spy()
+      // net._inputLayers[0].compare = sinon.spy()
+      // net._hiddenLayers[0][0].compare = sinon.spy()
+      // net._hiddenLayers[1][0].compare = sinon.spy()
+      // net._outputLayers[0].compare = sinon.spy()
       net.runInput([0, 1])
       net._trainPattern([0, 1], [2])
 
-      assert.equal(net._outputLayers[0].compare.callCount, 2)
-      assert.deepEqual(net._outputLayers[0].compare.firstCall.args, [[2]])
-      assert.deepEqual(net._outputLayers[0].compare.secondCall.args, [[1]])
+      expect(net._outputLayers[0].compare.callCount).toEqual(2)
+      expect(net._outputLayers[0].compare.firstCall.args).toEqual([[2]])
+      expect(net._outputLayers[0].compare.secondCall.args).toEqual([[1]])
     })
     describe('when called more than once', () => {
-      it('continuously updates output layer', () => {
+      test('continuously updates output layer', () => {
         const net = new Recurrent({
           inputLayer: () => input({ height: 1 }),
           hiddenLayers: [
@@ -275,19 +276,19 @@ describe('Recurrent Class: Unit', () => {
         net.initializeDeep()
 
         const lastOutputLayer = net._outputLayers[net._outputLayers.length - 1]
-        assert.deepEqual(lastOutputLayer.weights, [[0]])
+        expect(lastOutputLayer.weights).toEqual([[0]])
         net._trainPattern([1, 2], [3])
         const weights1 = lastOutputLayer.weights
-        assert.notDeepEqual(weights1, [[0]])
+        expect(weights1).not.toEqual([[0]])
         net._trainPattern([3, 2], [1])
         const weights2 = lastOutputLayer.weights
-        assert.notDeepEqual(weights1, weights2)
+        expect(weights1).not.toEqual(weights2)
         net._trainPattern([1, 1], [1])
         const weights3 = lastOutputLayer.weights
-        assert.notDeepEqual(weights2, weights3)
+        expect(weights2).not.toEqual(weights3)
         net._trainPattern([3, 3], [3])
         const weights4 = lastOutputLayer.weights
-        assert.notDeepEqual(weights3, weights4)
+        expect(weights3).not.toEqual(weights4)
       })
     })
   })
