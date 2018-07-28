@@ -5,7 +5,7 @@
     "url": "https://github.com/brainjs/brain.js/issues"
   },
   "dependencies": {
-    "gpu.js": "^1.5.4",
+    "gpu.js": "^1.5.5",
     "thaw.js": "^2.0.0"
   },
   "description": "Neural networks in JavaScript",
@@ -20,7 +20,7 @@
     "eslint-plugin-jsx-a11y": "^6.1.1",
     "eslint-plugin-react": "^7.10.0",
     "gpu-mock.js": "^1.0.1",
-    "jest": "^23.4.1",
+    "jest": "^23.4.2",
     "parcel-bundler": "^1.9.7",
     "prettier": "^1.13.7"
   },
