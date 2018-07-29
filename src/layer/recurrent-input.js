@@ -49,26 +49,26 @@ export default class RecurrentInput extends Internal {
   }
 
   predict() {
-    throw new Error(`${this.constructor.name}-predict is not yet implemented`)
+    // throw new Error(`${this.constructor.name}-predict is not yet implemented`)
   }
 
   compare() {
-    throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+    // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 
   learn() {
-    throw new Error(`${this.constructor.name}-learn is not yet implemented`)
+    // throw new Error(`${this.constructor.name}-learn is not yet implemented`)
   }
 
   setupKernels() {
-    throw new Error(
-      `${this.constructor.name}-setupKernels is not yet implemented`
-    )
+    // throw new Error(
+    //   `${this.constructor.name}-setupKernels is not yet implemented`
+    // )
   }
 
   reuseKernels() {
-    throw new Error(
-      `${this.constructor.name}-reuseKernels is not yet implemented`
-    )
+    // throw new Error(
+    //   `${this.constructor.name}-reuseKernels is not yet implemented`
+    // )
   }
 }
