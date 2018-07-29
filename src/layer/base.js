@@ -1,4 +1,5 @@
 import zeros2D from '../utilities/zeros-2d'
+import zeros3D from '../utilities/zeros-3d'
 
 export default class Base {
   static get defaults() {
@@ -132,7 +133,13 @@ export default class Base {
 
   learn(previousLayer, nextLayer, learningRate) {
     this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate)
-    this.deltas = zeros2D(this.width, this.height)
+
+    //TODO: put into a kernel
+    if (this.depth > 1) {
+      this.deltas = zeros3D(this.width, this.height, this.depth)
+    } else {
+      this.deltas = zeros2D(this.width, this.height)
+    }
   }
 
   toArray() {
