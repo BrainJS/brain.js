@@ -149,8 +149,8 @@ export function loss(exponentials) {
 // TODO: handle: `return -Math.log(this.es[y]);` in learn
 
 export default class SoftMax extends Filter {
-  constructor(settings, inputLayer) {
-    super(settings)
+  constructor(inputLayer) {
+    super()
     this.width = inputLayer.width
     this.height = inputLayer.height
     this.depth = inputLayer.depth
@@ -174,63 +174,56 @@ export default class SoftMax extends Filter {
   }
 
   setupKernels() {
-    const { inputLayer } = this
-    if (inputLayer.depth > 1) {
+    const { width, height, depth } = this
+    if (depth > 1) {
       this.getExponentialsKernel = makeKernel(getExponentials3D, {
-        output: [
-          inputLayer.width,
-          inputLayer.height,
-          inputLayer.depth,
-        ],
+        output: [width, height, depth],
       })
       this.getMaxValueKernel = makeKernel(getMaxValue3D, {
         output: [1, 1, 1],
         constants: {
-          inputWidth: inputLayer.width,
-          inputHeight: inputLayer.height,
-          inputDepth: inputLayer.depth,
+          inputWidth: width,
+          inputHeight: height,
+          inputDepth: depth,
         },
       })
       this.getSumKernel = makeKernel(getSum3D, {
         output: [1, 1, 1],
         constants: {
-          inputWidth: inputLayer.width,
-          inputHeight: inputLayer.height,
-          inputDepth: inputLayer.depth,
+          inputWidth: width,
+          inputHeight: height,
+          inputDepth: depth,
         },
       })
       this.predictKernel = makeKernel(predict3D, {
-        output: [this.width, this.height, this.depth],
+        output: [width, height, depth],
       })
-      this.compareKernel = makeKernel(compare, {
-        output: [this.width, this.height, this.depth],
+      this.compareKernel = makeKernel(compare3D, {
+        output: [width, height, depth],
       })
     } else {
       this.getExponentialsKernel = makeKernel(getExponentials, {
-        output: [
-          inputLayer.width,
-          inputLayer.height,
-        ],
+        output: [width, height],
       })
-      this.getMaxValueKernel = makeKernel(getMaxValue, {
+      this.getMaxValueKernel = makeKernel(getMaxValue2D, {
         output: [1, 1],
         constants: {
-          inputWidth: inputLayer.width,
-          inputHeight: inputLayer.height,
+          inputWidth: width,
+          inputHeight: height,
         },
       })
-      this.getSumKernel = makeKernel(getSum, {
+      this.getSumKernel = makeKernel(getSum2D, {
         output: [1, 1],
         constants: {
-          inputWidth: inputLayer.width,
-          inputHeight: inputLayer.height,
+          inputWidth: width,
+          inputHeight: height,
         },
       })
-      this.predictKernel = makeKernel(predict, {
-        output: [this.width, this.height],
+      this.predictKernel = makeKernel(predict2D, {
+        output: [width, height],
       })
-      this.compareKernel = makeKernel(compare, {
-        output: [this.width * this.height],
+      this.compareKernel = makeKernel(compare2D, {
+        output: [width, height],
       })
     }
   }
