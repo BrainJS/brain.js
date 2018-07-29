@@ -56,13 +56,13 @@ export default class RNN {
     const { model, hiddenSizes } = this
     const { hiddenLayers } = model
     // 0 is end, so add 1 to offset
-    hiddenLayers.push(this.getModel(hiddenSizes[0], this.inputSize))
+    hiddenLayers.push(RNN.getModel(hiddenSizes[0], this.inputSize))
     let prevSize = hiddenSizes[0]
 
     for (let d = 1; d < hiddenSizes.length; d++) {
       // loop over depths
       const hiddenSize = hiddenSizes[d]
-      hiddenLayers.push(this.getModel(hiddenSize, prevSize))
+      hiddenLayers.push(RNN.getModel(hiddenSize, prevSize))
       prevSize = hiddenSize
     }
   }
