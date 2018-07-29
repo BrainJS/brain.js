@@ -35,7 +35,7 @@ export default class Relu extends Activation {
     this.width = width
     this.height = height
     this.validate()
-    if (depth && depth > 1) {
+    if (depth > 1) {
       this.depth = depth
       this.weights = zeros3D(width, height, depth)
       this.deltas = zeros3D(width, height, depth)
@@ -47,24 +47,25 @@ export default class Relu extends Activation {
   }
 
   setupKernels() {
+    const { width, height, depth } = this.inputLayer
     if (this.depth > 1) {
       this.predictKernel = makeKernel(predict3D, {
-        output: [this.width, this.height, this.depth],
+        output: [width, height, depth],
         functions: [activate],
       })
 
       this.compareKernel = makeKernel(compare3D, {
-        output: [this.width, this.height, this.depth],
+        output: [width, height, depth],
         functions: [measure],
       })
     } else {
       this.predictKernel = makeKernel(predict, {
-        output: [this.width, this.height],
+        output: [width, height],
         functions: [activate],
       })
 
       this.compareKernel = makeKernel(compare, {
-        output: [this.width, this.height],
+        output: [width, height],
         functions: [measure],
       })
     }
