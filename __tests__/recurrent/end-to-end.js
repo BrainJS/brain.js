@@ -1,21 +1,17 @@
+import brain from '../../src'
+
 import Recurrent from '../../src/recurrent'
 import RNNTimeStep from '../../src/recurrent/rnn-time-step'
-
-import { layer } from '../../src'
-import Equation from '../../src/recurrent/matrix/equation'
-import RandomMatrix from '../../src/recurrent/matrix/random-matrix'
-import Matrix from '../../src/recurrent/matrix'
+// import Equation from '../../src/recurrent/matrix/equation'
+// import RandomMatrix from '../../src/recurrent/matrix/random-matrix'
+// import Matrix from '../../src/recurrent/matrix'
 import zeros2D from '../../src/utilities/zeros-2d'
+
+const { layer } = brain
 
 const { add, input, multiply, output, random, recurrent } = layer
 
 describe('Recurrent Class: End to End', () => {
-  const xorTrainingData = [
-    { input: [0, 0], output: [0] },
-    { input: [0, 1], output: [1] },
-    { input: [1, 0], output: [1] },
-    { input: [1, 1], output: [0] },
-  ]
   describe('when configured like RNNTimeStep', () => {
     test('forward propagates equivalent to baseline', () => {
       const timeStep = new RNNTimeStep({
@@ -599,7 +595,7 @@ describe('Recurrent Class: End to End', () => {
         net._outputConnection.setLayerOriginal = net._outputConnection.setLayer
         const actualConnectedLayers = []
         // last in first out
-        net._outputConnection.setLayer = function(layer) {
+        net._outputConnection.setLayer = layer => {
           actualConnectedLayers.unshift(layer)
           this.setLayerOriginal(layer)
         }
