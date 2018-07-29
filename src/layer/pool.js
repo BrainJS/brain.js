@@ -1,9 +1,8 @@
 import { Filter } from './types'
 import { makeKernel } from '../utilities/kernel'
 import { setPadding, setStride } from '../utilities/layer-setup'
-import zeros2D from '../utilities/zeros-2d'
 import zeros3D from '../utilities/zeros-3d'
-import randos2D from '../utilities/randos-2d'
+import randos3D from "../utilities/randos-3d";
 
 function setSwitchY(value) {
   return value
@@ -107,18 +106,14 @@ export default class Pool extends Filter {
         this.strideY +
         1
     )
+    //TODO: handle 1 depth?
     this.depth = this.filterCount
 
-    this.weights = zeros3D(this.width, this.height, this.depth)
+    this.weights = randos3D(this.width, this.height, this.depth)
     this.deltas = zeros3D(this.width, this.height, this.depth)
 
-    this.filters = []
-    this.filterDeltas = []
-
-    for (let i = 0; i < this.filterCount; i++) {
-      this.filters.push(randos2D(this.filterWidth, this.filterHeight))
-      this.filterDeltas.push(zeros2D(this.filterWidth, this.filterHeight))
-    }
+    this.filters = randos3D(this.filterWidth, this.filterHeight, this.filterCount)
+    this.filterDeltas = zeros3D(this.filterWidth, this.filterHeight, this.filterCount)
 
     this.learnFilters = null
     this.learnInputs = null
@@ -144,7 +139,7 @@ export default class Pool extends Filter {
     })
 
     this.compareKernel = makeKernel(compare, {
-      output: [this.width, this.height, this.depth],
+      output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth],
       constants: {
         outputWidth: this.width,
         outputHeight: this.height,
