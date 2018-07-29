@@ -1,9 +1,10 @@
 import { makeKernel } from '../utilities/kernel'
 import { setStride, setPadding } from '../utilities/layer-setup'
 import { Filter } from './types'
-import randos2D from '../utilities/randos-2d'
-import zeros2D from '../utilities/zeros-2d'
 import randos from '../utilities/randos'
+import randos3D from '../utilities/randos-3d'
+import zeros3D from '../utilities/zeros-3d'
+import values from '../utilities/values'
 
 export function predict(inputs, filters, biases) {
   const x =
@@ -159,18 +160,14 @@ export default class Convolution extends Filter {
         1
     )
     this.depth = this.filterCount
+    this.weights = randos3D(this.width, this.height, this.depth)
+    this.deltas = zeros3D(this.width, this.height, this.depth)
 
-    this.biases = new Array(this.depth)
-    this.biases.fill(this.bias)
+    this.biases = values(this.depth, this.bias)
     this.biasDeltas = randos(this.depth)
 
-    this.filters = []
-    this.filterDeltas = []
-
-    for (let i = 0; i < this.filterCount; i++) {
-      this.filters.push(randos2D(this.filterWidth, this.filterHeight))
-      this.filterDeltas.push(zeros2D(this.filterWidth, this.filterHeight))
-    }
+    this.filters = randos3D(this.filterWidth, this.filterHeight, this.filterCount)
+    this.filterDeltas = zeros3D(this.filterWidth, this.filterHeight, this.filterCount)
 
     this.learnFilters = null
     this.learnInputs = null
@@ -252,6 +249,6 @@ export default class Convolution extends Filter {
   learn(previousLayer, nextLayer, learningRate) {
     // TODO: handle filters
     this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate)
-    this.deltas = zeros2D(this.width, this.height)
+    this.deltas = zeros3D(this.width, this.height, this.depth)
   }
 }
