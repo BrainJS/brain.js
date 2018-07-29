@@ -5,7 +5,7 @@ import sampleI from './matrix/sample-i'
 import maxI from './matrix/max-i'
 import softmax from './matrix/softmax'
 import copy from './matrix/copy'
-import { randomF } from '../utilities/random'
+import { randomFloat } from '../utilities/random'
 import zeros from '../utilities/zeros'
 import DataFormatter from '../utilities/data-formatter'
 
@@ -178,11 +178,9 @@ export default class RNN {
     this.createHiddenLayers()
     if (!model.hiddenLayers.length) throw new Error('net.hiddenLayers not set')
     for (let i = 0, max = hiddenLayers.length; i < max; i++) {
-      const hiddenMatrix = hiddenLayers[i]
-      for (const property in hiddenMatrix) {
-        if (!hiddenMatrix.hasOwnProperty(property)) continue
-        allMatrices.push(hiddenMatrix[property])
-      }
+      Object.values(hiddenLayers[i]).forEach(val => {
+        allMatrices.push(val)
+      })
     }
 
     this.createOutputMatrix()
@@ -271,7 +269,7 @@ export default class RNN {
   step(learningRate = null) {
     // perform parameter update
     // TODO: still not sure if this is ready for learningRate
-    const stepSize = this.learningRate
+    const stepSize = learningRate || this.learningRate
     const { regc, clipval, model } = this
     let numClipped = 0
     let numTot = 0
@@ -770,7 +768,7 @@ ${innerFunctionsSwitch.join('\n')}
   }
   ${zeros.toString()}
   ${softmax.toString().replace('_2.default', 'Matrix')}
-  ${randomF.toString()}
+  ${randomFloat.toString()}
   ${sampleI.toString()}
   ${maxI.toString()}`
     // eslint-disable-next-line

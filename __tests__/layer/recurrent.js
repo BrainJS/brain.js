@@ -1,8 +1,7 @@
-import assert from 'assert'
 import recurrent from '../../src/layer/recurrent'
 
 describe('Recurrent Layer', () => {
-  it('properly sets width and height', () => {
+  test('properly sets width and height', () => {
     const input = { width: 1, height: 3 }
 
     const settings = { height: 3 }
@@ -15,7 +14,7 @@ describe('Recurrent Layer', () => {
 
     const layer = recurrent(settings, input, recurrentInput)
 
-    assert.equal(layer.width, 1)
-    assert.equal(layer.height, settings.height)
+    expect(layer.width).toEqual(1)
+    expect(layer.height).toEqual(settings.height)
   })
 })

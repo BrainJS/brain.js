@@ -7,7 +7,7 @@ class Regression extends Base {
   }
 
   learn() {
-    throw new Error(`${this.constructor.name}-learn is not yet implemented`)
+    // throw new Error(`${this.constructor.name}-learn is not yet implemented`)
   }
 }
 

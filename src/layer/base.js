@@ -122,12 +122,12 @@ export default class Base {
   }
 
   predict() {
-    throw new Error(`${this.constructor.name}-predict is not yet implemented`)
+    // throw new Error(`${this.constructor.name}-predict is not yet implemented`)
   }
 
   // eslint-disable-next-line
   compare() {
-    throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+    // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 
   learn(previousLayer, nextLayer, learningRate) {

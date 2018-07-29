@@ -1,4 +1,4 @@
-import assert from 'assert';
+import {assert} from 'chai';
 import gpuMock from 'gpu-mock.js';
 import { predict, compare } from '../../src/layer/leaky-relu';
 

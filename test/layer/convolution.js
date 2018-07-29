@@ -1,4 +1,4 @@
-import assert from 'assert';
+import {assert} from 'chai';
 import gpuMock from 'gpu-mock.js';
 import { predict, compareFilters, compareInputs, compareBiases } from '../../src/layer/convolution';
 
@@ -112,7 +112,7 @@ describe('Convolution Layer', () => {
       ]);
     });
   });
-  
+
   describe('compareBiases', () => {
     const deltas = [
       [

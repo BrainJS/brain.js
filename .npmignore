@@ -11,3 +11,4 @@ coverage/
 __tests__
 __coverage__
 .cache
+.dist/

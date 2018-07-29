@@ -11,23 +11,23 @@ export default class RecurrentZeros extends Internal {
   }
 
   setupKernels() {
-    throw new Error(
-      `${this.constructor.name}-setupKernels is not yet implemented`
-    )
+    // throw new Error(
+    //   `${this.constructor.name}-setupKernels is not yet implemented`
+    // )
   }
 
   reuseKernels() {
-    throw new Error(
-      `${this.constructor.name}-reuseKernels is not yet implemented`
-    )
+    // throw new Error(
+    //   `${this.constructor.name}-reuseKernels is not yet implemented`
+    // )
   }
 
   predict() {
-    throw new Error(`${this.constructor.name}-predict is not yet implemented`)
+    // throw new Error(`${this.constructor.name}-predict is not yet implemented`)
   }
 
   compare() {
-    throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+    // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 
   learn(previousLayer, nextLayer, learningRate) {
