@@ -11,7 +11,7 @@ describe('MomentumRootMeanSquaredPropagation', () => {
         regularizationStrength: 0.000001,
         smoothEps: 1e-8,
       })
-      const result = praxis.run()
+      const result = praxis.run(layer)
       expect(result[0][0]).toEqual(0.6837728151101338)
     })
   })
