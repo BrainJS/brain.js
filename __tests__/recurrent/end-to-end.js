@@ -22,10 +22,10 @@ describe('Recurrent Class: End to End', () => {
       const recurrentNet = new Recurrent({
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
-          (input, recurrentInput) =>
-            recurrent({ width: 1, height: 3 }, input, recurrentInput),
+          (inputLayer, recurrentInput) =>
+            recurrent({ width: 1, height: 3 }, inputLayer, recurrentInput),
         ],
-        outputLayer: input => output({ height: 1 }, input),
+        outputLayer: inputLayer => output({ height: 1 }, inputLayer),
       })
       timeStep.initialize()
       recurrentNet.initialize()
@@ -39,34 +39,34 @@ describe('Recurrent Class: End to End', () => {
       ).toEqual(recurrentNet._model.length)
       // set both nets exactly the same, then train them once, and compare
       // zero out
-      recurrentNet._inputLayers.forEach((layer, i) => {
-        layer.deltas = zeros2D(layer.width, layer.height)
-        layer.weights = zeros2D(layer.width, layer.height)
+      recurrentNet._inputLayers.forEach(l => {
+        l.deltas = zeros2D(l.width, l.height)
+        l.weights = zeros2D(l.width, l.height)
       })
-      recurrentNet._hiddenLayers[0].forEach((layer, i) => {
-        layer.deltas = zeros2D(layer.width, layer.height)
-        layer.weights = zeros2D(layer.width, layer.height)
+      recurrentNet._hiddenLayers[0].forEach(l => {
+        l.deltas = zeros2D(l.width, l.height)
+        l.weights = zeros2D(l.width, l.height)
       })
-      recurrentNet._outputLayers.forEach((layer, i) => {
-        layer.deltas = zeros2D(layer.width, layer.height)
-        layer.weights = zeros2D(layer.width, layer.height)
+      recurrentNet._outputLayers.forEach(l => {
+        l.deltas = zeros2D(l.width, l.height)
+        l.weights = zeros2D(l.width, l.height)
       })
       timeStep.model.input.weights.forEach((weight, i) => {
         timeStep.model.input.weights[i] = 0
         timeStep.model.input.deltas[i] = 0
       })
-      timeStep.model.hiddenLayers.forEach(layer => {
-        layer.bias.weights.forEach((weight, i) => {
-          layer.bias.weights[i] = 0
-          layer.bias.deltas[i] = 0
+      timeStep.model.hiddenLayers.forEach(l => {
+        l.bias.weights.forEach((weight, i) => {
+          l.bias.weights[i] = 0
+          l.bias.deltas[i] = 0
         })
-        layer.transition.weights.forEach((weight, i) => {
-          layer.transition.weights[i] = 0
-          layer.transition.deltas[i] = 0
+        l.transition.weights.forEach((weight, i) => {
+          l.transition.weights[i] = 0
+          l.transition.deltas[i] = 0
         })
-        layer.weight.weights.forEach((weight, i) => {
-          layer.weight.weights[i] = 0
-          layer.weight.deltas[i] = 0
+        l.weight.weights.forEach((weight, i) => {
+          l.weight.weights[i] = 0
+          l.weight.deltas[i] = 0
         })
       })
       timeStep.model.output.weights.forEach((weight, i) => {
@@ -75,13 +75,13 @@ describe('Recurrent Class: End to End', () => {
       })
 
       const recurrentWeightLayers = recurrentNet._model.filter(
-        layer => layer.name === 'weight'
+        l => l.name === 'weight'
       )
       const recurrentTransitionLayers = recurrentNet._model.filter(
-        layer => layer.name === 'transition'
+        l => l.name === 'transition'
       )
       const recurrentBiasLayers = recurrentNet._model.filter(
-        layer => layer.name === 'bias'
+        l => l.name === 'bias'
       )
       const recurrentOutputLayer = recurrentNet._outputLayers[0]
       const recurrentRecurrentLayer = recurrentNet._hiddenLayers[0][1]
@@ -282,12 +282,15 @@ describe('Recurrent Class: End to End', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
-          (input, recurrentInput) => {
+          (inputLayer, recurrentInput) => {
             recurrentInput.setDimensions(1, 3)
-            return add(multiply(random({ height: 3 }), input), recurrentInput)
+            return add(
+              multiply(random({ height: 3 }), inputLayer),
+              recurrentInput
+            )
           },
         ],
-        outputLayer: input => output({ height: 1 }, input),
+        outputLayer: inputLayer => output({ height: 1 }, inputLayer),
       })
 
       net.initialize()
@@ -512,12 +515,12 @@ describe('Recurrent Class: End to End', () => {
         const net = new Recurrent({
           inputLayer: () => model.inputLayer,
           hiddenLayers: [
-            (input, recurrentInput) => {
+            (inputLayer, recurrentInput) => {
               recurrentInput.setDimensions(1, 3)
-              return add(multiply(model.weights, input), recurrentInput)
+              return add(multiply(model.weights, inputLayer), recurrentInput)
             },
           ],
-          outputLayer: input => output({ height: 1 }, input),
+          outputLayer: inputLayer => output({ height: 1 }, inputLayer),
         })
 
         // single
@@ -595,9 +598,9 @@ describe('Recurrent Class: End to End', () => {
         net._outputConnection.setLayerOriginal = net._outputConnection.setLayer
         const actualConnectedLayers = []
         // last in first out
-        net._outputConnection.setLayer = layer => {
-          actualConnectedLayers.unshift(layer)
-          this.setLayerOriginal(layer)
+        net._outputConnection.setLayer = l => {
+          actualConnectedLayers.unshift(l)
+          this.setLayerOriginal(l)
         }
 
         net._inputLayers[0].weights = [[0]]
@@ -617,10 +620,10 @@ describe('Recurrent Class: End to End', () => {
     const net = new Recurrent({
       inputLayer: () => input({ width: 1 }),
       hiddenLayers: [
-        (input, recurrentInput) =>
-          recurrent({ width: 1, height: 1 }, input, recurrentInput),
+        (inputLayer, recurrentInput) =>
+          recurrent({ width: 1, height: 1 }, inputLayer, recurrentInput),
       ],
-      outputLayer: input => output({ width: 1, height: 1 }, input),
+      outputLayer: inputLayer => output({ width: 1, height: 1 }, inputLayer),
     })
     net.initialize()
     net.initializeDeep()
@@ -640,12 +643,12 @@ describe('Recurrent Class: End to End', () => {
         const net = new Recurrent({
           inputLayer: () => input({ width: 1 }),
           hiddenLayers: [
-            (input, recurrentInput) =>
-              recurrent({ height: 3, width: 1 }, input, recurrentInput),
-            (input, recurrentInput) =>
-              recurrent({ height: 1, width: 1 }, input, recurrentInput),
+            (inputLayer, recurrentInput) =>
+              recurrent({ height: 3, width: 1 }, inputLayer, recurrentInput),
+            (inputLayer, recurrentInput) =>
+              recurrent({ height: 1, width: 1 }, inputLayer, recurrentInput),
           ],
-          outputLayer: input => output({ height: 1 }, input),
+          outputLayer: inputLayer => output({ height: 1 }, inputLayer),
         })
         net.initialize()
       } catch (e) {
@@ -658,10 +661,10 @@ describe('Recurrent Class: End to End', () => {
     const net = new Recurrent({
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
-        (input, recurrentInput) =>
-          recurrent({ height: 3 }, input, recurrentInput),
+        (inputLayer, recurrentInput) =>
+          recurrent({ height: 3 }, inputLayer, recurrentInput),
       ],
-      outputLayer: input => output({ height: 1 }, input),
+      outputLayer: inputLayer => output({ height: 1 }, inputLayer),
     })
     net.initialize()
     net.initializeDeep()
@@ -708,10 +711,10 @@ describe('Recurrent Class: End to End', () => {
     const net = new Recurrent({
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
-        (input, recurrentInput) =>
-          recurrent({ height: 3 }, input, recurrentInput),
+        (inputLayer, recurrentInput) =>
+          recurrent({ height: 3 }, inputLayer, recurrentInput),
       ],
-      outputLayer: input => output({ height: 1 }, input),
+      outputLayer: inputLayer => output({ height: 1 }, inputLayer),
     })
     net.initialize()
     net.initializeDeep()
@@ -729,10 +732,10 @@ describe('Recurrent Class: End to End', () => {
     const net = new Recurrent({
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
-        (input, recurrentInput) =>
-          recurrent({ height: 3 }, input, recurrentInput),
+        (inputLayer, recurrentInput) =>
+          recurrent({ height: 3 }, inputLayer, recurrentInput),
       ],
-      outputLayer: input => output({ height: 1 }, input),
+      outputLayer: inputLayer => output({ height: 1 }, inputLayer),
     })
     const results = net.train([
       {

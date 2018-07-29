@@ -1,7 +1,8 @@
-import { Recurrent, layer } from '../../src/index'
-import RecurrentConnection from '../../src/layer/recurrent-connection'
-import { Filter, Model } from '../../src/layer/types'
+import brain from '../../src'
+// import RecurrentConnection from '../../src/layer/recurrent-connection'
+import { Filter } from '../../src/layer/types'
 
+const { Recurrent, layer } = brain
 const { add, input, multiply, output, random, recurrent } = layer
 
 describe('Recurrent Class: Unit', () => {
@@ -10,23 +11,26 @@ describe('Recurrent Class: Unit', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 2 }),
         hiddenLayers: [
-          (input, recurrentInput) => {
+          (inputLayer, recurrentInput) => {
             recurrentInput.setDimensions(1, 3)
-            return recurrent({ height: 3 }, input, recurrentInput)
+            return recurrent({ height: 3 }, inputLayer, recurrentInput)
           },
         ],
-        outputLayer: input => output({ height: 1 }, input),
+        outputLayer: inputLayer => output({ height: 1 }, inputLayer),
       })
 
       net.initialize()
 
-      expect(net._inputLayers.map(layer => layer.constructor.name)).toEqual([
-        'Input',
+      expect(net._inputLayers.map(l => l.constructor.name)).toEqual(['Input'])
+      expect(net._hiddenLayers[0].map(l => l.constructor.name)).toEqual([
+        'Multiply',
+        'RecurrentZeros',
+        'Multiply',
+        'Add',
+        'Add',
+        'Relu',
       ])
-      expect(net._hiddenLayers[0].map(layer => layer.constructor.name)).toEqual(
-        ['Multiply', 'RecurrentZeros', 'Multiply', 'Add', 'Add', 'Relu']
-      )
-      expect(net._outputLayers.map(layer => layer.constructor.name)).toEqual([
+      expect(net._outputLayers.map(l => l.constructor.name)).toEqual([
         'Random',
         'RecurrentConnection',
         'Multiply',
@@ -41,15 +45,15 @@ describe('Recurrent Class: Unit', () => {
       const net = new Recurrent({
         inputLayer: () => input({ width: 1 }),
         hiddenLayers: [
-          (input, recurrentInput) => {
+          (inputLayer, recurrentInput) => {
             recurrentInput.setDimensions(1, 1)
             return multiply(
-              multiply(random({ width: 1, height: 1 }), input),
+              multiply(random({ width: 1, height: 1 }), inputLayer),
               recurrentInput
             )
           },
         ],
-        outputLayer: input => output({ width: 1, height: 1 }, input),
+        outputLayer: inputLayer => output({ width: 1, height: 1 }, inputLayer),
       })
 
       net.initialize()
@@ -66,12 +70,15 @@ describe('Recurrent Class: Unit', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
-          (input, recurrentInput) => {
+          (inputLayer, recurrentInput) => {
             recurrentInput.setDimensions(1, 3)
-            return add(multiply(random({ height: 3 }), input), recurrentInput)
+            return add(
+              multiply(random({ height: 3 }), inputLayer),
+              recurrentInput
+            )
           },
         ],
-        outputLayer: input => output({ height: 1 }, input),
+        outputLayer: inputLayer => output({ height: 1 }, inputLayer),
       })
 
       net.initialize()
@@ -183,12 +190,15 @@ describe('Recurrent Class: Unit', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
-          (input, recurrentInput) => {
+          (inputLayer, recurrentInput) => {
             recurrentInput.setDimensions(1, 3)
-            return add(multiply(random({ height: 3 }), input), recurrentInput)
+            return add(
+              multiply(random({ height: 3 }), inputLayer),
+              recurrentInput
+            )
           },
         ],
-        outputLayer: input => output({ height: 1 }, input),
+        outputLayer: inputLayer => output({ height: 1 }, inputLayer),
       })
 
       net.initialize()
@@ -245,8 +255,8 @@ describe('Recurrent Class: Unit', () => {
       }
       const net = new Recurrent({
         inputLayer: () => new SuperLayer(),
-        hiddenLayers: [(input, recurrentInput) => new SuperLayer()],
-        outputLayer: input => new SuperLayer(),
+        hiddenLayers: [() => new SuperLayer()],
+        outputLayer: () => new SuperLayer(),
       })
 
       net.initialize()
@@ -267,10 +277,10 @@ describe('Recurrent Class: Unit', () => {
         const net = new Recurrent({
           inputLayer: () => input({ height: 1 }),
           hiddenLayers: [
-            (input, recurrentInput) =>
-              recurrent({ height: 3 }, input, recurrentInput),
+            (inputLayer, recurrentInput) =>
+              recurrent({ height: 3 }, inputLayer, recurrentInput),
           ],
-          outputLayer: input => output({ height: 1 }, input),
+          outputLayer: inputLayer => output({ height: 1 }, inputLayer),
         })
         net.initialize()
         net.initializeDeep()
