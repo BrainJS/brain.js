@@ -1,9 +1,11 @@
 import { Filter } from './types'
 import { makeKernel } from '../utilities/kernel'
-import randos2D from '../utilities/randos-2d'
 import values from '../utilities/values'
-import zeros2D from '../utilities/zeros-2d'
+import randos2D from '../utilities/randos-2d'
+import randos3D from '../utilities/randos-3d'
 import zeros from '../utilities/zeros'
+import zeros2D from '../utilities/zeros-2d'
+import zeros3D from '../utilities/zeros-3d'
 
 export function predict(inputs, filters, biases) {
   let output = 0
@@ -61,8 +63,8 @@ export function compareFilterDeltas(filterDeltas, inputWeights, deltas) {
 
 export function compareFilterDeltas3D(filterDeltas, inputWeights, deltas) {
   const inputZ = Math.floor(this.thread.x / (this.constants.inputWidth * this.constants.inputHeight))
-  const inputY = Math.floor(this.thread.x / this.constants.inputWidth)
-  const inputX = this.thread.x % this.constants.inputWidth
+  const inputY = Math.floor((this.thread.x - inputZ * this.constants.inputWidth * this.constants.inputHeight) / this.constants.inputWidth)
+  const inputX = this.thread.x - this.constants.inputWidth * (inputY + this.constants.inputHeight * inputZ)
   return filterDeltas[this.thread.y][this.thread.x] + (inputWeights[inputZ][inputY][inputX] * deltas[0][this.thread.y])
 }
 
@@ -88,8 +90,13 @@ export default class FullyConnected extends Filter {
     this.filters = randos2D(connectionCount, this.height)
     this.filterDeltas = zeros2D(connectionCount, this.height)
 
-    this.weights = randos2D(this.width, this.height)
-    this.deltas = zeros2D(this.width, this.height)
+    if (this.depth > 1) {
+      this.weights = randos3D(this.width, this.height)
+      this.deltas = zeros3D(this.width, this.height)
+    } else if (this.height > 1) {
+      this.weights = randos2D(this.width, this.height)
+      this.deltas = zeros2D(this.width, this.height)
+    }
   }
 
   validate() {
