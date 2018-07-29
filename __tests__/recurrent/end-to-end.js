@@ -600,7 +600,7 @@ describe('Recurrent Class: End to End', () => {
         // last in first out
         net._outputConnection.setLayer = l => {
           actualConnectedLayers.unshift(l)
-          this.setLayerOriginal(l)
+          net._outputConnection.setLayerOriginal(l)
         }
 
         net._inputLayers[0].weights = [[0]]

@@ -34,7 +34,7 @@ export default class RNNTimeStep extends RNN {
         : this.initialLayerInputs
 
     // 0 index
-    let output = this.getEquation(
+    let output = RNNTimeStep.getEquation(
       equation,
       equation.input(model.input),
       equationConnection[0],
@@ -43,7 +43,7 @@ export default class RNNTimeStep extends RNN {
     outputs.push(output)
     // 1+ indices
     for (let i = 1, max = hiddenSizes.length; i < max; i++) {
-      output = this.getEquation(
+      output = RNNTimeStep.getEquation(
         equation,
         output,
         equationConnection[i],
@@ -136,7 +136,10 @@ export default class RNNTimeStep extends RNN {
    * @param {Number} temperature
    * @returns {Number[]|Number}
    */
-  run(input = [], maxPredictionLength = 1, isSampleI = false, temperature = 1) {
+  run(
+    input = [],
+    maxPredictionLength = 1 /* , isSampleI = false, temperature = 1 */
+  ) {
     if (!this.isRunnable) return null
     const { model } = this
     while (model.equations.length < maxPredictionLength) {
