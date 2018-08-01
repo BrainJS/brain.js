@@ -103,6 +103,7 @@ You can check out this fantastic screencast, which explains how to train a simpl
 * [simple letter detection](./examples/which-letter-simple.js)
 
 # Usage
+
 ### Node
 If you have [node](http://nodejs.org/), you can install `brain.js` with [npm](http://npmjs.org):
 
