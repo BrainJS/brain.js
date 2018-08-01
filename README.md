@@ -99,7 +99,7 @@ However, there is no reason to use a neural network to figure out XOR. (-: So, h
 
 ## More Examples
 You can check out this fantastic screencast, which explains how to train a simple neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
-* [writing a children's book using a recurrent neural neural network](./examples/childrens-book.js)
+* [writing a children's book using a recurrent neural network](./examples/childrens-book.js)
 * [simple letter detection](./examples/which-letter-simple.js)
 
 # Usage
@@ -232,7 +232,7 @@ net.train(data, {
 
 The network will stop training whenever one of the two criteria is met: the training error has gone below the threshold (default `0.005`), or the max number of iterations (default `20000`) has been reached.
 
-By default training will not let you know how its doing until the end, but set `log` to `true` to get periodic updates on the current training error of the network. The training error should decrease every time. The updates will be printed to console. If you set `log` to a function, this function will be called with the updates instead of printing to the console.
+By default training will not let you know how it's doing until the end, but set `log` to `true` to get periodic updates on the current training error of the network. The training error should decrease every time. The updates will be printed to console. If you set `log` to a function, this function will be called with the updates instead of printing to the console.
 
 The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0`, it will take longer to train. If the learning rate is closer to `1`, it will train faster, but training results may be constrained to a local minimum and perform badly on new data.(_Overfitting_) The default learning rate is `0.3`.
 
