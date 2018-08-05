@@ -53,20 +53,48 @@ export function predict(inputs) {
 
 export function compare(deltas, switchY, switchX) {
   const x = Math.floor(
-    (this.thread.x / this.output.x) * this.constants.outputWidth -
-      this.constants.paddingX
+    (this.thread.x / this.output.x) * this.constants.outputWidth
   )
   const y = Math.floor(
-    (this.thread.y / this.output.y) * this.constants.outputHeight -
-      this.constants.paddingY
+    (this.thread.y / this.output.y) * this.constants.outputHeight
   )
-  const deltaXIndex = switchX[y][x]
-  const deltaYIndex = switchY[y][x]
 
-  if (deltaXIndex !== this.thread.y) return 0
-  if (deltaYIndex !== this.thread.x) return 0
+  let value = 0
 
-  return deltas[y][x]
+  for (let deltasY = 0; deltasY < this.constants.inputHeight; deltasY++) {
+    for (let deltasX = 0; deltasX < this.constants.inputWidth; deltasX++) {
+      const switchXValue = switchX[deltasY][deltasX]
+      const switchYValue = switchY[deltasY][deltasX]
+      if (switchXValue === x && switchYValue === y) {
+        value += deltas[deltasY][deltasX]
+      }
+    }
+  }
+
+  return value
+}
+
+export function compare3D(deltas, switchY, switchX) {
+  const x = Math.floor(
+    (this.thread.x / this.output.x) * this.constants.outputWidth
+  )
+  const y = Math.floor(
+    (this.thread.y / this.output.y) * this.constants.outputHeight
+  )
+
+  let value = 0
+
+  for (let deltasY = 0; deltasY < this.constants.inputHeight; deltasY++) {
+    for (let deltasX = 0; deltasX < this.constants.inputWidth; deltasX++) {
+      const switchXValue = switchX[this.thread.z][deltasY][deltasX]
+      const switchYValue = switchY[this.thread.z][deltasY][deltasX]
+      if (switchXValue === x && switchYValue === y) {
+        value += deltas[this.thread.z][deltasY][deltasX]
+      }
+    }
+  }
+
+  return value
 }
 
 export default class Pool extends Filter {
@@ -143,6 +171,7 @@ export default class Pool extends Filter {
       constants: {
         outputWidth: this.width,
         outputHeight: this.height,
+        outputDepth: this.depth,
         paddingX: this.paddingX,
         paddingY: this.paddingY,
       },
@@ -158,10 +187,20 @@ export default class Pool extends Filter {
   }
 
   compare() {
+    debugger
+    const depth = this.inputLayer.deltas.length
+    const height = this.inputLayer.deltas[0].length
+    const width = this.inputLayer.deltas[0][0].length
+    const type = typeof this.inputLayer.deltas[0][0][0]
     this.inputLayer.deltas = this.compareKernel(
       this.deltas,
       this.switchX,
       this.switchY
     )
+    debugger
+    if (depth !== this.inputLayer.deltas.length) debugger
+    if (height !== this.inputLayer.deltas[0].length) debugger
+    if (width !== this.inputLayer.deltas[0][0].length) debugger
+    if (type !== typeof this.inputLayer.deltas[0][0][0]) debugger
   }
 }
