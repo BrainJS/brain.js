@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.2.4
+ *   version: 1.2.5
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -41,7 +41,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: The gpu.js Team
  *   homepage: http://gpu.rocks/
- *   version: 1.5.2
+ *   version: 1.6.0
  *
  * ieee754:
  *   license: BSD-3-Clause (http://opensource.org/licenses/BSD-3-Clause)
@@ -1983,11 +1983,11 @@ var NeuralNetwork = function () {
           case 'sigmoid':
             return '1/(1+1/Math.exp(' + result.join('') + '))';
           case 'relu':
-            return 'var sum = ' + result.join('') + ';(sum < 0 ? 0 : sum);';
+            return '(' + result.join('') + ' < 0 ? 0 : ' + result.join('') + ')';
           case 'leaky-relu':
-            return 'var sum = ' + result.join('') + ';(sum < 0 ? 0 : 0.01 * sum);';
+            return '(' + result.join('') + ' < 0 ? 0 : 0.01 * ' + result.join('') + ')';
           case 'tanh':
-            return 'Math.tanh(' + result.join('') + ');';
+            return 'Math.tanh(' + result.join('') + ')';
           default:
             throw new Error('unknown activation type ' + activation);
         }
@@ -4295,7 +4295,7 @@ var RNN = function () {
 
         if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
         if (log && i % logPeriod == 0) {
-          log('iterations:', i, 'training error:', error);
+          log('iterations: ' + i + ', training error: ' + error);
         }
         if (callback && i % callbackPeriod == 0) {
           callback({ error: error, iterations: i });
@@ -9081,8 +9081,8 @@ module.exports = function (_KernelBase) {
 				return '  ' + name + 'Z = new Array(' + threadDim[2] + ');\n';
 			}).join('')) + '\n    for (this.thread.z = 0; this.thread.z < ' + threadDim[2] + '; this.thread.z++) {\n      ret[this.thread.z] = new Array(' + threadDim[1] + ');\n  ' + (this.subKernelOutputVariableNames === null ? '' : this.subKernelOutputVariableNames.map(function (name) {
 				return '    ' + name + 'Z[this.thread.z] = new Array(' + threadDim[1] + ');\n';
-			}).join('')) + '\n      for (this.thread.y = 0; this.thread.y < ' + threadDim[1] + '; this.thread.y++) {\n        ret[this.thread.z][this.thread.y] = new Array(' + threadDim[0] + ');\n  ' + (this.subKernelOutputVariableNames === null ? '' : this.subKernelOutputVariableNames.map(function (name) {
-				return '      ' + name + 'Z[this.thread.z][this.thread.y] = new Array(' + threadDim[0] + ');\n';
+			}).join('')) + '\n      for (this.thread.y = 0; this.thread.y < ' + threadDim[1] + '; this.thread.y++) {\n        ret[this.thread.z][this.thread.y] = ' + (this.floatOutput ? 'new Float32Array(' + threadDim[0] + ')' : 'new Array(' + threadDim[0] + ')') + ';\n  ' + (this.subKernelOutputVariableNames === null ? '' : this.subKernelOutputVariableNames.map(function (name) {
+				return '      ' + name + 'Z[this.thread.z][this.thread.y] = ' + (_this2.floatOutput ? 'new Float32Array(' + threadDim[0] + ')' : 'new Array(' + threadDim[0] + ')') + ';\n';
 			}).join('')) + '\n        for (this.thread.x = 0; this.thread.x < ' + threadDim[0] + '; this.thread.x++) {\n          var kernelResult;\n          ' + kernel + '\n          ret[this.thread.z][this.thread.y][this.thread.x] = kernelResult;\n' + (this.subKernelOutputVariableNames === null ? '' : this.subKernelOutputVariableNames.map(function (name) {
 				return '        ' + name + 'Z[this.thread.z][this.thread.y][this.thread.x] = ' + name + ';\n';
 			}).join('')) + '\n          }\n        }\n      }\n      \n      if (this.graphical) {\n        this._imageData.data.set(this._colorData);\n        this._canvasCtx.putImageData(this._imageData, 0, 0);\n        return;\n      }\n      \n      if (this.output.length === 1) {\n        ret = ret[0][0];\n        ' + (this.subKernelOutputVariableNames === null ? '' : this.subKernelOutputVariableNames.map(function (name) {
@@ -9640,6 +9640,7 @@ module.exports = function () {
 		this.output = null;
 		this.declarations = {};
 		this.states = [];
+		this.fixIntegerDivisionAccuracy = null;
 
 		var paramTypes = void 0;
 		var returnType = void 0;
@@ -9664,6 +9665,9 @@ module.exports = function () {
 			}
 			if (options.hasOwnProperty('returnType')) {
 				returnType = options.returnType;
+			}
+			if (options.hasOwnProperty('fixIntegerDivisionAccuracy')) {
+				this.fixIntegerDivisionAccuracy = options.fixIntegerDivisionAccuracy;
 			}
 		}
 
@@ -10307,6 +10311,7 @@ module.exports = function () {
   * @prop {Array} subKernels - Sub kernels bound to this kernel instance
   * @prop {Object} subKernelProperties - Sub kernels bound to this kernel instance as key/value pairs
   * @prop {Array} subKernelOutputVariableNames - Names of the variables outputted by the subkerls
+  * @prop {Boolean} fixIntegerDivisionAccuracy - fix issues with some graphics cards not returning whole numbers when dividing by factors of 3
   *
   */
 	function KernelBase(fnString, settings) {
@@ -10340,6 +10345,7 @@ module.exports = function () {
 		this.functionBuilder = null;
 		this.paramTypes = null;
 		this.paramSizes = null;
+		this.fixIntegerDivisionAccuracy = null;
 
 		for (var p in settings) {
 			if (!settings.hasOwnProperty(p) || !this.hasOwnProperty(p)) continue;
@@ -10478,6 +10484,24 @@ module.exports = function () {
 		key: 'setLoopMaxIterations',
 		value: function setLoopMaxIterations(max) {
 			this.loopMaxIterations = max;
+			return this;
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name setFixIntegerDivisionAccuracy
+   *
+   * @desc Fix division by factor of 3 FP accuracy bug
+   *
+   * @param {Boolean} fix - should fix 
+   *
+   */
+
+	}, {
+		key: 'setFixIntegerDivisionAccuracy',
+		value: function setFixIntegerDivisionAccuracy(fix) {
+			this.fixIntegerDivisionAccuracy = fix;
 			return this;
 		}
 
@@ -10718,6 +10742,22 @@ module.exports = function () {
 		value: function addNativeFunction(name, source) {
 			this.functionBuilder.addNativeFunction(name, source);
 		}
+
+		/**
+   *
+   * Destroys all memory associated with this kernel
+   *
+   * @name destroy
+   * @function
+   * @memberOf KernelBase#
+   *
+   * * @param {Boolean} removeCanvasReferences remve any associated canvas references?
+   *
+   */
+
+	}, {
+		key: 'destroy',
+		value: function destroy() {}
 	}]);
 
 	return KernelBase;
@@ -11252,6 +11292,12 @@ module.exports = function (_FunctionNodeBase) {
 				this.astGeneric(ast.left, retArr);
 				retArr.push('!=');
 				this.astGeneric(ast.right, retArr);
+			} else if (this.fixIntegerDivisionAccuracy && ast.operator === '/') {
+				retArr.push('div_with_int_check(');
+				this.astGeneric(ast.left, retArr);
+				retArr.push(', ');
+				this.astGeneric(ast.right, retArr);
+				retArr.push(')');
 			} else {
 				this.astGeneric(ast.left, retArr);
 				retArr.push(ast.operator);
@@ -11959,6 +12005,9 @@ module.exports = function (_FunctionNodeBase) {
 								this.astGeneric(mNode.object, retArr);
 								retArr.push('Dim[2]');
 								retArr.push('), ');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('BitRatio');
+								retArr.push(', ');
 								this.popState('not-in-get-call-parameters');
 								this.pushState('in-get-call-parameters');
 								this.astGeneric(mNode.property, retArr);
@@ -12300,6 +12349,8 @@ module.exports = function (gpuKernel, name) {
 },{"../../core/utils":84,"../kernel-run-shortcut":61}],66:[function(require,module,exports){
 'use strict';
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -12375,6 +12426,8 @@ module.exports = function (_KernelBase) {
 		_this.argumentsLength = 0;
 		_this.compiledFragShaderString = null;
 		_this.compiledVertShaderString = null;
+		_this.fragShader = null;
+		_this.vertShader = null;
 		_this.drawBuffersMap = null;
 		_this.outputTexture = null;
 		_this.maxTexSize = null;
@@ -12417,6 +12470,13 @@ module.exports = function (_KernelBase) {
 			} else if (this.floatTextures === undefined && utils.OES_texture_float) {
 				this.floatTextures = true;
 				this.floatOutput = isFloatReadPixel;
+			}
+
+			var hasIntegerDivisionBug = utils.hasIntegerDivisionAccuracyBug();
+			if (this.fixIntegerDivisionAccuracy == null) {
+				this.fixIntegerDivisionAccuracy = hasIntegerDivisionBug;
+			} else if (this.fixIntegerDivisionAccuracy && !hasIntegerDivisionBug) {
+				this.fixIntegerDivisionAccuracy = false;
 			}
 
 			utils.checkOutput(this.output);
@@ -12512,11 +12572,14 @@ module.exports = function (_KernelBase) {
 			var vertShader = gl.createShader(gl.VERTEX_SHADER);
 			gl.shaderSource(vertShader, compiledVertShaderString);
 			gl.compileShader(vertShader);
+			if (this.vertShader) {}
+			this.vertShader = vertShader;
 
 			var compiledFragShaderString = this._getFragShaderString(arguments);
 			var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
 			gl.shaderSource(fragShader, compiledFragShaderString);
 			gl.compileShader(fragShader);
+			this.fragShader = fragShader;
 
 			if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
 				console.log(compiledVertShaderString);
@@ -12988,6 +13051,7 @@ module.exports = function (_KernelBase) {
 				CONSTANTS: this._getConstantsString(),
 				DECODE32_ENDIANNESS: this._getDecode32EndiannessString(),
 				ENCODE32_ENDIANNESS: this._getEncode32EndiannessString(),
+				DIVIDE_WITH_INTEGER_CHECK: this._getDivideWithIntegerCheckString(),
 				GET_WRAPAROUND: this._getGetWraparoundString(),
 				GET_TEXTURE_CHANNEL: this._getGetTextureChannelString(),
 				GET_TEXTURE_INDEX: this._getGetTextureIndexString(),
@@ -13037,38 +13101,24 @@ module.exports = function (_KernelBase) {
 						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
 						var length = size[0] * size[1];
-						if (this.floatTextures) {
-							length *= 4;
-						}
 
-						var valuesFlat = void 0;
-
-						if (utils.isArray(value[0])) {
-							// not already flat
-							valuesFlat = new Float32Array(length);
-							utils.flattenTo(value, valuesFlat);
-						} else if (value.constructor != Float32Array) {
-							// TODO: would be great if we could not have to create Float32Array buffers
-							// if input is 8/16 bit values...
-							// valuesFlat = new Float32Array(value);
-							valuesFlat = new Float32Array(length);
-							valuesFlat.set(value);
-						} else {
-							valuesFlat = value;
-						}
+						var _formatArrayTransfer2 = this._formatArrayTransfer(value, length),
+						    valuesFlat = _formatArrayTransfer2.valuesFlat,
+						    bitRatio = _formatArrayTransfer2.bitRatio;
 
 						var buffer = void 0;
 						if (this.floatTextures) {
 							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0], size[1], 0, gl.RGBA, gl.FLOAT, valuesFlat);
 						} else {
 							buffer = new Uint8Array(valuesFlat.buffer);
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0], size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0] / bitRatio, size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
 						}
 
 						if (!this.hardcodeConstants) {
 							this.setUniform3iv('user_' + name + 'Dim', dim);
 							this.setUniform2iv('user_' + name + 'Size', size);
 						}
+						this.setUniform1i('user_' + name + 'BitRatio', bitRatio);
 						this.setUniform1i('user_' + name, this.argumentsLength);
 						break;
 					}
@@ -13094,26 +13144,23 @@ module.exports = function (_KernelBase) {
 						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
 						var _length = _size[0] * _size[1];
-						var inputArray = void 0;
-						if (this.floatTextures) {
-							_length *= 4;
-							inputArray = new Float32Array(_length);
-							inputArray.set(input.value);
-						} else {
-							inputArray = input.value;
-						}
+
+						var _formatArrayTransfer3 = this._formatArrayTransfer(value.value, _length),
+						    _valuesFlat = _formatArrayTransfer3.valuesFlat,
+						    _bitRatio = _formatArrayTransfer3.bitRatio;
 
 						if (this.floatTextures) {
 							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size[0], _size[1], 0, gl.RGBA, gl.FLOAT, inputArray);
 						} else {
-							var _buffer = new Uint8Array(inputArray.buffer);
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size[0], _size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, _buffer);
+							var _buffer = new Uint8Array(_valuesFlat.buffer);
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size[0] / _bitRatio, _size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, _buffer);
 						}
 
 						if (!this.hardcodeConstants) {
 							this.setUniform3iv('user_' + name + 'Dim', _dim);
 							this.setUniform2iv('user_' + name + 'Size', _size);
 						}
+						this.setUniform1i('user_' + name + 'BitRatio', _bitRatio);
 						this.setUniform1i('user_' + name, this.argumentsLength);
 						break;
 					}
@@ -13152,6 +13199,7 @@ module.exports = function (_KernelBase) {
 
 						this.setUniform3iv('user_' + name + 'Dim', _dim3);
 						this.setUniform2iv('user_' + name + 'Size', _size3);
+						this.setUniform1i('user_' + name + 'BitRatio', 1); // aways float32
 						this.setUniform1i('user_' + name, this.argumentsLength);
 						break;
 					}
@@ -13159,6 +13207,55 @@ module.exports = function (_KernelBase) {
 					throw new Error('Input type not supported (WebGL): ' + value);
 			}
 			this.argumentsLength++;
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _formatArrayTransfer
+   *
+   * @desc Adds kernel parameters to the Argument Texture,
+   * binding it to the webGl instance, etc.
+   *
+   * @param {Array} value - The actual argument supplied to the kernel
+   * @param {String} length - the expected total length of the output array
+   *
+   * @returns {Object} bitRatio - bit storage ratio of source to target 'buffer', i.e. if 8bit array -> 32bit tex = 4
+   * 				     valuesFlat - flattened array to transfer
+   */
+
+	}, {
+		key: '_formatArrayTransfer',
+		value: function _formatArrayTransfer(value, length) {
+			var bitRatio = 1; // bit storage ratio of source to target 'buffer', i.e. if 8bit array -> 32bit tex = 4
+			var valuesFlat = value;
+			if (utils.isArray(value[0]) || this.floatTextures) {
+				// not already flat
+				valuesFlat = new Float32Array(length);
+				utils.flattenTo(value, valuesFlat);
+			} else {
+
+				switch (value.constructor) {
+					case Uint8Array:
+					case Int8Array:
+						bitRatio = 4;
+						break;
+					case Uint16Array:
+					case Int16Array:
+						bitRatio = 2;
+					case Float32Array:
+					case Int32Array:
+						break;
+
+					default:
+						valuesFlat = new Float32Array(length);
+						utils.flattenTo(value, valuesFlat);
+				}
+			}
+			return {
+				bitRatio: bitRatio,
+				valuesFlat: valuesFlat
+			};
 		}
 
 		/**
@@ -13218,9 +13315,9 @@ module.exports = function (_KernelBase) {
 			var threadDim = this.threadDim;
 			var texSize = this.texSize;
 			if (this.hardcodeConstants) {
-				result.push('highp ivec3 uOutputDim = ivec3(' + threadDim[0] + ',' + threadDim[1] + ', ' + threadDim[2] + ')', 'highp ivec2 uTexSize = ivec2(' + texSize[0] + ', ' + texSize[1] + ')');
+				result.push('ivec3 uOutputDim = ivec3(' + threadDim[0] + ',' + threadDim[1] + ', ' + threadDim[2] + ')', 'ivec2 uTexSize = ivec2(' + texSize[0] + ', ' + texSize[1] + ')');
 			} else {
-				result.push('uniform highp ivec3 uOutputDim', 'uniform highp ivec2 uTexSize');
+				result.push('uniform ivec3 uOutputDim', 'uniform ivec2 uTexSize');
 			}
 
 			return this._linesToString(result);
@@ -13242,9 +13339,9 @@ module.exports = function (_KernelBase) {
 		value: function _getTextureCoordinate() {
 			var names = this.subKernelOutputVariableNames;
 			if (names === null || names.length < 1) {
-				return 'varying highp vec2 vTexCoord;\n';
+				return 'varying vec2 vTexCoord;\n';
 			} else {
-				return 'out highp vec2 vTexCoord;\n';
+				return 'out vec2 vTexCoord;\n';
 			}
 		}
 
@@ -13283,6 +13380,23 @@ module.exports = function (_KernelBase) {
 		}
 
 		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getDivideWithIntegerCheckString
+   *
+   * @desc if fixIntegerDivisionAccuracy provide method to replace /
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getDivideWithIntegerCheckString',
+		value: function _getDivideWithIntegerCheckString() {
+			return this.fixIntegerDivisionAccuracy ? '\n\t\t\t  float div_with_int_check(float x, float y) {\n\t\t\t  if (floor(x) == x && floor(y) == y && integerMod(x, y) == 0.0) {\n\t\t\t    return float(int(x)/int(y));\n\t\t\t  }\n\t\t\t  return x / y;\n\t\t\t}\n\t\t\t' : '';
+		}
+
+		/**
    * @function
    * @memberOf WebGLKernel#
    * @name _getGetWraparoundString
@@ -13308,7 +13422,7 @@ module.exports = function (_KernelBase) {
 		value: function _getGetTextureChannelString() {
 			if (!this.floatTextures) return '';
 
-			return this._linesToString(['  int channel = int(integerMod(index, 4))', '  index = index / 4']);
+			return this._linesToString(['  int channel = integerMod(index, 4)', '  index = index / 4']);
 		}
 
 		/**
@@ -13339,7 +13453,9 @@ module.exports = function (_KernelBase) {
 	}, {
 		key: '_getGetResultString',
 		value: function _getGetResultString() {
-			if (!this.floatTextures) return '  return decode32(texel);\n';
+			if (!this.floatTextures) {
+				return '  return decode(texel, x, bitRatio);';
+			}
 			return this._linesToString(['  if (channel == 0) return texel.r', '  if (channel == 1) return texel.g', '  if (channel == 2) return texel.b', '  if (channel == 3) return texel.a']);
 		}
 
@@ -13374,17 +13490,20 @@ module.exports = function (_KernelBase) {
 							floatOutput: this.floatOutput
 						}, paramDim);
 
-						result.push('uniform highp sampler2D user_' + paramName, 'highp ivec2 user_' + paramName + 'Size = vec2(' + paramSize[0] + ', ' + paramSize[1] + ')', 'highp ivec3 user_' + paramName + 'Dim = vec3(' + paramDim[0] + ', ' + paramDim[1] + ', ' + paramDim[2] + ')');
+						result.push('uniform sampler2D user_' + paramName, 'ivec2 user_' + paramName + 'Size = vec2(' + paramSize[0] + ', ' + paramSize[1] + ')', 'ivec3 user_' + paramName + 'Dim = vec3(' + paramDim[0] + ', ' + paramDim[1] + ', ' + paramDim[2] + ')', 'uniform int user_' + paramName + 'BitRatio');
 					} else if (paramType === 'Integer') {
-						result.push('highp float user_' + paramName + ' = ' + param + '.0');
+						result.push('float user_' + paramName + ' = ' + param + '.0');
 					} else if (paramType === 'Float') {
-						result.push('highp float user_' + paramName + ' = ' + param);
+						result.push('float user_' + paramName + ' = ' + param);
 					}
 				} else {
 					if (paramType === 'Array' || paramType === 'Texture' || paramType === 'Input' || paramType === 'HTMLImage') {
-						result.push('uniform highp sampler2D user_' + paramName, 'uniform highp ivec2 user_' + paramName + 'Size', 'uniform highp ivec3 user_' + paramName + 'Dim');
+						result.push('uniform sampler2D user_' + paramName, 'uniform ivec2 user_' + paramName + 'Size', 'uniform ivec3 user_' + paramName + 'Dim');
+						if (paramType !== 'HTMLImage') {
+							result.push('uniform int user_' + paramName + 'BitRatio');
+						}
 					} else if (paramType === 'Integer' || paramType === 'Float') {
-						result.push('uniform highp float user_' + paramName);
+						result.push('uniform float user_' + paramName);
 					} else {
 						throw new Error('Param type ' + paramType + ' not supported in WebGL, only WebGL2');
 					}
@@ -13441,12 +13560,12 @@ module.exports = function (_KernelBase) {
 			var result = [];
 			var names = this.subKernelOutputVariableNames;
 			if (names !== null) {
-				result.push('highp float kernelResult = 0.0');
+				result.push('float kernelResult = 0.0');
 				for (var i = 0; i < names.length; i++) {
-					result.push('highp float ' + names[i] + ' = 0.0');
+					result.push('float ' + names[i] + ' = 0.0');
 				}
 			} else {
-				result.push('highp float kernelResult = 0.0');
+				result.push('float kernelResult = 0.0');
 			}
 
 			return this._linesToString(result) + this.functionBuilder.getPrototypeString('kernel');
@@ -13583,7 +13702,8 @@ module.exports = function (_KernelBase) {
 				debug: this.debug,
 				loopMaxIterations: this.loopMaxIterations,
 				paramNames: this.paramNames,
-				paramTypes: this.paramTypes
+				paramTypes: this.paramTypes,
+				fixIntegerDivisionAccuracy: this.fixIntegerDivisionAccuracy
 			});
 
 			if (this.subKernels !== null) {
@@ -13610,7 +13730,8 @@ module.exports = function (_KernelBase) {
 				constants: this.constants,
 				output: this.output,
 				debug: this.debug,
-				loopMaxIterations: this.loopMaxIterations
+				loopMaxIterations: this.loopMaxIterations,
+				fixIntegerDivisionAccuracy: this.fixIntegerDivisionAccuracy
 			});
 			this.subKernelOutputVariableNames.push(subKernel.name + 'Result');
 		}
@@ -13680,6 +13801,53 @@ module.exports = function (_KernelBase) {
 		value: function addFunction(fn) {
 			this.functionBuilder.addFunction(null, fn);
 		}
+	}, {
+		key: 'destroy',
+		value: function destroy(removeCanvasReferences) {
+			_get(WebGLKernel.prototype.__proto__ || Object.getPrototypeOf(WebGLKernel.prototype), 'destroy', this).call(this);
+			if (this.outputTexture) {
+				this._webGl.deleteTexture(this.outputTexture);
+			}
+			if (this.buffer) {
+				this._webGl.deleteBuffer(this.buffer);
+			}
+			if (this.framebuffer) {
+				this._webGl.deleteFramebuffer(this.framebuffer);
+			}
+
+			if (this.vertShader) {
+				this._webGl.deleteShader(this.vertShader);
+			}
+
+			if (this.fragShader) {
+				this._webGl.deleteShader(this.fragShader);
+			}
+
+			if (this.program) {
+				this._webGl.deleteProgram(this.program);
+			}
+
+			var keys = Object.keys(this.textureCache);
+
+			for (var i = 0; i < keys.length; i++) {
+				var name = keys[i];
+				this._webGl.deleteTexture(this.textureCache[name]);
+			}
+
+			if (this.subKernelOutputTextures) {
+				for (var _i3 = 0; _i3 < this.subKernelOutputTextures.length; _i3++) {
+					this._webGl.deleteTexture(this.subKernelOutputTextures[_i3]);
+				}
+			}
+			if (removeCanvasReferences) {
+				var idx = canvases.indexOf(this._canvas);
+				if (idx >= 0) {
+					canvases[idx] = null;
+					maxTexSizes[idx] = null;
+				}
+			}
+			delete this._webGl;
+		}
 	}]);
 
 	return WebGLKernel;
@@ -13745,11 +13913,11 @@ module.exports = function (_RunnerBase) {
 },{"../runner-base":62,"./function-builder":63,"./kernel":66}],68:[function(require,module,exports){
 "use strict";
 
-module.exports = "__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst float LOOP_MAX = __LOOP_MAX__;\n#define EPSILON 0.0000001;\n\n__CONSTANTS__;\n\nvarying highp vec2 vTexCoord;\n\nvec4 round(vec4 x) {\n  return floor(x + 0.5);\n}\n\nhighp float round(highp float x) {\n  return floor(x + 0.5);\n}\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nhighp float integerMod(highp float x, highp float y) {\n  highp float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nhighp int integerMod(highp int x, highp int y) {\n  return x - (y * int(x/y));\n}\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nhighp float decode32(highp vec4 rgba) {\n  __DECODE32_ENDIANNESS__;\n  rgba *= 255.0;\n  vec2 gte128;\n  gte128.x = rgba.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = rgba.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * rgba.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  rgba.b = rgba.b - 128.0 * gte128.x;\n  res = dot(rgba, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nhighp vec4 encode32(highp float f) {\n  highp float F = abs(f);\n  highp float sign = f < 0.0 ? 1.0 : 0.0;\n  highp float exponent = floor(log2(F));\n  highp float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 rgba = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  rgba.rg = integerMod(rgba.rg, 256.0);\n  rgba.b = integerMod(rgba.b, 128.0);\n  rgba.a = exponent*0.5 + 63.5;\n  rgba.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  rgba = floor(rgba);\n  rgba *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return rgba;\n}\n// Dragons end here\n\nhighp int index;\nhighp ivec3 threadId;\n\nhighp ivec3 indexTo3D(highp int idx, highp ivec3 texDim) {\n  highp int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  highp int y = int(idx / texDim.x);\n  highp int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nhighp float get(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp int z, highp int y, highp int x) {\n  highp ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  highp int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  highp int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  highp vec4 texel = texture2D(tex, st / vec2(texSize));\n  __GET_RESULT__;\n  \n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp int z, highp int y, highp int x) {\n  highp ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  highp int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  highp int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture2D(tex, st / vec2(texSize));\n}\n\nhighp float get(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp int y, highp int x) {\n  return get(tex, texSize, texDim, int(0), y, x);\n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp int y, highp int x) {\n  return getImage2D(tex, texSize, texDim, int(0), y, x);\n}\n\nhighp float get(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp int x) {\n  return get(tex, texSize, texDim, int(0), int(0), x);\n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp int x) {\n  return getImage2D(tex, texSize, texDim, int(0), int(0), x);\n}\n\n\nhighp vec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\nvoid color(sampler2D image) {\n  actualColor = texture2D(image, vTexCoord);\n}\n\n__MAIN_PARAMS__;\n__MAIN_CONSTANTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
+module.exports = "__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst float LOOP_MAX = __LOOP_MAX__;\n\n__CONSTANTS__;\n\nvarying vec2 vTexCoord;\n\nvec4 round(vec4 x) {\n  return floor(x + 0.5);\n}\n\nfloat round(float x) {\n  return floor(x + 0.5);\n}\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x / y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 rgba) {\n  __DECODE32_ENDIANNESS__;\n  rgba *= 255.0;\n  vec2 gte128;\n  gte128.x = rgba.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = rgba.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * rgba.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  rgba.b = rgba.b - 128.0 * gte128.x;\n  res = dot(rgba, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nvec4 encode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 rgba = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  rgba.rg = integerMod(rgba.rg, 256.0);\n  rgba.b = integerMod(rgba.b, 128.0);\n  rgba.a = exponent*0.5 + 63.5;\n  rgba.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  rgba = floor(rgba);\n  rgba *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return rgba;\n}\n// Dragons end here\n\nfloat decode(vec4 rgba, int x, int bitRatio) {\n  if (bitRatio == 1) {\n    return decode32(rgba);\n  }\n  __DECODE32_ENDIANNESS__;\n  int channel = integerMod(x, bitRatio);\n  if (bitRatio == 4) {\n    if (channel == 0) return rgba.r * 255.0;\n    if (channel == 1) return rgba.g * 255.0;\n    if (channel == 2) return rgba.b * 255.0;\n    if (channel == 3) return rgba.a * 255.0;\n  }\n  else {\n    if (channel == 0) return rgba.r * 255.0 + rgba.g * 65280.0;\n    if (channel == 1) return rgba.b * 255.0 + rgba.a * 65280.0;\n  }\n}\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio,  int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  __GET_RESULT__;\n  \n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture2D(tex, st / vec2(texSize));\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio, int y, int x) {\n  return get(tex, texSize, texDim, bitRatio, int(0), y, x);\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int y, int x) {\n  return getImage2D(tex, texSize, texDim, int(0), y, x);\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio, int x) {\n  return get(tex, texSize, texDim, bitRatio, int(0), int(0), x);\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int x) {\n  return getImage2D(tex, texSize, texDim, int(0), int(0), x);\n}\n\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\nvoid color(sampler2D image) {\n  actualColor = texture2D(image, vTexCoord);\n}\n\n__MAIN_PARAMS__;\n__MAIN_CONSTANTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
 },{}],69:[function(require,module,exports){
 "use strict";
 
-module.exports = "precision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nattribute highp vec2 aPos;\nattribute highp vec2 aTexCoord;\n\nvarying highp vec2 vTexCoord;\nuniform vec2 ratio;\n\nvoid main(void) {\n  gl_Position = vec4((aPos + vec2(1)) * ratio + vec2(-1), 0, 1);\n  vTexCoord = aTexCoord;\n}";
+module.exports = "precision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nattribute vec2 aPos;\nattribute vec2 aTexCoord;\n\nvarying vec2 vTexCoord;\nuniform vec2 ratio;\n\nvoid main(void) {\n  gl_Position = vec4((aPos + vec2(1)) * ratio + vec2(-1), 0, 1);\n  vTexCoord = aTexCoord;\n}";
 },{}],70:[function(require,module,exports){
 'use strict';
 
@@ -14096,6 +14264,13 @@ module.exports = function (_WebGLKernel) {
 				this.floatOutput = isFloatReadPixel;
 			}
 
+			var hasIntegerDivisionBug = utils.hasIntegerDivisionAccuracyBug();
+			if (this.fixIntegerDivisionAccuracy == null) {
+				this.fixIntegerDivisionAccuracy = hasIntegerDivisionBug;
+			} else if (this.fixIntegerDivisionAccuracy && !hasIntegerDivisionBug) {
+				this.fixIntegerDivisionAccuracy = false;
+			}
+
 			utils.checkOutput(this.output);
 
 			if (!this.output || this.output.length === 0) {
@@ -14344,38 +14519,24 @@ module.exports = function (_WebGLKernel) {
 						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
 						var length = size[0] * size[1];
-						if (this.floatTextures) {
-							length *= 4;
-						}
 
-						var valuesFlat = void 0;
-
-						if (utils.isArray(value[0])) {
-							// not already flat
-							valuesFlat = new Float32Array(length);
-							utils.flattenTo(value, valuesFlat);
-						} else if (value.constructor != Float32Array) {
-							// TODO: would be great if we could not have to create Float32Array buffers
-							// if input is 8/16 bit values...
-							// valuesFlat = new Float32Array(value);
-							valuesFlat = new Float32Array(length);
-							valuesFlat.set(value);
-						} else {
-							valuesFlat = value;
-						}
+						var _formatArrayTransfer = this._formatArrayTransfer(value, length),
+						    valuesFlat = _formatArrayTransfer.valuesFlat,
+						    bitRatio = _formatArrayTransfer.bitRatio;
 
 						var buffer = void 0;
 						if (this.floatTextures) {
 							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, size[0], size[1], 0, gl.RGBA, gl.FLOAT, valuesFlat);
 						} else {
 							buffer = new Uint8Array(valuesFlat.buffer);
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0], size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0] / bitRatio, size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
 						}
 
 						if (!this.hardcodeConstants) {
 							this.setUniform3iv('user_' + name + 'Dim', dim);
 							this.setUniform2iv('user_' + name + 'Size', size);
 						}
+						this.setUniform1i('user_' + name + 'BitRatio', bitRatio);
 						this.setUniform1i('user_' + name, this.argumentsLength);
 						break;
 					}
@@ -14401,26 +14562,23 @@ module.exports = function (_WebGLKernel) {
 						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
 						var _length = _size[0] * _size[1];
-						var inputArray = void 0;
-						if (this.floatTextures) {
-							_length *= 4;
-							inputArray = new Float32Array(_length);
-							inputArray.set(input.value);
-						} else {
-							inputArray = input.value;
-						}
+
+						var _formatArrayTransfer2 = this._formatArrayTransfer(value.value, _length),
+						    _valuesFlat = _formatArrayTransfer2.valuesFlat,
+						    _bitRatio = _formatArrayTransfer2.bitRatio;
 
 						if (this.floatTextures) {
 							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, _size[0], _size[1], 0, gl.RGBA, gl.FLOAT, inputArray);
 						} else {
-							var _buffer = new Uint8Array(inputArray.buffer);
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size[0], _size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, _buffer);
+							var _buffer = new Uint8Array(_valuesFlat.buffer);
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size[0] / _bitRatio, _size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, _buffer);
 						}
 
 						if (!this.hardcodeConstants) {
 							this.setUniform3iv('user_' + name + 'Dim', _dim);
 							this.setUniform2iv('user_' + name + 'Size', _size);
 						}
+						this.setUniform1i('user_' + name + 'BitRatio', _bitRatio);
 						this.setUniform1i('user_' + name, this.argumentsLength);
 						break;
 					}
@@ -14491,6 +14649,7 @@ module.exports = function (_WebGLKernel) {
 
 						this.setUniform3iv('user_' + name + 'Dim', _dim4);
 						this.setUniform2iv('user_' + name + 'Size', _size4);
+						this.setUniform1i('user_' + name + 'BitRatio', 1); // always float32
 						this.setUniform1i('user_' + name, this.argumentsLength);
 						break;
 					}
@@ -14498,6 +14657,22 @@ module.exports = function (_WebGLKernel) {
 					throw new Error('Input type not supported (WebGL): ' + value);
 			}
 			this.argumentsLength++;
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name _getGetResultString
+   *
+   */
+
+	}, {
+		key: '_getGetResultString',
+		value: function _getGetResultString() {
+			if (!this.floatTextures) {
+				return '  return decode(texel, x, bitRatio);';
+			}
+			return '  return texel[channel];';
 		}
 
 		/**
@@ -14571,7 +14746,11 @@ module.exports = function (_WebGLKernel) {
 							floatOutput: this.floatOutput
 						}, paramDim);
 
-						result.push('uniform highp sampler2D user_' + paramName, 'highp ivec2 user_' + paramName + 'Size = ivec2(' + paramSize[0] + ', ' + paramSize[1] + ')', 'highp ivec3 user_' + paramName + 'Dim = ivec3(' + paramDim[0] + ', ' + paramDim[1] + ', ' + paramDim[2] + ')');
+						result.push('uniform highp sampler2D user_' + paramName, 'highp ivec2 user_' + paramName + 'Size = ivec2(' + paramSize[0] + ', ' + paramSize[1] + ')', 'highp ivec3 user_' + paramName + 'Dim = ivec3(' + paramDim[0] + ', ' + paramDim[1] + ', ' + paramDim[2] + ')', 'uniform highp int user_' + paramName + 'BitRatio');
+
+						if (paramType === 'Array') {
+							result.push('uniform highp int user_' + paramName + 'BitRatio');
+						}
 					} else if (paramType === 'Integer') {
 						result.push('highp float user_' + paramName + ' = ' + param + '.0');
 					} else if (paramType === 'Float') {
@@ -14580,10 +14759,13 @@ module.exports = function (_WebGLKernel) {
 				} else {
 					if (paramType === 'Array' || paramType === 'Texture' || paramType === 'Input' || paramType === 'HTMLImage') {
 						result.push('uniform highp sampler2D user_' + paramName, 'uniform highp ivec2 user_' + paramName + 'Size', 'uniform highp ivec3 user_' + paramName + 'Dim');
+						if (paramType !== 'HTMLImage') {
+							result.push('uniform highp int user_' + paramName + 'BitRatio');
+						}
 					} else if (paramType === 'HTMLImageArray') {
 						result.push('uniform highp sampler2DArray user_' + paramName, 'uniform highp ivec2 user_' + paramName + 'Size', 'uniform highp ivec3 user_' + paramName + 'Dim');
 					} else if (paramType === 'Integer' || paramType === 'Float') {
-						result.push('uniform highp float user_' + paramName);
+						result.push('uniform float user_' + paramName);
 					}
 				}
 			}
@@ -14607,14 +14789,14 @@ module.exports = function (_WebGLKernel) {
 			var result = [];
 			var names = this.subKernelOutputVariableNames;
 			if (names !== null) {
-				result.push('highp float kernelResult = 0.0');
-				result.push('layout(location = 0) out highp vec4 data0');
+				result.push('float kernelResult = 0.0');
+				result.push('layout(location = 0) out vec4 data0');
 				for (var i = 0; i < names.length; i++) {
-					result.push('highp float ' + names[i] + ' = 0.0', 'layout(location = ' + (i + 1) + ') out highp vec4 data' + (i + 1));
+					result.push('float ' + names[i] + ' = 0.0', 'layout(location = ' + (i + 1) + ') out vec4 data' + (i + 1));
 				}
 			} else {
-				result.push('out highp vec4 data0');
-				result.push('highp float kernelResult = 0.0');
+				result.push('out vec4 data0');
+				result.push('float kernelResult = 0.0');
 			}
 
 			return this._linesToString(result) + this.functionBuilder.getPrototypeString('kernel');
@@ -14709,7 +14891,8 @@ module.exports = function (_WebGLKernel) {
 				debug: this.debug,
 				loopMaxIterations: this.loopMaxIterations,
 				paramNames: this.paramNames,
-				paramTypes: this.paramTypes
+				paramTypes: this.paramTypes,
+				fixIntegerDivisionAccuracy: this.fixIntegerDivisionAccuracy
 			});
 
 			if (this.subKernels !== null) {
@@ -14847,11 +15030,11 @@ module.exports = function (_RunnerBase) {
 },{"../runner-base":62,"./function-builder":71,"./kernel":73}],75:[function(require,module,exports){
 "use strict";
 
-module.exports = "#version 300 es\n__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst float LOOP_MAX = __LOOP_MAX__;\n#define EPSILON 0.0000001;\n\n__CONSTANTS__;\n\nin highp vec2 vTexCoord;\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nhighp float integerMod(highp float x, highp float y) {\n  highp float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nhighp int integerMod(highp int x, highp int y) {\n  return x - (y * int(x/y));\n}\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nhighp float decode32(highp vec4 rgba) {\n  __DECODE32_ENDIANNESS__;\n  rgba *= 255.0;\n  vec2 gte128;\n  gte128.x = rgba.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = rgba.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * rgba.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  rgba.b = rgba.b - 128.0 * gte128.x;\n  res = dot(rgba, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nhighp vec4 encode32(highp float f) {\n  highp float F = abs(f);\n  highp float sign = f < 0.0 ? 1.0 : 0.0;\n  highp float exponent = floor(log2(F));\n  highp float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 rgba = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  rgba.rg = integerMod(rgba.rg, 256.0);\n  rgba.b = integerMod(rgba.b, 128.0);\n  rgba.a = exponent*0.5 + 63.5;\n  rgba.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  rgba = floor(rgba);\n  rgba *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return rgba;\n}\n// Dragons end here\n\nhighp int index;\nhighp ivec3 threadId;\n\nhighp ivec3 indexTo3D(highp int idx, highp ivec3 texDim) {\n  highp int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  highp int y = int(idx / texDim.x);\n  highp int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nhighp float get(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp int z, highp int y, highp int x) {\n  highp ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  highp int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  highp int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  highp vec4 texel = texture(tex, st / vec2(texSize));\n  __GET_RESULT__;\n  \n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp int z, highp int y, highp int x) {\n  highp ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  highp int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  highp int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture(tex, st / vec2(texSize));\n}\n\nhighp vec4 getImage3D(highp sampler2DArray tex, highp ivec2 texSize, highp ivec3 texDim, highp int z, highp int y, highp int x) {\n  highp ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  highp int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  highp int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture(tex, vec3(st / vec2(texSize), z));\n}\n\nhighp float get(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp int y, highp int x) {\n  return get(tex, texSize, texDim, int(0), y, x);\n}\n\nhighp float get(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp int x) {\n  return get(tex, texSize, texDim, int(0), int(0), x);\n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp int y, highp int x) {\n  return getImage2D(tex, texSize, texDim, int(0), y, x);\n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp int x) {\n  return getImage2D(tex, texSize, texDim, int(0), int(0), x);\n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp float y, highp float x) {\n  return getImage2D(tex, texSize, texDim, int(0), int(y), int(x));\n}\n\nhighp vec4 getImage2D(highp sampler2D tex, highp ivec2 texSize, highp ivec3 texDim, highp float x) {\n  return getImage2D(tex, texSize, texDim, int(0), int(0), int(x));\n}\n\nhighp vec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\n__MAIN_PARAMS__;\n__MAIN_CONSTANTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
+module.exports = "#version 300 es\n__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst float LOOP_MAX = __LOOP_MAX__;\n\n__CONSTANTS__;\n\nin vec2 vTexCoord;\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x/y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 rgba) {\n  __DECODE32_ENDIANNESS__;\n  rgba *= 255.0;\n  vec2 gte128;\n  gte128.x = rgba.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = rgba.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * rgba.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  rgba.b = rgba.b - 128.0 * gte128.x;\n  res = dot(rgba, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nvec4 encode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 rgba = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  rgba.rg = integerMod(rgba.rg, 256.0);\n  rgba.b = integerMod(rgba.b, 128.0);\n  rgba.a = exponent*0.5 + 63.5;\n  rgba.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  rgba = floor(rgba);\n  rgba *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return rgba;\n}\n// Dragons end here\n\nfloat decode(vec4 rgba, int x, int bitRatio) {\n  if (bitRatio == 1) {\n    return decode32(rgba);\n  }\n  __DECODE32_ENDIANNESS__;\n  int channel = integerMod(x, bitRatio);\n  if (bitRatio == 4) {\n    return rgba[channel] * 255.0;\n  }\n  else {\n    return rgba[channel*2] * 255.0 + rgba[channel*2 + 1] * 65280.0;\n  }\n}\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio,  int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  __GET_RESULT__;\n  \n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture(tex, st / vec2(texSize));\n}\n\nvec4 getImage3D(sampler2DArray tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture(tex, vec3(st / vec2(texSize), z));\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio, int y, int x) {\n  return get(tex, texSize, texDim, bitRatio, 0, y, x);\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio, int x) {\n  return get(tex, texSize, texDim, bitRatio, 0, 0, x);\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int y, int x) {\n  return getImage2D(tex, texSize, texDim, 0, y, x);\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int x) {\n  return getImage2D(tex, texSize, texDim, 0, 0, x);\n}\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\n__MAIN_PARAMS__;\n__MAIN_CONSTANTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
 },{}],76:[function(require,module,exports){
 "use strict";
 
-module.exports = "#version 300 es\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nin highp vec2 aPos;\nin highp vec2 aTexCoord;\n\nout highp vec2 vTexCoord;\nuniform vec2 ratio;\n\nvoid main(void) {\n  gl_Position = vec4((aPos + vec2(1)) * ratio + vec2(-1), 0, 1);\n  vTexCoord = aTexCoord;\n}";
+module.exports = "#version 300 es\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nin vec2 aPos;\nin vec2 aTexCoord;\n\nout vec2 vTexCoord;\nuniform vec2 ratio;\n\nvoid main(void) {\n  gl_Position = vec4((aPos + vec2(1)) * ratio + vec2(-1), 0, 1);\n  vTexCoord = aTexCoord;\n}";
 },{}],77:[function(require,module,exports){
 'use strict';
 
@@ -15069,7 +15252,6 @@ var GPU = function (_GPUCore) {
 		} else {
 			detectedMode = mode || 'gpu';
 		}
-
 		_this.kernels = [];
 
 		var runnerSettings = {
@@ -15389,6 +15571,27 @@ var GPU = function (_GPUCore) {
 
 		/**
    *
+   * Return TRUE, if system has integer division accuracy issue
+   *
+   * @name get hasIntegerDivisionAccuracyBug
+   * @function
+   * @memberOf GPU#
+   *
+   * Note: This function can also be called directly `GPU.hasIntegerDivisionAccuracyBug()`
+   *
+   * @returns {Boolean} TRUE if system has integer division accuracy issue
+   *
+   *
+   */
+
+	}, {
+		key: 'hasIntegerDivisionAccuracyBug',
+		value: function hasIntegerDivisionAccuracyBug() {
+			return utils.hasIntegerDivisionAccuracyBug();
+		}
+
+		/**
+   *
    * Return the canvas object bound to this gpu instance.
    *
    * @name getCanvas
@@ -15421,6 +15624,44 @@ var GPU = function (_GPUCore) {
 		key: 'getWebGl',
 		value: function getWebGl() {
 			return this._webGl;
+		}
+
+		/**
+   *
+   * Destroys all memory associated with gpu.js & the webGl if we created it
+   *
+   * @name destroy
+   * @function
+   * @memberOf GPU#
+   *
+   *
+   */
+
+	}, {
+		key: 'destroy',
+		value: function destroy() {
+			var _this2 = this;
+
+			// perform on next runloop - for some reason we dont get lose context events 
+			// if webGl is created and destroyed in the same run loop.
+			setTimeout(function () {
+				var kernels = _this2.kernels;
+
+				var destroyWebGl = !_this2._webGl && kernels.length && kernels[0]._webGl;
+				for (var i = 0; i < _this2.kernels.length; i++) {
+					_this2.kernels[i].destroy(true); // remove canvas if exists
+				}
+
+				if (destroyWebGl) {
+					destroyWebGl.OES_texture_float = null;
+					destroyWebGl.OES_texture_float_linear = null;
+					destroyWebGl.OES_element_index_uint = null;
+					var loseContextExt = destroyWebGl.getExtension('WEBGL_lose_context');
+					if (loseContextExt) {
+						loseContextExt.loseContext();
+					}
+				}
+			}, 0);
 		}
 	}]);
 
@@ -15467,8 +15708,6 @@ module.exports = function Input(value, size) {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var gpu = null;
 
 module.exports = function () {
 
@@ -15895,6 +16134,8 @@ var _isMixedIdentifiersSupported = function () {
 	}
 }();
 
+var _hasIntegerDivisionAccuracyBug = null;
+
 /**
  * @class
  * @extends UtilsCore
@@ -16209,9 +16450,10 @@ var Utils = function (_UtilsCore) {
 			}
 
 			var GPU = require('../index');
-			var x = new GPU({
+			var gpu = new GPU({
 				mode: 'webgl-validator'
-			}).createKernel(function () {
+			});
+			var x = gpu.createKernel(function () {
 				return 1;
 			}, {
 				output: [2],
@@ -16221,7 +16463,7 @@ var Utils = function (_UtilsCore) {
 			})();
 
 			_isFloatReadPixelsSupported = x[0] === 1;
-
+			gpu.destroy();
 			return _isFloatReadPixelsSupported;
 		}
 
@@ -16245,9 +16487,10 @@ var Utils = function (_UtilsCore) {
 			}
 
 			var GPU = require('../index');
-			var x = new GPU({
+			var gpu = new GPU({
 				mode: 'webgl2-validator'
-			}).createKernel(function () {
+			});
+			var x = gpu.createKernel(function () {
 				return 1;
 			}, {
 				output: [2],
@@ -16257,8 +16500,44 @@ var Utils = function (_UtilsCore) {
 			})();
 
 			_isFloatReadPixelsSupportedWebGL2 = x[0] === 1;
-
+			gpu.destroy();
 			return _isFloatReadPixelsSupportedWebGL2;
+		}
+
+		/**
+   * @memberOf Utils
+   * @name hasIntegerDivisionAccuracyBug
+   * @function
+   * @static
+   *
+   * Checks if the system has inaccuracies when dividing integers
+   *
+   * @returns {Boolean} true if bug is exhibited on this system
+   *
+   */
+
+	}, {
+		key: 'hasIntegerDivisionAccuracyBug',
+		value: function hasIntegerDivisionAccuracyBug() {
+			if (_hasIntegerDivisionAccuracyBug !== null) {
+				return _hasIntegerDivisionAccuracyBug;
+			}
+
+			var GPU = require('../index');
+			var gpu = new GPU({
+				mode: 'webgl-validator'
+			});
+			var x = gpu.createKernel(function (v1, v2) {
+				return v1[this.thread.x] / v2[this.thread.x];
+			}, {
+				output: [1]
+			})([6, 6030401], [3, 3991]);
+
+			// have we not got whole numbers for 6/3 or 6030401/3991
+			// add more here if others see this problem
+			_hasIntegerDivisionAccuracyBug = x[0] !== 2 || x[1] !== 1511;
+			gpu.destroy();
+			return _hasIntegerDivisionAccuracyBug;
 		}
 	}, {
 		key: 'isMixedIdentifiersSupported',
@@ -16276,8 +16555,7 @@ var Utils = function (_UtilsCore) {
 			}
 
 			if (opt.floatTextures && (!output || opt.floatOutput)) {
-				numTexels = Math.ceil(numTexels / 4);
-				w = Math.ceil(numTexels / 4);
+				w = numTexels = Math.ceil(numTexels / 4);
 			}
 			// if given dimensions == a 2d image
 			if (h > 1 && w * h === numTexels) {

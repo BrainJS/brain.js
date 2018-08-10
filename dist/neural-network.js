@@ -1045,11 +1045,11 @@ var NeuralNetwork = function () {
           case 'sigmoid':
             return '1/(1+1/Math.exp(' + result.join('') + '))';
           case 'relu':
-            return 'var sum = ' + result.join('') + ';(sum < 0 ? 0 : sum);';
+            return '(' + result.join('') + ' < 0 ? 0 : ' + result.join('') + ')';
           case 'leaky-relu':
-            return 'var sum = ' + result.join('') + ';(sum < 0 ? 0 : 0.01 * sum);';
+            return '(' + result.join('') + ' < 0 ? 0 : 0.01 * ' + result.join('') + ')';
           case 'tanh':
-            return 'Math.tanh(' + result.join('') + ');';
+            return 'Math.tanh(' + result.join('') + ')';
           default:
             throw new Error('unknown activation type ' + activation);
         }
