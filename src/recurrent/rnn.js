@@ -230,7 +230,7 @@ export default class RNN {
     }
 
     this.totalCost = cost;
-    return Math.pow(2, log2ppl / (max - 1));
+    return Math.pow(2, log2ppl / (max - 1)) / 100;
   }
 
   /**
