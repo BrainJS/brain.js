@@ -1,7 +1,7 @@
 {
   "name": "brain.js",
   "description": "Neural network library",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": {
     "type": "git",

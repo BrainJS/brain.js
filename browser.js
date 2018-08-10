@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.2.5
+ *   version: 1.2.6
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -4102,7 +4102,7 @@ var RNN = function () {
       }
 
       this.totalCost = cost;
-      return Math.pow(2, log2ppl / (max - 1));
+      return Math.pow(2, log2ppl / (max - 1)) / 100;
     }
 
     /**
