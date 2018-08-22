@@ -33,32 +33,35 @@ describe('Convolution Layer', () => {
     })
   })
 
-  describe('.compare (back propagation)', () => {
+  describe('.compareFilters (back propagation)', () => {
     test('can convolution a simple matrix', () => {
-      const inputs = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
+      const filters = [[[1, 2], [3, 4]]]
+      const inputs = [[[1, 2], [3, 4]]]
       const deltas = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
       const results = gpuMock(compareFilters, {
-        output: [3, 3],
+        output: [2, 2],
         constants: {
           strideX: 1,
           strideY: 1,
           paddingY: 0,
           paddingX: 0,
-          filterHeight: 3,
-          filterWidth: 3,
+          filterHeight: 2,
+          filterWidth: 2,
           filterCount: 1,
-          inputWidth: 3,
-          inputHeight: 3,
+          inputWidth: 2,
+          inputHeight: 2,
           inputDepth: 1,
+          deltasDepth: 1,
+          deltasHeight: 3,
+          deltasWidth: 3
         },
-      })(inputs, deltas)
+      })(filters, inputs, deltas)
 
-      // TODO: likely incorrect
-      expect(results).toEqual([[45, 33, 18], [39, 28, 15], [24, 17, 9]])
+      expect(results).toEqual([[38, 49], [70, 81]])
     })
   })
 
-  describe('.learnInputs (back propagation)', () => {
+  describe('.compareInputs (back propagation)', () => {
     test('can convolution a simple matrix', () => {
       const inputs = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
       const deltas = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
@@ -82,7 +85,7 @@ describe('Convolution Layer', () => {
     })
   })
 
-  describe('compareBiases', () => {
+  describe('.compareBiases (back propagation)', () => {
     const deltas = [
       [[0, 16], [8, 24]],
       [[1, 17], [9, 25]],

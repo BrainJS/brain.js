@@ -52,37 +52,14 @@ export function predict(inputs, filters, biases) {
   return sum + biases[this.thread.z]
 }
 
-export function compareFilters(inputs, deltas) {
-  let sum = 0
-  const delta =
-    deltas[this.thread.z][this.thread.y * this.constants.paddingY][
-      this.thread.x * this.constants.paddingX
-    ]
-  const inputXMax = this.constants.inputWidth + this.constants.paddingX
-  const inputYMax = this.constants.inputHeight + this.constants.paddingY
-  for (
-    let inputY = this.thread.y - this.constants.paddingY;
-    inputY < inputYMax;
-    inputY += this.constants.strideY
-  ) {
-    for (
-      let inputX = this.thread.x - this.constants.paddingX;
-      inputX < inputXMax;
-      inputX += this.constants.strideX
-    ) {
-      if (
-        inputY >= 0 &&
-        inputY < this.constants.inputHeight &&
-        inputX >= 0 &&
-        inputX < this.constants.inputWidth
-      ) {
-        for (
-          let inputIndex = 0;
-          inputIndex < this.constants.inputDepth;
-          inputIndex++
-        ) {
-          sum += inputs[inputIndex][inputY][inputX] * delta
-        }
+export function compareFilters(filterDeltas, inputs, deltas) {
+  const inputX = (this.thread.x * this.constants.strideX) - this.constants.paddingX
+  const inputY = (this.thread.y * this.constants.strideY) - this.constants.paddingY
+  let sum = filterDeltas[this.thread.z][this.thread.y][this.thread.x]
+  for (let z = 0; z < this.constants.filterCount; z++) {
+    for (let y = 0; y < this.constants.filterHeight; y++) {
+      for (let x = 0; x < this.constants.filterWidth; x++) {
+        sum += deltas[this.thread.z][inputY + y][inputX + x] * inputs[this.thread.z][y][x]
       }
     }
   }
@@ -194,6 +171,9 @@ export default class Convolution extends Filter {
 
     this.compareFiltersKernel = makeKernel(compareFilters, {
       constants: {
+        deltasWidth: this.width,
+        deltasHeight: this.height,
+        deltasDepth: this.depth,
         inputWidth: this.inputLayer.width,
         inputHeight: this.inputLayer.height,
         inputDepth: this.inputLayer.depth,
@@ -238,6 +218,7 @@ export default class Convolution extends Filter {
 
   compare() {
     this.filterDeltas = this.compareFiltersKernel(
+      this.filterDeltas,
       this.inputLayer.weights,
       this.deltas
     )
