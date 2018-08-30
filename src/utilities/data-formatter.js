@@ -165,13 +165,10 @@ export default class DataFormatter {
     return dataFormatter;
   }
 
-  addSpecial() {
-    for (let i = 0; i < arguments.length; i++) {
-      const special = arguments[i];
-      let specialIndex = this.indexTable[special] = this.characters.length;
-      this.characterTable[specialIndex] = special;
-      this.characters.push(special);
-    }
+  addSpecial(special, printableValue = '') {
+    let specialIndex = this.indexTable[special] = this.characters.length;
+    this.characterTable[specialIndex] = printableValue;
+    this.characters.push(special);
   }
 
   toFunctionString() {

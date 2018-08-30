@@ -158,13 +158,12 @@ var DataFormatter = function () {
     }
   }, {
     key: 'addSpecial',
-    value: function addSpecial() {
-      for (var i = 0; i < arguments.length; i++) {
-        var special = arguments[i];
-        var specialIndex = this.indexTable[special] = this.characters.length;
-        this.characterTable[specialIndex] = special;
-        this.characters.push(special);
-      }
+    value: function addSpecial(special) {
+      var printableValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+      var specialIndex = this.indexTable[special] = this.characters.length;
+      this.characterTable[specialIndex] = printableValue;
+      this.characters.push(special);
     }
   }, {
     key: 'toFunctionString',
