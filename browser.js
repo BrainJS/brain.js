@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.2.7
+ *   version: 1.2.8
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)

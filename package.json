@@ -1,7 +1,7 @@
 {
   "name": "brain.js",
   "description": "Neural network library",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": {
     "type": "git",
@@ -23,8 +23,7 @@
     "browser": "browserify ./index.js -p licensify -o browser.js -s brain",
     "browser-min": "browserify ./index.js -p licensify -s brain -g uglifyify -o browser.min.js",
     "make": "rimraf dist && npm run dist && git add ./dist && npm run browser && npm run browser-min",
-    "clean": "rimraf node_modules",
-    "postinstall": "opencollective postinstall"
+    "clean": "rimraf node_modules"
   },
   "main": "./index.js",
   "devDependencies": {
@@ -76,7 +75,6 @@
   "license": "MIT",
   "dependencies": {
     "gpu.js": "^1.2.0",
-    "opencollective": "^1.0.3",
     "thaw.js": "^2.0.0"
   },
   "typings": "./index.d.ts",
