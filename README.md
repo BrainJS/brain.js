@@ -135,7 +135,7 @@ bower install brain.js
 
 #### Use CDN
 
-[brain.js CDN Link](unpkg.com/brain.js/dist/brain.min.js): Use this link to directly include `brain.js` script in your webpage.
+[brain.js CDN Link](unpkg.com/brain.js/dist/brain-browser.min.js): Use this link to directly include `brain-browser.min.js` script in your webpage.
 
 _This is recommended way to load brain.js in browser._
 
@@ -143,7 +143,7 @@ Or
 
 #### Download from Github
 
-[Download brain.js for browser](https://cdn.rawgit.com/BrainJS/brain.js/master/dist/brain.min.js)
+[Download brain.js for browser](https://cdn.rawgit.com/BrainJS/brain.js/master/dist/brain-browser.min.js)
 
 **Note**: Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network into your website.
 

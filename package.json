@@ -1,6 +1,6 @@
 {
   "author": "Heather Arthur <fayearthur@gmail.com>",
-  "browser": "./dist/brain.js",
+  "browser": "./dist/brain-browser.js",
   "bugs": {
     "url": "https://github.com/brainjs/brain.js/issues"
   },
@@ -10,6 +10,7 @@
   },
   "description": "Neural networks in JavaScript",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
     "eslint": "^5.2.0",
@@ -68,17 +69,17 @@
     "gru"
   ],
   "license": "MIT",
-  "main": "./dist/brain.js",
+  "main": "./dist/index.js",
   "name": "brain.js",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/brainjs/brain.js.git"
   },
   "scripts": {
-    "build": "npm run dist",
-    "bundle": "parcel build ./src/index.js --out-dir ./dist --out-file brain.js --no-minify",
-    "bundle:minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain.min.js",
-    "dist": "npm run bundle && npm run bundle:minified",
+    "build": "npx babel src --out-dir dist",
+    "bundle-web": "parcel build ./src/index.js --out-dir ./dist --out-file brain-browser.js --no-minify",
+    "bundle-web:minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain-browser.min.js",
+    "dist": "npm run build && npm run bundle-web && npm run bundle-web:minified",
     "lint": "eslint --ext .js ./src ./__tests__",
     "lint:fix": "eslint --ext .js --fix ./src ./__tests__",
     "prettier": "prettier --write {src,__tests__}/**/*.js",
