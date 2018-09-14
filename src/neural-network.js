@@ -8,6 +8,25 @@ import toArray from './utilities/to-array';
 import zeros from './utilities/zeros';
 import Thaw from 'thaw.js';
 
+const availableActivations = {
+  'sigmoid': {
+    activationFn: (sum) => 1 / (1 + Math.exp(-sum)),
+    deltaFn: (output, error) => error * output * (1 - output)
+  },
+  'relu': {
+    activationFn: (sum) => Math.max(0, sum),
+    deltaFn: (output, error) => output > 0 ? error : 0
+  },
+  'leaky-relu': {
+    activationFn: (sum) => sum < 0 ? 0 : 0.01 * sum,
+    deltaFn: (output, error) => output > 0 ? error : 0.01 * error
+  },
+  'tanh': {
+    activationFn: (sum) => Math.tanh(sum),
+    deltaFn: (output, error) => (1 - output * output) * error
+  }
+};
+
 /**
  * @param {object} options
  * @constructor
@@ -42,15 +61,15 @@ export default class NeuralNetwork {
    */
   static _validateTrainingOptions(options) {
     const validations = {
-      iterations: (val) => { return typeof val === 'number' && val > 0; },
-      errorThresh: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
-      log: (val) => { return typeof val === 'function' || typeof val === 'boolean'; },
-      logPeriod: (val) => { return typeof val === 'number' && val > 0; },
-      learningRate: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
-      momentum: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
-      callback: (val) => { return typeof val === 'function' || val === null },
-      callbackPeriod: (val) => { return typeof val === 'number' && val > 0; },
-      timeout: (val) => { return typeof val === 'number' && val > 0 }
+      iterations: val => typeof val === 'number' && val > 0,
+      errorThresh: val => typeof val === 'number' && val > 0 && val < 1,
+      log: val => typeof val === 'function' || typeof val === 'boolean',
+      logPeriod: val => typeof val === 'number' && val > 0,
+      learningRate: val => typeof val === 'number' && val > 0 && val < 1,
+      momentum: val => typeof val === 'number' && val > 0 && val < 1,
+      callback: val => typeof val === 'function' || val === null,
+      callbackPeriod: val => typeof val === 'number' && val > 0,
+      timeout: val => typeof val === 'number' && val > 0
     };
     Object.keys(NeuralNetwork.trainDefaults).forEach(key => {
       if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
@@ -128,29 +147,19 @@ export default class NeuralNetwork {
    * @param activation supported inputs: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
    */
   setActivation(activation) {
-    this.activation = (activation) ? activation : this.activation;
-    switch (this.activation) {
-      case 'sigmoid':
-        this.runInput = this.runInput || this._runInputSigmoid;
-        this.calculateDeltas = this.calculateDeltas || this._calculateDeltasSigmoid;
-        break;
-      case 'relu':
-        this.runInput = this.runInput || this._runInputRelu;
-        this.calculateDeltas = this.calculateDeltas || this._calculateDeltasRelu;
-        break;
-      case 'leaky-relu':
-        this.runInput = this.runInput || this._runInputLeakyRelu;
-        this.calculateDeltas = this.calculateDeltas || this._calculateDeltasLeakyRelu;
-        break;
-      case 'tanh':
-        this.runInput = this.runInput || this._runInputTanh;
-        this.calculateDeltas = this.calculateDeltas || this._calculateDeltasTanh;
-        break;
-      default:
-        throw new Error('unknown activation ' + this.activation + ', The activation should be one of [\'sigmoid\', \'relu\', \'leaky-relu\', \'tanh\']');
-    }
-  }
+    const activationList = Object.keys(availableActivations);
+    this.activation = activation || this.activation;
 
+    if (!activationList.includes(this.activation)) {
+      throw new Error(`Unknown activation ${this.activation}, The activation should be one of ['${activationList.join('\', \'')}']`);
+    }
+
+    const { activationFn, deltaFn } = availableActivations[this.activation];
+
+    this.runInput = this.runInput || this._createRunInput(activationFn);
+    this.calculateDeltas = this.calculateDeltas || this._createCalculateDeltas(deltaFn);
+  }
+  
   /**
    *
    * @returns boolean
@@ -200,88 +209,30 @@ export default class NeuralNetwork {
   }
 
   /**
-   * trains via sigmoid
-   * @param input
-   * @returns {*}
+   * 
+   * @param {Function} activationFn 
+   * @returns {Function}
    */
-  _runInputSigmoid(input) {
-    this.outputs[0] = input;  // set output state of input layer
+  _createRunInput(activationFn) {
+    return function _runInput(input) {
+      this.outputs[0] = input;  // set output state of input layer
 
-    let output = null;
-    for (let layer = 1; layer <= this.outputLayer; layer++) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let weights = this.weights[layer][node];
+      let output = null;
+      for (let layer = 1; layer <= this.outputLayer; layer++) {
+        for (let node = 0; node < this.sizes[layer]; node++) {
+          const weights = this.weights[layer][node];
 
-        let sum = this.biases[layer][node];
-        for (let k = 0; k < weights.length; k++) {
-          sum += weights[k] * input[k];
+          let sum = this.biases[layer][node];
+          for (let k = 0; k < weights.length; k++) {
+            sum += weights[k] * input[k];
+          }
+          
+          this.outputs[layer][node] = activationFn(sum);
         }
-        //sigmoid
-        this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
+        output = input = this.outputs[layer];
       }
-      output = input = this.outputs[layer];
+      return output;
     }
-    return output;
-  }
-
-  _runInputRelu(input) {
-    this.outputs[0] = input;  // set output state of input layer
-
-    let output = null;
-    for (let layer = 1; layer <= this.outputLayer; layer++) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let weights = this.weights[layer][node];
-
-        let sum = this.biases[layer][node];
-        for (let k = 0; k < weights.length; k++) {
-          sum += weights[k] * input[k];
-        }
-        //relu
-        this.outputs[layer][node] = (sum < 0 ? 0 : sum);
-      }
-      output = input = this.outputs[layer];
-    }
-    return output;
-  }
-
-  _runInputLeakyRelu(input) {
-    this.outputs[0] = input;  // set output state of input layer
-
-    let output = null;
-    for (let layer = 1; layer <= this.outputLayer; layer++) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let weights = this.weights[layer][node];
-
-        let sum = this.biases[layer][node];
-        for (let k = 0; k < weights.length; k++) {
-          sum += weights[k] * input[k];
-        }
-        //leaky relu
-        this.outputs[layer][node] = (sum < 0 ? 0 : 0.01 * sum);
-      }
-      output = input = this.outputs[layer];
-    }
-    return output;
-  }
-
-  _runInputTanh(input) {
-    this.outputs[0] = input;  // set output state of input layer
-
-    let output = null;
-    for (let layer = 1; layer <= this.outputLayer; layer++) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let weights = this.weights[layer][node];
-
-        let sum = this.biases[layer][node];
-        for (let k = 0; k < weights.length; k++) {
-          sum += weights[k] * input[k];
-        }
-        //tanh
-        this.outputs[layer][node] = Math.tanh(sum);
-      }
-      output = input = this.outputs[layer];
-    }
-    return output;
   }
 
   /**
@@ -496,101 +447,29 @@ export default class NeuralNetwork {
   }
 
   /**
-   *
-   * @param target
+   * 
+   * @param {Function} deltaFn 
+   * @returns {Function}
    */
-  _calculateDeltasSigmoid(target) {
-    for (let layer = this.outputLayer; layer >= 0; layer--) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let output = this.outputs[layer][node];
-
-        let error = 0;
-        if (layer === this.outputLayer) {
-          error = target[node] - output;
-        }
-        else {
-          let deltas = this.deltas[layer + 1];
-          for (let k = 0; k < deltas.length; k++) {
-            error += deltas[k] * this.weights[layer + 1][k][node];
+  _createCalculateDeltas(deltaFn) {
+    return function _calcuateDeltas(target) {
+      for (let layer = this.outputLayer; layer >= 0; layer--) {
+        for (let node = 0; node < this.sizes[layer]; node++) {
+          const output = this.outputs[layer][node];
+  
+          let error = 0;
+          if (layer === this.outputLayer) {
+            error = target[node] - output;
           }
-        }
-        this.errors[layer][node] = error;
-        this.deltas[layer][node] = error * output * (1 - output);
-      }
-    }
-  }
-
-  /**
-   *
-   * @param target
-   */
-  _calculateDeltasRelu(target) {
-    for (let layer = this.outputLayer; layer >= 0; layer--) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let output = this.outputs[layer][node];
-
-        let error = 0;
-        if (layer === this.outputLayer) {
-          error = target[node] - output;
-        }
-        else {
-          let deltas = this.deltas[layer + 1];
-          for (let k = 0; k < deltas.length; k++) {
-            error += deltas[k] * this.weights[layer + 1][k][node];
+          else {
+            const deltas = this.deltas[layer + 1];
+            for (let k = 0; k < deltas.length; k++) {
+              error += deltas[k] * this.weights[layer + 1][k][node];
+            }
           }
+          this.errors[layer][node] = error;
+          this.deltas[layer][node] = deltaFn(output, error);
         }
-        this.errors[layer][node] = error;
-        this.deltas[layer][node] = output > 0 ? error : 0;
-      }
-    }
-  }
-
-  /**
-   *
-   * @param target
-   */
-  _calculateDeltasLeakyRelu(target) {
-    for (let layer = this.outputLayer; layer >= 0; layer--) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let output = this.outputs[layer][node];
-
-        let error = 0;
-        if (layer === this.outputLayer) {
-          error = target[node] - output;
-        }
-        else {
-          let deltas = this.deltas[layer + 1];
-          for (let k = 0; k < deltas.length; k++) {
-            error += deltas[k] * this.weights[layer + 1][k][node];
-          }
-        }
-        this.errors[layer][node] = error;
-        this.deltas[layer][node] = output > 0 ? error : 0.01 * error;
-      }
-    }
-  }
-
-  /**
-   *
-   * @param target
-   */
-  _calculateDeltasTanh(target) {
-    for (let layer = this.outputLayer; layer >= 0; layer--) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let output = this.outputs[layer][node];
-
-        let error = 0;
-        if (layer === this.outputLayer) {
-          error = target[node] - output;
-        }
-        else {
-          let deltas = this.deltas[layer + 1];
-          for (let k = 0; k < deltas.length; k++) {
-            error += deltas[k] * this.weights[layer + 1][k][node];
-          }
-        }
-        this.errors[layer][node] = error;
-        this.deltas[layer][node] = (1 - output * output) * error;
       }
     }
   }
@@ -863,6 +742,11 @@ export default class NeuralNetwork {
    */
   toFunction() {
     const activation = this.activation;
+
+    if (!Object.keys(availableActivations).includes(activation)) {
+      throw new Error(`unknown activation type ${activation}`);
+    }
+
     function nodeHandle(layers, layerNumber, nodeKey) {
       if (layerNumber === 0) {
         return (typeof nodeKey === 'string'
@@ -874,25 +758,12 @@ export default class NeuralNetwork {
       const node = layer[nodeKey];
       let result = [node.bias];
       for (let w in node.weights) {
-        if (node.weights[w] < 0) {
-          result.push(`${node.weights[w]}*(${nodeHandle(layers, layerNumber - 1, w)})`);
-        } else {
-          result.push(`+${node.weights[w]}*(${nodeHandle(layers, layerNumber - 1, w)})`);
-        }
+        result.push(
+          `${node.weights[w] < 0 ? '' : '+'}${node.weights[w]}*(${nodeHandle(layers, layerNumber - 1, w)})`
+        );
       }
 
-      switch (activation) {
-        case 'sigmoid':
-          return `1/(1+1/Math.exp(${result.join('')}))`;
-        case 'relu':
-          return `var sum = ${result.join('')};(sum < 0 ? 0 : sum);`;
-        case 'leaky-relu':
-          return `var sum = ${result.join('')};(sum < 0 ? 0 : 0.01 * sum);`;
-        case 'tanh':
-          return `Math.tanh(${result.join('')});`;
-        default:
-          throw new Error('unknown activation type ' + activation);
-      }
+      return `(${availableActivations[activation].activationFn.toString()})(${result.join('')})`;
     }
 
     const layers = this.toJSON().layers;

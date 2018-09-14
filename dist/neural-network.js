@@ -48,10 +48,46 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var availableActivations = {
+  'sigmoid': {
+    activationFn: function activationFn(sum) {
+      return 1 / (1 + Math.exp(-sum));
+    },
+    deltaFn: function deltaFn(output, error) {
+      return error * output * (1 - output);
+    }
+  },
+  'relu': {
+    activationFn: function activationFn(sum) {
+      return Math.max(0, sum);
+    },
+    deltaFn: function deltaFn(output, error) {
+      return output > 0 ? error : 0;
+    }
+  },
+  'leaky-relu': {
+    activationFn: function activationFn(sum) {
+      return sum < 0 ? 0 : 0.01 * sum;
+    },
+    deltaFn: function deltaFn(output, error) {
+      return output > 0 ? error : 0.01 * error;
+    }
+  },
+  'tanh': {
+    activationFn: function activationFn(sum) {
+      return Math.tanh(sum);
+    },
+    deltaFn: function deltaFn(output, error) {
+      return (1 - output * output) * error;
+    }
+  }
+};
+
 /**
  * @param {object} options
  * @constructor
  */
+
 var NeuralNetwork = function () {
   _createClass(NeuralNetwork, null, [{
     key: '_validateTrainingOptions',
@@ -204,27 +240,20 @@ var NeuralNetwork = function () {
   }, {
     key: 'setActivation',
     value: function setActivation(activation) {
-      this.activation = activation ? activation : this.activation;
-      switch (this.activation) {
-        case 'sigmoid':
-          this.runInput = this.runInput || this._runInputSigmoid;
-          this.calculateDeltas = this.calculateDeltas || this._calculateDeltasSigmoid;
-          break;
-        case 'relu':
-          this.runInput = this.runInput || this._runInputRelu;
-          this.calculateDeltas = this.calculateDeltas || this._calculateDeltasRelu;
-          break;
-        case 'leaky-relu':
-          this.runInput = this.runInput || this._runInputLeakyRelu;
-          this.calculateDeltas = this.calculateDeltas || this._calculateDeltasLeakyRelu;
-          break;
-        case 'tanh':
-          this.runInput = this.runInput || this._runInputTanh;
-          this.calculateDeltas = this.calculateDeltas || this._calculateDeltasTanh;
-          break;
-        default:
-          throw new Error('unknown activation ' + this.activation + ', The activation should be one of [\'sigmoid\', \'relu\', \'leaky-relu\', \'tanh\']');
+      var activationList = Object.keys(availableActivations);
+      this.activation = activation || this.activation;
+
+      if (!activationList.includes(this.activation)) {
+        throw new Error('Unknown activation ' + this.activation + ', The activation should be one of [\'' + activationList.join('\', \'') + '\']');
       }
+
+      var _availableActivations = availableActivations[this.activation],
+          activationFn = _availableActivations.activationFn,
+          deltaFn = _availableActivations.deltaFn;
+
+
+      this.runInput = this.runInput || this._createRunInput(activationFn);
+      this.calculateDeltas = this.calculateDeltas || this._createCalculateDeltas(deltaFn);
     }
 
     /**
@@ -256,94 +285,33 @@ var NeuralNetwork = function () {
     }
 
     /**
-     * trains via sigmoid
-     * @param input
-     * @returns {*}
+     * 
+     * @param {Function} activationFn 
+     * @returns {Function}
      */
 
   }, {
-    key: '_runInputSigmoid',
-    value: function _runInputSigmoid(input) {
-      this.outputs[0] = input; // set output state of input layer
+    key: '_createRunInput',
+    value: function _createRunInput(activationFn) {
+      return function _runInput(input) {
+        this.outputs[0] = input; // set output state of input layer
 
-      var output = null;
-      for (var layer = 1; layer <= this.outputLayer; layer++) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var weights = this.weights[layer][node];
+        var output = null;
+        for (var layer = 1; layer <= this.outputLayer; layer++) {
+          for (var node = 0; node < this.sizes[layer]; node++) {
+            var weights = this.weights[layer][node];
 
-          var sum = this.biases[layer][node];
-          for (var k = 0; k < weights.length; k++) {
-            sum += weights[k] * input[k];
+            var sum = this.biases[layer][node];
+            for (var k = 0; k < weights.length; k++) {
+              sum += weights[k] * input[k];
+            }
+
+            this.outputs[layer][node] = activationFn(sum);
           }
-          //sigmoid
-          this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
+          output = input = this.outputs[layer];
         }
-        output = input = this.outputs[layer];
-      }
-      return output;
-    }
-  }, {
-    key: '_runInputRelu',
-    value: function _runInputRelu(input) {
-      this.outputs[0] = input; // set output state of input layer
-
-      var output = null;
-      for (var layer = 1; layer <= this.outputLayer; layer++) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var weights = this.weights[layer][node];
-
-          var sum = this.biases[layer][node];
-          for (var k = 0; k < weights.length; k++) {
-            sum += weights[k] * input[k];
-          }
-          //relu
-          this.outputs[layer][node] = sum < 0 ? 0 : sum;
-        }
-        output = input = this.outputs[layer];
-      }
-      return output;
-    }
-  }, {
-    key: '_runInputLeakyRelu',
-    value: function _runInputLeakyRelu(input) {
-      this.outputs[0] = input; // set output state of input layer
-
-      var output = null;
-      for (var layer = 1; layer <= this.outputLayer; layer++) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var weights = this.weights[layer][node];
-
-          var sum = this.biases[layer][node];
-          for (var k = 0; k < weights.length; k++) {
-            sum += weights[k] * input[k];
-          }
-          //leaky relu
-          this.outputs[layer][node] = sum < 0 ? 0 : 0.01 * sum;
-        }
-        output = input = this.outputs[layer];
-      }
-      return output;
-    }
-  }, {
-    key: '_runInputTanh',
-    value: function _runInputTanh(input) {
-      this.outputs[0] = input; // set output state of input layer
-
-      var output = null;
-      for (var layer = 1; layer <= this.outputLayer; layer++) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var weights = this.weights[layer][node];
-
-          var sum = this.biases[layer][node];
-          for (var k = 0; k < weights.length; k++) {
-            sum += weights[k] * input[k];
-          }
-          //tanh
-          this.outputs[layer][node] = Math.tanh(sum);
-        }
-        output = input = this.outputs[layer];
-      }
-      return output;
+        return output;
+      };
     }
 
     /**
@@ -622,111 +590,33 @@ var NeuralNetwork = function () {
     }
 
     /**
-     *
-     * @param target
+     * 
+     * @param {Function} deltaFn 
+     * @returns {Function}
      */
 
   }, {
-    key: '_calculateDeltasSigmoid',
-    value: function _calculateDeltasSigmoid(target) {
-      for (var layer = this.outputLayer; layer >= 0; layer--) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var output = this.outputs[layer][node];
+    key: '_createCalculateDeltas',
+    value: function _createCalculateDeltas(deltaFn) {
+      return function _calcuateDeltas(target) {
+        for (var layer = this.outputLayer; layer >= 0; layer--) {
+          for (var node = 0; node < this.sizes[layer]; node++) {
+            var output = this.outputs[layer][node];
 
-          var error = 0;
-          if (layer === this.outputLayer) {
-            error = target[node] - output;
-          } else {
-            var deltas = this.deltas[layer + 1];
-            for (var k = 0; k < deltas.length; k++) {
-              error += deltas[k] * this.weights[layer + 1][k][node];
+            var error = 0;
+            if (layer === this.outputLayer) {
+              error = target[node] - output;
+            } else {
+              var deltas = this.deltas[layer + 1];
+              for (var k = 0; k < deltas.length; k++) {
+                error += deltas[k] * this.weights[layer + 1][k][node];
+              }
             }
+            this.errors[layer][node] = error;
+            this.deltas[layer][node] = deltaFn(output, error);
           }
-          this.errors[layer][node] = error;
-          this.deltas[layer][node] = error * output * (1 - output);
         }
-      }
-    }
-
-    /**
-     *
-     * @param target
-     */
-
-  }, {
-    key: '_calculateDeltasRelu',
-    value: function _calculateDeltasRelu(target) {
-      for (var layer = this.outputLayer; layer >= 0; layer--) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var output = this.outputs[layer][node];
-
-          var error = 0;
-          if (layer === this.outputLayer) {
-            error = target[node] - output;
-          } else {
-            var deltas = this.deltas[layer + 1];
-            for (var k = 0; k < deltas.length; k++) {
-              error += deltas[k] * this.weights[layer + 1][k][node];
-            }
-          }
-          this.errors[layer][node] = error;
-          this.deltas[layer][node] = output > 0 ? error : 0;
-        }
-      }
-    }
-
-    /**
-     *
-     * @param target
-     */
-
-  }, {
-    key: '_calculateDeltasLeakyRelu',
-    value: function _calculateDeltasLeakyRelu(target) {
-      for (var layer = this.outputLayer; layer >= 0; layer--) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var output = this.outputs[layer][node];
-
-          var error = 0;
-          if (layer === this.outputLayer) {
-            error = target[node] - output;
-          } else {
-            var deltas = this.deltas[layer + 1];
-            for (var k = 0; k < deltas.length; k++) {
-              error += deltas[k] * this.weights[layer + 1][k][node];
-            }
-          }
-          this.errors[layer][node] = error;
-          this.deltas[layer][node] = output > 0 ? error : 0.01 * error;
-        }
-      }
-    }
-
-    /**
-     *
-     * @param target
-     */
-
-  }, {
-    key: '_calculateDeltasTanh',
-    value: function _calculateDeltasTanh(target) {
-      for (var layer = this.outputLayer; layer >= 0; layer--) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var output = this.outputs[layer][node];
-
-          var error = 0;
-          if (layer === this.outputLayer) {
-            error = target[node] - output;
-          } else {
-            var deltas = this.deltas[layer + 1];
-            for (var k = 0; k < deltas.length; k++) {
-              error += deltas[k] * this.weights[layer + 1][k][node];
-            }
-          }
-          this.errors[layer][node] = error;
-          this.deltas[layer][node] = (1 - output * output) * error;
-        }
-      }
+      };
     }
 
     /**
@@ -1025,6 +915,11 @@ var NeuralNetwork = function () {
     key: 'toFunction',
     value: function toFunction() {
       var activation = this.activation;
+
+      if (!Object.keys(availableActivations).includes(activation)) {
+        throw new Error('unknown activation type ' + activation);
+      }
+
       function nodeHandle(layers, layerNumber, nodeKey) {
         if (layerNumber === 0) {
           return typeof nodeKey === 'string' ? 'input[\'' + nodeKey + '\']' : 'input[' + nodeKey + ']';
@@ -1034,25 +929,10 @@ var NeuralNetwork = function () {
         var node = layer[nodeKey];
         var result = [node.bias];
         for (var w in node.weights) {
-          if (node.weights[w] < 0) {
-            result.push(node.weights[w] + '*(' + nodeHandle(layers, layerNumber - 1, w) + ')');
-          } else {
-            result.push('+' + node.weights[w] + '*(' + nodeHandle(layers, layerNumber - 1, w) + ')');
-          }
+          result.push('' + (node.weights[w] < 0 ? '' : '+') + node.weights[w] + '*(' + nodeHandle(layers, layerNumber - 1, w) + ')');
         }
 
-        switch (activation) {
-          case 'sigmoid':
-            return '1/(1+1/Math.exp(' + result.join('') + '))';
-          case 'relu':
-            return 'var sum = ' + result.join('') + ';(sum < 0 ? 0 : sum);';
-          case 'leaky-relu':
-            return 'var sum = ' + result.join('') + ';(sum < 0 ? 0 : 0.01 * sum);';
-          case 'tanh':
-            return 'Math.tanh(' + result.join('') + ');';
-          default:
-            throw new Error('unknown activation type ' + activation);
-        }
+        return '(' + availableActivations[activation].activationFn.toString() + ')(' + result.join('') + ')';
       }
 
       var layers = this.toJSON().layers;
