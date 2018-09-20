@@ -1,5 +1,4 @@
 import lookup from './lookup';
-import TrainStream from './train-stream';
 import max from './utilities/max';
 import mse from './utilities/mse';
 import randos from './utilities/randos';
@@ -910,18 +909,5 @@ export default class NeuralNetwork {
       result = `[${layersAsMath.join(',')}]`;
     }
     return new Function('input', `return ${result}`);
-  }
-
-  /**
-   * This will create a TrainStream (WriteStream) for us to send the training data to.
-   * @param opts training options
-   * @returns {TrainStream|*}
-   */
-  createTrainStream(opts) {
-    opts = opts || {};
-    opts.neuralNetwork = this;
-    this.setActivation();
-    this.trainStream = new TrainStream(opts);
-    return this.trainStream;
   }
 }

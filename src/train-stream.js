@@ -21,6 +21,7 @@ export default class TrainStream extends Writable {
     }
 
     this.neuralNetwork = opts.neuralNetwork;
+    this.hiddenSizes = opts.neuralNetwork.hiddenSizes;
     this.dataFormatDetermined = false;
 
     this.inputKeys = [];
@@ -45,6 +46,10 @@ export default class TrainStream extends Writable {
     return this;
   }
 
+  endInputs() {
+    this.write(false);
+  }
+
   /**
    * _write expects data to be in the form of a datum. ie. {input: {a: 1 b: 0}, output: {z: 0}}
    * @param chunk
@@ -54,7 +59,8 @@ export default class TrainStream extends Writable {
    * @private
    */
   _write(chunk, enc, next) {
-    if (!chunk) { // check for the end of one iteration of the stream
+    if (!chunk) {
+      // check for the end of one iteration of the stream
       this.emit('finish');
       return next();
     }
@@ -69,7 +75,7 @@ export default class TrainStream extends Writable {
 
     this.count++;
 
-    let data = this.neuralNetwork.formatData(chunk);
+    let data = this.neuralNetwork._formatData(chunk);
     this.trainDatum(data[0]);
 
     // tell the Readable Stream that we are ready for more data
@@ -81,7 +87,7 @@ export default class TrainStream extends Writable {
    * @param datum
    */
   trainDatum(datum) {
-    let err = this.neuralNetwork.trainPattern(datum.input, datum.output);
+    let err = this.neuralNetwork._trainPattern(datum.input, datum.output, true);
     this.sum += err;
   }
 
@@ -101,11 +107,11 @@ export default class TrainStream extends Writable {
         this.neuralNetwork.outputLookup = lookup.lookupFromArray(this.outputKeys);
       }
 
-      let data = this.neuralNetwork.formatData(this.firstDatum);
+      let data = this.neuralNetwork._formatData(this.firstDatum);
       let sizes = [];
       let inputSize = data[0].input.length;
       let outputSize = data[0].output.length;
-      let hiddenSizes = this.hiddenSizes;
+      let hiddenSizes = this.neuralNetwork.hiddenSizes;
       if (!hiddenSizes) {
         sizes.push(Math.max(3, Math.floor(inputSize / 2)));
       } else {
@@ -118,7 +124,8 @@ export default class TrainStream extends Writable {
       sizes.push(outputSize);
 
       this.dataFormatDetermined = true;
-      this.neuralNetwork.initialize(sizes);
+      this.neuralNetwork.sizes = sizes;
+      this.neuralNetwork._initialize();
 
       if (typeof this.floodCallback === 'function') {
         this.floodCallback();
@@ -128,10 +135,10 @@ export default class TrainStream extends Writable {
 
     let error = this.sum / this.size;
 
-    if (this.log && (this.i % this.logPeriod == 0)) {
+    if (this.log && (this.i % this.logPeriod === 0)) {
       this.log('iterations:', this.i, 'training error:', error);
     }
-    if (this.callback && (this.i % this.callbackPeriod == 0)) {
+    if (this.callback && (this.i % this.callbackPeriod === 0)) {
       this.callback({
         error: error,
         iterations: this.i

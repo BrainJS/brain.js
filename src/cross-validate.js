@@ -1,152 +1,177 @@
-/**
- *
- * @param {NeuralNetwork|constructor} Classifier
- * @param {object} opts
- * @param {object} trainOpts
- * @param {object} trainSet
- * @param {object} testSet
- * @returns {void|*}
- */
-export function testPartition(Classifier, opts, trainOpts, trainSet, testSet) {
-  let classifier = new Classifier(opts);
-  let beginTrain = Date.now();
-  let trainingStats = classifier.train(trainSet, trainOpts);
-  let beginTest = Date.now();
-  let testStats = classifier.test(testSet);
-  let endTest = Date.now();
-  let stats = Object.assign({}, testStats, {
-    trainTime : beginTest - beginTrain,
-    testTime : endTest - beginTest,
-    iterations: trainingStats.iterations,
-    trainError: trainingStats.error,
-    learningRate: trainOpts.learningRate,
-    hidden: classifier.hiddenSizes,
-    network: classifier.toJSON()
-  });
+export default class CrossValidate {
 
-  return stats;
-}
-
-/**
- * Randomize array element order in-place.
- * Using Durstenfeld shuffle algorithm.
- * source: http://stackoverflow.com/a/12646864/1324039
- */
-export function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
-    let temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
+  /**
+   *
+   * @param {NeuralNetwork|constructor} Classifier
+   */
+  constructor(Classifier) {
+    this.Classifier = Classifier;
+    this.json = null;
   }
-  return array;
-}
 
-/**
- *
- * @param {NeuralNetwork|constructor} Classifier
- * @param {object} data
- * @param {object} opts
- * @param {object} trainOpts
- * @param {number} k
- * @returns {
- *  {
- *    avgs: {
- *      error: number,
- *      trainTime: number,
- *      testTime: number,
- *      iterations: number,
- *      trainError: number
- *    },
- *    stats: {
- *      truePos: number,
- *      trueNeg: number,
- *      falsePos: number,
- *      falseNeg: number,
- *      total: number
- *    },
- *    sets: Array,
- *    misclasses: Array
- *  }
- * }
- */
-export default function crossValidate(Classifier, data, opts, trainOpts, k) {
-  k = k || 4;
-  let size = data.length / k;
-
-  if (data.constructor === Array) {
-    shuffleArray(data);
-  } else {
-    let newData = {};
-    shuffleArray(Object.keys(data)).forEach((key) => {
-      newData[key] = data[key];
+  /**
+   *
+   * @param {object} options
+   * @param {object} trainOpts
+   * @param {object} trainSet
+   * @param {object} testSet
+   * @returns {void|*}
+   */
+  testPartition(options, trainOpts, trainSet, testSet) {
+    let classifier = new this.Classifier(options);
+    let beginTrain = Date.now();
+    let trainingStats = classifier.train(trainSet, trainOpts);
+    let beginTest = Date.now();
+    let testStats = classifier.test(testSet);
+    let endTest = Date.now();
+    let stats = Object.assign({}, testStats, {
+      trainTime: beginTest - beginTrain,
+      testTime: endTest - beginTest,
+      iterations: trainingStats.iterations,
+      trainError: trainingStats.error,
+      learningRate: trainOpts.learningRate,
+      hidden: classifier.hiddenSizes,
+      network: classifier.toJSON()
     });
-    data = newData;
+
+    return stats;
   }
 
-  let avgs = {
-    error : 0,
-    trainTime : 0,
-    testTime : 0,
-    iterations: 0,
-    trainError: 0
-  };
+  /**
+   * Randomize array element order in-place.
+   * Using Durstenfeld shuffle algorithm.
+   * source: http://stackoverflow.com/a/12646864/1324039
+   */
+  shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      let temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+    return array;
+  }
 
-  let stats = {
-    truePos: 0,
-    trueNeg: 0,
-    falsePos: 0,
-    falseNeg: 0,
-    total: 0
-  };
+  /**
+   *
+   * @param {object} data
+   * @param {object} options
+   * @param {object} trainOpts
+   * @param {number} [k]
+   * @returns {
+   *  {
+   *    avgs: {
+   *      error: number,
+   *      trainTime: number,
+   *      testTime: number,
+   *      iterations: number,
+   *      trainError: number
+   *    },
+   *    stats: {
+   *      truePos: number,
+   *      trueNeg: number,
+   *      falsePos: number,
+   *      falseNeg: number,
+   *      total: number
+   *    },
+   *    sets: Array
+   *  }
+   * }
+   */
+  train(data, options, trainOpts, k) {
+    k = k || 4;
+    let size = data.length / k;
 
-  let misclasses = [];
-  let results = [];
-  let stat;
-  let sum;
+    if (data.constructor === Array) {
+      this.shuffleArray(data);
+    } else {
+      let newData = {};
+      this.shuffleArray(Object.keys(data)).forEach((key) => {
+        newData[key] = data[key];
+      });
+      data = newData;
+    }
 
-  for (let i = 0; i < k; i++) {
-    let dclone = data.slice(0);
-    let testSet = dclone.splice(i * size, size);
-    let trainSet = dclone;
-    let result = testPartition(Classifier, opts, trainOpts, trainSet, testSet);
+    let avgs = {
+      error: 0,
+      trainTime: 0,
+      testTime: 0,
+      iterations: 0,
+      trainError: 0
+    };
+
+    let stats = {
+      truePos: 0,
+      trueNeg: 0,
+      falsePos: 0,
+      falseNeg: 0,
+      total: 0
+    };
+
+    let results = [];
+    let stat;
+    let sum;
+
+    for (let i = 0; i < k; i++) {
+      let dclone = data.slice(0);
+      let testSet = dclone.splice(i * size, size);
+      let trainSet = dclone;
+      let result = this.testPartition(options, trainOpts, trainSet, testSet);
+      for (stat in avgs) {
+        if (stat in avgs) {
+          sum = avgs[stat];
+          avgs[stat] = sum + result[stat];
+        }
+      }
+
+      for (stat in stats) {
+        if (stat in stats) {
+          sum = stats[stat];
+          stats[stat] = sum + result[stat];
+        }
+      }
+
+      results.push(result);
+    }
+
     for (stat in avgs) {
       if (stat in avgs) {
         sum = avgs[stat];
-        avgs[stat] = sum + result[stat];
+        avgs[stat] = sum / k;
       }
     }
 
-    for (stat in stats) {
-      if (stat in stats) {
-        sum = stats[stat];
-        stats[stat] = sum + result[stat];
-      }
-    }
+    stats.precision = stats.truePos / (stats.truePos + stats.falsePos);
+    stats.recall = stats.truePos / (stats.truePos + stats.falseNeg);
+    stats.accuracy = (stats.trueNeg + stats.truePos) / stats.total;
 
-    misclasses.concat(results.misclasses);
+    stats.testSize = size;
+    stats.trainSize = data.length - size;
 
-    results.push(result);
+
+    this.json = {
+      avgs: avgs,
+      stats: stats,
+      sets: results
+    };
   }
 
-  for (stat in avgs) {
-    if (stat in avgs) {
-      sum = avgs[stat];
-      avgs[stat] = sum / k;
-    }
+  toNetwork() {
+    return this.fromJSON(this.json);
   }
 
-  stats.precision = stats.truePos / (stats.truePos + stats.falsePos);
-  stats.recall = stats.truePos / (stats.truePos + stats.falseNeg);
-  stats.accuracy = (stats.trueNeg + stats.truePos) / stats.total;
+  toJSON() {
+    return this.json;
+  }
 
-  stats.testSize = size;
-  stats.trainSize = data.length - size;
-
-  return {
-    avgs: avgs,
-    stats: stats,
-    sets: results,
-    misclasses: misclasses
-  };
+  fromJSON(crossValidateJson) {
+    const Classifier = this.Classifier;
+    const json = crossValidateJson.sets.reduce((prev, cur) => prev.error < cur.error ? prev : cur, {error: Infinity}).network;
+    if (Classifier.fromJSON) {
+      return Classifier.fromJSON(json);
+    }
+    const instance = new Classifier();
+    instance.fromJSON(json);
+    return instance;
+  }
 }

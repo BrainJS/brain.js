@@ -1,4 +1,5 @@
-import brain from 'brain.js';
+// import brain from 'brain.js';
+const brain = require('../dist/index').default;
 
 const trainingData = [
   'Jane saw Doug.',
@@ -8,7 +9,11 @@ const trainingData = [
 ];
 
 const lstm = new brain.recurrent.LSTM();
-const result = lstm.train(trainingData, { iterations: 1500 });
+const result = lstm.train(trainingData, {
+  iterations: 1500,
+  log: details => console.log(details),
+  errorThresh: 0.011
+});
 const run1 = lstm.run('Jane');
 const run2 = lstm.run('Doug');
 const run3 = lstm.run('Spot');

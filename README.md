@@ -28,6 +28,8 @@
       + [For training with `RNN`, `LSTM` and `GRU`](#for-training-with-rnn-lstm-and-gru)
     + [Training Options](#training-options)
     + [Async Training](#async-training)
+    + [Cross Validation](#cross-validation)
+    + [Train Stream](#train-stream)
 - [Methods](#methods)
     + [train](#train)
 - [Failing](#failing)
@@ -274,6 +276,49 @@ With multiple networks you can train in parallel like this:
     .catch(handleError);
 ```
 
+### Cross Validation
+[Cross Validation](https://en.wikipedia.org/wiki/Cross-validation_(statistics)) can provide a less fragile way of training on larger data sets.  The brain.js api provides Cross Validation in this example:
+```js
+const crossValidate = new CrossValidate(brain.NeuralNetwork);
+const stats = crossValidate.train(data, networkOptions, trainingOptions, k); //note k (or KFolds) is optional
+const net = crossValidate.toNetwork();
+
+
+// optionally later
+const json = crossValidate.toJSON();
+const net = crossValidate.fromJSON(json);
+```
+
+An example of using cross validate can be found in [examples/cross-validate.js](examples/cross-validate.js)
+
+### Train Stream
+Streams are a very powerful tool in node for massive data spread across processes and are provided via the brain.js api in the following way: 
+```js
+const net = new brain.NeuralNetwork();
+const trainStream = new brain.TrainStream({
+  neuralNetwork: net,
+  floodCallback: function() {
+    flood(trainStream, data);
+  },
+  doneTrainingCallback: function(stats) {
+    // network is done training!  What next?
+  }
+});
+
+// kick it off
+readInputs(trainStream, data);
+
+function readInputs(stream, data) {
+  for (let i = 0; i < data.length; i++) {
+    stream.write(data[i]);
+  }
+  // let it know we've reached the end of the inputs
+  stream.endInputs();
+}
+```
+
+An example of using train stream can be found in [examples/stream-example.js](examples/stream-example.js)
+
 # Methods
 ### train
 The output of `train()` is a hash of information about how the training went:
@@ -341,7 +386,7 @@ The network now has a [WriteStream](http://nodejs.org/api/stream.html#stream_cla
 
 
 ### Example
-Refer to [`stream-example.js`](./examples/cli/stream-example.js) for an example on how to train the network with a stream.
+Refer to [`stream-example.js`](examples/stream-example.js) for an example on how to train the network with a stream.
 
 
 ### Initialization

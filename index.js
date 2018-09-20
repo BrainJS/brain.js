@@ -1,4 +1,4 @@
-var crossValidate = require('./dist/cross-validate').default;
+var CrossValidate = require('./dist/cross-validate').default;
 var likely = require('./dist/likely').default;
 var lookup = require('./dist/lookup').default;
 var NeuralNetwork = require('./dist/neural-network').default;
@@ -24,7 +24,7 @@ var utilities = {
 };
 
 var brain = {
-  crossValidate: crossValidate,
+  CrossValidate: CrossValidate,
   likely: likely,
   lookup: lookup,
   NeuralNetwork: NeuralNetwork,

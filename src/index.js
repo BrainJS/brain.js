@@ -1,4 +1,4 @@
-import crossValidate from './cross-validate';
+import CrossValidate from './cross-validate';
 import likely from './likely';
 import lookup from './lookup';
 import NeuralNetwork from './neural-network';
@@ -12,7 +12,7 @@ import LSTMTimeStep from './recurrent/lstm-time-step';
 import GRUTimeStep from './recurrent/gru-time-step';
 
 export default {
-  crossValidate,
+  CrossValidate,
   likely,
   lookup,
   NeuralNetwork,
