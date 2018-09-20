@@ -1,4 +1,5 @@
-import * as brain from '../';
+import * as assert from 'assert';
+import * as brain from '../index';
 
 const a = character(
   '.#####.' +
@@ -51,6 +52,7 @@ const result = brain.likely(character(
   '#.....#'
 ), net);
 
+assert(result === 'a');
 console.log(result); // 'a'
 
 

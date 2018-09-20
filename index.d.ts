@@ -1,7 +1,8 @@
+/* NeuralNetwork section */
 export interface INeuralNetworkDefaultOptions {
-  binaryThresh: number;
-  hiddenLayers: number[];
-  activation: NeuralNetworkActivation
+  binaryThresh?: number;
+  hiddenLayers?: number[];
+  activation?: NeuralNetworkActivation;
 }
 
 export type NeuralNetworkActivation = 'sigmoid' | 'relu' | 'leaky-relu' | 'tanh';
@@ -9,7 +10,7 @@ export type NeuralNetworkActivation = 'sigmoid' | 'relu' | 'leaky-relu' | 'tanh'
 export interface INeuralNetworkTrainingOptions {
   iterations?: number;
   errorThresh?: number;
-  log?: boolean;
+  log?: boolean | INeuralNetworkTrainingCallback;
   logPeriod?: number;
   learningRate?: number;
   momentum?: number;
@@ -27,29 +28,142 @@ export interface INeuralNetworkState {
   error: number;
 }
 
-export interface ITrainStream {
-  write<T>(data: T): void;
+export interface INeuralNetworkJSON {
+  sizes: number[];
+  layers: object[];
+  outputLookup: any;
+  inputLookup: any;
+  activation: NeuralNetworkActivation,
+  trainOpts: INeuralNetworkTrainingOptions
 }
 
-export interface ITrainStreamOptions {
-  floodCallback?: () => void;
-  doneTrainingCallback?: (obj: any) => void;
+export interface INeuralNetworkTrainingData {
+  input: NeuralNetworkTrainingValue;
+  output: NeuralNetworkTrainingValue;
 }
+
+export type NeuralNetworkTrainingValue = number[];
 
 export class NeuralNetwork {
   public constructor(options?: INeuralNetworkDefaultOptions);
+  public train(data: INeuralNetworkTrainingData[], options?: INeuralNetworkTrainingOptions): INeuralNetworkState;
   public train<T>(data: T, options?: INeuralNetworkTrainingOptions): INeuralNetworkState;
-  public train(data: any[], options?: INeuralNetworkTrainingOptions): INeuralNetworkState;
+  public trainAsync(data: INeuralNetworkTrainingData, options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
   public trainAsync<T>(data: T, options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
-  public trainAsync(data: any, options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
-  public run<T>(data: string | number | string[] | number[]): T;
-  public fromJSON<T>(json: T);
-  public toJSON<T>(): T;
-  public createTrainStream(options: ITrainStreamOptions): ITrainStream;
+  public run(data: NeuralNetworkTrainingValue): NeuralNetworkTrainingValue;
+  public run<T>(data: NeuralNetworkTrainingValue): T;
+  public run<TInput, TOutput>(data: TInput): TOutput;
+  public fromJSON(json: INeuralNetworkJSON): NeuralNetwork;
+  public toJSON(): INeuralNetworkJSON;
+}
+
+/* CrossValidate section */
+export interface ICrossValidateJSON {
+  avgs: ICrossValidationTestPartitionResults;
+  stats: ICrossValidateStats;
+  sets: ICrossValidationTestPartitionResults[];
+}
+
+export interface ICrossValidateStats {
+  truePos: number;
+  trueNeg: number;
+  falsePos: number;
+  falseNeg: number;
+  total: number;
+}
+
+export interface ICrossValidationTestPartitionResults {
+  trainTime: number;
+  testTime: number;
+  iterations: number;
+  trainError: number;
+  learningRate: number;
+  hidden: number[];
+  network: NeuralNetwork;
+}
+
+export class CrossValidate {
+  public constructor(Classifier: typeof NeuralNetwork);
+  public fromJSON(json: ICrossValidateJSON): NeuralNetwork;
+  public toJSON(): ICrossValidateJSON;
+  public train(
+    data: INeuralNetworkTrainingData[],
+    networkOptions: INeuralNetworkDefaultOptions,
+    trainingOptions: INeuralNetworkTrainingOptions,
+    k?: number): ICrossValidateStats;
+  public train<T>(
+    data: T,
+    networkOptions: INeuralNetworkDefaultOptions,
+    trainingOptions: INeuralNetworkTrainingOptions,
+    k?: number): ICrossValidateStats;
+  public testPartition(): ICrossValidationTestPartitionResults;
+  public toNetwork(): NeuralNetwork;
+  public toNetwork<T>(): T;
+}
+
+/* TrainStream section */
+export interface ITrainStreamOptions {
+  neuralNetwork: NeuralNetwork,
+  floodCallback: () => void,
+  doneTrainingCallback: (state: INeuralNetworkState) => void
+}
+
+export class TrainStream {
+  public constructor(options: ITrainStreamOptions)
+  write(data: INeuralNetworkTrainingData): void;
+  write<T>(data: T): void;
+  endInputs(): void;
+}
+
+/* recurrent section */
+export type RNNTrainingValue = string;
+export type RNNTimeStepTrainingValue = NeuralNetworkTrainingValue | number | number[] | number[][];
+export interface IRNNDefaultOptions extends INeuralNetworkDefaultOptions {
+  inputSize?: number;
+  outputSize?: number;
+}
+export interface IRNNTrainingData {
+  input: RNNTrainingValue,
+  output: RNNTrainingValue
+}
+
+export interface IRNNTimeStepTrainingData {
+  input: number[],
+  output: number[]
+}
+
+export interface IRNNTimeStepTrainingData2d {
+  input: number[][],
+  output: number[][]
+}
+
+export interface IRNNTimeStepTrainingData3d {
+  input: number[][][],
+  output: number[][][]
 }
 
 export declare namespace recurrent {
-  class LSTM extends NeuralNetwork {}
+  class RNN extends NeuralNetwork {
+    constructor(options?: IRNNDefaultOptions)
+    run(data: RNNTrainingValue): RNNTrainingValue;
+    run<T>(data: RNNTrainingValue): T;
+    run<TInput, TOutput>(data: TInput): TOutput;
+    train(data: IRNNTrainingData[], options: INeuralNetworkTrainingOptions): INeuralNetworkState;
+    train<T>(data: T, options: INeuralNetworkTrainingOptions): INeuralNetworkState;
+  }
+  class LSTM extends recurrent.RNN {}
+  class GRU extends recurrent.RNN {}
+
+  class RNNTimeStep extends recurrent.RNN {
+    run(data: RNNTimeStepTrainingValue): RNNTimeStepTrainingValue;
+    run<T>(data: RNNTimeStepTrainingValue): T;
+    run<TInput, TOutput>(data: TInput): TOutput;
+    train(data: IRNNTimeStepTrainingData[] | IRNNTimeStepTrainingData2d[] | IRNNTimeStepTrainingData3d[], options: INeuralNetworkTrainingOptions): INeuralNetworkState;
+    train<T>(data: T, options: INeuralNetworkTrainingOptions): INeuralNetworkState;
+  }
+  class LSTMTimeStep extends recurrent.RNNTimeStep {}
+  class GRUTimeStep extends recurrent.RNNTimeStep {}
 }
 
+/* misc helper function section */
 export function likely<T>(input: T, net: NeuralNetwork): any;

@@ -55,7 +55,7 @@ var _gruTimeStep2 = _interopRequireDefault(_gruTimeStep);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
-  crossValidate: _crossValidate2.default,
+  CrossValidate: _crossValidate2.default,
   likely: _likely2.default,
   lookup: _lookup2.default,
   NeuralNetwork: _neuralNetwork2.default,

@@ -1,4 +1,4 @@
-import * as brain from '../';
+import * as brain from '../index';
 
 const trainingData = [
   'Jane saw Doug.',

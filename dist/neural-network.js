@@ -10,10 +10,6 @@ var _lookup = require('./lookup');
 
 var _lookup2 = _interopRequireDefault(_lookup);
 
-var _trainStream = require('./train-stream');
-
-var _trainStream2 = _interopRequireDefault(_trainStream);
-
 var _max = require('./utilities/max');
 
 var _max2 = _interopRequireDefault(_max);
@@ -1069,22 +1065,6 @@ var NeuralNetwork = function () {
         result = '[' + layersAsMath.join(',') + ']';
       }
       return new Function('input', 'return ' + result);
-    }
-
-    /**
-     * This will create a TrainStream (WriteStream) for us to send the training data to.
-     * @param opts training options
-     * @returns {TrainStream|*}
-     */
-
-  }, {
-    key: 'createTrainStream',
-    value: function createTrainStream(opts) {
-      opts = opts || {};
-      opts.neuralNetwork = this;
-      this.setActivation();
-      this.trainStream = new _trainStream2.default(opts);
-      return this.trainStream;
     }
   }, {
     key: 'isRunnable',

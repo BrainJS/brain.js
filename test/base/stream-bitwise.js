@@ -12,7 +12,8 @@ class StreamTester {
 
     this.net = new brain.NeuralNetwork();
 
-    this.trainStream = this.net.createTrainStream({
+    this.trainStream = new brain.TrainStream({
+      neuralNetwork: this.net,
       floodCallback: this.flood.bind(this),
       doneTrainingCallback: this.doneTraining.bind(this),
       errorThresh: this.errorThresh // error threshold to reach

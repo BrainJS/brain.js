@@ -48,6 +48,7 @@ var TrainStream = function (_Writable) {
     }
 
     _this.neuralNetwork = opts.neuralNetwork;
+    _this.hiddenSizes = opts.neuralNetwork.hiddenSizes;
     _this.dataFormatDetermined = false;
 
     _this.inputKeys = [];
@@ -72,17 +73,22 @@ var TrainStream = function (_Writable) {
     return _ret = _this, _possibleConstructorReturn(_this, _ret);
   }
 
-  /**
-   * _write expects data to be in the form of a datum. ie. {input: {a: 1 b: 0}, output: {z: 0}}
-   * @param chunk
-   * @param enc
-   * @param next
-   * @returns {*}
-   * @private
-   */
-
-
   _createClass(TrainStream, [{
+    key: 'endInputs',
+    value: function endInputs() {
+      this.write(false);
+    }
+
+    /**
+     * _write expects data to be in the form of a datum. ie. {input: {a: 1 b: 0}, output: {z: 0}}
+     * @param chunk
+     * @param enc
+     * @param next
+     * @returns {*}
+     * @private
+     */
+
+  }, {
     key: '_write',
     value: function _write(chunk, enc, next) {
       if (!chunk) {
@@ -101,7 +107,7 @@ var TrainStream = function (_Writable) {
 
       this.count++;
 
-      var data = this.neuralNetwork.formatData(chunk);
+      var data = this.neuralNetwork._formatData(chunk);
       this.trainDatum(data[0]);
 
       // tell the Readable Stream that we are ready for more data
@@ -116,7 +122,7 @@ var TrainStream = function (_Writable) {
   }, {
     key: 'trainDatum',
     value: function trainDatum(datum) {
-      var err = this.neuralNetwork.trainPattern(datum.input, datum.output);
+      var err = this.neuralNetwork._trainPattern(datum.input, datum.output, true);
       this.sum += err;
     }
 
@@ -139,11 +145,11 @@ var TrainStream = function (_Writable) {
           this.neuralNetwork.outputLookup = _lookup2.default.lookupFromArray(this.outputKeys);
         }
 
-        var data = this.neuralNetwork.formatData(this.firstDatum);
+        var data = this.neuralNetwork._formatData(this.firstDatum);
         var sizes = [];
         var inputSize = data[0].input.length;
         var outputSize = data[0].output.length;
-        var hiddenSizes = this.hiddenSizes;
+        var hiddenSizes = this.neuralNetwork.hiddenSizes;
         if (!hiddenSizes) {
           sizes.push(Math.max(3, Math.floor(inputSize / 2)));
         } else {
@@ -156,7 +162,8 @@ var TrainStream = function (_Writable) {
         sizes.push(outputSize);
 
         this.dataFormatDetermined = true;
-        this.neuralNetwork.initialize(sizes);
+        this.neuralNetwork.sizes = sizes;
+        this.neuralNetwork._initialize();
 
         if (typeof this.floodCallback === 'function') {
           this.floodCallback();
@@ -166,10 +173,10 @@ var TrainStream = function (_Writable) {
 
       var error = this.sum / this.size;
 
-      if (this.log && this.i % this.logPeriod == 0) {
+      if (this.log && this.i % this.logPeriod === 0) {
         this.log('iterations:', this.i, 'training error:', error);
       }
-      if (this.callback && this.i % this.callbackPeriod == 0) {
+      if (this.callback && this.i % this.callbackPeriod === 0) {
         this.callback({
           error: error,
           iterations: this.i
