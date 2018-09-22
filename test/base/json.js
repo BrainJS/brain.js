@@ -257,8 +257,6 @@ describe('default net json', () => {
     });
 
     it('training options timeout', () => {
-      console.log(originalNet.trainOpts.timeout);
-      console.log(serializedNet.trainOpts.timeout);
       assert.equal(originalNet.trainOpts.timeout, serializedNet.trainOpts.timeout, `originalNet.trainOpts are: ${originalNet.trainOpts.timeout} serializedNet should be the same but are: ${serializedNet.trainOpts.timeout}`);
     });
   });

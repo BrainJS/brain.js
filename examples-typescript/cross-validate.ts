@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import * as brain from '../index';
 
 const trainingData = [
-  // xor
+  // xor data, repeating to simulate that we have a lot of data
   { input: [0, 1], output: [1] },
   { input: [0, 0], output: [0] },
   { input: [1, 1], output: [0] },
@@ -29,17 +29,17 @@ const trainingData = [
 
 const netOptions = {
   hiddenSizes: [3]
-} as brain.INeuralNetworkDefaultOptions;
+} as brain.INeuralNetworkOptions;
 
 const trainingOptions = {
   iterations: 20000,
   log: details => console.log(details)
 } as brain.INeuralNetworkTrainingOptions;
 
-const crossValidate = new brain.CrossValidate(brain.NeuralNetwork);
-const stats = crossValidate.train(trainingData, netOptions, trainingOptions);
+const crossValidate = new brain.CrossValidate(brain.NeuralNetwork, netOptions);
+const stats = crossValidate.train(trainingData, trainingOptions);
 console.log(stats);
-const net = crossValidate.toNetwork();
+const net = crossValidate.toNeuralNetwork();
 const result01 = net.run([0, 1]);
 const result00 = net.run([0, 0]);
 const result11 = net.run([1, 1]);

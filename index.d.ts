@@ -1,5 +1,5 @@
 /* NeuralNetwork section */
-export interface INeuralNetworkDefaultOptions {
+export interface INeuralNetworkOptions {
   binaryThresh?: number;
   hiddenLayers?: number[];
   activation?: NeuralNetworkActivation;
@@ -45,7 +45,7 @@ export interface INeuralNetworkTrainingData {
 export type NeuralNetworkTrainingValue = number[];
 
 export class NeuralNetwork {
-  public constructor(options?: INeuralNetworkDefaultOptions);
+  public constructor(options?: INeuralNetworkOptions);
   public train(data: INeuralNetworkTrainingData[], options?: INeuralNetworkTrainingOptions): INeuralNetworkState;
   public train<T>(data: T, options?: INeuralNetworkTrainingOptions): INeuralNetworkState;
   public trainAsync(data: INeuralNetworkTrainingData, options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
@@ -83,22 +83,20 @@ export interface ICrossValidationTestPartitionResults {
 }
 
 export class CrossValidate {
-  public constructor(Classifier: typeof NeuralNetwork);
+  public constructor(Classifier: typeof NeuralNetwork, options?: INeuralNetworkOptions);
   public fromJSON(json: ICrossValidateJSON): NeuralNetwork;
   public toJSON(): ICrossValidateJSON;
   public train(
     data: INeuralNetworkTrainingData[],
-    networkOptions: INeuralNetworkDefaultOptions,
     trainingOptions: INeuralNetworkTrainingOptions,
     k?: number): ICrossValidateStats;
   public train<T>(
     data: T,
-    networkOptions: INeuralNetworkDefaultOptions,
     trainingOptions: INeuralNetworkTrainingOptions,
     k?: number): ICrossValidateStats;
   public testPartition(): ICrossValidationTestPartitionResults;
-  public toNetwork(): NeuralNetwork;
-  public toNetwork<T>(): T;
+  public toNeuralNetwork(): NeuralNetwork;
+  public toNeuralNetwork<T>(): T;
 }
 
 /* TrainStream section */
@@ -118,7 +116,7 @@ export class TrainStream {
 /* recurrent section */
 export type RNNTrainingValue = string;
 export type RNNTimeStepTrainingValue = NeuralNetworkTrainingValue | number | number[] | number[][];
-export interface IRNNDefaultOptions extends INeuralNetworkDefaultOptions {
+export interface IRNNDefaultOptions extends INeuralNetworkOptions {
   inputSize?: number;
   outputSize?: number;
 }

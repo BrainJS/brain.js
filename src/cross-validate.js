@@ -3,22 +3,23 @@ export default class CrossValidate {
   /**
    *
    * @param {NeuralNetwork|constructor} Classifier
+   * @param {object} [options]
    */
-  constructor(Classifier) {
+  constructor(Classifier, options) {
     this.Classifier = Classifier;
+    this.options = options;
     this.json = null;
   }
 
   /**
    *
-   * @param {object} options
    * @param {object} trainOpts
    * @param {object} trainSet
    * @param {object} testSet
    * @returns {void|*}
    */
-  testPartition(options, trainOpts, trainSet, testSet) {
-    let classifier = new this.Classifier(options);
+  testPartition(trainOpts, trainSet, testSet) {
+    let classifier = new this.Classifier(this.options);
     let beginTrain = Date.now();
     let trainingStats = classifier.train(trainSet, trainOpts);
     let beginTest = Date.now();
@@ -55,7 +56,6 @@ export default class CrossValidate {
   /**
    *
    * @param {object} data
-   * @param {object} options
    * @param {object} trainOpts
    * @param {number} [k]
    * @returns {
@@ -78,7 +78,7 @@ export default class CrossValidate {
    *  }
    * }
    */
-  train(data, options, trainOpts, k) {
+  train(data, trainOpts, k) {
     k = k || 4;
     let size = data.length / k;
 
@@ -156,7 +156,7 @@ export default class CrossValidate {
     };
   }
 
-  toNetwork() {
+  toNeuralNetwork() {
     return this.fromJSON(this.json);
   }
 

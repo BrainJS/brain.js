@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.3.0
+ *   version: 1.3.1
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -127,17 +127,18 @@ var CrossValidate = function () {
   /**
    *
    * @param {NeuralNetwork|constructor} Classifier
+   * @param {object} [options]
    */
-  function CrossValidate(Classifier) {
+  function CrossValidate(Classifier, options) {
     _classCallCheck(this, CrossValidate);
 
     this.Classifier = Classifier;
+    this.options = options;
     this.json = null;
   }
 
   /**
    *
-   * @param {object} options
    * @param {object} trainOpts
    * @param {object} trainSet
    * @param {object} testSet
@@ -147,8 +148,8 @@ var CrossValidate = function () {
 
   _createClass(CrossValidate, [{
     key: "testPartition",
-    value: function testPartition(options, trainOpts, trainSet, testSet) {
-      var classifier = new this.Classifier(options);
+    value: function testPartition(trainOpts, trainSet, testSet) {
+      var classifier = new this.Classifier(this.options);
       var beginTrain = Date.now();
       var trainingStats = classifier.train(trainSet, trainOpts);
       var beginTest = Date.now();
@@ -188,7 +189,6 @@ var CrossValidate = function () {
     /**
      *
      * @param {object} data
-     * @param {object} options
      * @param {object} trainOpts
      * @param {number} [k]
      * @returns {
@@ -214,7 +214,7 @@ var CrossValidate = function () {
 
   }, {
     key: "train",
-    value: function train(data, options, trainOpts, k) {
+    value: function train(data, trainOpts, k) {
       k = k || 4;
       var size = data.length / k;
 
@@ -291,8 +291,8 @@ var CrossValidate = function () {
       };
     }
   }, {
-    key: "toNetwork",
-    value: function toNetwork() {
+    key: "toNeuralNetwork",
+    value: function toNeuralNetwork() {
       return this.fromJSON(this.json);
     }
   }, {
