@@ -22,7 +22,11 @@ export default class NeuralNetwork {
       momentum: 0.1,        // multiply's against the specified "change" then adds to learning rate for change
       callback: null,       // a periodic call back that can be triggered while training
       callbackPeriod: 10,   // the number of iterations through the training data between callback calls
-      timeout: Infinity     // the max number of milliseconds to train for
+      timeout: Infinity,    // the max number of milliseconds to train for
+      praxis: null,
+      beta1: 0.9,
+      beta2: 0.999,
+      epsilon: 1e-8,
     };
   }
 
@@ -443,6 +447,10 @@ export default class NeuralNetwork {
     let status, endTime;
     ({ data, status, endTime } = this._prepTraining(data, options));
 
+    if (options.praxis === 'adam') {
+      this._setupAdam();
+    }
+
     while (this._trainingTick(data, status, endTime));
     return status;
   }
@@ -615,6 +623,69 @@ export default class NeuralNetwork {
           this.weights[layer][node][k] += change;
         }
         this.biases[layer][node] += this.trainOpts.learningRate * delta;
+      }
+    }
+  }
+
+  _setupAdam() {
+    this.biasChangesLow = [];
+    this.biasChangesHigh = [];
+    this.changesLow = [];
+    this.changesHigh = [];
+    this.iterations = 0;
+
+    for (let layer = 0; layer <= this.outputLayer; layer++) {
+      let size = this.sizes[layer];
+      if (layer > 0) {
+        this.biasChangesLow[layer] = zeros(size);
+        this.biasChangesHigh[layer] = zeros(size);
+        this.changesLow[layer] = new Array(size);
+        this.changesHigh[layer] = new Array(size);
+
+        for (let node = 0; node < size; node++) {
+          let prevSize = this.sizes[layer - 1];
+          this.changesLow[layer][node] = zeros(prevSize);
+          this.changesHigh[layer][node] = zeros(prevSize);
+        }
+      }
+    }
+
+    this._adjustWeights = this._adjustWeightsAdam;
+  }
+
+  _adjustWeightsAdam() {
+    const trainOpts = this.trainOpts;
+    this.iterations++;
+
+    for (let layer = 1; layer <= this.outputLayer; layer++) {
+      const incoming = this.outputs[layer - 1];
+
+      for (let node = 0; node < this.sizes[layer]; node++) {
+        const delta = this.deltas[layer][node];
+
+        for (let k = 0; k < incoming.length; k++) {
+          const gradient = delta * incoming[k];
+          const changeLow = this.changesLow[layer][node][k] * trainOpts.beta1 + (1 - trainOpts.beta1) * gradient;
+          const changeHigh = this.changesHigh[layer][node][k] * trainOpts.beta2 + (1 - trainOpts.beta2) * gradient * gradient;
+          
+          const momentumCorrection = changeLow / (1 - Math.pow(trainOpts.beta1, this.iterations));
+          const gradientCorrection = changeHigh / (1 - Math.pow(trainOpts.beta2, this.iterations));
+
+          this.changesLow[layer][node][k] = changeLow;
+          this.changesHigh[layer][node][k] = changeHigh;
+          this.weights[layer][node][k] += this.trainOpts.learningRate * momentumCorrection / (Math.sqrt(gradientCorrection) + trainOpts.epsilon);
+        }
+
+        const biasGradient = this.deltas[layer][node];
+        const biasChangeLow = this.biasChangesLow[layer][node] * trainOpts.beta1 + (1 - trainOpts.beta1) * biasGradient;
+        const biasChangeHigh = this.biasChangesHigh[layer][node] * trainOpts.beta2 + (1 - trainOpts.beta2) * biasGradient * biasGradient;
+
+        const biasMomentumCorrection = this.biasChangesLow[layer][node] / (1 - Math.pow(trainOpts.beta1, this.iterations));
+        const biasGradientCorrection = this.biasChangesHigh[layer][node] / (1 - Math.pow(trainOpts.beta2, this.iterations));
+
+        this.biasChangesLow[layer][node] = biasChangeLow;
+        this.biasChangesHigh[layer][node] = biasChangeHigh;
+        this.biases[layer][node] += trainOpts.learningRate * biasMomentumCorrection / (Math.sqrt(biasGradientCorrection) + trainOpts.epsilon);
       }
     }
   }
