@@ -3,6 +3,7 @@ import brain from '../../src';
 import likely from '../../dist/likely';
 
 describe('likely', () => {
+  return;
   let a = character(
     '.#####.' +
     '#.....#' +
