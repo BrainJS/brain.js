@@ -2,7 +2,6 @@ import assert from 'assert';
 import NeuralNetwork from './../../src/neural-network';
 
 describe('JSON', () => {
-  return;
   const originalNet = new NeuralNetwork();
 
   let trainingOpts = {
@@ -201,7 +200,6 @@ describe('JSON', () => {
 
 
 describe('default net json', () => {
-  return;
   const originalNet = new NeuralNetwork();
 
   originalNet.train([
