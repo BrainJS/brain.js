@@ -106,7 +106,11 @@ var NeuralNetwork = function () {
         momentum: 0.1, // multiply's against the specified "change" then adds to learning rate for change
         callback: null, // a periodic call back that can be triggered while training
         callbackPeriod: 10, // the number of iterations through the training data between callback calls
-        timeout: Infinity // the max number of milliseconds to train for
+        timeout: Infinity, // the max number of milliseconds to train for
+        praxis: null,
+        beta1: 0.9,
+        beta2: 0.999,
+        epsilon: 1e-8
       };
     }
   }, {
@@ -545,6 +549,10 @@ var NeuralNetwork = function () {
       endTime = _prepTraining2.endTime;
 
 
+      if (options.praxis === 'adam') {
+        this._setupAdam();
+      }
+
       while (this._trainingTick(data, status, endTime)) {}
       return status;
     }
@@ -748,6 +756,71 @@ var NeuralNetwork = function () {
             this.weights[layer][node][k] += change;
           }
           this.biases[layer][node] += this.trainOpts.learningRate * delta;
+        }
+      }
+    }
+  }, {
+    key: '_setupAdam',
+    value: function _setupAdam() {
+      this.biasChangesLow = [];
+      this.biasChangesHigh = [];
+      this.changesLow = [];
+      this.changesHigh = [];
+      this.iterations = 0;
+
+      for (var layer = 0; layer <= this.outputLayer; layer++) {
+        var size = this.sizes[layer];
+        if (layer > 0) {
+          this.biasChangesLow[layer] = (0, _zeros2.default)(size);
+          this.biasChangesHigh[layer] = (0, _zeros2.default)(size);
+          this.changesLow[layer] = new Array(size);
+          this.changesHigh[layer] = new Array(size);
+
+          for (var node = 0; node < size; node++) {
+            var prevSize = this.sizes[layer - 1];
+            this.changesLow[layer][node] = (0, _zeros2.default)(prevSize);
+            this.changesHigh[layer][node] = (0, _zeros2.default)(prevSize);
+          }
+        }
+      }
+
+      this._adjustWeights = this._adjustWeightsAdam;
+    }
+  }, {
+    key: '_adjustWeightsAdam',
+    value: function _adjustWeightsAdam() {
+      var trainOpts = this.trainOpts;
+      this.iterations++;
+
+      for (var layer = 1; layer <= this.outputLayer; layer++) {
+        var incoming = this.outputs[layer - 1];
+
+        for (var node = 0; node < this.sizes[layer]; node++) {
+          var delta = this.deltas[layer][node];
+
+          for (var k = 0; k < incoming.length; k++) {
+            var gradient = delta * incoming[k];
+            var changeLow = this.changesLow[layer][node][k] * trainOpts.beta1 + (1 - trainOpts.beta1) * gradient;
+            var changeHigh = this.changesHigh[layer][node][k] * trainOpts.beta2 + (1 - trainOpts.beta2) * gradient * gradient;
+
+            var momentumCorrection = changeLow / (1 - Math.pow(trainOpts.beta1, this.iterations));
+            var gradientCorrection = changeHigh / (1 - Math.pow(trainOpts.beta2, this.iterations));
+
+            this.changesLow[layer][node][k] = changeLow;
+            this.changesHigh[layer][node][k] = changeHigh;
+            this.weights[layer][node][k] += this.trainOpts.learningRate * momentumCorrection / (Math.sqrt(gradientCorrection) + trainOpts.epsilon);
+          }
+
+          var biasGradient = this.deltas[layer][node];
+          var biasChangeLow = this.biasChangesLow[layer][node] * trainOpts.beta1 + (1 - trainOpts.beta1) * biasGradient;
+          var biasChangeHigh = this.biasChangesHigh[layer][node] * trainOpts.beta2 + (1 - trainOpts.beta2) * biasGradient * biasGradient;
+
+          var biasMomentumCorrection = this.biasChangesLow[layer][node] / (1 - Math.pow(trainOpts.beta1, this.iterations));
+          var biasGradientCorrection = this.biasChangesHigh[layer][node] / (1 - Math.pow(trainOpts.beta2, this.iterations));
+
+          this.biasChangesLow[layer][node] = biasChangeLow;
+          this.biasChangesHigh[layer][node] = biasChangeHigh;
+          this.biases[layer][node] += trainOpts.learningRate * biasMomentumCorrection / (Math.sqrt(biasGradientCorrection) + trainOpts.epsilon);
         }
       }
     }
