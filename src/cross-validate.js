@@ -116,7 +116,7 @@ export default class CrossValidate {
       let dclone = data.slice(0);
       let testSet = dclone.splice(i * size, size);
       let trainSet = dclone;
-      let result = this.testPartition(this.options, trainOpts, trainSet, testSet);
+      let result = this.testPartition(trainOpts, trainSet, testSet);
       for (stat in avgs) {
         if (stat in avgs) {
           sum = avgs[stat];
