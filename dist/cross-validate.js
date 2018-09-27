@@ -138,7 +138,7 @@ var CrossValidate = function () {
         var dclone = data.slice(0);
         var testSet = dclone.splice(i * size, size);
         var trainSet = dclone;
-        var result = this.testPartition(options, trainOpts, trainSet, testSet);
+        var result = this.testPartition(trainOpts, trainSet, testSet);
         for (stat in avgs) {
           if (stat in avgs) {
             sum = avgs[stat];

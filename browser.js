@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.4.0
+ *   version: 1.4.1
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -252,7 +252,7 @@ var CrossValidate = function () {
         var dclone = data.slice(0);
         var testSet = dclone.splice(i * size, size);
         var trainSet = dclone;
-        var result = this.testPartition(options, trainOpts, trainSet, testSet);
+        var result = this.testPartition(trainOpts, trainSet, testSet);
         for (stat in avgs) {
           if (stat in avgs) {
             sum = avgs[stat];
