@@ -100,8 +100,13 @@ var CrossValidate = function () {
 
   }, {
     key: "train",
-    value: function train(data, trainOpts, k) {
-      k = k || 4;
+    value: function train(data) {
+      var trainOpts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var k = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 4;
+
+      if (data.length <= k) {
+        throw new Error("Training set size is too small for " + data.length + " k folds of " + k);
+      }
       var size = data.length / k;
 
       if (data.constructor === Array) {
