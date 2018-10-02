@@ -960,8 +960,8 @@ var NeuralNetwork = function () {
           falseNeg: falseNeg,
           falsePos: falsePos,
           total: data.length,
-          precision: truePos / (truePos + falsePos),
-          recall: truePos / (truePos + falseNeg),
+          precision: truePos > 0 ? truePos / (truePos + falsePos) : 0,
+          recall: truePos > 0 ? truePos / (truePos + falseNeg) : 0,
           accuracy: (trueNeg + truePos) / data.length
         });
       }

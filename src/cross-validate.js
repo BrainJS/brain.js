@@ -78,8 +78,10 @@ export default class CrossValidate {
    *  }
    * }
    */
-  train(data, trainOpts, k) {
-    k = k || 4;
+  train(data, trainOpts = {}, k = 4) {
+    if (data.length <= k) {
+      throw new Error(`Training set size is too small for ${ data.length } k folds of ${ k }`);
+    }
     let size = data.length / k;
 
     if (data.constructor === Array) {
