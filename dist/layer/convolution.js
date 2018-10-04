@@ -65,16 +65,34 @@ function predict(inputs, filters, biases) {
 }
 
 function compareFilters(filterDeltas, inputs, deltas) {
-  var inputX = this.thread.x * this.constants.strideX - this.constants.paddingX;
-  var inputY = this.thread.y * this.constants.strideY - this.constants.paddingY;
+  var startingInputY = this.thread.y - this.constants.paddingY;
+  var startingInputX = this.thread.x - this.constants.paddingX;
+
+  var deltaSlideY = 0;
+
   var sum = filterDeltas[this.thread.z][this.thread.y][this.thread.x];
-  for (var z = 0; z < this.constants.filterCount; z++) {
-    for (var y = 0; y < this.constants.filterHeight; y++) {
-      for (var x = 0; x < this.constants.filterWidth; x++) {
-        sum += deltas[this.thread.z][inputY + y][inputX + x] * inputs[this.thread.z][y][x];
+  for (var y = 0; y < this.constants.slideHeight; y++) {
+    deltaSlideY++;
+    var deltaSlideX = 0;
+
+    var inputY = startingInputY + y * this.constants.strideY;
+    if (inputY < 0 || inputY >= this.constants.inputHeight) continue;
+
+    for (var x = 0; x < this.constants.slideWidth; x++) {
+      deltaSlideX++;
+
+      var inputX = startingInputX + x * this.constants.strideX;
+      if (inputX < 0 || inputX >= this.constants.inputWidth) continue;
+
+      var input = inputs[this.thread.z][inputY][inputX];
+      var deltaY = deltaSlideY - 1;
+      var deltaX = deltaSlideX - 1;
+      for (var deltaZ = 0; deltaZ < this.constants.deltaDepth; deltaZ++) {
+        sum += input * deltas[deltaZ][deltaY][deltaX];
       }
     }
   }
+
   return sum;
 }
 

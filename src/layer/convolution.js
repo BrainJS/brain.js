@@ -53,16 +53,34 @@ export function predict(inputs, filters, biases) {
 }
 
 export function compareFilters(filterDeltas, inputs, deltas) {
-  const inputX = (this.thread.x * this.constants.strideX) - this.constants.paddingX
-  const inputY = (this.thread.y * this.constants.strideY) - this.constants.paddingY
+  const startingInputY = this.thread.y - this.constants.paddingY
+  const startingInputX = this.thread.x - this.constants.paddingX
+
+  let deltaSlideY = 0
+
   let sum = filterDeltas[this.thread.z][this.thread.y][this.thread.x]
-  for (let z = 0; z < this.constants.filterCount; z++) {
-    for (let y = 0; y < this.constants.filterHeight; y++) {
-      for (let x = 0; x < this.constants.filterWidth; x++) {
-        sum += deltas[this.thread.z][inputY + y][inputX + x] * inputs[this.thread.z][y][x]
+  for (let y = 0; y < this.constants.slideHeight; y++) {
+    deltaSlideY++
+    let deltaSlideX = 0
+
+    const inputY = startingInputY + (y * this.constants.strideY)
+    if (inputY < 0 || inputY >= this.constants.inputHeight) continue
+
+    for (let x = 0; x < this.constants.slideWidth; x++) {
+      deltaSlideX++
+
+      const inputX = startingInputX + (x * this.constants.strideX)
+      if (inputX < 0 || inputX >= this.constants.inputWidth) continue
+
+      const input = inputs[this.thread.z][inputY][inputX]
+      const deltaY = deltaSlideY - 1;
+      const deltaX = deltaSlideX - 1;
+      for (let deltaZ = 0; deltaZ < this.constants.deltaDepth; deltaZ++) {
+        sum += input * deltas[deltaZ][deltaY][deltaX]
       }
     }
   }
+
   return sum
 }
 
