@@ -87,9 +87,7 @@ function compareFilters(filterDeltas, inputs, deltas) {
       var input = inputs[this.thread.z][inputY][inputX];
       var deltaY = deltaSlideY - 1;
       var deltaX = deltaSlideX - 1;
-      for (var deltaZ = 0; deltaZ < this.constants.deltaDepth; deltaZ++) {
-        sum += input * deltas[deltaZ][deltaY][deltaX];
-      }
+      sum += input * deltas[this.constants.deltaZ][deltaY][deltaX];
     }
   }
 
