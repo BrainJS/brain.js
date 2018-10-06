@@ -137,7 +137,7 @@ describe('Convolution Layer', () => {
       [[7, 23], [15, 31]],
     ]
     test('accumulates values from deltas correctly from 0', () => {
-      const biasDeltas = [0, 0, 0, 0, 0, 0, 0, 0]
+      const biasDeltas = [[[0]], [[0]], [[0]], [[0]], [[0]], [[0]], [[0]], [[0]]]
       const kernel = gpuMock(compareBiases, {
         output: [1, 1, 8],
         constants: {
@@ -160,7 +160,7 @@ describe('Convolution Layer', () => {
       expect(result).toEqual(expectedBiasDeltas)
     })
     test('accumulates values from deltas correctly from greater than 0', () => {
-      const biasDeltas = [0, 1, 2, 3, 4, 5, 6, 7]
+      const biasDeltas = [[[0]], [[1]], [[2]], [[3]], [[4]], [[5]], [[6]], [[7]]]
       const kernel = gpuMock(compareBiases, {
         output: [1, 1, 8],
         constants: {

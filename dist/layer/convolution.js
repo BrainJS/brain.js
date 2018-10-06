@@ -117,7 +117,7 @@ function compareBiases(biasDeltas, deltas) {
       sum += deltas[this.thread.z][y][x];
     }
   }
-  return biasDeltas[this.thread.z] + sum;
+  return biasDeltas[this.thread.z][this.thread.y][this.thread.x] + sum;
 }
 
 var Convolution = function (_Filter) {
