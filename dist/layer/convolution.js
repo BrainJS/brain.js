@@ -112,8 +112,8 @@ function compareInputs(filters, deltas) {
 
 function compareBiases(biasDeltas, deltas) {
   var sum = 0;
-  for (var y = 0; y < this.constants.y; y++) {
-    for (var x = 0; x < this.constants.x; x++) {
+  for (var y = 0; y < this.constants.deltaHeight; y++) {
+    for (var x = 0; x < this.constants.deltaWidth; x++) {
       sum += deltas[this.thread.z][y][x];
     }
   }
@@ -221,10 +221,10 @@ var Convolution = function (_Filter) {
       });
 
       this.compareBiasesKernel = (0, _kernel.makeKernel)(compareBiases, {
-        output: [1, 1, this.inputLayer.depth],
+        output: [1, 1, this.depth],
         constants: {
-          x: 1,
-          y: 1
+          deltaWidth: this.width,
+          deltaHeight: this.height
         }
       });
     }

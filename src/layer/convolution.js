@@ -106,8 +106,8 @@ export function compareInputs(filters, deltas) {
 
 export function compareBiases(biasDeltas, deltas) {
   let sum = 0
-  for (let y = 0; y < this.constants.y; y++) {
-    for (let x = 0; x < this.constants.x; x++) {
+  for (let y = 0; y < this.constants.deltaHeight; y++) {
+    for (let x = 0; x < this.constants.deltaWidth; x++) {
       sum += deltas[this.thread.z][y][x]
     }
   }
@@ -216,10 +216,10 @@ export default class Convolution extends Filter {
     })
 
     this.compareBiasesKernel = makeKernel(compareBiases, {
-      output: [1, 1, this.inputLayer.depth],
+      output: [1, 1, this.depth],
       constants: {
-        x: 1,
-        y: 1,
+        deltaWidth: this.width,
+        deltaHeight: this.height,
       },
     })
   }

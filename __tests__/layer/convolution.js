@@ -6,6 +6,37 @@ import {
   compareBiases,
 } from '../../src/layer/convolution'
 
+//TODO: move to tests helper location when time is right
+function onePlusPlus3D(width, height, depth) {
+  const grid = []
+  let i = 1
+  for (let z = 0; z < depth; z++) {
+    const rows = []
+    for (let y = 0; y < height; y++) {
+      const columns = []
+      for (let x = 0; x < width; x++) {
+        columns.push(i++)
+      }
+      rows.push(columns)
+    }
+    grid.push(rows)
+  }
+  return grid
+}
+
+function onePlusPlus2D(width, height) {
+  const rows = []
+  let i = 1
+  for (let y = 0; y < height; y++) {
+    const columns = []
+    for (let x = 0; x < width; x++) {
+      columns.push(i++)
+    }
+    rows.push(columns)
+  }
+  return rows
+}
+
 describe('Convolution Layer', () => {
   describe('.predict (forward propagation)', () => {
     test('can convolution a simple matrix', () => {
@@ -35,29 +66,38 @@ describe('Convolution Layer', () => {
 
   describe('.compareFilters (back propagation)', () => {
     test('can convolution a simple matrix', () => {
-      const filters = [[[1, 2], [3, 4]]]
-      const inputs = [[[1, 2], [3, 4]]]
-      const deltas = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
+      const filterWidth = 2
+      const filterHeight = 2
+      const inputWidth = 2
+      const inputHeight = 2
+      const inputDepth = 2
+      const width = 3
+      const height = 3
+      const depth = 3
+      const stride = 1
+      const padding = 0
+      const slideWidth = 2
+      const slideHeight = 2
+
+      const filters = onePlusPlus3D(filterWidth, filterHeight, inputDepth)
+      const inputs = onePlusPlus3D(inputWidth, inputHeight, inputDepth)
+      const deltas = onePlusPlus3D(width, height, depth)
       const results = gpuMock(compareFilters, {
-        output: [2, 2],
+        output: [2, 2, 2],
         constants: {
-          strideX: 1,
-          strideY: 1,
-          paddingY: 0,
-          paddingX: 0,
-          filterHeight: 2,
-          filterWidth: 2,
-          filterCount: 1,
-          inputWidth: 2,
-          inputHeight: 2,
-          inputDepth: 1,
-          deltasDepth: 1,
-          deltasHeight: 3,
-          deltasWidth: 3
+          strideX: stride,
+          strideY: stride,
+          paddingY: padding,
+          paddingX: padding,
+          inputWidth,
+          inputHeight,
+          slideWidth,
+          slideHeight,
+          deltaZ: 0
         },
       })(filters, inputs, deltas)
 
-      expect(results).toEqual([[38, 49], [70, 81]])
+      expect(results).toEqual([[[38, 20], [14, 8]], [[90, 44], [30, 16]]])
     })
   })
 
@@ -101,8 +141,8 @@ describe('Convolution Layer', () => {
       const kernel = gpuMock(compareBiases, {
         output: [1, 1, 8],
         constants: {
-          x: 2,
-          y: 2,
+          deltaWidth: 2,
+          deltaHeight: 2,
         },
       })
       const result = kernel(biasDeltas, deltas)
@@ -124,8 +164,8 @@ describe('Convolution Layer', () => {
       const kernel = gpuMock(compareBiases, {
         output: [1, 1, 8],
         constants: {
-          x: 2,
-          y: 2,
+          deltaWidth: 2,
+          deltaHeight: 2,
         },
       })
       const result = kernel(biasDeltas, deltas)
