@@ -104,6 +104,36 @@ export function compareInputs(filters, deltas) {
   return sum
 }
 
+export function compareInputDeltas(inputDeltas, filters, inputs) {
+  const startingFilterY = this.thread.y - this.constants.inputHeight + 1
+  const startingFilterX = this.thread.x - this.constants.inputWidth + 1
+
+  let inputSlideY = 0
+
+  let sum = inputDeltas[this.thread.z][this.thread.y][this.thread.x]
+  for (let y = 0; y < this.constants.slideHeight; y++) {
+    inputSlideY++
+    let inputSlideX = 0
+
+    let filterY = startingFilterY + y * this.constants.strideY
+    if (filterY < 0 || filterY >= this.constants.filterHeight) continue
+
+    for (let x = 0; x < this.constants.slideWidth; x++) {
+      inputSlideX++
+
+      let filterX = startingFilterX + x * this.constants.strideX
+      if (filterX < 0 || filterX >= this.constants.filterWidth) continue
+
+      const filter = filters[this.thread.z][filterY][filterX]
+      const inputY = inputSlideY - 1
+      const inputX = inputSlideX - 1
+      sum += filter * inputs[this.constants.deltaZ][inputY][inputX]
+    }
+  }
+
+  return sum
+}
+
 export function compareBiases(biasDeltas, deltas) {
   let sum = 0
   for (let y = 0; y < this.constants.deltaHeight; y++) {
