@@ -105,8 +105,8 @@ export function compareInputs(filters, deltas) {
 }
 
 export function compareInputDeltas(inputDeltas, filters, inputs) {
-  const startingFilterY = this.thread.y - this.constants.inputHeight + 1
-  const startingFilterX = this.thread.x - this.constants.inputWidth + 1
+  const startingFilterY = this.thread.y - (this.constants.slideHeight * this.constants.strideY) + this.constants.strideY
+  const startingFilterX = this.thread.x - (this.constants.slideWidth * this.constants.strideX) + this.constants.strideX
 
   let inputSlideY = 0
 
@@ -115,13 +115,13 @@ export function compareInputDeltas(inputDeltas, filters, inputs) {
     inputSlideY++
     let inputSlideX = 0
 
-    let filterY = startingFilterY + y * this.constants.strideY
+    const filterY = startingFilterY + y * this.constants.strideY + this.constants.paddingY
     if (filterY < 0 || filterY >= this.constants.filterHeight) continue
 
     for (let x = 0; x < this.constants.slideWidth; x++) {
       inputSlideX++
 
-      let filterX = startingFilterX + x * this.constants.strideX
+      const filterX = startingFilterX + x * this.constants.strideX + this.constants.paddingX
       if (filterX < 0 || filterX >= this.constants.filterWidth) continue
 
       const filter = filters[this.thread.z][filterY][filterX]
