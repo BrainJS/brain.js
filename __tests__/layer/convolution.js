@@ -1,7 +1,7 @@
 import gpuMock from 'gpu-mock.js'
 import {
   predict,
-  compareFilters,
+  compareFilterDeltas,
   compareInputs,
   compareBiases,
 } from '../../src/layer/convolution'
@@ -64,40 +64,40 @@ describe('Convolution Layer', () => {
     })
   })
 
-  describe('.compareFilters (back propagation)', () => {
+  describe('.compareFilterDeltas (back propagation)', () => {
     test('can convolution a simple matrix', () => {
       const filterWidth = 2
       const filterHeight = 2
-      const inputWidth = 2
-      const inputHeight = 2
-      const inputDepth = 2
-      const width = 3
-      const height = 3
-      const depth = 3
+      const inputWidth = 4
+      const inputHeight = 4
+      const inputDepth = 1
+      const width = 2
+      const height = 2
+      const depth = 1
       const stride = 1
       const padding = 0
-      const slideWidth = 2
-      const slideHeight = 2
 
-      const filters = onePlusPlus3D(filterWidth, filterHeight, inputDepth)
+      const filterDeltas = onePlusPlus3D(filterWidth, filterHeight, inputDepth)
       const inputs = onePlusPlus3D(inputWidth, inputHeight, inputDepth)
       const deltas = onePlusPlus3D(width, height, depth)
-      const results = gpuMock(compareFilters, {
-        output: [2, 2, 2],
+      const results = gpuMock(compareFilterDeltas, {
+        output: [filterWidth, filterHeight, 1],
         constants: {
           strideX: stride,
           strideY: stride,
           paddingY: padding,
           paddingX: padding,
+          filterWidth,
+          filterHeight,
           inputWidth,
           inputHeight,
-          slideWidth,
-          slideHeight,
-          deltaZ: 0
+          deltaZ: 0,
+          deltaWidth: width,
+          deltaHeight: height,
         },
-      })(filters, inputs, deltas)
+      })(filterDeltas, inputs, deltas)
 
-      expect(results).toEqual([[[38, 20], [14, 8]], [[90, 44], [30, 16]]])
+      expect(results).toEqual([[[45, 56], [87, 98]]])
     })
   })
 

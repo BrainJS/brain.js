@@ -52,30 +52,19 @@ export function predict(inputs, filters, biases) {
   return sum + biases[this.thread.z]
 }
 
-export function compareFilters(filterDeltas, inputs, deltas) {
-  const startingInputY = this.thread.y - this.constants.paddingY
-  const startingInputX = this.thread.x - this.constants.paddingX
+export function compareFilterDeltas(filterDeltas, inputs, deltas) {
+  const startingDeltaX = Math.max(0, Math.ceil((this.constants.paddingX - this.thread.x) / this.constants.strideX))
+  const startingInputX = startingDeltaX * this.constants.strideX + this.thread.x - this.constants.paddingX
+  const endingDeltaX = Math.min(this.constants.deltaWidth, Math.floor(((this.constants.inputWidth - 1) - this.thread.x + this.constants.paddingX) / this.constants.strideX) + 1)
 
-  let deltaSlideY = 0
+  const startingDeltaY = Math.max(0, Math.ceil((this.constants.paddingY - this.thread.y) / this.constants.strideY))
+  const startingInputY = startingDeltaY * this.constants.strideY + this.thread.y - this.constants.paddingY
+  const endingDeltaY = Math.min(this.constants.deltaHeight, Math.floor(((this.constants.inputHeight - 1) - this.thread.y + this.constants.paddingY) / this.constants.strideY) + 1)
 
   let sum = filterDeltas[this.thread.z][this.thread.y][this.thread.x]
-  for (let y = 0; y < this.constants.slideHeight; y++) {
-    deltaSlideY++
-    let deltaSlideX = 0
-
-    const inputY = startingInputY + (y * this.constants.strideY)
-    if (inputY < 0 || inputY >= this.constants.inputHeight) continue
-
-    for (let x = 0; x < this.constants.slideWidth; x++) {
-      deltaSlideX++
-
-      const inputX = startingInputX + (x * this.constants.strideX)
-      if (inputX < 0 || inputX >= this.constants.inputWidth) continue
-
-      const input = inputs[this.thread.z][inputY][inputX]
-      const deltaY = deltaSlideY - 1;
-      const deltaX = deltaSlideX - 1;
-      sum += input * deltas[this.constants.deltaZ][deltaY][deltaX]
+  for (let deltaY = startingDeltaY, inputY = startingInputY; deltaY < endingDeltaY; deltaY++, inputY += this.constants.strideY) {
+    for (let deltaX = startingDeltaX, inputX = startingInputX; deltaX < endingDeltaX; deltaX++, inputX += this.constants.strideX) {
+      sum += inputs[this.thread.z][inputY][inputX] * deltas[this.constants.deltaZ][deltaY][deltaX]
     }
   }
 
@@ -215,7 +204,7 @@ export default class Convolution extends Filter {
       output: [this.width, this.height, this.depth],
     })
 
-    this.compareFiltersKernel = makeKernel(compareFilters, {
+    this.compareFilterDeltasKernel = makeKernel(compareFilterDeltas, {
       constants: {
         deltasWidth: this.width,
         deltasHeight: this.height,
@@ -227,7 +216,6 @@ export default class Convolution extends Filter {
         strideY: this.strideY,
         paddingX: this.paddingX,
         paddingY: this.paddingY,
-        filterCount: this.filterCount,
         filterWidth: this.filterWidth,
         filterHeight: this.filterHeight,
       },
@@ -263,7 +251,7 @@ export default class Convolution extends Filter {
   }
 
   compare() {
-    this.filterDeltas = this.compareFiltersKernel(
+    this.filterDeltas = this.compareFilterDeltasKernel(
       this.filterDeltas,
       this.inputLayer.weights,
       this.deltas
