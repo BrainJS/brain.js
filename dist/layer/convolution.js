@@ -7,8 +7,9 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 exports.predict = predict;
-exports.compareFilters = compareFilters;
+exports.compareFilterDeltas = compareFilterDeltas;
 exports.compareInputs = compareInputs;
+exports.compareInputDeltas = compareInputDeltas;
 exports.compareBiases = compareBiases;
 
 var _kernel = require('../utilities/kernel');
@@ -64,30 +65,19 @@ function predict(inputs, filters, biases) {
   return sum + biases[this.thread.z];
 }
 
-function compareFilters(filterDeltas, inputs, deltas) {
-  var startingInputY = this.thread.y - this.constants.paddingY;
-  var startingInputX = this.thread.x - this.constants.paddingX;
+function compareFilterDeltas(filterDeltas, inputs, deltas) {
+  var startingDeltaX = Math.max(0, Math.ceil((this.constants.paddingX - this.thread.x) / this.constants.strideX));
+  var startingInputX = startingDeltaX * this.constants.strideX + this.thread.x - this.constants.paddingX;
+  var endingDeltaX = Math.min(this.constants.deltaWidth, Math.floor((this.constants.inputWidth - 1 - this.thread.x + this.constants.paddingX) / this.constants.strideX) + 1);
 
-  var deltaSlideY = 0;
+  var startingDeltaY = Math.max(0, Math.ceil((this.constants.paddingY - this.thread.y) / this.constants.strideY));
+  var startingInputY = startingDeltaY * this.constants.strideY + this.thread.y - this.constants.paddingY;
+  var endingDeltaY = Math.min(this.constants.deltaHeight, Math.floor((this.constants.inputHeight - 1 - this.thread.y + this.constants.paddingY) / this.constants.strideY) + 1);
 
   var sum = filterDeltas[this.thread.z][this.thread.y][this.thread.x];
-  for (var y = 0; y < this.constants.slideHeight; y++) {
-    deltaSlideY++;
-    var deltaSlideX = 0;
-
-    var inputY = startingInputY + y * this.constants.strideY;
-    if (inputY < 0 || inputY >= this.constants.inputHeight) continue;
-
-    for (var x = 0; x < this.constants.slideWidth; x++) {
-      deltaSlideX++;
-
-      var inputX = startingInputX + x * this.constants.strideX;
-      if (inputX < 0 || inputX >= this.constants.inputWidth) continue;
-
-      var input = inputs[this.thread.z][inputY][inputX];
-      var deltaY = deltaSlideY - 1;
-      var deltaX = deltaSlideX - 1;
-      sum += input * deltas[this.constants.deltaZ][deltaY][deltaX];
+  for (var deltaY = startingDeltaY, inputY = startingInputY; deltaY < endingDeltaY; deltaY++, inputY += this.constants.strideY) {
+    for (var deltaX = startingDeltaX, inputX = startingInputX; deltaX < endingDeltaX; deltaX++, inputX += this.constants.strideX) {
+      sum += inputs[this.thread.z][inputY][inputX] * deltas[this.constants.deltaZ][deltaY][deltaX];
     }
   }
 
@@ -106,6 +96,29 @@ function compareInputs(filters, deltas) {
       offsetX--;
     }
     offsetY--;
+  }
+  return sum;
+}
+
+function compareInputDeltas(inputDeltas, filters, deltas) {
+  var x = this.thread.x + this.constants.paddingX;
+  var startingDeltaX = x < this.constants.filterWidth ? 0 : Math.floor((x - this.constants.filterWidth + this.constants.strideX) / this.constants.strideX);
+  var startingFilterX = x - startingDeltaX * this.constants.strideX;
+  var endDeltaX = Math.min(startingDeltaX + Math.floor(startingFilterX / this.constants.strideX) + 1, this.constants.deltaWidth);
+
+  var y = this.thread.y + this.constants.paddingY;
+  var startingDeltaY = y < this.constants.filterHeight ? 0 : Math.floor((y - this.constants.filterHeight + this.constants.strideY) / this.constants.strideY);
+  var startingFilterY = y - startingDeltaY * this.constants.strideY;
+  var endDeltaY = Math.min(startingDeltaY + Math.floor(startingFilterY / this.constants.strideY) + 1, this.constants.deltaHeight);
+
+  var sum = 0;
+  var deltaY = startingDeltaY;
+
+  for (var filterY = startingFilterY; deltaY < endDeltaY; filterY -= this.constants.strideY, deltaY++) {
+    var deltaX = startingDeltaX;
+    for (var filterX = startingFilterX; deltaX < endDeltaX; filterX -= this.constants.strideX, deltaX++) {
+      sum += filters[this.thread.z][filterY][filterX] * deltas[this.constants.deltaZ][deltaX][deltaY];
+    }
   }
   return sum;
 }
@@ -194,7 +207,7 @@ var Convolution = function (_Filter) {
         output: [this.width, this.height, this.depth]
       });
 
-      this.compareFiltersKernel = (0, _kernel.makeKernel)(compareFilters, {
+      this.compareFilterDeltasKernel = (0, _kernel.makeKernel)(compareFilterDeltas, {
         constants: {
           deltasWidth: this.width,
           deltasHeight: this.height,
@@ -206,7 +219,6 @@ var Convolution = function (_Filter) {
           strideY: this.strideY,
           paddingX: this.paddingX,
           paddingY: this.paddingY,
-          filterCount: this.filterCount,
           filterWidth: this.filterWidth,
           filterHeight: this.filterHeight
         },
@@ -236,7 +248,7 @@ var Convolution = function (_Filter) {
   }, {
     key: 'compare',
     value: function compare() {
-      this.filterDeltas = this.compareFiltersKernel(this.filterDeltas, this.inputLayer.weights, this.deltas);
+      this.filterDeltas = this.compareFilterDeltasKernel(this.filterDeltas, this.inputLayer.weights, this.deltas);
       this.biasDeltas = this.compareBiasesKernel(this.biasDeltas, this.deltas);
       this.deltas = this.compareInputsKernel(this.filters, this.inputLayer.deltas);
       this.inputLayer.deltas = this.deltas;

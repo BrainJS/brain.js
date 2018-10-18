@@ -93,33 +93,26 @@ export function compareInputs(filters, deltas) {
   return sum
 }
 
-export function compareInputDeltas(inputDeltas, filters, inputs) {
-  const startingFilterY = this.thread.y - (this.constants.slideHeight * this.constants.strideY) + this.constants.strideY
-  const startingFilterX = this.thread.x - (this.constants.slideWidth * this.constants.strideX) + this.constants.strideX
+export function compareInputDeltas(inputDeltas, filters, deltas) {
+  const x = this.thread.x + this.constants.paddingX;
+  const startingDeltaX = x < this.constants.filterWidth ? 0 : Math.floor((x - this.constants.filterWidth + this.constants.strideX) / this.constants.strideX);
+  const startingFilterX = x - startingDeltaX * this.constants.strideX;
+  const endDeltaX = Math.min(startingDeltaX + Math.floor(startingFilterX / this.constants.strideX) + 1, this.constants.deltaWidth);
 
-  let inputSlideY = 0
+  const y = this.thread.y + this.constants.paddingY;
+  const startingDeltaY = y < this.constants.filterHeight ? 0 : Math.floor((y - this.constants.filterHeight + this.constants.strideY) / this.constants.strideY);
+  const startingFilterY = y - startingDeltaY * this.constants.strideY;
+  const endDeltaY = Math.min(startingDeltaY + Math.floor(startingFilterY / this.constants.strideY) + 1, this.constants.deltaHeight);
 
-  let sum = inputDeltas[this.thread.z][this.thread.y][this.thread.x]
-  for (let y = 0; y < this.constants.slideHeight; y++) {
-    inputSlideY++
-    let inputSlideX = 0
+  let sum = 0;
+  let deltaY = startingDeltaY;
 
-    const filterY = startingFilterY + y * this.constants.strideY + this.constants.paddingY
-    if (filterY < 0 || filterY >= this.constants.filterHeight) continue
-
-    for (let x = 0; x < this.constants.slideWidth; x++) {
-      inputSlideX++
-
-      const filterX = startingFilterX + x * this.constants.strideX + this.constants.paddingX
-      if (filterX < 0 || filterX >= this.constants.filterWidth) continue
-
-      const filter = filters[this.thread.z][filterY][filterX]
-      const inputY = inputSlideY - 1
-      const inputX = inputSlideX - 1
-      sum += filter * inputs[this.constants.deltaZ][inputY][inputX]
+  for (let filterY = startingFilterY; deltaY < endDeltaY; filterY -= this.constants.strideY, deltaY++) {
+    let deltaX = startingDeltaX;
+    for (let filterX = startingFilterX; deltaX < endDeltaX; filterX -= this.constants.strideX, deltaX++) {
+      sum += filters[this.thread.z][filterY][filterX] * deltas[this.constants.deltaZ][deltaX][deltaY];
     }
   }
-
   return sum
 }
 
