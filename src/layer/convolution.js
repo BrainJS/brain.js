@@ -71,46 +71,24 @@ export function compareFilterDeltas(filterDeltas, inputs, deltas) {
   return sum
 }
 
-export function compareInputs(filters, deltas) {
-  let sum = 0
-  for (let filterY = 0; filterY <= this.thread.y; filterY++) {
-    let offsetY = this.thread.y - filterY
-    for (let filterX = 0; filterX <= this.thread.x; filterX++) {
-      let offsetX = this.thread.x - filterX
-      for (
-        let filterIndex = 0;
-        filterIndex < this.constants.filterCount;
-        filterIndex++
-      ) {
-        sum +=
-          filters[filterIndex][offsetY][offsetX] *
-          deltas[filterIndex][filterY][filterX]
-      }
-      offsetX--
-    }
-    offsetY--
-  }
-  return sum
-}
-
 export function compareInputDeltas(inputDeltas, filters, deltas) {
-  const x = this.thread.x + this.constants.paddingX;
-  const startingDeltaX = x < this.constants.filterWidth ? 0 : Math.floor((x - this.constants.filterWidth + this.constants.strideX) / this.constants.strideX);
-  const startingFilterX = x - startingDeltaX * this.constants.strideX;
-  const endDeltaX = Math.min(startingDeltaX + Math.floor(startingFilterX / this.constants.strideX) + 1, this.constants.deltaWidth);
+  const x = this.thread.x + this.constants.paddingX
+  const startingDeltaX = x < this.constants.filterWidth ? 0 : Math.floor((x - this.constants.filterWidth + this.constants.strideX) / this.constants.strideX)
+  const startingFilterX = x - startingDeltaX * this.constants.strideX
+  const endDeltaX = Math.min(startingDeltaX + Math.floor(startingFilterX / this.constants.strideX) + 1, this.constants.deltaWidth)
 
-  const y = this.thread.y + this.constants.paddingY;
-  const startingDeltaY = y < this.constants.filterHeight ? 0 : Math.floor((y - this.constants.filterHeight + this.constants.strideY) / this.constants.strideY);
-  const startingFilterY = y - startingDeltaY * this.constants.strideY;
-  const endDeltaY = Math.min(startingDeltaY + Math.floor(startingFilterY / this.constants.strideY) + 1, this.constants.deltaHeight);
+  const y = this.thread.y + this.constants.paddingY
+  const startingDeltaY = y < this.constants.filterHeight ? 0 : Math.floor((y - this.constants.filterHeight + this.constants.strideY) / this.constants.strideY)
+  const startingFilterY = y - startingDeltaY * this.constants.strideY
+  const endDeltaY = Math.min(startingDeltaY + Math.floor(startingFilterY / this.constants.strideY) + 1, this.constants.deltaHeight)
 
-  let sum = 0;
-  let deltaY = startingDeltaY;
+  let sum = inputDeltas[this.thread.z][this.thread.y][this.thread.x]
+  let deltaY = startingDeltaY
 
   for (let filterY = startingFilterY; deltaY < endDeltaY; filterY -= this.constants.strideY, deltaY++) {
-    let deltaX = startingDeltaX;
+    let deltaX = startingDeltaX
     for (let filterX = startingFilterX; deltaX < endDeltaX; filterX -= this.constants.strideX, deltaX++) {
-      sum += filters[this.thread.z][filterY][filterX] * deltas[this.constants.deltaZ][deltaX][deltaY];
+      sum += filters[this.thread.z][filterY][filterX] * deltas[this.constants.deltaZ][deltaX][deltaY]
     }
   }
   return sum
@@ -215,7 +193,7 @@ export default class Convolution extends Filter {
       output: [this.width, this.height, this.depth],
     })
 
-    this.compareInputsKernel = makeKernel(compareInputs, {
+    this.compareInputDeltasKernel = makeKernel(compareInputDeltas, {
       constants: {
         filterCount: this.filterCount,
       },
@@ -250,7 +228,7 @@ export default class Convolution extends Filter {
       this.deltas
     )
     this.biasDeltas = this.compareBiasesKernel(this.biasDeltas, this.deltas)
-    this.deltas = this.compareInputsKernel(this.filters, this.inputLayer.deltas)
+    this.deltas = this.compareInputDeltasKernel(this.filters, this.inputLayer.deltas)
     this.inputLayer.deltas = this.deltas
   }
 

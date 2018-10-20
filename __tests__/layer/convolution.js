@@ -2,7 +2,7 @@ import gpuMock from 'gpu-mock.js'
 import {
   predict,
   compareFilterDeltas,
-  compareInputs,
+  compareInputDeltas,
   compareBiases,
 } from '../../src/layer/convolution'
 
@@ -101,11 +101,12 @@ describe('Convolution Layer', () => {
     })
   })
 
-  describe('.compareInputs (back propagation)', () => {
+  describe('.compareInputDeltas (back propagation)', () => {
     test('can convolution a simple matrix', () => {
-      const inputs = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
+      const inputDeltas = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
+      const filters = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
       const deltas = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-      const results = gpuMock(compareInputs, {
+      const results = gpuMock(compareInputDeltas, {
         output: [3, 3],
         constants: {
           strideX: 1,
@@ -115,13 +116,14 @@ describe('Convolution Layer', () => {
           filterHeight: 3,
           filterWidth: 3,
           filterCount: 1,
-          inputWidth: 3,
-          inputHeight: 3,
-          inputDepth: 1,
+          deltaWidth: 3,
+          deltaHeight: 3,
+          deltaDepth: 1,
+          deltaZ: 0
         },
-      })(inputs, deltas)
+      })(inputDeltas, filters, deltas)
 
-      expect(results).toEqual([[1, 4, 10], [8, 26, 56], [30, 84, 165]])
+      expect(results).toEqual([[2, 8, 21], [10, 35, 84], [25, 86, 198]])
     })
   })
 

@@ -8,7 +8,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 exports.predict = predict;
 exports.compareFilterDeltas = compareFilterDeltas;
-exports.compareInputs = compareInputs;
 exports.compareInputDeltas = compareInputDeltas;
 exports.compareBiases = compareBiases;
 
@@ -84,22 +83,6 @@ function compareFilterDeltas(filterDeltas, inputs, deltas) {
   return sum;
 }
 
-function compareInputs(filters, deltas) {
-  var sum = 0;
-  for (var filterY = 0; filterY <= this.thread.y; filterY++) {
-    var offsetY = this.thread.y - filterY;
-    for (var filterX = 0; filterX <= this.thread.x; filterX++) {
-      var offsetX = this.thread.x - filterX;
-      for (var filterIndex = 0; filterIndex < this.constants.filterCount; filterIndex++) {
-        sum += filters[filterIndex][offsetY][offsetX] * deltas[filterIndex][filterY][filterX];
-      }
-      offsetX--;
-    }
-    offsetY--;
-  }
-  return sum;
-}
-
 function compareInputDeltas(inputDeltas, filters, deltas) {
   var x = this.thread.x + this.constants.paddingX;
   var startingDeltaX = x < this.constants.filterWidth ? 0 : Math.floor((x - this.constants.filterWidth + this.constants.strideX) / this.constants.strideX);
@@ -111,7 +94,7 @@ function compareInputDeltas(inputDeltas, filters, deltas) {
   var startingFilterY = y - startingDeltaY * this.constants.strideY;
   var endDeltaY = Math.min(startingDeltaY + Math.floor(startingFilterY / this.constants.strideY) + 1, this.constants.deltaHeight);
 
-  var sum = 0;
+  var sum = inputDeltas[this.thread.z][this.thread.y][this.thread.x];
   var deltaY = startingDeltaY;
 
   for (var filterY = startingFilterY; deltaY < endDeltaY; filterY -= this.constants.strideY, deltaY++) {
@@ -225,7 +208,7 @@ var Convolution = function (_Filter) {
         output: [this.width, this.height, this.depth]
       });
 
-      this.compareInputsKernel = (0, _kernel.makeKernel)(compareInputs, {
+      this.compareInputDeltasKernel = (0, _kernel.makeKernel)(compareInputDeltas, {
         constants: {
           filterCount: this.filterCount
         },
@@ -250,7 +233,7 @@ var Convolution = function (_Filter) {
     value: function compare() {
       this.filterDeltas = this.compareFilterDeltasKernel(this.filterDeltas, this.inputLayer.weights, this.deltas);
       this.biasDeltas = this.compareBiasesKernel(this.biasDeltas, this.deltas);
-      this.deltas = this.compareInputsKernel(this.filters, this.inputLayer.deltas);
+      this.deltas = this.compareInputDeltasKernel(this.filters, this.inputLayer.deltas);
       this.inputLayer.deltas = this.deltas;
     }
   }, {
