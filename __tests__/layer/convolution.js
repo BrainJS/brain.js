@@ -123,7 +123,7 @@ describe('Convolution Layer', () => {
         },
       })(inputDeltas, filters, deltas)
 
-      expect(results).toEqual([[2, 8, 21], [10, 35, 84], [25, 86, 198]])
+      expect(results).toEqual([[2, 6, 13], [12, 31, 62], [37, 92, 174]])
     })
   })
 

@@ -88,7 +88,7 @@ export function compareInputDeltas(inputDeltas, filters, deltas) {
   for (let filterY = startingFilterY; deltaY < endDeltaY; filterY -= this.constants.strideY, deltaY++) {
     let deltaX = startingDeltaX
     for (let filterX = startingFilterX; deltaX < endDeltaX; filterX -= this.constants.strideX, deltaX++) {
-      sum += filters[this.thread.z][filterY][filterX] * deltas[this.constants.deltaZ][deltaX][deltaY]
+      sum += filters[this.thread.z][filterY][filterX] * deltas[this.constants.deltaZ][deltaY][deltaX]
     }
   }
   return sum
