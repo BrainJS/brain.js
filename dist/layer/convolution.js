@@ -42,22 +42,19 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 function predict(inputs, filters, biases) {
-  var x = this.thread.x / this.output.x * this.constants.inputWidth * this.constants.strideX - this.constants.paddingX;
-  var y = this.thread.y / this.output.y * this.constants.inputHeight * this.constants.strideY - this.constants.paddingY;
+  var startFilterX = this.constants.paddingX - this.thread.x * this.constants.strideX;
+  var startInputX = this.thread.x * this.constants.strideX - this.constants.paddingX;
+  var endFilterX = Math.min(this.constants.filterWidth, startFilterX + this.constants.inputWidth);
 
-  // convolve centered at this particular location
+  var startFilterY = this.constants.paddingY - this.thread.y * this.constants.strideY;
+  var startInputY = this.thread.y * this.constants.strideY - this.constants.paddingY;
+  var endFilterY = Math.min(this.constants.filterHeight, startFilterY + this.constants.inputHeight);
+
   var sum = 0;
-  for (var filterY = 0; filterY < this.constants.filterHeight; filterY++) {
-    // coordinates in the original input array coordinates
-    var inputY = filterY + y;
-    for (var filterX = 0; filterX < this.constants.filterWidth; filterX++) {
-      var inputX = filterX + x;
-      if (inputY >= 0 && inputY < this.constants.inputHeight && inputX >= 0 && inputX < this.constants.inputWidth) {
-        for (var inputIndex = 0; inputIndex < this.constants.inputDepth; inputIndex++) {
-          for (var filterIndex = 0; filterIndex < this.constants.filterCount; filterIndex++) {
-            sum += filters[filterIndex][filterY][filterX] * inputs[inputIndex][inputY][inputX];
-          }
-        }
+  for (var z = 0; z < this.constants.inputDepth; z++) {
+    for (var filterY = Math.max(0, startFilterY), inputY = Math.max(0, startInputY); filterY < endFilterY; filterY++, inputY++) {
+      for (var filterX = Math.max(0, startFilterX), inputX = Math.max(0, startInputX); filterX < endFilterX; filterX++, inputX++) {
+        sum += filters[z][filterY][filterX] * inputs[z][inputY][inputX];
       }
     }
   }
@@ -65,41 +62,39 @@ function predict(inputs, filters, biases) {
 }
 
 function compareFilterDeltas(filterDeltas, inputs, deltas) {
-  var startingDeltaX = Math.max(0, Math.ceil((this.constants.paddingX - this.thread.x) / this.constants.strideX));
-  var startingInputX = startingDeltaX * this.constants.strideX + this.thread.x - this.constants.paddingX;
-  var endingDeltaX = Math.min(this.constants.deltaWidth, Math.floor((this.constants.inputWidth - 1 - this.thread.x + this.constants.paddingX) / this.constants.strideX) + 1);
+  var startDeltaX = Math.max(0, Math.ceil((this.constants.paddingX - this.thread.x) / this.constants.strideX));
+  var startInputX = startDeltaX * this.constants.strideX + this.thread.x - this.constants.paddingX;
+  var endDeltaX = Math.min(this.constants.deltaWidth, Math.floor((this.constants.inputWidth - 1 - this.thread.x + this.constants.paddingX) / this.constants.strideX) + 1);
 
-  var startingDeltaY = Math.max(0, Math.ceil((this.constants.paddingY - this.thread.y) / this.constants.strideY));
-  var startingInputY = startingDeltaY * this.constants.strideY + this.thread.y - this.constants.paddingY;
-  var endingDeltaY = Math.min(this.constants.deltaHeight, Math.floor((this.constants.inputHeight - 1 - this.thread.y + this.constants.paddingY) / this.constants.strideY) + 1);
+  var startDeltaY = Math.max(0, Math.ceil((this.constants.paddingY - this.thread.y) / this.constants.strideY));
+  var startInputY = startDeltaY * this.constants.strideY + this.thread.y - this.constants.paddingY;
+  var endDeltaY = Math.min(this.constants.deltaHeight, Math.floor((this.constants.inputHeight - 1 - this.thread.y + this.constants.paddingY) / this.constants.strideY) + 1);
 
   var sum = filterDeltas[this.thread.z][this.thread.y][this.thread.x];
-  for (var deltaY = startingDeltaY, inputY = startingInputY; deltaY < endingDeltaY; deltaY++, inputY += this.constants.strideY) {
-    for (var deltaX = startingDeltaX, inputX = startingInputX; deltaX < endingDeltaX; deltaX++, inputX += this.constants.strideX) {
+  for (var deltaY = startDeltaY, inputY = startInputY; deltaY < endDeltaY; deltaY++, inputY += this.constants.strideY) {
+    for (var deltaX = startDeltaX, inputX = startInputX; deltaX < endDeltaX; deltaX++, inputX += this.constants.strideX) {
       sum += inputs[this.thread.z][inputY][inputX] * deltas[this.constants.deltaZ][deltaY][deltaX];
     }
   }
-
   return sum;
 }
 
 function compareInputDeltas(inputDeltas, filters, deltas) {
   var x = this.thread.x + this.constants.paddingX;
-  var startingDeltaX = x < this.constants.filterWidth ? 0 : Math.floor((x - this.constants.filterWidth + this.constants.strideX) / this.constants.strideX);
-  var startingFilterX = x - startingDeltaX * this.constants.strideX;
-  var endDeltaX = Math.min(startingDeltaX + Math.floor(startingFilterX / this.constants.strideX) + 1, this.constants.deltaWidth);
+  var startDeltaX = x < this.constants.filterWidth ? 0 : Math.floor((x - this.constants.filterWidth + this.constants.strideX) / this.constants.strideX);
+  var startFilterX = x - startDeltaX * this.constants.strideX;
+  var endDeltaX = Math.min(startDeltaX + Math.floor(startFilterX / this.constants.strideX) + 1, this.constants.deltaWidth);
 
   var y = this.thread.y + this.constants.paddingY;
-  var startingDeltaY = y < this.constants.filterHeight ? 0 : Math.floor((y - this.constants.filterHeight + this.constants.strideY) / this.constants.strideY);
-  var startingFilterY = y - startingDeltaY * this.constants.strideY;
-  var endDeltaY = Math.min(startingDeltaY + Math.floor(startingFilterY / this.constants.strideY) + 1, this.constants.deltaHeight);
+  var startDeltaY = y < this.constants.filterHeight ? 0 : Math.floor((y - this.constants.filterHeight + this.constants.strideY) / this.constants.strideY);
+  var startFilterY = y - startDeltaY * this.constants.strideY;
+  var endDeltaY = Math.min(startDeltaY + Math.floor(startFilterY / this.constants.strideY) + 1, this.constants.deltaHeight);
 
   var sum = inputDeltas[this.thread.z][this.thread.y][this.thread.x];
-  var deltaY = startingDeltaY;
-
-  for (var filterY = startingFilterY; deltaY < endDeltaY; filterY -= this.constants.strideY, deltaY++) {
-    var deltaX = startingDeltaX;
-    for (var filterX = startingFilterX; deltaX < endDeltaX; filterX -= this.constants.strideX, deltaX++) {
+  var deltaY = startDeltaY;
+  for (var filterY = startFilterY; deltaY < endDeltaY; filterY -= this.constants.strideY, deltaY++) {
+    var deltaX = startDeltaX;
+    for (var filterX = startFilterX; deltaX < endDeltaX; filterX -= this.constants.strideX, deltaX++) {
       sum += filters[this.thread.z][filterY][filterX] * deltas[this.constants.deltaZ][deltaY][deltaX];
     }
   }
@@ -183,7 +178,6 @@ var Convolution = function (_Filter) {
           strideY: this.strideY,
           paddingX: this.paddingX,
           paddingY: this.paddingY,
-          filterCount: this.filterCount,
           filterWidth: this.filterWidth,
           filterHeight: this.filterHeight
         },
