@@ -187,13 +187,11 @@ var RNN = function () {
   }, {
     key: 'mapModel',
     value: function mapModel() {
-      var _this = this;
-
       var model = this.model;
       var hiddenLayers = model.hiddenLayers;
       var allMatrices = model.allMatrices;
       this.initialLayerInputs = this.hiddenLayers.map(function (size) {
-        return new _matrix2.default(_this.hiddenLayers[0], 1);
+        return new _matrix2.default(size, 1);
       });
 
       this.createInputMatrix();
@@ -523,8 +521,6 @@ var RNN = function () {
   }, {
     key: 'fromJSON',
     value: function fromJSON(json) {
-      var _this2 = this;
-
       var defaults = this.constructor.defaults;
       var options = json.options;
       this.model = null;
@@ -570,7 +566,7 @@ var RNN = function () {
         equationConnections: []
       };
       this.initialLayerInputs = this.hiddenLayers.map(function (size) {
-        return new _matrix2.default(_this2.hiddenLayers[0], 1);
+        return new _matrix2.default(size, 1);
       });
       this.bindEquation();
     }
