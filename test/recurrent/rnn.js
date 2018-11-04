@@ -20,6 +20,28 @@ describe('rnn', () => {
       net.initialize();
       assert.notEqual(net.model, null);
     });
+    it('can setup different size hiddenLayers', () => {
+      const inputSize = 2;
+      const hiddenLayers = [5,4,3];
+      const networkOptions = {
+        learningRate: 0.001,
+        decayRate: 0.75,
+        inputSize: inputSize,
+        hiddenLayers,
+        outputSize: inputSize
+      };
+
+      const net = new RNN(networkOptions);
+      net.initialize();
+      net.bindEquation();
+      assert.equal(net.model.hiddenLayers.length, 3);
+      assert.equal(net.model.hiddenLayers[0].weight.columns, inputSize);
+      assert.equal(net.model.hiddenLayers[0].weight.rows, hiddenLayers[0]);
+      assert.equal(net.model.hiddenLayers[1].weight.columns, hiddenLayers[0]);
+      assert.equal(net.model.hiddenLayers[1].weight.rows, hiddenLayers[1]);
+      assert.equal(net.model.hiddenLayers[2].weight.columns, hiddenLayers[1]);
+      assert.equal(net.model.hiddenLayers[2].weight.rows, hiddenLayers[2]);
+    });
   });
   describe('basic operations', () => {
     it('starts with zeros in input.deltas', () => {
@@ -354,9 +376,12 @@ describe('rnn', () => {
 
     describe('.fromJSON', () => {
       it('can import model from json', () => {
-        let dataFormatter = new DataFormatter('abcdef'.split(''));
-        let jsonString = JSON.stringify(new RNN({
-          inputSize: 6, //<- length
+        const inputSize = 6;
+        const hiddenLayers = [10, 20];
+        const dataFormatter = new DataFormatter('abcdef'.split(''));
+        const jsonString = JSON.stringify(new RNN({
+          inputSize, //<- length
+          hiddenLayers,
           inputRange: dataFormatter.characters.length,
           outputSize: dataFormatter.characters.length //<- length
         }).toJSON(), null, 2);
@@ -368,6 +393,12 @@ describe('rnn', () => {
         assert.equal(clone.inputSize, 6);
         assert.equal(clone.inputRange, dataFormatter.characters.length);
         assert.equal(clone.outputSize, dataFormatter.characters.length);
+
+        assert.equal(clone.model.hiddenLayers.length, 2);
+        assert.equal(clone.model.hiddenLayers[0].weight.columns, inputSize);
+        assert.equal(clone.model.hiddenLayers[0].weight.rows, hiddenLayers[0]);
+        assert.equal(clone.model.hiddenLayers[1].weight.columns, hiddenLayers[0]);
+        assert.equal(clone.model.hiddenLayers[1].weight.rows, hiddenLayers[1]);
       });
 
       it('can import model from json using .fromJSON()', () => {

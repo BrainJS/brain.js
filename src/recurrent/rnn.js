@@ -152,7 +152,7 @@ export default class RNN {
     let model = this.model;
     let hiddenLayers = model.hiddenLayers;
     let allMatrices = model.allMatrices;
-    this.initialLayerInputs = this.hiddenLayers.map((size) => new Matrix(this.hiddenLayers[0], 1));
+    this.initialLayerInputs = this.hiddenLayers.map((size) => new Matrix(size, 1));
 
     this.createInputMatrix();
     if (!model.input) throw new Error('net.model.input not set');
@@ -506,7 +506,7 @@ export default class RNN {
       equations: [],
       equationConnections: [],
     };
-    this.initialLayerInputs = this.hiddenLayers.map((size) => new Matrix(this.hiddenLayers[0], 1));
+    this.initialLayerInputs = this.hiddenLayers.map((size) => new Matrix(size, 1));
     this.bindEquation();
   }
 
