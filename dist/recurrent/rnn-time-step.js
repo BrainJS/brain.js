@@ -22,6 +22,24 @@ var _rnn = require('./rnn');
 
 var _rnn2 = _interopRequireDefault(_rnn);
 
+var _zeros = require('../utilities/zeros');
+
+var _zeros2 = _interopRequireDefault(_zeros);
+
+var _softmax = require('./matrix/softmax');
+
+var _softmax2 = _interopRequireDefault(_softmax);
+
+var _random = require('../utilities/random');
+
+var _sampleI = require('./matrix/sample-i');
+
+var _sampleI2 = _interopRequireDefault(_sampleI);
+
+var _maxI = require('./matrix/max-i');
+
+var _maxI2 = _interopRequireDefault(_maxI);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -33,10 +51,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var RNNTimeStep = function (_RNN) {
   _inherits(RNNTimeStep, _RNN);
 
-  function RNNTimeStep(options) {
+  function RNNTimeStep() {
     _classCallCheck(this, RNNTimeStep);
 
-    return _possibleConstructorReturn(this, (RNNTimeStep.__proto__ || Object.getPrototypeOf(RNNTimeStep)).call(this, options));
+    return _possibleConstructorReturn(this, (RNNTimeStep.__proto__ || Object.getPrototypeOf(RNNTimeStep)).apply(this, arguments));
   }
 
   _createClass(RNNTimeStep, [{
@@ -49,7 +67,7 @@ var RNNTimeStep = function (_RNN) {
     value: function createOutputMatrix() {
       var model = this.model;
       var outputSize = this.outputSize;
-      var lastHiddenSize = this.hiddenSizes[this.hiddenSizes.length - 1];
+      var lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1];
 
       //whd
       model.outputConnector = new _randomMatrix2.default(outputSize, lastHiddenSize, 0.08);
@@ -60,18 +78,18 @@ var RNNTimeStep = function (_RNN) {
     key: 'bindEquation',
     value: function bindEquation() {
       var model = this.model;
-      var hiddenSizes = this.hiddenSizes;
-      var hiddenLayers = model.hiddenLayers;
+      var hiddenLayers = this.hiddenLayers;
+      var layers = model.hiddenLayers;
       var equation = new _equation2.default();
       var outputs = [];
       var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs;
 
       // 0 index
-      var output = this.getEquation(equation, equation.input(model.input), equationConnection[0], hiddenLayers[0]);
+      var output = this.getEquation(equation, equation.input(model.input), equationConnection[0], layers[0]);
       outputs.push(output);
       // 1+ indices
-      for (var i = 1, max = hiddenSizes.length; i < max; i++) {
-        output = this.getEquation(equation, output, equationConnection[i], hiddenLayers[i]);
+      for (var i = 1, max = hiddenLayers.length; i < max; i++) {
+        output = this.getEquation(equation, output, equationConnection[i], layers[i]);
         outputs.push(output);
       }
 
@@ -149,10 +167,7 @@ var RNNTimeStep = function (_RNN) {
 
     /**
      *
-     * @param {Number[]|Number} [input]
-     * @param {Number} [maxPredictionLength]
-     * @param {Boolean} [isSampleI]
-     * @param {Number} temperature
+     * @param {Number[]|Number[][]} [input]
      * @returns {Number[]|Number}
      */
 
@@ -160,13 +175,10 @@ var RNNTimeStep = function (_RNN) {
     key: 'run',
     value: function run() {
       var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var maxPredictionLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-      var isSampleI = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      var temperature = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
 
       if (!this.isRunnable) return null;
       var model = this.model;
-      while (model.equations.length < maxPredictionLength) {
+      while (model.equations.length < input.length) {
         this.bindEquation();
       }
       var lastOutput = void 0;
@@ -195,7 +207,108 @@ var RNNTimeStep = function (_RNN) {
   }, {
     key: 'toFunction',
     value: function toFunction() {
-      throw new Error('not implemented');
+      var model = this.model;
+      var equations = this.model.equations;
+      var inputSize = this.inputSize;
+      debugger;
+      var equation = equations[1];
+      var states = equation.states;
+      var jsonString = JSON.stringify(this.toJSON());
+
+      function matrixOrigin(m, stateIndex) {
+        for (var i = 0, max = states.length; i < max; i++) {
+          var state = states[i];
+
+          if (i === stateIndex) {
+            var j = previousConnectionIndex(m);
+            switch (m) {
+              case state.left:
+                if (j > -1) {
+                  return 'typeof prevStates[' + j + '] === \'object\' ? prevStates[' + j + '].product : new Matrix(' + m.rows + ', ' + m.columns + ')';
+                }
+              case state.right:
+                if (j > -1) {
+                  return 'typeof prevStates[' + j + '] === \'object\' ? prevStates[' + j + '].product : new Matrix(' + m.rows + ', ' + m.columns + ')';
+                }
+              case state.product:
+                return 'new Matrix(' + m.rows + ', ' + m.columns + ')';
+              default:
+                throw Error('unknown state');
+            }
+          }
+
+          if (m === state.product) return 'states[' + i + '].product';
+          if (m === state.right) return 'states[' + i + '].right';
+          if (m === state.left) return 'states[' + i + '].left';
+        }
+      }
+
+      function previousConnectionIndex(m) {
+        var connection = model.equationConnections[0];
+        var states = equations[0].states;
+        for (var i = 0, max = states.length; i < max; i++) {
+          if (states[i].product === m) {
+            return i;
+          }
+        }
+        return connection.indexOf(m);
+      }
+
+      function matrixToString(m, stateIndex) {
+        if (!m || !m.rows || !m.columns) return 'null';
+
+        if (m === model.input) return 'json.input';
+        if (m === model.outputConnector) return 'json.outputConnector';
+        if (m === model.output) return 'json.output';
+
+        for (var i = 0, max = model.hiddenLayers.length; i < max; i++) {
+          var hiddenLayer = model.hiddenLayers[i];
+          for (var p in hiddenLayer) {
+            if (!hiddenLayer.hasOwnProperty(p)) continue;
+            if (hiddenLayer[p] !== m) continue;
+            return 'json.hiddenLayers[' + i + '].' + p;
+          }
+        }
+
+        return matrixOrigin(m, stateIndex);
+      }
+
+      function toInner(fnString) {
+        // crude, but should be sufficient for now
+        // function() { body }
+        fnString = fnString.toString().split('{');
+        fnString.shift();
+        // body }
+        fnString = fnString.join('{');
+        fnString = fnString.split('}');
+        fnString.pop();
+        // body
+
+        return fnString.join('}').split('\n').join('\n        ').replace('product.weights = _this.inputValue;', inputSize === 1 ? 'product.weights = [input[_i]];' : 'product.weights = input[_i];').replace('product.deltas[i] = 0;', '').replace('product.deltas[column] = 0;', '').replace('left.deltas[leftIndex] = 0;', '').replace('right.deltas[rightIndex] = 0;', '').replace('product.deltas = left.deltas.slice(0);', '');
+      }
+
+      function fileName(fnName) {
+        return 'src/recurrent/matrix/' + fnName.replace(/[A-Z]/g, function (value) {
+          return '-' + value.toLowerCase();
+        }) + '.js';
+      }
+
+      var statesRaw = [];
+      var usedFunctionNames = {};
+      var innerFunctionsSwitch = [];
+      for (var i = 0, max = states.length; i < max; i++) {
+        var state = states[i];
+        statesRaw.push('states[' + i + '] = {\n      name: \'' + state.forwardFn.name + '\',\n      left: ' + matrixToString(state.left, i) + ',\n      right: ' + matrixToString(state.right, i) + ',\n      product: ' + matrixToString(state.product, i) + '\n    }');
+
+        var fnName = state.forwardFn.name;
+        if (!usedFunctionNames[fnName]) {
+          usedFunctionNames[fnName] = true;
+          innerFunctionsSwitch.push('        case \'' + fnName + '\':' + (fnName !== 'forwardFn' ? ' //compiled from ' + fileName(fnName) : '') + '\n          ' + toInner(state.forwardFn.toString()) + '\n          break;');
+        }
+      }
+
+      var src = '\n  if (typeof rawInput === \'undefined\') rawInput = [];\n  ' + (this.dataFormatter !== null ? this.dataFormatter.toFunctionString() : '') + '\n  \n  var input = ' + (this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput') + ';\n  var json = ' + jsonString + ';\n  var output = [];\n  var states = [];\n  var prevStates;\n  var state;\n  for (let _i = 0; _i < input.length; _i++) {\n    prevStates = states;\n    states = [];\n    ' + statesRaw.join(';\n    ') + ';\n    for (var stateIndex = 0, stateMax = ' + statesRaw.length + '; stateIndex < stateMax; stateIndex++) {\n      state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      \n      switch (state.name) {\n' + innerFunctionsSwitch.join('\n') + '\n      }\n    }\n  }\n  ' + (this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, ' + (this.outputSize === 1 ? 'state.product.weights[0]' : 'state.product.weights') + ')' : 'return ' + (this.outputSize === 1 ? 'state.product.weights[0]' : 'state.product.weights')) + ';\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ' + (this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? 'function formatDataIn(input, output) { ' + toInner(this.formatDataIn.toString()).replace(/this[.]dataFormatter[\n\s]+[.]/g, '').replace(/this[.]dataFormatter[.]/g, '').replace(/this[.]dataFormatter/g, 'true') + ' }' : '') + '\n  ' + (this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? 'function formatDataOut(input, output) { ' + toInner(this.formatDataOut.toString()).replace(/this[.]dataFormatter[\n\s]+[.]/g, '').replace(/this[.]dataFormatter[.]/g, '').replace(/this[.]dataFormatter/g, 'true') + ' }' : '') + '\n  ' + _zeros2.default.toString() + '\n  ' + _softmax2.default.toString().replace('_2.default', 'Matrix') + '\n  ' + _random.randomF.toString() + '\n  ' + _sampleI2.default.toString() + '\n  ' + _maxI2.default.toString();
+      return new Function('rawInput', src);
     }
   }]);
 
@@ -207,14 +320,13 @@ exports.default = RNNTimeStep;
 
 RNNTimeStep.defaults = {
   inputSize: 1,
-  hiddenSizes: [20],
+  hiddenLayers: [20],
   outputSize: 1,
   learningRate: 0.01,
   decayRate: 0.999,
   smoothEps: 1e-8,
   regc: 0.000001,
   clipval: 5,
-  json: null,
   dataFormatter: null
 };
 

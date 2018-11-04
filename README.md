@@ -53,7 +53,7 @@ more info on config [here](https://github.com/BrainJS/brain.js/blob/develop/src/
 ```javascript
 // provide optional config object (or undefined). Defaults shown.
 const config = {
-    binaryThresh: 0.5,     // ¯\_(ツ)_/¯
+    binaryThresh: 0.5,
     hiddenLayers: [3],     // array of ints for the sizes of the hidden layers in the network
     activation: 'sigmoid'  // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
 };
@@ -76,7 +76,7 @@ more info on config [here](https://github.com/BrainJS/brain.js/blob/develop/src/
 const config = {
     inputSize: 20,
     inputRange: 20,
-    hiddenSizes: [20,20],
+    hiddenLayers: [20,20],
     outputSize: 20,
     learningRate: 0.01,
     decayRate: 0.999,

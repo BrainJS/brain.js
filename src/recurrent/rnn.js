@@ -13,7 +13,7 @@ export default class RNN {
   constructor(options = {}) {
     const defaults = this.constructor.defaults;
 
-    Object.assign(this, defaults, options)
+    Object.assign(this, defaults, options);
 
     this.stepCache = {};
     this.runs = 0;
@@ -21,10 +21,12 @@ export default class RNN {
     this.ratioClipped = null;
     this.model = null;
 
-    this.initialLayerInputs = this.hiddenSizes.map((size) => new Matrix(this.hiddenSizes[0], 1));
     this.inputLookup = null;
     this.outputLookup = null;
-    this.initialize();
+
+    if (options.json) {
+      this.fromJSON(options.json);
+    }
   }
 
   initialize() {
@@ -34,7 +36,8 @@ export default class RNN {
       output: null,
       equations: [],
       allMatrices: [],
-      equationConnections: []
+      equationConnections: [],
+      outputConnector: null,
     };
 
     if (this.dataFormatter !== null) {
@@ -42,25 +45,17 @@ export default class RNN {
       this.inputRange =
       this.outputSize = this.dataFormatter.characters.length;
     }
-
-    if (this.json) {
-      this.fromJSON(this.json);
-    } else {
-      this.mapModel();
-    }
+    this.mapModel();
   }
 
   createHiddenLayers() {
-    let hiddenSizes = this.hiddenSizes;
-    let model = this.model;
-    let hiddenLayers = model.hiddenLayers;
     //0 is end, so add 1 to offset
-    hiddenLayers.push(this.getModel(hiddenSizes[0], this.inputSize));
-    let prevSize = hiddenSizes[0];
+    this.model.hiddenLayers.push(this.getModel(this.hiddenLayers[0], this.inputSize));
+    let prevSize = this.hiddenLayers[0];
 
-    for (let d = 1; d < hiddenSizes.length; d++) { // loop over depths
-      let hiddenSize = hiddenSizes[d];
-      hiddenLayers.push(this.getModel(hiddenSize, prevSize));
+    for (let d = 1; d < this.hiddenLayers.length; d++) { // loop over depths
+      let hiddenSize = this.hiddenLayers[d];
+      this.model.hiddenLayers.push(this.getModel(hiddenSize, prevSize));
       prevSize = hiddenSize;
     }
   }
@@ -120,7 +115,7 @@ export default class RNN {
   createOutputMatrix() {
     let model = this.model;
     let outputSize = this.outputSize;
-    let lastHiddenSize = this.hiddenSizes[this.hiddenSizes.length - 1];
+    let lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1];
 
     //0 is end, so add 1 to offset
     //whd
@@ -132,8 +127,6 @@ export default class RNN {
 
   bindEquation() {
     let model = this.model;
-    let hiddenSizes = this.hiddenSizes;
-    let hiddenLayers = model.hiddenLayers;
     let equation = new Equation();
     let outputs = [];
     let equationConnection = model.equationConnections.length > 0
@@ -142,11 +135,11 @@ export default class RNN {
       ;
 
       // 0 index
-    let output = this.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], hiddenLayers[0]);
+    let output = this.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], model.hiddenLayers[0]);
     outputs.push(output);
     // 1+ indices
-    for (let i = 1, max = hiddenSizes.length; i < max; i++) {
-      output = this.getEquation(equation, output, equationConnection[i], hiddenLayers[i]);
+    for (let i = 1, max = this.hiddenLayers.length; i < max; i++) {
+      output = this.getEquation(equation, output, equationConnection[i], model.hiddenLayers[i]);
       outputs.push(output);
     }
 
@@ -159,6 +152,7 @@ export default class RNN {
     let model = this.model;
     let hiddenLayers = model.hiddenLayers;
     let allMatrices = model.allMatrices;
+    this.initialLayerInputs = this.hiddenLayers.map((size) => new Matrix(this.hiddenLayers[0], 1));
 
     this.createInputMatrix();
     if (!model.input) throw new Error('net.model.input not set');
@@ -308,20 +302,17 @@ export default class RNN {
   /**
    *
    * @param {Number[]|*} [rawInput]
-   * @param {Number} [maxPredictionLength]
    * @param {Boolean} [isSampleI]
    * @param {Number} temperature
    * @returns {*}
    */
-  run(rawInput = [], maxPredictionLength = 100, isSampleI = false, temperature = 1) {
+  run(rawInput = [], isSampleI = false, temperature = 1) {
+    const maxPredictionLength = this.maxPredictionLength + rawInput.length + (this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0);
     if (!this.isRunnable) return null;
     const input = this.formatDataIn(rawInput);
     const model = this.model;
     const output = [];
     let i = 0;
-    while (model.equations.length < maxPredictionLength) {
-      this.bindEquation();
-    }
     while (true) {
       let previousIndex = (i === 0
         ? 0
@@ -329,6 +320,9 @@ export default class RNN {
           ? input[i - 1] + 1
           : output[i - 1])
           ;
+      while (model.equations.length <= i) {
+        this.bindEquation();
+      }
       let equation = model.equations[i];
       // sample predicted letter
       let outputMatrix = equation.run(previousIndex);
@@ -403,7 +397,7 @@ export default class RNN {
       data = this.setupData(data);
     }
 
-    if (!options.keepNetworkIntact) {
+    if (!this.model) {
       this.initialize();
     }
 
@@ -416,10 +410,10 @@ export default class RNN {
       error = sum / data.length;
 
       if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
-      if (log && (i % logPeriod == 0)) {
+      if (log && (i % logPeriod === 0)) {
         log(`iterations: ${ i }, training error: ${ error }`);
       }
-      if (callback && (i % callbackPeriod == 0)) {
+      if (callback && (i % callbackPeriod === 0)) {
         callback({ error: error, iterations: i });
       }
     }
@@ -432,28 +426,19 @@ export default class RNN {
 
   /**
    *
-   * @param data
-   * @returns {
-   *  {
-   *    error: number,
-   *    misclasses: Array
-   *  }
-   * }
-   */
-  test(data) {
-    throw new Error('not yet implemented');
-  }
-
-  /**
-   *
    * @returns {Object}
    */
   toJSON() {
     const defaults = this.constructor.defaults;
+    if (!this.model) {
+      this.initialize();
+    }
     let model = this.model;
     let options = {};
     for (let p in defaults) {
-      options[p] = this[p];
+      if (defaults.hasOwnProperty(p)) {
+        options[p] = this[p];
+      }
     }
 
     return {
@@ -477,41 +462,52 @@ export default class RNN {
   }
 
   fromJSON(json) {
-    this.json = json;
     const defaults = this.constructor.defaults;
-    let model = this.model;
-    let options = json.options;
-    let allMatrices = model.allMatrices;
-    model.input = Matrix.fromJSON(json.input);
-    allMatrices.push(model.input);
-    model.hiddenLayers = json.hiddenLayers.map((hiddenLayer) => {
+    const options = json.options;
+    this.model = null;
+    this.hiddenLayers = null;
+    const allMatrices = [];
+    const input = Matrix.fromJSON(json.input);
+    allMatrices.push(input);
+    const hiddenLayers = [];
+
+    // backward compatibility for hiddenSizes
+    (json.hiddenLayers || json.hiddenSizes).forEach((hiddenLayer) => {
       let layers = {};
       for (let p in hiddenLayer) {
         layers[p] = Matrix.fromJSON(hiddenLayer[p]);
         allMatrices.push(layers[p]);
       }
-      return layers;
+      hiddenLayers.push(layers);
     });
-    model.outputConnector = Matrix.fromJSON(json.outputConnector);
-    model.output = Matrix.fromJSON(json.output);
-    allMatrices.push(model.outputConnector);
-    allMatrices.push(model.output);
 
-    for (let p in defaults) {
-      if (!defaults.hasOwnProperty(p)) continue;
-      this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
+    const outputConnector = Matrix.fromJSON(json.outputConnector);
+    allMatrices.push(outputConnector);
+    const output = Matrix.fromJSON(json.output);
+    allMatrices.push(output);
+
+    Object.assign(this, defaults, options);
+
+    // backward compatibility
+    if (options.hiddenSizes) {
+      this.hiddenLayers = options.hiddenSizes;
     }
 
     if (options.hasOwnProperty('dataFormatter') && options.dataFormatter !== null) {
       this.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);
-      delete options.dataFormatter;
     }
 
+    this.model = {
+      input,
+      hiddenLayers,
+      output,
+      allMatrices,
+      outputConnector,
+      equations: [],
+      equationConnections: [],
+    };
+    this.initialLayerInputs = this.hiddenLayers.map((size) => new Matrix(this.hiddenLayers[0], 1));
     this.bindEquation();
-  }
-
-  fromJSONString(json) {
-    return this.fromJSON(JSON.parse(json));
   }
 
   /**
@@ -630,7 +626,6 @@ export default class RNN {
 
     const src = `
   if (typeof rawInput === 'undefined') rawInput = [];
-  if (typeof maxPredictionLength === 'undefined') maxPredictionLength = 100;
   if (typeof isSampleI === 'undefined') isSampleI = false;
   if (typeof temperature === 'undefined') temperature = 1;
   ${ (this.dataFormatter !== null) ? this.dataFormatter.toFunctionString() : '' }
@@ -641,6 +636,7 @@ export default class RNN {
         : 'rawInput'
     };
   var json = ${ jsonString };
+  var maxPredictionLength = input.length + ${ this.maxPredictionLength };
   var _i = 0;
   var output = [];
   var states = [];
@@ -653,11 +649,12 @@ export default class RNN {
           : output[_i - 1])
           ;
     var rowPluckIndex = previousIndex;
+    var state;
     prevStates = states;
     states = [];
     ${ statesRaw.join(';\n    ') };
     for (var stateIndex = 0, stateMax = ${ statesRaw.length }; stateIndex < stateMax; stateIndex++) {
-      var state = states[stateIndex];
+      state = states[stateIndex];
       var product = state.product;
       var left = state.left;
       var right = state.right;
@@ -716,21 +713,21 @@ ${ innerFunctionsSwitch.join('\n') }
   ${ randomF.toString() }
   ${ sampleI.toString() }
   ${ maxI.toString() }`;
-    return new Function('rawInput', 'maxPredictionLength', 'isSampleI', 'temperature', src);
+    return new Function('rawInput', 'isSampleI', 'temperature', src);
   }
 }
 
 RNN.defaults = {
   inputSize: 20,
   inputRange: 20,
-  hiddenSizes:[20,20],
+  hiddenLayers: [20,20],
   outputSize: 20,
   learningRate: 0.01,
   decayRate: 0.999,
   smoothEps: 1e-8,
   regc: 0.000001,
   clipval: 5,
-  json: null,
+  maxPredictionLength: 100,
   /**
    *
    * @param {*[]} data

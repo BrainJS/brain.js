@@ -32,7 +32,7 @@ export default class NeuralNetwork {
 
   static get defaults() {
     return {
-      binaryThresh: 0.5,     // ¯\_(ツ)_/¯
+      binaryThresh: 0.5,
       hiddenLayers: [3],     // array of ints for the sizes of the hidden layers in the network
       activation: 'sigmoid'  // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
     };
@@ -64,7 +64,7 @@ export default class NeuralNetwork {
 
   constructor(options = {}) {
     Object.assign(this, this.constructor.defaults, options);
-    this.hiddenSizes = options.hiddenLayers;
+    this.hiddenLayers = options.hiddenLayers;
     this.trainOpts = {};
     this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
 
@@ -298,10 +298,10 @@ export default class NeuralNetwork {
 
     this.sizes = [];
     this.sizes.push(data[0].input.length);
-    if (!this.hiddenSizes) {
+    if (!this.hiddenLayers) {
       this.sizes.push(Math.max(3, Math.floor(data[0].input.length / 2)));
     } else {
-      this.hiddenSizes.forEach(size => {
+      this.hiddenLayers.forEach(size => {
         this.sizes.push(size);
       });
     }
@@ -933,6 +933,7 @@ export default class NeuralNetwork {
    */
   toFunction() {
     const activation = this.activation;
+    let needsVar = false;
     function nodeHandle(layers, layerNumber, nodeKey) {
       if (layerNumber === 0) {
         return (typeof nodeKey === 'string'
@@ -942,22 +943,27 @@ export default class NeuralNetwork {
 
       const layer = layers[layerNumber];
       const node = layer[nodeKey];
-      let result = [node.bias];
+      let result = ['(' , node.bias];
       for (let w in node.weights) {
         if (node.weights[w] < 0) {
-          result.push(`${node.weights[w]}*(${nodeHandle(layers, layerNumber - 1, w)})`);
+          result.push(`${node.weights[w]}*${nodeHandle(layers, layerNumber - 1, w)}`);
         } else {
-          result.push(`+${node.weights[w]}*(${nodeHandle(layers, layerNumber - 1, w)})`);
+          result.push(`+${node.weights[w]}*${nodeHandle(layers, layerNumber - 1, w)}`);
         }
       }
+      result.push(')');
 
       switch (activation) {
         case 'sigmoid':
           return `1/(1+1/Math.exp(${result.join('')}))`;
-        case 'relu':
-          return `(${result.join('')} < 0 ? 0 : ${result.join('')})`;
-        case 'leaky-relu':
-          return `(${result.join('')} < 0 ? 0 : 0.01 * ${result.join('')})`;
+        case 'relu': {
+          needsVar = true;
+          return `((v=${result.join('')})<0?0:v)`;
+        }
+        case 'leaky-relu': {
+          needsVar = true;
+          return `((v=${result.join('')})<0?0:0.01*v)`;
+        }
         case 'tanh':
           return `Math.tanh(${result.join('')})`;
         default:
@@ -975,10 +981,11 @@ export default class NeuralNetwork {
       result = `{${
         Object.keys(this.outputLookup)
           .map((key, i) => `'${key}':${layersAsMath[i]}`)
-      }}`;
+        }}`;
     } else {
       result = `[${layersAsMath.join(',')}]`;
     }
-    return new Function('input', `return ${result}`);
+
+    return new Function('input', `${ needsVar ? 'var v;' : '' }return ${result};`);
   }
 }

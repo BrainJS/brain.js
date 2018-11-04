@@ -7,15 +7,14 @@ describe('lstm', () => {
     it('can predict math', function(done) {
       this.timeout(15000);
       const net = new LSTM();
-      const items = [];
+      const items = new Set([]);
       for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
-          items.push(`${i}+${j}=${i + j}`);
-          if (i === j) continue;
-          items.push(`${j}+${i}=${i + j}`);
+          items.add(`${i}+${j}=${i + j}`);
+          items.add(`${j}+${i}=${i + j}`);
         }
       }
-      net.train(items, { log: true, iterations: 100 });
+      net.train(Array.from(items), { log: true, iterations: 100 });
       for (let i = 0; i < 10; i++) {
         const output = net.run();
         console.log(output);
@@ -63,7 +62,8 @@ describe('lstm', () => {
           outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
-        var clone = new LSTM({ json: JSON.parse(jsonString) });
+        var clone = new LSTM();
+        clone.fromJSON(JSON.parse(jsonString));
 
         assert.equal(jsonString, JSON.stringify(clone.toJSON()));
         assert.equal(clone.inputSize, 6);
@@ -79,7 +79,8 @@ describe('lstm', () => {
           outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
-        var clone = new LSTM({ json: JSON.parse(jsonString) });
+        var clone = new LSTM();
+        clone.fromJSON(JSON.parse(jsonString));
         clone.trainPattern([0, 1, 2, 3, 4, 5]);
 
         assert.notEqual(jsonString, JSON.stringify(clone.toJSON()));
@@ -98,7 +99,7 @@ describe('lstm', () => {
         inputRange: dataFormatter.characters.length,
         outputSize: 7
       });
-
+      net.initialize();
       for (var i = 0; i < 100; i++) {
         net.trainPattern(dataFormatter.toIndexes('hi mom!'));
         if (i % 10) {
@@ -121,9 +122,7 @@ describe('lstm', () => {
 
   describe('.run', () => {
     it('can predict greetings in 100 trainings', () => {
-      const net = new LSTM({
-        //json: json
-      });
+      const net = new LSTM();
       const trainingData = [{
         input: 'hi',
         output: 'mom'

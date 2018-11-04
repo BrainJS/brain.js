@@ -327,10 +327,10 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     }
 
     this.sizes.push(data[0].size.input);
-    if (!this.hiddenSizes) {
+    if (!this.hiddenLayers) {
       this.sizes.push(Math.max(3, Math.floor(data[0].size.input / 2)));
     } else {
-      this.hiddenSizes.forEach(size => {
+      this.hiddenLayers.forEach(size => {
         this.sizes.push(size);
       });
     }

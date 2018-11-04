@@ -14,6 +14,7 @@ export default class DataFormatter {
     this.indexTable = {};
     this.characterTable = {};
     this.characters = [];
+    this.specialIndexes = [];
     this.buildCharactersFromIterable(values);
     this.buildTables(maxThreshold);
   }
@@ -105,8 +106,9 @@ export default class DataFormatter {
         } else {
           throw new Error(`unrecognized index "${ index }"`);
         }
+      } else if (character !== null) {
+        result.push(character);
       }
-      result.push(character);
     }
 
     return result;
@@ -165,10 +167,22 @@ export default class DataFormatter {
     return dataFormatter;
   }
 
-  addSpecial(special, printableValue = '') {
+  addSpecial(special, character = null) {
     let specialIndex = this.indexTable[special] = this.characters.length;
-    this.characterTable[specialIndex] = printableValue;
+    this.characterTable[specialIndex] = character;
+    this.specialIndexes.push(this.characters.length);
     this.characters.push(special);
+  }
+
+  countSpecial(output) {
+    let sum = 0;
+    for (let i = 0; i < this.specialIndexes; i++) {
+      let index = -1;
+      while (index = output.indexOf(this.specialIndexes[i], index) > -1) {
+        sum++;
+      }
+    }
+    return sum;
   }
 
   toFunctionString() {

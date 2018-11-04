@@ -48,7 +48,7 @@ var TrainStream = function (_Writable) {
     }
 
     _this.neuralNetwork = opts.neuralNetwork;
-    _this.hiddenSizes = opts.neuralNetwork.hiddenSizes;
+    _this.hiddenLayers = opts.neuralNetwork.hiddenLayers;
     _this.dataFormatDetermined = false;
 
     _this.inputKeys = [];
@@ -149,11 +149,11 @@ var TrainStream = function (_Writable) {
         var sizes = [];
         var inputSize = data[0].input.length;
         var outputSize = data[0].output.length;
-        var hiddenSizes = this.neuralNetwork.hiddenSizes;
-        if (!hiddenSizes) {
+        var hiddenLayers = this.neuralNetwork.hiddenLayers;
+        if (!hiddenLayers) {
           sizes.push(Math.max(3, Math.floor(inputSize / 2)));
         } else {
-          hiddenSizes.forEach(function (size) {
+          hiddenLayers.forEach(function (size) {
             sizes.push(size);
           });
         }

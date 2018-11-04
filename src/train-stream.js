@@ -21,7 +21,7 @@ export default class TrainStream extends Writable {
     }
 
     this.neuralNetwork = opts.neuralNetwork;
-    this.hiddenSizes = opts.neuralNetwork.hiddenSizes;
+    this.hiddenLayers = opts.neuralNetwork.hiddenLayers;
     this.dataFormatDetermined = false;
 
     this.inputKeys = [];
@@ -111,11 +111,11 @@ export default class TrainStream extends Writable {
       let sizes = [];
       let inputSize = data[0].input.length;
       let outputSize = data[0].output.length;
-      let hiddenSizes = this.neuralNetwork.hiddenSizes;
-      if (!hiddenSizes) {
+      let hiddenLayers = this.neuralNetwork.hiddenLayers;
+      if (!hiddenLayers) {
         sizes.push(Math.max(3, Math.floor(inputSize / 2)));
       } else {
-        hiddenSizes.forEach(size => {
+        hiddenLayers.forEach(size => {
           sizes.push(size);
         });
       }

@@ -365,10 +365,10 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       }
 
       this.sizes.push(data[0].size.input);
-      if (!this.hiddenSizes) {
+      if (!this.hiddenLayers) {
         this.sizes.push(Math.max(3, Math.floor(data[0].size.input / 2)));
       } else {
-        this.hiddenSizes.forEach(function (size) {
+        this.hiddenLayers.forEach(function (size) {
           _this2.sizes.push(size);
         });
       }

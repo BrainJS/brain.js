@@ -7,15 +7,14 @@ describe('gru', () => {
     it('can predict math', function(done) {
       this.timeout(15000);
       const net = new GRU();
-      const items = [];
+      const items = new Set([]);
       for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
-          items.push(`${i}+${j}=${i + j}`);
-          if (i === j) continue;
-          items.push(`${j}+${i}=${i + j}`);
+          items.add(`${i}+${j}=${i + j}`);
+          items.add(`${j}+${i}=${i + j}`);
         }
       }
-      net.train(items, { log: true, iterations: 100 });
+      net.train(Array.from(items), { log: true, iterations: 100 });
       for (let i = 0; i < 10; i++) {
         const output = net.run();
         console.log(output, typeof output);
@@ -44,7 +43,7 @@ describe('gru', () => {
         inputRange: dataFormatter.characters.length,
         outputSize: 3
       });
-
+      net.initialize();
       for (var i = 0; i < 100; i++) {
         net.trainPattern(dataFormatter.toIndexes(phrase));
         if (i % 10 === 0) {
@@ -64,6 +63,7 @@ describe('gru', () => {
         inputRange: dataFormatter.characters.length,
         outputSize: 40
       });
+      net.initialize();
       for (var i = 0; i < 200; i++) {
         net.trainPattern(phraseAsIndices);
         if (i % 10 === 0) {
@@ -113,8 +113,8 @@ describe('gru', () => {
           outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
-        var clone = new GRU({ json: JSON.parse(jsonString) });
-
+        var clone = new GRU();
+        clone.fromJSON(JSON.parse(jsonString));
         assert.equal(jsonString, JSON.stringify(clone.toJSON()));
         assert.equal(clone.inputSize, 6);
         assert.equal(clone.inputRange, dataFormatter.characters.length);
@@ -129,7 +129,8 @@ describe('gru', () => {
           outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
-        var clone = new GRU({ json: JSON.parse(jsonString) });
+        var clone = new GRU();
+        clone.fromJSON(JSON.parse(jsonString));
         clone.trainPattern([0, 1, 2, 3, 4, 5]);
 
         assert.notEqual(jsonString, JSON.stringify(clone.toJSON()));
@@ -148,7 +149,7 @@ describe('gru', () => {
         inputRange: dataFormatter.characters.length,
         outputSize: 6
       });
-
+      net.initialize();
       for (var i = 0; i < 100; i++) {
         net.trainPattern(dataFormatter.toIndexes('hi mom!'));
         if (i % 10) {

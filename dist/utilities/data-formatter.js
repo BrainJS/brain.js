@@ -30,6 +30,7 @@ var DataFormatter = function () {
     this.indexTable = {};
     this.characterTable = {};
     this.characters = [];
+    this.specialIndexes = [];
     this.buildCharactersFromIterable(values);
     this.buildTables(maxThreshold);
   }
@@ -134,8 +135,9 @@ var DataFormatter = function () {
           } else {
             throw new Error('unrecognized index "' + index + '"');
           }
+        } else if (character !== null) {
+          result.push(character);
         }
-        result.push(character);
       }
 
       return result;
@@ -159,11 +161,24 @@ var DataFormatter = function () {
   }, {
     key: 'addSpecial',
     value: function addSpecial(special) {
-      var printableValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      var character = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       var specialIndex = this.indexTable[special] = this.characters.length;
-      this.characterTable[specialIndex] = printableValue;
+      this.characterTable[specialIndex] = character;
+      this.specialIndexes.push(this.characters.length);
       this.characters.push(special);
+    }
+  }, {
+    key: 'countSpecial',
+    value: function countSpecial(output) {
+      var sum = 0;
+      for (var i = 0; i < this.specialIndexes; i++) {
+        var index = -1;
+        while (index = output.indexOf(this.specialIndexes[i], index) > -1) {
+          sum++;
+        }
+      }
+      return sum;
     }
   }, {
     key: 'toFunctionString',

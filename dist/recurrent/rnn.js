@@ -50,8 +50,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var RNN = function () {
   function RNN() {
-    var _this = this;
-
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, RNN);
@@ -66,12 +64,12 @@ var RNN = function () {
     this.ratioClipped = null;
     this.model = null;
 
-    this.initialLayerInputs = this.hiddenSizes.map(function (size) {
-      return new _matrix2.default(_this.hiddenSizes[0], 1);
-    });
     this.inputLookup = null;
     this.outputLookup = null;
-    this.initialize();
+
+    if (options.json) {
+      this.fromJSON(options.json);
+    }
   }
 
   _createClass(RNN, [{
@@ -83,33 +81,26 @@ var RNN = function () {
         output: null,
         equations: [],
         allMatrices: [],
-        equationConnections: []
+        equationConnections: [],
+        outputConnector: null
       };
 
       if (this.dataFormatter !== null) {
         this.inputSize = this.inputRange = this.outputSize = this.dataFormatter.characters.length;
       }
-
-      if (this.json) {
-        this.fromJSON(this.json);
-      } else {
-        this.mapModel();
-      }
+      this.mapModel();
     }
   }, {
     key: 'createHiddenLayers',
     value: function createHiddenLayers() {
-      var hiddenSizes = this.hiddenSizes;
-      var model = this.model;
-      var hiddenLayers = model.hiddenLayers;
       //0 is end, so add 1 to offset
-      hiddenLayers.push(this.getModel(hiddenSizes[0], this.inputSize));
-      var prevSize = hiddenSizes[0];
+      this.model.hiddenLayers.push(this.getModel(this.hiddenLayers[0], this.inputSize));
+      var prevSize = this.hiddenLayers[0];
 
-      for (var d = 1; d < hiddenSizes.length; d++) {
+      for (var d = 1; d < this.hiddenLayers.length; d++) {
         // loop over depths
-        var hiddenSize = hiddenSizes[d];
-        hiddenLayers.push(this.getModel(hiddenSize, prevSize));
+        var hiddenSize = this.hiddenLayers[d];
+        this.model.hiddenLayers.push(this.getModel(hiddenSize, prevSize));
         prevSize = hiddenSize;
       }
     }
@@ -163,7 +154,7 @@ var RNN = function () {
     value: function createOutputMatrix() {
       var model = this.model;
       var outputSize = this.outputSize;
-      var lastHiddenSize = this.hiddenSizes[this.hiddenSizes.length - 1];
+      var lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1];
 
       //0 is end, so add 1 to offset
       //whd
@@ -176,18 +167,16 @@ var RNN = function () {
     key: 'bindEquation',
     value: function bindEquation() {
       var model = this.model;
-      var hiddenSizes = this.hiddenSizes;
-      var hiddenLayers = model.hiddenLayers;
       var equation = new _equation2.default();
       var outputs = [];
       var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs;
 
       // 0 index
-      var output = this.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], hiddenLayers[0]);
+      var output = this.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], model.hiddenLayers[0]);
       outputs.push(output);
       // 1+ indices
-      for (var i = 1, max = hiddenSizes.length; i < max; i++) {
-        output = this.getEquation(equation, output, equationConnection[i], hiddenLayers[i]);
+      for (var i = 1, max = this.hiddenLayers.length; i < max; i++) {
+        output = this.getEquation(equation, output, equationConnection[i], model.hiddenLayers[i]);
         outputs.push(output);
       }
 
@@ -198,9 +187,14 @@ var RNN = function () {
   }, {
     key: 'mapModel',
     value: function mapModel() {
+      var _this = this;
+
       var model = this.model;
       var hiddenLayers = model.hiddenLayers;
       var allMatrices = model.allMatrices;
+      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
+        return new _matrix2.default(_this.hiddenLayers[0], 1);
+      });
 
       this.createInputMatrix();
       if (!model.input) throw new Error('net.model.input not set');
@@ -363,27 +357,26 @@ var RNN = function () {
     /**
      *
      * @param {Number[]|*} [rawInput]
-     * @param {Number} [maxPredictionLength]
      * @param {Boolean} [isSampleI]
      * @param {Number} temperature
      * @returns {*}
      */
     value: function run() {
       var rawInput = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var maxPredictionLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 100;
-      var isSampleI = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      var temperature = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
+      var isSampleI = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      var temperature = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
 
+      var maxPredictionLength = this.maxPredictionLength + rawInput.length + (this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0);
       if (!this.isRunnable) return null;
       var input = this.formatDataIn(rawInput);
       var model = this.model;
       var output = [];
       var i = 0;
-      while (model.equations.length < maxPredictionLength) {
-        this.bindEquation();
-      }
       while (true) {
         var previousIndex = i === 0 ? 0 : i < input.length ? input[i - 1] + 1 : output[i - 1];
+        while (model.equations.length <= i) {
+          this.bindEquation();
+        }
         var equation = model.equations[i];
         // sample predicted letter
         var outputMatrix = equation.run(previousIndex);
@@ -460,7 +453,7 @@ var RNN = function () {
         data = this.setupData(data);
       }
 
-      if (!options.keepNetworkIntact) {
+      if (!this.model) {
         this.initialize();
       }
 
@@ -473,10 +466,10 @@ var RNN = function () {
         error = sum / data.length;
 
         if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
-        if (log && i % logPeriod == 0) {
+        if (log && i % logPeriod === 0) {
           log('iterations: ' + i + ', training error: ' + error);
         }
-        if (callback && i % callbackPeriod == 0) {
+        if (callback && i % callbackPeriod === 0) {
           callback({ error: error, iterations: i });
         }
       }
@@ -489,23 +482,6 @@ var RNN = function () {
 
     /**
      *
-     * @param data
-     * @returns {
-     *  {
-     *    error: number,
-     *    misclasses: Array
-     *  }
-     * }
-     */
-
-  }, {
-    key: 'test',
-    value: function test(data) {
-      throw new Error('not yet implemented');
-    }
-
-    /**
-     *
      * @returns {Object}
      */
 
@@ -513,10 +489,15 @@ var RNN = function () {
     key: 'toJSON',
     value: function toJSON() {
       var defaults = this.constructor.defaults;
+      if (!this.model) {
+        this.initialize();
+      }
       var model = this.model;
       var options = {};
       for (var p in defaults) {
-        options[p] = this[p];
+        if (defaults.hasOwnProperty(p)) {
+          options[p] = this[p];
+        }
       }
 
       return {
@@ -542,42 +523,56 @@ var RNN = function () {
   }, {
     key: 'fromJSON',
     value: function fromJSON(json) {
-      this.json = json;
+      var _this2 = this;
+
       var defaults = this.constructor.defaults;
-      var model = this.model;
       var options = json.options;
-      var allMatrices = model.allMatrices;
-      model.input = _matrix2.default.fromJSON(json.input);
-      allMatrices.push(model.input);
-      model.hiddenLayers = json.hiddenLayers.map(function (hiddenLayer) {
+      this.model = null;
+      this.hiddenLayers = null;
+      var allMatrices = [];
+      var input = _matrix2.default.fromJSON(json.input);
+      allMatrices.push(input);
+      var hiddenLayers = [];
+
+      // backward compatibility for hiddenSizes
+      (json.hiddenLayers || json.hiddenSizes).forEach(function (hiddenLayer) {
         var layers = {};
         for (var p in hiddenLayer) {
           layers[p] = _matrix2.default.fromJSON(hiddenLayer[p]);
           allMatrices.push(layers[p]);
         }
-        return layers;
+        hiddenLayers.push(layers);
       });
-      model.outputConnector = _matrix2.default.fromJSON(json.outputConnector);
-      model.output = _matrix2.default.fromJSON(json.output);
-      allMatrices.push(model.outputConnector);
-      allMatrices.push(model.output);
 
-      for (var p in defaults) {
-        if (!defaults.hasOwnProperty(p)) continue;
-        this[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
+      var outputConnector = _matrix2.default.fromJSON(json.outputConnector);
+      allMatrices.push(outputConnector);
+      var output = _matrix2.default.fromJSON(json.output);
+      allMatrices.push(output);
+
+      Object.assign(this, defaults, options);
+
+      // backward compatibility
+      if (options.hiddenSizes) {
+        this.hiddenLayers = options.hiddenSizes;
       }
 
       if (options.hasOwnProperty('dataFormatter') && options.dataFormatter !== null) {
         this.dataFormatter = _dataFormatter2.default.fromJSON(options.dataFormatter);
-        delete options.dataFormatter;
       }
 
+      this.model = {
+        input: input,
+        hiddenLayers: hiddenLayers,
+        output: output,
+        allMatrices: allMatrices,
+        outputConnector: outputConnector,
+        equations: [],
+        equationConnections: []
+      };
+      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
+        return new _matrix2.default(_this2.hiddenLayers[0], 1);
+      });
       this.bindEquation();
-    }
-  }, {
-    key: 'fromJSONString',
-    value: function fromJSONString(json) {
-      return this.fromJSON(JSON.parse(json));
     }
 
     /**
@@ -685,8 +680,8 @@ var RNN = function () {
         }
       }
 
-      var src = '\n  if (typeof rawInput === \'undefined\') rawInput = [];\n  if (typeof maxPredictionLength === \'undefined\') maxPredictionLength = 100;\n  if (typeof isSampleI === \'undefined\') isSampleI = false;\n  if (typeof temperature === \'undefined\') temperature = 1;\n  ' + (this.dataFormatter !== null ? this.dataFormatter.toFunctionString() : '') + '\n  \n  var input = ' + (this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput') + ';\n  var json = ' + jsonString + ';\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ' + statesRaw.join(';\n    ') + ';\n    for (var stateIndex = 0, stateMax = ' + statesRaw.length + '; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      \n      switch (state.name) {\n' + innerFunctionsSwitch.join('\n') + '\n      }\n    }\n    \n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n    \n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ' + (this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })') + ';\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ' + (this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? 'function formatDataIn(input, output) { ' + toInner(this.formatDataIn.toString()).replace(/this[.]dataFormatter[\n\s]+[.]/g, '').replace(/this[.]dataFormatter[.]/g, '').replace(/this[.]dataFormatter/g, 'true') + ' }' : '') + '\n  ' + (this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? 'function formatDataOut(input, output) { ' + toInner(this.formatDataOut.toString()).replace(/this[.]dataFormatter[\n\s]+[.]/g, '').replace(/this[.]dataFormatter[.]/g, '').replace(/this[.]dataFormatter/g, 'true') + ' }' : '') + '\n  ' + _zeros2.default.toString() + '\n  ' + _softmax2.default.toString().replace('_2.default', 'Matrix') + '\n  ' + _random.randomF.toString() + '\n  ' + _sampleI2.default.toString() + '\n  ' + _maxI2.default.toString();
-      return new Function('rawInput', 'maxPredictionLength', 'isSampleI', 'temperature', src);
+      var src = '\n  if (typeof rawInput === \'undefined\') rawInput = [];\n  if (typeof isSampleI === \'undefined\') isSampleI = false;\n  if (typeof temperature === \'undefined\') temperature = 1;\n  ' + (this.dataFormatter !== null ? this.dataFormatter.toFunctionString() : '') + '\n  \n  var input = ' + (this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput') + ';\n  var json = ' + jsonString + ';\n  var maxPredictionLength = input.length + ' + this.maxPredictionLength + ';\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    var state;\n    prevStates = states;\n    states = [];\n    ' + statesRaw.join(';\n    ') + ';\n    for (var stateIndex = 0, stateMax = ' + statesRaw.length + '; stateIndex < stateMax; stateIndex++) {\n      state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      \n      switch (state.name) {\n' + innerFunctionsSwitch.join('\n') + '\n      }\n    }\n    \n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n    \n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ' + (this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })') + ';\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ' + (this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? 'function formatDataIn(input, output) { ' + toInner(this.formatDataIn.toString()).replace(/this[.]dataFormatter[\n\s]+[.]/g, '').replace(/this[.]dataFormatter[.]/g, '').replace(/this[.]dataFormatter/g, 'true') + ' }' : '') + '\n  ' + (this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? 'function formatDataOut(input, output) { ' + toInner(this.formatDataOut.toString()).replace(/this[.]dataFormatter[\n\s]+[.]/g, '').replace(/this[.]dataFormatter[.]/g, '').replace(/this[.]dataFormatter/g, 'true') + ' }' : '') + '\n  ' + _zeros2.default.toString() + '\n  ' + _softmax2.default.toString().replace('_2.default', 'Matrix') + '\n  ' + _random.randomF.toString() + '\n  ' + _sampleI2.default.toString() + '\n  ' + _maxI2.default.toString();
+      return new Function('rawInput', 'isSampleI', 'temperature', src);
     }
   }, {
     key: 'isRunnable',
@@ -709,14 +704,14 @@ exports.default = RNN;
 RNN.defaults = {
   inputSize: 20,
   inputRange: 20,
-  hiddenSizes: [20, 20],
+  hiddenLayers: [20, 20],
   outputSize: 20,
   learningRate: 0.01,
   decayRate: 0.999,
   smoothEps: 1e-8,
   regc: 0.000001,
   clipval: 5,
-  json: null,
+  maxPredictionLength: 100,
   /**
    *
    * @param {*[]} data
