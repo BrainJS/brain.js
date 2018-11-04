@@ -64,7 +64,7 @@ export default class NeuralNetwork {
 
   constructor(options = {}) {
     Object.assign(this, this.constructor.defaults, options);
-    this.hiddenSizes = options.hiddenLayers;
+    this.hiddenLayers = options.hiddenLayers;
     this.trainOpts = {};
     this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
 
@@ -298,10 +298,10 @@ export default class NeuralNetwork {
 
     this.sizes = [];
     this.sizes.push(data[0].input.length);
-    if (!this.hiddenSizes) {
+    if (!this.hiddenLayers) {
       this.sizes.push(Math.max(3, Math.floor(data[0].input.length / 2)));
     } else {
-      this.hiddenSizes.forEach(size => {
+      this.hiddenLayers.forEach(size => {
         this.sizes.push(size);
       });
     }

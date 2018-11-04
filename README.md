@@ -76,7 +76,7 @@ more info on config [here](https://github.com/BrainJS/brain.js/blob/develop/src/
 const config = {
     inputSize: 20,
     inputRange: 20,
-    hiddenSizes: [20,20],
+    hiddenLayers: [20,20],
     outputSize: 20,
     learningRate: 0.01,
     decayRate: 0.999,

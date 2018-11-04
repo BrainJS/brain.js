@@ -134,8 +134,9 @@ var DataFormatter = function () {
           } else {
             throw new Error('unrecognized index "' + index + '"');
           }
+        } else if (character !== null) {
+          result.push(character);
         }
-        result.push(character);
       }
 
       return result;
@@ -159,10 +160,10 @@ var DataFormatter = function () {
   }, {
     key: 'addSpecial',
     value: function addSpecial(special) {
-      var printableValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      var character = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       var specialIndex = this.indexTable[special] = this.characters.length;
-      this.characterTable[specialIndex] = printableValue;
+      this.characterTable[specialIndex] = character;
       this.characters.push(special);
     }
   }, {

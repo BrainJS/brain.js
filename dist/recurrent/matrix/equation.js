@@ -249,11 +249,12 @@ var Equation = function () {
   }, {
     key: 'input',
     value: function input(_input) {
-      var self = this;
+      var _this = this;
+
       this.states.push({
         product: _input,
-        forwardFn: function forwardFn() {
-          _input.weights = self.inputValue;
+        forwardFn: function forwardFn(product) {
+          product.weights = _this.inputValue;
         }
       });
       return _input;

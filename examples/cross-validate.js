@@ -16,7 +16,7 @@ const trainingData = [
 ];
 
 const netOptions = {
-  hiddenSizes: [3]
+  hiddenLayers: [3]
 };
 
 const trainingOptions = {

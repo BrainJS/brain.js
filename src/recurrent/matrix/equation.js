@@ -154,11 +154,10 @@ export default class Equation {
    * @returns {Matrix}
    */
   input(input) {
-    const self = this;
     this.states.push({
       product: input,
-      forwardFn: () => {
-        input.weights = self.inputValue;
+      forwardFn: (product) => {
+        product.weights = this.inputValue;
       }
     });
     return input;

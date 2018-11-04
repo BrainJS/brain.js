@@ -105,8 +105,9 @@ export default class DataFormatter {
         } else {
           throw new Error(`unrecognized index "${ index }"`);
         }
+      } else if (character !== null) {
+        result.push(character);
       }
-      result.push(character);
     }
 
     return result;
@@ -165,9 +166,9 @@ export default class DataFormatter {
     return dataFormatter;
   }
 
-  addSpecial(special, printableValue = '') {
+  addSpecial(special, character = null) {
     let specialIndex = this.indexTable[special] = this.characters.length;
-    this.characterTable[specialIndex] = printableValue;
+    this.characterTable[specialIndex] = character;
     this.characters.push(special);
   }
 
