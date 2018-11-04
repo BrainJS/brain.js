@@ -66,10 +66,6 @@ var RNN = function () {
 
     this.inputLookup = null;
     this.outputLookup = null;
-
-    if (options.json) {
-      this.fromJSON(options.json);
-    }
   }
 
   _createClass(RNN, [{
