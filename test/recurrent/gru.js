@@ -113,8 +113,8 @@ describe('gru', () => {
           outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
-        var clone = new GRU({ json: JSON.parse(jsonString) });
-
+        var clone = new GRU();
+        clone.fromJSON(JSON.parse(jsonString));
         assert.equal(jsonString, JSON.stringify(clone.toJSON()));
         assert.equal(clone.inputSize, 6);
         assert.equal(clone.inputRange, dataFormatter.characters.length);
@@ -129,7 +129,8 @@ describe('gru', () => {
           outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
-        var clone = new GRU({ json: JSON.parse(jsonString) });
+        var clone = new GRU();
+        clone.fromJSON(JSON.parse(jsonString));
         clone.trainPattern([0, 1, 2, 3, 4, 5]);
 
         assert.notEqual(jsonString, JSON.stringify(clone.toJSON()));

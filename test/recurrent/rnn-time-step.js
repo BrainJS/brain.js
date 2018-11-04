@@ -97,7 +97,7 @@ describe('RNNTimeStep', () => {
   it('can learn to predict forwards and backwards', () => {
     const net = new LSTMTimeStep({
       inputSize: 1,
-      hiddenLayers: [20],
+      hiddenLayers: [20, 20],
       outputSize: 1
     });
 

@@ -359,11 +359,12 @@ describe('rnn', () => {
           inputSize: 6, //<- length
           inputRange: dataFormatter.characters.length,
           outputSize: dataFormatter.characters.length //<- length
-        }).toJSON());
+        }).toJSON(), null, 2);
 
-        let clone = new RNN({ json: JSON.parse(jsonString) });
-
-        assert.equal(jsonString, JSON.stringify(clone.toJSON()));
+        const clone = new RNN();
+        clone.fromJSON(JSON.parse(jsonString));
+        const cloneString = JSON.stringify(clone.toJSON(), null, 2);
+        assert.equal(jsonString, cloneString);
         assert.equal(clone.inputSize, 6);
         assert.equal(clone.inputRange, dataFormatter.characters.length);
         assert.equal(clone.outputSize, dataFormatter.characters.length);
@@ -463,16 +464,22 @@ describe('rnn', () => {
     it('gets a default value', () => {
       assert.equal(new RNN().maxPredictionLength, RNN.defaults.maxPredictionLength);
     });
-    it('restores from JSON a custom value', () => {
+    it('restores option', () => {
       const maxPredictionLength = Math.random();
       assert.equal(new RNN({ maxPredictionLength }).maxPredictionLength, maxPredictionLength);
     });
-    it.only('restores from JSON a custom value', () => {
+    it('can be set multiple times', () => {
       const net = new RNN({ maxPredictionLength: 5 });
-      net.train([{ input: '123456', output: '78910' }]);
-      assert.equal(net.run('123456'), '78910');
+      assert.equal(net.maxPredictionLength, 5);
       net.maxPredictionLength = 1;
-      assert.equal(net.run('123456'), '7');
+      assert.equal(net.maxPredictionLength, 1);
+    });
+    it('shortens returned values', () => {
+      const net = new RNN({ maxPredictionLength: 3 });
+      net.train([{ input: '123', output: '456' }], { errorThresh: 0.011 });
+      assert.equal(net.run('123'), '456');
+      net.maxPredictionLength = 1;
+      assert.equal(net.run('123'), '4');
     });
   });
   describe('rnn.toFunction', () => {

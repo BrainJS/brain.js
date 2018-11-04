@@ -30,6 +30,7 @@ var DataFormatter = function () {
     this.indexTable = {};
     this.characterTable = {};
     this.characters = [];
+    this.specialIndexes = [];
     this.buildCharactersFromIterable(values);
     this.buildTables(maxThreshold);
   }
@@ -164,7 +165,20 @@ var DataFormatter = function () {
 
       var specialIndex = this.indexTable[special] = this.characters.length;
       this.characterTable[specialIndex] = character;
+      this.specialIndexes.push(this.characters.length);
       this.characters.push(special);
+    }
+  }, {
+    key: 'countSpecial',
+    value: function countSpecial(output) {
+      var sum = 0;
+      for (var i = 0; i < this.specialIndexes; i++) {
+        var index = -1;
+        while (index = output.indexOf(this.specialIndexes[i], index) > -1) {
+          sum++;
+        }
+      }
+      return sum;
     }
   }, {
     key: 'toFunctionString',

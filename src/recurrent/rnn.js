@@ -23,6 +23,10 @@ export default class RNN {
 
     this.inputLookup = null;
     this.outputLookup = null;
+
+    if (options.json) {
+      this.fromJSON(options.json);
+    }
   }
 
   initialize() {
@@ -303,7 +307,7 @@ export default class RNN {
    * @returns {*}
    */
   run(rawInput = [], isSampleI = false, temperature = 1) {
-    const maxPredictionLength = this.maxPredictionLength + rawInput.length;
+    const maxPredictionLength = this.maxPredictionLength + rawInput.length + (this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0);
     if (!this.isRunnable) return null;
     const input = this.formatDataIn(rawInput);
     const model = this.model;
@@ -466,7 +470,9 @@ export default class RNN {
     const input = Matrix.fromJSON(json.input);
     allMatrices.push(input);
     const hiddenLayers = [];
-    json.hiddenLayers.forEach((hiddenLayer) => {
+
+    // backward compatibility for hiddenSizes
+    (json.hiddenLayers || json.hiddenSizes).forEach((hiddenLayer) => {
       let layers = {};
       for (let p in hiddenLayer) {
         layers[p] = Matrix.fromJSON(hiddenLayer[p]);
@@ -474,12 +480,18 @@ export default class RNN {
       }
       hiddenLayers.push(layers);
     });
+
     const outputConnector = Matrix.fromJSON(json.outputConnector);
     allMatrices.push(outputConnector);
     const output = Matrix.fromJSON(json.output);
     allMatrices.push(output);
 
     Object.assign(this, defaults, options);
+
+    // backward compatibility
+    if (options.hiddenSizes) {
+      this.hiddenLayers = options.hiddenSizes;
+    }
 
     if (options.hasOwnProperty('dataFormatter') && options.dataFormatter !== null) {
       this.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);

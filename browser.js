@@ -4115,6 +4115,10 @@ var RNN = function () {
 
     this.inputLookup = null;
     this.outputLookup = null;
+
+    if (options.json) {
+      this.fromJSON(options.json);
+    }
   }
 
   _createClass(RNN, [{
@@ -4411,7 +4415,7 @@ var RNN = function () {
       var isSampleI = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var temperature = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
 
-      var maxPredictionLength = this.maxPredictionLength + rawInput.length;
+      var maxPredictionLength = this.maxPredictionLength + rawInput.length + (this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0);
       if (!this.isRunnable) return null;
       var input = this.formatDataIn(rawInput);
       var model = this.model;
@@ -4578,7 +4582,9 @@ var RNN = function () {
       var input = _matrix2.default.fromJSON(json.input);
       allMatrices.push(input);
       var hiddenLayers = [];
-      json.hiddenLayers.forEach(function (hiddenLayer) {
+
+      // backward compatibility for hiddenSizes
+      (json.hiddenLayers || json.hiddenSizes).forEach(function (hiddenLayer) {
         var layers = {};
         for (var p in hiddenLayer) {
           layers[p] = _matrix2.default.fromJSON(hiddenLayer[p]);
@@ -4586,12 +4592,18 @@ var RNN = function () {
         }
         hiddenLayers.push(layers);
       });
+
       var outputConnector = _matrix2.default.fromJSON(json.outputConnector);
       allMatrices.push(outputConnector);
       var output = _matrix2.default.fromJSON(json.output);
       allMatrices.push(output);
 
       Object.assign(this, defaults, options);
+
+      // backward compatibility
+      if (options.hiddenSizes) {
+        this.hiddenLayers = options.hiddenSizes;
+      }
 
       if (options.hasOwnProperty('dataFormatter') && options.dataFormatter !== null) {
         this.dataFormatter = _dataFormatter2.default.fromJSON(options.dataFormatter);
@@ -5087,6 +5099,7 @@ var DataFormatter = function () {
     this.indexTable = {};
     this.characterTable = {};
     this.characters = [];
+    this.specialIndexes = [];
     this.buildCharactersFromIterable(values);
     this.buildTables(maxThreshold);
   }
@@ -5221,7 +5234,20 @@ var DataFormatter = function () {
 
       var specialIndex = this.indexTable[special] = this.characters.length;
       this.characterTable[specialIndex] = character;
+      this.specialIndexes.push(this.characters.length);
       this.characters.push(special);
+    }
+  }, {
+    key: 'countSpecial',
+    value: function countSpecial(output) {
+      var sum = 0;
+      for (var i = 0; i < this.specialIndexes; i++) {
+        var index = -1;
+        while (index = output.indexOf(this.specialIndexes[i], index) > -1) {
+          sum++;
+        }
+      }
+      return sum;
     }
   }, {
     key: 'toFunctionString',
