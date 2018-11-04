@@ -7,24 +7,36 @@ function notZero(v) {
   return v !== 0;
 }
 
-function isZero(v) {
-  return v === 0;
-}
-
 describe('rnn', () => {
+  describe('constructor', () => {
+    it('does not initialize model', () => {
+      const net = new RNN();
+      assert.equal(net.model, null);
+    });
+  });
+  describe('initialize', () => {
+    it('initializes model', () => {
+      const net = new RNN();
+      net.initialize();
+      assert.notEqual(net.model, null);
+    });
+  });
   describe('basic operations', () => {
     it('starts with zeros in input.deltas', () => {
-      (new RNN()).model.input.deltas.forEach((v) => {
+      const net = new RNN();
+      net.initialize();
+      net.model.input.deltas.forEach((v) => {
         assert(v === 0);
       });
     });
     it('after initial run, does not have zeros in deltas', () => {
       let net = new RNN({
-        hiddenSizes: [3],
+        hiddenLayers: [3],
         inputSize: 3,
         inputRange: 2,
         outputSize: 2
       });
+      net.initialize();
       net.runInput([1, 1, 0]);
       net.model.input.deltas.forEach((v) => {
         assert.equal(v, 0);
@@ -36,7 +48,7 @@ describe('rnn', () => {
       assert(net.model.input.deltas.some(notZero));
     });
     it('can handle unrecognized input characters', () => {
-      var net = new RNN({ hiddenSizes: [3] });
+      var net = new RNN({ hiddenLayers: [3] });
       net.train([
         { input: '1', output: '2' },
         { input: '2', output: '3' },
@@ -49,12 +61,14 @@ describe('rnn', () => {
   });
   describe('xor', () => {
     function xorNet() {
-      return new RNN({
-        hiddenSizes: [9, 9],
+      const net = new RNN({
+        hiddenLayers: [20, 20],
         inputSize: 3,
         inputRange: 3,
         outputSize: 3
       });
+      net.initialize();
+      return net;
     }
 
     let xorNetValues = [
@@ -286,8 +300,10 @@ describe('rnn', () => {
       let error;
 
       for (let i = 0; i < 10; i++) {
-        let input = xorNetValues[Math.floor((xorNetValues.length - 1) * Math.random())];
-        error = net.trainPattern(input);
+        error = 0;
+        for (let j = 0; j < 4; j++) {
+          error += net.trainPattern(xorNetValues[j]);
+        }
         if (i === 0) {
           initialError = error;
         }
@@ -353,7 +369,7 @@ describe('rnn', () => {
         assert.equal(clone.outputSize, dataFormatter.characters.length);
       });
 
-      it('can import model from json and train again', () => {
+      it('can import model from json using .fromJSON()', () => {
         let dataFormatter = new DataFormatter('abcdef'.split(''));
         let jsonString = JSON.stringify(new RNN({
           inputSize: 6, //<- length
@@ -361,9 +377,61 @@ describe('rnn', () => {
           outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
-        let clone = new RNN({ json: JSON.parse(jsonString) });
-        clone.trainPattern([0, 1, 2, 3, 4, 5]);
+        const clone = new RNN();
+        clone.fromJSON(JSON.parse(jsonString));
 
+        assert.equal(jsonString, JSON.stringify(clone.toJSON()));
+        assert.equal(clone.inputSize, 6);
+        assert.equal(clone.inputRange, dataFormatter.characters.length);
+        assert.equal(clone.outputSize, dataFormatter.characters.length);
+      });
+
+      it('will not initialize when importing json', () => {
+        const dataFormatter = new DataFormatter('abcdef'.split(''));
+        const original = new RNN({
+          inputSize: 6, //<- length
+          inputRange: dataFormatter.characters.length,
+          hiddenLayers: [3, 3],
+          outputSize: dataFormatter.characters.length //<- length
+        });
+
+        original.initialize();
+        const jsonString = JSON.stringify(original.toJSON());
+
+        const json = JSON.parse(jsonString);
+        const clone = new RNN();
+        clone.fromJSON(json);
+        assert.equal(jsonString, JSON.stringify(clone.toJSON()));
+        assert.equal(clone.inputSize, 6);
+        assert.equal(clone.inputRange, dataFormatter.characters.length);
+        assert.equal(clone.outputSize, dataFormatter.characters.length);
+      });
+
+      it('can import model from json and train again', () => {
+        const dataFormatter = new DataFormatter('abcdef'.split(''));
+        const net = new RNN({
+          inputSize: 6, //<- length
+          inputRange: dataFormatter.characters.length,
+          outputSize: dataFormatter.characters.length //<- length
+        });
+
+        net.initialize();
+
+        // over fit on purpose
+        for (let i = 0; i < 10; i++) {
+          net.trainPattern([0, 1, 1]);
+          net.trainPattern([1, 0, 1]);
+          net.trainPattern([1, 1, 0]);
+          net.trainPattern([0, 0, 0]);
+        }
+
+        const error = net.trainPattern([0, 1, 1]);
+        const jsonString = JSON.stringify(net.toJSON());
+        const clone = new RNN();
+        clone.fromJSON(JSON.parse(jsonString));
+        assert.equal(jsonString, JSON.stringify(clone.toJSON()));
+        const newError = clone.trainPattern([0, 1, 1]);
+        assert((error - newError) < 0.02);
         assert.notEqual(jsonString, JSON.stringify(clone.toJSON()));
         assert.equal(clone.inputSize, 6);
         assert.equal(clone.inputRange, dataFormatter.characters.length);
@@ -391,6 +459,22 @@ describe('rnn', () => {
     });
   });
 
+  describe('maxPredictionLength', () => {
+    it('gets a default value', () => {
+      assert.equal(new RNN().maxPredictionLength, RNN.defaults.maxPredictionLength);
+    });
+    it('restores from JSON a custom value', () => {
+      const maxPredictionLength = Math.random();
+      assert.equal(new RNN({ maxPredictionLength }).maxPredictionLength, maxPredictionLength);
+    });
+    it.only('restores from JSON a custom value', () => {
+      const net = new RNN({ maxPredictionLength: 5 });
+      net.train([{ input: '123456', output: '78910' }]);
+      assert.equal(net.run('123456'), '78910');
+      net.maxPredictionLength = 1;
+      assert.equal(net.run('123456'), '7');
+    });
+  });
   describe('rnn.toFunction', () => {
     it('can output same as run method', () => {
       const dataFormatter = new DataFormatter(['h', 'i', ' ', 'm', 'o', '!']);
@@ -399,6 +483,7 @@ describe('rnn', () => {
         inputRange: dataFormatter.characters.length,
         outputSize: 7
       });
+      net.initialize();
 
       for (let i = 0; i < 100; i++) {
         net.trainPattern(dataFormatter.toIndexes('hi mom!'));

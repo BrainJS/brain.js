@@ -140,7 +140,7 @@ describe('DataFormatter', function() {
     it('works', () => {
       const dataFormatter = DataFormatter.fromArrayInputOutput([1,2,3,4,5,6,7,8,9,0]);
       let indices = dataFormatter.toIndexesInputOutput([1,2,3,4,5], [1,2,3,4,5]);
-      assert.deepEqual(dataFormatter.toCharacters(indices), [1,2,3,4,5,'stop-input', 'start-output', 1,2,3,4,5]);
+      assert.deepEqual(dataFormatter.toCharacters(indices), [1,2,3,4,5,1,2,3,4,5]);
     });
   });
 });
