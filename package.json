@@ -1,12 +1,18 @@
 {
   "name": "brain.js",
   "description": "Neural network library",
-  "version": "1.4.4",
+  "version": "1.4.6",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/brainjs/brain.js.git"
   },
+  "files": [
+    "dist",
+    "browser.js",
+    "browser.min.js",
+    "index.d.ts"
+  ],
   "scripts": {
     "test-browser": "testee test/browser/index.html --browsers firefox --reporter Spec",
     "test-base": "find ./test/base/ -name '*.js' | xargs mocha --compilers js:babel-core/register",
