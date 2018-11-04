@@ -1,7 +1,7 @@
 {
   "name": "brain.js",
   "description": "Neural network library",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": {
     "type": "git",
@@ -11,7 +11,8 @@
     "dist",
     "browser.js",
     "browser.min.js",
-    "index.d.ts"
+    "index.d.ts",
+    "index.js"
   ],
   "scripts": {
     "test-browser": "testee test/browser/index.html --browsers firefox --reporter Spec",
