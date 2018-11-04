@@ -31,7 +31,7 @@ export default class CrossValidate {
       iterations: trainingStats.iterations,
       trainError: trainingStats.error,
       learningRate: trainOpts.learningRate,
-      hidden: classifier.hiddenSizes,
+      hiddenLayers: classifier.hiddenLayers,
       network: classifier.toJSON()
     });
 
