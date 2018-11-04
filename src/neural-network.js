@@ -933,6 +933,7 @@ export default class NeuralNetwork {
    */
   toFunction() {
     const activation = this.activation;
+    let needsVar = false;
     function nodeHandle(layers, layerNumber, nodeKey) {
       if (layerNumber === 0) {
         return (typeof nodeKey === 'string'
@@ -942,22 +943,27 @@ export default class NeuralNetwork {
 
       const layer = layers[layerNumber];
       const node = layer[nodeKey];
-      let result = [node.bias];
+      let result = ['(' , node.bias];
       for (let w in node.weights) {
         if (node.weights[w] < 0) {
-          result.push(`${node.weights[w]}*(${nodeHandle(layers, layerNumber - 1, w)})`);
+          result.push(`${node.weights[w]}*${nodeHandle(layers, layerNumber - 1, w)}`);
         } else {
-          result.push(`+${node.weights[w]}*(${nodeHandle(layers, layerNumber - 1, w)})`);
+          result.push(`+${node.weights[w]}*${nodeHandle(layers, layerNumber - 1, w)}`);
         }
       }
+      result.push(')');
 
       switch (activation) {
         case 'sigmoid':
           return `1/(1+1/Math.exp(${result.join('')}))`;
-        case 'relu':
-          return `(${result.join('')} < 0 ? 0 : ${result.join('')})`;
-        case 'leaky-relu':
-          return `(${result.join('')} < 0 ? 0 : 0.01 * ${result.join('')})`;
+        case 'relu': {
+          needsVar = true;
+          return `((v=${result.join('')})<0?0:v)`;
+        }
+        case 'leaky-relu': {
+          needsVar = true;
+          return `((v=${result.join('')})<0?0:0.01*v)`;
+        }
         case 'tanh':
           return `Math.tanh(${result.join('')})`;
         default:
@@ -975,10 +981,11 @@ export default class NeuralNetwork {
       result = `{${
         Object.keys(this.outputLookup)
           .map((key, i) => `'${key}':${layersAsMath[i]}`)
-      }}`;
+        }}`;
     } else {
       result = `[${layersAsMath.join(',')}]`;
     }
-    return new Function('input', `return ${result}`);
+
+    return new Function('input', `${ needsVar ? 'var v;' : '' }return ${result};`);
   }
 }
