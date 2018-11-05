@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.4.7
+ *   version: 1.4.8
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -5347,7 +5347,7 @@ function mse(errors) {
   // mean squared error
   var sum = 0;
   for (var i = 0; i < errors.length; i++) {
-    sum += Math.pow(errors[i], 2);
+    sum += errors[i] * errors[i];
   }
   return sum / errors.length;
 }
