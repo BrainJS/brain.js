@@ -8,6 +8,7 @@ import {
   compareInputDeltas,
   compareInputDeltas3D,
 } from '../../src/layer/fully-connected'
+import { onePlusPlus2D, zero2D } from '../test-utils';
 
 describe('FullyConnected Layer', () => {
   describe('.predict (forward propagation)', () => {
@@ -146,53 +147,47 @@ describe('FullyConnected Layer', () => {
   })
 
   describe('.compareFilterDeltas (back propagation)', () => {
-    test('can compare a simplge matrix', () => {
-      const inputWeights = [[1, 2], [3, 4]]
-      const deltas = [[1, 2, 3, 4]]
-      const filterDeltas = [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-      ]
+    test('can compare a simple matrix', () => {
+      const inputWeights = onePlusPlus2D(4, 4)
+      const deltas = onePlusPlus2D(1, 16)
+      const filterDeltas = zero2D(4, 4)
       const kernel = gpuMock(compareFilterDeltas, {
         output: [4, 4],
         constants: {
-          inputWidth: 2,
-          inputHeight: 2,
+          deltaX: 0,
+          deltaY: 0,
+          deltaWidth: 4,
+          deltaHeight: 4
         },
       })
 
       expect(kernel(filterDeltas, inputWeights, deltas)).toEqual([
-        [1, 2, 3, 4],
-        [2, 4, 6, 8],
-        [3, 6, 9, 12],
-        [4, 8, 12, 16],
-      ])
-    })
-
-    test('can add a simplge matrix', () => {
-      const inputWeights = [[1, 2], [3, 4]]
-      const deltas = [[1, 2, 3, 4]]
-      const filterDeltas = [
         [1, 2, 3, 4],
         [5, 6, 7, 8],
         [9, 10, 11, 12],
-        [13, 14, 15, 16],
-      ]
+        [13, 14, 15, 16]
+      ])
+    })
+
+    test('can add a simple matrix', () => {
+      const inputWeights = onePlusPlus2D(4, 4)
+      const deltas = onePlusPlus2D(1, 16)
+      const filterDeltas = onePlusPlus2D(4, 4)
       const kernel = gpuMock(compareFilterDeltas, {
         output: [4, 4],
         constants: {
-          inputWidth: 2,
-          inputHeight: 2,
+          deltaX: 0,
+          deltaY: 0,
+          deltaWidth: 4,
+          deltaHeight: 4
         },
       })
 
       expect(kernel(filterDeltas, inputWeights, deltas)).toEqual([
         [2, 4, 6, 8],
-        [7, 10, 13, 16],
-        [12, 16, 20, 24],
-        [17, 22, 27, 32],
+        [10, 12, 14, 16],
+        [18, 20, 22, 24],
+        [26, 28, 30, 32]
       ])
     })
   })

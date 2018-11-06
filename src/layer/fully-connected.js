@@ -56,9 +56,7 @@ export function compareBiases(biases, deltas) {
 }
 
 export function compareFilterDeltas(filterDeltas, inputWeights, deltas) {
-  const inputY = Math.floor(this.thread.x / this.constants.inputWidth)
-  const inputX = this.thread.x % this.constants.inputWidth
-  return filterDeltas[this.thread.y][this.thread.x] + (inputWeights[inputY][inputX] * deltas[0][this.thread.y])
+  return filterDeltas[this.thread.y][this.thread.x] + (inputWeights[this.thread.y][this.thread.x] * deltas[this.constants.deltaY][this.constants.deltaX])
 }
 
 export function compareFilterDeltas3D(filterDeltas, inputWeights, deltas) {
