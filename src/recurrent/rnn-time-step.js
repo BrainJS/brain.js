@@ -49,63 +49,6 @@ export default class RNNTimeStep extends RNN {
     model.equations.push(equation);
   }
 
-  /**
-   *
-   * @param {Number[]} input
-   * @returns {number}
-   */
-  runInput(input) {
-    this.runs++;
-    let model = this.model;
-    let errorSum = 0;
-    let equation;
-    while (model.equations.length < input.length - 1) {
-      this.bindEquation();
-    }
-    const outputs = [];
-
-    if (this.inputSize === 1) {
-      for (let inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
-        // start and end tokens are zeros
-        equation = model.equations[inputIndex];
-
-        const current = input[inputIndex];
-        const next = input[inputIndex + 1];
-        const output = equation.runInput([current]);
-        for (let i = 0; i < output.weights.length; i++) {
-          const error = output.weights[i] - next;
-          // set gradients into log probabilities
-          errorSum += Math.abs(error);
-
-          // write gradients into log probabilities
-          output.deltas[i] = error;
-          outputs.push(output.weights);
-        }
-      }
-    } else {
-      for (let inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
-        // start and end tokens are zeros
-        equation = model.equations[inputIndex];
-
-        const current = input[inputIndex];
-        const next = input[inputIndex + 1];
-        const output = equation.runInput(current);
-        for (let i = 0; i < output.weights.length; i++) {
-          const error = output.weights[i] - next[i];
-          // set gradients into log probabilities
-          errorSum += Math.abs(error);
-
-          // write gradients into log probabilities
-          output.deltas[i] = error;
-          outputs.push(output.weights);
-        }
-      }
-    }
-    //this.model.equations.length - 1;
-    this.totalCost = errorSum;
-    return errorSum;
-  }
-
   runBackpropagate() {
     for (let i = this.model.equations.length - 1; i > -1; i--) {
       this.model.equations[i].runBackpropagate();
@@ -119,27 +62,186 @@ export default class RNNTimeStep extends RNN {
    * @returns {Number[]|Number}
    */
   run(input = []) {
+    if (this.inputSize === 1) {
+      this.run = this.runNumbers;
+      return this.runNumbers(input);
+    }
+    this.run = this.runArrays;
+    return this.runArrays(input);
+  }
+
+  /**
+   *
+   * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
+   * @param {Object} [options]
+   * @returns {{error: number, iterations: number}}
+   */
+  train(data, options = {}) {
+    if (data[0].input) {
+      if (Array.isArray(data[0].input[0])) {
+        this.trainInput = this.trainInputOutputArray;
+      } else {
+        this.trainInput = this.trainInputOutput;
+      }
+    } else if (Array.isArray(data[0])) {
+      if (Array.isArray(data[0][0])) {
+        this.trainInput = this.trainArrays;
+      } else {
+        if (this.inputSize > 1) {
+          data = [data];
+          this.trainInput = this.trainArrays;
+        } else {
+          this.trainInput = this.trainNumbers;
+        }
+      }
+    }
+
+    options = Object.assign({}, this.constructor.trainDefaults, options);
+    const iterations = options.iterations;
+    const errorThresh = options.errorThresh;
+    const log = options.log === true ? console.log : options.log;
+    const logPeriod = options.logPeriod;
+    const learningRate = options.learningRate || this.learningRate;
+    const callback = options.callback;
+    const callbackPeriod = options.callbackPeriod;
+    let error = Infinity;
+    let i;
+
+    if (this.hasOwnProperty('setupData')) {
+      data = this.setupData(data);
+    }
+
+    if (!this.model) {
+      this.initialize();
+    }
+
+    for (i = 0; i < iterations && error > errorThresh; i++) {
+      let sum = 0;
+      for (let j = 0; j < data.length; j++) {
+        let err = this.trainPattern(data[j], learningRate);
+        sum += err;
+      }
+      error = sum / data.length;
+
+      if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
+      if (log && (i % logPeriod === 0)) {
+        log(`iterations: ${ i }, training error: ${ error }`);
+      }
+      if (callback && (i % callbackPeriod === 0)) {
+        callback({ error: error, iterations: i });
+      }
+    }
+
+    return {
+      error: error,
+      iterations: i
+    };
+  }
+
+  trainNumbers(input) {
+    const model = this.model;
+    const equations = model.equations;
+    while (equations.length < input.length) {
+      this.bindEquation();
+    }
+    let errorSum = 0;
+    for (let i = 0, max = input.length - 1; i < max; i++) {
+      errorSum += equations[i].predictTarget([input[i]], [input[i + 1]]);
+    }
+    this.end();
+    return errorSum / input.length;
+  }
+
+  runNumbers(input) {
+    if (!this.isRunnable) return null;
+    const model = this.model;
+    const equations = model.equations;
+    while (equations.length <= input.length) {
+      this.bindEquation();
+    }
+    let lastOutput;
+    for (let i = 0; i < input.length; i++) {
+      lastOutput = equations[i].runInput([input[i]]);
+    }
+    this.end();
+    return lastOutput.weights.slice(0);
+  }
+
+  trainInputOutput(object) {
+    const model = this.model;
+    const input = object.input;
+    const output = object.output;
+    const totalSize = input.length + output.length;
+    const equations = model.equations;
+    while (equations.length < totalSize) {
+      this.bindEquation();
+    }
+    let errorSum = 0;
+    let equationIndex = 0;
+    for (let inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
+      errorSum += equations[equationIndex++].predictTarget([input[inputIndex]], [input[inputIndex + 1]]);
+    }
+    errorSum += equations[equationIndex++].predictTarget([input[input.length - 1]], [output[0]]);
+    for (let outputIndex = 0, max = output.length - 1; outputIndex < max; outputIndex++) {
+      errorSum += equations[equationIndex++].predictTarget([output[outputIndex]], [output[outputIndex + 1]]);
+    }
+    this.end();
+    return errorSum / totalSize;
+  }
+
+  trainInputOutputArray(set) {
+    const model = this.model;
+    const input = set.input;
+    const output = set.output;
+    const totalSize = input.length + output.length;
+    const equations = model.equations;
+    while (equations.length < totalSize) {
+      this.bindEquation();
+    }
+    let errorSum = 0;
+    let equationIndex = 0;
+    for (let inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
+      errorSum += equations[equationIndex++].predictTarget(input[inputIndex], input[inputIndex + 1]);
+    }
+    errorSum += equations[equationIndex++].predictTarget(input[input.length - 1], output[0]);
+    for (let outputIndex = 0, max = output.length - 1; outputIndex < max; outputIndex++) {
+      errorSum += equations[equationIndex++].predictTarget(output[outputIndex], output[outputIndex + 1]);
+    }
+    this.end();
+    return errorSum / totalSize;
+  }
+
+  trainArrays(input) {
+    const model = this.model;
+    const equations = model.equations;
+    while (equations.length < input.length) {
+      this.bindEquation();
+    }
+    let errorSum = 0;
+    for (let i = 0, max = input.length - 1; i < max; i++) {
+      errorSum += equations[i].predictTarget(input[i], input[i + 1]);
+    }
+    this.end();
+    return errorSum / input.length;
+  }
+
+  runArrays(input) {
     if (!this.isRunnable) return null;
     const model = this.model;
     while (model.equations.length < input.length) {
       this.bindEquation();
     }
     let lastOutput;
-    if (this.inputSize === 1) {
-      for (let i = 0; i < input.length; i++) {
-        let outputMatrix = model.equations[i].runInput([input[i]]);
-        lastOutput = outputMatrix.weights;
-      }
-    } else {
-      for (let i = 0; i < input.length; i++) {
-        let outputMatrix = model.equations[i].runInput(input[i]);
-        lastOutput = outputMatrix.weights;
-      }
-    }
-    if (this.outputSize === 1) {
-      return lastOutput[0]
+    for (let i = 0; i < input.length; i++) {
+      let outputMatrix = model.equations[i].runInput(input[i]);
+      lastOutput = outputMatrix.weights;
     }
     return lastOutput;
+  }
+
+  end() {
+    const endEquation = this.model.equations[this.model.equations.length - 1];
+    endEquation.runInput(new Float32Array(this.inputSize));
   }
 
   /**
@@ -150,7 +252,6 @@ export default class RNNTimeStep extends RNN {
     let model = this.model;
     let equations = this.model.equations;
     const inputSize = this.inputSize;
-    debugger;
     let equation = equations[1];
     let states = equation.states;
     let jsonString = JSON.stringify(this.toJSON());
@@ -319,7 +420,7 @@ ${ innerFunctionsSwitch.join('\n') }
   ${ softmax.toString().replace('_2.default', 'Matrix') }
   ${ randomF.toString() }
   ${ sampleI.toString() }
-  ${ maxI.toString() }`
+  ${ maxI.toString() }`;
     return new Function('rawInput', src);
   }
 }

@@ -17,6 +17,7 @@ import sigmoid from './sigmoid';
 import sigmoidB from './sigmoid-b';
 import tanh from './tanh';
 import tanhB from './tanh-b';
+import softmax from './softmax';
 
 export default class Equation {
   constructor() {
@@ -238,7 +239,7 @@ export default class Equation {
    * @patam {Number} [rowIndex]
    * @output {Matrix}
    */
-  run(rowIndex = 0) {
+  runIndex(rowIndex = 0) {
     this.inputRow = rowIndex;
     let state;
     for (let i = 0, max = this.states.length; i < max; i++) {
@@ -288,5 +289,32 @@ export default class Equation {
     }
 
     return state.product;
+  }
+
+  predictTarget(input, target) {
+    const output = this.runInput(input);
+    let errorSum = 0;
+    for (let i = 0; i < output.weights.length; i++) {
+      const error = output.weights[i] - target[i];
+      // set gradients into log probabilities
+      errorSum += Math.abs(error);
+      // write gradients into log probabilities
+      output.deltas[i] = error;
+    }
+    return errorSum;
+  }
+
+  predictTargetSymbol(input, target) {
+    const output = this.runIndex(input);
+    // set gradients into log probabilities
+    const logProbabilities = output; // interpret output as log probabilities
+    let probabilities = softmax(output); // compute the softmax probabilities
+
+    // write gradients into log probabilities
+    logProbabilities.deltas = probabilities.weights.slice(0);
+    logProbabilities.deltas[target] -= 1;
+
+    // accumulate base 2 log prob and do smoothing
+    return -Math.log2(probabilities.weights[target]);
   }
 }

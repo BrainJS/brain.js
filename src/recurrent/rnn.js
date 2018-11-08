@@ -17,7 +17,6 @@ export default class RNN {
 
     this.stepCache = {};
     this.runs = 0;
-    this.totalCost = null;
     this.ratioClipped = null;
     this.model = null;
 
@@ -183,7 +182,7 @@ export default class RNN {
    * @returns {number}
    */
   trainPattern(input, learningRate = null) {
-    const error = this.runInput(input);
+    const error = this.trainInput(input);
     this.runBackpropagate(input);
     this.step(learningRate);
     return error;
@@ -194,12 +193,11 @@ export default class RNN {
    * @param {Number[]} input
    * @returns {number}
    */
-  runInput(input) {
+  trainInput(input) {
     this.runs++;
     let model = this.model;
     let max = input.length;
     let log2ppl = 0;
-    let cost = 0;
     let equation;
     while (model.equations.length <= input.length + 1) {//last is zero
       this.bindEquation();
@@ -211,19 +209,8 @@ export default class RNN {
 
       let source = (inputIndex === -1 ? 0 : input[inputIndex] + 1); // first step: start with START token
       let target = (inputIndex === max - 1 ? 0 : input[inputIndex + 1] + 1); // last step: end with END token
-      let output = equation.run(source);
-      // set gradients into log probabilities
-      let logProbabilities = output; // interpret output as log probabilities
-      let probabilities = softmax(output); // compute the softmax probabilities
-
-      log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
-      cost += -Math.log(probabilities.weights[target]);
-      // write gradients into log probabilities
-      logProbabilities.deltas = probabilities.weights.slice(0);
-      logProbabilities.deltas[target] -= 1;
+      log2ppl += equation.predictTargetSymbol(source, target);
     }
-
-    this.totalCost = cost;
     return Math.pow(2, log2ppl / (max - 1)) / 100;
   }
 
@@ -325,7 +312,7 @@ export default class RNN {
       }
       let equation = model.equations[i];
       // sample predicted letter
-      let outputMatrix = equation.run(previousIndex);
+      let outputMatrix = equation.runIndex(previousIndex);
       let logProbabilities = new Matrix(model.output.rows, model.output.columns);
       copy(logProbabilities, outputMatrix);
       if (temperature !== 1 && isSampleI) {
