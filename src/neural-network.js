@@ -406,7 +406,10 @@ export default class NeuralNetwork {
     }
 
     if (this.trainOpts.callback && (status.iterations % this.trainOpts.callbackPeriod === 0)) {
-      this.trainOpts.callback(Object.assign(status));
+      this.trainOpts.callback({
+        iterations: status.iterations,
+        error: status.error
+      });
     }
     return true;
   }
@@ -667,7 +670,7 @@ export default class NeuralNetwork {
           const gradient = delta * incoming[k];
           const changeLow = this.changesLow[layer][node][k] * trainOpts.beta1 + (1 - trainOpts.beta1) * gradient;
           const changeHigh = this.changesHigh[layer][node][k] * trainOpts.beta2 + (1 - trainOpts.beta2) * gradient * gradient;
-          
+
           const momentumCorrection = changeLow / (1 - Math.pow(trainOpts.beta1, this.iterations));
           const gradientCorrection = changeHigh / (1 - Math.pow(trainOpts.beta2, this.iterations));
 
