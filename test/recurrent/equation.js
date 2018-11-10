@@ -35,7 +35,7 @@ describe('equation', () => {
           backpropagationFn: sinon.spy()
         })
       }
-      equation.runBackpropagate();
+      equation.backpropagate();
       equation.states.forEach((state) => {
         assert(state.backpropagationFn.called);
       });
@@ -140,7 +140,7 @@ describe('equation', () => {
       sinon.spy(equation.states[0], 'backpropagationFn');
       sinon.spy(equation.states[1], 'backpropagationFn');
       sinon.spy(equation.states[2], 'backpropagationFn');
-      equation.runBackpropagate();
+      equation.backpropagate();
       equation.states.forEach((state) => {
         assert(state.backpropagationFn.called);
       });
@@ -175,7 +175,7 @@ describe('equation', () => {
         assert.equal(output.weights[1], 3);
       });
     });
-    context('runBackpropagate', () => {
+    context('.backpropagate()', () => {
       it('can properly split up a matrix', () => {
         var input = new Matrix(2, 2);
         /**
@@ -196,11 +196,6 @@ describe('equation', () => {
         assert.equal(output.weights.length, 2);
         output = equation.runIndex(1);
         assert.equal(output.weights.length, 2);
-        output.weights.forEach((weight, i) => {
-          output.deltas[i] = weight;
-        });
-        equation.runBackpropagate(1);
-        equation.runBackpropagate();
       });
     });
   });

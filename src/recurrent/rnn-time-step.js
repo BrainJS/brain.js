@@ -9,10 +9,6 @@ import sampleI from './matrix/sample-i';
 import maxI from './matrix/max-i';
 
 export default class RNNTimeStep extends RNN {
-  createInputMatrix() {
-    this.model.input = new RandomMatrix(this.inputSize, 1, 0.08);
-  }
-
   createOutputMatrix() {
     let model = this.model;
     let outputSize = this.outputSize;
@@ -21,7 +17,7 @@ export default class RNNTimeStep extends RNN {
     //whd
     model.outputConnector = new RandomMatrix(outputSize, lastHiddenSize, 0.08);
     //bd
-    model.output = new Matrix(outputSize, 1);
+    model.output = new RandomMatrix(outputSize, 1, 0.08);
   }
 
   bindEquation() {
@@ -36,7 +32,7 @@ export default class RNNTimeStep extends RNN {
       ;
 
       // 0 index
-    let output = this.getEquation(equation, equation.input(model.input), equationConnection[0], layers[0]);
+    let output = this.getEquation(equation, equation.input(new Matrix(this.inputSize, 1)), equationConnection[0], layers[0]);
     outputs.push(output);
     // 1+ indices
     for (let i = 1, max = hiddenLayers.length; i < max; i++) {
@@ -49,9 +45,33 @@ export default class RNNTimeStep extends RNN {
     model.equations.push(equation);
   }
 
-  runBackpropagate() {
+  mapModel() {
+    let model = this.model;
+    let hiddenLayers = model.hiddenLayers;
+    let allMatrices = model.allMatrices;
+    this.initialLayerInputs = this.hiddenLayers.map((size) => new Matrix(size, 1));
+
+    this.createHiddenLayers();
+    if (!model.hiddenLayers.length) throw new Error('net.hiddenLayers not set');
+    for (let i = 0, max = hiddenLayers.length; i < max; i++) {
+      let hiddenMatrix = hiddenLayers[i];
+      for (let property in hiddenMatrix) {
+        if (!hiddenMatrix.hasOwnProperty(property)) continue;
+        allMatrices.push(hiddenMatrix[property]);
+      }
+    }
+
+    this.createOutputMatrix();
+    if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
+    if (!model.output) throw new Error('net.model.output not set');
+
+    allMatrices.push(model.outputConnector);
+    allMatrices.push(model.output);
+  }
+
+  backpropagate() {
     for (let i = this.model.equations.length - 1; i > -1; i--) {
-      this.model.equations[i].runBackpropagate();
+      this.model.equations[i].backpropagate();
     }
   }
 
@@ -68,6 +88,15 @@ export default class RNNTimeStep extends RNN {
     }
     this.run = this.runArrays;
     return this.runArrays(input);
+  }
+
+  forecast(input, count) {
+    if (this.inputSize === 1) {
+      this.run = this.forecastNumbers;
+      return this.forecastNumbers(input, count);
+    }
+    this.run = this.forecastArrays;
+    return this.forecastArrays(input, count);
   }
 
   /**
@@ -167,6 +196,28 @@ export default class RNNTimeStep extends RNN {
     return lastOutput.weights.slice(0);
   }
 
+  forecastNumbers(input, count) {
+    if (!this.isRunnable) return null;
+    const model = this.model;
+    const equations = model.equations;
+    const length = input.length + count;
+    while (equations.length <= length) {
+      this.bindEquation();
+    }
+    let lastOutput;
+    let equationIndex = 0;
+    for (let i = 0; i < input.length; i++) {
+      lastOutput = equations[equationIndex++].runInput([input[i]]);
+    }
+    const result = [lastOutput.weights.slice(0)];
+    for (let i = 0, max = count - 1; i < max; i++) {
+      lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
+      result.push(lastOutput.weights.slice(0));
+    }
+    this.end();
+    return result;
+  }
+
   trainInputOutput(object) {
     const model = this.model;
     const input = object.input;
@@ -228,20 +279,121 @@ export default class RNNTimeStep extends RNN {
   runArrays(input) {
     if (!this.isRunnable) return null;
     const model = this.model;
-    while (model.equations.length < input.length) {
+    const equations = model.equations;
+    while (equations.length < input.length) {
       this.bindEquation();
     }
     let lastOutput;
     for (let i = 0; i < input.length; i++) {
-      let outputMatrix = model.equations[i].runInput(input[i]);
+      let outputMatrix = equations[i].runInput(input[i]);
       lastOutput = outputMatrix.weights;
     }
+    this.end();
     return lastOutput;
   }
 
+  forecastArrays(input, count) {
+    if (!this.isRunnable) return null;
+    const model = this.model;
+    const equations = model.equations;
+    const length = input.length + count;
+    while (equations.length <= length) {
+      this.bindEquation();
+    }
+    let lastOutput;
+    let equationIndex = 0;
+    for (let i = 0; i < input.length; i++) {
+      lastOutput = equations[equationIndex++].runInput(input[i]);
+    }
+    const result = [lastOutput.weights];
+    for (let i = 0, max = count - 1; i < max; i++) {
+      lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
+      result.push(lastOutput.weights);
+    }
+    this.end();
+    return result;
+  }
+
   end() {
-    const endEquation = this.model.equations[this.model.equations.length - 1];
-    endEquation.runInput(new Float32Array(this.inputSize));
+    this.model.equations[this.model.equations.length - 1].runInput(new Float32Array(this.outputSize));
+  }
+
+  /**
+   *
+   * @returns {Object}
+   */
+  toJSON() {
+    const defaults = this.constructor.defaults;
+    if (!this.model) {
+      this.initialize();
+    }
+    let model = this.model;
+    let options = {};
+    for (let p in defaults) {
+      if (defaults.hasOwnProperty(p)) {
+        options[p] = this[p];
+      }
+    }
+
+    return {
+      type: this.constructor.name,
+      options: options,
+      hiddenLayers: model.hiddenLayers.map((hiddenLayer) => {
+        let layers = {};
+        for (let p in hiddenLayer) {
+          layers[p] = hiddenLayer[p].toJSON();
+        }
+        return layers;
+      }),
+      outputConnector: this.model.outputConnector.toJSON(),
+      output: this.model.output.toJSON()
+    };
+  }
+
+  fromJSON(json) {
+    const defaults = this.constructor.defaults;
+    const options = json.options;
+    this.model = null;
+    this.hiddenLayers = null;
+    const allMatrices = [];
+    const hiddenLayers = [];
+
+    // backward compatibility for hiddenSizes
+    (json.hiddenLayers || json.hiddenSizes).forEach((hiddenLayer) => {
+      let layers = {};
+      for (let p in hiddenLayer) {
+        layers[p] = Matrix.fromJSON(hiddenLayer[p]);
+        allMatrices.push(layers[p]);
+      }
+      hiddenLayers.push(layers);
+    });
+
+    const outputConnector = Matrix.fromJSON(json.outputConnector);
+    allMatrices.push(outputConnector);
+    const output = Matrix.fromJSON(json.output);
+    allMatrices.push(output);
+
+    Object.assign(this, defaults, options);
+
+    // backward compatibility
+    if (options.hiddenSizes) {
+      this.hiddenLayers = options.hiddenSizes;
+    }
+
+    if (options.hasOwnProperty('dataFormatter') && options.dataFormatter !== null) {
+      this.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);
+    }
+
+    this.model = {
+      hiddenLayers,
+      output,
+      allMatrices,
+      outputConnector,
+      equations: [],
+      equationConnections: [],
+    };
+    this.initialLayerInputs = this.hiddenLayers.map((size) => new Matrix(size, 1));
+    this.bindEquation();
   }
 
   /**
@@ -297,8 +449,6 @@ export default class RNNTimeStep extends RNN {
 
     function matrixToString(m, stateIndex) {
       if (!m || !m.rows || !m.columns) return 'null';
-
-      if (m === model.input) return `json.input`;
       if (m === model.outputConnector) return `json.outputConnector`;
       if (m === model.output) return `json.output`;
 
@@ -326,7 +476,7 @@ export default class RNNTimeStep extends RNN {
       // body
 
       return fnString.join('}').split('\n').join('\n        ')
-        .replace('product.weights = _this.inputValue;', inputSize === 1 ? 'product.weights = [input[_i]];' : 'product.weights = input[_i];')
+        .replace('product.weights = _input.weights = _this.inputValue;', inputSize === 1 ? 'product.weights = [input[_i]];' : 'product.weights = input[_i];')
         .replace('product.deltas[i] = 0;', '')
         .replace('product.deltas[column] = 0;', '')
         .replace('left.deltas[leftIndex] = 0;', '')

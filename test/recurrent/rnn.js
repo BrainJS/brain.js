@@ -63,10 +63,10 @@ describe('rnn', () => {
       net.model.input.deltas.forEach((v) => {
         assert.equal(v, 0);
       });
-      net.runBackpropagate([1, 1, 0]);
-      net.runBackpropagate([0, 1, 1]);
-      net.runBackpropagate([1, 0, 1]);
-      net.runBackpropagate([1, 1, 0]);
+      net.backpropagate([1, 1, 0]);
+      net.backpropagate([0, 1, 1]);
+      net.backpropagate([1, 0, 1]);
+      net.backpropagate([1, 1, 0]);
       assert(net.model.input.deltas.some(notZero));
     });
     it('can handle unrecognized input characters', () => {
@@ -100,43 +100,38 @@ describe('rnn', () => {
       [1, 1, 0]
     ];
 
-    it('properly provides values to equations[].run', () => {
+    it('properly provides values to equations[].predictTargetIndex', () => {
       let net = xorNet();
       let called = [];
       net.model.equations[0] = {
-        runIndex: (v) => {
+        predictTargetIndex: (v) => {
           called[0] = v;
           return {rows: 1, columns: 0, weights: [], deltas: []};
-        },
-        predictTargetSymbol: () => {},
+        }
       };
       net.model.equations[1] = {
-        runIndex: (v) => {
+        predictTargetIndex: (v) => {
           called[1] = v;
           return {rows: 0, columns: 0, weights: [], deltas: []};
-        },
-        predictTargetSymbol: () => {},
+        }
       };
       net.model.equations[2] = {
-        runIndex: (v) => {
+        predictTargetIndex: (v) => {
           called[2] = v;
           return {rows: 0, columns: 0, weights: [], deltas: []};
-        },
-        predictTargetSymbol: () => {},
+        }
       };
       net.model.equations[3] = {
-        runIndex: (v) => {
+        predictTargetIndex: (v) => {
           called[3] = v;
           return {rows: 0, columns: 0, weights: [], deltas: []};
-        },
-        predictTargetSymbol: () => {},
+        }
       };
       net.model.equations[4] = {
-        runIndex: (v) => {
+        predictTargetIndex: (v) => {
           called[4] = v;
           return {rows: 0, columns: 0, weights: [], deltas: []};
-        },
-        predictTargetSymbol: () => {},
+        }
       };
       net.trainInput([0, 0, 0]);
       assert.equal(called.length, 4);
@@ -156,50 +151,46 @@ describe('rnn', () => {
       let net = xorNet();
       let backPropagateCalled = [];
       net.model.equations[0] = {
-        runIndex: () => {
+        predictTargetIndex: () => {
           return {rows: 0, columns: 0, weights: [], deltas: []};
         },
-        predictTargetSymbol: () => {},
-        runBackpropagate: (v) => {
+        backpropagateIndex: (v) => {
           backPropagateCalled[0] = v;
         }
       };
       net.model.equations[1] = {
-        runIndex: () => {
+        predictTargetIndex: () => {
           return {rows: 0, columns: 0, weights: [], deltas: []};
         },
-        predictTargetSymbol: () => {},
-        runBackpropagate: (v) => {
+        backpropagateIndex: (v) => {
           backPropagateCalled[1] = v;
         }
       };
       net.model.equations[2] = {
-        runIndex: () => {
+        predictTargetIndex: () => {
           return {rows: 0, columns: 0, weights: [], deltas: []};
         },
-        predictTargetSymbol: () => {},
-        runBackpropagate: (v) => {
+        backpropagateIndex: (v) => {
           backPropagateCalled[2] = v;
         }
       };
       net.model.equations[3] = {
-        runIndex: () => {
+        predictTargetIndex: () => {
           return {rows: 0, columns: 0, weights: [], deltas: []};
         },
-        predictTargetSymbol: () => {},
-        runBackpropagate: (v) => {
+        backpropagateIndex: (v) => {
           backPropagateCalled[3] = v;
         }
       };
       net.trainInput([0, 0, 0]);
-      net.runBackpropagate([0, 0, 0]);
+      net.backpropagate([0, 0, 0]);
       assert.equal(backPropagateCalled.length, 4);
       assert.equal(backPropagateCalled[0], 0);
       assert.equal(backPropagateCalled[1], 1);
       assert.equal(backPropagateCalled[2], 1);
       assert.equal(backPropagateCalled[3], 1);
       net.trainInput([0, 1, 1]);
-      net.runBackpropagate([0, 1, 1]);
+      net.backpropagate([0, 1, 1]);
       assert.equal(backPropagateCalled.length, 4);
       assert.equal(backPropagateCalled[0], 0);
       assert.equal(backPropagateCalled[1], 1);
@@ -211,50 +202,46 @@ describe('rnn', () => {
       let net = xorNet();
       let backPropagateCalled = [];
       net.model.equations[0] = {
-        runIndex: () => {
+        predictTargetIndex: () => {
           return {rows: 0, columns: 0, weights: [], deltas: []};
         },
-        predictTargetSymbol: () => {},
-        runBackpropagate: (v) => {
+        backpropagateIndex: (v) => {
           backPropagateCalled[0] = v;
         }
       };
       net.model.equations[1] = {
-        runIndex: () => {
+        predictTargetIndex: () => {
           return {rows: 0, columns: 0, weights: [], deltas: []};
         },
-        predictTargetSymbol: () => {},
-        runBackpropagate: (v) => {
+        backpropagateIndex: (v) => {
           backPropagateCalled[1] = v;
         }
       };
       net.model.equations[2] = {
-        runIndex: () => {
+        predictTargetIndex: () => {
           return {rows: 0, columns: 0, weights: [], deltas: []};
         },
-        predictTargetSymbol: () => {},
-        runBackpropagate: (v) => {
+        backpropagateIndex: (v) => {
           backPropagateCalled[2] = v;
         }
       };
       net.model.equations[3] = {
-        runIndex: () => {
+        predictTargetIndex: () => {
           return {rows: 0, columns: 0, weights: [], deltas: []};
         },
-        predictTargetSymbol: () => {},
-        runBackpropagate: (v) => {
+        backpropagateIndex: (v) => {
           backPropagateCalled[3] = v;
         }
       };
       net.trainInput([0, 0, 0]);
-      net.runBackpropagate([0, 0, 0]);
+      net.backpropagate([0, 0, 0]);
       assert.equal(backPropagateCalled.length, 4);
       assert.equal(backPropagateCalled[0], 0);
       assert.equal(backPropagateCalled[1], 1);
       assert.equal(backPropagateCalled[2], 1);
       assert.equal(backPropagateCalled[3], 1);
       net.trainInput([0, 1, 1]);
-      net.runBackpropagate([0, 1, 1]);
+      net.backpropagate([0, 1, 1]);
       assert.equal(backPropagateCalled.length, 4);
       assert.equal(backPropagateCalled[0], 0);
       assert.equal(backPropagateCalled[1], 1);
@@ -287,7 +274,7 @@ describe('rnn', () => {
         assert.equal(v, 0);
       });
 
-      net.runBackpropagate(input);
+      net.backpropagate(input);
 
       assert(net.model.input.deltas.some(notZero));
       net.model.hiddenLayers.forEach((layer) => {
@@ -324,13 +311,13 @@ describe('rnn', () => {
             assert(!isNaN(value));
           });
         });
-        net.runBackpropagate(input);
+        net.backpropagate(input);
         rnnCheck.allMatrices(net.model, (values) => {
           values.forEach((value, i) => {
             assert(!isNaN(value));
           });
         });
-        net.step();
+        net.adjustWeights();
         rnnCheck.allMatrices(net.model, (values) => {
           values.forEach((value, i) => {
             assert(!isNaN(value));
@@ -352,7 +339,6 @@ describe('rnn', () => {
         if (i === 0) {
           initialError = error;
         }
-        console.log(error);
       }
       assert(initialError > error);
     });
@@ -531,9 +517,11 @@ describe('rnn', () => {
     it('shortens returned values', () => {
       const net = new RNN({ maxPredictionLength: 3 });
       net.train([{ input: '123', output: '456' }], { errorThresh: 0.011 });
-      assert.equal(net.run('123'), '456');
+      const output1 = net.run('123');
+      assert.equal(output1.length, 3);
       net.maxPredictionLength = 1;
-      assert.equal(net.run('123'), '4');
+      const output2 = net.run('123');
+      assert.equal(output2.length, 1);
     });
   });
   describe('rnn.toFunction', () => {

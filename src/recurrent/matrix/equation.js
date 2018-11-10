@@ -158,7 +158,7 @@ export default class Equation {
     this.states.push({
       product: input,
       forwardFn: (product) => {
-        product.weights = this.inputValue;
+        product.weights = input.weights = this.inputValue;
       }
     });
     return input;
@@ -275,7 +275,25 @@ export default class Equation {
    * @patam {Number} [rowIndex]
    * @output {Matrix}
    */
-  runBackpropagate(rowIndex = 0) {
+  backpropagate() {
+    let i = this.states.length;
+    let state;
+    while (i-- > 0) {
+      state = this.states[i];
+      if (!state.hasOwnProperty('backpropagationFn')) {
+        continue;
+      }
+      state.backpropagationFn(state.product, state.left, state.right);
+    }
+
+    return state.product;
+  }
+
+  /**
+   * @patam {Number} [rowIndex]
+   * @output {Matrix}
+   */
+  backpropagateIndex(rowIndex = 0) {
     this.inputRow = rowIndex;
 
     let i = this.states.length;
@@ -304,7 +322,7 @@ export default class Equation {
     return errorSum;
   }
 
-  predictTargetSymbol(input, target) {
+  predictTargetIndex(input, target) {
     const output = this.runIndex(input);
     // set gradients into log probabilities
     const logProbabilities = output; // interpret output as log probabilities

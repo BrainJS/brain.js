@@ -183,8 +183,8 @@ export default class RNN {
    */
   trainPattern(input, learningRate = null) {
     const error = this.trainInput(input);
-    this.runBackpropagate(input);
-    this.step(learningRate);
+    this.backpropagate(input);
+    this.adjustWeights(learningRate);
     return error;
   }
 
@@ -209,7 +209,7 @@ export default class RNN {
 
       let source = (inputIndex === -1 ? 0 : input[inputIndex] + 1); // first step: start with START token
       let target = (inputIndex === max - 1 ? 0 : input[inputIndex + 1] + 1); // last step: end with END token
-      log2ppl += equation.predictTargetSymbol(source, target);
+      log2ppl += equation.predictTargetIndex(source, target);
     }
     return Math.pow(2, log2ppl / (max - 1)) / 100;
   }
@@ -217,22 +217,22 @@ export default class RNN {
   /**
    * @param {Number[]} input
    */
-  runBackpropagate(input) {
+  backpropagate(input) {
     let i = input.length;
     let model = this.model;
     let equations = model.equations;
     while(i > 0) {
-      equations[i].runBackpropagate(input[i - 1] + 1);
+      equations[i].backpropagateIndex(input[i - 1] + 1);
       i--;
     }
-    equations[0].runBackpropagate(0);
+    equations[0].backpropagateIndex(0);
   }
 
   /**
    *
    * @param {Number} [learningRate]
    */
-  step(learningRate = null) {
+  adjustWeights(learningRate = null) {
     // perform parameter update
     //TODO: still not sure if this is ready for learningRate
     let stepSize = this.learningRate;
@@ -442,10 +442,6 @@ export default class RNN {
       outputConnector: this.model.outputConnector.toJSON(),
       output: this.model.output.toJSON()
     };
-  }
-
-  toJSONString() {
-    return JSON.stringify(this.toJSON());
   }
 
   fromJSON(json) {
