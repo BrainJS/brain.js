@@ -5,12 +5,38 @@ export default class lookup {
    * @param {Object} hashes
    * @returns {Object}
    */
-  static buildLookup(hashes) {
-    let hash = hashes.reduce((memo, hash) => {
+  static toTable(hashes) {
+    const hash = hashes.reduce((memo, hash) => {
       return Object.assign(memo, hash);
     }, {});
 
-    return lookup.lookupFromHash(hash);
+    return lookup.toHash(hash);
+  }
+
+  static toInputTable(data) {
+    const table = {};
+    let tableIndex = 0;
+    for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
+      for (let p in data[dataIndex].input) {
+        if (!table.hasOwnProperty(p)) {
+          table[p] = tableIndex++;
+        }
+      }
+    }
+    return table;
+  }
+
+  static toOutputTable(data) {
+    const table = {};
+    let tableIndex = 0;
+    for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
+      for (let p in data[dataIndex].output) {
+        if (!table.hasOwnProperty(p)) {
+          table[p] = tableIndex++;
+        }
+      }
+    }
+    return table;
   }
 
   /**
@@ -18,7 +44,7 @@ export default class lookup {
    * @param {Object} hash
    * @returns {Object}
    */
-  static lookupFromHash(hash) {
+  static toHash(hash) {
     let lookup = {};
     let index = 0;
     for (let i in hash) {
@@ -30,13 +56,14 @@ export default class lookup {
   /**
    * performs `{a: 0, b: 1}, {a: 6} -> [6, 0]`
    * @param {*} lookup
-   * @param {*} hash
-   * @returns {Array}
+   * @param {*} object
+   * @param {*} arrayLength
+   * @returns {Float32Array}
    */
-  static toArray(lookup, hash) {
-    let array = [];
+  static toArray(lookup, object, arrayLength) {
+    const array = new Float32Array(arrayLength);
     for (let i in lookup) {
-      array[lookup[i]] = hash[i] || 0;
+      array[lookup[i]] = object[i] || 0;
     }
     return array;
   }
@@ -47,7 +74,7 @@ export default class lookup {
    * @param {Array} array
    * @returns {Object}
    */
-  static toHash(lookup, array) {
+  static toObject(lookup, array) {
     let hash = {};
     for (let i in lookup) {
       hash[i] = array[lookup[i]];
@@ -68,5 +95,52 @@ export default class lookup {
       lookup[array[i]] = z++;
     }
     return lookup;
+  }
+
+  static toTrainingData(data, inputTable, outputTable) {
+    // turn sparse hash input into arrays with 0s as filler
+    const convertInput = getTypedArrayFn(data[0].input, inputTable);
+    const convertOutput = getTypedArrayFn(data[0].output, outputTable);
+
+    if (convertInput && convertOutput) {
+      data = data.map(datum => {
+        return {
+          input: convertInput(datum.input),
+          output: convertOutput(datum.output),
+        };
+      });
+    } else if (convertInput) {
+      data = data.map(datum => {
+        return {
+          input: convertInput(datum.input),
+          output: datum.output
+        };
+      });
+    } else if (convertOutput) {
+      data = data.map(datum => {
+        return {
+          input: datum.input,
+          output: convertOutput(datum.output)
+        };
+      });
+    }
+    return data;
+  }
+}
+
+function getTypedArrayFn(value, table) {
+  if (value.buffer instanceof ArrayBuffer) {
+    return null;
+  } else if (Array.isArray(value)) {
+    return (v) => Float32Array.from(v);
+  } else {
+    const length = Object.keys(table).length;
+    return (v) => {
+      const array = new Float32Array(length);
+      for (let i in table) {
+        array[table[i]] = v[i] || 0;
+      }
+      return array;
+    }
   }
 }

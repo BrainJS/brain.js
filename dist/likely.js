@@ -7,7 +7,7 @@ exports.default = likely;
 /**
  *
  * @param {*} input
- * @param {NeuralNetwork} net
+ * @param {brain.NeuralNetwork} net
  * @returns {*}
  */
 function likely(input, net) {

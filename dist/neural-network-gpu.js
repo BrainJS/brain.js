@@ -340,7 +340,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       var output = outputTextures.toArray(this.gpu);
 
       if (this.outputLookup) {
-        output = _lookup2.default.toHash(this.outputLookup, output);
+        output = _lookup2.default.toObject(this.outputLookup, output);
       }
       return output;
     }

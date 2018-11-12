@@ -7,8 +7,17 @@ import softmax from './matrix/softmax';
 import {randomF} from '../utilities/random';
 import sampleI from './matrix/sample-i';
 import maxI from './matrix/max-i';
+import lookup from "../lookup";
 
 export default class RNNTimeStep extends RNN {
+  constructor(options) {
+    super(options);
+    this.inputLookup = null;
+    this.inputLookupLength = null;
+    this.outputLookup = null;
+    this.outputLookupLength = null;
+  }
+
   createOutputMatrix() {
     let model = this.model;
     let outputSize = this.outputSize;
@@ -79,10 +88,14 @@ export default class RNNTimeStep extends RNN {
   /**
    *
    * @param {Number[]|Number[][]} [input]
-   * @returns {Number[]|Number}
+   * @returns {Number[]|Number|Object[]|Object[][]}
    */
   run(input = []) {
     if (this.inputSize === 1) {
+      if (this.outputLookup) {
+        this.run = this.runObject;
+        return this.runObject(input);
+      }
       this.run = this.runNumbers;
       return this.runNumbers(input);
     }
@@ -109,7 +122,14 @@ export default class RNNTimeStep extends RNN {
     if (data[0].input) {
       if (Array.isArray(data[0].input[0])) {
         this.trainInput = this.trainInputOutputArray;
+      } else if (Array.isArray(data[0].input)) {
+        this.trainInput = this.trainInputOutput;
       } else {
+        this.inputLookup = lookup.toInputTable(data);
+        this.inputLookupLength = Object.keys(this.inputLookup).length;
+        this.outputLookup = lookup.toOutputTable(data);
+        this.outputLookupLength = Object.keys(this.outputLookup).length;
+        data = lookup.toTrainingData(data, this.inputLookup, this.outputLookup);
         this.trainInput = this.trainInputOutput;
       }
     } else if (Array.isArray(data[0])) {
@@ -209,13 +229,17 @@ export default class RNNTimeStep extends RNN {
     for (let i = 0; i < input.length; i++) {
       lastOutput = equations[equationIndex++].runInput([input[i]]);
     }
-    const result = [lastOutput.weights.slice(0)];
+    const result = [lastOutput.weights[0]];
     for (let i = 0, max = count - 1; i < max; i++) {
       lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
-      result.push(lastOutput.weights.slice(0));
+      result.push(lastOutput.weights[0]);
     }
     this.end();
     return result;
+  }
+
+  runObject(input) {
+    return lookup.toObject(this.outputLookup, this.forecastNumbers(lookup.toArray(this.inputLookup, input, this.inputLookupLength), this.outputLookupLength));
   }
 
   trainInputOutput(object) {

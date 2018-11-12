@@ -12,8 +12,8 @@ describe('JSON', () => {
     learningRate: 0.03,
     momentum: 0.01,
     callbackPeriod: 5,
-    timeout: 3000 
-  }
+    timeout: 3000
+  };
   originalNet.train([
     {
       input: {'0': Math.random(), b: Math.random()},
@@ -144,36 +144,36 @@ describe('JSON', () => {
         it('training options iterations', () => {
           assert.equal(trainingOpts.iterations, serializedNet.trainOpts.iterations, `trainingOpts are: ${trainingOpts.iterations} serializedNet should be the same but are: ${serializedNet.trainOpts.iterations}`);
         });
-  
+
         it('training options errorThresh', () => {
           assert.equal(trainingOpts.errorThresh, serializedNet.trainOpts.errorThresh, `trainingOpts are: ${trainingOpts.errorThresh} serializedNet should be the same but are: ${serializedNet.trainOpts.errorThresh}`);
         });
-  
+
         it('training options log', () => {
           // Should have inflated to console.log
           assert.equal(console.log, serializedNet.trainOpts.log, `log are: ${trainingOpts.log} serializedNet should be the same but are: ${serializedNet.trainOpts.log}`);
         });
-  
+
         it('training options logPeriod', () => {
           assert.equal(trainingOpts.logPeriod, serializedNet.trainOpts.logPeriod, `trainingOpts are: ${trainingOpts.logPeriod} serializedNet should be the same but are: ${serializedNet.trainOpts.logPeriod}`);
         });
-  
+
         it('training options learningRate', () => {
           assert.equal(trainingOpts.learningRate, serializedNet.trainOpts.learningRate, `trainingOpts are: ${trainingOpts.learningRate} serializedNet should be the same but are: ${serializedNet.trainOpts.learningRate}`);
         });
-  
+
         it('training options momentum', () => {
           assert.equal(trainingOpts.momentum, serializedNet.trainOpts.momentum, `trainingOpts are: ${trainingOpts.momentum} serializedNet should be the same but are: ${serializedNet.trainOpts.momentum}`);
         });
-  
+
         it('training options callback', () => {
           assert.equal(trainingOpts.callback, serializedNet.trainOpts.callback, `trainingOpts are: ${trainingOpts.callback} serializedNet should be the same but are: ${serializedNet.trainOpts.callback}`);
         });
-  
+
         it('training options callbackPeriod', () => {
           assert.equal(trainingOpts.callbackPeriod, serializedNet.trainOpts.callbackPeriod, `trainingOpts are: ${trainingOpts.callbackPeriod} serializedNet should be the same but are: ${serializedNet.trainOpts.callbackPeriod}`);
         });
-  
+
         it('training options timeout', () => {
           assert.equal(trainingOpts.timeout, serializedNet.trainOpts.timeout, `trainingOpts are: ${trainingOpts.timeout} serializedNet should be the same but are: ${serializedNet.trainOpts.timeout}`);
         });

@@ -40,8 +40,6 @@ var _thaw2 = _interopRequireDefault(_thaw);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
@@ -151,6 +149,9 @@ var NeuralNetwork = function () {
     if (!this.constructor.prototype.hasOwnProperty('calculateDeltas')) {
       this.calculateDeltas = null;
     }
+    this.inputLookup = null;
+    this.inputLookupLength = null;
+    this.outputLookup = null;
   }
 
   /**
@@ -244,13 +245,13 @@ var NeuralNetwork = function () {
     value: function run(input) {
       if (!this.isRunnable) return null;
       if (this.inputLookup) {
-        input = _lookup2.default.toArray(this.inputLookup, input);
+        input = _lookup2.default.toArray(this.inputLookup, input, this.inputLookupLength);
       }
 
-      var output = [].concat(_toConsumableArray(this.runInput(input)));
+      var output = this.runInput(input);
 
       if (this.outputLookup) {
-        output = _lookup2.default.toHash(this.outputLookup, output);
+        output = _lookup2.default.toObject(this.outputLookup, output);
       }
       return output;
     }
@@ -493,7 +494,10 @@ var NeuralNetwork = function () {
       }
 
       if (this.trainOpts.callback && status.iterations % this.trainOpts.callbackPeriod === 0) {
-        this.trainOpts.callback(Object.assign(status));
+        this.trainOpts.callback({
+          iterations: status.iterations,
+          error: status.error
+        });
       }
       return true;
     }
@@ -834,40 +838,25 @@ var NeuralNetwork = function () {
   }, {
     key: '_formatData',
     value: function _formatData(data) {
-      var _this5 = this;
-
       if (!Array.isArray(data)) {
         // turn stream datum into array
-        var tmp = [];
-        tmp.push(data);
-        data = tmp;
+        data = [data];
       }
-      // turn sparse hash input into arrays with 0s as filler
-      var datum = data[0].input;
-      if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
+
+      if (!Array.isArray(data[0].input)) {
         if (!this.inputLookup) {
-          this.inputLookup = _lookup2.default.buildLookup(data.map(function (value) {
-            return value['input'];
-          }));
+          this.inputLookup = _lookup2.default.toInputTable(data);
         }
-        data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this5.inputLookup, datum.input);
-          return Object.assign({}, datum, { input: array });
-        }, this);
+        this.inputLookupLength = Object.keys(this.inputLookup).length;
       }
 
       if (!Array.isArray(data[0].output)) {
         if (!this.outputLookup) {
-          this.outputLookup = _lookup2.default.buildLookup(data.map(function (value) {
-            return value['output'];
-          }));
+          this.outputLookup = _lookup2.default.toOutputTable(data);
         }
-        data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this5.outputLookup, datum.output);
-          return Object.assign({}, datum, { output: array });
-        }, this);
       }
-      return data;
+
+      return _lookup2.default.toTrainingData(data, this.inputLookup, this.outputLookup);
     }
 
     /**
@@ -884,7 +873,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'test',
     value: function test(data) {
-      var _this6 = this;
+      var _this5 = this;
 
       data = this._formatData(data);
 
@@ -903,13 +892,13 @@ var NeuralNetwork = function () {
       var sum = 0;
 
       var _loop = function _loop(i) {
-        var output = _this6.runInput(data[i].input);
+        var output = _this5.runInput(data[i].input);
         var target = data[i].output;
 
         var actual = void 0,
             expected = void 0;
         if (isBinary) {
-          actual = output[0] > _this6.binaryThresh ? 1 : 0;
+          actual = output[0] > _this5.binaryThresh ? 1 : 0;
           expected = target[0];
         } else {
           actual = output.indexOf((0, _max2.default)(output));
@@ -1042,8 +1031,8 @@ var NeuralNetwork = function () {
       return {
         sizes: this.sizes,
         layers: layers,
-        outputLookup: !!this.outputLookup,
-        inputLookup: !!this.inputLookup,
+        outputLookup: this.outputLookup !== null,
+        inputLookup: this.inputLookup !== null,
         activation: this.activation,
         trainOpts: this._getTrainOptsJSON()
       };
@@ -1064,9 +1053,10 @@ var NeuralNetwork = function () {
       for (var i = 0; i <= this.outputLayer; i++) {
         var layer = json.layers[i];
         if (i === 0 && (!layer[0] || json.inputLookup)) {
-          this.inputLookup = _lookup2.default.lookupFromHash(layer);
+          this.inputLookup = _lookup2.default.toHash(layer);
+          this.inputLookupLength = Object.keys(this.inputLookup).length;
         } else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
-          this.outputLookup = _lookup2.default.lookupFromHash(layer);
+          this.outputLookup = _lookup2.default.toHash(layer);
         }
         if (i > 0) {
           var nodes = Object.keys(layer);
@@ -1151,7 +1141,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'isRunnable',
     get: function get() {
-      var _this7 = this;
+      var _this6 = this;
 
       if (!this.runInput) {
         console.error('Activation function has not been initialized, did you run train()?');
@@ -1159,7 +1149,7 @@ var NeuralNetwork = function () {
       }
 
       var checkFns = ['sizes', 'outputLayer', 'biases', 'weights', 'outputs', 'deltas', 'changes', 'errors'].filter(function (c) {
-        return _this7[c] === null;
+        return _this6[c] === null;
       });
 
       if (checkFns.length > 0) {

@@ -111,8 +111,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     this.outputs[0] = input;
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       this.outputs[layer] = this.forwardPropagate[layer](
-        this.weights[layer], 
-        this.biases[layer], 
+        this.weights[layer],
+        this.biases[layer],
         input
       );
       output = input = this.outputs[layer];
@@ -232,9 +232,9 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
         outputToTexture: true,
         hardCodeConstants: true
       });
-    }    
+    }
   }
-  
+
   getChanges() {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       let output = this.changesPropagate[layer](
@@ -306,7 +306,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     let output = outputTextures.toArray(this.gpu);
 
     if (this.outputLookup) {
-      output = lookup.toHash(this.outputLookup, output);
+      output = lookup.toObject(this.outputLookup, output);
     }
     return output;
   }

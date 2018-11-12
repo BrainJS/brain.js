@@ -60,7 +60,6 @@ var RNN = function () {
 
     this.stepCache = {};
     this.runs = 0;
-    this.totalCost = null;
     this.ratioClipped = null;
     this.model = null;
 
@@ -228,9 +227,9 @@ var RNN = function () {
     value: function trainPattern(input) {
       var learningRate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-      var error = this.runInput(input);
-      this.runBackpropagate(input);
-      this.step(learningRate);
+      var error = this.trainInput(input);
+      this.backpropagate(input);
+      this.adjustWeights(learningRate);
       return error;
     }
 
@@ -241,13 +240,12 @@ var RNN = function () {
      */
 
   }, {
-    key: 'runInput',
-    value: function runInput(input) {
+    key: 'trainInput',
+    value: function trainInput(input) {
       this.runs++;
       var model = this.model;
       var max = input.length;
       var log2ppl = 0;
-      var cost = 0;
       var equation = void 0;
       while (model.equations.length <= input.length + 1) {
         //last is zero
@@ -260,19 +258,8 @@ var RNN = function () {
 
         var source = inputIndex === -1 ? 0 : input[inputIndex] + 1; // first step: start with START token
         var target = inputIndex === max - 1 ? 0 : input[inputIndex + 1] + 1; // last step: end with END token
-        var output = equation.run(source);
-        // set gradients into log probabilities
-        var logProbabilities = output; // interpret output as log probabilities
-        var probabilities = (0, _softmax2.default)(output); // compute the softmax probabilities
-
-        log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
-        cost += -Math.log(probabilities.weights[target]);
-        // write gradients into log probabilities
-        logProbabilities.deltas = probabilities.weights.slice(0);
-        logProbabilities.deltas[target] -= 1;
+        log2ppl += equation.predictTargetIndex(source, target);
       }
-
-      this.totalCost = cost;
       return Math.pow(2, log2ppl / (max - 1)) / 100;
     }
 
@@ -281,16 +268,16 @@ var RNN = function () {
      */
 
   }, {
-    key: 'runBackpropagate',
-    value: function runBackpropagate(input) {
+    key: 'backpropagate',
+    value: function backpropagate(input) {
       var i = input.length;
       var model = this.model;
       var equations = model.equations;
       while (i > 0) {
-        equations[i].runBackpropagate(input[i - 1] + 1);
+        equations[i].backpropagateIndex(input[i - 1] + 1);
         i--;
       }
-      equations[0].runBackpropagate(0);
+      equations[0].backpropagateIndex(0);
     }
 
     /**
@@ -299,8 +286,8 @@ var RNN = function () {
      */
 
   }, {
-    key: 'step',
-    value: function step() {
+    key: 'adjustWeights',
+    value: function adjustWeights() {
       var learningRate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
       // perform parameter update
@@ -377,7 +364,7 @@ var RNN = function () {
         }
         var equation = model.equations[i];
         // sample predicted letter
-        var outputMatrix = equation.run(previousIndex);
+        var outputMatrix = equation.runIndex(previousIndex);
         var logProbabilities = new _matrix2.default(model.output.rows, model.output.columns);
         (0, _copy2.default)(logProbabilities, outputMatrix);
         if (temperature !== 1 && isSampleI) {
@@ -512,11 +499,6 @@ var RNN = function () {
         outputConnector: this.model.outputConnector.toJSON(),
         output: this.model.output.toJSON()
       };
-    }
-  }, {
-    key: 'toJSONString',
-    value: function toJSONString() {
-      return JSON.stringify(this.toJSON());
     }
   }, {
     key: 'fromJSON',

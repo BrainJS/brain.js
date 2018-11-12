@@ -85,6 +85,9 @@ export default class NeuralNetwork {
     if (!this.constructor.prototype.hasOwnProperty('calculateDeltas')) {
       this.calculateDeltas = null;
     }
+    this.inputLookup = null;
+    this.inputLookupLength = null;
+    this.outputLookup = null;
   }
 
   /**
@@ -191,13 +194,13 @@ export default class NeuralNetwork {
   run(input) {
     if (!this.isRunnable) return null;
     if (this.inputLookup) {
-      input = lookup.toArray(this.inputLookup, input);
+      input = lookup.toArray(this.inputLookup, input, this.inputLookupLength);
     }
 
-    let output = [...this.runInput(input)];
+    let output = this.runInput(input);
 
     if (this.outputLookup) {
-      output = lookup.toHash(this.outputLookup, output);
+      output = lookup.toObject(this.outputLookup, output);
     }
     return output;
   }
@@ -700,32 +703,23 @@ export default class NeuralNetwork {
    */
   _formatData(data) {
     if (!Array.isArray(data)) { // turn stream datum into array
-      let tmp = [];
-      tmp.push(data);
-      data = tmp;
+      data = [data];
     }
-    // turn sparse hash input into arrays with 0s as filler
-    let datum = data[0].input;
-    if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
+
+    if (!Array.isArray(data[0].input)) {
       if (!this.inputLookup) {
-        this.inputLookup = lookup.buildLookup(data.map(value => value['input']));
+        this.inputLookup = lookup.toInputTable(data);
       }
-      data = data.map(datum => {
-        let array = lookup.toArray(this.inputLookup, datum.input);
-        return Object.assign({}, datum, { input: array });
-      }, this);
+      this.inputLookupLength = Object.keys(this.inputLookup).length;
     }
 
     if (!Array.isArray(data[0].output)) {
       if (!this.outputLookup) {
-        this.outputLookup = lookup.buildLookup(data.map(value => value['output']));
+        this.outputLookup = lookup.toOutputTable(data);
       }
-      data = data.map(datum => {
-        let array = lookup.toArray(this.outputLookup, datum.output);
-        return Object.assign({}, datum, { output: array });
-      }, this);
     }
-    return data;
+
+    return lookup.toTrainingData(data, this.inputLookup, this.outputLookup);
   }
 
   /**
@@ -889,8 +883,8 @@ export default class NeuralNetwork {
     return {
       sizes: this.sizes,
       layers,
-      outputLookup:!!this.outputLookup,
-      inputLookup:!!this.inputLookup,
+      outputLookup: this.outputLookup !== null,
+      inputLookup: this.inputLookup !== null,
       activation: this.activation,
       trainOpts: this._getTrainOptsJSON()
     };
@@ -908,10 +902,11 @@ export default class NeuralNetwork {
     for (let i = 0; i <= this.outputLayer; i++) {
       let layer = json.layers[i];
       if (i === 0 && (!layer[0] || json.inputLookup)) {
-        this.inputLookup = lookup.lookupFromHash(layer);
+        this.inputLookup = lookup.toHash(layer);
+        this.inputLookupLength = Object.keys(this.inputLookup).length;
       }
       else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
-        this.outputLookup = lookup.lookupFromHash(layer);
+        this.outputLookup = lookup.toHash(layer);
       }
       if (i > 0) {
         const nodes = Object.keys(layer);

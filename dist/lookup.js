@@ -15,19 +15,47 @@ var lookup = function () {
   }
 
   _createClass(lookup, null, [{
-    key: "buildLookup",
+    key: "toTable",
 
     /**
      * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
      * @param {Object} hashes
      * @returns {Object}
      */
-    value: function buildLookup(hashes) {
+    value: function toTable(hashes) {
       var hash = hashes.reduce(function (memo, hash) {
         return Object.assign(memo, hash);
       }, {});
 
-      return lookup.lookupFromHash(hash);
+      return lookup.toHash(hash);
+    }
+  }, {
+    key: "toInputTable",
+    value: function toInputTable(data) {
+      var table = {};
+      var tableIndex = 0;
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        for (var p in data[dataIndex].input) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
+        }
+      }
+      return table;
+    }
+  }, {
+    key: "toOutputTable",
+    value: function toOutputTable(data) {
+      var table = {};
+      var tableIndex = 0;
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        for (var p in data[dataIndex].output) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
+        }
+      }
+      return table;
     }
 
     /**
@@ -37,8 +65,8 @@ var lookup = function () {
      */
 
   }, {
-    key: "lookupFromHash",
-    value: function lookupFromHash(hash) {
+    key: "toHash",
+    value: function toHash(hash) {
       var lookup = {};
       var index = 0;
       for (var i in hash) {
@@ -50,16 +78,17 @@ var lookup = function () {
     /**
      * performs `{a: 0, b: 1}, {a: 6} -> [6, 0]`
      * @param {*} lookup
-     * @param {*} hash
-     * @returns {Array}
+     * @param {*} object
+     * @param {*} arrayLength
+     * @returns {Float32Array}
      */
 
   }, {
     key: "toArray",
-    value: function toArray(lookup, hash) {
-      var array = [];
+    value: function toArray(lookup, object, arrayLength) {
+      var array = new Float32Array(arrayLength);
       for (var i in lookup) {
-        array[lookup[i]] = hash[i] || 0;
+        array[lookup[i]] = object[i] || 0;
       }
       return array;
     }
@@ -72,8 +101,8 @@ var lookup = function () {
      */
 
   }, {
-    key: "toHash",
-    value: function toHash(lookup, array) {
+    key: "toObject",
+    value: function toObject(lookup, array) {
       var hash = {};
       for (var i in lookup) {
         hash[i] = array[lookup[i]];
@@ -98,10 +127,61 @@ var lookup = function () {
       }
       return lookup;
     }
+  }, {
+    key: "toTrainingData",
+    value: function toTrainingData(data, inputTable, outputTable) {
+      // turn sparse hash input into arrays with 0s as filler
+      var convertInput = getTypedArrayFn(data[0].input, inputTable);
+      var convertOutput = getTypedArrayFn(data[0].output, outputTable);
+
+      if (convertInput && convertOutput) {
+        data = data.map(function (datum) {
+          return {
+            input: convertInput(datum.input),
+            output: convertOutput(datum.output)
+          };
+        });
+      } else if (convertInput) {
+        data = data.map(function (datum) {
+          return {
+            input: convertInput(datum.input),
+            output: datum.output
+          };
+        });
+      } else if (convertOutput) {
+        data = data.map(function (datum) {
+          return {
+            input: datum.input,
+            output: convertOutput(datum.output)
+          };
+        });
+      }
+      return data;
+    }
   }]);
 
   return lookup;
 }();
 
 exports.default = lookup;
+
+
+function getTypedArrayFn(value, table) {
+  if (value.buffer instanceof ArrayBuffer) {
+    return null;
+  } else if (Array.isArray(value)) {
+    return function (v) {
+      return Float32Array.from(v);
+    };
+  } else {
+    var length = Object.keys(table).length;
+    return function (v) {
+      var array = new Float32Array(length);
+      for (var i in table) {
+        array[table[i]] = v[i] || 0;
+      }
+      return array;
+    };
+  }
+}
 //# sourceMappingURL=lookup.js.map

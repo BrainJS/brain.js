@@ -336,7 +336,7 @@ exports.default = likely;
 /**
  *
  * @param {*} input
- * @param {NeuralNetwork} net
+ * @param {brain.NeuralNetwork} net
  * @returns {*}
  */
 function likely(input, net) {
@@ -371,19 +371,47 @@ var lookup = function () {
   }
 
   _createClass(lookup, null, [{
-    key: "buildLookup",
+    key: "toTable",
 
     /**
      * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
      * @param {Object} hashes
      * @returns {Object}
      */
-    value: function buildLookup(hashes) {
+    value: function toTable(hashes) {
       var hash = hashes.reduce(function (memo, hash) {
         return Object.assign(memo, hash);
       }, {});
 
-      return lookup.lookupFromHash(hash);
+      return lookup.toHash(hash);
+    }
+  }, {
+    key: "toInputTable",
+    value: function toInputTable(data) {
+      var table = {};
+      var tableIndex = 0;
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        for (var p in data[dataIndex].input) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
+        }
+      }
+      return table;
+    }
+  }, {
+    key: "toOutputTable",
+    value: function toOutputTable(data) {
+      var table = {};
+      var tableIndex = 0;
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        for (var p in data[dataIndex].output) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
+        }
+      }
+      return table;
     }
 
     /**
@@ -393,8 +421,8 @@ var lookup = function () {
      */
 
   }, {
-    key: "lookupFromHash",
-    value: function lookupFromHash(hash) {
+    key: "toHash",
+    value: function toHash(hash) {
       var lookup = {};
       var index = 0;
       for (var i in hash) {
@@ -406,16 +434,17 @@ var lookup = function () {
     /**
      * performs `{a: 0, b: 1}, {a: 6} -> [6, 0]`
      * @param {*} lookup
-     * @param {*} hash
-     * @returns {Array}
+     * @param {*} object
+     * @param {*} arrayLength
+     * @returns {Float32Array}
      */
 
   }, {
     key: "toArray",
-    value: function toArray(lookup, hash) {
-      var array = [];
+    value: function toArray(lookup, object, arrayLength) {
+      var array = new Float32Array(arrayLength);
       for (var i in lookup) {
-        array[lookup[i]] = hash[i] || 0;
+        array[lookup[i]] = object[i] || 0;
       }
       return array;
     }
@@ -428,8 +457,8 @@ var lookup = function () {
      */
 
   }, {
-    key: "toHash",
-    value: function toHash(lookup, array) {
+    key: "toObject",
+    value: function toObject(lookup, array) {
       var hash = {};
       for (var i in lookup) {
         hash[i] = array[lookup[i]];
@@ -454,12 +483,63 @@ var lookup = function () {
       }
       return lookup;
     }
+  }, {
+    key: "toTrainingData",
+    value: function toTrainingData(data, inputTable, outputTable) {
+      // turn sparse hash input into arrays with 0s as filler
+      var convertInput = getTypedArrayFn(data[0].input, inputTable);
+      var convertOutput = getTypedArrayFn(data[0].output, outputTable);
+
+      if (convertInput && convertOutput) {
+        data = data.map(function (datum) {
+          return {
+            input: convertInput(datum.input),
+            output: convertOutput(datum.output)
+          };
+        });
+      } else if (convertInput) {
+        data = data.map(function (datum) {
+          return {
+            input: convertInput(datum.input),
+            output: datum.output
+          };
+        });
+      } else if (convertOutput) {
+        data = data.map(function (datum) {
+          return {
+            input: datum.input,
+            output: convertOutput(datum.output)
+          };
+        });
+      }
+      return data;
+    }
   }]);
 
   return lookup;
 }();
 
 exports.default = lookup;
+
+
+function getTypedArrayFn(value, table) {
+  if (value.buffer instanceof ArrayBuffer) {
+    return null;
+  } else if (Array.isArray(value)) {
+    return function (v) {
+      return Float32Array.from(v);
+    };
+  } else {
+    var length = Object.keys(table).length;
+    return function (v) {
+      var array = new Float32Array(length);
+      for (var i in table) {
+        array[table[i]] = v[i] || 0;
+      }
+      return array;
+    };
+  }
+}
 
 },{}],4:[function(require,module,exports){
 'use strict';
@@ -804,7 +884,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       var output = outputTextures.toArray(this.gpu);
 
       if (this.outputLookup) {
-        output = _lookup2.default.toHash(this.outputLookup, output);
+        output = _lookup2.default.toObject(this.outputLookup, output);
       }
       return output;
     }
@@ -1031,8 +1111,6 @@ var _thaw2 = _interopRequireDefault(_thaw);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
@@ -1142,6 +1220,9 @@ var NeuralNetwork = function () {
     if (!this.constructor.prototype.hasOwnProperty('calculateDeltas')) {
       this.calculateDeltas = null;
     }
+    this.inputLookup = null;
+    this.inputLookupLength = null;
+    this.outputLookup = null;
   }
 
   /**
@@ -1235,13 +1316,13 @@ var NeuralNetwork = function () {
     value: function run(input) {
       if (!this.isRunnable) return null;
       if (this.inputLookup) {
-        input = _lookup2.default.toArray(this.inputLookup, input);
+        input = _lookup2.default.toArray(this.inputLookup, input, this.inputLookupLength);
       }
 
-      var output = [].concat(_toConsumableArray(this.runInput(input)));
+      var output = this.runInput(input);
 
       if (this.outputLookup) {
-        output = _lookup2.default.toHash(this.outputLookup, output);
+        output = _lookup2.default.toObject(this.outputLookup, output);
       }
       return output;
     }
@@ -1484,7 +1565,10 @@ var NeuralNetwork = function () {
       }
 
       if (this.trainOpts.callback && status.iterations % this.trainOpts.callbackPeriod === 0) {
-        this.trainOpts.callback(Object.assign(status));
+        this.trainOpts.callback({
+          iterations: status.iterations,
+          error: status.error
+        });
       }
       return true;
     }
@@ -1825,40 +1909,25 @@ var NeuralNetwork = function () {
   }, {
     key: '_formatData',
     value: function _formatData(data) {
-      var _this5 = this;
-
       if (!Array.isArray(data)) {
         // turn stream datum into array
-        var tmp = [];
-        tmp.push(data);
-        data = tmp;
+        data = [data];
       }
-      // turn sparse hash input into arrays with 0s as filler
-      var datum = data[0].input;
-      if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
+
+      if (!Array.isArray(data[0].input)) {
         if (!this.inputLookup) {
-          this.inputLookup = _lookup2.default.buildLookup(data.map(function (value) {
-            return value['input'];
-          }));
+          this.inputLookup = _lookup2.default.toInputTable(data);
         }
-        data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this5.inputLookup, datum.input);
-          return Object.assign({}, datum, { input: array });
-        }, this);
+        this.inputLookupLength = Object.keys(this.inputLookup).length;
       }
 
       if (!Array.isArray(data[0].output)) {
         if (!this.outputLookup) {
-          this.outputLookup = _lookup2.default.buildLookup(data.map(function (value) {
-            return value['output'];
-          }));
+          this.outputLookup = _lookup2.default.toOutputTable(data);
         }
-        data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this5.outputLookup, datum.output);
-          return Object.assign({}, datum, { output: array });
-        }, this);
       }
-      return data;
+
+      return _lookup2.default.toTrainingData(data, this.inputLookup, this.outputLookup);
     }
 
     /**
@@ -1875,7 +1944,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'test',
     value: function test(data) {
-      var _this6 = this;
+      var _this5 = this;
 
       data = this._formatData(data);
 
@@ -1894,13 +1963,13 @@ var NeuralNetwork = function () {
       var sum = 0;
 
       var _loop = function _loop(i) {
-        var output = _this6.runInput(data[i].input);
+        var output = _this5.runInput(data[i].input);
         var target = data[i].output;
 
         var actual = void 0,
             expected = void 0;
         if (isBinary) {
-          actual = output[0] > _this6.binaryThresh ? 1 : 0;
+          actual = output[0] > _this5.binaryThresh ? 1 : 0;
           expected = target[0];
         } else {
           actual = output.indexOf((0, _max2.default)(output));
@@ -2033,8 +2102,8 @@ var NeuralNetwork = function () {
       return {
         sizes: this.sizes,
         layers: layers,
-        outputLookup: !!this.outputLookup,
-        inputLookup: !!this.inputLookup,
+        outputLookup: this.outputLookup !== null,
+        inputLookup: this.inputLookup !== null,
         activation: this.activation,
         trainOpts: this._getTrainOptsJSON()
       };
@@ -2055,9 +2124,10 @@ var NeuralNetwork = function () {
       for (var i = 0; i <= this.outputLayer; i++) {
         var layer = json.layers[i];
         if (i === 0 && (!layer[0] || json.inputLookup)) {
-          this.inputLookup = _lookup2.default.lookupFromHash(layer);
+          this.inputLookup = _lookup2.default.toHash(layer);
+          this.inputLookupLength = Object.keys(this.inputLookup).length;
         } else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
-          this.outputLookup = _lookup2.default.lookupFromHash(layer);
+          this.outputLookup = _lookup2.default.toHash(layer);
         }
         if (i > 0) {
           var nodes = Object.keys(layer);
@@ -2142,7 +2212,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'isRunnable',
     get: function get() {
-      var _this7 = this;
+      var _this6 = this;
 
       if (!this.runInput) {
         console.error('Activation function has not been initialized, did you run train()?');
@@ -2150,7 +2220,7 @@ var NeuralNetwork = function () {
       }
 
       var checkFns = ['sizes', 'outputLayer', 'biases', 'weights', 'outputs', 'deltas', 'changes', 'errors'].filter(function (c) {
-        return _this7[c] === null;
+        return _this6[c] === null;
       });
 
       if (checkFns.length > 0) {
@@ -2706,6 +2776,10 @@ var _tanhB = require('./tanh-b');
 
 var _tanhB2 = _interopRequireDefault(_tanhB);
 
+var _softmax = require('./softmax');
+
+var _softmax2 = _interopRequireDefault(_softmax);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2878,7 +2952,7 @@ var Equation = function () {
       this.states.push({
         product: _input,
         forwardFn: function forwardFn(product) {
-          product.weights = _this.inputValue;
+          product.weights = _input.weights = _this.inputValue;
         }
       });
       return _input;
@@ -2973,8 +3047,8 @@ var Equation = function () {
      */
 
   }, {
-    key: 'run',
-    value: function run() {
+    key: 'runIndex',
+    value: function runIndex() {
       var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
       this.inputRow = rowIndex;
@@ -3017,8 +3091,29 @@ var Equation = function () {
      */
 
   }, {
-    key: 'runBackpropagate',
-    value: function runBackpropagate() {
+    key: 'backpropagate',
+    value: function backpropagate() {
+      var i = this.states.length;
+      var state = void 0;
+      while (i-- > 0) {
+        state = this.states[i];
+        if (!state.hasOwnProperty('backpropagationFn')) {
+          continue;
+        }
+        state.backpropagationFn(state.product, state.left, state.right);
+      }
+
+      return state.product;
+    }
+
+    /**
+     * @patam {Number} [rowIndex]
+     * @output {Matrix}
+     */
+
+  }, {
+    key: 'backpropagateIndex',
+    value: function backpropagateIndex() {
       var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
       this.inputRow = rowIndex;
@@ -3035,6 +3130,35 @@ var Equation = function () {
 
       return state.product;
     }
+  }, {
+    key: 'predictTarget',
+    value: function predictTarget(input, target) {
+      var output = this.runInput(input);
+      var errorSum = 0;
+      for (var i = 0; i < output.weights.length; i++) {
+        var error = output.weights[i] - target[i];
+        // set gradients into log probabilities
+        errorSum += Math.abs(error);
+        // write gradients into log probabilities
+        output.deltas[i] = error;
+      }
+      return errorSum;
+    }
+  }, {
+    key: 'predictTargetIndex',
+    value: function predictTargetIndex(input, target) {
+      var output = this.runIndex(input);
+      // set gradients into log probabilities
+      var logProbabilities = output; // interpret output as log probabilities
+      var probabilities = (0, _softmax2.default)(output); // compute the softmax probabilities
+
+      // write gradients into log probabilities
+      logProbabilities.deltas = probabilities.weights.slice(0);
+      logProbabilities.deltas[target] -= 1;
+
+      // accumulate base 2 log prob and do smoothing
+      return -Math.log2(probabilities.weights[target]);
+    }
   }]);
 
   return Equation;
@@ -3042,7 +3166,7 @@ var Equation = function () {
 
 exports.default = Equation;
 
-},{"./":16,"./add":11,"./add-b":10,"./all-ones":12,"./clone-negative":13,"./copy":14,"./multiply":21,"./multiply-b":18,"./multiply-element":20,"./multiply-element-b":19,"./ones-matrix":22,"./relu":25,"./relu-b":24,"./row-pluck":27,"./row-pluck-b":26,"./sigmoid":30,"./sigmoid-b":29,"./tanh":33,"./tanh-b":32}],16:[function(require,module,exports){
+},{"./":16,"./add":11,"./add-b":10,"./all-ones":12,"./clone-negative":13,"./copy":14,"./multiply":21,"./multiply-b":18,"./multiply-element":20,"./multiply-element-b":19,"./ones-matrix":22,"./relu":25,"./relu-b":24,"./row-pluck":27,"./row-pluck-b":26,"./sigmoid":30,"./sigmoid-b":29,"./softmax":31,"./tanh":33,"./tanh-b":32}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3754,6 +3878,10 @@ var _maxI = require('./matrix/max-i');
 
 var _maxI2 = _interopRequireDefault(_maxI);
 
+var _lookup = require('../lookup');
+
+var _lookup2 = _interopRequireDefault(_lookup);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3765,18 +3893,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var RNNTimeStep = function (_RNN) {
   _inherits(RNNTimeStep, _RNN);
 
-  function RNNTimeStep() {
+  function RNNTimeStep(options) {
     _classCallCheck(this, RNNTimeStep);
 
-    return _possibleConstructorReturn(this, (RNNTimeStep.__proto__ || Object.getPrototypeOf(RNNTimeStep)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (RNNTimeStep.__proto__ || Object.getPrototypeOf(RNNTimeStep)).call(this, options));
+
+    _this.inputLookup = null;
+    _this.inputLookupLength = null;
+    _this.outputLookup = null;
+    _this.outputLookupLength = null;
+    return _this;
   }
 
   _createClass(RNNTimeStep, [{
-    key: 'createInputMatrix',
-    value: function createInputMatrix() {
-      this.model.input = new _randomMatrix2.default(this.inputSize, 1, 0.08);
-    }
-  }, {
     key: 'createOutputMatrix',
     value: function createOutputMatrix() {
       var model = this.model;
@@ -3786,7 +3915,7 @@ var RNNTimeStep = function (_RNN) {
       //whd
       model.outputConnector = new _randomMatrix2.default(outputSize, lastHiddenSize, 0.08);
       //bd
-      model.output = new _matrix2.default(outputSize, 1);
+      model.output = new _randomMatrix2.default(outputSize, 1, 0.08);
     }
   }, {
     key: 'bindEquation',
@@ -3799,7 +3928,7 @@ var RNNTimeStep = function (_RNN) {
       var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs;
 
       // 0 index
-      var output = this.getEquation(equation, equation.input(model.input), equationConnection[0], layers[0]);
+      var output = this.getEquation(equation, equation.input(new _matrix2.default(this.inputSize, 1)), equationConnection[0], layers[0]);
       outputs.push(output);
       // 1+ indices
       for (var i = 1, max = hiddenLayers.length; i < max; i++) {
@@ -3811,78 +3940,45 @@ var RNNTimeStep = function (_RNN) {
       equation.add(equation.multiply(model.outputConnector, output), model.output);
       model.equations.push(equation);
     }
-
-    /**
-     *
-     * @param {Number[]} input
-     * @returns {number}
-     */
-
   }, {
-    key: 'runInput',
-    value: function runInput(input) {
-      this.runs++;
+    key: 'mapModel',
+    value: function mapModel() {
       var model = this.model;
-      var errorSum = 0;
-      var equation = void 0;
-      while (model.equations.length < input.length - 1) {
-        this.bindEquation();
-      }
-      var outputs = [];
+      var hiddenLayers = model.hiddenLayers;
+      var allMatrices = model.allMatrices;
+      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
+        return new _matrix2.default(size, 1);
+      });
 
-      if (this.inputSize === 1) {
-        for (var inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
-          // start and end tokens are zeros
-          equation = model.equations[inputIndex];
-
-          var current = input[inputIndex];
-          var next = input[inputIndex + 1];
-          var output = equation.runInput([current]);
-          for (var i = 0; i < output.weights.length; i++) {
-            var error = output.weights[i] - next;
-            // set gradients into log probabilities
-            errorSum += Math.abs(error);
-
-            // write gradients into log probabilities
-            output.deltas[i] = error;
-            outputs.push(output.weights);
-          }
-        }
-      } else {
-        for (var _inputIndex = 0, _max = input.length - 1; _inputIndex < _max; _inputIndex++) {
-          // start and end tokens are zeros
-          equation = model.equations[_inputIndex];
-
-          var _current = input[_inputIndex];
-          var _next = input[_inputIndex + 1];
-          var _output = equation.runInput(_current);
-          for (var _i = 0; _i < _output.weights.length; _i++) {
-            var _error = _output.weights[_i] - _next[_i];
-            // set gradients into log probabilities
-            errorSum += Math.abs(_error);
-
-            // write gradients into log probabilities
-            _output.deltas[_i] = _error;
-            outputs.push(_output.weights);
-          }
+      this.createHiddenLayers();
+      if (!model.hiddenLayers.length) throw new Error('net.hiddenLayers not set');
+      for (var i = 0, max = hiddenLayers.length; i < max; i++) {
+        var hiddenMatrix = hiddenLayers[i];
+        for (var property in hiddenMatrix) {
+          if (!hiddenMatrix.hasOwnProperty(property)) continue;
+          allMatrices.push(hiddenMatrix[property]);
         }
       }
-      //this.model.equations.length - 1;
-      this.totalCost = errorSum;
-      return errorSum;
+
+      this.createOutputMatrix();
+      if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
+      if (!model.output) throw new Error('net.model.output not set');
+
+      allMatrices.push(model.outputConnector);
+      allMatrices.push(model.output);
     }
   }, {
-    key: 'runBackpropagate',
-    value: function runBackpropagate() {
+    key: 'backpropagate',
+    value: function backpropagate() {
       for (var i = this.model.equations.length - 1; i > -1; i--) {
-        this.model.equations[i].runBackpropagate();
+        this.model.equations[i].backpropagate();
       }
     }
 
     /**
      *
      * @param {Number[]|Number[][]} [input]
-     * @returns {Number[]|Number}
+     * @returns {Number[]|Number|Object[]|Object[][]}
      */
 
   }, {
@@ -3890,27 +3986,355 @@ var RNNTimeStep = function (_RNN) {
     value: function run() {
       var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
+      if (this.inputSize === 1) {
+        if (this.outputLookup) {
+          this.run = this.runObject;
+          return this.runObject(input);
+        }
+        this.run = this.runNumbers;
+        return this.runNumbers(input);
+      }
+      this.run = this.runArrays;
+      return this.runArrays(input);
+    }
+  }, {
+    key: 'forecast',
+    value: function forecast(input, count) {
+      if (this.inputSize === 1) {
+        this.run = this.forecastNumbers;
+        return this.forecastNumbers(input, count);
+      }
+      this.run = this.forecastArrays;
+      return this.forecastArrays(input, count);
+    }
+
+    /**
+     *
+     * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
+     * @param {Object} [options]
+     * @returns {{error: number, iterations: number}}
+     */
+
+  }, {
+    key: 'train',
+    value: function train(data) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      if (data[0].input) {
+        if (Array.isArray(data[0].input[0])) {
+          this.trainInput = this.trainInputOutputArray;
+        } else if (Array.isArray(data[0].input)) {
+          this.trainInput = this.trainInputOutput;
+        } else {
+          this.inputLookup = _lookup2.default.toInputTable(data);
+          this.inputLookupLength = Object.keys(this.inputLookup).length;
+          this.outputLookup = _lookup2.default.toOutputTable(data);
+          this.outputLookupLength = Object.keys(this.outputLookup).length;
+          data = _lookup2.default.toTrainingData(data, this.inputLookup, this.outputLookup);
+          this.trainInput = this.trainInputOutput;
+        }
+      } else if (Array.isArray(data[0])) {
+        if (Array.isArray(data[0][0])) {
+          this.trainInput = this.trainArrays;
+        } else {
+          if (this.inputSize > 1) {
+            data = [data];
+            this.trainInput = this.trainArrays;
+          } else {
+            this.trainInput = this.trainNumbers;
+          }
+        }
+      }
+
+      options = Object.assign({}, this.constructor.trainDefaults, options);
+      var iterations = options.iterations;
+      var errorThresh = options.errorThresh;
+      var log = options.log === true ? console.log : options.log;
+      var logPeriod = options.logPeriod;
+      var learningRate = options.learningRate || this.learningRate;
+      var callback = options.callback;
+      var callbackPeriod = options.callbackPeriod;
+      var error = Infinity;
+      var i = void 0;
+
+      if (this.hasOwnProperty('setupData')) {
+        data = this.setupData(data);
+      }
+
+      if (!this.model) {
+        this.initialize();
+      }
+
+      for (i = 0; i < iterations && error > errorThresh; i++) {
+        var sum = 0;
+        for (var j = 0; j < data.length; j++) {
+          var err = this.trainPattern(data[j], learningRate);
+          sum += err;
+        }
+        error = sum / data.length;
+
+        if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
+        if (log && i % logPeriod === 0) {
+          log('iterations: ' + i + ', training error: ' + error);
+        }
+        if (callback && i % callbackPeriod === 0) {
+          callback({ error: error, iterations: i });
+        }
+      }
+
+      return {
+        error: error,
+        iterations: i
+      };
+    }
+  }, {
+    key: 'trainNumbers',
+    value: function trainNumbers(input) {
+      var model = this.model;
+      var equations = model.equations;
+      while (equations.length < input.length) {
+        this.bindEquation();
+      }
+      var errorSum = 0;
+      for (var i = 0, max = input.length - 1; i < max; i++) {
+        errorSum += equations[i].predictTarget([input[i]], [input[i + 1]]);
+      }
+      this.end();
+      return errorSum / input.length;
+    }
+  }, {
+    key: 'runNumbers',
+    value: function runNumbers(input) {
       if (!this.isRunnable) return null;
       var model = this.model;
-      while (model.equations.length < input.length) {
+      var equations = model.equations;
+      while (equations.length <= input.length) {
         this.bindEquation();
       }
       var lastOutput = void 0;
-      if (this.inputSize === 1) {
-        for (var i = 0; i < input.length; i++) {
-          var outputMatrix = model.equations[i].runInput([input[i]]);
-          lastOutput = outputMatrix.weights;
-        }
-      } else {
-        for (var _i2 = 0; _i2 < input.length; _i2++) {
-          var _outputMatrix = model.equations[_i2].runInput(input[_i2]);
-          lastOutput = _outputMatrix.weights;
-        }
+      for (var i = 0; i < input.length; i++) {
+        lastOutput = equations[i].runInput([input[i]]);
       }
-      if (this.outputSize === 1) {
-        return lastOutput[0];
+      this.end();
+      return lastOutput.weights.slice(0);
+    }
+  }, {
+    key: 'forecastNumbers',
+    value: function forecastNumbers(input, count) {
+      if (!this.isRunnable) return null;
+      var model = this.model;
+      var equations = model.equations;
+      var length = input.length + count;
+      while (equations.length <= length) {
+        this.bindEquation();
       }
+      var lastOutput = void 0;
+      var equationIndex = 0;
+      for (var i = 0; i < input.length; i++) {
+        lastOutput = equations[equationIndex++].runInput([input[i]]);
+      }
+      var result = [lastOutput.weights[0]];
+      for (var _i = 0, max = count - 1; _i < max; _i++) {
+        lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
+        result.push(lastOutput.weights[0]);
+      }
+      this.end();
+      return result;
+    }
+  }, {
+    key: 'runObject',
+    value: function runObject(input) {
+      return _lookup2.default.toObject(this.outputLookup, this.forecastNumbers(_lookup2.default.toArray(this.inputLookup, input, this.inputLookupLength), this.outputLookupLength));
+    }
+  }, {
+    key: 'trainInputOutput',
+    value: function trainInputOutput(object) {
+      var model = this.model;
+      var input = object.input;
+      var output = object.output;
+      var totalSize = input.length + output.length;
+      var equations = model.equations;
+      while (equations.length < totalSize) {
+        this.bindEquation();
+      }
+      var errorSum = 0;
+      var equationIndex = 0;
+      for (var inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
+        errorSum += equations[equationIndex++].predictTarget([input[inputIndex]], [input[inputIndex + 1]]);
+      }
+      errorSum += equations[equationIndex++].predictTarget([input[input.length - 1]], [output[0]]);
+      for (var outputIndex = 0, _max = output.length - 1; outputIndex < _max; outputIndex++) {
+        errorSum += equations[equationIndex++].predictTarget([output[outputIndex]], [output[outputIndex + 1]]);
+      }
+      this.end();
+      return errorSum / totalSize;
+    }
+  }, {
+    key: 'trainInputOutputArray',
+    value: function trainInputOutputArray(set) {
+      var model = this.model;
+      var input = set.input;
+      var output = set.output;
+      var totalSize = input.length + output.length;
+      var equations = model.equations;
+      while (equations.length < totalSize) {
+        this.bindEquation();
+      }
+      var errorSum = 0;
+      var equationIndex = 0;
+      for (var inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
+        errorSum += equations[equationIndex++].predictTarget(input[inputIndex], input[inputIndex + 1]);
+      }
+      errorSum += equations[equationIndex++].predictTarget(input[input.length - 1], output[0]);
+      for (var outputIndex = 0, _max2 = output.length - 1; outputIndex < _max2; outputIndex++) {
+        errorSum += equations[equationIndex++].predictTarget(output[outputIndex], output[outputIndex + 1]);
+      }
+      this.end();
+      return errorSum / totalSize;
+    }
+  }, {
+    key: 'trainArrays',
+    value: function trainArrays(input) {
+      var model = this.model;
+      var equations = model.equations;
+      while (equations.length < input.length) {
+        this.bindEquation();
+      }
+      var errorSum = 0;
+      for (var i = 0, max = input.length - 1; i < max; i++) {
+        errorSum += equations[i].predictTarget(input[i], input[i + 1]);
+      }
+      this.end();
+      return errorSum / input.length;
+    }
+  }, {
+    key: 'runArrays',
+    value: function runArrays(input) {
+      if (!this.isRunnable) return null;
+      var model = this.model;
+      var equations = model.equations;
+      while (equations.length < input.length) {
+        this.bindEquation();
+      }
+      var lastOutput = void 0;
+      for (var i = 0; i < input.length; i++) {
+        var outputMatrix = equations[i].runInput(input[i]);
+        lastOutput = outputMatrix.weights;
+      }
+      this.end();
       return lastOutput;
+    }
+  }, {
+    key: 'forecastArrays',
+    value: function forecastArrays(input, count) {
+      if (!this.isRunnable) return null;
+      var model = this.model;
+      var equations = model.equations;
+      var length = input.length + count;
+      while (equations.length <= length) {
+        this.bindEquation();
+      }
+      var lastOutput = void 0;
+      var equationIndex = 0;
+      for (var i = 0; i < input.length; i++) {
+        lastOutput = equations[equationIndex++].runInput(input[i]);
+      }
+      var result = [lastOutput.weights];
+      for (var _i2 = 0, max = count - 1; _i2 < max; _i2++) {
+        lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
+        result.push(lastOutput.weights);
+      }
+      this.end();
+      return result;
+    }
+  }, {
+    key: 'end',
+    value: function end() {
+      this.model.equations[this.model.equations.length - 1].runInput(new Float32Array(this.outputSize));
+    }
+
+    /**
+     *
+     * @returns {Object}
+     */
+
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      var defaults = this.constructor.defaults;
+      if (!this.model) {
+        this.initialize();
+      }
+      var model = this.model;
+      var options = {};
+      for (var p in defaults) {
+        if (defaults.hasOwnProperty(p)) {
+          options[p] = this[p];
+        }
+      }
+
+      return {
+        type: this.constructor.name,
+        options: options,
+        hiddenLayers: model.hiddenLayers.map(function (hiddenLayer) {
+          var layers = {};
+          for (var _p in hiddenLayer) {
+            layers[_p] = hiddenLayer[_p].toJSON();
+          }
+          return layers;
+        }),
+        outputConnector: this.model.outputConnector.toJSON(),
+        output: this.model.output.toJSON()
+      };
+    }
+  }, {
+    key: 'fromJSON',
+    value: function fromJSON(json) {
+      var defaults = this.constructor.defaults;
+      var options = json.options;
+      this.model = null;
+      this.hiddenLayers = null;
+      var allMatrices = [];
+      var hiddenLayers = [];
+
+      // backward compatibility for hiddenSizes
+      (json.hiddenLayers || json.hiddenSizes).forEach(function (hiddenLayer) {
+        var layers = {};
+        for (var p in hiddenLayer) {
+          layers[p] = _matrix2.default.fromJSON(hiddenLayer[p]);
+          allMatrices.push(layers[p]);
+        }
+        hiddenLayers.push(layers);
+      });
+
+      var outputConnector = _matrix2.default.fromJSON(json.outputConnector);
+      allMatrices.push(outputConnector);
+      var output = _matrix2.default.fromJSON(json.output);
+      allMatrices.push(output);
+
+      Object.assign(this, defaults, options);
+
+      // backward compatibility
+      if (options.hiddenSizes) {
+        this.hiddenLayers = options.hiddenSizes;
+      }
+
+      if (options.hasOwnProperty('dataFormatter') && options.dataFormatter !== null) {
+        this.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);
+      }
+
+      this.model = {
+        hiddenLayers: hiddenLayers,
+        output: output,
+        allMatrices: allMatrices,
+        outputConnector: outputConnector,
+        equations: [],
+        equationConnections: []
+      };
+      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
+        return new _matrix2.default(size, 1);
+      });
+      this.bindEquation();
     }
 
     /**
@@ -3924,7 +4348,6 @@ var RNNTimeStep = function (_RNN) {
       var model = this.model;
       var equations = this.model.equations;
       var inputSize = this.inputSize;
-      debugger;
       var equation = equations[1];
       var states = equation.states;
       var jsonString = JSON.stringify(this.toJSON());
@@ -3970,8 +4393,6 @@ var RNNTimeStep = function (_RNN) {
 
       function matrixToString(m, stateIndex) {
         if (!m || !m.rows || !m.columns) return 'null';
-
-        if (m === model.input) return 'json.input';
         if (m === model.outputConnector) return 'json.outputConnector';
         if (m === model.output) return 'json.output';
 
@@ -3998,7 +4419,7 @@ var RNNTimeStep = function (_RNN) {
         fnString.pop();
         // body
 
-        return fnString.join('}').split('\n').join('\n        ').replace('product.weights = _this.inputValue;', inputSize === 1 ? 'product.weights = [input[_i]];' : 'product.weights = input[_i];').replace('product.deltas[i] = 0;', '').replace('product.deltas[column] = 0;', '').replace('left.deltas[leftIndex] = 0;', '').replace('right.deltas[rightIndex] = 0;', '').replace('product.deltas = left.deltas.slice(0);', '');
+        return fnString.join('}').split('\n').join('\n        ').replace('product.weights = _input.weights = _this.inputValue;', inputSize === 1 ? 'product.weights = [input[_i]];' : 'product.weights = input[_i];').replace('product.deltas[i] = 0;', '').replace('product.deltas[column] = 0;', '').replace('left.deltas[leftIndex] = 0;', '').replace('right.deltas[rightIndex] = 0;', '').replace('product.deltas = left.deltas.slice(0);', '');
       }
 
       function fileName(fnName) {
@@ -4046,7 +4467,7 @@ RNNTimeStep.defaults = {
 
 RNNTimeStep.trainDefaults = _rnn2.default.trainDefaults;
 
-},{"../utilities/random":42,"../utilities/zeros":46,"./matrix":16,"./matrix/equation":15,"./matrix/max-i":17,"./matrix/random-matrix":23,"./matrix/sample-i":28,"./matrix/softmax":31,"./rnn":35}],35:[function(require,module,exports){
+},{"../lookup":3,"../utilities/random":42,"../utilities/zeros":46,"./matrix":16,"./matrix/equation":15,"./matrix/max-i":17,"./matrix/random-matrix":23,"./matrix/sample-i":28,"./matrix/softmax":31,"./rnn":35}],35:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4109,7 +4530,6 @@ var RNN = function () {
 
     this.stepCache = {};
     this.runs = 0;
-    this.totalCost = null;
     this.ratioClipped = null;
     this.model = null;
 
@@ -4277,9 +4697,9 @@ var RNN = function () {
     value: function trainPattern(input) {
       var learningRate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-      var error = this.runInput(input);
-      this.runBackpropagate(input);
-      this.step(learningRate);
+      var error = this.trainInput(input);
+      this.backpropagate(input);
+      this.adjustWeights(learningRate);
       return error;
     }
 
@@ -4290,13 +4710,12 @@ var RNN = function () {
      */
 
   }, {
-    key: 'runInput',
-    value: function runInput(input) {
+    key: 'trainInput',
+    value: function trainInput(input) {
       this.runs++;
       var model = this.model;
       var max = input.length;
       var log2ppl = 0;
-      var cost = 0;
       var equation = void 0;
       while (model.equations.length <= input.length + 1) {
         //last is zero
@@ -4309,19 +4728,8 @@ var RNN = function () {
 
         var source = inputIndex === -1 ? 0 : input[inputIndex] + 1; // first step: start with START token
         var target = inputIndex === max - 1 ? 0 : input[inputIndex + 1] + 1; // last step: end with END token
-        var output = equation.run(source);
-        // set gradients into log probabilities
-        var logProbabilities = output; // interpret output as log probabilities
-        var probabilities = (0, _softmax2.default)(output); // compute the softmax probabilities
-
-        log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
-        cost += -Math.log(probabilities.weights[target]);
-        // write gradients into log probabilities
-        logProbabilities.deltas = probabilities.weights.slice(0);
-        logProbabilities.deltas[target] -= 1;
+        log2ppl += equation.predictTargetIndex(source, target);
       }
-
-      this.totalCost = cost;
       return Math.pow(2, log2ppl / (max - 1)) / 100;
     }
 
@@ -4330,16 +4738,16 @@ var RNN = function () {
      */
 
   }, {
-    key: 'runBackpropagate',
-    value: function runBackpropagate(input) {
+    key: 'backpropagate',
+    value: function backpropagate(input) {
       var i = input.length;
       var model = this.model;
       var equations = model.equations;
       while (i > 0) {
-        equations[i].runBackpropagate(input[i - 1] + 1);
+        equations[i].backpropagateIndex(input[i - 1] + 1);
         i--;
       }
-      equations[0].runBackpropagate(0);
+      equations[0].backpropagateIndex(0);
     }
 
     /**
@@ -4348,8 +4756,8 @@ var RNN = function () {
      */
 
   }, {
-    key: 'step',
-    value: function step() {
+    key: 'adjustWeights',
+    value: function adjustWeights() {
       var learningRate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
       // perform parameter update
@@ -4426,7 +4834,7 @@ var RNN = function () {
         }
         var equation = model.equations[i];
         // sample predicted letter
-        var outputMatrix = equation.run(previousIndex);
+        var outputMatrix = equation.runIndex(previousIndex);
         var logProbabilities = new _matrix2.default(model.output.rows, model.output.columns);
         (0, _copy2.default)(logProbabilities, outputMatrix);
         if (temperature !== 1 && isSampleI) {
@@ -4561,11 +4969,6 @@ var RNN = function () {
         outputConnector: this.model.outputConnector.toJSON(),
         output: this.model.output.toJSON()
       };
-    }
-  }, {
-    key: 'toJSONString',
-    value: function toJSONString() {
-      return JSON.stringify(this.toJSON());
     }
   }, {
     key: 'fromJSON',
