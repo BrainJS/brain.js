@@ -65,21 +65,18 @@ describe.only('RNNTimeStep', () => {
           assert.deepEqual(Equation.prototype.predictTarget.args[7][1], [.1]);
         });
         it('can learn basic logic', () => {
-          return new Promise((resolve) => {
-            const net = new LSTMTimeStep({
-              inputSize: 1,
-              hiddenLayers: [20, 20],
-              outputSize: 1
-            });
-            const trainingData = [
-              [.1,.2,.3,.4,.5],
-              [.5,.4,.3,.2,.1]
-            ];
-            const result = net.train(trainingData);
-            assert(result.error < 0.05, `error ${ result.error } did not go below 0.05`);
-            assert(result.iterations < 1000, `iterations ${ result.iterations } went above 1000`);
-            resolve();
+          const net = new LSTMTimeStep({
+            inputSize: 1,
+            hiddenLayers: [10],
+            outputSize: 1
           });
+          const trainingData = [
+            [.1,.2,.3,.4,.5],
+            [.5,.4,.3,.2,.1]
+          ];
+          const result = net.train(trainingData, { errorThresh: 0.05 });
+          assert(result.error < 0.05, `error ${ result.error } did not go below 0.05`);
+          assert(result.iterations < 1000, `iterations ${ result.iterations } went above 1000`);
         });
       });
 
@@ -130,24 +127,21 @@ describe.only('RNNTimeStep', () => {
         });
 
         it('can learn basic logic', () => {
-          return new Promise((resolve) => {
-            const net = new LSTMTimeStep({
-              inputSize: 2,
-              hiddenLayers: [20],
-              outputSize: 2
-            });
-            const trainingData = [
-              [.1,.5],
-              [.2,.4],
-              [.3,.3],
-              [.4,.2],
-              [.5,.1],
-            ];
-            const result = net.train(trainingData);
-            assert(result.error < 0.05, `error ${ result.error } did not go below 0.05`);
-            assert(result.iterations < 4000, `iterations ${ result.iterations } went above 4000`);
-            resolve();
+          const net = new LSTMTimeStep({
+            inputSize: 2,
+            hiddenLayers: [20],
+            outputSize: 2
           });
+          const trainingData = [
+            [.1,.5],
+            [.2,.4],
+            [.3,.3],
+            [.4,.2],
+            [.5,.1],
+          ];
+          const result = net.train(trainingData, { errorThresh: 0.05 });
+          assert(result.error < 0.05, `error ${ result.error } did not go below 0.05`);
+          assert(result.iterations < 4000, `iterations ${ result.iterations } went above 4000`);
         });
       });
 
@@ -224,33 +218,30 @@ describe.only('RNNTimeStep', () => {
         });
 
         it('can learn basic logic', () => {
-          return new Promise((resolve) => {
-            const net = new LSTMTimeStep({
-              inputSize: 2,
-              hiddenLayers: [40, 40],
-              outputSize: 2
-            });
-            const trainingData = [
-              [
-                [.1,.5],
-                [.2,.4],
-                [.3,.3],
-                [.4,.2],
-                [.5,.1],
-              ],
-              [
-                [.5,.9],
-                [.6,.8],
-                [.7,.7],
-                [.8,.6],
-                [.9,.5],
-              ],
-            ];
-            const result = net.train(trainingData);
-            assert(result.error < 0.05, `error ${ result.error } did not go below 0.05`);
-            assert(result.iterations < 4000, `iterations ${ result.iterations } went above 4000`);
-            resolve();
+          const net = new LSTMTimeStep({
+            inputSize: 2,
+            hiddenLayers: [30],
+            outputSize: 2
           });
+          const trainingData = [
+            [
+              [.1,.5],
+              [.2,.4],
+              [.3,.3],
+              [.4,.2],
+              [.5,.1],
+            ],
+            [
+              [.5,.9],
+              [.6,.8],
+              [.7,.7],
+              [.8,.6],
+              [.9,.5],
+            ],
+          ];
+          const result = net.train(trainingData, { errorThresh: 0.05 });
+          assert(result.error < 0.05, `error ${ result.error } did not go below 0.05`);
+          assert(result.iterations < 4000, `iterations ${ result.iterations } went above 4000`);
         });
       });
     });
@@ -496,34 +487,31 @@ describe.only('RNNTimeStep', () => {
         assert(closeToFive[0].toFixed(1) === '0.5', `${ closeToFive } is not close to 0.5`);
       });
       it('can train and predict single linear array, two input, 1 to 5, and 5 to 1', () => {
-        return new Promise((resolve) => {
-          const net = new LSTMTimeStep({
-            inputSize: 2,
-            hiddenLayers: [20, 20],
-            outputSize: 2
-          });
-
-          //Same test as previous, but combined on a single set
-          const trainingData = [
-            [.1,.5],
-            [.2,.4],
-            [.3,.3],
-            [.4,.2],
-            [.5,.1]
-          ];
-
-          const result = net.train(trainingData);
-          assert(result.error < 0.09, `error ${ result.error } did not go below 0.09`);
-          const closeToFiveAndOne = net.run([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
-          assert(closeToFiveAndOne[0].toFixed(1) === '0.5', `${ closeToFiveAndOne[0] } is not close to 0.5`);
-          assert(closeToFiveAndOne[1].toFixed(1) === '0.1', `${ closeToFiveAndOne[1] } is not close to 0.1`);
-          resolve();
+        const net = new LSTMTimeStep({
+          inputSize: 2,
+          hiddenLayers: [20],
+          outputSize: 2
         });
+
+        //Same test as previous, but combined on a single set
+        const trainingData = [
+          [.1,.5],
+          [.2,.4],
+          [.3,.3],
+          [.4,.2],
+          [.5,.1]
+        ];
+
+        const result = net.train(trainingData, { errorThresh: 0.01 });
+        assert(result.error < 0.01, `error ${ result.error } did not go below 0.01`);
+        const closeToFiveAndOne = net.run([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
+        assert(closeToFiveAndOne[0].toFixed(1) === '0.5', `${ closeToFiveAndOne[0] } is not close to 0.5`);
+        assert(closeToFiveAndOne[1].toFixed(1) === '0.1', `${ closeToFiveAndOne[1] } is not close to 0.1`);
       });
       it('can train and predict multiple linear array, two input, 1 to 5, 5 to 1, 5 to 9, and 9 to 5', () => {
         const net = new LSTMTimeStep({
           inputSize: 2,
-          hiddenLayers: [20, 20],
+          hiddenLayers: [40],
           outputSize: 2
         });
 
@@ -546,7 +534,7 @@ describe.only('RNNTimeStep', () => {
         ];
 
         const result = net.train(trainingData);
-        assert(result.error < 0.09, `error ${ result.error } did not go below 0.09`);
+        assert(result.error < 0.05, `error ${ result.error } did not go below 0.05`);
         const closeToFiveAndOne = net.run([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
         assert(closeToFiveAndOne[0].toFixed(1) === '0.5', `${ closeToFiveAndOne[0] } is not close to 0.5`);
         assert(closeToFiveAndOne[1].toFixed(1) === '0.1', `${ closeToFiveAndOne[1] } is not close to 0.1`);
@@ -559,55 +547,52 @@ describe.only('RNNTimeStep', () => {
     describe('prediction using input/output', () => {
       describe('with objects', () => {
         it('can train and predict input/output linear array avg weather data', () => {
-          return new Promise((resolve) => {
-            const net = new LSTMTimeStep({
-              inputSize: 1,
-              hiddenLayers: [5],
-              outputSize: 1
-            });
-
-            // average temp
-            const trainingData = [
-              // Washington DC
-              {
-                input: {
-                  jan: .42,
-                  feb: .44,
-                  mar: .53,
-                  apr: .64
-                },
-                output: {
-                  may: .75,
-                  jun: .83
-                }
-              },
-
-              // Bluff Utah
-              {
-                input: {
-                  jan: .44,
-                  feb: .52,
-                  mar: .63,
-                  apr: .72
-                },
-                output: {
-                  may: .82,
-                  jun: .92
-                }
-              },
-            ];
-
-            const result = net.train(trainingData);
-            assert(result.error < 0.05, `error ${ result.error } is not below 0.05`);
-            const washington = net.run({ jan: .42, feb: .44, mar: .53, apr: .64 });
-            const bluff = net.run({ jan: .44, feb: .52, mar: .63, apr: .72 });
-            assert(washington.may.toFixed(2).indexOf('0.7') > -1, `${ washington.may } is not close to .7`);
-            assert(washington.jun.toFixed(2).indexOf('0.8') > -1, `${ washington.jun } is not close to .8`);
-
-            assert(bluff.may.toFixed(2).indexOf('0.8') > -1, `${ bluff.may } is not close to .8`);
-            assert(bluff.jun.toFixed(2).indexOf('0.9') > -1, `${ bluff.jun } is not close to .9`);
-            resolve();
+          const net = new LSTMTimeStep({
+            inputSize: 1,
+            hiddenLayers: [5],
+            outputSize: 1
           });
+
+          // average temp
+          const trainingData = [
+            // Washington DC
+            {
+              input: {
+                jan: .42,
+                feb: .44,
+                mar: .53,
+                apr: .64
+              },
+              output: {
+                may: .75,
+                jun: .83
+              }
+            },
+
+            // Bluff Utah
+            {
+              input: {
+                jan: .44,
+                feb: .52,
+                mar: .63,
+                apr: .72
+              },
+              output: {
+                may: .82,
+                jun: .92
+              }
+            },
+          ];
+
+          const result = net.train(trainingData);
+          assert(result.error < 0.05, `error ${ result.error } is not below 0.05`);
+          const washington = net.run({ jan: .42, feb: .44, mar: .53, apr: .64 });
+          const bluff = net.run({ jan: .44, feb: .52, mar: .63, apr: .72 });
+          assert(washington.may.toFixed(2).indexOf('0.7') > -1, `${ washington.may } is not close to .7`);
+          assert(washington.jun.toFixed(2).indexOf('0.8') > -1, `${ washington.jun } is not close to .8`);
+
+          assert(bluff.may.toFixed(2).indexOf('0.8') > -1, `${ bluff.may } is not close to .8`);
+          assert(bluff.jun.toFixed(2).indexOf('0.9') > -1, `${ bluff.jun } is not close to .9`);
         });
       });
 
@@ -640,33 +625,41 @@ describe.only('RNNTimeStep', () => {
           done();
         });
         it('can train and predict using array of input and output, two input, 1 to 5, and 5 to 1', () => {
-          return new Promise((resolve) => {
-            const net = new LSTMTimeStep({
-              inputSize: 2,
-              hiddenLayers: [20],
-              outputSize: 2
-            });
-
-            //Same test as previous, but combined on a single set
-            const trainingData = [
-              {
-                input: [[.1,.5],[.2,.4],[.3,.3],[.4,.2]],
-                output: [[.5,.1]]
-              }
-            ];
-
-            const result = net.train(trainingData);
-            assert(result.error < 0.09, `error ${ result.error } did not go below 0.09`);
-            const closeToFiveAndOne = net.run([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
-            assert(closeToFiveAndOne[0].toFixed(1) === '0.5', `${ closeToFiveAndOne[0] } is not close to 0.5`);
-            assert(closeToFiveAndOne[1].toFixed(1) === '0.1', `${ closeToFiveAndOne[1] } is not close to 0.1`);
-            resolve();
+          const net = new LSTMTimeStep({
+            inputSize: 2,
+            hiddenLayers: [20],
+            outputSize: 2
           });
+
+          //Same test as previous, but combined on a single set
+          const trainingData = [
+            {
+              input: [[.1,.5],[.2,.4],[.3,.3],[.4,.2]],
+              output: [[.5,.1]]
+            }
+          ];
+
+          const result = net.train(trainingData, { errorThresh: 0.01 });
+          assert(result.error < 0.01, `error ${ result.error } did not go below 0.01`);
+          const closeToFiveAndOne = net.run([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
+          assert(closeToFiveAndOne[0].toFixed(1) === '0.5', `${ closeToFiveAndOne[0] } is not close to 0.5`);
+          assert(closeToFiveAndOne[1].toFixed(1) === '0.1', `${ closeToFiveAndOne[1] } is not close to 0.1`);
         });
       });
     });
   });
   describe('.trainNumbers()', () => {
+    function prepNet(net) {
+      // put some weights into recurrent inputs
+      net.initialLayerInputs.forEach(matrix => matrix.weights = matrix.weights.map(() => 1));
+      net.model.equationConnections.forEach(matrix => matrix[0].weights = matrix[0].weights.map(() => 1));
+
+      // make any values that are less than zero, positive, so relu doesn't go into zero
+      net.model.equations.forEach(equation => equation.states.forEach((state => {
+        if (state.left) state.left.weights = state.left.weights.map(value => value < 0 ? Math.abs(value) : value);
+        if (state.right) state.right.weights = state.right.weights.map(value => value < 0 ? Math.abs(value) : value);
+      })));
+    }
     it('forward propagates weights', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
@@ -685,7 +678,7 @@ describe.only('RNNTimeStep', () => {
       net.model.equations.forEach((equation, equationIndex) => {
         // we back propagate zero, so don't check there
         if (equationIndex > 1) return;
-        equation.states.forEach((state, stateIndex) => {
+        equation.states.forEach((state) => {
           // don't use equation connections, they are zero;
           if (net.model.equationConnections.indexOf(state.product) > -1) return;
           // don't use initialLayerInputs, zero there too
@@ -696,15 +689,7 @@ describe.only('RNNTimeStep', () => {
         });
       });
 
-      // put some weights into recurrent inputs
-      net.initialLayerInputs.forEach(matrix => matrix.weights = matrix.weights.map(() => 1));
-      net.model.equationConnections.forEach(matrix => matrix[0].weights = matrix[0].weights.map(() => 1));
-
-      // make any values that are less than zero, positive, so relu doesn't go into zero
-      net.model.equations.forEach(equation => equation.states.forEach((state => {
-        if (state.left) state.left.weights = state.left.weights.map(value => value < 0 ? Math.abs(value) : value);
-        if (state.right) state.right.weights = state.right.weights.map(value => value < 0 ? Math.abs(value) : value);
-      })));
+      prepNet(net);
 
       net.trainNumbers([1, 2, 3]);
 
@@ -726,33 +711,48 @@ describe.only('RNNTimeStep', () => {
       });
 
       net.initialize();
-      net.trainNumbers([1, 2, 3]);
+      // 1,2
+      net.bindEquation();
+      // 2,3
+      net.bindEquation();
+      // end
+      net.bindEquation();
 
       net.model.equations.forEach((equation, equationIndex) => {
-        equation.states.forEach((state, stateIndex) => {
-          if (stateIndex !== equation.states.length - 1) {
-            state.product.deltas.forEach((delta, deltaIndex) => {
-              assert.equal(delta, 0, `equation is not 0 on equation ${ equationIndex }, state ${ stateIndex }, delta ${ deltaIndex }`);
-            });
-          }
+        // we back propagate zero, so don't check there
+        if (equationIndex > 1) return;
+        equation.states.forEach((state) => {
+          // don't use equation connections, they are zero;
+          if (net.model.equationConnections.indexOf(state.product) > -1) return;
+          // don't use initialLayerInputs, zero there too
+          if (state.right === net.initialLayerInputs[0]) return;
+          state.product.weights.forEach((weight) => {
+            assert.equal(weight, 0);
+          });
         });
       });
 
-      // fully propagate inputs back onto deltas
-      net.backpropagate();
+      prepNet(net);
+
+      net.model.equations.forEach((equation, equationIndex) => {
+        // we back propagate zero, so don't check last equation, as it has zeros
+        if (equationIndex > 1) return;
+        equation.states.forEach((state, stateIndex) => {
+          state.product.deltas.forEach((delta, weightIndex) => {
+            assert.equal(delta, 0, `equation is not 0 on equation ${ equationIndex}, state ${ stateIndex }, delta ${ weightIndex }`);
+          });
+        });
+      });
+
       net.trainNumbers([1, 2, 3]);
       net.backpropagate();
 
       net.model.equations.forEach((equation, equationIndex) => {
-        if (equationIndex === 2) return;
+        // we back propagate zero, so don't check last equation, as it has zeros
+        if (equationIndex > 1) return;
         equation.states.forEach((state, stateIndex) => {
-          if (
-            (equationIndex === 2 && stateIndex === 0)
-            || (equationIndex === 2 && stateIndex === 1)
-            || (equationIndex === 2 && stateIndex === 2)
-          ) return;
-          state.product.deltas.forEach((delta, deltaIndex) => {
-            assert.notEqual(delta, 0, `equation is 0 on equation ${ equationIndex }, state ${ stateIndex }, delta ${ deltaIndex }`);
+          state.product.deltas.forEach((delta, weightIndex) => {
+            assert.notEqual(delta, 0, `equation is 0 on equation ${ equationIndex}, state ${ stateIndex }, delta ${ weightIndex }`);
           });
         });
       });
@@ -795,71 +795,65 @@ describe.only('RNNTimeStep', () => {
   describe('.forecast()', () => {
     describe('using numbers', () => {
       it('can use an input of numbers of length 3 and give an output of length 2', () => {
-        return new Promise((resolve) => {
-          const net = new LSTMTimeStep({
-            inputSize: 1,
-            hiddenLayers: [10],
-            outputSize: 1
-          });
-
-          //Same test as previous, but combined on a single set
-          const trainingData = [
-            {
-              input: [.1,.2,.3],
-              output: [.4,.5]
-            },
-            {
-              input: [.5,.4,.3],
-              output: [.2,.1]
-            }
-          ];
-
-          const trainResult = net.train(trainingData);
-          assert(trainResult.error < 0.09, `error ${ trainResult.error } did not go below 0.09`);
-          const result1 = net.forecast([.1,.2,.3], 2);
-          assert.equal(result1.length, 2);
-          assert(result1[0].toFixed(1) === '0.4', `${ result1[0] } is not close to 0.4`);
-          assert(result1[1].toFixed(1) === '0.5', `${ result1[1] } is not close to 0.5`);
-
-          const result2 = net.forecast([.5,.4,.3], 2);
-          assert.equal(result2.length, 2);
-          assert(result2[0].toFixed(1) === '0.2', `${ result2[0] } is not close to 0.2`);
-          assert(result2[1].toFixed(1) === '0.1', `${ result2[1] } is not close to 0.1`);
-          resolve();
+        const net = new LSTMTimeStep({
+          inputSize: 1,
+          hiddenLayers: [10],
+          outputSize: 1
         });
+
+        //Same test as previous, but combined on a single set
+        const trainingData = [
+          {
+            input: [.1,.2,.3],
+            output: [.4,.5]
+          },
+          {
+            input: [.5,.4,.3],
+            output: [.2,.1]
+          }
+        ];
+
+        const trainResult = net.train(trainingData, { errorThresh: 0.01 });
+        assert(trainResult.error < 0.01, `error ${ trainResult.error } did not go below 0.01`);
+        const result1 = net.forecast([.1,.2,.3], 2);
+        assert.equal(result1.length, 2);
+        assert(result1[0].toFixed(1) === '0.4', `${ result1[0] } is not close to 0.4`);
+        assert(result1[1].toFixed(1) === '0.5', `${ result1[1] } is not close to 0.5`);
+
+        const result2 = net.forecast([.5,.4,.3], 2);
+        assert.equal(result2.length, 2);
+        assert(result2[0].toFixed(1) === '0.2', `${ result2[0] } is not close to 0.2`);
+        assert(result2[1].toFixed(1) === '0.1', `${ result2[1] } is not close to 0.1`);
       });
     });
     describe('using arrays', () => {
       it('can use an input array of length 3 and give an output of length 2', () => {
-        return new Promise((resolve) => {
-          const net = new LSTMTimeStep({
-            inputSize: 2,
-            hiddenLayers: [20],
-            outputSize: 2
-          });
-
-          //Same test as previous, but combined on a single set
-          const trainingData = [
-            {
-              input: [[.1,.5],[.2,.4],[.3,.3]],
-              output: [[.4,.2],[.5,.1]]
-            }
-          ];
-
-          const trainResult = net.train(trainingData);
-          assert(trainResult.error < 0.09, `error ${ trainResult.error } did not go below 0.09`);
-          const result = net.forecast([[.1,.5],[.2,.4],[.3,.3]], 2);
-          assert.equal(result.length, 2);
-          assert(result[0][0].toFixed(1) === '0.4', `${ result[0][0] } is not close to 0.4`);
-          assert(result[0][1].toFixed(1) === '0.2', `${ result[0][1] } is not close to 0.2`);
-          assert(result[1][0].toFixed(1) === '0.5', `${ result[0][0] } is not close to 0.5`);
-          assert(result[1][1].toFixed(1) === '0.1', `${ result[0][1] } is not close to 0.1`);
-          resolve();
+        const net = new LSTMTimeStep({
+          inputSize: 2,
+          hiddenLayers: [20],
+          outputSize: 2
         });
+
+        //Same test as previous, but combined on a single set
+        const trainingData = [
+          {
+            input: [[.1,.5],[.2,.4],[.3,.3]],
+            output: [[.4,.2],[.5,.1]]
+          }
+        ];
+
+        const trainResult = net.train(trainingData, { errorThresh: 0.01 });
+        assert(trainResult.error < 0.01, `error ${ trainResult.error } did not go below 0.01`);
+        const result = net.forecast([[.1,.5],[.2,.4],[.3,.3]], 2);
+        assert.equal(result.length, 2);
+        assert(result[0][0].toFixed(1) === '0.4', `${ result[0][0] } is not close to 0.4`);
+        assert(result[0][1].toFixed(1) === '0.2', `${ result[0][1] } is not close to 0.2`);
+        assert(result[1][0].toFixed(1) === '0.5', `${ result[0][0] } is not close to 0.5`);
+        assert(result[1][1].toFixed(1) === '0.1', `${ result[0][1] } is not close to 0.1`);
       });
     });
   });
-  describe('.toFunction', () => {
+  describe('.toFunction()', () => {
     it('outputs exactly what net outputs', (done) => {
       const net = new LSTMTimeStep({
         inputSize: 2,
