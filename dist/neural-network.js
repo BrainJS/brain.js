@@ -117,6 +117,7 @@ var NeuralNetwork = function () {
     key: 'defaults',
     get: function get() {
       return {
+        leakyReluAlpha: 0.01,
         binaryThresh: 0.5,
         hiddenLayers: [3], // array of ints for the sizes of the hidden layers in the network
         activation: 'sigmoid' // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
@@ -307,7 +308,7 @@ var NeuralNetwork = function () {
     key: '_runInputLeakyRelu',
     value: function _runInputLeakyRelu(input) {
       this.outputs[0] = input; // set output state of input layer
-
+      var alpha = this.leakyReluAlpha;
       var output = null;
       for (var layer = 1; layer <= this.outputLayer; layer++) {
         for (var node = 0; node < this.sizes[layer]; node++) {
@@ -318,7 +319,7 @@ var NeuralNetwork = function () {
             sum += weights[k] * input[k];
           }
           //leaky relu
-          this.outputs[layer][node] = sum < 0 ? 0 : 0.01 * sum;
+          this.outputs[layer][node] = sum < 0 ? 0 : alpha * sum;
         }
         output = input = this.outputs[layer];
       }
@@ -687,6 +688,7 @@ var NeuralNetwork = function () {
   }, {
     key: '_calculateDeltasLeakyRelu',
     value: function _calculateDeltasLeakyRelu(target) {
+      var alpha = this.leakyReluAlpha;
       for (var layer = this.outputLayer; layer >= 0; layer--) {
         for (var node = 0; node < this.sizes[layer]; node++) {
           var output = this.outputs[layer][node];
@@ -701,7 +703,7 @@ var NeuralNetwork = function () {
             }
           }
           this.errors[layer][node] = error;
-          this.deltas[layer][node] = output > 0 ? error : 0.01 * error;
+          this.deltas[layer][node] = output > 0 ? error : alpha * error;
         }
       }
     }
@@ -1094,6 +1096,7 @@ var NeuralNetwork = function () {
     key: 'toFunction',
     value: function toFunction() {
       var activation = this.activation;
+      var leakyReluAlpha = this.leakyReluAlpha;
       var needsVar = false;
       function nodeHandle(layers, layerNumber, nodeKey) {
         if (layerNumber === 0) {
@@ -1123,7 +1126,7 @@ var NeuralNetwork = function () {
           case 'leaky-relu':
             {
               needsVar = true;
-              return '((v=' + result.join('') + ')<0?0:0.01*v)';
+              return '((v=' + result.join('') + ')<0?0:' + leakyReluAlpha + '*v)';
             }
           case 'tanh':
             return 'Math.tanh(' + result.join('') + ')';
