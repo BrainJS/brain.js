@@ -304,7 +304,7 @@ export default class RNNTimeStep extends RNN {
     if (!this.isRunnable) return null;
     const model = this.model;
     const equations = model.equations;
-    while (equations.length < input.length) {
+    while (equations.length <= input.length) {
       this.bindEquation();
     }
     let lastOutput;
@@ -402,10 +402,6 @@ export default class RNNTimeStep extends RNN {
     // backward compatibility
     if (options.hiddenSizes) {
       this.hiddenLayers = options.hiddenSizes;
-    }
-
-    if (options.hasOwnProperty('dataFormatter') && options.dataFormatter !== null) {
-      this.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);
     }
 
     this.model = {
@@ -536,14 +532,7 @@ export default class RNNTimeStep extends RNN {
     }
 
     const src = `
-  if (typeof rawInput === 'undefined') rawInput = [];
-  ${ (this.dataFormatter !== null) ? this.dataFormatter.toFunctionString() : '' }
-  
-  var input = ${
-      (this.dataFormatter !== null && typeof this.formatDataIn === 'function')
-        ? 'formatDataIn(rawInput)'
-        : 'rawInput'
-      };
+  var input = ${ this.inputLookup ? 'lookupInput(rawInput)' : 'rawInput' };
   var json = ${ jsonString };
   var output = [];
   var states = [];
@@ -565,31 +554,36 @@ ${ innerFunctionsSwitch.join('\n') }
     }
   }
   ${
-    (this.dataFormatter !== null && typeof this.formatDataOut === 'function')
-      ? `return formatDataOut(input, ${ this.outputSize === 1 ? 'state.product.weights[0]' : 'state.product.weights' })`
-      : `return ${ this.outputSize === 1 ? 'state.product.weights[0]' : 'state.product.weights' }`
+    this.inputLookup
+      ? 'return lookupOutput(state.product.weights)'
+      : 'return state.product.weights'
   };
+  ${ this.inputLookup
+      ? `function lookupInput(input) {
+          var table = ${ JSON.stringify(this.inputLookup) };
+          var result = new Float32Array(${ Object.keys(this.inputLookup).length });
+          for (var p in table) {
+            result[table[p]] = input[p];
+          }
+          return result;
+        }`
+      : '' }
+  ${ this.outputLookup
+      ? `function lookupOutput(output) {
+          var table = ${ JSON.stringify(this.outputLookup) };
+          var result = {};
+          for (var p in table) {
+            result[p] = output[table[p]];
+          }
+          return result;
+        }`
+      : '' }
+  
   function Matrix(rows, columns) {
     this.rows = rows;
     this.columns = columns;
     this.weights = zeros(rows * columns);
   }
-  ${ this.dataFormatter !== null && typeof this.formatDataIn === 'function'
-        ? `function formatDataIn(input, output) { ${
-          toInner(this.formatDataIn.toString())
-            .replace(/this[.]dataFormatter[\n\s]+[.]/g, '')
-            .replace(/this[.]dataFormatter[.]/g, '')
-            .replace(/this[.]dataFormatter/g, 'true')
-          } }`
-        : '' }
-  ${ this.dataFormatter !== null && typeof this.formatDataOut === 'function'
-        ? `function formatDataOut(input, output) { ${
-          toInner(this.formatDataOut.toString())
-            .replace(/this[.]dataFormatter[\n\s]+[.]/g, '')
-            .replace(/this[.]dataFormatter[.]/g, '')
-            .replace(/this[.]dataFormatter/g, 'true')
-          } }`
-        : '' }
   ${ zeros.toString() }
   ${ softmax.toString().replace('_2.default', 'Matrix') }
   ${ randomF.toString() }
@@ -607,8 +601,7 @@ RNNTimeStep.defaults = {
   decayRate: 0.999,
   smoothEps: 1e-8,
   regc: 0.000001,
-  clipval: 5,
-  dataFormatter: null
+  clipval: 5
 };
 
 RNNTimeStep.trainDefaults = RNN.trainDefaults;

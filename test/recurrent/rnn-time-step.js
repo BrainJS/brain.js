@@ -4,11 +4,6 @@ import LSTMTimeStep from '../../src/recurrent/lstm-time-step';
 import Equation from '../../src/recurrent/matrix/equation';
 import sinon from 'sinon';
 
-/* NOTE: TimeStep here is deprecated though being committed as something new, it is the first feature we want using
- recurrent.js because it is simply one of the simplest recurrent neural networks and serves as a baseline to completing
- the GPU architecture.   This test is written so as to create the baseline we can measure against.
- We get this working, we have a baseline, we finish brain.js v2.
-  */
 describe.only('RNNTimeStep', () => {
   describe('.createOutputMatrix()', () => {
     it('creates the outputConnector and output for model', () => {
@@ -1169,6 +1164,291 @@ describe.only('RNNTimeStep', () => {
       assert(stub.called);
     });
   });
+  describe('.trainInputOutputArray()', () => {
+    it('sets up equations for length of input(3), output(1) plus count plus 1 for internal of 0', () => {
+      const net = new RNNTimeStep({
+        inputSize: 2,
+        hiddenLayers: [2],
+        outputSize: 2
+      });
+      net.initialize();
+      net.bindEquation();
+      assert.equal(net.model.equations.length, 1);
+      net.trainInputOutputArray({ input: [[1,4],[2,3],[3,2]], output: [[4,1]] });
+      assert.equal(net.model.equations.length, 4);
+    });
+    it('sets up equations for length of input(3), output(2) plus count plus 1 for internal of 0', () => {
+      const net = new RNNTimeStep({
+        inputSize: 2,
+        hiddenLayers: [2],
+        outputSize: 2
+      });
+      net.initialize();
+      net.bindEquation();
+      assert.equal(net.model.equations.length, 1);
+      net.trainInputOutputArray({ input: [[1,5],[2,4],[3,3]], output: [[4,2], [5,1]] });
+      assert.equal(net.model.equations.length, 5);
+    });
+    it('calls equation.predictTarget for each input', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      net.initialize();
+      const predictTargetStubs = [];
+      const runInputStubs = [];
+      net.bindEquation = function() {
+        const predictTargetStub = sinon.stub();
+        const runInputStub = sinon.stub();
+        predictTargetStubs.push(predictTargetStub);
+        runInputStubs.push(runInputStub);
+        this.model.equations.push({
+          predictTarget: predictTargetStub,
+          runInput: runInputStub
+        });
+      };
+      assert.equal(net.model.equations.length, 0);
+      net.trainInputOutputArray({ input: [[1,5],[2,4],[3,3]], output: [[4,2], [5,1]] });
+      assert.equal(net.model.equations.length, 5);
+
+      assert(!runInputStubs[0].called);
+      assert(!runInputStubs[1].called);
+      assert(!runInputStubs[2].called);
+      assert(!runInputStubs[3].called);
+
+      assert(predictTargetStubs[0].called);
+      assert(predictTargetStubs[1].called);
+      assert(predictTargetStubs[2].called);
+      assert(predictTargetStubs[3].called);
+      assert(runInputStubs[4].called);
+
+      assert.deepEqual(predictTargetStubs[0].args[0], [[1, 5], [2, 4]]);
+      assert.deepEqual(predictTargetStubs[1].args[0], [[2, 4], [3, 3]]);
+      assert.deepEqual(predictTargetStubs[2].args[0], [[3, 3], [4, 2]]);
+      assert.deepEqual(predictTargetStubs[3].args[0], [[4, 2], [5, 1]]);
+      assert.deepEqual(runInputStubs[4].args[0], [[0]]);
+    });
+    it('sets calls this.end() after calls equations.runInput', () => {
+      const net = new RNNTimeStep({
+        inputSize: 2,
+        hiddenLayers: [2],
+        outputSize: 2
+      });
+      const stub = net.end = sinon.stub();
+      net.initialize();
+      net.bindEquation();
+      net.trainInputOutputArray({ input: [[1,5],[2,4],[3,3]], output: [[4,2], [5,1]] });
+      assert(stub.called);
+    });
+  });
+  describe('.trainArrays()', () => {
+    it('sets up equations for length of input(3), output(1) plus count plus 1 for internal of 0', () => {
+      const net = new RNNTimeStep({
+        inputSize: 2,
+        hiddenLayers: [2],
+        outputSize: 2
+      });
+      net.initialize();
+      net.bindEquation();
+      assert.equal(net.model.equations.length, 1);
+      net.trainArrays([[1,4],[2,3],[3,2],[4,1]]);
+      assert.equal(net.model.equations.length, 4);
+    });
+    it('sets up equations for length of input(3), output(2) plus count plus 1 for internal of 0', () => {
+      const net = new RNNTimeStep({
+        inputSize: 2,
+        hiddenLayers: [2],
+        outputSize: 2
+      });
+      net.initialize();
+      net.bindEquation();
+      assert.equal(net.model.equations.length, 1);
+      net.trainArrays([[1,5],[2,4],[3,3],[4,2], [5,1]]);
+      assert.equal(net.model.equations.length, 5);
+    });
+    it('calls equation.predictTarget for each input', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      net.initialize();
+      const predictTargetStubs = [];
+      const runInputStubs = [];
+      net.bindEquation = function() {
+        const predictTargetStub = sinon.stub();
+        const runInputStub = sinon.stub();
+        predictTargetStubs.push(predictTargetStub);
+        runInputStubs.push(runInputStub);
+        this.model.equations.push({
+          predictTarget: predictTargetStub,
+          runInput: runInputStub
+        });
+      };
+      assert.equal(net.model.equations.length, 0);
+      net.trainArrays([[1,5],[2,4],[3,3],[4,2],[5,1]]);
+      assert.equal(net.model.equations.length, 5);
+
+      assert(!runInputStubs[0].called);
+      assert(!runInputStubs[1].called);
+      assert(!runInputStubs[2].called);
+      assert(!runInputStubs[3].called);
+
+      assert(predictTargetStubs[0].called);
+      assert(predictTargetStubs[1].called);
+      assert(predictTargetStubs[2].called);
+      assert(predictTargetStubs[3].called);
+      assert(runInputStubs[4].called);
+
+      assert.deepEqual(predictTargetStubs[0].args[0], [[1, 5], [2, 4]]);
+      assert.deepEqual(predictTargetStubs[1].args[0], [[2, 4], [3, 3]]);
+      assert.deepEqual(predictTargetStubs[2].args[0], [[3, 3], [4, 2]]);
+      assert.deepEqual(predictTargetStubs[3].args[0], [[4, 2], [5, 1]]);
+      assert.deepEqual(runInputStubs[4].args[0], [[0]]);
+    });
+    it('sets calls this.end() after calls equations.runInput', () => {
+      const net = new RNNTimeStep({
+        inputSize: 2,
+        hiddenLayers: [2],
+        outputSize: 2
+      });
+      const stub = net.end = sinon.stub();
+      net.initialize();
+      net.bindEquation();
+      net.trainArrays([[1,5],[2,4],[3,3],[4,2],[5,1]]);
+      assert(stub.called);
+    });
+  });
+  describe('.runArrays()', () => {
+    it('returns null when this.isRunnable returns false', () => {
+      const result = RNNTimeStep.prototype.runArrays.apply({
+        isRunnable: false
+      });
+      assert.equal(result, null);
+    });
+    it('sets up equations for length of input plus 1 for internal of 0', () => {
+      const net = new RNNTimeStep({
+        inputSize: 2,
+        hiddenLayers: [2],
+        outputSize: 2
+      });
+      net.initialize();
+      net.bindEquation();
+      assert.equal(net.model.equations.length, 1);
+      net.runArrays([[1,3],[2,2],[3,1]]);
+      assert.equal(net.model.equations.length, 4);
+    });
+    it('sets calls equation.runInput() with value in array for each input plus 1 for 0 (to end) output', () => {
+      const net = new RNNTimeStep({
+        inputSize: 2,
+        hiddenLayers: [2],
+        outputSize: 2
+      });
+      net.initialize();
+      const runInputStubs = [];
+      net.bindEquation = function() {
+        const stub = sinon.stub().returns({ weights: [] });
+        runInputStubs.push(stub);
+        this.model.equations.push({ runInput: stub });
+      };
+      net.bindEquation();
+      net.runArrays([[1,3],[2,2],[3,1]]);
+      assert.equal(runInputStubs.length, 4);
+      assert(runInputStubs[0].called);
+      assert(runInputStubs[1].called);
+      assert(runInputStubs[2].called);
+      assert(runInputStubs[3].called);
+
+      assert.deepEqual(runInputStubs[0].args[0][0], [1,3]);
+      assert.deepEqual(runInputStubs[1].args[0][0], [2,2]);
+      assert.deepEqual(runInputStubs[2].args[0][0], [3,1]);
+      assert.deepEqual(runInputStubs[3].args[0][0], [0,0]);
+    });
+    it('sets calls this.end() after calls equations.runInput', () => {
+      const net = new RNNTimeStep({
+        inputSize: 2,
+        hiddenLayers: [2],
+        outputSize: 2
+      });
+      const stub = net.end = sinon.stub();
+      net.initialize();
+      net.bindEquation();
+      net.runArrays([[1,3],[2,2],[3,1]]);
+      assert(stub.called);
+    });
+  });
+  describe('.forecastArrays()', () => {
+    it('returns null when this.isRunnable returns false', () => {
+      const result = RNNTimeStep.prototype.forecastArrays.apply({
+        isRunnable: false
+      });
+      assert.equal(result, null);
+    });
+    it('sets up equations for length of input plus count plus 1 for internal of 0', () => {
+      const net = new RNNTimeStep({
+        inputSize: 2,
+        hiddenLayers: [2],
+        outputSize: 2
+      });
+      net.initialize();
+      net.bindEquation();
+      assert.equal(net.model.equations.length, 1);
+      net.forecastArrays([[1,3],[2,2],[3,1]], 2);
+      assert.equal(net.model.equations.length, 6);
+    });
+    it('sets calls this.end() after calls equations.runInput', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      const stub = net.end = sinon.stub();
+      net.initialize();
+      net.bindEquation();
+      net.forecastArrays([[1,3],[2,2],[3,1]], 2);
+      assert(stub.called);
+    });
+    it('outputs the length of required forecast', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      net.initialize();
+      net.bindEquation();
+      const result = net.forecastArrays([[1,3],[2,2],[3,1]], 2);
+      assert.equal(result.length, 2);
+    });
+    it('outputs a nested array of numbers', () => {
+      const outputWidth = 4;
+      const net = new RNNTimeStep({
+        inputSize: 2,
+        hiddenLayers: [2],
+        outputSize: outputWidth
+      });
+      net.initialize();
+      net.bindEquation();
+      const predictionsCount = 3;
+      const result = net.forecastArrays([[1,3],[2,2],[3,1]], predictionsCount);
+      assert.equal(result.length, predictionsCount);
+      assert.equal(result[0].length, outputWidth);
+      assert.equal(result[1].length, outputWidth);
+      assert.equal(result[2].length, outputWidth);
+      assert.equal(typeof result[0][0], 'number');
+      assert.equal(typeof result[0][1], 'number');
+      assert.equal(typeof result[0][2], 'number');
+      assert.equal(typeof result[0][3], 'number');
+      assert.equal(typeof result[1][0], 'number');
+      assert.equal(typeof result[1][1], 'number');
+      assert.equal(typeof result[1][2], 'number');
+      assert.equal(typeof result[1][3], 'number');
+      assert.equal(typeof result[2][0], 'number');
+      assert.equal(typeof result[2][1], 'number');
+      assert.equal(typeof result[2][2], 'number');
+      assert.equal(typeof result[2][3], 'number');
+    });
+  });
   describe('.forecast()', () => {
     describe('using numbers', () => {
       it('can use an input of numbers of length 3 and give an output of length 2', () => {
@@ -1231,28 +1511,103 @@ describe.only('RNNTimeStep', () => {
     });
   });
   describe('.toFunction()', () => {
-    it('outputs exactly what net outputs', (done) => {
-      const net = new LSTMTimeStep({
-        inputSize: 2,
-        hiddenLayers: [10],
-        outputSize: 2
+    describe('handles numbers', () => {
+      it('outputs exactly what net outputs', () => {
+        const net = new LSTMTimeStep({
+          inputSize: 1,
+          hiddenLayers: [10],
+          outputSize: 1
+        });
+
+        //Same test as previous, but combined on a single set
+        const trainingData = [
+          [.1,.2,.3,.4,.5],
+          [.5,.4,.3,.2,.1]
+        ];
+
+        const trainResult = net.train(trainingData);
+        assert(trainResult.error < 0.09, `error ${ trainResult.error } did not go below 0.09`);
+        const closeToFive = net.run([.1,.2,.3,.4]);
+        const closeToOne = net.run([.5,.4,.3,.2]);
+        const fn = net.toFunction();
+        assert(closeToFive[0].toFixed(1) === '0.5', `${ closeToFive[0] } is not close to 0.5`);
+        assert(closeToOne[0].toFixed(1) === '0.1', `${ closeToOne[0] } is not close to 0.1`);
+        assert.equal(fn([.1,.2,.3,.4])[0], closeToFive[0]);
+        assert.equal(fn([.5,.4,.3,.2])[0], closeToOne[0]);
       });
+    });
+    describe('handles arrays', () => {
+      it('outputs exactly what net outputs', () => {
+        const net = new LSTMTimeStep({
+          inputSize: 2,
+          hiddenLayers: [10],
+          outputSize: 2
+        });
 
-      //Same test as previous, but combined on a single set
-      const trainingData = [
-        [.1,.5],[.2,.4],[.3,.3],[.4,.2],[.5,.1]
-      ];
+        //Same test as previous, but combined on a single set
+        const trainingData = [
+          [.1,.5],[.2,.4],[.3,.3],[.4,.2],[.5,.1]
+        ];
 
-      const trainResult = net.train(trainingData);
-      assert(trainResult.error < 0.09, `error ${ trainResult.error } did not go below 0.09`);
-      const closeToFiveAndOne = net.run([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
-      const fn = net.toFunction();
-      const result = fn([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
-      assert(closeToFiveAndOne[0].toFixed(1) === '0.5', `${ closeToFiveAndOne[0] } is not close to 0.5`);
-      assert(closeToFiveAndOne[1].toFixed(1) === '0.1', `${ closeToFiveAndOne[1] } is not close to 0.1`);
-      assert.equal(result[0], closeToFiveAndOne[0]);
-      assert.equal(result[1], closeToFiveAndOne[1]);
-      done();
+        const trainResult = net.train(trainingData);
+        assert(trainResult.error < 0.09, `error ${ trainResult.error } did not go below 0.09`);
+        const closeToFiveAndOne = net.run([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
+        const fn = net.toFunction();
+        const result = fn([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
+        assert(closeToFiveAndOne[0].toFixed(1) === '0.5', `${ closeToFiveAndOne[0] } is not close to 0.5`);
+        assert(closeToFiveAndOne[1].toFixed(1) === '0.1', `${ closeToFiveAndOne[1] } is not close to 0.1`);
+        assert.equal(result[0], closeToFiveAndOne[0]);
+        assert.equal(result[1], closeToFiveAndOne[1]);
+      });
+    });
+    describe('handles input/output arrays', () => {
+      it('outputs exactly what net outputs', () => {
+        const net = new LSTMTimeStep({
+          inputSize: 2,
+          hiddenLayers: [10],
+          outputSize: 2
+        });
+
+        //Same test as previous, but combined on a single set
+        const trainingData = [
+          { input: [[.1,.5],[.2,.4],[.3,.3]], output: [[.4,.2],[.5,.1]] }
+        ];
+
+        const trainResult = net.train(trainingData);
+        assert(trainResult.error < 0.09, `error ${ trainResult.error } did not go below 0.09`);
+        const closeToFiveAndOne = net.run([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
+        const fn = net.toFunction();
+        const result = fn([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
+        assert(closeToFiveAndOne[0].toFixed(1) === '0.5', `${ closeToFiveAndOne[0] } is not close to 0.5`);
+        assert(closeToFiveAndOne[1].toFixed(1) === '0.1', `${ closeToFiveAndOne[1] } is not close to 0.1`);
+        assert.equal(result[0], closeToFiveAndOne[0]);
+        assert.equal(result[1], closeToFiveAndOne[1]);
+      });
+    });
+    describe('handles input/output objects', () => {
+      it('outputs exactly what net outputs', () => {
+        const net = new LSTMTimeStep({
+          inputSize: 1,
+          hiddenLayers: [10],
+          outputSize: 1
+        });
+
+        //Same test as previous, but combined on a single set
+        const trainingData = [
+          { input: { monday: .1, tuesday: .2, wednesday: .3, thursday: .4 }, output: { friday: .5 } },
+          { input: { monday: .5, tuesday: .4, wednesday: .3, thursday: .2 }, output: { friday: .1 } },
+        ];
+
+        const trainResult = net.train(trainingData);
+        assert(trainResult.error < 0.09, `error ${ trainResult.error } did not go below 0.09`);
+        const closeToFive = net.run({ monday: .1, tuesday: .2, wednesday: .3, thursday: .4 });
+        const closeToOne = net.run({ monday: .5, tuesday: .4, wednesday: .3, thursday: .2 });
+        const fn = net.toFunction();
+        assert(closeToFive.friday.toFixed(1) === '0.5', `${ closeToFive.friday } is not close to 0.5`);
+        assert(closeToOne.friday.toFixed(1) === '0.1', `${ closeToOne.friday } is not close to 0.1`);
+        assert.equal(fn({ monday: .1, tuesday: .2, wednesday: .3, thursday: .4 }).friday, closeToFive.friday);
+        assert.equal(fn({ monday: .5, tuesday: .4, wednesday: .3, thursday: .2 }).friday, closeToOne.friday);
+      });
     });
   });
 });

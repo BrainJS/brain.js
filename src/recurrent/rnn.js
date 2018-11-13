@@ -39,7 +39,7 @@ export default class RNN {
       outputConnector: null,
     };
 
-    if (this.dataFormatter !== null) {
+    if (this.dataFormatter) {
       this.inputSize =
       this.inputRange =
       this.outputSize = this.dataFormatter.characters.length;
@@ -476,7 +476,7 @@ export default class RNN {
       this.hiddenLayers = options.hiddenSizes;
     }
 
-    if (options.hasOwnProperty('dataFormatter') && options.dataFormatter !== null) {
+    if (options.dataFormatter) {
       this.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);
     }
 
@@ -611,10 +611,10 @@ export default class RNN {
   if (typeof rawInput === 'undefined') rawInput = [];
   if (typeof isSampleI === 'undefined') isSampleI = false;
   if (typeof temperature === 'undefined') temperature = 1;
-  ${ (this.dataFormatter !== null) ? this.dataFormatter.toFunctionString() : '' }
+  ${ this.dataFormatter ? this.dataFormatter.toFunctionString() : '' }
   
   var input = ${
-      (this.dataFormatter !== null && typeof this.formatDataIn === 'function')
+      (this.dataFormatter && typeof this.formatDataIn === 'function')
         ? 'formatDataIn(rawInput)' 
         : 'rawInput'
     };
@@ -667,7 +667,7 @@ ${ innerFunctionsSwitch.join('\n') }
 
     output.push(nextIndex);
   }
-  ${ (this.dataFormatter !== null && typeof this.formatDataOut === 'function') 
+  ${ (this.dataFormatter && typeof this.formatDataOut === 'function') 
       ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))'
       : 'return output.slice(input.length).map(function(value) { return value - 1; })' };
   function Matrix(rows, columns) {
@@ -675,7 +675,7 @@ ${ innerFunctionsSwitch.join('\n') }
     this.columns = columns;
     this.weights = zeros(rows * columns);
   }
-  ${ this.dataFormatter !== null && typeof this.formatDataIn === 'function'
+  ${ this.dataFormatter && typeof this.formatDataIn === 'function'
       ? `function formatDataIn(input, output) { ${
           toInner(this.formatDataIn.toString())
             .replace(/this[.]dataFormatter[\n\s]+[.]/g, '')
@@ -730,7 +730,7 @@ RNN.defaults = {
     let values = [];
     const result = [];
     if (typeof data[0] === 'string' || Array.isArray(data[0])) {
-      if (this.dataFormatter === null) {
+      if (!this.dataFormatter) {
         for (let i = 0; i < data.length; i++) {
           values.push(data[i]);
         }
@@ -740,7 +740,7 @@ RNN.defaults = {
         result.push(this.formatDataIn(data[i]));
       }
     } else {
-      if (this.dataFormatter === null) {
+      if (!this.dataFormatter) {
         for (let i = 0; i < data.length; i++) {
           values.push(data[i].input);
           values.push(data[i].output);
@@ -761,7 +761,7 @@ RNN.defaults = {
    * @returns {Number[]}
    */
   formatDataIn: function(input, output = null) {
-    if (this.dataFormatter !== null) {
+    if (this.dataFormatter) {
       if (this.dataFormatter.indexTable.hasOwnProperty('stop-input')) {
         return this.dataFormatter.toIndexesInputOutput(input, output);
       } else {
@@ -777,7 +777,7 @@ RNN.defaults = {
    * @returns {*}
    */
   formatDataOut: function(input, output) {
-    if (this.dataFormatter !== null) {
+    if (this.dataFormatter) {
       return this.dataFormatter
         .toCharacters(output)
         .join('');
