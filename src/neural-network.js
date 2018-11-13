@@ -935,6 +935,7 @@ export default class NeuralNetwork {
    */
   toFunction() {
     const activation = this.activation;
+    const leakyReluAlpha = this.leakyReluAlpha;
     let needsVar = false;
     function nodeHandle(layers, layerNumber, nodeKey) {
       if (layerNumber === 0) {
@@ -964,7 +965,7 @@ export default class NeuralNetwork {
         }
         case 'leaky-relu': {
           needsVar = true;
-          return `((v=${result.join('')})<0?0:0.01*v)`;
+          return `((v=${result.join('')})<0?0:${leakyReluAlpha}*v)`;
         }
         case 'tanh':
           return `Math.tanh(${result.join('')})`;
