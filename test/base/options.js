@@ -108,4 +108,10 @@ describe ('neural network constructor values', () => {
     var net = new brain.NeuralNetwork(opts);
     assert.equal(opts.activation, net.activation, `activation => ${net.activation} but should be ${opts.activation}`);
   })
+
+  it('leakyReluAlpha should be settable in the constructor', () => {
+    let opts = { leakyReluAlpha: 0.1337 };
+    var net = new brain.NeuralNetwork(opts);
+    assert.equal(opts.leakyReluAlpha, net.leakyReluAlpha, `leakyReluAlpha => ${net.leakyReluAlpha} but should be ${opts.leakyReluAlpha}`);
+  })
 });
