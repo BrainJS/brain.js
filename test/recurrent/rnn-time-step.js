@@ -7,9 +7,173 @@ import sinon from 'sinon';
 /* NOTE: TimeStep here is deprecated though being committed as something new, it is the first feature we want using
  recurrent.js because it is simply one of the simplest recurrent neural networks and serves as a baseline to completing
  the GPU architecture.   This test is written so as to create the baseline we can measure against.
- We get this working, we have a baseline, we finish recurrent.js.
+ We get this working, we have a baseline, we finish brain.js v2.
   */
 describe.only('RNNTimeStep', () => {
+  describe('.createOutputMatrix()', () => {
+    it('creates the outputConnector and output for model', () => {
+      const net = new RNNTimeStep({
+        inputSize: 2,
+        hiddenLayers: [9, 11],
+        outputSize: 5,
+      });
+      assert.equal(net.model, null);
+      net.model = {};
+      net.createOutputMatrix();
+      assert.equal(net.model.outputConnector.rows, 5);
+      assert.equal(net.model.outputConnector.columns, 11);
+      assert.equal(net.model.output.rows, 5);
+      assert.equal(net.model.output.columns, 1);
+    });
+  });
+  describe('.bindEquation()', () => {
+    it('adds equations as expected', () => {
+      const net = new RNNTimeStep({
+        inputSize: 2,
+        hiddenLayers: [9, 11],
+        outputSize: 5,
+      });
+      net.initialize();
+      net.mapModel();
+      assert.equal(net.model.equations.length, 0);
+      net.bindEquation();
+      assert.equal(net.model.equations.length, 1);
+      net.bindEquation();
+      assert.equal(net.model.equations.length, 2);
+      net.bindEquation();
+      assert.equal(net.model.equations.length, 3);
+    });
+  });
+  describe('.mapModel()', () => {
+    describe('when .createHiddenLayers() does not provide model.hiddenLayers', () => {
+      it('throws', () => {
+        const net = new RNNTimeStep();
+        net.createHiddenLayers = () => {};
+        net.model = { hiddenLayers: [] };
+        assert.throws(
+          () => {
+            net.mapModel();
+          },
+          'Error: net.hiddenLayers not set'
+        );
+      });
+    });
+    describe('when .createOutputMatrix() does not provide model.outputConnector', () => {
+      it('throws', () => {
+        const net = new RNNTimeStep();
+        net.createOutputMatrix = () => {};
+        net.model = {
+          hiddenLayers: [],
+          outputConnector: null,
+          allMatrices: []
+        };
+        assert.throws(
+          () => {
+            net.mapModel();
+          },
+          'Error: net.model.outputConnector'
+        );
+      });
+    });
+    describe('when .createOutputMatrix() does not provide model.output', () => {
+      it('throws', () => {
+        const net = new RNNTimeStep();
+        net.createOutputMatrix = () => {};
+        net.model = {
+          hiddenLayers: [],
+          outputConnector: [],
+          allMatrices: []
+        };
+        assert.throws(
+          () => {
+            net.mapModel();
+          },
+          'Error: net.model.output not set'
+        );
+      });
+    });
+    it('maps models to model.allMatrices', () => {
+      const net = new RNNTimeStep();
+      net.model = {
+        allMatrices: [],
+        hiddenLayers: []
+      };
+      net.mapModel();
+      assert.equal(net.model.allMatrices.length, 5);
+    });
+  });
+  describe('.backpropagate()', () => {
+    it('steps through model.equations in reverse, calling model.equations[index].backpropagate', () => {
+      const net = new RNNTimeStep();
+      let i = 0;
+      net.model = {
+        equations: [
+          { backpropagate: () => { assert.equal(i++, 2); } },
+          { backpropagate: () => { assert.equal(i++, 1); } },
+          { backpropagate: () => { assert.equal(i++, 0); } },
+        ]
+      };
+      net.backpropagate();
+      assert.equal(i, 3);
+    });
+  });
+  describe('.run()', () => {
+    describe('when this.inputSize = 1', () => {
+      describe('when this.outputLookup is truthy', () => {
+        it('uses this.runObject as fn, calls it, and sets this.run as it for next use', () => {
+          const net = new RNNTimeStep({ inputSize: 1 });
+          net.model = { equations: [null] };
+          net.outputLookup = {};
+          const stub = net.runObject = sinon.stub();
+          net.run();
+          assert(stub.called);
+          assert.equal(net.run, stub);
+        });
+      });
+      describe('when this.outputLookup is not truthy', () => {
+        it('calls this.runNumbers and sets this.run as it for next use', () => {
+          const net = new RNNTimeStep({ inputSize: 1 });
+          net.model = {equations: [null]};
+          const stub = net.runNumbers = sinon.stub();
+          net.run();
+          assert(stub.called);
+          assert.equal(net.run, stub);
+        });
+      });
+    });
+    describe('when this.inputSize > 1', () => {
+      it('calls this.runArrays and sets this.run as it for next use', () => {
+        const net = new RNNTimeStep({ inputSize: 2 });
+        net.model = {equations: [null]};
+        const stub = net.runArrays = sinon.stub();
+        net.run();
+        assert(stub.called);
+        assert.equal(net.run, stub);
+      });
+    });
+  });
+  describe('.forecast()', () => {
+    describe('when this.inputSize = 1', () => {
+      it('calls this.forecastNumbers and sets this.forecast as it for next use', () => {
+        const net = new RNNTimeStep({ inputSize: 1 });
+        net.model = {equations: [null]};
+        const stub = net.forecastNumbers = sinon.stub();
+        net.forecast();
+        assert(stub.called);
+        assert.equal(net.forecast, stub);
+      });
+    });
+    describe('when this.inputSize > 1', () => {
+      it('calls this.forecastArrays and sets this.forecast as it for next use', () => {
+        const net = new RNNTimeStep({ inputSize: 2 });
+        net.model = {equations: [null]};
+        const stub = net.forecastArrays = sinon.stub();
+        net.forecast();
+        assert(stub.called);
+        assert.equal(net.forecast, stub);
+      });
+    });
+  });
   describe('.train()', () => {
     describe('calling using arrays', () => {
       describe('training data with 1D arrays', () => {
@@ -790,6 +954,219 @@ describe.only('RNNTimeStep', () => {
       assert.notDeepEqual(originalDeltas1, equationOutput1.product.deltas);
       assert.notDeepEqual(equationOutput0.product.deltas, equationOutput1.product.deltas);
       done();
+    });
+  });
+  describe('.runNumbers()', () => {
+    it('returns null when this.isRunnable returns false', () => {
+      const result = RNNTimeStep.prototype.runNumbers.apply({
+        isRunnable: false
+      });
+      assert.equal(result, null);
+    });
+    it('sets up equations for length of input plus 1 for internal of 0', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      net.initialize();
+      net.bindEquation();
+      assert.equal(net.model.equations.length, 1);
+      net.runNumbers([1,2,3]);
+      assert.equal(net.model.equations.length, 4);
+    });
+    it('sets calls equation.runInput() with value in array for each input plus 1 for 0 (to end) output', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      net.initialize();
+      const runInputStubs = [];
+      net.bindEquation = function() {
+        const stub = sinon.stub().returns({ weights: [] });
+        runInputStubs.push(stub);
+        this.model.equations.push({ runInput: stub });
+      };
+      net.bindEquation();
+      net.runNumbers([1,2,3]);
+      assert.equal(runInputStubs.length, 4);
+      assert(runInputStubs[0].called);
+      assert(runInputStubs[1].called);
+      assert(runInputStubs[2].called);
+      assert(runInputStubs[3].called);
+
+      assert.deepEqual(runInputStubs[0].args[0][0], [1]);
+      assert.deepEqual(runInputStubs[1].args[0][0], [2]);
+      assert.deepEqual(runInputStubs[2].args[0][0], [3]);
+      assert.deepEqual(runInputStubs[3].args[0][0], [0]);
+    });
+    it('sets calls this.end() after calls equations.runInput', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      const stub = net.end = sinon.stub();
+      net.initialize();
+      net.bindEquation();
+      net.runNumbers([1,2,3]);
+      assert(stub.called);
+    });
+  });
+  describe('.forecastNumbers()', () => {
+    it('returns null when this.isRunnable returns false', () => {
+      const result = RNNTimeStep.prototype.forecastNumbers.apply({
+        isRunnable: false
+      });
+      assert.equal(result, null);
+    });
+    it('sets up equations for length of input plus count plus 1 for internal of 0', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      net.initialize();
+      net.bindEquation();
+      assert.equal(net.model.equations.length, 1);
+      net.forecastNumbers([1,2,3], 2);
+      assert.equal(net.model.equations.length, 6);
+    });
+    it('sets calls this.end() after calls equations.runInput', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      const stub = net.end = sinon.stub();
+      net.initialize();
+      net.bindEquation();
+      net.forecastNumbers([1,2,3], 2);
+      assert(stub.called);
+    });
+    it('outputs the length of required forecast', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      net.initialize();
+      net.bindEquation();
+      const result = net.forecastNumbers([1,2,3], 2);
+      assert.equal(result.length, 2);
+    });
+    it('outputs a flat array of numbers', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      net.initialize();
+      net.bindEquation();
+      const result = net.forecastNumbers([1,2,3], 2);
+      assert.equal(typeof result[0], 'number');
+      assert.equal(typeof result[1], 'number');
+    });
+  });
+  describe('.runObject()', () => {
+    it('calls this.forecastNumbers()', () => {
+      const forecastNumbersStub = sinon.stub().returns([99, 88]);
+      const result = RNNTimeStep.prototype.runObject.apply({
+        inputLookup: {
+          input1: 0,
+          input2: 1
+        },
+        outputLookup: {
+          output1: 0,
+          output2: 1
+        },
+        forecastNumbers: forecastNumbersStub,
+      }, [1, 2]);
+
+      assert.deepEqual(result, {
+        output1: 99,
+        output2: 88
+      });
+      assert(forecastNumbersStub.called);
+    });
+  });
+  describe('.trainInputOutput()', () => {
+    it('sets up equations for length of input(3), output(1) plus count plus 1 for internal of 0', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      net.initialize();
+      net.bindEquation();
+      assert.equal(net.model.equations.length, 1);
+      net.trainInputOutput({ input: [1,2,3], output: [4] });
+      assert.equal(net.model.equations.length, 4);
+    });
+    it('sets up equations for length of input(3), output(2) plus count plus 1 for internal of 0', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      net.initialize();
+      net.bindEquation();
+      assert.equal(net.model.equations.length, 1);
+      net.trainInputOutput({ input: [1,2,3], output: [4,5] });
+      assert.equal(net.model.equations.length, 5);
+    });
+    it('calls equation.predictTarget for each input', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      net.initialize();
+      const predictTargetStubs = [];
+      const runInputStubs = [];
+      net.bindEquation = function() {
+        const predictTargetStub = sinon.stub();
+        const runInputStub = sinon.stub();
+        predictTargetStubs.push(predictTargetStub);
+        runInputStubs.push(runInputStub);
+        this.model.equations.push({
+          predictTarget: predictTargetStub,
+          runInput: runInputStub
+        });
+      };
+      assert.equal(net.model.equations.length, 0);
+      net.trainInputOutput({ input: [1,2,3], output: [4,5] });
+      assert.equal(net.model.equations.length, 5);
+
+      assert(!runInputStubs[0].called);
+      assert(!runInputStubs[1].called);
+      assert(!runInputStubs[2].called);
+      assert(!runInputStubs[3].called);
+
+      assert(predictTargetStubs[0].called);
+      assert(predictTargetStubs[1].called);
+      assert(predictTargetStubs[2].called);
+      assert(predictTargetStubs[3].called);
+      assert(runInputStubs[4].called);
+
+      assert.deepEqual(predictTargetStubs[0].args[0], [[1], [2]]);
+      assert.deepEqual(predictTargetStubs[1].args[0], [[2], [3]]);
+      assert.deepEqual(predictTargetStubs[2].args[0], [[3], [4]]);
+      assert.deepEqual(predictTargetStubs[3].args[0], [[4], [5]]);
+      assert.deepEqual(runInputStubs[4].args[0], [[0]]);
+    });
+    it('sets calls this.end() after calls equations.runInput', () => {
+      const net = new RNNTimeStep({
+        inputSize: 1,
+        hiddenLayers: [1],
+        outputSize: 1
+      });
+      const stub = net.end = sinon.stub();
+      net.initialize();
+      net.bindEquation();
+      net.trainInputOutput({ input: [1,2,3], output: [4,5] });
+      assert(stub.called);
     });
   });
   describe('.forecast()', () => {

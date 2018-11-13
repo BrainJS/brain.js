@@ -105,10 +105,10 @@ export default class RNNTimeStep extends RNN {
 
   forecast(input, count) {
     if (this.inputSize === 1) {
-      this.run = this.forecastNumbers;
+      this.forecast = this.forecastNumbers;
       return this.forecastNumbers(input, count);
     }
-    this.run = this.forecastArrays;
+    this.forecast = this.forecastArrays;
     return this.forecastArrays(input, count);
   }
 

@@ -147,7 +147,7 @@ describe('equation', () => {
     });
   });
   describe('inputMatrixToRow', () => {
-    context('run', () => {
+    context('runIndex', () => {
       it('can properly split up a matrix', () => {
         var input = new Matrix(2, 2);
         /**

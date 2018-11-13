@@ -277,7 +277,7 @@ export default class RNN {
    * @returns boolean
    */
   get isRunnable(){
-    if(this.model.equations.length === 0){
+    if (this.model.equations.length === 0) {
       console.error(`No equations bound, did you run train()?`);
       return false;
     }
