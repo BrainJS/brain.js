@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.4.8
+ *   version: 1.4.9
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -5304,6 +5304,7 @@ var DataFormatter = function () {
       dataFormatter.characterTable = json.characterTable;
       dataFormatter.values = json.values;
       dataFormatter.characters = json.characters;
+      dataFormatter.specialIndexes = json.specialIndexes;
       return dataFormatter;
     }
   }]);
