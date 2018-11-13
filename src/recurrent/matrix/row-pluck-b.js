@@ -5,9 +5,9 @@
  * @param {Number} rowIndex
  */
 export default function rowPluckB(product, left, rowIndex) {
-  const { columns } = left
-  const rowBase = columns * rowIndex
+  const { columns } = left;
+  const rowBase = columns * rowIndex;
   for (let column = 0; column < columns; column++) {
-    left.deltas[rowBase + column] = product.deltas[column]
+    left.deltas[rowBase + column] = product.deltas[column];
   }
 }

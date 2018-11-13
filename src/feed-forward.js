@@ -1,9 +1,9 @@
-import lookup from './lookup'
+import lookup from './lookup';
 // import TrainStream from './train-stream'
-import mse2d from './utilities/mse-2d'
-import layerFromJSON from './utilities/layer-from-json'
-import * as praxis from './praxis'
-import flattenLayers from './utilities/flatten-layers'
+import mse2d from './utilities/mse-2d';
+import layerFromJSON from './utilities/layer-from-json';
+import * as praxis from './praxis';
+import flattenLayers from './utilities/flatten-layers';
 
 export default class FeedForward {
   static get trainDefaults() {
@@ -16,7 +16,7 @@ export default class FeedForward {
       callback: null,
       callbackPeriod: 10,
       reinforce: false,
-    }
+    };
   }
 
   static get defaults() {
@@ -27,7 +27,7 @@ export default class FeedForward {
       inputLayer: null,
       outputLayer: null,
       praxis: layer => praxis.momentumRootMeanSquaredPropagation(layer),
-    }
+    };
   }
 
   /**
@@ -45,16 +45,16 @@ export default class FeedForward {
       callback: val => typeof val === 'function' || val === null,
       callbackPeriod: val => typeof val === 'number' && val > 0,
       timeout: val => typeof val === 'number' && val > 0,
-    }
+    };
     Object.keys(FeedForward.trainDefaults).forEach(key => {
       if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
         throw new Error(
           `[${key}, ${
             options[key]
           }] is out of normal training range, your network will probably not train.`
-        )
+        );
       }
-    })
+    });
   }
 
   /**
@@ -66,12 +66,12 @@ export default class FeedForward {
    */
   _setLogMethod(log) {
     if (typeof log === 'function') {
-      this.trainOpts.log = log
+      this.trainOpts.log = log;
     } else if (log) {
       // eslint-disable-next-line
       this.trainOpts.log = console.log
     } else {
-      this.trainOpts.log = false
+      this.trainOpts.log = false;
     }
   }
 
@@ -86,10 +86,10 @@ export default class FeedForward {
     Object.keys(this.constructor.trainDefaults).forEach(opt => {
       this.trainOpts[opt] = opts.hasOwnProperty(opt)
         ? opts[opt]
-        : this.trainOpts[opt]
-    })
-    this.constructor._validateTrainingOptions(this.trainOpts)
-    this._setLogMethod(opts.log || this.trainOpts.log)
+        : this.trainOpts[opt];
+    });
+    this.constructor._validateTrainingOptions(this.trainOpts);
+    this._setLogMethod(opts.log || this.trainOpts.log);
   }
 
   static get structure() {
@@ -97,7 +97,7 @@ export default class FeedForward {
       layers: null,
       _inputLayer: null,
       _outputLayer: null,
-    }
+    };
   }
 
   /**
@@ -106,53 +106,53 @@ export default class FeedForward {
    * @constructor
    */
   constructor(options = {}) {
-    this.inputLayer = null
-    this.hiddenLayers = null
-    this.outputLayer = null
-    this.errorCheckInterval = 100
-    Object.assign(this, this.constructor.defaults, options)
-    this.trainOpts = {}
+    this.inputLayer = null;
+    this.hiddenLayers = null;
+    this.outputLayer = null;
+    this.errorCheckInterval = 100;
+    Object.assign(this, this.constructor.defaults, options);
+    this.trainOpts = {};
     this._updateTrainingOptions(
       Object.assign({}, this.constructor.trainDefaults, options)
-    )
-    Object.assign(this, this.constructor.structure)
+    );
+    Object.assign(this, this.constructor.structure);
   }
 
   _connectLayers() {
-    const layers = []
-    this._inputLayer = this.inputLayer()
-    const hiddenLayers = this._connectHiddenLayers(this._inputLayer)
+    const layers = [];
+    this._inputLayer = this.inputLayer();
+    const hiddenLayers = this._connectHiddenLayers(this._inputLayer);
     this._outputLayer = this.outputLayer(
       hiddenLayers[hiddenLayers.length - 1],
       hiddenLayers.length
-    )
-    layers.push(this._inputLayer)
-    layers.push(...hiddenLayers)
-    layers.push(this._outputLayer)
-    this.layers = flattenLayers(layers)
+    );
+    layers.push(this._inputLayer);
+    layers.push(...hiddenLayers);
+    layers.push(this._outputLayer);
+    this.layers = flattenLayers(layers);
   }
 
   _connectHiddenLayers(previousLayer) {
-    const hiddenLayers = []
+    const hiddenLayers = [];
     for (let i = 0; i < this.hiddenLayers.length; i++) {
-      const hiddenLayer = this.hiddenLayers[i](previousLayer, i)
-      hiddenLayers.push(hiddenLayer)
-      previousLayer = hiddenLayer
+      const hiddenLayer = this.hiddenLayers[i](previousLayer, i);
+      hiddenLayers.push(hiddenLayer);
+      previousLayer = hiddenLayer;
     }
-    return hiddenLayers
+    return hiddenLayers;
   }
 
   initialize() {
-    this._connectLayers()
-    this.initializeLayers(this.layers)
+    this._connectLayers();
+    this.initializeLayers(this.layers);
   }
 
   initializeLayers(layers) {
     for (let i = 0; i < layers.length; i++) {
-      const layer = layers[i]
-      layer.setupKernels()
+      const layer = layers[i];
+      layer.setupKernels();
       if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
-        layer.praxis = this.praxis(layer)
+        layer.praxis = this.praxis(layer);
       }
     }
   }
@@ -164,23 +164,23 @@ export default class FeedForward {
    */
   run(input) {
     if (this.inputLookup) {
-      input = lookup.toArray(this.inputLookup, input)
+      input = lookup.toArray(this.inputLookup, input);
     }
 
-    let output = this.runInput(input)
+    let output = this.runInput(input);
 
     if (this.outputLookup) {
-      output = lookup.toHash(this.outputLookup, output)
+      output = lookup.toHash(this.outputLookup, output);
     }
-    return output
+    return output;
   }
 
   runInput(input) {
-    this.layers[0].predict(input)
+    this.layers[0].predict(input);
     for (let i = 1; i < this.layers.length; i++) {
-      this.layers[i].predict()
+      this.layers[i].predict();
     }
-    return this.layers[this.layers.length - 1].weights
+    return this.layers[this.layers.length - 1].weights;
   }
 
   /**
@@ -190,12 +190,12 @@ export default class FeedForward {
    * @returns {{error: number, iterations: number}}
    */
   train(data, options = {}) {
-    let status
+    let status;
     let endTime
-    ;({ data, status, endTime } = this._prepTraining(data, options))
+    ;({ data, status, endTime } = this._prepTraining(data, options));
 
     while (this._trainingTick(data, status, endTime));
-    return status
+    return status;
   }
 
   /**
@@ -210,32 +210,32 @@ export default class FeedForward {
       status.error <= this.trainOpts.errorThresh ||
       Date.now() >= endTime
     ) {
-      return false
+      return false;
     }
 
-    status.iterations++
+    status.iterations++;
 
     if (
       this.trainOpts.log &&
       status.iterations % this.trainOpts.logPeriod === 0
     ) {
-      status.error = this._calculateTrainingError(data)
+      status.error = this._calculateTrainingError(data);
       this.trainOpts.log(
         `iterations: ${status.iterations}, training error: ${status.error}`
-      )
+      );
     } else if (status.iterations % this.errorCheckInterval === 0) {
-      status.error = this._calculateTrainingError(data)
+      status.error = this._calculateTrainingError(data);
     } else {
-      this._trainPatterns(data)
+      this._trainPatterns(data);
     }
 
     if (
       this.trainOpts.callback &&
       status.iterations % this.trainOpts.callbackPeriod === 0
     ) {
-      this.trainOpts.callback(Object.assign(status))
+      this.trainOpts.callback(Object.assign(status));
     }
-    return true
+    return true;
   }
 
   /**
@@ -246,22 +246,22 @@ export default class FeedForward {
    * @return { data, status, endTime }
    */
   _prepTraining(data, options) {
-    this._updateTrainingOptions(options)
-    data = this._formatData(data)
-    const endTime = Date.now() + this.trainOpts.timeout
+    this._updateTrainingOptions(options);
+    data = this._formatData(data);
+    const endTime = Date.now() + this.trainOpts.timeout;
 
     const status = {
       error: 1,
       iterations: 0,
-    }
+    };
 
-    this.initialize()
+    this.initialize();
 
     return {
       data,
       status,
       endTime,
-    }
+    };
   }
 
   /**
@@ -270,11 +270,11 @@ export default class FeedForward {
    * @returns {Number} error
    */
   _calculateTrainingError(data) {
-    let sum = 0
+    let sum = 0;
     for (let i = 0; i < data.length; ++i) {
-      sum += this._trainPattern(data[i].input, data[i].output, true)
+      sum += this._trainPattern(data[i].input, data[i].output, true);
     }
-    return sum / data.length
+    return sum / data.length;
   }
 
   /**
@@ -283,7 +283,7 @@ export default class FeedForward {
    */
   _trainPatterns(data) {
     for (let i = 0; i < data.length; ++i) {
-      this._trainPattern(data[i].input, data[i].output, false)
+      this._trainPattern(data[i].input, data[i].output, false);
     }
   }
 
@@ -295,25 +295,25 @@ export default class FeedForward {
    */
   _trainPattern(input, target, logErrorRate) {
     // forward propagate
-    this.runInput(input)
+    this.runInput(input);
 
     // back propagate
-    this._calculateDeltas(target)
-    this._adjustWeights()
+    this._calculateDeltas(target);
+    this._adjustWeights();
 
     if (logErrorRate) {
       return mse2d(
         this._outputLayer.errors.hasOwnProperty('toArray')
           ? this._outputLayer.errors.toArray()
           : this._outputLayer.errors
-      )
+      );
     }
-    return null
+    return null;
   }
 
   _calculateDeltas(target) {
     for (let i = this.layers.length - 1; i > -1; i--) {
-      this.layers[i].compare(target)
+      this.layers[i].compare(target);
     }
   }
 
@@ -326,7 +326,7 @@ export default class FeedForward {
         this.layers[i - 1],
         this.layers[i + 1],
         this.trainOpts.learningRate
-      )
+      );
     }
   }
 
@@ -338,33 +338,33 @@ export default class FeedForward {
   _formatData(data) {
     if (!Array.isArray(data)) {
       // turn stream datum into array
-      const tmp = []
-      tmp.push(data)
-      data = tmp
+      const tmp = [];
+      tmp.push(data);
+      data = tmp;
     }
 
     // turn sparse hash input into arrays with 0s as filler
-    const datum = data[0].input
+    const datum = data[0].input;
     if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
       if (!this.inputLookup) {
-        this.inputLookup = lookup.buildLookup(data.map(value => value.input))
+        this.inputLookup = lookup.buildLookup(data.map(value => value.input));
       }
       data = data.map(datumParam => {
-        const array = lookup.toArray(this.inputLookup, datumParam.input)
-        return Object.assign({}, datumParam, { input: array })
-      }, this)
+        const array = lookup.toArray(this.inputLookup, datumParam.input);
+        return Object.assign({}, datumParam, { input: array });
+      }, this);
     }
 
     if (!Array.isArray(data[0].output)) {
       if (!this.outputLookup) {
-        this.outputLookup = lookup.buildLookup(data.map(value => value.output))
+        this.outputLookup = lookup.buildLookup(data.map(value => value.output));
       }
       data = data.map(datumParam => {
-        const array = lookup.toArray(this.outputLookup, datumParam.output)
-        return Object.assign({}, datumParam, { output: array })
-      }, this)
+        const array = lookup.toArray(this.outputLookup, datumParam.output);
+        return Object.assign({}, datumParam, { output: array });
+      }, this);
     }
-    return data
+    return data;
   }
 
   /**
@@ -378,31 +378,31 @@ export default class FeedForward {
    * }
    */
   test() {
-    throw new Error(`${this.constructor.name}-test is not yet implemented`)
+    throw new Error(`${this.constructor.name}-test is not yet implemented`);
   }
 
   /**
    *
    */
   toJSON() {
-    const jsonLayers = []
+    const jsonLayers = [];
     for (let i = 0; i < this.layers.length; i++) {
-      const layer = this.layers[i]
-      const jsonLayer = layer.toJSON()
+      const layer = this.layers[i];
+      const jsonLayer = layer.toJSON();
       if (layer.hasOwnProperty('inputLayer')) {
-        jsonLayer.inputLayerIndex = this.layers.indexOf(layer.inputLayer)
+        jsonLayer.inputLayerIndex = this.layers.indexOf(layer.inputLayer);
       } else if (
         layer.hasOwnProperty('inputLayer1') &&
         layer.hasOwnProperty('inputLayer2')
       ) {
-        jsonLayer.inputLayer1Index = this.layers.indexOf(layer.inputLayer1)
-        jsonLayer.inputLayer2Index = this.layers.indexOf(layer.inputLayer2)
+        jsonLayer.inputLayer1Index = this.layers.indexOf(layer.inputLayer1);
+        jsonLayer.inputLayer2Index = this.layers.indexOf(layer.inputLayer2);
       }
-      jsonLayers.push(jsonLayer)
+      jsonLayers.push(jsonLayer);
     }
     return {
       layers: jsonLayers,
-    }
+    };
   }
 
   /**
@@ -412,46 +412,46 @@ export default class FeedForward {
    * @returns {FeedForward}
    */
   static fromJSON(json, getLayer) {
-    const jsonLayers = json.layers
-    const layers = []
-    const inputLayer = layerFromJSON(jsonLayers[0]) || getLayer(jsonLayers[0])
-    layers.push(inputLayer)
+    const jsonLayers = json.layers;
+    const layers = [];
+    const inputLayer = layerFromJSON(jsonLayers[0]) || getLayer(jsonLayers[0]);
+    layers.push(inputLayer);
 
     for (let i = 1; i < jsonLayers.length; i++) {
-      const jsonLayer = jsonLayers[i]
+      const jsonLayer = jsonLayers[i];
       if (jsonLayer.hasOwnProperty('inputLayerIndex')) {
-        const inputLayer1 = layers[jsonLayer.inputLayerIndex]
+        const inputLayer1 = layers[jsonLayer.inputLayerIndex];
         layers.push(
           layerFromJSON(jsonLayer, inputLayer1) ||
             getLayer(jsonLayer, inputLayer1)
-        )
+        );
       } else {
         if (!jsonLayer.hasOwnProperty('inputLayer1Index'))
-          throw new Error('inputLayer1Index not defined')
+          throw new Error('inputLayer1Index not defined');
         if (!jsonLayer.hasOwnProperty('inputLayer2Index'))
-          throw new Error('inputLayer2Index not defined')
-        const inputLayer1 = layers[jsonLayer.inputLayer1Index]
-        const inputLayer2 = layers[jsonLayer.inputLayer2Index]
+          throw new Error('inputLayer2Index not defined');
+        const inputLayer1 = layers[jsonLayer.inputLayer1Index];
+        const inputLayer2 = layers[jsonLayer.inputLayer2Index];
 
         if (inputLayer1 === undefined)
           throw new Error(
             `layer of index ${jsonLayer.inputLayer1Index} not found`
-          )
+          );
         if (inputLayer2 === undefined)
           throw new Error(
             `layer of index ${jsonLayer.inputLayer2Index} not found`
-          )
+          );
 
         layers.push(
           layerFromJSON(jsonLayer, inputLayer) ||
             getLayer(jsonLayer, inputLayer1, inputLayer2)
-        )
+        );
       }
     }
 
-    const net = new FeedForward(json)
-    net.layers = layers
-    return net
+    const net = new FeedForward(json);
+    net.layers = layers;
+    return net;
   }
 
   /**
@@ -461,7 +461,7 @@ export default class FeedForward {
   toFunction() {
     throw new Error(
       `${this.constructor.name}-toFunction is not yet implemented`
-    )
+    );
   }
 
   /**
@@ -472,6 +472,6 @@ export default class FeedForward {
   createTrainStream() {
     throw new Error(
       `${this.constructor.name}-createTrainStream is not yet implemented`
-    )
+    );
   }
 }

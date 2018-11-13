@@ -16,6 +16,6 @@
     "no-plusplus": 0,
     "no-prototype-builtins": 0,
     "no-underscore-dangle": 0,
-    "semi": 0
+    "semi": 1
   }
 }

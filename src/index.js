@@ -1,43 +1,43 @@
-import activation from './activation'
-import crossValidate from './cross-validate'
-import * as layer from './layer'
-import likely from './likely'
-import lookup from './lookup'
-import praxis from './praxis'
-import FeedForward from './feed-forward'
-import NeuralNetwork from './neural-network'
-import NeuralNetworkGPU from './neural-network-gpu'
-import TrainStream from './train-stream'
-import Recurrent from './recurrent'
-import RNNTimeStep from './recurrent/rnn-time-step'
-import LSTMTimeStep from './recurrent/lstm-time-step'
-import GRUTimeStep from './recurrent/gru-time-step'
-import RNN from './recurrent/rnn'
-import LSTM from './recurrent/lstm'
-import GRU from './recurrent/gru'
-import max from './utilities/max'
-import mse from './utilities/mse'
-import ones from './utilities/ones'
-import random from './utilities/random'
-import randomWeight from './utilities/random-weight'
-import randos from './utilities/randos'
-import range from './utilities/range'
-import toArray from './utilities/to-array'
-import DataFormatter from './utilities/data-formatter'
-import zeros from './utilities/zeros'
+import activation from './activation';
+import crossValidate from './cross-validate';
+import * as layer from './layer';
+import likely from './likely';
+import lookup from './lookup';
+import praxis from './praxis';
+import FeedForward from './feed-forward';
+import NeuralNetwork from './neural-network';
+import NeuralNetworkGPU from './neural-network-gpu';
+import TrainStream from './train-stream';
+import Recurrent from './recurrent';
+import RNNTimeStep from './recurrent/rnn-time-step';
+import LSTMTimeStep from './recurrent/lstm-time-step';
+import GRUTimeStep from './recurrent/gru-time-step';
+import RNN from './recurrent/rnn';
+import LSTM from './recurrent/lstm';
+import GRU from './recurrent/gru';
+import max from './utilities/max';
+import mse from './utilities/mse';
+import ones from './utilities/ones';
+import random from './utilities/random';
+import randomWeight from './utilities/random-weight';
+import randos from './utilities/randos';
+import range from './utilities/range';
+import toArray from './utilities/to-array';
+import DataFormatter from './utilities/data-formatter';
+import zeros from './utilities/zeros';
 
 // layer deps
-import feedForward from './layer/feed-forward'
-import gru from './layer/gru'
-import lstm from './layer/lstm'
-import recurrent from './layer/recurrent'
-import output from './layer/output'
+import feedForward from './layer/feed-forward';
+import gru from './layer/gru';
+import lstm from './layer/lstm';
+import recurrent from './layer/recurrent';
+import output from './layer/output';
 
-layer.feedForward = feedForward
-layer.gru = gru
-layer.lstm = lstm
-layer.recurrent = recurrent
-layer.output = output
+layer.feedForward = feedForward;
+layer.gru = gru;
+layer.lstm = lstm;
+layer.recurrent = recurrent;
+layer.output = output;
 
 const brain = {
   activation,
@@ -71,12 +71,12 @@ const brain = {
     DataFormatter,
     zeros,
   },
-}
+};
 
 if (typeof window !== 'undefined') {
   window.brain = brain //eslint-disable-line
 }
 
 if (typeof module !== 'undefined') {
-  module.exports = brain
+  module.exports = brain;
 }

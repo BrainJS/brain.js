@@ -5,9 +5,9 @@
  * @returns {Array}
  */
 export default function range(start, end) {
-  const result = []
+  const result = [];
   for (; start < end; start++) {
-    result.push(start)
+    result.push(start);
   }
-  return result
+  return result;
 }

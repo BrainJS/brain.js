@@ -1,9 +1,9 @@
-import Base from './base'
+import Base from './base';
 
 class Regression extends Base {
   predict() {
-    this.weights = this.inputs
-    this.validate()
+    this.weights = this.inputs;
+    this.validate();
   }
 
   learn() {

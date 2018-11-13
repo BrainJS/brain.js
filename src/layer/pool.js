@@ -1,100 +1,100 @@
-import { Filter } from './types'
-import { makeKernel } from '../utilities/kernel'
-import { setPadding, setStride } from '../utilities/layer-setup'
-import zeros3D from '../utilities/zeros-3d'
+import { Filter } from './types';
+import { makeKernel } from '../utilities/kernel';
+import { setPadding, setStride } from '../utilities/layer-setup';
+import zeros3D from '../utilities/zeros-3d';
 import randos3D from "../utilities/randos-3d";
 
 function setSwitchY(value) {
-  return value
+  return value;
 }
 
 function setSwitchX(value) {
-  return value
+  return value;
 }
 
 export function predict(inputs) {
   const x = Math.floor(
     (this.thread.x / this.output.x) * this.constants.inputWidth -
       this.constants.paddingX
-  )
+  );
   const y = Math.floor(
     (this.thread.y / this.output.y) * this.constants.inputHeight -
       this.constants.paddingY
-  )
-  let largestValue = -Infinity
-  let largestX = -1
-  let largestY = -1
+  );
+  let largestValue = -Infinity;
+  let largestX = -1;
+  let largestY = -1;
 
   // convolve centered at this particular location
   for (let filterY = 0; filterY < this.constants.filterHeight; filterY++) {
     // coordinates in the original input array coordinates
-    const inputY = filterY + y
+    const inputY = filterY + y;
     for (let filterX = 0; filterX < this.constants.filterWidth; filterX++) {
-      const inputX = filterX + x
+      const inputX = filterX + x;
       if (
         inputY >= 0 &&
         inputY < this.constants.inputHeight &&
         inputX >= 0 &&
         inputX < this.constants.inputWidth
       ) {
-        const input = inputs[this.thread.z][inputY][inputX]
+        const input = inputs[this.thread.z][inputY][inputX];
         if (input > largestValue) {
-          largestValue = input
-          largestY = inputY
-          largestX = inputX
+          largestValue = input;
+          largestY = inputY;
+          largestX = inputX;
         }
       }
     }
   }
-  setSwitchY(largestY)
-  setSwitchX(largestX)
-  return largestValue
+  setSwitchY(largestY);
+  setSwitchX(largestX);
+  return largestValue;
 }
 
 export function compare(deltas, switchY, switchX) {
   const x = Math.floor(
     (this.thread.x / this.output.x) * this.constants.outputWidth
-  )
+  );
   const y = Math.floor(
     (this.thread.y / this.output.y) * this.constants.outputHeight
-  )
+  );
 
-  let value = 0
+  let value = 0;
 
   for (let deltasY = 0; deltasY < this.constants.inputHeight; deltasY++) {
     for (let deltasX = 0; deltasX < this.constants.inputWidth; deltasX++) {
-      const switchXValue = switchX[deltasY][deltasX]
-      const switchYValue = switchY[deltasY][deltasX]
+      const switchXValue = switchX[deltasY][deltasX];
+      const switchYValue = switchY[deltasY][deltasX];
       if (switchXValue === x && switchYValue === y) {
-        value += deltas[deltasY][deltasX]
+        value += deltas[deltasY][deltasX];
       }
     }
   }
 
-  return value
+  return value;
 }
 
 export function compare3D(deltas, switchY, switchX) {
   const x = Math.floor(
     (this.thread.x / this.output.x) * this.constants.outputWidth
-  )
+  );
   const y = Math.floor(
     (this.thread.y / this.output.y) * this.constants.outputHeight
-  )
+  );
 
-  let value = 0
+  let value = 0;
 
   for (let deltasY = 0; deltasY < this.constants.inputHeight; deltasY++) {
     for (let deltasX = 0; deltasX < this.constants.inputWidth; deltasX++) {
-      const switchXValue = switchX[this.thread.z][deltasY][deltasX]
-      const switchYValue = switchY[this.thread.z][deltasY][deltasX]
+      const switchXValue = switchX[this.thread.z][deltasY][deltasX];
+      const switchYValue = switchY[this.thread.z][deltasY][deltasX];
       if (switchXValue === x && switchYValue === y) {
-        value += deltas[this.thread.z][deltasY][deltasX]
+        value += deltas[this.thread.z][deltasY][deltasX];
       }
     }
   }
 
-  return value
+  return value;
 }
 
 export default class Pool extends Filter {
@@ -105,48 +105,48 @@ export default class Pool extends Filter {
       filterWidth: 0,
       filterHeight: 0,
       filterCount: 0,
-    }
+    };
   }
 
   constructor(settings, inputLayer) {
-    super(settings)
+    super(settings);
 
-    this.stride = null
-    this.strideX = null
-    this.strideY = null
-    setStride(this, settings)
+    this.stride = null;
+    this.strideX = null;
+    this.strideY = null;
+    setStride(this, settings);
 
-    this.padding = null
-    this.paddingX = null
-    this.paddingY = null
-    setPadding(this, settings)
+    this.padding = null;
+    this.paddingX = null;
+    this.paddingY = null;
+    setPadding(this, settings);
 
-    this.filterCount = settings.filterCount
-    this.filterWidth = settings.filterWidth
-    this.filterHeight = settings.filterHeight
+    this.filterCount = settings.filterCount;
+    this.filterWidth = settings.filterWidth;
+    this.filterHeight = settings.filterHeight;
 
     this.width = Math.floor(
       (inputLayer.width + this.paddingX * 2 - this.filterWidth) / this.strideX +
         1
-    )
+    );
     this.height = Math.floor(
       (inputLayer.height + this.paddingY * 2 - this.filterHeight) /
         this.strideY +
         1
-    )
-    //TODO: handle 1 depth?
-    this.depth = this.filterCount
+    );
+    // TODO: handle 1 depth?
+    this.depth = this.filterCount;
 
-    this.weights = randos3D(this.width, this.height, this.depth)
-    this.deltas = zeros3D(this.width, this.height, this.depth)
+    this.weights = randos3D(this.width, this.height, this.depth);
+    this.deltas = zeros3D(this.width, this.height, this.depth);
 
-    this.filters = randos3D(this.filterWidth, this.filterHeight, this.filterCount)
-    this.filterDeltas = zeros3D(this.filterWidth, this.filterHeight, this.filterCount)
+    this.filters = randos3D(this.filterWidth, this.filterHeight, this.filterCount);
+    this.filterDeltas = zeros3D(this.filterWidth, this.filterHeight, this.filterCount);
 
-    this.learnFilters = null
-    this.learnInputs = null
-    this.inputLayer = inputLayer
-    this.validate()
+    this.learnFilters = null;
+    this.learnInputs = null;
+    this.inputLayer = inputLayer;
+    this.validate();
   }
 
   setupKernels() {
@@ -164,7 +164,7 @@ export default class Pool extends Filter {
         filterHeight: this.filterHeight,
         filterWidth: this.filterWidth,
       },
-    })
+    });
 
     this.compareKernel = makeKernel(compare, {
       output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth],
@@ -175,32 +175,32 @@ export default class Pool extends Filter {
         paddingX: this.paddingX,
         paddingY: this.paddingY,
       },
-    })
+    });
   }
 
   predict() {
-    const weights = this.predictKernel(this.inputLayer.weights)
-    this.switchX = weights.switchX
-    this.switchY = weights.switchY
-    this.weights = weights.result
-    return this.weights
+    const weights = this.predictKernel(this.inputLayer.weights);
+    this.switchX = weights.switchX;
+    this.switchY = weights.switchY;
+    this.weights = weights.result;
+    return this.weights;
   }
 
   compare() {
-    debugger
-    const depth = this.inputLayer.deltas.length
-    const height = this.inputLayer.deltas[0].length
-    const width = this.inputLayer.deltas[0][0].length
-    const type = typeof this.inputLayer.deltas[0][0][0]
+    debugger;
+    const depth = this.inputLayer.deltas.length;
+    const height = this.inputLayer.deltas[0].length;
+    const width = this.inputLayer.deltas[0][0].length;
+    const type = typeof this.inputLayer.deltas[0][0][0];
     this.inputLayer.deltas = this.compareKernel(
       this.deltas,
       this.switchX,
       this.switchY
-    )
-    debugger
-    if (depth !== this.inputLayer.deltas.length) debugger
-    if (height !== this.inputLayer.deltas[0].length) debugger
-    if (width !== this.inputLayer.deltas[0][0].length) debugger
-    if (type !== typeof this.inputLayer.deltas[0][0][0]) debugger
+    );
+    debugger;
+    if (depth !== this.inputLayer.deltas.length) debugger;
+    if (height !== this.inputLayer.deltas[0].length) debugger;
+    if (width !== this.inputLayer.deltas[0][0].length) debugger;
+    if (type !== typeof this.inputLayer.deltas[0][0][0]) debugger;
   }
 }

@@ -9,9 +9,9 @@ export default class lookup {
     const reducedHash = hashes.reduce(
       (memo, hash) => Object.assign(memo, hash),
       {}
-    )
+    );
 
-    return lookup.lookupFromHash(reducedHash)
+    return lookup.lookupFromHash(reducedHash);
   }
 
   /**
@@ -20,15 +20,15 @@ export default class lookup {
    * @returns {Object}
    */
   static lookupFromHash(hash) {
-    const lookupHash = {}
-    let index = 0
+    const lookupHash = {};
+    let index = 0;
 
     Object.keys(hash).forEach(i => {
-      index += 1
-      lookupHash[i] = index
-    })
+      index += 1;
+      lookupHash[i] = index;
+    });
 
-    return lookupHash
+    return lookupHash;
   }
 
   /**
@@ -38,13 +38,13 @@ export default class lookup {
    * @returns {Array}
    */
   static toArray(lookupHash, hash) {
-    const array = []
+    const array = [];
 
     Object.keys(lookupHash).forEach(i => {
-      array[lookupHash[i]] = hash[i] || 0
-    })
+      array[lookupHash[i]] = hash[i] || 0;
+    });
 
-    return array
+    return array;
   }
 
   /**
@@ -54,13 +54,13 @@ export default class lookup {
    * @returns {Object}
    */
   static toHash(lookupHash, array) {
-    const hash = {}
+    const hash = {};
 
     Object.keys(lookupHash).forEach(i => {
-      hash[i] = array[lookupHash[i]]
-    })
+      hash[i] = array[lookupHash[i]];
+    });
 
-    return hash
+    return hash;
   }
 
   /**
@@ -69,14 +69,14 @@ export default class lookup {
    * @returns {*}
    */
   static lookupFromArray(array) {
-    const lookupHash = {}
-    let z = 0
-    let i = array.length
+    const lookupHash = {};
+    let z = 0;
+    let i = array.length;
 
     while (i-- > 0) {
-      lookupHash[array[i]] = z++
+      lookupHash[array[i]] = z++;
     }
 
-    return lookupHash
+    return lookupHash;
   }
 }

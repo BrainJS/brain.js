@@ -6,7 +6,7 @@
  */
 export default function multiplyElementB(product, left, right) {
   for (let i = 0; i < left.weights.length; i++) {
-    left.deltas[i] = right.weights[i] * product.deltas[i]
-    right.deltas[i] = left.weights[i] * product.deltas[i]
+    left.deltas[i] = right.weights[i] * product.deltas[i];
+    right.deltas[i] = left.weights[i] * product.deltas[i];
   }
 }

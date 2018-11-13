@@ -5,7 +5,7 @@
  * @returns {number}
  */
 export function activate(weight) {
-  return weight > 0 ? weight : 0.01 * weight
+  return weight > 0 ? weight : 0.01 * weight;
 }
 
 /**
@@ -15,5 +15,5 @@ export function activate(weight) {
  * @returns {number}
  */
 export function measure(weight, error) {
-  return weight > 0 ? error : 0.01 * error
+  return weight > 0 ? error : 0.01 * error;
 }

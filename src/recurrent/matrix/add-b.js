@@ -6,7 +6,7 @@
  */
 export default function addB(product, left, right) {
   for (let i = 0; i < product.deltas.length; i++) {
-    left.deltas[i] = product.deltas[i]
-    right.deltas[i] = product.deltas[i]
+    left.deltas[i] = product.deltas[i];
+    right.deltas[i] = product.deltas[i];
   }
 }

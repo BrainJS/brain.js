@@ -1,6 +1,6 @@
-import Matrix from './matrix'
-import RandomMatrix from './matrix/random-matrix'
-import RNN from './rnn'
+import Matrix from './matrix';
+import RandomMatrix from './matrix/random-matrix';
+import RNN from './rnn';
 
 export default class GRU extends RNN {
   static getModel(hiddenSize, prevSize) {
@@ -20,7 +20,7 @@ export default class GRU extends RNN {
       cellWriteInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wchh
       cellWriteHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bc
       cellWriteBias: new Matrix(hiddenSize, 1),
-    }
+    };
   }
 
   /**
@@ -32,13 +32,13 @@ export default class GRU extends RNN {
    * @returns {Matrix}
    */
   static getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-    const sigmoid = equation.sigmoid.bind(equation)
-    const add = equation.add.bind(equation)
-    const multiply = equation.multiply.bind(equation)
-    const multiplyElement = equation.multiplyElement.bind(equation)
-    const tanh = equation.tanh.bind(equation)
-    const allOnes = equation.allOnes.bind(equation)
-    const cloneNegative = equation.cloneNegative.bind(equation)
+    const sigmoid = equation.sigmoid.bind(equation);
+    const add = equation.add.bind(equation);
+    const multiply = equation.multiply.bind(equation);
+    const multiplyElement = equation.multiplyElement.bind(equation);
+    const tanh = equation.tanh.bind(equation);
+    const allOnes = equation.allOnes.bind(equation);
+    const cloneNegative = equation.cloneNegative.bind(equation);
 
     // update gate
     const updateGate = sigmoid(
@@ -49,7 +49,7 @@ export default class GRU extends RNN {
         ),
         hiddenLayer.updateGateBias
       )
-    )
+    );
 
     // reset gate
     const resetGate = sigmoid(
@@ -60,7 +60,7 @@ export default class GRU extends RNN {
         ),
         hiddenLayer.resetGateBias
       )
-    )
+    );
 
     // cell
     const cell = tanh(
@@ -74,7 +74,7 @@ export default class GRU extends RNN {
         ),
         hiddenLayer.cellWriteBias
       )
-    )
+    );
 
     // compute hidden state as gated, saturated cell activations
     // negate updateGate
@@ -87,6 +87,6 @@ export default class GRU extends RNN {
         cell
       ),
       multiplyElement(previousResult, updateGate)
-    )
+    );
   }
 }

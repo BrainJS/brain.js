@@ -1,6 +1,6 @@
-import Matrix from './matrix'
-import RandomMatrix from './matrix/random-matrix'
-import RNN from './rnn'
+import Matrix from './matrix';
+import RandomMatrix from './matrix/random-matrix';
+import RNN from './rnn';
 
 export default class LSTM extends RNN {
   static getModel(hiddenSize, prevSize) {
@@ -23,7 +23,7 @@ export default class LSTM extends RNN {
       cellActivationMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wch
       cellActivationHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bc
       cellActivationBias: new Matrix(hiddenSize, 1),
-    }
+    };
   }
 
   /**
@@ -35,11 +35,11 @@ export default class LSTM extends RNN {
    * @returns {Matrix}
    */
   static getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-    const sigmoid = equation.sigmoid.bind(equation)
-    const add = equation.add.bind(equation)
-    const multiply = equation.multiply.bind(equation)
-    const multiplyElement = equation.multiplyElement.bind(equation)
-    const tanh = equation.tanh.bind(equation)
+    const sigmoid = equation.sigmoid.bind(equation);
+    const add = equation.add.bind(equation);
+    const multiply = equation.multiply.bind(equation);
+    const multiplyElement = equation.multiplyElement.bind(equation);
+    const tanh = equation.tanh.bind(equation);
 
     const inputGate = sigmoid(
       add(
@@ -49,7 +49,7 @@ export default class LSTM extends RNN {
         ),
         hiddenLayer.inputBias
       )
-    )
+    );
 
     const forgetGate = sigmoid(
       add(
@@ -59,7 +59,7 @@ export default class LSTM extends RNN {
         ),
         hiddenLayer.forgetBias
       )
-    )
+    );
 
     // output gate
     const outputGate = sigmoid(
@@ -70,7 +70,7 @@ export default class LSTM extends RNN {
         ),
         hiddenLayer.outputBias
       )
-    )
+    );
 
     // write operation on cells
     const cellWrite = tanh(
@@ -81,14 +81,14 @@ export default class LSTM extends RNN {
         ),
         hiddenLayer.cellActivationBias
       )
-    )
+    );
 
     // compute new cell activation
-    const retainCell = multiplyElement(forgetGate, previousResult) // what do we keep from cell
-    const writeCell = multiplyElement(inputGate, cellWrite) // what do we write to cell
-    const cell = add(retainCell, writeCell) // new cell contents
+    const retainCell = multiplyElement(forgetGate, previousResult); // what do we keep from cell
+    const writeCell = multiplyElement(inputGate, cellWrite); // what do we write to cell
+    const cell = add(retainCell, writeCell); // new cell contents
 
     // compute hidden state as gated, saturated cell activations
-    return multiplyElement(outputGate, tanh(cell))
+    return multiplyElement(outputGate, tanh(cell));
   }
 }

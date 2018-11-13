@@ -1,10 +1,10 @@
-import ones from '../../src/utilities/ones'
+import ones from '../../src/utilities/ones';
 
 describe('ones', () => {
   test('should return an array with all ones', () => {
-    const temp = ones(10)
-    const tempCheck = temp.filter(el => el === 1)
+    const temp = ones(10);
+    const tempCheck = temp.filter(el => el === 1);
 
-    expect(temp.length).toBe(tempCheck.length)
-  })
-})
+    expect(temp.length).toBe(tempCheck.length);
+  });
+});

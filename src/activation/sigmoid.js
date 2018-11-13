@@ -4,7 +4,7 @@
  * @returns {number}
  */
 export function activate(value) {
-  return 1 / (1 + Math.exp(-value))
+  return 1 / (1 + Math.exp(-value));
 }
 
 /**
@@ -14,5 +14,5 @@ export function activate(value) {
  * @returns {number}
  */
 export function measure(weight, error) {
-  return weight * (1 - weight) * error
+  return weight * (1 - weight) * error;
 }

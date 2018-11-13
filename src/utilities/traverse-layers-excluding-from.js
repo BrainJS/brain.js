@@ -4,14 +4,14 @@ export default function traverseLayersExcludingFrom(
   recurrentLayer,
   cb
 ) {
-  if (layer === inputLayer || layer === recurrentLayer) return
+  if (layer === inputLayer || layer === recurrentLayer) return;
   if (layer.hasOwnProperty('inputLayer')) {
     traverseLayersExcludingFrom(
       layer.inputLayer,
       inputLayer,
       recurrentLayer,
       cb
-    )
+    );
   } else {
     if (layer.hasOwnProperty('inputLayer1')) {
       traverseLayersExcludingFrom(
@@ -19,7 +19,7 @@ export default function traverseLayersExcludingFrom(
         inputLayer,
         recurrentLayer,
         cb
-      )
+      );
     }
     if (layer.hasOwnProperty('inputLayer2')) {
       traverseLayersExcludingFrom(
@@ -27,8 +27,8 @@ export default function traverseLayersExcludingFrom(
         inputLayer,
         recurrentLayer,
         cb
-      )
+      );
     }
   }
-  cb(layer)
+  cb(layer);
 }

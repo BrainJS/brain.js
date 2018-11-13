@@ -5,7 +5,7 @@
  * @returns {number}
  */
 export function activate(weight) {
-  return Math.max(0, weight)
+  return Math.max(0, weight);
 }
 
 /**
@@ -16,7 +16,7 @@ export function activate(weight) {
  */
 export function measure(weight, delta) {
   if (weight <= 0) {
-    return 0
+    return 0;
   }
-  return delta
+  return delta;
 }

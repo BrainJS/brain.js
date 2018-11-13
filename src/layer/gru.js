@@ -8,13 +8,13 @@ import {
   random,
   tanh,
   zeros,
-} from '.'
+} from '.';
 
 export default (settings, recurrentInput, input) => {
-  const { height } = settings
-  const updateGateWeights = random({ height, width: input.height })
-  const updateGatePeepholes = random({ width: height, height })
-  const updateGateBias = zeros({ height })
+  const { height } = settings;
+  const updateGateWeights = random({ height, width: input.height });
+  const updateGatePeepholes = random({ width: height, height });
+  const updateGateBias = zeros({ height });
   const updateGate = sigmoid(
     add(
       add(
@@ -23,11 +23,11 @@ export default (settings, recurrentInput, input) => {
       ),
       updateGateBias
     )
-  )
+  );
 
-  const resetGateWeights = random({ height, width: input.height })
-  const resetGatePeepholes = random({ width: height, height })
-  const resetGateBias = zeros({ height })
+  const resetGateWeights = random({ height, width: input.height });
+  const resetGatePeepholes = random({ width: height, height });
+  const resetGateBias = zeros({ height });
   const resetGate = sigmoid(
     add(
       add(
@@ -36,11 +36,11 @@ export default (settings, recurrentInput, input) => {
       ),
       resetGateBias
     )
-  )
+  );
 
-  const cellWeights = random({ height, width: input.height })
-  const cellPeepholes = random({ width: height, height })
-  const cellBias = zeros({ height })
+  const cellWeights = random({ height, width: input.height });
+  const cellPeepholes = random({ width: height, height });
+  const cellBias = zeros({ height });
   const cell = tanh(
     add(
       add(
@@ -49,7 +49,7 @@ export default (settings, recurrentInput, input) => {
       ),
       cellBias
     )
-  )
+  );
 
   // compute hidden state as gated, saturated cell activations
   // negate updateGate
@@ -59,5 +59,5 @@ export default (settings, recurrentInput, input) => {
       cell
     ),
     multiplyElement(recurrentInput, updateGate)
-  )
-}
+  );
+};

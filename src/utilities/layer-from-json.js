@@ -1,17 +1,17 @@
-const layer = require('../layer')
+const layer = require('../layer');
 
 export default function layerFromJSON(jsonLayer) {
-  if (!layer.hasOwnProperty(jsonLayer.type)) return null
-  const Layer = layer[jsonLayer.type]
+  if (!layer.hasOwnProperty(jsonLayer.type)) return null;
+  const Layer = layer[jsonLayer.type];
 
   // eslint-disable-next-line
   const realLayer = Reflect.construct(Layer, arguments)
 
   Object.keys(jsonLayer).forEach(p => {
     if (p !== 'type') {
-      realLayer[p] = jsonLayer[p]
+      realLayer[p] = jsonLayer[p];
     }
-  })
+  });
 
-  return realLayer
+  return realLayer;
 }

@@ -1,32 +1,32 @@
 export function randomFloat(a, b) {
-  return Math.random() * (b - a) + a
+  return Math.random() * (b - a) + a;
 }
 
 // Random numbers utils
 function gaussRandom() {
   if (gaussRandom.returnV) {
-    gaussRandom.returnV = false
-    return gaussRandom.vVal
+    gaussRandom.returnV = false;
+    return gaussRandom.vVal;
   }
-  const u = 2 * Math.random() - 1
-  const v = 2 * Math.random() - 1
-  const r = u * u + v * v
+  const u = 2 * Math.random() - 1;
+  const v = 2 * Math.random() - 1;
+  const r = u * u + v * v;
   if (r === 0 || r > 1) {
-    return gaussRandom()
+    return gaussRandom();
   }
-  const c = Math.sqrt((-2 * Math.log(r)) / r)
-  gaussRandom.vVal = v * c // cache this
-  gaussRandom.returnV = true
-  return u * c
+  const c = Math.sqrt((-2 * Math.log(r)) / r);
+  gaussRandom.vVal = v * c; // cache this
+  gaussRandom.returnV = true;
+  return u * c;
 }
 
 export function randomInteger(a, b) {
-  return Math.floor(Math.random() * (b - a) + a)
+  return Math.floor(Math.random() * (b - a) + a);
 }
 
 export function randomN(mu, std) {
-  return mu + gaussRandom() * std
+  return mu + gaussRandom() * std;
 }
 
-gaussRandom.returnV = false
-gaussRandom.vVal = 0
+gaussRandom.returnV = false;
+gaussRandom.vVal = 0;

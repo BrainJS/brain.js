@@ -1,13 +1,13 @@
-import gpuMock from 'gpu-mock.js'
-import { predict, compare } from '../../src/layer/tanh'
+import gpuMock from 'gpu-mock.js';
+import { predict, compare } from '../../src/layer/tanh';
 
 function shave(array) {
-  const result = []
+  const result = [];
   for (let i = 0; i < array.length; i++) {
     if (Array.isArray(array[i])) {
-      result.push(shave(array[i]))
+      result.push(shave(array[i]));
     } else {
-      result.push(array[i].toFixed(16))
+      result.push(array[i].toFixed(16));
     }
   }
 }
@@ -15,8 +15,8 @@ function shave(array) {
 describe('Tanh Layer', () => {
   describe('.predict (forward propagation)', () => {
     test('can tanh a simple matrix', () => {
-      const inputs = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9]]
-      const results = gpuMock(predict, { output: [3, 3] })(inputs)
+      const inputs = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9]];
+      const results = gpuMock(predict, { output: [3, 3] })(inputs);
 
       expect(shave(results)).toEqual(
         shave([
@@ -24,15 +24,15 @@ describe('Tanh Layer', () => {
           [0.37994896225522495, 0.4621171572600098, 0.5370495669980353],
           [0.6043677771171635, 0.664036770267849, 0.7162978701990244],
         ])
-      )
-    })
-  })
+      );
+    });
+  });
 
   describe('.compare (back propagation)', () => {
     test('can tanh a simple matrix', () => {
-      const inputs = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9]]
-      const deltas = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
-      const results = gpuMock(compare, { output: [3, 3] })(inputs, deltas)
+      const inputs = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9]];
+      const deltas = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
+      const results = gpuMock(compare, { output: [3, 3] })(inputs, deltas);
 
       expect(shave(results)).toEqual(
         shave([
@@ -40,7 +40,7 @@ describe('Tanh Layer', () => {
           [0.84, 0.75, 0.64],
           [0.51, 0.3599999999999999, 0.18999999999999995],
         ])
-      )
-    })
-  })
-})
+      );
+    });
+  });
+});

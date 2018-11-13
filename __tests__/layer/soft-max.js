@@ -1,5 +1,5 @@
-import assert from 'assert'
-import gpuMock from 'gpu-mock.js'
+import assert from 'assert';
+import gpuMock from 'gpu-mock.js';
 import {
   compare,
   compare2D,
@@ -16,48 +16,48 @@ import {
   predict,
   predict2D,
   predict3D,
-} from '../../src/layer/soft-max'
+} from '../../src/layer/soft-max';
 
 describe('SoftMax', () => {
   describe('.compare', () => {
     it('can run on a simple matrix', () => {
-      const exponentials = [1,2,3,4]
+      const exponentials = [1,2,3,4];
       const kernel = gpuMock(compare, {
         output: [4],
-      })
-      assert.deepEqual(kernel(0, exponentials), [-0,2,3,4])
-      assert.deepEqual(kernel(1, exponentials), [1,1,3,4])
-      assert.deepEqual(kernel(2, exponentials), [1,2,2,4])
-      assert.deepEqual(kernel(3, exponentials), [1,2,3,3])
-    })
-  })
+      });
+      assert.deepEqual(kernel(0, exponentials), [-0,2,3,4]);
+      assert.deepEqual(kernel(1, exponentials), [1,1,3,4]);
+      assert.deepEqual(kernel(2, exponentials), [1,2,2,4]);
+      assert.deepEqual(kernel(3, exponentials), [1,2,3,3]);
+    });
+  });
   describe('.compare2D', () => {
     it('can run on a simple matrix', () => {
       const exponentials = [
         [1,2],
         [3,4]
-      ]
+      ];
       const kernel = gpuMock(compare2D, {
         output: [2,2],
-      })
+      });
       assert.deepEqual(kernel(0, exponentials), [
         [-0,2],
         [3,4]
-      ])
+      ]);
       assert.deepEqual(kernel(1, exponentials), [
         [1,1],
         [3,4]
-      ])
+      ]);
       assert.deepEqual(kernel(2, exponentials), [
         [1,2],
         [2,4]
-      ])
+      ]);
       assert.deepEqual(kernel(3, exponentials), [
         [1,2],
         [3,3]
-      ])
-    })
-  })
+      ]);
+    });
+  });
   describe('.compare3D', () => {
     it('can run on a simple matrix', () => {
       const exponentials = [
@@ -69,10 +69,10 @@ describe('SoftMax', () => {
           [5,6],
           [7,8]
         ]
-      ]
+      ];
       const kernel = gpuMock(compare3D, {
         output: [2,2,2],
-      })
+      });
       assert.deepEqual(kernel(0, exponentials), [
         [
           [-0,2],
@@ -82,7 +82,7 @@ describe('SoftMax', () => {
           [5,6],
           [7,8]
         ]
-      ])
+      ]);
       assert.deepEqual(kernel(1, exponentials), [
         [
           [1,1],
@@ -92,7 +92,7 @@ describe('SoftMax', () => {
           [5,6],
           [7,8]
         ]
-      ])
+      ]);
       assert.deepEqual(kernel(2, exponentials), [
         [
           [1,2],
@@ -102,7 +102,7 @@ describe('SoftMax', () => {
           [5,6],
           [7,8]
         ]
-      ])
+      ]);
       assert.deepEqual(kernel(3, exponentials), [
         [
           [1,2],
@@ -112,7 +112,7 @@ describe('SoftMax', () => {
           [5,6],
           [7,8]
         ]
-      ])
+      ]);
       assert.deepEqual(kernel(4, exponentials), [
         [
           [1,2],
@@ -122,7 +122,7 @@ describe('SoftMax', () => {
           [4,6],
           [7,8]
         ]
-      ])
+      ]);
       assert.deepEqual(kernel(5, exponentials), [
         [
           [1,2],
@@ -132,7 +132,7 @@ describe('SoftMax', () => {
           [5,5],
           [7,8]
         ]
-      ])
+      ]);
       assert.deepEqual(kernel(6, exponentials), [
         [
           [1,2],
@@ -142,7 +142,7 @@ describe('SoftMax', () => {
           [5,6],
           [6,8]
         ]
-      ])
+      ]);
       assert.deepEqual(kernel(7, exponentials), [
         [
           [1,2],
@@ -152,19 +152,19 @@ describe('SoftMax', () => {
           [5,6],
           [7,7]
         ]
-      ])
-    })
-  })
+      ]);
+    });
+  });
   describe('.getExponentials2D', () => {
     it('can run on a simple matrix', () => {
       const weights = [
         [1,2],
         [3,4]
-      ]
+      ];
       const kernel = gpuMock(getExponentials2D, {
         output: [2,2],
-      })
-      const result = kernel(weights, [0])
+      });
+      const result = kernel(weights, [0]);
       assert.deepEqual(result, [
         [
           Math.exp(1),
@@ -174,17 +174,17 @@ describe('SoftMax', () => {
           Math.exp(3),
           Math.exp(4),
         ]
-      ])
-    })
+      ]);
+    });
     it('can subtract maxInput and run on a simple matrix', () => {
       const weights = [
         [1,2],
         [3,4]
-      ]
+      ];
       const kernel = gpuMock(getExponentials2D, {
         output: [2,2],
-      })
-      const result = kernel(weights, [4])
+      });
+      const result = kernel(weights, [4]);
       assert.deepEqual(result, [
         [
           Math.exp(1 - 4),
@@ -194,9 +194,9 @@ describe('SoftMax', () => {
           Math.exp(3 - 4),
           Math.exp(4 - 4),
         ]
-      ])
-    })
-  })
+      ]);
+    });
+  });
   describe('.getExponentials3D', () => {
     it('can run on a simple matrix', () => {
       const weights = [
@@ -208,11 +208,11 @@ describe('SoftMax', () => {
           [5,6],
           [7,8],
         ]
-      ]
+      ];
       const kernel = gpuMock(getExponentials3D, {
         output: [2,2,2],
-      })
-      const result = kernel(weights, [0])
+      });
+      const result = kernel(weights, [0]);
       assert.deepEqual(result, [
         [
           [
@@ -234,8 +234,8 @@ describe('SoftMax', () => {
             Math.exp(8),
           ]
         ]
-      ])
-    })
+      ]);
+    });
     it('can subtract maxInput and run on a simple matrix', () => {
       const weights = [
         [
@@ -246,11 +246,11 @@ describe('SoftMax', () => {
           [5,6],
           [7,8],
         ]
-      ]
+      ];
       const kernel = gpuMock(getExponentials3D, {
         output: [2,2,2],
-      })
-      const result = kernel(weights, [4])
+      });
+      const result = kernel(weights, [4]);
       assert.deepEqual(result, [
         [
           [
@@ -272,26 +272,26 @@ describe('SoftMax', () => {
             Math.exp(8 - 4),
           ]
         ]
-      ])
-    })
-  })
+      ]);
+    });
+  });
   describe('.getMaxValue2D', () => {
     it('can run on a simple matrix', () => {
       const weights = [
         [1,2],
         [3,4],
-      ]
+      ];
       const kernel = gpuMock(getMaxValue2D, {
         output: [1],
         constants: {
           inputWidth: 2,
           inputHeight: 2,
         }
-      })
-      const result = kernel(weights)
-      assert.deepEqual(result, [4])
-    })
-  })
+      });
+      const result = kernel(weights);
+      assert.deepEqual(result, [4]);
+    });
+  });
   describe('.getMaxValue3D', () => {
     it('can run on a simple matrix', () => {
       const weights = [
@@ -303,7 +303,7 @@ describe('SoftMax', () => {
           [5,6],
           [7,8],
         ]
-      ]
+      ];
       const kernel = gpuMock(getMaxValue3D, {
         output: [1],
         constants: {
@@ -311,28 +311,28 @@ describe('SoftMax', () => {
           inputHeight: 2,
           inputDepth: 2
         }
-      })
-      const result = kernel(weights)
-      assert.deepEqual(result, [8])
-    })
-  })
+      });
+      const result = kernel(weights);
+      assert.deepEqual(result, [8]);
+    });
+  });
   describe('.getSum2D', () => {
     it('can run on a simple matrix', () => {
       const weights = [
         [1,2],
         [3,4],
-      ]
+      ];
       const kernel = gpuMock(getSum2D, {
         output: [1],
         constants: {
           inputWidth: 2,
           inputHeight: 2,
         }
-      })
-      const result = kernel(weights)
-      assert.deepEqual(result, [10])
-    })
-  })
+      });
+      const result = kernel(weights);
+      assert.deepEqual(result, [10]);
+    });
+  });
   describe('.getSum3D', () => {
     it('can run on a simple matrix', () => {
       const weights = [
@@ -344,7 +344,7 @@ describe('SoftMax', () => {
           [5,6],
           [7,8],
         ]
-      ]
+      ];
       const kernel = gpuMock(getSum3D, {
         output: [1],
         constants: {
@@ -352,27 +352,27 @@ describe('SoftMax', () => {
           inputHeight: 2,
           inputDepth: 2
         }
-      })
-      const result = kernel(weights)
-      assert.deepEqual(result, [36])
-    })
-  })
+      });
+      const result = kernel(weights);
+      assert.deepEqual(result, [36]);
+    });
+  });
   describe('.predict2D', () => {
     it('can run on a simple matrix', () => {
       const weights = [
         [1,2],
         [3,4],
-      ]
+      ];
       const kernel = gpuMock(predict2D, {
         output: [2,2],
-      })
-      const result = kernel(weights, [2])
+      });
+      const result = kernel(weights, [2]);
       assert.deepEqual(result, [
         [0.5,1],
         [1.5,2]
-      ])
-    })
-  })
+      ]);
+    });
+  });
   describe('.predict3D', () => {
     it('can run on a simple matrix', () => {
       const weights = [
@@ -384,11 +384,11 @@ describe('SoftMax', () => {
           [5,6],
           [7,8]
         ]
-      ]
+      ];
       const kernel = gpuMock(predict3D, {
         output: [2,2,2],
-      })
-      const result = kernel(weights, [2])
+      });
+      const result = kernel(weights, [2]);
       assert.deepEqual(result, [
         [
           [0.5,1],
@@ -398,7 +398,7 @@ describe('SoftMax', () => {
           [2.5,3],
           [3.5,4]
         ]
-      ])
-    })
-  })
-})
+      ]);
+    });
+  });
+});

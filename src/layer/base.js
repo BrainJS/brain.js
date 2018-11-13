@@ -1,5 +1,5 @@
-import zeros2D from '../utilities/zeros-2d'
-import zeros3D from '../utilities/zeros-3d'
+import zeros2D from '../utilities/zeros-2d';
+import zeros3D from '../utilities/zeros-3d';
 
 export default class Base {
   static get defaults() {
@@ -10,23 +10,23 @@ export default class Base {
       weights: null,
       deltas: null,
       name: null,
-    }
+    };
   }
 
   constructor(settings = {}) {
     // size
-    this.width = null
-    this.height = null
+    this.width = null;
+    this.height = null;
 
     // what matters :P
-    this.deltas = null
-    this.weights = null
+    this.deltas = null;
+    this.weights = null;
 
-    this.praxis = null
+    this.praxis = null;
     if (this.constructor !== Base) {
-      Object.assign(this, Base.defaults, settings)
+      Object.assign(this, Base.defaults, settings);
     }
-    Object.assign(this, this.constructor.defaults, settings)
+    Object.assign(this, this.constructor.defaults, settings);
 
     // special settings
     if (settings.hasOwnProperty('praxis')) {
@@ -39,9 +39,9 @@ export default class Base {
             },
             settings
           )
-        )
+        );
       } else {
-        this.praxis = settings.praxis
+        this.praxis = settings.praxis;
       }
     }
   }
@@ -81,16 +81,16 @@ export default class Base {
 
   validate() {
     if (Number.isNaN(this.height)) {
-      throw new Error(`${this.constructor.name} layer height is not a number`)
+      throw new Error(`${this.constructor.name} layer height is not a number`);
     }
     if (Number.isNaN(this.width)) {
-      throw new Error(`${this.constructor.name} layer width is not a number`)
+      throw new Error(`${this.constructor.name} layer width is not a number`);
     }
     if (this.height < 1) {
-      throw new Error(`${this.constructor.name} layer height is less than 1`)
+      throw new Error(`${this.constructor.name} layer height is less than 1`);
     }
     if (this.width < 1) {
-      throw new Error(`${this.constructor.name} layer width is less than 1`)
+      throw new Error(`${this.constructor.name} layer width is less than 1`);
     }
   }
 
@@ -104,22 +104,22 @@ export default class Base {
         `${this.constructor.name} kernel width mismatch ${layer.width} is not ${
           this.width
         }`
-      )
+      );
     }
     if (layer.height !== this.height) {
       throw new Error(
         `${this.constructor.name} kernel width mismatch ${
           layer.height
         } is not ${this.height}`
-      )
+      );
     }
     if (layer.hasOwnProperty('predictKernel')) {
-      this.predictKernel = layer.predictKernel
+      this.predictKernel = layer.predictKernel;
     }
     if (layer.hasOwnProperty('compareKernel')) {
-      this.compareKernel = layer.compareKernel
+      this.compareKernel = layer.compareKernel;
     }
-    this.praxis = layer.praxis
+    this.praxis = layer.praxis;
   }
 
   predict() {
@@ -132,34 +132,34 @@ export default class Base {
   }
 
   learn(previousLayer, nextLayer, learningRate) {
-    this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate)
+    this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
 
-    //TODO: put into a kernel
+    // TODO: put into a kernel
     if (this.depth > 1) {
-      this.deltas = zeros3D(this.width, this.height, this.depth)
+      this.deltas = zeros3D(this.width, this.height, this.depth);
     } else {
-      this.deltas = zeros2D(this.width, this.height)
+      this.deltas = zeros2D(this.width, this.height);
     }
   }
 
   toArray() {
-    return this.weights.toArray()
+    return this.weights.toArray();
   }
 
   toJSON() {
-    const jsonLayer = {}
-    const { defaults, name } = this.constructor
+    const jsonLayer = {};
+    const { defaults, name } = this.constructor;
     if (this.constructor !== Base) {
-      Object.assign(defaults, Base.defaults, defaults)
+      Object.assign(defaults, Base.defaults, defaults);
     }
-    const keys = Object.keys(defaults)
+    const keys = Object.keys(defaults);
     for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]
-      if (key === 'deltas') continue
-      if (key === 'name' && this[key] === null) continue
-      jsonLayer[key] = this[key]
+      const key = keys[i];
+      if (key === 'deltas') continue;
+      if (key === 'name' && this[key] === null) continue;
+      jsonLayer[key] = this[key];
     }
-    jsonLayer.type = name
-    return jsonLayer
+    jsonLayer.type = name;
+    return jsonLayer;
   }
 }

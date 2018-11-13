@@ -1,5 +1,5 @@
-import gpuMock from 'gpu-mock.js'
-import Pool, { predict, compare, compare3D } from '../../src/layer/pool'
+import gpuMock from 'gpu-mock.js';
+import Pool, { predict, compare, compare3D } from '../../src/layer/pool';
 
 describe('Pool Layer', () => {
   describe('constructor', () => {
@@ -15,15 +15,15 @@ describe('Pool Layer', () => {
           width: 24,
           height: 24,
         }
-      )
-      expect(layer.width).toEqual(12)
-      expect(layer.height).toEqual(12)
-      expect(layer.depth).toEqual(8)
-    })
-  })
+      );
+      expect(layer.width).toEqual(12);
+      expect(layer.height).toEqual(12);
+      expect(layer.depth).toEqual(8);
+    });
+  });
   describe('.predict (forward propagation)', () => {
     test('can pool a simple matrix', () => {
-      const inputs = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
+      const inputs = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]];
       const results = gpuMock(predict, {
         output: [1, 1, 0],
         constants: {
@@ -38,16 +38,16 @@ describe('Pool Layer', () => {
           filterHeight: 3,
           filterCount: 1,
         },
-      })(inputs)
+      })(inputs);
 
-      expect(results).toEqual([[9]])
-    })
-  })
+      expect(results).toEqual([[9]]);
+    });
+  });
   describe('.compare (back propagation)', () => {
     test('can pool a simple matrix', () => {
-      const deltas = [[1,2],[3,4]]
-      const switchX = [[1,0], [1,0]]
-      const switchY = [[1,1],[0,0]]
+      const deltas = [[1,2],[3,4]];
+      const switchX = [[1,0], [1,0]];
+      const switchY = [[1,1],[0,0]];
       const results = gpuMock(compare, {
         output: [2, 2],
         constants: {
@@ -56,14 +56,14 @@ describe('Pool Layer', () => {
           outputWidth: 2,
           outputHeight: 2,
         },
-      })(deltas, switchY, switchX)
+      })(deltas, switchY, switchX);
 
-      expect(results).toEqual([[4,3], [2,1]])
-    })
+      expect(results).toEqual([[4,3], [2,1]]);
+    });
     test('can pool a simple matrix', () => {
-      const deltas = [[1,2],[3,4]]
-      const switchX = [[1,1],[1,1]]
-      const switchY = [[1,1],[1,1]]
+      const deltas = [[1,2],[3,4]];
+      const switchX = [[1,1],[1,1]];
+      const switchY = [[1,1],[1,1]];
       const results = gpuMock(compare, {
         output: [2, 2],
         constants: {
@@ -72,16 +72,16 @@ describe('Pool Layer', () => {
           outputWidth: 2,
           outputHeight: 2,
         },
-      })(deltas, switchY, switchX)
+      })(deltas, switchY, switchX);
 
-      expect(results).toEqual([[0,0], [0,10]])
-    })
-  })
+      expect(results).toEqual([[0,0], [0,10]]);
+    });
+  });
   describe('.compare3D (back propagation)', () => {
     test('can pool a simple matrix', () => {
-      const deltas = [[[1,2],[3,4]]]
-      const switchX = [[[1,0], [1,0]]]
-      const switchY = [[[1,1],[0,0]]]
+      const deltas = [[[1,2],[3,4]]];
+      const switchX = [[[1,0], [1,0]]];
+      const switchY = [[[1,1],[0,0]]];
       const results = gpuMock(compare3D, {
         output: [2, 2, 1],
         constants: {
@@ -90,14 +90,14 @@ describe('Pool Layer', () => {
           outputWidth: 2,
           outputHeight: 2,
         },
-      })(deltas, switchY, switchX)
+      })(deltas, switchY, switchX);
 
-      expect(results).toEqual([[[4,3], [2,1]]])
-    })
+      expect(results).toEqual([[[4,3], [2,1]]]);
+    });
     test('can pool a simple matrix', () => {
-      const deltas = [[[1,2],[3,4]]]
-      const switchX = [[[1,1],[1,1]]]
-      const switchY = [[[1,1],[1,1]]]
+      const deltas = [[[1,2],[3,4]]];
+      const switchX = [[[1,1],[1,1]]];
+      const switchY = [[[1,1],[1,1]]];
       const results = gpuMock(compare3D, {
         output: [2, 2, 1],
         constants: {
@@ -106,9 +106,9 @@ describe('Pool Layer', () => {
           outputWidth: 2,
           outputHeight: 2,
         },
-      })(deltas, switchY, switchX)
+      })(deltas, switchY, switchX);
 
-      expect(results).toEqual([[[0,0], [0,10]]])
-    })
-  })
-})
+      expect(results).toEqual([[[0,0], [0,10]]]);
+    });
+  });
+});

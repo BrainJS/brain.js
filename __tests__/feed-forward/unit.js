@@ -1,6 +1,6 @@
-import brain from '../../src'
+import brain from '../../src';
 
-const { FeedForward, layer } = brain
+const { FeedForward, layer } = brain;
 
 const {
   Add,
@@ -23,14 +23,14 @@ const {
   softMax,
   Target,
   Zeros,
-} = layer
+} = layer;
 
 describe('FeedForward Class: Unit', () => {
   describe('.constructor()', () => {
     test('initially does not have any layers', () => {
-      expect(new FeedForward().layers).toBeNull()
-    })
-  })
+      expect(new FeedForward().layers).toBeNull();
+    });
+  });
 
   describe('layer composition', () => {
     describe('flat', () => {
@@ -85,11 +85,11 @@ describe('FeedForward Class: Unit', () => {
             inputLayer => softMax({ height: 10 }, inputLayer),
           ],
           outputLayer: inputLayer => output({ height: 10 }, inputLayer),
-        })
+        });
 
-        net.initialize()
+        net.initialize();
 
-        expect(net.layers.length).toBe(13)
+        expect(net.layers.length).toBe(13);
         expect(net.layers.map(l => l.constructor).sort()).toEqual(
           [
             Add,
@@ -109,19 +109,19 @@ describe('FeedForward Class: Unit', () => {
             Target,
             Zeros,
           ].sort()
-        )
-      })
+        );
+      });
 
       test('can setup and traverse entire network using layer composed of layers', () => {
         const net = new FeedForward({
           inputLayer: () => input({ height: 1 }),
           hiddenLayers: [inputLayer => feedForward({ height: 1 }, inputLayer)],
           outputLayer: inputLayer => output({ height: 1 }, inputLayer),
-        })
+        });
 
-        net.initialize()
+        net.initialize();
 
-        expect(net.layers.length).toBe(11)
+        expect(net.layers.length).toBe(11);
         expect(net.layers.map(l => l.constructor).sort()).toEqual(
           [
             Input,
@@ -136,9 +136,9 @@ describe('FeedForward Class: Unit', () => {
             Target,
             Zeros,
           ].sort()
-        )
-      })
-    })
+        );
+      });
+    });
 
     describe('functional', () => {
       test('can setup and traverse entire network as needed', () => {
@@ -190,10 +190,10 @@ describe('FeedForward Class: Unit', () => {
               ),
           ],
           outputLayer: inputParam => output({ height: 10 }, inputParam),
-        })
-        net.initialize()
+        });
+        net.initialize();
 
-        expect(net.layers.length).toBe(13)
+        expect(net.layers.length).toBe(13);
         expect(net.layers.map(l => l.constructor).sort()).toEqual(
           [
             Add,
@@ -210,16 +210,16 @@ describe('FeedForward Class: Unit', () => {
             Target,
             Zeros,
           ].sort()
-        )
-      })
-    })
-  })
+        );
+      });
+    });
+  });
 
   describe('.initialize()', () => {
     test('initializes all layers', () => {
       class TestLayer extends Base {
         setupKernels() {
-          this.called = true
+          this.called = true;
         }
       }
 
@@ -231,23 +231,23 @@ describe('FeedForward Class: Unit', () => {
           () => new TestLayer(),
         ],
         outputLayer: () => new TestLayer(),
-      })
-      net.initialize()
+      });
+      net.initialize();
 
-      expect(net.layers.length).toBe(5)
+      expect(net.layers.length).toBe(5);
       expect(net.layers.map(l => l.constructor !== undefined)).toEqual([
         true,
         true,
         true,
         true,
         true,
-      ])
-    })
+      ]);
+    });
 
     test('populates praxis on all layers when it is null', () => {
       class TestLayer extends Base {
         setupKernels() {
-          this.called = true
+          this.called = true;
         }
       }
 
@@ -259,29 +259,29 @@ describe('FeedForward Class: Unit', () => {
           () => new TestLayer(),
         ],
         outputLayer: () => new TestLayer(),
-      })
-      net.initialize()
+      });
+      net.initialize();
 
-      expect(net.layers.length).toBe(5)
+      expect(net.layers.length).toBe(5);
       expect(net.layers.map(l => l.called)).toEqual([
         true,
         true,
         true,
         true,
         true,
-      ])
+      ]);
       expect(net.layers.map(l => Boolean(l.praxis))).toEqual([
         true,
         true,
         true,
         true,
         true,
-      ])
-    })
+      ]);
+    });
     test('populates praxis when defined as setting on layer', () => {
       class TestLayer extends Base {
         setupKernels() {
-          this.called = true
+          this.called = true;
         }
       }
 
@@ -293,26 +293,26 @@ describe('FeedForward Class: Unit', () => {
           () => new TestLayer(),
         ],
         outputLayer: () => new TestLayer(),
-      })
-      net.initialize()
+      });
+      net.initialize();
 
-      expect(net.layers.length).toBe(5)
+      expect(net.layers.length).toBe(5);
       expect(net.layers.map(l => l.called)).toEqual([
         true,
         true,
         true,
         true,
         true,
-      ])
+      ]);
       expect(net.layers.map(l => l.praxis === true)).toEqual([
         false,
         true,
         false,
         false,
         false,
-      ])
-    })
-  })
+      ]);
+    });
+  });
 
   describe('.runInput()', () => {
     test('calls .predict() on all layers', () => {
@@ -321,7 +321,7 @@ describe('FeedForward Class: Unit', () => {
         setupKernels() {}
 
         predict() {
-          this.called = true
+          this.called = true;
         }
       }
 
@@ -333,10 +333,10 @@ describe('FeedForward Class: Unit', () => {
           () => new TestLayer(),
         ],
         outputLayer: () => new TestLayer(),
-      })
+      });
 
-      net.initialize()
-      net.runInput()
+      net.initialize();
+      net.runInput();
 
       expect(net.layers.map(l => l.called)).toEqual([
         true,
@@ -344,9 +344,9 @@ describe('FeedForward Class: Unit', () => {
         true,
         true,
         true,
-      ])
-    })
-  })
+      ]);
+    });
+  });
 
   describe('._calculateDeltas()', () => {
     test('calls .compare() on all layers', () => {
@@ -358,7 +358,7 @@ describe('FeedForward Class: Unit', () => {
         predict() {}
 
         compare() {
-          this.called = true
+          this.called = true;
         }
       }
 
@@ -370,10 +370,10 @@ describe('FeedForward Class: Unit', () => {
           () => new TestLayer(),
         ],
         outputLayer: () => new TestLayer(),
-      })
+      });
 
-      net.initialize()
-      net._calculateDeltas()
+      net.initialize();
+      net._calculateDeltas();
 
       expect(net.layers.map(l => l.called)).toEqual([
         true,
@@ -381,9 +381,9 @@ describe('FeedForward Class: Unit', () => {
         true,
         true,
         true,
-      ])
-    })
-  })
+      ]);
+    });
+  });
 
   describe('._adjustWeights()', () => {
     test('calls .learn() on all layers', () => {
@@ -398,7 +398,7 @@ describe('FeedForward Class: Unit', () => {
         compare() {}
 
         learn() {
-          this.called = true
+          this.called = true;
         }
       }
 
@@ -410,10 +410,10 @@ describe('FeedForward Class: Unit', () => {
           () => new TestLayer(),
         ],
         outputLayer: () => new TestLayer(),
-      })
+      });
 
-      net.initialize()
-      net._adjustWeights()
+      net.initialize();
+      net._adjustWeights();
 
       expect(net.layers.map(l => l.called)).toEqual([
         true,
@@ -421,26 +421,26 @@ describe('FeedForward Class: Unit', () => {
         true,
         true,
         true,
-      ])
-    })
-  })
+      ]);
+    });
+  });
 
   describe('.toJSON()', () => {
     test('can serialize to json', () => {
       class TestInputLayer extends Base {
         constructor(settings) {
-          super(settings)
-          this.weights = [0, 1, 3, 4, 5, 6, 7, 8, 9]
+          super(settings);
+          this.weights = [0, 1, 3, 4, 5, 6, 7, 8, 9];
         }
       }
       class TestLayer1 extends Base {
         static get defaults() {
-          return { foo: null }
+          return { foo: null };
         }
 
         constructor(settings, inputLayer) {
-          super(settings)
-          this.inputLayer = inputLayer
+          super(settings);
+          this.inputLayer = inputLayer;
         }
 
         // eslint-disable-next-line
@@ -449,8 +449,8 @@ describe('FeedForward Class: Unit', () => {
 
       class TestLayer2 extends Base {
         constructor(settings, inputLayer) {
-          super(settings)
-          this.inputLayer = inputLayer
+          super(settings);
+          this.inputLayer = inputLayer;
         }
 
         // eslint-disable-next-line
@@ -459,9 +459,9 @@ describe('FeedForward Class: Unit', () => {
 
       class TestOperatorLayer extends Base {
         constructor(settings, inputLayer1, inputLayer2) {
-          super(settings)
-          this.inputLayer1 = inputLayer1
-          this.inputLayer2 = inputLayer2
+          super(settings);
+          this.inputLayer1 = inputLayer1;
+          this.inputLayer2 = inputLayer2;
         }
 
         // eslint-disable-next-line
@@ -470,8 +470,8 @@ describe('FeedForward Class: Unit', () => {
 
       class TestOutputLayer extends Base {
         constructor(settings, inputLayer) {
-          super(settings)
-          this.inputLayer = inputLayer
+          super(settings);
+          this.inputLayer = inputLayer;
         }
       }
 
@@ -487,21 +487,21 @@ describe('FeedForward Class: Unit', () => {
         ],
         outputLayer: inputParam =>
           new TestOutputLayer({ width: 10, height: 5 }, inputParam),
-      })
-      net.initialize()
+      });
+      net.initialize();
 
-      const json = net.toJSON()
+      const json = net.toJSON();
 
-      expect(json.layers).toBeDefined()
-      expect(json.layers.every(l => !l.hasOwnProperty('deltas'))).toBe(true)
-      expect(json.layers.length).toBe(5)
+      expect(json.layers).toBeDefined();
+      expect(json.layers.every(l => !l.hasOwnProperty('deltas'))).toBe(true);
+      expect(json.layers.length).toBe(5);
       expect(json.layers[0]).toEqual({
         type: 'TestInputLayer',
         weights: [0, 1, 3, 4, 5, 6, 7, 8, 9],
         width: 10,
         height: 1,
         depth: 1,
-      })
+      });
       expect(json.layers[1]).toEqual({
         type: 'TestLayer1',
         weights: null,
@@ -510,7 +510,7 @@ describe('FeedForward Class: Unit', () => {
         width: 1,
         height: 1,
         depth: 1,
-      })
+      });
       expect(json.layers[2]).toEqual({
         type: 'TestLayer2',
         weights: null,
@@ -518,7 +518,7 @@ describe('FeedForward Class: Unit', () => {
         width: 1,
         height: 1,
         depth: 1,
-      })
+      });
       expect(json.layers[3]).toEqual({
         type: 'TestOperatorLayer',
         weights: null,
@@ -527,7 +527,7 @@ describe('FeedForward Class: Unit', () => {
         width: 1,
         height: 1,
         depth: 1,
-      })
+      });
       expect(json.layers[4]).toEqual({
         height: 5,
         inputLayerIndex: 3,
@@ -535,20 +535,20 @@ describe('FeedForward Class: Unit', () => {
         weights: null,
         width: 10,
         depth: 1,
-      })
-    })
-  })
+      });
+    });
+  });
 
   describe('.fromJSON()', () => {
     test('can deserialize to object from json using inputLayerIndex', () => {
       class TestLayer extends Base {
         static get defaults() {
-          return { foo: null }
+          return { foo: null };
         }
 
         constructor(settings, inputLayer) {
-          super(settings)
-          this.inputLayer = inputLayer
+          super(settings);
+          this.inputLayer = inputLayer;
         }
 
         // eslint-disable-next-line
@@ -582,36 +582,36 @@ describe('FeedForward Class: Unit', () => {
         (jsonLayer, inputParam) => {
           switch (jsonLayer.type) {
             case 'TestLayer':
-              return new TestLayer(jsonLayer, inputParam)
+              return new TestLayer(jsonLayer, inputParam);
             default:
-              throw new Error(`unknown layer ${jsonLayer.type}`)
+              throw new Error(`unknown layer ${jsonLayer.type}`);
           }
         }
-      )
+      );
 
       expect(net.layers.map(l => l instanceof TestLayer)).toEqual([
         true,
         true,
         true,
         true,
-      ])
+      ]);
       expect(net.layers.map(l => l.inputLayer instanceof TestLayer)).toEqual([
         false,
         true,
         true,
         true,
-      ])
-    })
+      ]);
+    });
 
     test('can deserialize to object from json using inputLayer1Index & inputLayer2Index', () => {
       class TestLayer extends Base {
         static get defaults() {
-          return { foo: null }
+          return { foo: null };
         }
 
         constructor(settings, inputLayer) {
-          super(settings)
-          this.inputLayer = inputLayer
+          super(settings);
+          this.inputLayer = inputLayer;
         }
 
         // eslint-disable-next-line
@@ -620,13 +620,13 @@ describe('FeedForward Class: Unit', () => {
 
       class TestOperatorLayer extends Base {
         static get defaults() {
-          return { foo: null }
+          return { foo: null };
         }
 
         constructor(settings, inputLayer1, inputLayer2) {
-          super(settings)
-          this.inputLayer1 = inputLayer1
-          this.inputLayer2 = inputLayer2
+          super(settings);
+          this.inputLayer1 = inputLayer1;
+          this.inputLayer2 = inputLayer2;
         }
 
         // eslint-disable-next-line
@@ -656,24 +656,24 @@ describe('FeedForward Class: Unit', () => {
         (jsonLayer, input1, input2) => {
           switch (jsonLayer.type) {
             case 'TestLayer':
-              return new TestLayer(jsonLayer, input1)
+              return new TestLayer(jsonLayer, input1);
             case 'TestOperatorLayer':
-              return new TestOperatorLayer(jsonLayer, input1, input2)
+              return new TestOperatorLayer(jsonLayer, input1, input2);
             default:
-              throw new Error(`unknown layer ${jsonLayer.type}`)
+              throw new Error(`unknown layer ${jsonLayer.type}`);
           }
         }
-      )
+      );
 
-      expect(net.layers.length).toBe(3)
-      expect(net.layers[0] instanceof TestLayer).toBeTruthy()
-      expect(net.layers[0] instanceof TestLayer).toBeTruthy()
-      expect(net.layers[1] instanceof TestLayer).toBeTruthy()
-      expect(net.layers[2] instanceof TestOperatorLayer).toBeTruthy()
-      expect(net.layers[2].inputLayer1).toEqual(net.layers[0])
-      expect(net.layers[2].inputLayer2).toEqual(net.layers[1])
-    })
-  })
+      expect(net.layers.length).toBe(3);
+      expect(net.layers[0] instanceof TestLayer).toBeTruthy();
+      expect(net.layers[0] instanceof TestLayer).toBeTruthy();
+      expect(net.layers[1] instanceof TestLayer).toBeTruthy();
+      expect(net.layers[2] instanceof TestOperatorLayer).toBeTruthy();
+      expect(net.layers[2].inputLayer1).toEqual(net.layers[0]);
+      expect(net.layers[2].inputLayer2).toEqual(net.layers[1]);
+    });
+  });
 
   describe('._trainPattern()', () => {
     test('calls training methods and mse2d and returns value', () => {
@@ -681,9 +681,9 @@ describe('FeedForward Class: Unit', () => {
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [inputLayer => feedForward({ height: 1 }, inputLayer)],
         outputLayer: inputLayer => output({ height: 1 }, inputLayer),
-      })
-      net.initialize()
-      net._outputLayer = { errors: [0] }
+      });
+      net.initialize();
+      net._outputLayer = { errors: [0] };
 
       // TODO: Fix this test
 
@@ -696,6 +696,6 @@ describe('FeedForward Class: Unit', () => {
       // expect(runInput).toHaveBeenCalled()
       // expect(_calculateDeltas).toHaveBeenCalled()
       // expect(_adjustWeights).toHaveBeenCalled()
-    })
-  })
-})
+    });
+  });
+});
