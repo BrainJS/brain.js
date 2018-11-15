@@ -5,23 +5,19 @@ import DataFormatter from '../../src/utilities/data-formatter';
 describe('gru', () => {
   describe('math', () => {
     it('can predict math', () => {
-      return new Promise((resolve) => {
-        const net = new GRU();
-        const items = new Set([]);
-        for (let i = 0; i < 10; i++) {
-          for (let j = 0; j < 10; j++) {
-            items.add(`${i}+${j}=${i + j}`);
-            items.add(`${j}+${i}=${i + j}`);
-          }
+      const net = new GRU();
+      const items = new Set([]);
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          items.add(`${i}+${j}=${i + j}`);
+          items.add(`${j}+${i}=${i + j}`);
         }
-        net.train(Array.from(items), { log: true, iterations: 100 });
-        for (let i = 0; i < 10; i++) {
-          const output = net.run();
-          console.log(output, typeof output);
-          assert(Boolean(/^[0-9]+[+][0-9]+[=][0-9]+$/.test(output)));
-        }
-        resolve();
-      });
+      }
+      net.train(Array.from(items), { iterations: 60, errorThresh: 0.03 });
+      for (let i = 0; i < 10; i++) {
+        const output = net.run(`${ i }+`);
+        assert(/^[0-9]+[=][0-9]+$/.test(output));
+      }
     });
   });
 

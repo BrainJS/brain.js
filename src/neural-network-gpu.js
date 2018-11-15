@@ -348,7 +348,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
    */
   _prepTraining(data, options) {
     this._updateTrainingOptions(options);
-    data = this._formatData(data);
+    data = this.formatData(data);
     const endTime = Date.now() + this.trainOpts.timeout;
 
     const status = {

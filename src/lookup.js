@@ -101,30 +101,32 @@ export default class lookup {
     // turn sparse hash input into arrays with 0s as filler
     const convertInput = getTypedArrayFn(data[0].input, inputTable);
     const convertOutput = getTypedArrayFn(data[0].output, outputTable);
-
+    const result = [];
     if (convertInput && convertOutput) {
-      data = data.map(datum => {
-        return {
-          input: convertInput(datum.input),
-          output: convertOutput(datum.output),
-        };
-      });
+      for (let i = 0; i < data.length; i++) {
+        result.push({
+          input: convertInput(data[i].input),
+          output: convertOutput(data[i].output),
+        });
+      }
     } else if (convertInput) {
-      data = data.map(datum => {
-        return {
-          input: convertInput(datum.input),
-          output: datum.output
-        };
-      });
+      for (let i = 0; i < data.length; i++) {
+        result.push({
+          input: convertInput(data[i].input),
+          output: data[i].output
+        });
+      }
     } else if (convertOutput) {
-      data = data.map(datum => {
-        return {
-          input: datum.input,
-          output: convertOutput(datum.output)
-        };
-      });
+      for (let i = 0; i < data.length; i++) {
+        result.push({
+          input: data[i].input,
+          output: convertOutput(data[i].output)
+        });
+      }
+    } else {
+      return data;
     }
-    return data;
+    return result;
   }
 }
 
@@ -137,8 +139,8 @@ function getTypedArrayFn(value, table) {
     const length = Object.keys(table).length;
     return (v) => {
       const array = new Float32Array(length);
-      for (let i in table) {
-        array[table[i]] = v[i] || 0;
+      for (let p in table) {
+        array[table[p]] = v[p] || 0;
       }
       return array;
     }

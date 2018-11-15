@@ -119,21 +119,19 @@ export default class RNNTimeStep extends RNN {
    * @returns {{error: number, iterations: number}}
    */
   train(data, options = {}) {
+    options = Object.assign({}, this.constructor.trainDefaults, options);
+    const iterations = options.iterations;
+    const errorThresh = options.errorThresh;
+    const log = options.log === true ? console.log : options.log;
+    const logPeriod = options.logPeriod;
+    const learningRate = options.learningRate || this.learningRate;
+    const callback = options.callback;
+    const callbackPeriod = options.callbackPeriod;
+    data = this.formatData(data);
     if (data[0].input) {
-      if (Array.isArray(data[0].input[0])) {
-        this.trainInput = this.trainInputOutputArray;
-      } else if (Array.isArray(data[0].input)) {
-        this.trainInput = this.trainInputOutput;
-      } else {
-        this.inputLookup = lookup.toInputTable(data);
-        this.inputLookupLength = Object.keys(this.inputLookup).length;
-        this.outputLookup = lookup.toOutputTable(data);
-        this.outputLookupLength = Object.keys(this.outputLookup).length;
-        data = lookup.toTrainingData(data, this.inputLookup, this.outputLookup);
-        this.trainInput = this.trainInputOutput;
-      }
-    } else if (Array.isArray(data[0])) {
-      if (Array.isArray(data[0][0])) {
+      this.trainInput = this.trainInputOutput;
+    } else if (data[0].length > 0) {
+      if (data[0][0].length > 0) {
         this.trainInput = this.trainArrays;
       } else {
         if (this.inputSize > 1) {
@@ -145,20 +143,9 @@ export default class RNNTimeStep extends RNN {
       }
     }
 
-    options = Object.assign({}, this.constructor.trainDefaults, options);
-    const iterations = options.iterations;
-    const errorThresh = options.errorThresh;
-    const log = options.log === true ? console.log : options.log;
-    const logPeriod = options.logPeriod;
-    const learningRate = options.learningRate || this.learningRate;
-    const callback = options.callback;
-    const callbackPeriod = options.callbackPeriod;
+
     let error = Infinity;
     let i;
-
-    if (this.hasOwnProperty('setupData')) {
-      data = this.setupData(data);
-    }
 
     if (!this.model) {
       this.initialize();
@@ -195,7 +182,7 @@ export default class RNNTimeStep extends RNN {
     }
     let errorSum = 0;
     for (let i = 0, max = input.length - 1; i < max; i++) {
-      errorSum += equations[i].predictTarget([input[i]], [input[i + 1]]);
+      errorSum += equations[i].predictTarget(input[i], input[i + 1]);
     }
     this.end();
     return errorSum / input.length;
@@ -246,28 +233,6 @@ export default class RNNTimeStep extends RNN {
     const model = this.model;
     const input = object.input;
     const output = object.output;
-    const totalSize = input.length + output.length;
-    const equations = model.equations;
-    while (equations.length < totalSize) {
-      this.bindEquation();
-    }
-    let errorSum = 0;
-    let equationIndex = 0;
-    for (let inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
-      errorSum += equations[equationIndex++].predictTarget([input[inputIndex]], [input[inputIndex + 1]]);
-    }
-    errorSum += equations[equationIndex++].predictTarget([input[input.length - 1]], [output[0]]);
-    for (let outputIndex = 0, max = output.length - 1; outputIndex < max; outputIndex++) {
-      errorSum += equations[equationIndex++].predictTarget([output[outputIndex]], [output[outputIndex + 1]]);
-    }
-    this.end();
-    return errorSum / totalSize;
-  }
-
-  trainInputOutputArray(set) {
-    const model = this.model;
-    const input = set.input;
-    const output = set.output;
     const totalSize = input.length + output.length;
     const equations = model.equations;
     while (equations.length < totalSize) {
@@ -340,6 +305,262 @@ export default class RNNTimeStep extends RNN {
 
   end() {
     this.model.equations[this.model.equations.length - 1].runInput(new Float32Array(this.outputSize));
+  }
+
+  /**
+   *
+   * @param data
+   * @returns {*}
+   */
+  formatData(data) {
+    if (data[0].input) {
+      if (Array.isArray(data[0].input[0])) {
+        if (this.inputSize > 1) {
+          // [{ input: number[][], output: number[][] }] to [{ input: Float32Array[], output: Float32Array[] }]
+          const result = [];
+          for (let i = 0; i < data.length; i++) {
+            const datum = data[i];
+            const input = datum.input;
+            const output = datum.output;
+            const newInput = [];
+            const newOutput = [];
+            for (let j = 0; j < input.length; j++) {
+              newInput.push(Float32Array.from(input[j]));
+            }
+            for (let j = 0; j < output.length; j++) {
+              newOutput.push(Float32Array.from(output[j]));
+            }
+            result.push({
+              input: newInput,
+              output: newOutput
+            });
+          }
+          return result;
+        } else {
+          // { input: [[1,4],[2,3]], output: [[3,2],[4,1]] } -> [[1,4],[2,3],[3,2],[4,1]]
+          const result = [];
+          for (let i = 0; i < data.length; i++) {
+            const datum = data[i];
+            result.push({
+              input: Float32Array.from(datum.input),
+              output: Float32Array.from(datum.output)
+            });
+          }
+          return result;
+        }
+      } else if (Array.isArray(data[0].input)) {
+        if (typeof data[0].input[0] === 'number') {
+          // [{ input: number[], output: number[] }] to [{ input: Float32Array, output: Float32Array }]
+          if (this.inputSize === 1) {
+            const result = [];
+            for (let i = 0; i < data.length; i++) {
+              const datum = data[i];
+              const input = datum.input;
+              const output = datum.output;
+              const newInput = [];
+              const newOutput = [];
+              for (let j = 0; j < input.length; j++) {
+                newInput.push(Float32Array.from([input[j]]));
+              }
+              for (let j = 0; j < output.length; j++) {
+                newOutput.push(Float32Array.from([output[j]]));
+              }
+              result.push({
+                input: newInput,
+                output: newOutput
+              });
+            }
+            return result;
+          }
+          throw new Error(`data size too small for brain.${ this.constructor.name }, try brain.NeuralNetwork`);
+        } else {
+          // [{ input: object[], output: object[] }] to [{ input: Float32Array[], output: Float32Array[] }]
+          const inputLookup = {};
+          const outputLookup = {};
+          let inputLookupLength = 0;
+          let outputLookupLength = 0;
+          const result = [];
+          for (let i = 0; i < data.length; i++) {
+            const datum = data[i];
+            const input = datum.input;
+            for (let j = 0; j < input.length; j++) {
+              for (let p in input[j]) {
+                if (inputLookup.hasOwnProperty(p)) continue;
+                inputLookup[p] = inputLookupLength++;
+              }
+            }
+            const output = datum.output;
+            for (let j = 0; j < output.length; j++) {
+              for (let p in output[j]) {
+                if (outputLookup.hasOwnProperty(p)) continue;
+                outputLookup[p] = outputLookupLength++;
+              }
+            }
+          }
+
+          for (let i = 0; i < data.length; i++) {
+            const datum = data[i];
+            const input = datum.input;
+            const output = datum.output;
+            const newInputs = [];
+            const newOutputs = [];
+            for (let j = 0; j < input.length; j++) {
+              const newInput = new Float32Array(inputLookupLength);
+              for (let p in input[j]) {
+                newInput[inputLookup[p]] = input[j].hasOwnProperty(p) ? input[j][p] : 0;
+              }
+              newInputs.push(newInput);
+            }
+            for (let j = 0; j < output.length; j++) {
+              const newOutput = new Float32Array(outputLookupLength);
+              for (let p in output[j]) {
+                newOutput[outputLookup[p]] = output[j].hasOwnProperty(p) ? output[j][p] : 0;
+              }
+              newOutputs.push(newOutput);
+            }
+            result.push({ input: newInputs, output: newOutputs });
+          }
+
+          this.inputLookup = inputLookup;
+          this.inputLookupLength = inputLookupLength;
+          this.outputLookup = outputLookup;
+          this.outputLookupLength = outputLookupLength;
+          return result;
+        }
+      } else {
+        // [{ input: object, output: object }] to [{ input: Float32Array, output: Float32Array }]
+        if (this.inputSize === 1) {
+          const result = [];
+          for (let i = 0; i < data.length; i++) {
+            const datum = data[i];
+            const input = datum.input;
+            const output = datum.output;
+            const newInput = [];
+            const newOutput = [];
+            const inputLookup = {};
+            const outputLookup = {};
+            let inputLookupLength = 0;
+            let outputLookupLength = 0;
+            for (let i = 0; i < data.length; i++) {
+              const datum = data[i];
+              const input = datum.input;
+              for (let p in input) {
+                if (inputLookup.hasOwnProperty(p)) continue;
+                inputLookup[p] = inputLookupLength++;
+              }
+
+              const output = datum.output;
+              for (let p in output) {
+                if (outputLookup.hasOwnProperty(p)) continue;
+                outputLookup[p] = outputLookupLength++;
+              }
+            }
+            for (let p in input) {
+              newInput.push(Float32Array.from([input[p]]));
+            }
+            for (let p in output) {
+              newOutput.push(Float32Array.from([output[p]]));
+            }
+            result.push({
+              input: newInput,
+              output: newOutput
+            });
+            this.inputLookup = inputLookup;
+            this.inputLookupLength = inputLookupLength;
+            this.outputLookup = outputLookup;
+            this.outputLookupLength = outputLookupLength;
+          }
+          return result;
+        } else {
+          const inputLookup = {};
+          const outputLookup = {};
+          let inputLookupLength = 0;
+          let outputLookupLength = 0;
+          const result = [];
+          for (let i = 0; i < data.length; i++) {
+            const datum = data[i];
+            const input = datum.input;
+            const output = datum.output;
+            for (let p in input) {
+              if (inputLookup.hasOwnProperty(p)) continue;
+              inputLookup[p] = inputLookupLength++;
+            }
+            for (let p in output) {
+              if (outputLookup.hasOwnProperty(p)) continue;
+              outputLookup[p] = outputLookupLength++;
+            }
+          }
+
+          for (let i = 0; i < data.length; i++) {
+            const datum = data[i];
+            const input = datum.input;
+            const output = datum.output;
+            const newInput = new Float32Array(inputLookupLength);
+            const newOutput = new Float32Array(outputLookupLength);
+            for (let p in input) {
+              newInput[inputLookup[p]] = input.hasOwnProperty(p) ? input[p] : 0;
+            }
+            for (let p in output) {
+              newOutput[outputLookup[p]] = output.hasOwnProperty(p) ? output[p] : 0;
+            }
+            result.push({input: newInput, output: newOutput});
+          }
+
+          this.inputLookup = inputLookup;
+          this.inputLookupLength = inputLookupLength;
+          this.outputLookup = outputLookup;
+          this.outputLookupLength = outputLookupLength;
+          return result;
+        }
+      }
+    } else if (Array.isArray(data)) {
+      if (Array.isArray(data[0])) {
+        if (this.inputSize > 1) {
+          // number[][][] to Float32Array[][][]
+          if (Array.isArray(data[0][0])) {
+            const result = [];
+            for (let i = 0; i < data.length; i++) {
+              const datum = data[i];
+              const array = [];
+              for (let j = 0; j < datum.length; j++) {
+                array.push(Float32Array.from(datum[j]));
+              }
+              result.push(array);
+            }
+            return result;
+          } else {
+            // number[][] to Float32Array[][]
+            const result = [];
+            for (let i = 0; i < data.length; i++) {
+              result.push(Float32Array.from(data[i]));
+            }
+            return result;
+          }
+        } else if (this.inputSize === 1) {
+          // number[][] to Float32Array[][][]
+          const result = [];
+          for (let i = 0; i < data.length; i++) {
+            const datum = data[i];
+            const array = [];
+            for (let j = 0; j < datum.length; j++) {
+              array.push(Float32Array.from([datum[j]]));
+            }
+            result.push(array);
+          }
+          return result;
+        }
+      } else {
+        // number[] to Float32Array[]
+        if (this.inputSize === 1) {
+          const result = [];
+          for (let i = 0; i < data.length; i++) {
+            result.push(Float32Array.from([data[i]]));
+          }
+          return result;
+        }
+      }
+    }
+    throw new Error('unhandled data type');
   }
 
   /**
@@ -570,6 +791,7 @@ ${ innerFunctionsSwitch.join('\n') }
       : '' }
   ${ this.outputLookup
       ? `function lookupOutput(output) {
+          debugger;
           var table = ${ JSON.stringify(this.outputLookup) };
           var result = {};
           for (var p in table) {
