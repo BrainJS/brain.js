@@ -127,61 +127,10 @@ var lookup = function () {
       }
       return lookup;
     }
-  }, {
-    key: "toTrainingData",
-    value: function toTrainingData(data, inputTable, outputTable) {
-      // turn sparse hash input into arrays with 0s as filler
-      var convertInput = getTypedArrayFn(data[0].input, inputTable);
-      var convertOutput = getTypedArrayFn(data[0].output, outputTable);
-
-      if (convertInput && convertOutput) {
-        data = data.map(function (datum) {
-          return {
-            input: convertInput(datum.input),
-            output: convertOutput(datum.output)
-          };
-        });
-      } else if (convertInput) {
-        data = data.map(function (datum) {
-          return {
-            input: convertInput(datum.input),
-            output: datum.output
-          };
-        });
-      } else if (convertOutput) {
-        data = data.map(function (datum) {
-          return {
-            input: datum.input,
-            output: convertOutput(datum.output)
-          };
-        });
-      }
-      return data;
-    }
   }]);
 
   return lookup;
 }();
 
 exports.default = lookup;
-
-
-function getTypedArrayFn(value, table) {
-  if (value.buffer instanceof ArrayBuffer) {
-    return null;
-  } else if (Array.isArray(value)) {
-    return function (v) {
-      return Float32Array.from(v);
-    };
-  } else {
-    var length = Object.keys(table).length;
-    return function (v) {
-      var array = new Float32Array(length);
-      for (var i in table) {
-        array[table[i]] = v[i] || 0;
-      }
-      return array;
-    };
-  }
-}
 //# sourceMappingURL=lookup.js.map

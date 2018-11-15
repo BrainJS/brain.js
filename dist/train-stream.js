@@ -107,7 +107,7 @@ var TrainStream = function (_Writable) {
 
       this.count++;
 
-      var data = this.neuralNetwork._formatData(chunk);
+      var data = this.neuralNetwork.formatData(chunk);
       this.trainDatum(data[0]);
 
       // tell the Readable Stream that we are ready for more data
@@ -145,7 +145,7 @@ var TrainStream = function (_Writable) {
           this.neuralNetwork.outputLookup = _lookup2.default.lookupFromArray(this.outputKeys);
         }
 
-        var data = this.neuralNetwork._formatData(this.firstDatum);
+        var data = this.neuralNetwork.formatData(this.firstDatum);
         var sizes = [];
         var inputSize = data[0].input.length;
         var outputSize = data[0].output.length;

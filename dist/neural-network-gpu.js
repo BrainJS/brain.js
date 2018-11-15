@@ -391,7 +391,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       var _this3 = this;
 
       this._updateTrainingOptions(options);
-      data = this._formatData(data);
+      data = this.formatData(data);
       var endTime = Date.now() + this.trainOpts.timeout;
 
       var status = {
