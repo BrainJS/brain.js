@@ -4,7 +4,7 @@ import LSTMTimeStep from '../../src/recurrent/lstm-time-step';
 import Equation from '../../src/recurrent/matrix/equation';
 import sinon from 'sinon';
 
-describe('RNNTimeStep', () => {
+describe.only('RNNTimeStep', () => {
   describe('.createOutputMatrix()', () => {
     it('creates the outputConnector and output for model', () => {
       const net = new RNNTimeStep({
@@ -1614,7 +1614,8 @@ describe('RNNTimeStep', () => {
         });
         net.train(data, { iteration: 100, errorThresh: 0.05 });
         const fn = net.toFunction();
-        assert.deepEqual(fn(data[0].input), net.run(data[0].input));
+        const expected = net.run(data[0].input);
+        assert.deepEqual(fn(data[0].input), expected);
       });
 
       it('handles [{ input: object, output: object }]', () => {
@@ -1626,7 +1627,8 @@ describe('RNNTimeStep', () => {
         });
         net.train(data, { iteration: 100, errorThresh: 0.05 });
         const fn = net.toFunction();
-        assert.deepEqual(fn(data[0].input), net.run(data[0].input));
+        const expected = net.run(data[0].input);
+        assert.deepEqual(fn(data[0].input), expected);
       });
 
       it('handles [{ input: number[][], output: number[][] }]', () => {
@@ -1650,7 +1652,8 @@ describe('RNNTimeStep', () => {
         });
         net.train(data, { iteration: 100, errorThresh: 0.05 });
         const fn = net.toFunction();
-        assert.deepEqual(fn(data[0].input), net.run(data[0].input));
+        const expected = net.run(data[0].input);
+        assert.deepEqual(fn(data[0].input), expected);
       });
     });
     describe('arrays', () => {

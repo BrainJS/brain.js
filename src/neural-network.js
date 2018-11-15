@@ -1,3 +1,4 @@
+import Thaw from 'thaw.js';
 import lookup from './lookup';
 import max from './utilities/max';
 import mse from './utilities/mse';
@@ -5,7 +6,8 @@ import randos from './utilities/randos';
 import range from './utilities/range';
 import toArray from './utilities/to-array';
 import zeros from './utilities/zeros';
-import Thaw from 'thaw.js';
+import LookupTable from './utilities/lookup-table';
+import { arrayToFloat32Array } from './utilities/cast';
 
 /**
  * @param {object} options
@@ -707,19 +709,76 @@ export default class NeuralNetwork {
     }
 
     if (!Array.isArray(data[0].input)) {
-      if (!this.inputLookup) {
-        this.inputLookup = lookup.toInputTable(data);
+      if (this.inputLookup) {
+        this.inputLookupLength = Object.keys(this.inputLookup).length;
+      } else {
+        const inputLookup = new LookupTable(data, 'input');
+        this.inputLookup = inputLookup.table;
+        this.inputLookupLength = inputLookup.length;
       }
-      this.inputLookupLength = Object.keys(this.inputLookup).length;
+
     }
 
     if (!Array.isArray(data[0].output)) {
-      if (!this.outputLookup) {
-        this.outputLookup = lookup.toOutputTable(data);
+      if (this.outputLookup) {
+        this.outputLookupLength = Object.keys(this.outputLookup).length;
+      } else {
+        const lookup = new LookupTable(data, 'output');
+        this.outputLookup = lookup.table;
+        this.outputLookupLength = lookup.length;
       }
     }
 
-    return lookup.toTrainingData(data, this.inputLookup, this.outputLookup);
+    function toTrainingData(data, inputTable, outputTable) {
+      // turn sparse hash input into arrays with 0s as filler
+      const convertInput = getTypedArrayFn(data[0].input, inputTable);
+      const convertOutput = getTypedArrayFn(data[0].output, outputTable);
+      const result = [];
+      if (convertInput && convertOutput) {
+        for (let i = 0; i < data.length; i++) {
+          result.push({
+            input: convertInput(data[i].input),
+            output: convertOutput(data[i].output),
+          });
+        }
+      } else if (convertInput) {
+        for (let i = 0; i < data.length; i++) {
+          result.push({
+            input: convertInput(data[i].input),
+            output: data[i].output
+          });
+        }
+      } else if (convertOutput) {
+        for (let i = 0; i < data.length; i++) {
+          result.push({
+            input: data[i].input,
+            output: convertOutput(data[i].output)
+          });
+        }
+      } else {
+        return data;
+      }
+      return result;
+    }
+
+    function getTypedArrayFn(value, table) {
+      if (value.buffer instanceof ArrayBuffer) {
+        return null;
+      } else if (Array.isArray(value)) {
+        return arrayToFloat32Array;
+      } else {
+        const length = Object.keys(table).length;
+        return (v) => {
+          const array = new Float32Array(length);
+          for (let p in table) {
+            array[table[p]] = v[p] || 0;
+          }
+          return array;
+        }
+      }
+    }
+
+    return toTrainingData(data, this.inputLookup, this.outputLookup);
   }
 
   /**

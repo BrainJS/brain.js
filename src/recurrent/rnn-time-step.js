@@ -8,6 +8,14 @@ import {randomF} from '../utilities/random';
 import sampleI from './matrix/sample-i';
 import maxI from './matrix/max-i';
 import lookup from "../lookup";
+import LookupTable from '../utilities/lookup-table';
+import ArrayLookupTable from '../utilities/array-lookup-table';
+import {
+  arraysToFloat32Arrays,
+  arrayToFloat32Arrays,
+  objectsToFloat32Arrays,
+  objectToFloat32Arrays,
+  objectToFloat32Array } from '../utilities/cast';
 
 export default class RNNTimeStep extends RNN {
   constructor(options) {
@@ -278,6 +286,9 @@ export default class RNNTimeStep extends RNN {
       lastOutput = outputMatrix.weights;
     }
     this.end();
+    if (this.outputLookup) {
+      return lookup.toObject(this.outputLookup, lastOutput);
+    }
     return lastOutput;
   }
 
@@ -320,19 +331,9 @@ export default class RNNTimeStep extends RNN {
           const result = [];
           for (let i = 0; i < data.length; i++) {
             const datum = data[i];
-            const input = datum.input;
-            const output = datum.output;
-            const newInput = [];
-            const newOutput = [];
-            for (let j = 0; j < input.length; j++) {
-              newInput.push(Float32Array.from(input[j]));
-            }
-            for (let j = 0; j < output.length; j++) {
-              newOutput.push(Float32Array.from(output[j]));
-            }
             result.push({
-              input: newInput,
-              output: newOutput
+              input: arraysToFloat32Arrays(datum.input),
+              output: arraysToFloat32Arrays(datum.output)
             });
           }
           return result;
@@ -355,19 +356,9 @@ export default class RNNTimeStep extends RNN {
             const result = [];
             for (let i = 0; i < data.length; i++) {
               const datum = data[i];
-              const input = datum.input;
-              const output = datum.output;
-              const newInput = [];
-              const newOutput = [];
-              for (let j = 0; j < input.length; j++) {
-                newInput.push(Float32Array.from([input[j]]));
-              }
-              for (let j = 0; j < output.length; j++) {
-                newOutput.push(Float32Array.from([output[j]]));
-              }
               result.push({
-                input: newInput,
-                output: newOutput
+                input: arrayToFloat32Arrays(datum.input),
+                output: arrayToFloat32Arrays(datum.output)
               });
             }
             return result;
@@ -375,141 +366,58 @@ export default class RNNTimeStep extends RNN {
           throw new Error(`data size too small for brain.${ this.constructor.name }, try brain.NeuralNetwork`);
         } else {
           // [{ input: object[], output: object[] }] to [{ input: Float32Array[], output: Float32Array[] }]
-          const inputLookup = {};
-          const outputLookup = {};
-          let inputLookupLength = 0;
-          let outputLookupLength = 0;
+          const inputLookup = new ArrayLookupTable(data, 'input');
+          const outputLookup = new ArrayLookupTable(data, 'output');
           const result = [];
-          for (let i = 0; i < data.length; i++) {
-            const datum = data[i];
-            const input = datum.input;
-            for (let j = 0; j < input.length; j++) {
-              for (let p in input[j]) {
-                if (inputLookup.hasOwnProperty(p)) continue;
-                inputLookup[p] = inputLookupLength++;
-              }
-            }
-            const output = datum.output;
-            for (let j = 0; j < output.length; j++) {
-              for (let p in output[j]) {
-                if (outputLookup.hasOwnProperty(p)) continue;
-                outputLookup[p] = outputLookupLength++;
-              }
-            }
-          }
 
           for (let i = 0; i < data.length; i++) {
             const datum = data[i];
-            const input = datum.input;
-            const output = datum.output;
-            const newInputs = [];
-            const newOutputs = [];
-            for (let j = 0; j < input.length; j++) {
-              const newInput = new Float32Array(inputLookupLength);
-              for (let p in input[j]) {
-                newInput[inputLookup[p]] = input[j].hasOwnProperty(p) ? input[j][p] : 0;
-              }
-              newInputs.push(newInput);
-            }
-            for (let j = 0; j < output.length; j++) {
-              const newOutput = new Float32Array(outputLookupLength);
-              for (let p in output[j]) {
-                newOutput[outputLookup[p]] = output[j].hasOwnProperty(p) ? output[j][p] : 0;
-              }
-              newOutputs.push(newOutput);
-            }
-            result.push({ input: newInputs, output: newOutputs });
+            result.push({
+              input: objectsToFloat32Arrays(datum.input, inputLookup),
+              output: objectsToFloat32Arrays(datum.output, outputLookup)
+            });
           }
 
-          this.inputLookup = inputLookup;
-          this.inputLookupLength = inputLookupLength;
-          this.outputLookup = outputLookup;
-          this.outputLookupLength = outputLookupLength;
+          this.inputLookup = inputLookup.table;
+          this.inputLookupLength = inputLookup.length;
+          this.outputLookup = outputLookup.table;
+          this.outputLookupLength = outputLookup.length;
           return result;
         }
       } else {
         // [{ input: object, output: object }] to [{ input: Float32Array, output: Float32Array }]
         if (this.inputSize === 1) {
+          const inputLookup = new LookupTable(data, 'input');
+          const outputLookup = new LookupTable(data, 'output');
           const result = [];
           for (let i = 0; i < data.length; i++) {
             const datum = data[i];
-            const input = datum.input;
-            const output = datum.output;
-            const newInput = [];
-            const newOutput = [];
-            const inputLookup = {};
-            const outputLookup = {};
-            let inputLookupLength = 0;
-            let outputLookupLength = 0;
-            for (let i = 0; i < data.length; i++) {
-              const datum = data[i];
-              const input = datum.input;
-              for (let p in input) {
-                if (inputLookup.hasOwnProperty(p)) continue;
-                inputLookup[p] = inputLookupLength++;
-              }
-
-              const output = datum.output;
-              for (let p in output) {
-                if (outputLookup.hasOwnProperty(p)) continue;
-                outputLookup[p] = outputLookupLength++;
-              }
-            }
-            for (let p in input) {
-              newInput.push(Float32Array.from([input[p]]));
-            }
-            for (let p in output) {
-              newOutput.push(Float32Array.from([output[p]]));
-            }
             result.push({
-              input: newInput,
-              output: newOutput
+              input: objectToFloat32Arrays(datum.input),
+              output: objectToFloat32Arrays(datum.output)
             });
-            this.inputLookup = inputLookup;
-            this.inputLookupLength = inputLookupLength;
-            this.outputLookup = outputLookup;
-            this.outputLookupLength = outputLookupLength;
+            this.inputLookup = inputLookup.table;
+            this.inputLookupLength = inputLookup.length;
+            this.outputLookup = outputLookup.table;
+            this.outputLookupLength = outputLookup.length;
           }
           return result;
         } else {
-          const inputLookup = {};
-          const outputLookup = {};
-          let inputLookupLength = 0;
-          let outputLookupLength = 0;
+          const inputLookup = new LookupTable(data, 'input');
+          const outputLookup = new LookupTable(data, 'output');
           const result = [];
           for (let i = 0; i < data.length; i++) {
             const datum = data[i];
-            const input = datum.input;
-            const output = datum.output;
-            for (let p in input) {
-              if (inputLookup.hasOwnProperty(p)) continue;
-              inputLookup[p] = inputLookupLength++;
-            }
-            for (let p in output) {
-              if (outputLookup.hasOwnProperty(p)) continue;
-              outputLookup[p] = outputLookupLength++;
-            }
+            result.push({
+              input: objectToFloat32Array(datum.input, inputLookup),
+              output: objectToFloat32Array(datum.output, outputLookup)
+            });
           }
 
-          for (let i = 0; i < data.length; i++) {
-            const datum = data[i];
-            const input = datum.input;
-            const output = datum.output;
-            const newInput = new Float32Array(inputLookupLength);
-            const newOutput = new Float32Array(outputLookupLength);
-            for (let p in input) {
-              newInput[inputLookup[p]] = input.hasOwnProperty(p) ? input[p] : 0;
-            }
-            for (let p in output) {
-              newOutput[outputLookup[p]] = output.hasOwnProperty(p) ? output[p] : 0;
-            }
-            result.push({input: newInput, output: newOutput});
-          }
-
-          this.inputLookup = inputLookup;
-          this.inputLookupLength = inputLookupLength;
-          this.outputLookup = outputLookup;
-          this.outputLookupLength = outputLookupLength;
+          this.inputLookup = inputLookup.table;
+          this.inputLookupLength = inputLookup.length;
+          this.outputLookup = outputLookup.table;
+          this.outputLookupLength = outputLookup.length;
           return result;
         }
       }
@@ -520,12 +428,7 @@ export default class RNNTimeStep extends RNN {
           if (Array.isArray(data[0][0])) {
             const result = [];
             for (let i = 0; i < data.length; i++) {
-              const datum = data[i];
-              const array = [];
-              for (let j = 0; j < datum.length; j++) {
-                array.push(Float32Array.from(datum[j]));
-              }
-              result.push(array);
+              result.push(arraysToFloat32Arrays(data[i]));
             }
             return result;
           } else {
@@ -540,12 +443,7 @@ export default class RNNTimeStep extends RNN {
           // number[][] to Float32Array[][][]
           const result = [];
           for (let i = 0; i < data.length; i++) {
-            const datum = data[i];
-            const array = [];
-            for (let j = 0; j < datum.length; j++) {
-              array.push(Float32Array.from([datum[j]]));
-            }
-            result.push(array);
+            result.push(arrayToFloat32Arrays(data[i]));
           }
           return result;
         }
@@ -642,12 +540,16 @@ export default class RNNTimeStep extends RNN {
    * @returns {Function}
    */
   toFunction() {
-    let model = this.model;
-    let equations = this.model.equations;
+    const model = this.model;
+    const equations = this.model.equations;
     const inputSize = this.inputSize;
-    let equation = equations[1];
-    let states = equation.states;
-    let jsonString = JSON.stringify(this.toJSON());
+    const inputLookup = this.inputLookup;
+    const inputLookupLength = this.inputLookupLength;
+    const outputLookup = this.outputLookup;
+    const outputLookupLength = this.outputLookupLength;
+    const equation = equations[1];
+    const states = equation.states;
+    const jsonString = JSON.stringify(this.toJSON());
 
     function matrixOrigin(m, stateIndex) {
       for (let i = 0, max = states.length; i < max; i++) {
@@ -705,6 +607,54 @@ export default class RNNTimeStep extends RNN {
       return matrixOrigin(m, stateIndex);
     }
 
+    function formatInputData() {
+      if (!inputLookup) return '';
+      if (inputSize === 1) {
+        return `function lookupInput(input) {
+          var table = ${ JSON.stringify(inputLookup) };
+          var result = [];
+          for (var p in table) {
+            result.push(Float32Array.from([input[p]]));
+          }
+          return result;
+        }`;
+      }
+      return `function lookupInput(input) {
+          var table = ${ JSON.stringify(inputLookup) };
+          var result = new Float32Array(${ inputLookupLength });
+          for (var p in table) {
+            result[table[p]] = input[p];
+          }
+          return result;
+        }`;
+    }
+
+    function formatOutputData() {
+      if (!outputLookup) return '';
+      if (inputSize === 1) {
+        return `function lookupOutput(output) {
+          var table = ${ JSON.stringify(outputLookup) };
+          var result = {};
+          for (var p in table) {
+            result[p] = output[table[p]][0];
+          }
+          return result;
+        }`
+      }
+      outputLookup
+        ? `function lookupOutput(output) {
+          var table = ${ JSON.stringify(outputLookup) };
+          var result = {};
+          debugger;
+          for (var p in table) {
+            result[p] = output[table[p]];
+          }
+          debugger;
+          return result;
+        }`
+        : ''
+    }
+
     function toInner(fnString) {
       // crude, but should be sufficient for now
       // function() { body }
@@ -717,7 +667,7 @@ export default class RNNTimeStep extends RNN {
       // body
 
       return fnString.join('}').split('\n').join('\n        ')
-        .replace('product.weights = _input.weights = _this.inputValue;', inputSize === 1 ? 'product.weights = [input[_i]];' : 'product.weights = input[_i];')
+        .replace('product.weights = _input.weights = _this.inputValue;', inputLookup && inputSize === 1 ? 'product.weights = _i < input.length ? input[_i] : prevStates[prevStates.length - 1].product.weights' : 'debugger;product.weights = input[_i];')
         .replace('product.deltas[i] = 0;', '')
         .replace('product.deltas[column] = 0;', '')
         .replace('left.deltas[leftIndex] = 0;', '')
@@ -752,6 +702,7 @@ export default class RNNTimeStep extends RNN {
       }
     }
 
+    const forceForecast = this.inputSize === 1 && this.outputLookup;
     const src = `
   var input = ${ this.inputLookup ? 'lookupInput(rawInput)' : 'rawInput' };
   var json = ${ jsonString };
@@ -759,7 +710,8 @@ export default class RNNTimeStep extends RNN {
   var states = [];
   var prevStates;
   var state;
-  for (let _i = 0; _i < input.length; _i++) {
+  var max = ${ forceForecast ? `input.length + ${ outputLookupLength - 1 }` : 'input.length' };
+  for (var _i = 0; _i < max; _i++) {
     prevStates = states;
     states = [];
     ${ statesRaw.join(';\n    ') };
@@ -773,33 +725,15 @@ export default class RNNTimeStep extends RNN {
 ${ innerFunctionsSwitch.join('\n') }
       }
     }
+    ${ inputSize && inputLookup ? 'if (_i >= input.length - 1) { output.push(state.product.weights); }' : '' }
   }
   ${
     this.inputLookup
-      ? 'return lookupOutput(state.product.weights)'
+      ? 'return lookupOutput(output)'
       : 'return state.product.weights'
   };
-  ${ this.inputLookup
-      ? `function lookupInput(input) {
-          var table = ${ JSON.stringify(this.inputLookup) };
-          var result = new Float32Array(${ Object.keys(this.inputLookup).length });
-          for (var p in table) {
-            result[table[p]] = input[p];
-          }
-          return result;
-        }`
-      : '' }
-  ${ this.outputLookup
-      ? `function lookupOutput(output) {
-          debugger;
-          var table = ${ JSON.stringify(this.outputLookup) };
-          var result = {};
-          for (var p in table) {
-            result[p] = output[table[p]];
-          }
-          return result;
-        }`
-      : '' }
+  ${ formatInputData() }
+  ${ formatOutputData() }
   
   function Matrix(rows, columns) {
     this.rows = rows;
