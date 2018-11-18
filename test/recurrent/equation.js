@@ -21,7 +21,7 @@ describe('equation', () => {
           forwardFn: sinon.spy()
         })
       }
-      equation.run();
+      equation.runIndex();
       equation.states.forEach((state) => {
         assert(state.forwardFn.called);
       });
@@ -35,7 +35,7 @@ describe('equation', () => {
           backpropagationFn: sinon.spy()
         })
       }
-      equation.runBackpropagate();
+      equation.backpropagate();
       equation.states.forEach((state) => {
         assert(state.backpropagationFn.called);
       });
@@ -48,7 +48,7 @@ describe('equation', () => {
       equation.add(input, fourSquareMatrix(1));
       assert.equal(equation.states.length, 1);
       sinon.spy(equation.states[0], 'forwardFn');
-      equation.run();
+      equation.runIndex();
       assert(equation.states[0].forwardFn.called);
     });
   });
@@ -59,7 +59,7 @@ describe('equation', () => {
       equation.multiply(input, fourSquareMatrix(1));
       assert.equal(equation.states.length, 1);
       sinon.spy(equation.states[0], 'forwardFn');
-      equation.run();
+      equation.runIndex();
       assert(equation.states[0].forwardFn.called);
     });
   });
@@ -70,7 +70,7 @@ describe('equation', () => {
       equation.add(input, fourSquareMatrix(1));
       assert.equal(equation.states.length, 1);
       sinon.spy(equation.states[0], 'forwardFn');
-      equation.run();
+      equation.runIndex();
       assert(equation.states[0].forwardFn.called);
     });
   });
@@ -81,7 +81,7 @@ describe('equation', () => {
       equation.add(input, fourSquareMatrix(1));
       assert.equal(equation.states.length, 1);
       sinon.spy(equation.states[0], 'forwardFn');
-      equation.run();
+      equation.runIndex();
       assert(equation.states[0].forwardFn.called);
     });
   });
@@ -92,7 +92,7 @@ describe('equation', () => {
       equation.add(input, fourSquareMatrix(1));
       assert.equal(equation.states.length, 1);
       sinon.spy(equation.states[0], 'forwardFn');
-      equation.run();
+      equation.runIndex();
       assert(equation.states[0].forwardFn.called);
     });
   });
@@ -103,7 +103,7 @@ describe('equation', () => {
       equation.add(input, fourSquareMatrix(1));
       assert.equal(equation.states.length, 1);
       sinon.spy(equation.states[0], 'forwardFn');
-      equation.run();
+      equation.runIndex();
       assert(equation.states[0].forwardFn.called);
     });
   });
@@ -114,7 +114,7 @@ describe('equation', () => {
       equation.add(input, fourSquareMatrix(1));
       assert.equal(equation.states.length, 1);
       sinon.spy(equation.states[0], 'forwardFn');
-      equation.run();
+      equation.runIndex();
       assert(equation.states[0].forwardFn.called);
     });
   });
@@ -127,7 +127,7 @@ describe('equation', () => {
       sinon.spy(equation.states[0], 'forwardFn');
       sinon.spy(equation.states[1], 'forwardFn');
       sinon.spy(equation.states[2], 'forwardFn');
-      equation.run();
+      equation.runIndex();
       equation.states.forEach((state) => {
         assert(state.forwardFn.called);
       });
@@ -140,14 +140,14 @@ describe('equation', () => {
       sinon.spy(equation.states[0], 'backpropagationFn');
       sinon.spy(equation.states[1], 'backpropagationFn');
       sinon.spy(equation.states[2], 'backpropagationFn');
-      equation.runBackpropagate();
+      equation.backpropagate();
       equation.states.forEach((state) => {
         assert(state.backpropagationFn.called);
       });
     });
   });
   describe('inputMatrixToRow', () => {
-    context('run', () => {
+    context('runIndex', () => {
       it('can properly split up a matrix', () => {
         var input = new Matrix(2, 2);
         /**
@@ -164,18 +164,18 @@ describe('equation', () => {
         });
         var equation = new Equation();
         equation.add(new OnesMatrix(1, 2), equation.inputMatrixToRow(input));
-        var output = equation.run();
+        var output = equation.runIndex();
         assert.equal(output.weights.length, 2);
         assert.equal(output.weights[0], 2);
         assert.equal(output.weights[1], 2);
 
-        output = equation.run(1);
+        output = equation.runIndex(1);
         assert.equal(output.weights.length, 2);
         assert.equal(output.weights[0], 3);
         assert.equal(output.weights[1], 3);
       });
     });
-    context('runBackpropagate', () => {
+    context('.backpropagate()', () => {
       it('can properly split up a matrix', () => {
         var input = new Matrix(2, 2);
         /**
@@ -192,15 +192,10 @@ describe('equation', () => {
         });
         var equation = new Equation();
         equation.add(new OnesMatrix(1, 2), equation.inputMatrixToRow(input));
-        var output = equation.run();
+        var output = equation.runIndex();
         assert.equal(output.weights.length, 2);
-        output = equation.run(1);
+        output = equation.runIndex(1);
         assert.equal(output.weights.length, 2);
-        output.weights.forEach((weight, i) => {
-          output.deltas[i] = weight;
-        });
-        equation.runBackpropagate(1);
-        equation.runBackpropagate();
       });
     });
   });

@@ -80,23 +80,23 @@ describe('train() and trainAsync() use the same private methods', () => {
   let opts = { iterations:1 };
   let net = new brain.NeuralNetwork();
   let methodsChecked = [
-    '_prepTraining',
-    '_updateTrainingOptions',
-    '_formatData',
-    '_verifyIsInitialized',
-    '_trainingTick'
+    'prepTraining',
+    'updateTrainingOptions',
+    'formatData',
+    'verifyIsInitialized',
+    'trainingTick'
   ];
 
-  beforeEach(() => { methodsChecked.forEach(m => sinon.spy(net, m)); })
-  afterEach(() => { methodsChecked.forEach(m => net[m].restore()); })
+  beforeEach(() => { methodsChecked.forEach(m => sinon.spy(net, m)); });
+  afterEach(() => { methodsChecked.forEach(m => net[m].restore()); });
 
-  it('_prepTraining()', (done) => {
+  it('.prepTraining()', (done) => {
     net.train(trainingData, opts);
-    assert(net._prepTraining.calledOnce, `_prepTraining was expected to be called once but was called ${net._prepTraining.callCount}`);
+    assert(net.prepTraining.calledOnce, `_prepTraining was expected to be called once but was called ${net.prepTraining.callCount}`);
     net
       .trainAsync(trainingData, opts)
       .then(() => {
-        assert(net._prepTraining.calledTwice, `_prepTraining was expected to be called twice but was called ${net._prepTraining.callCount}`);
+        assert(net.prepTraining.calledTwice, `_prepTraining was expected to be called twice but was called ${net.prepTraining.callCount}`);
         done();
       })
       .catch(e => {
@@ -105,13 +105,13 @@ describe('train() and trainAsync() use the same private methods', () => {
       });
   });
 
-  it('_updateTrainingOptions()', (done) => {
+  it('.updateTrainingOptions()', (done) => {
     net.train(trainingData, opts);
-    assert(net._updateTrainingOptions.calledOnce, `_updateTrainingOptions was expected to be called once but was called ${net._updateTrainingOptions.callCount}`);
+    assert(net.updateTrainingOptions.calledOnce, `_updateTrainingOptions was expected to be called once but was called ${net.updateTrainingOptions.callCount}`);
     net
       .trainAsync(trainingData, opts)
       .then(() => {
-        assert(net._updateTrainingOptions.calledTwice, `_updateTrainingOptions was expected to be called twice but was called ${net._prepTraining.callCount}`);
+        assert(net.updateTrainingOptions.calledTwice, `_updateTrainingOptions was expected to be called twice but was called ${net.prepTraining.callCount}`);
         done();
       })
       .catch(e => {
@@ -120,13 +120,13 @@ describe('train() and trainAsync() use the same private methods', () => {
       });
   });
 
-  it('_formatData()', (done) => {
+  it('.formatData()', (done) => {
     net.train(trainingData, opts);
-    assert(net._formatData.calledOnce, `_formatData was expected to be called once but was called ${net._formatData.callCount}`);
+    assert(net.formatData.calledOnce, `_formatData was expected to be called once but was called ${net.formatData.callCount}`);
     net
       .trainAsync(trainingData, opts)
       .then(() => {
-        assert(net._formatData.calledTwice, `_formatData was expected to be called twice but was called ${net._prepTraining.callCount}`);
+        assert(net.formatData.calledTwice, `_formatData was expected to be called twice but was called ${net.prepTraining.callCount}`);
         done();
       })
       .catch(e => {
@@ -135,13 +135,13 @@ describe('train() and trainAsync() use the same private methods', () => {
       });
   });
 
-  it('_verifyIsInitialized()', (done) => {
+  it('.verifyIsInitialized()', (done) => {
     net.train(trainingData, opts);
-    assert(net._verifyIsInitialized.calledOnce, `_verifyIsInitialized was expected to be called once but was called ${net._verifyIsInitialized.callCount}`);
+    assert(net.verifyIsInitialized.calledOnce, `_verifyIsInitialized was expected to be called once but was called ${net.verifyIsInitialized.callCount}`);
     net
       .trainAsync(trainingData, opts)
       .then(() => {
-        assert(net._verifyIsInitialized.calledTwice, `_verifyIsInitialized was expected to be called twice but was called ${net._prepTraining.callCount}`);
+        assert(net.verifyIsInitialized.calledTwice, `_verifyIsInitialized was expected to be called twice but was called ${net.prepTraining.callCount}`);
         done();
       })
       .catch(e => {
@@ -150,15 +150,15 @@ describe('train() and trainAsync() use the same private methods', () => {
       });
   });
 
-  it('_trainingTick()', (done) => {
+  it('.trainingTick()', (done) => {
     net.train(trainingData, opts);
-    // The loop calls _trainingTick twice and returns imidiatly on second call
-    assert(net._trainingTick.calledTwice, `_trainingTick was expected to be called twice but was called ${net._prepTraining.callCount}`);
+    // The loop calls _trainingTick twice and returns immediately on second call
+    assert(net.trainingTick.calledTwice, `_trainingTick was expected to be called twice but was called ${net.prepTraining.callCount}`);
     net
       .trainAsync(trainingData, opts)
       .then(() => {
         // trainAsync only calls _trainingTick once
-        assert(net._trainingTick.calledThrice, `_trainingTick was expected to be called thrice but was called ${net._prepTraining.callCount}`);
+        assert(net.trainingTick.calledThrice, `_trainingTick was expected to be called thrice but was called ${net.prepTraining.callCount}`);
         done();
       })
       .catch(e => {
@@ -171,89 +171,89 @@ describe('train() and trainAsync() use the same private methods', () => {
 describe('training options validation', () => {
   it('iterations validation', () => {
     let net = new brain.NeuralNetwork();
-    assert.throws(() => { net._updateTrainingOptions({ iterations: 'should be a string' }) });
-    assert.throws(() => { net._updateTrainingOptions({ iterations: () => {} }) });
-    assert.throws(() => { net._updateTrainingOptions({ iterations: false }) });
-    assert.throws(() => { net._updateTrainingOptions({ iterations: -1 }) });
-    assert.doesNotThrow(() => { net._updateTrainingOptions({ iterations: 5000 }) });
+    assert.throws(() => { net.updateTrainingOptions({ iterations: 'should be a string' }) });
+    assert.throws(() => { net.updateTrainingOptions({ iterations: () => {} }) });
+    assert.throws(() => { net.updateTrainingOptions({ iterations: false }) });
+    assert.throws(() => { net.updateTrainingOptions({ iterations: -1 }) });
+    assert.doesNotThrow(() => { net.updateTrainingOptions({ iterations: 5000 }) });
   });
 
   it('errorThresh validation', () => {
     let net = new brain.NeuralNetwork();
-    assert.throws(() => { net._updateTrainingOptions({ errorThresh: 'no strings'}) });
-    assert.throws(() => { net._updateTrainingOptions({ errorThresh: () => {} }) });
-    assert.throws(() => { net._updateTrainingOptions({ errorThresh: 5}) });
-    assert.throws(() => { net._updateTrainingOptions({ errorThresh: -1}) });
-    assert.throws(() => { net._updateTrainingOptions({ errorThresh: false}) });
-    assert.doesNotThrow(() => { net._updateTrainingOptions({ errorThresh: 0.008}) });
+    assert.throws(() => { net.updateTrainingOptions({ errorThresh: 'no strings'}) });
+    assert.throws(() => { net.updateTrainingOptions({ errorThresh: () => {} }) });
+    assert.throws(() => { net.updateTrainingOptions({ errorThresh: 5}) });
+    assert.throws(() => { net.updateTrainingOptions({ errorThresh: -1}) });
+    assert.throws(() => { net.updateTrainingOptions({ errorThresh: false}) });
+    assert.doesNotThrow(() => { net.updateTrainingOptions({ errorThresh: 0.008}) });
   });
 
   it('log validation', () => {
     let net = new brain.NeuralNetwork();
-    assert.throws(() => { net._updateTrainingOptions({ log: 'no strings' }) });
-    assert.throws(() => { net._updateTrainingOptions({ log: 4 }) });
-    assert.doesNotThrow(() => { net._updateTrainingOptions({ log: false }) });
-    assert.doesNotThrow(() => { net._updateTrainingOptions({ log: () => {} }) });
+    assert.throws(() => { net.updateTrainingOptions({ log: 'no strings' }) });
+    assert.throws(() => { net.updateTrainingOptions({ log: 4 }) });
+    assert.doesNotThrow(() => { net.updateTrainingOptions({ log: false }) });
+    assert.doesNotThrow(() => { net.updateTrainingOptions({ log: () => {} }) });
   });
 
   it('logPeriod validation', () => {
     let net = new brain.NeuralNetwork();
-    assert.throws(() => { net._updateTrainingOptions({ logPeriod: 'no strings' }) });
-    assert.throws(() => { net._updateTrainingOptions({ logPeriod: -50 }) });
-    assert.throws(() => { net._updateTrainingOptions({ logPeriod: () => {} }) });
-    assert.throws(() => { net._updateTrainingOptions({ logPeriod: false }) });
-    assert.doesNotThrow(() => { net._updateTrainingOptions({ logPeriod: 40 }) });
+    assert.throws(() => { net.updateTrainingOptions({ logPeriod: 'no strings' }) });
+    assert.throws(() => { net.updateTrainingOptions({ logPeriod: -50 }) });
+    assert.throws(() => { net.updateTrainingOptions({ logPeriod: () => {} }) });
+    assert.throws(() => { net.updateTrainingOptions({ logPeriod: false }) });
+    assert.doesNotThrow(() => { net.updateTrainingOptions({ logPeriod: 40 }) });
   });
 
   it('learningRate validation', () => {
     let net = new brain.NeuralNetwork();
-    assert.throws(() => { net._updateTrainingOptions({ learningRate: 'no strings' }) });
-    assert.throws(() => { net._updateTrainingOptions({ learningRate: -50 }) });
-    assert.throws(() => { net._updateTrainingOptions({ learningRate: 50 }) });
-    assert.throws(() => { net._updateTrainingOptions({ learningRate: () => {} }) });
-    assert.throws(() => { net._updateTrainingOptions({ learningRate: false }) });
-    assert.doesNotThrow(() => { net._updateTrainingOptions({ learningRate: 0.5 }) });
+    assert.throws(() => { net.updateTrainingOptions({ learningRate: 'no strings' }) });
+    assert.throws(() => { net.updateTrainingOptions({ learningRate: -50 }) });
+    assert.throws(() => { net.updateTrainingOptions({ learningRate: 50 }) });
+    assert.throws(() => { net.updateTrainingOptions({ learningRate: () => {} }) });
+    assert.throws(() => { net.updateTrainingOptions({ learningRate: false }) });
+    assert.doesNotThrow(() => { net.updateTrainingOptions({ learningRate: 0.5 }) });
   });
 
   it('momentum validation', () => {
     let net = new brain.NeuralNetwork();
-    assert.throws(() => { net._updateTrainingOptions({ momentum: 'no strings' }) });
-    assert.throws(() => { net._updateTrainingOptions({ momentum: -50 }) });
-    assert.throws(() => { net._updateTrainingOptions({ momentum: 50 }) });
-    assert.throws(() => { net._updateTrainingOptions({ momentum: () => {} }) });
-    assert.throws(() => { net._updateTrainingOptions({ momentum: false }) });
-    assert.doesNotThrow(() => { net._updateTrainingOptions({ momentum: 0.8 }) });
+    assert.throws(() => { net.updateTrainingOptions({ momentum: 'no strings' }) });
+    assert.throws(() => { net.updateTrainingOptions({ momentum: -50 }) });
+    assert.throws(() => { net.updateTrainingOptions({ momentum: 50 }) });
+    assert.throws(() => { net.updateTrainingOptions({ momentum: () => {} }) });
+    assert.throws(() => { net.updateTrainingOptions({ momentum: false }) });
+    assert.doesNotThrow(() => { net.updateTrainingOptions({ momentum: 0.8 }) });
   });
 
   it('callback validation', () => {
     let net = new brain.NeuralNetwork();
-    assert.throws(() => { net._updateTrainingOptions({ callback: 'no strings' }) });
-    assert.throws(() => { net._updateTrainingOptions({ callback: 4 }) });
-    assert.throws(() => { net._updateTrainingOptions({ callback: false }) });
-    assert.doesNotThrow(() => { net._updateTrainingOptions({ callback: null }) });
-    assert.doesNotThrow(() => { net._updateTrainingOptions({ callback: () => {} }) });
+    assert.throws(() => { net.updateTrainingOptions({ callback: 'no strings' }) });
+    assert.throws(() => { net.updateTrainingOptions({ callback: 4 }) });
+    assert.throws(() => { net.updateTrainingOptions({ callback: false }) });
+    assert.doesNotThrow(() => { net.updateTrainingOptions({ callback: null }) });
+    assert.doesNotThrow(() => { net.updateTrainingOptions({ callback: () => {} }) });
   });
 
   it('callbackPeriod validation', () => {
     let net = new brain.NeuralNetwork();
-    assert.throws(() => { net._updateTrainingOptions({ callbackPeriod: 'no strings' }) });
-    assert.throws(() => { net._updateTrainingOptions({ callbackPeriod: -50 }) });
-    assert.throws(() => { net._updateTrainingOptions({ callbackPeriod: () => {} }) });
-    assert.throws(() => { net._updateTrainingOptions({ callbackPeriod: false }) });
-    assert.doesNotThrow(() => { net._updateTrainingOptions({ callbackPeriod: 40 }) });
+    assert.throws(() => { net.updateTrainingOptions({ callbackPeriod: 'no strings' }) });
+    assert.throws(() => { net.updateTrainingOptions({ callbackPeriod: -50 }) });
+    assert.throws(() => { net.updateTrainingOptions({ callbackPeriod: () => {} }) });
+    assert.throws(() => { net.updateTrainingOptions({ callbackPeriod: false }) });
+    assert.doesNotThrow(() => { net.updateTrainingOptions({ callbackPeriod: 40 }) });
   });
 
   it('timeout validation', () => {
     let net = new brain.NeuralNetwork();
-    assert.throws(() => { net._updateTrainingOptions({ timeout: 'no strings' }) });
-    assert.throws(() => { net._updateTrainingOptions({ timeout: -50 }) });
-    assert.throws(() => { net._updateTrainingOptions({ timeout: () => {} }) });
-    assert.throws(() => { net._updateTrainingOptions({ timeout: false }) });
-    assert.doesNotThrow(() => { net._updateTrainingOptions({ timeout: 40 }) });
+    assert.throws(() => { net.updateTrainingOptions({ timeout: 'no strings' }) });
+    assert.throws(() => { net.updateTrainingOptions({ timeout: -50 }) });
+    assert.throws(() => { net.updateTrainingOptions({ timeout: () => {} }) });
+    assert.throws(() => { net.updateTrainingOptions({ timeout: false }) });
+    assert.doesNotThrow(() => { net.updateTrainingOptions({ timeout: 40 }) });
   });
 
   it('should handle unsupported options', () => {
     let net = new brain.NeuralNetwork();
-    assert.doesNotThrow(() => { net._updateTrainingOptions({ fakeProperty: 'should be handled fine' }) });
+    assert.doesNotThrow(() => { net.updateTrainingOptions({ fakeProperty: 'should be handled fine' }) });
   })
 });

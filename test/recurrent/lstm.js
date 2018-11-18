@@ -4,8 +4,7 @@ import DataFormatter from '../../src/utilities/data-formatter';
 
 describe('lstm', () => {
   describe('math', () => {
-    it('can predict math', function(done) {
-      this.timeout(15000);
+    it('can predict math', () => {
       const net = new LSTM();
       const items = new Set([]);
       for (let i = 0; i < 10; i++) {
@@ -14,13 +13,11 @@ describe('lstm', () => {
           items.add(`${j}+${i}=${i + j}`);
         }
       }
-      net.train(Array.from(items), { log: true, iterations: 100 });
+      net.train(Array.from(items), { iterations: 60, errorThresh: 0.03 });
       for (let i = 0; i < 10; i++) {
-        const output = net.run();
-        console.log(output);
-        assert(/^[0-9]+[+][0-9]+[=][0-9]+$/.test(output));
+        const output = net.run(`${ i }+`);
+        assert(/^[0-9]+[=][0-9]+$/.test(output));
       }
-      done();
     });
   });
 

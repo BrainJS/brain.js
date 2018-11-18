@@ -27,8 +27,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
   /**
    *
    */
-  _initialize() {
-    super._initialize();
+  initialize() {
+    super.initialize();
     this.buildRunInput();
     this.buildCalculateDeltas();
     this.buildGetChanges();
@@ -44,7 +44,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
    * @param target
    * @param logErrorRate
    */
-  _trainPattern(input, target, logErrorRate) {
+  trainPattern(input, target, logErrorRate) {
     // forward propagate
     this.runInput(input);
 
@@ -91,7 +91,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
       });
     }
 
-    this._texturizeInputData = this.gpu.createKernel(function(value) {
+    this.texturizeInputData = this.gpu.createKernel(function(value) {
       return value[this.thread.x];
     }, {
       output: [this.sizes[1]],
@@ -111,8 +111,8 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     this.outputs[0] = input;
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       this.outputs[layer] = this.forwardPropagate[layer](
-        this.weights[layer], 
-        this.biases[layer], 
+        this.weights[layer],
+        this.biases[layer],
         input
       );
       output = input = this.outputs[layer];
@@ -232,9 +232,9 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
         outputToTexture: true,
         hardCodeConstants: true
       });
-    }    
+    }
   }
-  
+
   getChanges() {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       let output = this.changesPropagate[layer](
@@ -299,44 +299,21 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
   run(input) {
     if (!this.isRunnable) return null;
     if (this.inputLookup) {
-      input = lookup.toArray(this.inputLookup, input);
+      input = lookup.toArray(this.inputLookup, input, this.inputLookupLength);
     }
-    const inputTexture = this._texturizeInputData(input);
+    const inputTexture = this.texturizeInputData(input);
     const outputTextures = this.runInput(inputTexture);
-    let output = outputTextures.toArray(this.gpu);
+    let output;
+    if (outputTextures.toArray) {
+      output = outputTextures.toArray(this.gpu);
+    } else {
+      output = outputTextures;
+    }
 
     if (this.outputLookup) {
-      output = lookup.toHash(this.outputLookup, output);
+      output = lookup.toObject(this.outputLookup, output);
     }
     return output;
-  }
-
-
-  /**
-   *
-   * @param data
-   * Verifies network sizes are initilaized
-   * If they are not it will initialize them based off the data set.
-   */
-  _verifyIsInitialized(data) {
-    if (this.sizes) return;
-
-    this.sizes = [];
-    if (!data[0].size) {
-      data[0].size = { input: data[0].input.length, output: data[0].output.length };
-    }
-
-    this.sizes.push(data[0].size.input);
-    if (!this.hiddenLayers) {
-      this.sizes.push(Math.max(3, Math.floor(data[0].size.input / 2)));
-    } else {
-      this.hiddenLayers.forEach(size => {
-        this.sizes.push(size);
-      });
-    }
-    this.sizes.push(data[0].size.output);
-
-    this._initialize();
   }
 
   /**
@@ -346,9 +323,9 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
    * @protected
    * @return { data, status, endTime }
    */
-  _prepTraining(data, options) {
-    this._updateTrainingOptions(options);
-    data = this._formatData(data);
+  prepTraining(data, options) {
+    this.updateTrainingOptions(options);
+    data = this.formatData(data);
     const endTime = Date.now() + this.trainOpts.timeout;
 
     const status = {
@@ -356,7 +333,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
       iterations: 0
     };
 
-    this._verifyIsInitialized(data);
+    this.verifyIsInitialized(data);
 
     const texturizeOutputData = this.gpu.createKernel(function(value) {
       return value[this.thread.x];
@@ -370,8 +347,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     return {
       data: data.map((set) => {
         return {
-          size: set.size,
-          input: this._texturizeInputData(set.input),
+          input: this.texturizeInputData(set.input),
           output: texturizeOutputData(set.output)
         }
       }),

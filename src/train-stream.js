@@ -75,7 +75,7 @@ export default class TrainStream extends Writable {
 
     this.count++;
 
-    let data = this.neuralNetwork._formatData(chunk);
+    let data = this.neuralNetwork.formatData(chunk);
     this.trainDatum(data[0]);
 
     // tell the Readable Stream that we are ready for more data
@@ -107,7 +107,7 @@ export default class TrainStream extends Writable {
         this.neuralNetwork.outputLookup = lookup.lookupFromArray(this.outputKeys);
       }
 
-      let data = this.neuralNetwork._formatData(this.firstDatum);
+      let data = this.neuralNetwork.formatData(this.firstDatum);
       let sizes = [];
       let inputSize = data[0].input.length;
       let outputSize = data[0].output.length;

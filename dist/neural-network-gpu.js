@@ -64,9 +64,9 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
 
 
   _createClass(NeuralNetworkGPU, [{
-    key: '_initialize',
-    value: function _initialize() {
-      _get(NeuralNetworkGPU.prototype.__proto__ || Object.getPrototypeOf(NeuralNetworkGPU.prototype), '_initialize', this).call(this);
+    key: 'initialize',
+    value: function initialize() {
+      _get(NeuralNetworkGPU.prototype.__proto__ || Object.getPrototypeOf(NeuralNetworkGPU.prototype), 'initialize', this).call(this);
       this.buildRunInput();
       this.buildCalculateDeltas();
       this.buildGetChanges();
@@ -85,8 +85,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
      */
 
   }, {
-    key: '_trainPattern',
-    value: function _trainPattern(input, target, logErrorRate) {
+    key: 'trainPattern',
+    value: function trainPattern(input, target, logErrorRate) {
       // forward propagate
       this.runInput(input);
 
@@ -134,7 +134,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
         });
       }
 
-      this._texturizeInputData = this.gpu.createKernel(function (value) {
+      this.texturizeInputData = this.gpu.createKernel(function (value) {
         return value[this.thread.x];
       }, {
         output: [this.sizes[1]],
@@ -333,48 +333,21 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     value: function run(input) {
       if (!this.isRunnable) return null;
       if (this.inputLookup) {
-        input = _lookup2.default.toArray(this.inputLookup, input);
+        input = _lookup2.default.toArray(this.inputLookup, input, this.inputLookupLength);
       }
-      var inputTexture = this._texturizeInputData(input);
+      var inputTexture = this.texturizeInputData(input);
       var outputTextures = this.runInput(inputTexture);
-      var output = outputTextures.toArray(this.gpu);
+      var output = void 0;
+      if (outputTextures.toArray) {
+        output = outputTextures.toArray(this.gpu);
+      } else {
+        output = outputTextures;
+      }
 
       if (this.outputLookup) {
-        output = _lookup2.default.toHash(this.outputLookup, output);
+        output = _lookup2.default.toObject(this.outputLookup, output);
       }
       return output;
-    }
-
-    /**
-     *
-     * @param data
-     * Verifies network sizes are initilaized
-     * If they are not it will initialize them based off the data set.
-     */
-
-  }, {
-    key: '_verifyIsInitialized',
-    value: function _verifyIsInitialized(data) {
-      var _this2 = this;
-
-      if (this.sizes) return;
-
-      this.sizes = [];
-      if (!data[0].size) {
-        data[0].size = { input: data[0].input.length, output: data[0].output.length };
-      }
-
-      this.sizes.push(data[0].size.input);
-      if (!this.hiddenLayers) {
-        this.sizes.push(Math.max(3, Math.floor(data[0].size.input / 2)));
-      } else {
-        this.hiddenLayers.forEach(function (size) {
-          _this2.sizes.push(size);
-        });
-      }
-      this.sizes.push(data[0].size.output);
-
-      this._initialize();
     }
 
     /**
@@ -386,12 +359,12 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
      */
 
   }, {
-    key: '_prepTraining',
-    value: function _prepTraining(data, options) {
-      var _this3 = this;
+    key: 'prepTraining',
+    value: function prepTraining(data, options) {
+      var _this2 = this;
 
-      this._updateTrainingOptions(options);
-      data = this._formatData(data);
+      this.updateTrainingOptions(options);
+      data = this.formatData(data);
       var endTime = Date.now() + this.trainOpts.timeout;
 
       var status = {
@@ -399,7 +372,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
         iterations: 0
       };
 
-      this._verifyIsInitialized(data);
+      this.verifyIsInitialized(data);
 
       var texturizeOutputData = this.gpu.createKernel(function (value) {
         return value[this.thread.x];
@@ -413,8 +386,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       return {
         data: data.map(function (set) {
           return {
-            size: set.size,
-            input: _this3._texturizeInputData(set.input),
+            input: _this2.texturizeInputData(set.input),
             output: texturizeOutputData(set.output)
           };
         }),

@@ -17,7 +17,6 @@ export default class RNN {
 
     this.stepCache = {};
     this.runs = 0;
-    this.totalCost = null;
     this.ratioClipped = null;
     this.model = null;
 
@@ -40,7 +39,7 @@ export default class RNN {
       outputConnector: null,
     };
 
-    if (this.dataFormatter !== null) {
+    if (this.dataFormatter) {
       this.inputSize =
       this.inputRange =
       this.outputSize = this.dataFormatter.characters.length;
@@ -183,9 +182,9 @@ export default class RNN {
    * @returns {number}
    */
   trainPattern(input, learningRate = null) {
-    const error = this.runInput(input);
-    this.runBackpropagate(input);
-    this.step(learningRate);
+    const error = this.trainInput(input);
+    this.backpropagate(input);
+    this.adjustWeights(learningRate);
     return error;
   }
 
@@ -194,12 +193,11 @@ export default class RNN {
    * @param {Number[]} input
    * @returns {number}
    */
-  runInput(input) {
+  trainInput(input) {
     this.runs++;
     let model = this.model;
     let max = input.length;
     let log2ppl = 0;
-    let cost = 0;
     let equation;
     while (model.equations.length <= input.length + 1) {//last is zero
       this.bindEquation();
@@ -211,41 +209,30 @@ export default class RNN {
 
       let source = (inputIndex === -1 ? 0 : input[inputIndex] + 1); // first step: start with START token
       let target = (inputIndex === max - 1 ? 0 : input[inputIndex + 1] + 1); // last step: end with END token
-      let output = equation.run(source);
-      // set gradients into log probabilities
-      let logProbabilities = output; // interpret output as log probabilities
-      let probabilities = softmax(output); // compute the softmax probabilities
-
-      log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
-      cost += -Math.log(probabilities.weights[target]);
-      // write gradients into log probabilities
-      logProbabilities.deltas = probabilities.weights.slice(0);
-      logProbabilities.deltas[target] -= 1;
+      log2ppl += equation.predictTargetIndex(source, target);
     }
-
-    this.totalCost = cost;
     return Math.pow(2, log2ppl / (max - 1)) / 100;
   }
 
   /**
    * @param {Number[]} input
    */
-  runBackpropagate(input) {
+  backpropagate(input) {
     let i = input.length;
     let model = this.model;
     let equations = model.equations;
     while(i > 0) {
-      equations[i].runBackpropagate(input[i - 1] + 1);
+      equations[i].backpropagateIndex(input[i - 1] + 1);
       i--;
     }
-    equations[0].runBackpropagate(0);
+    equations[0].backpropagateIndex(0);
   }
 
   /**
    *
    * @param {Number} [learningRate]
    */
-  step(learningRate = null) {
+  adjustWeights(learningRate = null) {
     // perform parameter update
     //TODO: still not sure if this is ready for learningRate
     let stepSize = this.learningRate;
@@ -290,7 +277,7 @@ export default class RNN {
    * @returns boolean
    */
   get isRunnable(){
-    if(this.model.equations.length === 0){
+    if (this.model.equations.length === 0) {
       console.error(`No equations bound, did you run train()?`);
       return false;
     }
@@ -325,7 +312,7 @@ export default class RNN {
       }
       let equation = model.equations[i];
       // sample predicted letter
-      let outputMatrix = equation.run(previousIndex);
+      let outputMatrix = equation.runIndex(previousIndex);
       let logProbabilities = new Matrix(model.output.rows, model.output.columns);
       copy(logProbabilities, outputMatrix);
       if (temperature !== 1 && isSampleI) {
@@ -457,10 +444,6 @@ export default class RNN {
     };
   }
 
-  toJSONString() {
-    return JSON.stringify(this.toJSON());
-  }
-
   fromJSON(json) {
     const defaults = this.constructor.defaults;
     const options = json.options;
@@ -493,7 +476,7 @@ export default class RNN {
       this.hiddenLayers = options.hiddenSizes;
     }
 
-    if (options.hasOwnProperty('dataFormatter') && options.dataFormatter !== null) {
+    if (options.dataFormatter) {
       this.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);
     }
 
@@ -628,10 +611,10 @@ export default class RNN {
   if (typeof rawInput === 'undefined') rawInput = [];
   if (typeof isSampleI === 'undefined') isSampleI = false;
   if (typeof temperature === 'undefined') temperature = 1;
-  ${ (this.dataFormatter !== null) ? this.dataFormatter.toFunctionString() : '' }
+  ${ this.dataFormatter ? this.dataFormatter.toFunctionString() : '' }
   
   var input = ${
-      (this.dataFormatter !== null && typeof this.formatDataIn === 'function')
+      (this.dataFormatter && typeof this.formatDataIn === 'function')
         ? 'formatDataIn(rawInput)' 
         : 'rawInput'
     };
@@ -684,7 +667,7 @@ ${ innerFunctionsSwitch.join('\n') }
 
     output.push(nextIndex);
   }
-  ${ (this.dataFormatter !== null && typeof this.formatDataOut === 'function') 
+  ${ (this.dataFormatter && typeof this.formatDataOut === 'function') 
       ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))'
       : 'return output.slice(input.length).map(function(value) { return value - 1; })' };
   function Matrix(rows, columns) {
@@ -692,7 +675,7 @@ ${ innerFunctionsSwitch.join('\n') }
     this.columns = columns;
     this.weights = zeros(rows * columns);
   }
-  ${ this.dataFormatter !== null && typeof this.formatDataIn === 'function'
+  ${ this.dataFormatter && typeof this.formatDataIn === 'function'
       ? `function formatDataIn(input, output) { ${
           toInner(this.formatDataIn.toString())
             .replace(/this[.]dataFormatter[\n\s]+[.]/g, '')
@@ -747,7 +730,7 @@ RNN.defaults = {
     let values = [];
     const result = [];
     if (typeof data[0] === 'string' || Array.isArray(data[0])) {
-      if (this.dataFormatter === null) {
+      if (!this.dataFormatter) {
         for (let i = 0; i < data.length; i++) {
           values.push(data[i]);
         }
@@ -757,7 +740,7 @@ RNN.defaults = {
         result.push(this.formatDataIn(data[i]));
       }
     } else {
-      if (this.dataFormatter === null) {
+      if (!this.dataFormatter) {
         for (let i = 0; i < data.length; i++) {
           values.push(data[i].input);
           values.push(data[i].output);
@@ -778,7 +761,7 @@ RNN.defaults = {
    * @returns {Number[]}
    */
   formatDataIn: function(input, output = null) {
-    if (this.dataFormatter !== null) {
+    if (this.dataFormatter) {
       if (this.dataFormatter.indexTable.hasOwnProperty('stop-input')) {
         return this.dataFormatter.toIndexesInputOutput(input, output);
       } else {
@@ -794,7 +777,7 @@ RNN.defaults = {
    * @returns {*}
    */
   formatDataOut: function(input, output) {
-    if (this.dataFormatter !== null) {
+    if (this.dataFormatter) {
       return this.dataFormatter
         .toCharacters(output)
         .join('');

@@ -1,7 +1,7 @@
 /**
  *
  * @param {*} input
- * @param {NeuralNetwork} net
+ * @param {brain.NeuralNetwork} net
  * @returns {*}
  */
 export default function likely(input, net) {

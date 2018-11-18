@@ -17,6 +17,7 @@ export interface INeuralNetworkTrainingOptions {
   callback?: INeuralNetworkTrainingCallback | number;
   callbackPeriod?: number;
   timeout?: number;
+  praxis?: null | 'adam'
 }
 
 export interface INeuralNetworkTrainingCallback {
@@ -39,11 +40,11 @@ export interface INeuralNetworkJSON {
 }
 
 export interface INeuralNetworkTrainingData {
-  input: NeuralNetworkTrainingValue;
-  output: NeuralNetworkTrainingValue;
+  input: NeuralNetworkInput;
+  output: NeuralNetworkInput;
 }
 
-export type NeuralNetworkTrainingValue = number[];
+export type NeuralNetworkInput = number[];
 
 export class NeuralNetwork {
   public constructor(options?: INeuralNetworkOptions);
@@ -51,12 +52,14 @@ export class NeuralNetwork {
   public train<T>(data: T, options?: INeuralNetworkTrainingOptions): INeuralNetworkState;
   public trainAsync(data: INeuralNetworkTrainingData, options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
   public trainAsync<T>(data: T, options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
-  public run(data: NeuralNetworkTrainingValue): NeuralNetworkTrainingValue;
-  public run<T>(data: NeuralNetworkTrainingValue): T;
+  public run(data: NeuralNetworkInput): NeuralNetworkInput;
+  public run<T>(data: NeuralNetworkInput): T;
   public run<TInput, TOutput>(data: TInput): TOutput;
   public fromJSON(json: INeuralNetworkJSON): NeuralNetwork;
   public toJSON(): INeuralNetworkJSON;
 }
+
+export class NeuralNetworkGPU extends NeuralNetwork {}
 
 /* CrossValidate section */
 export interface ICrossValidateJSON {
@@ -103,6 +106,7 @@ export class CrossValidate {
 /* TrainStream section */
 export interface ITrainStreamOptions {
   neuralNetwork: NeuralNetwork,
+  neuralNetworkGPU: NeuralNetworkGPU,
   floodCallback: () => void,
   doneTrainingCallback: (state: INeuralNetworkState) => void
 }
@@ -116,29 +120,51 @@ export class TrainStream {
 
 /* recurrent section */
 export type RNNTrainingValue = string;
-export type RNNTimeStepTrainingValue = NeuralNetworkTrainingValue | number | number[] | number[][];
-export interface IRNNDefaultOptions extends INeuralNetworkOptions {
-  inputSize?: number;
-  outputSize?: number;
-}
 export interface IRNNTrainingData {
   input: RNNTrainingValue,
   output: RNNTrainingValue
 }
+export interface IRNNDefaultOptions extends INeuralNetworkOptions {
+  inputSize?: number;
+  outputSize?: number;
+}
 
-export interface IRNNTimeStepTrainingData {
+/* recurrent time step section */
+export type RNNTimeStepInput = number[] | number[][] | object | object[] | object[][];
+export type IRNNTimeStepTrainingDatum =
+  IRNNTimeStepTrainingNumbers
+  | IRNNTimeStepTrainingNumbers2D
+  | IRNNTimeStepTrainingObject
+  | IRNNTimeStepTrainingObjects
+  | IRNNTimeStepTrainingObject2D
+  | number[]
+  | number[][]
+  | object[]
+  | object[][];
+
+export interface IRNNTimeStepTrainingNumbers {
   input: number[],
   output: number[]
 }
 
-export interface IRNNTimeStepTrainingData2d {
+export interface IRNNTimeStepTrainingNumbers2D {
   input: number[][],
   output: number[][]
 }
 
-export interface IRNNTimeStepTrainingData3d {
-  input: number[][][],
-  output: number[][][]
+export interface IRNNTimeStepTrainingObject {
+  input: object,
+  output: object
+}
+
+export interface IRNNTimeStepTrainingObjects {
+  input: object[],
+  output: object[]
+}
+
+export interface IRNNTimeStepTrainingObject2D {
+  input: object[][],
+  output: object[][]
 }
 
 export declare namespace recurrent {
@@ -154,10 +180,15 @@ export declare namespace recurrent {
   class GRU extends recurrent.RNN {}
 
   class RNNTimeStep extends recurrent.RNN {
-    run(data: RNNTimeStepTrainingValue): RNNTimeStepTrainingValue;
-    run<T>(data: RNNTimeStepTrainingValue): T;
-    run<TInput, TOutput>(data: TInput): TOutput;
-    train(data: IRNNTimeStepTrainingData[] | IRNNTimeStepTrainingData2d[] | IRNNTimeStepTrainingData3d[], options: INeuralNetworkTrainingOptions): INeuralNetworkState;
+    run(input: RNNTimeStepInput): RNNTimeStepInput;
+    run<T>(input: RNNTimeStepInput): T;
+    run<TInput, TOutput>(input: TInput): TOutput;
+
+    forecast(input: RNNTimeStepInput, count: number): RNNTimeStepInput;
+    forecast<T>(input: RNNTimeStepInput, count: number): T;
+    forecast<TInput, TOutput>(input: TInput, count: number): TOutput;
+
+    train(data: IRNNTimeStepTrainingDatum[], options: INeuralNetworkTrainingOptions): INeuralNetworkState;
     train<T>(data: T, options: INeuralNetworkTrainingOptions): INeuralNetworkState;
   }
   class LSTMTimeStep extends recurrent.RNNTimeStep {}

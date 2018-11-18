@@ -3,7 +3,7 @@ import brain from '../../src';
 import likely from '../../dist/likely';
 
 describe('likely', () => {
-  let a = character(
+  const a = character(
     '.#####.' +
     '#.....#' +
     '#.....#' +
@@ -12,7 +12,7 @@ describe('likely', () => {
     '#.....#' +
     '#.....#'
   );
-  let b = character(
+  const b = character(
     '######.' +
     '#.....#' +
     '#.....#' +
@@ -21,7 +21,7 @@ describe('likely', () => {
     '#.....#' +
     '######.'
   );
-  let c = character(
+  const c = character(
     '#######' +
     '#......' +
     '#......' +
@@ -35,10 +35,7 @@ describe('likely', () => {
    * Learn the letters A through C.
    */
 
-  let test;
-
-  let net = new brain.NeuralNetwork();
-
+  const net = new brain.NeuralNetwork();
   net.train([
     { input: a, output: { a: 1 } },
     { input: b, output: { b: 1 } },

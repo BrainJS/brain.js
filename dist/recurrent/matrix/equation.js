@@ -82,6 +82,10 @@ var _tanhB = require('./tanh-b');
 
 var _tanhB2 = _interopRequireDefault(_tanhB);
 
+var _softmax = require('./softmax');
+
+var _softmax2 = _interopRequireDefault(_softmax);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -254,7 +258,7 @@ var Equation = function () {
       this.states.push({
         product: _input,
         forwardFn: function forwardFn(product) {
-          product.weights = _this.inputValue;
+          product.weights = _input.weights = _this.inputValue;
         }
       });
       return _input;
@@ -349,8 +353,8 @@ var Equation = function () {
      */
 
   }, {
-    key: 'run',
-    value: function run() {
+    key: 'runIndex',
+    value: function runIndex() {
       var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
       this.inputRow = rowIndex;
@@ -393,8 +397,29 @@ var Equation = function () {
      */
 
   }, {
-    key: 'runBackpropagate',
-    value: function runBackpropagate() {
+    key: 'backpropagate',
+    value: function backpropagate() {
+      var i = this.states.length;
+      var state = void 0;
+      while (i-- > 0) {
+        state = this.states[i];
+        if (!state.hasOwnProperty('backpropagationFn')) {
+          continue;
+        }
+        state.backpropagationFn(state.product, state.left, state.right);
+      }
+
+      return state.product;
+    }
+
+    /**
+     * @patam {Number} [rowIndex]
+     * @output {Matrix}
+     */
+
+  }, {
+    key: 'backpropagateIndex',
+    value: function backpropagateIndex() {
       var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
       this.inputRow = rowIndex;
@@ -410,6 +435,35 @@ var Equation = function () {
       }
 
       return state.product;
+    }
+  }, {
+    key: 'predictTarget',
+    value: function predictTarget(input, target) {
+      var output = this.runInput(input);
+      var errorSum = 0;
+      for (var i = 0; i < output.weights.length; i++) {
+        var error = output.weights[i] - target[i];
+        // set gradients into log probabilities
+        errorSum += Math.abs(error);
+        // write gradients into log probabilities
+        output.deltas[i] = error;
+      }
+      return errorSum;
+    }
+  }, {
+    key: 'predictTargetIndex',
+    value: function predictTargetIndex(input, target) {
+      var output = this.runIndex(input);
+      // set gradients into log probabilities
+      var logProbabilities = output; // interpret output as log probabilities
+      var probabilities = (0, _softmax2.default)(output); // compute the softmax probabilities
+
+      // write gradients into log probabilities
+      logProbabilities.deltas = probabilities.weights.slice(0);
+      logProbabilities.deltas[target] -= 1;
+
+      // accumulate base 2 log prob and do smoothing
+      return -Math.log2(probabilities.weights[target]);
     }
   }]);
 

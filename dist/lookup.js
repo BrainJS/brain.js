@@ -15,19 +15,47 @@ var lookup = function () {
   }
 
   _createClass(lookup, null, [{
-    key: "buildLookup",
+    key: "toTable",
 
     /**
      * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
      * @param {Object} hashes
      * @returns {Object}
      */
-    value: function buildLookup(hashes) {
+    value: function toTable(hashes) {
       var hash = hashes.reduce(function (memo, hash) {
         return Object.assign(memo, hash);
       }, {});
 
-      return lookup.lookupFromHash(hash);
+      return lookup.toHash(hash);
+    }
+  }, {
+    key: "toInputTable",
+    value: function toInputTable(data) {
+      var table = {};
+      var tableIndex = 0;
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        for (var p in data[dataIndex].input) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
+        }
+      }
+      return table;
+    }
+  }, {
+    key: "toOutputTable",
+    value: function toOutputTable(data) {
+      var table = {};
+      var tableIndex = 0;
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        for (var p in data[dataIndex].output) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
+        }
+      }
+      return table;
     }
 
     /**
@@ -37,8 +65,8 @@ var lookup = function () {
      */
 
   }, {
-    key: "lookupFromHash",
-    value: function lookupFromHash(hash) {
+    key: "toHash",
+    value: function toHash(hash) {
       var lookup = {};
       var index = 0;
       for (var i in hash) {
@@ -50,18 +78,38 @@ var lookup = function () {
     /**
      * performs `{a: 0, b: 1}, {a: 6} -> [6, 0]`
      * @param {*} lookup
-     * @param {*} hash
-     * @returns {Array}
+     * @param {*} object
+     * @param {*} arrayLength
+     * @returns {Float32Array}
      */
 
   }, {
     key: "toArray",
-    value: function toArray(lookup, hash) {
-      var array = [];
-      for (var i in lookup) {
-        array[lookup[i]] = hash[i] || 0;
+    value: function toArray(lookup, object, arrayLength) {
+      var result = new Float32Array(arrayLength);
+      for (var p in lookup) {
+        result[lookup[p]] = object.hasOwnProperty(p) ? object[p] : 0;
       }
-      return array;
+      return result;
+    }
+  }, {
+    key: "toArrayShort",
+    value: function toArrayShort(lookup, object) {
+      var result = [];
+      for (var p in lookup) {
+        if (!object.hasOwnProperty(p)) break;
+        result[lookup[p]] = object[p];
+      }
+      return Float32Array.from(result);
+    }
+  }, {
+    key: "toArrays",
+    value: function toArrays(lookup, objects, arrayLength) {
+      var result = [];
+      for (var i = 0; i < objects.length; i++) {
+        result.push(this.toArray(lookup, objects[i], arrayLength));
+      }
+      return result;
     }
 
     /**
@@ -72,13 +120,24 @@ var lookup = function () {
      */
 
   }, {
-    key: "toHash",
-    value: function toHash(lookup, array) {
-      var hash = {};
-      for (var i in lookup) {
-        hash[i] = array[lookup[i]];
+    key: "toObject",
+    value: function toObject(lookup, array) {
+      var object = {};
+      for (var p in lookup) {
+        object[p] = array[lookup[p]];
       }
-      return hash;
+      return object;
+    }
+  }, {
+    key: "toObjectPartial",
+    value: function toObjectPartial(lookup, array, offset) {
+      var object = {};
+      var i = 0;
+      for (var p in lookup) {
+        if (i++ < offset) continue;
+        object[p] = array[lookup[p] - offset];
+      }
+      return object;
     }
 
     /**

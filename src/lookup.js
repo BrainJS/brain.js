@@ -5,12 +5,38 @@ export default class lookup {
    * @param {Object} hashes
    * @returns {Object}
    */
-  static buildLookup(hashes) {
-    let hash = hashes.reduce((memo, hash) => {
+  static toTable(hashes) {
+    const hash = hashes.reduce((memo, hash) => {
       return Object.assign(memo, hash);
     }, {});
 
-    return lookup.lookupFromHash(hash);
+    return lookup.toHash(hash);
+  }
+
+  static toInputTable(data) {
+    const table = {};
+    let tableIndex = 0;
+    for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
+      for (let p in data[dataIndex].input) {
+        if (!table.hasOwnProperty(p)) {
+          table[p] = tableIndex++;
+        }
+      }
+    }
+    return table;
+  }
+
+  static toOutputTable(data) {
+    const table = {};
+    let tableIndex = 0;
+    for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
+      for (let p in data[dataIndex].output) {
+        if (!table.hasOwnProperty(p)) {
+          table[p] = tableIndex++;
+        }
+      }
+    }
+    return table;
   }
 
   /**
@@ -18,7 +44,7 @@ export default class lookup {
    * @param {Object} hash
    * @returns {Object}
    */
-  static lookupFromHash(hash) {
+  static toHash(hash) {
     let lookup = {};
     let index = 0;
     for (let i in hash) {
@@ -30,15 +56,33 @@ export default class lookup {
   /**
    * performs `{a: 0, b: 1}, {a: 6} -> [6, 0]`
    * @param {*} lookup
-   * @param {*} hash
-   * @returns {Array}
+   * @param {*} object
+   * @param {*} arrayLength
+   * @returns {Float32Array}
    */
-  static toArray(lookup, hash) {
-    let array = [];
-    for (let i in lookup) {
-      array[lookup[i]] = hash[i] || 0;
+  static toArray(lookup, object, arrayLength) {
+    const result = new Float32Array(arrayLength);
+    for (let p in lookup) {
+      result[lookup[p]] = object.hasOwnProperty(p) ? object[p] : 0;
     }
-    return array;
+    return result;
+  }
+
+  static toArrayShort(lookup, object) {
+    const result = [];
+    for (let p in lookup) {
+      if (!object.hasOwnProperty(p)) break;
+      result[lookup[p]] = object[p];
+    }
+    return Float32Array.from(result);
+  }
+
+  static toArrays(lookup, objects, arrayLength) {
+    const result = [];
+    for (let i = 0; i < objects.length; i++) {
+      result.push(this.toArray(lookup, objects[i], arrayLength));
+    }
+    return result;
   }
 
   /**
@@ -47,12 +91,22 @@ export default class lookup {
    * @param {Array} array
    * @returns {Object}
    */
-  static toHash(lookup, array) {
-    let hash = {};
-    for (let i in lookup) {
-      hash[i] = array[lookup[i]];
+  static toObject(lookup, array) {
+    const object = {};
+    for (let p in lookup) {
+      object[p] = array[lookup[p]];
     }
-    return hash;
+    return object;
+  }
+
+  static toObjectPartial(lookup, array, offset) {
+    const object = {};
+    let i = 0;
+    for (let p in lookup) {
+      if (i++ < offset) continue;
+      object[p] = array[lookup[p] - offset];
+    }
+    return object;
   }
 
   /**
