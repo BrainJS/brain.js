@@ -4,7 +4,7 @@ import LSTMTimeStep from '../../src/recurrent/lstm-time-step';
 import Equation from '../../src/recurrent/matrix/equation';
 import sinon from 'sinon';
 
-describe.only('RNNTimeStep', () => {
+describe('RNNTimeStep', () => {
   describe('.createOutputMatrix()', () => {
     it('creates the outputConnector and output for model', () => {
       const net = new RNNTimeStep({
@@ -170,6 +170,29 @@ describe.only('RNNTimeStep', () => {
     });
   });
   describe('.train()', () => {
+    it('does not handle [{ input: number[], output: number[] }] w/ input size of 2', () => {
+      const data = [{input: [1, 2], output: [3, 4]}];
+      const net = new LSTMTimeStep({
+        inputSize: 2,
+        hiddenLayers: [10],
+        outputSize: 2
+      });
+      assert.throws(() => {
+        net.train(data);
+      });
+    });
+    it('does not handle [{ input: object, output: object }] w/ input size of 2', () => {
+      const data = [{ input: { a: 1, b: 2 }, output: { c: 3, d: 4 } }];
+      const net = new LSTMTimeStep({
+        inputSize: 2,
+        hiddenLayers: [10],
+        outputSize: 2
+      });
+      assert.throws(() => {
+        net.train(data);
+      });
+    });
+
     describe('calling using arrays', () => {
       describe('training data with 1D arrays', () => {
         beforeEach(() => {
@@ -663,8 +686,8 @@ describe.only('RNNTimeStep', () => {
         assert(result.error < 0.05, `error ${ result.error } is not below 0.05`);
         const closeToFive = net.run([.1,.2,.3,.4]);
         const closeToOne = net.run([.5,.4,.3,.2]);
-        assert(closeToOne[0].toFixed(1) === '0.1', `${ closeToOne } is not close to 0.1`);
-        assert(closeToFive[0].toFixed(1) === '0.5', `${ closeToFive } is not close to 0.5`);
+        assert(closeToOne.toFixed(1) === '0.1', `${ closeToOne } is not close to 0.1`);
+        assert(closeToFive.toFixed(1) === '0.5', `${ closeToFive } is not close to 0.5`);
       });
       it('can train and predict single linear array, two input, 1 to 5, and 5 to 1', () => {
         const net = new LSTMTimeStep({
@@ -777,7 +800,7 @@ describe.only('RNNTimeStep', () => {
       });
 
       describe('with arrays', () => {
-        it('can use inputs(4) and output(1)', (done) => {
+        it('can use inputs(4) and output(1)', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
             hiddenLayers: [20, 20],
@@ -800,9 +823,8 @@ describe.only('RNNTimeStep', () => {
           assert(result.error < 0.09, `error ${ result.error } did not go below 0.09`);
           const closeToFive = net.run([.1,.2,.3,.4]);
           const closeToOne = net.run([.5,.4,.3,.2]);
-          assert(closeToFive[0].toFixed(1) === '0.5', `${ closeToFive[0] } is not close to 0.5`);
-          assert(closeToOne[0].toFixed(1) === '0.1', `${ closeToOne[0] } is not close to 0.1`);
-          done();
+          assert(closeToFive.toFixed(1) === '0.5', `${ closeToFive } is not close to 0.5`);
+          assert(closeToOne.toFixed(1) === '0.1', `${ closeToOne } is not close to 0.1`);
         });
         it('can train and predict using array of input and output, two input, 1 to 5, and 5 to 1', () => {
           const net = new LSTMTimeStep({
@@ -1106,6 +1128,25 @@ describe.only('RNNTimeStep', () => {
         output2: 88
       });
       assert(forecastNumbersStub.called);
+    });
+    it('handles object to object with lookup tables being same w/ inputSize of 1', () => {
+      const inputSize = 1;
+      const hiddenLayers = [10];
+      const outputSize = 1;
+      const net = new RNNTimeStep({
+        inputSize,
+        hiddenLayers,
+        outputSize
+      });
+      let lastStatus;
+      net.train([{ monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 }], {
+        log: (status) => {
+          lastStatus = status;
+        }
+      });
+      const result = net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
+      assert.equal(Object.keys(result).length, 1);
+      assert.equal(result.friday.toFixed(0), '5');
     });
   });
   describe('.trainInputOutput()', () => {
@@ -1470,15 +1511,12 @@ describe.only('RNNTimeStep', () => {
           RNNTimeStep.prototype.formatData.apply(instance, [data]);
         });
       });
-      it('handles [{ input: object, output: object }] to [{ input: Float32Array, output: Float32Array }]', () => {
+      it('does not handle [{ input: object, output: object }]', () => {
         const data = [{ input: { a: 1, b: 2 }, output: { c: 3, d: 4 } }];
         const instance = { inputSize: 2 };
-        const result = RNNTimeStep.prototype.formatData.apply(instance, [data]);
-        assert.equal(JSON.stringify(instance.inputLookup), '{"a":0,"b":1}');
-        assert.equal(JSON.stringify(instance.outputLookup), '{"c":0,"d":1}');
-        assert.equal(instance.inputLookupLength, 2);
-        assert.equal(instance.outputLookupLength, 2);
-        assert.deepEqual(result, [{ input: Float32Array.from([1,2]), output: Float32Array.from([3,4]) }]);
+        assert.throws(() => {
+          RNNTimeStep.prototype.formatData.apply(instance, [data]);
+        }, 'Error: unknown data shape or configuration');
       });
       it('handles [{ input: number[][], output: number[][] }] to [{ input: Float32Array[], output: Float32Array[] }]', () => {
         const data = [{ input: [[1,4],[2,3]], output: [[3,2],[4,1]] }];
@@ -1591,102 +1629,58 @@ describe.only('RNNTimeStep', () => {
       });
     });
   });
-  describe.skip('.toFunction()', () => {
-    describe('input/output', () => {
-      it('does not handle [{ input: number[], output: number[] }] w/ input size of 2', () => {
-        const data = [{input: [1, 2], output: [3, 4]}];
-        const net = new LSTMTimeStep({
-          inputSize: 2,
-          hiddenLayers: [10],
-          outputSize: 2
-        });
-        assert.throws(() => {
-          net.train(data, { iteration: 100, errorThresh: 0.05 });
-        });
+  describe('.toFunction()', () => {
+    it('handles  number[] w/ input size of 1', () => {
+      const data = [{input: [1, 2], output: [3, 4]}];
+      const net = new LSTMTimeStep({
+        inputSize: 1,
+        hiddenLayers: [10],
+        outputSize: 1
       });
-
-      it('does not handle [{ input: number[], output: number[] }] w/ input size of 1', () => {
-        const data = [{input: [1, 2], output: [3, 4]}];
-        const net = new LSTMTimeStep({
-          inputSize: 1,
-          hiddenLayers: [10],
-          outputSize: 1
-        });
-        net.train(data, { iteration: 100, errorThresh: 0.05 });
-        const fn = net.toFunction();
-        const expected = net.run(data[0].input);
-        assert.deepEqual(fn(data[0].input), expected);
-      });
-
-      it('handles [{ input: object, output: object }]', () => {
-        const data = [{ input: { a: 1, b: 2 }, output: { c: 3, d: 4 } }];
-        const net = new LSTMTimeStep({
-          inputSize: 1,
-          hiddenLayers: [10],
-          outputSize: 1
-        });
-        net.train(data, { iteration: 100, errorThresh: 0.05 });
-        const fn = net.toFunction();
-        const expected = net.run(data[0].input);
-        assert.deepEqual(fn(data[0].input), expected);
-      });
-
-      it('handles [{ input: number[][], output: number[][] }]', () => {
-        const data = [{ input: [[1,4],[2,3]], output: [[3,2],[4,1]] }];
-        const net = new LSTMTimeStep({
-          inputSize: 2,
-          hiddenLayers: [10],
-          outputSize: 2
-        });
-        net.train(data, { iteration: 100, errorThresh: 0.05 });
-        const fn = net.toFunction();
-        assert.deepEqual(fn(data[0].input), net.run(data[0].input));
-      });
-
-      it('handles [{ input: object[], output: object[] }]', () => {
-        const data = [{ input: [{ a: 1, b: 4 },{ a: 2, b: 3 }], output: [{ c: 3, d: 2 }, { c: 4, d: 1 }] }];
-        const net = new LSTMTimeStep({
-          inputSize: 2,
-          hiddenLayers: [10],
-          outputSize: 2
-        });
-        net.train(data, { iteration: 100, errorThresh: 0.05 });
-        const fn = net.toFunction();
-        const expected = net.run(data[0].input);
-        assert.deepEqual(fn(data[0].input), expected);
-      });
+      net.train(data, { iteration: 100, errorThresh: 0.05 });
+      const fn = net.toFunction();
+      const expected = net.run(data[0].input);
+      const result = fn(data[0].input);
+      assert.equal(typeof result, 'number');
+      assert.deepEqual(result, expected);
     });
-    describe('arrays', () => {
-      it('handles number[]', () => {
-        const data = [1,2,3,4];
-      });
 
-      it('handles number[][] w/ input size of 1', () => {
-        const data = [[1, 2, 3, 4], [4, 3, 2, 1]];
+    it('handles object w/ input size of 1', () => {
+      const data = [{ input: { a: 1, b: 2 }, output: { c: 3, d: 4 } }];
+      const net = new LSTMTimeStep({
+        inputSize: 1,
+        hiddenLayers: [10],
+        outputSize: 1
       });
+      net.train(data, { iteration: 100, errorThresh: 0.05 });
+      const fn = net.toFunction();
+      const expected = net.run(data[0].input);
+      assert.deepEqual(fn(data[0].input), expected);
+    });
 
-      it('handles number[][] w/ input size greater than 1', () => {
-        const data = [[1,4],[2,3],[3,2],[4,1]];
+    it('handles number[][]', () => {
+      const data = [{ input: [[1,4],[2,3]], output: [[3,2],[4,1]] }];
+      const net = new LSTMTimeStep({
+        inputSize: 2,
+        hiddenLayers: [10],
+        outputSize: 2
       });
+      net.train(data, { iteration: 100, errorThresh: 0.05 });
+      const fn = net.toFunction();
+      assert.deepEqual(fn(data[0].input), net.run(data[0].input));
+    });
 
-      it('handles number[][][] w/ input size greater than 1', () => {
-        const data = [
-          [
-            [1,5],
-            [2,4],
-            [3,3],
-            [4,2],
-            [5,1]
-          ],
-          [
-            [5,9],
-            [6,8],
-            [7,7],
-            [8,6],
-            [9,5]
-          ],
-        ];
+    it('handles object[]', () => {
+      const data = [{ input: [{ a: 1, b: 4 },{ a: 2, b: 3 }], output: [{ c: 3, d: 2 }, { c: 4, d: 1 }] }];
+      const net = new LSTMTimeStep({
+        inputSize: 2,
+        hiddenLayers: [10],
+        outputSize: 2
       });
+      net.train(data, { iteration: 100, errorThresh: 0.05 });
+      const fn = net.toFunction();
+      const expected = net.run(data[0].input);
+      assert.deepEqual(fn(data[0].input), expected);
     });
     describe('handles numbers', () => {
       it('outputs exactly what net outputs', () => {
@@ -1707,10 +1701,10 @@ describe.only('RNNTimeStep', () => {
         const closeToFive = net.run([.1,.2,.3,.4]);
         const closeToOne = net.run([.5,.4,.3,.2]);
         const fn = net.toFunction();
-        assert(closeToFive[0].toFixed(1) === '0.5', `${ closeToFive[0] } is not close to 0.5`);
-        assert(closeToOne[0].toFixed(1) === '0.1', `${ closeToOne[0] } is not close to 0.1`);
-        assert.equal(fn([.1,.2,.3,.4])[0], closeToFive[0]);
-        assert.equal(fn([.5,.4,.3,.2])[0], closeToOne[0]);
+        assert(closeToFive.toFixed(1) === '0.5', `${ closeToFive } is not close to 0.5`);
+        assert(closeToOne.toFixed(1) === '0.1', `${ closeToOne } is not close to 0.1`);
+        assert.equal(fn([.1,.2,.3,.4]), closeToFive);
+        assert.equal(fn([.5,.4,.3,.2]), closeToOne);
       });
     });
     describe('handles arrays', () => {
@@ -1784,6 +1778,83 @@ describe.only('RNNTimeStep', () => {
         assert.equal(fn({ monday: .1, tuesday: .2, wednesday: .3, thursday: .4 }).friday, closeToFive.friday);
         assert.equal(fn({ monday: .5, tuesday: .4, wednesday: .3, thursday: .2 }).friday, closeToOne.friday);
       });
+    });
+  });
+  describe('.toJSON()', () => {
+    it('saves network dimensions to json', () => {
+      const inputSize = 4;
+      const hiddenLayers = [1,2,3];
+      const outputSize = 5;
+      const net = new RNNTimeStep({
+        inputSize,
+        hiddenLayers,
+        outputSize
+      });
+      net.initialize();
+      const json = net.toJSON();
+      assert.equal(json.options.inputSize, inputSize);
+      assert.deepEqual(json.options.hiddenLayers, hiddenLayers);
+      assert.equal(json.options.outputSize, outputSize);
+    });
+    it('restores network dimensions from json', () => {
+      const inputSize = 45;
+      const hiddenLayers = [1,2,3,4,5,6,7,8,9];
+      const outputSize = 20;
+      const net = new RNNTimeStep({
+        inputSize,
+        hiddenLayers,
+        outputSize
+      });
+      net.initialize();
+      const json = net.toJSON();
+      const serializedNet = new RNNTimeStep();
+      serializedNet.fromJSON(json);
+      assert.equal(serializedNet.inputSize, inputSize);
+      assert.deepEqual(serializedNet.hiddenLayers, hiddenLayers);
+      assert.equal(serializedNet.outputSize, outputSize);
+    });
+    it('handles object to object with lookup tables being same w/ inputSize of 1', () => {
+      const inputSize = 1;
+      const hiddenLayers = [10];
+      const outputSize = 1;
+      const net = new RNNTimeStep({
+        inputSize,
+        hiddenLayers,
+        outputSize
+      });
+      net.train([{ monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 }]);
+      const fn = net.toFunction();
+      const result = fn({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
+      assert.deepEqual(result, net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 }));
+      assert.equal(Object.keys(result).length, 1);
+      assert.equal(result.friday.toFixed(0), '5');
+    });
+    it('error rate stays same after serialization', () => {
+      const inputSize = 1;
+      const hiddenLayers = [10];
+      const outputSize = 1;
+      const net = new RNNTimeStep({
+        inputSize,
+        hiddenLayers,
+        outputSize
+      });
+      let lastNetStatus;
+      const trainingData = [{ monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 }];
+      net.train(trainingData, {
+        log: (status) => {
+          lastNetStatus = status;
+        },
+        iterations: 50
+      });
+      net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
+      const json = net.toJSON();
+      const serializedNet = new RNNTimeStep();
+      serializedNet.fromJSON(json);
+      let lastSerializedNetStatus;
+      serializedNet.train(trainingData, { iterations: 1, log: (status) => {
+          lastSerializedNetStatus = status;
+      }});
+      assert(lastSerializedNetStatus.split(' ').pop() < lastNetStatus.split(' ').pop());
     });
   });
 });

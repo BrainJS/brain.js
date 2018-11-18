@@ -61,11 +61,28 @@ export default class lookup {
    * @returns {Float32Array}
    */
   static toArray(lookup, object, arrayLength) {
-    const array = new Float32Array(arrayLength);
-    for (let i in lookup) {
-      array[lookup[i]] = object[i] || 0;
+    const result = new Float32Array(arrayLength);
+    for (let p in lookup) {
+      result[lookup[p]] = object.hasOwnProperty(p) ? object[p] : 0;
     }
-    return array;
+    return result;
+  }
+
+  static toArrayShort(lookup, object) {
+    const result = [];
+    for (let p in lookup) {
+      if (!object.hasOwnProperty(p)) break;
+      result[lookup[p]] = object[p];
+    }
+    return Float32Array.from(result);
+  }
+
+  static toArrays(lookup, objects, arrayLength) {
+    const result = [];
+    for (let i = 0; i < objects.length; i++) {
+      result.push(this.toArray(lookup, objects[i], arrayLength));
+    }
+    return result;
   }
 
   /**
@@ -75,11 +92,21 @@ export default class lookup {
    * @returns {Object}
    */
   static toObject(lookup, array) {
-    let hash = {};
-    for (let i in lookup) {
-      hash[i] = array[lookup[i]];
+    const object = {};
+    for (let p in lookup) {
+      object[p] = array[lookup[p]];
     }
-    return hash;
+    return object;
+  }
+
+  static toObjectPartial(lookup, array, offset) {
+    const object = {};
+    let i = 0;
+    for (let p in lookup) {
+      if (i++ < offset) continue;
+      object[p] = array[lookup[p] - offset];
+    }
+    return object;
   }
 
   /**
