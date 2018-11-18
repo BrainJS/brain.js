@@ -86,11 +86,30 @@ var lookup = function () {
   }, {
     key: "toArray",
     value: function toArray(lookup, object, arrayLength) {
-      var array = new Float32Array(arrayLength);
-      for (var i in lookup) {
-        array[lookup[i]] = object[i] || 0;
+      var result = new Float32Array(arrayLength);
+      for (var p in lookup) {
+        result[lookup[p]] = object.hasOwnProperty(p) ? object[p] : 0;
       }
-      return array;
+      return result;
+    }
+  }, {
+    key: "toArrayShort",
+    value: function toArrayShort(lookup, object) {
+      var result = [];
+      for (var p in lookup) {
+        if (!object.hasOwnProperty(p)) break;
+        result[lookup[p]] = object[p];
+      }
+      return Float32Array.from(result);
+    }
+  }, {
+    key: "toArrays",
+    value: function toArrays(lookup, objects, arrayLength) {
+      var result = [];
+      for (var i = 0; i < objects.length; i++) {
+        result.push(this.toArray(lookup, objects[i], arrayLength));
+      }
+      return result;
     }
 
     /**
@@ -103,11 +122,22 @@ var lookup = function () {
   }, {
     key: "toObject",
     value: function toObject(lookup, array) {
-      var hash = {};
-      for (var i in lookup) {
-        hash[i] = array[lookup[i]];
+      var object = {};
+      for (var p in lookup) {
+        object[p] = array[lookup[p]];
       }
-      return hash;
+      return object;
+    }
+  }, {
+    key: "toObjectPartial",
+    value: function toObjectPartial(lookup, array, offset) {
+      var object = {};
+      var i = 0;
+      for (var p in lookup) {
+        if (i++ < offset) continue;
+        object[p] = array[lookup[p] - offset];
+      }
+      return object;
     }
 
     /**
