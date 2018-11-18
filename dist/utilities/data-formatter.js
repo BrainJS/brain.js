@@ -239,6 +239,7 @@ var DataFormatter = function () {
       dataFormatter.characterTable = json.characterTable;
       dataFormatter.values = json.values;
       dataFormatter.characters = json.characters;
+      dataFormatter.specialIndexes = json.specialIndexes;
       return dataFormatter;
     }
   }]);

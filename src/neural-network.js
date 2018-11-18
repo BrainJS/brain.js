@@ -34,6 +34,7 @@ export default class NeuralNetwork {
 
   static get defaults() {
     return {
+      leakyReluAlpha: 0.01,
       binaryThresh: 0.5,
       hiddenLayers: [3],     // array of ints for the sizes of the hidden layers in the network
       activation: 'sigmoid'  // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
@@ -254,7 +255,7 @@ export default class NeuralNetwork {
 
   _runInputLeakyRelu(input) {
     this.outputs[0] = input;  // set output state of input layer
-
+    let alpha = this.leakyReluAlpha;
     let output = null;
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       for (let node = 0; node < this.sizes[layer]; node++) {
@@ -265,7 +266,7 @@ export default class NeuralNetwork {
           sum += weights[k] * input[k];
         }
         //leaky relu
-        this.outputs[layer][node] = (sum < 0 ? 0 : 0.01 * sum);
+        this.outputs[layer][node] = (sum < 0 ? 0 : alpha * sum);
       }
       output = input = this.outputs[layer];
     }
@@ -565,6 +566,7 @@ export default class NeuralNetwork {
    * @param target
    */
   _calculateDeltasLeakyRelu(target) {
+    let alpha = this.leakyReluAlpha;
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       for (let node = 0; node < this.sizes[layer]; node++) {
         let output = this.outputs[layer][node];
@@ -580,7 +582,7 @@ export default class NeuralNetwork {
           }
         }
         this.errors[layer][node] = error;
-        this.deltas[layer][node] = output > 0 ? error : 0.01 * error;
+        this.deltas[layer][node] = output > 0 ? error : alpha * error;
       }
     }
   }
@@ -990,6 +992,7 @@ export default class NeuralNetwork {
    */
   toFunction() {
     const activation = this.activation;
+    const leakyReluAlpha = this.leakyReluAlpha;
     let needsVar = false;
     function nodeHandle(layers, layerNumber, nodeKey) {
       if (layerNumber === 0) {
@@ -1019,7 +1022,7 @@ export default class NeuralNetwork {
         }
         case 'leaky-relu': {
           needsVar = true;
-          return `((v=${result.join('')})<0?0:0.01*v)`;
+          return `((v=${result.join('')})<0?0:${leakyReluAlpha}*v)`;
         }
         case 'tanh':
           return `Math.tanh(${result.join('')})`;

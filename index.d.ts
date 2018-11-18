@@ -35,7 +35,8 @@ export interface INeuralNetworkJSON {
   outputLookup: any;
   inputLookup: any;
   activation: NeuralNetworkActivation,
-  trainOpts: INeuralNetworkTrainingOptions
+  trainOpts: INeuralNetworkTrainingOptions,
+  leakyReluAlpha?: number,
 }
 
 export interface INeuralNetworkTrainingData {

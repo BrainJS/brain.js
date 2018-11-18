@@ -3,8 +3,8 @@
 
 <img src="https://cdn.rawgit.com/harthur-org/brain.js/ff595242/logo.svg" alt="Logo" width=200px/>
 
-[![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js) 
-[![Backers on Open Collective](https://opencollective.com/brainjs/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/brainjs/sponsors/badge.svg)](#sponsors) 
+[![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js)
+[![Backers on Open Collective](https://opencollective.com/brainjs/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/brainjs/sponsors/badge.svg)](#sponsors)
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brain-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Slack](https://slack.bri.im/badge.svg)](https://slack.bri.im)
 
@@ -45,7 +45,7 @@
     + [`likely`](#likely)
 - [Neural Network Types](#neural-network-types)
     + [Why different Neural Network Types?](#why-different-neural-network-types)
-    
+
 # Examples
 Here's an example showcasing how to approximate the XOR function using `brain.js`:
 more info on config [here](https://github.com/BrainJS/brain.js/blob/develop/src/neural-network.js#L31).
@@ -55,7 +55,8 @@ more info on config [here](https://github.com/BrainJS/brain.js/blob/develop/src/
 const config = {
     binaryThresh: 0.5,
     hiddenLayers: [3],     // array of ints for the sizes of the hidden layers in the network
-    activation: 'sigmoid'  // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+    activation: 'sigmoid'  // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
+    leakyReluAlpha: 0.01   // supported for activation type 'leaky-relu'
 };
 
 // create a simple feed forward neural network with backpropagation
@@ -293,7 +294,7 @@ const net = crossValidate.fromJSON(json);
 An example of using cross validate can be found in [examples/cross-validate.js](examples/cross-validate.js)
 
 ### Train Stream
-Streams are a very powerful tool in node for massive data spread across processes and are provided via the brain.js api in the following way: 
+Streams are a very powerful tool in node for massive data spread across processes and are provided via the brain.js api in the following way:
 ```js
 const net = new brain.NeuralNetwork();
 const trainStream = new brain.TrainStream({
@@ -364,11 +365,12 @@ const net = new brain.NeuralNetwork({
 ```
 
 ### activation
-This parameter lets you specify which activation function your neural network should use. There are currently four supported activation functions, **sigmoid** being the default: 
+This parameter lets you specify which activation function your neural network should use. There are currently four supported activation functions, **sigmoid** being the default:
 
 - [sigmoid](https://www.wikiwand.com/en/Sigmoid_function)
 - [relu](https://www.wikiwand.com/en/Rectifier_(neural_networks))
 - [leaky-relu](https://www.wikiwand.com/en/Rectifier_(neural_networks))
+  * related option - 'leakyReluAlpha' optional number, defaults to 0.01
 - [tanh](https://theclevermachine.wordpress.com/tag/tanh-function/)
 
 Here's a table (thanks, Wikipedia!) summarizing a plethora of activation functions — [Activation Function](https://www.wikiwand.com/en/Activation_function)
