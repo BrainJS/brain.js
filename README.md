@@ -91,7 +91,7 @@ net.train([{input: [0, 0], output: [0]},
            {input: [1, 0], output: [1]},
            {input: [1, 1], output: [0]}]);
 
-let output = net.run([0, 0]);  // [0]
+const output = net.run([0, 0]);  // [0]
 output = net.run([0, 1]);      // [1]
 output = net.run([1, 0]);      // [1]
 output = net.run([1, 1]);      // [0]
@@ -102,8 +102,13 @@ However, there is no reason to use a neural network to figure out XOR. (-: So, h
 
 ## More Examples
 You can check out this fantastic screencast, which explains how to train a simple neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
-* [writing a children's book using a recurrent neural network](./examples/childrens-book.js)
-* [simple letter detection](./examples/which-letter-simple.js)
+* [writing a children's book using a recurrent neural network](./examples/childrens-book.js) & [./examples-typescript/childrens-book.ts]((typescript version))
+* [using cross validation with a feed forward net](./examples/cross-validation.js) & [./examples-typescript/cross-validation.ts]((typescript version))
+* experimental (NeuralNetwork only, but more to come!) [using the gpu in a browser](./examples/gpu.html) or [using node gpu fallback to cpu](./examples/gpu-fallback.js) & [./examples-typescript/gpu-fallback.ts]((typescript version))
+* [learning math using a recurrent neural network](./examples/learn-math.js) & [typescript version]((./examples-typescript/learn-math.ts))
+* [predict next number, and forecast numbers](./examples/predict-numbers.js) & [typescript version]((./examples-typescript/predict-numbers.ts))
+* [using node streams](./examples/stream-example.js) & [typescript version]((./examples-typescript/stream-example.ts))
+* [simple letter detection](./examples/which-letter-simple.js) & [typescript version]((./examples-typescript/which-letter-simple.js))
 
 # Usage
 
@@ -134,13 +139,13 @@ at classifying new patterns.
 Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color contrast demo](https://brain.js.org/) it looks something like this:
 
 ```javascript
-var net = new brain.NeuralNetwork();
+const net = new brain.NeuralNetwork();
 
 net.train([{input: { r: 0.03, g: 0.7, b: 0.5 }, output: { black: 1 }},
            {input: { r: 0.16, g: 0.09, b: 0.2 }, output: { white: 1 }},
            {input: { r: 0.5, g: 0.5, b: 1.0 }, output: { white: 1 }}]);
 
-var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.99, black: 0.002 }
+const output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.99, black: 0.002 }
 ```
 Here's another variation of the above example. (_Note_ that input objects do not need to be similar.)
 ```javascript
@@ -148,7 +153,7 @@ net.train([{input: { r: 0.03, g: 0.7 }, output: { black: 1 }},
            {input: { r: 0.16, b: 0.2 }, output: { white: 1 }},
            {input: { r: 0.5, g: 0.5, b: 1.0 }, output: { white: 1 }}]);
 
-var output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.81, black: 0.18 }
+const output = net.run({ r: 1, g: 0.4, b: 0 });  // { white: 0.81, black: 0.18 }
 ```
 
 #### For training with `RNNTimeStep`, `LSTMTimeStep` and `GRUTimeStep`
@@ -158,18 +163,22 @@ Each training pattern can either:
 
 Example using an array of numbers:
 ```javascript
-var net = new brain.recurrent.LSTMTimeStep();
+const net = new brain.recurrent.LSTMTimeStep();
 
 net.train([
   [1, 2, 3]
 ]);
 
-var output = net.run([1, 2]);  // 3
+const output = net.run([1, 2]);  // 3
 ```
 
 Example using an array of arrays of numbers:
 ```javascript
-var net = new brain.recurrent.LSTMTimeStep();
+const net = new brain.recurrent.LSTMTimeStep({
+  inputSize: 2,
+  hiddenLayers: [10],
+  outputSize: 2
+});
 
 net.train([
   [1, 3],
@@ -177,7 +186,7 @@ net.train([
   [3, 1],
 ]);
 
-var output = net.run([[1, 3], [2, 2]]);  // [3, 1]
+const output = net.run([[1, 3], [2, 2]]);  // [3, 1]
 ```
 
 #### For training with `RNN`, `LSTM` and `GRU`
@@ -191,7 +200,7 @@ CAUTION: When using an array of values, you can use ANY value, however, the valu
 
 Example using direct strings:
 ```javascript
-var net = new brain.recurrent.LSTM();
+const net = new brain.recurrent.LSTM();
 
 net.train([
   'doe, a deer, a female deer',
@@ -199,19 +208,19 @@ net.train([
   'me, a name I call myself',
 ]);
 
-var output = net.run('doe');  // ', a deer, a female deer'
+const output = net.run('doe');  // ', a deer, a female deer'
 ```
 
 Example using strings with inputs and outputs:
 ```javascript
-var net = new brain.recurrent.LSTM();
+const net = new brain.recurrent.LSTM();
 
 net.train([
   { input: 'I feel great about the world!', output: 'happy' },
   { input: 'The world is a terrible place!', output: 'sad' },
 ]);
 
-var output = net.run('I feel great about the world!');  // 'happy'
+const output = net.run('I feel great about the world!');  // 'happy'
 ```
 
 
@@ -249,7 +258,7 @@ A boolean property called `invalidTrainOptsShouldThrow` is set to `true` by defa
 `trainAsync()` takes the same arguments as train (data and options). Instead of returning the results object from training, it returns a promise that when resolved will return the training results object.
 
 ```javascript
-  let net = new brain.NeuralNetwork();
+  const net = new brain.NeuralNetwork();
   net
     .trainAsync(data, options)
     .then(res => {
@@ -322,7 +331,7 @@ function readInputs(stream, data) {
 An example of using train stream can be found in [examples/stream-example.js](examples/stream-example.js)
 
 # Methods
-### train
+### train(trainingData) -> trainingStatus
 The output of `train()` is a hash of information about how the training went:
 
 ```javascript
@@ -330,6 +339,48 @@ The output of `train()` is a hash of information about how the training went:
   error: 0.0039139985510105032,  // training error
   iterations: 406                // training iterations
 }
+```
+
+### run(input) -> prediction
+Supported on classes:
+
+* `brain.NeuralNetwork`
+* `brain.recurrent.RNN`
+* `brain.recurrent.LSTM`
+* `brain.recurrent.GRU`
+* `brain.recurrent.RNNTimeStep`
+* `brain.recurrent.LSTMTimeStep`
+* `brain.recurrent.GRUTimeStep`
+
+Example:
+```js
+// feed forward
+const net = new brain.NeuralNetwork();
+net.fromJSON(json);
+net.run(input);
+
+// time step
+const net = new brain.LSTMTimeStep();
+net.fromJSON(json);
+net.run(input);
+
+// recurrent
+const net = new brain.LSTMTimeStep();
+net.fromJSON(json);
+net.run(input);
+```
+
+### forecast(input, count) -> predictions
+* `brain.recurrent.RNNTimeStep`
+* `brain.recurrent.LSTMTimeStep`
+* `brain.recurrent.GRUTimeStep`
+
+Example:
+
+```js
+const net = new brain.LSTMTimeStep();
+net.fromJSON(json);
+net.forecast(input, 3);
 ```
 
 # Failing

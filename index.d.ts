@@ -59,6 +59,8 @@ export class NeuralNetwork {
   public toJSON(): INeuralNetworkJSON;
 }
 
+export class NeuralNetworkGPU extends NeuralNetwork {}
+
 /* CrossValidate section */
 export interface ICrossValidateJSON {
   avgs: ICrossValidationTestPartitionResults;
@@ -104,6 +106,7 @@ export class CrossValidate {
 /* TrainStream section */
 export interface ITrainStreamOptions {
   neuralNetwork: NeuralNetwork,
+  neuralNetworkGPU: NeuralNetworkGPU,
   floodCallback: () => void,
   doneTrainingCallback: (state: INeuralNetworkState) => void
 }
