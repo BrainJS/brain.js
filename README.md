@@ -31,9 +31,12 @@
     + [Cross Validation](#cross-validation)
     + [Train Stream](#train-stream)
 - [Methods](#methods)
-    + [train](#train)
+    + [train](#traintrainingdata---trainingstatus)
+    + [run](#runinput---prediction)
+    + [forecast](#forecastinput-count---predictions)
 - [Failing](#failing)
 - [JSON](#json)
+- [Standalone Function](#standalone-function)
 - [Options](#options)
     + [activation](#activation)
     + [hiddenLayers](#hiddenlayers)
@@ -331,7 +334,7 @@ function readInputs(stream, data) {
 An example of using train stream can be found in [examples/stream-example.js](examples/stream-example.js)
 
 # Methods
-### train(trainingData) -> trainingStatus
+## `train(trainingData)` -> trainingStatus
 The output of `train()` is a hash of information about how the training went:
 
 ```javascript
@@ -341,7 +344,7 @@ The output of `train()` is a hash of information about how the training went:
 }
 ```
 
-### run(input) -> prediction
+## `run(input)` -> prediction
 Supported on classes:
 
 * `brain.NeuralNetwork`
@@ -370,7 +373,10 @@ net.fromJSON(json);
 net.run(input);
 ```
 
-### forecast(input, count) -> predictions
+## `forecast(input, count)` -> predictions
+
+Available with the following classes.  Outputs a array of predictions.  Predictions being a continuation of the inputs.
+
 * `brain.recurrent.RNNTimeStep`
 * `brain.recurrent.LSTMTimeStep`
 * `brain.recurrent.GRUTimeStep`
@@ -382,6 +388,9 @@ const net = new brain.LSTMTimeStep();
 net.fromJSON(json);
 net.forecast(input, 3);
 ```
+
+## `toJSON()`
+## `fromJSON()`
 
 # Failing
 If the network failed to train, the error will be above the error threshold. This could happen if the training data is too noisy (most likely), the network does not have enough hidden layers or nodes to handle the complexity of the data, or it has not been trained for enough iterations.
@@ -396,6 +405,7 @@ const json = net.toJSON();
 net.fromJSON(json);
 ```
 
+# Standalone Function
 You can also get a custom standalone function from a trained network that acts just like `run()`:
 
 ```javascript
