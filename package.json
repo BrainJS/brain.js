@@ -1,7 +1,7 @@
 {
   "name": "brain.js",
   "description": "Neural network library",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": {
     "type": "git",
@@ -43,10 +43,10 @@
     "browserify": "^13.1.0",
     "js-datasets-iris": "^1.0.4",
     "licensify": "^3.1.2",
-    "mocha": "^3.0.2",
+    "mocha": "^5.2.0",
     "rimraf": "^2.6.2",
     "sinon": "^1.17.6",
-    "testee": "^0.7.0",
+    "testee": "^0.8.1",
     "uglifyify": "^3.0.2"
   },
   "keywords": [

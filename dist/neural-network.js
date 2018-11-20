@@ -255,7 +255,7 @@ var NeuralNetwork = function () {
         input = _lookup3.default.toArray(this.inputLookup, input, this.inputLookupLength);
       }
 
-      var output = this.runInput(input);
+      var output = this.runInput(input).slice(0);
 
       if (this.outputLookup) {
         output = _lookup3.default.toObject(this.outputLookup, output);
@@ -871,56 +871,41 @@ var NeuralNetwork = function () {
         }
       }
 
-      function toTrainingData(data, inputTable, outputTable) {
-        // turn sparse hash input into arrays with 0s as filler
-        var convertInput = getTypedArrayFn(data[0].input, inputTable);
-        var convertOutput = getTypedArrayFn(data[0].output, outputTable);
+      if (typeof this._formatInput === 'undefined') {
+        this._formatInput = getTypedArrayFn(data[0].input, this.inputLookup);
+        this._formatOutput = getTypedArrayFn(data[0].output, this.outputLookup);
+      }
+
+      // turn sparse hash input into arrays with 0s as filler
+      if (this._formatInput && this._formatOutput) {
         var result = [];
-        if (convertInput && convertOutput) {
-          for (var i = 0; i < data.length; i++) {
-            result.push({
-              input: convertInput(data[i].input),
-              output: convertOutput(data[i].output)
-            });
-          }
-        } else if (convertInput) {
-          for (var _i = 0; _i < data.length; _i++) {
-            result.push({
-              input: convertInput(data[_i].input),
-              output: data[_i].output
-            });
-          }
-        } else if (convertOutput) {
-          for (var _i2 = 0; _i2 < data.length; _i2++) {
-            result.push({
-              input: data[_i2].input,
-              output: convertOutput(data[_i2].output)
-            });
-          }
-        } else {
-          return data;
+        for (var i = 0; i < data.length; i++) {
+          result.push({
+            input: this._formatInput(data[i].input),
+            output: this._formatOutput(data[i].output)
+          });
         }
         return result;
-      }
-
-      function getTypedArrayFn(value, table) {
-        if (value.buffer instanceof ArrayBuffer) {
-          return null;
-        } else if (Array.isArray(value)) {
-          return _cast.arrayToFloat32Array;
-        } else {
-          var length = Object.keys(table).length;
-          return function (v) {
-            var array = new Float32Array(length);
-            for (var p in table) {
-              array[table[p]] = v[p] || 0;
-            }
-            return array;
-          };
+      } else if (this._formatInput) {
+        var _result = [];
+        for (var _i = 0; _i < data.length; _i++) {
+          _result.push({
+            input: this._formatInput(data[_i].input),
+            output: data[_i].output
+          });
         }
+        return _result;
+      } else if (this._formatOutput) {
+        var _result2 = [];
+        for (var _i2 = 0; _i2 < data.length; _i2++) {
+          _result2.push({
+            input: data[_i2].input,
+            output: this._formatOutput(data[_i2].output)
+          });
+        }
+        return _result2;
       }
-
-      return toTrainingData(data, this.inputLookup, this.outputLookup);
+      return data;
     }
 
     /**
@@ -1229,4 +1214,22 @@ var NeuralNetwork = function () {
 }();
 
 exports.default = NeuralNetwork;
+
+
+function getTypedArrayFn(value, table) {
+  if (value.buffer instanceof ArrayBuffer) {
+    return null;
+  } else if (Array.isArray(value)) {
+    return _cast.arrayToFloat32Array;
+  } else {
+    var length = Object.keys(table).length;
+    return function (v) {
+      var array = new Float32Array(length);
+      for (var p in table) {
+        array[table[p]] = v[p] || 0;
+      }
+      return array;
+    };
+  }
+}
 //# sourceMappingURL=neural-network.js.map

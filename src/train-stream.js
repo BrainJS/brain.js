@@ -21,7 +21,6 @@ export default class TrainStream extends Writable {
     }
 
     this.neuralNetwork = opts.neuralNetwork;
-    this.hiddenLayers = opts.neuralNetwork.hiddenLayers;
     this.dataFormatDetermined = false;
 
     this.inputKeys = [];
@@ -42,8 +41,6 @@ export default class TrainStream extends Writable {
     this.sum = 0;
 
     this.on('finish', this.finishStreamIteration.bind(this));
-
-    return this;
   }
 
   endInputs() {
@@ -67,15 +64,15 @@ export default class TrainStream extends Writable {
 
     if (!this.dataFormatDetermined) {
       this.size++;
-      this.inputKeys = uniques(this.inputKeys.slice(0).concat(Object.keys(chunk.input)));
-      this.outputKeys = uniques(this.outputKeys.slice(0).concat(Object.keys(chunk.output)));
+      this.inputKeys = Array.from(new Set(this.inputKeys.concat(Object.keys(chunk.input))));
+      this.outputKeys = Array.from(new Set(this.outputKeys.concat(Object.keys(chunk.output))));
       this.firstDatum = this.firstDatum || chunk;
       return next();
     }
 
     this.count++;
 
-    let data = this.neuralNetwork.formatData(chunk);
+    const data = this.neuralNetwork.formatData(chunk);
     this.trainDatum(data[0]);
 
     // tell the Readable Stream that we are ready for more data
@@ -87,8 +84,7 @@ export default class TrainStream extends Writable {
    * @param datum
    */
   trainDatum(datum) {
-    let err = this.neuralNetwork._trainPattern(datum.input, datum.output, true);
-    this.sum += err;
+    this.sum += this.neuralNetwork.trainPattern(datum.input, datum.output, true);
   }
 
   /**
@@ -102,30 +98,15 @@ export default class TrainStream extends Writable {
 
     if (!this.dataFormatDetermined) {
       // create the lookup
-      this.neuralNetwork.inputLookup = lookup.lookupFromArray(this.inputKeys);
-      if(!Array.isArray(this.firstDatum.output)){
+      if(!Array.isArray(this.firstDatum.input)) {
+        this.neuralNetwork.inputLookup = lookup.lookupFromArray(this.inputKeys);
+      }
+      if(!Array.isArray(this.firstDatum.output)) {
         this.neuralNetwork.outputLookup = lookup.lookupFromArray(this.outputKeys);
       }
-
-      let data = this.neuralNetwork.formatData(this.firstDatum);
-      let sizes = [];
-      let inputSize = data[0].input.length;
-      let outputSize = data[0].output.length;
-      let hiddenLayers = this.neuralNetwork.hiddenLayers;
-      if (!hiddenLayers) {
-        sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-      } else {
-        hiddenLayers.forEach(size => {
-          sizes.push(size);
-        });
-      }
-
-      sizes.unshift(inputSize);
-      sizes.push(outputSize);
-
+      const data = this.neuralNetwork.formatData(this.firstDatum);
+      this.neuralNetwork.verifyIsInitialized(data);
       this.dataFormatDetermined = true;
-      this.neuralNetwork.sizes = sizes;
-      this.neuralNetwork._initialize();
 
       if (typeof this.floodCallback === 'function') {
         this.floodCallback();
@@ -133,7 +114,7 @@ export default class TrainStream extends Writable {
       return;
     }
 
-    let error = this.sum / this.size;
+    const error = this.sum / this.size;
 
     if (this.log && (this.i % this.logPeriod === 0)) {
       this.log('iterations:', this.i, 'training error:', error);
@@ -165,15 +146,4 @@ export default class TrainStream extends Writable {
       }
     }
   }
-}
-
-/**
- *
- * https://gist.github.com/telekosmos/3b62a31a5c43f40849bb
- * @param arr
- * @returns {Array}
- */
-function uniques(arr) {
-  // Sets cannot contain duplicate elements, which is what we want
-  return [...new Set(arr)];
 }

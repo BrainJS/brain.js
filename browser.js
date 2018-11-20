@@ -6,13 +6,14 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.5.0
+ *   version: 1.5.1
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   maintainers: Marijn Haverbeke <marijnh@gmail.com>, Ingvar Stepanyan <me@rreverser.com>, Adrian Heine <http://adrianheine.de>
+ *   contributors: List of Acorn contributors. Updated before every release., Adrian Heine, Adrian Rakovsky, Alistair Braidwood, Amila Welihinda, Andres Suarez, Angelo, Aparajita Fishman, Arian Stolwijk, Artem Govorov, Boopesh Mahendran, Bradley Heinz, Brandon Mills, Charles Hughes, Charmander, Chris McKnight, Conrad Irwin, Daniel Tschinder, David Bonnet, Domenico Matteo, ehmicky, Eugene Obrezkov, Felix Maier, Forbes Lindesay, Gilad Peleg, impinball, Ingvar Stepanyan, Jackson Ray Hamilton, Jesse McCarthy, Jiaxing Wang, Joel Kemp, Johannes Herr, John-David Dalton, Jordan Klassen, Jürg Lehni, Kai Cataldo, keeyipchan, Keheliya Gallaba, Kevin Irish, Kevin Kwok, krator, laosb, luckyzeng, Marek, Marijn Haverbeke, Martin Carlberg, Mat Garcia, Mathias Bynens, Mathieu 'p01' Henri, Matthew Bastien, Max Schaefer, Max Zerzouri, Mihai Bazon, Mike Rennie, naoh, Nicholas C. Zakas, Nick Fitzgerald, Olivier Thomann, Oskar Schöldström, Paul Harper, Peter Rust, PlNG, Prayag Verma, ReadmeCritic, r-e-d, Renée Kooi, Richard Gibson, Rich Harris, Sebastian McKenzie, Shahar Soel, Sheel Bedi, Simen Bekkhus, Teddy Katz, Timothy Gu, Toru Nagashima, Victor Homyakov, Wexpo Lyu, zsjforcn
  *   homepage: https://github.com/acornjs/acorn
- *   version: 5.7.2
+ *   version: 5.7.3
  *
  * base64-js:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -29,28 +30,32 @@
  *
  * core-util-is:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me/)
+ *   author: Isaac Z. Schlueter <i@izs.me>
+ *   homepage: https://github.com/isaacs/core-util-is#readme
  *   version: 1.0.2
  *
  * events:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)
+ *   author: Irakli Gozalishvili <rfobic@gmail.com>
+ *   homepage: https://github.com/Gozala/events#readme
  *   version: 1.1.1
  *
  * gpu.js:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: The gpu.js Team
  *   homepage: http://gpu.rocks/
- *   version: 1.10.3
+ *   version: 1.10.4
  *
  * ieee754:
  *   license: BSD-3-Clause (http://opensource.org/licenses/BSD-3-Clause)
  *   author: Feross Aboukhadijeh <feross@feross.org>
  *   contributors: Romain Beauxis <toots@rastageeks.org>
+ *   homepage: https://github.com/feross/ieee754#readme
  *   version: 1.1.12
  *
  * inherits:
  *   license: ISC (http://opensource.org/licenses/ISC)
+ *   homepage: https://github.com/isaacs/inherits#readme
  *   version: 2.0.3
  *
  * isarray:
@@ -62,6 +67,7 @@
  * process:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Roman Shtylman <shtylman@gmail.com>
+ *   homepage: https://github.com/shtylman/node-process#readme
  *   version: 0.11.10
  *
  * process-nextick-args:
@@ -71,6 +77,7 @@
  *
  * readable-stream:
  *   license: MIT (http://opensource.org/licenses/MIT)
+ *   homepage: https://github.com/nodejs/readable-stream#readme
  *   version: 2.3.6
  *
  * safe-buffer:
@@ -98,14 +105,14 @@
  *
  * timers-browserify:
  *   licenses: MIT (http://opensource.org/licenses/MIT)
- *   author: J. Ryan Stinnett <jryans@gmail.com> (http://convolv.es/)
+ *   author: J. Ryan Stinnett <jryans@gmail.com>
  *   contributors: Guy Bedford <guybedford@gmail.com>, Ionut-Cristian Florescu <ionut.florescu@gmail.com>, James Halliday <mail@substack.net>, Jan Schär <jscissr@gmail.com>, Johannes Ewald <johannes.ewald@peerigon.com>, Jonathan Prins <jon@blip.tv>, Matt Esch <matt@mattesch.info>
  *   homepage: https://github.com/jryans/timers-browserify
  *   version: 1.4.2
  *
  * util-deprecate:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)
+ *   author: Nathan Rajlich <nathan@tootallnate.net>
  *   homepage: https://github.com/TooTallNate/util-deprecate
  *   version: 1.0.2
  *
@@ -1277,7 +1284,7 @@ var NeuralNetwork = function () {
         input = _lookup3.default.toArray(this.inputLookup, input, this.inputLookupLength);
       }
 
-      var output = this.runInput(input);
+      var output = this.runInput(input).slice(0);
 
       if (this.outputLookup) {
         output = _lookup3.default.toObject(this.outputLookup, output);
@@ -1893,56 +1900,41 @@ var NeuralNetwork = function () {
         }
       }
 
-      function toTrainingData(data, inputTable, outputTable) {
-        // turn sparse hash input into arrays with 0s as filler
-        var convertInput = getTypedArrayFn(data[0].input, inputTable);
-        var convertOutput = getTypedArrayFn(data[0].output, outputTable);
+      if (typeof this._formatInput === 'undefined') {
+        this._formatInput = getTypedArrayFn(data[0].input, this.inputLookup);
+        this._formatOutput = getTypedArrayFn(data[0].output, this.outputLookup);
+      }
+
+      // turn sparse hash input into arrays with 0s as filler
+      if (this._formatInput && this._formatOutput) {
         var result = [];
-        if (convertInput && convertOutput) {
-          for (var i = 0; i < data.length; i++) {
-            result.push({
-              input: convertInput(data[i].input),
-              output: convertOutput(data[i].output)
-            });
-          }
-        } else if (convertInput) {
-          for (var _i = 0; _i < data.length; _i++) {
-            result.push({
-              input: convertInput(data[_i].input),
-              output: data[_i].output
-            });
-          }
-        } else if (convertOutput) {
-          for (var _i2 = 0; _i2 < data.length; _i2++) {
-            result.push({
-              input: data[_i2].input,
-              output: convertOutput(data[_i2].output)
-            });
-          }
-        } else {
-          return data;
+        for (var i = 0; i < data.length; i++) {
+          result.push({
+            input: this._formatInput(data[i].input),
+            output: this._formatOutput(data[i].output)
+          });
         }
         return result;
-      }
-
-      function getTypedArrayFn(value, table) {
-        if (value.buffer instanceof ArrayBuffer) {
-          return null;
-        } else if (Array.isArray(value)) {
-          return _cast.arrayToFloat32Array;
-        } else {
-          var length = Object.keys(table).length;
-          return function (v) {
-            var array = new Float32Array(length);
-            for (var p in table) {
-              array[table[p]] = v[p] || 0;
-            }
-            return array;
-          };
+      } else if (this._formatInput) {
+        var _result = [];
+        for (var _i = 0; _i < data.length; _i++) {
+          _result.push({
+            input: this._formatInput(data[_i].input),
+            output: data[_i].output
+          });
         }
+        return _result;
+      } else if (this._formatOutput) {
+        var _result2 = [];
+        for (var _i2 = 0; _i2 < data.length; _i2++) {
+          _result2.push({
+            input: data[_i2].input,
+            output: this._formatOutput(data[_i2].output)
+          });
+        }
+        return _result2;
       }
-
-      return toTrainingData(data, this.inputLookup, this.outputLookup);
+      return data;
     }
 
     /**
@@ -2251,6 +2243,24 @@ var NeuralNetwork = function () {
 }();
 
 exports.default = NeuralNetwork;
+
+
+function getTypedArrayFn(value, table) {
+  if (value.buffer instanceof ArrayBuffer) {
+    return null;
+  } else if (Array.isArray(value)) {
+    return _cast.arrayToFloat32Array;
+  } else {
+    var length = Object.keys(table).length;
+    return function (v) {
+      var array = new Float32Array(length);
+      for (var p in table) {
+        array[table[p]] = v[p] || 0;
+      }
+      return array;
+    };
+  }
+}
 
 },{"./lookup":3,"./utilities/cast":38,"./utilities/lookup-table":40,"./utilities/max":41,"./utilities/mse":42,"./utilities/randos":46,"./utilities/range":47,"./utilities/to-array":48,"./utilities/zeros":49,"thaw.js":113}],6:[function(require,module,exports){
 'use strict';
@@ -5419,8 +5429,6 @@ var _lookup2 = _interopRequireDefault(_lookup);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -5437,8 +5445,6 @@ var TrainStream = function (_Writable) {
   _inherits(TrainStream, _Writable);
 
   function TrainStream(opts) {
-    var _ret;
-
     _classCallCheck(this, TrainStream);
 
     var _this = _possibleConstructorReturn(this, (TrainStream.__proto__ || Object.getPrototypeOf(TrainStream)).call(this, {
@@ -5453,7 +5459,6 @@ var TrainStream = function (_Writable) {
     }
 
     _this.neuralNetwork = opts.neuralNetwork;
-    _this.hiddenLayers = opts.neuralNetwork.hiddenLayers;
     _this.dataFormatDetermined = false;
 
     _this.inputKeys = [];
@@ -5474,8 +5479,7 @@ var TrainStream = function (_Writable) {
     _this.sum = 0;
 
     _this.on('finish', _this.finishStreamIteration.bind(_this));
-
-    return _ret = _this, _possibleConstructorReturn(_this, _ret);
+    return _this;
   }
 
   _createClass(TrainStream, [{
@@ -5504,8 +5508,8 @@ var TrainStream = function (_Writable) {
 
       if (!this.dataFormatDetermined) {
         this.size++;
-        this.inputKeys = uniques(this.inputKeys.slice(0).concat(Object.keys(chunk.input)));
-        this.outputKeys = uniques(this.outputKeys.slice(0).concat(Object.keys(chunk.output)));
+        this.inputKeys = Array.from(new Set(this.inputKeys.concat(Object.keys(chunk.input))));
+        this.outputKeys = Array.from(new Set(this.outputKeys.concat(Object.keys(chunk.output))));
         this.firstDatum = this.firstDatum || chunk;
         return next();
       }
@@ -5527,8 +5531,7 @@ var TrainStream = function (_Writable) {
   }, {
     key: 'trainDatum',
     value: function trainDatum(datum) {
-      var err = this.neuralNetwork._trainPattern(datum.input, datum.output, true);
-      this.sum += err;
+      this.sum += this.neuralNetwork.trainPattern(datum.input, datum.output, true);
     }
 
     /**
@@ -5545,30 +5548,15 @@ var TrainStream = function (_Writable) {
 
       if (!this.dataFormatDetermined) {
         // create the lookup
-        this.neuralNetwork.inputLookup = _lookup2.default.lookupFromArray(this.inputKeys);
+        if (!Array.isArray(this.firstDatum.input)) {
+          this.neuralNetwork.inputLookup = _lookup2.default.lookupFromArray(this.inputKeys);
+        }
         if (!Array.isArray(this.firstDatum.output)) {
           this.neuralNetwork.outputLookup = _lookup2.default.lookupFromArray(this.outputKeys);
         }
-
         var data = this.neuralNetwork.formatData(this.firstDatum);
-        var sizes = [];
-        var inputSize = data[0].input.length;
-        var outputSize = data[0].output.length;
-        var hiddenLayers = this.neuralNetwork.hiddenLayers;
-        if (!hiddenLayers) {
-          sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-        } else {
-          hiddenLayers.forEach(function (size) {
-            sizes.push(size);
-          });
-        }
-
-        sizes.unshift(inputSize);
-        sizes.push(outputSize);
-
+        this.neuralNetwork.verifyIsInitialized(data);
         this.dataFormatDetermined = true;
-        this.neuralNetwork.sizes = sizes;
-        this.neuralNetwork._initialize();
 
         if (typeof this.floodCallback === 'function') {
           this.floodCallback();
@@ -5613,19 +5601,7 @@ var TrainStream = function (_Writable) {
   return TrainStream;
 }(_stream.Writable);
 
-/**
- *
- * https://gist.github.com/telekosmos/3b62a31a5c43f40849bb
- * @param arr
- * @returns {Array}
- */
-
-
 exports.default = TrainStream;
-function uniques(arr) {
-  // Sets cannot contain duplicate elements, which is what we want
-  return [].concat(_toConsumableArray(new Set(arr)));
-}
 
 },{"./lookup":3,"stream":111}],37:[function(require,module,exports){
 "use strict";
@@ -20744,6 +20720,7 @@ pp$3.parseTemplate = function(ref) {
   var curElt = this.parseTemplateElement({isTagged: isTagged});
   node.quasis = [curElt];
   while (!curElt.tail) {
+    if (this$1.type === types.eof) { this$1.raise(this$1.pos, "Unterminated template literal"); }
     this$1.expect(types.dollarBraceL);
     node.expressions.push(this$1.parseExpression());
     this$1.expect(types.braceR);
@@ -21423,7 +21400,7 @@ types.star.updateContext = function(prevType) {
 
 types.name.updateContext = function(prevType) {
   var allowed = false;
-  if (this.options.ecmaVersion >= 6) {
+  if (this.options.ecmaVersion >= 6 && prevType !== types.dot) {
     if (this.value === "of" && !this.exprAllowed ||
         this.value === "yield" && this.inGeneratorContext())
       { allowed = true; }
@@ -23671,7 +23648,7 @@ pp$8.readWord = function() {
 // [dammit]: acorn_loose.js
 // [walk]: util/walk.js
 
-var version = "5.7.2";
+var version = "5.7.3";
 
 // The main exported interface (under `self.acorn` when in the
 // browser) is a `parse` function that takes a code string and

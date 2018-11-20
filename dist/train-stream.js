@@ -14,8 +14,6 @@ var _lookup2 = _interopRequireDefault(_lookup);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -32,8 +30,6 @@ var TrainStream = function (_Writable) {
   _inherits(TrainStream, _Writable);
 
   function TrainStream(opts) {
-    var _ret;
-
     _classCallCheck(this, TrainStream);
 
     var _this = _possibleConstructorReturn(this, (TrainStream.__proto__ || Object.getPrototypeOf(TrainStream)).call(this, {
@@ -48,7 +44,6 @@ var TrainStream = function (_Writable) {
     }
 
     _this.neuralNetwork = opts.neuralNetwork;
-    _this.hiddenLayers = opts.neuralNetwork.hiddenLayers;
     _this.dataFormatDetermined = false;
 
     _this.inputKeys = [];
@@ -69,8 +64,7 @@ var TrainStream = function (_Writable) {
     _this.sum = 0;
 
     _this.on('finish', _this.finishStreamIteration.bind(_this));
-
-    return _ret = _this, _possibleConstructorReturn(_this, _ret);
+    return _this;
   }
 
   _createClass(TrainStream, [{
@@ -99,8 +93,8 @@ var TrainStream = function (_Writable) {
 
       if (!this.dataFormatDetermined) {
         this.size++;
-        this.inputKeys = uniques(this.inputKeys.slice(0).concat(Object.keys(chunk.input)));
-        this.outputKeys = uniques(this.outputKeys.slice(0).concat(Object.keys(chunk.output)));
+        this.inputKeys = Array.from(new Set(this.inputKeys.concat(Object.keys(chunk.input))));
+        this.outputKeys = Array.from(new Set(this.outputKeys.concat(Object.keys(chunk.output))));
         this.firstDatum = this.firstDatum || chunk;
         return next();
       }
@@ -122,8 +116,7 @@ var TrainStream = function (_Writable) {
   }, {
     key: 'trainDatum',
     value: function trainDatum(datum) {
-      var err = this.neuralNetwork._trainPattern(datum.input, datum.output, true);
-      this.sum += err;
+      this.sum += this.neuralNetwork.trainPattern(datum.input, datum.output, true);
     }
 
     /**
@@ -140,30 +133,15 @@ var TrainStream = function (_Writable) {
 
       if (!this.dataFormatDetermined) {
         // create the lookup
-        this.neuralNetwork.inputLookup = _lookup2.default.lookupFromArray(this.inputKeys);
+        if (!Array.isArray(this.firstDatum.input)) {
+          this.neuralNetwork.inputLookup = _lookup2.default.lookupFromArray(this.inputKeys);
+        }
         if (!Array.isArray(this.firstDatum.output)) {
           this.neuralNetwork.outputLookup = _lookup2.default.lookupFromArray(this.outputKeys);
         }
-
         var data = this.neuralNetwork.formatData(this.firstDatum);
-        var sizes = [];
-        var inputSize = data[0].input.length;
-        var outputSize = data[0].output.length;
-        var hiddenLayers = this.neuralNetwork.hiddenLayers;
-        if (!hiddenLayers) {
-          sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-        } else {
-          hiddenLayers.forEach(function (size) {
-            sizes.push(size);
-          });
-        }
-
-        sizes.unshift(inputSize);
-        sizes.push(outputSize);
-
+        this.neuralNetwork.verifyIsInitialized(data);
         this.dataFormatDetermined = true;
-        this.neuralNetwork.sizes = sizes;
-        this.neuralNetwork._initialize();
 
         if (typeof this.floodCallback === 'function') {
           this.floodCallback();
@@ -208,17 +186,5 @@ var TrainStream = function (_Writable) {
   return TrainStream;
 }(_stream.Writable);
 
-/**
- *
- * https://gist.github.com/telekosmos/3b62a31a5c43f40849bb
- * @param arr
- * @returns {Array}
- */
-
-
 exports.default = TrainStream;
-function uniques(arr) {
-  // Sets cannot contain duplicate elements, which is what we want
-  return [].concat(_toConsumableArray(new Set(arr)));
-}
 //# sourceMappingURL=train-stream.js.map
