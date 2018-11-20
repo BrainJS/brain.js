@@ -389,8 +389,11 @@ net.fromJSON(json);
 net.forecast(input, 3);
 ```
 
-## `toJSON()`
-## `fromJSON()`
+## `toJSON() -> json`
+Serialize neural network to json
+
+## `fromJSON(json)`
+Deserialize neural network from json
 
 # Failing
 If the network failed to train, the error will be above the error threshold. This could happen if the training data is too noisy (most likely), the network does not have enough hidden layers or nodes to handle the complexity of the data, or it has not been trained for enough iterations.
