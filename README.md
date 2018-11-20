@@ -400,6 +400,18 @@ If the network failed to train, the error will be above the error threshold. Thi
 
 If the training error is still something huge like `0.4` after 20000 iterations, it's a good sign that the network can't make sense of the given data.
 
+## RNN, LSTM, or GRU Output too short or too long
+The instance of the net's property `maxPredictionLength` (default 100) can be set to adjust the output of the net;
+
+Example:
+```js
+const net = new brain.recurrent.LSTM();
+
+// later in code, after training on a few novels, write me a new one!
+net.maxPredictionLength = 1000000000; // Be careful!
+net.run('Once upon a time');
+```
+
 # JSON
 Serialize or load in the state of a trained network with JSON:
 
