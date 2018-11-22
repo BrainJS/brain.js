@@ -46,12 +46,18 @@ export interface INeuralNetworkTrainingData {
 
 export type NeuralNetworkInput = number[];
 
+export interface INeuralNetworkTestResult {
+  misclasses: any,
+  error: number
+}
+
 export class NeuralNetwork {
   public constructor(options?: INeuralNetworkOptions);
   public train(data: INeuralNetworkTrainingData[], options?: INeuralNetworkTrainingOptions): INeuralNetworkState;
   public train<T>(data: T, options?: INeuralNetworkTrainingOptions): INeuralNetworkState;
   public trainAsync(data: INeuralNetworkTrainingData, options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
   public trainAsync<T>(data: T, options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
+  public test(data: INeuralNetworkTrainingData): INeuralNetworkTestResult;
   public run(data: NeuralNetworkInput): NeuralNetworkInput;
   public run<T>(data: NeuralNetworkInput): T;
   public run<TInput, TOutput>(data: TInput): TOutput;

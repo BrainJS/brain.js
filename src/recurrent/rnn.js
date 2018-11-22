@@ -19,7 +19,7 @@ export default class RNN {
     this.runs = 0;
     this.ratioClipped = null;
     this.model = null;
-
+    this.trainOpts = {};
     this.inputLookup = null;
     this.outputLookup = null;
 
@@ -369,7 +369,7 @@ export default class RNN {
    * @returns {{error: number, iterations: number}}
    */
   train(data, options = {}) {
-    options = Object.assign({}, this.constructor.trainDefaults, options);
+    this.trainOpts = options = Object.assign({}, this.constructor.trainDefaults, options);
     let iterations = options.iterations;
     let errorThresh = options.errorThresh;
     let log = options.log === true ? console.log : options.log;

@@ -19,13 +19,13 @@ export default class CrossValidate {
    * @returns {void|*}
    */
   testPartition(trainOpts, trainSet, testSet) {
-    let classifier = new this.Classifier(this.options);
-    let beginTrain = Date.now();
-    let trainingStats = classifier.train(trainSet, trainOpts);
-    let beginTest = Date.now();
-    let testStats = classifier.test(testSet);
-    let endTest = Date.now();
-    let stats = Object.assign({}, testStats, {
+    const classifier = new this.Classifier(this.options);
+    const beginTrain = Date.now();
+    const trainingStats = classifier.train(trainSet, trainOpts);
+    const beginTest = Date.now();
+    const testStats = classifier.test(testSet);
+    const endTest = Date.now();
+    const stats = Object.assign({}, testStats, {
       trainTime: beginTest - beginTrain,
       testTime: endTest - beginTest,
       iterations: trainingStats.iterations,
@@ -79,7 +79,7 @@ export default class CrossValidate {
    * }
    */
   train(data, trainOpts = {}, k = 4) {
-    if (data.length <= k) {
+    if (data.length < k) {
       throw new Error(`Training set size is too small for ${ data.length } k folds of ${ k }`);
     }
     let size = data.length / k;

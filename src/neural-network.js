@@ -779,44 +779,35 @@ export default class NeuralNetwork {
    */
   test(data) {
     data = this.formatData(data);
-
     // for binary classification problems with one output node
-    let isBinary = data[0].output.length === 1;
-    let falsePos = 0;
-    let falseNeg = 0;
-    let truePos = 0;
-    let trueNeg = 0;
-
+    const isBinary = data[0].output.length === 1;
     // for classification problems
-    let misclasses = [];
-
+    const misclasses = [];
     // run each pattern through the trained network and collect
     // error and misclassification statistics
-    let sum = 0;
-    for (let i = 0; i < data.length; i++) {
-      let output = this.runInput(data[i].input);
-      let target = data[i].output;
+    let errorSum = 0;
 
-      let actual, expected;
-      if (isBinary) {
-        actual = output[0] > this.binaryThresh ? 1 : 0;
-        expected = target[0];
-      }
-      else {
-        actual = output.indexOf(max(output));
-        expected = target.indexOf(max(target));
-      }
+    if (isBinary) {
+      let falsePos = 0;
+      let falseNeg = 0;
+      let truePos = 0;
+      let trueNeg = 0;
 
-      if (actual !== expected) {
-        let misclass = data[i];
-        Object.assign(misclass, {
-          actual: actual,
-          expected: expected
-        });
-        misclasses.push(misclass);
-      }
+      for (let i = 0; i < data.length; i++) {
+        const output = this.runInput(data[i].input);
+        const target = data[i].output;
+        const actual = output[0] > this.binaryThresh ? 1 : 0;
+        const expected = target[0];
 
-      if (isBinary) {
+        if (actual !== expected) {
+          const misclass = data[i];
+          Object.assign(misclass, {
+            actual: actual,
+            expected: expected
+          });
+          misclasses.push(misclass);
+        }
+
         if (actual === 0 && expected === 0) {
           trueNeg++;
         } else if (actual === 1 && expected === 1) {
@@ -826,22 +817,15 @@ export default class NeuralNetwork {
         } else if (actual === 1 && expected === 0) {
           falsePos++;
         }
+
+        errorSum += mse(output.map((value, i) => {
+          return target[i] - value;
+        }));
       }
 
-      let errors = output.map((value, i) => {
-        return target[i] - value;
-      });
-      sum += mse(errors);
-    }
-    let error = sum / data.length;
-
-    let stats = {
-      error: error,
-      misclasses: misclasses
-    };
-
-    if (isBinary) {
-      Object.assign(stats, {
+      return {
+        error: errorSum / data.length,
+        misclasses: misclasses,
         trueNeg: trueNeg,
         truePos: truePos,
         falseNeg: falseNeg,
@@ -850,9 +834,32 @@ export default class NeuralNetwork {
         precision: truePos > 0 ? truePos / (truePos + falsePos) : 0,
         recall: truePos > 0 ? truePos / (truePos + falseNeg) : 0,
         accuracy: (trueNeg + truePos) / data.length
-      });
+      };
     }
-    return stats;
+
+    for (let i = 0; i < data.length; i++) {
+      const output = this.runInput(data[i].input);
+      const target = data[i].output;
+      const actual = output.indexOf(max(output));
+      const expected = target.indexOf(max(target));
+
+      if (actual !== expected) {
+        const misclass = data[i];
+        Object.assign(misclass, {
+          actual: actual,
+          expected: expected
+        });
+        misclasses.push(misclass);
+      }
+
+      errorSum += mse(output.map((value, i) => {
+        return target[i] - value;
+      }));
+    }
+    return {
+      error: errorSum / data.length,
+      misclasses: misclasses
+    };
   }
 
   /**
