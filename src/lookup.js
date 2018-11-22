@@ -155,11 +155,16 @@ export default class lookup {
     return object;
   }
 
-  static toObjectPartial(lookup, array, offset) {
+  static toObjectPartial(lookup, array, offset = 0, limit = 0) {
     const object = {};
     let i = 0;
     for (let p in lookup) {
-      if (i++ < offset) continue;
+      if (offset > 0) {
+        if (i++ < offset) continue;
+      }
+      if (limit > 0) {
+        if (i++ >= limit) continue;
+      }
       object[p] = array[lookup[p] - offset];
     }
     return object;

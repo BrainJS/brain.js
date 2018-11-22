@@ -527,47 +527,60 @@ export default class RNNTimeStep extends RNN {
     // error and misclassification statistics
     let errorSum = 0;
 
-    const dataShape = lookup.dataShape(data).join(',');
-    switch (dataShape) {
-      case 'array,array,number':
-      case 'array,array,array,number':
-      case 'array,object,number':
-      case 'array,array,object,number':
-
-      case 'array,datum,array,number':
-      case 'array,datum,object,number':
-      case 'array,datum,array,array,number':
-      case 'array,datum,array,object,number':
-    }
     if (data[0].input) {
-      for (let i = 0; i < formattedData.length; i++) {
-        const datum = formattedData[i];
-        const output = this.forecast(datum.input, datum.output.length);
-        let errors = 0;
-        for (let i = 0; i < output.length; i++) {
-          const error = datum.output[i][0] - output[i];
-          errors += error * error;
-        }
+      if (this.inputSize === 1) {
+        for (let i = 0; i < formattedData.length; i++) {
+          const datum = formattedData[i];
+          const output = this.forecast(datum.input, datum.output.length);
+          let errors = 0;
+          for (let i = 0; i < output.length; i++) {
+            const error = datum.output[i][0] - output[i];
+            errors += error * error;
+          }
 
-        errorSum += errors;
-        const errorsAbs = Math.abs(errors);
-        if (errorsAbs > this.trainOpts.errorThresh) {
-          const misclass = data[i];
-          Object.assign(misclass, {
-            actual: this.outputLookup
-              ? lookup.toObject(this.outputLookup, output)
-              : output
-          });
-          misclasses.push(misclass);
+          errorSum += errors;
+          const errorsAbs = Math.abs(errors);
+          if (errorsAbs > this.trainOpts.errorThresh) {
+            const misclass = data[i];
+            Object.assign(misclass, {
+              actual: this.outputLookup
+                ? lookup.toObject(this.outputLookup, output)
+                : output
+            });
+            misclasses.push(misclass);
+          }
+        }
+      } else {
+        for (let i = 0; i < formattedData.length; i++) {
+          const datum = formattedData[i];
+          const output = this.forecast(datum.input, datum.output.length);
+          let errors = 0;
+          for (let i = 0; i < output.length; i++) {
+            const error = datum.output[i][0] - output[i][0];
+            errors += error * error;
+          }
+
+          errorSum += errors;
+          const errorsAbs = Math.abs(errors);
+          if (errorsAbs > this.trainOpts.errorThresh) {
+            const misclass = data[i];
+            Object.assign(misclass, {
+              actual: this.outputLookup
+                ? lookup.toObject(this.outputLookup, output)
+                : output
+            });
+            misclasses.push(misclass);
+          }
         }
       }
     } else {
+      const dataShape = lookup.dataShape(data).join(',');
       switch (dataShape) {
         case 'array,array,number': {
           if (this.inputSize === 1) {
             for (let i = 0; i < formattedData.length; i++) {
               const input = formattedData[i];
-              const output = this.run(input.splice(0, input.length - 2));
+              const output = this.run(input.splice(0, input.length - 1));
               const target = input[input.length - 1][0];
               const error = target - output;
               const errorMSE = error * error;
@@ -576,15 +589,62 @@ export default class RNNTimeStep extends RNN {
               if (errorsAbs > this.trainOpts.errorThresh) {
                 const misclass = data[i];
                 Object.assign(misclass, {
-                  actual: this.outputLookup
-                    ? lookup.toObject(this.outputLookup, output)
-                    : output
+                  value: input,
+                  actual: output
                 });
                 misclasses.push(misclass);
               }
             }
             break;
           }
+        }
+        case 'array,array,array,number': {
+          for (let i = 0; i < formattedData.length; i++) {
+            const input = formattedData[i];
+            const output = this.run(input.splice(0, input.length - 1));
+            const target = input[input.length - 1];
+            let errors = 0;
+            for (let i = 0; i < output.length; i++) {
+              const error = target[i] - output[i];
+              // mse
+              errors += error * error;
+            }
+            errorSum += errors;
+            const errorsAbs = Math.abs(errors);
+            if (errorsAbs > this.trainOpts.errorThresh) {
+              const misclass = data[i];
+              misclasses.push({
+                value: misclass,
+                actual: output
+              });
+            }
+          }
+          break;
+        }
+        case 'array,object,number':
+        {
+          if (this.inputSize > 1) throw new Error('TODO: too big');
+          for (let i = 0; i < formattedData.length; i++) {
+            const input = formattedData[i];
+            const output = this.run(lookup.toObjectPartial(this.outputLookup, input, 0, input.length - 1));
+            const target = input[input.length - 1];
+            let errors = 0;
+            let p;
+            for (p in output) {}
+            const error = target[i] - output[p];
+            // mse
+            errors += error * error;
+            errorSum += errors;
+            const errorsAbs = Math.abs(errors);
+            if (errorsAbs > this.trainOpts.errorThresh) {
+              const misclass = data[i];
+              misclasses.push({
+                value: misclass,
+                actual: output
+              });
+            }
+          }
+          break;
         }
         default: throw new Error('unimplemented');
       }

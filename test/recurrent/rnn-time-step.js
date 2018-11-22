@@ -1971,6 +1971,214 @@ describe('RNNTimeStep', () => {
     });
   });
   describe('.test()', () => {
+    describe('using array,array', () => {
+      describe('inputSize of 1', () => {
+        it('accumulates no error or misclasses when no error', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 1,
+            hiddenLayers: [10],
+            outputSize: 1
+          });
+          sinon.spy(net, 'formatData');
+          net.run = sinon.spy((data) => {
+            return [.5];
+          });
+          net.trainOpts = {
+            errorThresh: 0.001
+          };
+          const testResult = net.test([
+            [.1,.2,.3,.4,.5]
+          ]);
+          assert(net.formatData.called);
+          assert(net.run.called);
+          assert.deepEqual(net.run.args[0][0], [[.1],[.2],[.3],[.4]].map(v => Float32Array.from(v)));
+          assert.equal(testResult.error, 0);
+          assert.equal(testResult.misclasses.length, 0);
+        });
+        it('accumulates error and misclasses when error', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 1,
+            hiddenLayers: [10],
+            outputSize: 1
+          });
+          sinon.spy(net, 'formatData');
+          net.run = sinon.spy((data) => {
+            return [.1];
+          });
+          net.trainOpts = {
+            errorThresh: 0.001
+          };
+          const testResult = net.test([
+            [.1,.2,.3,.4,.5]
+          ]);
+          assert(net.formatData.called);
+          assert(net.run.called);
+          assert.deepEqual(net.run.args[0][0], [[.1],[.2],[.3],[.4]].map(v => Float32Array.from(v)));
+          assert(testResult.error > .1);
+          assert.equal(testResult.misclasses.length, 1);
+        });
+      });
+      describe('inputSize of 2', () => {
+        it('throws', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 2,
+            hiddenLayers: [10],
+            outputSize: 2
+          });
+          sinon.spy(net, 'formatData');
+          net.run = sinon.spy((data) => {
+            return [.1];
+          });
+          net.trainOpts = {
+            errorThresh: 0.001
+          };
+          assert.throws(() => {
+            const testResult = net.test([
+              [.1,.2,.3,.4,.5]
+            ]);
+          });
+          // assert(net.formatData.called);
+          // assert(net.run.called);
+          // assert.deepEqual(net.run.args[0][0], [[.1],[.2],[.3],[.4]].map(v => Float32Array.from(v)));
+          // assert(testResult.error > .1);
+          // assert.equal(testResult.misclasses.length, 1);
+        });
+      });
+    });
+    describe('using array,array,array', () => {
+      describe('inputSize of 2', () => {
+        describe('no error', () => {
+          it('can test', () => {
+            const net = new LSTMTimeStep({
+              inputSize: 2,
+              hiddenLayers: [10],
+              outputSize: 2
+            });
+            sinon.spy(net, 'formatData');
+            net.run = sinon.spy((data) => {
+              return Float32Array.from([.5,.1]);
+            });
+            net.trainOpts = {
+              errorThresh: 0.001
+            };
+            const testResult = net.test([
+              [[.1,.5],[.2,.4],[.3,.3],[.4,.2],[.5,.1]]
+            ]);
+            assert(net.formatData.called);
+            assert(net.run.called);
+            assert.equal(testResult.error, 0);
+            assert.equal(testResult.misclasses.length, 0);
+          });
+        });
+        describe('some error', () => {
+          it('can test', () => {
+            const net = new LSTMTimeStep({
+              inputSize: 2,
+              hiddenLayers: [10],
+              outputSize: 2
+            });
+            net.trainOpts = {
+              errorThresh: 0.001
+            };
+            sinon.spy(net, 'formatData');
+            net.run = sinon.spy((data) => {
+              return Float32Array.from([.1,.5]);
+            });
+            const testResult = net.test([
+              [[.1,.5],[.2,.4],[.3,.3],[.4,.2],[.5,.1]]
+            ]);
+            assert(net.formatData.called);
+            assert(net.run.called);
+            assert.ok(testResult.error >= 0.1);
+            assert.equal(testResult.misclasses.length, 1);
+            assert.deepEqual(testResult.misclasses, [{
+              value: [[.1,.5],[.2,.4],[.3,.3],[.4,.2],[.5,.1]],
+              actual: Float32Array.from([.1,.5])
+            }]);
+          });
+        });
+      });
+    });
+    describe('using array,object', () => {
+      describe('inputSize of 1', () => {
+        describe('no error', () => {
+          it('can test w/ forecastNumbers of 1', () => {
+            const net = new LSTMTimeStep({
+              inputSize: 1,
+              hiddenLayers: [10],
+              outputSize: 1
+            });
+            sinon.spy(net, 'formatData');
+            net.forecastNumbers = sinon.spy((data, count) => {
+              assert.equal(count, 1);
+              return [.5];
+            });
+            net.trainOpts = {
+              errorThresh: 0.001
+            };
+            net.inputLookup = net.outputLookup = {
+              monday: 0,
+              tuesday: 1,
+              wednesday: 2,
+              thursday: 3,
+              friday: 4
+            };
+            net.inputLookupLength = net.outputLookupLength = Object.keys(net.inputLookup).length;
+            const testResult = net.test([
+              { monday: .1, tuesday: .2, wednesday: .3, thursday: .4, friday: .5 }
+            ]);
+            assert(net.formatData.called);
+            assert(net.forecastNumbers.called);
+            assert.deepEqual(net.forecastNumbers.args[0][0], Float32Array.from([.1,.2,.3,.4]));
+            assert.deepEqual(net.forecastNumbers.args[0][1], 1);
+            assert.equal(testResult.error, 0);
+            assert.equal(testResult.misclasses.length, 0);
+          });
+        });
+        describe('some error', () => {
+          it('can test w/ forecastNumbers of 1', () => {
+            const net = new LSTMTimeStep({
+              inputSize: 1,
+              hiddenLayers: [10],
+              outputSize: 1
+            });
+            net.trainOpts = {
+              errorThresh: 0.001
+            };
+            sinon.spy(net, 'formatData');
+            net.forecastNumbers = sinon.spy((data, count) => {
+              assert(count, 1);
+              return [.1];
+            });
+            net.inputLookup = net.outputLookup = {
+              monday: 0,
+              tuesday: 1,
+              wednesday: 2,
+              thursday: 3,
+              friday: 4
+            };
+            net.inputLookupLength = net.outputLookupLength = Object.keys(net.inputLookup).length;
+            const testResult = net.test([
+              { monday: .1, tuesday: .2, wednesday: .3, thursday: .4, friday: .5 }
+            ]);
+            assert(net.formatData.called);
+            assert(net.forecastNumbers.called);
+            assert.deepEqual(net.forecastNumbers.args[0][0], Float32Array.from([.1,.2,.3,.4]));
+            assert.ok(testResult.error >= 0.08);
+            assert.equal(testResult.misclasses.length, 1);
+            assert.deepEqual(testResult.misclasses, [{
+              value: { monday: .1, tuesday: .2, wednesday: .3, thursday: .4, friday: .5 },
+              actual: { friday: .1 }
+            }]);
+          });
+        });
+      });
+    });
+    describe.skip('using array,array,object',() => {
+      it('', () => {
+        throw new Error();
+      });
+    });
     describe('using array,datum,array', () => {
       describe('inputSize of 1', () => {
         describe('no error', () => {
@@ -2186,6 +2394,22 @@ describe('RNNTimeStep', () => {
         });
       });
     });
+    describe.skip('using array,datum,object', () => {
+      it('', () => {
+        throw new Error();
+      });
+    });
+    describe.skip('using array,datum,array,array', () => {
+      it('', () => {
+        throw new Error();
+      });
+    });
+    describe.skip('using array,datum,array,object', () => {
+      it('', () => {
+        throw new Error();
+      });
+    });
+
   });
   describe('.toJSON()', () => {
     it('saves network dimensions to json', () => {
