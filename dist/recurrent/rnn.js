@@ -62,7 +62,7 @@ var RNN = function () {
     this.runs = 0;
     this.ratioClipped = null;
     this.model = null;
-
+    this.trainOpts = {};
     this.inputLookup = null;
     this.outputLookup = null;
 
@@ -423,7 +423,7 @@ var RNN = function () {
     value: function train(data) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      options = Object.assign({}, this.constructor.trainDefaults, options);
+      this.trainOpts = options = Object.assign({}, this.constructor.trainDefaults, options);
       var iterations = options.iterations;
       var errorThresh = options.errorThresh;
       var log = options.log === true ? console.log : options.log;

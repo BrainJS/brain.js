@@ -1,8 +1,10 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -15,7 +17,7 @@ var lookup = function () {
   }
 
   _createClass(lookup, null, [{
-    key: "toTable",
+    key: 'toTable',
 
     /**
      * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
@@ -29,8 +31,33 @@ var lookup = function () {
 
       return lookup.toHash(hash);
     }
+
+    /**
+     * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
+     * @param {Object} objects2D
+     * @returns {Object}
+     */
+
   }, {
-    key: "toInputTable",
+    key: 'toTable2D',
+    value: function toTable2D(objects2D) {
+      var table = {};
+      var valueIndex = 0;
+      for (var i = 0; i < objects2D.length; i++) {
+        var objects = objects2D[i];
+        for (var j = 0; j < objects.length; j++) {
+          var object = objects[j];
+          for (var p in object) {
+            if (object.hasOwnProperty(p) && !table.hasOwnProperty(p)) {
+              table[p] = valueIndex++;
+            }
+          }
+        }
+      }
+      return table;
+    }
+  }, {
+    key: 'toInputTable',
     value: function toInputTable(data) {
       var table = {};
       var tableIndex = 0;
@@ -44,7 +71,25 @@ var lookup = function () {
       return table;
     }
   }, {
-    key: "toOutputTable",
+    key: 'toInputTable2D',
+    value: function toInputTable2D(data) {
+      var table = {};
+      var tableIndex = 0;
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        var input = data[dataIndex].input;
+        for (var i = 0; i < input.length; i++) {
+          var object = input[i];
+          for (var p in object) {
+            if (!table.hasOwnProperty(p)) {
+              table[p] = tableIndex++;
+            }
+          }
+        }
+      }
+      return table;
+    }
+  }, {
+    key: 'toOutputTable',
     value: function toOutputTable(data) {
       var table = {};
       var tableIndex = 0;
@@ -52,6 +97,24 @@ var lookup = function () {
         for (var p in data[dataIndex].output) {
           if (!table.hasOwnProperty(p)) {
             table[p] = tableIndex++;
+          }
+        }
+      }
+      return table;
+    }
+  }, {
+    key: 'toOutputTable2D',
+    value: function toOutputTable2D(data) {
+      var table = {};
+      var tableIndex = 0;
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        var output = data[dataIndex].output;
+        for (var i = 0; i < output.length; i++) {
+          var object = output[i];
+          for (var p in object) {
+            if (!table.hasOwnProperty(p)) {
+              table[p] = tableIndex++;
+            }
           }
         }
       }
@@ -65,7 +128,7 @@ var lookup = function () {
      */
 
   }, {
-    key: "toHash",
+    key: 'toHash',
     value: function toHash(hash) {
       var lookup = {};
       var index = 0;
@@ -84,7 +147,7 @@ var lookup = function () {
      */
 
   }, {
-    key: "toArray",
+    key: 'toArray',
     value: function toArray(lookup, object, arrayLength) {
       var result = new Float32Array(arrayLength);
       for (var p in lookup) {
@@ -93,7 +156,7 @@ var lookup = function () {
       return result;
     }
   }, {
-    key: "toArrayShort",
+    key: 'toArrayShort',
     value: function toArrayShort(lookup, object) {
       var result = [];
       for (var p in lookup) {
@@ -103,7 +166,7 @@ var lookup = function () {
       return Float32Array.from(result);
     }
   }, {
-    key: "toArrays",
+    key: 'toArrays',
     value: function toArrays(lookup, objects, arrayLength) {
       var result = [];
       for (var i = 0; i < objects.length; i++) {
@@ -120,7 +183,7 @@ var lookup = function () {
      */
 
   }, {
-    key: "toObject",
+    key: 'toObject',
     value: function toObject(lookup, array) {
       var object = {};
       for (var p in lookup) {
@@ -129,12 +192,20 @@ var lookup = function () {
       return object;
     }
   }, {
-    key: "toObjectPartial",
-    value: function toObjectPartial(lookup, array, offset) {
+    key: 'toObjectPartial',
+    value: function toObjectPartial(lookup, array) {
+      var offset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+      var limit = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+
       var object = {};
       var i = 0;
       for (var p in lookup) {
-        if (i++ < offset) continue;
+        if (offset > 0) {
+          if (i++ < offset) continue;
+        }
+        if (limit > 0) {
+          if (i++ >= limit) continue;
+        }
         object[p] = array[lookup[p] - offset];
       }
       return object;
@@ -147,7 +218,7 @@ var lookup = function () {
      */
 
   }, {
-    key: "lookupFromArray",
+    key: 'lookupFromArray',
     value: function lookupFromArray(array) {
       var lookup = {};
       var z = 0;
@@ -156,6 +227,38 @@ var lookup = function () {
         lookup[array[i]] = z++;
       }
       return lookup;
+    }
+  }, {
+    key: 'dataShape',
+    value: function dataShape(data) {
+      var shape = [];
+
+      if (data[0].input) {
+        shape.push('array', 'datum');
+        data = data[0].input;
+      } else {
+        shape.push('array');
+        data = data[0];
+      }
+
+      var p = void 0;
+      while (data) {
+        for (p in data) {
+          break;
+        }
+        if (!data.hasOwnProperty(p)) break;
+        if (Array.isArray(data) || data.buffer instanceof ArrayBuffer) {
+          shape.push('array');
+          data = data[p];
+        } else if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) === 'object') {
+          shape.push('object');
+          data = data[p];
+        } else {
+          throw new Error('unhandled signature');
+        }
+      }
+      shape.push(typeof data === 'undefined' ? 'undefined' : _typeof(data));
+      return shape;
     }
   }]);
 

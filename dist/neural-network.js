@@ -925,34 +925,73 @@ var NeuralNetwork = function () {
       var _this5 = this;
 
       data = this.formatData(data);
-
       // for binary classification problems with one output node
       var isBinary = data[0].output.length === 1;
-      var falsePos = 0;
-      var falseNeg = 0;
-      var truePos = 0;
-      var trueNeg = 0;
-
       // for classification problems
       var misclasses = [];
-
       // run each pattern through the trained network and collect
       // error and misclassification statistics
-      var sum = 0;
+      var errorSum = 0;
 
-      var _loop = function _loop(i) {
+      if (isBinary) {
+        var falsePos = 0;
+        var falseNeg = 0;
+        var truePos = 0;
+        var trueNeg = 0;
+
+        var _loop = function _loop(i) {
+          var output = _this5.runInput(data[i].input);
+          var target = data[i].output;
+          var actual = output[0] > _this5.binaryThresh ? 1 : 0;
+          var expected = target[0];
+
+          if (actual !== expected) {
+            var misclass = data[i];
+            Object.assign(misclass, {
+              actual: actual,
+              expected: expected
+            });
+            misclasses.push(misclass);
+          }
+
+          if (actual === 0 && expected === 0) {
+            trueNeg++;
+          } else if (actual === 1 && expected === 1) {
+            truePos++;
+          } else if (actual === 0 && expected === 1) {
+            falseNeg++;
+          } else if (actual === 1 && expected === 0) {
+            falsePos++;
+          }
+
+          errorSum += (0, _mse2.default)(output.map(function (value, i) {
+            return target[i] - value;
+          }));
+        };
+
+        for (var i = 0; i < data.length; i++) {
+          _loop(i);
+        }
+
+        return {
+          error: errorSum / data.length,
+          misclasses: misclasses,
+          trueNeg: trueNeg,
+          truePos: truePos,
+          falseNeg: falseNeg,
+          falsePos: falsePos,
+          total: data.length,
+          precision: truePos > 0 ? truePos / (truePos + falsePos) : 0,
+          recall: truePos > 0 ? truePos / (truePos + falseNeg) : 0,
+          accuracy: (trueNeg + truePos) / data.length
+        };
+      }
+
+      var _loop2 = function _loop2(i) {
         var output = _this5.runInput(data[i].input);
         var target = data[i].output;
-
-        var actual = void 0,
-            expected = void 0;
-        if (isBinary) {
-          actual = output[0] > _this5.binaryThresh ? 1 : 0;
-          expected = target[0];
-        } else {
-          actual = output.indexOf((0, _max2.default)(output));
-          expected = target.indexOf((0, _max2.default)(target));
-        }
+        var actual = output.indexOf((0, _max2.default)(output));
+        var expected = target.indexOf((0, _max2.default)(target));
 
         if (actual !== expected) {
           var misclass = data[i];
@@ -963,47 +1002,18 @@ var NeuralNetwork = function () {
           misclasses.push(misclass);
         }
 
-        if (isBinary) {
-          if (actual === 0 && expected === 0) {
-            trueNeg++;
-          } else if (actual === 1 && expected === 1) {
-            truePos++;
-          } else if (actual === 0 && expected === 1) {
-            falseNeg++;
-          } else if (actual === 1 && expected === 0) {
-            falsePos++;
-          }
-        }
-
-        var errors = output.map(function (value, i) {
+        errorSum += (0, _mse2.default)(output.map(function (value, i) {
           return target[i] - value;
-        });
-        sum += (0, _mse2.default)(errors);
+        }));
       };
 
       for (var i = 0; i < data.length; i++) {
-        _loop(i);
+        _loop2(i);
       }
-      var error = sum / data.length;
-
-      var stats = {
-        error: error,
+      return {
+        error: errorSum / data.length,
         misclasses: misclasses
       };
-
-      if (isBinary) {
-        Object.assign(stats, {
-          trueNeg: trueNeg,
-          truePos: truePos,
-          falseNeg: falseNeg,
-          falsePos: falsePos,
-          total: data.length,
-          precision: truePos > 0 ? truePos / (truePos + falsePos) : 0,
-          recall: truePos > 0 ? truePos / (truePos + falseNeg) : 0,
-          accuracy: (trueNeg + truePos) / data.length
-        });
-      }
-      return stats;
     }
 
     /**
