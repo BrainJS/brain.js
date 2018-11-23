@@ -31,5 +31,55 @@ describe('lookup', () => {
     let hash = lookup.toObject(lup, [0, 9, 8]);
 
     assert.deepEqual(hash, {a: 0, b: 9, c: 8})
-  })
+  });
+
+  describe('dataShape', () => {
+    it('can identify array,array,number', () => {
+      assert.deepEqual(lookup.dataShape([
+        [0]
+      ]), ['array','array','number']);
+    });
+
+    it('can identify array,array,array,number', () => {
+      assert.deepEqual(lookup.dataShape([
+        [[0]]
+      ]), ['array','array','array','number']);
+    });
+
+    it('can identify array,object,number', () => {
+      assert.deepEqual(lookup.dataShape([
+        { one: 0 }
+      ]), ['array','object','number']);
+    });
+
+    it('can identify array,array,object,number', () => {
+      assert.deepEqual(lookup.dataShape([
+        [{ one: 0 }]
+      ]), ['array','array','object','number']);
+    });
+
+    it('can identify array,datum,array,number', () => {
+      assert.deepEqual(lookup.dataShape([
+        { input: [0], output: [0] }
+      ]), ['array','datum','array','number']);
+    });
+
+    it('can identify array,datum,object,number', () => {
+      assert.deepEqual(lookup.dataShape([
+        { input: { one: 0 }, output: { none: 0 } }
+      ]), ['array','datum','object','number']);
+    });
+
+    it('can identify array,datum,array,array,number', () => {
+      assert.deepEqual(lookup.dataShape([
+        { input: [[0]], output: [[0]] }
+      ]), ['array','datum','array','array','number']);
+    });
+
+    it('can identify array,datum,array,object,number', () => {
+      assert.deepEqual(lookup.dataShape([
+        { input: [{ one: 0 }], output: [{ one: 0 }] }
+      ]), ['array','datum','array','object','number']);
+    });
+  });
 });

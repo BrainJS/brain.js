@@ -526,128 +526,177 @@ export default class RNNTimeStep extends RNN {
     // run each pattern through the trained network and collect
     // error and misclassification statistics
     let errorSum = 0;
-
-    if (data[0].input) {
-      if (this.inputSize === 1) {
-        for (let i = 0; i < formattedData.length; i++) {
-          const datum = formattedData[i];
-          const output = this.forecast(datum.input, datum.output.length);
-          let errors = 0;
-          for (let i = 0; i < output.length; i++) {
-            const error = datum.output[i][0] - output[i];
-            errors += error * error;
-          }
-
-          errorSum += errors;
-          const errorsAbs = Math.abs(errors);
-          if (errorsAbs > this.trainOpts.errorThresh) {
-            const misclass = data[i];
-            Object.assign(misclass, {
-              actual: this.outputLookup
-                ? lookup.toObject(this.outputLookup, output)
-                : output
-            });
-            misclasses.push(misclass);
-          }
-        }
-      } else {
-        for (let i = 0; i < formattedData.length; i++) {
-          const datum = formattedData[i];
-          const output = this.forecast(datum.input, datum.output.length);
-          let errors = 0;
-          for (let i = 0; i < output.length; i++) {
-            const error = datum.output[i][0] - output[i][0];
-            errors += error * error;
-          }
-
-          errorSum += errors;
-          const errorsAbs = Math.abs(errors);
-          if (errorsAbs > this.trainOpts.errorThresh) {
-            const misclass = data[i];
-            Object.assign(misclass, {
-              actual: this.outputLookup
-                ? lookup.toObject(this.outputLookup, output)
-                : output
-            });
-            misclasses.push(misclass);
-          }
-        }
-      }
-    } else {
-      const dataShape = lookup.dataShape(data).join(',');
-      switch (dataShape) {
-        case 'array,array,number': {
-          if (this.inputSize === 1) {
-            for (let i = 0; i < formattedData.length; i++) {
-              const input = formattedData[i];
-              const output = this.run(input.splice(0, input.length - 1));
-              const target = input[input.length - 1][0];
-              const error = target - output;
-              const errorMSE = error * error;
-              errorSum += errorMSE;
-              const errorsAbs = Math.abs(errorMSE);
-              if (errorsAbs > this.trainOpts.errorThresh) {
-                const misclass = data[i];
-                Object.assign(misclass, {
-                  value: input,
-                  actual: output
-                });
-                misclasses.push(misclass);
-              }
-            }
-            break;
-          }
-        }
-        case 'array,array,array,number': {
+    const dataShape = lookup.dataShape(data).join(',');
+    switch (dataShape) {
+      case 'array,array,number': {
+        if (this.inputSize === 1) {
           for (let i = 0; i < formattedData.length; i++) {
             const input = formattedData[i];
             const output = this.run(input.splice(0, input.length - 1));
-            const target = input[input.length - 1];
-            let errors = 0;
-            for (let i = 0; i < output.length; i++) {
-              const error = target[i] - output[i];
-              // mse
-              errors += error * error;
-            }
-            errorSum += errors;
-            const errorsAbs = Math.abs(errors);
+            const target = input[input.length - 1][0];
+            const error = target - output;
+            const errorMSE = error * error;
+            errorSum += errorMSE;
+            const errorsAbs = Math.abs(errorMSE);
             if (errorsAbs > this.trainOpts.errorThresh) {
               const misclass = data[i];
-              misclasses.push({
-                value: misclass,
+              Object.assign(misclass, {
+                value: input,
                 actual: output
               });
+              misclasses.push(misclass);
             }
           }
           break;
         }
-        case 'array,object,number':
-        {
-          if (this.inputSize > 1) throw new Error('TODO: too big');
-          for (let i = 0; i < formattedData.length; i++) {
-            const input = formattedData[i];
-            const output = this.run(lookup.toObjectPartial(this.outputLookup, input, 0, input.length - 1));
-            const target = input[input.length - 1];
-            let errors = 0;
-            let p;
-            for (p in output) {}
-            const error = target[i] - output[p];
+      }
+      case 'array,array,array,number': {
+        for (let i = 0; i < formattedData.length; i++) {
+          const input = formattedData[i];
+          const output = this.run(input.splice(0, input.length - 1));
+          const target = input[input.length - 1];
+          let errors = 0;
+          for (let j = 0; j < output.length; j++) {
+            const error = target[j] - output[j];
             // mse
             errors += error * error;
-            errorSum += errors;
-            const errorsAbs = Math.abs(errors);
-            if (errorsAbs > this.trainOpts.errorThresh) {
-              const misclass = data[i];
-              misclasses.push({
-                value: misclass,
-                actual: output
-              });
+          }
+          errorSum += errors;
+          const errorsAbs = Math.abs(errors);
+          if (errorsAbs > this.trainOpts.errorThresh) {
+            const misclass = data[i];
+            misclasses.push({
+              value: misclass,
+              actual: output
+            });
+          }
+        }
+        break;
+      }
+      case 'array,object,number':
+      {
+        if (this.inputSize > 1) throw new Error('TODO: too big');
+        for (let i = 0; i < formattedData.length; i++) {
+          const input = formattedData[i];
+          const output = this.run(lookup.toObjectPartial(this.outputLookup, input, 0, input.length - 1));
+          const target = input[input.length - 1];
+          let errors = 0;
+          let p;
+          for (p in output) {}
+          const error = target[i] - output[p];
+          // mse
+          errors += error * error;
+          errorSum += errors;
+          const errorsAbs = Math.abs(errors);
+          if (errorsAbs > this.trainOpts.errorThresh) {
+            const misclass = data[i];
+            misclasses.push({
+              value: misclass,
+              actual: output
+            });
+          }
+        }
+        break;
+      }
+      case 'array,array,object,number': {
+        for (let i = 0; i < formattedData.length; i++) {
+          const input = formattedData[i];
+          const output = this.run(input.slice(0, input.length - 1));
+          const target = data[i][input.length - 1];
+          let errors = 0;
+          for (const p in output) {
+            const error = target[p] - output[p];
+            // mse
+            errors += error * error;
+          }
+          errorSum += errors;
+          const errorsAbs = Math.abs(errors);
+          if (errorsAbs > this.trainOpts.errorThresh) {
+            const misclass = data[i];
+            misclasses.push({
+              value: misclass,
+              actual: output
+            });
+          }
+        }
+        break;
+      }
+      case 'array,datum,array,number':
+      case 'array,datum,object,number': {
+        for (let i = 0; i < formattedData.length; i++) {
+          const datum = formattedData[i];
+          const output = this.forecast(datum.input, datum.output.length);
+          let errors = 0;
+          for (let j = 0; j < output.length; j++) {
+            const error = datum.output[j][0] - output[j];
+            errors += error * error;
+          }
+
+          errorSum += errors;
+          const errorsAbs = Math.abs(errors);
+          if (errorsAbs > this.trainOpts.errorThresh) {
+            const misclass = data[i];
+            Object.assign(misclass, {
+              actual: this.outputLookup
+                ? lookup.toObject(this.outputLookup, output)
+                : output
+            });
+            misclasses.push(misclass);
+          }
+        }
+        break;
+      }
+      case 'array,datum,array,array,number': {
+        for (let i = 0; i < formattedData.length; i++) {
+          const datum = formattedData[i];
+          const output = this.forecast(datum.input, datum.output.length);
+          let errors = 0;
+          for (let j = 0; j < output.length; j++) {
+            for (let k = 0; k < output[j].length; k++) {
+              const error = datum.output[j][k] - output[j][k];
+              errors += error * error;
             }
           }
-          break;
+
+          errorSum += errors;
+          const errorsAbs = Math.abs(errors);
+          if (errorsAbs > this.trainOpts.errorThresh) {
+            const misclass = data[i];
+            misclasses.push({
+              input: misclass.input,
+              output: misclass.output,
+              actual: output
+            });
+          }
         }
-        default: throw new Error('unimplemented');
+        break;
       }
+      case 'array,datum,array,object,number': {
+        for (let i = 0; i < formattedData.length; i++) {
+          const datum = formattedData[i];
+          const output = this.forecast(datum.input, datum.output.length);
+          let errors = 0;
+          for (let j = 0; j < output.length; j++) {
+            for (const p in output[j]) {
+              const error = data[i].output[j][p] - output[j][p];
+              errors += error * error;
+            }
+          }
+
+          errorSum += errors;
+          const errorsAbs = Math.abs(errors);
+          if (errorsAbs > this.trainOpts.errorThresh) {
+            const misclass = data[i];
+            misclasses.push({
+              input: misclass.input,
+              output: misclass.output,
+              actual: output
+            });
+          }
+        }
+        break;
+      }
+      default: throw new Error('unimplemented');
     }
 
     return {
