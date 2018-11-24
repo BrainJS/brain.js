@@ -81,6 +81,8 @@
   },
   "license": "MIT",
   "dependencies": {
+    "chai": "^4.2.0",
+    "chai-xml": "^0.3.2",
     "gpu.js": "^1.2.0",
     "thaw.js": "^2.0.0"
   },
