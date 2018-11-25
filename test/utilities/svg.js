@@ -5,11 +5,6 @@
 
 import assert from 'assert';
 import svg from '../../src/utilities/svg';
-var chai    = require('chai');
-var expect  = require('chai').expect;
-var chaiXml = require('chai-xml');
-
-chai.use(chaiXml);
 
 describe('svg', () => {
     let size = [4,3,2];
@@ -52,10 +47,10 @@ describe('svg', () => {
             assert.equal(svgImg.slice(-6) , '</svg>');
         });    
         
-        it('should return valid xml when sane inputs provided', () => {
-            const svgImg = svg.makeSVG(size,options)
-            expect(svgImg).xml.to.be.valid();
-        });
+        // it('should return valid xml when sane inputs provided', () => {
+        //     const svgImg = svg.makeSVG(size,options)
+        //     expect(svgImg).xml.to.be.valid();
+        // });
     });
     
     describe('"size" input', () => {

@@ -5,7 +5,19 @@
 		<title>brain.js network rendering example</title>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" type="text/css" href="app.css">
-        <script src="../../src/utilities/svg.js"></script> 
+		<script>
+			function request(net) {
+				var xhttp = new XMLHttpRequest();
+				xhttp.open("POST", "/svg", true);
+				xhttp.setRequestHeader("Content-Type", "text/plain;charset=UTF-8")
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+					document.getElementById("result").innerHTML = this.responseText;
+					}
+				};
+				xhttp.send(JSON.stringify(net));
+			}
+		</script>
 	</head>
 	<body >
 	
@@ -77,8 +89,8 @@
 				const size = this.elements.namedItem("size").value.split(",").map((item)=> {
 					return parseInt(item, 10);
 				});;
-                const options = constructOptions(this)
-                document.getElementById('result').innerHTML=svgModule.makeSVG(size,options)
+				const options = constructOptions(this)
+				request({"size":size,"options":options})
 			});
 
 			function constructOptions(form){
