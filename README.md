@@ -295,7 +295,7 @@ With multiple networks you can train in parallel like this:
 const crossValidate = new brain.CrossValidate(brain.NeuralNetwork, networkOptions);
 crossValidate.train(data, trainingOptions, k); //note k (or KFolds) is optional
 const json = crossValidate.toJSON(); // all stats in json as well as neural networks
-const net = crossValidate.toNeuralNetwork();
+const net = crossValidate.toNeuralNetwork(); // get top performing net out of `crossValidate`
 
 
 // optionally later
@@ -303,7 +303,7 @@ const json = crossValidate.toJSON();
 const net = crossValidate.fromJSON(json);
 ```
 
-Use `CrossValidation` with these classes:
+Use `CrossValidate` with these classes:
 * `brain.NeuralNetwork`
 * `brain.RNNTimeStep`
 * `brain.LSTMTimeStep`
