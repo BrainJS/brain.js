@@ -233,12 +233,17 @@ var lookup = function () {
     value: function dataShape(data) {
       var shape = [];
 
-      if (data[0].input) {
-        shape.push('array', 'datum');
-        data = data[0].input;
-      } else {
-        shape.push('array');
-        data = data[0];
+      if (data.input) {
+        shape.push('datum');
+        data = data.input;
+      } else if (Array.isArray(data)) {
+        if (data[0].input) {
+          shape.push('array', 'datum');
+          data = data[0].input;
+        } else {
+          shape.push('array');
+          data = data[0];
+        }
       }
 
       var p = void 0;
@@ -259,6 +264,19 @@ var lookup = function () {
       }
       shape.push(typeof data === 'undefined' ? 'undefined' : _typeof(data));
       return shape;
+    }
+  }, {
+    key: 'addKeys',
+    value: function addKeys(value, table) {
+      if (Array.isArray(value)) return;
+      table = table || {};
+      var i = Object.keys(table).length;
+      for (var p in value) {
+        if (!value.hasOwnProperty(p)) continue;
+        if (table.hasOwnProperty(p)) continue;
+        table[p] = i++;
+      }
+      return table;
     }
   }]);
 

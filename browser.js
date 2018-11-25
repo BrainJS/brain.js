@@ -596,12 +596,17 @@ var lookup = function () {
     value: function dataShape(data) {
       var shape = [];
 
-      if (data[0].input) {
-        shape.push('array', 'datum');
-        data = data[0].input;
-      } else {
-        shape.push('array');
-        data = data[0];
+      if (data.input) {
+        shape.push('datum');
+        data = data.input;
+      } else if (Array.isArray(data)) {
+        if (data[0].input) {
+          shape.push('array', 'datum');
+          data = data[0].input;
+        } else {
+          shape.push('array');
+          data = data[0];
+        }
       }
 
       var p = void 0;
@@ -622,6 +627,19 @@ var lookup = function () {
       }
       shape.push(typeof data === 'undefined' ? 'undefined' : _typeof(data));
       return shape;
+    }
+  }, {
+    key: 'addKeys',
+    value: function addKeys(value, table) {
+      if (Array.isArray(value)) return;
+      table = table || {};
+      var i = Object.keys(table).length;
+      for (var p in value) {
+        if (!value.hasOwnProperty(p)) continue;
+        if (table.hasOwnProperty(p)) continue;
+        table[p] = i++;
+      }
+      return table;
     }
   }]);
 
@@ -712,27 +730,31 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
 
     /**
      *
-     * @param input
-     * @param target
+     * @param value
      * @param logErrorRate
      */
 
   }, {
     key: 'trainPattern',
-    value: function trainPattern(input, target, logErrorRate) {
+    value: function trainPattern(value, logErrorRate) {
       // forward propagate
-      this.runInput(input);
+      this.runInput(value.input);
 
-      // backward propagate
-      this.calculateDeltas(target);
-      this.getChanges();
-      this.changeBiases();
+      // back propagate
+      this.calculateDeltas(value.target);
+      this.adjustWeights();
 
       if (logErrorRate) {
         return this.getMSE(this.errors[this.outputLayer])[0];
       } else {
         return null;
       }
+    }
+  }, {
+    key: 'adjustWeights',
+    value: function adjustWeights() {
+      this.getChanges();
+      this.changeBiases();
     }
   }, {
     key: 'buildRunInput',
@@ -1186,51 +1208,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 var NeuralNetwork = function () {
   _createClass(NeuralNetwork, null, [{
-    key: 'validateTrainingOptions',
-
-
-    /**
-     *
-     * @param options
-     * @private
-     */
-    value: function validateTrainingOptions(options) {
-      var validations = {
-        iterations: function iterations(val) {
-          return typeof val === 'number' && val > 0;
-        },
-        errorThresh: function errorThresh(val) {
-          return typeof val === 'number' && val > 0 && val < 1;
-        },
-        log: function log(val) {
-          return typeof val === 'function' || typeof val === 'boolean';
-        },
-        logPeriod: function logPeriod(val) {
-          return typeof val === 'number' && val > 0;
-        },
-        learningRate: function learningRate(val) {
-          return typeof val === 'number' && val > 0 && val < 1;
-        },
-        momentum: function momentum(val) {
-          return typeof val === 'number' && val > 0 && val < 1;
-        },
-        callback: function callback(val) {
-          return typeof val === 'function' || val === null;
-        },
-        callbackPeriod: function callbackPeriod(val) {
-          return typeof val === 'number' && val > 0;
-        },
-        timeout: function timeout(val) {
-          return typeof val === 'number' && val > 0;
-        }
-      };
-      Object.keys(NeuralNetwork.trainDefaults).forEach(function (key) {
-        if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
-          throw new Error('[' + key + ', ' + options[key] + '] is out of normal training range, your network will probably not train.');
-        }
-      });
-    }
-  }, {
     key: 'trainDefaults',
     get: function get() {
       return {
@@ -1291,6 +1268,7 @@ var NeuralNetwork = function () {
     this.inputLookup = null;
     this.inputLookupLength = null;
     this.outputLookup = null;
+    this.outputLookupLength = null;
   }
 
   /**
@@ -1334,6 +1312,9 @@ var NeuralNetwork = function () {
       }
 
       this.setActivation();
+      if (this.trainOpts.praxis === 'adam') {
+        this._setupAdam();
+      }
     }
 
     /**
@@ -1516,7 +1497,7 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param opts
+     * @param options
      *    Supports all `trainDefaults` properties
      *    also supports:
      *       learningRate: (number),
@@ -1526,15 +1507,59 @@ var NeuralNetwork = function () {
 
   }, {
     key: 'updateTrainingOptions',
-    value: function updateTrainingOptions(opts) {
+    value: function updateTrainingOptions(options) {
       var _this2 = this;
 
-      Object.keys(NeuralNetwork.trainDefaults).forEach(function (opt) {
-        return _this2.trainOpts[opt] = opts.hasOwnProperty(opt) ? opts[opt] : _this2.trainOpts[opt];
+      Object.keys(this.constructor.trainDefaults).forEach(function (p) {
+        return _this2.trainOpts[p] = options.hasOwnProperty(p) ? options[p] : _this2.trainOpts[p];
       });
-      NeuralNetwork.validateTrainingOptions(this.trainOpts);
-      this.setLogMethod(opts.log || this.trainOpts.log);
-      this.activation = opts.activation || this.activation;
+      this.validateTrainingOptions(this.trainOpts);
+      this.setLogMethod(options.log || this.trainOpts.log);
+      this.activation = options.activation || this.activation;
+    }
+
+    /**
+     *
+     * @param options
+     */
+
+  }, {
+    key: 'validateTrainingOptions',
+    value: function validateTrainingOptions(options) {
+      var validations = {
+        iterations: function iterations(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        errorThresh: function errorThresh(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        log: function log(val) {
+          return typeof val === 'function' || typeof val === 'boolean';
+        },
+        logPeriod: function logPeriod(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        learningRate: function learningRate(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        momentum: function momentum(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        callback: function callback(val) {
+          return typeof val === 'function' || val === null;
+        },
+        callbackPeriod: function callbackPeriod(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        timeout: function timeout(val) {
+          return typeof val === 'number' && val > 0;
+        }
+      };
+      Object.keys(this.constructor.trainDefaults).forEach(function (key) {
+        if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
+          throw new Error('[' + key + ', ' + options[key] + '] is out of normal training range, your network will probably not train.');
+        }
+      });
     }
 
     /**
@@ -1548,7 +1573,7 @@ var NeuralNetwork = function () {
     value: function getTrainOptsJSON() {
       var _this3 = this;
 
-      return Object.keys(NeuralNetwork.trainDefaults).reduce(function (opts, opt) {
+      return Object.keys(this.constructor.trainDefaults).reduce(function (opts, opt) {
         if (opt === 'timeout' && _this3.trainOpts[opt] === Infinity) return opts;
         if (_this3.trainOpts[opt]) opts[opt] = _this3.trainOpts[opt];
         if (opt === 'log') opts.log = typeof opts.log === 'function';
@@ -1587,21 +1612,20 @@ var NeuralNetwork = function () {
     value: function calculateTrainingError(data) {
       var sum = 0;
       for (var i = 0; i < data.length; ++i) {
-        sum += this.trainPattern(data[i].input, data[i].output, true);
+        sum += this.trainPattern(data[i], true);
       }
       return sum / data.length;
     }
 
     /**
      * @param data
-     * @private
      */
 
   }, {
     key: 'trainPatterns',
     value: function trainPatterns(data) {
       for (var i = 0; i < data.length; ++i) {
-        this.trainPattern(data[i].input, data[i].output, false);
+        this.trainPattern(data[i]);
       }
     }
 
@@ -1646,7 +1670,7 @@ var NeuralNetwork = function () {
      * @param data
      * @param options
      * @protected
-     * @return { data, status, endTime }
+     * @return {object} { data, status, endTime }
      */
 
   }, {
@@ -1674,7 +1698,7 @@ var NeuralNetwork = function () {
      *
      * @param data
      * @param options
-     * @returns {{error: number, iterations: number}}
+     * @returns {object} {error: number, iterations: number}
      */
 
   }, {
@@ -1691,10 +1715,6 @@ var NeuralNetwork = function () {
       status = _prepTraining.status;
       endTime = _prepTraining.endTime;
 
-
-      if (options.praxis === 'adam') {
-        this._setupAdam();
-      }
 
       while (this.trainingTick(data, status, endTime)) {}
       return status;
@@ -1746,19 +1766,18 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param input
-     * @param target
+     * @param {object} value
+     * @param {boolean} [logErrorRate]
      */
 
   }, {
     key: 'trainPattern',
-    value: function trainPattern(input, target, logErrorRate) {
-
+    value: function trainPattern(value, logErrorRate) {
       // forward propagate
-      this.runInput(input);
+      this.runInput(value.input);
 
       // back propagate
-      this.calculateDeltas(target);
+      this.calculateDeltas(value.output);
       this.adjustWeights();
 
       if (logErrorRate) {
@@ -2038,6 +2057,18 @@ var NeuralNetwork = function () {
         return _result2;
       }
       return data;
+    }
+  }, {
+    key: 'addFormat',
+    value: function addFormat(data) {
+      this.inputLookup = _lookup3.default.addKeys(data.input, this.inputLookup);
+      if (this.inputLookup) {
+        this.inputLookupLength = Object.keys(this.inputLookup).length;
+      }
+      this.outputLookup = _lookup3.default.addKeys(data.output, this.outputLookup);
+      if (this.outputLookup) {
+        this.outputLookupLength = Object.keys(this.outputLookup).length;
+      }
     }
 
     /**
@@ -4042,16 +4073,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var RNNTimeStep = function (_RNN) {
   _inherits(RNNTimeStep, _RNN);
 
-  function RNNTimeStep(options) {
+  function RNNTimeStep() {
     _classCallCheck(this, RNNTimeStep);
 
-    var _this = _possibleConstructorReturn(this, (RNNTimeStep.__proto__ || Object.getPrototypeOf(RNNTimeStep)).call(this, options));
-
-    _this.inputLookup = null;
-    _this.inputLookupLength = null;
-    _this.outputLookup = null;
-    _this.outputLookupLength = null;
-    return _this;
+    return _possibleConstructorReturn(this, (RNNTimeStep.__proto__ || Object.getPrototypeOf(RNNTimeStep)).apply(this, arguments));
   }
 
   _createClass(RNNTimeStep, [{
@@ -4180,7 +4205,6 @@ var RNNTimeStep = function (_RNN) {
       var errorThresh = options.errorThresh;
       var log = options.log === true ? console.log : options.log;
       var logPeriod = options.logPeriod;
-      var learningRate = options.learningRate || this.learningRate;
       var callback = options.callback;
       var callbackPeriod = options.callbackPeriod;
 
@@ -4189,32 +4213,15 @@ var RNNTimeStep = function (_RNN) {
       }
 
       data = this.formatData(data);
-      if (data[0].input) {
-        this.trainInput = this.trainInputOutput;
-      } else if (data[0].length > 0) {
-        if (data[0][0].length > 0) {
-          this.trainInput = this.trainArrays;
-        } else {
-          if (this.inputSize > 1) {
-            data = [data];
-            this.trainInput = this.trainArrays;
-          } else {
-            this.trainInput = this.trainNumbers;
-          }
-        }
-      }
-
       var error = Infinity;
       var i = void 0;
 
-      if (!this.model) {
-        this.initialize();
-      }
+      this.verifyIsInitialized(data);
 
       for (i = 0; i < iterations && error > errorThresh; i++) {
         var sum = 0;
         for (var j = 0; j < data.length; j++) {
-          var err = this.trainPattern(data[j], learningRate);
+          var err = this.trainPattern(data[j], true);
           sum += err;
         }
         error = sum / data.length;
@@ -4232,6 +4239,35 @@ var RNNTimeStep = function (_RNN) {
         error: error,
         iterations: i
       };
+    }
+
+    /**
+     *
+     * @param data
+     * Verifies network sizes are initialized
+     * If they are not it will initialize them based off the data set.
+     */
+
+  }, {
+    key: 'verifyIsInitialized',
+    value: function verifyIsInitialized(data) {
+      if (data[0].input) {
+        this.trainInput = this.trainInputOutput;
+      } else if (data[0].length > 0) {
+        if (data[0][0].length > 0) {
+          this.trainInput = this.trainArrays;
+        } else {
+          if (this.inputSize > 1) {
+            this.trainInput = this.trainArrays;
+          } else {
+            this.trainInput = this.trainNumbers;
+          }
+        }
+      }
+
+      if (!this.model) {
+        this.initialize();
+      }
     }
   }, {
     key: 'setSize',
@@ -4446,41 +4482,58 @@ var RNNTimeStep = function (_RNN) {
             if (this.inputSize !== 1) {
               throw new Error('inputSize must be 1 for this data size');
             }
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
             for (var i = 0; i < data.length; i++) {
               result.push(Float32Array.from([data[i]]));
             }
-            return result;
+            return [result];
           }
         case 'array,array,number':
           {
-            if (this.inputSize === 1) {
+            if (this.inputSize === 1 && this.outputSize === 1) {
               for (var _i3 = 0; _i3 < data.length; _i3++) {
                 result.push((0, _cast.arrayToFloat32Arrays)(data[_i3]));
               }
               return result;
             }
-
+            if (this.inputSize !== data[0].length) {
+              throw new Error('inputSize must match data input size');
+            }
+            if (this.outputSize !== data[0].length) {
+              throw new Error('outputSize must match data input size');
+            }
             for (var _i4 = 0; _i4 < data.length; _i4++) {
               result.push(Float32Array.from(data[_i4]));
             }
-            return result;
+            return [result];
           }
         case 'array,object,number':
           {
-            var lookupTable = new _lookupTable3.default(data);
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
+            }
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
+            if (!this.inputLookup) {
+              var lookupTable = new _lookupTable3.default(data);
+              this.inputLookup = this.outputLookup = lookupTable.table;
+              this.inputLookupLength = this.outputLookupLength = lookupTable.length;
+            }
             for (var _i5 = 0; _i5 < data.length; _i5++) {
               result.push((0, _cast.objectToFloat32Arrays)(data[_i5]));
             }
-            this.inputLookup = lookupTable.table;
-            this.inputLookupLength = lookupTable.length;
-            this.outputLookup = lookupTable.table;
-            this.outputLookupLength = lookupTable.length;
             return result;
           }
         case 'array,datum,array,number':
           {
             if (this.inputSize !== 1) {
               throw new Error('inputSize must be 1 for this data size');
+            }
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
             }
             for (var _i6 = 0; _i6 < data.length; _i6++) {
               var datum = data[_i6];
@@ -4493,23 +4546,30 @@ var RNNTimeStep = function (_RNN) {
           }
         case 'array,datum,object,number':
           {
-            if (this.inputSize === 1) {
-              var inputLookup = new _lookupTable3.default(data, 'input');
-              var outputLookup = new _lookupTable3.default(data, 'output');
-              for (var _i7 = 0; _i7 < data.length; _i7++) {
-                var _datum = data[_i7];
-                result.push({
-                  input: (0, _cast.objectToFloat32Arrays)(_datum.input),
-                  output: (0, _cast.objectToFloat32Arrays)(_datum.output)
-                });
-                this.inputLookup = inputLookup.table;
-                this.inputLookupLength = inputLookup.length;
-                this.outputLookup = outputLookup.table;
-                this.outputLookupLength = outputLookup.length;
-              }
-              return result;
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
             }
-            throw new Error('unknown data shape or configuration');
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
+            if (!this.inputLookup) {
+              var inputLookup = new _lookupTable3.default(data, 'input');
+              this.inputLookup = inputLookup.table;
+              this.inputLookupLength = inputLookup.length;
+            }
+            if (!this.outputLookup) {
+              var outputLookup = new _lookupTable3.default(data, 'output');
+              this.outputLookup = outputLookup.table;
+              this.outputLookupLength = outputLookup.length;
+            }
+            for (var _i7 = 0; _i7 < data.length; _i7++) {
+              var _datum = data[_i7];
+              result.push({
+                input: (0, _cast.objectToFloat32Arrays)(_datum.input),
+                output: (0, _cast.objectToFloat32Arrays)(_datum.output)
+              });
+            }
+            return result;
           }
         case 'array,array,array,number':
           {
@@ -4520,36 +4580,42 @@ var RNNTimeStep = function (_RNN) {
           }
         case 'array,array,object,number':
           {
-            var _lookupTable = new _lookupTable3.default(data);
+            if (!this.inputLookup) {
+              var _lookupTable = new _lookupTable3.default(data);
+              this.inputLookup = this.outputLookup = _lookupTable.table;
+              this.inputLookupLength = this.outputLookupLength = _lookupTable.length;
+            }
             for (var _i9 = 0; _i9 < data.length; _i9++) {
               var array = [];
               for (var j = 0; j < data[_i9].length; j++) {
-                array.push((0, _cast.objectToFloat32Array)(data[_i9][j], _lookupTable));
+                array.push((0, _cast.objectToFloat32Array)(data[_i9][j], this.inputLookup, this.inputLookupLength));
               }
               result.push(array);
             }
-            this.inputLookup = _lookupTable.table;
-            this.inputLookupLength = _lookupTable.length;
-            this.outputLookup = _lookupTable.table;
-            this.outputLookupLength = _lookupTable.length;
             return result;
           }
         case 'array,datum,array,array,number':
           {
-            if (this.inputSize > 1) {
+            if (this.inputSize === 1 && this.outputSize === 1) {
               for (var _i10 = 0; _i10 < data.length; _i10++) {
                 var _datum2 = data[_i10];
                 result.push({
-                  input: (0, _cast.arraysToFloat32Arrays)(_datum2.input),
-                  output: (0, _cast.arraysToFloat32Arrays)(_datum2.output)
+                  input: Float32Array.from(_datum2.input),
+                  output: Float32Array.from(_datum2.output)
                 });
               }
             } else {
+              if (this.inputSize !== data[0].input[0].length) {
+                throw new Error('inputSize must match data input size');
+              }
+              if (this.outputSize !== data[0].output[0].length) {
+                throw new Error('outputSize must match data output size');
+              }
               for (var _i11 = 0; _i11 < data.length; _i11++) {
                 var _datum3 = data[_i11];
                 result.push({
-                  input: Float32Array.from(_datum3.input),
-                  output: Float32Array.from(_datum3.output)
+                  input: (0, _cast.arraysToFloat32Arrays)(_datum3.input),
+                  output: (0, _cast.arraysToFloat32Arrays)(_datum3.output)
                 });
               }
             }
@@ -4557,21 +4623,23 @@ var RNNTimeStep = function (_RNN) {
           }
         case 'array,datum,array,object,number':
           {
-            var _inputLookup = new _arrayLookupTable2.default(data, 'input');
-            var _outputLookup = new _arrayLookupTable2.default(data, 'output');
-
+            if (!this.inputLookup) {
+              var _inputLookup = new _arrayLookupTable2.default(data, 'input');
+              this.inputLookup = _inputLookup.table;
+              this.inputLookupLength = _inputLookup.length;
+            }
+            if (!this.outputLookup) {
+              var _outputLookup = new _arrayLookupTable2.default(data, 'output');
+              this.outputLookup = _outputLookup.table;
+              this.outputLookupLength = _outputLookup.length;
+            }
             for (var _i12 = 0; _i12 < data.length; _i12++) {
               var _datum4 = data[_i12];
               result.push({
-                input: (0, _cast.objectsToFloat32Arrays)(_datum4.input, _inputLookup),
-                output: (0, _cast.objectsToFloat32Arrays)(_datum4.output, _outputLookup)
+                input: (0, _cast.objectsToFloat32Arrays)(_datum4.input, this.inputLookup, this.inputLookupLength),
+                output: (0, _cast.objectsToFloat32Arrays)(_datum4.output, this.outputLookup, this.outputLookupLength)
               });
             }
-
-            this.inputLookup = _inputLookup.table;
-            this.inputLookupLength = _inputLookup.length;
-            this.outputLookup = _outputLookup.table;
-            this.outputLookupLength = _outputLookup.length;
             return result;
           }
         default:
@@ -4631,12 +4699,14 @@ var RNNTimeStep = function (_RNN) {
               var _output = this.run(_input.splice(0, _input.length - 1));
               var _target = _input[_input.length - 1];
               var errors = 0;
+              var errorCount = 0;
               for (var j = 0; j < _output.length; j++) {
+                errorCount++;
                 var _error = _target[j] - _output[j];
                 // mse
                 errors += _error * _error;
               }
-              errorSum += errors;
+              errorSum += errors / errorCount;
               var _errorsAbs = Math.abs(errors);
               if (_errorsAbs > this.trainOpts.errorThresh) {
                 var _misclass = data[_i13];
@@ -4650,7 +4720,6 @@ var RNNTimeStep = function (_RNN) {
           }
         case 'array,object,number':
           {
-            if (this.inputSize > 1) throw new Error('TODO: too big');
             for (var _i14 = 0; _i14 < formattedData.length; _i14++) {
               var _input2 = formattedData[_i14];
               var _output2 = this.run(_lookup2.default.toObjectPartial(this.outputLookup, _input2, 0, _input2.length - 1));
@@ -4680,12 +4749,14 @@ var RNNTimeStep = function (_RNN) {
               var _output3 = this.run(_input3.slice(0, _input3.length - 1));
               var _target3 = data[_i15][_input3.length - 1];
               var _errors2 = 0;
+              var _errorCount = 0;
               for (var _p in _output3) {
                 var _error3 = _target3[_p] - _output3[_p];
                 // mse
                 _errors2 += _error3 * _error3;
+                _errorCount++;
               }
-              errorSum += _errors2;
+              errorSum += _errors2 / _errorCount;
               var _errorsAbs3 = Math.abs(_errors2);
               if (_errorsAbs3 > this.trainOpts.errorThresh) {
                 var _misclass3 = data[_i15];
@@ -4704,12 +4775,14 @@ var RNNTimeStep = function (_RNN) {
               var datum = formattedData[_i16];
               var _output4 = this.forecast(datum.input, datum.output.length);
               var _errors3 = 0;
+              var _errorCount2 = 0;
               for (var _j = 0; _j < _output4.length; _j++) {
                 var _error4 = datum.output[_j][0] - _output4[_j];
                 _errors3 += _error4 * _error4;
+                _errorCount2++;
               }
 
-              errorSum += _errors3;
+              errorSum += _errors3 / _errorCount2;
               var _errorsAbs4 = Math.abs(_errors3);
               if (_errorsAbs4 > this.trainOpts.errorThresh) {
                 var _misclass4 = data[_i16];
@@ -4781,6 +4854,26 @@ var RNNTimeStep = function (_RNN) {
         error: errorSum / data.length,
         misclasses: misclasses
       };
+    }
+  }, {
+    key: 'addFormat',
+    value: function addFormat(value) {
+      var dataShape = _lookup2.default.dataShape(value).join(',');
+      switch (dataShape) {
+        case 'array,array,number':
+        case 'datum,array,array,number':
+        case 'array,number':
+        case 'datum,array,number':
+          return;
+        case 'datum,object,number':
+        case 'object,number':
+        case 'array,object,number':
+        case 'datum,array,object,number':
+          throw new Error('addFormat for dataShape of ' + dataShape + ' not supported, investigate or open an issue');
+
+        default:
+          throw new Error('unknown data shape ' + dataShape);
+      }
     }
 
     /**
@@ -5010,11 +5103,11 @@ RNNTimeStep.defaults = {
   inputSize: 1,
   hiddenLayers: [20],
   outputSize: 1,
-  learningRate: 0.01,
-  decayRate: 0.999,
-  smoothEps: 1e-8,
-  regc: 0.000001,
-  clipval: 5
+  learningRate: _rnn2.default.defaults.learningRate,
+  decayRate: _rnn2.default.defaults.decayRate,
+  smoothEps: _rnn2.default.defaults.smoothEps,
+  regc: _rnn2.default.defaults.regc,
+  clipval: _rnn2.default.defaults.clipval
 };
 
 RNNTimeStep.trainDefaults = _rnn2.default.trainDefaults;
@@ -5066,6 +5159,10 @@ var _dataFormatter = require('../utilities/data-formatter');
 
 var _dataFormatter2 = _interopRequireDefault(_dataFormatter);
 
+var _neuralNetwork = require('../neural-network');
+
+var _neuralNetwork2 = _interopRequireDefault(_neuralNetwork);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -5079,14 +5176,17 @@ var RNN = function () {
     var defaults = this.constructor.defaults;
 
     Object.assign(this, defaults, options);
+    this.trainOpts = {};
+    this.updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
 
     this.stepCache = {};
     this.runs = 0;
     this.ratioClipped = null;
     this.model = null;
-    this.trainOpts = {};
     this.inputLookup = null;
+    this.inputLookupLength = null;
     this.outputLookup = null;
+    this.outputLookupLength = null;
 
     if (options.json) {
       this.fromJSON(options.json);
@@ -5239,20 +5339,21 @@ var RNN = function () {
 
     /**
      *
-     * @param {Number[]} input
-     * @param {Number} [learningRate]
+     * @param {Number[]|string[]|string} input
+     * @param {boolean} [logErrorRate]
      * @returns {number}
      */
 
   }, {
     key: 'trainPattern',
-    value: function trainPattern(input) {
-      var learningRate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
+    value: function trainPattern(input, logErrorRate) {
       var error = this.trainInput(input);
       this.backpropagate(input);
-      this.adjustWeights(learningRate);
-      return error;
+      this.adjustWeights();
+
+      if (logErrorRate) {
+        return error;
+      }
     }
 
     /**
@@ -5301,40 +5402,35 @@ var RNN = function () {
       }
       equations[0].backpropagateIndex(0);
     }
-
-    /**
-     *
-     * @param {Number} [learningRate]
-     */
-
   }, {
     key: 'adjustWeights',
     value: function adjustWeights() {
-      var learningRate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      var regc = this.regc,
+          clipval = this.clipval,
+          model = this.model,
+          decayRate = this.decayRate,
+          stepCache = this.stepCache,
+          smoothEps = this.smoothEps,
+          trainOpts = this.trainOpts;
+      var learningRate = trainOpts.learningRate;
+      var allMatrices = model.allMatrices;
 
-      // perform parameter update
-      //TODO: still not sure if this is ready for learningRate
-      var stepSize = this.learningRate;
-      var regc = this.regc;
-      var clipval = this.clipval;
-      var model = this.model;
       var numClipped = 0;
       var numTot = 0;
-      var allMatrices = model.allMatrices;
       for (var matrixIndex = 0; matrixIndex < allMatrices.length; matrixIndex++) {
         var matrix = allMatrices[matrixIndex];
         var weights = matrix.weights,
             deltas = matrix.deltas;
 
-        if (!(matrixIndex in this.stepCache)) {
-          this.stepCache[matrixIndex] = (0, _zeros2.default)(matrix.rows * matrix.columns);
+        if (!(matrixIndex in stepCache)) {
+          stepCache[matrixIndex] = (0, _zeros2.default)(matrix.rows * matrix.columns);
         }
-        var cache = this.stepCache[matrixIndex];
+        var cache = stepCache[matrixIndex];
         for (var i = 0; i < weights.length; i++) {
           var r = deltas[i];
           var w = weights[i];
           // rmsprop adaptive learning rate
-          cache[i] = cache[i] * this.decayRate + (1 - this.decayRate) * r * r;
+          cache[i] = cache[i] * decayRate + (1 - decayRate) * r * r;
           // gradient clip
           if (r > clipval) {
             r = clipval;
@@ -5346,7 +5442,7 @@ var RNN = function () {
           }
           numTot++;
           // update (and regularize)
-          weights[i] = w + -stepSize * r / Math.sqrt(cache[i] + this.smoothEps) - regc * w;
+          weights[i] = w + -learningRate * r / Math.sqrt(cache[i] + smoothEps) - regc * w;
         }
       }
       this.ratioClipped = numClipped / numTot;
@@ -5435,6 +5531,98 @@ var RNN = function () {
 
     /**
      *
+     * @param data
+     * Verifies network sizes are initilaized
+     * If they are not it will initialize them based off the data set.
+     */
+
+  }, {
+    key: 'verifyIsInitialized',
+    value: function verifyIsInitialized(data) {
+      if (!this.model) {
+        this.initialize();
+      }
+    }
+
+    /**
+     *
+     * @param options
+     *    Supports all `trainDefaults` properties
+     *    also supports:
+     *       learningRate: (number),
+     *       momentum: (number),
+     *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
+     */
+
+  }, {
+    key: 'updateTrainingOptions',
+    value: function updateTrainingOptions(options) {
+      var _this = this;
+
+      Object.keys(this.constructor.trainDefaults).forEach(function (p) {
+        return _this.trainOpts[p] = options.hasOwnProperty(p) ? options[p] : _this.trainOpts[p];
+      });
+      this.validateTrainingOptions(this.trainOpts);
+      this.setLogMethod(options.log || this.trainOpts.log);
+      this.activation = options.activation || this.activation;
+    }
+  }, {
+    key: 'validateTrainingOptions',
+    value: function validateTrainingOptions(options) {
+      _neuralNetwork2.default.prototype.validateTrainingOptions.call(this, options);
+    }
+
+    /**
+     *
+     * @param log
+     * if a method is passed in method is used
+     * if false passed in nothing is logged
+     * @returns error
+     */
+
+  }, {
+    key: 'setLogMethod',
+    value: function setLogMethod(log) {
+      if (typeof log === 'function') {
+        this.trainOpts.log = log;
+      } else if (log) {
+        this.trainOpts.log = console.log;
+      } else {
+        this.trainOpts.log = false;
+      }
+    }
+
+    /**
+     *
+     * @param data
+     * @param options
+     * @protected
+     * @return {object} { data, status, endTime }
+     */
+
+  }, {
+    key: 'prepTraining',
+    value: function prepTraining(data, options) {
+      this.updateTrainingOptions(options);
+      data = this.formatData(data);
+      var endTime = Date.now() + this.trainOpts.timeout;
+
+      var status = {
+        error: 1,
+        iterations: 0
+      };
+
+      this.verifyIsInitialized(data);
+
+      return {
+        data: data,
+        status: status,
+        endTime: endTime
+      };
+    }
+
+    /**
+     *
      * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
      * @param {Object} [options]
      * @returns {{error: number, iterations: number}}
@@ -5450,7 +5638,6 @@ var RNN = function () {
       var errorThresh = options.errorThresh;
       var log = options.log === true ? console.log : options.log;
       var logPeriod = options.logPeriod;
-      var learningRate = options.learningRate || this.learningRate;
       var callback = options.callback;
       var callbackPeriod = options.callbackPeriod;
       var error = Infinity;
@@ -5460,14 +5647,12 @@ var RNN = function () {
         data = this.setupData(data);
       }
 
-      if (!this.model) {
-        this.initialize();
-      }
+      this.verifyIsInitialized();
 
       for (i = 0; i < iterations && error > errorThresh; i++) {
         var sum = 0;
         for (var j = 0; j < data.length; j++) {
-          var err = this.trainPattern(data[j], learningRate);
+          var err = this.trainPattern(data[j], true);
           sum += err;
         }
         error = sum / data.length;
@@ -5485,6 +5670,11 @@ var RNN = function () {
         error: error,
         iterations: i
       };
+    }
+  }, {
+    key: 'addFormat',
+    value: function addFormat() {
+      throw new Error('not yet implemented');
     }
 
     /**
@@ -5706,7 +5896,6 @@ RNN.defaults = {
   inputRange: 20,
   hiddenLayers: [20, 20],
   outputSize: 20,
-  learningRate: 0.01,
   decayRate: 0.999,
   smoothEps: 1e-8,
   regc: 0.000001,
@@ -5786,13 +5975,12 @@ RNN.trainDefaults = {
   errorThresh: 0.005,
   log: false,
   logPeriod: 10,
-  learningRate: 0.3,
+  learningRate: 0.01,
   callback: null,
-  callbackPeriod: 10,
-  keepNetworkIntact: false
+  callbackPeriod: 10
 };
 
-},{"../utilities/data-formatter":39,"../utilities/random":45,"../utilities/zeros":49,"./matrix":16,"./matrix/copy":14,"./matrix/equation":15,"./matrix/max-i":17,"./matrix/random-matrix":23,"./matrix/sample-i":28,"./matrix/softmax":31}],36:[function(require,module,exports){
+},{"../neural-network":5,"../utilities/data-formatter":39,"../utilities/random":45,"../utilities/zeros":49,"./matrix":16,"./matrix/copy":14,"./matrix/equation":15,"./matrix/max-i":17,"./matrix/random-matrix":23,"./matrix/sample-i":28,"./matrix/softmax":31}],36:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5802,12 +5990,6 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _stream = require('stream');
-
-var _lookup = require('./lookup');
-
-var _lookup2 = _interopRequireDefault(_lookup);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -5824,39 +6006,42 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var TrainStream = function (_Writable) {
   _inherits(TrainStream, _Writable);
 
-  function TrainStream(opts) {
+  function TrainStream(options) {
     _classCallCheck(this, TrainStream);
 
     var _this = _possibleConstructorReturn(this, (TrainStream.__proto__ || Object.getPrototypeOf(TrainStream)).call(this, {
       objectMode: true
     }));
 
-    opts = opts || {};
+    options = options || {};
 
     // require the neuralNetwork
-    if (!opts.neuralNetwork) {
+    if (!options.neuralNetwork) {
       throw new Error('no neural network specified');
     }
 
-    _this.neuralNetwork = opts.neuralNetwork;
+    var _options = options,
+        neuralNetwork = _options.neuralNetwork;
+
+    _this.neuralNetwork = neuralNetwork;
     _this.dataFormatDetermined = false;
-
-    _this.inputKeys = [];
-    _this.outputKeys = []; // keeps track of keys seen
-    _this.i = 0; // keep track of the for loop i variable that we got rid of
-    _this.iterations = opts.iterations || 20000;
-    _this.errorThresh = opts.errorThresh || 0.005;
-    _this.log = opts.log ? typeof opts.log === 'function' ? opts.log : console.log : false;
-    _this.logPeriod = opts.logPeriod || 10;
-    _this.callback = opts.callback;
-    _this.callbackPeriod = opts.callbackPeriod || 10;
-    _this.floodCallback = opts.floodCallback;
-    _this.doneTrainingCallback = opts.doneTrainingCallback;
-
+    _this.i = 0; // keep track of internal iterations
     _this.size = 0;
     _this.count = 0;
-
     _this.sum = 0;
+    _this.floodCallback = options.floodCallback;
+    _this.doneTrainingCallback = options.doneTrainingCallback;
+
+    // inherit trainOpts settings from neuralNetwork
+    neuralNetwork.updateTrainingOptions(options);
+    var trainOpts = neuralNetwork.trainOpts;
+
+    _this.iterations = trainOpts.iterations;
+    _this.errorThresh = trainOpts.errorThresh;
+    _this.log = trainOpts.log;
+    _this.logPeriod = trainOpts.logPeriod;
+    _this.callbackPeriod = trainOpts.callbackPeriod;
+    _this.callback = trainOpts.callback;
 
     _this.on('finish', _this.finishStreamIteration.bind(_this));
     return _this;
@@ -5888,8 +6073,7 @@ var TrainStream = function (_Writable) {
 
       if (!this.dataFormatDetermined) {
         this.size++;
-        this.inputKeys = Array.from(new Set(this.inputKeys.concat(Object.keys(chunk.input))));
-        this.outputKeys = Array.from(new Set(this.outputKeys.concat(Object.keys(chunk.output))));
+        this.neuralNetwork.addFormat(chunk);
         this.firstDatum = this.firstDatum || chunk;
         return next();
       }
@@ -5897,21 +6081,10 @@ var TrainStream = function (_Writable) {
       this.count++;
 
       var data = this.neuralNetwork.formatData(chunk);
-      this.trainDatum(data[0]);
+      this.sum += this.neuralNetwork.trainPattern(data[0], true);
 
       // tell the Readable Stream that we are ready for more data
       next();
-    }
-
-    /**
-     *
-     * @param datum
-     */
-
-  }, {
-    key: 'trainDatum',
-    value: function trainDatum(datum) {
-      this.sum += this.neuralNetwork.trainPattern(datum.input, datum.output, true);
     }
 
     /**
@@ -5927,13 +6100,6 @@ var TrainStream = function (_Writable) {
       }
 
       if (!this.dataFormatDetermined) {
-        // create the lookup
-        if (!Array.isArray(this.firstDatum.input)) {
-          this.neuralNetwork.inputLookup = _lookup2.default.lookupFromArray(this.inputKeys);
-        }
-        if (!Array.isArray(this.firstDatum.output)) {
-          this.neuralNetwork.outputLookup = _lookup2.default.lookupFromArray(this.outputKeys);
-        }
         var data = this.neuralNetwork.formatData(this.firstDatum);
         this.neuralNetwork.verifyIsInitialized(data);
         this.dataFormatDetermined = true;
@@ -5947,7 +6113,7 @@ var TrainStream = function (_Writable) {
       var error = this.sum / this.size;
 
       if (this.log && this.i % this.logPeriod === 0) {
-        this.log('iterations:', this.i, 'training error:', error);
+        this.log('iterations: ' + this.i + ', training error: ' + error);
       }
       if (this.callback && this.i % this.callbackPeriod === 0) {
         this.callback({
@@ -5983,7 +6149,7 @@ var TrainStream = function (_Writable) {
 
 exports.default = TrainStream;
 
-},{"./lookup":3,"stream":111}],37:[function(require,module,exports){
+},{"stream":111}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6035,14 +6201,14 @@ function arrayToFloat32Arrays(array) {
 function arrayToFloat32Array(array) {
   return Float32Array.from(array);
 }
-function objectsToFloat32Arrays(objects, lookup) {
+function objectsToFloat32Arrays(objects, table, length) {
   var results = [];
   for (var i = 0; i < objects.length; i++) {
     var object = objects[i];
-    var result = new Float32Array(lookup.length);
+    var result = new Float32Array(length);
     for (var p in object) {
       if (object.hasOwnProperty(p)) {
-        result[lookup.table[p]] = object[p];
+        result[table[p]] = object[p];
       }
     }
     results.push(result);
@@ -6056,11 +6222,11 @@ function objectToFloat32Arrays(object) {
   }
   return result;
 }
-function objectToFloat32Array(object, lookup) {
-  var result = new Float32Array(lookup.length);
+function objectToFloat32Array(object, table, length) {
+  var result = new Float32Array(length);
   for (var p in object) {
     if (object.hasOwnProperty(p)) {
-      result[lookup.table[p]] = object[p];
+      result[table[p]] = object[p];
     }
   }
   return result;

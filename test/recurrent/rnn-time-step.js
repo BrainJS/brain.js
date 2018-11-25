@@ -3,6 +3,7 @@ import RNNTimeStep from '../../src/recurrent/rnn-time-step';
 import LSTMTimeStep from '../../src/recurrent/lstm-time-step';
 import Equation from '../../src/recurrent/matrix/equation';
 import sinon from 'sinon';
+import lookup from "../../src/lookup";
 
 describe('RNNTimeStep', () => {
   describe('.createOutputMatrix()', () => {
@@ -148,18 +149,29 @@ describe('RNNTimeStep', () => {
     });
   });
   describe('.train()', () => {
-    it('throws on array,datum,array w/ input size of 2', () => {
+    it('throws on array,datum,array w/ inputSize of 2', () => {
       const data = [{input: [1, 2], output: [3, 4]}];
       const net = new LSTMTimeStep({
         inputSize: 2,
+        hiddenLayers: [10],
+        outputSize: 1
+      });
+      assert.throws(() => {
+        net.train(data);
+      }, 'inputSize must be 1 for this data size');
+    });
+    it('throws on array,datum,array w/ outputSize of 2', () => {
+      const data = [{input: [1, 2], output: [3, 4]}];
+      const net = new LSTMTimeStep({
+        inputSize: 1,
         hiddenLayers: [10],
         outputSize: 2
       });
       assert.throws(() => {
         net.train(data);
-      });
+      }, 'outputSize must be 1 for this data size');
     });
-    it('throws on array,datum,object w/ input size of 2', () => {
+    it('throws on array,datum,object w/ inputSize of 2', () => {
       const data = [{ input: { a: 1, b: 2 }, output: { c: 3, d: 4 } }];
       const net = new LSTMTimeStep({
         inputSize: 2,
@@ -1718,9 +1730,23 @@ describe('RNNTimeStep', () => {
   });
   describe('.formatData()', () => {
     describe('handles datum', () => {
-      it('handles array,datum,object to array,datum,array,array w/ input size of 1', () => {
+      it('throws array,datum,object in inputSize > 1', () => {
         const data = [{ input: { one: 1, two: 2 }, output: { three: 3, four: 4 } }];
-        const instance = { inputSize: 1 };
+        const instance = { inputSize: 2, outputSize: 1 };
+        assert.throws(() => {
+          RNNTimeStep.prototype.formatData.apply(instance, [data]);
+        });
+      });
+      it('throws array,datum,object in inputSize > 1', () => {
+        const data = [{ input: { one: 1, two: 2 }, output: { three: 3, four: 4 } }];
+        const instance = { inputSize: 1, outputSize: 2 };
+        assert.throws(() => {
+          RNNTimeStep.prototype.formatData.apply(instance, [data]);
+        });
+      });
+      it('handles array,datum,object to array,datum,array,array w/ inputSize of 1', () => {
+        const data = [{ input: { one: 1, two: 2 }, output: { three: 3, four: 4 } }];
+        const instance = { inputSize: 1, outputSize: 1 };
         const result = RNNTimeStep.prototype.formatData.apply(instance, [data]);
         assert.deepEqual(result, [{ input: [Float32Array.from([1]), Float32Array.from([2])], output: [Float32Array.from([3]), Float32Array.from([4])] }]);
       });
@@ -1738,10 +1764,31 @@ describe('RNNTimeStep', () => {
           RNNTimeStep.prototype.formatData.apply(instance, [data]);
         }, 'Error: unknown data shape or configuration');
       });
+      it('throws if array,datum,array,array not sized to match inputSize', () => {
+        const data = [{ input: [[1,4,5]], output: [[3,2]] }];
+        const instance = {
+          inputSize: 2,
+          outputSize: 2
+        };
+        assert.throws(() => {
+          RNNTimeStep.prototype.formatData.apply(instance, [data]);
+        }, 'inputSize must match data inputSize');
+      });
+      it('throws if array,datum,array,array not sized to match outputSize', () => {
+        const data = [{ input: [[1,4]], output: [[3,2,1]] }];
+        const instance = {
+          inputSize: 2,
+          outputSize: 2
+        };
+        assert.throws(() => {
+          RNNTimeStep.prototype.formatData.apply(instance, [data]);
+        }, 'outputSize must match data inputSize');
+      });
       it('formats array,datum,array,array to array,datum,array,floatArray', () => {
         const data = [{ input: [[1,4],[2,3]], output: [[3,2],[4,1]] }];
         const instance = {
-          inputSize: 2
+          inputSize: 2,
+          outputSize: 2
         };
         const result = RNNTimeStep.prototype.formatData.apply(instance, [data]);
         assert.deepEqual(result, [
@@ -1770,20 +1817,36 @@ describe('RNNTimeStep', () => {
       });
     });
     describe('arrays', () => {
-      it('formats array to floatArray', () => {
+      it('throws is inputSize > 1', () => {
         const data = [1,2,3,4];
-        const instance = { inputSize: 1 };
+        const instance = { inputSize: 2, outputSize: 1 };
+        assert.throws(() => {
+          RNNTimeStep.prototype.formatData.apply(instance, [data]);
+        });
+      });
+      it('throws is outputSize > 1', () => {
+        const data = [1,2,3,4];
+        const instance = { inputSize: 1, outputSize: 2 };
+        assert.throws(() => {
+          RNNTimeStep.prototype.formatData.apply(instance, [data]);
+        });
+      });
+      it('formats array to array,floatArray', () => {
+        const data = [1,2,3,4];
+        const instance = { inputSize: 1, outputSize: 1 };
         const result = RNNTimeStep.prototype.formatData.apply(instance, [data]);
         assert.deepEqual(result, [
-          Float32Array.from([1]),
-          Float32Array.from([2]),
-          Float32Array.from([3]),
-          Float32Array.from([4]),
+          [
+            Float32Array.from([1]),
+            Float32Array.from([2]),
+            Float32Array.from([3]),
+            Float32Array.from([4]),
+          ]
         ]);
       });
-      it('formats array,array to array,floatArray w/ input size of 1', () => {
+      it('formats array,array to array,floatArray w/ inputSize of 1', () => {
         const data = [[1,2,3,4],[4,3,2,1]];
-        const instance = { inputSize: 1 };
+        const instance = { inputSize: 1, outputSize: 1 };
         const result = RNNTimeStep.prototype.formatData.apply(instance, [data]);
         assert.deepEqual(result, [
           [
@@ -1800,18 +1863,34 @@ describe('RNNTimeStep', () => {
           ]
         ]);
       });
-      it('formats array,array to array,floatArray w/ input size greater than 1', () => {
+      it('throws array,array to array,floatArray w/ inputSize greater than data', () => {
         const data = [[1,4],[2,3],[3,2],[4,1]];
-        const instance = { inputSize: 2 };
+        const instance = { inputSize: 3, outputSize: 2 };
+        assert.throws(() => {
+          RNNTimeStep.prototype.formatData.apply(instance, [data]);
+        });
+      });
+      it('throws array,array to array,floatArray w/ outputSize greater than data', () => {
+        const data = [[1,4],[2,3],[3,2],[4,1]];
+        const instance = { inputSize: 2, outputSize: 3 };
+        assert.throws(() => {
+          RNNTimeStep.prototype.formatData.apply(instance, [data]);
+        });
+      });
+      it('formats array,array to array,floatArray w/ inputSize greater than 1', () => {
+        const data = [[1,4],[2,3],[3,2],[4,1]];
+        const instance = { inputSize: 2, outputSize: 2 };
         const result = RNNTimeStep.prototype.formatData.apply(instance, [data]);
         assert.deepEqual(result, [
-          Float32Array.from([1,4]),
-          Float32Array.from([2,3]),
-          Float32Array.from([3,2]),
-          Float32Array.from([4,1]),
+          [
+            Float32Array.from([1,4]),
+            Float32Array.from([2,3]),
+            Float32Array.from([3,2]),
+            Float32Array.from([4,1]),
+          ]
         ]);
       });
-      it('formats array,array,array to array,array,floatArray w/ input size greater than 1', () => {
+      it('formats array,array,array to array,array,floatArray w/ inputSize greater than 1', () => {
         const data = [
           [
             [1,5],
@@ -1850,7 +1929,7 @@ describe('RNNTimeStep', () => {
     });
   });
   describe('.toFunction()', () => {
-    it('processes array same as net w/ input size of 1', () => {
+    it('processes array same as net w/ inputSize of 1', () => {
       const data = [{input: [1, 2], output: [3, 4]}];
       const net = new LSTMTimeStep({
         inputSize: 1,
@@ -1865,7 +1944,7 @@ describe('RNNTimeStep', () => {
       assert.deepEqual(result, expected);
     });
 
-    it('processes object same as net w/ input size of 1', () => {
+    it('processes object same as net w/ inputSize of 1', () => {
       const data = [{ input: { a: 1, b: 2 }, output: { c: 3, d: 4 } }];
       const net = new LSTMTimeStep({
         inputSize: 1,
@@ -1876,18 +1955,6 @@ describe('RNNTimeStep', () => {
       const fn = net.toFunction();
       const expected = net.run(data[0].input);
       assert.deepEqual(fn(data[0].input), expected);
-    });
-
-    it('processes array,array same as net', () => {
-      const data = [{ input: [[1,4],[2,3]], output: [[3,2],[4,1]] }];
-      const net = new LSTMTimeStep({
-        inputSize: 2,
-        hiddenLayers: [10],
-        outputSize: 2
-      });
-      net.train(data, { iteration: 100, errorThresh: 0.05 });
-      const fn = net.toFunction();
-      assert.deepEqual(fn(data[0].input), net.run(data[0].input));
     });
 
     it('processes array,object same as net', () => {
@@ -2220,7 +2287,7 @@ describe('RNNTimeStep', () => {
             });
             sinon.spy(net, 'formatData');
             net.run = sinon.spy((data) => {
-              return { low: .1, high: .5 };
+              return { low: .9, high: .9 };
             });
             net.trainOpts = {
               errorThresh: 0.001
@@ -2252,7 +2319,7 @@ describe('RNNTimeStep', () => {
                 { low: .4, high: .2 },
                 { low: .5, high: .1 },
               ],
-              actual: { low: .1, high: .5 }
+              actual: { low: .9, high: .9 }
             }]);
           });
         });
@@ -2715,6 +2782,59 @@ describe('RNNTimeStep', () => {
         });
       });
     });
+  });
+  describe('.addFormat()', () => {
+    it('array,array,number', () => {
+      const instance = {};
+      RNNTimeStep.prototype.addFormat.call(instance, [[0]]);
+      assert.deepEqual(instance, {});
+    });
+    it('datum,array,array,number', () => {
+      const instance = {};
+      RNNTimeStep.prototype.addFormat.call(instance, { input: [[0]], output: [[0]] });
+      assert.deepEqual(instance, {});
+    });
+    it('array,number', () => {
+      const instance = {};
+      RNNTimeStep.prototype.addFormat.call(instance, [0]);
+      assert.deepEqual(instance, {});
+    });
+    it('datum,array,number', () => {
+      const instance = {};
+      RNNTimeStep.prototype.addFormat.call(instance, { input: [0], output: [0] });
+      assert.deepEqual(instance, {});
+    });
+
+    it('datum,object,number', () => {
+      const instance = {
+        inputLookup: { 'inputOne': 0, },
+        outputLookup: { 'outputOne': 0 }
+      };
+      RNNTimeStep.prototype.addFormat.call(instance, {
+        input: { inputTwo: 1, inputThree: 2 },
+        output: { outputTwo: 1, outputThree: 2 }
+      });
+      assert.deepEqual(instance, {
+        inputLookup: { inputOne: 0, inputTwo: 1, inputThree: 2 },
+        inputLookupLength: 3,
+        outputLookup: { outputOne: 0, outputTwo: 1, outputThree: 2 },
+        outputLookupLength: 3
+      });
+    });
+    it('object,number', () => {
+      const instance = {
+        inputLookup: { 'inputOne': 0, }
+      };
+      RNNTimeStep.prototype.addFormat.call(instance, { inputTwo: 1, inputThree: 2 });
+      assert.deepEqual(instance, {
+        inputLookup: { inputOne: 0, inputTwo: 1, inputThree: 2 },
+        inputLookupLength: 3,
+        outputLookup: { inputOne: 0, inputTwo: 1, inputThree: 2 },
+        outputLookupLength: 3
+      });
+    });
+    it('array,object,number', () => {});
+    it('datum,array,object,number', () => {});
   });
   describe('.toJSON()', () => {
     it('saves network dimensions to json', () => {

@@ -26,14 +26,14 @@ function arrayToFloat32Arrays(array) {
 function arrayToFloat32Array(array) {
   return Float32Array.from(array);
 }
-function objectsToFloat32Arrays(objects, lookup) {
+function objectsToFloat32Arrays(objects, table, length) {
   var results = [];
   for (var i = 0; i < objects.length; i++) {
     var object = objects[i];
-    var result = new Float32Array(lookup.length);
+    var result = new Float32Array(length);
     for (var p in object) {
       if (object.hasOwnProperty(p)) {
-        result[lookup.table[p]] = object[p];
+        result[table[p]] = object[p];
       }
     }
     results.push(result);
@@ -47,11 +47,11 @@ function objectToFloat32Arrays(object) {
   }
   return result;
 }
-function objectToFloat32Array(object, lookup) {
-  var result = new Float32Array(lookup.length);
+function objectToFloat32Array(object, table, length) {
+  var result = new Float32Array(length);
   for (var p in object) {
     if (object.hasOwnProperty(p)) {
-      result[lookup.table[p]] = object[p];
+      result[table[p]] = object[p];
     }
   }
   return result;

@@ -21,7 +21,7 @@ const trainingStream = new brain.TrainStream({
   /**
    * Called when the network is done training.
    */
-  doneTrainingCallback: function(obj) {
+  doneTrainingCallback: function(obj: brain.INeuralNetworkState) {
     console.log(`trained in ${ obj.iterations } iterations with error: ${ obj.error }`);
 
     const result01 = net.run([0, 1]);
@@ -39,7 +39,7 @@ const trainingStream = new brain.TrainStream({
     console.log('1 XOR 1: ', result11);  // 0.087
     console.log('1 XOR 0: ', result10);  // 0.934
   }
-});
+} as brain.ITrainStreamOptions);
 
 // kick it off
 readInputs(trainingStream, xor);

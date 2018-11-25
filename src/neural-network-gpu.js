@@ -40,24 +40,27 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
 
   /**
    *
-   * @param input
-   * @param target
+   * @param value
    * @param logErrorRate
    */
-  trainPattern(input, target, logErrorRate) {
+  trainPattern(value, logErrorRate) {
     // forward propagate
-    this.runInput(input);
+    this.runInput(value.input);
 
-    // backward propagate
-    this.calculateDeltas(target);
-    this.getChanges();
-    this.changeBiases();
+    // back propagate
+    this.calculateDeltas(value.target);
+    this.adjustWeights();
 
     if (logErrorRate) {
       return this.getMSE(this.errors[this.outputLayer])[0];
     } else {
       return null;
     }
+  }
+
+  adjustWeights() {
+    this.getChanges();
+    this.changeBiases();
   }
 
   buildRunInput() {

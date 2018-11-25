@@ -188,12 +188,17 @@ export default class lookup {
   static dataShape(data) {
     const shape = [];
 
-    if (data[0].input) {
-      shape.push('array', 'datum');
-      data = data[0].input;
-    } else {
-      shape.push('array');
-      data = data[0];
+    if (data.input) {
+      shape.push('datum');
+      data = data.input;
+    } else if (Array.isArray(data)) {
+      if (data[0].input) {
+        shape.push('array', 'datum');
+        data = data[0].input;
+      } else {
+        shape.push('array');
+        data = data[0];
+      }
     }
 
     let p;
@@ -212,5 +217,17 @@ export default class lookup {
     }
     shape.push(typeof data);
     return shape;
+  }
+
+  static addKeys(value, table) {
+    if (Array.isArray(value)) return;
+    table = table || {};
+    let i = Object.keys(table).length;
+    for (const p in value) {
+      if (!value.hasOwnProperty(p)) continue;
+      if (table.hasOwnProperty(p)) continue;
+      table[p] = i++;
+    }
+    return table;
   }
 }

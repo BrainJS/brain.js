@@ -41,30 +41,6 @@ export default class NeuralNetwork {
     };
   }
 
-  /**
-   *
-   * @param options
-   * @private
-   */
-  static validateTrainingOptions(options) {
-    const validations = {
-      iterations: (val) => { return typeof val === 'number' && val > 0; },
-      errorThresh: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
-      log: (val) => { return typeof val === 'function' || typeof val === 'boolean'; },
-      logPeriod: (val) => { return typeof val === 'number' && val > 0; },
-      learningRate: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
-      momentum: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
-      callback: (val) => { return typeof val === 'function' || val === null },
-      callbackPeriod: (val) => { return typeof val === 'number' && val > 0; },
-      timeout: (val) => { return typeof val === 'number' && val > 0 }
-    };
-    Object.keys(NeuralNetwork.trainDefaults).forEach(key => {
-      if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
-        throw new Error(`[${key}, ${options[key]}] is out of normal training range, your network will probably not train.`);
-      }
-    });
-  }
-
   constructor(options = {}) {
     Object.assign(this, this.constructor.defaults, options);
     this.hiddenLayers = options.hiddenLayers;
@@ -91,6 +67,7 @@ export default class NeuralNetwork {
     this.inputLookup = null;
     this.inputLookupLength = null;
     this.outputLookup = null;
+    this.outputLookupLength = null;
   }
 
   /**
@@ -130,6 +107,9 @@ export default class NeuralNetwork {
     }
 
     this.setActivation();
+    if (this.trainOpts.praxis === 'adam') {
+      this._setupAdam();
+    }
   }
 
   /**
@@ -318,18 +298,41 @@ export default class NeuralNetwork {
 
   /**
    *
-   * @param opts
+   * @param options
    *    Supports all `trainDefaults` properties
    *    also supports:
    *       learningRate: (number),
    *       momentum: (number),
    *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
    */
-  updateTrainingOptions(opts) {
-    Object.keys(NeuralNetwork.trainDefaults).forEach(opt => this.trainOpts[opt] = (opts.hasOwnProperty(opt)) ? opts[opt] : this.trainOpts[opt]);
-    NeuralNetwork.validateTrainingOptions(this.trainOpts);
-    this.setLogMethod(opts.log || this.trainOpts.log);
-    this.activation = opts.activation || this.activation;
+  updateTrainingOptions(options) {
+    Object.keys(this.constructor.trainDefaults).forEach(p => this.trainOpts[p] = (options.hasOwnProperty(p)) ? options[p] : this.trainOpts[p]);
+    this.validateTrainingOptions(this.trainOpts);
+    this.setLogMethod(options.log || this.trainOpts.log);
+    this.activation = options.activation || this.activation;
+  }
+
+  /**
+   *
+   * @param options
+   */
+  validateTrainingOptions(options) {
+    const validations = {
+      iterations: (val) => { return typeof val === 'number' && val > 0; },
+      errorThresh: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
+      log: (val) => { return typeof val === 'function' || typeof val === 'boolean'; },
+      logPeriod: (val) => { return typeof val === 'number' && val > 0; },
+      learningRate: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
+      momentum: (val) => { return typeof val === 'number' && val > 0 && val < 1; },
+      callback: (val) => { return typeof val === 'function' || val === null },
+      callbackPeriod: (val) => { return typeof val === 'number' && val > 0; },
+      timeout: (val) => { return typeof val === 'number' && val > 0 }
+    };
+    Object.keys(this.constructor.trainDefaults).forEach(key => {
+      if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
+        throw new Error(`[${key}, ${options[key]}] is out of normal training range, your network will probably not train.`);
+      }
+    });
   }
 
   /**
@@ -338,7 +341,7 @@ export default class NeuralNetwork {
    *    NOTE: Activation is stored directly on JSON object and not in the training options
    */
   getTrainOptsJSON() {
-    return Object.keys(NeuralNetwork.trainDefaults)
+    return Object.keys(this.constructor.trainDefaults)
       .reduce((opts, opt) => {
         if (opt === 'timeout' && this.trainOpts[opt] === Infinity) return opts;
         if (this.trainOpts[opt]) opts[opt] = this.trainOpts[opt];
@@ -372,18 +375,17 @@ export default class NeuralNetwork {
   calculateTrainingError(data) {
     let sum = 0;
     for (let i = 0; i < data.length; ++i) {
-      sum += this.trainPattern(data[i].input, data[i].output, true);
+      sum += this.trainPattern(data[i], true);
     }
     return sum / data.length;
   }
 
   /**
    * @param data
-   * @private
    */
   trainPatterns(data) {
     for (let i = 0; i < data.length; ++i) {
-      this.trainPattern(data[i].input, data[i].output, false);
+      this.trainPattern(data[i]);
     }
   }
 
@@ -425,7 +427,7 @@ export default class NeuralNetwork {
    * @param data
    * @param options
    * @protected
-   * @return { data, status, endTime }
+   * @return {object} { data, status, endTime }
    */
   prepTraining(data, options) {
     this.updateTrainingOptions(options);
@@ -450,15 +452,11 @@ export default class NeuralNetwork {
    *
    * @param data
    * @param options
-   * @returns {{error: number, iterations: number}}
+   * @returns {object} {error: number, iterations: number}
    */
   train(data, options = {}) {
     let status, endTime;
     ({ data, status, endTime } = this.prepTraining(data, options));
-
-    if (options.praxis === 'adam') {
-      this._setupAdam();
-    }
 
     while (this.trainingTick(data, status, endTime));
     return status;
@@ -492,16 +490,15 @@ export default class NeuralNetwork {
 
   /**
    *
-   * @param input
-   * @param target
+   * @param {object} value
+   * @param {boolean} [logErrorRate]
    */
-  trainPattern(input, target, logErrorRate) {
-
+  trainPattern(value, logErrorRate) {
     // forward propagate
-    this.runInput(input);
+    this.runInput(value.input);
 
     // back propagate
-    this.calculateDeltas(target);
+    this.calculateDeltas(value.output);
     this.adjustWeights();
 
     if  (logErrorRate) {
@@ -765,6 +762,17 @@ export default class NeuralNetwork {
       return result;
     }
     return data;
+  }
+
+  addFormat(data) {
+    this.inputLookup = lookup.addKeys(data.input, this.inputLookup);
+    if (this.inputLookup) {
+      this.inputLookupLength = Object.keys(this.inputLookup).length;
+    }
+    this.outputLookup = lookup.addKeys(data.output, this.outputLookup);
+    if (this.outputLookup) {
+      this.outputLookupLength = Object.keys(this.outputLookup).length;
+    }
   }
 
   /**

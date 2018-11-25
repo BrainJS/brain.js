@@ -18,14 +18,6 @@ import {
   objectToFloat32Array } from '../utilities/cast';
 
 export default class RNNTimeStep extends RNN {
-  constructor(options) {
-    super(options);
-    this.inputLookup = null;
-    this.inputLookupLength = null;
-    this.outputLookup = null;
-    this.outputLookupLength = null;
-  }
-
   createOutputMatrix() {
     let model = this.model;
     let outputSize = this.outputSize;
@@ -140,7 +132,6 @@ export default class RNNTimeStep extends RNN {
     const errorThresh = options.errorThresh;
     const log = options.log === true ? console.log : options.log;
     const logPeriod = options.logPeriod;
-    const learningRate = options.learningRate || this.learningRate;
     const callback = options.callback;
     const callbackPeriod = options.callbackPeriod;
 
@@ -149,33 +140,15 @@ export default class RNNTimeStep extends RNN {
     }
 
     data = this.formatData(data);
-    if (data[0].input) {
-      this.trainInput = this.trainInputOutput;
-    } else if (data[0].length > 0) {
-      if (data[0][0].length > 0) {
-        this.trainInput = this.trainArrays;
-      } else {
-        if (this.inputSize > 1) {
-          data = [data];
-          this.trainInput = this.trainArrays;
-        } else {
-          this.trainInput = this.trainNumbers;
-        }
-      }
-    }
-
-
     let error = Infinity;
     let i;
 
-    if (!this.model) {
-      this.initialize();
-    }
+    this.verifyIsInitialized(data);
 
     for (i = 0; i < iterations && error > errorThresh; i++) {
       let sum = 0;
       for (let j = 0; j < data.length; j++) {
-        let err = this.trainPattern(data[j], learningRate);
+        const err = this.trainPattern(data[j], true);
         sum += err;
       }
       error = sum / data.length;
@@ -193,6 +166,32 @@ export default class RNNTimeStep extends RNN {
       error: error,
       iterations: i
     };
+  }
+
+  /**
+   *
+   * @param data
+   * Verifies network sizes are initialized
+   * If they are not it will initialize them based off the data set.
+   */
+  verifyIsInitialized(data) {
+    if (data[0].input) {
+      this.trainInput = this.trainInputOutput;
+    } else if (data[0].length > 0) {
+      if (data[0][0].length > 0) {
+        this.trainInput = this.trainArrays;
+      } else {
+        if (this.inputSize > 1) {
+          this.trainInput = this.trainArrays;
+        } else {
+          this.trainInput = this.trainNumbers;
+        }
+      }
+    }
+
+    if (!this.model) {
+      this.initialize();
+    }
   }
 
   setSize(data) {
@@ -385,38 +384,55 @@ export default class RNNTimeStep extends RNN {
         if (this.inputSize !== 1) {
           throw new Error('inputSize must be 1 for this data size');
         }
+        if (this.outputSize !== 1) {
+          throw new Error('outputSize must be 1 for this data size');
+        }
         for (let i = 0; i < data.length; i++) {
           result.push(Float32Array.from([data[i]]));
         }
-        return result;
+        return [result];
       }
       case 'array,array,number': {
-        if (this.inputSize === 1) {
+        if (this.inputSize === 1 && this.outputSize === 1) {
           for (let i = 0; i < data.length; i++) {
             result.push(arrayToFloat32Arrays(data[i]));
           }
           return result;
         }
-
+        if (this.inputSize !== data[0].length) {
+          throw new Error('inputSize must match data input size');
+        }
+        if (this.outputSize !== data[0].length) {
+          throw new Error('outputSize must match data input size');
+        }
         for (let i = 0; i < data.length; i++) {
           result.push(Float32Array.from(data[i]));
         }
-        return result;
+        return [result];
       }
       case 'array,object,number': {
-        const lookupTable = new LookupTable(data);
+        if (this.inputSize !== 1) {
+          throw new Error('inputSize must be 1 for this data size');
+        }
+        if (this.outputSize !== 1) {
+          throw new Error('outputSize must be 1 for this data size');
+        }
+        if (!this.inputLookup) {
+          const lookupTable = new LookupTable(data);
+          this.inputLookup = this.outputLookup = lookupTable.table;
+          this.inputLookupLength = this.outputLookupLength = lookupTable.length;
+        }
         for (let i = 0; i < data.length; i++) {
           result.push(objectToFloat32Arrays(data[i]));
         }
-        this.inputLookup = lookupTable.table;
-        this.inputLookupLength = lookupTable.length;
-        this.outputLookup = lookupTable.table;
-        this.outputLookupLength = lookupTable.length;
         return result;
       }
       case 'array,datum,array,number': {
         if (this.inputSize !== 1) {
           throw new Error('inputSize must be 1 for this data size');
+        }
+        if (this.outputSize !== 1) {
+          throw new Error('outputSize must be 1 for this data size');
         }
         for (let i = 0; i < data.length; i++) {
           const datum = data[i];
@@ -428,23 +444,30 @@ export default class RNNTimeStep extends RNN {
         return result;
       }
       case 'array,datum,object,number': {
-        if (this.inputSize === 1) {
-          const inputLookup = new LookupTable(data, 'input');
-          const outputLookup = new LookupTable(data, 'output');
-          for (let i = 0; i < data.length; i++) {
-            const datum = data[i];
-            result.push({
-              input: objectToFloat32Arrays(datum.input),
-              output: objectToFloat32Arrays(datum.output)
-            });
-            this.inputLookup = inputLookup.table;
-            this.inputLookupLength = inputLookup.length;
-            this.outputLookup = outputLookup.table;
-            this.outputLookupLength = outputLookup.length;
-          }
-          return result;
+        if (this.inputSize !== 1) {
+          throw new Error('inputSize must be 1 for this data size');
         }
-        throw new Error('unknown data shape or configuration');
+        if (this.outputSize !== 1) {
+          throw new Error('outputSize must be 1 for this data size');
+        }
+        if (!this.inputLookup) {
+          const inputLookup = new LookupTable(data, 'input');
+          this.inputLookup = inputLookup.table;
+          this.inputLookupLength = inputLookup.length;
+        }
+        if (!this.outputLookup) {
+          const outputLookup = new LookupTable(data, 'output');
+          this.outputLookup = outputLookup.table;
+          this.outputLookupLength = outputLookup.length;
+        }
+        for (let i = 0; i < data.length; i++) {
+          const datum = data[i];
+          result.push({
+            input: objectToFloat32Arrays(datum.input),
+            output: objectToFloat32Arrays(datum.output)
+          });
+        }
+        return result;
       }
       case 'array,array,array,number': {
         for (let i = 0; i < data.length; i++) {
@@ -453,30 +476,22 @@ export default class RNNTimeStep extends RNN {
         return result;
       }
       case 'array,array,object,number': {
-        const lookupTable = new LookupTable(data);
+        if (!this.inputLookup) {
+          const lookupTable = new LookupTable(data);
+          this.inputLookup = this.outputLookup = lookupTable.table;
+          this.inputLookupLength = this.outputLookupLength = lookupTable.length;
+        }
         for (let i = 0; i < data.length; i++) {
           const array = [];
           for (let j = 0; j < data[i].length; j++) {
-            array.push(objectToFloat32Array(data[i][j], lookupTable));
+            array.push(objectToFloat32Array(data[i][j], this.inputLookup, this.inputLookupLength));
           }
           result.push(array);
         }
-        this.inputLookup = lookupTable.table;
-        this.inputLookupLength = lookupTable.length;
-        this.outputLookup = lookupTable.table;
-        this.outputLookupLength = lookupTable.length;
         return result;
       }
       case 'array,datum,array,array,number': {
-        if (this.inputSize > 1) {
-          for (let i = 0; i < data.length; i++) {
-            const datum = data[i];
-            result.push({
-              input: arraysToFloat32Arrays(datum.input),
-              output: arraysToFloat32Arrays(datum.output)
-            });
-          }
-        } else {
+        if (this.inputSize === 1 && this.outputSize === 1) {
           for (let i = 0; i < data.length; i++) {
             const datum = data[i];
             result.push({
@@ -484,25 +499,41 @@ export default class RNNTimeStep extends RNN {
               output: Float32Array.from(datum.output)
             });
           }
+        } else {
+          if (this.inputSize !== data[0].input[0].length) {
+            throw new Error('inputSize must match data input size');
+          }
+          if (this.outputSize !== data[0].output[0].length) {
+            throw new Error('outputSize must match data output size');
+          }
+          for (let i = 0; i < data.length; i++) {
+            const datum = data[i];
+            result.push({
+              input: arraysToFloat32Arrays(datum.input),
+              output: arraysToFloat32Arrays(datum.output)
+            });
+          }
         }
         return result;
       }
       case 'array,datum,array,object,number': {
-        const inputLookup = new ArrayLookupTable(data, 'input');
-        const outputLookup = new ArrayLookupTable(data, 'output');
-
+        if (!this.inputLookup) {
+          const inputLookup = new ArrayLookupTable(data, 'input');
+          this.inputLookup = inputLookup.table;
+          this.inputLookupLength = inputLookup.length;
+        }
+        if (!this.outputLookup) {
+          const outputLookup = new ArrayLookupTable(data, 'output');
+          this.outputLookup = outputLookup.table;
+          this.outputLookupLength = outputLookup.length;
+        }
         for (let i = 0; i < data.length; i++) {
           const datum = data[i];
           result.push({
-            input: objectsToFloat32Arrays(datum.input, inputLookup),
-            output: objectsToFloat32Arrays(datum.output, outputLookup)
+            input: objectsToFloat32Arrays(datum.input, this.inputLookup, this.inputLookupLength),
+            output: objectsToFloat32Arrays(datum.output, this.outputLookup, this.outputLookupLength)
           });
         }
-
-        this.inputLookup = inputLookup.table;
-        this.inputLookupLength = inputLookup.length;
-        this.outputLookup = outputLookup.table;
-        this.outputLookupLength = outputLookup.length;
         return result;
       }
       default: throw new Error('unknown data shape or configuration');
@@ -556,12 +587,14 @@ export default class RNNTimeStep extends RNN {
           const output = this.run(input.splice(0, input.length - 1));
           const target = input[input.length - 1];
           let errors = 0;
+          let errorCount = 0;
           for (let j = 0; j < output.length; j++) {
+            errorCount++;
             const error = target[j] - output[j];
             // mse
             errors += error * error;
           }
-          errorSum += errors;
+          errorSum += errors / errorCount;
           const errorsAbs = Math.abs(errors);
           if (errorsAbs > this.trainOpts.errorThresh) {
             const misclass = data[i];
@@ -575,7 +608,6 @@ export default class RNNTimeStep extends RNN {
       }
       case 'array,object,number':
       {
-        if (this.inputSize > 1) throw new Error('TODO: too big');
         for (let i = 0; i < formattedData.length; i++) {
           const input = formattedData[i];
           const output = this.run(lookup.toObjectPartial(this.outputLookup, input, 0, input.length - 1));
@@ -604,12 +636,14 @@ export default class RNNTimeStep extends RNN {
           const output = this.run(input.slice(0, input.length - 1));
           const target = data[i][input.length - 1];
           let errors = 0;
+          let errorCount = 0;
           for (const p in output) {
             const error = target[p] - output[p];
             // mse
             errors += error * error;
+            errorCount++;
           }
-          errorSum += errors;
+          errorSum += errors / errorCount;
           const errorsAbs = Math.abs(errors);
           if (errorsAbs > this.trainOpts.errorThresh) {
             const misclass = data[i];
@@ -627,12 +661,14 @@ export default class RNNTimeStep extends RNN {
           const datum = formattedData[i];
           const output = this.forecast(datum.input, datum.output.length);
           let errors = 0;
+          let errorCount = 0;
           for (let j = 0; j < output.length; j++) {
             const error = datum.output[j][0] - output[j];
             errors += error * error;
+            errorCount++;
           }
 
-          errorSum += errors;
+          errorSum += errors / errorCount;
           const errorsAbs = Math.abs(errors);
           if (errorsAbs > this.trainOpts.errorThresh) {
             const misclass = data[i];
@@ -703,6 +739,61 @@ export default class RNNTimeStep extends RNN {
       error: errorSum / data.length,
       misclasses: misclasses
     };
+  }
+
+  addFormat(value) {
+    const dataShape = lookup.dataShape(value).join(',');
+    switch(dataShape) {
+      case 'array,array,number':
+      case 'datum,array,array,number':
+      case 'array,number':
+      case 'datum,array,number':
+        return;
+      case 'datum,object,number': {
+        this.inputLookup = lookup.addKeys(value.input, this.inputLookup);
+        if (this.inputLookup) {
+          this.inputLookupLength = Object.keys(this.inputLookup).length;
+        }
+        this.outputLookup = lookup.addKeys(value.output, this.outputLookup);
+        if (this.outputLookup) {
+          this.outputLookupLength = Object.keys(this.outputLookup).length;
+        }
+        break;
+      }
+      case 'object,number': {
+        this.inputLookup = this.outputLookup = lookup.addKeys(value, this.inputLookup);
+        if (this.inputLookup) {
+          this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
+        }
+        break;
+      }
+      case 'array,object,number': {
+        for (let i = 0; i < value.length; i++) {
+          this.inputLookup = this.outputLookup = lookup.addKeys(value[i], this.inputLookup);
+          if (this.inputLookup) {
+            this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
+          }
+        }
+        break;
+      }
+      case 'datum,array,object,number': {
+        for (let i = 0; i < value.input.length; i++) {
+          this.inputLookup = lookup.addKeys(value.input[i], this.inputLookup);
+          if (this.inputLookup) {
+            this.inputLookupLength = Object.keys(this.inputLookup).length;
+          }
+        }
+        for (let i = 0; i < value.output.length; i++) {
+          this.outputLookup = lookup.addKeys(value.output[i], this.outputLookup);
+          if (this.outputLookup) {
+            this.outputLookupLength = Object.keys(this.outputLookup).length;
+          }
+        }
+        break;
+      }
+
+      default: throw new Error(`unknown data shape ${ dataShape }`);
+    }
   }
 
   /**
@@ -1037,11 +1128,11 @@ RNNTimeStep.defaults = {
   inputSize: 1,
   hiddenLayers: [20],
   outputSize: 1,
-  learningRate: 0.01,
-  decayRate: 0.999,
-  smoothEps: 1e-8,
-  regc: 0.000001,
-  clipval: 5
+  learningRate: RNN.defaults.learningRate,
+  decayRate: RNN.defaults.decayRate,
+  smoothEps: RNN.defaults.smoothEps,
+  regc: RNN.defaults.regc,
+  clipval: RNN.defaults.clipval
 };
 
 RNNTimeStep.trainDefaults = RNN.trainDefaults;

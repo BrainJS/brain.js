@@ -79,27 +79,31 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
 
     /**
      *
-     * @param input
-     * @param target
+     * @param value
      * @param logErrorRate
      */
 
   }, {
     key: 'trainPattern',
-    value: function trainPattern(input, target, logErrorRate) {
+    value: function trainPattern(value, logErrorRate) {
       // forward propagate
-      this.runInput(input);
+      this.runInput(value.input);
 
-      // backward propagate
-      this.calculateDeltas(target);
-      this.getChanges();
-      this.changeBiases();
+      // back propagate
+      this.calculateDeltas(value.target);
+      this.adjustWeights();
 
       if (logErrorRate) {
         return this.getMSE(this.errors[this.outputLayer])[0];
       } else {
         return null;
       }
+    }
+  }, {
+    key: 'adjustWeights',
+    value: function adjustWeights() {
+      this.getChanges();
+      this.changeBiases();
     }
   }, {
     key: 'buildRunInput',

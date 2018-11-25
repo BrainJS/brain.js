@@ -54,51 +54,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 var NeuralNetwork = function () {
   _createClass(NeuralNetwork, null, [{
-    key: 'validateTrainingOptions',
-
-
-    /**
-     *
-     * @param options
-     * @private
-     */
-    value: function validateTrainingOptions(options) {
-      var validations = {
-        iterations: function iterations(val) {
-          return typeof val === 'number' && val > 0;
-        },
-        errorThresh: function errorThresh(val) {
-          return typeof val === 'number' && val > 0 && val < 1;
-        },
-        log: function log(val) {
-          return typeof val === 'function' || typeof val === 'boolean';
-        },
-        logPeriod: function logPeriod(val) {
-          return typeof val === 'number' && val > 0;
-        },
-        learningRate: function learningRate(val) {
-          return typeof val === 'number' && val > 0 && val < 1;
-        },
-        momentum: function momentum(val) {
-          return typeof val === 'number' && val > 0 && val < 1;
-        },
-        callback: function callback(val) {
-          return typeof val === 'function' || val === null;
-        },
-        callbackPeriod: function callbackPeriod(val) {
-          return typeof val === 'number' && val > 0;
-        },
-        timeout: function timeout(val) {
-          return typeof val === 'number' && val > 0;
-        }
-      };
-      Object.keys(NeuralNetwork.trainDefaults).forEach(function (key) {
-        if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
-          throw new Error('[' + key + ', ' + options[key] + '] is out of normal training range, your network will probably not train.');
-        }
-      });
-    }
-  }, {
     key: 'trainDefaults',
     get: function get() {
       return {
@@ -159,6 +114,7 @@ var NeuralNetwork = function () {
     this.inputLookup = null;
     this.inputLookupLength = null;
     this.outputLookup = null;
+    this.outputLookupLength = null;
   }
 
   /**
@@ -202,6 +158,9 @@ var NeuralNetwork = function () {
       }
 
       this.setActivation();
+      if (this.trainOpts.praxis === 'adam') {
+        this._setupAdam();
+      }
     }
 
     /**
@@ -384,7 +343,7 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param opts
+     * @param options
      *    Supports all `trainDefaults` properties
      *    also supports:
      *       learningRate: (number),
@@ -394,15 +353,59 @@ var NeuralNetwork = function () {
 
   }, {
     key: 'updateTrainingOptions',
-    value: function updateTrainingOptions(opts) {
+    value: function updateTrainingOptions(options) {
       var _this2 = this;
 
-      Object.keys(NeuralNetwork.trainDefaults).forEach(function (opt) {
-        return _this2.trainOpts[opt] = opts.hasOwnProperty(opt) ? opts[opt] : _this2.trainOpts[opt];
+      Object.keys(this.constructor.trainDefaults).forEach(function (p) {
+        return _this2.trainOpts[p] = options.hasOwnProperty(p) ? options[p] : _this2.trainOpts[p];
       });
-      NeuralNetwork.validateTrainingOptions(this.trainOpts);
-      this.setLogMethod(opts.log || this.trainOpts.log);
-      this.activation = opts.activation || this.activation;
+      this.validateTrainingOptions(this.trainOpts);
+      this.setLogMethod(options.log || this.trainOpts.log);
+      this.activation = options.activation || this.activation;
+    }
+
+    /**
+     *
+     * @param options
+     */
+
+  }, {
+    key: 'validateTrainingOptions',
+    value: function validateTrainingOptions(options) {
+      var validations = {
+        iterations: function iterations(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        errorThresh: function errorThresh(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        log: function log(val) {
+          return typeof val === 'function' || typeof val === 'boolean';
+        },
+        logPeriod: function logPeriod(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        learningRate: function learningRate(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        momentum: function momentum(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        callback: function callback(val) {
+          return typeof val === 'function' || val === null;
+        },
+        callbackPeriod: function callbackPeriod(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        timeout: function timeout(val) {
+          return typeof val === 'number' && val > 0;
+        }
+      };
+      Object.keys(this.constructor.trainDefaults).forEach(function (key) {
+        if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
+          throw new Error('[' + key + ', ' + options[key] + '] is out of normal training range, your network will probably not train.');
+        }
+      });
     }
 
     /**
@@ -416,7 +419,7 @@ var NeuralNetwork = function () {
     value: function getTrainOptsJSON() {
       var _this3 = this;
 
-      return Object.keys(NeuralNetwork.trainDefaults).reduce(function (opts, opt) {
+      return Object.keys(this.constructor.trainDefaults).reduce(function (opts, opt) {
         if (opt === 'timeout' && _this3.trainOpts[opt] === Infinity) return opts;
         if (_this3.trainOpts[opt]) opts[opt] = _this3.trainOpts[opt];
         if (opt === 'log') opts.log = typeof opts.log === 'function';
@@ -455,21 +458,20 @@ var NeuralNetwork = function () {
     value: function calculateTrainingError(data) {
       var sum = 0;
       for (var i = 0; i < data.length; ++i) {
-        sum += this.trainPattern(data[i].input, data[i].output, true);
+        sum += this.trainPattern(data[i], true);
       }
       return sum / data.length;
     }
 
     /**
      * @param data
-     * @private
      */
 
   }, {
     key: 'trainPatterns',
     value: function trainPatterns(data) {
       for (var i = 0; i < data.length; ++i) {
-        this.trainPattern(data[i].input, data[i].output, false);
+        this.trainPattern(data[i]);
       }
     }
 
@@ -514,7 +516,7 @@ var NeuralNetwork = function () {
      * @param data
      * @param options
      * @protected
-     * @return { data, status, endTime }
+     * @return {object} { data, status, endTime }
      */
 
   }, {
@@ -542,7 +544,7 @@ var NeuralNetwork = function () {
      *
      * @param data
      * @param options
-     * @returns {{error: number, iterations: number}}
+     * @returns {object} {error: number, iterations: number}
      */
 
   }, {
@@ -559,10 +561,6 @@ var NeuralNetwork = function () {
       status = _prepTraining.status;
       endTime = _prepTraining.endTime;
 
-
-      if (options.praxis === 'adam') {
-        this._setupAdam();
-      }
 
       while (this.trainingTick(data, status, endTime)) {}
       return status;
@@ -614,19 +612,18 @@ var NeuralNetwork = function () {
 
     /**
      *
-     * @param input
-     * @param target
+     * @param {object} value
+     * @param {boolean} [logErrorRate]
      */
 
   }, {
     key: 'trainPattern',
-    value: function trainPattern(input, target, logErrorRate) {
-
+    value: function trainPattern(value, logErrorRate) {
       // forward propagate
-      this.runInput(input);
+      this.runInput(value.input);
 
       // back propagate
-      this.calculateDeltas(target);
+      this.calculateDeltas(value.output);
       this.adjustWeights();
 
       if (logErrorRate) {
@@ -906,6 +903,18 @@ var NeuralNetwork = function () {
         return _result2;
       }
       return data;
+    }
+  }, {
+    key: 'addFormat',
+    value: function addFormat(data) {
+      this.inputLookup = _lookup3.default.addKeys(data.input, this.inputLookup);
+      if (this.inputLookup) {
+        this.inputLookupLength = Object.keys(this.inputLookup).length;
+      }
+      this.outputLookup = _lookup3.default.addKeys(data.output, this.outputLookup);
+      if (this.outputLookup) {
+        this.outputLookupLength = Object.keys(this.outputLookup).length;
+      }
     }
 
     /**

@@ -303,6 +303,12 @@ const json = crossValidate.toJSON();
 const net = crossValidate.fromJSON(json);
 ```
 
+Use `CrossValidation` with these classes:
+* `brain.NeuralNetwork`
+* `brain.RNNTimeStep`
+* `brain.LSTMTimeStep`
+* `brain.GRUTimeStep`
+
 An example of using cross validate can be found in [examples/cross-validate.js](examples/cross-validate.js)
 
 ### Train Stream
