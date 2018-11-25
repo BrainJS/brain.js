@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.5.2
+ *   version: 1.6.0
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -4866,10 +4866,51 @@ var RNNTimeStep = function (_RNN) {
         case 'datum,array,number':
           return;
         case 'datum,object,number':
+          {
+            this.inputLookup = _lookup2.default.addKeys(value.input, this.inputLookup);
+            if (this.inputLookup) {
+              this.inputLookupLength = Object.keys(this.inputLookup).length;
+            }
+            this.outputLookup = _lookup2.default.addKeys(value.output, this.outputLookup);
+            if (this.outputLookup) {
+              this.outputLookupLength = Object.keys(this.outputLookup).length;
+            }
+            break;
+          }
         case 'object,number':
+          {
+            this.inputLookup = this.outputLookup = _lookup2.default.addKeys(value, this.inputLookup);
+            if (this.inputLookup) {
+              this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
+            }
+            break;
+          }
         case 'array,object,number':
+          {
+            for (var i = 0; i < value.length; i++) {
+              this.inputLookup = this.outputLookup = _lookup2.default.addKeys(value[i], this.inputLookup);
+              if (this.inputLookup) {
+                this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
+              }
+            }
+            break;
+          }
         case 'datum,array,object,number':
-          throw new Error('addFormat for dataShape of ' + dataShape + ' not supported, investigate or open an issue');
+          {
+            for (var _i19 = 0; _i19 < value.input.length; _i19++) {
+              this.inputLookup = _lookup2.default.addKeys(value.input[_i19], this.inputLookup);
+              if (this.inputLookup) {
+                this.inputLookupLength = Object.keys(this.inputLookup).length;
+              }
+            }
+            for (var _i20 = 0; _i20 < value.output.length; _i20++) {
+              this.outputLookup = _lookup2.default.addKeys(value.output[_i20], this.outputLookup);
+              if (this.outputLookup) {
+                this.outputLookupLength = Object.keys(this.outputLookup).length;
+              }
+            }
+            break;
+          }
 
         default:
           throw new Error('unknown data shape ' + dataShape);
