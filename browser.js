@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.5.1
+ *   version: 1.5.2
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -925,9 +925,35 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       };
     }
   }, {
-    key: 'toFunction',
-    value: function toFunction() {
-      throw new Error('not implemented on NeuralNetworkGPU');
+    key: 'toJSON',
+    value: function toJSON() {
+      var _this3 = this;
+
+      if (!this.weights[1].toArray) {
+        // in fallback mode
+        return _get(NeuralNetworkGPU.prototype.__proto__ || Object.getPrototypeOf(NeuralNetworkGPU.prototype), 'toJSON', this).call(this);
+      }
+
+      // in GPU mode
+      var weights = [];
+      var biases = [];
+      for (var layer = 1; layer <= this.outputLayer; layer++) {
+        weights[layer] = Array.from(this.weights[layer].toArray(this.gpu));
+        biases[layer] = Array.from(this.biases[layer].toArray(this.gpu));
+      }
+
+      // pseudo lo-fi decorator
+      return _neuralNetwork2.default.prototype.toJSON.call({
+        inputLookup: this.inputLookup,
+        outputLookup: this.outputLookup,
+        outputLayer: this.outputLayer,
+        sizes: this.sizes,
+        getTrainOptsJSON: function getTrainOptsJSON() {
+          return _this3.getTrainOptsJSON();
+        },
+        weights: weights,
+        biases: biases
+      });
     }
   }]);
 
@@ -2083,7 +2109,7 @@ var NeuralNetwork = function () {
         // turn any internal arrays back into hashes for readable json
         if (layer === 0 && this.inputLookup) {
           nodes = Object.keys(this.inputLookup);
-        } else if (layer === this.outputLayer && this.outputLookup) {
+        } else if (this.outputLookup && layer === this.outputLayer) {
           nodes = Object.keys(this.outputLookup);
         } else {
           nodes = (0, _range2.default)(0, this.sizes[layer]);

@@ -1054,7 +1054,7 @@ var NeuralNetwork = function () {
         // turn any internal arrays back into hashes for readable json
         if (layer === 0 && this.inputLookup) {
           nodes = Object.keys(this.inputLookup);
-        } else if (layer === this.outputLayer && this.outputLookup) {
+        } else if (this.outputLookup && layer === this.outputLayer) {
           nodes = Object.keys(this.outputLookup);
         } else {
           nodes = (0, _range2.default)(0, this.sizes[layer]);
