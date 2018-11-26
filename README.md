@@ -348,6 +348,7 @@ The output of `train()` is a hash of information about how the training went:
 Supported on classes:
 
 * `brain.NeuralNetwork`
+* `brain.NeuralNetworkGPU` -> All the functionality of `brain.NeuralNetwork` but, ran on GPU (via gpu.js in WebGL2, WebGL1, or fallback to CPU)
 * `brain.recurrent.RNN`
 * `brain.recurrent.LSTM`
 * `brain.recurrent.GRU`
@@ -497,6 +498,7 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 
 # Neural Network Types
 * [`brain.NeuralNetwork`](src/neural-network.js) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation
+* [`brain.NeuralNetworkGPU`](src/neural-network-gpu.js) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation, GPU version
 * [`brain.recurrent.RNNTimeStep`](src/recurrent/rnn-time-step.js) - [Time Step Recurrent Neural Network or "RNN"](https://en.wikipedia.org/wiki/Recurrent_neural_network)
 * [`brain.recurrent.LSTMTimeStep`](src/recurrent/lstm-time-step.js) - [Time Step Long Short Term Memory Neural Network or "LSTM"](https://en.wikipedia.org/wiki/Long_short-term_memory)
 * [`brain.recurrent.GRUTimeStep`](src/recurrent/gru-time-step.js) - [Time Step Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
