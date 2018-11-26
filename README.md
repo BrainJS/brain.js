@@ -432,8 +432,8 @@ document.getElementById('result').innerHTML=svgModule.makeSVG(size,options)
 client-side example see: [examples/svg](./examples/svg/index.js)
 
 #### server-side
-From the examples/svg directory start the server with **node index.js**
-Open a browser window and request localhost:3000/serversideSVG.html. In order to render a network, the client makes an XMLhttpRequest to the server.
+- From the examples/svg directory start the server with **node index.js**
+- Open a browser window and request localhost:3000/serversideSVG.html. In order to render a network, the client makes an XMLhttpRequest to the server.
 
 server-side example see: [examples/svg](./examples/svg/serversideSVG.html)
 
