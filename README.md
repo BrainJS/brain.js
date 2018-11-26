@@ -433,10 +433,11 @@ client-side example see: [examples/svg](./examples/svg/index.js)
 
 #### server-side
 From the examples/svg directory start the server with **node index.js**
-Open a browser window and request localhost:3000/serversideSVG.html
+Open a browser window and request localhost:3000/serversideSVG.html. In order to render a network, the client makes an XMLhttpRequest to the server.
 
 server-side example see: [examples/svg](./examples/svg/serversideSVG.html)
 
+![screenshot1](https://user-images.githubusercontent.com/43925925/48969024-e526ed80-f000-11e8-85bd-e10967cfaee2.png)
 
 # Neural Network Types
 * [`brain.NeuralNetwork`](src/neural-network.js) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation
