@@ -43,6 +43,7 @@
     + [Transform](#transform)
 - [Utilities](#utilities)
     + [`likely`](#likely)
+    + [`SVG image`](#svg-image)
 - [Neural Network Types](#neural-network-types)
     + [Why different Neural Network Types?](#why-different-neural-network-types)
     
@@ -409,6 +410,15 @@ Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transfor
 # Utilities
 
 ### `likely`
+
+```js
+const likely = require('brain/likely');
+const key = likely(input, net);
+```
+
+Likely example see: [simple letter detection](./examples/which-letter-simple.js)
+
+### `svg-image`
 
 ```js
 const likely = require('brain/likely');
