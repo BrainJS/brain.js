@@ -419,6 +419,7 @@ const key = likely(input, net);
 Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 
 ### `svg-image`
+Server-side and client-side implementation.
 
 #### client-side
 ```js
@@ -437,6 +438,7 @@ client-side example see: [examples/svg](./examples/svg/index.js)
 
 server-side example see: [examples/svg](./examples/svg/serversideSVG.html)
 
+The user interface used in both cases:
 ![screenshot1](https://user-images.githubusercontent.com/43925925/48969024-e526ed80-f000-11e8-85bd-e10967cfaee2.png)
 
 # Neural Network Types
