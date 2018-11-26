@@ -429,13 +429,14 @@ Renders the network topology of a feedforward network
 document.getElementById('result').innerHTML=svgModule.makeSVG(size,options)
 ```
 
+client-side example see: [svg](./examples/svg/index.js)
+
 #### server-side
 From the examples/svg directory start the server with **node index.js**
 Open a browser window and request localhost:3000/serversideSVG.html
 
+server-side example see: [svg](./examples/svg/serversideSVG.js)
 
-
-Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 
 # Neural Network Types
 * [`brain.NeuralNetwork`](src/neural-network.js) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation
