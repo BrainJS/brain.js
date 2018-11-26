@@ -907,7 +907,7 @@ export default class NeuralNetwork {
    *  }
    */
   toJSON() {
-    let layers = [];
+    const layers = [];
     for (let layer = 0; layer <= this.outputLayer; layer++) {
       layers[layer] = {};
 
@@ -915,16 +915,14 @@ export default class NeuralNetwork {
       // turn any internal arrays back into hashes for readable json
       if (layer === 0 && this.inputLookup) {
         nodes = Object.keys(this.inputLookup);
-      }
-      else if (layer === this.outputLayer && this.outputLookup) {
+      } else if (this.outputLookup && layer === this.outputLayer) {
         nodes = Object.keys(this.outputLookup);
-      }
-      else {
+      } else {
         nodes = range(0, this.sizes[layer]);
       }
 
       for (let j = 0; j < nodes.length; j++) {
-        let node = nodes[j];
+        const node = nodes[j];
         layers[layer][node] = {};
 
         if (layer > 0) {
