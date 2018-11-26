@@ -420,10 +420,7 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 
 ### `svg-image`
 
-```js
-const likely = require('brain/likely');
-const key = likely(input, net);
-```
+
 
 Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 
