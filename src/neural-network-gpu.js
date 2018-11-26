@@ -356,10 +356,31 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     };
   }
 
-  toFunction() {
-    throw new Error('not implemented on NeuralNetworkGPU');
-  }
+  toJSON() {
+    if (!this.weights[1].toArray) {
+      // in fallback mode
+      return super.toJSON();
+    }
 
+    // in GPU mode
+    const weights = [];
+    const biases = [];
+    for (let layer = 1; layer <= this.outputLayer; layer++) {
+      weights[layer] = Array.from(this.weights[layer].toArray(this.gpu));
+      biases[layer] = Array.from(this.biases[layer].toArray(this.gpu));
+    }
+
+    // pseudo lo-fi decorator
+    return NeuralNetwork.prototype.toJSON.call({
+      inputLookup: this.inputLookup,
+      outputLookup: this.outputLookup,
+      outputLayer: this.outputLayer,
+      sizes: this.sizes,
+      getTrainOptsJSON: () => this.getTrainOptsJSON(),
+      weights,
+      biases,
+    });
+  }
 }
 
 function weightedSumSigmoid(weights, biases, inputs) {
