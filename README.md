@@ -420,6 +420,19 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 
 ### `svg-image`
 
+#### client-side
+```js
+<script src="../../src/utilities/svg.js"></script> 
+```
+Renders the network topology of a feedforward network
+```js
+document.getElementById('result').innerHTML=svgModule.makeSVG(size,options)
+```
+
+#### server-side
+From the examples/svg directory start the server with **node index.js**
+Open a browser window and request localhost:3000/serversideSVG.html
+
 
 
 Likely example see: [simple letter detection](./examples/which-letter-simple.js)
