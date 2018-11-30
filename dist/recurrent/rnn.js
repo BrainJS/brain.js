@@ -44,6 +44,10 @@ var _dataFormatter = require('../utilities/data-formatter');
 
 var _dataFormatter2 = _interopRequireDefault(_dataFormatter);
 
+var _neuralNetwork = require('../neural-network');
+
+var _neuralNetwork2 = _interopRequireDefault(_neuralNetwork);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -57,14 +61,17 @@ var RNN = function () {
     var defaults = this.constructor.defaults;
 
     Object.assign(this, defaults, options);
+    this.trainOpts = {};
+    this.updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
 
     this.stepCache = {};
     this.runs = 0;
     this.ratioClipped = null;
     this.model = null;
-
     this.inputLookup = null;
+    this.inputLookupLength = null;
     this.outputLookup = null;
+    this.outputLookupLength = null;
 
     if (options.json) {
       this.fromJSON(options.json);
@@ -217,20 +224,21 @@ var RNN = function () {
 
     /**
      *
-     * @param {Number[]} input
-     * @param {Number} [learningRate]
+     * @param {Number[]|string[]|string} input
+     * @param {boolean} [logErrorRate]
      * @returns {number}
      */
 
   }, {
     key: 'trainPattern',
-    value: function trainPattern(input) {
-      var learningRate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
+    value: function trainPattern(input, logErrorRate) {
       var error = this.trainInput(input);
       this.backpropagate(input);
-      this.adjustWeights(learningRate);
-      return error;
+      this.adjustWeights();
+
+      if (logErrorRate) {
+        return error;
+      }
     }
 
     /**
@@ -279,40 +287,35 @@ var RNN = function () {
       }
       equations[0].backpropagateIndex(0);
     }
-
-    /**
-     *
-     * @param {Number} [learningRate]
-     */
-
   }, {
     key: 'adjustWeights',
     value: function adjustWeights() {
-      var learningRate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      var regc = this.regc,
+          clipval = this.clipval,
+          model = this.model,
+          decayRate = this.decayRate,
+          stepCache = this.stepCache,
+          smoothEps = this.smoothEps,
+          trainOpts = this.trainOpts;
+      var learningRate = trainOpts.learningRate;
+      var allMatrices = model.allMatrices;
 
-      // perform parameter update
-      //TODO: still not sure if this is ready for learningRate
-      var stepSize = this.learningRate;
-      var regc = this.regc;
-      var clipval = this.clipval;
-      var model = this.model;
       var numClipped = 0;
       var numTot = 0;
-      var allMatrices = model.allMatrices;
       for (var matrixIndex = 0; matrixIndex < allMatrices.length; matrixIndex++) {
         var matrix = allMatrices[matrixIndex];
         var weights = matrix.weights,
             deltas = matrix.deltas;
 
-        if (!(matrixIndex in this.stepCache)) {
-          this.stepCache[matrixIndex] = (0, _zeros2.default)(matrix.rows * matrix.columns);
+        if (!(matrixIndex in stepCache)) {
+          stepCache[matrixIndex] = (0, _zeros2.default)(matrix.rows * matrix.columns);
         }
-        var cache = this.stepCache[matrixIndex];
+        var cache = stepCache[matrixIndex];
         for (var i = 0; i < weights.length; i++) {
           var r = deltas[i];
           var w = weights[i];
           // rmsprop adaptive learning rate
-          cache[i] = cache[i] * this.decayRate + (1 - this.decayRate) * r * r;
+          cache[i] = cache[i] * decayRate + (1 - decayRate) * r * r;
           // gradient clip
           if (r > clipval) {
             r = clipval;
@@ -324,7 +327,7 @@ var RNN = function () {
           }
           numTot++;
           // update (and regularize)
-          weights[i] = w + -stepSize * r / Math.sqrt(cache[i] + this.smoothEps) - regc * w;
+          weights[i] = w + -learningRate * r / Math.sqrt(cache[i] + smoothEps) - regc * w;
         }
       }
       this.ratioClipped = numClipped / numTot;
@@ -413,6 +416,98 @@ var RNN = function () {
 
     /**
      *
+     * @param data
+     * Verifies network sizes are initilaized
+     * If they are not it will initialize them based off the data set.
+     */
+
+  }, {
+    key: 'verifyIsInitialized',
+    value: function verifyIsInitialized(data) {
+      if (!this.model) {
+        this.initialize();
+      }
+    }
+
+    /**
+     *
+     * @param options
+     *    Supports all `trainDefaults` properties
+     *    also supports:
+     *       learningRate: (number),
+     *       momentum: (number),
+     *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
+     */
+
+  }, {
+    key: 'updateTrainingOptions',
+    value: function updateTrainingOptions(options) {
+      var _this = this;
+
+      Object.keys(this.constructor.trainDefaults).forEach(function (p) {
+        return _this.trainOpts[p] = options.hasOwnProperty(p) ? options[p] : _this.trainOpts[p];
+      });
+      this.validateTrainingOptions(this.trainOpts);
+      this.setLogMethod(options.log || this.trainOpts.log);
+      this.activation = options.activation || this.activation;
+    }
+  }, {
+    key: 'validateTrainingOptions',
+    value: function validateTrainingOptions(options) {
+      _neuralNetwork2.default.prototype.validateTrainingOptions.call(this, options);
+    }
+
+    /**
+     *
+     * @param log
+     * if a method is passed in method is used
+     * if false passed in nothing is logged
+     * @returns error
+     */
+
+  }, {
+    key: 'setLogMethod',
+    value: function setLogMethod(log) {
+      if (typeof log === 'function') {
+        this.trainOpts.log = log;
+      } else if (log) {
+        this.trainOpts.log = console.log;
+      } else {
+        this.trainOpts.log = false;
+      }
+    }
+
+    /**
+     *
+     * @param data
+     * @param options
+     * @protected
+     * @return {object} { data, status, endTime }
+     */
+
+  }, {
+    key: 'prepTraining',
+    value: function prepTraining(data, options) {
+      this.updateTrainingOptions(options);
+      data = this.formatData(data);
+      var endTime = Date.now() + this.trainOpts.timeout;
+
+      var status = {
+        error: 1,
+        iterations: 0
+      };
+
+      this.verifyIsInitialized(data);
+
+      return {
+        data: data,
+        status: status,
+        endTime: endTime
+      };
+    }
+
+    /**
+     *
      * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
      * @param {Object} [options]
      * @returns {{error: number, iterations: number}}
@@ -423,12 +518,11 @@ var RNN = function () {
     value: function train(data) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      options = Object.assign({}, this.constructor.trainDefaults, options);
+      this.trainOpts = options = Object.assign({}, this.constructor.trainDefaults, options);
       var iterations = options.iterations;
       var errorThresh = options.errorThresh;
       var log = options.log === true ? console.log : options.log;
       var logPeriod = options.logPeriod;
-      var learningRate = options.learningRate || this.learningRate;
       var callback = options.callback;
       var callbackPeriod = options.callbackPeriod;
       var error = Infinity;
@@ -438,14 +532,12 @@ var RNN = function () {
         data = this.setupData(data);
       }
 
-      if (!this.model) {
-        this.initialize();
-      }
+      this.verifyIsInitialized();
 
       for (i = 0; i < iterations && error > errorThresh; i++) {
         var sum = 0;
         for (var j = 0; j < data.length; j++) {
-          var err = this.trainPattern(data[j], learningRate);
+          var err = this.trainPattern(data[j], true);
           sum += err;
         }
         error = sum / data.length;
@@ -463,6 +555,11 @@ var RNN = function () {
         error: error,
         iterations: i
       };
+    }
+  }, {
+    key: 'addFormat',
+    value: function addFormat() {
+      throw new Error('not yet implemented');
     }
 
     /**
@@ -684,7 +781,6 @@ RNN.defaults = {
   inputRange: 20,
   hiddenLayers: [20, 20],
   outputSize: 20,
-  learningRate: 0.01,
   decayRate: 0.999,
   smoothEps: 1e-8,
   regc: 0.000001,
@@ -764,9 +860,8 @@ RNN.trainDefaults = {
   errorThresh: 0.005,
   log: false,
   logPeriod: 10,
-  learningRate: 0.3,
+  learningRate: 0.01,
   callback: null,
-  callbackPeriod: 10,
-  keepNetworkIntact: false
+  callbackPeriod: 10
 };
 //# sourceMappingURL=rnn.js.map

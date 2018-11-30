@@ -17,13 +17,25 @@ function LookupTable(data, prop) {
         table[p] = this.length++;
       }
     }
-  } else {
+  } else if (Array.isArray(data[0])) {
     var _table = this.table = {};
     for (var _i = 0; _i < data.length; _i++) {
-      var _object = data[_i];
-      for (var _p in _object) {
-        if (_table.hasOwnProperty(_p)) continue;
-        _table[_p] = this.length++;
+      var array = data[_i];
+      for (var j = 0; j < array.length; j++) {
+        var _object = array[j];
+        for (var _p in _object) {
+          if (_table.hasOwnProperty(_p)) continue;
+          _table[_p] = this.length++;
+        }
+      }
+    }
+  } else {
+    var _table2 = this.table = {};
+    for (var _i2 = 0; _i2 < data.length; _i2++) {
+      var _object2 = data[_i2];
+      for (var _p2 in _object2) {
+        if (_table2.hasOwnProperty(_p2)) continue;
+        _table2[_p2] = this.length++;
       }
     }
   }

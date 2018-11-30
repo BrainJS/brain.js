@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -33,7 +33,7 @@ var CrossValidate = function () {
 
 
   _createClass(CrossValidate, [{
-    key: "testPartition",
+    key: 'testPartition',
     value: function testPartition(trainOpts, trainSet, testSet) {
       var classifier = new this.Classifier(this.options);
       var beginTrain = Date.now();
@@ -45,8 +45,9 @@ var CrossValidate = function () {
         trainTime: beginTest - beginTrain,
         testTime: endTest - beginTest,
         iterations: trainingStats.iterations,
-        trainError: trainingStats.error,
-        learningRate: trainOpts.learningRate,
+        error: trainingStats.error,
+        total: testStats.total,
+        learningRate: classifier.trainOpts.learningRate,
         hiddenLayers: classifier.hiddenLayers,
         network: classifier.toJSON()
       });
@@ -61,7 +62,7 @@ var CrossValidate = function () {
      */
 
   }, {
-    key: "shuffleArray",
+    key: 'shuffleArray',
     value: function shuffleArray(array) {
       for (var i = array.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
@@ -84,7 +85,7 @@ var CrossValidate = function () {
      *      trainTime: number,
      *      testTime: number,
      *      iterations: number,
-     *      trainError: number
+     *      error: number
      *    },
      *    stats: {
      *      truePos: number,
@@ -99,14 +100,15 @@ var CrossValidate = function () {
      */
 
   }, {
-    key: "train",
+    key: 'train',
     value: function train(data) {
       var trainOpts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var k = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 4;
 
-      if (data.length <= k) {
-        throw new Error("Training set size is too small for " + data.length + " k folds of " + k);
+      if (data.length < k) {
+        throw new Error('Training set size is too small for ' + data.length + ' k folds of ' + k);
       }
+
       var size = data.length / k;
 
       if (data.constructor === Array) {
@@ -120,41 +122,50 @@ var CrossValidate = function () {
       }
 
       var avgs = {
-        error: 0,
         trainTime: 0,
         testTime: 0,
         iterations: 0,
-        trainError: 0
+        error: 0
       };
 
       var stats = {
+        total: 0
+      };
+
+      var binaryStats = {
+        total: 0,
         truePos: 0,
         trueNeg: 0,
         falsePos: 0,
-        falseNeg: 0,
-        total: 0
+        falseNeg: 0
       };
 
       var results = [];
       var stat = void 0;
-      var sum = void 0;
+      var isBinary = null;
 
       for (var i = 0; i < k; i++) {
         var dclone = data.slice(0);
         var testSet = dclone.splice(i * size, size);
         var trainSet = dclone;
         var result = this.testPartition(trainOpts, trainSet, testSet);
+
+        if (isBinary === null) {
+          isBinary = result.hasOwnProperty('falseNeg') && result.hasOwnProperty('falsePos') && result.hasOwnProperty('trueNeg') && result.hasOwnProperty('truePos');
+          if (isBinary) {
+            Object.assign(stats, binaryStats);
+          }
+        }
+
         for (stat in avgs) {
           if (stat in avgs) {
-            sum = avgs[stat];
-            avgs[stat] = sum + result[stat];
+            avgs[stat] += result[stat];
           }
         }
 
         for (stat in stats) {
           if (stat in stats) {
-            sum = stats[stat];
-            stats[stat] = sum + result[stat];
+            stats[stat] += result[stat];
           }
         }
 
@@ -163,36 +174,37 @@ var CrossValidate = function () {
 
       for (stat in avgs) {
         if (stat in avgs) {
-          sum = avgs[stat];
-          avgs[stat] = sum / k;
+          avgs[stat] /= k;
         }
       }
 
-      stats.precision = stats.truePos / (stats.truePos + stats.falsePos);
-      stats.recall = stats.truePos / (stats.truePos + stats.falseNeg);
-      stats.accuracy = (stats.trueNeg + stats.truePos) / stats.total;
+      if (isBinary) {
+        stats.precision = stats.truePos / (stats.truePos + stats.falsePos);
+        stats.recall = stats.truePos / (stats.truePos + stats.falseNeg);
+        stats.accuracy = (stats.trueNeg + stats.truePos) / stats.total;
+      }
 
       stats.testSize = size;
       stats.trainSize = data.length - size;
 
-      this.json = {
+      return this.json = {
         avgs: avgs,
         stats: stats,
         sets: results
       };
     }
   }, {
-    key: "toNeuralNetwork",
+    key: 'toNeuralNetwork',
     value: function toNeuralNetwork() {
       return this.fromJSON(this.json);
     }
   }, {
-    key: "toJSON",
+    key: 'toJSON',
     value: function toJSON() {
       return this.json;
     }
   }, {
-    key: "fromJSON",
+    key: 'fromJSON',
     value: function fromJSON(crossValidateJson) {
       var Classifier = this.Classifier;
       var json = crossValidateJson.sets.reduce(function (prev, cur) {

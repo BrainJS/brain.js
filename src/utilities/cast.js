@@ -15,14 +15,14 @@ export function arrayToFloat32Arrays(array) {
 export function arrayToFloat32Array(array) {
   return Float32Array.from(array)
 }
-export function objectsToFloat32Arrays(objects, lookup) {
+export function objectsToFloat32Arrays(objects, table, length) {
   const results = [];
   for (let i = 0; i < objects.length; i++) {
     const object = objects[i];
-    const result = new Float32Array(lookup.length);
+    const result = new Float32Array(length);
     for (let p in object) {
       if (object.hasOwnProperty(p)) {
-        result[lookup.table[p]] = object[p];
+        result[table[p]] = object[p];
       }
     }
     results.push(result);
@@ -36,11 +36,11 @@ export function objectToFloat32Arrays(object) {
   }
   return result;
 }
-export function objectToFloat32Array(object, lookup) {
-  const result = new Float32Array(lookup.length);
+export function objectToFloat32Array(object, table, length) {
+  const result = new Float32Array(length);
   for (let p in object) {
     if (object.hasOwnProperty(p)) {
-      result[lookup.table[p]] = object[p];
+      result[table[p]] = object[p];
     }
   }
   return result;

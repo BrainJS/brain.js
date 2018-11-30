@@ -334,7 +334,7 @@ describe('rnn', () => {
       for (let i = 0; i < 10; i++) {
         error = 0;
         for (let j = 0; j < 4; j++) {
-          error += net.trainPattern(xorNetValues[j]);
+          error += net.trainPattern(xorNetValues[j], true);
         }
         if (i === 0) {
           initialError = error;
@@ -347,7 +347,7 @@ describe('rnn', () => {
       let net = xorNet();
       for (let i = 0; i < 10; i++) {
         xorNetValues.forEach(function(value) {
-          console.log(net.trainPattern(value));
+          console.log(net.trainPattern(value, true));
         });
       }
       assert.equal(net.run().length, 3);
@@ -466,12 +466,12 @@ describe('rnn', () => {
           net.trainPattern([0, 0, 0]);
         }
 
-        const error = net.trainPattern([0, 1, 1]);
+        const error = net.trainPattern([0, 1, 1], true);
         const jsonString = JSON.stringify(net.toJSON());
         const clone = new RNN();
         clone.fromJSON(JSON.parse(jsonString));
         assert.equal(jsonString, JSON.stringify(clone.toJSON()));
-        const newError = clone.trainPattern([0, 1, 1]);
+        const newError = clone.trainPattern([0, 1, 1], true);
         assert((error - newError) < 0.02);
         assert.notEqual(jsonString, JSON.stringify(clone.toJSON()));
         assert.equal(clone.inputSize, 6);

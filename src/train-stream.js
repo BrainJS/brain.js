@@ -1,5 +1,4 @@
 import { Writable } from 'stream';
-import lookup from './lookup';
 
 /**
  *
@@ -8,37 +7,37 @@ import lookup from './lookup';
  * @constructor
  */
 export default class TrainStream extends Writable {
-  constructor(opts) {
+  constructor(options) {
     super({
       objectMode: true
     });
 
-    opts = opts || {};
+    options = options || {};
 
     // require the neuralNetwork
-    if (!opts.neuralNetwork) {
+    if (!options.neuralNetwork) {
       throw new Error('no neural network specified');
     }
 
-    this.neuralNetwork = opts.neuralNetwork;
+    const { neuralNetwork } = options;
+    this.neuralNetwork = neuralNetwork;
     this.dataFormatDetermined = false;
-
-    this.inputKeys = [];
-    this.outputKeys = []; // keeps track of keys seen
-    this.i = 0; // keep track of the for loop i variable that we got rid of
-    this.iterations = opts.iterations || 20000;
-    this.errorThresh = opts.errorThresh || 0.005;
-    this.log = opts.log ? (typeof opts.log === 'function' ? opts.log : console.log) : false;
-    this.logPeriod = opts.logPeriod || 10;
-    this.callback = opts.callback;
-    this.callbackPeriod = opts.callbackPeriod || 10;
-    this.floodCallback = opts.floodCallback;
-    this.doneTrainingCallback = opts.doneTrainingCallback;
-
+    this.i = 0; // keep track of internal iterations
     this.size = 0;
     this.count = 0;
-
     this.sum = 0;
+    this.floodCallback = options.floodCallback;
+    this.doneTrainingCallback = options.doneTrainingCallback;
+
+    // inherit trainOpts settings from neuralNetwork
+    neuralNetwork.updateTrainingOptions(options);
+    const { trainOpts } = neuralNetwork;
+    this.iterations = trainOpts.iterations;
+    this.errorThresh = trainOpts.errorThresh;
+    this.log = trainOpts.log;
+    this.logPeriod = trainOpts.logPeriod;
+    this.callbackPeriod = trainOpts.callbackPeriod;
+    this.callback = trainOpts.callback;
 
     this.on('finish', this.finishStreamIteration.bind(this));
   }
@@ -64,8 +63,7 @@ export default class TrainStream extends Writable {
 
     if (!this.dataFormatDetermined) {
       this.size++;
-      this.inputKeys = Array.from(new Set(this.inputKeys.concat(Object.keys(chunk.input))));
-      this.outputKeys = Array.from(new Set(this.outputKeys.concat(Object.keys(chunk.output))));
+      this.neuralNetwork.addFormat(chunk);
       this.firstDatum = this.firstDatum || chunk;
       return next();
     }
@@ -73,18 +71,10 @@ export default class TrainStream extends Writable {
     this.count++;
 
     const data = this.neuralNetwork.formatData(chunk);
-    this.trainDatum(data[0]);
+    this.sum += this.neuralNetwork.trainPattern(data[0], true);
 
     // tell the Readable Stream that we are ready for more data
     next();
-  }
-
-  /**
-   *
-   * @param datum
-   */
-  trainDatum(datum) {
-    this.sum += this.neuralNetwork.trainPattern(datum.input, datum.output, true);
   }
 
   /**
@@ -97,13 +87,6 @@ export default class TrainStream extends Writable {
     }
 
     if (!this.dataFormatDetermined) {
-      // create the lookup
-      if(!Array.isArray(this.firstDatum.input)) {
-        this.neuralNetwork.inputLookup = lookup.lookupFromArray(this.inputKeys);
-      }
-      if(!Array.isArray(this.firstDatum.output)) {
-        this.neuralNetwork.outputLookup = lookup.lookupFromArray(this.outputKeys);
-      }
       const data = this.neuralNetwork.formatData(this.firstDatum);
       this.neuralNetwork.verifyIsInitialized(data);
       this.dataFormatDetermined = true;
@@ -117,7 +100,7 @@ export default class TrainStream extends Writable {
     const error = this.sum / this.size;
 
     if (this.log && (this.i % this.logPeriod === 0)) {
-      this.log('iterations:', this.i, 'training error:', error);
+      this.log(`iterations: ${ this.i}, training error: ${ error }`);
     }
     if (this.callback && (this.i % this.callbackPeriod === 0)) {
       this.callback({

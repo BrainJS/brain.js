@@ -44,9 +44,9 @@ var _lookup = require('../lookup');
 
 var _lookup2 = _interopRequireDefault(_lookup);
 
-var _lookupTable = require('../utilities/lookup-table');
+var _lookupTable2 = require('../utilities/lookup-table');
 
-var _lookupTable2 = _interopRequireDefault(_lookupTable);
+var _lookupTable3 = _interopRequireDefault(_lookupTable2);
 
 var _arrayLookupTable = require('../utilities/array-lookup-table');
 
@@ -65,16 +65,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var RNNTimeStep = function (_RNN) {
   _inherits(RNNTimeStep, _RNN);
 
-  function RNNTimeStep(options) {
+  function RNNTimeStep() {
     _classCallCheck(this, RNNTimeStep);
 
-    var _this = _possibleConstructorReturn(this, (RNNTimeStep.__proto__ || Object.getPrototypeOf(RNNTimeStep)).call(this, options));
-
-    _this.inputLookup = null;
-    _this.inputLookupLength = null;
-    _this.outputLookup = null;
-    _this.outputLookupLength = null;
-    return _this;
+    return _possibleConstructorReturn(this, (RNNTimeStep.__proto__ || Object.getPrototypeOf(RNNTimeStep)).apply(this, arguments));
   }
 
   _createClass(RNNTimeStep, [{
@@ -171,8 +165,16 @@ var RNNTimeStep = function (_RNN) {
     key: 'forecast',
     value: function forecast(input, count) {
       if (this.inputSize === 1) {
+        if (this.outputLookup) {
+          this.forecast = this.runObject;
+          return this.runObject(input);
+        }
         this.forecast = this.forecastNumbers;
         return this.forecastNumbers(input, count);
+      }
+      if (this.outputLookup) {
+        this.forecast = this.forecastObjects;
+        return this.forecastObjects(input, count);
       }
       this.forecast = this.forecastArrays;
       return this.forecastArrays(input, count);
@@ -190,41 +192,28 @@ var RNNTimeStep = function (_RNN) {
     value: function train(data) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      options = Object.assign({}, this.constructor.trainDefaults, options);
+      this.trainOpts = options = Object.assign({}, this.constructor.trainDefaults, options);
       var iterations = options.iterations;
       var errorThresh = options.errorThresh;
       var log = options.log === true ? console.log : options.log;
       var logPeriod = options.logPeriod;
-      var learningRate = options.learningRate || this.learningRate;
       var callback = options.callback;
       var callbackPeriod = options.callbackPeriod;
-      data = this.formatData(data);
-      if (data[0].input) {
-        this.trainInput = this.trainInputOutput;
-      } else if (data[0].length > 0) {
-        if (data[0][0].length > 0) {
-          this.trainInput = this.trainArrays;
-        } else {
-          if (this.inputSize > 1) {
-            data = [data];
-            this.trainInput = this.trainArrays;
-          } else {
-            this.trainInput = this.trainNumbers;
-          }
-        }
+
+      if (this.inputSize === 1 || !this.inputSize) {
+        this.setSize(data);
       }
 
+      data = this.formatData(data);
       var error = Infinity;
       var i = void 0;
 
-      if (!this.model) {
-        this.initialize();
-      }
+      this.verifyIsInitialized(data);
 
       for (i = 0; i < iterations && error > errorThresh; i++) {
         var sum = 0;
         for (var j = 0; j < data.length; j++) {
-          var err = this.trainPattern(data[j], learningRate);
+          var err = this.trainPattern(data[j], true);
           sum += err;
         }
         error = sum / data.length;
@@ -242,6 +231,63 @@ var RNNTimeStep = function (_RNN) {
         error: error,
         iterations: i
       };
+    }
+
+    /**
+     *
+     * @param data
+     * Verifies network sizes are initialized
+     * If they are not it will initialize them based off the data set.
+     */
+
+  }, {
+    key: 'verifyIsInitialized',
+    value: function verifyIsInitialized(data) {
+      if (data[0].input) {
+        this.trainInput = this.trainInputOutput;
+      } else if (data[0].length > 0) {
+        if (data[0][0].length > 0) {
+          this.trainInput = this.trainArrays;
+        } else {
+          if (this.inputSize > 1) {
+            this.trainInput = this.trainArrays;
+          } else {
+            this.trainInput = this.trainNumbers;
+          }
+        }
+      }
+
+      if (!this.model) {
+        this.initialize();
+      }
+    }
+  }, {
+    key: 'setSize',
+    value: function setSize(data) {
+      var dataShape = _lookup2.default.dataShape(data).join(',');
+      switch (dataShape) {
+        case 'array,array,number':
+        case 'array,object,number':
+        case 'array,datum,array,number':
+        case 'array,datum,object,number':
+          // probably 1
+          break;
+        case 'array,array,array,number':
+          this.inputSize = this.outputSize = data[0][0].length;
+          break;
+        case 'array,array,object,number':
+          this.inputSize = this.outputSize = Object.keys(_lookup2.default.toTable2D(data)).length;
+          break;
+        case 'array,datum,array,array,number':
+          this.inputSize = this.outputSize = data[0].input[0].length;
+          break;
+        case 'array,datum,array,object,number':
+          this.inputSize = Object.keys(_lookup2.default.toInputTable2D(data)).length;
+          this.outputSize = Object.keys(_lookup2.default.toOutputTable2D(data)).length;
+          break;
+        default:
+          throw new Error('unknown data shape or configuration');
+      }
     }
   }, {
     key: 'trainNumbers',
@@ -308,6 +354,18 @@ var RNNTimeStep = function (_RNN) {
         return _lookup2.default.toObjectPartial(this.outputLookup, this.forecastNumbers(inputArray, this.outputLookupLength - inputArray.length), inputArray.length);
       }
       return _lookup2.default.toObject(this.outputLookup, this.forecastNumbers(_lookup2.default.toArray(this.inputLookup, input, this.inputLookupLength), this.outputLookupLength));
+    }
+  }, {
+    key: 'forecastObjects',
+    value: function forecastObjects(input, count) {
+      var _this2 = this;
+
+      input = input.map(function (value) {
+        return _lookup2.default.toArray(_this2.outputLookup, value, _this2.outputLookupLength);
+      });
+      return this.forecastArrays(input, count).map(function (value) {
+        return _lookup2.default.toObject(_this2.outputLookup, value);
+      });
     }
   }, {
     key: 'trainInputOutput',
@@ -408,135 +466,449 @@ var RNNTimeStep = function (_RNN) {
   }, {
     key: 'formatData',
     value: function formatData(data) {
-      if (data[0].input) {
-        if (Array.isArray(data[0].input[0])) {
-          if (this.inputSize > 1) {
-            // [{ input: number[][], output: number[][] }] to [{ input: Float32Array[], output: Float32Array[] }]
-            var result = [];
+      var dataShape = _lookup2.default.dataShape(data).join(',');
+      var result = [];
+      switch (dataShape) {
+        case 'array,number':
+          {
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
+            }
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
             for (var i = 0; i < data.length; i++) {
-              var datum = data[i];
+              result.push(Float32Array.from([data[i]]));
+            }
+            return [result];
+          }
+        case 'array,array,number':
+          {
+            if (this.inputSize === 1 && this.outputSize === 1) {
+              for (var _i3 = 0; _i3 < data.length; _i3++) {
+                result.push((0, _cast.arrayToFloat32Arrays)(data[_i3]));
+              }
+              return result;
+            }
+            if (this.inputSize !== data[0].length) {
+              throw new Error('inputSize must match data input size');
+            }
+            if (this.outputSize !== data[0].length) {
+              throw new Error('outputSize must match data input size');
+            }
+            for (var _i4 = 0; _i4 < data.length; _i4++) {
+              result.push(Float32Array.from(data[_i4]));
+            }
+            return [result];
+          }
+        case 'array,object,number':
+          {
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
+            }
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
+            if (!this.inputLookup) {
+              var lookupTable = new _lookupTable3.default(data);
+              this.inputLookup = this.outputLookup = lookupTable.table;
+              this.inputLookupLength = this.outputLookupLength = lookupTable.length;
+            }
+            for (var _i5 = 0; _i5 < data.length; _i5++) {
+              result.push((0, _cast.objectToFloat32Arrays)(data[_i5]));
+            }
+            return result;
+          }
+        case 'array,datum,array,number':
+          {
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
+            }
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
+            for (var _i6 = 0; _i6 < data.length; _i6++) {
+              var datum = data[_i6];
               result.push({
-                input: (0, _cast.arraysToFloat32Arrays)(datum.input),
-                output: (0, _cast.arraysToFloat32Arrays)(datum.output)
+                input: (0, _cast.arrayToFloat32Arrays)(datum.input),
+                output: (0, _cast.arrayToFloat32Arrays)(datum.output)
               });
             }
             return result;
-          } else {
-            // { input: [[1,4],[2,3]], output: [[3,2],[4,1]] } -> [[1,4],[2,3],[3,2],[4,1]]
-            var _result = [];
-            for (var _i3 = 0; _i3 < data.length; _i3++) {
-              var _datum = data[_i3];
-              _result.push({
-                input: Float32Array.from(_datum.input),
-                output: Float32Array.from(_datum.output)
+          }
+        case 'array,datum,object,number':
+          {
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
+            }
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
+            if (!this.inputLookup) {
+              var inputLookup = new _lookupTable3.default(data, 'input');
+              this.inputLookup = inputLookup.table;
+              this.inputLookupLength = inputLookup.length;
+            }
+            if (!this.outputLookup) {
+              var outputLookup = new _lookupTable3.default(data, 'output');
+              this.outputLookup = outputLookup.table;
+              this.outputLookupLength = outputLookup.length;
+            }
+            for (var _i7 = 0; _i7 < data.length; _i7++) {
+              var _datum = data[_i7];
+              result.push({
+                input: (0, _cast.objectToFloat32Arrays)(_datum.input),
+                output: (0, _cast.objectToFloat32Arrays)(_datum.output)
               });
             }
-            return _result;
+            return result;
           }
-        } else if (Array.isArray(data[0].input)) {
-          if (typeof data[0].input[0] === 'number') {
-            // [{ input: number[], output: number[] }] to [{ input: Float32Array, output: Float32Array }]
-            if (this.inputSize === 1) {
-              var _result2 = [];
-              for (var _i4 = 0; _i4 < data.length; _i4++) {
-                var _datum2 = data[_i4];
-                _result2.push({
-                  input: (0, _cast.arrayToFloat32Arrays)(_datum2.input),
-                  output: (0, _cast.arrayToFloat32Arrays)(_datum2.output)
+        case 'array,array,array,number':
+          {
+            for (var _i8 = 0; _i8 < data.length; _i8++) {
+              result.push((0, _cast.arraysToFloat32Arrays)(data[_i8]));
+            }
+            return result;
+          }
+        case 'array,array,object,number':
+          {
+            if (!this.inputLookup) {
+              var _lookupTable = new _lookupTable3.default(data);
+              this.inputLookup = this.outputLookup = _lookupTable.table;
+              this.inputLookupLength = this.outputLookupLength = _lookupTable.length;
+            }
+            for (var _i9 = 0; _i9 < data.length; _i9++) {
+              var array = [];
+              for (var j = 0; j < data[_i9].length; j++) {
+                array.push((0, _cast.objectToFloat32Array)(data[_i9][j], this.inputLookup, this.inputLookupLength));
+              }
+              result.push(array);
+            }
+            return result;
+          }
+        case 'array,datum,array,array,number':
+          {
+            if (this.inputSize === 1 && this.outputSize === 1) {
+              for (var _i10 = 0; _i10 < data.length; _i10++) {
+                var _datum2 = data[_i10];
+                result.push({
+                  input: Float32Array.from(_datum2.input),
+                  output: Float32Array.from(_datum2.output)
                 });
               }
-              return _result2;
+            } else {
+              if (this.inputSize !== data[0].input[0].length) {
+                throw new Error('inputSize must match data input size');
+              }
+              if (this.outputSize !== data[0].output[0].length) {
+                throw new Error('outputSize must match data output size');
+              }
+              for (var _i11 = 0; _i11 < data.length; _i11++) {
+                var _datum3 = data[_i11];
+                result.push({
+                  input: (0, _cast.arraysToFloat32Arrays)(_datum3.input),
+                  output: (0, _cast.arraysToFloat32Arrays)(_datum3.output)
+                });
+              }
             }
-            throw new Error('data is not recurrent');
-          } else {
-            // [{ input: object[], output: object[] }] to [{ input: Float32Array[], output: Float32Array[] }]
-            var inputLookup = new _arrayLookupTable2.default(data, 'input');
-            var outputLookup = new _arrayLookupTable2.default(data, 'output');
-            var _result3 = [];
-
-            for (var _i5 = 0; _i5 < data.length; _i5++) {
-              var _datum3 = data[_i5];
-              _result3.push({
-                input: (0, _cast.objectsToFloat32Arrays)(_datum3.input, inputLookup),
-                output: (0, _cast.objectsToFloat32Arrays)(_datum3.output, outputLookup)
+            return result;
+          }
+        case 'array,datum,array,object,number':
+          {
+            if (!this.inputLookup) {
+              var _inputLookup = new _arrayLookupTable2.default(data, 'input');
+              this.inputLookup = _inputLookup.table;
+              this.inputLookupLength = _inputLookup.length;
+            }
+            if (!this.outputLookup) {
+              var _outputLookup = new _arrayLookupTable2.default(data, 'output');
+              this.outputLookup = _outputLookup.table;
+              this.outputLookupLength = _outputLookup.length;
+            }
+            for (var _i12 = 0; _i12 < data.length; _i12++) {
+              var _datum4 = data[_i12];
+              result.push({
+                input: (0, _cast.objectsToFloat32Arrays)(_datum4.input, this.inputLookup, this.inputLookupLength),
+                output: (0, _cast.objectsToFloat32Arrays)(_datum4.output, this.outputLookup, this.outputLookupLength)
               });
             }
-
-            this.inputLookup = inputLookup.table;
-            this.inputLookupLength = inputLookup.length;
-            this.outputLookup = outputLookup.table;
-            this.outputLookupLength = outputLookup.length;
-            return _result3;
+            return result;
           }
-        } else if (this.inputSize === 1) {
-          // [{ input: object, output: object }] to [{ input: Float32Array, output: Float32Array }]
-          var _inputLookup = new _lookupTable2.default(data, 'input');
-          var _outputLookup = new _lookupTable2.default(data, 'output');
-          var _result4 = [];
-          for (var _i6 = 0; _i6 < data.length; _i6++) {
-            var _datum4 = data[_i6];
-            _result4.push({
-              input: (0, _cast.objectToFloat32Arrays)(_datum4.input),
-              output: (0, _cast.objectToFloat32Arrays)(_datum4.output)
-            });
-            this.inputLookup = _inputLookup.table;
-            this.inputLookupLength = _inputLookup.length;
-            this.outputLookup = _outputLookup.table;
-            this.outputLookupLength = _outputLookup.length;
-          }
-          return _result4;
-        }
-      } else if (Array.isArray(data)) {
-        if (Array.isArray(data[0])) {
-          if (this.inputSize > 1) {
-            // number[][][] to Float32Array[][][]
-            if (Array.isArray(data[0][0])) {
-              var _result5 = [];
-              for (var _i7 = 0; _i7 < data.length; _i7++) {
-                _result5.push((0, _cast.arraysToFloat32Arrays)(data[_i7]));
-              }
-              return _result5;
-            } else {
-              // number[][] to Float32Array[][]
-              var _result6 = [];
-              for (var _i8 = 0; _i8 < data.length; _i8++) {
-                _result6.push(Float32Array.from(data[_i8]));
-              }
-              return _result6;
-            }
-          } else if (this.inputSize === 1) {
-            // number[][] to Float32Array[][][]
-            var _result7 = [];
-            for (var _i9 = 0; _i9 < data.length; _i9++) {
-              _result7.push((0, _cast.arrayToFloat32Arrays)(data[_i9]));
-            }
-            return _result7;
-          }
-        } else if (this.inputSize === 1) {
-
-          if (Array.isArray(data) && typeof data[0] === 'number') {
-            // number[] to Float32Array[]
-            var _result8 = [];
-            for (var _i10 = 0; _i10 < data.length; _i10++) {
-              _result8.push(Float32Array.from([data[_i10]]));
-            }
-            return _result8;
-          } else if (!data[0].hasOwnProperty(0)) {
-            // object[] to Float32Array[]
-            var _result9 = [];
-            var lookupTable = new _lookupTable2.default(data);
-            for (var _i11 = 0; _i11 < data.length; _i11++) {
-              _result9.push((0, _cast.objectToFloat32Arrays)(data[_i11]));
-            }
-            this.inputLookup = lookupTable.table;
-            this.inputLookupLength = lookupTable.length;
-            this.outputLookup = lookupTable.table;
-            this.outputLookupLength = lookupTable.length;
-            return _result9;
-          }
-        }
+        default:
+          throw new Error('unknown data shape or configuration');
       }
-      throw new Error('unknown data shape or configuration');
+    }
+
+    /**
+     *
+     * @param data
+     * @returns {
+     *  {
+     *    error: number,
+     *    misclasses: Array
+     *  }
+     * }
+     */
+
+  }, {
+    key: 'test',
+    value: function test(data) {
+      var formattedData = this.formatData(data);
+      // for classification problems
+      var misclasses = [];
+      // run each pattern through the trained network and collect
+      // error and misclassification statistics
+      var errorSum = 0;
+      var dataShape = _lookup2.default.dataShape(data).join(',');
+      switch (dataShape) {
+        case 'array,array,number':
+          {
+            if (this.inputSize === 1) {
+              for (var i = 0; i < formattedData.length; i++) {
+                var input = formattedData[i];
+                var output = this.run(input.splice(0, input.length - 1));
+                var target = input[input.length - 1][0];
+                var error = target - output;
+                var errorMSE = error * error;
+                errorSum += errorMSE;
+                var errorsAbs = Math.abs(errorMSE);
+                if (errorsAbs > this.trainOpts.errorThresh) {
+                  var misclass = data[i];
+                  Object.assign(misclass, {
+                    value: input,
+                    actual: output
+                  });
+                  misclasses.push(misclass);
+                }
+              }
+              break;
+            }
+            throw new Error('unknown data shape or configuration');
+          }
+        case 'array,array,array,number':
+          {
+            for (var _i13 = 0; _i13 < formattedData.length; _i13++) {
+              var _input = formattedData[_i13];
+              var _output = this.run(_input.splice(0, _input.length - 1));
+              var _target = _input[_input.length - 1];
+              var errors = 0;
+              var errorCount = 0;
+              for (var j = 0; j < _output.length; j++) {
+                errorCount++;
+                var _error = _target[j] - _output[j];
+                // mse
+                errors += _error * _error;
+              }
+              errorSum += errors / errorCount;
+              var _errorsAbs = Math.abs(errors);
+              if (_errorsAbs > this.trainOpts.errorThresh) {
+                var _misclass = data[_i13];
+                misclasses.push({
+                  value: _misclass,
+                  actual: _output
+                });
+              }
+            }
+            break;
+          }
+        case 'array,object,number':
+          {
+            for (var _i14 = 0; _i14 < formattedData.length; _i14++) {
+              var _input2 = formattedData[_i14];
+              var _output2 = this.run(_lookup2.default.toObjectPartial(this.outputLookup, _input2, 0, _input2.length - 1));
+              var _target2 = _input2[_input2.length - 1];
+              var _errors = 0;
+              var p = void 0;
+              for (p in _output2) {}
+              var _error2 = _target2[_i14] - _output2[p];
+              // mse
+              _errors += _error2 * _error2;
+              errorSum += _errors;
+              var _errorsAbs2 = Math.abs(_errors);
+              if (_errorsAbs2 > this.trainOpts.errorThresh) {
+                var _misclass2 = data[_i14];
+                misclasses.push({
+                  value: _misclass2,
+                  actual: _output2
+                });
+              }
+            }
+            break;
+          }
+        case 'array,array,object,number':
+          {
+            for (var _i15 = 0; _i15 < formattedData.length; _i15++) {
+              var _input3 = formattedData[_i15];
+              var _output3 = this.run(_input3.slice(0, _input3.length - 1));
+              var _target3 = data[_i15][_input3.length - 1];
+              var _errors2 = 0;
+              var _errorCount = 0;
+              for (var _p in _output3) {
+                var _error3 = _target3[_p] - _output3[_p];
+                // mse
+                _errors2 += _error3 * _error3;
+                _errorCount++;
+              }
+              errorSum += _errors2 / _errorCount;
+              var _errorsAbs3 = Math.abs(_errors2);
+              if (_errorsAbs3 > this.trainOpts.errorThresh) {
+                var _misclass3 = data[_i15];
+                misclasses.push({
+                  value: _misclass3,
+                  actual: _output3
+                });
+              }
+            }
+            break;
+          }
+        case 'array,datum,array,number':
+        case 'array,datum,object,number':
+          {
+            for (var _i16 = 0; _i16 < formattedData.length; _i16++) {
+              var datum = formattedData[_i16];
+              var _output4 = this.forecast(datum.input, datum.output.length);
+              var _errors3 = 0;
+              var _errorCount2 = 0;
+              for (var _j = 0; _j < _output4.length; _j++) {
+                var _error4 = datum.output[_j][0] - _output4[_j];
+                _errors3 += _error4 * _error4;
+                _errorCount2++;
+              }
+
+              errorSum += _errors3 / _errorCount2;
+              var _errorsAbs4 = Math.abs(_errors3);
+              if (_errorsAbs4 > this.trainOpts.errorThresh) {
+                var _misclass4 = data[_i16];
+                Object.assign(_misclass4, {
+                  actual: this.outputLookup ? _lookup2.default.toObject(this.outputLookup, _output4) : _output4
+                });
+                misclasses.push(_misclass4);
+              }
+            }
+            break;
+          }
+        case 'array,datum,array,array,number':
+          {
+            for (var _i17 = 0; _i17 < formattedData.length; _i17++) {
+              var _datum5 = formattedData[_i17];
+              var _output5 = this.forecast(_datum5.input, _datum5.output.length);
+              var _errors4 = 0;
+              for (var _j2 = 0; _j2 < _output5.length; _j2++) {
+                for (var k = 0; k < _output5[_j2].length; k++) {
+                  var _error5 = _datum5.output[_j2][k] - _output5[_j2][k];
+                  _errors4 += _error5 * _error5;
+                }
+              }
+
+              errorSum += _errors4;
+              var _errorsAbs5 = Math.abs(_errors4);
+              if (_errorsAbs5 > this.trainOpts.errorThresh) {
+                var _misclass5 = data[_i17];
+                misclasses.push({
+                  input: _misclass5.input,
+                  output: _misclass5.output,
+                  actual: _output5
+                });
+              }
+            }
+            break;
+          }
+        case 'array,datum,array,object,number':
+          {
+            for (var _i18 = 0; _i18 < formattedData.length; _i18++) {
+              var _datum6 = formattedData[_i18];
+              var _output6 = this.forecast(_datum6.input, _datum6.output.length);
+              var _errors5 = 0;
+              for (var _j3 = 0; _j3 < _output6.length; _j3++) {
+                for (var _p2 in _output6[_j3]) {
+                  var _error6 = data[_i18].output[_j3][_p2] - _output6[_j3][_p2];
+                  _errors5 += _error6 * _error6;
+                }
+              }
+
+              errorSum += _errors5;
+              var _errorsAbs6 = Math.abs(_errors5);
+              if (_errorsAbs6 > this.trainOpts.errorThresh) {
+                var _misclass6 = data[_i18];
+                misclasses.push({
+                  input: _misclass6.input,
+                  output: _misclass6.output,
+                  actual: _output6
+                });
+              }
+            }
+            break;
+          }
+        default:
+          throw new Error('unknown data shape or configuration');
+      }
+
+      return {
+        error: errorSum / formattedData.length,
+        misclasses: misclasses,
+        total: formattedData.length
+      };
+    }
+  }, {
+    key: 'addFormat',
+    value: function addFormat(value) {
+      var dataShape = _lookup2.default.dataShape(value).join(',');
+      switch (dataShape) {
+        case 'array,array,number':
+        case 'datum,array,array,number':
+        case 'array,number':
+        case 'datum,array,number':
+          return;
+        case 'datum,object,number':
+          {
+            this.inputLookup = _lookup2.default.addKeys(value.input, this.inputLookup);
+            if (this.inputLookup) {
+              this.inputLookupLength = Object.keys(this.inputLookup).length;
+            }
+            this.outputLookup = _lookup2.default.addKeys(value.output, this.outputLookup);
+            if (this.outputLookup) {
+              this.outputLookupLength = Object.keys(this.outputLookup).length;
+            }
+            break;
+          }
+        case 'object,number':
+          {
+            this.inputLookup = this.outputLookup = _lookup2.default.addKeys(value, this.inputLookup);
+            if (this.inputLookup) {
+              this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
+            }
+            break;
+          }
+        case 'array,object,number':
+          {
+            for (var i = 0; i < value.length; i++) {
+              this.inputLookup = this.outputLookup = _lookup2.default.addKeys(value[i], this.inputLookup);
+              if (this.inputLookup) {
+                this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
+              }
+            }
+            break;
+          }
+        case 'datum,array,object,number':
+          {
+            for (var _i19 = 0; _i19 < value.input.length; _i19++) {
+              this.inputLookup = _lookup2.default.addKeys(value.input[_i19], this.inputLookup);
+              if (this.inputLookup) {
+                this.inputLookupLength = Object.keys(this.inputLookup).length;
+              }
+            }
+            for (var _i20 = 0; _i20 < value.output.length; _i20++) {
+              this.outputLookup = _lookup2.default.addKeys(value.output[_i20], this.outputLookup);
+              if (this.outputLookup) {
+                this.outputLookupLength = Object.keys(this.outputLookup).length;
+              }
+            }
+            break;
+          }
+
+        default:
+          throw new Error('unknown data shape or configuration');
+      }
     }
 
     /**
@@ -564,8 +936,8 @@ var RNNTimeStep = function (_RNN) {
         options: options,
         hiddenLayers: model.hiddenLayers.map(function (hiddenLayer) {
           var layers = {};
-          for (var _p in hiddenLayer) {
-            layers[_p] = hiddenLayer[_p].toJSON();
+          for (var _p3 in hiddenLayer) {
+            layers[_p3] = hiddenLayer[_p3].toJSON();
           }
           return layers;
         }),
@@ -766,11 +1138,11 @@ RNNTimeStep.defaults = {
   inputSize: 1,
   hiddenLayers: [20],
   outputSize: 1,
-  learningRate: 0.01,
-  decayRate: 0.999,
-  smoothEps: 1e-8,
-  regc: 0.000001,
-  clipval: 5
+  learningRate: _rnn2.default.defaults.learningRate,
+  decayRate: _rnn2.default.defaults.decayRate,
+  smoothEps: _rnn2.default.defaults.smoothEps,
+  regc: _rnn2.default.defaults.regc,
+  clipval: _rnn2.default.defaults.clipval
 };
 
 RNNTimeStep.trainDefaults = _rnn2.default.trainDefaults;

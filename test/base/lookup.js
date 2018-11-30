@@ -31,5 +31,66 @@ describe('lookup', () => {
     let hash = lookup.toObject(lup, [0, 9, 8]);
 
     assert.deepEqual(hash, {a: 0, b: 9, c: 8})
-  })
+  });
+
+  describe('dataShape', () => {
+    describe('collection usage', () => {
+      it('can identify array,array,number', () => {
+        const individual = lookup.dataShape([0]);
+        const collection = lookup.dataShape([[0]]);
+
+        assert.deepEqual(individual, ['array','number']);
+        assert.deepEqual(collection, ['array','array','number']);
+      });
+
+      it('can identify array,array,array,number', () => {
+        const individual = lookup.dataShape([[0]]);
+        const collection = lookup.dataShape([[[0]]]);
+        assert.deepEqual(individual, ['array','array','number']);
+        assert.deepEqual(collection, ['array','array','array','number']);
+      });
+
+      it('can identify array,object,number', () => {
+        const individual = lookup.dataShape({ one: 0 });
+        const collection = lookup.dataShape([{ one: 0 }]);
+        assert.deepEqual(individual, ['object','number']);
+        assert.deepEqual(collection, ['array','object','number']);
+      });
+
+      it('can identify array,array,object,number', () => {
+        const individual = lookup.dataShape([{ one: 0 }]);
+        const collection = lookup.dataShape([[{ one: 0 }]]);
+        assert.deepEqual(individual, ['array','object','number']);
+        assert.deepEqual(collection, ['array','array','object','number']);
+      });
+
+      it('can identify array,datum,array,number', () => {
+        const individual = lookup.dataShape({ input: [0], output: [0] });
+        const collection = lookup.dataShape([{ input: [0], output: [0] }]);
+        assert.deepEqual(individual, ['datum','array','number']);
+        assert.deepEqual(collection, ['array','datum','array','number']);
+      });
+
+      it('can identify array,datum,object,number', () => {
+        const individual = lookup.dataShape({ input: { one: 0 }, output: { none: 0 } });
+        const collection = lookup.dataShape([{ input: { one: 0 }, output: { none: 0 } }]);
+        assert.deepEqual(individual, ['datum','object','number']);
+        assert.deepEqual(collection, ['array','datum','object','number']);
+      });
+
+      it('can identify array,datum,array,array,number', () => {
+        const individual = lookup.dataShape({ input: [[0]], output: [[0]] });
+        const collection = lookup.dataShape([{ input: [[0]], output: [[0]] }]);
+        assert.deepEqual(individual, ['datum','array','array','number']);
+        assert.deepEqual(collection, ['array','datum','array','array','number']);
+      });
+
+      it('can identify array,datum,array,object,number', () => {
+        const individual = lookup.dataShape({ input: [{ one: 0 }], output: [{ one: 0 }] });
+        const collection = lookup.dataShape([{ input: [{ one: 0 }], output: [{ one: 0 }] }]);
+        assert.deepEqual(individual, ['datum','array','object','number']);
+        assert.deepEqual(collection, ['array','datum','array','object','number']);
+      });
+    });
+  });
 });

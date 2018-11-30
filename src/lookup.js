@@ -13,6 +13,28 @@ export default class lookup {
     return lookup.toHash(hash);
   }
 
+  /**
+   * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
+   * @param {Object} objects2D
+   * @returns {Object}
+   */
+  static toTable2D(objects2D) {
+    const table = {};
+    let valueIndex = 0;
+    for (let i = 0; i < objects2D.length; i++) {
+      const objects = objects2D[i];
+      for (let j = 0; j < objects.length; j++) {
+        const object = objects[j];
+        for (const p in object) {
+          if (object.hasOwnProperty(p) && !table.hasOwnProperty(p)) {
+            table[p] = valueIndex++;
+          }
+        }
+      }
+    }
+    return table;
+  }
+
   static toInputTable(data) {
     const table = {};
     let tableIndex = 0;
@@ -26,6 +48,23 @@ export default class lookup {
     return table;
   }
 
+  static toInputTable2D(data) {
+    const table = {};
+    let tableIndex = 0;
+    for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
+      const input = data[dataIndex].input;
+      for (let i = 0; i < input.length; i++) {
+        const object = input[i];
+        for (let p in object) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
+        }
+      }
+    }
+    return table;
+  }
+
   static toOutputTable(data) {
     const table = {};
     let tableIndex = 0;
@@ -33,6 +72,23 @@ export default class lookup {
       for (let p in data[dataIndex].output) {
         if (!table.hasOwnProperty(p)) {
           table[p] = tableIndex++;
+        }
+      }
+    }
+    return table;
+  }
+
+  static toOutputTable2D(data) {
+    const table = {};
+    let tableIndex = 0;
+    for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
+      const output = data[dataIndex].output;
+      for (let i = 0; i < output.length; i++) {
+        const object = output[i];
+        for (let p in object) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
         }
       }
     }
@@ -99,11 +155,16 @@ export default class lookup {
     return object;
   }
 
-  static toObjectPartial(lookup, array, offset) {
+  static toObjectPartial(lookup, array, offset = 0, limit = 0) {
     const object = {};
     let i = 0;
     for (let p in lookup) {
-      if (i++ < offset) continue;
+      if (offset > 0) {
+        if (i++ < offset) continue;
+      }
+      if (limit > 0) {
+        if (i++ >= limit) continue;
+      }
       object[p] = array[lookup[p] - offset];
     }
     return object;
@@ -122,5 +183,51 @@ export default class lookup {
       lookup[array[i]] = z++;
     }
     return lookup;
+  }
+
+  static dataShape(data) {
+    const shape = [];
+
+    if (data.input) {
+      shape.push('datum');
+      data = data.input;
+    } else if (Array.isArray(data)) {
+      if (data[0].input) {
+        shape.push('array', 'datum');
+        data = data[0].input;
+      } else {
+        shape.push('array');
+        data = data[0];
+      }
+    }
+
+    let p;
+    while (data) {
+      for (p in data) { break; }
+      if (!data.hasOwnProperty(p)) break;
+      if (Array.isArray(data) || data.buffer instanceof ArrayBuffer) {
+        shape.push('array');
+        data = data[p];
+      } else if (typeof data === 'object') {
+        shape.push('object');
+        data = data[p];
+      } else {
+        throw new Error('unhandled signature');
+      }
+    }
+    shape.push(typeof data);
+    return shape;
+  }
+
+  static addKeys(value, table) {
+    if (Array.isArray(value)) return;
+    table = table || {};
+    let i = Object.keys(table).length;
+    for (const p in value) {
+      if (!value.hasOwnProperty(p)) continue;
+      if (table.hasOwnProperty(p)) continue;
+      table[p] = i++;
+    }
+    return table;
   }
 }

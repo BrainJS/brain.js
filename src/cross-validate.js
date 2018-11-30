@@ -19,18 +19,19 @@ export default class CrossValidate {
    * @returns {void|*}
    */
   testPartition(trainOpts, trainSet, testSet) {
-    let classifier = new this.Classifier(this.options);
-    let beginTrain = Date.now();
-    let trainingStats = classifier.train(trainSet, trainOpts);
-    let beginTest = Date.now();
-    let testStats = classifier.test(testSet);
-    let endTest = Date.now();
-    let stats = Object.assign({}, testStats, {
+    const classifier = new this.Classifier(this.options);
+    const beginTrain = Date.now();
+    const trainingStats = classifier.train(trainSet, trainOpts);
+    const beginTest = Date.now();
+    const testStats = classifier.test(testSet);
+    const endTest = Date.now();
+    const stats = Object.assign({}, testStats, {
       trainTime: beginTest - beginTrain,
       testTime: endTest - beginTest,
       iterations: trainingStats.iterations,
-      trainError: trainingStats.error,
-      learningRate: trainOpts.learningRate,
+      error: trainingStats.error,
+      total: testStats.total,
+      learningRate: classifier.trainOpts.learningRate,
       hiddenLayers: classifier.hiddenLayers,
       network: classifier.toJSON()
     });
@@ -65,7 +66,7 @@ export default class CrossValidate {
    *      trainTime: number,
    *      testTime: number,
    *      iterations: number,
-   *      trainError: number
+   *      error: number
    *    },
    *    stats: {
    *      truePos: number,
@@ -79,57 +80,71 @@ export default class CrossValidate {
    * }
    */
   train(data, trainOpts = {}, k = 4) {
-    if (data.length <= k) {
+    if (data.length < k) {
       throw new Error(`Training set size is too small for ${ data.length } k folds of ${ k }`);
     }
-    let size = data.length / k;
+
+    const size = data.length / k;
 
     if (data.constructor === Array) {
       this.shuffleArray(data);
     } else {
-      let newData = {};
+      const newData = {};
       this.shuffleArray(Object.keys(data)).forEach((key) => {
         newData[key] = data[key];
       });
       data = newData;
     }
 
-    let avgs = {
-      error: 0,
+    const avgs = {
       trainTime: 0,
       testTime: 0,
       iterations: 0,
-      trainError: 0
+      error: 0
     };
 
-    let stats = {
-      truePos: 0,
-      trueNeg: 0,
-      falsePos: 0,
-      falseNeg: 0,
+    const stats = {
       total: 0
     };
 
-    let results = [];
+    const binaryStats = {
+      total: 0,
+      truePos: 0,
+      trueNeg: 0,
+      falsePos: 0,
+      falseNeg: 0
+    };
+
+    const results = [];
     let stat;
-    let sum;
+    let isBinary = null;
 
     for (let i = 0; i < k; i++) {
-      let dclone = data.slice(0);
-      let testSet = dclone.splice(i * size, size);
-      let trainSet = dclone;
-      let result = this.testPartition(trainOpts, trainSet, testSet);
+      const dclone = data.slice(0);
+      const testSet = dclone.splice(i * size, size);
+      const trainSet = dclone;
+      const result = this.testPartition(trainOpts, trainSet, testSet);
+
+      if (isBinary === null) {
+        isBinary =
+          result.hasOwnProperty('falseNeg')
+          && result.hasOwnProperty('falsePos')
+          && result.hasOwnProperty('trueNeg')
+          && result.hasOwnProperty('truePos');
+        if (isBinary) {
+          Object.assign(stats, binaryStats);
+        }
+      }
+
       for (stat in avgs) {
         if (stat in avgs) {
-          sum = avgs[stat];
-          avgs[stat] = sum + result[stat];
+          avgs[stat] += result[stat];
         }
       }
 
       for (stat in stats) {
         if (stat in stats) {
-          sum = stats[stat];
-          stats[stat] = sum + result[stat];
+          stats[stat] += result[stat];
         }
       }
 
@@ -138,20 +153,21 @@ export default class CrossValidate {
 
     for (stat in avgs) {
       if (stat in avgs) {
-        sum = avgs[stat];
-        avgs[stat] = sum / k;
+        avgs[stat] /= k;
       }
     }
 
-    stats.precision = stats.truePos / (stats.truePos + stats.falsePos);
-    stats.recall = stats.truePos / (stats.truePos + stats.falseNeg);
-    stats.accuracy = (stats.trueNeg + stats.truePos) / stats.total;
+    if (isBinary) {
+      stats.precision = stats.truePos / (stats.truePos + stats.falsePos);
+      stats.recall = stats.truePos / (stats.truePos + stats.falseNeg);
+      stats.accuracy = (stats.trueNeg + stats.truePos) / stats.total;
+    }
 
     stats.testSize = size;
     stats.trainSize = data.length - size;
 
 
-    this.json = {
+    return this.json = {
       avgs: avgs,
       stats: stats,
       sets: results

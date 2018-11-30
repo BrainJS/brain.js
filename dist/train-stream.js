@@ -8,12 +8,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _stream = require('stream');
 
-var _lookup = require('./lookup');
-
-var _lookup2 = _interopRequireDefault(_lookup);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -29,39 +23,42 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var TrainStream = function (_Writable) {
   _inherits(TrainStream, _Writable);
 
-  function TrainStream(opts) {
+  function TrainStream(options) {
     _classCallCheck(this, TrainStream);
 
     var _this = _possibleConstructorReturn(this, (TrainStream.__proto__ || Object.getPrototypeOf(TrainStream)).call(this, {
       objectMode: true
     }));
 
-    opts = opts || {};
+    options = options || {};
 
     // require the neuralNetwork
-    if (!opts.neuralNetwork) {
+    if (!options.neuralNetwork) {
       throw new Error('no neural network specified');
     }
 
-    _this.neuralNetwork = opts.neuralNetwork;
+    var _options = options,
+        neuralNetwork = _options.neuralNetwork;
+
+    _this.neuralNetwork = neuralNetwork;
     _this.dataFormatDetermined = false;
-
-    _this.inputKeys = [];
-    _this.outputKeys = []; // keeps track of keys seen
-    _this.i = 0; // keep track of the for loop i variable that we got rid of
-    _this.iterations = opts.iterations || 20000;
-    _this.errorThresh = opts.errorThresh || 0.005;
-    _this.log = opts.log ? typeof opts.log === 'function' ? opts.log : console.log : false;
-    _this.logPeriod = opts.logPeriod || 10;
-    _this.callback = opts.callback;
-    _this.callbackPeriod = opts.callbackPeriod || 10;
-    _this.floodCallback = opts.floodCallback;
-    _this.doneTrainingCallback = opts.doneTrainingCallback;
-
+    _this.i = 0; // keep track of internal iterations
     _this.size = 0;
     _this.count = 0;
-
     _this.sum = 0;
+    _this.floodCallback = options.floodCallback;
+    _this.doneTrainingCallback = options.doneTrainingCallback;
+
+    // inherit trainOpts settings from neuralNetwork
+    neuralNetwork.updateTrainingOptions(options);
+    var trainOpts = neuralNetwork.trainOpts;
+
+    _this.iterations = trainOpts.iterations;
+    _this.errorThresh = trainOpts.errorThresh;
+    _this.log = trainOpts.log;
+    _this.logPeriod = trainOpts.logPeriod;
+    _this.callbackPeriod = trainOpts.callbackPeriod;
+    _this.callback = trainOpts.callback;
 
     _this.on('finish', _this.finishStreamIteration.bind(_this));
     return _this;
@@ -93,8 +90,7 @@ var TrainStream = function (_Writable) {
 
       if (!this.dataFormatDetermined) {
         this.size++;
-        this.inputKeys = Array.from(new Set(this.inputKeys.concat(Object.keys(chunk.input))));
-        this.outputKeys = Array.from(new Set(this.outputKeys.concat(Object.keys(chunk.output))));
+        this.neuralNetwork.addFormat(chunk);
         this.firstDatum = this.firstDatum || chunk;
         return next();
       }
@@ -102,21 +98,10 @@ var TrainStream = function (_Writable) {
       this.count++;
 
       var data = this.neuralNetwork.formatData(chunk);
-      this.trainDatum(data[0]);
+      this.sum += this.neuralNetwork.trainPattern(data[0], true);
 
       // tell the Readable Stream that we are ready for more data
       next();
-    }
-
-    /**
-     *
-     * @param datum
-     */
-
-  }, {
-    key: 'trainDatum',
-    value: function trainDatum(datum) {
-      this.sum += this.neuralNetwork.trainPattern(datum.input, datum.output, true);
     }
 
     /**
@@ -132,13 +117,6 @@ var TrainStream = function (_Writable) {
       }
 
       if (!this.dataFormatDetermined) {
-        // create the lookup
-        if (!Array.isArray(this.firstDatum.input)) {
-          this.neuralNetwork.inputLookup = _lookup2.default.lookupFromArray(this.inputKeys);
-        }
-        if (!Array.isArray(this.firstDatum.output)) {
-          this.neuralNetwork.outputLookup = _lookup2.default.lookupFromArray(this.outputKeys);
-        }
         var data = this.neuralNetwork.formatData(this.firstDatum);
         this.neuralNetwork.verifyIsInitialized(data);
         this.dataFormatDetermined = true;
@@ -152,7 +130,7 @@ var TrainStream = function (_Writable) {
       var error = this.sum / this.size;
 
       if (this.log && this.i % this.logPeriod === 0) {
-        this.log('iterations:', this.i, 'training error:', error);
+        this.log('iterations: ' + this.i + ', training error: ' + error);
       }
       if (this.callback && this.i % this.callbackPeriod === 0) {
         this.callback({

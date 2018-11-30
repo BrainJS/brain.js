@@ -1,19 +1,19 @@
 import assert from 'assert';
 import NeuralNetwork from '../../src/neural-network';
 import TrainStream from '../../src/train-stream';
+import LSTMTimeStep from '../../src/recurrent/lstm-time-step';
 
 describe('TrainStream', () => {
   const wiggle = 0.1;
   const errorThresh = 0.003;
   function testTrainer(net, opts) {
+    const { data } = opts;
     return new Promise((resolve) => {
-      const { data, errorThresh } = opts;
-      const trainStream = new TrainStream({
+      const trainStream = new TrainStream(Object.assign({}, opts,{
         neuralNetwork: net,
-        errorThresh: errorThresh || 0.004,
         floodCallback: flood,
         doneTrainingCallback: resolve
-      });
+      }));
 
       /**
        * kick off the stream
@@ -204,6 +204,32 @@ describe('TrainStream', () => {
             }
           });
       });
+    });
+  });
+
+  describe('RNNTimeStep compatibility', () => {
+    it('can average error for array,array, counting forwards and backwards', () => {
+      const iterations = 50;
+      const data = [
+        [.1,.2,.3,.4,.5],
+        [.2,.3,.4,.5,.6],
+        [.3,.4,.5,.6,.7],
+        [.4,.5,.6,.7,.8],
+        [.5,.6,.7,.8,.9]
+      ];
+
+      const net = new LSTMTimeStep({ hiddenLayers: [10] });
+
+      return testTrainer(net, { data, iterations })
+        .then((info) => {
+          assert.ok(info.error < 0.05);
+          assert.equal(info.iterations, iterations);
+
+          for (let i = 0; i < data.length; i++) {
+            const value = data[i];
+            assert.equal(net.run(value.slice(0, 4)).toFixed(1), value[4].toFixed(1));
+          }
+        });
     });
   });
 });
