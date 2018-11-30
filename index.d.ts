@@ -3,6 +3,7 @@ export interface INeuralNetworkOptions {
   binaryThresh?: number;
   hiddenLayers?: number[];
   activation?: NeuralNetworkActivation;
+  leakyReluAlpha?: number;
 }
 
 export type NeuralNetworkActivation = 'sigmoid' | 'relu' | 'leaky-relu' | 'tanh';
@@ -47,8 +48,19 @@ export interface INeuralNetworkTrainingData {
 export type NeuralNetworkInput = number[];
 
 export interface INeuralNetworkTestResult {
-  misclasses: any,
-  error: number
+  misclasses: any;
+  error: number;
+  total: number;
+}
+
+export interface INeuralNetworkBinaryTestResult extends INeuralNetworkTestResult {
+  trueNeg: number;
+  truePos: number;
+  falseNeg: number;
+  falsePos: number;
+  precision: number;
+  recall: number;
+  accuracy: number;
 }
 
 export class NeuralNetwork {
@@ -57,7 +69,7 @@ export class NeuralNetwork {
   public train<T>(data: T, options?: INeuralNetworkTrainingOptions): INeuralNetworkState;
   public trainAsync(data: INeuralNetworkTrainingData, options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
   public trainAsync<T>(data: T, options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
-  public test(data: INeuralNetworkTrainingData): INeuralNetworkTestResult;
+  public test(data: INeuralNetworkTrainingData): INeuralNetworkTestResult | INeuralNetworkBinaryTestResult;
   public run(data: NeuralNetworkInput): NeuralNetworkInput;
   public run<T>(data: NeuralNetworkInput): T;
   public run<TInput, TOutput>(data: TInput): TOutput;

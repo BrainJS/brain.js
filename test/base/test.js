@@ -76,22 +76,26 @@ describe('test()', () => {
     net.train(trainingData);
     it('can test simple math data', () => {
       const test1 = net.test(trainingData[0]);
-      assert.equal(Object.keys(test1).length, 2);
+      assert.equal(Object.keys(test1).length, 3);
+      assert.equal(test1.total, 1);
       assert.ok(test1.error < 0.05);
       assert.equal(test1.misclasses.length, 0);
 
       const test2 = net.test(trainingData[1]);
-      assert.equal(Object.keys(test2).length, 2);
+      assert.equal(Object.keys(test2).length, 3);
+      assert.equal(test2.total, 1);
       assert.ok(test2.error < 0.05);
       assert.equal(test2.misclasses.length, 0);
 
       const test3 = net.test(trainingData[2]);
-      assert.equal(Object.keys(test3).length, 2);
+      assert.equal(Object.keys(test3).length, 3);
+      assert.equal(test3.total, 1);
       assert.ok(test3.error < 0.05);
       assert.equal(test3.misclasses.length, 0);
 
       const test4 = net.test(trainingData[3]);
-      assert.equal(Object.keys(test4).length, 2);
+      assert.equal(Object.keys(test4).length, 3);
+      assert.equal(test4.total, 1);
       assert.ok(test4.error < 0.05);
       assert.equal(test4.misclasses.length, 0);
     });

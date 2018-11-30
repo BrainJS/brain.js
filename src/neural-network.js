@@ -36,14 +36,13 @@ export default class NeuralNetwork {
     return {
       leakyReluAlpha: 0.01,
       binaryThresh: 0.5,
-      hiddenLayers: [3],     // array of ints for the sizes of the hidden layers in the network
+      hiddenLayers: null,     // array of ints for the sizes of the hidden layers in the network
       activation: 'sigmoid'  // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
     };
   }
 
   constructor(options = {}) {
     Object.assign(this, this.constructor.defaults, options);
-    this.hiddenLayers = options.hiddenLayers;
     this.trainOpts = {};
     this.updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
 
@@ -781,7 +780,7 @@ export default class NeuralNetwork {
    * @returns {
    *  {
    *    error: number,
-   *    misclasses: Array
+   *    misclasses: Array,
    *  }
    * }
    */
@@ -809,11 +808,12 @@ export default class NeuralNetwork {
 
         if (actual !== expected) {
           const misclass = data[i];
-          Object.assign(misclass, {
-            actual: actual,
-            expected: expected
+          misclasses.push({
+            input: misclass.input,
+            output: misclass.output,
+            actual,
+            expected
           });
-          misclasses.push(misclass);
         }
 
         if (actual === 0 && expected === 0) {
@@ -834,11 +834,11 @@ export default class NeuralNetwork {
       return {
         error: errorSum / data.length,
         misclasses: misclasses,
+        total: data.length,
         trueNeg: trueNeg,
         truePos: truePos,
         falseNeg: falseNeg,
         falsePos: falsePos,
-        total: data.length,
         precision: truePos > 0 ? truePos / (truePos + falsePos) : 0,
         recall: truePos > 0 ? truePos / (truePos + falseNeg) : 0,
         accuracy: (trueNeg + truePos) / data.length
@@ -853,11 +853,12 @@ export default class NeuralNetwork {
 
       if (actual !== expected) {
         const misclass = data[i];
-        Object.assign(misclass, {
-          actual: actual,
-          expected: expected
+        misclasses.push({
+          input: misclass.input,
+          output: misclass.output,
+          actual,
+          expected
         });
-        misclasses.push(misclass);
       }
 
       errorSum += mse(output.map((value, i) => {
@@ -866,7 +867,8 @@ export default class NeuralNetwork {
     }
     return {
       error: errorSum / data.length,
-      misclasses: misclasses
+      misclasses: misclasses,
+      total: data.length
     };
   }
 

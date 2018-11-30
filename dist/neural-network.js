@@ -78,7 +78,7 @@ var NeuralNetwork = function () {
       return {
         leakyReluAlpha: 0.01,
         binaryThresh: 0.5,
-        hiddenLayers: [3], // array of ints for the sizes of the hidden layers in the network
+        hiddenLayers: null, // array of ints for the sizes of the hidden layers in the network
         activation: 'sigmoid' // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
       };
     }
@@ -90,7 +90,6 @@ var NeuralNetwork = function () {
     _classCallCheck(this, NeuralNetwork);
 
     Object.assign(this, this.constructor.defaults, options);
-    this.hiddenLayers = options.hiddenLayers;
     this.trainOpts = {};
     this.updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
 
@@ -923,7 +922,7 @@ var NeuralNetwork = function () {
      * @returns {
      *  {
      *    error: number,
-     *    misclasses: Array
+     *    misclasses: Array,
      *  }
      * }
      */
@@ -956,11 +955,12 @@ var NeuralNetwork = function () {
 
           if (actual !== expected) {
             var misclass = data[i];
-            Object.assign(misclass, {
+            misclasses.push({
+              input: misclass.input,
+              output: misclass.output,
               actual: actual,
               expected: expected
             });
-            misclasses.push(misclass);
           }
 
           if (actual === 0 && expected === 0) {
@@ -985,11 +985,11 @@ var NeuralNetwork = function () {
         return {
           error: errorSum / data.length,
           misclasses: misclasses,
+          total: data.length,
           trueNeg: trueNeg,
           truePos: truePos,
           falseNeg: falseNeg,
           falsePos: falsePos,
-          total: data.length,
           precision: truePos > 0 ? truePos / (truePos + falsePos) : 0,
           recall: truePos > 0 ? truePos / (truePos + falseNeg) : 0,
           accuracy: (trueNeg + truePos) / data.length
@@ -1004,11 +1004,12 @@ var NeuralNetwork = function () {
 
         if (actual !== expected) {
           var misclass = data[i];
-          Object.assign(misclass, {
+          misclasses.push({
+            input: misclass.input,
+            output: misclass.output,
             actual: actual,
             expected: expected
           });
-          misclasses.push(misclass);
         }
 
         errorSum += (0, _mse2.default)(output.map(function (value, i) {
@@ -1021,7 +1022,8 @@ var NeuralNetwork = function () {
       }
       return {
         error: errorSum / data.length,
-        misclasses: misclasses
+        misclasses: misclasses,
+        total: data.length
       };
     }
 

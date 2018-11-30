@@ -216,7 +216,7 @@ export default class RNNTimeStep extends RNN {
         this.inputSize = Object.keys(lookup.toInputTable2D(data)).length;
         this.outputSize = Object.keys(lookup.toOutputTable2D(data)).length;
         break;
-      default: throw new Error(`unknown data shape ${ dataShape }`);
+      default: throw new Error('unknown data shape or configuration');
     }
   }
 
@@ -580,6 +580,7 @@ export default class RNNTimeStep extends RNN {
           }
           break;
         }
+        throw new Error('unknown data shape or configuration');
       }
       case 'array,array,array,number': {
         for (let i = 0; i < formattedData.length; i++) {
@@ -732,12 +733,13 @@ export default class RNNTimeStep extends RNN {
         }
         break;
       }
-      default: throw new Error('unimplemented');
+      default: throw new Error('unknown data shape or configuration');
     }
 
     return {
-      error: errorSum / data.length,
-      misclasses: misclasses
+      error: errorSum / formattedData.length,
+      misclasses: misclasses,
+      total: formattedData.length
     };
   }
 
@@ -792,7 +794,7 @@ export default class RNNTimeStep extends RNN {
         break;
       }
 
-      default: throw new Error(`unknown data shape ${ dataShape }`);
+      default: throw new Error('unknown data shape or configuration');
     }
   }
 

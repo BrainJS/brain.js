@@ -286,7 +286,7 @@ var RNNTimeStep = function (_RNN) {
           this.outputSize = Object.keys(_lookup2.default.toOutputTable2D(data)).length;
           break;
         default:
-          throw new Error('unknown data shape ' + dataShape);
+          throw new Error('unknown data shape or configuration');
       }
     }
   }, {
@@ -683,6 +683,7 @@ var RNNTimeStep = function (_RNN) {
               }
               break;
             }
+            throw new Error('unknown data shape or configuration');
           }
         case 'array,array,array,number':
           {
@@ -839,12 +840,13 @@ var RNNTimeStep = function (_RNN) {
             break;
           }
         default:
-          throw new Error('unimplemented');
+          throw new Error('unknown data shape or configuration');
       }
 
       return {
-        error: errorSum / data.length,
-        misclasses: misclasses
+        error: errorSum / formattedData.length,
+        misclasses: misclasses,
+        total: formattedData.length
       };
     }
   }, {
@@ -905,7 +907,7 @@ var RNNTimeStep = function (_RNN) {
           }
 
         default:
-          throw new Error('unknown data shape ' + dataShape);
+          throw new Error('unknown data shape or configuration');
       }
     }
 
