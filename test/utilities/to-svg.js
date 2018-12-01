@@ -4,10 +4,15 @@
  */
 
 import assert from 'assert';
-import svg from '../../src/utilities/svg';
+import toSVG from '../../src/utilities/to-svg';
+var parser = require('fast-xml-parser');
 
 describe('svg', () => {
-    let size = [4,3,2];
+    let network = {
+            inputSize: 4,
+            hiddenLayers: [3],
+            outputSize: 2
+    };
     
     let options = {
         height: 200,
@@ -28,43 +33,46 @@ describe('svg', () => {
             color: 'rgba(100, 149, 237, 0.5)',
         },
         fontSize: "11px"
-    }
+    };
 
     describe('check the value returned when sane inputs are provided', () => {
        
         it('should return a string', () => {
-            const svgImg = svg.makeSVG(size,options)
+            const svgImg = toSVG(network,options);
             assert.ok(typeof(svgImg) === 'string');
         });
 
         it('should return a string starting with "<svg"', () => {
-            const svgImg = svg.makeSVG(size,options)
+            const svgImg = toSVG(network,options);
             assert.equal(svgImg.slice(0,4) , '<svg');
         });
         
         it('should return a string ending to "</svg>"', () => {
-            const svgImg = svg.makeSVG(size,options)
+            const svgImg = toSVG(network,options);
             assert.equal(svgImg.slice(-6) , '</svg>');
         });    
         
-        // it('should return valid xml when sane inputs provided', () => {
-        //     const svgImg = svg.makeSVG(size,options)
-        //     expect(svgImg).xml.to.be.valid();
-        // });
+        it('should return valid xml when sane inputs provided', () => {
+            assert.ok(parser.validate(toSVG(network,options))===true);
+        });
     });
     
-    describe('"size" input', () => {
+    describe('"network" input', () => {
 
-        it('should not throw an exception when size is not an array', () => {
-            const sizeNotAnArray = 5
+        it('should not throw an exception when null input size provided', () => {
+            const network = {
+                inputSize: null,
+                hiddenLayers: [3],
+                outputSize: 2
+            };
             assert.doesNotThrow(()=>{
-                const val = svg.makeSVG(sizeNotAnArray,options);
+                const val = toSVG(network,options);
             },TypeError)
         });        
         
-        it('should return false when size length is smaller than 2', () => {
-            const empty = []
-            const val = svg.makeSVG(empty,options)
+        it('should return false when empty network object provided', () => {
+            const empty = {}
+            const val = toSVG(empty,options)
             assert.ok(val === false);
         });
     });
@@ -74,9 +82,13 @@ describe('svg', () => {
 
         it('should not throw an exception when any options missing', () => {
             const noOptions = {}
-            size = [4,3,2];
+            network = {
+                inputSize: 4,
+                hiddenLayers: [3],
+                outputSize: 2
+            };
             assert.doesNotThrow(()=>{
-                const val = svg.makeSVG(size,noOptions);
+                const val = toSVG(network,noOptions);
             },TypeError)
         });
     });

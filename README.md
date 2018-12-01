@@ -427,7 +427,7 @@ Server-side and client-side implementation.
 ```
 Renders the network topology of a feedforward network
 ```js
-document.getElementById('result').innerHTML=svgModule.makeSVG(size,options)
+document.getElementById('result').innerHTML=svgModule.toSVG(size,options)
 ```
 
 client-side example see: [examples/svg](./examples/svg/index.js)

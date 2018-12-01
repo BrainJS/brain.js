@@ -4,20 +4,28 @@
 	<head>
 		<title>brain.js network rendering example</title>
 		<meta charset="UTF-8">
+		<script src="https://unpkg.com/brain.js@1.1.2/browser.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="app.css">
 		<script>
 			function request(net) {
 				var xhttp = new XMLHttpRequest();
 				xhttp.open("POST", "/svg", true);
-				xhttp.setRequestHeader("Content-Type", "text/plain;charset=UTF-8")
+				xhttp.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
 				xhttp.onreadystatechange = function() {
 					if (this.readyState == 4 && this.status == 200) {
 					document.getElementById("result").innerHTML = this.responseText;
-					}
+					};
 				};
+				
+				const nnet = {};
+				vals = Object.values(net.network);
+				Object.keys(net.network).forEach((key,i)=>{
+					nnet[key] = vals[i];
+				}) 
+				
 				xhttp.send(JSON.stringify(net));
 			}
-		</script>
+		</script> 
 	</head>
 	<body >
 	
@@ -88,32 +96,47 @@
 				e.preventDefault();
 				const size = this.elements.namedItem("size").value.split(",").map((item)=> {
 					return parseInt(item, 10);
-				});;
-				const options = constructOptions(this)
-				request({"size":size,"options":options})
+				});
+				const options = constructOptions(this);
+				const config = {
+					inputSize: size[0],
+					inputRange: size[0],
+					hiddenLayers: size.slice(1,size.length-1),
+					outputSize: size[size.length-1]
+				};
+				const network = new brain.NeuralNetwork(config);
+				const netJson = {};
+				const vals = Object.values(network);
+				Object.keys(network).forEach((key,i)=>{
+					netJson[key] = vals[i];
+				}) 
+
+				request({"network":netJson,"options":options});
 			});
 
 			function constructOptions(form){
-				const options={}
-				options.height = Number(form.elements.namedItem("height").value)
-				options.width = Number(form.elements.namedItem("width").value)
-				options.r = Number(form.elements.namedItem("radius").value)
-				options.line = {}
-				options.inputs = {}
-				options.hidden = {}
-				options.outputs = {}
-				options.line.width = Number(form.elements.namedItem("lineWidth").value)
-				options.line.color = form.elements.namedItem("lineColor").value
-				options.inputs.color = form.elements.namedItem("inp-color").value
-				options.hidden.color = form.elements.namedItem("hid-color").value
-				options.outputs.color = form.elements.namedItem("out-color").value
-				options.fontSize = form.elements.namedItem("fontSize").value
+				const options={};
+				options.height = Number(form.elements.namedItem("height").value);
+				options.width = Number(form.elements.namedItem("width").value);
+				options.radius = Number(form.elements.namedItem("radius").value);
+				options.line = {};
+				options.inputs = {};
+				options.hidden = {};
+				options.outputs = {};
+				options.line.width = Number(form.elements.namedItem("lineWidth").value);
+				options.line.color = form.elements.namedItem("lineColor").value;
+				options.inputs.color = form.elements.namedItem("inp-color").value;
+				options.hidden.color = form.elements.namedItem("hid-color").value;
+				options.outputs.color = form.elements.namedItem("out-color").value;
+				options.fontSize = form.elements.namedItem("fontSize").value;
 
-				tempInpLabels = form.elements.namedItem("inp-labels").value
-				options.inputs.label = []
-				tempInpLabels.split(',').forEach(element => options.inputs.label.push(element))
+				tempInpLabels = form.elements.namedItem("inp-labels").value;
+				options.inputs.label = [];
+				tempInpLabels.split(',').forEach(element => options.inputs.label.push(element));
+				
+				if(options.inputs.label.length<2) options.inputs.label = false;
 
-				return options
+				return options;
 			}
 
 			// Click programmatically

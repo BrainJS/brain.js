@@ -1,5 +1,5 @@
 
-const svgImg = require('../../src/utilities/svg')
+const brain = require('../../index')
 const fs = require('fs')
 const path = require('path')
 
@@ -10,7 +10,7 @@ var handlers = {};
 handlers.index = (data, callback)=>{
     // Reject any request that isn't GET
     if(data.method == 'get'){
-        const templatesDir = path.join(__dirname,'index.html')
+        const templatesDir = path.join(__dirname,'serversideSVG.html')
         fs.readFile(templatesDir,'utf8',(err,str)=>{
             if(!err && str && str.length> 0){
                 callback(200, str, 'html');
@@ -23,8 +23,7 @@ handlers.index = (data, callback)=>{
 
 handlers.svg =function(data, callback){
     if(data.method=='post'){
-            const svg = svgImg.makeSVG(data.payload.size, data.payload.options);
-        // const svg = svgImg.makeSVG(data.payload.status, data.payload.options);
+        const svg = brain.utilities.toSVG(data.payload.network, data.payload.options);
         callback(200,svg,'html');
     }else{
         callback(405);

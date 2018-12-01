@@ -5,10 +5,9 @@
 		<title>brain.js network rendering example</title>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" type="text/css" href="app.css">
-        <script src="../../src/utilities/svg.js"></script> 
+		<script src="../../browser.min.js"></script>
 	</head>
 	<body >
-	
 		<div class="flex-container">
 			<div class="formWrapper" style="flex-grow: 1;width:400px">
 				<form id="network-settings" action="" method="POST">
@@ -76,16 +75,24 @@
 				e.preventDefault();
 				const size = this.elements.namedItem("size").value.split(",").map((item)=> {
 					return parseInt(item, 10);
-				});;
-                const options = constructOptions(this)
-                document.getElementById('result').innerHTML=svgModule.makeSVG(size,options)
+				});
+				const config = {
+					inputSize: size[0],
+					inputRange: size[0],
+					hiddenLayers: size.slice(1,size.length-1),
+					outputSize: size[size.length-1]
+				};
+				const network = new brain.NeuralNetwork(config);
+				const options = constructOptions(this);
+				
+                document.getElementById('result').innerHTML=brain.utilities.toSVG(network,options);
 			});
 
 			function constructOptions(form){
 				const options={}
 				options.height = Number(form.elements.namedItem("height").value)
 				options.width = Number(form.elements.namedItem("width").value)
-				options.r = Number(form.elements.namedItem("radius").value)
+				options.radius = Number(form.elements.namedItem("radius").value)
 				options.line = {}
 				options.inputs = {}
 				options.hidden = {}
