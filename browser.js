@@ -11,8 +11,9 @@
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   maintainers: Marijn Haverbeke <marijnh@gmail.com>, Ingvar Stepanyan <me@rreverser.com>, Adrian Heine <http://adrianheine.de>
+ *   contributors: List of Acorn contributors. Updated before every release., Adrian Heine, Adrian Rakovsky, Alistair Braidwood, Amila Welihinda, Andres Suarez, Angelo, Aparajita Fishman, Arian Stolwijk, Artem Govorov, Boopesh Mahendran, Bradley Heinz, Brandon Mills, Charles Hughes, Charmander, Chris McKnight, Conrad Irwin, Daniel Tschinder, David Bonnet, Domenico Matteo, ehmicky, Eugene Obrezkov, Felix Maier, Forbes Lindesay, Gilad Peleg, impinball, Ingvar Stepanyan, Jackson Ray Hamilton, Jesse McCarthy, Jiaxing Wang, Joel Kemp, Johannes Herr, John-David Dalton, Jordan Klassen, Jürg Lehni, Kai Cataldo, keeyipchan, Keheliya Gallaba, Kevin Irish, Kevin Kwok, krator, laosb, luckyzeng, Marek, Marijn Haverbeke, Martin Carlberg, Mat Garcia, Mathias Bynens, Mathieu 'p01' Henri, Matthew Bastien, Max Schaefer, Max Zerzouri, Mihai Bazon, Mike Rennie, naoh, Nicholas C. Zakas, Nick Fitzgerald, Olivier Thomann, Oskar Schöldström, Paul Harper, Peter Rust, PlNG, Prayag Verma, ReadmeCritic, r-e-d, Renée Kooi, Richard Gibson, Rich Harris, Sebastian McKenzie, Shahar Soel, Sheel Bedi, Simen Bekkhus, Teddy Katz, Timothy Gu, Toru Nagashima, Victor Homyakov, Wexpo Lyu, zsjforcn
  *   homepage: https://github.com/acornjs/acorn
- *   version: 5.7.2
+ *   version: 5.7.3
  *
  * base64-js:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -29,12 +30,14 @@
  *
  * core-util-is:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me/)
+ *   author: Isaac Z. Schlueter <i@izs.me>
+ *   homepage: https://github.com/isaacs/core-util-is#readme
  *   version: 1.0.2
  *
  * events:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)
+ *   author: Irakli Gozalishvili <rfobic@gmail.com>
+ *   homepage: https://github.com/Gozala/events#readme
  *   version: 1.1.1
  *
  * gpu.js:
@@ -47,10 +50,12 @@
  *   license: BSD-3-Clause (http://opensource.org/licenses/BSD-3-Clause)
  *   author: Feross Aboukhadijeh <feross@feross.org>
  *   contributors: Romain Beauxis <toots@rastageeks.org>
+ *   homepage: https://github.com/feross/ieee754#readme
  *   version: 1.1.12
  *
  * inherits:
  *   license: ISC (http://opensource.org/licenses/ISC)
+ *   homepage: https://github.com/isaacs/inherits#readme
  *   version: 2.0.3
  *
  * isarray:
@@ -62,6 +67,7 @@
  * process:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Roman Shtylman <shtylman@gmail.com>
+ *   homepage: https://github.com/shtylman/node-process#readme
  *   version: 0.11.10
  *
  * process-nextick-args:
@@ -71,6 +77,7 @@
  *
  * readable-stream:
  *   license: MIT (http://opensource.org/licenses/MIT)
+ *   homepage: https://github.com/nodejs/readable-stream#readme
  *   version: 2.3.6
  *
  * safe-buffer:
@@ -98,14 +105,14 @@
  *
  * timers-browserify:
  *   licenses: MIT (http://opensource.org/licenses/MIT)
- *   author: J. Ryan Stinnett <jryans@gmail.com> (http://convolv.es/)
+ *   author: J. Ryan Stinnett <jryans@gmail.com>
  *   contributors: Guy Bedford <guybedford@gmail.com>, Ionut-Cristian Florescu <ionut.florescu@gmail.com>, James Halliday <mail@substack.net>, Jan Schär <jscissr@gmail.com>, Johannes Ewald <johannes.ewald@peerigon.com>, Jonathan Prins <jon@blip.tv>, Matt Esch <matt@mattesch.info>
  *   homepage: https://github.com/jryans/timers-browserify
  *   version: 1.4.2
  *
  * util-deprecate:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)
+ *   author: Nathan Rajlich <nathan@tootallnate.net>
  *   homepage: https://github.com/TooTallNate/util-deprecate
  *   version: 1.0.2
  *
@@ -1182,7 +1189,7 @@ function mse(errors) {
   return sum / this.constants.size;
 }
 
-},{"./lookup":3,"./neural-network":5,"gpu.js":88}],5:[function(require,module,exports){
+},{"./lookup":3,"./neural-network":5,"gpu.js":90}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2439,7 +2446,7 @@ function getTypedArrayFn(value, table) {
   }
 }
 
-},{"./lookup":3,"./utilities/cast":38,"./utilities/lookup-table":40,"./utilities/max":41,"./utilities/mse":42,"./utilities/randos":46,"./utilities/range":47,"./utilities/to-array":48,"./utilities/zeros":49,"thaw.js":113}],6:[function(require,module,exports){
+},{"./lookup":3,"./utilities/cast":38,"./utilities/lookup-table":40,"./utilities/max":41,"./utilities/mse":42,"./utilities/randos":46,"./utilities/range":47,"./utilities/to-array":48,"./utilities/zeros":50,"thaw.js":114}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3553,7 +3560,7 @@ var Matrix = function () {
 
 exports.default = Matrix;
 
-},{"../../utilities/zeros":49}],17:[function(require,module,exports){
+},{"../../utilities/zeros":50}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5188,7 +5195,7 @@ RNNTimeStep.defaults = {
 
 RNNTimeStep.trainDefaults = _rnn2.default.trainDefaults;
 
-},{"../lookup":3,"../utilities/array-lookup-table":37,"../utilities/cast":38,"../utilities/lookup-table":40,"../utilities/random":45,"../utilities/zeros":49,"./matrix":16,"./matrix/equation":15,"./matrix/max-i":17,"./matrix/random-matrix":23,"./matrix/sample-i":28,"./matrix/softmax":31,"./rnn":35}],35:[function(require,module,exports){
+},{"../lookup":3,"../utilities/array-lookup-table":37,"../utilities/cast":38,"../utilities/lookup-table":40,"../utilities/random":45,"../utilities/zeros":50,"./matrix":16,"./matrix/equation":15,"./matrix/max-i":17,"./matrix/random-matrix":23,"./matrix/sample-i":28,"./matrix/softmax":31,"./rnn":35}],35:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6056,7 +6063,7 @@ RNN.trainDefaults = {
   callbackPeriod: 10
 };
 
-},{"../neural-network":5,"../utilities/data-formatter":39,"../utilities/random":45,"../utilities/zeros":49,"./matrix":16,"./matrix/copy":14,"./matrix/equation":15,"./matrix/max-i":17,"./matrix/random-matrix":23,"./matrix/sample-i":28,"./matrix/softmax":31}],36:[function(require,module,exports){
+},{"../neural-network":5,"../utilities/data-formatter":39,"../utilities/random":45,"../utilities/zeros":50,"./matrix":16,"./matrix/copy":14,"./matrix/equation":15,"./matrix/max-i":17,"./matrix/random-matrix":23,"./matrix/sample-i":28,"./matrix/softmax":31}],36:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6780,6 +6787,75 @@ function toArray(values) {
 }
 
 },{}],49:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = toSVG;
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function toSVG(network, options) {
+    //default values
+    var defaultOptions = {
+        line: {
+            width: '0.5',
+            color: 'black'
+        },
+        inputs: {
+            color: 'rgba(0, 128, 0, 0.5)',
+            label: false
+        },
+        outputs: {
+            color: 'rgba(100, 149, 237, 0.5)'
+        },
+        hidden: {
+            color: 'rgba(255, 127, 80, 0.5)'
+        },
+        fontSize: '14px',
+        radius: '8',
+        width: '400',
+        height: '250'
+    };
+
+    var size = typeof network.inputSize == 'number' && typeof network.outputSize == 'number' && network.inputSize > 0 && network.outputSize > 0 ? [network.inputSize].concat(_toConsumableArray(network.hiddenLayers), [network.outputSize]) : false;
+    options = Object.assign(defaultOptions, options);
+    options.inputs.label = options.inputs.label.length == network.inputSize ? options.inputs.label : false;
+    if (size) {
+        var svg = '<svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="' + options.width + '" height="' + options.height + '">';
+        var sh = options.width / size.length;
+        size.forEach(function (neuronsNu, i) {
+            var sv = options.height / neuronsNu;
+            [].concat(_toConsumableArray(Array(neuronsNu))).forEach(function (_, j) {
+                if (i == 0) {
+                    svg += '<rect x="' + (sh / 2 - options.radius) + '" y="' + (sv / 2 + j * sv - options.radius) + '" width="' + 2 * options.radius + '" height="' + 2 * options.radius + '" stroke="black" stroke-width="1" fill="' + options.inputs.color + '" />';
+                    svg += '<line x1="' + sh / 4 + '" y1="' + (sv / 2 + j * sv) + '" x2="' + (sh / 2 - options.radius) + '" y2="' + (sv / 2 + j * sv) + '" style="stroke:' + options.line.color + ';stroke-width:' + options.line.width + '" />';
+                    if (options.inputs.label) {
+                        svg += '<text x="' + sh / 8 + '" y="' + (sv / 2 + j * sv - 5) + '" fill="black" font-size= "' + options.fontSize + '">' + options.inputs.label[j] + '</text>';
+                    }
+                } else {
+                    var sv_1 = options.height / size[i - 1];
+                    if (i == size.length - 1) {
+                        svg += '<circle cx="' + (sh / 2 + i * sh) + '" cy="' + (sv / 2 + j * sv) + '" r="' + options.radius + '" stroke="black" stroke-width="1" fill="' + options.outputs.color + '" />';
+                        svg += '<line x1="' + (sh / 2 + i * sh + options.radius) + '" y1="' + (sv / 2 + j * sv) + '" x2="' + (sh / 2 + i * sh + sh / 4) + '" y2="' + (sv / 2 + j * sv) + '" style="stroke:' + options.line.color + ';stroke-width:' + options.line.width + '" />';
+                    } else {
+                        svg += '<circle cx="' + (sh / 2 + i * sh) + '" cy="' + (sv / 2 + j * sv) + '" r="' + options.radius + '" stroke="black" stroke-width="1" fill="' + options.hidden.color + '" />';
+                    }
+                    for (var k = 0; k < size[i - 1]; k++) {
+                        svg += '<line x1="' + (sh / 2 + (i - 1) * sh + options.radius) + '" y1="' + (sv_1 / 2 + k * sv_1) + '" x2="' + (sh / 2 + i * sh - options.radius) + '" y2="' + (sv / 2 + j * sv) + '" style="stroke:' + options.line.color + ';stroke-width:' + options.line.width + '" />';
+                    }
+                }
+            });
+        });
+        svg += '</svg>';
+        return svg;
+    } else {
+        return false;
+    }
+}
+
+},{}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6790,7 +6866,7 @@ function zeros(size) {
   return new Float32Array(size);
 }
 
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 var CrossValidate = require('./dist/cross-validate').default;
 var likely = require('./dist/likely').default;
 var lookup = require('./dist/lookup').default;
@@ -6813,7 +6889,8 @@ var utilities = {
   range: require('./dist/utilities/range').default,
   toArray: require('./dist/utilities/to-array').default,
   DataFormatter: require('./dist/utilities/data-formatter').default,
-  zeros: require('./dist/utilities/zeros').default
+  zeros: require('./dist/utilities/zeros').default,
+  toSVG: require('./dist/utilities/to-svg').default
 };
 
 var brain = {
@@ -6844,12167 +6921,7 @@ if (typeof module !== 'undefined') {
   module.exports = brain;
 }
 
-},{"./dist/cross-validate":1,"./dist/likely":2,"./dist/lookup":3,"./dist/neural-network":5,"./dist/neural-network-gpu":4,"./dist/recurrent/gru":7,"./dist/recurrent/gru-time-step":6,"./dist/recurrent/lstm":9,"./dist/recurrent/lstm-time-step":8,"./dist/recurrent/rnn":35,"./dist/recurrent/rnn-time-step":34,"./dist/train-stream":36,"./dist/utilities/data-formatter":39,"./dist/utilities/max":41,"./dist/utilities/mse":42,"./dist/utilities/ones":43,"./dist/utilities/random":45,"./dist/utilities/random-weight":44,"./dist/utilities/randos":46,"./dist/utilities/range":47,"./dist/utilities/to-array":48,"./dist/utilities/zeros":49}],51:[function(require,module,exports){
-'use strict'
-
-exports.byteLength = byteLength
-exports.toByteArray = toByteArray
-exports.fromByteArray = fromByteArray
-
-var lookup = []
-var revLookup = []
-var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
-
-var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-for (var i = 0, len = code.length; i < len; ++i) {
-  lookup[i] = code[i]
-  revLookup[code.charCodeAt(i)] = i
-}
-
-// Support decoding URL-safe base64 strings, as Node.js does.
-// See: https://en.wikipedia.org/wiki/Base64#URL_applications
-revLookup['-'.charCodeAt(0)] = 62
-revLookup['_'.charCodeAt(0)] = 63
-
-function getLens (b64) {
-  var len = b64.length
-
-  if (len % 4 > 0) {
-    throw new Error('Invalid string. Length must be a multiple of 4')
-  }
-
-  // Trim off extra bytes after placeholder bytes are found
-  // See: https://github.com/beatgammit/base64-js/issues/42
-  var validLen = b64.indexOf('=')
-  if (validLen === -1) validLen = len
-
-  var placeHoldersLen = validLen === len
-    ? 0
-    : 4 - (validLen % 4)
-
-  return [validLen, placeHoldersLen]
-}
-
-// base64 is 4/3 + up to two characters of the original data
-function byteLength (b64) {
-  var lens = getLens(b64)
-  var validLen = lens[0]
-  var placeHoldersLen = lens[1]
-  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
-}
-
-function _byteLength (b64, validLen, placeHoldersLen) {
-  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
-}
-
-function toByteArray (b64) {
-  var tmp
-  var lens = getLens(b64)
-  var validLen = lens[0]
-  var placeHoldersLen = lens[1]
-
-  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen))
-
-  var curByte = 0
-
-  // if there are placeholders, only get up to the last complete 4 chars
-  var len = placeHoldersLen > 0
-    ? validLen - 4
-    : validLen
-
-  for (var i = 0; i < len; i += 4) {
-    tmp =
-      (revLookup[b64.charCodeAt(i)] << 18) |
-      (revLookup[b64.charCodeAt(i + 1)] << 12) |
-      (revLookup[b64.charCodeAt(i + 2)] << 6) |
-      revLookup[b64.charCodeAt(i + 3)]
-    arr[curByte++] = (tmp >> 16) & 0xFF
-    arr[curByte++] = (tmp >> 8) & 0xFF
-    arr[curByte++] = tmp & 0xFF
-  }
-
-  if (placeHoldersLen === 2) {
-    tmp =
-      (revLookup[b64.charCodeAt(i)] << 2) |
-      (revLookup[b64.charCodeAt(i + 1)] >> 4)
-    arr[curByte++] = tmp & 0xFF
-  }
-
-  if (placeHoldersLen === 1) {
-    tmp =
-      (revLookup[b64.charCodeAt(i)] << 10) |
-      (revLookup[b64.charCodeAt(i + 1)] << 4) |
-      (revLookup[b64.charCodeAt(i + 2)] >> 2)
-    arr[curByte++] = (tmp >> 8) & 0xFF
-    arr[curByte++] = tmp & 0xFF
-  }
-
-  return arr
-}
-
-function tripletToBase64 (num) {
-  return lookup[num >> 18 & 0x3F] +
-    lookup[num >> 12 & 0x3F] +
-    lookup[num >> 6 & 0x3F] +
-    lookup[num & 0x3F]
-}
-
-function encodeChunk (uint8, start, end) {
-  var tmp
-  var output = []
-  for (var i = start; i < end; i += 3) {
-    tmp =
-      ((uint8[i] << 16) & 0xFF0000) +
-      ((uint8[i + 1] << 8) & 0xFF00) +
-      (uint8[i + 2] & 0xFF)
-    output.push(tripletToBase64(tmp))
-  }
-  return output.join('')
-}
-
-function fromByteArray (uint8) {
-  var tmp
-  var len = uint8.length
-  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
-  var parts = []
-  var maxChunkLength = 16383 // must be multiple of 3
-
-  // go through the array every three bytes, we'll deal with trailing stuff later
-  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-    parts.push(encodeChunk(
-      uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)
-    ))
-  }
-
-  // pad the end with zeros, but make sure to not forget the extra bytes
-  if (extraBytes === 1) {
-    tmp = uint8[len - 1]
-    parts.push(
-      lookup[tmp >> 2] +
-      lookup[(tmp << 4) & 0x3F] +
-      '=='
-    )
-  } else if (extraBytes === 2) {
-    tmp = (uint8[len - 2] << 8) + uint8[len - 1]
-    parts.push(
-      lookup[tmp >> 10] +
-      lookup[(tmp >> 4) & 0x3F] +
-      lookup[(tmp << 2) & 0x3F] +
-      '='
-    )
-  }
-
-  return parts.join('')
-}
-
-},{}],52:[function(require,module,exports){
-
-},{}],53:[function(require,module,exports){
-(function (global){
-/*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
- * @license  MIT
- */
-/* eslint-disable no-proto */
-
-'use strict'
-
-var base64 = require('base64-js')
-var ieee754 = require('ieee754')
-var isArray = require('isarray')
-
-exports.Buffer = Buffer
-exports.SlowBuffer = SlowBuffer
-exports.INSPECT_MAX_BYTES = 50
-
-/**
- * If `Buffer.TYPED_ARRAY_SUPPORT`:
- *   === true    Use Uint8Array implementation (fastest)
- *   === false   Use Object implementation (most compatible, even IE6)
- *
- * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
- * Opera 11.6+, iOS 4.2+.
- *
- * Due to various browser bugs, sometimes the Object implementation will be used even
- * when the browser supports typed arrays.
- *
- * Note:
- *
- *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
- *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
- *
- *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
- *
- *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
- *     incorrect length in some situations.
-
- * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
- * get the Object implementation, which is slower but behaves correctly.
- */
-Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
-  ? global.TYPED_ARRAY_SUPPORT
-  : typedArraySupport()
-
-/*
- * Export kMaxLength after typed array support is determined.
- */
-exports.kMaxLength = kMaxLength()
-
-function typedArraySupport () {
-  try {
-    var arr = new Uint8Array(1)
-    arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }}
-    return arr.foo() === 42 && // typed array instances can be augmented
-        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
-        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
-  } catch (e) {
-    return false
-  }
-}
-
-function kMaxLength () {
-  return Buffer.TYPED_ARRAY_SUPPORT
-    ? 0x7fffffff
-    : 0x3fffffff
-}
-
-function createBuffer (that, length) {
-  if (kMaxLength() < length) {
-    throw new RangeError('Invalid typed array length')
-  }
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    // Return an augmented `Uint8Array` instance, for best performance
-    that = new Uint8Array(length)
-    that.__proto__ = Buffer.prototype
-  } else {
-    // Fallback: Return an object instance of the Buffer class
-    if (that === null) {
-      that = new Buffer(length)
-    }
-    that.length = length
-  }
-
-  return that
-}
-
-/**
- * The Buffer constructor returns instances of `Uint8Array` that have their
- * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
- * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
- * and the `Uint8Array` methods. Square bracket notation works as expected -- it
- * returns a single octet.
- *
- * The `Uint8Array` prototype remains unmodified.
- */
-
-function Buffer (arg, encodingOrOffset, length) {
-  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
-    return new Buffer(arg, encodingOrOffset, length)
-  }
-
-  // Common case.
-  if (typeof arg === 'number') {
-    if (typeof encodingOrOffset === 'string') {
-      throw new Error(
-        'If encoding is specified then the first argument must be a string'
-      )
-    }
-    return allocUnsafe(this, arg)
-  }
-  return from(this, arg, encodingOrOffset, length)
-}
-
-Buffer.poolSize = 8192 // not used by this implementation
-
-// TODO: Legacy, not needed anymore. Remove in next major version.
-Buffer._augment = function (arr) {
-  arr.__proto__ = Buffer.prototype
-  return arr
-}
-
-function from (that, value, encodingOrOffset, length) {
-  if (typeof value === 'number') {
-    throw new TypeError('"value" argument must not be a number')
-  }
-
-  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
-    return fromArrayBuffer(that, value, encodingOrOffset, length)
-  }
-
-  if (typeof value === 'string') {
-    return fromString(that, value, encodingOrOffset)
-  }
-
-  return fromObject(that, value)
-}
-
-/**
- * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
- * if value is a number.
- * Buffer.from(str[, encoding])
- * Buffer.from(array)
- * Buffer.from(buffer)
- * Buffer.from(arrayBuffer[, byteOffset[, length]])
- **/
-Buffer.from = function (value, encodingOrOffset, length) {
-  return from(null, value, encodingOrOffset, length)
-}
-
-if (Buffer.TYPED_ARRAY_SUPPORT) {
-  Buffer.prototype.__proto__ = Uint8Array.prototype
-  Buffer.__proto__ = Uint8Array
-  if (typeof Symbol !== 'undefined' && Symbol.species &&
-      Buffer[Symbol.species] === Buffer) {
-    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
-    Object.defineProperty(Buffer, Symbol.species, {
-      value: null,
-      configurable: true
-    })
-  }
-}
-
-function assertSize (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('"size" argument must be a number')
-  } else if (size < 0) {
-    throw new RangeError('"size" argument must not be negative')
-  }
-}
-
-function alloc (that, size, fill, encoding) {
-  assertSize(size)
-  if (size <= 0) {
-    return createBuffer(that, size)
-  }
-  if (fill !== undefined) {
-    // Only pay attention to encoding if it's a string. This
-    // prevents accidentally sending in a number that would
-    // be interpretted as a start offset.
-    return typeof encoding === 'string'
-      ? createBuffer(that, size).fill(fill, encoding)
-      : createBuffer(that, size).fill(fill)
-  }
-  return createBuffer(that, size)
-}
-
-/**
- * Creates a new filled Buffer instance.
- * alloc(size[, fill[, encoding]])
- **/
-Buffer.alloc = function (size, fill, encoding) {
-  return alloc(null, size, fill, encoding)
-}
-
-function allocUnsafe (that, size) {
-  assertSize(size)
-  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
-  if (!Buffer.TYPED_ARRAY_SUPPORT) {
-    for (var i = 0; i < size; ++i) {
-      that[i] = 0
-    }
-  }
-  return that
-}
-
-/**
- * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
- * */
-Buffer.allocUnsafe = function (size) {
-  return allocUnsafe(null, size)
-}
-/**
- * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
- */
-Buffer.allocUnsafeSlow = function (size) {
-  return allocUnsafe(null, size)
-}
-
-function fromString (that, string, encoding) {
-  if (typeof encoding !== 'string' || encoding === '') {
-    encoding = 'utf8'
-  }
-
-  if (!Buffer.isEncoding(encoding)) {
-    throw new TypeError('"encoding" must be a valid string encoding')
-  }
-
-  var length = byteLength(string, encoding) | 0
-  that = createBuffer(that, length)
-
-  var actual = that.write(string, encoding)
-
-  if (actual !== length) {
-    // Writing a hex string, for example, that contains invalid characters will
-    // cause everything after the first invalid character to be ignored. (e.g.
-    // 'abxxcd' will be treated as 'ab')
-    that = that.slice(0, actual)
-  }
-
-  return that
-}
-
-function fromArrayLike (that, array) {
-  var length = array.length < 0 ? 0 : checked(array.length) | 0
-  that = createBuffer(that, length)
-  for (var i = 0; i < length; i += 1) {
-    that[i] = array[i] & 255
-  }
-  return that
-}
-
-function fromArrayBuffer (that, array, byteOffset, length) {
-  array.byteLength // this throws if `array` is not a valid ArrayBuffer
-
-  if (byteOffset < 0 || array.byteLength < byteOffset) {
-    throw new RangeError('\'offset\' is out of bounds')
-  }
-
-  if (array.byteLength < byteOffset + (length || 0)) {
-    throw new RangeError('\'length\' is out of bounds')
-  }
-
-  if (byteOffset === undefined && length === undefined) {
-    array = new Uint8Array(array)
-  } else if (length === undefined) {
-    array = new Uint8Array(array, byteOffset)
-  } else {
-    array = new Uint8Array(array, byteOffset, length)
-  }
-
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    // Return an augmented `Uint8Array` instance, for best performance
-    that = array
-    that.__proto__ = Buffer.prototype
-  } else {
-    // Fallback: Return an object instance of the Buffer class
-    that = fromArrayLike(that, array)
-  }
-  return that
-}
-
-function fromObject (that, obj) {
-  if (Buffer.isBuffer(obj)) {
-    var len = checked(obj.length) | 0
-    that = createBuffer(that, len)
-
-    if (that.length === 0) {
-      return that
-    }
-
-    obj.copy(that, 0, 0, len)
-    return that
-  }
-
-  if (obj) {
-    if ((typeof ArrayBuffer !== 'undefined' &&
-        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
-      if (typeof obj.length !== 'number' || isnan(obj.length)) {
-        return createBuffer(that, 0)
-      }
-      return fromArrayLike(that, obj)
-    }
-
-    if (obj.type === 'Buffer' && isArray(obj.data)) {
-      return fromArrayLike(that, obj.data)
-    }
-  }
-
-  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
-}
-
-function checked (length) {
-  // Note: cannot use `length < kMaxLength()` here because that fails when
-  // length is NaN (which is otherwise coerced to zero.)
-  if (length >= kMaxLength()) {
-    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
-                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
-  }
-  return length | 0
-}
-
-function SlowBuffer (length) {
-  if (+length != length) { // eslint-disable-line eqeqeq
-    length = 0
-  }
-  return Buffer.alloc(+length)
-}
-
-Buffer.isBuffer = function isBuffer (b) {
-  return !!(b != null && b._isBuffer)
-}
-
-Buffer.compare = function compare (a, b) {
-  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
-    throw new TypeError('Arguments must be Buffers')
-  }
-
-  if (a === b) return 0
-
-  var x = a.length
-  var y = b.length
-
-  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
-    if (a[i] !== b[i]) {
-      x = a[i]
-      y = b[i]
-      break
-    }
-  }
-
-  if (x < y) return -1
-  if (y < x) return 1
-  return 0
-}
-
-Buffer.isEncoding = function isEncoding (encoding) {
-  switch (String(encoding).toLowerCase()) {
-    case 'hex':
-    case 'utf8':
-    case 'utf-8':
-    case 'ascii':
-    case 'latin1':
-    case 'binary':
-    case 'base64':
-    case 'ucs2':
-    case 'ucs-2':
-    case 'utf16le':
-    case 'utf-16le':
-      return true
-    default:
-      return false
-  }
-}
-
-Buffer.concat = function concat (list, length) {
-  if (!isArray(list)) {
-    throw new TypeError('"list" argument must be an Array of Buffers')
-  }
-
-  if (list.length === 0) {
-    return Buffer.alloc(0)
-  }
-
-  var i
-  if (length === undefined) {
-    length = 0
-    for (i = 0; i < list.length; ++i) {
-      length += list[i].length
-    }
-  }
-
-  var buffer = Buffer.allocUnsafe(length)
-  var pos = 0
-  for (i = 0; i < list.length; ++i) {
-    var buf = list[i]
-    if (!Buffer.isBuffer(buf)) {
-      throw new TypeError('"list" argument must be an Array of Buffers')
-    }
-    buf.copy(buffer, pos)
-    pos += buf.length
-  }
-  return buffer
-}
-
-function byteLength (string, encoding) {
-  if (Buffer.isBuffer(string)) {
-    return string.length
-  }
-  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
-      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
-    return string.byteLength
-  }
-  if (typeof string !== 'string') {
-    string = '' + string
-  }
-
-  var len = string.length
-  if (len === 0) return 0
-
-  // Use a for loop to avoid recursion
-  var loweredCase = false
-  for (;;) {
-    switch (encoding) {
-      case 'ascii':
-      case 'latin1':
-      case 'binary':
-        return len
-      case 'utf8':
-      case 'utf-8':
-      case undefined:
-        return utf8ToBytes(string).length
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return len * 2
-      case 'hex':
-        return len >>> 1
-      case 'base64':
-        return base64ToBytes(string).length
-      default:
-        if (loweredCase) return utf8ToBytes(string).length // assume utf8
-        encoding = ('' + encoding).toLowerCase()
-        loweredCase = true
-    }
-  }
-}
-Buffer.byteLength = byteLength
-
-function slowToString (encoding, start, end) {
-  var loweredCase = false
-
-  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
-  // property of a typed array.
-
-  // This behaves neither like String nor Uint8Array in that we set start/end
-  // to their upper/lower bounds if the value passed is out of range.
-  // undefined is handled specially as per ECMA-262 6th Edition,
-  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
-  if (start === undefined || start < 0) {
-    start = 0
-  }
-  // Return early if start > this.length. Done here to prevent potential uint32
-  // coercion fail below.
-  if (start > this.length) {
-    return ''
-  }
-
-  if (end === undefined || end > this.length) {
-    end = this.length
-  }
-
-  if (end <= 0) {
-    return ''
-  }
-
-  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
-  end >>>= 0
-  start >>>= 0
-
-  if (end <= start) {
-    return ''
-  }
-
-  if (!encoding) encoding = 'utf8'
-
-  while (true) {
-    switch (encoding) {
-      case 'hex':
-        return hexSlice(this, start, end)
-
-      case 'utf8':
-      case 'utf-8':
-        return utf8Slice(this, start, end)
-
-      case 'ascii':
-        return asciiSlice(this, start, end)
-
-      case 'latin1':
-      case 'binary':
-        return latin1Slice(this, start, end)
-
-      case 'base64':
-        return base64Slice(this, start, end)
-
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return utf16leSlice(this, start, end)
-
-      default:
-        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-        encoding = (encoding + '').toLowerCase()
-        loweredCase = true
-    }
-  }
-}
-
-// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
-// Buffer instances.
-Buffer.prototype._isBuffer = true
-
-function swap (b, n, m) {
-  var i = b[n]
-  b[n] = b[m]
-  b[m] = i
-}
-
-Buffer.prototype.swap16 = function swap16 () {
-  var len = this.length
-  if (len % 2 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 16-bits')
-  }
-  for (var i = 0; i < len; i += 2) {
-    swap(this, i, i + 1)
-  }
-  return this
-}
-
-Buffer.prototype.swap32 = function swap32 () {
-  var len = this.length
-  if (len % 4 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 32-bits')
-  }
-  for (var i = 0; i < len; i += 4) {
-    swap(this, i, i + 3)
-    swap(this, i + 1, i + 2)
-  }
-  return this
-}
-
-Buffer.prototype.swap64 = function swap64 () {
-  var len = this.length
-  if (len % 8 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 64-bits')
-  }
-  for (var i = 0; i < len; i += 8) {
-    swap(this, i, i + 7)
-    swap(this, i + 1, i + 6)
-    swap(this, i + 2, i + 5)
-    swap(this, i + 3, i + 4)
-  }
-  return this
-}
-
-Buffer.prototype.toString = function toString () {
-  var length = this.length | 0
-  if (length === 0) return ''
-  if (arguments.length === 0) return utf8Slice(this, 0, length)
-  return slowToString.apply(this, arguments)
-}
-
-Buffer.prototype.equals = function equals (b) {
-  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
-  if (this === b) return true
-  return Buffer.compare(this, b) === 0
-}
-
-Buffer.prototype.inspect = function inspect () {
-  var str = ''
-  var max = exports.INSPECT_MAX_BYTES
-  if (this.length > 0) {
-    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
-    if (this.length > max) str += ' ... '
-  }
-  return '<Buffer ' + str + '>'
-}
-
-Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
-  if (!Buffer.isBuffer(target)) {
-    throw new TypeError('Argument must be a Buffer')
-  }
-
-  if (start === undefined) {
-    start = 0
-  }
-  if (end === undefined) {
-    end = target ? target.length : 0
-  }
-  if (thisStart === undefined) {
-    thisStart = 0
-  }
-  if (thisEnd === undefined) {
-    thisEnd = this.length
-  }
-
-  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
-    throw new RangeError('out of range index')
-  }
-
-  if (thisStart >= thisEnd && start >= end) {
-    return 0
-  }
-  if (thisStart >= thisEnd) {
-    return -1
-  }
-  if (start >= end) {
-    return 1
-  }
-
-  start >>>= 0
-  end >>>= 0
-  thisStart >>>= 0
-  thisEnd >>>= 0
-
-  if (this === target) return 0
-
-  var x = thisEnd - thisStart
-  var y = end - start
-  var len = Math.min(x, y)
-
-  var thisCopy = this.slice(thisStart, thisEnd)
-  var targetCopy = target.slice(start, end)
-
-  for (var i = 0; i < len; ++i) {
-    if (thisCopy[i] !== targetCopy[i]) {
-      x = thisCopy[i]
-      y = targetCopy[i]
-      break
-    }
-  }
-
-  if (x < y) return -1
-  if (y < x) return 1
-  return 0
-}
-
-// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
-// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
-//
-// Arguments:
-// - buffer - a Buffer to search
-// - val - a string, Buffer, or number
-// - byteOffset - an index into `buffer`; will be clamped to an int32
-// - encoding - an optional encoding, relevant is val is a string
-// - dir - true for indexOf, false for lastIndexOf
-function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
-  // Empty buffer means no match
-  if (buffer.length === 0) return -1
-
-  // Normalize byteOffset
-  if (typeof byteOffset === 'string') {
-    encoding = byteOffset
-    byteOffset = 0
-  } else if (byteOffset > 0x7fffffff) {
-    byteOffset = 0x7fffffff
-  } else if (byteOffset < -0x80000000) {
-    byteOffset = -0x80000000
-  }
-  byteOffset = +byteOffset  // Coerce to Number.
-  if (isNaN(byteOffset)) {
-    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
-    byteOffset = dir ? 0 : (buffer.length - 1)
-  }
-
-  // Normalize byteOffset: negative offsets start from the end of the buffer
-  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
-  if (byteOffset >= buffer.length) {
-    if (dir) return -1
-    else byteOffset = buffer.length - 1
-  } else if (byteOffset < 0) {
-    if (dir) byteOffset = 0
-    else return -1
-  }
-
-  // Normalize val
-  if (typeof val === 'string') {
-    val = Buffer.from(val, encoding)
-  }
-
-  // Finally, search either indexOf (if dir is true) or lastIndexOf
-  if (Buffer.isBuffer(val)) {
-    // Special case: looking for empty string/buffer always fails
-    if (val.length === 0) {
-      return -1
-    }
-    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
-  } else if (typeof val === 'number') {
-    val = val & 0xFF // Search for a byte value [0-255]
-    if (Buffer.TYPED_ARRAY_SUPPORT &&
-        typeof Uint8Array.prototype.indexOf === 'function') {
-      if (dir) {
-        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
-      } else {
-        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
-      }
-    }
-    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
-  }
-
-  throw new TypeError('val must be string, number or Buffer')
-}
-
-function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
-  var indexSize = 1
-  var arrLength = arr.length
-  var valLength = val.length
-
-  if (encoding !== undefined) {
-    encoding = String(encoding).toLowerCase()
-    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
-        encoding === 'utf16le' || encoding === 'utf-16le') {
-      if (arr.length < 2 || val.length < 2) {
-        return -1
-      }
-      indexSize = 2
-      arrLength /= 2
-      valLength /= 2
-      byteOffset /= 2
-    }
-  }
-
-  function read (buf, i) {
-    if (indexSize === 1) {
-      return buf[i]
-    } else {
-      return buf.readUInt16BE(i * indexSize)
-    }
-  }
-
-  var i
-  if (dir) {
-    var foundIndex = -1
-    for (i = byteOffset; i < arrLength; i++) {
-      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
-        if (foundIndex === -1) foundIndex = i
-        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
-      } else {
-        if (foundIndex !== -1) i -= i - foundIndex
-        foundIndex = -1
-      }
-    }
-  } else {
-    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
-    for (i = byteOffset; i >= 0; i--) {
-      var found = true
-      for (var j = 0; j < valLength; j++) {
-        if (read(arr, i + j) !== read(val, j)) {
-          found = false
-          break
-        }
-      }
-      if (found) return i
-    }
-  }
-
-  return -1
-}
-
-Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
-  return this.indexOf(val, byteOffset, encoding) !== -1
-}
-
-Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
-  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
-}
-
-Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
-  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
-}
-
-function hexWrite (buf, string, offset, length) {
-  offset = Number(offset) || 0
-  var remaining = buf.length - offset
-  if (!length) {
-    length = remaining
-  } else {
-    length = Number(length)
-    if (length > remaining) {
-      length = remaining
-    }
-  }
-
-  // must be an even number of digits
-  var strLen = string.length
-  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
-
-  if (length > strLen / 2) {
-    length = strLen / 2
-  }
-  for (var i = 0; i < length; ++i) {
-    var parsed = parseInt(string.substr(i * 2, 2), 16)
-    if (isNaN(parsed)) return i
-    buf[offset + i] = parsed
-  }
-  return i
-}
-
-function utf8Write (buf, string, offset, length) {
-  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
-}
-
-function asciiWrite (buf, string, offset, length) {
-  return blitBuffer(asciiToBytes(string), buf, offset, length)
-}
-
-function latin1Write (buf, string, offset, length) {
-  return asciiWrite(buf, string, offset, length)
-}
-
-function base64Write (buf, string, offset, length) {
-  return blitBuffer(base64ToBytes(string), buf, offset, length)
-}
-
-function ucs2Write (buf, string, offset, length) {
-  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
-}
-
-Buffer.prototype.write = function write (string, offset, length, encoding) {
-  // Buffer#write(string)
-  if (offset === undefined) {
-    encoding = 'utf8'
-    length = this.length
-    offset = 0
-  // Buffer#write(string, encoding)
-  } else if (length === undefined && typeof offset === 'string') {
-    encoding = offset
-    length = this.length
-    offset = 0
-  // Buffer#write(string, offset[, length][, encoding])
-  } else if (isFinite(offset)) {
-    offset = offset | 0
-    if (isFinite(length)) {
-      length = length | 0
-      if (encoding === undefined) encoding = 'utf8'
-    } else {
-      encoding = length
-      length = undefined
-    }
-  // legacy write(string, encoding, offset, length) - remove in v0.13
-  } else {
-    throw new Error(
-      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
-    )
-  }
-
-  var remaining = this.length - offset
-  if (length === undefined || length > remaining) length = remaining
-
-  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
-    throw new RangeError('Attempt to write outside buffer bounds')
-  }
-
-  if (!encoding) encoding = 'utf8'
-
-  var loweredCase = false
-  for (;;) {
-    switch (encoding) {
-      case 'hex':
-        return hexWrite(this, string, offset, length)
-
-      case 'utf8':
-      case 'utf-8':
-        return utf8Write(this, string, offset, length)
-
-      case 'ascii':
-        return asciiWrite(this, string, offset, length)
-
-      case 'latin1':
-      case 'binary':
-        return latin1Write(this, string, offset, length)
-
-      case 'base64':
-        // Warning: maxLength not taken into account in base64Write
-        return base64Write(this, string, offset, length)
-
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return ucs2Write(this, string, offset, length)
-
-      default:
-        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-        encoding = ('' + encoding).toLowerCase()
-        loweredCase = true
-    }
-  }
-}
-
-Buffer.prototype.toJSON = function toJSON () {
-  return {
-    type: 'Buffer',
-    data: Array.prototype.slice.call(this._arr || this, 0)
-  }
-}
-
-function base64Slice (buf, start, end) {
-  if (start === 0 && end === buf.length) {
-    return base64.fromByteArray(buf)
-  } else {
-    return base64.fromByteArray(buf.slice(start, end))
-  }
-}
-
-function utf8Slice (buf, start, end) {
-  end = Math.min(buf.length, end)
-  var res = []
-
-  var i = start
-  while (i < end) {
-    var firstByte = buf[i]
-    var codePoint = null
-    var bytesPerSequence = (firstByte > 0xEF) ? 4
-      : (firstByte > 0xDF) ? 3
-      : (firstByte > 0xBF) ? 2
-      : 1
-
-    if (i + bytesPerSequence <= end) {
-      var secondByte, thirdByte, fourthByte, tempCodePoint
-
-      switch (bytesPerSequence) {
-        case 1:
-          if (firstByte < 0x80) {
-            codePoint = firstByte
-          }
-          break
-        case 2:
-          secondByte = buf[i + 1]
-          if ((secondByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
-            if (tempCodePoint > 0x7F) {
-              codePoint = tempCodePoint
-            }
-          }
-          break
-        case 3:
-          secondByte = buf[i + 1]
-          thirdByte = buf[i + 2]
-          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
-            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
-              codePoint = tempCodePoint
-            }
-          }
-          break
-        case 4:
-          secondByte = buf[i + 1]
-          thirdByte = buf[i + 2]
-          fourthByte = buf[i + 3]
-          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
-            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
-              codePoint = tempCodePoint
-            }
-          }
-      }
-    }
-
-    if (codePoint === null) {
-      // we did not generate a valid codePoint so insert a
-      // replacement char (U+FFFD) and advance only 1 byte
-      codePoint = 0xFFFD
-      bytesPerSequence = 1
-    } else if (codePoint > 0xFFFF) {
-      // encode to utf16 (surrogate pair dance)
-      codePoint -= 0x10000
-      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
-      codePoint = 0xDC00 | codePoint & 0x3FF
-    }
-
-    res.push(codePoint)
-    i += bytesPerSequence
-  }
-
-  return decodeCodePointsArray(res)
-}
-
-// Based on http://stackoverflow.com/a/22747272/680742, the browser with
-// the lowest limit is Chrome, with 0x10000 args.
-// We go 1 magnitude less, for safety
-var MAX_ARGUMENTS_LENGTH = 0x1000
-
-function decodeCodePointsArray (codePoints) {
-  var len = codePoints.length
-  if (len <= MAX_ARGUMENTS_LENGTH) {
-    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
-  }
-
-  // Decode in chunks to avoid "call stack size exceeded".
-  var res = ''
-  var i = 0
-  while (i < len) {
-    res += String.fromCharCode.apply(
-      String,
-      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
-    )
-  }
-  return res
-}
-
-function asciiSlice (buf, start, end) {
-  var ret = ''
-  end = Math.min(buf.length, end)
-
-  for (var i = start; i < end; ++i) {
-    ret += String.fromCharCode(buf[i] & 0x7F)
-  }
-  return ret
-}
-
-function latin1Slice (buf, start, end) {
-  var ret = ''
-  end = Math.min(buf.length, end)
-
-  for (var i = start; i < end; ++i) {
-    ret += String.fromCharCode(buf[i])
-  }
-  return ret
-}
-
-function hexSlice (buf, start, end) {
-  var len = buf.length
-
-  if (!start || start < 0) start = 0
-  if (!end || end < 0 || end > len) end = len
-
-  var out = ''
-  for (var i = start; i < end; ++i) {
-    out += toHex(buf[i])
-  }
-  return out
-}
-
-function utf16leSlice (buf, start, end) {
-  var bytes = buf.slice(start, end)
-  var res = ''
-  for (var i = 0; i < bytes.length; i += 2) {
-    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
-  }
-  return res
-}
-
-Buffer.prototype.slice = function slice (start, end) {
-  var len = this.length
-  start = ~~start
-  end = end === undefined ? len : ~~end
-
-  if (start < 0) {
-    start += len
-    if (start < 0) start = 0
-  } else if (start > len) {
-    start = len
-  }
-
-  if (end < 0) {
-    end += len
-    if (end < 0) end = 0
-  } else if (end > len) {
-    end = len
-  }
-
-  if (end < start) end = start
-
-  var newBuf
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    newBuf = this.subarray(start, end)
-    newBuf.__proto__ = Buffer.prototype
-  } else {
-    var sliceLen = end - start
-    newBuf = new Buffer(sliceLen, undefined)
-    for (var i = 0; i < sliceLen; ++i) {
-      newBuf[i] = this[i + start]
-    }
-  }
-
-  return newBuf
-}
-
-/*
- * Need to make sure that buffer isn't trying to write out of bounds.
- */
-function checkOffset (offset, ext, length) {
-  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
-  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
-}
-
-Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var val = this[offset]
-  var mul = 1
-  var i = 0
-  while (++i < byteLength && (mul *= 0x100)) {
-    val += this[offset + i] * mul
-  }
-
-  return val
-}
-
-Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) {
-    checkOffset(offset, byteLength, this.length)
-  }
-
-  var val = this[offset + --byteLength]
-  var mul = 1
-  while (byteLength > 0 && (mul *= 0x100)) {
-    val += this[offset + --byteLength] * mul
-  }
-
-  return val
-}
-
-Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 1, this.length)
-  return this[offset]
-}
-
-Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  return this[offset] | (this[offset + 1] << 8)
-}
-
-Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  return (this[offset] << 8) | this[offset + 1]
-}
-
-Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return ((this[offset]) |
-      (this[offset + 1] << 8) |
-      (this[offset + 2] << 16)) +
-      (this[offset + 3] * 0x1000000)
-}
-
-Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset] * 0x1000000) +
-    ((this[offset + 1] << 16) |
-    (this[offset + 2] << 8) |
-    this[offset + 3])
-}
-
-Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var val = this[offset]
-  var mul = 1
-  var i = 0
-  while (++i < byteLength && (mul *= 0x100)) {
-    val += this[offset + i] * mul
-  }
-  mul *= 0x80
-
-  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-
-  return val
-}
-
-Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var i = byteLength
-  var mul = 1
-  var val = this[offset + --i]
-  while (i > 0 && (mul *= 0x100)) {
-    val += this[offset + --i] * mul
-  }
-  mul *= 0x80
-
-  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-
-  return val
-}
-
-Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 1, this.length)
-  if (!(this[offset] & 0x80)) return (this[offset])
-  return ((0xff - this[offset] + 1) * -1)
-}
-
-Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  var val = this[offset] | (this[offset + 1] << 8)
-  return (val & 0x8000) ? val | 0xFFFF0000 : val
-}
-
-Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  var val = this[offset + 1] | (this[offset] << 8)
-  return (val & 0x8000) ? val | 0xFFFF0000 : val
-}
-
-Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset]) |
-    (this[offset + 1] << 8) |
-    (this[offset + 2] << 16) |
-    (this[offset + 3] << 24)
-}
-
-Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset] << 24) |
-    (this[offset + 1] << 16) |
-    (this[offset + 2] << 8) |
-    (this[offset + 3])
-}
-
-Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-  return ieee754.read(this, offset, true, 23, 4)
-}
-
-Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-  return ieee754.read(this, offset, false, 23, 4)
-}
-
-Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 8, this.length)
-  return ieee754.read(this, offset, true, 52, 8)
-}
-
-Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 8, this.length)
-  return ieee754.read(this, offset, false, 52, 8)
-}
-
-function checkInt (buf, value, offset, ext, max, min) {
-  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
-  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
-  if (offset + ext > buf.length) throw new RangeError('Index out of range')
-}
-
-Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) {
-    var maxBytes = Math.pow(2, 8 * byteLength) - 1
-    checkInt(this, value, offset, byteLength, maxBytes, 0)
-  }
-
-  var mul = 1
-  var i = 0
-  this[offset] = value & 0xFF
-  while (++i < byteLength && (mul *= 0x100)) {
-    this[offset + i] = (value / mul) & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) {
-    var maxBytes = Math.pow(2, 8 * byteLength) - 1
-    checkInt(this, value, offset, byteLength, maxBytes, 0)
-  }
-
-  var i = byteLength - 1
-  var mul = 1
-  this[offset + i] = value & 0xFF
-  while (--i >= 0 && (mul *= 0x100)) {
-    this[offset + i] = (value / mul) & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
-  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
-  this[offset] = (value & 0xff)
-  return offset + 1
-}
-
-function objectWriteUInt16 (buf, value, offset, littleEndian) {
-  if (value < 0) value = 0xffff + value + 1
-  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
-    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
-      (littleEndian ? i : 1 - i) * 8
-  }
-}
-
-Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value & 0xff)
-    this[offset + 1] = (value >>> 8)
-  } else {
-    objectWriteUInt16(this, value, offset, true)
-  }
-  return offset + 2
-}
-
-Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value >>> 8)
-    this[offset + 1] = (value & 0xff)
-  } else {
-    objectWriteUInt16(this, value, offset, false)
-  }
-  return offset + 2
-}
-
-function objectWriteUInt32 (buf, value, offset, littleEndian) {
-  if (value < 0) value = 0xffffffff + value + 1
-  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
-    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
-  }
-}
-
-Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset + 3] = (value >>> 24)
-    this[offset + 2] = (value >>> 16)
-    this[offset + 1] = (value >>> 8)
-    this[offset] = (value & 0xff)
-  } else {
-    objectWriteUInt32(this, value, offset, true)
-  }
-  return offset + 4
-}
-
-Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value >>> 24)
-    this[offset + 1] = (value >>> 16)
-    this[offset + 2] = (value >>> 8)
-    this[offset + 3] = (value & 0xff)
-  } else {
-    objectWriteUInt32(this, value, offset, false)
-  }
-  return offset + 4
-}
-
-Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) {
-    var limit = Math.pow(2, 8 * byteLength - 1)
-
-    checkInt(this, value, offset, byteLength, limit - 1, -limit)
-  }
-
-  var i = 0
-  var mul = 1
-  var sub = 0
-  this[offset] = value & 0xFF
-  while (++i < byteLength && (mul *= 0x100)) {
-    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
-      sub = 1
-    }
-    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) {
-    var limit = Math.pow(2, 8 * byteLength - 1)
-
-    checkInt(this, value, offset, byteLength, limit - 1, -limit)
-  }
-
-  var i = byteLength - 1
-  var mul = 1
-  var sub = 0
-  this[offset + i] = value & 0xFF
-  while (--i >= 0 && (mul *= 0x100)) {
-    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
-      sub = 1
-    }
-    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
-  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
-  if (value < 0) value = 0xff + value + 1
-  this[offset] = (value & 0xff)
-  return offset + 1
-}
-
-Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value & 0xff)
-    this[offset + 1] = (value >>> 8)
-  } else {
-    objectWriteUInt16(this, value, offset, true)
-  }
-  return offset + 2
-}
-
-Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value >>> 8)
-    this[offset + 1] = (value & 0xff)
-  } else {
-    objectWriteUInt16(this, value, offset, false)
-  }
-  return offset + 2
-}
-
-Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value & 0xff)
-    this[offset + 1] = (value >>> 8)
-    this[offset + 2] = (value >>> 16)
-    this[offset + 3] = (value >>> 24)
-  } else {
-    objectWriteUInt32(this, value, offset, true)
-  }
-  return offset + 4
-}
-
-Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
-  if (value < 0) value = 0xffffffff + value + 1
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value >>> 24)
-    this[offset + 1] = (value >>> 16)
-    this[offset + 2] = (value >>> 8)
-    this[offset + 3] = (value & 0xff)
-  } else {
-    objectWriteUInt32(this, value, offset, false)
-  }
-  return offset + 4
-}
-
-function checkIEEE754 (buf, value, offset, ext, max, min) {
-  if (offset + ext > buf.length) throw new RangeError('Index out of range')
-  if (offset < 0) throw new RangeError('Index out of range')
-}
-
-function writeFloat (buf, value, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
-  }
-  ieee754.write(buf, value, offset, littleEndian, 23, 4)
-  return offset + 4
-}
-
-Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
-  return writeFloat(this, value, offset, true, noAssert)
-}
-
-Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
-  return writeFloat(this, value, offset, false, noAssert)
-}
-
-function writeDouble (buf, value, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
-  }
-  ieee754.write(buf, value, offset, littleEndian, 52, 8)
-  return offset + 8
-}
-
-Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
-  return writeDouble(this, value, offset, true, noAssert)
-}
-
-Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
-  return writeDouble(this, value, offset, false, noAssert)
-}
-
-// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
-Buffer.prototype.copy = function copy (target, targetStart, start, end) {
-  if (!start) start = 0
-  if (!end && end !== 0) end = this.length
-  if (targetStart >= target.length) targetStart = target.length
-  if (!targetStart) targetStart = 0
-  if (end > 0 && end < start) end = start
-
-  // Copy 0 bytes; we're done
-  if (end === start) return 0
-  if (target.length === 0 || this.length === 0) return 0
-
-  // Fatal error conditions
-  if (targetStart < 0) {
-    throw new RangeError('targetStart out of bounds')
-  }
-  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
-  if (end < 0) throw new RangeError('sourceEnd out of bounds')
-
-  // Are we oob?
-  if (end > this.length) end = this.length
-  if (target.length - targetStart < end - start) {
-    end = target.length - targetStart + start
-  }
-
-  var len = end - start
-  var i
-
-  if (this === target && start < targetStart && targetStart < end) {
-    // descending copy from end
-    for (i = len - 1; i >= 0; --i) {
-      target[i + targetStart] = this[i + start]
-    }
-  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
-    // ascending copy from start
-    for (i = 0; i < len; ++i) {
-      target[i + targetStart] = this[i + start]
-    }
-  } else {
-    Uint8Array.prototype.set.call(
-      target,
-      this.subarray(start, start + len),
-      targetStart
-    )
-  }
-
-  return len
-}
-
-// Usage:
-//    buffer.fill(number[, offset[, end]])
-//    buffer.fill(buffer[, offset[, end]])
-//    buffer.fill(string[, offset[, end]][, encoding])
-Buffer.prototype.fill = function fill (val, start, end, encoding) {
-  // Handle string cases:
-  if (typeof val === 'string') {
-    if (typeof start === 'string') {
-      encoding = start
-      start = 0
-      end = this.length
-    } else if (typeof end === 'string') {
-      encoding = end
-      end = this.length
-    }
-    if (val.length === 1) {
-      var code = val.charCodeAt(0)
-      if (code < 256) {
-        val = code
-      }
-    }
-    if (encoding !== undefined && typeof encoding !== 'string') {
-      throw new TypeError('encoding must be a string')
-    }
-    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
-      throw new TypeError('Unknown encoding: ' + encoding)
-    }
-  } else if (typeof val === 'number') {
-    val = val & 255
-  }
-
-  // Invalid ranges are not set to a default, so can range check early.
-  if (start < 0 || this.length < start || this.length < end) {
-    throw new RangeError('Out of range index')
-  }
-
-  if (end <= start) {
-    return this
-  }
-
-  start = start >>> 0
-  end = end === undefined ? this.length : end >>> 0
-
-  if (!val) val = 0
-
-  var i
-  if (typeof val === 'number') {
-    for (i = start; i < end; ++i) {
-      this[i] = val
-    }
-  } else {
-    var bytes = Buffer.isBuffer(val)
-      ? val
-      : utf8ToBytes(new Buffer(val, encoding).toString())
-    var len = bytes.length
-    for (i = 0; i < end - start; ++i) {
-      this[i + start] = bytes[i % len]
-    }
-  }
-
-  return this
-}
-
-// HELPER FUNCTIONS
-// ================
-
-var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
-
-function base64clean (str) {
-  // Node strips out invalid characters like \n and \t from the string, base64-js does not
-  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
-  // Node converts strings with length < 2 to ''
-  if (str.length < 2) return ''
-  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
-  while (str.length % 4 !== 0) {
-    str = str + '='
-  }
-  return str
-}
-
-function stringtrim (str) {
-  if (str.trim) return str.trim()
-  return str.replace(/^\s+|\s+$/g, '')
-}
-
-function toHex (n) {
-  if (n < 16) return '0' + n.toString(16)
-  return n.toString(16)
-}
-
-function utf8ToBytes (string, units) {
-  units = units || Infinity
-  var codePoint
-  var length = string.length
-  var leadSurrogate = null
-  var bytes = []
-
-  for (var i = 0; i < length; ++i) {
-    codePoint = string.charCodeAt(i)
-
-    // is surrogate component
-    if (codePoint > 0xD7FF && codePoint < 0xE000) {
-      // last char was a lead
-      if (!leadSurrogate) {
-        // no lead yet
-        if (codePoint > 0xDBFF) {
-          // unexpected trail
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-          continue
-        } else if (i + 1 === length) {
-          // unpaired lead
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-          continue
-        }
-
-        // valid lead
-        leadSurrogate = codePoint
-
-        continue
-      }
-
-      // 2 leads in a row
-      if (codePoint < 0xDC00) {
-        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-        leadSurrogate = codePoint
-        continue
-      }
-
-      // valid surrogate pair
-      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
-    } else if (leadSurrogate) {
-      // valid bmp char, but last char was a lead
-      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-    }
-
-    leadSurrogate = null
-
-    // encode utf8
-    if (codePoint < 0x80) {
-      if ((units -= 1) < 0) break
-      bytes.push(codePoint)
-    } else if (codePoint < 0x800) {
-      if ((units -= 2) < 0) break
-      bytes.push(
-        codePoint >> 0x6 | 0xC0,
-        codePoint & 0x3F | 0x80
-      )
-    } else if (codePoint < 0x10000) {
-      if ((units -= 3) < 0) break
-      bytes.push(
-        codePoint >> 0xC | 0xE0,
-        codePoint >> 0x6 & 0x3F | 0x80,
-        codePoint & 0x3F | 0x80
-      )
-    } else if (codePoint < 0x110000) {
-      if ((units -= 4) < 0) break
-      bytes.push(
-        codePoint >> 0x12 | 0xF0,
-        codePoint >> 0xC & 0x3F | 0x80,
-        codePoint >> 0x6 & 0x3F | 0x80,
-        codePoint & 0x3F | 0x80
-      )
-    } else {
-      throw new Error('Invalid code point')
-    }
-  }
-
-  return bytes
-}
-
-function asciiToBytes (str) {
-  var byteArray = []
-  for (var i = 0; i < str.length; ++i) {
-    // Node's code seems to be doing this and not & 0x7F..
-    byteArray.push(str.charCodeAt(i) & 0xFF)
-  }
-  return byteArray
-}
-
-function utf16leToBytes (str, units) {
-  var c, hi, lo
-  var byteArray = []
-  for (var i = 0; i < str.length; ++i) {
-    if ((units -= 2) < 0) break
-
-    c = str.charCodeAt(i)
-    hi = c >> 8
-    lo = c % 256
-    byteArray.push(lo)
-    byteArray.push(hi)
-  }
-
-  return byteArray
-}
-
-function base64ToBytes (str) {
-  return base64.toByteArray(base64clean(str))
-}
-
-function blitBuffer (src, dst, offset, length) {
-  for (var i = 0; i < length; ++i) {
-    if ((i + offset >= dst.length) || (i >= src.length)) break
-    dst[i + offset] = src[i]
-  }
-  return i
-}
-
-function isnan (val) {
-  return val !== val // eslint-disable-line no-self-compare
-}
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":51,"ieee754":90,"isarray":93}],54:[function(require,module,exports){
-(function (Buffer){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// NOTE: These type checking functions intentionally don't use `instanceof`
-// because it is fragile and can be easily faked with `Object.create()`.
-
-function isArray(arg) {
-  if (Array.isArray) {
-    return Array.isArray(arg);
-  }
-  return objectToString(arg) === '[object Array]';
-}
-exports.isArray = isArray;
-
-function isBoolean(arg) {
-  return typeof arg === 'boolean';
-}
-exports.isBoolean = isBoolean;
-
-function isNull(arg) {
-  return arg === null;
-}
-exports.isNull = isNull;
-
-function isNullOrUndefined(arg) {
-  return arg == null;
-}
-exports.isNullOrUndefined = isNullOrUndefined;
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-exports.isNumber = isNumber;
-
-function isString(arg) {
-  return typeof arg === 'string';
-}
-exports.isString = isString;
-
-function isSymbol(arg) {
-  return typeof arg === 'symbol';
-}
-exports.isSymbol = isSymbol;
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-exports.isUndefined = isUndefined;
-
-function isRegExp(re) {
-  return objectToString(re) === '[object RegExp]';
-}
-exports.isRegExp = isRegExp;
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-exports.isObject = isObject;
-
-function isDate(d) {
-  return objectToString(d) === '[object Date]';
-}
-exports.isDate = isDate;
-
-function isError(e) {
-  return (objectToString(e) === '[object Error]' || e instanceof Error);
-}
-exports.isError = isError;
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-exports.isFunction = isFunction;
-
-function isPrimitive(arg) {
-  return arg === null ||
-         typeof arg === 'boolean' ||
-         typeof arg === 'number' ||
-         typeof arg === 'string' ||
-         typeof arg === 'symbol' ||  // ES6 symbol
-         typeof arg === 'undefined';
-}
-exports.isPrimitive = isPrimitive;
-
-exports.isBuffer = Buffer.isBuffer;
-
-function objectToString(o) {
-  return Object.prototype.toString.call(o);
-}
-
-}).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":92}],55:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
-}
-module.exports = EventEmitter;
-
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
-
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._maxListeners = undefined;
-
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
-  this._maxListeners = n;
-  return this;
-};
-
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
-
-  if (!this._events)
-    this._events = {};
-
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      } else {
-        // At least give some kind of context to the user
-        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
-        err.context = er;
-        throw err;
-      }
-    }
-  }
-
-  handler = this._events[type];
-
-  if (isUndefined(handler))
-    return false;
-
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        args = Array.prototype.slice.call(arguments, 1);
-        handler.apply(this, args);
-    }
-  } else if (isObject(handler)) {
-    args = Array.prototype.slice.call(arguments, 1);
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
-  }
-
-  return true;
-};
-
-EventEmitter.prototype.addListener = function(type, listener) {
-  var m;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events)
-    this._events = {};
-
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
-
-  if (!this._events[type])
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
-    } else {
-      m = EventEmitter.defaultMaxListeners;
-    }
-
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
-    }
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
-    }
-  }
-
-  g.listener = listener;
-  this.on(type, g);
-
-  return this;
-};
-
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events || !this._events[type])
-    return this;
-
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
-      }
-    }
-
-    if (position < 0)
-      return this;
-
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
-    }
-
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
-    }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
-
-  listeners = this._events[type];
-
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else if (listeners) {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.prototype.listenerCount = function(type) {
-  if (this._events) {
-    var evlistener = this._events[type];
-
-    if (isFunction(evlistener))
-      return 1;
-    else if (evlistener)
-      return evlistener.length;
-  }
-  return 0;
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  return emitter.listenerCount(type);
-};
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-
-},{}],56:[function(require,module,exports){
-'use strict';
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var FunctionBuilderBase = require('../function-builder-base');
-var CPUFunctionNode = require('./function-node');
-
-/**
- * @class CPUFunctionBuilder
- *
- * @extends FunctionBuilderBase
- *
- * @desc Builds functions to execute on CPU from JavaScript function Strings
- *
- */
-module.exports = function (_FunctionBuilderBase) {
-  _inherits(CPUFunctionBuilder, _FunctionBuilderBase);
-
-  function CPUFunctionBuilder() {
-    _classCallCheck(this, CPUFunctionBuilder);
-
-    var _this = _possibleConstructorReturn(this, (CPUFunctionBuilder.__proto__ || Object.getPrototypeOf(CPUFunctionBuilder)).call(this));
-
-    _this.Node = CPUFunctionNode;
-    return _this;
-  }
-
-  return CPUFunctionBuilder;
-}(FunctionBuilderBase);
-},{"../function-builder-base":61,"./function-node":57}],57:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var BaseFunctionNode = require('../function-node-base');
-var utils = require('../../core/utils');
-
-/**
- * @class CPUFunctionNode
- *
- * @extends BaseFunctionNode#
- *
- * @desc [INTERNAL] Represents a single function, inside JS
- *
- * <p>This handles all the raw state, converted state, etc. Of a single function.</p>
- *
- * @prop functionName         - {String}        Name of the function
- * @prop jsFunction           - {Function}   The JS Function the node represents
- * @prop jsFunctionString     - {String}        jsFunction.toString()
- * @prop paramNames           - {String[]}  Parameter names of the function
- * @prop paramTypes           - {String[]}  Shader land parameters type assumption
- * @prop isRootKernel         - {Boolean}       Special indicator, for kernel function
- * @prop webglFunctionString  - {String}        webgl converted function string
- * @prop openglFunctionString - {String}        opengl converted function string
- * @prop calledFunctions      - {String[]}  List of all the functions called
- * @prop initVariables        - {String[]}  List of variables initialized in the function
- * @prop readVariables        - {String[]}  List of variables read operations occur
- * @prop writeVariables       - {String[]}  List of variables write operations occur
- *
- */
-module.exports = function (_BaseFunctionNode) {
-	_inherits(CPUFunctionNode, _BaseFunctionNode);
-
-	function CPUFunctionNode(functionName, jsFunction, options) {
-		_classCallCheck(this, CPUFunctionNode);
-
-		var _this = _possibleConstructorReturn(this, (CPUFunctionNode.__proto__ || Object.getPrototypeOf(CPUFunctionNode)).call(this, functionName, jsFunction, options));
-
-		_this.paramSizes = options ? options.paramSizes : [];
-		_this.memberStates = [];
-		return _this;
-	}
-
-	_createClass(CPUFunctionNode, [{
-		key: 'pushMemberState',
-		value: function pushMemberState(name) {
-			this.memberStates.push(name);
-		}
-	}, {
-		key: 'popMemberState',
-		value: function popMemberState(name) {
-			if (this.memberState === name) {
-				this.memberStates.pop();
-			} else {
-				throw new Error('Cannot popMemberState ' + name + ' when in ' + this.memberState);
-			}
-		}
-	}, {
-		key: 'generate',
-		value: function generate() {
-			if (this.debug) {
-				console.log(this);
-			}
-			this.functionStringArray = this.astGeneric(this.getJsAST(), []);
-			this.functionString = this.functionStringArray.join('').trim();
-			return this.functionString;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name getFunctionPrototypeString
-   *
-   * @desc Returns the converted JS function
-   *
-   * @returns {String} function string, result is cached under this.getFunctionPrototypeString
-   *
-   */
-
-	}, {
-		key: 'getFunctionPrototypeString',
-		value: function getFunctionPrototypeString() {
-			if (this.webGlFunctionPrototypeString) {
-				return this.webGlFunctionPrototypeString;
-			}
-			return this.webGlFunctionPrototypeString = this.generate();
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astFunctionDeclaration
-   *
-   * @desc Parses the abstract syntax tree for to its *named function declaration*
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astFunctionDeclaration',
-		value: function astFunctionDeclaration(ast, retArr) {
-			this.builder.addFunction(null, utils.getAstString(this.jsFunctionString, ast));
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astFunctionPrototype
-   *
-   * @desc Parses the abstract syntax tree for to its *named function prototype*
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astFunctionPrototype',
-		value: function astFunctionPrototype(ast, retArr) {
-			// Setup function return type and name
-			if (this.isRootKernel || this.isSubKernel) {
-				return retArr;
-			}
-
-			retArr.push(this.returnType);
-			retArr.push(' ');
-			retArr.push(this.functionName);
-			retArr.push('(');
-
-			// Arguments handling
-			for (var i = 0; i < this.paramNames.length; ++i) {
-				if (i > 0) {
-					retArr.push(', ');
-				}
-				retArr.push('user_');
-				retArr.push(this.paramNames[i]);
-			}
-
-			retArr.push(');\n');
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astFunctionExpression
-   *
-   * @desc Parses the abstract syntax tree for to its *named function*
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astFunctionExpression',
-		value: function astFunctionExpression(ast, retArr) {
-
-			// Setup function return type and name
-			if (!this.isRootKernel) {
-				retArr.push('function');
-				retArr.push(' ');
-				retArr.push(this.functionName);
-				retArr.push('(');
-
-				// Arguments handling
-				for (var i = 0; i < this.paramNames.length; ++i) {
-					var paramName = this.paramNames[i];
-
-					if (i > 0) {
-						retArr.push(', ');
-					}
-					retArr.push('user_');
-					retArr.push(paramName);
-				}
-
-				// Function opening
-				retArr.push(') {\n');
-			}
-
-			// Body statement iteration
-			for (var _i = 0; _i < ast.body.body.length; ++_i) {
-				this.astGeneric(ast.body.body[_i], retArr);
-				retArr.push('\n');
-			}
-
-			if (!this.isRootKernel) {
-				// Function closing
-				retArr.push('}\n');
-			}
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astReturnStatement
-   *
-   * @desc Parses the abstract syntax tree for to *return* statement
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astReturnStatement',
-		value: function astReturnStatement(ast, retArr) {
-			if (this.isRootKernel) {
-				retArr.push('kernelResult = ');
-				this.astGeneric(ast.argument, retArr);
-				retArr.push(';');
-			} else if (this.isSubKernel) {
-				retArr.push(this.functionName + 'Result = ');
-				this.astGeneric(ast.argument, retArr);
-				retArr.push(';');
-				retArr.push('return ' + this.functionName + 'Result;');
-			} else {
-				retArr.push('return ');
-				this.astGeneric(ast.argument, retArr);
-				retArr.push(';');
-			}
-
-			//throw this.astErrorOutput(
-			//	'Non main function return, is not supported : '+this.currentFunctionNamespace,
-			//	ast
-			//);
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astLiteral
-   *
-   * @desc Parses the abstract syntax tree for *literal value*
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astLiteral',
-		value: function astLiteral(ast, retArr) {
-
-			// Reject non numeric literals
-			if (isNaN(ast.value)) {
-				throw this.astErrorOutput('Non-numeric literal not supported : ' + ast.value, ast);
-			}
-
-			retArr.push(ast.value);
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astBinaryExpression
-   *
-   * @desc Parses the abstract syntax tree for *binary* expression
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astBinaryExpression',
-		value: function astBinaryExpression(ast, retArr) {
-			retArr.push('(');
-			this.astGeneric(ast.left, retArr);
-			retArr.push(ast.operator);
-			this.astGeneric(ast.right, retArr);
-			retArr.push(')');
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astIdentifierExpression
-   *
-   * @desc Parses the abstract syntax tree for *identifier* expression
-   *
-   * @param {Object} idtNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astIdentifierExpression',
-		value: function astIdentifierExpression(idtNode, retArr) {
-			if (idtNode.type !== 'Identifier') {
-				throw this.astErrorOutput('IdentifierExpression - not an Identifier', idtNode);
-			}
-
-			switch (this.state) {
-				case 'input-index-y':
-				case 'input-index-z':
-					retArr.push('(');
-			}
-
-			switch (idtNode.name) {
-				case 'gpu_threadX':
-					retArr.push('threadId.x');
-					break;
-				case 'gpu_threadY':
-					retArr.push('threadId.y');
-					break;
-				case 'gpu_threadZ':
-					retArr.push('threadId.z');
-					break;
-				case 'gpu_outputX':
-					retArr.push('uOutputDim.x');
-					break;
-				case 'gpu_outputY':
-					retArr.push('uOutputDim.y');
-					break;
-				case 'gpu_outputZ':
-					retArr.push('uOutputDim.z');
-					break;
-				case 'Infinity':
-					retArr.push('Infinity');
-					break;
-				default:
-					if (this.constants && this.constants.hasOwnProperty(idtNode.name)) {
-						retArr.push('constants_' + idtNode.name);
-					} else {
-						var userParamName = this.getUserParamName(idtNode.name);
-						if (userParamName !== null) {
-							retArr.push('user_' + userParamName);
-						} else {
-							retArr.push('user_' + idtNode.name);
-						}
-					}
-			}
-
-			switch (this.state) {
-				case 'input-index-y':
-					{
-						var size = this.paramSizes[this.paramNames.indexOf(this.memberState)];
-						retArr.push(' * ' + size[0] + ')');
-						break;
-					}
-				case 'input-index-z':
-					{
-						var _size = this.paramSizes[this.paramNames.indexOf(this.memberState)];
-						retArr.push(' * ' + _size[0] * _size[1] + ')');
-						break;
-					}
-			}
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astForStatement
-   *
-   * @desc Parses the abstract syntax tree forfor *for-loop* expression
-   *
-   * @param {Object} forNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the parsed cpu string
-   */
-
-	}, {
-		key: 'astForStatement',
-		value: function astForStatement(forNode, retArr) {
-			if (forNode.type !== 'ForStatement') {
-				throw this.astErrorOutput('Invalid for statement', forNode);
-			}
-
-			if (forNode.test && forNode.test.type === 'BinaryExpression') {
-				if ((forNode.test.right.type === 'Identifier' || forNode.test.right.type === 'Literal') && forNode.test.operator === '<' && this.isIdentifierConstant(forNode.test.right.name) === false) {
-
-					if (!this.loopMaxIterations) {
-						console.warn('Warning: loopMaxIterations is not set! Using default of 1000 which may result in unintended behavior.');
-						console.warn('Set loopMaxIterations or use a for loop of fixed length to silence this message.');
-					}
-
-					retArr.push('for (');
-					this.astGeneric(forNode.init, retArr);
-					if (retArr[retArr.length - 1] !== ';') {
-						retArr.push(';');
-					}
-					this.astGeneric(forNode.test.left, retArr);
-					retArr.push(forNode.test.operator);
-					retArr.push('LOOP_MAX');
-					retArr.push(';');
-					this.astGeneric(forNode.update, retArr);
-					retArr.push(')');
-
-					retArr.push('{\n');
-					retArr.push('if (');
-					this.astGeneric(forNode.test.left, retArr);
-					retArr.push(forNode.test.operator);
-					this.astGeneric(forNode.test.right, retArr);
-					retArr.push(') {\n');
-					if (forNode.body.type === 'BlockStatement') {
-						for (var i = 0; i < forNode.body.body.length; i++) {
-							this.astGeneric(forNode.body.body[i], retArr);
-						}
-					} else {
-						this.astGeneric(forNode.body, retArr);
-					}
-					retArr.push('} else {\n');
-					retArr.push('break;\n');
-					retArr.push('}\n');
-					retArr.push('}\n');
-
-					return retArr;
-				} else if (forNode.init.declarations) {
-					var declarations = JSON.parse(JSON.stringify(forNode.init.declarations));
-					var updateArgument = forNode.update.argument;
-					if (!Array.isArray(declarations) || declarations.length < 1) {
-						console.log(this.jsFunctionString);
-						throw new Error('Error: Incompatible for loop declaration');
-					}
-
-					if (declarations.length > 1) {
-						var initArgument = null;
-						for (var _i2 = 0; _i2 < declarations.length; _i2++) {
-							var declaration = declarations[_i2];
-							if (declaration.id.name === updateArgument.name) {
-								initArgument = declaration;
-								declarations.splice(_i2, 1);
-							} else {
-								retArr.push('var ');
-								this.astGeneric(declaration, retArr);
-								retArr.push(';');
-							}
-						}
-
-						retArr.push('for (let ');
-						this.astGeneric(initArgument, retArr);
-						retArr.push(';');
-					} else {
-						retArr.push('for (');
-						this.astGeneric(forNode.init, retArr);
-					}
-
-					this.astGeneric(forNode.test, retArr);
-					retArr.push(';');
-					this.astGeneric(forNode.update, retArr);
-					retArr.push(')');
-					this.astGeneric(forNode.body, retArr);
-					return retArr;
-				}
-			}
-
-			throw this.astErrorOutput('Invalid for statement', forNode);
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astWhileStatement
-   *
-   * @desc Parses the abstract syntax tree for *while* loop
-   *
-   *
-   * @param {Object} whileNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the parsed openclgl string
-   */
-
-	}, {
-		key: 'astWhileStatement',
-		value: function astWhileStatement(whileNode, retArr) {
-			if (whileNode.type !== 'WhileStatement') {
-				throw this.astErrorOutput('Invalid while statement', whileNode);
-			}
-
-			retArr.push('for (let i = 0; i < LOOP_MAX; i++) {');
-			retArr.push('if (');
-			this.astGeneric(whileNode.test, retArr);
-			retArr.push(') {\n');
-			this.astGeneric(whileNode.body, retArr);
-			retArr.push('} else {\n');
-			retArr.push('break;\n');
-			retArr.push('}\n');
-			retArr.push('}\n');
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astWhileStatement
-   *
-   * @desc Parses the abstract syntax tree for *do while* loop
-   *
-   *
-   * @param {Object} doWhileNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the parsed webgl string
-   */
-
-	}, {
-		key: 'astDoWhileStatement',
-		value: function astDoWhileStatement(doWhileNode, retArr) {
-			if (doWhileNode.type !== 'DoWhileStatement') {
-				throw this.astErrorOutput('Invalid while statement', doWhileNode);
-			}
-
-			retArr.push('for (let i = 0; i < LOOP_MAX; i++) {');
-			this.astGeneric(doWhileNode.body, retArr);
-			retArr.push('if (!');
-			this.astGeneric(doWhileNode.test, retArr);
-			retArr.push(') {\n');
-			retArr.push('break;\n');
-			retArr.push('}\n');
-			retArr.push('}\n');
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astAssignmentExpression
-   *
-   * @desc Parses the abstract syntax tree for *Assignment* Expression
-   *
-   * @param {Object} assNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astAssignmentExpression',
-		value: function astAssignmentExpression(assNode, retArr) {
-			this.astGeneric(assNode.left, retArr);
-			retArr.push(assNode.operator);
-			this.astGeneric(assNode.right, retArr);
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astEmptyStatement
-   *
-   * @desc Parses the abstract syntax tree for an *Empty* Statement
-   *
-   * @param {Object} eNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astEmptyStatement',
-		value: function astEmptyStatement(eNode, retArr) {
-			//retArr.push(';\n');
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astBlockStatement
-   *
-   * @desc Parses the abstract syntax tree for *Block* statement
-   *
-   * @param {Object} bNode - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astBlockStatement',
-		value: function astBlockStatement(bNode, retArr) {
-			retArr.push('{\n');
-			for (var i = 0; i < bNode.body.length; i++) {
-				this.astGeneric(bNode.body[i], retArr);
-			}
-			retArr.push('}\n');
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astExpressionStatement
-   *
-   * @desc Parses the abstract syntax tree for *generic expression* statement
-   *
-   * @param {Object} esNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astExpressionStatement',
-		value: function astExpressionStatement(esNode, retArr) {
-			this.astGeneric(esNode.expression, retArr);
-			retArr.push(';');
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astVariableDeclaration
-   *
-   * @desc Parses the abstract syntax tree for *Variable Declaration*
-   *
-   * @param {Object} vardecNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astVariableDeclaration',
-		value: function astVariableDeclaration(vardecNode, retArr) {
-			retArr.push('var ');
-			for (var i = 0; i < vardecNode.declarations.length; i++) {
-				this.declarations[vardecNode.declarations[i].id.name] = 'var';
-				if (i > 0) {
-					retArr.push(',');
-				}
-				this.astGeneric(vardecNode.declarations[i], retArr);
-			}
-			retArr.push(';');
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astVariableDeclarator
-   *
-   * @desc Parses the abstract syntax tree for *Variable Declarator*
-   *
-   * @param {Object} ivardecNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astVariableDeclarator',
-		value: function astVariableDeclarator(ivardecNode, retArr) {
-			this.astGeneric(ivardecNode.id, retArr);
-			if (ivardecNode.init !== null) {
-				retArr.push('=');
-				this.astGeneric(ivardecNode.init, retArr);
-			}
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astIfStatement
-   *
-   * @desc Parses the abstract syntax tree for *If* Statement
-   *
-   * @param {Object} ifNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astIfStatement',
-		value: function astIfStatement(ifNode, retArr) {
-			retArr.push('if (');
-			this.astGeneric(ifNode.test, retArr);
-			retArr.push(')');
-			if (ifNode.consequent.type === 'BlockStatement') {
-				this.astGeneric(ifNode.consequent, retArr);
-			} else {
-				retArr.push(' {\n');
-				this.astGeneric(ifNode.consequent, retArr);
-				retArr.push('\n}\n');
-			}
-
-			if (ifNode.alternate) {
-				retArr.push('else ');
-				if (ifNode.alternate.type === 'BlockStatement') {
-					this.astGeneric(ifNode.alternate, retArr);
-				} else {
-					retArr.push(' {\n');
-					this.astGeneric(ifNode.alternate, retArr);
-					retArr.push('\n}\n');
-				}
-			}
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astBreakStatement
-   *
-   * @desc Parses the abstract syntax tree for *Break* Statement
-   *
-   * @param {Object} brNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astBreakStatement',
-		value: function astBreakStatement(brNode, retArr) {
-			retArr.push('break;\n');
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astContinueStatement
-   *
-   * @desc Parses the abstract syntax tree for *Continue* Statement
-   *
-   * @param {Object} crNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astContinueStatement',
-		value: function astContinueStatement(crNode, retArr) {
-			retArr.push('continue;\n');
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astLogicalExpression
-   *
-   * @desc Parses the abstract syntax tree for *Logical* Expression
-   *
-   * @param {Object} logNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astLogicalExpression',
-		value: function astLogicalExpression(logNode, retArr) {
-			retArr.push('(');
-			this.astGeneric(logNode.left, retArr);
-			retArr.push(logNode.operator);
-			this.astGeneric(logNode.right, retArr);
-			retArr.push(')');
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astUpdateExpression
-   *
-   * @desc Parses the abstract syntax tree for *Update* Expression
-   *
-   * @param {Object} uNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astUpdateExpression',
-		value: function astUpdateExpression(uNode, retArr) {
-			if (uNode.prefix) {
-				retArr.push(uNode.operator);
-				this.astGeneric(uNode.argument, retArr);
-			} else {
-				this.astGeneric(uNode.argument, retArr);
-				retArr.push(uNode.operator);
-			}
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astUnaryExpression
-   *
-   * @desc Parses the abstract syntax tree for *Unary* Expression
-   *
-   * @param {Object} uNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astUnaryExpression',
-		value: function astUnaryExpression(uNode, retArr) {
-			if (uNode.prefix) {
-				retArr.push(uNode.operator);
-				this.astGeneric(uNode.argument, retArr);
-			} else {
-				this.astGeneric(uNode.argument, retArr);
-				retArr.push(uNode.operator);
-			}
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astThisExpression
-   *
-   * @desc Parses the abstract syntax tree for *This* expression
-   *
-   * @param {Object} tNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astThisExpression',
-		value: function astThisExpression(tNode, retArr) {
-			retArr.push('_this');
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astMemberExpression
-   *
-   * @desc Parses the abstract syntax tree for *Member* Expression
-   *
-   * @param {Object} mNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astMemberExpression',
-		value: function astMemberExpression(mNode, retArr) {
-			if (mNode.computed) {
-				if (mNode.object.type === 'Identifier' || mNode.object.type === 'MemberExpression' && mNode.object.object.object && mNode.object.object.object.type === 'ThisExpression' && mNode.object.object.property.name === 'constants') {
-					this.pushState('identifier');
-					this.astGeneric(mNode.object, retArr);
-					this.popState('identifier');
-					retArr.push('[');
-					if (this.isInput(mNode.object.name)) {
-						this.astGeneric(mNode.property, retArr);
-					} else {
-						this.astGeneric(mNode.property, retArr);
-					}
-					retArr.push(']');
-				} else {
-					if (mNode.object.object) {
-						if (mNode.object.object.object && this.isInput(mNode.object.object.object.name)) {
-							this.pushMemberState(mNode.object.object.object.name);
-							this.pushState('input-index-z');
-							this.astGeneric(mNode.object, retArr);
-							var last = retArr.pop();
-							retArr.push(' + ');
-							this.popState('input-index-z');
-							this.pushState('input-index');
-							this.astGeneric(mNode.property, retArr);
-							this.popState('input-index');
-							retArr.push(last);
-							this.popMemberState(mNode.object.object.object.name);
-						} else if (this.isInput(mNode.object.object.name)) {
-							this.pushMemberState(mNode.object.object.name);
-							if (!this.isState('input-index-z')) {
-								this.pushState('input-index-y');
-							}
-							this.astGeneric(mNode.object, retArr);
-							var _last = retArr.pop();
-							retArr.push(' + ');
-							if (!this.isState('input-index-z')) {
-								this.popState('input-index-y');
-							}
-
-							var isInputIndexZ = this.isState('input-index-z');
-							if (isInputIndexZ) {
-								this.pushState('input-index-y');
-							} else {
-								this.pushState('input-index');
-							}
-							this.astGeneric(mNode.property, retArr);
-							if (isInputIndexZ) {
-								this.popState('input-index-y');
-							} else {
-								this.popState('input-index');
-							}
-							retArr.push(_last);
-							this.popMemberState(mNode.object.object.name);
-						} else {
-							this.astGeneric(mNode.object, retArr);
-							var _last2 = retArr.pop();
-							retArr.push('][');
-							this.astGeneric(mNode.property, retArr);
-							retArr.push(_last2);
-						}
-					} else {
-						this.astGeneric(mNode.object, retArr);
-						var _last3 = retArr.pop();
-						retArr.push('][');
-						this.astGeneric(mNode.property, retArr);
-						retArr.push(_last3);
-					}
-				}
-			} else {
-				var unrolled = this.astMemberExpressionUnroll(mNode);
-				if (mNode.property.type === 'Identifier' && mNode.computed) {
-					unrolled = 'user_' + unrolled;
-				}
-
-				if (unrolled.indexOf('this.constants') === 0) {
-					// remove 'this.constants' from beginning
-					unrolled = 'constants_' + unrolled.substring(15);
-				} else if (unrolled.indexOf('this') === 0) {
-					// Its a reference to `this`, add '_' before
-					unrolled = '_' + unrolled;
-				}
-
-				switch (this.state) {
-					case 'input-index-y':
-					case 'input-index-z':
-						retArr.push('(');
-				}
-
-				switch (unrolled) {
-					case '_this.output.x':
-						retArr.push(this.output[0]);
-						break;
-					case '_this.output.y':
-						retArr.push(this.output[1]);
-						break;
-					case '_this.output.z':
-						retArr.push(this.output[2]);
-						break;
-					default:
-						if (mNode.object && mNode.object.name && this.declarations[mNode.object.name]) {
-							retArr.push('user_');
-						}
-						retArr.push(unrolled);
-				}
-
-				switch (this.state) {
-					case 'input-index-y':
-						{
-							var size = this.paramSizes[this.paramNames.indexOf(this.memberState)];
-							retArr.push(' * ' + size[0] + ')');
-							break;
-						}
-					case 'input-index-z':
-						{
-							var _size2 = this.paramSizes[this.paramNames.indexOf(this.memberState)];
-							retArr.push(' * ' + _size2[0] * _size2[1] + ')');
-							break;
-						}
-				}
-			}
-			return retArr;
-		}
-	}, {
-		key: 'astSequenceExpression',
-		value: function astSequenceExpression(sNode, retArr) {
-			for (var i = 0; i < sNode.expressions.length; i++) {
-				if (i > 0) {
-					retArr.push(',');
-				}
-				this.astGeneric(sNode.expressions, retArr);
-			}
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astCallExpression
-   *
-   * @desc Parses the abstract syntax tree for *call* expression
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns  {Array} the append retArr
-   */
-
-	}, {
-		key: 'astCallExpression',
-		value: function astCallExpression(ast, retArr) {
-			if (ast.callee) {
-				// Get the full function call, unrolled
-				var funcName = this.astMemberExpressionUnroll(ast.callee);
-
-				// Register the function into the called registry
-				if (this.calledFunctions.indexOf(funcName) < 0) {
-					this.calledFunctions.push(funcName);
-				}
-				if (!this.hasOwnProperty('funcName')) {
-					this.calledFunctionsArguments[funcName] = [];
-				}
-
-				var functionArguments = [];
-				this.calledFunctionsArguments[funcName].push(functionArguments);
-
-				// Call the function
-				retArr.push(funcName);
-
-				// Open arguments space
-				retArr.push('(');
-
-				// Add the vars
-				for (var i = 0; i < ast.arguments.length; ++i) {
-					var argument = ast.arguments[i];
-					if (i > 0) {
-						retArr.push(', ');
-					}
-					this.astGeneric(argument, retArr);
-					if (argument.type === 'Identifier') {
-						var paramIndex = this.paramNames.indexOf(argument.name);
-						if (paramIndex === -1) {
-							functionArguments.push(null);
-						} else {
-							functionArguments.push({
-								name: argument.name,
-								type: this.paramTypes[paramIndex]
-							});
-						}
-					} else {
-						functionArguments.push(null);
-					}
-				}
-
-				// Close arguments space
-				retArr.push(')');
-
-				return retArr;
-			}
-
-			// Failure, unknown expression
-			throw this.astErrorOutput('Unknown CallExpression', ast);
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf CPUFunctionNode#
-   * @function
-   * @name astArrayExpression
-   *
-   * @desc Parses the abstract syntax tree for *Array* Expression
-   *
-   * @param {Object} arrNode - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astArrayExpression',
-		value: function astArrayExpression(arrNode, retArr) {
-			var arrLen = arrNode.elements.length;
-
-			retArr.push('[');
-			for (var i = 0; i < arrLen; ++i) {
-				if (i > 0) {
-					retArr.push(', ');
-				}
-				var subNode = arrNode.elements[i];
-				this.astGeneric(subNode, retArr);
-			}
-			retArr.push(']');
-
-			return retArr;
-
-			// // Failure, unknown expression
-			// throw this.astErrorOutput(
-			// 	'Unknown  ArrayExpression',
-			// 	arrNode
-			//);
-		}
-	}, {
-		key: 'astDebuggerStatement',
-		value: function astDebuggerStatement(arrNode, retArr) {
-			retArr.push('debugger;');
-			return retArr;
-		}
-	}, {
-		key: 'memberState',
-		get: function get() {
-			return this.memberStates[this.memberStates.length - 1];
-		}
-	}]);
-
-	return CPUFunctionNode;
-}(BaseFunctionNode);
-},{"../../core/utils":87,"../function-node-base":62}],58:[function(require,module,exports){
-'use strict';
-
-var utils = require('../../core/utils');
-var kernelRunShortcut = require('../kernel-run-shortcut');
-
-function removeFnNoise(fn) {
-  if (/^function /.test(fn)) {
-    fn = fn.substring(9);
-  }
-  return fn.replace(/[_]typeof/g, 'typeof');
-}
-
-function removeNoise(str) {
-  return str.replace(/[_]typeof/g, 'typeof');
-}
-
-module.exports = function (cpuKernel, name) {
-  return '() => {\n    ' + kernelRunShortcut.toString() + ';\n    const utils = {\n      allPropertiesOf: ' + removeNoise(utils.allPropertiesOf.toString()) + ',\n      clone: ' + removeNoise(utils.clone.toString()) + ',\n      checkOutput: ' + removeNoise(utils.checkOutput.toString()) + '\n    };\n    const Utils = utils;\n    let Input = function() {};\n    class ' + (name || 'Kernel') + ' {\n      constructor() {        \n        this.argumentsLength = 0;\n        this._canvas = null;\n        this._webGl = null;\n        this.built = false;\n        this.program = null;\n        this.paramNames = ' + JSON.stringify(cpuKernel.paramNames) + ';\n        this.paramTypes = ' + JSON.stringify(cpuKernel.paramTypes) + ';\n        this.texSize = ' + JSON.stringify(cpuKernel.texSize) + ';\n        this.output = ' + JSON.stringify(cpuKernel.output) + ';\n        this._kernelString = `' + cpuKernel._kernelString + '`;\n        this.output = ' + JSON.stringify(cpuKernel.output) + ';\n\t\t    this.run = function() {\n          this.run = null;\n          this.build();\n          return this.run.apply(this, arguments);\n        }.bind(this);\n        this.thread = {\n          x: 0,\n          y: 0,\n          z: 0\n        };\n      }\n      setCanvas(canvas) { this._canvas = canvas; return this; }\n      setWebGl(webGl) { this._webGl = webGl; return this; }\n      setInput(Type) { Input = Type; }\n      ' + removeFnNoise(cpuKernel.build.toString()) + '\n      ' + removeFnNoise(cpuKernel.setupParams.toString()) + '\n      ' + removeFnNoise(cpuKernel.setupConstants.toString()) + '\n      run () { ' + cpuKernel.kernelString + ' }\n      getKernelString() { return this._kernelString; }\n      ' + removeFnNoise(cpuKernel.validateOptions.toString()) + '\n    };\n    return kernelRunShortcut(new Kernel());\n  };';
-};
-},{"../../core/utils":87,"../kernel-run-shortcut":64}],59:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var KernelBase = require('../kernel-base');
-var utils = require('../../core/utils');
-var kernelString = require('./kernel-string');
-
-module.exports = function (_KernelBase) {
-	_inherits(CPUKernel, _KernelBase);
-
-	/**
-  * @constructor CPUKernel
-  *
-  * @desc Kernel Implementation for CPU.
-  *
-  * <p>Instantiates properties to the CPU Kernel.</p>
-  *
-  * @extends KernelBase
-  *
-  * @prop {Object} thread - The thread dimensions, x, y and z
-  * @prop {Object} output - The canvas dimensions
-  * @prop {Object} functionBuilder - Function Builder instance bound to this Kernel
-  * @prop {Function} run - Method to run the kernel
-  *
-  */
-	function CPUKernel(fnString, settings) {
-		_classCallCheck(this, CPUKernel);
-
-		var _this = _possibleConstructorReturn(this, (CPUKernel.__proto__ || Object.getPrototypeOf(CPUKernel)).call(this, fnString, settings));
-
-		_this._fn = null;
-		_this.run = null;
-		_this._canvasCtx = null;
-		_this._imageData = null;
-		_this._colorData = null;
-		_this._kernelString = null;
-		_this.thread = {
-			x: 0,
-			y: 0,
-			z: 0
-		};
-
-		_this.run = function () {
-			this.run = null;
-			this.build.apply(this, arguments);
-			return this.run.apply(this, arguments);
-		}.bind(_this);
-		return _this;
-	}
-
-	/**
-  * @memberOf CPUKernel#
-  * @function
-  * @name validateOptions
-  *
-  * @desc Validate options related to CPU Kernel, such as
-  * dimensions size, and auto dimension support.
-  *
-  */
-
-
-	_createClass(CPUKernel, [{
-		key: 'validateOptions',
-		value: function validateOptions() {
-			if (!this.output || this.output.length === 0) {
-				if (arguments.length !== 1) {
-					throw 'Auto dimensions only supported for kernels with only one input';
-				}
-
-				var argType = utils.getArgumentType(arguments[0]);
-				if (argType === 'Array') {
-					this.output = utils.getDimensions(argType);
-				} else if (argType === 'NumberTexture' || argType === 'ArrayTexture(4)') {
-					this.output = arguments[0].output;
-				} else {
-					throw 'Auto dimensions not supported for input type: ' + argType;
-				}
-			}
-
-			utils.checkOutput(this.output);
-		}
-
-		/**
-   * @memberOf CPUKernel#
-   * @function
-   * @name build
-   *
-   * @desc Builds the Kernel, by generating the kernel
-   * string using thread dimensions, and arguments
-   * supplied to the kernel.
-   *
-   * <p>If the graphical flag is enabled, canvas is used.</p>
-   *
-   */
-
-	}, {
-		key: 'build',
-		value: function build() {
-			this.setupConstants();
-			this.setupParams(arguments);
-			this.validateOptions();
-			var canvas = this._canvas;
-			if (canvas) {
-				// if node or canvas is not found, don't die
-				this._canvasCtx = canvas.getContext('2d');
-			}
-			var threadDim = this.threadDim = utils.clone(this.output);
-
-			while (threadDim.length < 3) {
-				threadDim.push(1);
-			}
-
-			if (this.graphical) {
-				var _canvas = this._canvas;
-				if (!_canvas) {
-					throw new Error('no canvas available for using graphical output');
-				}
-				_canvas.width = threadDim[0];
-				_canvas.height = threadDim[1];
-				this._imageData = this._canvasCtx.createImageData(threadDim[0], threadDim[1]);
-				this._colorData = new Uint8ClampedArray(threadDim[0] * threadDim[1] * 4);
-			}
-
-			var kernelString = this.getKernelString();
-
-			if (this.debug) {
-				console.log('Options:');
-				console.dir(this);
-				console.log('Function output:');
-				console.log(kernelString);
-			}
-
-			this.kernelString = kernelString;
-			this.run = new Function([], kernelString).bind(this)();
-		}
-	}, {
-		key: 'color',
-		value: function color(r, g, b, a) {
-			if (typeof a === 'undefined') {
-				a = 1;
-			}
-
-			r = Math.floor(r * 255);
-			g = Math.floor(g * 255);
-			b = Math.floor(b * 255);
-			a = Math.floor(a * 255);
-
-			var width = this.output[0];
-			var height = this.output[1];
-
-			var x = this.thread.x;
-			var y = height - this.thread.y - 1;
-
-			var index = x + y * width;
-
-			this._colorData[index * 4 + 0] = r;
-			this._colorData[index * 4 + 1] = g;
-			this._colorData[index * 4 + 2] = b;
-			this._colorData[index * 4 + 3] = a;
-		}
-
-		/**
-   * @memberOf CPUKernel#
-   * @function
-   * @name getKernelString
-   *
-   * @desc Generates kernel string for this kernel program.
-   *
-   * <p>If sub-kernels are supplied, they are also factored in.
-   * This string can be saved by calling the `toString` method
-   * and then can be reused later.</p>
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: 'getKernelString',
-		value: function getKernelString() {
-			if (this._kernelString !== null) return this._kernelString;
-
-			var builder = this.functionBuilder;
-
-			// Thread dim fix (to make compilable)
-			var threadDim = this.threadDim || (this.threadDim = utils.clone(this.output));
-			while (threadDim.length < 3) {
-				threadDim.push(1);
-			}
-
-			builder.addKernel(this.fnString, {
-				prototypeOnly: false,
-				constants: this.constants,
-				output: threadDim,
-				debug: this.debug,
-				loopMaxIterations: this.loopMaxIterations,
-				paramNames: this.paramNames,
-				paramTypes: this.paramTypes,
-				paramSizes: this.paramSizes,
-				constantTypes: this.constantTypes
-			});
-
-			builder.addFunctions(this.functions, {
-				constants: this.constants,
-				output: threadDim
-			});
-
-			builder.addNativeFunctions(this.nativeFunctions);
-
-			if (this.subKernels !== null) {
-				this.subKernelOutputTextures = [];
-				this.subKernelOutputVariableNames = [];
-				for (var i = 0; i < this.subKernels.length; i++) {
-					var subKernel = this.subKernels[i];
-					builder.addSubKernel(subKernel, {
-						prototypeOnly: false,
-						constants: this.constants,
-						output: this.output,
-						debug: this.debug,
-						loopMaxIterations: this.loopMaxIterations
-					});
-					this.subKernelOutputVariableNames.push(subKernel.name + 'Result');
-				}
-			} else if (this.subKernelProperties !== null) {
-				this.subKernelOutputVariableNames = [];
-				var _i = 0;
-				for (var p in this.subKernelProperties) {
-					if (!this.subKernelProperties.hasOwnProperty(p)) continue;
-					var _subKernel = this.subKernelProperties[p];
-					builder.addSubKernel(_subKernel);
-					this.subKernelOutputVariableNames.push(_subKernel.name + 'Result');
-					_i++;
-				}
-			}
-
-			var prototypes = builder.getPrototypes('kernel');
-			var kernel = null;
-			if (prototypes.length > 1) {
-				prototypes = prototypes.filter(function (fn) {
-					if (/^function/.test(fn)) return fn;
-					kernel = fn;
-					return false;
-				});
-			} else {
-				kernel = prototypes.shift();
-			}
-			var kernelString = this._kernelString = '\n\t\tvar LOOP_MAX = ' + this._getLoopMaxString() + '\n\t\tvar constants = this.constants;\n\t\tvar _this = this;\n    return function (' + this.paramNames.map(function (paramName) {
-				return 'user_' + paramName;
-			}).join(', ') + ') {\n      ' + this._processConstants() + '\n      ' + this._processParams() + '\n      ' + this._kernelLoop(kernel) + '\n      if (this.graphical) {\n        this._imageData.data.set(this._colorData);\n        this._canvasCtx.putImageData(this._imageData, 0, 0);\n        return;\n      }\n      ' + this._kernelOutput() + '\n      ' + (prototypes.length > 0 ? prototypes.join('\n') : '') + '\n    }.bind(this);';
-			return kernelString;
-		}
-
-		/**
-   * @memberOf CPUKernel#
-   * @function
-   * @name toString
-   *
-   * @desc Returns the *pre-compiled* Kernel as a JS Object String, that can be reused.
-   *
-   */
-
-	}, {
-		key: 'toString',
-		value: function toString() {
-			return kernelString(this);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getLoopMaxString
-   *
-   * @desc Get the maximum loop size String.
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getLoopMaxString',
-		value: function _getLoopMaxString() {
-			return this.loopMaxIterations ? ' ' + parseInt(this.loopMaxIterations) + ';\n' : ' 1000;\n';
-		}
-	}, {
-		key: '_processConstants',
-		value: function _processConstants() {
-			if (!this.constants) return '';
-
-			var result = [];
-			for (var p in this.constants) {
-				var type = this.constantTypes[p];
-				switch (type) {
-					case 'HTMLImage':
-						result.push('  var constants_' + p + ' = this._imageTo2DArray(this.constants.' + p + ')');
-						break;
-					case 'HTMLImageArray':
-						result.push('  var constants_' + p + ' = this._imageTo3DArray(this.constants.' + p + ')');
-						break;
-					case 'Input':
-						result.push('  var constants_' + p + ' = this.constants.' + p + '.value');
-						break;
-					default:
-						result.push('  var constants_' + p + ' = this.constants.' + p);
-				}
-			}
-			return result.join('\n');
-		}
-	}, {
-		key: '_processParams',
-		value: function _processParams() {
-			var result = [];
-			for (var i = 0; i < this.paramTypes.length; i++) {
-				switch (this.paramTypes[i]) {
-					case 'HTMLImage':
-						result.push('  user_' + this.paramNames[i] + ' = this._imageTo2DArray(user_' + this.paramNames[i] + ')');
-						break;
-					case 'HTMLImageArray':
-						result.push('  user_' + this.paramNames[i] + ' = this._imageTo3DArray(user_' + this.paramNames[i] + ')');
-						break;
-					case 'Input':
-						result.push('  user_' + this.paramNames[i] + ' = user_' + this.paramNames[i] + '.value');
-						break;
-				}
-			}
-			return result.join(';\n');
-		}
-	}, {
-		key: '_imageTo2DArray',
-		value: function _imageTo2DArray(image) {
-			var canvas = this._canvas;
-			if (canvas.width < image.width) {
-				canvas.width = image.width;
-			}
-			if (canvas.height < image.height) {
-				canvas.height = image.height;
-			}
-			var ctx = this._canvasCtx;
-			ctx.drawImage(image, 0, 0, image.width, image.height);
-			var pixelsData = ctx.getImageData(0, 0, image.width, image.height).data;
-			var imageArray = new Array(image.height);
-			var index = 0;
-			for (var y = image.height - 1; y >= 0; y--) {
-				imageArray[y] = new Array(image.width);
-				for (var x = 0; x < image.width; x++) {
-					var r = pixelsData[index++] / 255;
-					var g = pixelsData[index++] / 255;
-					var b = pixelsData[index++] / 255;
-					var a = pixelsData[index++] / 255;
-					var result = [r, g, b, a];
-					result.r = r;
-					result.g = g;
-					result.b = b;
-					result.a = a;
-					imageArray[y][x] = result;
-				}
-			}
-			return imageArray;
-		}
-	}, {
-		key: '_imageTo3DArray',
-		value: function _imageTo3DArray(images) {
-			var imagesArray = new Array(images.length);
-			for (var i = 0; i < images.length; i++) {
-				imagesArray[i] = this._imageTo2DArray(images[i]);
-			}
-			return imagesArray;
-		}
-	}, {
-		key: '_kernelLoop',
-		value: function _kernelLoop(kernelString) {
-			switch (this.output.length) {
-				case 1:
-					return this._kernel1DLoop(kernelString);
-				case 2:
-					return this._kernel2DLoop(kernelString);
-				case 3:
-					return this._kernel3DLoop(kernelString);
-				default:
-					throw new Error('unsupported size kernel');
-			}
-		}
-	}, {
-		key: '_kernel1DLoop',
-		value: function _kernel1DLoop(kernelString) {
-			var threadDim = this.threadDim;
-			return '\n    var result = new Float32Array(' + threadDim[0] + ');\n    ' + this._mapSubKernels(function (name) {
-				return 'var result_' + name + ' = new Float32Array(' + threadDim[0] + ');\n';
-			}).join('') + '\n    for (var x = 0; x < ' + threadDim[0] + '; x++) {\n      this.thread.x = x;\n      this.thread.y = 0;\n      this.thread.z = 0;\n      var kernelResult;\n      ' + kernelString + '\n      result[x] = kernelResult;\n      ' + this._mapSubKernels(function (name) {
-				return 'result_' + name + '[x] = ' + name + ';\n';
-			}).join('') + '\n    }';
-		}
-	}, {
-		key: '_kernel2DLoop',
-		value: function _kernel2DLoop(kernelString) {
-			var threadDim = this.threadDim;
-			return '\n    var result = new Array(' + threadDim[1] + ');\n    ' + this._mapSubKernels(function (name) {
-				return 'var result_' + name + ' = new Array(' + threadDim[1] + ');\n';
-			}).join('') + '\n    for (var y = 0; y < ' + threadDim[1] + '; y++) {\n      this.thread.z = 0;\n      this.thread.y = y;\n      var resultX = result[y] = new Float32Array(' + threadDim[0] + ');\n      ' + this._mapSubKernels(function (name) {
-				return 'var result_' + name + 'X = result_' + name + '[y] = new Float32Array(' + threadDim[0] + ');\n';
-			}).join('') + '\n      for (var x = 0; x < ' + threadDim[0] + '; x++) {\n      \tthis.thread.x = x;\n        var kernelResult;\n        ' + kernelString + '\n        resultX[x] = kernelResult;\n        ' + this._mapSubKernels(function (name) {
-				return 'result_' + name + 'X[x] = ' + name + ';\n';
-			}).join('') + '\n      }\n    }';
-		}
-	}, {
-		key: '_kernel3DLoop',
-		value: function _kernel3DLoop(kernelString) {
-			var threadDim = this.threadDim;
-			return '\n    var result = new Array(' + threadDim[2] + ');\n    ' + this._mapSubKernels(function (name) {
-				return 'var result_' + name + ' = new Array(' + threadDim[2] + ');\n';
-			}).join('') + '\n    for (var z = 0; z < ' + threadDim[2] + '; z++) {\n      this.thread.z = z;\n      var resultY = result[z] = new Array(' + threadDim[1] + ');\n      ' + this._mapSubKernels(function (name) {
-				return 'var result_' + name + 'Y = result_' + name + '[z] = new Array(' + threadDim[1] + ');\n';
-			}).join('') + '\n      for (var y = 0; y < ' + threadDim[1] + '; y++) {\n        this.thread.y = y;\n        var resultX = resultY[y] = new Float32Array(' + threadDim[0] + ');\n        ' + this._mapSubKernels(function (name) {
-				return 'var result_' + name + 'X = result_' + name + 'Y[y] = new Float32Array(' + threadDim[0] + ');\n';
-			}).join('') + '\n        for (var x = 0; x < ' + threadDim[0] + '; x++) {\n        \tthis.thread.x = x;\n          var kernelResult;\n          ' + kernelString + '\n          resultX[x] = kernelResult;\n          ' + this._mapSubKernels(function (name) {
-				return 'result_' + name + 'X[x] = ' + name + ';\n';
-			}).join('') + '\n        }\n      }\n    }';
-		}
-	}, {
-		key: '_kernelOutput',
-		value: function _kernelOutput() {
-			var _this2 = this;
-
-			if (!this.subKernelOutputVariableNames) {
-				return 'return result;';
-			}
-			return 'return {\n      result: result,\n      ' + Object.keys(this.subKernelProperties || this.subKernelOutputVariableNames).map(function (name, i) {
-				return name + ': result_' + _this2.subKernelOutputVariableNames[i];
-			}).join(',\n') + '\n    };';
-		}
-	}, {
-		key: '_mapSubKernels',
-		value: function _mapSubKernels(fn) {
-			return this.subKernelOutputVariableNames === null ? [''] : this.subKernelOutputVariableNames.map(fn);
-		}
-	}]);
-
-	return CPUKernel;
-}(KernelBase);
-},{"../../core/utils":87,"../kernel-base":63,"./kernel-string":58}],60:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var utils = require('../../core/utils');
-var RunnerBase = require('../runner-base');
-var CPUKernel = require('./kernel');
-var CPUFunctionBuilder = require('./function-builder');
-
-module.exports = function (_RunnerBase) {
-	_inherits(CPURunner, _RunnerBase);
-
-	/**
-  * @constructor CPURunner
-  *
-  * @desc Instantiates a Runner instance for the kernel.
-  * 
-  * @extends RunnerBase
-  *
-  * @param {Object} settings - Settings to instantiate properties in RunnerBase, with given values
-  *
-  */
-
-	function CPURunner(settings) {
-		_classCallCheck(this, CPURunner);
-
-		var _this = _possibleConstructorReturn(this, (CPURunner.__proto__ || Object.getPrototypeOf(CPURunner)).call(this, new CPUFunctionBuilder(), settings));
-
-		_this.Kernel = CPUKernel;
-		_this.kernel = null;
-		return _this;
-	}
-
-	/**
-  * @memberOf CPURunner#
-  * @function
-  * @name getMode()
-  *
-  * Return the current mode in which gpu.js is executing.
-  * 
-  * @returns {String} The current mode; "cpu".
-  *
-  */
-
-
-	_createClass(CPURunner, [{
-		key: 'getMode',
-		value: function getMode() {
-			return 'cpu';
-		}
-	}]);
-
-	return CPURunner;
-}(RunnerBase);
-},{"../../core/utils":87,"../runner-base":65,"./function-builder":56,"./kernel":59}],61:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-module.exports = function () {
-
-	/**
-  * @constructor FunctionBuilderBase
-  *
-  * @desc This handles all the raw state, converted state, etc. of a single function.
-  * [INTERNAL] A collection of functionNodes.
-  * 
-  * @prop {Object} nodeMap - Object map, where nodeMap[function] = new FunctionNode;
-  * @prop {Object} gpu - The current gpu instance bound to this builder
-  * @prop {Object} rootKernel - The root kernel object, contains the paramNames, dimensions etc.
-  * 
-  */
-	function FunctionBuilderBase(gpu) {
-		_classCallCheck(this, FunctionBuilderBase);
-
-		this.nodeMap = {};
-		this.nativeFunctions = {};
-		this.gpu = gpu;
-		this.rootKernel = null;
-		this.Node = null;
-	}
-
-	_createClass(FunctionBuilderBase, [{
-		key: 'addNativeFunction',
-		value: function addNativeFunction(functionName, glslFunctionString) {
-			this.nativeFunctions[functionName] = glslFunctionString;
-		}
-
-		/**
-   * @memberOf FunctionBuilderBase#
-   * @function
-   * @name addFunction
-   *
-   * @desc Instantiates a FunctionNode, and add it to the nodeMap
-   *
-   * @param {String} functionName - Function name to assume, if its null, it attempts to extract from the function
-   * @param {Function} jsFunction - JS Function to do conversion
-   * @param {Object} [options]
-   *
-   */
-
-	}, {
-		key: 'addFunction',
-		value: function addFunction(functionName, jsFunction, options) {
-			this.addFunctionNode(new this.Node(functionName, jsFunction, options).setBuilder(this));
-		}
-	}, {
-		key: 'addFunctions',
-		value: function addFunctions(functions, options) {
-			if (functions) {
-				if (Array.isArray(functions)) {
-					for (var i = 0; i < functions.length; i++) {
-						this.addFunction(null, functions[i], options);
-					}
-				} else {
-					for (var p in functions) {
-						this.addFunction(p, functions[p], options);
-					}
-				}
-			}
-		}
-	}, {
-		key: 'addNativeFunctions',
-		value: function addNativeFunctions(nativeFunctions) {
-			for (var functionName in nativeFunctions) {
-				if (!nativeFunctions.hasOwnProperty(functionName)) continue;
-				this.addNativeFunction(functionName, nativeFunctions[functionName]);
-			}
-		}
-
-		/**
-   * @memberOf FunctionBuilderBase#
-   * @function
-   * @name addFunctionNode
-   *
-   * @desc Add the function node directly
-   *
-   * @param {functionNode} inNode - functionNode to add
-   *
-   */
-
-	}, {
-		key: 'addFunctionNode',
-		value: function addFunctionNode(inNode) {
-			this.nodeMap[inNode.functionName] = inNode;
-			if (inNode.isRootKernel) {
-				this.rootKernel = inNode;
-			}
-		}
-
-		/**
-   * @memberOf FunctionBuilderBase#
-   * @function
-   * @name traceFunctionCalls
-   *
-   * @desc Trace all the depending functions being called, from a single function
-   *
-   * This allow for 'unneeded' functions to be automatically optimized out.
-   * Note that the 0-index, is the starting function trace.
-   *
-   * @param {String} functionName - Function name to trace from, default to 'kernel'
-   * @param {String[]} retList - Returning list of function names that is traced. Including itself.
-   * @param {Object} [parent] - Parent node
-   *
-   * @returns {String[]}  Returning list of function names that is traced. Including itself.
-   */
-
-	}, {
-		key: 'traceFunctionCalls',
-		value: function traceFunctionCalls(functionName, retList, parent) {
-			functionName = functionName || 'kernel';
-			retList = retList || [];
-
-			var fNode = this.nodeMap[functionName];
-			if (fNode) {
-				// Check if function already exists
-				var functionIndex = retList.indexOf(functionName);
-				if (functionIndex === -1) {
-					retList.push(functionName);
-					if (parent) {
-						fNode.parent = parent;
-					}
-					fNode.getFunctionString(); //ensure JS trace is done
-					for (var i = 0; i < fNode.calledFunctions.length; ++i) {
-						this.traceFunctionCalls(fNode.calledFunctions[i], retList, fNode);
-					}
-				} else {
-					/**
-      * https://github.com/gpujs/gpu.js/issues/207
-      * if dependent function is already in the list, because a function depends on it, and because it has
-      * already been traced, we know that we must move the dependent function to the end of the the retList.
-      * */
-					var dependantFunctionName = retList.splice(functionIndex, 1)[0];
-					retList.push(dependantFunctionName);
-				}
-			}
-
-			if (this.nativeFunctions[functionName]) {
-				if (retList.indexOf(functionName) >= 0) {
-					// Does nothing if already traced
-				} else {
-					retList.push(functionName);
-				}
-			}
-
-			return retList;
-		}
-
-		/**
-   * @memberOf FunctionBuilderBase#
-   * @function
-   * @name addKernel
-   *
-   * @desc Add a new kernel to this instance
-   *
-   * @param {String} fnString - Kernel function as a String
-   * @param {Object} options - Settings object to set constants, debug mode, etc.
-   *
-   *
-   * @returns {Object} The inserted kernel as a Kernel Node
-   *
-   */
-
-	}, {
-		key: 'addKernel',
-		value: function addKernel(fnString, options) {
-			var kernelNode = new this.Node('kernel', fnString, options);
-			kernelNode.setBuilder(this);
-			kernelNode.isRootKernel = true;
-			this.addFunctionNode(kernelNode);
-			return kernelNode;
-		}
-
-		/**
-   * @memberOf FunctionBuilderBase#
-   * @function
-   * @name addSubKernel
-   *
-   * @desc Add a new sub-kernel to the current kernel instance
-   *
-   * @param {Function} jsFunction - Sub-kernel function (JavaScript)
-   * @param {Object} options - Settings object to set constants, debug mode, etc.
-   *
-   * @returns {Object} The inserted sub-kernel as a Kernel Node
-   *
-   */
-
-	}, {
-		key: 'addSubKernel',
-		value: function addSubKernel(jsFunction, options) {
-			var kernelNode = new this.Node(null, jsFunction, options);
-			kernelNode.setBuilder(this);
-			kernelNode.isSubKernel = true;
-			this.addFunctionNode(kernelNode);
-			return kernelNode;
-		}
-
-		/**
-   * @memberOf CPUFunctionBuilder#
-   * @name getPrototypeString
-   * @function
-   *
-   * @desc Return the string for a function
-   *
-   * @param {String} functionName - Function name to trace from. If null, it returns the WHOLE builder stack
-   *
-   * @returns {String} The full string, of all the various functions. Trace optimized if functionName given
-   *
-   */
-
-	}, {
-		key: 'getPrototypeString',
-		value: function getPrototypeString(functionName) {
-			return this.getPrototypes(functionName).join('\n');
-		}
-
-		/**
-   * @memberOf CPUFunctionBuilder#
-   * @name getPrototypeString
-   * @function
-   *
-   * @desc Return the string for a function
-   *
-   * @param {String} [functionName] - Function name to trace from. If null, it returns the WHOLE builder stack
-   *
-   * @returns {Array} The full string, of all the various functions. Trace optimized if functionName given
-   *
-   */
-
-	}, {
-		key: 'getPrototypes',
-		value: function getPrototypes(functionName) {
-			this.rootKernel.generate();
-			if (functionName) {
-				return this.getPrototypesFromFunctionNames(this.traceFunctionCalls(functionName, []).reverse());
-			}
-			return this.getPrototypesFromFunctionNames(Object.keys(this.nodeMap));
-		}
-
-		/**
-   * @memberOf FunctionBuilderBase#
-   * @function
-   * @name getStringFromFunctionNames
-   *
-   * @desc Get string from function names
-   *
-   * @param {String[]} functionList - List of function to build string
-   *
-   * @returns {String} The string, of all the various functions. Trace optimized if functionName given
-   *
-   */
-
-	}, {
-		key: 'getStringFromFunctionNames',
-		value: function getStringFromFunctionNames(functionList) {
-			var ret = [];
-			for (var i = 0; i < functionList.length; ++i) {
-				var node = this.nodeMap[functionList[i]];
-				if (node) {
-					ret.push(this.nodeMap[functionList[i]].getFunctionString());
-				}
-			}
-			return ret.join('\n');
-		}
-
-		/**
-   * @memberOf FunctionBuilderBase#
-   * @function
-   * @name getPrototypeStringFromFunctionNames
-   *
-   * @desc Return string of all functions converted
-   *
-   * @param {String[]} functionList - List of function names to build the string.
-   * @param {Object} [opt - Settings object passed to functionNode. See functionNode for more details.
-   *
-   * @returns {Array} Prototypes of all functions converted
-   *
-   */
-
-	}, {
-		key: 'getPrototypesFromFunctionNames',
-		value: function getPrototypesFromFunctionNames(functionList, opt) {
-			var ret = [];
-			for (var i = 0; i < functionList.length; ++i) {
-				var functionName = functionList[i];
-				var node = this.nodeMap[functionName];
-				if (node) {
-					ret.push(node.getFunctionPrototypeString(opt));
-				} else if (this.nativeFunctions[functionName]) {
-					ret.push(this.nativeFunctions[functionName]);
-				}
-			}
-			return ret;
-		}
-
-		/**
-   * @memberOf FunctionBuilderBase#
-   * @function
-   * @name getPrototypeStringFromFunctionNames
-   *
-   * @desc Return string of all functions converted
-   *
-   * @param {String[]} functionList - List of function names to build the string.
-   * @param {Object} opt - Settings object passed to functionNode. See functionNode for more details.
-   *
-   * @returns {String} Prototype string of all functions converted
-   *
-   */
-
-	}, {
-		key: 'getPrototypeStringFromFunctionNames',
-		value: function getPrototypeStringFromFunctionNames(functionList, opt) {
-			return this.getPrototypesFromFunctionNames(functionList, opt).toString();
-		}
-
-		/**
-   * @memberOf FunctionBuilderBase#
-   * @function
-   * @name getString
-   *
-   * Get string for a particular function name
-   *
-   * @param {String} functionName - Function name to trace from. If null, it returns the WHOLE builder stack
-   *
-   * @returns {String} The string, of all the various functions. Trace optimized if functionName given
-   *
-   */
-
-	}, {
-		key: 'getString',
-		value: function getString(functionName, opt) {
-			if (opt === undefined) {
-				opt = {};
-			}
-
-			if (functionName) {
-				return this.getStringFromFunctionNames(this.traceFunctionCalls(functionName, [], opt).reverse(), opt);
-			}
-			return this.getStringFromFunctionNames(Object.keys(this.nodeMap), opt);
-		}
-	}]);
-
-	return FunctionBuilderBase;
-}();
-},{}],62:[function(require,module,exports){
-'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var utils = require('../core/utils');
-var acorn = require('acorn');
-
-module.exports = function () {
-
-	/**
-  * @constructor FunctionNodeBase
-  * 
-  * @desc Represents a single function, inside JS, webGL, or openGL.
-  * 
-  * <p>This handles all the raw state, converted state, etc. Of a single function.</p>
-  * 
-  * @prop {String} functionName - Name of the function
-  * @prop {Function} jsFunction - The JS Function the node represents
-  * @prop {String} jsFunctionString - jsFunction.toString()
-  * @prop {String[]} paramNames - Parameter names of the function
-  * @prop {String[]} paramTypes - Shader land parameters type assumption
-  * @prop {Boolean} isRootKernel - Special indicator, for kernel function
-  * @prop {String} webglFunctionString - webgl converted function string
-  * @prop {String} openglFunctionString - opengl converted function string
-  * @prop {String[]} calledFunctions - List of all the functions called
-  * @param {String} functionName - Function name to assume, if its null, it attempts to extract from the function
-  * @param {Function|String} jsFunction - JS Function to do conversion
-  * @param {Object} options
-  *
-  */
-	function BaseFunctionNode(functionName, jsFunction, options) {
-		_classCallCheck(this, BaseFunctionNode);
-
-		this.calledFunctions = [];
-		this.calledFunctionsArguments = {};
-		this.builder = null;
-		this.isRootKernel = false;
-		this.isSubKernel = false;
-		this.parent = null;
-		this.debug = null;
-		this.prototypeOnly = null;
-		this.constants = null;
-		this.output = null;
-		this.declarations = {};
-		this.states = [];
-		this.fixIntegerDivisionAccuracy = null;
-
-		var paramTypes = void 0;
-		var returnType = void 0;
-		if (options) {
-			if (options.hasOwnProperty('debug')) {
-				this.debug = options.debug;
-			}
-			if (options.hasOwnProperty('prototypeOnly')) {
-				this.prototypeOnly = options.prototypeOnly;
-			}
-			if (options.hasOwnProperty('constants')) {
-				this.constants = options.constants;
-			}
-			if (options.hasOwnProperty('output')) {
-				this.output = options.output;
-			}
-			if (options.hasOwnProperty('loopMaxIterations')) {
-				this.loopMaxIterations = options.loopMaxIterations;
-			}
-			if (options.hasOwnProperty('paramTypes')) {
-				this.paramTypes = paramTypes = options.paramTypes;
-			}
-			if (options.hasOwnProperty('constantTypes')) {
-				this.constantTypes = options.constantTypes;
-			} else {
-				this.constantTypes = {};
-			}
-			if (options.hasOwnProperty('returnType')) {
-				returnType = options.returnType;
-			}
-			if (options.hasOwnProperty('fixIntegerDivisionAccuracy')) {
-				this.fixIntegerDivisionAccuracy = options.fixIntegerDivisionAccuracy;
-			}
-		}
-
-		//
-		// Missing jsFunction object exception
-		//
-		if (!jsFunction) {
-			throw 'jsFunction, parameter is missing';
-		}
-
-		//
-		// Setup jsFunction and its string property + validate them
-		//
-		this.jsFunctionString = jsFunction.toString();
-		if (!utils.isFunctionString(this.jsFunctionString)) {
-			console.error('jsFunction, to string conversion check failed: not a function?', this.jsFunctionString);
-			throw 'jsFunction, to string conversion check failed: not a function?';
-		}
-
-		if (!utils.isFunction(jsFunction)) {
-			//throw 'jsFunction, is not a valid JS Function';
-			this.jsFunction = null;
-		} else {
-			this.jsFunction = jsFunction;
-		}
-
-		//
-		// Setup the function name property
-		//
-		this.functionName = functionName || jsFunction && jsFunction.name || utils.getFunctionNameFromString(this.jsFunctionString);
-
-		if (!this.functionName) {
-			throw 'jsFunction, missing name argument or value';
-		}
-
-		//
-		// Extract parameter name, and its argument types
-		//
-		this.paramNames = utils.getParamNamesFromString(this.jsFunctionString);
-		if (paramTypes) {
-			if (Array.isArray(paramTypes)) {
-				if (paramTypes.length !== this.paramNames.length) {
-					throw 'Invalid argument type array length, against function length -> (' + paramTypes.length + ',' + this.paramNames.length + ')';
-				}
-				this.paramTypes = paramTypes;
-			} else if ((typeof paramTypes === 'undefined' ? 'undefined' : _typeof(paramTypes)) === 'object') {
-				var paramVariableNames = Object.keys(paramTypes);
-				if (paramTypes.hasOwnProperty('returns')) {
-					this.returnType = paramTypes.returns;
-					paramVariableNames.splice(paramVariableNames.indexOf('returns'), 1);
-				}
-				if (paramVariableNames.length > 0 && paramVariableNames.length !== this.paramNames.length) {
-					throw 'Invalid argument type array length, against function length -> (' + paramVariableNames.length + ',' + this.paramNames.length + ')';
-				} else {
-					this.paramTypes = this.paramNames.map(function (key) {
-						if (paramTypes.hasOwnProperty(key)) {
-							return paramTypes[key];
-						} else {
-							return 'Number';
-						}
-					});
-				}
-			}
-		} else {
-			this.paramTypes = [];
-		}
-
-		//
-		// Return type handling
-		//
-		if (!this.returnType) {
-			this.returnType = returnType || 'Number';
-		}
-	}
-
-	_createClass(BaseFunctionNode, [{
-		key: 'isIdentifierConstant',
-		value: function isIdentifierConstant(paramName) {
-			if (!this.constants) return false;
-			return this.constants.hasOwnProperty(paramName);
-		}
-	}, {
-		key: 'isInput',
-		value: function isInput(paramName) {
-			return this.paramTypes[this.paramNames.indexOf(paramName)] === 'Input';
-		}
-	}, {
-		key: 'setBuilder',
-		value: function setBuilder(builder) {
-			this.builder = builder;
-			return this;
-		}
-	}, {
-		key: 'pushState',
-		value: function pushState(state) {
-			this.states.push(state);
-		}
-	}, {
-		key: 'popState',
-		value: function popState(state) {
-			if (this.state !== state) {
-				throw new Error('Cannot popState ' + state + ' when in ' + this.state);
-			}
-			this.states.pop();
-		}
-	}, {
-		key: 'isState',
-		value: function isState(state) {
-			return this.state === state;
-		}
-	}, {
-		key: 'getJsFunction',
-
-		/**
-   * 
-   * Core Functions
-   * 
-   */
-
-		/**
-   * @memberOf FunctionNodeBase#
-   * @function
-   * @name getJSFunction
-   *
-   * @desc Gets and return the stored JS Function.
-   * Note: that this internally eval the function, if only the string was provided on construction
-   *
-   * @returns {Function} The function object
-   *
-   */
-		value: function getJsFunction() {
-			if (this.jsFunction) {
-				return this.jsFunction;
-			}
-
-			if (this.jsFunctionString) {
-				this.jsFunction = eval(this.jsFunctionString);
-				return this.jsFunction;
-			}
-
-			throw 'Missing jsFunction, and jsFunctionString parameter';
-		}
-
-		/**
-   * @memberOf FunctionNodeBase#
-   * @function
-   * @name astMemberExpressionUnroll
-   * @desc Parses the abstract syntax tree for binary expression.
-   *
-   * <p>Utility function for astCallExpression.</p>
-   *
-   * @param {Object} ast - the AST object to parse
-   *
-   * @returns {String} the function namespace call, unrolled
-   */
-
-	}, {
-		key: 'astMemberExpressionUnroll',
-		value: function astMemberExpressionUnroll(ast) {
-			if (ast.type === 'Identifier') {
-				return ast.name;
-			} else if (ast.type === 'ThisExpression') {
-				return 'this';
-			}
-
-			if (ast.type === 'MemberExpression') {
-				if (ast.object && ast.property) {
-					//babel sniffing
-					if (ast.object.hasOwnProperty('name') && ast.object.name[0] === '_') {
-						return this.astMemberExpressionUnroll(ast.property);
-					}
-
-					return this.astMemberExpressionUnroll(ast.object) + '.' + this.astMemberExpressionUnroll(ast.property);
-				}
-			}
-
-			//babel sniffing
-			if (ast.hasOwnProperty('expressions')) {
-				var firstExpression = ast.expressions[0];
-				if (firstExpression.type === 'Literal' && firstExpression.value === 0 && ast.expressions.length === 2) {
-					return this.astMemberExpressionUnroll(ast.expressions[1]);
-				}
-			}
-
-			// Failure, unknown expression
-			throw this.astErrorOutput('Unknown CallExpression_unroll', ast);
-		}
-
-		/**
-   * @memberOf FunctionNodeBase#
-   * @function
-   * @name getJsAST
-   *
-   * @desc Parses the class function JS, and returns its Abstract Syntax Tree object.
-   *
-   * This is used internally to convert to shader code
-   *
-   * @param {Object} [inParser] - Parser to use, assumes in scope 'parser' if null or undefined
-   *
-   * @returns {Object} The function AST Object, note that result is cached under this.jsFunctionAST;
-   *
-   */
-
-	}, {
-		key: 'getJsAST',
-		value: function getJsAST(inParser) {
-			if (this.jsFunctionAST) {
-				return this.jsFunctionAST;
-			}
-
-			inParser = inParser || acorn;
-			if (inParser === null) {
-				throw 'Missing JS to AST parser';
-			}
-
-			var ast = inParser.parse('var ' + this.functionName + ' = ' + this.jsFunctionString + ';', {
-				locations: true
-			});
-			if (ast === null) {
-				throw 'Failed to parse JS code';
-			}
-
-			// take out the function object, outside the var declarations
-			var funcAST = ast.body[0].declarations[0].init;
-			this.jsFunctionAST = funcAST;
-
-			return funcAST;
-		}
-
-		/**
-   * @memberOf FunctionNodeBase#
-   * @function
-   * @name getFunctionString
-   *
-   * @desc Returns the converted webgl shader function equivalent of the JS function
-   *
-   * @returns {String} webgl function string, result is cached under this.webGlFunctionString
-   *
-   */
-
-	}, {
-		key: 'getFunctionString',
-		value: function getFunctionString() {
-			this.generate();
-			return this.functionString;
-		}
-
-		/**
-   * @memberOf FunctionNodeBase#
-   * @function
-   * @name setFunctionString
-   *
-   * @desc Set the functionString value, overwriting it
-   *
-   * @param {String} functionString - Shader code string, representing the function
-   *
-   */
-
-	}, {
-		key: 'setFunctionString',
-		value: function setFunctionString(functionString) {
-			this.functionString = functionString;
-		}
-
-		/**
-   * @memberOf FunctionNodeBase#
-   * @function
-   * @name getParamType
-   *
-   * @desc Return the type of parameter sent to subKernel/Kernel.
-   *
-   * @param {String} paramName - Name of the parameter
-   *
-   * @returns {String} Type of the parameter
-   *
-   */
-
-	}, {
-		key: 'getParamType',
-		value: function getParamType(paramName) {
-			var paramIndex = this.paramNames.indexOf(paramName);
-			if (paramIndex === -1) {
-				if (this.declarations.hasOwnProperty(paramName)) {
-					return this.declarations[paramName];
-				} else {
-					return 'Number';
-				}
-			} else {
-				if (!this.parent) {
-					if (this.paramTypes[paramIndex]) return this.paramTypes[paramIndex];
-				} else {
-					if (this.paramTypes[paramIndex]) return this.paramTypes[paramIndex];
-					var calledFunctionArguments = this.parent.calledFunctionsArguments[this.functionName];
-					for (var i = 0; i < calledFunctionArguments.length; i++) {
-						var calledFunctionArgument = calledFunctionArguments[i];
-						if (calledFunctionArgument[paramIndex] !== null) {
-							return this.paramTypes[paramIndex] = calledFunctionArgument[paramIndex].type;
-						}
-					}
-				}
-			}
-			return 'Number';
-		}
-	}, {
-		key: 'getConstantType',
-		value: function getConstantType(constantName) {
-			if (this.constantTypes[constantName]) {
-				return this.constantTypes[constantName];
-			}
-			return null;
-		}
-
-		/**
-   * @memberOf FunctionNodeBase#
-   * @function
-   * @name getUserParamName
-   *
-   * @desc Return the name of the *user parameter*(subKernel parameter) corresponding 
-   * to the parameter supplied to the kernel
-   *
-   * @param {String} paramName - Name of the parameter
-   *
-   * @returns {String} Name of the parameter
-   *
-   */
-
-	}, {
-		key: 'getUserParamName',
-		value: function getUserParamName(paramName) {
-			var paramIndex = this.paramNames.indexOf(paramName);
-			if (paramIndex === -1) return null;
-			if (!this.parent || !this.isSubKernel) return null;
-			var calledFunctionArguments = this.parent.calledFunctionsArguments[this.functionName];
-			for (var i = 0; i < calledFunctionArguments.length; i++) {
-				var calledFunctionArgument = calledFunctionArguments[i];
-				var param = calledFunctionArgument[paramIndex];
-				if (param !== null && param.type !== 'Integer') {
-					return param.name;
-				}
-			}
-			return null;
-		}
-	}, {
-		key: 'generate',
-		value: function generate(options) {
-			throw new Error('generate not defined on BaseFunctionNode');
-		}
-
-		/**
-   * @memberOf FunctionNodeBase#
-   * @function
-   * @name astGeneric
-   *
-   * @desc Parses the abstract syntax tree for generically to its respective function
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the parsed string array
-   */
-
-	}, {
-		key: 'astGeneric',
-		value: function astGeneric(ast, retArr) {
-			if (ast === null) {
-				throw this.astErrorOutput('NULL ast', ast);
-			} else {
-				if (Array.isArray(ast)) {
-					for (var i = 0; i < ast.length; i++) {
-						this.astGeneric(ast[i], retArr);
-					}
-					return retArr;
-				}
-
-				switch (ast.type) {
-					case 'FunctionDeclaration':
-						return this.astFunctionDeclaration(ast, retArr);
-					case 'FunctionExpression':
-						return this.astFunctionExpression(ast, retArr);
-					case 'ReturnStatement':
-						return this.astReturnStatement(ast, retArr);
-					case 'Literal':
-						return this.astLiteral(ast, retArr);
-					case 'BinaryExpression':
-						return this.astBinaryExpression(ast, retArr);
-					case 'Identifier':
-						return this.astIdentifierExpression(ast, retArr);
-					case 'AssignmentExpression':
-						return this.astAssignmentExpression(ast, retArr);
-					case 'ExpressionStatement':
-						return this.astExpressionStatement(ast, retArr);
-					case 'EmptyStatement':
-						return this.astEmptyStatement(ast, retArr);
-					case 'BlockStatement':
-						return this.astBlockStatement(ast, retArr);
-					case 'IfStatement':
-						return this.astIfStatement(ast, retArr);
-					case 'BreakStatement':
-						return this.astBreakStatement(ast, retArr);
-					case 'ContinueStatement':
-						return this.astContinueStatement(ast, retArr);
-					case 'ForStatement':
-						return this.astForStatement(ast, retArr);
-					case 'WhileStatement':
-						return this.astWhileStatement(ast, retArr);
-					case 'DoWhileStatement':
-						return this.astDoWhileStatement(ast, retArr);
-					case 'VariableDeclaration':
-						return this.astVariableDeclaration(ast, retArr);
-					case 'VariableDeclarator':
-						return this.astVariableDeclarator(ast, retArr);
-					case 'ThisExpression':
-						return this.astThisExpression(ast, retArr);
-					case 'SequenceExpression':
-						return this.astSequenceExpression(ast, retArr);
-					case 'UnaryExpression':
-						return this.astUnaryExpression(ast, retArr);
-					case 'UpdateExpression':
-						return this.astUpdateExpression(ast, retArr);
-					case 'LogicalExpression':
-						return this.astLogicalExpression(ast, retArr);
-					case 'MemberExpression':
-						return this.astMemberExpression(ast, retArr);
-					case 'CallExpression':
-						return this.astCallExpression(ast, retArr);
-					case 'ArrayExpression':
-						return this.astArrayExpression(ast, retArr);
-					case 'DebuggerStatement':
-						return this.astDebuggerStatement(ast, retArr);
-				}
-
-				throw this.astErrorOutput('Unknown ast type : ' + ast.type, ast);
-			}
-		}
-		/**
-   * @function
-   * @name astErrorOutput
-   * @ignore
-   * @desc To throw the AST error, with its location.
-   *
-   * @todo add location support fpr the AST error
-   *
-   * @param {Object} error - the error message output
-   * @param {Object} ast - the AST object where the error is
-   */
-
-	}, {
-		key: 'astErrorOutput',
-		value: function astErrorOutput(error, ast) {
-			console.error(utils.getAstString(this.jsFunctionString, ast));
-			console.error(error, ast, this);
-			return error;
-		}
-	}, {
-		key: 'astDebuggerStatement',
-		value: function astDebuggerStatement(arrNode, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astFunctionDeclaration',
-		value: function astFunctionDeclaration(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astFunctionExpression',
-		value: function astFunctionExpression(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astReturnStatement',
-		value: function astReturnStatement(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astLiteral',
-		value: function astLiteral(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astBinaryExpression',
-		value: function astBinaryExpression(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astIdentifierExpression',
-		value: function astIdentifierExpression(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astAssignmentExpression',
-		value: function astAssignmentExpression(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astExpressionStatement',
-		value: function astExpressionStatement(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astEmptyStatement',
-		value: function astEmptyStatement(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astBlockStatement',
-		value: function astBlockStatement(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astIfStatement',
-		value: function astIfStatement(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astBreakStatement',
-		value: function astBreakStatement(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astContinueStatement',
-		value: function astContinueStatement(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astForStatement',
-		value: function astForStatement(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astWhileStatement',
-		value: function astWhileStatement(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astDoWhileStatement',
-		value: function astDoWhileStatement(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astVariableDeclaration',
-		value: function astVariableDeclaration(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astVariableDeclarator',
-		value: function astVariableDeclarator(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astThisExpression',
-		value: function astThisExpression(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astSequenceExpression',
-		value: function astSequenceExpression(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astUnaryExpression',
-		value: function astUnaryExpression(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astUpdateExpression',
-		value: function astUpdateExpression(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astLogicalExpression',
-		value: function astLogicalExpression(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astMemberExpression',
-		value: function astMemberExpression(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astCallExpression',
-		value: function astCallExpression(ast, retArr) {
-			return retArr;
-		}
-	}, {
-		key: 'astArrayExpression',
-		value: function astArrayExpression(ast, retArr) {
-			return retArr;
-		}
-
-		/**
-   * @ignore
-   * @function
-   * @name pushParameter
-   *
-   * @desc [INTERNAL] pushes a fn parameter onto retArr and 'casts' to int if necessary
-   *  i.e. deal with force-int-parameter state
-   * 			
-   * @param {Array} retArr - return array string
-   * @param {String} parameter - the parameter name  
-   *
-   */
-
-	}, {
-		key: 'pushParameter',
-		value: function pushParameter(retArr, parameter) {
-			if (this.isState('in-get-call-parameters')) {
-				retArr.push('int(' + parameter + ')');
-			} else {
-				retArr.push(parameter);
-			}
-		}
-	}, {
-		key: 'state',
-		get: function get() {
-			return this.states[this.states.length - 1];
-		}
-	}]);
-
-	return BaseFunctionNode;
-}();
-},{"../core/utils":87,"acorn":89}],63:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var utils = require('../core/utils');
-var Input = require('../core/input');
-
-module.exports = function () {
-
-	/**
-  * @constructor KernelBase
-  * 
-  * @desc Implements the base class for Kernels, and is used as a 
-  * parent class for all Kernel implementations.
-  *
-  * This contains the basic methods needed by all Kernel implementations, 
-  * like setDimensions, addSubKernel, etc.
-  * 
-  * @prop {Array} paramNames - Name of the parameters of the kernel function
-  * @prop {String} fnString - Kernel function as a String
-  * @prop {Array} dimensions - Dimensions of the kernel function, this.thread.x, etc.
-  * @prop {Boolean} debug - Toggle debug mode
-  * @prop {String} graphical - Toggle graphical mode
-  * @prop {number} loopMaxIterations - Maximum number of loop iterations
-  * @prop {Object} constants - Global constants
-  * @prop {Array} subKernels - Sub kernels bound to this kernel instance
-  * @prop {Object} subKernelProperties - Sub kernels bound to this kernel instance as key/value pairs
-  * @prop {Array} subKernelOutputVariableNames - Names of the variables outputted by the subkerls
-  * @prop {Boolean} fixIntegerDivisionAccuracy - fix issues with some graphics cards not returning whole numbers when dividing by factors of 3
-  *
-  */
-	function KernelBase(fnString, settings) {
-		_classCallCheck(this, KernelBase);
-
-		this.paramNames = utils.getParamNamesFromString(fnString);
-		this.fnString = fnString;
-		this.output = null;
-		this.debug = false;
-		this.graphical = false;
-		this.loopMaxIterations = 0;
-		this.constants = null;
-		this.wraparound = null;
-		this.hardcodeConstants = null;
-		this.outputToTexture = null;
-		this.outputImmutable = null;
-		this.texSize = null;
-		this._canvas = null;
-		this._webGl = null;
-		this.threadDim = null;
-		this.floatTextures = null;
-		this.floatOutput = null;
-		this.floatOutputForce = null;
-		this.addFunction = null;
-		this.functions = null;
-		this.nativeFunctions = null;
-		this.subKernels = null;
-		this.subKernelProperties = null;
-		this.subKernelNames = null;
-		this.subKernelOutputVariableNames = null;
-		this.functionBuilder = null;
-		this.paramTypes = null;
-		this.paramSizes = null;
-		this.constantTypes = null;
-		this.fixIntegerDivisionAccuracy = null;
-
-		for (var p in settings) {
-			if (!settings.hasOwnProperty(p) || !this.hasOwnProperty(p)) continue;
-			this[p] = settings[p];
-		}
-		if (settings.hasOwnProperty('canvas')) {
-			this._canvas = settings.canvas;
-		}
-		if (settings.hasOwnProperty('webGl')) {
-			this._webGl = settings.webGl;
-		}
-		if (settings.hasOwnProperty('output')) {
-			this.setOutput(settings.output); // Flatten output object
-		}
-
-		if (!this._canvas) this._canvas = utils.initCanvas();
-	}
-
-	_createClass(KernelBase, [{
-		key: 'build',
-		value: function build() {
-			throw new Error('"build" not defined on Base');
-		}
-
-		/**
-   * @memberOf KernelBase#
-   * @function
-   * @name setupParams
-   *
-   * @desc Setup the parameter types for the parameters
-   * supplied to the Kernel function
-   *
-   * @param {IArguments} args - The actual parameters sent to the Kernel
-   *
-   */
-
-	}, {
-		key: 'setupParams',
-		value: function setupParams(args) {
-			this.paramTypes = [];
-			this.paramSizes = [];
-			for (var i = 0; i < args.length; i++) {
-				var arg = args[i];
-
-				this.paramTypes.push(utils.getArgumentType(arg));
-				this.paramSizes.push(arg.constructor === Input ? arg.size : null);
-			}
-		}
-	}, {
-		key: 'setupConstants',
-		value: function setupConstants() {
-			this.constantTypes = {};
-			if (this.constants) {
-				for (var p in this.constants) {
-					this.constantTypes[p] = utils.getArgumentType(this.constants[p]);
-				}
-			}
-		}
-	}, {
-		key: 'setFunctions',
-		value: function setFunctions(functions) {
-			this.functions = functions;
-			return this;
-		}
-
-		/**
-   * @memberOf KernelBase#
-   * @function
-   * @name setOutput
-   *
-   * @desc Set dimensions of the kernel function
-   *
-   * @param {Array|Object} output - The output array to set the kernel output size to
-   *
-   */
-
-	}, {
-		key: 'setOutput',
-		value: function setOutput(output) {
-			if (output.hasOwnProperty('x')) {
-				if (output.hasOwnProperty('y')) {
-					if (output.hasOwnProperty('z')) {
-						this.output = [output.x, output.y, output.z];
-					} else {
-						this.output = [output.x, output.y];
-					}
-				} else {
-					this.output = [output.x];
-				}
-			} else {
-				this.output = output;
-			}
-			return this;
-		}
-
-		/**
-   * @memberOf KernelBase#
-   * @function
-   * @name setDebug
-   *
-   * @desc Toggle debug mode
-   *
-   * @param {Boolean} flag - true to enable debug
-   *
-   */
-
-	}, {
-		key: 'setDebug',
-		value: function setDebug(flag) {
-			this.debug = flag;
-			return this;
-		}
-
-		/**
-   * @memberOf KernelBase#
-   * @function
-   * @name setGraphical
-   *
-   * @desc Toggle graphical output mode
-   *
-   * @param {Boolean} flag - true to enable graphical output
-   *
-   */
-
-	}, {
-		key: 'setGraphical',
-		value: function setGraphical(flag) {
-			this.graphical = flag;
-			return this;
-		}
-
-		/**
-   * @memberOf KernelBase#
-   * @function
-   * @name setLoopMaxIterations
-   *
-   * @desc Set the maximum number of loop iterations
-   *
-   * @param {number} max - iterations count
-   *
-   */
-
-	}, {
-		key: 'setLoopMaxIterations',
-		value: function setLoopMaxIterations(max) {
-			this.loopMaxIterations = max;
-			return this;
-		}
-
-		/**
-   * @memberOf KernelBase#
-   * @function
-   * @name setFixIntegerDivisionAccuracy
-   *
-   * @desc Fix division by factor of 3 FP accuracy bug
-   *
-   * @param {Boolean} fix - should fix 
-   *
-   */
-
-	}, {
-		key: 'setFixIntegerDivisionAccuracy',
-		value: function setFixIntegerDivisionAccuracy(fix) {
-			this.fixIntegerDivisionAccuracy = fix;
-			return this;
-		}
-
-		/**
-   * @memberOf KernelBase#
-   * @function
-   * @name setConstants
-   * @desc Set Constants
-   */
-
-	}, {
-		key: 'setConstants',
-		value: function setConstants(constants) {
-			this.constants = constants;
-			return this;
-		}
-	}, {
-		key: 'setWraparound',
-		value: function setWraparound(flag) {
-			console.warn('Wraparound mode is not supported and undocumented.');
-			this.wraparound = flag;
-			return this;
-		}
-	}, {
-		key: 'setHardcodeConstants',
-		value: function setHardcodeConstants(flag) {
-			this.hardcodeConstants = flag;
-			return this;
-		}
-	}, {
-		key: 'setOutputToTexture',
-		value: function setOutputToTexture(flag) {
-			this.outputToTexture = flag;
-			return this;
-		}
-	}, {
-		key: 'setOutputImmutable',
-		value: function setOutputImmutable(flag) {
-			this.outputImmutable = flag;
-			return this;
-		}
-
-		/**
-   * @memberOf KernelBase#
-   * @function
-   * @name setFloatTextures
-   *
-   * @desc Toggle texture output mode
-   *
-   * @param {Boolean} flag - true to enable floatTextures
-   *
-   */
-
-	}, {
-		key: 'setFloatTextures',
-		value: function setFloatTextures(flag) {
-			this.floatTextures = flag;
-			return this;
-		}
-
-		/**
-   * @memberOf KernelBase#
-   * @function
-   * @name setFloatOutput
-   *
-   * @desc Toggle output mode
-   *
-   * @param {Boolean} flag - true to enable float
-   *
-   */
-
-	}, {
-		key: 'setFloatOutput',
-		value: function setFloatOutput(flag) {
-			this.floatOutput = flag;
-			return this;
-		}
-	}, {
-		key: 'setFloatOutputForce',
-		value: function setFloatOutputForce(flag) {
-			this.floatOutputForce = flag;
-			return this;
-		}
-
-		/**
-   * @memberOf KernelBase#
-   * @function
-   * @name setCanvas
-   *
-   * @desc Bind the canvas to kernel
-   * 
-   * @param {Canvas} canvas - Canvas to bind
-   *
-   */
-
-	}, {
-		key: 'setCanvas',
-		value: function setCanvas(canvas) {
-			this._canvas = canvas;
-			return this;
-		}
-
-		/**
-   * @memberOf KernelBase#
-   * @function
-   * @name setCanvas
-   *
-   * @desc Bind the webGL instance to kernel
-   * 
-   * @param {Canvas} webGL - webGL instance to bind
-   *
-   */
-
-	}, {
-		key: 'setWebGl',
-		value: function setWebGl(webGl) {
-			this._webGl = webGl;
-			return this;
-		}
-
-		/**
-   * @memberOf KernelBase#
-   * @function
-   * @name getCanvas()
-   *
-   * @desc Returns the current canvas instance bound to the kernel
-   *
-   */
-
-	}, {
-		key: 'getCanvas',
-		value: function getCanvas() {
-			return this._canvas;
-		}
-
-		/**
-   * @memberOf KernelBase#
-   * @function
-   * @name getWebGl()
-   *
-   * @desc Returns the current webGl instance bound to the kernel
-   *
-   */
-
-	}, {
-		key: 'getWebGl',
-		value: function getWebGl() {
-			return this._webGl;
-		}
-	}, {
-		key: 'validateOptions',
-		value: function validateOptions() {
-			throw new Error('validateOptions not defined');
-		}
-	}, {
-		key: 'exec',
-		value: function exec() {
-			return this.execute.apply(this, arguments);
-		}
-	}, {
-		key: 'execute',
-		value: function execute() {
-			var _this = this;
-
-			//
-			// Prepare the required objects
-			//
-			var args = arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments);
-
-			//
-			// Setup and return the promise, and execute the function, in synchronous mode
-			//
-			return utils.newPromise(function (accept, reject) {
-				try {
-					accept(_this.run.apply(_this, args));
-				} catch (e) {
-					//
-					// Error : throw rejection
-					//
-					reject(e);
-				}
-			});
-		}
-
-		/** 
-   * @memberOf KernelBase#
-   * @function
-   * @name addSubKernel
-   *
-   * @desc Add a sub kernel to the root kernel instance.
-   * This is what `createKernelMap` uses.
-   *
-   * @param {String} fnString - function (as a String) of the subKernel to add
-   *
-   */
-
-	}, {
-		key: 'addSubKernel',
-		value: function addSubKernel(fnString) {
-			if (this.subKernels === null) {
-				this.subKernels = [];
-				this.subKernelNames = [];
-			}
-			this.subKernels.push(fnString);
-			this.subKernelNames.push(utils.getFunctionNameFromString(fnString));
-			return this;
-		}
-
-		/** 
-   * @memberOf KernelBase#
-   * @function
-   * @name addSubKernelProperty
-   *
-   * @desc Add a sub kernel to the root kernel instance, indexed by a property name
-   * This is what `createKernelMap` uses.
-   *
-   * @param {String} property - property key for the subKernel
-   * @param {String} fnString - function (as a String) of the subKernel to add
-   *
-   */
-
-	}, {
-		key: 'addSubKernelProperty',
-		value: function addSubKernelProperty(property, fnString) {
-			if (this.subKernelProperties === null) {
-				this.subKernelProperties = {};
-				this.subKernelNames = [];
-			}
-			if (this.subKernelProperties.hasOwnProperty(property)) {
-				throw new Error('cannot add sub kernel ' + property + ', already defined');
-			}
-			this.subKernelProperties[property] = fnString;
-			this.subKernelNames.push(utils.getFunctionNameFromString(fnString));
-			return this;
-		}
-	}, {
-		key: 'addNativeFunction',
-		value: function addNativeFunction(name, source) {
-			this.functionBuilder.addNativeFunction(name, source);
-		}
-
-		/**
-   *
-   * Destroys all memory associated with this kernel
-   *
-   * @name destroy
-   * @function
-   * @memberOf KernelBase#
-   *
-   * * @param {Boolean} removeCanvasReferences remve any associated canvas references?
-   *
-   */
-
-	}, {
-		key: 'destroy',
-		value: function destroy() {}
-	}]);
-
-	return KernelBase;
-}();
-},{"../core/input":84,"../core/utils":87}],64:[function(require,module,exports){
-'use strict';
-
-var utils = require('../core/utils');
-
-module.exports = function kernelRunShortcut(kernel) {
-	var shortcut = function shortcut() {
-		return kernel.run.apply(kernel, arguments);
-	};
-
-	utils.allPropertiesOf(kernel).forEach(function (key) {
-		if (key[0] === '_' && key[1] === '_') return;
-		if (typeof kernel[key] === 'function') {
-			if (key.substring(0, 3) === 'add' || key.substring(0, 3) === 'set') {
-				shortcut[key] = function () {
-					kernel[key].apply(kernel, arguments);
-					return shortcut;
-				};
-			} else {
-				shortcut[key] = kernel[key].bind(kernel);
-			}
-		} else {
-			shortcut.__defineGetter__(key, function () {
-				return kernel[key];
-			});
-			shortcut.__defineSetter__(key, function (value) {
-				kernel[key] = value;
-			});
-		}
-	});
-
-	shortcut.kernel = kernel;
-
-	return shortcut;
-};
-},{"../core/utils":87}],65:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var utils = require('../core/utils');
-var kernelRunShortcut = require('./kernel-run-shortcut');
-
-module.exports = function () {
-
-	/**
-  * @constructor BaseRunner
-  *
-  * @desc Represents the 'private/protected' namespace of the GPU class
-  *
-  * <p>I know @private makes more sense, but since the documentation engine state is undetirmined.
-  * (See https://github.com/gpujs/gpu.js/issues/19 regarding documentation engine issue)
-  * File isolation is currently the best way to go. </p>
-  *
-  * *base.js* internal functions namespace <br>
-  * *gpu.js* PUBLIC function namespace <br>
-  *
-  * @prop {Object} settings - Settings object used to set Dimensions, etc.
-  * @prop {String} kernel - Current kernel instance
-  * @prop {Object} canvas - Canvas instance attached to the kernel
-  * @prop {Object} webGl - WebGl instance attached to the kernel
-  * @prop {Function} fn - Kernel function to run
-  * @prop {Object} functionBuilder - FunctionBuilder instance
-  * @prop {String} fnString - Kernel function (as a String)
-  * @prop {String} endianness - endian information like Little-endian, Big-endian.
-  *
-  */
-
-	function BaseRunner(functionBuilder, settings) {
-		_classCallCheck(this, BaseRunner);
-
-		settings = settings || {};
-		this.kernel = settings.kernel;
-		this.canvas = settings.canvas;
-		this.webGl = settings.webGl;
-		this.fn = null;
-		this.functionBuilder = functionBuilder;
-		this.fnString = null;
-		this.endianness = utils.systemEndianness();
-	}
-
-	/**
-  * @memberOf BaseRunner#
-  * @function
-  * @name textureToArray
-  *
-  * @desc Converts the provided Texture instance to a JavaScript Array
-  *
-  * @param {Object} texture - Texture Object
-  *
-  */
-
-
-	_createClass(BaseRunner, [{
-		key: 'textureToArray',
-		value: function textureToArray(texture) {
-			var copy = this.createKernel(function (x) {
-				return x[this.thread.z][this.thread.y][this.thread.x];
-			});
-
-			return copy(texture);
-		}
-
-		/**
-   * @memberOf BaseRunner#
-   * @function
-   *
-   * @name deleteTexture
-   *
-   * @desc Deletes the provided Texture instance
-   *
-   * @param {Object} texture - Texture Object
-   */
-
-	}, {
-		key: 'deleteTexture',
-		value: function deleteTexture(texture) {
-			this.webGl.deleteTexture(texture.texture);
-		}
-
-		/**
-   * @memberOf BaseRunner#
-   * @function
-   * @name buildPromiseKernel
-   *
-   * @desc Get and returns the ASYNCHRONOUS executor, of a class and kernel
-   * This returns a Promise object from an argument set.
-   *
-   * Note that there is no current implementation.
-   *
-   */
-
-	}, {
-		key: 'buildPromiseKernel',
-		value: function buildPromiseKernel() {
-			throw new Error('not yet implemented');
-		}
-	}, {
-		key: 'getMode',
-		value: function getMode() {
-			throw new Error('"mode" not implemented on BaseRunner');
-		}
-
-		/**
-   * @memberOf BaseRunner#
-   * @function
-   *
-   * @name buildKernel
-   *
-   * @desc Get and returns the Synchronous executor, of a class and kernel
-   * Which returns the result directly after passing the arguments.
-   *
-   */
-
-	}, {
-		key: 'buildKernel',
-		value: function buildKernel(fn, settings) {
-			settings = Object.assign({}, settings || {});
-			var fnString = fn.toString();
-			if (!settings.functionBuilder) {
-				settings.functionBuilder = this.functionBuilder;
-			}
-
-			if (!settings.canvas) {
-				settings.canvas = this.canvas;
-			}
-
-			if (!settings.webGl) {
-				settings.webGl = this.webgl;
-			}
-
-			return kernelRunShortcut(new this.Kernel(fnString, settings));
-		}
-	}]);
-
-	return BaseRunner;
-}();
-},{"../core/utils":87,"./kernel-run-shortcut":64}],66:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var FunctionBuilderBase = require('../function-builder-base');
-var WebGLFunctionNode = require('./function-node');
-
-/**
- * @class WebGLFunctionBuilder
- *
- * @extends FunctionBuilderBase
- *
- * @desc Builds webGl functions (shaders) from JavaScript function Strings
- *
- */
-module.exports = function (_FunctionBuilderBase) {
-	_inherits(WebGLFunctionBuilder, _FunctionBuilderBase);
-
-	function WebGLFunctionBuilder() {
-		_classCallCheck(this, WebGLFunctionBuilder);
-
-		var _this = _possibleConstructorReturn(this, (WebGLFunctionBuilder.__proto__ || Object.getPrototypeOf(WebGLFunctionBuilder)).call(this));
-
-		_this.Node = WebGLFunctionNode;
-		return _this;
-	}
-
-	//---------------------------------------------------------
-	//
-	//  Polyfill stuff
-	//
-	//---------------------------------------------------------
-
-	// Round function used in polyfill
-
-
-	_createClass(WebGLFunctionBuilder, [{
-		key: 'polyfillStandardFunctions',
-
-
-		/**
-   * @memberOf FunctionBuilderBase#
-   * @function
-   * @name polyfillStandardFunctions
-   *
-   * @desc Polyfill in the missing Math functions (round)
-   *
-   */
-		value: function polyfillStandardFunctions() {
-			this.addFunction('round', _round);
-		}
-	}], [{
-		key: 'round',
-		value: function round(a) {
-			return _round(a);
-		}
-	}]);
-
-	return WebGLFunctionBuilder;
-}(FunctionBuilderBase);
-
-function _round(a) {
-	return Math.floor(a + 0.5);
-}
-},{"../function-builder-base":61,"./function-node":67}],67:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var FunctionNodeBase = require('../function-node-base');
-var utils = require('../../core/utils');
-// Closure capture for the ast function, prevent collision with existing AST functions
-// The prefixes to use
-var jsMathPrefix = 'Math.';
-var localPrefix = 'this.';
-var constantsPrefix = 'this.constants.';
-
-var DECODE32_ENCODE32 = /decode32\(\s+encode32\(/g;
-var ENCODE32_DECODE32 = /encode32\(\s+decode32\(/g;
-
-// these debugs were hugely usefull...
-// TODO: optimise out - webpack/babel options? maybe some generic logging support in core/utils?
-// const debugLog = console.log
-var debugLog = function debugLog() {};
-/**
- * @class WebGLFunctionNode
- *
- * @desc [INTERNAL] Takes in a function node, and does all the AST voodoo required to generate its respective webGL code.
- *
- * @extends FunctionNodeBase
- *
- * @param {functionNode} inNode - The function node object
- *
- * @returns the converted webGL function string
- *
- */
-module.exports = function (_FunctionNodeBase) {
-	_inherits(WebGLFunctionNode, _FunctionNodeBase);
-
-	function WebGLFunctionNode() {
-		_classCallCheck(this, WebGLFunctionNode);
-
-		return _possibleConstructorReturn(this, (WebGLFunctionNode.__proto__ || Object.getPrototypeOf(WebGLFunctionNode)).apply(this, arguments));
-	}
-
-	_createClass(WebGLFunctionNode, [{
-		key: 'generate',
-		value: function generate() {
-			if (this.debug) {
-				debugLog(this);
-			}
-			if (this.prototypeOnly) {
-				return this.astFunctionPrototype(this.getJsAST(), []).join('').trim();
-			} else {
-				this.functionStringArray = this.astGeneric(this.getJsAST(), []);
-			}
-			this.functionString = webGlRegexOptimize(this.functionStringArray.join('').trim());
-			return this.functionString;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astFunctionDeclaration
-   *
-   * @desc Parses the abstract syntax tree for to its *named function declaration*
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astFunctionDeclaration',
-		value: function astFunctionDeclaration(ast, retArr) {
-			this.builder.addFunction(null, utils.getAstString(this.jsFunctionString, ast));
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astFunctionPrototype
-   * @static
-   *
-   * @desc Parses the abstract syntax tree for to its *named function prototype*
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astFunctionPrototype',
-		value: function astFunctionPrototype(ast, retArr) {
-			// Setup function return type and name
-			if (this.isRootKernel || this.isSubKernel) {
-				return retArr;
-			}
-
-			var returnType = this.returnType;
-			var type = typeMap[returnType];
-			if (!type) {
-				throw new Error('unknown type ' + returnType);
-			}
-			retArr.push(type);
-			retArr.push(' ');
-			retArr.push(this.functionName);
-			retArr.push('(');
-
-			// Arguments handling
-			for (var i = 0; i < this.paramNames.length; ++i) {
-				if (i > 0) {
-					retArr.push(', ');
-				}
-
-				retArr.push(this.paramTypes[i]);
-				retArr.push(' ');
-				retArr.push('user_');
-				retArr.push(this.paramNames[i]);
-			}
-
-			retArr.push(');\n');
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astFunctionExpression
-   *
-   * @desc Parses the abstract syntax tree for to its *named function*
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astFunctionExpression',
-		value: function astFunctionExpression(ast, retArr) {
-
-			// Setup function return type and name
-			if (this.isRootKernel) {
-				retArr.push('void');
-			} else {
-				var returnType = this.returnType;
-				var type = typeMap[returnType];
-				if (!type) {
-					throw new Error('unknown type ' + returnType);
-				}
-				retArr.push(type);
-			}
-			retArr.push(' ');
-			retArr.push(this.functionName);
-			retArr.push('(');
-
-			if (!this.isRootKernel) {
-				// Arguments handling
-				for (var i = 0; i < this.paramNames.length; ++i) {
-					var paramName = this.paramNames[i];
-
-					if (i > 0) {
-						retArr.push(', ');
-					}
-					var paramType = this.getParamType(paramName);
-					var _type = typeMap[paramType];
-					if (!_type) {
-						throw new Error('unknown type ' + paramType);
-					}
-					retArr.push(_type);
-					retArr.push(' ');
-					retArr.push('user_');
-					retArr.push(paramName);
-				}
-			}
-
-			// Function opening
-			retArr.push(') {\n');
-
-			// Body statement iteration
-			for (var _i = 0; _i < ast.body.body.length; ++_i) {
-				this.astGeneric(ast.body.body[_i], retArr);
-				retArr.push('\n');
-			}
-
-			// Function closing
-			retArr.push('}\n');
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astReturnStatement
-   *
-   * @desc Parses the abstract syntax tree for to *return* statement
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astReturnStatement',
-		value: function astReturnStatement(ast, retArr) {
-			if (this.isRootKernel) {
-				retArr.push('kernelResult = ');
-				this.astGeneric(ast.argument, retArr);
-				retArr.push(';');
-				retArr.push('return;');
-			} else if (this.isSubKernel) {
-				retArr.push(this.functionName + 'Result = ');
-				this.astGeneric(ast.argument, retArr);
-				retArr.push(';');
-				retArr.push('return ' + this.functionName + 'Result;');
-			} else {
-				retArr.push('return ');
-				this.astGeneric(ast.argument, retArr);
-				retArr.push(';');
-			}
-
-			//throw this.astErrorOutput(
-			//	'Non main function return, is not supported : '+this.currentFunctionNamespace,
-			//	ast
-			//);
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astLiteral
-   *
-   * @desc Parses the abstract syntax tree for *literal value*
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astLiteral',
-		value: function astLiteral(ast, retArr) {
-
-			// Reject non numeric literals
-			if (isNaN(ast.value)) {
-				throw this.astErrorOutput('Non-numeric literal not supported : ' + ast.value, ast);
-			}
-
-			// Push the literal value as a float/int
-			retArr.push(ast.value);
-
-			var inGetParams = this.isState('in-get-call-parameters');
-			// If it was an int, node made a float if necessary
-			if (Number.isInteger(ast.value)) {
-				if (!inGetParams) {
-					retArr.push('.0');
-				}
-			} else if (inGetParams) {
-				// or cast to an int as we are addressing an input array
-				retArr.pop();
-				retArr.push('int(');
-				retArr.push(ast.value);
-				retArr.push(')');
-			}
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astBinaryExpression
-   *
-   * @desc Parses the abstract syntax tree for *binary* expression
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astBinaryExpression',
-		value: function astBinaryExpression(ast, retArr) {
-			var inGetParams = this.isState('in-get-call-parameters');
-			if (inGetParams) {
-				this.pushState('not-in-get-call-parameters');
-				retArr.push('int');
-			}
-			retArr.push('(');
-
-			if (ast.operator === '%') {
-				retArr.push('mod(');
-				this.astGeneric(ast.left, retArr);
-				retArr.push(',');
-				this.astGeneric(ast.right, retArr);
-				retArr.push(')');
-			} else if (ast.operator === '===') {
-				this.astGeneric(ast.left, retArr);
-				retArr.push('==');
-				this.astGeneric(ast.right, retArr);
-			} else if (ast.operator === '!==') {
-				this.astGeneric(ast.left, retArr);
-				retArr.push('!=');
-				this.astGeneric(ast.right, retArr);
-			} else if (this.fixIntegerDivisionAccuracy && ast.operator === '/') {
-				retArr.push('div_with_int_check(');
-				this.astGeneric(ast.left, retArr);
-				retArr.push(', ');
-				this.astGeneric(ast.right, retArr);
-				retArr.push(')');
-			} else {
-				this.astGeneric(ast.left, retArr);
-				retArr.push(ast.operator);
-				this.astGeneric(ast.right, retArr);
-			}
-
-			retArr.push(')');
-
-			if (inGetParams) {
-				this.popState('not-in-get-call-parameters');
-			}
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astIdentifierExpression
-   *
-   * @desc Parses the abstract syntax tree for *identifier* expression
-   *
-   * @param {Object} idtNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astIdentifierExpression',
-		value: function astIdentifierExpression(idtNode, retArr) {
-			if (idtNode.type !== 'Identifier') {
-				throw this.astErrorOutput('IdentifierExpression - not an Identifier', idtNode);
-			}
-			// do we need to cast addressing vales to float?
-			var castFloat = !this.isState('in-get-call-parameters');
-
-			switch (idtNode.name) {
-				case 'gpu_threadX':
-					castFloat && retArr.push('float(');
-					retArr.push('threadId.x');
-					castFloat && retArr.push(')');
-					break;
-				case 'gpu_threadY':
-					castFloat && retArr.push('float(');
-					retArr.push('threadId.y');
-					castFloat && retArr.push(')');
-					break;
-				case 'gpu_threadZ':
-					castFloat && retArr.push('float(');
-					retArr.push('threadId.z');
-					castFloat && retArr.push(')');
-					break;
-				case 'gpu_outputX':
-					retArr.push('uOutputDim.x');
-					break;
-				case 'gpu_outputY':
-					retArr.push('uOutputDim.y');
-					break;
-				case 'gpu_outputZ':
-					retArr.push('uOutputDim.z');
-					break;
-				case 'Infinity':
-					// https://stackoverflow.com/a/47543127/1324039
-					retArr.push('3.402823466e+38');
-					break;
-				default:
-					var userParamName = this.getUserParamName(idtNode.name);
-					if (userParamName !== null) {
-						this.pushParameter(retArr, 'user_' + userParamName);
-					} else {
-						this.pushParameter(retArr, 'user_' + idtNode.name);
-					}
-			}
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astForStatement
-   *
-   * @desc Parses the abstract syntax tree forfor *for-loop* expression
-   *
-   * @param {Object} forNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the parsed webgl string
-   */
-
-	}, {
-		key: 'astForStatement',
-		value: function astForStatement(forNode, retArr) {
-			if (forNode.type !== 'ForStatement') {
-				throw this.astErrorOutput('Invalid for statment', forNode);
-			}
-
-			if (forNode.test && forNode.test.type === 'BinaryExpression') {
-				if (forNode.test.right.type === 'Identifier' && forNode.test.operator === '<' && this.isIdentifierConstant(forNode.test.right.name) === false) {
-
-					if (!this.loopMaxIterations) {
-						console.warn('Warning: loopMaxIterations is not set! Using default of 1000 which may result in unintended behavior.');
-						console.warn('Set loopMaxIterations or use a for loop of fixed length to silence this message.');
-					}
-
-					retArr.push('for (');
-					this.astGeneric(forNode.init, retArr);
-					this.astGeneric(forNode.test.left, retArr);
-					retArr.push(forNode.test.operator);
-					retArr.push('LOOP_MAX');
-					retArr.push(';');
-					this.astGeneric(forNode.update, retArr);
-					retArr.push(')');
-
-					retArr.push('{\n');
-					retArr.push('if (');
-					this.astGeneric(forNode.test.left, retArr);
-					retArr.push(forNode.test.operator);
-					this.astGeneric(forNode.test.right, retArr);
-					retArr.push(') {\n');
-					if (forNode.body.type === 'BlockStatement') {
-						for (var i = 0; i < forNode.body.body.length; i++) {
-							this.astGeneric(forNode.body.body[i], retArr);
-						}
-					} else {
-						this.astGeneric(forNode.body, retArr);
-					}
-					retArr.push('\n} else {\n');
-					retArr.push('break;\n');
-					retArr.push('}\n');
-					retArr.push('}\n');
-
-					return retArr;
-				} else {
-					var declarations = JSON.parse(JSON.stringify(forNode.init.declarations));
-					var updateArgument = forNode.update.argument;
-					if (!Array.isArray(declarations) || declarations.length < 1) {
-						debugLog(this.jsFunctionString);
-						throw new Error('Error: Incompatible for loop declaration');
-					}
-
-					if (declarations.length > 1) {
-						var initArgument = null;
-						for (var _i2 = 0; _i2 < declarations.length; _i2++) {
-							var declaration = declarations[_i2];
-							if (declaration.id.name === updateArgument.name) {
-								initArgument = declaration;
-								declarations.splice(_i2, 1);
-							} else {
-								retArr.push('float ');
-								this.astGeneric(declaration, retArr);
-								retArr.push(';');
-							}
-						}
-
-						retArr.push('for (float ');
-						this.astGeneric(initArgument, retArr);
-						retArr.push(';');
-					} else {
-						retArr.push('for (');
-						this.astGeneric(forNode.init, retArr);
-					}
-
-					this.astGeneric(forNode.test, retArr);
-					retArr.push(';');
-					this.astGeneric(forNode.update, retArr);
-					retArr.push(')');
-					this.astGeneric(forNode.body, retArr);
-					return retArr;
-				}
-			}
-
-			throw this.astErrorOutput('Invalid for statement', forNode);
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astWhileStatement
-   *
-   * @desc Parses the abstract syntax tree for *while* loop
-   *
-   *
-   * @param {Object} whileNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the parsed webgl string
-   */
-
-	}, {
-		key: 'astWhileStatement',
-		value: function astWhileStatement(whileNode, retArr) {
-			if (whileNode.type !== 'WhileStatement') {
-				throw this.astErrorOutput('Invalid while statment', whileNode);
-			}
-
-			retArr.push('for (float i = 0.0; i < LOOP_MAX; i++) {');
-			retArr.push('if (');
-			this.astGeneric(whileNode.test, retArr);
-			retArr.push(') {\n');
-			this.astGeneric(whileNode.body, retArr);
-			retArr.push('} else {\n');
-			retArr.push('break;\n');
-			retArr.push('}\n');
-			retArr.push('}\n');
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astWhileStatement
-   *
-   * @desc Parses the abstract syntax tree for *do while* loop
-   *
-   *
-   * @param {Object} doWhileNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the parsed webgl string
-   */
-
-	}, {
-		key: 'astDoWhileStatement',
-		value: function astDoWhileStatement(doWhileNode, retArr) {
-			if (doWhileNode.type !== 'DoWhileStatement') {
-				throw this.astErrorOutput('Invalid while statment', doWhileNode);
-			}
-
-			retArr.push('for (float i = 0.0; i < LOOP_MAX; i++) {');
-			this.astGeneric(doWhileNode.body, retArr);
-			retArr.push('if (!');
-			this.astGeneric(doWhileNode.test, retArr);
-			retArr.push(') {\n');
-			retArr.push('break;\n');
-			retArr.push('}\n');
-			retArr.push('}\n');
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astAssignmentExpression
-   *
-   * @desc Parses the abstract syntax tree for *Assignment* Expression
-   *
-   * @param {Object} assNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astAssignmentExpression',
-		value: function astAssignmentExpression(assNode, retArr) {
-			if (assNode.operator === '%=') {
-				this.astGeneric(assNode.left, retArr);
-				retArr.push('=');
-				retArr.push('mod(');
-				this.astGeneric(assNode.left, retArr);
-				retArr.push(',');
-				this.astGeneric(assNode.right, retArr);
-				retArr.push(')');
-			} else {
-				this.astGeneric(assNode.left, retArr);
-				retArr.push(assNode.operator);
-				this.astGeneric(assNode.right, retArr);
-				return retArr;
-			}
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astEmptyStatement
-   *
-   * @desc Parses the abstract syntax tree for an *Empty* Statement
-   *
-   * @param {Object} eNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astEmptyStatement',
-		value: function astEmptyStatement(eNode, retArr) {
-			//retArr.push(';\n');
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astBlockStatement
-   *
-   * @desc Parses the abstract syntax tree for *Block* statement
-   *
-   * @param {Object} bNode - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astBlockStatement',
-		value: function astBlockStatement(bNode, retArr) {
-			retArr.push('{\n');
-			for (var i = 0; i < bNode.body.length; i++) {
-				this.astGeneric(bNode.body[i], retArr);
-			}
-			retArr.push('}\n');
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astExpressionStatement
-   *
-   * @desc Parses the abstract syntax tree for *generic expression* statement
-   *
-   * @param {Object} esNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astExpressionStatement',
-		value: function astExpressionStatement(esNode, retArr) {
-			this.astGeneric(esNode.expression, retArr);
-			retArr.push(';');
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astVariableDeclaration
-   *
-   * @desc Parses the abstract syntax tree for *Variable Declaration*
-   *
-   * @param {Object} vardecNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astVariableDeclaration',
-		value: function astVariableDeclaration(vardecNode, retArr) {
-			for (var i = 0; i < vardecNode.declarations.length; i++) {
-				var declaration = vardecNode.declarations[i];
-				if (i > 0) {
-					retArr.push(',');
-				}
-				var retDeclaration = [];
-				this.astGeneric(declaration, retDeclaration);
-				var declarationType = 'Number';
-				if (i === 0) {
-					var init = declaration.init;
-					if (init) {
-						if (init.object) {
-							if (init.object.type === 'MemberExpression' && init.object.object) {
-								// this.thread.x, this.thread.y, this.thread.z
-								if (init.object.object.type === 'ThisExpression' && init.object.property && (init.object.property.name === 'thread' || init.object.property.name === 'output')) {
-									declarationType = 'Integer';
-								}
-								// param[]
-								else if (init.object.object.type === 'Identifier') {
-										var _type2 = this.getParamType(init.object.object.name);
-										declarationType = typeLookupMap[_type2];
-									}
-									// param[][]
-									else if (init.object.object.object && init.object.object.object.type === 'Identifier') {
-											var _type3 = this.getParamType(init.object.object.object.name);
-											declarationType = typeLookupMap[_type3];
-										}
-										// this.constants.param[]
-										else if (init.object.object.object && init.object.object.object.object && init.object.object.object.object.type === 'ThisExpression' && init.object.object.object.property.name === 'constants') {
-												var _type4 = this.getConstantType(init.object.object.property.name);
-												declarationType = typeLookupMap[_type4];
-											}
-											// this.constants.param[][]
-											else if (init.object.object.object && init.object.object.object.object && init.object.object.object.object.object && init.object.object.object.object.object.type === 'ThisExpression' && init.object.object.object.object.property.name === 'constants') {
-													var _type5 = this.getConstantType(init.object.object.object.property.name);
-													declarationType = typeLookupMap[_type5];
-												}
-							}
-							if (!declarationType) {
-								throw new Error('unknown lookup type ' + typeLookupMap);
-							}
-						} else {
-							if (init.name && this.declarations[init.name]) {
-								declarationType = this.declarations[init.name];
-							} else if (init.type === 'ArrayExpression') {
-								declarationType = 'Array(' + init.elements.length + ')';
-							} else if (init.type === 'CallExpression') {
-								var node = this.builder.nodeMap[init.callee.name];
-								if (node && node.returnType) {
-									declarationType = node.returnType;
-								}
-							}
-						}
-					}
-					var type = typeMap[declarationType];
-					if (!type) {
-						throw new Error('type ' + declarationType + ' not handled');
-					}
-					retArr.push(type + ' ');
-				}
-				this.declarations[declaration.id.name] = declarationType;
-				retArr.push.apply(retArr, retDeclaration);
-			}
-			retArr.push(';');
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astVariableDeclarator
-   *
-   * @desc Parses the abstract syntax tree for *Variable Declarator*
-   *
-   * @param {Object} ivardecNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astVariableDeclarator',
-		value: function astVariableDeclarator(ivardecNode, retArr) {
-			this.astGeneric(ivardecNode.id, retArr);
-			if (ivardecNode.init !== null) {
-				retArr.push('=');
-				this.astGeneric(ivardecNode.init, retArr);
-			}
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astIfStatement
-   *
-   * @desc Parses the abstract syntax tree for *If* Statement
-   *
-   * @param {Object} ifNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astIfStatement',
-		value: function astIfStatement(ifNode, retArr) {
-			retArr.push('if (');
-			this.astGeneric(ifNode.test, retArr);
-			retArr.push(')');
-			if (ifNode.consequent.type === 'BlockStatement') {
-				this.astGeneric(ifNode.consequent, retArr);
-			} else {
-				retArr.push(' {\n');
-				this.astGeneric(ifNode.consequent, retArr);
-				retArr.push('\n}\n');
-			}
-
-			if (ifNode.alternate) {
-				retArr.push('else ');
-				if (ifNode.alternate.type === 'BlockStatement') {
-					this.astGeneric(ifNode.alternate, retArr);
-				} else {
-					retArr.push(' {\n');
-					this.astGeneric(ifNode.alternate, retArr);
-					retArr.push('\n}\n');
-				}
-			}
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astBreakStatement
-   *
-   * @desc Parses the abstract syntax tree for *Break* Statement
-   *
-   * @param {Object} brNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astBreakStatement',
-		value: function astBreakStatement(brNode, retArr) {
-			retArr.push('break;\n');
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astContinueStatement
-   *
-   * @desc Parses the abstract syntax tree for *Continue* Statement
-   *
-   * @param {Object} crNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astContinueStatement',
-		value: function astContinueStatement(crNode, retArr) {
-			retArr.push('continue;\n');
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astLogicalExpression
-   *
-   * @desc Parses the abstract syntax tree for *Logical* Expression
-   *
-   * @param {Object} logNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astLogicalExpression',
-		value: function astLogicalExpression(logNode, retArr) {
-			retArr.push('(');
-			this.astGeneric(logNode.left, retArr);
-			retArr.push(logNode.operator);
-			this.astGeneric(logNode.right, retArr);
-			retArr.push(')');
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astUpdateExpression
-   *
-   * @desc Parses the abstract syntax tree for *Update* Expression
-   *
-   * @param {Object} uNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astUpdateExpression',
-		value: function astUpdateExpression(uNode, retArr) {
-			if (uNode.prefix) {
-				retArr.push(uNode.operator);
-				this.astGeneric(uNode.argument, retArr);
-			} else {
-				this.astGeneric(uNode.argument, retArr);
-				retArr.push(uNode.operator);
-			}
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astUnaryExpression
-   *
-   * @desc Parses the abstract syntax tree for *Unary* Expression
-   *
-   * @param {Object} uNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astUnaryExpression',
-		value: function astUnaryExpression(uNode, retArr) {
-			if (uNode.prefix) {
-				retArr.push(uNode.operator);
-				this.astGeneric(uNode.argument, retArr);
-			} else {
-				this.astGeneric(uNode.argument, retArr);
-				retArr.push(uNode.operator);
-			}
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astThisExpression
-   *
-   * @desc Parses the abstract syntax tree for *This* expression
-   *
-   * @param {Object} tNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astThisExpression',
-		value: function astThisExpression(tNode, retArr) {
-			retArr.push('this');
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astMemberExpression
-   *
-   * @desc Parses the abstract syntax tree for *Member* Expression
-   *
-   * @param {Object} mNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astMemberExpression',
-		value: function astMemberExpression(mNode, retArr) {
-			debugLog("[in] astMemberExpression " + mNode.object.type);
-			if (mNode.computed) {
-				if (mNode.object.type === 'Identifier' || mNode.object.type === 'MemberExpression' &&
-				// mNode.object.object &&
-				mNode.object.object.object && mNode.object.object.object.type === 'ThisExpression' && mNode.object.object.property.name === 'constants') {
-					// Working logger
-					var reqName = mNode.object.name;
-					var funcName = this.functionName || 'kernel';
-					var assumeNotTexture = false;
-
-					// Possibly an array request - handle it as such
-					if (this.paramNames) {
-						var idx = this.paramNames.indexOf(reqName);
-						if (idx >= 0 && this.paramTypes[idx] === 'Number') {
-							assumeNotTexture = true;
-						}
-					}
-					debugLog("- astMemberExpression " + reqName + " " + funcName);
-					if (assumeNotTexture) {
-						// Get from array
-						this.astGeneric(mNode.object, retArr);
-						retArr.push('[int(');
-						this.astGeneric(mNode.property, retArr);
-						retArr.push(')]');
-					} else {
-						var isInGetParams = this.isState('in-get-call-parameters');
-						var multiMemberExpression = this.isState('multi-member-expression');
-						if (multiMemberExpression) {
-							this.popState('multi-member-expression');
-						}
-						this.pushState('not-in-get-call-parameters');
-
-						// This normally refers to the global read only input vars
-						var variableType = null;
-						if (mNode.object.name) {
-							if (this.declarations[mNode.object.name]) {
-								variableType = this.declarations[mNode.object.name];
-							} else {
-								variableType = this.getParamType(mNode.object.name);
-							}
-						} else if (mNode.object && mNode.object.object && mNode.object.object.object && mNode.object.object.object.type === 'ThisExpression') {
-							variableType = this.getConstantType(mNode.object.property.name);
-						}
-						switch (variableType) {
-							case 'Array(2)':
-							case 'Array(3)':
-							case 'Array(4)':
-								// Get from local vec4
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('[');
-								retArr.push(mNode.property.raw);
-								retArr.push(']');
-								if (multiMemberExpression) {
-									this.popState('not-in-get-call-parameters');
-								}
-								break;
-							case 'HTMLImageArray':
-								// Get from image
-								retArr.push('getImage3D(');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push(', ivec2(');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Size[0],');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Size[1]), ivec3(');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Dim[0],');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Dim[1],');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Dim[2]');
-								retArr.push('), ');
-								this.popState('not-in-get-call-parameters');
-								this.pushState('in-get-call-parameters');
-								this.astGeneric(mNode.property, retArr);
-								if (!multiMemberExpression) {
-									this.popState('in-get-call-parameters');
-								}
-								retArr.push(')');
-								break;
-							case 'ArrayTexture(4)':
-							case 'HTMLImage':
-								// Get from image
-								retArr.push('getImage2D(');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push(', ivec2(');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Size[0],');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Size[1]), ivec3(');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Dim[0],');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Dim[1],');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Dim[2]');
-								retArr.push('), ');
-								this.popState('not-in-get-call-parameters');
-								this.pushState('in-get-call-parameters');
-								this.astGeneric(mNode.property, retArr);
-								if (!multiMemberExpression) {
-									this.popState('in-get-call-parameters');
-								}
-								retArr.push(')');
-								break;
-							default:
-								// Get from texture
-								if (isInGetParams) {
-									retArr.push('int(');
-								}
-								retArr.push('get(');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push(', ivec2(');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Size[0],');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Size[1]), ivec3(');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Dim[0],');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Dim[1],');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('Dim[2]');
-								retArr.push('), ');
-								this.astGeneric(mNode.object, retArr);
-								retArr.push('BitRatio');
-								retArr.push(', ');
-								this.popState('not-in-get-call-parameters');
-								this.pushState('in-get-call-parameters');
-								this.astGeneric(mNode.property, retArr);
-								if (!multiMemberExpression) {
-									this.popState('in-get-call-parameters');
-								}
-								retArr.push(')');
-								if (isInGetParams) {
-									retArr.push(')');
-								}
-								break;
-						}
-					}
-				} else {
-
-					debugLog("- astMemberExpression obj:", mNode.object);
-					var stateStackDepth = this.states.length;
-					var startedInGetParamsState = this.isState('in-get-call-parameters');
-					if (!startedInGetParamsState) {
-						this.pushState('multi-member-expression');
-					}
-					this.astGeneric(mNode.object, retArr);
-					if (this.isState('multi-member-expression')) {
-						this.popState('multi-member-expression');
-					}
-					var changedGetParamsState = !startedInGetParamsState && this.isState('in-get-call-parameters');
-					var last = retArr.pop();
-					retArr.push(',');
-					debugLog("- astMemberExpression prop:", mNode.property);
-					var shouldPopParamState = this.isState('should-pop-in-get-call-parameters');
-					if (shouldPopParamState) {
-						// go back to in-get-call-parameters state
-						this.popState('should-pop-in-get-call-parameters');
-					}
-					this.astGeneric(mNode.property, retArr);
-					retArr.push(last);
-
-					if (changedGetParamsState) {
-						// calling memberExpression should pop...
-						this.pushState('should-pop-in-get-call-parameters');
-					} else if (shouldPopParamState) {
-						// do the popping!
-						this.popState('in-get-call-parameters');
-					}
-				}
-			} else {
-
-				// Unroll the member expression
-				var unrolled = this.astMemberExpressionUnroll(mNode);
-				var unrolled_lc = unrolled.toLowerCase();
-				debugLog("- astMemberExpression unrolled:", unrolled);
-				// Its a constant, remove this.constants.
-				if (unrolled.indexOf(constantsPrefix) === 0) {
-					unrolled = 'constants_' + unrolled.slice(constantsPrefix.length);
-				}
-
-				// do we need to cast addressing vales to float?
-				var castFloat = !this.isState('in-get-call-parameters');
-
-				switch (unrolled_lc) {
-					case 'this.thread.x':
-						castFloat && retArr.push('float(');
-						retArr.push('threadId.x');
-						castFloat && retArr.push(')');
-						break;
-					case 'this.thread.y':
-						castFloat && retArr.push('float(');
-						retArr.push('threadId.y');
-						castFloat && retArr.push(')');
-						break;
-					case 'this.thread.z':
-						castFloat && retArr.push('float(');
-						retArr.push('threadId.z');
-						castFloat && retArr.push(')');
-						break;
-					case 'this.output.x':
-						retArr.push(this.output[0] + '.0');
-						break;
-					case 'this.output.y':
-						retArr.push(this.output[1] + '.0');
-						break;
-					case 'this.output.z':
-						retArr.push(this.output[2] + '.0');
-						break;
-					default:
-						if (mNode.object && mNode.object.name && this.declarations[mNode.object.name]) {
-							retArr.push('user_');
-						}
-						retArr.push(unrolled);
-				}
-			}
-			debugLog("[out] astMemberExpression " + mNode.object.type);
-			return retArr;
-		}
-	}, {
-		key: 'astSequenceExpression',
-		value: function astSequenceExpression(sNode, retArr) {
-			for (var i = 0; i < sNode.expressions.length; i++) {
-				if (i > 0) {
-					retArr.push(',');
-				}
-				this.astGeneric(sNode.expressions, retArr);
-			}
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astCallExpression
-   *
-   * @desc Parses the abstract syntax tree for *call* expression
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns  {Array} the append retArr
-   */
-
-	}, {
-		key: 'astCallExpression',
-		value: function astCallExpression(ast, retArr) {
-			if (ast.callee) {
-				// Get the full function call, unrolled
-				var funcName = this.astMemberExpressionUnroll(ast.callee);
-
-				// Its a math operator, remove the prefix
-				if (funcName.indexOf(jsMathPrefix) === 0) {
-					funcName = funcName.slice(jsMathPrefix.length);
-				}
-
-				// Its a local function, remove this
-				if (funcName.indexOf(localPrefix) === 0) {
-					funcName = funcName.slice(localPrefix.length);
-				}
-
-				// if this if grows to more than one, lets use a switch
-				if (funcName === 'atan2') {
-					funcName = 'atan';
-				}
-
-				// Register the function into the called registry
-				if (this.calledFunctions.indexOf(funcName) < 0) {
-					this.calledFunctions.push(funcName);
-				}
-				if (!this.hasOwnProperty('funcName')) {
-					this.calledFunctionsArguments[funcName] = [];
-				}
-
-				var functionArguments = [];
-				this.calledFunctionsArguments[funcName].push(functionArguments);
-
-				// Call the function
-				retArr.push(funcName);
-
-				// Open arguments space
-				retArr.push('(');
-
-				// Add the vars
-				for (var i = 0; i < ast.arguments.length; ++i) {
-					var argument = ast.arguments[i];
-					if (i > 0) {
-						retArr.push(', ');
-					}
-					this.astGeneric(argument, retArr);
-					if (argument.type === 'Identifier') {
-						var paramIndex = this.paramNames.indexOf(argument.name);
-						if (paramIndex === -1) {
-							functionArguments.push(null);
-						} else {
-							functionArguments.push({
-								name: argument.name,
-								type: this.paramTypes[paramIndex] || 'Number'
-							});
-						}
-					} else {
-						functionArguments.push(null);
-					}
-				}
-
-				// Close arguments space
-				retArr.push(')');
-
-				return retArr;
-			}
-
-			// Failure, unknown expression
-			throw this.astErrorOutput('Unknown CallExpression', ast);
-
-			return retArr;
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name astArrayExpression
-   *
-   * @desc Parses the abstract syntax tree for *Array* Expression
-   *
-   * @param {Object} ast - the AST object to parse
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astArrayExpression',
-		value: function astArrayExpression(arrNode, retArr) {
-			var arrLen = arrNode.elements.length;
-
-			retArr.push('vec' + arrLen + '(');
-			for (var i = 0; i < arrLen; ++i) {
-				if (i > 0) {
-					retArr.push(', ');
-				}
-				var subNode = arrNode.elements[i];
-				this.astGeneric(subNode, retArr);
-			}
-			retArr.push(')');
-
-			return retArr;
-
-			// // Failure, unknown expression
-			// throw this.astErrorOutput(
-			// 	'Unknown  ArrayExpression',
-			// 	arrNode
-			//);
-		}
-
-		/**
-   * @memberOf WebGLFunctionNode#
-   * @function
-   * @name getFunctionPrototypeString
-   *
-   * @desc Returns the converted webgl shader function equivalent of the JS function
-   *
-   * @returns {String} webgl function string, result is cached under this.getFunctionPrototypeString
-   *
-   */
-
-	}, {
-		key: 'getFunctionPrototypeString',
-		value: function getFunctionPrototypeString() {
-			if (this.webGlFunctionPrototypeString) {
-				return this.webGlFunctionPrototypeString;
-			}
-			return this.webGlFunctionPrototypeString = this.generate();
-		}
-	}, {
-		key: 'build',
-		value: function build() {
-			return this.getFunctionPrototypeString().length > 0;
-		}
-	}]);
-
-	return WebGLFunctionNode;
-}(FunctionNodeBase);
-
-var typeMap = {
-	'Array': 'sampler2D',
-	'Array(2)': 'vec2',
-	'Array(3)': 'vec3',
-	'Array(4)': 'vec4',
-	'Array2D': 'sampler2D',
-	'Array3D': 'sampler2D',
-	'Float': 'float',
-	'Input': 'sampler2D',
-	'Integer': 'float',
-	'Number': 'float',
-	'NumberTexture': 'sampler2D',
-	'ArrayTexture(4)': 'sampler2D'
-};
-
-var typeLookupMap = {
-	'Array': 'Number',
-	'Array2D': 'Number',
-	'Array3D': 'Number',
-	'HTMLImage': 'Array(4)',
-	'HTMLImageArray': 'Array(4)',
-	'NumberTexture': 'Number',
-	'ArrayTexture(4)': 'Array(4)'
-};
-
-/**
- * @ignore
- * @function
- * @name webgl_regex_optimize
- *
- * @desc [INTERNAL] Takes the near final webgl function string, and do regex search and replacments.
- * For voodoo optimize out the following:
- *
- * - decode32(encode32( <br>
- * - encode32(decode32( <br>
- *
- * @param {String} inStr - The webGl function String
- *
- */
-function webGlRegexOptimize(inStr) {
-	return inStr.replace(DECODE32_ENCODE32, '((').replace(ENCODE32_DECODE32, '((');
-}
-},{"../../core/utils":87,"../function-node-base":62}],68:[function(require,module,exports){
-'use strict';
-
-var utils = require('../../core/utils');
-var kernelRunShortcut = require('../kernel-run-shortcut');
-var Input = require('../../core/input');
-var Texture = require('../../core/texture');
-
-function removeFnNoise(fn) {
-  if (/^function /.test(fn)) {
-    fn = fn.substring(9);
-  }
-  return fn.replace(/[_]typeof/g, 'typeof');
-}
-
-function removeNoise(str) {
-  return str.replace(/[_]typeof/g, 'typeof');
-}
-
-module.exports = function (gpuKernel, name) {
-  return '() => {\n    ' + kernelRunShortcut.toString() + ';\n    const utils = {\n      allPropertiesOf: ' + removeNoise(utils.allPropertiesOf.toString()) + ',\n      clone: ' + removeNoise(utils.clone.toString()) + ',\n      splitArray: ' + removeNoise(utils.splitArray.toString()) + ',\n      getArgumentType: ' + removeNoise(utils.getArgumentType.toString()) + ',\n      getDimensions: ' + removeNoise(utils.getDimensions.toString()) + ',\n      dimToTexSize: ' + removeNoise(utils.dimToTexSize.toString()) + ',\n      flattenTo: ' + removeNoise(utils.flattenTo.toString()) + ',\n      flatten2dArrayTo: ' + removeNoise(utils.flatten2dArrayTo.toString()) + ',\n      flatten3dArrayTo: ' + removeNoise(utils.flatten3dArrayTo.toString()) + ',\n      systemEndianness: \'' + removeNoise(utils.systemEndianness()) + '\',\n      initWebGl: ' + removeNoise(utils.initWebGl.toString()) + ',\n      isArray: ' + removeNoise(utils.isArray.toString()) + ',\n      checkOutput: ' + removeNoise(utils.checkOutput.toString()) + '\n    };\n    const Utils = utils;\n    const canvases = [];\n    const maxTexSizes = {};\n    let Texture = function() {};\n    let Input = function() {}; \n    class ' + (name || 'Kernel') + ' {\n      constructor() {\n        this.maxTexSize = null;\n        this.argumentsLength = 0;\n        this.constantsLength = 0;\n        this._canvas = null;\n        this._webGl = null;\n        this.program = null;\n        this.outputToTexture = ' + (gpuKernel.outputToTexture ? 'true' : 'false') + ';\n        this.paramNames = ' + JSON.stringify(gpuKernel.paramNames) + ';\n        this.paramTypes = ' + JSON.stringify(gpuKernel.paramTypes) + ';\n        this.texSize = ' + JSON.stringify(gpuKernel.texSize) + ';\n        this.output = ' + JSON.stringify(gpuKernel.output) + ';\n        this.compiledFragShaderString = `' + gpuKernel.compiledFragShaderString + '`;\n\t\t    this.compiledVertShaderString = `' + gpuKernel.compiledVertShaderString + '`;\n\t\t    this.programUniformLocationCache = {};\n\t\t    this.textureCache = {};\n\t\t    this.subKernelOutputTextures = null;\n\t\t    this.subKernelOutputVariableNames = null;\n\t\t    this.uniform1fCache = {};\n\t\t    this.uniform1iCache = {};\n\t\t    this.uniform2fCache = {};\n\t\t    this.uniform2fvCache = {};\n\t\t    this.uniform2ivCache = {};\n\t\t    this.uniform3fvCache = {};\n\t\t    this.uniform3ivCache = {};\n      }\n      _getFragShaderString() { return this.compiledFragShaderString; }\n      _getVertShaderString() { return this.compiledVertShaderString; }\n      validateOptions() {}\n      setupParams() {}\n      setupConstants() {}\n      setCanvas(canvas) { this._canvas = canvas; return this; }\n      setWebGl(webGl) { this._webGl = webGl; return this; }\n      setTexture(Type) { Texture = Type; }\n      setInput(Type) { Input = Type; }\n      ' + removeFnNoise(gpuKernel.getUniformLocation.toString()) + '\n      ' + removeFnNoise(gpuKernel.build.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.run.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel._addArgument.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel._formatArrayTransfer.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.getArgumentTexture.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.getTextureCache.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.getOutputTexture.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.renderOutput.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.updateMaxTexSize.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel._setupOutputTexture.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.detachTextureCache.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform1f.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform1i.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform2f.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform2fv.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform2iv.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform3fv.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform3iv.toString()) + '\n    };\n    return kernelRunShortcut(new Kernel());\n  };';
-};
-},{"../../core/input":84,"../../core/texture":85,"../../core/utils":87,"../kernel-run-shortcut":64}],69:[function(require,module,exports){
-'use strict';
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var KernelBase = require('../kernel-base');
-var utils = require('../../core/utils');
-var Texture = require('../../core/texture');
-var fragShaderString = require('./shader-frag');
-var vertShaderString = require('./shader-vert');
-var kernelString = require('./kernel-string');
-var canvases = [];
-var maxTexSizes = {};
-
-module.exports = function (_KernelBase) {
-	_inherits(WebGLKernel, _KernelBase);
-
-	_createClass(WebGLKernel, null, [{
-		key: 'fragShaderString',
-		get: function get() {
-			return fragShaderString;
-		}
-	}, {
-		key: 'vertShaderString',
-		get: function get() {
-			return vertShaderString;
-		}
-		/**
-   * @constructor WebGLKernel
-   *
-   * @desc Kernel Implementation for WebGL.
-   * <p>This builds the shaders and runs them on the GPU,
-   * the outputs the result back as float(enabled by default) and Texture.</p>
-   *
-   * @extends KernelBase
-   *
-   * @prop {Object} textureCache - webGl Texture cache
-   * @prop {Object} threadDim - The thread dimensions, x, y and z
-   * @prop {Object} programUniformLocationCache - Location of program variables in memory
-   * @prop {Object} framebuffer - Webgl frameBuffer
-   * @prop {Object} buffer - WebGL buffer
-   * @prop {Object} program - The webGl Program
-   * @prop {Object} functionBuilder - Function Builder instance bound to this Kernel
-   * @prop {Boolean} outputToTexture - Set output type to Texture, instead of float
-   * @prop {String} endianness - Endian information like Little-endian, Big-endian.
-   * @prop {Array} paramTypes - Types of parameters sent to the Kernel
-   * @prop {number} argumentsLength - Number of parameters sent to the Kernel
-   * @prop {String} compiledFragShaderString - Compiled fragment shader string
-   * @prop {String} compiledVertShaderString - Compiled Vertical shader string
-   */
-
-	}]);
-
-	function WebGLKernel(fnString, settings) {
-		_classCallCheck(this, WebGLKernel);
-
-		var _this = _possibleConstructorReturn(this, (WebGLKernel.__proto__ || Object.getPrototypeOf(WebGLKernel)).call(this, fnString, settings));
-
-		_this.textureCache = {};
-		_this.threadDim = {};
-		_this.programUniformLocationCache = {};
-		_this.framebuffer = null;
-
-		_this.buffer = null;
-		_this.program = null;
-		_this.outputToTexture = settings.outputToTexture;
-		_this.endianness = utils.systemEndianness();
-		_this.subKernelOutputTextures = null;
-		_this.subKernelOutputVariableNames = null;
-		_this.argumentsLength = 0;
-		_this.constantsLength = 0;
-		_this.compiledFragShaderString = null;
-		_this.compiledVertShaderString = null;
-		_this.fragShader = null;
-		_this.vertShader = null;
-		_this.drawBuffersMap = null;
-		_this.outputTexture = null;
-		_this.maxTexSize = null;
-		_this.uniform1fCache = {};
-		_this.uniform1iCache = {};
-		_this.uniform2fCache = {};
-		_this.uniform2fvCache = {};
-		_this.uniform2ivCache = {};
-		_this.uniform3fvCache = {};
-		_this.uniform3ivCache = {};
-		if (!_this._webGl) _this._webGl = _this.initWebGl();
-		return _this;
-	}
-
-	_createClass(WebGLKernel, [{
-		key: 'initWebGl',
-		value: function initWebGl() {
-			return utils.initWebGl(this.getCanvas());
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name validateOptions
-   *
-   * @desc Validate options related to Kernel, such as
-   * floatOutputs and Textures, texSize, output,
-   * graphical output.
-   *
-   */
-
-	}, {
-		key: 'validateOptions',
-		value: function validateOptions() {
-			var isFloatReadPixel = utils.isFloatReadPixelsSupported();
-			if (this.floatTextures === true && !utils.OES_texture_float) {
-				throw new Error('Float textures are not supported on this browser');
-			} else if (this.floatOutput === true && this.floatOutputForce !== true && !isFloatReadPixel) {
-				throw new Error('Float texture outputs are not supported on this browser');
-			} else if (this.floatTextures === undefined && utils.OES_texture_float) {
-				this.floatTextures = true;
-				this.floatOutput = isFloatReadPixel;
-			}
-
-			var hasIntegerDivisionBug = utils.hasIntegerDivisionAccuracyBug();
-			if (this.fixIntegerDivisionAccuracy === null) {
-				this.fixIntegerDivisionAccuracy = hasIntegerDivisionBug;
-			} else if (this.fixIntegerDivisionAccuracy && !hasIntegerDivisionBug) {
-				this.fixIntegerDivisionAccuracy = false;
-			}
-
-			utils.checkOutput(this.output);
-
-			if (!this.output || this.output.length === 0) {
-				if (arguments.length !== 1) {
-					throw new Error('Auto output only supported for kernels with only one input');
-				}
-
-				var argType = utils.getArgumentType(arguments[0]);
-				if (argType === 'Array') {
-					this.output = utils.getDimensions(argType);
-				} else if (argType === 'NumberTexture' || argType === 'ArrayTexture(4)') {
-					this.output = arguments[0].output;
-				} else {
-					throw new Error('Auto output not supported for input type: ' + argType);
-				}
-			}
-
-			this.texSize = utils.dimToTexSize({
-				floatTextures: this.floatTextures,
-				floatOutput: this.floatOutput
-			}, this.output, true);
-
-			if (this.graphical) {
-				if (this.output.length !== 2) {
-					throw new Error('Output must have 2 dimensions on graphical mode');
-				}
-
-				if (this.floatOutput) {
-					this.floatOutput = false;
-					console.warn('Cannot use graphical mode and float output at the same time');
-				}
-
-				this.texSize = utils.clone(this.output);
-			} else if (this.floatOutput === undefined && utils.OES_texture_float) {
-				this.floatOutput = true;
-			}
-		}
-	}, {
-		key: 'updateMaxTexSize',
-		value: function updateMaxTexSize() {
-			var texSize = this.texSize;
-			var canvas = this._canvas;
-			if (this.maxTexSize === null) {
-				var canvasIndex = canvases.indexOf(canvas);
-				if (canvasIndex === -1) {
-					canvasIndex = canvases.length;
-					canvases.push(canvas);
-					maxTexSizes[canvasIndex] = [texSize[0], texSize[1]];
-				}
-				this.maxTexSize = maxTexSizes[canvasIndex];
-			}
-			if (this.maxTexSize[0] < texSize[0]) {
-				this.maxTexSize[0] = texSize[0];
-			}
-			if (this.maxTexSize[1] < texSize[1]) {
-				this.maxTexSize[1] = texSize[1];
-			}
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name build
-   *
-   * @desc Builds the Kernel, by compiling Fragment and Vertical Shaders,
-   * and instantiates the program.
-   *
-   */
-
-	}, {
-		key: 'build',
-		value: function build() {
-			this.validateOptions();
-			this.setupConstants();
-			this.setupParams(arguments);
-			this.updateMaxTexSize();
-			var texSize = this.texSize;
-			var gl = this._webGl;
-			var canvas = this._canvas;
-			gl.enable(gl.SCISSOR_TEST);
-			gl.viewport(0, 0, this.maxTexSize[0], this.maxTexSize[1]);
-			canvas.width = this.maxTexSize[0];
-			canvas.height = this.maxTexSize[1];
-			var threadDim = this.threadDim = utils.clone(this.output);
-			while (threadDim.length < 3) {
-				threadDim.push(1);
-			}
-
-			if (this.functionBuilder) this._addKernels();
-
-			var compiledVertShaderString = this._getVertShaderString(arguments);
-			var vertShader = gl.createShader(gl.VERTEX_SHADER);
-			gl.shaderSource(vertShader, compiledVertShaderString);
-			gl.compileShader(vertShader);
-			this.vertShader = vertShader;
-
-			var compiledFragShaderString = this._getFragShaderString(arguments);
-			var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-			gl.shaderSource(fragShader, compiledFragShaderString);
-			gl.compileShader(fragShader);
-			this.fragShader = fragShader;
-
-			if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
-				console.log(compiledVertShaderString);
-				console.error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(vertShader));
-				throw new Error('Error compiling vertex shader');
-			}
-			if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
-				console.log(compiledFragShaderString);
-				console.error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(fragShader));
-				throw new Error('Error compiling fragment shader');
-			}
-
-			if (this.debug) {
-				console.log('Options:');
-				console.dir(this);
-				console.log('GLSL Shader Output:');
-				console.log(compiledFragShaderString);
-			}
-
-			var program = this.program = gl.createProgram();
-			gl.attachShader(program, vertShader);
-			gl.attachShader(program, fragShader);
-			gl.linkProgram(program);
-			this.framebuffer = gl.createFramebuffer();
-			this.framebuffer.width = texSize[0];
-			this.framebuffer.height = texSize[1];
-
-			var vertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
-			var texCoords = new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]);
-
-			var texCoordOffset = vertices.byteLength;
-
-			var buffer = this.buffer;
-			if (!buffer) {
-				buffer = this.buffer = gl.createBuffer();
-				gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-				gl.bufferData(gl.ARRAY_BUFFER, vertices.byteLength + texCoords.byteLength, gl.STATIC_DRAW);
-			} else {
-				gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-			}
-
-			gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices);
-			gl.bufferSubData(gl.ARRAY_BUFFER, texCoordOffset, texCoords);
-
-			var aPosLoc = gl.getAttribLocation(this.program, 'aPos');
-			gl.enableVertexAttribArray(aPosLoc);
-			gl.vertexAttribPointer(aPosLoc, 2, gl.FLOAT, gl.FALSE, 0, 0);
-			var aTexCoordLoc = gl.getAttribLocation(this.program, 'aTexCoord');
-			gl.enableVertexAttribArray(aTexCoordLoc);
-			gl.vertexAttribPointer(aTexCoordLoc, 2, gl.FLOAT, gl.FALSE, 0, texCoordOffset);
-			gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
-
-			for (var p in this.constants) {
-				var value = this.constants[p];
-				var type = utils.getArgumentType(value);
-				if (type === 'Float' || type === 'Integer') {
-					continue;
-				}
-				gl.useProgram(this.program);
-				this._addConstant(this.constants[p], type, p);
-				this.constantsLength++;
-			}
-
-			if (!this.outputImmutable) {
-				this._setupOutputTexture();
-				if (this.subKernelOutputVariableNames !== null && this.subKernelOutputVariableNames.length > 0) {
-					this._setupSubOutputTextures(this.subKernelOutputVariableNames.length);
-				}
-			}
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name run
-   *
-   * @desc Run the kernel program, and send the output to renderOutput
-   *
-   * <p> This method calls a helper method *renderOutput* to return the result. </p>
-   *
-   * @returns {Object|Undefined} Result The final output of the program, as float, and as Textures for reuse.
-   *
-   *
-   */
-
-	}, {
-		key: 'run',
-		value: function run() {
-			if (this.program === null) {
-				this.build.apply(this, arguments);
-			}
-			var paramNames = this.paramNames;
-			var paramTypes = this.paramTypes;
-			var texSize = this.texSize;
-			var gl = this._webGl;
-
-			gl.useProgram(this.program);
-			gl.scissor(0, 0, texSize[0], texSize[1]);
-
-			if (!this.hardcodeConstants) {
-				this.setUniform3iv('uOutputDim', this.threadDim);
-				this.setUniform2iv('uTexSize', texSize);
-			}
-
-			this.setUniform2f('ratio', texSize[0] / this.maxTexSize[0], texSize[1] / this.maxTexSize[1]);
-
-			this.argumentsLength = 0;
-			for (var texIndex = 0; texIndex < paramNames.length; texIndex++) {
-				this._addArgument(arguments[texIndex], paramTypes[texIndex], paramNames[texIndex]);
-			}
-
-			if (this.graphical) {
-				if (this.outputToTexture) {
-					gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-					gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
-					if (!this.outputTexture || this.outputImmutable) {
-						this._setupOutputTexture();
-					}
-					gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-					return new Texture(this.outputTexture, texSize, this.threadDim, this.output, this._webGl, 'ArrayTexture(4)');
-				}
-				gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-				gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-				return;
-			}
-
-			gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
-			if (this.outputImmutable) {
-				this._setupOutputTexture();
-			}
-			var outputTexture = this.outputTexture;
-
-			if (this.subKernelOutputVariableNames !== null) {
-				if (this.outputImmutable) {
-					this.subKernelOutputTextures = [];
-					this._setupSubOutputTextures(this.subKernelOutputVariableNames.length);
-				}
-				this.drawBuffers.drawBuffersWEBGL(this.drawBuffersMap);
-			}
-
-			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
-			if (this.subKernelOutputTextures !== null) {
-				if (this.subKernels !== null) {
-					var output = [];
-					output.result = this.renderOutput(outputTexture);
-					for (var i = 0; i < this.subKernels.length; i++) {
-						output.push(new Texture(this.subKernelOutputTextures[i], texSize, this.threadDim, this.output, this._webGl));
-					}
-					return output;
-				} else if (this.subKernelProperties !== null) {
-					var _output = {
-						result: this.renderOutput(outputTexture)
-					};
-					var _i = 0;
-					for (var p in this.subKernelProperties) {
-						if (!this.subKernelProperties.hasOwnProperty(p)) continue;
-						_output[p] = new Texture(this.subKernelOutputTextures[_i], texSize, this.threadDim, this.output, this._webGl);
-						_i++;
-					}
-					return _output;
-				}
-			}
-
-			return this.renderOutput(outputTexture);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name renderOutput
-   *
-   *
-   * @desc Helper function to return webGl function's output.
-   * Since the program runs on GPU, we need to get the
-   * output of the program back to CPU and then return them.
-   *
-   * *Note*: This should not be called directly.
-   *
-   * @param {Object} outputTexture - Output Texture returned by webGl program
-   *
-   * @returns {Object|Array} result
-   *
-   *
-   */
-
-	}, {
-		key: 'renderOutput',
-		value: function renderOutput(outputTexture) {
-			var texSize = this.texSize;
-			var gl = this._webGl;
-			var threadDim = this.threadDim;
-			var output = this.output;
-			if (this.outputToTexture) {
-				return new Texture(outputTexture, texSize, this.threadDim, output, this._webGl);
-			} else {
-				var result = void 0;
-				if (this.floatOutput) {
-					var w = texSize[0];
-					var h = Math.ceil(texSize[1] / 4);
-					result = new Float32Array(w * h * 4);
-					gl.readPixels(0, 0, w, h, gl.RGBA, gl.FLOAT, result);
-				} else {
-					var bytes = new Uint8Array(texSize[0] * texSize[1] * 4);
-					gl.readPixels(0, 0, texSize[0], texSize[1], gl.RGBA, gl.UNSIGNED_BYTE, bytes);
-					result = new Float32Array(bytes.buffer);
-				}
-
-				result = result.subarray(0, threadDim[0] * threadDim[1] * threadDim[2]);
-
-				if (output.length === 1) {
-					return result;
-				} else if (output.length === 2) {
-					return utils.splitArray(result, output[0]);
-				} else if (output.length === 3) {
-					var cube = utils.splitArray(result, output[0] * output[1]);
-					return cube.map(function (x) {
-						return utils.splitArray(x, output[0]);
-					});
-				}
-			}
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name getOutputTexture
-   *
-   * @desc This return defined outputTexture, which is setup in .build(), or if immutable, is defined in .run()
-   *
-   * @returns {Object} Output Texture Cache
-   *
-   */
-
-	}, {
-		key: 'getOutputTexture',
-		value: function getOutputTexture() {
-			return this.outputTexture;
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _setupOutputTexture
-   * @private
-   *
-   * @desc Setup and replace output texture
-   */
-
-	}, {
-		key: '_setupOutputTexture',
-		value: function _setupOutputTexture() {
-			var gl = this._webGl;
-			var texSize = this.texSize;
-			var texture = this.outputTexture = this._webGl.createTexture();
-			gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.paramNames.length);
-			gl.bindTexture(gl.TEXTURE_2D, texture);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-			if (this.floatOutput) {
-				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.FLOAT, null);
-			} else {
-				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-			}
-			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @param length
-   * @private
-   *
-   * @desc Setup and replace sub-output textures
-   */
-
-	}, {
-		key: '_setupSubOutputTextures',
-		value: function _setupSubOutputTextures(length) {
-			var gl = this._webGl;
-			var texSize = this.texSize;
-			var drawBuffersMap = this.drawBuffersMap = [gl.COLOR_ATTACHMENT0];
-			var textures = this.subKernelOutputTextures = [];
-			for (var i = 0; i < length; i++) {
-				var texture = this._webGl.createTexture();
-				textures.push(texture);
-				drawBuffersMap.push(gl.COLOR_ATTACHMENT0 + i + 1);
-				gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.paramNames.length + i);
-				gl.bindTexture(gl.TEXTURE_2D, texture);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-				if (this.floatOutput) {
-					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.FLOAT, null);
-				} else {
-					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-				}
-				gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i + 1, gl.TEXTURE_2D, texture, 0);
-			}
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name getArgumentTexture
-   *
-   * @desc This uses *getTextureCache** to get the Texture Cache of the argument supplied
-   *
-   * @param {String} name - Name of the argument
-   *
-   * 	Texture cache for the supplied argument
-   *
-   */
-
-	}, {
-		key: 'getArgumentTexture',
-		value: function getArgumentTexture(name) {
-			return this.getTextureCache('ARGUMENT_' + name);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @name getTextureCache
-   * @function
-   *
-   * @desc Returns the Texture Cache of the supplied parameter (can be kernel, sub-kernel or argument)
-   *
-   * @param {String} name - Name of the subkernel, argument, or kernel.
-   *
-   * @returns {Object} Texture cache
-   *
-   */
-
-	}, {
-		key: 'getTextureCache',
-		value: function getTextureCache(name) {
-			if (this.textureCache.hasOwnProperty(name)) {
-				return this.textureCache[name];
-			}
-			return this.textureCache[name] = this._webGl.createTexture();
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @name detachTextureCache
-   * @function
-   * @desc removes a texture from the kernel's cache
-   * @param {String} name - Name of texture
-   */
-
-	}, {
-		key: 'detachTextureCache',
-		value: function detachTextureCache(name) {
-			delete this.textureCache[name];
-		}
-	}, {
-		key: 'setUniform1f',
-		value: function setUniform1f(name, value) {
-			if (this.uniform1fCache.hasOwnProperty(name)) {
-				var cache = this.uniform1fCache[name];
-				if (value === cache) {
-					return;
-				}
-			}
-			this.uniform1fCache[name] = value;
-			var loc = this.getUniformLocation(name);
-			this._webGl.uniform1f(loc, value);
-		}
-	}, {
-		key: 'setUniform1i',
-		value: function setUniform1i(name, value) {
-			if (this.uniform1iCache.hasOwnProperty(name)) {
-				var cache = this.uniform1iCache[name];
-				if (value === cache) {
-					return;
-				}
-			}
-			this.uniform1iCache[name] = value;
-			var loc = this.getUniformLocation(name);
-			this._webGl.uniform1i(loc, value);
-		}
-	}, {
-		key: 'setUniform2f',
-		value: function setUniform2f(name, value1, value2) {
-			if (this.uniform2fCache.hasOwnProperty(name)) {
-				var cache = this.uniform2fCache[name];
-				if (value1 === cache[0] && value2 === cache[1]) {
-					return;
-				}
-			}
-			this.uniform2fCache[name] = [value1, value2];
-			var loc = this.getUniformLocation(name);
-			this._webGl.uniform2f(loc, value1, value2);
-		}
-	}, {
-		key: 'setUniform2fv',
-		value: function setUniform2fv(name, value) {
-			if (this.uniform2fvCache.hasOwnProperty(name)) {
-				var cache = this.uniform2fvCache[name];
-				if (value[0] === cache[0] && value[1] === cache[1]) {
-					return;
-				}
-			}
-			this.uniform2fvCache[name] = value;
-			var loc = this.getUniformLocation(name);
-			this._webGl.uniform2fv(loc, value);
-		}
-	}, {
-		key: 'setUniform2iv',
-		value: function setUniform2iv(name, value) {
-			if (this.uniform2ivCache.hasOwnProperty(name)) {
-				var cache = this.uniform2ivCache[name];
-				if (value[0] === cache[0] && value[1] === cache[1]) {
-					return;
-				}
-			}
-			this.uniform2ivCache[name] = value;
-			var loc = this.getUniformLocation(name);
-			this._webGl.uniform2iv(loc, value);
-		}
-	}, {
-		key: 'setUniform3fv',
-		value: function setUniform3fv(name, value) {
-			if (this.uniform3fvCache.hasOwnProperty(name)) {
-				var cache = this.uniform3fvCache[name];
-				if (value[0] === cache[0] && value[1] === cache[1] && value[2] === cache[2]) {
-					return;
-				}
-			}
-			this.uniform3fvCache[name] = value;
-			var loc = this.getUniformLocation(name);
-			this._webGl.uniform3fv(loc, value);
-		}
-	}, {
-		key: 'setUniform3iv',
-		value: function setUniform3iv(name, value) {
-			if (this.uniform3ivCache.hasOwnProperty(name)) {
-				var cache = this.uniform3ivCache[name];
-				if (value[0] === cache[0] && value[1] === cache[1] && value[2] === cache[2]) {
-					return;
-				}
-			}
-			this.uniform3ivCache[name] = value;
-			var loc = this.getUniformLocation(name);
-			this._webGl.uniform3iv(loc, value);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name getUniformLocation
-   *
-   * @desc Return WebGlUniformLocation for various variables
-   * related to webGl program, such as user-defiend variables,
-   * as well as, dimension sizes, etc.
-   *
-   */
-
-	}, {
-		key: 'getUniformLocation',
-		value: function getUniformLocation(name) {
-			if (this.programUniformLocationCache.hasOwnProperty(name)) {
-				return this.programUniformLocationCache[name];
-			}
-			return this.programUniformLocationCache[name] = this._webGl.getUniformLocation(this.program, name);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getFragShaderArtifactMap
-   *
-   * @desc Generate Shader artifacts for the kernel program.
-   * The final object contains HEADER, KERNEL, MAIN_RESULT, and others.
-   *
-   * @param {Array} args - The actual parameters sent to the Kernel
-   *
-   * @returns {Object} An object containing the Shader Artifacts(CONSTANTS, HEADER, KERNEL, etc.)
-   *
-   */
-
-	}, {
-		key: '_getFragShaderArtifactMap',
-		value: function _getFragShaderArtifactMap(args) {
-			return {
-				HEADER: this._getHeaderString(),
-				LOOP_MAX: this._getLoopMaxString(),
-				CONSTANTS: this._getConstantsString(),
-				DECODE32_ENDIANNESS: this._getDecode32EndiannessString(),
-				ENCODE32_ENDIANNESS: this._getEncode32EndiannessString(),
-				DIVIDE_WITH_INTEGER_CHECK: this._getDivideWithIntegerCheckString(),
-				GET_WRAPAROUND: this._getGetWraparoundString(),
-				GET_TEXTURE_CHANNEL: this._getGetTextureChannelString(),
-				GET_TEXTURE_INDEX: this._getGetTextureIndexString(),
-				GET_RESULT: this._getGetResultString(),
-				MAIN_PARAMS: this._getMainParamsString(args),
-				MAIN_CONSTANTS: this._getMainConstantsString(),
-				KERNEL: this._getKernelString(),
-				MAIN_RESULT: this._getMainResultString()
-			};
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _addArgument
-   *
-   * @desc Adds kernel parameters to the Argument Texture,
-   * binding it to the webGl instance, etc.
-   *
-   * @param {Array|Texture|Number} value - The actual argument supplied to the kernel
-   * @param {String} type - Type of the argument
-   * @param {String} name - Name of the argument
-   *
-   */
-
-	}, {
-		key: '_addArgument',
-		value: function _addArgument(value, type, name) {
-			var gl = this._webGl;
-			var argumentTexture = this.getArgumentTexture(name);
-			if (value instanceof Texture) {
-				type = value.type;
-			}
-			switch (type) {
-				case 'Array':
-				case 'Array(2)':
-				case 'Array(3)':
-				case 'Array(4)':
-				case 'Array2D':
-				case 'Array3D':
-					{
-						var dim = utils.getDimensions(value, true);
-						var size = utils.dimToTexSize({
-							floatTextures: this.floatTextures,
-							floatOutput: this.floatOutput
-						}, dim);
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
-						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-						var length = size[0] * size[1];
-
-						var _formatArrayTransfer2 = this._formatArrayTransfer(value, length),
-						    valuesFlat = _formatArrayTransfer2.valuesFlat,
-						    bitRatio = _formatArrayTransfer2.bitRatio;
-
-						var buffer = void 0;
-						if (this.floatTextures) {
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0], size[1], 0, gl.RGBA, gl.FLOAT, valuesFlat);
-						} else {
-							buffer = new Uint8Array(valuesFlat.buffer);
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0] / bitRatio, size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
-						}
-
-						if (!this.hardcodeConstants) {
-							this.setUniform3iv('user_' + name + 'Dim', dim);
-							this.setUniform2iv('user_' + name + 'Size', size);
-						}
-						this.setUniform1i('user_' + name + 'BitRatio', bitRatio);
-						this.setUniform1i('user_' + name, this.argumentsLength);
-						break;
-					}
-				case 'Integer':
-				case 'Float':
-				case 'Number':
-					{
-						this.setUniform1f('user_' + name, value);
-						break;
-					}
-				case 'Input':
-					{
-						var input = value;
-						var _dim = input.size;
-						var _size = utils.dimToTexSize({
-							floatTextures: this.floatTextures,
-							floatOutput: this.floatOutput
-						}, _dim);
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
-						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-						var _length = _size[0] * _size[1];
-
-						var _formatArrayTransfer3 = this._formatArrayTransfer(value.value, _length),
-						    _valuesFlat = _formatArrayTransfer3.valuesFlat,
-						    _bitRatio = _formatArrayTransfer3.bitRatio;
-
-						if (this.floatTextures) {
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size[0], _size[1], 0, gl.RGBA, gl.FLOAT, inputArray);
-						} else {
-							var _buffer = new Uint8Array(_valuesFlat.buffer);
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size[0] / _bitRatio, _size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, _buffer);
-						}
-
-						if (!this.hardcodeConstants) {
-							this.setUniform3iv('user_' + name + 'Dim', _dim);
-							this.setUniform2iv('user_' + name + 'Size', _size);
-						}
-						this.setUniform1i('user_' + name + 'BitRatio', _bitRatio);
-						this.setUniform1i('user_' + name, this.argumentsLength);
-						break;
-					}
-				case 'HTMLImage':
-					{
-						var inputImage = value;
-						var _dim2 = [inputImage.width, inputImage.height, 1];
-						var _size2 = [inputImage.width, inputImage.height];
-
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
-						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-						gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-						// Upload the image into the texture.
-						var mipLevel = 0; // the largest mip
-						var internalFormat = gl.RGBA; // format we want in the texture
-						var srcFormat = gl.RGBA; // format of data we are supplying
-						var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
-						gl.texImage2D(gl.TEXTURE_2D, mipLevel, internalFormat, srcFormat, srcType, inputImage);
-						this.setUniform3iv('user_' + name + 'Dim', _dim2);
-						this.setUniform2iv('user_' + name + 'Size', _size2);
-						this.setUniform1i('user_' + name, this.argumentsLength);
-						break;
-					}
-				case 'ArrayTexture(4)':
-				case 'NumberTexture':
-					{
-						var inputTexture = value;
-						var _dim3 = inputTexture.dimensions;
-						var _size3 = inputTexture.size;
-
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
-						gl.bindTexture(gl.TEXTURE_2D, inputTexture.texture);
-
-						this.setUniform3iv('user_' + name + 'Dim', _dim3);
-						this.setUniform2iv('user_' + name + 'Size', _size3);
-						this.setUniform1i('user_' + name + 'BitRatio', 1); // aways float32
-						this.setUniform1i('user_' + name, this.argumentsLength);
-						break;
-					}
-				default:
-					throw new Error('Input type not supported (WebGL): ' + value);
-			}
-			this.argumentsLength++;
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _addConstant
-   *
-   * @desc Adds kernel parameters to the Argument Texture,
-   * binding it to the webGl instance, etc.
-   *
-   * @param {Array|Texture|Number} value - The actual argument supplied to the kernel
-   * @param {String} type - Type of the argument
-   * @param {String} name - Name of the argument
-   *
-   */
-
-	}, {
-		key: '_addConstant',
-		value: function _addConstant(value, type, name) {
-			var gl = this._webGl;
-			var argumentTexture = this.getArgumentTexture(name);
-			if (value instanceof Texture) {
-				type = value.type;
-			}
-			switch (type) {
-				case 'Array':
-					{
-						var dim = utils.getDimensions(value, true);
-						var size = utils.dimToTexSize({
-							floatTextures: this.floatTextures,
-							floatOutput: this.floatOutput
-						}, dim);
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
-						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-						var length = size[0] * size[1];
-
-						var _formatArrayTransfer4 = this._formatArrayTransfer(value, length),
-						    valuesFlat = _formatArrayTransfer4.valuesFlat,
-						    bitRatio = _formatArrayTransfer4.bitRatio;
-
-						var buffer = void 0;
-						if (this.floatTextures) {
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0], size[1], 0, gl.RGBA, gl.FLOAT, valuesFlat);
-						} else {
-							buffer = new Uint8Array(valuesFlat.buffer);
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0] / bitRatio, size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
-						}
-
-						if (!this.hardcodeConstants) {
-							this.setUniform3iv('constants_' + name + 'Dim', dim);
-							this.setUniform2iv('constants_' + name + 'Size', size);
-						}
-						this.setUniform1i('constants_' + name + 'BitRatio', bitRatio);
-						this.setUniform1i('constants_' + name, this.constantsLength);
-						break;
-					}
-				case 'Input':
-					{
-						var input = value;
-						var _dim4 = input.size;
-						var _size4 = utils.dimToTexSize({
-							floatTextures: this.floatTextures,
-							floatOutput: this.floatOutput
-						}, _dim4);
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
-						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-						var _length2 = _size4[0] * _size4[1];
-
-						var _formatArrayTransfer5 = this._formatArrayTransfer(value.value, _length2),
-						    _valuesFlat2 = _formatArrayTransfer5.valuesFlat,
-						    _bitRatio2 = _formatArrayTransfer5.bitRatio;
-
-						if (this.floatTextures) {
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size4[0], _size4[1], 0, gl.RGBA, gl.FLOAT, inputArray);
-						} else {
-							var _buffer2 = new Uint8Array(_valuesFlat2.buffer);
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size4[0] / _bitRatio2, _size4[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, _buffer2);
-						}
-
-						if (!this.hardcodeConstants) {
-							this.setUniform3iv('constants_' + name + 'Dim', _dim4);
-							this.setUniform2iv('constants_' + name + 'Size', _size4);
-						}
-						this.setUniform1i('constants_' + name + 'BitRatio', _bitRatio2);
-						this.setUniform1i('constants_' + name, this.constantsLength);
-						break;
-					}
-				case 'HTMLImage':
-					{
-						var inputImage = value;
-						var _dim5 = [inputImage.width, inputImage.height, 1];
-						var _size5 = [inputImage.width, inputImage.height];
-
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
-						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-						gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-						// Upload the image into the texture.
-						var mipLevel = 0; // the largest mip
-						var internalFormat = gl.RGBA; // format we want in the texture
-						var srcFormat = gl.RGBA; // format of data we are supplying
-						var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
-						gl.texImage2D(gl.TEXTURE_2D, mipLevel, internalFormat, srcFormat, srcType, inputImage);
-						this.setUniform3iv('constants_' + name + 'Dim', _dim5);
-						this.setUniform2iv('constants_' + name + 'Size', _size5);
-						this.setUniform1i('constants_' + name, this.constantsLength);
-						break;
-					}
-				case 'ArrayTexture(4)':
-				case 'NumberTexture':
-					{
-						var inputTexture = value;
-						var _dim6 = inputTexture.dimensions;
-						var _size6 = inputTexture.size;
-
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
-						gl.bindTexture(gl.TEXTURE_2D, inputTexture.texture);
-
-						this.setUniform3iv('constants_' + name + 'Dim', _dim6);
-						this.setUniform2iv('constants_' + name + 'Size', _size6);
-						this.setUniform1i('constants_' + name + 'BitRatio', 1); // aways float32
-						this.setUniform1i('constants_' + name, this.constantsLength);
-						break;
-					}
-				case 'Integer':
-				case 'Float':
-				default:
-					throw new Error('Input type not supported (WebGL): ' + value);
-			}
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _formatArrayTransfer
-   *
-   * @desc Adds kernel parameters to the Argument Texture,
-   * binding it to the webGl instance, etc.
-   *
-   * @param {Array} value - The actual argument supplied to the kernel
-   * @param {String} length - the expected total length of the output array
-   *
-   * @returns {Object} bitRatio - bit storage ratio of source to target 'buffer', i.e. if 8bit array -> 32bit tex = 4
-   * 				     valuesFlat - flattened array to transfer
-   */
-
-	}, {
-		key: '_formatArrayTransfer',
-		value: function _formatArrayTransfer(value, length) {
-			var bitRatio = 1; // bit storage ratio of source to target 'buffer', i.e. if 8bit array -> 32bit tex = 4
-			var valuesFlat = value;
-			if (utils.isArray(value[0]) || this.floatTextures) {
-				// not already flat
-				valuesFlat = new Float32Array(length);
-				utils.flattenTo(value, valuesFlat);
-			} else {
-
-				switch (value.constructor) {
-					case Uint8Array:
-					case Int8Array:
-						bitRatio = 4;
-						break;
-					case Uint16Array:
-					case Int16Array:
-						bitRatio = 2;
-					case Float32Array:
-					case Int32Array:
-						break;
-
-					default:
-						valuesFlat = new Float32Array(length);
-						utils.flattenTo(value, valuesFlat);
-				}
-			}
-			return {
-				bitRatio: bitRatio,
-				valuesFlat: valuesFlat
-			};
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getHeaderString
-   *
-   * @desc Get the header string for the program.
-   * This returns an empty string if no sub-kernels are defined.
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getHeaderString',
-		value: function _getHeaderString() {
-			return this.subKernels !== null || this.subKernelProperties !== null ?
-			//webgl2 '#version 300 es\n' :
-			'#extension GL_EXT_draw_buffers : require\n' : '';
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getLoopMaxString
-   *
-   * @desc Get the maximum loop size String.
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getLoopMaxString',
-		value: function _getLoopMaxString() {
-			return this.loopMaxIterations ? ' ' + parseInt(this.loopMaxIterations) + '.0;\n' : ' 1000.0;\n';
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getConstantsString
-   *
-   * @desc Generate transpiled glsl Strings for constant parameters sent to a kernel
-   *
-   * They can be defined by *hardcodeConstants*
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getConstantsString',
-		value: function _getConstantsString() {
-			var result = [];
-			var threadDim = this.threadDim;
-			var texSize = this.texSize;
-			if (this.hardcodeConstants) {
-				result.push('ivec3 uOutputDim = ivec3(' + threadDim[0] + ',' + threadDim[1] + ', ' + threadDim[2] + ')', 'ivec2 uTexSize = ivec2(' + texSize[0] + ', ' + texSize[1] + ')');
-			} else {
-				result.push('uniform ivec3 uOutputDim', 'uniform ivec2 uTexSize');
-			}
-
-			return this._linesToString(result);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getTextureCoordinate
-   *
-   * @desc Get texture coordinate string for the program
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getTextureCoordinate',
-		value: function _getTextureCoordinate() {
-			var names = this.subKernelOutputVariableNames;
-			if (names === null || names.length < 1) {
-				return 'varying vec2 vTexCoord;\n';
-			} else {
-				return 'out vec2 vTexCoord;\n';
-			}
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getDecode32EndiannessString
-   *
-   * @desc Get Decode32 endianness string for little-endian and big-endian
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getDecode32EndiannessString',
-		value: function _getDecode32EndiannessString() {
-			return this.endianness === 'LE' ? '' : '  rgba.rgba = rgba.abgr;\n';
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getEncode32EndiannessString
-   *
-   * @desc Get Encode32 endianness string for little-endian and big-endian
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getEncode32EndiannessString',
-		value: function _getEncode32EndiannessString() {
-			return this.endianness === 'LE' ? '' : '  rgba.rgba = rgba.abgr;\n';
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getDivideWithIntegerCheckString
-   *
-   * @desc if fixIntegerDivisionAccuracy provide method to replace /
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getDivideWithIntegerCheckString',
-		value: function _getDivideWithIntegerCheckString() {
-			return this.fixIntegerDivisionAccuracy ? '\n\t\t\t  float div_with_int_check(float x, float y) {\n\t\t\t  if (floor(x) == x && floor(y) == y && integerMod(x, y) == 0.0) {\n\t\t\t    return float(int(x)/int(y));\n\t\t\t  }\n\t\t\t  return x / y;\n\t\t\t}\n\t\t\t' : '';
-		}
-
-		/**
-   * @function
-   * @memberOf WebGLKernel#
-   * @name _getGetWraparoundString
-   *
-   * @returns {String} wraparound string
-   */
-
-	}, {
-		key: '_getGetWraparoundString',
-		value: function _getGetWraparoundString() {
-			return this.wraparound ? '  xyz = mod(xyz, texDim);\n' : '';
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getGetTextureChannelString
-   *
-   */
-
-	}, {
-		key: '_getGetTextureChannelString',
-		value: function _getGetTextureChannelString() {
-			if (!this.floatTextures) return '';
-
-			return this._linesToString(['  int channel = integerMod(index, 4)', '  index = index / 4']);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getGetTextureIndexString
-   *
-   * @desc Get generic texture index string, if floatTextures flag is true.
-   *
-   * @example
-   * '  index = float(int(index)/4);\n'
-   *
-   */
-
-	}, {
-		key: '_getGetTextureIndexString',
-		value: function _getGetTextureIndexString() {
-			return this.floatTextures ? '  index = index / 4;\n' : '';
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getGetResultString
-   *
-   */
-
-	}, {
-		key: '_getGetResultString',
-		value: function _getGetResultString() {
-			if (!this.floatTextures) {
-				return '  return decode(texel, x, bitRatio);';
-			}
-			return this._linesToString(['  if (channel == 0) return texel.r', '  if (channel == 1) return texel.g', '  if (channel == 2) return texel.b', '  if (channel == 3) return texel.a']);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getMainParamsString
-   *
-   * @desc Generate transpiled glsl Strings for user-defined parameters sent to a kernel
-   *
-   * @param {Array} args - The actual parameters sent to the Kernel
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getMainParamsString',
-		value: function _getMainParamsString(args) {
-			var result = [];
-			var paramTypes = this.paramTypes;
-			var paramNames = this.paramNames;
-			for (var i = 0; i < paramNames.length; i++) {
-				var param = args[i];
-				var paramName = paramNames[i];
-				var paramType = paramTypes[i];
-				if (this.hardcodeConstants) {
-					if (paramType === 'Array' || paramType === 'NumberTexture' || paramType === 'ArrayTexture(4)') {
-						var paramDim = utils.getDimensions(param, true);
-						var paramSize = utils.dimToTexSize({
-							floatTextures: this.floatTextures,
-							floatOutput: this.floatOutput
-						}, paramDim);
-
-						result.push('uniform sampler2D user_' + paramName, 'ivec2 user_' + paramName + 'Size = ivec2(' + paramSize[0] + ', ' + paramSize[1] + ')', 'ivec3 user_' + paramName + 'Dim = ivec3(' + paramDim[0] + ', ' + paramDim[1] + ', ' + paramDim[2] + ')', 'uniform int user_' + paramName + 'BitRatio');
-					} else if (paramType === 'Integer') {
-						result.push('float user_' + paramName + ' = ' + param + '.0');
-					} else if (paramType === 'Float') {
-						result.push('float user_' + paramName + ' = ' + param);
-					}
-				} else {
-					if (paramType === 'Array' || paramType === 'NumberTexture' || paramType === 'ArrayTexture(4)' || paramType === 'Input' || paramType === 'HTMLImage') {
-						result.push('uniform sampler2D user_' + paramName, 'uniform ivec2 user_' + paramName + 'Size', 'uniform ivec3 user_' + paramName + 'Dim');
-						if (paramType !== 'HTMLImage') {
-							result.push('uniform int user_' + paramName + 'BitRatio');
-						}
-					} else if (paramType === 'Integer' || paramType === 'Float') {
-						result.push('uniform float user_' + paramName);
-					} else {
-						throw new Error('Param type ' + paramType + ' not supported in WebGL, only WebGL2');
-					}
-				}
-			}
-			return this._linesToString(result);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getMainConstantsString
-   *
-   */
-
-	}, {
-		key: '_getMainConstantsString',
-		value: function _getMainConstantsString() {
-			var result = [];
-			if (this.constants) {
-				for (var name in this.constants) {
-					if (!this.constants.hasOwnProperty(name)) continue;
-					var value = this.constants[name];
-					var type = utils.getArgumentType(value);
-					switch (type) {
-						case 'Integer':
-							result.push('const float constants_' + name + ' = ' + parseInt(value) + '.0');
-							break;
-						case 'Float':
-							result.push('const float constants_' + name + ' = ' + parseFloat(value));
-							break;
-						case 'Array':
-						case 'Input':
-						case 'HTMLImage':
-						case 'NumberTexture':
-						case 'ArrayTexture(4)':
-							result.push('uniform sampler2D constants_' + name, 'uniform ivec2 constants_' + name + 'Size', 'uniform ivec3 constants_' + name + 'Dim', 'uniform int constants_' + name + 'BitRatio');
-							break;
-						default:
-							throw new Error('Unsupported constant ' + name + ' type ' + type);
-					}
-				}
-			}
-			return this._linesToString(result);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getKernelString
-   *
-   * @desc Get Kernel program string (in *glsl*) for a kernel.
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getKernelString',
-		value: function _getKernelString() {
-			var result = [];
-			var names = this.subKernelOutputVariableNames;
-			if (names !== null) {
-				result.push('float kernelResult = 0.0');
-				for (var i = 0; i < names.length; i++) {
-					result.push('float ' + names[i] + ' = 0.0');
-				}
-			} else {
-				result.push('float kernelResult = 0.0');
-			}
-
-			return this._linesToString(result) + this.functionBuilder.getPrototypeString('kernel');
-		}
-
-		/**
-   *
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getMainResultString
-   *
-   * @desc Get main result string with checks for floatOutput, graphical, subKernelsOutputs, etc.
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getMainResultString',
-		value: function _getMainResultString() {
-			var names = this.subKernelOutputVariableNames;
-			var result = [];
-
-			if (this.floatOutput) {
-				result.push('  index *= 4');
-			}
-
-			if (this.graphical) {
-				result.push('  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  gl_FragColor = actualColor');
-			} else if (this.floatOutput) {
-				var channels = ['r', 'g', 'b', 'a'];
-
-				for (var i = 0; i < channels.length; ++i) {
-					result.push('  threadId = indexTo3D(index, uOutputDim)');
-					result.push('  kernel()');
-
-					if (names) {
-						result.push('  gl_FragData[0].' + channels[i] + ' = kernelResult');
-
-						for (var j = 0; j < names.length; ++j) {
-							result.push('  gl_FragData[' + (j + 1) + '].' + channels[i] + ' = ' + names[j]);
-						}
-					} else {
-						result.push('  gl_FragColor.' + channels[i] + ' = kernelResult');
-					}
-
-					if (i < channels.length - 1) {
-						result.push('  index += 1');
-					}
-				}
-			} else if (names !== null) {
-				result.push('  threadId = indexTo3D(index, uOutputDim)');
-				result.push('  kernel()');
-				result.push('  gl_FragData[0] = encode32(kernelResult)');
-				for (var _i2 = 0; _i2 < names.length; _i2++) {
-					result.push('  gl_FragData[' + (_i2 + 1) + '] = encode32(' + names[_i2] + ')');
-				}
-			} else {
-				result.push('  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  gl_FragColor = encode32(kernelResult)');
-			}
-
-			return this._linesToString(result);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _linesToString
-   *
-   * @param {Array} lines - An Array of strings
-   *
-   * @returns {String} Single combined String, seperated by *\n*
-   *
-   */
-
-	}, {
-		key: '_linesToString',
-		value: function _linesToString(lines) {
-			if (lines.length > 0) {
-				return lines.join(';\n') + ';\n';
-			} else {
-				return '\n';
-			}
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _replaceArtifacts
-   *
-   * @param {String} src - Shader string
-   * @param {Array} map - Variables/Constants associated with shader
-   *
-   */
-
-	}, {
-		key: '_replaceArtifacts',
-		value: function _replaceArtifacts(src, map) {
-			return src.replace(/[ ]*__([A-Z]+[0-9]*([_]?[A-Z])*)__;\n/g, function (match, artifact) {
-				if (map.hasOwnProperty(artifact)) {
-					return map[artifact];
-				}
-				throw 'unhandled artifact ' + artifact;
-			});
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _addKernels
-   *
-   * @desc Adds all the sub-kernels supplied with this Kernel instance.
-   *
-   */
-
-	}, {
-		key: '_addKernels',
-		value: function _addKernels() {
-			var _this2 = this;
-
-			var builder = this.functionBuilder;
-			var gl = this._webGl;
-
-			builder.addFunctions(this.functions, {
-				constants: this.constants,
-				output: this.output
-			});
-			builder.addNativeFunctions(this.nativeFunctions);
-
-			builder.addKernel(this.fnString, {
-				prototypeOnly: false,
-				constants: this.constants,
-				output: this.output,
-				debug: this.debug,
-				loopMaxIterations: this.loopMaxIterations,
-				paramNames: this.paramNames,
-				paramTypes: this.paramTypes,
-				constantTypes: this.constantTypes,
-				fixIntegerDivisionAccuracy: this.fixIntegerDivisionAccuracy
-			});
-
-			if (this.subKernels !== null) {
-				var drawBuffers = this.drawBuffers = gl.getExtension('WEBGL_draw_buffers');
-				if (!drawBuffers) throw new Error('could not instantiate draw buffers extension');
-				this.subKernelOutputVariableNames = [];
-				this.subKernels.forEach(function (subKernel) {
-					return _this2._addSubKernel(subKernel);
-				});
-			} else if (this.subKernelProperties !== null) {
-				var _drawBuffers = this.drawBuffers = gl.getExtension('WEBGL_draw_buffers');
-				if (!_drawBuffers) throw new Error('could not instantiate draw buffers extension');
-				this.subKernelOutputVariableNames = [];
-				Object.keys(this.subKernelProperties).forEach(function (property) {
-					return _this2._addSubKernel(_this2.subKernelProperties[property]);
-				});
-			}
-		}
-	}, {
-		key: '_addSubKernel',
-		value: function _addSubKernel(subKernel) {
-			this.functionBuilder.addSubKernel(subKernel, {
-				prototypeOnly: false,
-				constants: this.constants,
-				output: this.output,
-				debug: this.debug,
-				loopMaxIterations: this.loopMaxIterations,
-				fixIntegerDivisionAccuracy: this.fixIntegerDivisionAccuracy
-			});
-			this.subKernelOutputVariableNames.push(subKernel.name + 'Result');
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getFragShaderString
-   *
-   * @desc Get the fragment shader String.
-   * If the String hasn't been compiled yet,
-   * then this method compiles it as well
-   *
-   * @param {Array} args - The actual parameters sent to the Kernel
-   *
-   * @returns {string} Fragment Shader string
-   *
-   */
-
-	}, {
-		key: '_getFragShaderString',
-		value: function _getFragShaderString(args) {
-			if (this.compiledFragShaderString !== null) {
-				return this.compiledFragShaderString;
-			}
-			return this.compiledFragShaderString = this._replaceArtifacts(this.constructor.fragShaderString, this._getFragShaderArtifactMap(args));
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getVertShaderString
-   *
-   * @desc Get the vertical shader String
-   *
-   * @param {Array} args - The actual parameters sent to the Kernel
-   *
-   * @returns {string} Vertical Shader string
-   *
-   */
-
-	}, {
-		key: '_getVertShaderString',
-		value: function _getVertShaderString(args) {
-			if (this.compiledVertShaderString !== null) {
-				return this.compiledVertShaderString;
-			}
-			return this.compiledVertShaderString = this.constructor.vertShaderString;
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name toString
-   *
-   * @desc Returns the *pre-compiled* Kernel as a JS Object String, that can be reused.
-   *
-   */
-
-	}, {
-		key: 'toString',
-		value: function toString() {
-			return kernelString(this);
-		}
-	}, {
-		key: 'addFunction',
-		value: function addFunction(fn) {
-			this.functionBuilder.addFunction(null, fn);
-		}
-	}, {
-		key: 'destroy',
-		value: function destroy(removeCanvasReferences) {
-			_get(WebGLKernel.prototype.__proto__ || Object.getPrototypeOf(WebGLKernel.prototype), 'destroy', this).call(this);
-			if (this.outputTexture) {
-				this._webGl.deleteTexture(this.outputTexture);
-			}
-			if (this.buffer) {
-				this._webGl.deleteBuffer(this.buffer);
-			}
-			if (this.framebuffer) {
-				this._webGl.deleteFramebuffer(this.framebuffer);
-			}
-
-			if (this.vertShader) {
-				this._webGl.deleteShader(this.vertShader);
-			}
-
-			if (this.fragShader) {
-				this._webGl.deleteShader(this.fragShader);
-			}
-
-			if (this.program) {
-				this._webGl.deleteProgram(this.program);
-			}
-
-			var keys = Object.keys(this.textureCache);
-
-			for (var i = 0; i < keys.length; i++) {
-				var name = keys[i];
-				this._webGl.deleteTexture(this.textureCache[name]);
-			}
-
-			if (this.subKernelOutputTextures) {
-				for (var _i3 = 0; _i3 < this.subKernelOutputTextures.length; _i3++) {
-					this._webGl.deleteTexture(this.subKernelOutputTextures[_i3]);
-				}
-			}
-			if (removeCanvasReferences) {
-				var idx = canvases.indexOf(this._canvas);
-				if (idx >= 0) {
-					canvases[idx] = null;
-					maxTexSizes[idx] = null;
-				}
-			}
-			delete this._webGl;
-		}
-	}]);
-
-	return WebGLKernel;
-}(KernelBase);
-},{"../../core/texture":85,"../../core/utils":87,"../kernel-base":63,"./kernel-string":68,"./shader-frag":71,"./shader-vert":72}],70:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var RunnerBase = require('../runner-base');
-var WebGLKernel = require('./kernel');
-var WebGLFunctionBuilder = require('./function-builder');
-
-module.exports = function (_RunnerBase) {
-	_inherits(WebGLRunner, _RunnerBase);
-
-	/**
-  * @constructor WebGLRunner
-  *
- 	 * @extends RunnerBase
-  	 * @desc Instantiates a Runner instance for the kernel.
-  * 
-  * @param {Object} settings - Settings to instantiate properties in RunnerBase, with given values
-  *
-  */
-	function WebGLRunner(settings) {
-		_classCallCheck(this, WebGLRunner);
-
-		var _this = _possibleConstructorReturn(this, (WebGLRunner.__proto__ || Object.getPrototypeOf(WebGLRunner)).call(this, new WebGLFunctionBuilder(), settings));
-
-		_this.Kernel = WebGLKernel;
-		_this.kernel = null;
-		return _this;
-	}
-
-	/**
-  * @memberOf WebGLRunner#
-  * @function
-  * @name getMode
-  *
-  * @desc Return the current mode in which gpu.js is executing.
-  * 
-  * @returns {String} The current mode; "cpu".
-  *
-  */
-
-
-	_createClass(WebGLRunner, [{
-		key: 'getMode',
-		value: function getMode() {
-			return 'gpu';
-		}
-	}]);
-
-	return WebGLRunner;
-}(RunnerBase);
-},{"../runner-base":65,"./function-builder":66,"./kernel":69}],71:[function(require,module,exports){
-"use strict";
-
-module.exports = "__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst float LOOP_MAX = __LOOP_MAX__;\n\n__CONSTANTS__;\n\nvarying vec2 vTexCoord;\n\nvec4 round(vec4 x) {\n  return floor(x + 0.5);\n}\n\nfloat round(float x) {\n  return floor(x + 0.5);\n}\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x / y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 rgba) {\n  __DECODE32_ENDIANNESS__;\n  rgba *= 255.0;\n  vec2 gte128;\n  gte128.x = rgba.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = rgba.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * rgba.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  rgba.b = rgba.b - 128.0 * gte128.x;\n  res = dot(rgba, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nvec4 encode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 rgba = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  rgba.rg = integerMod(rgba.rg, 256.0);\n  rgba.b = integerMod(rgba.b, 128.0);\n  rgba.a = exponent*0.5 + 63.5;\n  rgba.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  rgba = floor(rgba);\n  rgba *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return rgba;\n}\n// Dragons end here\n\nfloat decode(vec4 rgba, int x, int bitRatio) {\n  if (bitRatio == 1) {\n    return decode32(rgba);\n  }\n  __DECODE32_ENDIANNESS__;\n  int channel = integerMod(x, bitRatio);\n  if (bitRatio == 4) {\n    if (channel == 0) return rgba.r * 255.0;\n    if (channel == 1) return rgba.g * 255.0;\n    if (channel == 2) return rgba.b * 255.0;\n    if (channel == 3) return rgba.a * 255.0;\n  }\n  else {\n    if (channel == 0) return rgba.r * 255.0 + rgba.g * 65280.0;\n    if (channel == 1) return rgba.b * 255.0 + rgba.a * 65280.0;\n  }\n}\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio,  int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  __GET_RESULT__;\n  \n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture2D(tex, st / vec2(texSize));\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio, int y, int x) {\n  return get(tex, texSize, texDim, bitRatio, int(0), y, x);\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int y, int x) {\n  return getImage2D(tex, texSize, texDim, int(0), y, x);\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio, int x) {\n  return get(tex, texSize, texDim, bitRatio, int(0), int(0), x);\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int x) {\n  return getImage2D(tex, texSize, texDim, int(0), int(0), x);\n}\n\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\nvoid color(sampler2D image) {\n  actualColor = texture2D(image, vTexCoord);\n}\n\n__MAIN_PARAMS__;\n__MAIN_CONSTANTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
-},{}],72:[function(require,module,exports){
-"use strict";
-
-module.exports = "precision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nattribute vec2 aPos;\nattribute vec2 aTexCoord;\n\nvarying vec2 vTexCoord;\nuniform vec2 ratio;\n\nvoid main(void) {\n  gl_Position = vec4((aPos + vec2(1)) * ratio + vec2(-1), 0, 1);\n  vTexCoord = aTexCoord;\n}";
-},{}],73:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var WebGLKernel = require('./kernel');
-var utils = require('../../core/utils');
-
-/**
- * @class WebGLValidatorKernel
- *
- * @desc Helper class for WebGLKernel to validate texture size and dimensions.
- *
- */
-module.exports = function (_WebGLKernel) {
-	_inherits(WebGLValidatorKernel, _WebGLKernel);
-
-	function WebGLValidatorKernel() {
-		_classCallCheck(this, WebGLValidatorKernel);
-
-		return _possibleConstructorReturn(this, (WebGLValidatorKernel.__proto__ || Object.getPrototypeOf(WebGLValidatorKernel)).apply(this, arguments));
-	}
-
-	_createClass(WebGLValidatorKernel, [{
-		key: 'validateOptions',
-
-
-		/** 
-   * @memberOf WebGLValidatorKernel#
-   * @function
-   * @name validateOptions
-   *
-   */
-		value: function validateOptions() {
-			this.texSize = utils.dimToTexSize({
-				floatTextures: this.floatTextures,
-				floatOutput: this.floatOutput
-			}, this.output, true);
-		}
-	}]);
-
-	return WebGLValidatorKernel;
-}(WebGLKernel);
-},{"../../core/utils":87,"./kernel":69}],74:[function(require,module,exports){
-'use strict';
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var FunctionBuilderBase = require('../function-builder-base');
-var WebGL2FunctionNode = require('./function-node');
-
-/**
- * @class WebGLFunctionBuilder
- *
- * @extends FunctionBuilderBase
- *
- * @desc Builds webGl functions (shaders) from JavaScript function Strings
- *
- */
-module.exports = function (_FunctionBuilderBase) {
-  _inherits(WebGL2FunctionBuilder, _FunctionBuilderBase);
-
-  function WebGL2FunctionBuilder() {
-    _classCallCheck(this, WebGL2FunctionBuilder);
-
-    var _this = _possibleConstructorReturn(this, (WebGL2FunctionBuilder.__proto__ || Object.getPrototypeOf(WebGL2FunctionBuilder)).call(this));
-
-    _this.Node = WebGL2FunctionNode;
-    return _this;
-  }
-
-  return WebGL2FunctionBuilder;
-}(FunctionBuilderBase);
-},{"../function-builder-base":61,"./function-node":75}],75:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var WebGLFunctionNode = require('../web-gl/function-node');
-var DECODE32_ENCODE32 = /decode32\(\s+encode32\(/g;
-var ENCODE32_DECODE32 = /encode32\(\s+decode32\(/g;
-
-/** 
- * @class WebGL2FunctionNode
- *
- * @desc [INTERNAL] Takes in a function node, and does all the AST voodoo required to generate its respective webGL code.
- *
- * @extends WebGLFunctionNode
- *
- * @returns the converted webGL function string
- *
- */
-module.exports = function (_WebGLFunctionNode) {
-	_inherits(WebGL2FunctionNode, _WebGLFunctionNode);
-
-	function WebGL2FunctionNode() {
-		_classCallCheck(this, WebGL2FunctionNode);
-
-		return _possibleConstructorReturn(this, (WebGL2FunctionNode.__proto__ || Object.getPrototypeOf(WebGL2FunctionNode)).apply(this, arguments));
-	}
-
-	_createClass(WebGL2FunctionNode, [{
-		key: 'generate',
-		value: function generate() {
-			if (this.debug) {
-				console.log(this);
-			}
-			if (this.prototypeOnly) {
-				return this.astFunctionPrototype(this.getJsAST(), []).join('').trim();
-			} else {
-				this.functionStringArray = this.astGeneric(this.getJsAST(), []);
-			}
-			this.functionString = webGlRegexOptimize(this.functionStringArray.join('').trim());
-			return this.functionString;
-		}
-
-		/**
-   * @memberOf WebGL2FunctionNode#
-   * @function
-   * @name astIdentifierExpression
-   *
-   * @desc Parses the abstract syntax tree for *identifier* expression
-   *
-   * @param {Object} idtNode - An ast Node
-   * @param {Array} retArr - return array string
-   *
-   * @returns {Array} the append retArr
-   */
-
-	}, {
-		key: 'astIdentifierExpression',
-		value: function astIdentifierExpression(idtNode, retArr) {
-			if (idtNode.type !== 'Identifier') {
-				throw this.astErrorOutput('IdentifierExpression - not an Identifier', idtNode);
-			}
-
-			// do we need to cast addressing vales to float?
-			var castFloat = !this.isState('in-get-call-parameters');
-
-			switch (idtNode.name) {
-				case 'gpu_threadX':
-					castFloat && retArr.push('float(');
-					retArr.push('threadId.x');
-					castFloat && retArr.push(')');
-					break;
-				case 'gpu_threadY':
-					castFloat && retArr.push('float(');
-					retArr.push('threadId.y');
-					castFloat && retArr.push(')');
-					break;
-				case 'gpu_threadZ':
-					castFloat && retArr.push('float(');
-					retArr.push('threadId.z');
-					castFloat && retArr.push(')');
-					break;
-				case 'gpu_outputX':
-					retArr.push('uOutputDim.x');
-					break;
-				case 'gpu_outputY':
-					retArr.push('uOutputDim.y');
-					break;
-				case 'gpu_outputZ':
-					retArr.push('uOutputDim.z');
-					break;
-				case 'Infinity':
-					retArr.push('intBitsToFloat(2139095039)');
-					break;
-				default:
-					var userParamName = this.getUserParamName(idtNode.name);
-					if (userParamName !== null) {
-						this.pushParameter(retArr, 'user_' + userParamName);
-					} else {
-						this.pushParameter(retArr, 'user_' + idtNode.name);
-					}
-			}
-
-			return retArr;
-		}
-	}]);
-
-	return WebGL2FunctionNode;
-}(WebGLFunctionNode);
-
-/**
- * @ignore
- * @function
- * @name webgl_regex_optimize
- *
- * @desc [INTERNAL] Takes the near final webgl function string, and do regex search and replacments.
- * For voodoo optimize out the following: 
- *
- * - decode32(encode32( <br>
- * - encode32(decode32( <br>
- *
- * @param {String} inStr - The webGl function String
- *
- */
-function webGlRegexOptimize(inStr) {
-	return inStr.replace(DECODE32_ENCODE32, '((').replace(ENCODE32_DECODE32, '((');
-}
-},{"../web-gl/function-node":67}],76:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var WebGLKernel = require('../web-gl/kernel');
-var utils = require('../../core/utils');
-var Texture = require('../../core/texture');
-var fragShaderString = require('./shader-frag');
-var vertShaderString = require('./shader-vert');
-
-module.exports = function (_WebGLKernel) {
-	_inherits(WebGL2Kernel, _WebGLKernel);
-
-	function WebGL2Kernel() {
-		_classCallCheck(this, WebGL2Kernel);
-
-		return _possibleConstructorReturn(this, (WebGL2Kernel.__proto__ || Object.getPrototypeOf(WebGL2Kernel)).apply(this, arguments));
-	}
-
-	_createClass(WebGL2Kernel, [{
-		key: 'initWebGl',
-		value: function initWebGl() {
-			return utils.initWebGl2(this.getCanvas());
-		}
-		/**
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name validateOptions
-   *
-   * @desc Validate options related to Kernel, such as
-   * floatOutputs and Textures, texSize, output,
-   * graphical output.
-   *
-   */
-
-	}, {
-		key: 'validateOptions',
-		value: function validateOptions() {
-			var isFloatReadPixel = utils.isFloatReadPixelsSupportedWebGL2();
-			if (this.floatOutput === true && this.floatOutputForce !== true && !isFloatReadPixel) {
-				throw new Error('Float texture outputs are not supported on this browser');
-			} else if (this.floatTextures === undefined) {
-				this.floatTextures = true;
-				this.floatOutput = isFloatReadPixel;
-			}
-
-			var hasIntegerDivisionBug = utils.hasIntegerDivisionAccuracyBug();
-			if (this.fixIntegerDivisionAccuracy === null) {
-				this.fixIntegerDivisionAccuracy = hasIntegerDivisionBug;
-			} else if (this.fixIntegerDivisionAccuracy && !hasIntegerDivisionBug) {
-				this.fixIntegerDivisionAccuracy = false;
-			}
-
-			utils.checkOutput(this.output);
-
-			if (!this.output || this.output.length === 0) {
-				if (arguments.length !== 1) {
-					throw new Error('Auto output only supported for kernels with only one input');
-				}
-
-				var argType = utils.getArgumentType(arguments[0]);
-				if (argType === 'Array') {
-					this.output = utils.getDimensions(argType);
-				} else if (argType === 'NumberTexture' || argType === 'ArrayTexture(4)') {
-					this.output = arguments[0].output;
-				} else {
-					throw new Error('Auto output not supported for input type: ' + argType);
-				}
-			}
-
-			this.texSize = utils.dimToTexSize({
-				floatTextures: this.floatTextures,
-				floatOutput: this.floatOutput
-			}, this.output, true);
-
-			if (this.graphical) {
-				if (this.output.length !== 2) {
-					throw new Error('Output must have 2 dimensions on graphical mode');
-				}
-
-				if (this.floatOutput) {
-					this.floatOutput = false;
-					console.warn('Cannot use graphical mode and float output at the same time');
-				}
-
-				this.texSize = utils.clone(this.output);
-			} else if (this.floatOutput === undefined) {
-				this.floatOutput = true;
-			}
-
-			if (this.floatOutput || this.floatOutputForce) {
-				this._webGl.getExtension('EXT_color_buffer_float');
-			}
-		}
-
-		/**
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name run
-   *
-   * @desc Run the kernel program, and send the output to renderOutput
-   *
-   * <p> This method calls a helper method *renderOutput* to return the result. </p>
-   *
-   * @returns {Object|Undefined} Result The final output of the program, as float, and as Textures for reuse.
-   *
-   *
-   */
-
-	}, {
-		key: 'run',
-		value: function run() {
-			if (this.program === null) {
-				this.build.apply(this, arguments);
-			}
-			var paramNames = this.paramNames;
-			var paramTypes = this.paramTypes;
-			var texSize = this.texSize;
-			var gl = this._webGl;
-
-			gl.useProgram(this.program);
-			gl.scissor(0, 0, texSize[0], texSize[1]);
-
-			if (!this.hardcodeConstants) {
-				this.setUniform3iv('uOutputDim', new Int32Array(this.threadDim));
-				this.setUniform2iv('uTexSize', texSize);
-			}
-
-			this.setUniform2f('ratio', texSize[0] / this.maxTexSize[0], texSize[1] / this.maxTexSize[1]);
-
-			this.argumentsLength = 0;
-			for (var texIndex = 0; texIndex < paramNames.length; texIndex++) {
-				this._addArgument(arguments[texIndex], paramTypes[texIndex], paramNames[texIndex]);
-			}
-
-			if (this.graphical) {
-				if (this.outputToTexture) {
-					gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-					gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
-					if (!this.outputTexture || this.outputImmutable) {
-						this._setupOutputTexture();
-					}
-					gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-					return new Texture(this.outputTexture, texSize, this.threadDim, this.output, this._webGl, 'ArrayTexture(4)');
-				}
-				gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-				gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-				return;
-			}
-
-			gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
-			if (this.outputImmutable) {
-				this._setupOutputTexture();
-			}
-			var outputTexture = this.outputTexture;
-
-			if (this.subKernelOutputVariableNames !== null) {
-				if (this.outputImmutable) {
-					this.subKernelOutputTextures = [];
-					this._setupSubOutputTextures(this.subKernelOutputVariableNames.length);
-				}
-				gl.drawBuffers(this.drawBuffersMap);
-			}
-
-			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
-			if (this.subKernelOutputTextures !== null) {
-				if (this.subKernels !== null) {
-					var output = [];
-					output.result = this.renderOutput(outputTexture);
-					for (var i = 0; i < this.subKernels.length; i++) {
-						output.push(new Texture(this.subKernelOutputTextures[i], texSize, this.threadDim, this.output, this._webGl));
-					}
-					return output;
-				} else if (this.subKernelProperties !== null) {
-					var _output = {
-						result: this.renderOutput(outputTexture)
-					};
-					var _i = 0;
-					for (var p in this.subKernelProperties) {
-						if (!this.subKernelProperties.hasOwnProperty(p)) continue;
-						_output[p] = new Texture(this.subKernelOutputTextures[_i], texSize, this.threadDim, this.output, this._webGl);
-						_i++;
-					}
-					return _output;
-				}
-			}
-
-			return this.renderOutput(outputTexture);
-		}
-
-		/**
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name getOutputTexture
-   *
-   * @desc This return defined outputTexture, which is setup in .build(), or if immutable, is defined in .run()
-   *
-   * @returns {Object} Output Texture Cache
-   *
-   */
-
-	}, {
-		key: 'getOutputTexture',
-		value: function getOutputTexture() {
-			return this.outputTexture;
-		}
-
-		/**
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name _setupOutputTexture
-   * @private
-   *
-   * @desc Setup and replace output texture
-   */
-
-	}, {
-		key: '_setupOutputTexture',
-		value: function _setupOutputTexture() {
-			var gl = this._webGl;
-			var texSize = this.texSize;
-			var texture = this.outputTexture = this._webGl.createTexture();
-			gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.paramNames.length);
-			gl.bindTexture(gl.TEXTURE_2D, texture);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-			if (this.floatOutput) {
-				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, texSize[0], texSize[1], 0, gl.RGBA, gl.FLOAT, null);
-			} else {
-				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-			}
-			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-		}
-
-		/**
-   * @memberOf WebGL2Kernel#
-   * @param length
-   * @private
-   *
-   * @desc Setup and replace sub-output textures
-   */
-
-	}, {
-		key: '_setupSubOutputTextures',
-		value: function _setupSubOutputTextures(length) {
-			var gl = this._webGl;
-			var texSize = this.texSize;
-			var drawBuffersMap = this.drawBuffersMap = [gl.COLOR_ATTACHMENT0];
-			var textures = this.subKernelOutputTextures = [];
-			for (var i = 0; i < length; i++) {
-				var texture = this._webGl.createTexture();
-				textures.push(texture);
-				drawBuffersMap.push(gl.COLOR_ATTACHMENT0 + i + 1);
-				gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.paramNames.length + i);
-				gl.bindTexture(gl.TEXTURE_2D, texture);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-				if (this.floatOutput) {
-					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, texSize[0], texSize[1], 0, gl.RGBA, gl.FLOAT, null);
-				} else {
-					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-				}
-				gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i + 1, gl.TEXTURE_2D, texture, 0);
-			}
-		}
-
-		/**
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name _addArgument
-   *
-   * @desc Adds kernel parameters to the Argument Texture,
-   * binding it to the webGl instance, etc.
-   *
-   * @param {Array|Texture|Number} value - The actual argument supplied to the kernel
-   * @param {String} type - Type of the argument
-   * @param {String} name - Name of the argument
-   *
-   */
-
-	}, {
-		key: '_addArgument',
-		value: function _addArgument(value, type, name) {
-			var gl = this._webGl;
-			var argumentTexture = this.getArgumentTexture(name);
-			if (value instanceof Texture) {
-				type = value.type;
-			}
-			switch (type) {
-				case 'Array':
-					{
-						var dim = utils.getDimensions(value, true);
-						var size = utils.dimToTexSize({
-							floatTextures: this.floatTextures,
-							floatOutput: this.floatOutput
-						}, dim);
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
-						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-						var length = size[0] * size[1];
-
-						var _formatArrayTransfer = this._formatArrayTransfer(value, length),
-						    valuesFlat = _formatArrayTransfer.valuesFlat,
-						    bitRatio = _formatArrayTransfer.bitRatio;
-
-						var buffer = void 0;
-						if (this.floatTextures) {
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, size[0], size[1], 0, gl.RGBA, gl.FLOAT, valuesFlat);
-						} else {
-							buffer = new Uint8Array(valuesFlat.buffer);
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0] / bitRatio, size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
-						}
-
-						if (!this.hardcodeConstants) {
-							this.setUniform3iv('user_' + name + 'Dim', dim);
-							this.setUniform2iv('user_' + name + 'Size', size);
-						}
-						this.setUniform1i('user_' + name + 'BitRatio', bitRatio);
-						this.setUniform1i('user_' + name, this.argumentsLength);
-						break;
-					}
-				case 'Integer':
-				case 'Float':
-				case 'Number':
-					{
-						this.setUniform1f('user_' + name, value);
-						break;
-					}
-				case 'Input':
-					{
-						var input = value;
-						var _dim = input.size;
-						var _size = utils.dimToTexSize({
-							floatTextures: this.floatTextures,
-							floatOutput: this.floatOutput
-						}, _dim);
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
-						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-						var _length = _size[0] * _size[1];
-
-						var _formatArrayTransfer2 = this._formatArrayTransfer(value.value, _length),
-						    _valuesFlat = _formatArrayTransfer2.valuesFlat,
-						    _bitRatio = _formatArrayTransfer2.bitRatio;
-
-						if (this.floatTextures) {
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, _size[0], _size[1], 0, gl.RGBA, gl.FLOAT, inputArray);
-						} else {
-							var _buffer = new Uint8Array(_valuesFlat.buffer);
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size[0] / _bitRatio, _size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, _buffer);
-						}
-
-						if (!this.hardcodeConstants) {
-							this.setUniform3iv('user_' + name + 'Dim', _dim);
-							this.setUniform2iv('user_' + name + 'Size', _size);
-						}
-						this.setUniform1i('user_' + name + 'BitRatio', _bitRatio);
-						this.setUniform1i('user_' + name, this.argumentsLength);
-						break;
-					}
-				case 'HTMLImage':
-					{
-						var inputImage = value;
-						var _dim2 = [inputImage.width, inputImage.height, 1];
-						var _size2 = [inputImage.width, inputImage.height];
-
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
-						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-						gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-						// Upload the image into the texture.
-						var mipLevel = 0; // the largest mip
-						var internalFormat = gl.RGBA; // format we want in the texture
-						var srcFormat = gl.RGBA; // format of data we are supplying
-						var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
-						gl.texImage2D(gl.TEXTURE_2D, mipLevel, internalFormat, srcFormat, srcType, inputImage);
-						this.setUniform3iv('user_' + name + 'Dim', _dim2);
-						this.setUniform2iv('user_' + name + 'Size', _size2);
-						this.setUniform1i('user_' + name, this.argumentsLength);
-						break;
-					}
-				case 'HTMLImageArray':
-					{
-						var inputImages = value;
-						var _dim3 = [inputImages[0].width, inputImages[0].height, inputImages.length];
-						var _size3 = [inputImages[0].width, inputImages[0].height];
-
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
-						gl.bindTexture(gl.TEXTURE_2D_ARRAY, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-						// Upload the images into the texture.
-						var _mipLevel = 0; // the largest mip
-						var _internalFormat = gl.RGBA; // format we want in the texture
-						var width = inputImages[0].width;
-						var height = inputImages[0].height;
-						var textureDepth = inputImages.length;
-						var border = 0;
-						var _srcFormat = gl.RGBA; // format of data we are supplying
-						var _srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
-						gl.texImage3D(gl.TEXTURE_2D_ARRAY, _mipLevel, _internalFormat, width, height, textureDepth, border, _srcFormat, _srcType, null);
-						for (var i = 0; i < inputImages.length; i++) {
-							var xOffset = 0;
-							var yOffset = 0;
-							var imageDepth = 1;
-							gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, _mipLevel, xOffset, yOffset, i, inputImages[i].width, inputImages[i].height, imageDepth, _srcFormat, _srcType, inputImages[i]);
-						}
-						this.setUniform3iv('user_' + name + 'Dim', _dim3);
-						this.setUniform2iv('user_' + name + 'Size', _size3);
-						this.setUniform1i('user_' + name, this.argumentsLength);
-						break;
-					}
-				case 'ArrayTexture(4)':
-				case 'NumberTexture':
-					{
-						var inputTexture = value;
-						var _dim4 = inputTexture.dimensions;
-						var _size4 = inputTexture.size;
-
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
-						gl.bindTexture(gl.TEXTURE_2D, inputTexture.texture);
-
-						this.setUniform3iv('user_' + name + 'Dim', _dim4);
-						this.setUniform2iv('user_' + name + 'Size', _size4);
-						this.setUniform1i('user_' + name + 'BitRatio', 1); // always float32
-						this.setUniform1i('user_' + name, this.argumentsLength);
-						break;
-					}
-				default:
-					throw new Error('Input type not supported (WebGL): ' + value);
-			}
-			this.argumentsLength++;
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _getMainConstantsString
-   *
-   */
-
-	}, {
-		key: '_getMainConstantsString',
-		value: function _getMainConstantsString() {
-			var result = [];
-			if (this.constants) {
-				for (var name in this.constants) {
-					if (!this.constants.hasOwnProperty(name)) continue;
-					var value = this.constants[name];
-					var type = utils.getArgumentType(value);
-					switch (type) {
-						case 'Integer':
-							result.push('const float constants_' + name + ' = ' + parseInt(value) + '.0');
-							break;
-						case 'Float':
-							result.push('const float constants_' + name + ' = ' + parseFloat(value));
-							break;
-						case 'Array':
-						case 'Input':
-						case 'HTMLImage':
-						case 'ArrayTexture(4)':
-						case 'NumberTexture':
-							result.push('uniform highp sampler2D constants_' + name, 'uniform highp ivec2 constants_' + name + 'Size', 'uniform highp ivec3 constants_' + name + 'Dim', 'uniform highp int constants_' + name + 'BitRatio');
-							break;
-						case 'HTMLImageArray':
-							result.push('uniform highp sampler2DArray constants_' + name, 'uniform highp ivec2 constants_' + name + 'Size', 'uniform highp ivec3 constants_' + name + 'Dim', 'uniform highp int constants_' + name + 'BitRatio');
-							break;
-
-						default:
-							throw new Error('Unsupported constant ' + name + ' type ' + type);
-					}
-				}
-			}
-			return this._linesToString(result);
-		}
-
-		/**
-   * @memberOf WebGLKernel#
-   * @function
-   * @name _addConstant
-   *
-   * @desc Adds kernel parameters to the Argument Texture,
-   * binding it to the webGl instance, etc.
-   *
-   * @param {Array|Texture|Number} value - The actual argument supplied to the kernel
-   * @param {String} type - Type of the argument
-   * @param {String} name - Name of the argument
-   *
-   */
-
-	}, {
-		key: '_addConstant',
-		value: function _addConstant(value, type, name) {
-			var gl = this._webGl;
-			var argumentTexture = this.getArgumentTexture(name);
-			if (value instanceof Texture) {
-				type = value.type;
-			}
-			switch (type) {
-				case 'Array':
-					{
-						var dim = utils.getDimensions(value, true);
-						var size = utils.dimToTexSize({
-							floatTextures: this.floatTextures,
-							floatOutput: this.floatOutput
-						}, dim);
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
-						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-						var length = size[0] * size[1];
-
-						var _formatArrayTransfer3 = this._formatArrayTransfer(value, length),
-						    valuesFlat = _formatArrayTransfer3.valuesFlat,
-						    bitRatio = _formatArrayTransfer3.bitRatio;
-
-						var buffer = void 0;
-						if (this.floatTextures) {
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0], size[1], 0, gl.RGBA, gl.FLOAT, valuesFlat);
-						} else {
-							buffer = new Uint8Array(valuesFlat.buffer);
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0] / bitRatio, size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
-						}
-
-						if (!this.hardcodeConstants) {
-							this.setUniform3iv('constants_' + name + 'Dim', dim);
-							this.setUniform2iv('constants_' + name + 'Size', size);
-						}
-						this.setUniform1i('constants_' + name + 'BitRatio', bitRatio);
-						this.setUniform1i('constants_' + name, this.constantsLength);
-						break;
-					}
-				case 'Input':
-					{
-						var input = value;
-						var _dim5 = input.size;
-						var _size5 = utils.dimToTexSize({
-							floatTextures: this.floatTextures,
-							floatOutput: this.floatOutput
-						}, _dim5);
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
-						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-						var _length2 = _size5[0] * _size5[1];
-
-						var _formatArrayTransfer4 = this._formatArrayTransfer(value.value, _length2),
-						    _valuesFlat2 = _formatArrayTransfer4.valuesFlat,
-						    _bitRatio2 = _formatArrayTransfer4.bitRatio;
-
-						if (this.floatTextures) {
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, _size5[0], _size5[1], 0, gl.RGBA, gl.FLOAT, inputArray);
-						} else {
-							var _buffer2 = new Uint8Array(_valuesFlat2.buffer);
-							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size5[0] / _bitRatio2, _size5[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, _buffer2);
-						}
-
-						if (!this.hardcodeConstants) {
-							this.setUniform3iv('constants_' + name + 'Dim', _dim5);
-							this.setUniform2iv('constants_' + name + 'Size', _size5);
-						}
-						this.setUniform1i('constants_' + name + 'BitRatio', _bitRatio2);
-						this.setUniform1i('constants_' + name, this.constantsLength);
-						break;
-					}
-				case 'HTMLImage':
-					{
-						var inputImage = value;
-						var _dim6 = [inputImage.width, inputImage.height, 1];
-						var _size6 = [inputImage.width, inputImage.height];
-
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
-						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-						gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-						// Upload the image into the texture.
-						var mipLevel = 0; // the largest mip
-						var internalFormat = gl.RGBA; // format we want in the texture
-						var srcFormat = gl.RGBA; // format of data we are supplying
-						var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
-						gl.texImage2D(gl.TEXTURE_2D, mipLevel, internalFormat, srcFormat, srcType, inputImage);
-						this.setUniform3iv('constants_' + name + 'Dim', _dim6);
-						this.setUniform2iv('constants_' + name + 'Size', _size6);
-						this.setUniform1i('constants_' + name, this.constantsLength);
-						break;
-					}
-				case 'HTMLImageArray':
-					{
-						var inputImages = value;
-						var _dim7 = [inputImages[0].width, inputImages[0].height, inputImages.length];
-						var _size7 = [inputImages[0].width, inputImages[0].height];
-
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
-						gl.bindTexture(gl.TEXTURE_2D_ARRAY, argumentTexture);
-						gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-						gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-						// Upload the images into the texture.
-						var _mipLevel2 = 0; // the largest mip
-						var _internalFormat2 = gl.RGBA; // format we want in the texture
-						var width = inputImages[0].width;
-						var height = inputImages[0].height;
-						var textureDepth = inputImages.length;
-						var border = 0;
-						var _srcFormat2 = gl.RGBA; // format of data we are supplying
-						var _srcType2 = gl.UNSIGNED_BYTE; // type of data we are supplying
-						gl.texImage3D(gl.TEXTURE_2D_ARRAY, _mipLevel2, _internalFormat2, width, height, textureDepth, border, _srcFormat2, _srcType2, null);
-						for (var i = 0; i < inputImages.length; i++) {
-							var xOffset = 0;
-							var yOffset = 0;
-							var imageDepth = 1;
-							gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, _mipLevel2, xOffset, yOffset, i, inputImages[i].width, inputImages[i].height, imageDepth, _srcFormat2, _srcType2, inputImages[i]);
-						}
-						this.setUniform3iv('constants_' + name + 'Dim', _dim7);
-						this.setUniform2iv('constants_' + name + 'Size', _size7);
-						this.setUniform1i('constants_' + name, this.constantsLength);
-						break;
-					}
-				case 'ArrayTexture(4)':
-				case 'NumberTexture':
-					{
-						var inputTexture = value;
-						var _dim8 = inputTexture.dimensions;
-						var _size8 = inputTexture.size;
-
-						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
-						gl.bindTexture(gl.TEXTURE_2D, inputTexture.texture);
-
-						this.setUniform3iv('constants_' + name + 'Dim', _dim8);
-						this.setUniform2iv('constants_' + name + 'Size', _size8);
-						this.setUniform1i('constants_' + name + 'BitRatio', 1); // aways float32
-						this.setUniform1i('constants_' + name, this.constantsLength);
-						break;
-					}
-				case 'Integer':
-				case 'Float':
-				default:
-					throw new Error('Input type not supported (WebGL): ' + value);
-			}
-		}
-
-		/**
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name _getGetResultString
-   *
-   */
-
-	}, {
-		key: '_getGetResultString',
-		value: function _getGetResultString() {
-			if (!this.floatTextures) {
-				return '  return decode(texel, x, bitRatio);';
-			}
-			return '  return texel[channel];';
-		}
-
-		/**
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name _getHeaderString
-   *
-   * @desc Get the header string for the program.
-   * This returns an empty string if no sub-kernels are defined.
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getHeaderString',
-		value: function _getHeaderString() {
-			return '';
-		}
-
-		/**
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name _getTextureCoordinate
-   *
-   * @desc Get texture coordinate string for the program
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getTextureCoordinate',
-		value: function _getTextureCoordinate() {
-			var names = this.subKernelOutputVariableNames;
-			if (names === null || names.length < 1) {
-				return 'in highp vec2 vTexCoord;\n';
-			} else {
-				return 'out highp vec2 vTexCoord;\n';
-			}
-		}
-
-		/**
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name _getMainParamsString
-   *
-   * @desc Generate transpiled glsl Strings for user-defined parameters sent to a kernel
-   *
-   * @param {Array} args - The actual parameters sent to the Kernel
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getMainParamsString',
-		value: function _getMainParamsString(args) {
-			var result = [];
-			var paramTypes = this.paramTypes;
-			var paramNames = this.paramNames;
-			for (var i = 0; i < paramNames.length; i++) {
-				var param = args[i];
-				var paramName = paramNames[i];
-				var paramType = paramTypes[i];
-				if (this.hardcodeConstants) {
-					if (paramType === 'Array' || paramType === 'NumberTexture' || paramType === 'ArrayTexture(4)') {
-						var paramDim = utils.getDimensions(param, true);
-						var paramSize = utils.dimToTexSize({
-							floatTextures: this.floatTextures,
-							floatOutput: this.floatOutput
-						}, paramDim);
-
-						result.push('uniform highp sampler2D user_' + paramName, 'highp ivec2 user_' + paramName + 'Size = ivec2(' + paramSize[0] + ', ' + paramSize[1] + ')', 'highp ivec3 user_' + paramName + 'Dim = ivec3(' + paramDim[0] + ', ' + paramDim[1] + ', ' + paramDim[2] + ')', 'uniform highp int user_' + paramName + 'BitRatio');
-					} else if (paramType === 'Integer') {
-						result.push('highp float user_' + paramName + ' = ' + param + '.0');
-					} else if (paramType === 'Float') {
-						result.push('highp float user_' + paramName + ' = ' + param);
-					}
-				} else {
-					if (paramType === 'Array' || paramType === 'NumberTexture' || paramType === 'ArrayTexture(4)' || paramType === 'Input' || paramType === 'HTMLImage') {
-						result.push('uniform highp sampler2D user_' + paramName, 'uniform highp ivec2 user_' + paramName + 'Size', 'uniform highp ivec3 user_' + paramName + 'Dim');
-						if (paramType !== 'HTMLImage') {
-							result.push('uniform highp int user_' + paramName + 'BitRatio');
-						}
-					} else if (paramType === 'HTMLImageArray') {
-						result.push('uniform highp sampler2DArray user_' + paramName, 'uniform highp ivec2 user_' + paramName + 'Size', 'uniform highp ivec3 user_' + paramName + 'Dim');
-					} else if (paramType === 'Integer' || paramType === 'Float') {
-						result.push('uniform float user_' + paramName);
-					}
-				}
-			}
-			return this._linesToString(result);
-		}
-
-		/**
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name _getKernelString
-   *
-   * @desc Get Kernel program string (in *glsl*) for a kernel.
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getKernelString',
-		value: function _getKernelString() {
-			var result = [];
-			var names = this.subKernelOutputVariableNames;
-			if (names !== null) {
-				result.push('float kernelResult = 0.0');
-				result.push('layout(location = 0) out vec4 data0');
-				for (var i = 0; i < names.length; i++) {
-					result.push('float ' + names[i] + ' = 0.0', 'layout(location = ' + (i + 1) + ') out vec4 data' + (i + 1));
-				}
-			} else {
-				result.push('out vec4 data0');
-				result.push('float kernelResult = 0.0');
-			}
-
-			return this._linesToString(result) + this.functionBuilder.getPrototypeString('kernel');
-		}
-
-		/**
-   *
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name _getMainResultString
-   *
-   * @desc Get main result string with checks for floatOutput, graphical, subKernelsOutputs, etc.
-   *
-   * @returns {String} result
-   *
-   */
-
-	}, {
-		key: '_getMainResultString',
-		value: function _getMainResultString() {
-			var names = this.subKernelOutputVariableNames;
-			var result = [];
-
-			if (this.floatOutput) {
-				result.push('  index *= 4');
-			}
-
-			if (this.graphical) {
-				result.push('  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  data0 = actualColor');
-			} else if (this.floatOutput) {
-				var channels = ['r', 'g', 'b', 'a'];
-
-				for (var i = 0; i < channels.length; ++i) {
-					result.push('  threadId = indexTo3D(index, uOutputDim)');
-					result.push('  kernel()');
-
-					if (names) {
-						result.push('  data0.' + channels[i] + ' = kernelResult');
-
-						for (var j = 0; j < names.length; ++j) {
-							result.push('  data' + (j + 1) + '.' + channels[i] + ' = ' + names[j]);
-						}
-					} else {
-						result.push('  data0.' + channels[i] + ' = kernelResult');
-					}
-
-					if (i < channels.length - 1) {
-						result.push('  index += 1');
-					}
-				}
-			} else if (names !== null) {
-				result.push('  threadId = indexTo3D(index, uOutputDim)');
-				result.push('  kernel()');
-				result.push('  data0 = encode32(kernelResult)');
-				for (var _i2 = 0; _i2 < names.length; _i2++) {
-					result.push('  data' + (_i2 + 1) + ' = encode32(' + names[_i2] + ')');
-				}
-			} else {
-				result.push('  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  data0 = encode32(kernelResult)');
-			}
-
-			return this._linesToString(result);
-		}
-
-		/**
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name _addKernels
-   *
-   * @desc Adds all the sub-kernels supplied with this Kernel instance.
-   *
-   */
-
-	}, {
-		key: '_addKernels',
-		value: function _addKernels() {
-			var _this2 = this;
-
-			var builder = this.functionBuilder;
-			var gl = this._webGl;
-
-			builder.addFunctions(this.functions, {
-				constants: this.constants,
-				output: this.output
-			});
-			builder.addNativeFunctions(this.nativeFunctions);
-
-			builder.addKernel(this.fnString, {
-				prototypeOnly: false,
-				constants: this.constants,
-				output: this.output,
-				debug: this.debug,
-				loopMaxIterations: this.loopMaxIterations,
-				paramNames: this.paramNames,
-				paramTypes: this.paramTypes,
-				constantTypes: this.constantTypes,
-				fixIntegerDivisionAccuracy: this.fixIntegerDivisionAccuracy
-			});
-
-			if (this.subKernels !== null) {
-				this.subKernelOutputTextures = [];
-				this.subKernelOutputVariableNames = [];
-				this.subKernels.forEach(function (subKernel) {
-					return _this2._addSubKernel(subKernel);
-				});
-			} else if (this.subKernelProperties !== null) {
-				this.subKernelOutputTextures = [];
-				this.subKernelOutputVariableNames = [];
-				Object.keys(this.subKernelProperties).forEach(function (property) {
-					return _this2._addSubKernel(_this2.subKernelProperties[property]);
-				});
-			}
-		}
-
-		/**
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name _getFragShaderString
-   *
-   * @desc Get the fragment shader String.
-   * If the String hasn't been compiled yet,
-   * then this method compiles it as well
-   *
-   * @param {Array} args - The actual parameters sent to the Kernel
-   *
-   * @returns {string} Fragment Shader string
-   *
-   */
-
-	}, {
-		key: '_getFragShaderString',
-		value: function _getFragShaderString(args) {
-			if (this.compiledFragShaderString !== null) {
-				return this.compiledFragShaderString;
-			}
-			return this.compiledFragShaderString = this._replaceArtifacts(this.constructor.fragShaderString, this._getFragShaderArtifactMap(args));
-		}
-
-		/**
-   * @memberOf WebGL2Kernel#
-   * @function
-   * @name _getVertShaderString
-   *
-   * @desc Get the vertical shader String
-   *
-   * @param {Array} args - The actual parameters sent to the Kernel
-   *
-   * @returns {string} Vertical Shader string
-   *
-   */
-
-	}, {
-		key: '_getVertShaderString',
-		value: function _getVertShaderString(args) {
-			if (this.compiledVertShaderString !== null) {
-				return this.compiledVertShaderString;
-			}
-			return this.compiledVertShaderString = this.constructor.vertShaderString;
-		}
-	}], [{
-		key: 'fragShaderString',
-		get: function get() {
-			return fragShaderString;
-		}
-	}, {
-		key: 'vertShaderString',
-		get: function get() {
-			return vertShaderString;
-		}
-	}]);
-
-	return WebGL2Kernel;
-}(WebGLKernel);
-},{"../../core/texture":85,"../../core/utils":87,"../web-gl/kernel":69,"./shader-frag":78,"./shader-vert":79}],77:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var RunnerBase = require('../runner-base');
-var WebGL2FunctionBuilder = require('./function-builder');
-var WebGL2Kernel = require('./kernel');
-
-module.exports = function (_RunnerBase) {
-	_inherits(WebGL2Runner, _RunnerBase);
-
-	/**
-  * @constructor WebGL2Runner
-  *
-  * @extends RunnerBase
- 	 * @desc Instantiates a Runner instance for the kernel.
-  *
-  * @param {Object} settings - Settings to instantiate properties in RunnerBase, with given values
-  *
-  */
-	function WebGL2Runner(settings) {
-		_classCallCheck(this, WebGL2Runner);
-
-		var _this = _possibleConstructorReturn(this, (WebGL2Runner.__proto__ || Object.getPrototypeOf(WebGL2Runner)).call(this, new WebGL2FunctionBuilder(), settings));
-
-		_this.Kernel = WebGL2Kernel;
-		_this.kernel = null;
-		return _this;
-	}
-
-	/**
-  * @memberOf WebGL2Runner#
-  * @function
-  * @name getMode
-  *
-  * @desc Return the current mode in which gpu.js is executing.
-  *
-  * @returns {String} The current mode; "gpu".
-  *
-  */
-
-
-	_createClass(WebGL2Runner, [{
-		key: 'getMode',
-		value: function getMode() {
-			return 'gpu';
-		}
-	}]);
-
-	return WebGL2Runner;
-}(RunnerBase);
-},{"../runner-base":65,"./function-builder":74,"./kernel":76}],78:[function(require,module,exports){
-"use strict";
-
-module.exports = "#version 300 es\n__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst float LOOP_MAX = __LOOP_MAX__;\n\n__CONSTANTS__;\n\nin vec2 vTexCoord;\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x/y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 rgba) {\n  __DECODE32_ENDIANNESS__;\n  rgba *= 255.0;\n  vec2 gte128;\n  gte128.x = rgba.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = rgba.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * rgba.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  rgba.b = rgba.b - 128.0 * gte128.x;\n  res = dot(rgba, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nvec4 encode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 rgba = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  rgba.rg = integerMod(rgba.rg, 256.0);\n  rgba.b = integerMod(rgba.b, 128.0);\n  rgba.a = exponent*0.5 + 63.5;\n  rgba.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  rgba = floor(rgba);\n  rgba *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return rgba;\n}\n// Dragons end here\n\nfloat decode(vec4 rgba, int x, int bitRatio) {\n  if (bitRatio == 1) {\n    return decode32(rgba);\n  }\n  __DECODE32_ENDIANNESS__;\n  int channel = integerMod(x, bitRatio);\n  if (bitRatio == 4) {\n    return rgba[channel] * 255.0;\n  }\n  else {\n    return rgba[channel*2] * 255.0 + rgba[channel*2 + 1] * 65280.0;\n  }\n}\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio,  int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  __GET_RESULT__;\n  \n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture(tex, st / vec2(texSize));\n}\n\nvec4 getImage3D(sampler2DArray tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture(tex, vec3(st / vec2(texSize), z));\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio, int y, int x) {\n  return get(tex, texSize, texDim, bitRatio, 0, y, x);\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio, int x) {\n  return get(tex, texSize, texDim, bitRatio, 0, 0, x);\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int y, int x) {\n  return getImage2D(tex, texSize, texDim, 0, y, x);\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int x) {\n  return getImage2D(tex, texSize, texDim, 0, 0, x);\n}\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\n__MAIN_PARAMS__;\n__MAIN_CONSTANTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
-},{}],79:[function(require,module,exports){
-"use strict";
-
-module.exports = "#version 300 es\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nin vec2 aPos;\nin vec2 aTexCoord;\n\nout vec2 vTexCoord;\nuniform vec2 ratio;\n\nvoid main(void) {\n  gl_Position = vec4((aPos + vec2(1)) * ratio + vec2(-1), 0, 1);\n  vTexCoord = aTexCoord;\n}";
-},{}],80:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var WebGLKernel = require('./kernel');
-var utils = require('../../core/utils');
-
-/**
- * @class WebGLValidatorKernel
- *
- * @desc Helper class for WebGLKernel to validate texture size and dimensions.
- *
- */
-module.exports = function (_WebGLKernel) {
-	_inherits(WebGL2ValidatorKernel, _WebGLKernel);
-
-	function WebGL2ValidatorKernel() {
-		_classCallCheck(this, WebGL2ValidatorKernel);
-
-		return _possibleConstructorReturn(this, (WebGL2ValidatorKernel.__proto__ || Object.getPrototypeOf(WebGL2ValidatorKernel)).apply(this, arguments));
-	}
-
-	_createClass(WebGL2ValidatorKernel, [{
-		key: 'validateOptions',
-
-
-		/** 
-   * @memberOf WebGLValidatorKernel#
-   * @function
-   * @name validateOptions
-   *
-   */
-		value: function validateOptions() {
-			this._webGl.getExtension('EXT_color_buffer_float');
-			this.texSize = utils.dimToTexSize({
-				floatTextures: this.floatTextures,
-				floatOutput: this.floatOutput
-			}, this.output, true);
-		}
-	}]);
-
-	return WebGL2ValidatorKernel;
-}(WebGLKernel);
-},{"../../core/utils":87,"./kernel":76}],81:[function(require,module,exports){
-'use strict';
-
-var utils = require('./utils');
-module.exports = function alias(name, fn) {
-	var fnString = fn.toString();
-	return new Function('return function ' + name + ' (' + utils.getParamNamesFromString(fnString).join(', ') + ') {' + utils.getFunctionBodyFromString(fnString) + '}')();
-};
-},{"./utils":87}],82:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var UtilsCore = require("./utils-core");
-
-/**
- * This is a minimalistic version of GPU.js used 
- * to run precompiled GPU.JS code.
- *
- * This intentionally excludes the JS AST compiller : which is 400kb alone/
- *
- * @class GPUCore
- */
-module.exports = function () {
-	function GPUCore() {
-		_classCallCheck(this, GPUCore);
-	}
-
-	_createClass(GPUCore, null, [{
-		key: "validateKernelObj",
-
-
-		/**
-   * @name validateKernelObj
-   * @function
-   * @static
-   * @memberOf GPUCore
-   *
-   * @description Validates the KernelObj to comply with the defined format
-   * Note that this does only a limited sanity check, and does not  
-   * guarantee a full working validation.
-   *
-   * For the kernel object format see : <kernelObj-format>
-   *
-   * @param {Object|String} kernelObj - KernelObj used to validate
-   *
-   * @returns {Object} The validated kernel object, converted from JSON if needed
-   *
-   */
-		value: function validateKernelObj(kernelObj) {
-
-			// NULL validation
-			if (kernelObj === null) {
-				throw "KernelObj being validated is NULL";
-			}
-
-			// String JSON conversion
-			if (typeof kernelObj === "string") {
-				try {
-					kernelObj = JSON.parse(kernelObj);
-				} catch (e) {
-					console.error(e);
-					throw "Failed to convert KernelObj from JSON string";
-				}
-
-				// NULL validation
-				if (kernelObj === null) {
-					throw "Invalid (NULL) KernelObj JSON string representation";
-				}
-			}
-
-			// Check for kernel obj flag
-			if (kernelObj.isKernelObj !== true) {
-				throw "Failed missing isKernelObj flag check";
-			}
-
-			// Return the validated kernelObj
-			return kernelObj;
-		}
-
-		/**
-   * @name loadKernelObj
-   * @function
-   * @static
-   * @memberOf GPUCore
-   *
-   * @description Loads the precompiled kernel object. For GPUCore this is the ONLY way to create the kernel.
-   * To generate the kernelObj use <Kernel.exportKernelObj>
-   *
-   * Note that this function calls <validateKernelObj> internally, and throws an exception if it fails.
-   *
-   * @see GPUCore.validateKernelObj
-   * @see	Kernel.exportKernelObj
-   *
-   * @param {Object} kernelObj - The precompiled kernel object
-   * @param {Object} inOpt - [Optional] the option overrides to use
-   *
-   * @returns {Function} The kernel function
-   * 
-   */
-
-	}, {
-		key: "loadKernelObj",
-		value: function loadKernelObj(kernelObj, inOpt) {
-
-			// Validates the kernelObj, throws an exception if it fails
-			kernelObj = validateKernelObj(kernelObj);
-		}
-	}]);
-
-	return GPUCore;
-}();
-},{"./utils-core":86}],83:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var utils = require('./utils');
-var WebGLRunner = require('../backend/web-gl/runner');
-var WebGL2Runner = require('../backend/web-gl2/runner');
-var CPURunner = require('../backend/cpu/runner');
-var WebGLValidatorKernel = require('../backend/web-gl/validator-kernel');
-var WebGL2ValidatorKernel = require('../backend/web-gl2/validator-kernel');
-var GPUCore = require("./gpu-core");
-
-/**
- * Initialises the GPU.js library class which manages the webGlContext for the created functions.
- * @class
- * @extends GPUCore
- */
-
-var GPU = function (_GPUCore) {
-	_inherits(GPU, _GPUCore);
-
-	/**
-  * Creates an instance of GPU.
-  * @param {any} settings - Settings to set mode, andother properties. See #GPUCore
-  * @memberOf GPU#
-  */
-	function GPU(settings) {
-		_classCallCheck(this, GPU);
-
-		var _this = _possibleConstructorReturn(this, (GPU.__proto__ || Object.getPrototypeOf(GPU)).call(this, settings));
-
-		settings = settings || {};
-		_this._canvas = settings.canvas || null;
-		_this._webGl = settings.webGl || null;
-		var mode = settings.mode;
-		var detectedMode = void 0;
-		if (!utils.isWebGlSupported()) {
-			if (mode && mode !== 'cpu') {
-				throw new Error('A requested mode of "' + mode + '" and is not supported');
-			} else {
-				console.warn('Warning: gpu not supported, falling back to cpu support');
-				detectedMode = 'cpu';
-			}
-		} else {
-			if (_this._webGl) {
-				if (typeof WebGL2RenderingContext !== 'undefined' && _this._webGl.constructor === WebGL2RenderingContext) {
-					detectedMode = 'webgl2';
-				} else if (typeof WebGLRenderingContext !== 'undefined' && _this._webGl.constructor === WebGLRenderingContext) {
-					detectedMode = 'webgl';
-				} else {
-					throw new Error('unknown WebGL Context');
-				}
-			} else {
-				detectedMode = mode || 'gpu';
-			}
-		}
-		_this.kernels = [];
-
-		var runnerSettings = {
-			canvas: _this._canvas,
-			webGl: _this._webGl
-		};
-
-		switch (detectedMode) {
-			// public options
-			case 'cpu':
-				_this._runner = new CPURunner(runnerSettings);
-				break;
-			case 'gpu':
-				var Runner = _this.getGPURunner();
-				_this._runner = new Runner(runnerSettings);
-				break;
-
-			// private explicit options for testing
-			case 'webgl2':
-				_this._runner = new WebGL2Runner(runnerSettings);
-				break;
-			case 'webgl':
-				_this._runner = new WebGLRunner(runnerSettings);
-				break;
-
-			// private explicit options for internal
-			case 'webgl2-validator':
-				_this._runner = new WebGL2Runner(runnerSettings);
-				_this._runner.Kernel = WebGL2ValidatorKernel;
-				break;
-			case 'webgl-validator':
-				_this._runner = new WebGLRunner(runnerSettings);
-				_this._runner.Kernel = WebGLValidatorKernel;
-				break;
-			default:
-				throw new Error('"' + mode + '" mode is not defined');
-		}
-		return _this;
-	}
-	/**
-  *
-  * This creates a callable function object to call the kernel function with the argument parameter set
-  *
-  * @name createKernel
-  * @function
-  * @memberOf GPU##
-  *
-  * @param {Function} fn - The calling to perform the conversion
-  * @param {Object} [settings] - The parameter configuration object
-  * @property {String} settings.dimensions - Thread dimension array (Defaults to [1024])
-  * @property {String} settings.mode - CPU / GPU configuration mode (Defaults to null)
-  *
-  * The following modes are supported
-  * *'falsey'* : Attempts to build GPU mode, else fallbacks
-  * *'gpu'* : Attempts to build GPU mode, else fallbacks
-  * *'cpu'* : Forces JS fallback mode only
-  *
-  *
-  * @returns {Function} callable function to run
-  *
-  */
-
-
-	_createClass(GPU, [{
-		key: 'createKernel',
-		value: function createKernel(fn, settings) {
-			//
-			// basic parameters safety checks
-			//
-			if (typeof fn === 'undefined') {
-				throw 'Missing fn parameter';
-			}
-			if (!utils.isFunction(fn) && typeof fn !== 'string') {
-				throw 'fn parameter not a function';
-			}
-
-			var mergedSettings = Object.assign({
-				webGl: this._webGl,
-				canvas: this._canvas
-			}, settings || {});
-
-			var kernel = this._runner.buildKernel(fn, mergedSettings);
-
-			//if canvas didn't come from this, propagate from kernel
-			if (!this._canvas) {
-				this._canvas = kernel.getCanvas();
-			}
-			if (!this._runner.canvas) {
-				this._runner.canvas = kernel.getCanvas();
-			}
-
-			this.kernels.push(kernel);
-
-			return kernel;
-		}
-
-		/**
-   *
-   * Create a super kernel which executes sub kernels
-   * and saves their output to be used with the next sub kernel.
-   * This can be useful if we want to save the output on one kernel,
-   * and then use it as an input to another kernel. *Machine Learning*
-   *
-   * @name createKernelMap
-   * @function
-   * @memberOf GPU#
-   *
-   * @param {Object|Array} subKernels - Sub kernels for this kernel
-   * @param {Function} rootKernel - Root kernel
-   *
-   * @returns {Function} callable kernel function
-   *
-   * @example
-   * const megaKernel = gpu.createKernelMap({
-   *   addResult: function add(a, b) {
-   *     return a[this.thread.x] + b[this.thread.x];
-   *   },
-   *   multiplyResult: function multiply(a, b) {
-   *     return a[this.thread.x] * b[this.thread.x];
-   *   },
-   *  }, function(a, b, c) {
-   *       return multiply(add(a, b), c);
-   * });
-   *
-   * megaKernel(a, b, c);
-   *
-   * Note: You can also define subKernels as an array of functions.
-   * > [add, multiply]
-   *
-   */
-
-	}, {
-		key: 'createKernelMap',
-		value: function createKernelMap() {
-			var fn = void 0;
-			var settings = void 0;
-			if (typeof arguments[arguments.length - 2] === 'function') {
-				fn = arguments[arguments.length - 2];
-				settings = arguments[arguments.length - 1];
-			} else {
-				fn = arguments[arguments.length - 1];
-			}
-
-			if (!utils.isWebGlDrawBuffersSupported()) {
-				this._runner = new CPURunner(settings);
-			}
-
-			var kernel = this.createKernel(fn, settings);
-			if (Array.isArray(arguments[0])) {
-				var functions = arguments[0];
-				for (var i = 0; i < functions.length; i++) {
-					kernel.addSubKernel(functions[i]);
-				}
-			} else {
-				var _functions = arguments[0];
-				for (var p in _functions) {
-					if (!_functions.hasOwnProperty(p)) continue;
-					kernel.addSubKernelProperty(p, _functions[p]);
-				}
-			}
-
-			return kernel;
-		}
-
-		/**
-   *
-   * Combine different kernels into one super Kernel,
-   * useful to perform multiple operations inside one
-   * kernel without the penalty of data transfer between
-   * cpu and gpu.
-   *
-   * The number of kernel functions sent to this method can be variable.
-   * You can send in one, two, etc.
-   *
-   * @name combineKernels
-   * @function
-   * @memberOf GPU#
-   *
-   * @param {Function} subKernels - Kernel function(s) to combine.
-   * @param {Function} rootKernel - Root kernel to combine kernels into
-   *
-   * @example
-   * 	combineKernels(add, multiply, function(a,b,c){
-   *	 	return add(multiply(a,b), c)
-   *	})
-   *
-   * @returns {Function} Callable kernel function
-   *
-   */
-
-	}, {
-		key: 'combineKernels',
-		value: function combineKernels() {
-			var lastKernel = arguments[arguments.length - 2];
-			var combinedKernel = arguments[arguments.length - 1];
-			if (this.getMode() === 'cpu') return combinedKernel;
-
-			var canvas = arguments[0].getCanvas();
-			var webGl = arguments[0].getWebGl();
-
-			for (var i = 0; i < arguments.length - 1; i++) {
-				arguments[i].setCanvas(canvas).setWebGl(webGl).setOutputToTexture(true);
-			}
-
-			return function () {
-				combinedKernel.apply(null, arguments);
-				var texSize = lastKernel.texSize;
-				var gl = lastKernel.getWebGl();
-				var threadDim = lastKernel.threadDim;
-				var result = void 0;
-				if (lastKernel.floatOutput) {
-					var w = texSize[0];
-					var h = Math.ceil(texSize[1] / 4);
-					result = new Float32Array(w * h * 4);
-					gl.readPixels(0, 0, w, h, gl.RGBA, gl.FLOAT, result);
-				} else {
-					var bytes = new Uint8Array(texSize[0] * texSize[1] * 4);
-					gl.readPixels(0, 0, texSize[0], texSize[1], gl.RGBA, gl.UNSIGNED_BYTE, bytes);
-					result = new Float32Array(bytes.buffer);
-				}
-
-				result = result.subarray(0, threadDim[0] * threadDim[1] * threadDim[2]);
-
-				if (lastKernel.output.length === 1) {
-					return result;
-				} else if (lastKernel.output.length === 2) {
-					return utils.splitArray(result, lastKernel.output[0]);
-				} else if (lastKernel.output.length === 3) {
-					var cube = utils.splitArray(result, lastKernel.output[0] * lastKernel.output[1]);
-					return cube.map(function (x) {
-						return utils.splitArray(x, lastKernel.output[0]);
-					});
-				}
-			};
-		}
-	}, {
-		key: 'getGPURunner',
-		value: function getGPURunner() {
-			if (typeof WebGL2RenderingContext !== 'undefined' && utils.isWebGl2Supported()) return WebGL2Runner;
-			if (typeof WebGLRenderingContext !== 'undefined') return WebGLRunner;
-		}
-
-		/**
-   *
-   * Adds additional functions, that the kernel may call.
-   *
-   * @name addFunction
-   * @function
-   * @memberOf GPU#
-   *
-   * @param {Function|String} fn - JS Function to do conversion
-   * @param {Object} options
-   *
-   * @returns {GPU} returns itself
-   *
-   */
-
-	}, {
-		key: 'addFunction',
-		value: function addFunction(fn, options) {
-			this._runner.functionBuilder.addFunction(null, fn, options);
-			return this;
-		}
-
-		/**
-   *
-   * Adds additional native functions, that the kernel may call.
-   *
-   * @name addNativeFunction
-   * @function
-   * @memberOf GPU#
-   *
-   * @param {String} name - native function name, used for reverse lookup
-   * @param {String} nativeFunction - the native function implementation, as it would be defined in it's entirety
-   *
-   * @returns {GPU} returns itself
-   *
-   */
-
-	}, {
-		key: 'addNativeFunction',
-		value: function addNativeFunction(name, nativeFunction) {
-			this._runner.functionBuilder.addNativeFunction(name, nativeFunction);
-			return this;
-		}
-
-		/**
-   *
-   * Return the current mode in which gpu.js is executing.
-   * @name getMode
-   * @function
-   * @memberOf GPU#
-   *
-   * @returns {String} The current mode, "cpu", "webgl", etc.
-   *
-   */
-
-	}, {
-		key: 'getMode',
-		value: function getMode() {
-			return this._runner.getMode();
-		}
-
-		/**
-   *
-   * Return TRUE, if browser supports WebGl AND Canvas
-   *
-   * @name get isWebGlSupported
-   * @function
-   * @memberOf GPU#
-   *
-   * Note: This function can also be called directly `GPU.isWebGlSupported()`
-   *
-   * @returns {Boolean} TRUE if browser supports webGl
-   *
-   */
-
-	}, {
-		key: 'isWebGlSupported',
-		value: function isWebGlSupported() {
-			return utils.isWebGlSupported();
-		}
-
-		/**
-   *
-   * Return TRUE, if system has integer division accuracy issue
-   *
-   * @name get hasIntegerDivisionAccuracyBug
-   * @function
-   * @memberOf GPU#
-   *
-   * Note: This function can also be called directly `GPU.hasIntegerDivisionAccuracyBug()`
-   *
-   * @returns {Boolean} TRUE if system has integer division accuracy issue
-   *
-   *
-   */
-
-	}, {
-		key: 'hasIntegerDivisionAccuracyBug',
-		value: function hasIntegerDivisionAccuracyBug() {
-			return utils.hasIntegerDivisionAccuracyBug();
-		}
-
-		/**
-   *
-   * Return the canvas object bound to this gpu instance.
-   *
-   * @name getCanvas
-   * @function
-   * @memberOf GPU#
-   *
-   * @returns {Object} Canvas object if present
-   *
-   */
-
-	}, {
-		key: 'getCanvas',
-		value: function getCanvas() {
-			return this._canvas;
-		}
-
-		/**
-   *
-   * Return the webGl object bound to this gpu instance.
-   *
-   * @name getWebGl
-   * @function
-   * @memberOf GPU#
-   *
-   * @returns {Object} WebGl object if present
-   *
-   */
-
-	}, {
-		key: 'getWebGl',
-		value: function getWebGl() {
-			return this._webGl;
-		}
-
-		/**
-   *
-   * Destroys all memory associated with gpu.js & the webGl if we created it
-   *
-   * @name destroy
-   * @function
-   * @memberOf GPU#
-   *
-   *
-   */
-
-	}, {
-		key: 'destroy',
-		value: function destroy() {
-			var _this2 = this;
-
-			// perform on next runloop - for some reason we dont get lose context events 
-			// if webGl is created and destroyed in the same run loop.
-			setTimeout(function () {
-				var kernels = _this2.kernels;
-
-				var destroyWebGl = !_this2._webGl && kernels.length && kernels[0]._webGl;
-				for (var i = 0; i < _this2.kernels.length; i++) {
-					_this2.kernels[i].destroy(true); // remove canvas if exists
-				}
-
-				if (destroyWebGl) {
-					destroyWebGl.OES_texture_float = null;
-					destroyWebGl.OES_texture_float_linear = null;
-					destroyWebGl.OES_element_index_uint = null;
-					var loseContextExt = destroyWebGl.getExtension('WEBGL_lose_context');
-					if (loseContextExt) {
-						loseContextExt.loseContext();
-					}
-				}
-			}, 0);
-		}
-	}]);
-
-	return GPU;
-}(GPUCore);
-
-;
-
-// This ensure static methods are "inherited"
-// See: https://stackoverflow.com/questions/5441508/how-to-inherit-static-methods-from-base-class-in-javascript
-Object.assign(GPU, GPUCore);
-
-module.exports = GPU;
-},{"../backend/cpu/runner":60,"../backend/web-gl/runner":70,"../backend/web-gl/validator-kernel":73,"../backend/web-gl2/runner":77,"../backend/web-gl2/validator-kernel":80,"./gpu-core":82,"./utils":87}],84:[function(require,module,exports){
-"use strict";
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-module.exports = function Input(value, size) {
-	_classCallCheck(this, Input);
-
-	this.value = value;
-	if (Array.isArray(size)) {
-		this.size = [];
-		for (var i = 0; i < size.length; i++) {
-			this.size[i] = size[i];
-		}
-		while (this.size.length < 3) {
-			this.size.push(1);
-		}
-	} else {
-		if (size.z) {
-			this.size = [size.x, size.y, size.z];
-		} else if (size.y) {
-			this.size = [size.x, size.y, 1];
-		} else {
-			this.size = [size.x, 1, 1];
-		}
-	}
-};
-},{}],85:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-module.exports = function () {
-
-	/**
-  * @desc WebGl Texture implementation in JS
-  * @constructor Texture
-  * @param {Object} texture
-  * @param {Array} size
-  * @param dimensions
-  * @param {Array} output
-  * @param {Object} webGl
-  * @param {String} [type]
-  */
-	function Texture(texture, size, dimensions, output, webGl) {
-		var type = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 'NumberTexture';
-
-		_classCallCheck(this, Texture);
-
-		this.texture = texture;
-		this.size = size;
-		this.dimensions = dimensions;
-		this.output = output;
-		this.webGl = webGl;
-		this.kernel = null;
-		this.type = type;
-	}
-
-	/**
-  * @name toArray
-  * @function
-  * @memberOf Texture#
-  *
-  * @desc Converts the Texture into a JavaScript Array.
-  * 
-  * @param {Object} The `gpu` Object
-  *
-  */
-
-
-	_createClass(Texture, [{
-		key: 'toArray',
-		value: function toArray(gpu) {
-			if (!gpu) throw new Error('You need to pass the GPU object for toArray to work.');
-			if (this.kernel) return this.kernel(this);
-
-			this.kernel = gpu.createKernel(function (x) {
-				return x[this.thread.z][this.thread.y][this.thread.x];
-			}).setOutput(this.output);
-
-			return this.kernel(this);
-		}
-
-		/**
-   * @name delete
-   * @desc Deletes the Texture.
-   * @function
-   * @memberOf Texture#
-   *
-   *
-   */
-
-	}, {
-		key: 'delete',
-		value: function _delete() {
-			return this.webGl.deleteTexture(this.texture);
-		}
-	}]);
-
-	return Texture;
-}();
-},{}],86:[function(require,module,exports){
-'use strict';
-
-/**
- *
- * @desc Reduced subset of Utils, used exclusively in gpu-core.js
- * Various utility functions / snippets of code that GPU.JS uses internally.\
- * This covers various snippets of code that is not entirely gpu.js specific (ie. may find uses elsewhere)
- *
- * Note that all methods in this class is 'static' by nature `UtilsCore.functionName()`
- *
- * @class UtilsCore
- *
- */
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var UtilsCore = function () {
-	function UtilsCore() {
-		_classCallCheck(this, UtilsCore);
-	}
-
-	_createClass(UtilsCore, null, [{
-		key: 'isCanvas',
-
-
-		/**
-   * @typedef {Object} webGlContext
-   */
-
-		/**
-   * @typedef {Object} CanvasDOMObject
-   */
-
-		//-----------------------------------------------------------------------------
-		//
-		//  Canvas validation and support
-		//
-		//-----------------------------------------------------------------------------
-
-		/**
-   * @name isCanvas
-   * @static
-   * @function
-   * @memberOf UtilsCore
-   *
-   *
-   * @desc Return TRUE, on a valid DOM canvas or OffscreenCanvas object
-   *
-   * Note: This does just a VERY simply sanity check. And may give false positives.
-   *
-   * @param {CanvasDOMObject} canvasObj - Object to validate
-   *
-   * @returns {Boolean} TRUE if the object is a DOM canvas or OffscreenCanvas
-   *
-   */
-		value: function isCanvas(canvasObj) {
-			return canvasObj !== null && (canvasObj.nodeName && canvasObj.getContext && canvasObj.nodeName.toUpperCase() === 'CANVAS' || typeof OffscreenCanvas !== 'undefined' && canvasObj instanceof OffscreenCanvas);
-		}
-
-		/**
-   * @name isCanvasSupported
-   * @function
-   * @static
-   * @memberOf UtilsCore
-   *
-   * @desc Return TRUE, if browser supports canvas
-   *
-   * @returns {Boolean} TRUE if browser supports canvas
-   *
-   */
-
-	}, {
-		key: 'isCanvasSupported',
-		value: function isCanvasSupported() {
-			return _isCanvasSupported;
-		}
-
-		/**
-   * @name initCanvas
-   * @function
-   * @static
-   * @memberOf UtilsCore
-   *
-   * @desc Initiate and returns a canvas, for usage in init_webgl.
-   * Returns only if canvas is supported by browser.
-   *
-   * @returns {CanvasDOMObject} CanvasDOMObject if supported by browser, else null
-   *
-   */
-
-	}, {
-		key: 'initCanvas',
-		value: function initCanvas() {
-			// Fail fast if browser previously detected no support
-			if (!_isCanvasSupported) {
-				return null;
-			}
-
-			// Create a new canvas DOM
-			var canvas = typeof document !== 'undefined' ? document.createElement('canvas') : new OffscreenCanvas(0, 0);
-
-			// Default width and height, to fix webgl issue in safari
-			canvas.width = 2;
-			canvas.height = 2;
-
-			// Returns the canvas
-			return canvas;
-		}
-
-		//-----------------------------------------------------------------------------
-		//
-		//  Webgl validation and support
-		//
-		//-----------------------------------------------------------------------------
-
-
-		/**
-   *
-   * @name isWebGl
-   * @function
-   * @static
-   * @memberOf UtilsCore
-   *
-   * @desc Return TRUE, on a valid webGlContext object
-   *
-   * Note: This does just a VERY simply sanity check. And may give false positives.
-   *
-   * @param {webGlContext} webGlObj - Object to validate
-   *
-   * @returns {Boolean} TRUE if the object is a webGlContext object
-   *
-   */
-
-	}, {
-		key: 'isWebGl',
-		value: function isWebGl(webGlObj) {
-			return webGlObj && typeof webGlObj.getExtension === 'function';
-		}
-
-		/**
-   *
-   * @name isWebGl2
-   * @function
-   * @static
-   * @memberOf UtilsCore
-   *
-   * @desc Return TRUE, on a valid webGl2Context object
-   *
-   * Note: This does just a VERY simply sanity check. And may give false positives.
-   *
-   * @param {webGlContext} webGl2Obj - Object to validate
-   *
-   * @returns {Boolean} TRUE if the object is a webGl2Context object
-   *
-   */
-
-	}, {
-		key: 'isWebGl2',
-		value: function isWebGl2(webGl2Obj) {
-			return webGl2Obj && typeof WebGL2RenderingContext !== 'undefined' && webGl2Obj instanceof WebGL2RenderingContext;
-		}
-
-		/**
-   * @name isWebGlSupported
-   * @function
-   * @static
-   * @memberOf UtilsCore
-   *
-   * @desc Return TRUE, if browser supports webgl
-   *
-   * @returns {Boolean} TRUE if browser supports webgl
-   *
-   */
-
-	}, {
-		key: 'isWebGlSupported',
-		value: function isWebGlSupported() {
-			return _isWebGlSupported;
-		}
-
-		/**
-   * @name isWebGlSupported2
-   * @function
-   * @static
-   * @memberOf UtilsCore
-   *
-   * @desc Return TRUE, if browser supports webgl2
-   *
-   * @returns {Boolean} TRUE if browser supports webgl2
-   *
-   */
-
-	}, {
-		key: 'isWebGl2Supported',
-		value: function isWebGl2Supported() {
-			return _isWebGl2Supported;
-		}
-	}, {
-		key: 'isWebGlDrawBuffersSupported',
-		value: function isWebGlDrawBuffersSupported() {
-			return _isWebGlDrawBuffersSupported;
-		}
-
-		// Default webgl options to use
-
-	}, {
-		key: 'initWebGlDefaultOptions',
-		value: function initWebGlDefaultOptions() {
-			return {
-				alpha: false,
-				depth: false,
-				antialias: false
-			};
-		}
-
-		/**
-   * @name initWebGl
-   * @function
-   * @static
-   * @memberOf UtilsCore
-   *
-   * @desc Initiate and returns a webGl, from a canvas object
-   * Returns only if webGl is supported by browser.
-   *
-   * @param {CanvasDOMObject} canvasObj - Object to validate
-   *
-   * @returns {CanvasDOMObject} CanvasDOMObject if supported by browser, else null
-   *
-   */
-
-	}, {
-		key: 'initWebGl',
-		value: function initWebGl(canvasObj) {
-
-			// First time setup, does the browser support check memorizer
-			if (typeof _isCanvasSupported !== 'undefined' || canvasObj === null) {
-				if (!_isCanvasSupported) {
-					return null;
-				}
-			}
-
-			// Fail fast for invalid canvas object
-			if (!UtilsCore.isCanvas(canvasObj)) {
-				throw new Error('Invalid canvas object - ' + canvasObj);
-			}
-
-			// Create a new canvas DOM
-			var webGl = null;
-			var defaultOptions = UtilsCore.initWebGlDefaultOptions();
-			try {
-				webGl = canvasObj.getContext('experimental-webgl', defaultOptions);
-			} catch (e) {
-				// 'experimental-webgl' is not a supported context type
-				// fallback to 'webgl2' or 'webgl' below
-			}
-
-			if (webGl === null) {
-				webGl = canvasObj.getContext('webgl2', defaultOptions) || canvasObj.getContext('webgl', defaultOptions);
-			}
-
-			if (webGl) {
-				// Get the extension that is needed
-				webGl.OES_texture_float = webGl.getExtension('OES_texture_float');
-				webGl.OES_texture_float_linear = webGl.getExtension('OES_texture_float_linear');
-				webGl.OES_element_index_uint = webGl.getExtension('OES_element_index_uint');
-			}
-
-			// Returns the canvas
-			return webGl;
-		}
-
-		/**
-   * @name initWebGl2
-   * @function
-   * @static
-   * @memberOf UtilsCore
-   *
-   * @desc Initiate and returns a webGl, from a canvas object
-   * Returns only if webGl is supported by browser.
-   *
-   * @param {CanvasDOMObject} canvasObj - Object to validate
-   *
-   * @returns {CanvasDOMObject} CanvasDOMObject if supported by browser, else null
-   *
-   */
-
-	}, {
-		key: 'initWebGl2',
-		value: function initWebGl2(canvasObj) {
-
-			// First time setup, does the browser support check memorizer
-			if (typeof _isCanvasSupported !== 'undefined' || canvasObj === null) {
-				if (!_isCanvasSupported) {
-					return null;
-				}
-			}
-
-			// Fail fast for invalid canvas object
-			if (!UtilsCore.isCanvas(canvasObj)) {
-				throw new Error('Invalid canvas object - ' + canvasObj);
-			}
-
-			// Create a new canvas DOM
-			return canvasObj.getContext('webgl2', UtilsCore.initWebGlDefaultOptions());
-		}
-
-		/**
-   * @function
-   * @static
-   * @memberOf UtilsCore
-   * @param {number[]} output
-   * @throws if not correctly defined
-   */
-
-	}, {
-		key: 'checkOutput',
-		value: function checkOutput(output) {
-			if (!output || !Array.isArray(output)) throw new Error('kernel.output not an array');
-			for (var i = 0; i < output.length; i++) {
-				if (isNaN(output[i]) || output[i] < 1) {
-					throw new Error('kernel.output[' + i + '] incorrectly defined as `' + output[i] + '`, needs to be numeric, and greater than 0');
-				}
-			}
-		}
-	}]);
-
-	return UtilsCore;
-}();
-
-//-----------------------------------------------------------------------------
-//
-//  Canvas & Webgl validation and support constants
-//
-//-----------------------------------------------------------------------------
-
-var _isCanvasSupported = typeof document !== 'undefined' ? UtilsCore.isCanvas(document.createElement('canvas')) : typeof OffscreenCanvas !== 'undefined';
-var _testingWebGl = UtilsCore.initWebGl(UtilsCore.initCanvas());
-var _testingWebGl2 = UtilsCore.initWebGl2(UtilsCore.initCanvas());
-var _isWebGlSupported = UtilsCore.isWebGl(_testingWebGl);
-var _isWebGl2Supported = UtilsCore.isWebGl2(_testingWebGl2);
-var _isWebGlDrawBuffersSupported = _isWebGlSupported && Boolean(_testingWebGl.getExtension('WEBGL_draw_buffers'));
-
-if (_isWebGlSupported) {
-	UtilsCore.OES_texture_float = _testingWebGl.OES_texture_float;
-	UtilsCore.OES_texture_float_linear = _testingWebGl.OES_texture_float_linear;
-	UtilsCore.OES_element_index_uint = _testingWebGl.OES_element_index_uint;
-} else {
-	UtilsCore.OES_texture_float = false;
-	UtilsCore.OES_texture_float_linear = false;
-	UtilsCore.OES_element_index_uint = false;
-}
-
-module.exports = UtilsCore;
-},{}],87:[function(require,module,exports){
-'use strict';
-
-/**
- * 
- * @classdesc Various utility functions / snippets of code that GPU.JS uses internally.\
- * This covers various snippets of code that is not entirely gpu.js specific (ie. may find uses elsewhere)
- *
- * Note that all methods in this class are *static* by nature `Utils.functionName()`
- * 
- * @class Utils
- * @extends UtilsCore
- *
- */
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var UtilsCore = require("./utils-core");
-var Input = require('./input');
-var Texture = require('./texture');
-// FUNCTION_NAME regex
-var FUNCTION_NAME = /function ([^(]*)/;
-
-// STRIP COMMENTS regex
-var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-
-// ARGUMENT NAMES regex
-var ARGUMENT_NAMES = /([^\s,]+)/g;
-
-var _systemEndianness = function () {
-	var b = new ArrayBuffer(4);
-	var a = new Uint32Array(b);
-	var c = new Uint8Array(b);
-	a[0] = 0xdeadbeef;
-	if (c[0] === 0xef) return 'LE';
-	if (c[0] === 0xde) return 'BE';
-	throw new Error('unknown endianness');
-}();
-
-var _isFloatReadPixelsSupported = null;
-var _isFloatReadPixelsSupportedWebGL2 = null;
-
-var _isMixedIdentifiersSupported = function () {
-	try {
-		new Function('let i = 1; const j = 1;')();
-		return true;
-	} catch (e) {
-		return false;
-	}
-}();
-
-var _hasIntegerDivisionAccuracyBug = null;
-
-/**
- * @class
- * @extends UtilsCore
- */
-
-var Utils = function (_UtilsCore) {
-	_inherits(Utils, _UtilsCore);
-
-	function Utils() {
-		_classCallCheck(this, Utils);
-
-		return _possibleConstructorReturn(this, (Utils.__proto__ || Object.getPrototypeOf(Utils)).apply(this, arguments));
-	}
-
-	_createClass(Utils, null, [{
-		key: 'systemEndianness',
-
-
-		//-----------------------------------------------------------------------------
-		//
-		//  System values support (currently only endianness)
-		//
-		//-----------------------------------------------------------------------------
-
-		/**
-   * @memberOf Utils
-   * @name systemEndianness
-   * @function
-   * @static
-   *
-   * Gets the system endianness, and cache it
-   *
-   * @returns {String} 'LE' or 'BE' depending on system architecture
-   *
-   * Credit: https://gist.github.com/TooTallNate/4750953
-   */
-		value: function systemEndianness() {
-			return _systemEndianness;
-		}
-
-		//-----------------------------------------------------------------------------
-		//
-		//  Function and function string validations
-		//
-		//-----------------------------------------------------------------------------
-
-		/**
-   * @memberOf Utils
-   * @name isFunction
-   * @function
-   * @static
-   *
-   * Return TRUE, on a JS function
-   *
-   * @param {Function} funcObj - Object to validate if its a function
-   *
-   * @returns	{Boolean} TRUE if the object is a JS function
-   *
-   */
-
-	}, {
-		key: 'isFunction',
-		value: function isFunction(funcObj) {
-			return typeof funcObj === 'function';
-		}
-
-		/**
-   * @memberOf Utils
-   * @name isFunctionString
-   * @function
-   * @static
-   *
-   * Return TRUE, on a valid JS function string
-   *
-   * Note: This does just a VERY simply sanity check. And may give false positives.
-   *
-   * @param {String} funcStr - String of JS function to validate
-   *
-   * @returns {Boolean} TRUE if the string passes basic validation
-   *
-   */
-
-	}, {
-		key: 'isFunctionString',
-		value: function isFunctionString(funcStr) {
-			if (funcStr !== null) {
-				return funcStr.toString().slice(0, 'function'.length).toLowerCase() === 'function';
-			}
-			return false;
-		}
-
-		/**
-   * @memberOf Utils
-   * @name getFunctionName_fromString
-   * @function
-   * @static
-   *
-   * Return the function name from a JS function string
-   *
-   * @param {String} funcStr - String of JS function to validate
-   *
-   * @returns {String} Function name string (if found)
-   *
-   */
-
-	}, {
-		key: 'getFunctionNameFromString',
-		value: function getFunctionNameFromString(funcStr) {
-			return FUNCTION_NAME.exec(funcStr)[1];
-		}
-	}, {
-		key: 'getFunctionBodyFromString',
-		value: function getFunctionBodyFromString(funcStr) {
-			return funcStr.substring(funcStr.indexOf('{') + 1, funcStr.lastIndexOf('}'));
-		}
-
-		/**
-   * @memberOf Utils
-   * @name getParamNames_fromString
-   * @function
-   * @static
-   *
-   * Return list of parameter names extracted from the JS function string
-   *
-   * @param {String} funcStr - String of JS function to validate
-   *
-   * @returns {String[]}  Array representing all the parameter names
-   *
-   */
-
-	}, {
-		key: 'getParamNamesFromString',
-		value: function getParamNamesFromString(func) {
-			var fnStr = func.toString().replace(STRIP_COMMENTS, '');
-			var result = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
-			if (result === null) result = [];
-			return result;
-		}
-
-		//-----------------------------------------------------------------------------
-		//
-		//  Object / function cloning and manipulation
-		//
-		//-----------------------------------------------------------------------------
-
-		/**
-   * @memberOf Utils
-   * @name clone
-   * @function
-   * @static
-   *
-   * Returns a clone
-   *
-   * @param {Object} obj - Object to clone
-   *
-   * @returns {Object}  Cloned object
-   *
-   */
-
-	}, {
-		key: 'clone',
-		value: function clone(obj) {
-			if (obj === null || (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object' || obj.hasOwnProperty('isActiveClone')) return obj;
-
-			var temp = obj.constructor(); // changed
-
-			for (var key in obj) {
-				if (Object.prototype.hasOwnProperty.call(obj, key)) {
-					obj.isActiveClone = null;
-					temp[key] = Utils.clone(obj[key]);
-					delete obj.isActiveClone;
-				}
-			}
-
-			return temp;
-		}
-
-		/**
-   * @memberOf Utils
-   * @name newPromise
-   * @function
-   * @static
-   *
-   * Returns a `new Promise` object based on the underlying implmentation
-   *
-   * @param {Function} executor - Promise builder function
-   *
-   * @returns {Promise}  Promise object
-   *
-   */
-
-	}, {
-		key: 'newPromise',
-		value: function newPromise(executor) {
-			var simple = Promise || small_promise;
-			if (simple === null) {
-				throw TypeError('Browser is missing Promise implementation. Consider adding small_promise.js polyfill');
-			}
-			return new simple(executor);
-		}
-
-		/**
-   * @memberOf Utils
-   * @name functionBinder
-   * @function
-   * @static
-   *
-   * Limited implementation of Function.bind, with fallback
-   *
-   * @param {Function} inFunc - to setup bind on
-   * @param {Object} thisObj - The this parameter to assume inside the binded function
-   *
-   * @returns {Function}  The binded function
-   *
-   */
-
-	}, {
-		key: 'functionBinder',
-		value: function functionBinder(inFunc, thisObj) {
-			if (inFunc.bind) {
-				return inFunc.bind(thisObj);
-			}
-
-			return function () {
-				var args = arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments);
-				return inFunc.apply(thisObj, args);
-			};
-		}
-
-		/**
-   * @memberOf Utils
-   * @name isArray
-   * @function
-   * @static
-   *
-   * * Checks if is an array or Array-like object
-   *
-   * @param {Object} arg - The argument object to check if is array
-   *
-   * @returns {Boolean}  true if is array or Array-like object
-   *
-   */
-
-	}, {
-		key: 'isArray',
-		value: function isArray(array) {
-			if (isNaN(array.length)) {
-				return false;
-			}
-
-			return true;
-		}
-
-		/**
-   * @memberOf Utils
-   * @name getArgumentType
-   * @function
-   * @static
-   *
-   * Evaluate the argument type, to apply respective logic for it
-   *
-   * @param {Object} arg - The argument object to evaluate type
-   *
-   * @returns {String}  Argument type Array/Number/Float/Texture/Unknown
-   *
-   */
-
-	}, {
-		key: 'getArgumentType',
-		value: function getArgumentType(arg) {
-			if (Utils.isArray(arg)) {
-				if (arg[0].nodeName === 'IMG') {
-					return 'HTMLImageArray';
-				}
-				return 'Array';
-			} else if (typeof arg === 'number') {
-				if (Number.isInteger(arg)) {
-					return 'Integer';
-				}
-				return 'Float';
-			} else if (arg instanceof Texture) {
-				return arg.type;
-			} else if (arg instanceof Input) {
-				return 'Input';
-			} else if (arg.nodeName === 'IMG') {
-				return 'HTMLImage';
-			} else {
-				return 'Unknown';
-			}
-		}
-		/**
-   * @typedef {Object} gpuJSObject
-   */
-
-		/**
-   * @memberOf Utils
-   * @name isFloatReadPixelsSupported
-   * @function
-   * @static
-   *
-   * Checks if the browser supports readPixels with float type
-   *
-   * @returns {Boolean} true if browser supports
-   *
-   */
-
-	}, {
-		key: 'isFloatReadPixelsSupported',
-		value: function isFloatReadPixelsSupported() {
-			if (_isFloatReadPixelsSupported !== null) {
-				return _isFloatReadPixelsSupported;
-			}
-
-			var GPU = require('../index');
-			var gpu = new GPU({
-				mode: 'webgl-validator'
-			});
-			var x = gpu.createKernel(function () {
-				return 1;
-			}, {
-				output: [2],
-				floatTextures: true,
-				floatOutput: true,
-				floatOutputForce: true
-			})();
-
-			_isFloatReadPixelsSupported = x[0] === 1;
-			gpu.destroy();
-			return _isFloatReadPixelsSupported;
-		}
-
-		/**
-   * @memberOf Utils
-   * @name isFloatReadPixelsSupportedWebGL2
-   * @function
-   * @static
-   *
-   * Checks if the browser supports readPixels with float type
-   *
-   * @returns {Boolean} true if browser supports
-   *
-   */
-
-	}, {
-		key: 'isFloatReadPixelsSupportedWebGL2',
-		value: function isFloatReadPixelsSupportedWebGL2() {
-			if (_isFloatReadPixelsSupportedWebGL2 !== null) {
-				return _isFloatReadPixelsSupportedWebGL2;
-			}
-
-			var GPU = require('../index');
-			var gpu = new GPU({
-				mode: 'webgl2-validator'
-			});
-			var x = gpu.createKernel(function () {
-				return 1;
-			}, {
-				output: [2],
-				floatTextures: true,
-				floatOutput: true,
-				floatOutputForce: true
-			})();
-
-			_isFloatReadPixelsSupportedWebGL2 = x[0] === 1;
-			gpu.destroy();
-			return _isFloatReadPixelsSupportedWebGL2;
-		}
-
-		/**
-   * @memberOf Utils
-   * @name hasIntegerDivisionAccuracyBug
-   * @function
-   * @static
-   *
-   * Checks if the system has inaccuracies when dividing integers
-   *
-   * @returns {Boolean} true if bug is exhibited on this system
-   *
-   */
-
-	}, {
-		key: 'hasIntegerDivisionAccuracyBug',
-		value: function hasIntegerDivisionAccuracyBug() {
-			if (_hasIntegerDivisionAccuracyBug !== null) {
-				return _hasIntegerDivisionAccuracyBug;
-			}
-
-			var GPU = require('../index');
-			var gpu = new GPU({
-				mode: 'webgl-validator'
-			});
-			var x = gpu.createKernel(function (v1, v2) {
-				return v1[this.thread.x] / v2[this.thread.x];
-			}, {
-				output: [1]
-			})([6, 6030401], [3, 3991]);
-
-			// have we not got whole numbers for 6/3 or 6030401/3991
-			// add more here if others see this problem
-			_hasIntegerDivisionAccuracyBug = x[0] !== 2 || x[1] !== 1511;
-			gpu.destroy();
-			return _hasIntegerDivisionAccuracyBug;
-		}
-	}, {
-		key: 'isMixedIdentifiersSupported',
-		value: function isMixedIdentifiersSupported() {
-			return _isMixedIdentifiersSupported;
-		}
-	}, {
-		key: 'dimToTexSize',
-		value: function dimToTexSize(opt, dimensions, output) {
-			var numTexels = dimensions[0];
-			var w = dimensions[0];
-			var h = dimensions[1];
-			for (var i = 1; i < dimensions.length; i++) {
-				numTexels *= dimensions[i];
-			}
-
-			if (opt.floatTextures && (!output || opt.floatOutput)) {
-				w = numTexels = Math.ceil(numTexels / 4);
-			}
-			// if given dimensions == a 2d image
-			if (h > 1 && w * h === numTexels) {
-				return [w, h];
-			}
-			// find as close to square width, height sizes as possible
-			var sqrt = Math.sqrt(numTexels);
-			var high = Math.ceil(sqrt);
-			var low = Math.floor(sqrt);
-			while (high * low > numTexels) {
-				high--;
-				low = Math.ceil(numTexels / high);
-			}
-			w = low;
-			h = Math.ceil(numTexels / w);
-			return [w, h];
-		}
-
-		/**
-   * @memberOf Utils
-   * @name getDimensions
-   * @function
-   * @static
-   *
-   * Return the dimension of an array.
-   * 
-   * @param {Array|String} x - The array
-   * @param {number} [pad] - To include padding in the dimension calculation [Optional]
-   *
-   *
-   *
-   */
-
-	}, {
-		key: 'getDimensions',
-		value: function getDimensions(x, pad) {
-			var ret = void 0;
-			if (Utils.isArray(x)) {
-				var dim = [];
-				var temp = x;
-				while (Utils.isArray(temp)) {
-					dim.push(temp.length);
-					temp = temp[0];
-				}
-				ret = dim.reverse();
-			} else if (x instanceof Texture) {
-				ret = x.output;
-			} else if (x instanceof Input) {
-				ret = x.size;
-			} else {
-				throw 'Unknown dimensions of ' + x;
-			}
-
-			if (pad) {
-				ret = Utils.clone(ret);
-				while (ret.length < 3) {
-					ret.push(1);
-				}
-			}
-			// return ret;
-			return new Int32Array(ret);
-		}
-
-		/**
-   * @memberOf Utils
-   * @name pad
-   * @function
-   * @static
-   *
-   * Pad an array AND its elements with leading and ending zeros
-   *
-   * @param {Array} arr - the array to pad zeros to
-   * @param {number} padding - amount of padding
-   *
-   * @returns {Array} Array with leading and ending zeros, and all the elements padded by zeros.
-   *
-   */
-
-	}, {
-		key: 'pad',
-		value: function pad(arr, padding) {
-			function zeros(n) {
-				return Array.apply(null, new Array(n)).map(Number.prototype.valueOf, 0);
-			}
-
-			var len = arr.length + padding * 2;
-
-			var ret = arr.map(function (x) {
-				return [].concat(zeros(padding), x, zeros(padding));
-			});
-
-			for (var i = 0; i < padding; i++) {
-				ret = [].concat([zeros(len)], ret, [zeros(len)]);
-			}
-
-			return ret;
-		}
-
-		/**
-   * @memberOf Utils
-   * @name flatten2dArrayTo
-   * @function
-   * @static
-   *
-   * Puts a nested 2d array into a one-dimensional target array
-   * @param {Array|*} array
-   * @param {Float32Array|Float64Array} target
-   */
-
-	}, {
-		key: 'flatten2dArrayTo',
-		value: function flatten2dArrayTo(array, target) {
-			var offset = 0;
-			for (var y = 0; y < array.length; y++) {
-				target.set(array[y], offset);
-				offset += array[y].length;
-			}
-		}
-
-		/**
-   * @memberOf Utils
-   * @name flatten3dArrayTo
-   * @function
-   * @static
-   *
-   * Puts a nested 3d array into a one-dimensional target array
-   * @param {Array|*} array
-   * @param {Float32Array|Float64Array} target
-   */
-
-	}, {
-		key: 'flatten3dArrayTo',
-		value: function flatten3dArrayTo(array, target) {
-			var offset = 0;
-			for (var z = 0; z < array.length; z++) {
-				for (var y = 0; y < array[z].length; y++) {
-					target.set(array[z][y], offset);
-					offset += array[z][y].length;
-				}
-			}
-		}
-
-		/**
-   * @memberOf Utils
-   * @name flatten3dArrayTo
-   * @function
-   * @static
-   *
-   * Puts a nested 1d, 2d, or 3d array into a one-dimensional target array
-   * @param {Array|*} array
-   * @param {Float32Array|Float64Array} target
-   */
-
-	}, {
-		key: 'flattenTo',
-		value: function flattenTo(array, target) {
-			if (Utils.isArray(array[0])) {
-				if (Utils.isArray(array[0][0])) {
-					Utils.flatten3dArrayTo(array, target);
-				} else {
-					Utils.flatten2dArrayTo(array, target);
-				}
-			} else {
-				target.set(array);
-			}
-		}
-
-		/**
-   * @memberOf Utils
-   * @name splitArray
-   * @function
-   * @static
-   *
-   * Splits an array into smaller arrays.
-   * Number of elements in one small chunk is given by `part`
-   *
-   * @param {Array} array - The array to split into chunks
-   * @param {Array} part - elements in one chunk
-   *
-  	 * @returns {Array} An array of smaller chunks
-   *
-   */
-
-	}, {
-		key: 'splitArray',
-		value: function splitArray(array, part) {
-			var result = [];
-			for (var i = 0; i < array.length; i += part) {
-				result.push(new array.constructor(array.buffer, i * 4 + array.byteOffset, part));
-			}
-			return result;
-		}
-	}, {
-		key: 'getAstString',
-		value: function getAstString(source, ast) {
-			var lines = Array.isArray(source) ? source : source.split(/\r?\n/g);
-			var start = ast.loc.start;
-			var end = ast.loc.end;
-			var result = [];
-			result.push(lines[start.line - 1].slice(start.column));
-			for (var i = start.line; i < end.line - 1; i++) {
-				result.push(lines[i]);
-			}
-			result.push(lines[end.line - 1].slice(0, end.column));
-			return result.join('\n');
-		}
-	}, {
-		key: 'allPropertiesOf',
-		value: function allPropertiesOf(obj) {
-			var props = [];
-
-			do {
-				props.push.apply(props, Object.getOwnPropertyNames(obj));
-			} while (obj = Object.getPrototypeOf(obj));
-
-			return props;
-		}
-	}]);
-
-	return Utils;
-}(UtilsCore);
-
-// This ensure static methods are "inherited"
-// See: https://stackoverflow.com/questions/5441508/how-to-inherit-static-methods-from-base-class-in-javascript
-
-
-Object.assign(Utils, UtilsCore);
-
-module.exports = Utils;
-},{"../index":88,"./input":84,"./texture":85,"./utils-core":86}],88:[function(require,module,exports){
-'use strict';
-
-var GPU = require('./core/gpu');
-var alias = require('./core/alias');
-var utils = require('./core/utils');
-var Input = require('./core/input');
-var Texture = require('./core/texture');
-
-var CPUFunctionBuilder = require('./backend/cpu/function-builder');
-var CPUFunctionNode = require('./backend/cpu/function-node');
-var CPUKernel = require('./backend/cpu/kernel');
-var CPURunner = require('./backend/cpu/runner');
-
-var WebGLFunctionBuilder = require('./backend/web-gl/function-builder');
-var WebGLFunctionNode = require('./backend/web-gl/function-node');
-var WebGLKernel = require('./backend/web-gl/kernel');
-var WebGLRunner = require('./backend/web-gl/runner');
-
-var WebGL2FunctionBuilder = require('./backend/web-gl2/function-builder');
-var WebGL2FunctionNode = require('./backend/web-gl2/function-node');
-var WebGL2Kernel = require('./backend/web-gl2/kernel');
-var WebGL2Runner = require('./backend/web-gl2/runner');
-
-GPU.alias = alias;
-GPU.utils = utils;
-GPU.Texture = Texture;
-GPU.Input = Input;
-GPU.input = function (value, size) {
-	return new Input(value, size);
-};
-
-GPU.CPUFunctionBuilder = CPUFunctionBuilder;
-GPU.CPUFunctionNode = CPUFunctionNode;
-GPU.CPUKernel = CPUKernel;
-GPU.CPURunner = CPURunner;
-
-GPU.WebGLFunctionBuilder = WebGLFunctionBuilder;
-GPU.WebGLFunctionNode = WebGLFunctionNode;
-GPU.WebGLKernel = WebGLKernel;
-GPU.WebGLRunner = WebGLRunner;
-
-GPU.WebGL2FunctionBuilder = WebGL2FunctionBuilder;
-GPU.WebGL2FunctionNode = WebGL2FunctionNode;
-GPU.WebGL2Kernel = WebGL2Kernel;
-GPU.WebGL2Runner = WebGL2Runner;
-
-if (typeof module !== 'undefined') {
-	module.exports = GPU;
-}
-if (typeof window !== 'undefined') {
-	window.GPU = GPU;
-}
-if (typeof self !== 'undefined') {
-	self.GPU = GPU;
-}
-},{"./backend/cpu/function-builder":56,"./backend/cpu/function-node":57,"./backend/cpu/kernel":59,"./backend/cpu/runner":60,"./backend/web-gl/function-builder":66,"./backend/web-gl/function-node":67,"./backend/web-gl/kernel":69,"./backend/web-gl/runner":70,"./backend/web-gl2/function-builder":74,"./backend/web-gl2/function-node":75,"./backend/web-gl2/kernel":76,"./backend/web-gl2/runner":77,"./core/alias":81,"./core/gpu":83,"./core/input":84,"./core/texture":85,"./core/utils":87}],89:[function(require,module,exports){
+},{"./dist/cross-validate":1,"./dist/likely":2,"./dist/lookup":3,"./dist/neural-network":5,"./dist/neural-network-gpu":4,"./dist/recurrent/gru":7,"./dist/recurrent/gru-time-step":6,"./dist/recurrent/lstm":9,"./dist/recurrent/lstm-time-step":8,"./dist/recurrent/rnn":35,"./dist/recurrent/rnn-time-step":34,"./dist/train-stream":36,"./dist/utilities/data-formatter":39,"./dist/utilities/max":41,"./dist/utilities/mse":42,"./dist/utilities/ones":43,"./dist/utilities/random":45,"./dist/utilities/random-weight":44,"./dist/utilities/randos":46,"./dist/utilities/range":47,"./dist/utilities/to-array":48,"./dist/utilities/to-svg":49,"./dist/utilities/zeros":50}],52:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -21354,6 +9271,7 @@ pp$3.parseTemplate = function(ref) {
   var curElt = this.parseTemplateElement({isTagged: isTagged});
   node.quasis = [curElt];
   while (!curElt.tail) {
+    if (this$1.type === types.eof) { this$1.raise(this$1.pos, "Unterminated template literal"); }
     this$1.expect(types.dollarBraceL);
     node.expressions.push(this$1.parseExpression());
     this$1.expect(types.braceR);
@@ -22033,7 +9951,7 @@ types.star.updateContext = function(prevType) {
 
 types.name.updateContext = function(prevType) {
   var allowed = false;
-  if (this.options.ecmaVersion >= 6) {
+  if (this.options.ecmaVersion >= 6 && prevType !== types.dot) {
     if (this.value === "of" && !this.exprAllowed ||
         this.value === "yield" && this.inGeneratorContext())
       { allowed = true; }
@@ -24281,7 +12199,7 @@ pp$8.readWord = function() {
 // [dammit]: acorn_loose.js
 // [walk]: util/walk.js
 
-var version = "5.7.2";
+var version = "5.7.3";
 
 // The main exported interface (under `self.acorn` when in the
 // browser) is a `parse` function that takes a code string and
@@ -24350,7 +12268,12167 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],90:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
+'use strict'
+
+exports.byteLength = byteLength
+exports.toByteArray = toByteArray
+exports.fromByteArray = fromByteArray
+
+var lookup = []
+var revLookup = []
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
+}
+
+// Support decoding URL-safe base64 strings, as Node.js does.
+// See: https://en.wikipedia.org/wiki/Base64#URL_applications
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
+
+function getLens (b64) {
+  var len = b64.length
+
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
+  }
+
+  // Trim off extra bytes after placeholder bytes are found
+  // See: https://github.com/beatgammit/base64-js/issues/42
+  var validLen = b64.indexOf('=')
+  if (validLen === -1) validLen = len
+
+  var placeHoldersLen = validLen === len
+    ? 0
+    : 4 - (validLen % 4)
+
+  return [validLen, placeHoldersLen]
+}
+
+// base64 is 4/3 + up to two characters of the original data
+function byteLength (b64) {
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function _byteLength (b64, validLen, placeHoldersLen) {
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function toByteArray (b64) {
+  var tmp
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+
+  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen))
+
+  var curByte = 0
+
+  // if there are placeholders, only get up to the last complete 4 chars
+  var len = placeHoldersLen > 0
+    ? validLen - 4
+    : validLen
+
+  for (var i = 0; i < len; i += 4) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 18) |
+      (revLookup[b64.charCodeAt(i + 1)] << 12) |
+      (revLookup[b64.charCodeAt(i + 2)] << 6) |
+      revLookup[b64.charCodeAt(i + 3)]
+    arr[curByte++] = (tmp >> 16) & 0xFF
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 2) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 2) |
+      (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 1) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 10) |
+      (revLookup[b64.charCodeAt(i + 1)] << 4) |
+      (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  return arr
+}
+
+function tripletToBase64 (num) {
+  return lookup[num >> 18 & 0x3F] +
+    lookup[num >> 12 & 0x3F] +
+    lookup[num >> 6 & 0x3F] +
+    lookup[num & 0x3F]
+}
+
+function encodeChunk (uint8, start, end) {
+  var tmp
+  var output = []
+  for (var i = start; i < end; i += 3) {
+    tmp =
+      ((uint8[i] << 16) & 0xFF0000) +
+      ((uint8[i + 1] << 8) & 0xFF00) +
+      (uint8[i + 2] & 0xFF)
+    output.push(tripletToBase64(tmp))
+  }
+  return output.join('')
+}
+
+function fromByteArray (uint8) {
+  var tmp
+  var len = uint8.length
+  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+  var parts = []
+  var maxChunkLength = 16383 // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(
+      uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)
+    ))
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 2] +
+      lookup[(tmp << 4) & 0x3F] +
+      '=='
+    )
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 10] +
+      lookup[(tmp >> 4) & 0x3F] +
+      lookup[(tmp << 2) & 0x3F] +
+      '='
+    )
+  }
+
+  return parts.join('')
+}
+
+},{}],54:[function(require,module,exports){
+
+},{}],55:[function(require,module,exports){
+(function (global){
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @license  MIT
+ */
+/* eslint-disable no-proto */
+
+'use strict'
+
+var base64 = require('base64-js')
+var ieee754 = require('ieee754')
+var isArray = require('isarray')
+
+exports.Buffer = Buffer
+exports.SlowBuffer = SlowBuffer
+exports.INSPECT_MAX_BYTES = 50
+
+/**
+ * If `Buffer.TYPED_ARRAY_SUPPORT`:
+ *   === true    Use Uint8Array implementation (fastest)
+ *   === false   Use Object implementation (most compatible, even IE6)
+ *
+ * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
+ * Opera 11.6+, iOS 4.2+.
+ *
+ * Due to various browser bugs, sometimes the Object implementation will be used even
+ * when the browser supports typed arrays.
+ *
+ * Note:
+ *
+ *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
+ *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
+ *
+ *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
+ *
+ *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
+ *     incorrect length in some situations.
+
+ * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
+ * get the Object implementation, which is slower but behaves correctly.
+ */
+Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
+  ? global.TYPED_ARRAY_SUPPORT
+  : typedArraySupport()
+
+/*
+ * Export kMaxLength after typed array support is determined.
+ */
+exports.kMaxLength = kMaxLength()
+
+function typedArraySupport () {
+  try {
+    var arr = new Uint8Array(1)
+    arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }}
+    return arr.foo() === 42 && // typed array instances can be augmented
+        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
+        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
+  } catch (e) {
+    return false
+  }
+}
+
+function kMaxLength () {
+  return Buffer.TYPED_ARRAY_SUPPORT
+    ? 0x7fffffff
+    : 0x3fffffff
+}
+
+function createBuffer (that, length) {
+  if (kMaxLength() < length) {
+    throw new RangeError('Invalid typed array length')
+  }
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = new Uint8Array(length)
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    if (that === null) {
+      that = new Buffer(length)
+    }
+    that.length = length
+  }
+
+  return that
+}
+
+/**
+ * The Buffer constructor returns instances of `Uint8Array` that have their
+ * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
+ * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
+ * and the `Uint8Array` methods. Square bracket notation works as expected -- it
+ * returns a single octet.
+ *
+ * The `Uint8Array` prototype remains unmodified.
+ */
+
+function Buffer (arg, encodingOrOffset, length) {
+  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
+    return new Buffer(arg, encodingOrOffset, length)
+  }
+
+  // Common case.
+  if (typeof arg === 'number') {
+    if (typeof encodingOrOffset === 'string') {
+      throw new Error(
+        'If encoding is specified then the first argument must be a string'
+      )
+    }
+    return allocUnsafe(this, arg)
+  }
+  return from(this, arg, encodingOrOffset, length)
+}
+
+Buffer.poolSize = 8192 // not used by this implementation
+
+// TODO: Legacy, not needed anymore. Remove in next major version.
+Buffer._augment = function (arr) {
+  arr.__proto__ = Buffer.prototype
+  return arr
+}
+
+function from (that, value, encodingOrOffset, length) {
+  if (typeof value === 'number') {
+    throw new TypeError('"value" argument must not be a number')
+  }
+
+  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+    return fromArrayBuffer(that, value, encodingOrOffset, length)
+  }
+
+  if (typeof value === 'string') {
+    return fromString(that, value, encodingOrOffset)
+  }
+
+  return fromObject(that, value)
+}
+
+/**
+ * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
+ * if value is a number.
+ * Buffer.from(str[, encoding])
+ * Buffer.from(array)
+ * Buffer.from(buffer)
+ * Buffer.from(arrayBuffer[, byteOffset[, length]])
+ **/
+Buffer.from = function (value, encodingOrOffset, length) {
+  return from(null, value, encodingOrOffset, length)
+}
+
+if (Buffer.TYPED_ARRAY_SUPPORT) {
+  Buffer.prototype.__proto__ = Uint8Array.prototype
+  Buffer.__proto__ = Uint8Array
+  if (typeof Symbol !== 'undefined' && Symbol.species &&
+      Buffer[Symbol.species] === Buffer) {
+    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
+    Object.defineProperty(Buffer, Symbol.species, {
+      value: null,
+      configurable: true
+    })
+  }
+}
+
+function assertSize (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('"size" argument must be a number')
+  } else if (size < 0) {
+    throw new RangeError('"size" argument must not be negative')
+  }
+}
+
+function alloc (that, size, fill, encoding) {
+  assertSize(size)
+  if (size <= 0) {
+    return createBuffer(that, size)
+  }
+  if (fill !== undefined) {
+    // Only pay attention to encoding if it's a string. This
+    // prevents accidentally sending in a number that would
+    // be interpretted as a start offset.
+    return typeof encoding === 'string'
+      ? createBuffer(that, size).fill(fill, encoding)
+      : createBuffer(that, size).fill(fill)
+  }
+  return createBuffer(that, size)
+}
+
+/**
+ * Creates a new filled Buffer instance.
+ * alloc(size[, fill[, encoding]])
+ **/
+Buffer.alloc = function (size, fill, encoding) {
+  return alloc(null, size, fill, encoding)
+}
+
+function allocUnsafe (that, size) {
+  assertSize(size)
+  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+    for (var i = 0; i < size; ++i) {
+      that[i] = 0
+    }
+  }
+  return that
+}
+
+/**
+ * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
+ * */
+Buffer.allocUnsafe = function (size) {
+  return allocUnsafe(null, size)
+}
+/**
+ * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
+ */
+Buffer.allocUnsafeSlow = function (size) {
+  return allocUnsafe(null, size)
+}
+
+function fromString (that, string, encoding) {
+  if (typeof encoding !== 'string' || encoding === '') {
+    encoding = 'utf8'
+  }
+
+  if (!Buffer.isEncoding(encoding)) {
+    throw new TypeError('"encoding" must be a valid string encoding')
+  }
+
+  var length = byteLength(string, encoding) | 0
+  that = createBuffer(that, length)
+
+  var actual = that.write(string, encoding)
+
+  if (actual !== length) {
+    // Writing a hex string, for example, that contains invalid characters will
+    // cause everything after the first invalid character to be ignored. (e.g.
+    // 'abxxcd' will be treated as 'ab')
+    that = that.slice(0, actual)
+  }
+
+  return that
+}
+
+function fromArrayLike (that, array) {
+  var length = array.length < 0 ? 0 : checked(array.length) | 0
+  that = createBuffer(that, length)
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+function fromArrayBuffer (that, array, byteOffset, length) {
+  array.byteLength // this throws if `array` is not a valid ArrayBuffer
+
+  if (byteOffset < 0 || array.byteLength < byteOffset) {
+    throw new RangeError('\'offset\' is out of bounds')
+  }
+
+  if (array.byteLength < byteOffset + (length || 0)) {
+    throw new RangeError('\'length\' is out of bounds')
+  }
+
+  if (byteOffset === undefined && length === undefined) {
+    array = new Uint8Array(array)
+  } else if (length === undefined) {
+    array = new Uint8Array(array, byteOffset)
+  } else {
+    array = new Uint8Array(array, byteOffset, length)
+  }
+
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = array
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    that = fromArrayLike(that, array)
+  }
+  return that
+}
+
+function fromObject (that, obj) {
+  if (Buffer.isBuffer(obj)) {
+    var len = checked(obj.length) | 0
+    that = createBuffer(that, len)
+
+    if (that.length === 0) {
+      return that
+    }
+
+    obj.copy(that, 0, 0, len)
+    return that
+  }
+
+  if (obj) {
+    if ((typeof ArrayBuffer !== 'undefined' &&
+        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
+      if (typeof obj.length !== 'number' || isnan(obj.length)) {
+        return createBuffer(that, 0)
+      }
+      return fromArrayLike(that, obj)
+    }
+
+    if (obj.type === 'Buffer' && isArray(obj.data)) {
+      return fromArrayLike(that, obj.data)
+    }
+  }
+
+  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
+}
+
+function checked (length) {
+  // Note: cannot use `length < kMaxLength()` here because that fails when
+  // length is NaN (which is otherwise coerced to zero.)
+  if (length >= kMaxLength()) {
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
+                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
+  }
+  return length | 0
+}
+
+function SlowBuffer (length) {
+  if (+length != length) { // eslint-disable-line eqeqeq
+    length = 0
+  }
+  return Buffer.alloc(+length)
+}
+
+Buffer.isBuffer = function isBuffer (b) {
+  return !!(b != null && b._isBuffer)
+}
+
+Buffer.compare = function compare (a, b) {
+  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+    throw new TypeError('Arguments must be Buffers')
+  }
+
+  if (a === b) return 0
+
+  var x = a.length
+  var y = b.length
+
+  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i]
+      y = b[i]
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+Buffer.isEncoding = function isEncoding (encoding) {
+  switch (String(encoding).toLowerCase()) {
+    case 'hex':
+    case 'utf8':
+    case 'utf-8':
+    case 'ascii':
+    case 'latin1':
+    case 'binary':
+    case 'base64':
+    case 'ucs2':
+    case 'ucs-2':
+    case 'utf16le':
+    case 'utf-16le':
+      return true
+    default:
+      return false
+  }
+}
+
+Buffer.concat = function concat (list, length) {
+  if (!isArray(list)) {
+    throw new TypeError('"list" argument must be an Array of Buffers')
+  }
+
+  if (list.length === 0) {
+    return Buffer.alloc(0)
+  }
+
+  var i
+  if (length === undefined) {
+    length = 0
+    for (i = 0; i < list.length; ++i) {
+      length += list[i].length
+    }
+  }
+
+  var buffer = Buffer.allocUnsafe(length)
+  var pos = 0
+  for (i = 0; i < list.length; ++i) {
+    var buf = list[i]
+    if (!Buffer.isBuffer(buf)) {
+      throw new TypeError('"list" argument must be an Array of Buffers')
+    }
+    buf.copy(buffer, pos)
+    pos += buf.length
+  }
+  return buffer
+}
+
+function byteLength (string, encoding) {
+  if (Buffer.isBuffer(string)) {
+    return string.length
+  }
+  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
+      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
+    return string.byteLength
+  }
+  if (typeof string !== 'string') {
+    string = '' + string
+  }
+
+  var len = string.length
+  if (len === 0) return 0
+
+  // Use a for loop to avoid recursion
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'latin1':
+      case 'binary':
+        return len
+      case 'utf8':
+      case 'utf-8':
+      case undefined:
+        return utf8ToBytes(string).length
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2
+      case 'hex':
+        return len >>> 1
+      case 'base64':
+        return base64ToBytes(string).length
+      default:
+        if (loweredCase) return utf8ToBytes(string).length // assume utf8
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+Buffer.byteLength = byteLength
+
+function slowToString (encoding, start, end) {
+  var loweredCase = false
+
+  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
+  // property of a typed array.
+
+  // This behaves neither like String nor Uint8Array in that we set start/end
+  // to their upper/lower bounds if the value passed is out of range.
+  // undefined is handled specially as per ECMA-262 6th Edition,
+  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
+  if (start === undefined || start < 0) {
+    start = 0
+  }
+  // Return early if start > this.length. Done here to prevent potential uint32
+  // coercion fail below.
+  if (start > this.length) {
+    return ''
+  }
+
+  if (end === undefined || end > this.length) {
+    end = this.length
+  }
+
+  if (end <= 0) {
+    return ''
+  }
+
+  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
+  end >>>= 0
+  start >>>= 0
+
+  if (end <= start) {
+    return ''
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  while (true) {
+    switch (encoding) {
+      case 'hex':
+        return hexSlice(this, start, end)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Slice(this, start, end)
+
+      case 'ascii':
+        return asciiSlice(this, start, end)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Slice(this, start, end)
+
+      case 'base64':
+        return base64Slice(this, start, end)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return utf16leSlice(this, start, end)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = (encoding + '').toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
+// Buffer instances.
+Buffer.prototype._isBuffer = true
+
+function swap (b, n, m) {
+  var i = b[n]
+  b[n] = b[m]
+  b[m] = i
+}
+
+Buffer.prototype.swap16 = function swap16 () {
+  var len = this.length
+  if (len % 2 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 16-bits')
+  }
+  for (var i = 0; i < len; i += 2) {
+    swap(this, i, i + 1)
+  }
+  return this
+}
+
+Buffer.prototype.swap32 = function swap32 () {
+  var len = this.length
+  if (len % 4 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 32-bits')
+  }
+  for (var i = 0; i < len; i += 4) {
+    swap(this, i, i + 3)
+    swap(this, i + 1, i + 2)
+  }
+  return this
+}
+
+Buffer.prototype.swap64 = function swap64 () {
+  var len = this.length
+  if (len % 8 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 64-bits')
+  }
+  for (var i = 0; i < len; i += 8) {
+    swap(this, i, i + 7)
+    swap(this, i + 1, i + 6)
+    swap(this, i + 2, i + 5)
+    swap(this, i + 3, i + 4)
+  }
+  return this
+}
+
+Buffer.prototype.toString = function toString () {
+  var length = this.length | 0
+  if (length === 0) return ''
+  if (arguments.length === 0) return utf8Slice(this, 0, length)
+  return slowToString.apply(this, arguments)
+}
+
+Buffer.prototype.equals = function equals (b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return true
+  return Buffer.compare(this, b) === 0
+}
+
+Buffer.prototype.inspect = function inspect () {
+  var str = ''
+  var max = exports.INSPECT_MAX_BYTES
+  if (this.length > 0) {
+    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
+    if (this.length > max) str += ' ... '
+  }
+  return '<Buffer ' + str + '>'
+}
+
+Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+  if (!Buffer.isBuffer(target)) {
+    throw new TypeError('Argument must be a Buffer')
+  }
+
+  if (start === undefined) {
+    start = 0
+  }
+  if (end === undefined) {
+    end = target ? target.length : 0
+  }
+  if (thisStart === undefined) {
+    thisStart = 0
+  }
+  if (thisEnd === undefined) {
+    thisEnd = this.length
+  }
+
+  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+    throw new RangeError('out of range index')
+  }
+
+  if (thisStart >= thisEnd && start >= end) {
+    return 0
+  }
+  if (thisStart >= thisEnd) {
+    return -1
+  }
+  if (start >= end) {
+    return 1
+  }
+
+  start >>>= 0
+  end >>>= 0
+  thisStart >>>= 0
+  thisEnd >>>= 0
+
+  if (this === target) return 0
+
+  var x = thisEnd - thisStart
+  var y = end - start
+  var len = Math.min(x, y)
+
+  var thisCopy = this.slice(thisStart, thisEnd)
+  var targetCopy = target.slice(start, end)
+
+  for (var i = 0; i < len; ++i) {
+    if (thisCopy[i] !== targetCopy[i]) {
+      x = thisCopy[i]
+      y = targetCopy[i]
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
+// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
+//
+// Arguments:
+// - buffer - a Buffer to search
+// - val - a string, Buffer, or number
+// - byteOffset - an index into `buffer`; will be clamped to an int32
+// - encoding - an optional encoding, relevant is val is a string
+// - dir - true for indexOf, false for lastIndexOf
+function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
+  // Empty buffer means no match
+  if (buffer.length === 0) return -1
+
+  // Normalize byteOffset
+  if (typeof byteOffset === 'string') {
+    encoding = byteOffset
+    byteOffset = 0
+  } else if (byteOffset > 0x7fffffff) {
+    byteOffset = 0x7fffffff
+  } else if (byteOffset < -0x80000000) {
+    byteOffset = -0x80000000
+  }
+  byteOffset = +byteOffset  // Coerce to Number.
+  if (isNaN(byteOffset)) {
+    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
+    byteOffset = dir ? 0 : (buffer.length - 1)
+  }
+
+  // Normalize byteOffset: negative offsets start from the end of the buffer
+  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
+  if (byteOffset >= buffer.length) {
+    if (dir) return -1
+    else byteOffset = buffer.length - 1
+  } else if (byteOffset < 0) {
+    if (dir) byteOffset = 0
+    else return -1
+  }
+
+  // Normalize val
+  if (typeof val === 'string') {
+    val = Buffer.from(val, encoding)
+  }
+
+  // Finally, search either indexOf (if dir is true) or lastIndexOf
+  if (Buffer.isBuffer(val)) {
+    // Special case: looking for empty string/buffer always fails
+    if (val.length === 0) {
+      return -1
+    }
+    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
+  } else if (typeof val === 'number') {
+    val = val & 0xFF // Search for a byte value [0-255]
+    if (Buffer.TYPED_ARRAY_SUPPORT &&
+        typeof Uint8Array.prototype.indexOf === 'function') {
+      if (dir) {
+        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
+      } else {
+        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
+      }
+    }
+    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
+  }
+
+  throw new TypeError('val must be string, number or Buffer')
+}
+
+function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
+  var indexSize = 1
+  var arrLength = arr.length
+  var valLength = val.length
+
+  if (encoding !== undefined) {
+    encoding = String(encoding).toLowerCase()
+    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
+        encoding === 'utf16le' || encoding === 'utf-16le') {
+      if (arr.length < 2 || val.length < 2) {
+        return -1
+      }
+      indexSize = 2
+      arrLength /= 2
+      valLength /= 2
+      byteOffset /= 2
+    }
+  }
+
+  function read (buf, i) {
+    if (indexSize === 1) {
+      return buf[i]
+    } else {
+      return buf.readUInt16BE(i * indexSize)
+    }
+  }
+
+  var i
+  if (dir) {
+    var foundIndex = -1
+    for (i = byteOffset; i < arrLength; i++) {
+      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+        if (foundIndex === -1) foundIndex = i
+        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
+      } else {
+        if (foundIndex !== -1) i -= i - foundIndex
+        foundIndex = -1
+      }
+    }
+  } else {
+    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
+    for (i = byteOffset; i >= 0; i--) {
+      var found = true
+      for (var j = 0; j < valLength; j++) {
+        if (read(arr, i + j) !== read(val, j)) {
+          found = false
+          break
+        }
+      }
+      if (found) return i
+    }
+  }
+
+  return -1
+}
+
+Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
+  return this.indexOf(val, byteOffset, encoding) !== -1
+}
+
+Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
+}
+
+Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
+}
+
+function hexWrite (buf, string, offset, length) {
+  offset = Number(offset) || 0
+  var remaining = buf.length - offset
+  if (!length) {
+    length = remaining
+  } else {
+    length = Number(length)
+    if (length > remaining) {
+      length = remaining
+    }
+  }
+
+  // must be an even number of digits
+  var strLen = string.length
+  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
+
+  if (length > strLen / 2) {
+    length = strLen / 2
+  }
+  for (var i = 0; i < length; ++i) {
+    var parsed = parseInt(string.substr(i * 2, 2), 16)
+    if (isNaN(parsed)) return i
+    buf[offset + i] = parsed
+  }
+  return i
+}
+
+function utf8Write (buf, string, offset, length) {
+  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+function asciiWrite (buf, string, offset, length) {
+  return blitBuffer(asciiToBytes(string), buf, offset, length)
+}
+
+function latin1Write (buf, string, offset, length) {
+  return asciiWrite(buf, string, offset, length)
+}
+
+function base64Write (buf, string, offset, length) {
+  return blitBuffer(base64ToBytes(string), buf, offset, length)
+}
+
+function ucs2Write (buf, string, offset, length) {
+  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+Buffer.prototype.write = function write (string, offset, length, encoding) {
+  // Buffer#write(string)
+  if (offset === undefined) {
+    encoding = 'utf8'
+    length = this.length
+    offset = 0
+  // Buffer#write(string, encoding)
+  } else if (length === undefined && typeof offset === 'string') {
+    encoding = offset
+    length = this.length
+    offset = 0
+  // Buffer#write(string, offset[, length][, encoding])
+  } else if (isFinite(offset)) {
+    offset = offset | 0
+    if (isFinite(length)) {
+      length = length | 0
+      if (encoding === undefined) encoding = 'utf8'
+    } else {
+      encoding = length
+      length = undefined
+    }
+  // legacy write(string, encoding, offset, length) - remove in v0.13
+  } else {
+    throw new Error(
+      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
+    )
+  }
+
+  var remaining = this.length - offset
+  if (length === undefined || length > remaining) length = remaining
+
+  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
+    throw new RangeError('Attempt to write outside buffer bounds')
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'hex':
+        return hexWrite(this, string, offset, length)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Write(this, string, offset, length)
+
+      case 'ascii':
+        return asciiWrite(this, string, offset, length)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Write(this, string, offset, length)
+
+      case 'base64':
+        // Warning: maxLength not taken into account in base64Write
+        return base64Write(this, string, offset, length)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return ucs2Write(this, string, offset, length)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+Buffer.prototype.toJSON = function toJSON () {
+  return {
+    type: 'Buffer',
+    data: Array.prototype.slice.call(this._arr || this, 0)
+  }
+}
+
+function base64Slice (buf, start, end) {
+  if (start === 0 && end === buf.length) {
+    return base64.fromByteArray(buf)
+  } else {
+    return base64.fromByteArray(buf.slice(start, end))
+  }
+}
+
+function utf8Slice (buf, start, end) {
+  end = Math.min(buf.length, end)
+  var res = []
+
+  var i = start
+  while (i < end) {
+    var firstByte = buf[i]
+    var codePoint = null
+    var bytesPerSequence = (firstByte > 0xEF) ? 4
+      : (firstByte > 0xDF) ? 3
+      : (firstByte > 0xBF) ? 2
+      : 1
+
+    if (i + bytesPerSequence <= end) {
+      var secondByte, thirdByte, fourthByte, tempCodePoint
+
+      switch (bytesPerSequence) {
+        case 1:
+          if (firstByte < 0x80) {
+            codePoint = firstByte
+          }
+          break
+        case 2:
+          secondByte = buf[i + 1]
+          if ((secondByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
+            if (tempCodePoint > 0x7F) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 3:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
+            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 4:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          fourthByte = buf[i + 3]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
+            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+              codePoint = tempCodePoint
+            }
+          }
+      }
+    }
+
+    if (codePoint === null) {
+      // we did not generate a valid codePoint so insert a
+      // replacement char (U+FFFD) and advance only 1 byte
+      codePoint = 0xFFFD
+      bytesPerSequence = 1
+    } else if (codePoint > 0xFFFF) {
+      // encode to utf16 (surrogate pair dance)
+      codePoint -= 0x10000
+      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
+      codePoint = 0xDC00 | codePoint & 0x3FF
+    }
+
+    res.push(codePoint)
+    i += bytesPerSequence
+  }
+
+  return decodeCodePointsArray(res)
+}
+
+// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+// the lowest limit is Chrome, with 0x10000 args.
+// We go 1 magnitude less, for safety
+var MAX_ARGUMENTS_LENGTH = 0x1000
+
+function decodeCodePointsArray (codePoints) {
+  var len = codePoints.length
+  if (len <= MAX_ARGUMENTS_LENGTH) {
+    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
+  }
+
+  // Decode in chunks to avoid "call stack size exceeded".
+  var res = ''
+  var i = 0
+  while (i < len) {
+    res += String.fromCharCode.apply(
+      String,
+      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
+    )
+  }
+  return res
+}
+
+function asciiSlice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i] & 0x7F)
+  }
+  return ret
+}
+
+function latin1Slice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i])
+  }
+  return ret
+}
+
+function hexSlice (buf, start, end) {
+  var len = buf.length
+
+  if (!start || start < 0) start = 0
+  if (!end || end < 0 || end > len) end = len
+
+  var out = ''
+  for (var i = start; i < end; ++i) {
+    out += toHex(buf[i])
+  }
+  return out
+}
+
+function utf16leSlice (buf, start, end) {
+  var bytes = buf.slice(start, end)
+  var res = ''
+  for (var i = 0; i < bytes.length; i += 2) {
+    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
+  }
+  return res
+}
+
+Buffer.prototype.slice = function slice (start, end) {
+  var len = this.length
+  start = ~~start
+  end = end === undefined ? len : ~~end
+
+  if (start < 0) {
+    start += len
+    if (start < 0) start = 0
+  } else if (start > len) {
+    start = len
+  }
+
+  if (end < 0) {
+    end += len
+    if (end < 0) end = 0
+  } else if (end > len) {
+    end = len
+  }
+
+  if (end < start) end = start
+
+  var newBuf
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    newBuf = this.subarray(start, end)
+    newBuf.__proto__ = Buffer.prototype
+  } else {
+    var sliceLen = end - start
+    newBuf = new Buffer(sliceLen, undefined)
+    for (var i = 0; i < sliceLen; ++i) {
+      newBuf[i] = this[i + start]
+    }
+  }
+
+  return newBuf
+}
+
+/*
+ * Need to make sure that buffer isn't trying to write out of bounds.
+ */
+function checkOffset (offset, ext, length) {
+  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
+}
+
+Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    checkOffset(offset, byteLength, this.length)
+  }
+
+  var val = this[offset + --byteLength]
+  var mul = 1
+  while (byteLength > 0 && (mul *= 0x100)) {
+    val += this[offset + --byteLength] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  return this[offset]
+}
+
+Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return this[offset] | (this[offset + 1] << 8)
+}
+
+Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return (this[offset] << 8) | this[offset + 1]
+}
+
+Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return ((this[offset]) |
+      (this[offset + 1] << 8) |
+      (this[offset + 2] << 16)) +
+      (this[offset + 3] * 0x1000000)
+}
+
+Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] * 0x1000000) +
+    ((this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    this[offset + 3])
+}
+
+Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var i = byteLength
+  var mul = 1
+  var val = this[offset + --i]
+  while (i > 0 && (mul *= 0x100)) {
+    val += this[offset + --i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  if (!(this[offset] & 0x80)) return (this[offset])
+  return ((0xff - this[offset] + 1) * -1)
+}
+
+Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset] | (this[offset + 1] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset + 1] | (this[offset] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset]) |
+    (this[offset + 1] << 8) |
+    (this[offset + 2] << 16) |
+    (this[offset + 3] << 24)
+}
+
+Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] << 24) |
+    (this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    (this[offset + 3])
+}
+
+Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, true, 23, 4)
+}
+
+Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, false, 23, 4)
+}
+
+Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, true, 52, 8)
+}
+
+Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, false, 52, 8)
+}
+
+function checkInt (buf, value, offset, ext, max, min) {
+  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
+  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+}
+
+Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var mul = 1
+  var i = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+function objectWriteUInt16 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
+    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
+      (littleEndian ? i : 1 - i) * 8
+  }
+}
+
+Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+function objectWriteUInt32 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffffffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
+    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
+  }
+}
+
+Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset + 3] = (value >>> 24)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 1] = (value >>> 8)
+    this[offset] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = 0
+  var mul = 1
+  var sub = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  var sub = 0
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  if (value < 0) value = 0xff + value + 1
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 3] = (value >>> 24)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (value < 0) value = 0xffffffff + value + 1
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+function checkIEEE754 (buf, value, offset, ext, max, min) {
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+  if (offset < 0) throw new RangeError('Index out of range')
+}
+
+function writeFloat (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 23, 4)
+  return offset + 4
+}
+
+Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, false, noAssert)
+}
+
+function writeDouble (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 52, 8)
+  return offset + 8
+}
+
+Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, false, noAssert)
+}
+
+// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
+Buffer.prototype.copy = function copy (target, targetStart, start, end) {
+  if (!start) start = 0
+  if (!end && end !== 0) end = this.length
+  if (targetStart >= target.length) targetStart = target.length
+  if (!targetStart) targetStart = 0
+  if (end > 0 && end < start) end = start
+
+  // Copy 0 bytes; we're done
+  if (end === start) return 0
+  if (target.length === 0 || this.length === 0) return 0
+
+  // Fatal error conditions
+  if (targetStart < 0) {
+    throw new RangeError('targetStart out of bounds')
+  }
+  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
+  if (end < 0) throw new RangeError('sourceEnd out of bounds')
+
+  // Are we oob?
+  if (end > this.length) end = this.length
+  if (target.length - targetStart < end - start) {
+    end = target.length - targetStart + start
+  }
+
+  var len = end - start
+  var i
+
+  if (this === target && start < targetStart && targetStart < end) {
+    // descending copy from end
+    for (i = len - 1; i >= 0; --i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+    // ascending copy from start
+    for (i = 0; i < len; ++i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else {
+    Uint8Array.prototype.set.call(
+      target,
+      this.subarray(start, start + len),
+      targetStart
+    )
+  }
+
+  return len
+}
+
+// Usage:
+//    buffer.fill(number[, offset[, end]])
+//    buffer.fill(buffer[, offset[, end]])
+//    buffer.fill(string[, offset[, end]][, encoding])
+Buffer.prototype.fill = function fill (val, start, end, encoding) {
+  // Handle string cases:
+  if (typeof val === 'string') {
+    if (typeof start === 'string') {
+      encoding = start
+      start = 0
+      end = this.length
+    } else if (typeof end === 'string') {
+      encoding = end
+      end = this.length
+    }
+    if (val.length === 1) {
+      var code = val.charCodeAt(0)
+      if (code < 256) {
+        val = code
+      }
+    }
+    if (encoding !== undefined && typeof encoding !== 'string') {
+      throw new TypeError('encoding must be a string')
+    }
+    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
+      throw new TypeError('Unknown encoding: ' + encoding)
+    }
+  } else if (typeof val === 'number') {
+    val = val & 255
+  }
+
+  // Invalid ranges are not set to a default, so can range check early.
+  if (start < 0 || this.length < start || this.length < end) {
+    throw new RangeError('Out of range index')
+  }
+
+  if (end <= start) {
+    return this
+  }
+
+  start = start >>> 0
+  end = end === undefined ? this.length : end >>> 0
+
+  if (!val) val = 0
+
+  var i
+  if (typeof val === 'number') {
+    for (i = start; i < end; ++i) {
+      this[i] = val
+    }
+  } else {
+    var bytes = Buffer.isBuffer(val)
+      ? val
+      : utf8ToBytes(new Buffer(val, encoding).toString())
+    var len = bytes.length
+    for (i = 0; i < end - start; ++i) {
+      this[i + start] = bytes[i % len]
+    }
+  }
+
+  return this
+}
+
+// HELPER FUNCTIONS
+// ================
+
+var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
+
+function base64clean (str) {
+  // Node strips out invalid characters like \n and \t from the string, base64-js does not
+  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
+  // Node converts strings with length < 2 to ''
+  if (str.length < 2) return ''
+  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+  while (str.length % 4 !== 0) {
+    str = str + '='
+  }
+  return str
+}
+
+function stringtrim (str) {
+  if (str.trim) return str.trim()
+  return str.replace(/^\s+|\s+$/g, '')
+}
+
+function toHex (n) {
+  if (n < 16) return '0' + n.toString(16)
+  return n.toString(16)
+}
+
+function utf8ToBytes (string, units) {
+  units = units || Infinity
+  var codePoint
+  var length = string.length
+  var leadSurrogate = null
+  var bytes = []
+
+  for (var i = 0; i < length; ++i) {
+    codePoint = string.charCodeAt(i)
+
+    // is surrogate component
+    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+      // last char was a lead
+      if (!leadSurrogate) {
+        // no lead yet
+        if (codePoint > 0xDBFF) {
+          // unexpected trail
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        } else if (i + 1 === length) {
+          // unpaired lead
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        }
+
+        // valid lead
+        leadSurrogate = codePoint
+
+        continue
+      }
+
+      // 2 leads in a row
+      if (codePoint < 0xDC00) {
+        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+        leadSurrogate = codePoint
+        continue
+      }
+
+      // valid surrogate pair
+      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
+    } else if (leadSurrogate) {
+      // valid bmp char, but last char was a lead
+      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+    }
+
+    leadSurrogate = null
+
+    // encode utf8
+    if (codePoint < 0x80) {
+      if ((units -= 1) < 0) break
+      bytes.push(codePoint)
+    } else if (codePoint < 0x800) {
+      if ((units -= 2) < 0) break
+      bytes.push(
+        codePoint >> 0x6 | 0xC0,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x10000) {
+      if ((units -= 3) < 0) break
+      bytes.push(
+        codePoint >> 0xC | 0xE0,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x110000) {
+      if ((units -= 4) < 0) break
+      bytes.push(
+        codePoint >> 0x12 | 0xF0,
+        codePoint >> 0xC & 0x3F | 0x80,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else {
+      throw new Error('Invalid code point')
+    }
+  }
+
+  return bytes
+}
+
+function asciiToBytes (str) {
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    // Node's code seems to be doing this and not & 0x7F..
+    byteArray.push(str.charCodeAt(i) & 0xFF)
+  }
+  return byteArray
+}
+
+function utf16leToBytes (str, units) {
+  var c, hi, lo
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    if ((units -= 2) < 0) break
+
+    c = str.charCodeAt(i)
+    hi = c >> 8
+    lo = c % 256
+    byteArray.push(lo)
+    byteArray.push(hi)
+  }
+
+  return byteArray
+}
+
+function base64ToBytes (str) {
+  return base64.toByteArray(base64clean(str))
+}
+
+function blitBuffer (src, dst, offset, length) {
+  for (var i = 0; i < length; ++i) {
+    if ((i + offset >= dst.length) || (i >= src.length)) break
+    dst[i + offset] = src[i]
+  }
+  return i
+}
+
+function isnan (val) {
+  return val !== val // eslint-disable-line no-self-compare
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"base64-js":53,"ieee754":91,"isarray":94}],56:[function(require,module,exports){
+(function (Buffer){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// NOTE: These type checking functions intentionally don't use `instanceof`
+// because it is fragile and can be easily faked with `Object.create()`.
+
+function isArray(arg) {
+  if (Array.isArray) {
+    return Array.isArray(arg);
+  }
+  return objectToString(arg) === '[object Array]';
+}
+exports.isArray = isArray;
+
+function isBoolean(arg) {
+  return typeof arg === 'boolean';
+}
+exports.isBoolean = isBoolean;
+
+function isNull(arg) {
+  return arg === null;
+}
+exports.isNull = isNull;
+
+function isNullOrUndefined(arg) {
+  return arg == null;
+}
+exports.isNullOrUndefined = isNullOrUndefined;
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+exports.isNumber = isNumber;
+
+function isString(arg) {
+  return typeof arg === 'string';
+}
+exports.isString = isString;
+
+function isSymbol(arg) {
+  return typeof arg === 'symbol';
+}
+exports.isSymbol = isSymbol;
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+exports.isUndefined = isUndefined;
+
+function isRegExp(re) {
+  return objectToString(re) === '[object RegExp]';
+}
+exports.isRegExp = isRegExp;
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+exports.isObject = isObject;
+
+function isDate(d) {
+  return objectToString(d) === '[object Date]';
+}
+exports.isDate = isDate;
+
+function isError(e) {
+  return (objectToString(e) === '[object Error]' || e instanceof Error);
+}
+exports.isError = isError;
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+exports.isFunction = isFunction;
+
+function isPrimitive(arg) {
+  return arg === null ||
+         typeof arg === 'boolean' ||
+         typeof arg === 'number' ||
+         typeof arg === 'string' ||
+         typeof arg === 'symbol' ||  // ES6 symbol
+         typeof arg === 'undefined';
+}
+exports.isPrimitive = isPrimitive;
+
+exports.isBuffer = Buffer.isBuffer;
+
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
+}
+
+}).call(this,{"isBuffer":require("../../is-buffer/index.js")})
+},{"../../is-buffer/index.js":93}],57:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+function EventEmitter() {
+  this._events = this._events || {};
+  this._maxListeners = this._maxListeners || undefined;
+}
+module.exports = EventEmitter;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+EventEmitter.defaultMaxListeners = 10;
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function(n) {
+  if (!isNumber(n) || n < 0 || isNaN(n))
+    throw TypeError('n must be a positive number');
+  this._maxListeners = n;
+  return this;
+};
+
+EventEmitter.prototype.emit = function(type) {
+  var er, handler, len, args, i, listeners;
+
+  if (!this._events)
+    this._events = {};
+
+  // If there is no 'error' event listener then throw.
+  if (type === 'error') {
+    if (!this._events.error ||
+        (isObject(this._events.error) && !this._events.error.length)) {
+      er = arguments[1];
+      if (er instanceof Error) {
+        throw er; // Unhandled 'error' event
+      } else {
+        // At least give some kind of context to the user
+        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
+        err.context = er;
+        throw err;
+      }
+    }
+  }
+
+  handler = this._events[type];
+
+  if (isUndefined(handler))
+    return false;
+
+  if (isFunction(handler)) {
+    switch (arguments.length) {
+      // fast cases
+      case 1:
+        handler.call(this);
+        break;
+      case 2:
+        handler.call(this, arguments[1]);
+        break;
+      case 3:
+        handler.call(this, arguments[1], arguments[2]);
+        break;
+      // slower
+      default:
+        args = Array.prototype.slice.call(arguments, 1);
+        handler.apply(this, args);
+    }
+  } else if (isObject(handler)) {
+    args = Array.prototype.slice.call(arguments, 1);
+    listeners = handler.slice();
+    len = listeners.length;
+    for (i = 0; i < len; i++)
+      listeners[i].apply(this, args);
+  }
+
+  return true;
+};
+
+EventEmitter.prototype.addListener = function(type, listener) {
+  var m;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events)
+    this._events = {};
+
+  // To avoid recursion in the case that type === "newListener"! Before
+  // adding it to the listeners, first emit "newListener".
+  if (this._events.newListener)
+    this.emit('newListener', type,
+              isFunction(listener.listener) ?
+              listener.listener : listener);
+
+  if (!this._events[type])
+    // Optimize the case of one listener. Don't need the extra array object.
+    this._events[type] = listener;
+  else if (isObject(this._events[type]))
+    // If we've already got an array, just append.
+    this._events[type].push(listener);
+  else
+    // Adding the second element, need to change to array.
+    this._events[type] = [this._events[type], listener];
+
+  // Check for listener leak
+  if (isObject(this._events[type]) && !this._events[type].warned) {
+    if (!isUndefined(this._maxListeners)) {
+      m = this._maxListeners;
+    } else {
+      m = EventEmitter.defaultMaxListeners;
+    }
+
+    if (m && m > 0 && this._events[type].length > m) {
+      this._events[type].warned = true;
+      console.error('(node) warning: possible EventEmitter memory ' +
+                    'leak detected. %d listeners added. ' +
+                    'Use emitter.setMaxListeners() to increase limit.',
+                    this._events[type].length);
+      if (typeof console.trace === 'function') {
+        // not supported in IE 10
+        console.trace();
+      }
+    }
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.once = function(type, listener) {
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  var fired = false;
+
+  function g() {
+    this.removeListener(type, g);
+
+    if (!fired) {
+      fired = true;
+      listener.apply(this, arguments);
+    }
+  }
+
+  g.listener = listener;
+  this.on(type, g);
+
+  return this;
+};
+
+// emits a 'removeListener' event iff the listener was removed
+EventEmitter.prototype.removeListener = function(type, listener) {
+  var list, position, length, i;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events || !this._events[type])
+    return this;
+
+  list = this._events[type];
+  length = list.length;
+  position = -1;
+
+  if (list === listener ||
+      (isFunction(list.listener) && list.listener === listener)) {
+    delete this._events[type];
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+
+  } else if (isObject(list)) {
+    for (i = length; i-- > 0;) {
+      if (list[i] === listener ||
+          (list[i].listener && list[i].listener === listener)) {
+        position = i;
+        break;
+      }
+    }
+
+    if (position < 0)
+      return this;
+
+    if (list.length === 1) {
+      list.length = 0;
+      delete this._events[type];
+    } else {
+      list.splice(position, 1);
+    }
+
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.removeAllListeners = function(type) {
+  var key, listeners;
+
+  if (!this._events)
+    return this;
+
+  // not listening for removeListener, no need to emit
+  if (!this._events.removeListener) {
+    if (arguments.length === 0)
+      this._events = {};
+    else if (this._events[type])
+      delete this._events[type];
+    return this;
+  }
+
+  // emit removeListener for all listeners on all events
+  if (arguments.length === 0) {
+    for (key in this._events) {
+      if (key === 'removeListener') continue;
+      this.removeAllListeners(key);
+    }
+    this.removeAllListeners('removeListener');
+    this._events = {};
+    return this;
+  }
+
+  listeners = this._events[type];
+
+  if (isFunction(listeners)) {
+    this.removeListener(type, listeners);
+  } else if (listeners) {
+    // LIFO order
+    while (listeners.length)
+      this.removeListener(type, listeners[listeners.length - 1]);
+  }
+  delete this._events[type];
+
+  return this;
+};
+
+EventEmitter.prototype.listeners = function(type) {
+  var ret;
+  if (!this._events || !this._events[type])
+    ret = [];
+  else if (isFunction(this._events[type]))
+    ret = [this._events[type]];
+  else
+    ret = this._events[type].slice();
+  return ret;
+};
+
+EventEmitter.prototype.listenerCount = function(type) {
+  if (this._events) {
+    var evlistener = this._events[type];
+
+    if (isFunction(evlistener))
+      return 1;
+    else if (evlistener)
+      return evlistener.length;
+  }
+  return 0;
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  return emitter.listenerCount(type);
+};
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+
+},{}],58:[function(require,module,exports){
+'use strict';
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FunctionBuilderBase = require('../function-builder-base');
+var CPUFunctionNode = require('./function-node');
+
+/**
+ * @class CPUFunctionBuilder
+ *
+ * @extends FunctionBuilderBase
+ *
+ * @desc Builds functions to execute on CPU from JavaScript function Strings
+ *
+ */
+module.exports = function (_FunctionBuilderBase) {
+  _inherits(CPUFunctionBuilder, _FunctionBuilderBase);
+
+  function CPUFunctionBuilder() {
+    _classCallCheck(this, CPUFunctionBuilder);
+
+    var _this = _possibleConstructorReturn(this, (CPUFunctionBuilder.__proto__ || Object.getPrototypeOf(CPUFunctionBuilder)).call(this));
+
+    _this.Node = CPUFunctionNode;
+    return _this;
+  }
+
+  return CPUFunctionBuilder;
+}(FunctionBuilderBase);
+},{"../function-builder-base":63,"./function-node":59}],59:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var BaseFunctionNode = require('../function-node-base');
+var utils = require('../../core/utils');
+
+/**
+ * @class CPUFunctionNode
+ *
+ * @extends BaseFunctionNode#
+ *
+ * @desc [INTERNAL] Represents a single function, inside JS
+ *
+ * <p>This handles all the raw state, converted state, etc. Of a single function.</p>
+ *
+ * @prop functionName         - {String}        Name of the function
+ * @prop jsFunction           - {Function}   The JS Function the node represents
+ * @prop jsFunctionString     - {String}        jsFunction.toString()
+ * @prop paramNames           - {String[]}  Parameter names of the function
+ * @prop paramTypes           - {String[]}  Shader land parameters type assumption
+ * @prop isRootKernel         - {Boolean}       Special indicator, for kernel function
+ * @prop webglFunctionString  - {String}        webgl converted function string
+ * @prop openglFunctionString - {String}        opengl converted function string
+ * @prop calledFunctions      - {String[]}  List of all the functions called
+ * @prop initVariables        - {String[]}  List of variables initialized in the function
+ * @prop readVariables        - {String[]}  List of variables read operations occur
+ * @prop writeVariables       - {String[]}  List of variables write operations occur
+ *
+ */
+module.exports = function (_BaseFunctionNode) {
+	_inherits(CPUFunctionNode, _BaseFunctionNode);
+
+	function CPUFunctionNode(functionName, jsFunction, options) {
+		_classCallCheck(this, CPUFunctionNode);
+
+		var _this = _possibleConstructorReturn(this, (CPUFunctionNode.__proto__ || Object.getPrototypeOf(CPUFunctionNode)).call(this, functionName, jsFunction, options));
+
+		_this.paramSizes = options ? options.paramSizes : [];
+		_this.memberStates = [];
+		return _this;
+	}
+
+	_createClass(CPUFunctionNode, [{
+		key: 'pushMemberState',
+		value: function pushMemberState(name) {
+			this.memberStates.push(name);
+		}
+	}, {
+		key: 'popMemberState',
+		value: function popMemberState(name) {
+			if (this.memberState === name) {
+				this.memberStates.pop();
+			} else {
+				throw new Error('Cannot popMemberState ' + name + ' when in ' + this.memberState);
+			}
+		}
+	}, {
+		key: 'generate',
+		value: function generate() {
+			if (this.debug) {
+				console.log(this);
+			}
+			this.functionStringArray = this.astGeneric(this.getJsAST(), []);
+			this.functionString = this.functionStringArray.join('').trim();
+			return this.functionString;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name getFunctionPrototypeString
+   *
+   * @desc Returns the converted JS function
+   *
+   * @returns {String} function string, result is cached under this.getFunctionPrototypeString
+   *
+   */
+
+	}, {
+		key: 'getFunctionPrototypeString',
+		value: function getFunctionPrototypeString() {
+			if (this.webGlFunctionPrototypeString) {
+				return this.webGlFunctionPrototypeString;
+			}
+			return this.webGlFunctionPrototypeString = this.generate();
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astFunctionDeclaration
+   *
+   * @desc Parses the abstract syntax tree for to its *named function declaration*
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astFunctionDeclaration',
+		value: function astFunctionDeclaration(ast, retArr) {
+			this.builder.addFunction(null, utils.getAstString(this.jsFunctionString, ast));
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astFunctionPrototype
+   *
+   * @desc Parses the abstract syntax tree for to its *named function prototype*
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astFunctionPrototype',
+		value: function astFunctionPrototype(ast, retArr) {
+			// Setup function return type and name
+			if (this.isRootKernel || this.isSubKernel) {
+				return retArr;
+			}
+
+			retArr.push(this.returnType);
+			retArr.push(' ');
+			retArr.push(this.functionName);
+			retArr.push('(');
+
+			// Arguments handling
+			for (var i = 0; i < this.paramNames.length; ++i) {
+				if (i > 0) {
+					retArr.push(', ');
+				}
+				retArr.push('user_');
+				retArr.push(this.paramNames[i]);
+			}
+
+			retArr.push(');\n');
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astFunctionExpression
+   *
+   * @desc Parses the abstract syntax tree for to its *named function*
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astFunctionExpression',
+		value: function astFunctionExpression(ast, retArr) {
+
+			// Setup function return type and name
+			if (!this.isRootKernel) {
+				retArr.push('function');
+				retArr.push(' ');
+				retArr.push(this.functionName);
+				retArr.push('(');
+
+				// Arguments handling
+				for (var i = 0; i < this.paramNames.length; ++i) {
+					var paramName = this.paramNames[i];
+
+					if (i > 0) {
+						retArr.push(', ');
+					}
+					retArr.push('user_');
+					retArr.push(paramName);
+				}
+
+				// Function opening
+				retArr.push(') {\n');
+			}
+
+			// Body statement iteration
+			for (var _i = 0; _i < ast.body.body.length; ++_i) {
+				this.astGeneric(ast.body.body[_i], retArr);
+				retArr.push('\n');
+			}
+
+			if (!this.isRootKernel) {
+				// Function closing
+				retArr.push('}\n');
+			}
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astReturnStatement
+   *
+   * @desc Parses the abstract syntax tree for to *return* statement
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astReturnStatement',
+		value: function astReturnStatement(ast, retArr) {
+			if (this.isRootKernel) {
+				retArr.push('kernelResult = ');
+				this.astGeneric(ast.argument, retArr);
+				retArr.push(';');
+			} else if (this.isSubKernel) {
+				retArr.push(this.functionName + 'Result = ');
+				this.astGeneric(ast.argument, retArr);
+				retArr.push(';');
+				retArr.push('return ' + this.functionName + 'Result;');
+			} else {
+				retArr.push('return ');
+				this.astGeneric(ast.argument, retArr);
+				retArr.push(';');
+			}
+
+			//throw this.astErrorOutput(
+			//	'Non main function return, is not supported : '+this.currentFunctionNamespace,
+			//	ast
+			//);
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astLiteral
+   *
+   * @desc Parses the abstract syntax tree for *literal value*
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astLiteral',
+		value: function astLiteral(ast, retArr) {
+
+			// Reject non numeric literals
+			if (isNaN(ast.value)) {
+				throw this.astErrorOutput('Non-numeric literal not supported : ' + ast.value, ast);
+			}
+
+			retArr.push(ast.value);
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astBinaryExpression
+   *
+   * @desc Parses the abstract syntax tree for *binary* expression
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astBinaryExpression',
+		value: function astBinaryExpression(ast, retArr) {
+			retArr.push('(');
+			this.astGeneric(ast.left, retArr);
+			retArr.push(ast.operator);
+			this.astGeneric(ast.right, retArr);
+			retArr.push(')');
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astIdentifierExpression
+   *
+   * @desc Parses the abstract syntax tree for *identifier* expression
+   *
+   * @param {Object} idtNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astIdentifierExpression',
+		value: function astIdentifierExpression(idtNode, retArr) {
+			if (idtNode.type !== 'Identifier') {
+				throw this.astErrorOutput('IdentifierExpression - not an Identifier', idtNode);
+			}
+
+			switch (this.state) {
+				case 'input-index-y':
+				case 'input-index-z':
+					retArr.push('(');
+			}
+
+			switch (idtNode.name) {
+				case 'gpu_threadX':
+					retArr.push('threadId.x');
+					break;
+				case 'gpu_threadY':
+					retArr.push('threadId.y');
+					break;
+				case 'gpu_threadZ':
+					retArr.push('threadId.z');
+					break;
+				case 'gpu_outputX':
+					retArr.push('uOutputDim.x');
+					break;
+				case 'gpu_outputY':
+					retArr.push('uOutputDim.y');
+					break;
+				case 'gpu_outputZ':
+					retArr.push('uOutputDim.z');
+					break;
+				case 'Infinity':
+					retArr.push('Infinity');
+					break;
+				default:
+					if (this.constants && this.constants.hasOwnProperty(idtNode.name)) {
+						retArr.push('constants_' + idtNode.name);
+					} else {
+						var userParamName = this.getUserParamName(idtNode.name);
+						if (userParamName !== null) {
+							retArr.push('user_' + userParamName);
+						} else {
+							retArr.push('user_' + idtNode.name);
+						}
+					}
+			}
+
+			switch (this.state) {
+				case 'input-index-y':
+					{
+						var size = this.paramSizes[this.paramNames.indexOf(this.memberState)];
+						retArr.push(' * ' + size[0] + ')');
+						break;
+					}
+				case 'input-index-z':
+					{
+						var _size = this.paramSizes[this.paramNames.indexOf(this.memberState)];
+						retArr.push(' * ' + _size[0] * _size[1] + ')');
+						break;
+					}
+			}
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astForStatement
+   *
+   * @desc Parses the abstract syntax tree forfor *for-loop* expression
+   *
+   * @param {Object} forNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the parsed cpu string
+   */
+
+	}, {
+		key: 'astForStatement',
+		value: function astForStatement(forNode, retArr) {
+			if (forNode.type !== 'ForStatement') {
+				throw this.astErrorOutput('Invalid for statement', forNode);
+			}
+
+			if (forNode.test && forNode.test.type === 'BinaryExpression') {
+				if ((forNode.test.right.type === 'Identifier' || forNode.test.right.type === 'Literal') && forNode.test.operator === '<' && this.isIdentifierConstant(forNode.test.right.name) === false) {
+
+					if (!this.loopMaxIterations) {
+						console.warn('Warning: loopMaxIterations is not set! Using default of 1000 which may result in unintended behavior.');
+						console.warn('Set loopMaxIterations or use a for loop of fixed length to silence this message.');
+					}
+
+					retArr.push('for (');
+					this.astGeneric(forNode.init, retArr);
+					if (retArr[retArr.length - 1] !== ';') {
+						retArr.push(';');
+					}
+					this.astGeneric(forNode.test.left, retArr);
+					retArr.push(forNode.test.operator);
+					retArr.push('LOOP_MAX');
+					retArr.push(';');
+					this.astGeneric(forNode.update, retArr);
+					retArr.push(')');
+
+					retArr.push('{\n');
+					retArr.push('if (');
+					this.astGeneric(forNode.test.left, retArr);
+					retArr.push(forNode.test.operator);
+					this.astGeneric(forNode.test.right, retArr);
+					retArr.push(') {\n');
+					if (forNode.body.type === 'BlockStatement') {
+						for (var i = 0; i < forNode.body.body.length; i++) {
+							this.astGeneric(forNode.body.body[i], retArr);
+						}
+					} else {
+						this.astGeneric(forNode.body, retArr);
+					}
+					retArr.push('} else {\n');
+					retArr.push('break;\n');
+					retArr.push('}\n');
+					retArr.push('}\n');
+
+					return retArr;
+				} else if (forNode.init.declarations) {
+					var declarations = JSON.parse(JSON.stringify(forNode.init.declarations));
+					var updateArgument = forNode.update.argument;
+					if (!Array.isArray(declarations) || declarations.length < 1) {
+						console.log(this.jsFunctionString);
+						throw new Error('Error: Incompatible for loop declaration');
+					}
+
+					if (declarations.length > 1) {
+						var initArgument = null;
+						for (var _i2 = 0; _i2 < declarations.length; _i2++) {
+							var declaration = declarations[_i2];
+							if (declaration.id.name === updateArgument.name) {
+								initArgument = declaration;
+								declarations.splice(_i2, 1);
+							} else {
+								retArr.push('var ');
+								this.astGeneric(declaration, retArr);
+								retArr.push(';');
+							}
+						}
+
+						retArr.push('for (let ');
+						this.astGeneric(initArgument, retArr);
+						retArr.push(';');
+					} else {
+						retArr.push('for (');
+						this.astGeneric(forNode.init, retArr);
+					}
+
+					this.astGeneric(forNode.test, retArr);
+					retArr.push(';');
+					this.astGeneric(forNode.update, retArr);
+					retArr.push(')');
+					this.astGeneric(forNode.body, retArr);
+					return retArr;
+				}
+			}
+
+			throw this.astErrorOutput('Invalid for statement', forNode);
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astWhileStatement
+   *
+   * @desc Parses the abstract syntax tree for *while* loop
+   *
+   *
+   * @param {Object} whileNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the parsed openclgl string
+   */
+
+	}, {
+		key: 'astWhileStatement',
+		value: function astWhileStatement(whileNode, retArr) {
+			if (whileNode.type !== 'WhileStatement') {
+				throw this.astErrorOutput('Invalid while statement', whileNode);
+			}
+
+			retArr.push('for (let i = 0; i < LOOP_MAX; i++) {');
+			retArr.push('if (');
+			this.astGeneric(whileNode.test, retArr);
+			retArr.push(') {\n');
+			this.astGeneric(whileNode.body, retArr);
+			retArr.push('} else {\n');
+			retArr.push('break;\n');
+			retArr.push('}\n');
+			retArr.push('}\n');
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astWhileStatement
+   *
+   * @desc Parses the abstract syntax tree for *do while* loop
+   *
+   *
+   * @param {Object} doWhileNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the parsed webgl string
+   */
+
+	}, {
+		key: 'astDoWhileStatement',
+		value: function astDoWhileStatement(doWhileNode, retArr) {
+			if (doWhileNode.type !== 'DoWhileStatement') {
+				throw this.astErrorOutput('Invalid while statement', doWhileNode);
+			}
+
+			retArr.push('for (let i = 0; i < LOOP_MAX; i++) {');
+			this.astGeneric(doWhileNode.body, retArr);
+			retArr.push('if (!');
+			this.astGeneric(doWhileNode.test, retArr);
+			retArr.push(') {\n');
+			retArr.push('break;\n');
+			retArr.push('}\n');
+			retArr.push('}\n');
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astAssignmentExpression
+   *
+   * @desc Parses the abstract syntax tree for *Assignment* Expression
+   *
+   * @param {Object} assNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astAssignmentExpression',
+		value: function astAssignmentExpression(assNode, retArr) {
+			this.astGeneric(assNode.left, retArr);
+			retArr.push(assNode.operator);
+			this.astGeneric(assNode.right, retArr);
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astEmptyStatement
+   *
+   * @desc Parses the abstract syntax tree for an *Empty* Statement
+   *
+   * @param {Object} eNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astEmptyStatement',
+		value: function astEmptyStatement(eNode, retArr) {
+			//retArr.push(';\n');
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astBlockStatement
+   *
+   * @desc Parses the abstract syntax tree for *Block* statement
+   *
+   * @param {Object} bNode - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astBlockStatement',
+		value: function astBlockStatement(bNode, retArr) {
+			retArr.push('{\n');
+			for (var i = 0; i < bNode.body.length; i++) {
+				this.astGeneric(bNode.body[i], retArr);
+			}
+			retArr.push('}\n');
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astExpressionStatement
+   *
+   * @desc Parses the abstract syntax tree for *generic expression* statement
+   *
+   * @param {Object} esNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astExpressionStatement',
+		value: function astExpressionStatement(esNode, retArr) {
+			this.astGeneric(esNode.expression, retArr);
+			retArr.push(';');
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astVariableDeclaration
+   *
+   * @desc Parses the abstract syntax tree for *Variable Declaration*
+   *
+   * @param {Object} vardecNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astVariableDeclaration',
+		value: function astVariableDeclaration(vardecNode, retArr) {
+			retArr.push('var ');
+			for (var i = 0; i < vardecNode.declarations.length; i++) {
+				this.declarations[vardecNode.declarations[i].id.name] = 'var';
+				if (i > 0) {
+					retArr.push(',');
+				}
+				this.astGeneric(vardecNode.declarations[i], retArr);
+			}
+			retArr.push(';');
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astVariableDeclarator
+   *
+   * @desc Parses the abstract syntax tree for *Variable Declarator*
+   *
+   * @param {Object} ivardecNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astVariableDeclarator',
+		value: function astVariableDeclarator(ivardecNode, retArr) {
+			this.astGeneric(ivardecNode.id, retArr);
+			if (ivardecNode.init !== null) {
+				retArr.push('=');
+				this.astGeneric(ivardecNode.init, retArr);
+			}
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astIfStatement
+   *
+   * @desc Parses the abstract syntax tree for *If* Statement
+   *
+   * @param {Object} ifNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astIfStatement',
+		value: function astIfStatement(ifNode, retArr) {
+			retArr.push('if (');
+			this.astGeneric(ifNode.test, retArr);
+			retArr.push(')');
+			if (ifNode.consequent.type === 'BlockStatement') {
+				this.astGeneric(ifNode.consequent, retArr);
+			} else {
+				retArr.push(' {\n');
+				this.astGeneric(ifNode.consequent, retArr);
+				retArr.push('\n}\n');
+			}
+
+			if (ifNode.alternate) {
+				retArr.push('else ');
+				if (ifNode.alternate.type === 'BlockStatement') {
+					this.astGeneric(ifNode.alternate, retArr);
+				} else {
+					retArr.push(' {\n');
+					this.astGeneric(ifNode.alternate, retArr);
+					retArr.push('\n}\n');
+				}
+			}
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astBreakStatement
+   *
+   * @desc Parses the abstract syntax tree for *Break* Statement
+   *
+   * @param {Object} brNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astBreakStatement',
+		value: function astBreakStatement(brNode, retArr) {
+			retArr.push('break;\n');
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astContinueStatement
+   *
+   * @desc Parses the abstract syntax tree for *Continue* Statement
+   *
+   * @param {Object} crNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astContinueStatement',
+		value: function astContinueStatement(crNode, retArr) {
+			retArr.push('continue;\n');
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astLogicalExpression
+   *
+   * @desc Parses the abstract syntax tree for *Logical* Expression
+   *
+   * @param {Object} logNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astLogicalExpression',
+		value: function astLogicalExpression(logNode, retArr) {
+			retArr.push('(');
+			this.astGeneric(logNode.left, retArr);
+			retArr.push(logNode.operator);
+			this.astGeneric(logNode.right, retArr);
+			retArr.push(')');
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astUpdateExpression
+   *
+   * @desc Parses the abstract syntax tree for *Update* Expression
+   *
+   * @param {Object} uNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astUpdateExpression',
+		value: function astUpdateExpression(uNode, retArr) {
+			if (uNode.prefix) {
+				retArr.push(uNode.operator);
+				this.astGeneric(uNode.argument, retArr);
+			} else {
+				this.astGeneric(uNode.argument, retArr);
+				retArr.push(uNode.operator);
+			}
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astUnaryExpression
+   *
+   * @desc Parses the abstract syntax tree for *Unary* Expression
+   *
+   * @param {Object} uNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astUnaryExpression',
+		value: function astUnaryExpression(uNode, retArr) {
+			if (uNode.prefix) {
+				retArr.push(uNode.operator);
+				this.astGeneric(uNode.argument, retArr);
+			} else {
+				this.astGeneric(uNode.argument, retArr);
+				retArr.push(uNode.operator);
+			}
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astThisExpression
+   *
+   * @desc Parses the abstract syntax tree for *This* expression
+   *
+   * @param {Object} tNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astThisExpression',
+		value: function astThisExpression(tNode, retArr) {
+			retArr.push('_this');
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astMemberExpression
+   *
+   * @desc Parses the abstract syntax tree for *Member* Expression
+   *
+   * @param {Object} mNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astMemberExpression',
+		value: function astMemberExpression(mNode, retArr) {
+			if (mNode.computed) {
+				if (mNode.object.type === 'Identifier' || mNode.object.type === 'MemberExpression' && mNode.object.object.object && mNode.object.object.object.type === 'ThisExpression' && mNode.object.object.property.name === 'constants') {
+					this.pushState('identifier');
+					this.astGeneric(mNode.object, retArr);
+					this.popState('identifier');
+					retArr.push('[');
+					if (this.isInput(mNode.object.name)) {
+						this.astGeneric(mNode.property, retArr);
+					} else {
+						this.astGeneric(mNode.property, retArr);
+					}
+					retArr.push(']');
+				} else {
+					if (mNode.object.object) {
+						if (mNode.object.object.object && this.isInput(mNode.object.object.object.name)) {
+							this.pushMemberState(mNode.object.object.object.name);
+							this.pushState('input-index-z');
+							this.astGeneric(mNode.object, retArr);
+							var last = retArr.pop();
+							retArr.push(' + ');
+							this.popState('input-index-z');
+							this.pushState('input-index');
+							this.astGeneric(mNode.property, retArr);
+							this.popState('input-index');
+							retArr.push(last);
+							this.popMemberState(mNode.object.object.object.name);
+						} else if (this.isInput(mNode.object.object.name)) {
+							this.pushMemberState(mNode.object.object.name);
+							if (!this.isState('input-index-z')) {
+								this.pushState('input-index-y');
+							}
+							this.astGeneric(mNode.object, retArr);
+							var _last = retArr.pop();
+							retArr.push(' + ');
+							if (!this.isState('input-index-z')) {
+								this.popState('input-index-y');
+							}
+
+							var isInputIndexZ = this.isState('input-index-z');
+							if (isInputIndexZ) {
+								this.pushState('input-index-y');
+							} else {
+								this.pushState('input-index');
+							}
+							this.astGeneric(mNode.property, retArr);
+							if (isInputIndexZ) {
+								this.popState('input-index-y');
+							} else {
+								this.popState('input-index');
+							}
+							retArr.push(_last);
+							this.popMemberState(mNode.object.object.name);
+						} else {
+							this.astGeneric(mNode.object, retArr);
+							var _last2 = retArr.pop();
+							retArr.push('][');
+							this.astGeneric(mNode.property, retArr);
+							retArr.push(_last2);
+						}
+					} else {
+						this.astGeneric(mNode.object, retArr);
+						var _last3 = retArr.pop();
+						retArr.push('][');
+						this.astGeneric(mNode.property, retArr);
+						retArr.push(_last3);
+					}
+				}
+			} else {
+				var unrolled = this.astMemberExpressionUnroll(mNode);
+				if (mNode.property.type === 'Identifier' && mNode.computed) {
+					unrolled = 'user_' + unrolled;
+				}
+
+				if (unrolled.indexOf('this.constants') === 0) {
+					// remove 'this.constants' from beginning
+					unrolled = 'constants_' + unrolled.substring(15);
+				} else if (unrolled.indexOf('this') === 0) {
+					// Its a reference to `this`, add '_' before
+					unrolled = '_' + unrolled;
+				}
+
+				switch (this.state) {
+					case 'input-index-y':
+					case 'input-index-z':
+						retArr.push('(');
+				}
+
+				switch (unrolled) {
+					case '_this.output.x':
+						retArr.push(this.output[0]);
+						break;
+					case '_this.output.y':
+						retArr.push(this.output[1]);
+						break;
+					case '_this.output.z':
+						retArr.push(this.output[2]);
+						break;
+					default:
+						if (mNode.object && mNode.object.name && this.declarations[mNode.object.name]) {
+							retArr.push('user_');
+						}
+						retArr.push(unrolled);
+				}
+
+				switch (this.state) {
+					case 'input-index-y':
+						{
+							var size = this.paramSizes[this.paramNames.indexOf(this.memberState)];
+							retArr.push(' * ' + size[0] + ')');
+							break;
+						}
+					case 'input-index-z':
+						{
+							var _size2 = this.paramSizes[this.paramNames.indexOf(this.memberState)];
+							retArr.push(' * ' + _size2[0] * _size2[1] + ')');
+							break;
+						}
+				}
+			}
+			return retArr;
+		}
+	}, {
+		key: 'astSequenceExpression',
+		value: function astSequenceExpression(sNode, retArr) {
+			for (var i = 0; i < sNode.expressions.length; i++) {
+				if (i > 0) {
+					retArr.push(',');
+				}
+				this.astGeneric(sNode.expressions, retArr);
+			}
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astCallExpression
+   *
+   * @desc Parses the abstract syntax tree for *call* expression
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns  {Array} the append retArr
+   */
+
+	}, {
+		key: 'astCallExpression',
+		value: function astCallExpression(ast, retArr) {
+			if (ast.callee) {
+				// Get the full function call, unrolled
+				var funcName = this.astMemberExpressionUnroll(ast.callee);
+
+				// Register the function into the called registry
+				if (this.calledFunctions.indexOf(funcName) < 0) {
+					this.calledFunctions.push(funcName);
+				}
+				if (!this.hasOwnProperty('funcName')) {
+					this.calledFunctionsArguments[funcName] = [];
+				}
+
+				var functionArguments = [];
+				this.calledFunctionsArguments[funcName].push(functionArguments);
+
+				// Call the function
+				retArr.push(funcName);
+
+				// Open arguments space
+				retArr.push('(');
+
+				// Add the vars
+				for (var i = 0; i < ast.arguments.length; ++i) {
+					var argument = ast.arguments[i];
+					if (i > 0) {
+						retArr.push(', ');
+					}
+					this.astGeneric(argument, retArr);
+					if (argument.type === 'Identifier') {
+						var paramIndex = this.paramNames.indexOf(argument.name);
+						if (paramIndex === -1) {
+							functionArguments.push(null);
+						} else {
+							functionArguments.push({
+								name: argument.name,
+								type: this.paramTypes[paramIndex]
+							});
+						}
+					} else {
+						functionArguments.push(null);
+					}
+				}
+
+				// Close arguments space
+				retArr.push(')');
+
+				return retArr;
+			}
+
+			// Failure, unknown expression
+			throw this.astErrorOutput('Unknown CallExpression', ast);
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf CPUFunctionNode#
+   * @function
+   * @name astArrayExpression
+   *
+   * @desc Parses the abstract syntax tree for *Array* Expression
+   *
+   * @param {Object} arrNode - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astArrayExpression',
+		value: function astArrayExpression(arrNode, retArr) {
+			var arrLen = arrNode.elements.length;
+
+			retArr.push('[');
+			for (var i = 0; i < arrLen; ++i) {
+				if (i > 0) {
+					retArr.push(', ');
+				}
+				var subNode = arrNode.elements[i];
+				this.astGeneric(subNode, retArr);
+			}
+			retArr.push(']');
+
+			return retArr;
+
+			// // Failure, unknown expression
+			// throw this.astErrorOutput(
+			// 	'Unknown  ArrayExpression',
+			// 	arrNode
+			//);
+		}
+	}, {
+		key: 'astDebuggerStatement',
+		value: function astDebuggerStatement(arrNode, retArr) {
+			retArr.push('debugger;');
+			return retArr;
+		}
+	}, {
+		key: 'memberState',
+		get: function get() {
+			return this.memberStates[this.memberStates.length - 1];
+		}
+	}]);
+
+	return CPUFunctionNode;
+}(BaseFunctionNode);
+},{"../../core/utils":89,"../function-node-base":64}],60:[function(require,module,exports){
+'use strict';
+
+var utils = require('../../core/utils');
+var kernelRunShortcut = require('../kernel-run-shortcut');
+
+function removeFnNoise(fn) {
+  if (/^function /.test(fn)) {
+    fn = fn.substring(9);
+  }
+  return fn.replace(/[_]typeof/g, 'typeof');
+}
+
+function removeNoise(str) {
+  return str.replace(/[_]typeof/g, 'typeof');
+}
+
+module.exports = function (cpuKernel, name) {
+  return '() => {\n    ' + kernelRunShortcut.toString() + ';\n    const utils = {\n      allPropertiesOf: ' + removeNoise(utils.allPropertiesOf.toString()) + ',\n      clone: ' + removeNoise(utils.clone.toString()) + ',\n      checkOutput: ' + removeNoise(utils.checkOutput.toString()) + '\n    };\n    const Utils = utils;\n    let Input = function() {};\n    class ' + (name || 'Kernel') + ' {\n      constructor() {        \n        this.argumentsLength = 0;\n        this._canvas = null;\n        this._webGl = null;\n        this.built = false;\n        this.program = null;\n        this.paramNames = ' + JSON.stringify(cpuKernel.paramNames) + ';\n        this.paramTypes = ' + JSON.stringify(cpuKernel.paramTypes) + ';\n        this.texSize = ' + JSON.stringify(cpuKernel.texSize) + ';\n        this.output = ' + JSON.stringify(cpuKernel.output) + ';\n        this._kernelString = `' + cpuKernel._kernelString + '`;\n        this.output = ' + JSON.stringify(cpuKernel.output) + ';\n\t\t    this.run = function() {\n          this.run = null;\n          this.build();\n          return this.run.apply(this, arguments);\n        }.bind(this);\n        this.thread = {\n          x: 0,\n          y: 0,\n          z: 0\n        };\n      }\n      setCanvas(canvas) { this._canvas = canvas; return this; }\n      setWebGl(webGl) { this._webGl = webGl; return this; }\n      setInput(Type) { Input = Type; }\n      ' + removeFnNoise(cpuKernel.build.toString()) + '\n      ' + removeFnNoise(cpuKernel.setupParams.toString()) + '\n      ' + removeFnNoise(cpuKernel.setupConstants.toString()) + '\n      run () { ' + cpuKernel.kernelString + ' }\n      getKernelString() { return this._kernelString; }\n      ' + removeFnNoise(cpuKernel.validateOptions.toString()) + '\n    };\n    return kernelRunShortcut(new Kernel());\n  };';
+};
+},{"../../core/utils":89,"../kernel-run-shortcut":66}],61:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var KernelBase = require('../kernel-base');
+var utils = require('../../core/utils');
+var kernelString = require('./kernel-string');
+
+module.exports = function (_KernelBase) {
+	_inherits(CPUKernel, _KernelBase);
+
+	/**
+  * @constructor CPUKernel
+  *
+  * @desc Kernel Implementation for CPU.
+  *
+  * <p>Instantiates properties to the CPU Kernel.</p>
+  *
+  * @extends KernelBase
+  *
+  * @prop {Object} thread - The thread dimensions, x, y and z
+  * @prop {Object} output - The canvas dimensions
+  * @prop {Object} functionBuilder - Function Builder instance bound to this Kernel
+  * @prop {Function} run - Method to run the kernel
+  *
+  */
+	function CPUKernel(fnString, settings) {
+		_classCallCheck(this, CPUKernel);
+
+		var _this = _possibleConstructorReturn(this, (CPUKernel.__proto__ || Object.getPrototypeOf(CPUKernel)).call(this, fnString, settings));
+
+		_this._fn = null;
+		_this.run = null;
+		_this._canvasCtx = null;
+		_this._imageData = null;
+		_this._colorData = null;
+		_this._kernelString = null;
+		_this.thread = {
+			x: 0,
+			y: 0,
+			z: 0
+		};
+
+		_this.run = function () {
+			this.run = null;
+			this.build.apply(this, arguments);
+			return this.run.apply(this, arguments);
+		}.bind(_this);
+		return _this;
+	}
+
+	/**
+  * @memberOf CPUKernel#
+  * @function
+  * @name validateOptions
+  *
+  * @desc Validate options related to CPU Kernel, such as
+  * dimensions size, and auto dimension support.
+  *
+  */
+
+
+	_createClass(CPUKernel, [{
+		key: 'validateOptions',
+		value: function validateOptions() {
+			if (!this.output || this.output.length === 0) {
+				if (arguments.length !== 1) {
+					throw 'Auto dimensions only supported for kernels with only one input';
+				}
+
+				var argType = utils.getArgumentType(arguments[0]);
+				if (argType === 'Array') {
+					this.output = utils.getDimensions(argType);
+				} else if (argType === 'NumberTexture' || argType === 'ArrayTexture(4)') {
+					this.output = arguments[0].output;
+				} else {
+					throw 'Auto dimensions not supported for input type: ' + argType;
+				}
+			}
+
+			utils.checkOutput(this.output);
+		}
+
+		/**
+   * @memberOf CPUKernel#
+   * @function
+   * @name build
+   *
+   * @desc Builds the Kernel, by generating the kernel
+   * string using thread dimensions, and arguments
+   * supplied to the kernel.
+   *
+   * <p>If the graphical flag is enabled, canvas is used.</p>
+   *
+   */
+
+	}, {
+		key: 'build',
+		value: function build() {
+			this.setupConstants();
+			this.setupParams(arguments);
+			this.validateOptions();
+			var canvas = this._canvas;
+			if (canvas) {
+				// if node or canvas is not found, don't die
+				this._canvasCtx = canvas.getContext('2d');
+			}
+			var threadDim = this.threadDim = utils.clone(this.output);
+
+			while (threadDim.length < 3) {
+				threadDim.push(1);
+			}
+
+			if (this.graphical) {
+				var _canvas = this._canvas;
+				if (!_canvas) {
+					throw new Error('no canvas available for using graphical output');
+				}
+				_canvas.width = threadDim[0];
+				_canvas.height = threadDim[1];
+				this._imageData = this._canvasCtx.createImageData(threadDim[0], threadDim[1]);
+				this._colorData = new Uint8ClampedArray(threadDim[0] * threadDim[1] * 4);
+			}
+
+			var kernelString = this.getKernelString();
+
+			if (this.debug) {
+				console.log('Options:');
+				console.dir(this);
+				console.log('Function output:');
+				console.log(kernelString);
+			}
+
+			this.kernelString = kernelString;
+			this.run = new Function([], kernelString).bind(this)();
+		}
+	}, {
+		key: 'color',
+		value: function color(r, g, b, a) {
+			if (typeof a === 'undefined') {
+				a = 1;
+			}
+
+			r = Math.floor(r * 255);
+			g = Math.floor(g * 255);
+			b = Math.floor(b * 255);
+			a = Math.floor(a * 255);
+
+			var width = this.output[0];
+			var height = this.output[1];
+
+			var x = this.thread.x;
+			var y = height - this.thread.y - 1;
+
+			var index = x + y * width;
+
+			this._colorData[index * 4 + 0] = r;
+			this._colorData[index * 4 + 1] = g;
+			this._colorData[index * 4 + 2] = b;
+			this._colorData[index * 4 + 3] = a;
+		}
+
+		/**
+   * @memberOf CPUKernel#
+   * @function
+   * @name getKernelString
+   *
+   * @desc Generates kernel string for this kernel program.
+   *
+   * <p>If sub-kernels are supplied, they are also factored in.
+   * This string can be saved by calling the `toString` method
+   * and then can be reused later.</p>
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: 'getKernelString',
+		value: function getKernelString() {
+			if (this._kernelString !== null) return this._kernelString;
+
+			var builder = this.functionBuilder;
+
+			// Thread dim fix (to make compilable)
+			var threadDim = this.threadDim || (this.threadDim = utils.clone(this.output));
+			while (threadDim.length < 3) {
+				threadDim.push(1);
+			}
+
+			builder.addKernel(this.fnString, {
+				prototypeOnly: false,
+				constants: this.constants,
+				output: threadDim,
+				debug: this.debug,
+				loopMaxIterations: this.loopMaxIterations,
+				paramNames: this.paramNames,
+				paramTypes: this.paramTypes,
+				paramSizes: this.paramSizes,
+				constantTypes: this.constantTypes
+			});
+
+			builder.addFunctions(this.functions, {
+				constants: this.constants,
+				output: threadDim
+			});
+
+			builder.addNativeFunctions(this.nativeFunctions);
+
+			if (this.subKernels !== null) {
+				this.subKernelOutputTextures = [];
+				this.subKernelOutputVariableNames = [];
+				for (var i = 0; i < this.subKernels.length; i++) {
+					var subKernel = this.subKernels[i];
+					builder.addSubKernel(subKernel, {
+						prototypeOnly: false,
+						constants: this.constants,
+						output: this.output,
+						debug: this.debug,
+						loopMaxIterations: this.loopMaxIterations
+					});
+					this.subKernelOutputVariableNames.push(subKernel.name + 'Result');
+				}
+			} else if (this.subKernelProperties !== null) {
+				this.subKernelOutputVariableNames = [];
+				var _i = 0;
+				for (var p in this.subKernelProperties) {
+					if (!this.subKernelProperties.hasOwnProperty(p)) continue;
+					var _subKernel = this.subKernelProperties[p];
+					builder.addSubKernel(_subKernel);
+					this.subKernelOutputVariableNames.push(_subKernel.name + 'Result');
+					_i++;
+				}
+			}
+
+			var prototypes = builder.getPrototypes('kernel');
+			var kernel = null;
+			if (prototypes.length > 1) {
+				prototypes = prototypes.filter(function (fn) {
+					if (/^function/.test(fn)) return fn;
+					kernel = fn;
+					return false;
+				});
+			} else {
+				kernel = prototypes.shift();
+			}
+			var kernelString = this._kernelString = '\n\t\tvar LOOP_MAX = ' + this._getLoopMaxString() + '\n\t\tvar constants = this.constants;\n\t\tvar _this = this;\n    return function (' + this.paramNames.map(function (paramName) {
+				return 'user_' + paramName;
+			}).join(', ') + ') {\n      ' + this._processConstants() + '\n      ' + this._processParams() + '\n      ' + this._kernelLoop(kernel) + '\n      if (this.graphical) {\n        this._imageData.data.set(this._colorData);\n        this._canvasCtx.putImageData(this._imageData, 0, 0);\n        return;\n      }\n      ' + this._kernelOutput() + '\n      ' + (prototypes.length > 0 ? prototypes.join('\n') : '') + '\n    }.bind(this);';
+			return kernelString;
+		}
+
+		/**
+   * @memberOf CPUKernel#
+   * @function
+   * @name toString
+   *
+   * @desc Returns the *pre-compiled* Kernel as a JS Object String, that can be reused.
+   *
+   */
+
+	}, {
+		key: 'toString',
+		value: function toString() {
+			return kernelString(this);
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getLoopMaxString
+   *
+   * @desc Get the maximum loop size String.
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getLoopMaxString',
+		value: function _getLoopMaxString() {
+			return this.loopMaxIterations ? ' ' + parseInt(this.loopMaxIterations) + ';\n' : ' 1000;\n';
+		}
+	}, {
+		key: '_processConstants',
+		value: function _processConstants() {
+			if (!this.constants) return '';
+
+			var result = [];
+			for (var p in this.constants) {
+				var type = this.constantTypes[p];
+				switch (type) {
+					case 'HTMLImage':
+						result.push('  var constants_' + p + ' = this._imageTo2DArray(this.constants.' + p + ')');
+						break;
+					case 'HTMLImageArray':
+						result.push('  var constants_' + p + ' = this._imageTo3DArray(this.constants.' + p + ')');
+						break;
+					case 'Input':
+						result.push('  var constants_' + p + ' = this.constants.' + p + '.value');
+						break;
+					default:
+						result.push('  var constants_' + p + ' = this.constants.' + p);
+				}
+			}
+			return result.join('\n');
+		}
+	}, {
+		key: '_processParams',
+		value: function _processParams() {
+			var result = [];
+			for (var i = 0; i < this.paramTypes.length; i++) {
+				switch (this.paramTypes[i]) {
+					case 'HTMLImage':
+						result.push('  user_' + this.paramNames[i] + ' = this._imageTo2DArray(user_' + this.paramNames[i] + ')');
+						break;
+					case 'HTMLImageArray':
+						result.push('  user_' + this.paramNames[i] + ' = this._imageTo3DArray(user_' + this.paramNames[i] + ')');
+						break;
+					case 'Input':
+						result.push('  user_' + this.paramNames[i] + ' = user_' + this.paramNames[i] + '.value');
+						break;
+				}
+			}
+			return result.join(';\n');
+		}
+	}, {
+		key: '_imageTo2DArray',
+		value: function _imageTo2DArray(image) {
+			var canvas = this._canvas;
+			if (canvas.width < image.width) {
+				canvas.width = image.width;
+			}
+			if (canvas.height < image.height) {
+				canvas.height = image.height;
+			}
+			var ctx = this._canvasCtx;
+			ctx.drawImage(image, 0, 0, image.width, image.height);
+			var pixelsData = ctx.getImageData(0, 0, image.width, image.height).data;
+			var imageArray = new Array(image.height);
+			var index = 0;
+			for (var y = image.height - 1; y >= 0; y--) {
+				imageArray[y] = new Array(image.width);
+				for (var x = 0; x < image.width; x++) {
+					var r = pixelsData[index++] / 255;
+					var g = pixelsData[index++] / 255;
+					var b = pixelsData[index++] / 255;
+					var a = pixelsData[index++] / 255;
+					var result = [r, g, b, a];
+					result.r = r;
+					result.g = g;
+					result.b = b;
+					result.a = a;
+					imageArray[y][x] = result;
+				}
+			}
+			return imageArray;
+		}
+	}, {
+		key: '_imageTo3DArray',
+		value: function _imageTo3DArray(images) {
+			var imagesArray = new Array(images.length);
+			for (var i = 0; i < images.length; i++) {
+				imagesArray[i] = this._imageTo2DArray(images[i]);
+			}
+			return imagesArray;
+		}
+	}, {
+		key: '_kernelLoop',
+		value: function _kernelLoop(kernelString) {
+			switch (this.output.length) {
+				case 1:
+					return this._kernel1DLoop(kernelString);
+				case 2:
+					return this._kernel2DLoop(kernelString);
+				case 3:
+					return this._kernel3DLoop(kernelString);
+				default:
+					throw new Error('unsupported size kernel');
+			}
+		}
+	}, {
+		key: '_kernel1DLoop',
+		value: function _kernel1DLoop(kernelString) {
+			var threadDim = this.threadDim;
+			return '\n    var result = new Float32Array(' + threadDim[0] + ');\n    ' + this._mapSubKernels(function (name) {
+				return 'var result_' + name + ' = new Float32Array(' + threadDim[0] + ');\n';
+			}).join('') + '\n    for (var x = 0; x < ' + threadDim[0] + '; x++) {\n      this.thread.x = x;\n      this.thread.y = 0;\n      this.thread.z = 0;\n      var kernelResult;\n      ' + kernelString + '\n      result[x] = kernelResult;\n      ' + this._mapSubKernels(function (name) {
+				return 'result_' + name + '[x] = ' + name + ';\n';
+			}).join('') + '\n    }';
+		}
+	}, {
+		key: '_kernel2DLoop',
+		value: function _kernel2DLoop(kernelString) {
+			var threadDim = this.threadDim;
+			return '\n    var result = new Array(' + threadDim[1] + ');\n    ' + this._mapSubKernels(function (name) {
+				return 'var result_' + name + ' = new Array(' + threadDim[1] + ');\n';
+			}).join('') + '\n    for (var y = 0; y < ' + threadDim[1] + '; y++) {\n      this.thread.z = 0;\n      this.thread.y = y;\n      var resultX = result[y] = new Float32Array(' + threadDim[0] + ');\n      ' + this._mapSubKernels(function (name) {
+				return 'var result_' + name + 'X = result_' + name + '[y] = new Float32Array(' + threadDim[0] + ');\n';
+			}).join('') + '\n      for (var x = 0; x < ' + threadDim[0] + '; x++) {\n      \tthis.thread.x = x;\n        var kernelResult;\n        ' + kernelString + '\n        resultX[x] = kernelResult;\n        ' + this._mapSubKernels(function (name) {
+				return 'result_' + name + 'X[x] = ' + name + ';\n';
+			}).join('') + '\n      }\n    }';
+		}
+	}, {
+		key: '_kernel3DLoop',
+		value: function _kernel3DLoop(kernelString) {
+			var threadDim = this.threadDim;
+			return '\n    var result = new Array(' + threadDim[2] + ');\n    ' + this._mapSubKernels(function (name) {
+				return 'var result_' + name + ' = new Array(' + threadDim[2] + ');\n';
+			}).join('') + '\n    for (var z = 0; z < ' + threadDim[2] + '; z++) {\n      this.thread.z = z;\n      var resultY = result[z] = new Array(' + threadDim[1] + ');\n      ' + this._mapSubKernels(function (name) {
+				return 'var result_' + name + 'Y = result_' + name + '[z] = new Array(' + threadDim[1] + ');\n';
+			}).join('') + '\n      for (var y = 0; y < ' + threadDim[1] + '; y++) {\n        this.thread.y = y;\n        var resultX = resultY[y] = new Float32Array(' + threadDim[0] + ');\n        ' + this._mapSubKernels(function (name) {
+				return 'var result_' + name + 'X = result_' + name + 'Y[y] = new Float32Array(' + threadDim[0] + ');\n';
+			}).join('') + '\n        for (var x = 0; x < ' + threadDim[0] + '; x++) {\n        \tthis.thread.x = x;\n          var kernelResult;\n          ' + kernelString + '\n          resultX[x] = kernelResult;\n          ' + this._mapSubKernels(function (name) {
+				return 'result_' + name + 'X[x] = ' + name + ';\n';
+			}).join('') + '\n        }\n      }\n    }';
+		}
+	}, {
+		key: '_kernelOutput',
+		value: function _kernelOutput() {
+			var _this2 = this;
+
+			if (!this.subKernelOutputVariableNames) {
+				return 'return result;';
+			}
+			return 'return {\n      result: result,\n      ' + Object.keys(this.subKernelProperties || this.subKernelOutputVariableNames).map(function (name, i) {
+				return name + ': result_' + _this2.subKernelOutputVariableNames[i];
+			}).join(',\n') + '\n    };';
+		}
+	}, {
+		key: '_mapSubKernels',
+		value: function _mapSubKernels(fn) {
+			return this.subKernelOutputVariableNames === null ? [''] : this.subKernelOutputVariableNames.map(fn);
+		}
+	}]);
+
+	return CPUKernel;
+}(KernelBase);
+},{"../../core/utils":89,"../kernel-base":65,"./kernel-string":60}],62:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var utils = require('../../core/utils');
+var RunnerBase = require('../runner-base');
+var CPUKernel = require('./kernel');
+var CPUFunctionBuilder = require('./function-builder');
+
+module.exports = function (_RunnerBase) {
+	_inherits(CPURunner, _RunnerBase);
+
+	/**
+  * @constructor CPURunner
+  *
+  * @desc Instantiates a Runner instance for the kernel.
+  * 
+  * @extends RunnerBase
+  *
+  * @param {Object} settings - Settings to instantiate properties in RunnerBase, with given values
+  *
+  */
+
+	function CPURunner(settings) {
+		_classCallCheck(this, CPURunner);
+
+		var _this = _possibleConstructorReturn(this, (CPURunner.__proto__ || Object.getPrototypeOf(CPURunner)).call(this, new CPUFunctionBuilder(), settings));
+
+		_this.Kernel = CPUKernel;
+		_this.kernel = null;
+		return _this;
+	}
+
+	/**
+  * @memberOf CPURunner#
+  * @function
+  * @name getMode()
+  *
+  * Return the current mode in which gpu.js is executing.
+  * 
+  * @returns {String} The current mode; "cpu".
+  *
+  */
+
+
+	_createClass(CPURunner, [{
+		key: 'getMode',
+		value: function getMode() {
+			return 'cpu';
+		}
+	}]);
+
+	return CPURunner;
+}(RunnerBase);
+},{"../../core/utils":89,"../runner-base":67,"./function-builder":58,"./kernel":61}],63:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+module.exports = function () {
+
+	/**
+  * @constructor FunctionBuilderBase
+  *
+  * @desc This handles all the raw state, converted state, etc. of a single function.
+  * [INTERNAL] A collection of functionNodes.
+  * 
+  * @prop {Object} nodeMap - Object map, where nodeMap[function] = new FunctionNode;
+  * @prop {Object} gpu - The current gpu instance bound to this builder
+  * @prop {Object} rootKernel - The root kernel object, contains the paramNames, dimensions etc.
+  * 
+  */
+	function FunctionBuilderBase(gpu) {
+		_classCallCheck(this, FunctionBuilderBase);
+
+		this.nodeMap = {};
+		this.nativeFunctions = {};
+		this.gpu = gpu;
+		this.rootKernel = null;
+		this.Node = null;
+	}
+
+	_createClass(FunctionBuilderBase, [{
+		key: 'addNativeFunction',
+		value: function addNativeFunction(functionName, glslFunctionString) {
+			this.nativeFunctions[functionName] = glslFunctionString;
+		}
+
+		/**
+   * @memberOf FunctionBuilderBase#
+   * @function
+   * @name addFunction
+   *
+   * @desc Instantiates a FunctionNode, and add it to the nodeMap
+   *
+   * @param {String} functionName - Function name to assume, if its null, it attempts to extract from the function
+   * @param {Function} jsFunction - JS Function to do conversion
+   * @param {Object} [options]
+   *
+   */
+
+	}, {
+		key: 'addFunction',
+		value: function addFunction(functionName, jsFunction, options) {
+			this.addFunctionNode(new this.Node(functionName, jsFunction, options).setBuilder(this));
+		}
+	}, {
+		key: 'addFunctions',
+		value: function addFunctions(functions, options) {
+			if (functions) {
+				if (Array.isArray(functions)) {
+					for (var i = 0; i < functions.length; i++) {
+						this.addFunction(null, functions[i], options);
+					}
+				} else {
+					for (var p in functions) {
+						this.addFunction(p, functions[p], options);
+					}
+				}
+			}
+		}
+	}, {
+		key: 'addNativeFunctions',
+		value: function addNativeFunctions(nativeFunctions) {
+			for (var functionName in nativeFunctions) {
+				if (!nativeFunctions.hasOwnProperty(functionName)) continue;
+				this.addNativeFunction(functionName, nativeFunctions[functionName]);
+			}
+		}
+
+		/**
+   * @memberOf FunctionBuilderBase#
+   * @function
+   * @name addFunctionNode
+   *
+   * @desc Add the function node directly
+   *
+   * @param {functionNode} inNode - functionNode to add
+   *
+   */
+
+	}, {
+		key: 'addFunctionNode',
+		value: function addFunctionNode(inNode) {
+			this.nodeMap[inNode.functionName] = inNode;
+			if (inNode.isRootKernel) {
+				this.rootKernel = inNode;
+			}
+		}
+
+		/**
+   * @memberOf FunctionBuilderBase#
+   * @function
+   * @name traceFunctionCalls
+   *
+   * @desc Trace all the depending functions being called, from a single function
+   *
+   * This allow for 'unneeded' functions to be automatically optimized out.
+   * Note that the 0-index, is the starting function trace.
+   *
+   * @param {String} functionName - Function name to trace from, default to 'kernel'
+   * @param {String[]} retList - Returning list of function names that is traced. Including itself.
+   * @param {Object} [parent] - Parent node
+   *
+   * @returns {String[]}  Returning list of function names that is traced. Including itself.
+   */
+
+	}, {
+		key: 'traceFunctionCalls',
+		value: function traceFunctionCalls(functionName, retList, parent) {
+			functionName = functionName || 'kernel';
+			retList = retList || [];
+
+			var fNode = this.nodeMap[functionName];
+			if (fNode) {
+				// Check if function already exists
+				var functionIndex = retList.indexOf(functionName);
+				if (functionIndex === -1) {
+					retList.push(functionName);
+					if (parent) {
+						fNode.parent = parent;
+					}
+					fNode.getFunctionString(); //ensure JS trace is done
+					for (var i = 0; i < fNode.calledFunctions.length; ++i) {
+						this.traceFunctionCalls(fNode.calledFunctions[i], retList, fNode);
+					}
+				} else {
+					/**
+      * https://github.com/gpujs/gpu.js/issues/207
+      * if dependent function is already in the list, because a function depends on it, and because it has
+      * already been traced, we know that we must move the dependent function to the end of the the retList.
+      * */
+					var dependantFunctionName = retList.splice(functionIndex, 1)[0];
+					retList.push(dependantFunctionName);
+				}
+			}
+
+			if (this.nativeFunctions[functionName]) {
+				if (retList.indexOf(functionName) >= 0) {
+					// Does nothing if already traced
+				} else {
+					retList.push(functionName);
+				}
+			}
+
+			return retList;
+		}
+
+		/**
+   * @memberOf FunctionBuilderBase#
+   * @function
+   * @name addKernel
+   *
+   * @desc Add a new kernel to this instance
+   *
+   * @param {String} fnString - Kernel function as a String
+   * @param {Object} options - Settings object to set constants, debug mode, etc.
+   *
+   *
+   * @returns {Object} The inserted kernel as a Kernel Node
+   *
+   */
+
+	}, {
+		key: 'addKernel',
+		value: function addKernel(fnString, options) {
+			var kernelNode = new this.Node('kernel', fnString, options);
+			kernelNode.setBuilder(this);
+			kernelNode.isRootKernel = true;
+			this.addFunctionNode(kernelNode);
+			return kernelNode;
+		}
+
+		/**
+   * @memberOf FunctionBuilderBase#
+   * @function
+   * @name addSubKernel
+   *
+   * @desc Add a new sub-kernel to the current kernel instance
+   *
+   * @param {Function} jsFunction - Sub-kernel function (JavaScript)
+   * @param {Object} options - Settings object to set constants, debug mode, etc.
+   *
+   * @returns {Object} The inserted sub-kernel as a Kernel Node
+   *
+   */
+
+	}, {
+		key: 'addSubKernel',
+		value: function addSubKernel(jsFunction, options) {
+			var kernelNode = new this.Node(null, jsFunction, options);
+			kernelNode.setBuilder(this);
+			kernelNode.isSubKernel = true;
+			this.addFunctionNode(kernelNode);
+			return kernelNode;
+		}
+
+		/**
+   * @memberOf CPUFunctionBuilder#
+   * @name getPrototypeString
+   * @function
+   *
+   * @desc Return the string for a function
+   *
+   * @param {String} functionName - Function name to trace from. If null, it returns the WHOLE builder stack
+   *
+   * @returns {String} The full string, of all the various functions. Trace optimized if functionName given
+   *
+   */
+
+	}, {
+		key: 'getPrototypeString',
+		value: function getPrototypeString(functionName) {
+			return this.getPrototypes(functionName).join('\n');
+		}
+
+		/**
+   * @memberOf CPUFunctionBuilder#
+   * @name getPrototypeString
+   * @function
+   *
+   * @desc Return the string for a function
+   *
+   * @param {String} [functionName] - Function name to trace from. If null, it returns the WHOLE builder stack
+   *
+   * @returns {Array} The full string, of all the various functions. Trace optimized if functionName given
+   *
+   */
+
+	}, {
+		key: 'getPrototypes',
+		value: function getPrototypes(functionName) {
+			this.rootKernel.generate();
+			if (functionName) {
+				return this.getPrototypesFromFunctionNames(this.traceFunctionCalls(functionName, []).reverse());
+			}
+			return this.getPrototypesFromFunctionNames(Object.keys(this.nodeMap));
+		}
+
+		/**
+   * @memberOf FunctionBuilderBase#
+   * @function
+   * @name getStringFromFunctionNames
+   *
+   * @desc Get string from function names
+   *
+   * @param {String[]} functionList - List of function to build string
+   *
+   * @returns {String} The string, of all the various functions. Trace optimized if functionName given
+   *
+   */
+
+	}, {
+		key: 'getStringFromFunctionNames',
+		value: function getStringFromFunctionNames(functionList) {
+			var ret = [];
+			for (var i = 0; i < functionList.length; ++i) {
+				var node = this.nodeMap[functionList[i]];
+				if (node) {
+					ret.push(this.nodeMap[functionList[i]].getFunctionString());
+				}
+			}
+			return ret.join('\n');
+		}
+
+		/**
+   * @memberOf FunctionBuilderBase#
+   * @function
+   * @name getPrototypeStringFromFunctionNames
+   *
+   * @desc Return string of all functions converted
+   *
+   * @param {String[]} functionList - List of function names to build the string.
+   * @param {Object} [opt - Settings object passed to functionNode. See functionNode for more details.
+   *
+   * @returns {Array} Prototypes of all functions converted
+   *
+   */
+
+	}, {
+		key: 'getPrototypesFromFunctionNames',
+		value: function getPrototypesFromFunctionNames(functionList, opt) {
+			var ret = [];
+			for (var i = 0; i < functionList.length; ++i) {
+				var functionName = functionList[i];
+				var node = this.nodeMap[functionName];
+				if (node) {
+					ret.push(node.getFunctionPrototypeString(opt));
+				} else if (this.nativeFunctions[functionName]) {
+					ret.push(this.nativeFunctions[functionName]);
+				}
+			}
+			return ret;
+		}
+
+		/**
+   * @memberOf FunctionBuilderBase#
+   * @function
+   * @name getPrototypeStringFromFunctionNames
+   *
+   * @desc Return string of all functions converted
+   *
+   * @param {String[]} functionList - List of function names to build the string.
+   * @param {Object} opt - Settings object passed to functionNode. See functionNode for more details.
+   *
+   * @returns {String} Prototype string of all functions converted
+   *
+   */
+
+	}, {
+		key: 'getPrototypeStringFromFunctionNames',
+		value: function getPrototypeStringFromFunctionNames(functionList, opt) {
+			return this.getPrototypesFromFunctionNames(functionList, opt).toString();
+		}
+
+		/**
+   * @memberOf FunctionBuilderBase#
+   * @function
+   * @name getString
+   *
+   * Get string for a particular function name
+   *
+   * @param {String} functionName - Function name to trace from. If null, it returns the WHOLE builder stack
+   *
+   * @returns {String} The string, of all the various functions. Trace optimized if functionName given
+   *
+   */
+
+	}, {
+		key: 'getString',
+		value: function getString(functionName, opt) {
+			if (opt === undefined) {
+				opt = {};
+			}
+
+			if (functionName) {
+				return this.getStringFromFunctionNames(this.traceFunctionCalls(functionName, [], opt).reverse(), opt);
+			}
+			return this.getStringFromFunctionNames(Object.keys(this.nodeMap), opt);
+		}
+	}]);
+
+	return FunctionBuilderBase;
+}();
+},{}],64:[function(require,module,exports){
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var utils = require('../core/utils');
+var acorn = require('acorn');
+
+module.exports = function () {
+
+	/**
+  * @constructor FunctionNodeBase
+  * 
+  * @desc Represents a single function, inside JS, webGL, or openGL.
+  * 
+  * <p>This handles all the raw state, converted state, etc. Of a single function.</p>
+  * 
+  * @prop {String} functionName - Name of the function
+  * @prop {Function} jsFunction - The JS Function the node represents
+  * @prop {String} jsFunctionString - jsFunction.toString()
+  * @prop {String[]} paramNames - Parameter names of the function
+  * @prop {String[]} paramTypes - Shader land parameters type assumption
+  * @prop {Boolean} isRootKernel - Special indicator, for kernel function
+  * @prop {String} webglFunctionString - webgl converted function string
+  * @prop {String} openglFunctionString - opengl converted function string
+  * @prop {String[]} calledFunctions - List of all the functions called
+  * @param {String} functionName - Function name to assume, if its null, it attempts to extract from the function
+  * @param {Function|String} jsFunction - JS Function to do conversion
+  * @param {Object} options
+  *
+  */
+	function BaseFunctionNode(functionName, jsFunction, options) {
+		_classCallCheck(this, BaseFunctionNode);
+
+		this.calledFunctions = [];
+		this.calledFunctionsArguments = {};
+		this.builder = null;
+		this.isRootKernel = false;
+		this.isSubKernel = false;
+		this.parent = null;
+		this.debug = null;
+		this.prototypeOnly = null;
+		this.constants = null;
+		this.output = null;
+		this.declarations = {};
+		this.states = [];
+		this.fixIntegerDivisionAccuracy = null;
+
+		var paramTypes = void 0;
+		var returnType = void 0;
+		if (options) {
+			if (options.hasOwnProperty('debug')) {
+				this.debug = options.debug;
+			}
+			if (options.hasOwnProperty('prototypeOnly')) {
+				this.prototypeOnly = options.prototypeOnly;
+			}
+			if (options.hasOwnProperty('constants')) {
+				this.constants = options.constants;
+			}
+			if (options.hasOwnProperty('output')) {
+				this.output = options.output;
+			}
+			if (options.hasOwnProperty('loopMaxIterations')) {
+				this.loopMaxIterations = options.loopMaxIterations;
+			}
+			if (options.hasOwnProperty('paramTypes')) {
+				this.paramTypes = paramTypes = options.paramTypes;
+			}
+			if (options.hasOwnProperty('constantTypes')) {
+				this.constantTypes = options.constantTypes;
+			} else {
+				this.constantTypes = {};
+			}
+			if (options.hasOwnProperty('returnType')) {
+				returnType = options.returnType;
+			}
+			if (options.hasOwnProperty('fixIntegerDivisionAccuracy')) {
+				this.fixIntegerDivisionAccuracy = options.fixIntegerDivisionAccuracy;
+			}
+		}
+
+		//
+		// Missing jsFunction object exception
+		//
+		if (!jsFunction) {
+			throw 'jsFunction, parameter is missing';
+		}
+
+		//
+		// Setup jsFunction and its string property + validate them
+		//
+		this.jsFunctionString = jsFunction.toString();
+		if (!utils.isFunctionString(this.jsFunctionString)) {
+			console.error('jsFunction, to string conversion check failed: not a function?', this.jsFunctionString);
+			throw 'jsFunction, to string conversion check failed: not a function?';
+		}
+
+		if (!utils.isFunction(jsFunction)) {
+			//throw 'jsFunction, is not a valid JS Function';
+			this.jsFunction = null;
+		} else {
+			this.jsFunction = jsFunction;
+		}
+
+		//
+		// Setup the function name property
+		//
+		this.functionName = functionName || jsFunction && jsFunction.name || utils.getFunctionNameFromString(this.jsFunctionString);
+
+		if (!this.functionName) {
+			throw 'jsFunction, missing name argument or value';
+		}
+
+		//
+		// Extract parameter name, and its argument types
+		//
+		this.paramNames = utils.getParamNamesFromString(this.jsFunctionString);
+		if (paramTypes) {
+			if (Array.isArray(paramTypes)) {
+				if (paramTypes.length !== this.paramNames.length) {
+					throw 'Invalid argument type array length, against function length -> (' + paramTypes.length + ',' + this.paramNames.length + ')';
+				}
+				this.paramTypes = paramTypes;
+			} else if ((typeof paramTypes === 'undefined' ? 'undefined' : _typeof(paramTypes)) === 'object') {
+				var paramVariableNames = Object.keys(paramTypes);
+				if (paramTypes.hasOwnProperty('returns')) {
+					this.returnType = paramTypes.returns;
+					paramVariableNames.splice(paramVariableNames.indexOf('returns'), 1);
+				}
+				if (paramVariableNames.length > 0 && paramVariableNames.length !== this.paramNames.length) {
+					throw 'Invalid argument type array length, against function length -> (' + paramVariableNames.length + ',' + this.paramNames.length + ')';
+				} else {
+					this.paramTypes = this.paramNames.map(function (key) {
+						if (paramTypes.hasOwnProperty(key)) {
+							return paramTypes[key];
+						} else {
+							return 'Number';
+						}
+					});
+				}
+			}
+		} else {
+			this.paramTypes = [];
+		}
+
+		//
+		// Return type handling
+		//
+		if (!this.returnType) {
+			this.returnType = returnType || 'Number';
+		}
+	}
+
+	_createClass(BaseFunctionNode, [{
+		key: 'isIdentifierConstant',
+		value: function isIdentifierConstant(paramName) {
+			if (!this.constants) return false;
+			return this.constants.hasOwnProperty(paramName);
+		}
+	}, {
+		key: 'isInput',
+		value: function isInput(paramName) {
+			return this.paramTypes[this.paramNames.indexOf(paramName)] === 'Input';
+		}
+	}, {
+		key: 'setBuilder',
+		value: function setBuilder(builder) {
+			this.builder = builder;
+			return this;
+		}
+	}, {
+		key: 'pushState',
+		value: function pushState(state) {
+			this.states.push(state);
+		}
+	}, {
+		key: 'popState',
+		value: function popState(state) {
+			if (this.state !== state) {
+				throw new Error('Cannot popState ' + state + ' when in ' + this.state);
+			}
+			this.states.pop();
+		}
+	}, {
+		key: 'isState',
+		value: function isState(state) {
+			return this.state === state;
+		}
+	}, {
+		key: 'getJsFunction',
+
+		/**
+   * 
+   * Core Functions
+   * 
+   */
+
+		/**
+   * @memberOf FunctionNodeBase#
+   * @function
+   * @name getJSFunction
+   *
+   * @desc Gets and return the stored JS Function.
+   * Note: that this internally eval the function, if only the string was provided on construction
+   *
+   * @returns {Function} The function object
+   *
+   */
+		value: function getJsFunction() {
+			if (this.jsFunction) {
+				return this.jsFunction;
+			}
+
+			if (this.jsFunctionString) {
+				this.jsFunction = eval(this.jsFunctionString);
+				return this.jsFunction;
+			}
+
+			throw 'Missing jsFunction, and jsFunctionString parameter';
+		}
+
+		/**
+   * @memberOf FunctionNodeBase#
+   * @function
+   * @name astMemberExpressionUnroll
+   * @desc Parses the abstract syntax tree for binary expression.
+   *
+   * <p>Utility function for astCallExpression.</p>
+   *
+   * @param {Object} ast - the AST object to parse
+   *
+   * @returns {String} the function namespace call, unrolled
+   */
+
+	}, {
+		key: 'astMemberExpressionUnroll',
+		value: function astMemberExpressionUnroll(ast) {
+			if (ast.type === 'Identifier') {
+				return ast.name;
+			} else if (ast.type === 'ThisExpression') {
+				return 'this';
+			}
+
+			if (ast.type === 'MemberExpression') {
+				if (ast.object && ast.property) {
+					//babel sniffing
+					if (ast.object.hasOwnProperty('name') && ast.object.name[0] === '_') {
+						return this.astMemberExpressionUnroll(ast.property);
+					}
+
+					return this.astMemberExpressionUnroll(ast.object) + '.' + this.astMemberExpressionUnroll(ast.property);
+				}
+			}
+
+			//babel sniffing
+			if (ast.hasOwnProperty('expressions')) {
+				var firstExpression = ast.expressions[0];
+				if (firstExpression.type === 'Literal' && firstExpression.value === 0 && ast.expressions.length === 2) {
+					return this.astMemberExpressionUnroll(ast.expressions[1]);
+				}
+			}
+
+			// Failure, unknown expression
+			throw this.astErrorOutput('Unknown CallExpression_unroll', ast);
+		}
+
+		/**
+   * @memberOf FunctionNodeBase#
+   * @function
+   * @name getJsAST
+   *
+   * @desc Parses the class function JS, and returns its Abstract Syntax Tree object.
+   *
+   * This is used internally to convert to shader code
+   *
+   * @param {Object} [inParser] - Parser to use, assumes in scope 'parser' if null or undefined
+   *
+   * @returns {Object} The function AST Object, note that result is cached under this.jsFunctionAST;
+   *
+   */
+
+	}, {
+		key: 'getJsAST',
+		value: function getJsAST(inParser) {
+			if (this.jsFunctionAST) {
+				return this.jsFunctionAST;
+			}
+
+			inParser = inParser || acorn;
+			if (inParser === null) {
+				throw 'Missing JS to AST parser';
+			}
+
+			var ast = inParser.parse('var ' + this.functionName + ' = ' + this.jsFunctionString + ';', {
+				locations: true
+			});
+			if (ast === null) {
+				throw 'Failed to parse JS code';
+			}
+
+			// take out the function object, outside the var declarations
+			var funcAST = ast.body[0].declarations[0].init;
+			this.jsFunctionAST = funcAST;
+
+			return funcAST;
+		}
+
+		/**
+   * @memberOf FunctionNodeBase#
+   * @function
+   * @name getFunctionString
+   *
+   * @desc Returns the converted webgl shader function equivalent of the JS function
+   *
+   * @returns {String} webgl function string, result is cached under this.webGlFunctionString
+   *
+   */
+
+	}, {
+		key: 'getFunctionString',
+		value: function getFunctionString() {
+			this.generate();
+			return this.functionString;
+		}
+
+		/**
+   * @memberOf FunctionNodeBase#
+   * @function
+   * @name setFunctionString
+   *
+   * @desc Set the functionString value, overwriting it
+   *
+   * @param {String} functionString - Shader code string, representing the function
+   *
+   */
+
+	}, {
+		key: 'setFunctionString',
+		value: function setFunctionString(functionString) {
+			this.functionString = functionString;
+		}
+
+		/**
+   * @memberOf FunctionNodeBase#
+   * @function
+   * @name getParamType
+   *
+   * @desc Return the type of parameter sent to subKernel/Kernel.
+   *
+   * @param {String} paramName - Name of the parameter
+   *
+   * @returns {String} Type of the parameter
+   *
+   */
+
+	}, {
+		key: 'getParamType',
+		value: function getParamType(paramName) {
+			var paramIndex = this.paramNames.indexOf(paramName);
+			if (paramIndex === -1) {
+				if (this.declarations.hasOwnProperty(paramName)) {
+					return this.declarations[paramName];
+				} else {
+					return 'Number';
+				}
+			} else {
+				if (!this.parent) {
+					if (this.paramTypes[paramIndex]) return this.paramTypes[paramIndex];
+				} else {
+					if (this.paramTypes[paramIndex]) return this.paramTypes[paramIndex];
+					var calledFunctionArguments = this.parent.calledFunctionsArguments[this.functionName];
+					for (var i = 0; i < calledFunctionArguments.length; i++) {
+						var calledFunctionArgument = calledFunctionArguments[i];
+						if (calledFunctionArgument[paramIndex] !== null) {
+							return this.paramTypes[paramIndex] = calledFunctionArgument[paramIndex].type;
+						}
+					}
+				}
+			}
+			return 'Number';
+		}
+	}, {
+		key: 'getConstantType',
+		value: function getConstantType(constantName) {
+			if (this.constantTypes[constantName]) {
+				return this.constantTypes[constantName];
+			}
+			return null;
+		}
+
+		/**
+   * @memberOf FunctionNodeBase#
+   * @function
+   * @name getUserParamName
+   *
+   * @desc Return the name of the *user parameter*(subKernel parameter) corresponding 
+   * to the parameter supplied to the kernel
+   *
+   * @param {String} paramName - Name of the parameter
+   *
+   * @returns {String} Name of the parameter
+   *
+   */
+
+	}, {
+		key: 'getUserParamName',
+		value: function getUserParamName(paramName) {
+			var paramIndex = this.paramNames.indexOf(paramName);
+			if (paramIndex === -1) return null;
+			if (!this.parent || !this.isSubKernel) return null;
+			var calledFunctionArguments = this.parent.calledFunctionsArguments[this.functionName];
+			for (var i = 0; i < calledFunctionArguments.length; i++) {
+				var calledFunctionArgument = calledFunctionArguments[i];
+				var param = calledFunctionArgument[paramIndex];
+				if (param !== null && param.type !== 'Integer') {
+					return param.name;
+				}
+			}
+			return null;
+		}
+	}, {
+		key: 'generate',
+		value: function generate(options) {
+			throw new Error('generate not defined on BaseFunctionNode');
+		}
+
+		/**
+   * @memberOf FunctionNodeBase#
+   * @function
+   * @name astGeneric
+   *
+   * @desc Parses the abstract syntax tree for generically to its respective function
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the parsed string array
+   */
+
+	}, {
+		key: 'astGeneric',
+		value: function astGeneric(ast, retArr) {
+			if (ast === null) {
+				throw this.astErrorOutput('NULL ast', ast);
+			} else {
+				if (Array.isArray(ast)) {
+					for (var i = 0; i < ast.length; i++) {
+						this.astGeneric(ast[i], retArr);
+					}
+					return retArr;
+				}
+
+				switch (ast.type) {
+					case 'FunctionDeclaration':
+						return this.astFunctionDeclaration(ast, retArr);
+					case 'FunctionExpression':
+						return this.astFunctionExpression(ast, retArr);
+					case 'ReturnStatement':
+						return this.astReturnStatement(ast, retArr);
+					case 'Literal':
+						return this.astLiteral(ast, retArr);
+					case 'BinaryExpression':
+						return this.astBinaryExpression(ast, retArr);
+					case 'Identifier':
+						return this.astIdentifierExpression(ast, retArr);
+					case 'AssignmentExpression':
+						return this.astAssignmentExpression(ast, retArr);
+					case 'ExpressionStatement':
+						return this.astExpressionStatement(ast, retArr);
+					case 'EmptyStatement':
+						return this.astEmptyStatement(ast, retArr);
+					case 'BlockStatement':
+						return this.astBlockStatement(ast, retArr);
+					case 'IfStatement':
+						return this.astIfStatement(ast, retArr);
+					case 'BreakStatement':
+						return this.astBreakStatement(ast, retArr);
+					case 'ContinueStatement':
+						return this.astContinueStatement(ast, retArr);
+					case 'ForStatement':
+						return this.astForStatement(ast, retArr);
+					case 'WhileStatement':
+						return this.astWhileStatement(ast, retArr);
+					case 'DoWhileStatement':
+						return this.astDoWhileStatement(ast, retArr);
+					case 'VariableDeclaration':
+						return this.astVariableDeclaration(ast, retArr);
+					case 'VariableDeclarator':
+						return this.astVariableDeclarator(ast, retArr);
+					case 'ThisExpression':
+						return this.astThisExpression(ast, retArr);
+					case 'SequenceExpression':
+						return this.astSequenceExpression(ast, retArr);
+					case 'UnaryExpression':
+						return this.astUnaryExpression(ast, retArr);
+					case 'UpdateExpression':
+						return this.astUpdateExpression(ast, retArr);
+					case 'LogicalExpression':
+						return this.astLogicalExpression(ast, retArr);
+					case 'MemberExpression':
+						return this.astMemberExpression(ast, retArr);
+					case 'CallExpression':
+						return this.astCallExpression(ast, retArr);
+					case 'ArrayExpression':
+						return this.astArrayExpression(ast, retArr);
+					case 'DebuggerStatement':
+						return this.astDebuggerStatement(ast, retArr);
+				}
+
+				throw this.astErrorOutput('Unknown ast type : ' + ast.type, ast);
+			}
+		}
+		/**
+   * @function
+   * @name astErrorOutput
+   * @ignore
+   * @desc To throw the AST error, with its location.
+   *
+   * @todo add location support fpr the AST error
+   *
+   * @param {Object} error - the error message output
+   * @param {Object} ast - the AST object where the error is
+   */
+
+	}, {
+		key: 'astErrorOutput',
+		value: function astErrorOutput(error, ast) {
+			console.error(utils.getAstString(this.jsFunctionString, ast));
+			console.error(error, ast, this);
+			return error;
+		}
+	}, {
+		key: 'astDebuggerStatement',
+		value: function astDebuggerStatement(arrNode, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astFunctionDeclaration',
+		value: function astFunctionDeclaration(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astFunctionExpression',
+		value: function astFunctionExpression(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astReturnStatement',
+		value: function astReturnStatement(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astLiteral',
+		value: function astLiteral(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astBinaryExpression',
+		value: function astBinaryExpression(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astIdentifierExpression',
+		value: function astIdentifierExpression(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astAssignmentExpression',
+		value: function astAssignmentExpression(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astExpressionStatement',
+		value: function astExpressionStatement(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astEmptyStatement',
+		value: function astEmptyStatement(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astBlockStatement',
+		value: function astBlockStatement(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astIfStatement',
+		value: function astIfStatement(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astBreakStatement',
+		value: function astBreakStatement(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astContinueStatement',
+		value: function astContinueStatement(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astForStatement',
+		value: function astForStatement(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astWhileStatement',
+		value: function astWhileStatement(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astDoWhileStatement',
+		value: function astDoWhileStatement(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astVariableDeclaration',
+		value: function astVariableDeclaration(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astVariableDeclarator',
+		value: function astVariableDeclarator(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astThisExpression',
+		value: function astThisExpression(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astSequenceExpression',
+		value: function astSequenceExpression(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astUnaryExpression',
+		value: function astUnaryExpression(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astUpdateExpression',
+		value: function astUpdateExpression(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astLogicalExpression',
+		value: function astLogicalExpression(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astMemberExpression',
+		value: function astMemberExpression(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astCallExpression',
+		value: function astCallExpression(ast, retArr) {
+			return retArr;
+		}
+	}, {
+		key: 'astArrayExpression',
+		value: function astArrayExpression(ast, retArr) {
+			return retArr;
+		}
+
+		/**
+   * @ignore
+   * @function
+   * @name pushParameter
+   *
+   * @desc [INTERNAL] pushes a fn parameter onto retArr and 'casts' to int if necessary
+   *  i.e. deal with force-int-parameter state
+   * 			
+   * @param {Array} retArr - return array string
+   * @param {String} parameter - the parameter name  
+   *
+   */
+
+	}, {
+		key: 'pushParameter',
+		value: function pushParameter(retArr, parameter) {
+			if (this.isState('in-get-call-parameters')) {
+				retArr.push('int(' + parameter + ')');
+			} else {
+				retArr.push(parameter);
+			}
+		}
+	}, {
+		key: 'state',
+		get: function get() {
+			return this.states[this.states.length - 1];
+		}
+	}]);
+
+	return BaseFunctionNode;
+}();
+},{"../core/utils":89,"acorn":52}],65:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var utils = require('../core/utils');
+var Input = require('../core/input');
+
+module.exports = function () {
+
+	/**
+  * @constructor KernelBase
+  * 
+  * @desc Implements the base class for Kernels, and is used as a 
+  * parent class for all Kernel implementations.
+  *
+  * This contains the basic methods needed by all Kernel implementations, 
+  * like setDimensions, addSubKernel, etc.
+  * 
+  * @prop {Array} paramNames - Name of the parameters of the kernel function
+  * @prop {String} fnString - Kernel function as a String
+  * @prop {Array} dimensions - Dimensions of the kernel function, this.thread.x, etc.
+  * @prop {Boolean} debug - Toggle debug mode
+  * @prop {String} graphical - Toggle graphical mode
+  * @prop {number} loopMaxIterations - Maximum number of loop iterations
+  * @prop {Object} constants - Global constants
+  * @prop {Array} subKernels - Sub kernels bound to this kernel instance
+  * @prop {Object} subKernelProperties - Sub kernels bound to this kernel instance as key/value pairs
+  * @prop {Array} subKernelOutputVariableNames - Names of the variables outputted by the subkerls
+  * @prop {Boolean} fixIntegerDivisionAccuracy - fix issues with some graphics cards not returning whole numbers when dividing by factors of 3
+  *
+  */
+	function KernelBase(fnString, settings) {
+		_classCallCheck(this, KernelBase);
+
+		this.paramNames = utils.getParamNamesFromString(fnString);
+		this.fnString = fnString;
+		this.output = null;
+		this.debug = false;
+		this.graphical = false;
+		this.loopMaxIterations = 0;
+		this.constants = null;
+		this.wraparound = null;
+		this.hardcodeConstants = null;
+		this.outputToTexture = null;
+		this.outputImmutable = null;
+		this.texSize = null;
+		this._canvas = null;
+		this._webGl = null;
+		this.threadDim = null;
+		this.floatTextures = null;
+		this.floatOutput = null;
+		this.floatOutputForce = null;
+		this.addFunction = null;
+		this.functions = null;
+		this.nativeFunctions = null;
+		this.subKernels = null;
+		this.subKernelProperties = null;
+		this.subKernelNames = null;
+		this.subKernelOutputVariableNames = null;
+		this.functionBuilder = null;
+		this.paramTypes = null;
+		this.paramSizes = null;
+		this.constantTypes = null;
+		this.fixIntegerDivisionAccuracy = null;
+
+		for (var p in settings) {
+			if (!settings.hasOwnProperty(p) || !this.hasOwnProperty(p)) continue;
+			this[p] = settings[p];
+		}
+		if (settings.hasOwnProperty('canvas')) {
+			this._canvas = settings.canvas;
+		}
+		if (settings.hasOwnProperty('webGl')) {
+			this._webGl = settings.webGl;
+		}
+		if (settings.hasOwnProperty('output')) {
+			this.setOutput(settings.output); // Flatten output object
+		}
+
+		if (!this._canvas) this._canvas = utils.initCanvas();
+	}
+
+	_createClass(KernelBase, [{
+		key: 'build',
+		value: function build() {
+			throw new Error('"build" not defined on Base');
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name setupParams
+   *
+   * @desc Setup the parameter types for the parameters
+   * supplied to the Kernel function
+   *
+   * @param {IArguments} args - The actual parameters sent to the Kernel
+   *
+   */
+
+	}, {
+		key: 'setupParams',
+		value: function setupParams(args) {
+			this.paramTypes = [];
+			this.paramSizes = [];
+			for (var i = 0; i < args.length; i++) {
+				var arg = args[i];
+
+				this.paramTypes.push(utils.getArgumentType(arg));
+				this.paramSizes.push(arg.constructor === Input ? arg.size : null);
+			}
+		}
+	}, {
+		key: 'setupConstants',
+		value: function setupConstants() {
+			this.constantTypes = {};
+			if (this.constants) {
+				for (var p in this.constants) {
+					this.constantTypes[p] = utils.getArgumentType(this.constants[p]);
+				}
+			}
+		}
+	}, {
+		key: 'setFunctions',
+		value: function setFunctions(functions) {
+			this.functions = functions;
+			return this;
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name setOutput
+   *
+   * @desc Set dimensions of the kernel function
+   *
+   * @param {Array|Object} output - The output array to set the kernel output size to
+   *
+   */
+
+	}, {
+		key: 'setOutput',
+		value: function setOutput(output) {
+			if (output.hasOwnProperty('x')) {
+				if (output.hasOwnProperty('y')) {
+					if (output.hasOwnProperty('z')) {
+						this.output = [output.x, output.y, output.z];
+					} else {
+						this.output = [output.x, output.y];
+					}
+				} else {
+					this.output = [output.x];
+				}
+			} else {
+				this.output = output;
+			}
+			return this;
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name setDebug
+   *
+   * @desc Toggle debug mode
+   *
+   * @param {Boolean} flag - true to enable debug
+   *
+   */
+
+	}, {
+		key: 'setDebug',
+		value: function setDebug(flag) {
+			this.debug = flag;
+			return this;
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name setGraphical
+   *
+   * @desc Toggle graphical output mode
+   *
+   * @param {Boolean} flag - true to enable graphical output
+   *
+   */
+
+	}, {
+		key: 'setGraphical',
+		value: function setGraphical(flag) {
+			this.graphical = flag;
+			return this;
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name setLoopMaxIterations
+   *
+   * @desc Set the maximum number of loop iterations
+   *
+   * @param {number} max - iterations count
+   *
+   */
+
+	}, {
+		key: 'setLoopMaxIterations',
+		value: function setLoopMaxIterations(max) {
+			this.loopMaxIterations = max;
+			return this;
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name setFixIntegerDivisionAccuracy
+   *
+   * @desc Fix division by factor of 3 FP accuracy bug
+   *
+   * @param {Boolean} fix - should fix 
+   *
+   */
+
+	}, {
+		key: 'setFixIntegerDivisionAccuracy',
+		value: function setFixIntegerDivisionAccuracy(fix) {
+			this.fixIntegerDivisionAccuracy = fix;
+			return this;
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name setConstants
+   * @desc Set Constants
+   */
+
+	}, {
+		key: 'setConstants',
+		value: function setConstants(constants) {
+			this.constants = constants;
+			return this;
+		}
+	}, {
+		key: 'setWraparound',
+		value: function setWraparound(flag) {
+			console.warn('Wraparound mode is not supported and undocumented.');
+			this.wraparound = flag;
+			return this;
+		}
+	}, {
+		key: 'setHardcodeConstants',
+		value: function setHardcodeConstants(flag) {
+			this.hardcodeConstants = flag;
+			return this;
+		}
+	}, {
+		key: 'setOutputToTexture',
+		value: function setOutputToTexture(flag) {
+			this.outputToTexture = flag;
+			return this;
+		}
+	}, {
+		key: 'setOutputImmutable',
+		value: function setOutputImmutable(flag) {
+			this.outputImmutable = flag;
+			return this;
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name setFloatTextures
+   *
+   * @desc Toggle texture output mode
+   *
+   * @param {Boolean} flag - true to enable floatTextures
+   *
+   */
+
+	}, {
+		key: 'setFloatTextures',
+		value: function setFloatTextures(flag) {
+			this.floatTextures = flag;
+			return this;
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name setFloatOutput
+   *
+   * @desc Toggle output mode
+   *
+   * @param {Boolean} flag - true to enable float
+   *
+   */
+
+	}, {
+		key: 'setFloatOutput',
+		value: function setFloatOutput(flag) {
+			this.floatOutput = flag;
+			return this;
+		}
+	}, {
+		key: 'setFloatOutputForce',
+		value: function setFloatOutputForce(flag) {
+			this.floatOutputForce = flag;
+			return this;
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name setCanvas
+   *
+   * @desc Bind the canvas to kernel
+   * 
+   * @param {Canvas} canvas - Canvas to bind
+   *
+   */
+
+	}, {
+		key: 'setCanvas',
+		value: function setCanvas(canvas) {
+			this._canvas = canvas;
+			return this;
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name setCanvas
+   *
+   * @desc Bind the webGL instance to kernel
+   * 
+   * @param {Canvas} webGL - webGL instance to bind
+   *
+   */
+
+	}, {
+		key: 'setWebGl',
+		value: function setWebGl(webGl) {
+			this._webGl = webGl;
+			return this;
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name getCanvas()
+   *
+   * @desc Returns the current canvas instance bound to the kernel
+   *
+   */
+
+	}, {
+		key: 'getCanvas',
+		value: function getCanvas() {
+			return this._canvas;
+		}
+
+		/**
+   * @memberOf KernelBase#
+   * @function
+   * @name getWebGl()
+   *
+   * @desc Returns the current webGl instance bound to the kernel
+   *
+   */
+
+	}, {
+		key: 'getWebGl',
+		value: function getWebGl() {
+			return this._webGl;
+		}
+	}, {
+		key: 'validateOptions',
+		value: function validateOptions() {
+			throw new Error('validateOptions not defined');
+		}
+	}, {
+		key: 'exec',
+		value: function exec() {
+			return this.execute.apply(this, arguments);
+		}
+	}, {
+		key: 'execute',
+		value: function execute() {
+			var _this = this;
+
+			//
+			// Prepare the required objects
+			//
+			var args = arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments);
+
+			//
+			// Setup and return the promise, and execute the function, in synchronous mode
+			//
+			return utils.newPromise(function (accept, reject) {
+				try {
+					accept(_this.run.apply(_this, args));
+				} catch (e) {
+					//
+					// Error : throw rejection
+					//
+					reject(e);
+				}
+			});
+		}
+
+		/** 
+   * @memberOf KernelBase#
+   * @function
+   * @name addSubKernel
+   *
+   * @desc Add a sub kernel to the root kernel instance.
+   * This is what `createKernelMap` uses.
+   *
+   * @param {String} fnString - function (as a String) of the subKernel to add
+   *
+   */
+
+	}, {
+		key: 'addSubKernel',
+		value: function addSubKernel(fnString) {
+			if (this.subKernels === null) {
+				this.subKernels = [];
+				this.subKernelNames = [];
+			}
+			this.subKernels.push(fnString);
+			this.subKernelNames.push(utils.getFunctionNameFromString(fnString));
+			return this;
+		}
+
+		/** 
+   * @memberOf KernelBase#
+   * @function
+   * @name addSubKernelProperty
+   *
+   * @desc Add a sub kernel to the root kernel instance, indexed by a property name
+   * This is what `createKernelMap` uses.
+   *
+   * @param {String} property - property key for the subKernel
+   * @param {String} fnString - function (as a String) of the subKernel to add
+   *
+   */
+
+	}, {
+		key: 'addSubKernelProperty',
+		value: function addSubKernelProperty(property, fnString) {
+			if (this.subKernelProperties === null) {
+				this.subKernelProperties = {};
+				this.subKernelNames = [];
+			}
+			if (this.subKernelProperties.hasOwnProperty(property)) {
+				throw new Error('cannot add sub kernel ' + property + ', already defined');
+			}
+			this.subKernelProperties[property] = fnString;
+			this.subKernelNames.push(utils.getFunctionNameFromString(fnString));
+			return this;
+		}
+	}, {
+		key: 'addNativeFunction',
+		value: function addNativeFunction(name, source) {
+			this.functionBuilder.addNativeFunction(name, source);
+		}
+
+		/**
+   *
+   * Destroys all memory associated with this kernel
+   *
+   * @name destroy
+   * @function
+   * @memberOf KernelBase#
+   *
+   * * @param {Boolean} removeCanvasReferences remve any associated canvas references?
+   *
+   */
+
+	}, {
+		key: 'destroy',
+		value: function destroy() {}
+	}]);
+
+	return KernelBase;
+}();
+},{"../core/input":86,"../core/utils":89}],66:[function(require,module,exports){
+'use strict';
+
+var utils = require('../core/utils');
+
+module.exports = function kernelRunShortcut(kernel) {
+	var shortcut = function shortcut() {
+		return kernel.run.apply(kernel, arguments);
+	};
+
+	utils.allPropertiesOf(kernel).forEach(function (key) {
+		if (key[0] === '_' && key[1] === '_') return;
+		if (typeof kernel[key] === 'function') {
+			if (key.substring(0, 3) === 'add' || key.substring(0, 3) === 'set') {
+				shortcut[key] = function () {
+					kernel[key].apply(kernel, arguments);
+					return shortcut;
+				};
+			} else {
+				shortcut[key] = kernel[key].bind(kernel);
+			}
+		} else {
+			shortcut.__defineGetter__(key, function () {
+				return kernel[key];
+			});
+			shortcut.__defineSetter__(key, function (value) {
+				kernel[key] = value;
+			});
+		}
+	});
+
+	shortcut.kernel = kernel;
+
+	return shortcut;
+};
+},{"../core/utils":89}],67:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var utils = require('../core/utils');
+var kernelRunShortcut = require('./kernel-run-shortcut');
+
+module.exports = function () {
+
+	/**
+  * @constructor BaseRunner
+  *
+  * @desc Represents the 'private/protected' namespace of the GPU class
+  *
+  * <p>I know @private makes more sense, but since the documentation engine state is undetirmined.
+  * (See https://github.com/gpujs/gpu.js/issues/19 regarding documentation engine issue)
+  * File isolation is currently the best way to go. </p>
+  *
+  * *base.js* internal functions namespace <br>
+  * *gpu.js* PUBLIC function namespace <br>
+  *
+  * @prop {Object} settings - Settings object used to set Dimensions, etc.
+  * @prop {String} kernel - Current kernel instance
+  * @prop {Object} canvas - Canvas instance attached to the kernel
+  * @prop {Object} webGl - WebGl instance attached to the kernel
+  * @prop {Function} fn - Kernel function to run
+  * @prop {Object} functionBuilder - FunctionBuilder instance
+  * @prop {String} fnString - Kernel function (as a String)
+  * @prop {String} endianness - endian information like Little-endian, Big-endian.
+  *
+  */
+
+	function BaseRunner(functionBuilder, settings) {
+		_classCallCheck(this, BaseRunner);
+
+		settings = settings || {};
+		this.kernel = settings.kernel;
+		this.canvas = settings.canvas;
+		this.webGl = settings.webGl;
+		this.fn = null;
+		this.functionBuilder = functionBuilder;
+		this.fnString = null;
+		this.endianness = utils.systemEndianness();
+	}
+
+	/**
+  * @memberOf BaseRunner#
+  * @function
+  * @name textureToArray
+  *
+  * @desc Converts the provided Texture instance to a JavaScript Array
+  *
+  * @param {Object} texture - Texture Object
+  *
+  */
+
+
+	_createClass(BaseRunner, [{
+		key: 'textureToArray',
+		value: function textureToArray(texture) {
+			var copy = this.createKernel(function (x) {
+				return x[this.thread.z][this.thread.y][this.thread.x];
+			});
+
+			return copy(texture);
+		}
+
+		/**
+   * @memberOf BaseRunner#
+   * @function
+   *
+   * @name deleteTexture
+   *
+   * @desc Deletes the provided Texture instance
+   *
+   * @param {Object} texture - Texture Object
+   */
+
+	}, {
+		key: 'deleteTexture',
+		value: function deleteTexture(texture) {
+			this.webGl.deleteTexture(texture.texture);
+		}
+
+		/**
+   * @memberOf BaseRunner#
+   * @function
+   * @name buildPromiseKernel
+   *
+   * @desc Get and returns the ASYNCHRONOUS executor, of a class and kernel
+   * This returns a Promise object from an argument set.
+   *
+   * Note that there is no current implementation.
+   *
+   */
+
+	}, {
+		key: 'buildPromiseKernel',
+		value: function buildPromiseKernel() {
+			throw new Error('not yet implemented');
+		}
+	}, {
+		key: 'getMode',
+		value: function getMode() {
+			throw new Error('"mode" not implemented on BaseRunner');
+		}
+
+		/**
+   * @memberOf BaseRunner#
+   * @function
+   *
+   * @name buildKernel
+   *
+   * @desc Get and returns the Synchronous executor, of a class and kernel
+   * Which returns the result directly after passing the arguments.
+   *
+   */
+
+	}, {
+		key: 'buildKernel',
+		value: function buildKernel(fn, settings) {
+			settings = Object.assign({}, settings || {});
+			var fnString = fn.toString();
+			if (!settings.functionBuilder) {
+				settings.functionBuilder = this.functionBuilder;
+			}
+
+			if (!settings.canvas) {
+				settings.canvas = this.canvas;
+			}
+
+			if (!settings.webGl) {
+				settings.webGl = this.webgl;
+			}
+
+			return kernelRunShortcut(new this.Kernel(fnString, settings));
+		}
+	}]);
+
+	return BaseRunner;
+}();
+},{"../core/utils":89,"./kernel-run-shortcut":66}],68:[function(require,module,exports){
+'use strict';
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FunctionBuilderBase = require('../function-builder-base');
+var WebGL2FunctionNode = require('./function-node');
+
+/**
+ * @class WebGLFunctionBuilder
+ *
+ * @extends FunctionBuilderBase
+ *
+ * @desc Builds webGl functions (shaders) from JavaScript function Strings
+ *
+ */
+module.exports = function (_FunctionBuilderBase) {
+  _inherits(WebGL2FunctionBuilder, _FunctionBuilderBase);
+
+  function WebGL2FunctionBuilder() {
+    _classCallCheck(this, WebGL2FunctionBuilder);
+
+    var _this = _possibleConstructorReturn(this, (WebGL2FunctionBuilder.__proto__ || Object.getPrototypeOf(WebGL2FunctionBuilder)).call(this));
+
+    _this.Node = WebGL2FunctionNode;
+    return _this;
+  }
+
+  return WebGL2FunctionBuilder;
+}(FunctionBuilderBase);
+},{"../function-builder-base":63,"./function-node":69}],69:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var WebGLFunctionNode = require('../web-gl/function-node');
+var DECODE32_ENCODE32 = /decode32\(\s+encode32\(/g;
+var ENCODE32_DECODE32 = /encode32\(\s+decode32\(/g;
+
+/** 
+ * @class WebGL2FunctionNode
+ *
+ * @desc [INTERNAL] Takes in a function node, and does all the AST voodoo required to generate its respective webGL code.
+ *
+ * @extends WebGLFunctionNode
+ *
+ * @returns the converted webGL function string
+ *
+ */
+module.exports = function (_WebGLFunctionNode) {
+	_inherits(WebGL2FunctionNode, _WebGLFunctionNode);
+
+	function WebGL2FunctionNode() {
+		_classCallCheck(this, WebGL2FunctionNode);
+
+		return _possibleConstructorReturn(this, (WebGL2FunctionNode.__proto__ || Object.getPrototypeOf(WebGL2FunctionNode)).apply(this, arguments));
+	}
+
+	_createClass(WebGL2FunctionNode, [{
+		key: 'generate',
+		value: function generate() {
+			if (this.debug) {
+				console.log(this);
+			}
+			if (this.prototypeOnly) {
+				return this.astFunctionPrototype(this.getJsAST(), []).join('').trim();
+			} else {
+				this.functionStringArray = this.astGeneric(this.getJsAST(), []);
+			}
+			this.functionString = webGlRegexOptimize(this.functionStringArray.join('').trim());
+			return this.functionString;
+		}
+
+		/**
+   * @memberOf WebGL2FunctionNode#
+   * @function
+   * @name astIdentifierExpression
+   *
+   * @desc Parses the abstract syntax tree for *identifier* expression
+   *
+   * @param {Object} idtNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astIdentifierExpression',
+		value: function astIdentifierExpression(idtNode, retArr) {
+			if (idtNode.type !== 'Identifier') {
+				throw this.astErrorOutput('IdentifierExpression - not an Identifier', idtNode);
+			}
+
+			// do we need to cast addressing vales to float?
+			var castFloat = !this.isState('in-get-call-parameters');
+
+			switch (idtNode.name) {
+				case 'gpu_threadX':
+					castFloat && retArr.push('float(');
+					retArr.push('threadId.x');
+					castFloat && retArr.push(')');
+					break;
+				case 'gpu_threadY':
+					castFloat && retArr.push('float(');
+					retArr.push('threadId.y');
+					castFloat && retArr.push(')');
+					break;
+				case 'gpu_threadZ':
+					castFloat && retArr.push('float(');
+					retArr.push('threadId.z');
+					castFloat && retArr.push(')');
+					break;
+				case 'gpu_outputX':
+					retArr.push('uOutputDim.x');
+					break;
+				case 'gpu_outputY':
+					retArr.push('uOutputDim.y');
+					break;
+				case 'gpu_outputZ':
+					retArr.push('uOutputDim.z');
+					break;
+				case 'Infinity':
+					retArr.push('intBitsToFloat(2139095039)');
+					break;
+				default:
+					var userParamName = this.getUserParamName(idtNode.name);
+					if (userParamName !== null) {
+						this.pushParameter(retArr, 'user_' + userParamName);
+					} else {
+						this.pushParameter(retArr, 'user_' + idtNode.name);
+					}
+			}
+
+			return retArr;
+		}
+	}]);
+
+	return WebGL2FunctionNode;
+}(WebGLFunctionNode);
+
+/**
+ * @ignore
+ * @function
+ * @name webgl_regex_optimize
+ *
+ * @desc [INTERNAL] Takes the near final webgl function string, and do regex search and replacments.
+ * For voodoo optimize out the following: 
+ *
+ * - decode32(encode32( <br>
+ * - encode32(decode32( <br>
+ *
+ * @param {String} inStr - The webGl function String
+ *
+ */
+function webGlRegexOptimize(inStr) {
+	return inStr.replace(DECODE32_ENCODE32, '((').replace(ENCODE32_DECODE32, '((');
+}
+},{"../web-gl/function-node":76}],70:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var WebGLKernel = require('../web-gl/kernel');
+var utils = require('../../core/utils');
+var Texture = require('../../core/texture');
+var fragShaderString = require('./shader-frag');
+var vertShaderString = require('./shader-vert');
+
+module.exports = function (_WebGLKernel) {
+	_inherits(WebGL2Kernel, _WebGLKernel);
+
+	function WebGL2Kernel() {
+		_classCallCheck(this, WebGL2Kernel);
+
+		return _possibleConstructorReturn(this, (WebGL2Kernel.__proto__ || Object.getPrototypeOf(WebGL2Kernel)).apply(this, arguments));
+	}
+
+	_createClass(WebGL2Kernel, [{
+		key: 'initWebGl',
+		value: function initWebGl() {
+			return utils.initWebGl2(this.getCanvas());
+		}
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name validateOptions
+   *
+   * @desc Validate options related to Kernel, such as
+   * floatOutputs and Textures, texSize, output,
+   * graphical output.
+   *
+   */
+
+	}, {
+		key: 'validateOptions',
+		value: function validateOptions() {
+			var isFloatReadPixel = utils.isFloatReadPixelsSupportedWebGL2();
+			if (this.floatOutput === true && this.floatOutputForce !== true && !isFloatReadPixel) {
+				throw new Error('Float texture outputs are not supported on this browser');
+			} else if (this.floatTextures === undefined) {
+				this.floatTextures = true;
+				this.floatOutput = isFloatReadPixel;
+			}
+
+			var hasIntegerDivisionBug = utils.hasIntegerDivisionAccuracyBug();
+			if (this.fixIntegerDivisionAccuracy === null) {
+				this.fixIntegerDivisionAccuracy = hasIntegerDivisionBug;
+			} else if (this.fixIntegerDivisionAccuracy && !hasIntegerDivisionBug) {
+				this.fixIntegerDivisionAccuracy = false;
+			}
+
+			utils.checkOutput(this.output);
+
+			if (!this.output || this.output.length === 0) {
+				if (arguments.length !== 1) {
+					throw new Error('Auto output only supported for kernels with only one input');
+				}
+
+				var argType = utils.getArgumentType(arguments[0]);
+				if (argType === 'Array') {
+					this.output = utils.getDimensions(argType);
+				} else if (argType === 'NumberTexture' || argType === 'ArrayTexture(4)') {
+					this.output = arguments[0].output;
+				} else {
+					throw new Error('Auto output not supported for input type: ' + argType);
+				}
+			}
+
+			this.texSize = utils.dimToTexSize({
+				floatTextures: this.floatTextures,
+				floatOutput: this.floatOutput
+			}, this.output, true);
+
+			if (this.graphical) {
+				if (this.output.length !== 2) {
+					throw new Error('Output must have 2 dimensions on graphical mode');
+				}
+
+				if (this.floatOutput) {
+					this.floatOutput = false;
+					console.warn('Cannot use graphical mode and float output at the same time');
+				}
+
+				this.texSize = utils.clone(this.output);
+			} else if (this.floatOutput === undefined) {
+				this.floatOutput = true;
+			}
+
+			if (this.floatOutput || this.floatOutputForce) {
+				this._webGl.getExtension('EXT_color_buffer_float');
+			}
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name run
+   *
+   * @desc Run the kernel program, and send the output to renderOutput
+   *
+   * <p> This method calls a helper method *renderOutput* to return the result. </p>
+   *
+   * @returns {Object|Undefined} Result The final output of the program, as float, and as Textures for reuse.
+   *
+   *
+   */
+
+	}, {
+		key: 'run',
+		value: function run() {
+			if (this.program === null) {
+				this.build.apply(this, arguments);
+			}
+			var paramNames = this.paramNames;
+			var paramTypes = this.paramTypes;
+			var texSize = this.texSize;
+			var gl = this._webGl;
+
+			gl.useProgram(this.program);
+			gl.scissor(0, 0, texSize[0], texSize[1]);
+
+			if (!this.hardcodeConstants) {
+				this.setUniform3iv('uOutputDim', new Int32Array(this.threadDim));
+				this.setUniform2iv('uTexSize', texSize);
+			}
+
+			this.setUniform2f('ratio', texSize[0] / this.maxTexSize[0], texSize[1] / this.maxTexSize[1]);
+
+			this.argumentsLength = 0;
+			for (var texIndex = 0; texIndex < paramNames.length; texIndex++) {
+				this._addArgument(arguments[texIndex], paramTypes[texIndex], paramNames[texIndex]);
+			}
+
+			if (this.graphical) {
+				if (this.outputToTexture) {
+					gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+					gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
+					if (!this.outputTexture || this.outputImmutable) {
+						this._setupOutputTexture();
+					}
+					gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+					return new Texture(this.outputTexture, texSize, this.threadDim, this.output, this._webGl, 'ArrayTexture(4)');
+				}
+				gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+				gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+				return;
+			}
+
+			gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
+			if (this.outputImmutable) {
+				this._setupOutputTexture();
+			}
+			var outputTexture = this.outputTexture;
+
+			if (this.subKernelOutputVariableNames !== null) {
+				if (this.outputImmutable) {
+					this.subKernelOutputTextures = [];
+					this._setupSubOutputTextures(this.subKernelOutputVariableNames.length);
+				}
+				gl.drawBuffers(this.drawBuffersMap);
+			}
+
+			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+			if (this.subKernelOutputTextures !== null) {
+				if (this.subKernels !== null) {
+					var output = [];
+					output.result = this.renderOutput(outputTexture);
+					for (var i = 0; i < this.subKernels.length; i++) {
+						output.push(new Texture(this.subKernelOutputTextures[i], texSize, this.threadDim, this.output, this._webGl));
+					}
+					return output;
+				} else if (this.subKernelProperties !== null) {
+					var _output = {
+						result: this.renderOutput(outputTexture)
+					};
+					var _i = 0;
+					for (var p in this.subKernelProperties) {
+						if (!this.subKernelProperties.hasOwnProperty(p)) continue;
+						_output[p] = new Texture(this.subKernelOutputTextures[_i], texSize, this.threadDim, this.output, this._webGl);
+						_i++;
+					}
+					return _output;
+				}
+			}
+
+			return this.renderOutput(outputTexture);
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name getOutputTexture
+   *
+   * @desc This return defined outputTexture, which is setup in .build(), or if immutable, is defined in .run()
+   *
+   * @returns {Object} Output Texture Cache
+   *
+   */
+
+	}, {
+		key: 'getOutputTexture',
+		value: function getOutputTexture() {
+			return this.outputTexture;
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name _setupOutputTexture
+   * @private
+   *
+   * @desc Setup and replace output texture
+   */
+
+	}, {
+		key: '_setupOutputTexture',
+		value: function _setupOutputTexture() {
+			var gl = this._webGl;
+			var texSize = this.texSize;
+			var texture = this.outputTexture = this._webGl.createTexture();
+			gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.paramNames.length);
+			gl.bindTexture(gl.TEXTURE_2D, texture);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			if (this.floatOutput) {
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, texSize[0], texSize[1], 0, gl.RGBA, gl.FLOAT, null);
+			} else {
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+			}
+			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @param length
+   * @private
+   *
+   * @desc Setup and replace sub-output textures
+   */
+
+	}, {
+		key: '_setupSubOutputTextures',
+		value: function _setupSubOutputTextures(length) {
+			var gl = this._webGl;
+			var texSize = this.texSize;
+			var drawBuffersMap = this.drawBuffersMap = [gl.COLOR_ATTACHMENT0];
+			var textures = this.subKernelOutputTextures = [];
+			for (var i = 0; i < length; i++) {
+				var texture = this._webGl.createTexture();
+				textures.push(texture);
+				drawBuffersMap.push(gl.COLOR_ATTACHMENT0 + i + 1);
+				gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.paramNames.length + i);
+				gl.bindTexture(gl.TEXTURE_2D, texture);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+				if (this.floatOutput) {
+					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, texSize[0], texSize[1], 0, gl.RGBA, gl.FLOAT, null);
+				} else {
+					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+				}
+				gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i + 1, gl.TEXTURE_2D, texture, 0);
+			}
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name _addArgument
+   *
+   * @desc Adds kernel parameters to the Argument Texture,
+   * binding it to the webGl instance, etc.
+   *
+   * @param {Array|Texture|Number} value - The actual argument supplied to the kernel
+   * @param {String} type - Type of the argument
+   * @param {String} name - Name of the argument
+   *
+   */
+
+	}, {
+		key: '_addArgument',
+		value: function _addArgument(value, type, name) {
+			var gl = this._webGl;
+			var argumentTexture = this.getArgumentTexture(name);
+			if (value instanceof Texture) {
+				type = value.type;
+			}
+			switch (type) {
+				case 'Array':
+					{
+						var dim = utils.getDimensions(value, true);
+						var size = utils.dimToTexSize({
+							floatTextures: this.floatTextures,
+							floatOutput: this.floatOutput
+						}, dim);
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
+						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+						var length = size[0] * size[1];
+
+						var _formatArrayTransfer = this._formatArrayTransfer(value, length),
+						    valuesFlat = _formatArrayTransfer.valuesFlat,
+						    bitRatio = _formatArrayTransfer.bitRatio;
+
+						var buffer = void 0;
+						if (this.floatTextures) {
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, size[0], size[1], 0, gl.RGBA, gl.FLOAT, valuesFlat);
+						} else {
+							buffer = new Uint8Array(valuesFlat.buffer);
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0] / bitRatio, size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
+						}
+
+						if (!this.hardcodeConstants) {
+							this.setUniform3iv('user_' + name + 'Dim', dim);
+							this.setUniform2iv('user_' + name + 'Size', size);
+						}
+						this.setUniform1i('user_' + name + 'BitRatio', bitRatio);
+						this.setUniform1i('user_' + name, this.argumentsLength);
+						break;
+					}
+				case 'Integer':
+				case 'Float':
+				case 'Number':
+					{
+						this.setUniform1f('user_' + name, value);
+						break;
+					}
+				case 'Input':
+					{
+						var input = value;
+						var _dim = input.size;
+						var _size = utils.dimToTexSize({
+							floatTextures: this.floatTextures,
+							floatOutput: this.floatOutput
+						}, _dim);
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
+						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+						var _length = _size[0] * _size[1];
+
+						var _formatArrayTransfer2 = this._formatArrayTransfer(value.value, _length),
+						    _valuesFlat = _formatArrayTransfer2.valuesFlat,
+						    _bitRatio = _formatArrayTransfer2.bitRatio;
+
+						if (this.floatTextures) {
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, _size[0], _size[1], 0, gl.RGBA, gl.FLOAT, inputArray);
+						} else {
+							var _buffer = new Uint8Array(_valuesFlat.buffer);
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size[0] / _bitRatio, _size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, _buffer);
+						}
+
+						if (!this.hardcodeConstants) {
+							this.setUniform3iv('user_' + name + 'Dim', _dim);
+							this.setUniform2iv('user_' + name + 'Size', _size);
+						}
+						this.setUniform1i('user_' + name + 'BitRatio', _bitRatio);
+						this.setUniform1i('user_' + name, this.argumentsLength);
+						break;
+					}
+				case 'HTMLImage':
+					{
+						var inputImage = value;
+						var _dim2 = [inputImage.width, inputImage.height, 1];
+						var _size2 = [inputImage.width, inputImage.height];
+
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
+						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+						gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+						// Upload the image into the texture.
+						var mipLevel = 0; // the largest mip
+						var internalFormat = gl.RGBA; // format we want in the texture
+						var srcFormat = gl.RGBA; // format of data we are supplying
+						var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
+						gl.texImage2D(gl.TEXTURE_2D, mipLevel, internalFormat, srcFormat, srcType, inputImage);
+						this.setUniform3iv('user_' + name + 'Dim', _dim2);
+						this.setUniform2iv('user_' + name + 'Size', _size2);
+						this.setUniform1i('user_' + name, this.argumentsLength);
+						break;
+					}
+				case 'HTMLImageArray':
+					{
+						var inputImages = value;
+						var _dim3 = [inputImages[0].width, inputImages[0].height, inputImages.length];
+						var _size3 = [inputImages[0].width, inputImages[0].height];
+
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
+						gl.bindTexture(gl.TEXTURE_2D_ARRAY, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+						// Upload the images into the texture.
+						var _mipLevel = 0; // the largest mip
+						var _internalFormat = gl.RGBA; // format we want in the texture
+						var width = inputImages[0].width;
+						var height = inputImages[0].height;
+						var textureDepth = inputImages.length;
+						var border = 0;
+						var _srcFormat = gl.RGBA; // format of data we are supplying
+						var _srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
+						gl.texImage3D(gl.TEXTURE_2D_ARRAY, _mipLevel, _internalFormat, width, height, textureDepth, border, _srcFormat, _srcType, null);
+						for (var i = 0; i < inputImages.length; i++) {
+							var xOffset = 0;
+							var yOffset = 0;
+							var imageDepth = 1;
+							gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, _mipLevel, xOffset, yOffset, i, inputImages[i].width, inputImages[i].height, imageDepth, _srcFormat, _srcType, inputImages[i]);
+						}
+						this.setUniform3iv('user_' + name + 'Dim', _dim3);
+						this.setUniform2iv('user_' + name + 'Size', _size3);
+						this.setUniform1i('user_' + name, this.argumentsLength);
+						break;
+					}
+				case 'ArrayTexture(4)':
+				case 'NumberTexture':
+					{
+						var inputTexture = value;
+						var _dim4 = inputTexture.dimensions;
+						var _size4 = inputTexture.size;
+
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
+						gl.bindTexture(gl.TEXTURE_2D, inputTexture.texture);
+
+						this.setUniform3iv('user_' + name + 'Dim', _dim4);
+						this.setUniform2iv('user_' + name + 'Size', _size4);
+						this.setUniform1i('user_' + name + 'BitRatio', 1); // always float32
+						this.setUniform1i('user_' + name, this.argumentsLength);
+						break;
+					}
+				default:
+					throw new Error('Input type not supported (WebGL): ' + value);
+			}
+			this.argumentsLength++;
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getMainConstantsString
+   *
+   */
+
+	}, {
+		key: '_getMainConstantsString',
+		value: function _getMainConstantsString() {
+			var result = [];
+			if (this.constants) {
+				for (var name in this.constants) {
+					if (!this.constants.hasOwnProperty(name)) continue;
+					var value = this.constants[name];
+					var type = utils.getArgumentType(value);
+					switch (type) {
+						case 'Integer':
+							result.push('const float constants_' + name + ' = ' + parseInt(value) + '.0');
+							break;
+						case 'Float':
+							result.push('const float constants_' + name + ' = ' + parseFloat(value));
+							break;
+						case 'Array':
+						case 'Input':
+						case 'HTMLImage':
+						case 'ArrayTexture(4)':
+						case 'NumberTexture':
+							result.push('uniform highp sampler2D constants_' + name, 'uniform highp ivec2 constants_' + name + 'Size', 'uniform highp ivec3 constants_' + name + 'Dim', 'uniform highp int constants_' + name + 'BitRatio');
+							break;
+						case 'HTMLImageArray':
+							result.push('uniform highp sampler2DArray constants_' + name, 'uniform highp ivec2 constants_' + name + 'Size', 'uniform highp ivec3 constants_' + name + 'Dim', 'uniform highp int constants_' + name + 'BitRatio');
+							break;
+
+						default:
+							throw new Error('Unsupported constant ' + name + ' type ' + type);
+					}
+				}
+			}
+			return this._linesToString(result);
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _addConstant
+   *
+   * @desc Adds kernel parameters to the Argument Texture,
+   * binding it to the webGl instance, etc.
+   *
+   * @param {Array|Texture|Number} value - The actual argument supplied to the kernel
+   * @param {String} type - Type of the argument
+   * @param {String} name - Name of the argument
+   *
+   */
+
+	}, {
+		key: '_addConstant',
+		value: function _addConstant(value, type, name) {
+			var gl = this._webGl;
+			var argumentTexture = this.getArgumentTexture(name);
+			if (value instanceof Texture) {
+				type = value.type;
+			}
+			switch (type) {
+				case 'Array':
+					{
+						var dim = utils.getDimensions(value, true);
+						var size = utils.dimToTexSize({
+							floatTextures: this.floatTextures,
+							floatOutput: this.floatOutput
+						}, dim);
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
+						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+						var length = size[0] * size[1];
+
+						var _formatArrayTransfer3 = this._formatArrayTransfer(value, length),
+						    valuesFlat = _formatArrayTransfer3.valuesFlat,
+						    bitRatio = _formatArrayTransfer3.bitRatio;
+
+						var buffer = void 0;
+						if (this.floatTextures) {
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0], size[1], 0, gl.RGBA, gl.FLOAT, valuesFlat);
+						} else {
+							buffer = new Uint8Array(valuesFlat.buffer);
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0] / bitRatio, size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
+						}
+
+						if (!this.hardcodeConstants) {
+							this.setUniform3iv('constants_' + name + 'Dim', dim);
+							this.setUniform2iv('constants_' + name + 'Size', size);
+						}
+						this.setUniform1i('constants_' + name + 'BitRatio', bitRatio);
+						this.setUniform1i('constants_' + name, this.constantsLength);
+						break;
+					}
+				case 'Input':
+					{
+						var input = value;
+						var _dim5 = input.size;
+						var _size5 = utils.dimToTexSize({
+							floatTextures: this.floatTextures,
+							floatOutput: this.floatOutput
+						}, _dim5);
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
+						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+						var _length2 = _size5[0] * _size5[1];
+
+						var _formatArrayTransfer4 = this._formatArrayTransfer(value.value, _length2),
+						    _valuesFlat2 = _formatArrayTransfer4.valuesFlat,
+						    _bitRatio2 = _formatArrayTransfer4.bitRatio;
+
+						if (this.floatTextures) {
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, _size5[0], _size5[1], 0, gl.RGBA, gl.FLOAT, inputArray);
+						} else {
+							var _buffer2 = new Uint8Array(_valuesFlat2.buffer);
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size5[0] / _bitRatio2, _size5[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, _buffer2);
+						}
+
+						if (!this.hardcodeConstants) {
+							this.setUniform3iv('constants_' + name + 'Dim', _dim5);
+							this.setUniform2iv('constants_' + name + 'Size', _size5);
+						}
+						this.setUniform1i('constants_' + name + 'BitRatio', _bitRatio2);
+						this.setUniform1i('constants_' + name, this.constantsLength);
+						break;
+					}
+				case 'HTMLImage':
+					{
+						var inputImage = value;
+						var _dim6 = [inputImage.width, inputImage.height, 1];
+						var _size6 = [inputImage.width, inputImage.height];
+
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
+						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+						gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+						// Upload the image into the texture.
+						var mipLevel = 0; // the largest mip
+						var internalFormat = gl.RGBA; // format we want in the texture
+						var srcFormat = gl.RGBA; // format of data we are supplying
+						var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
+						gl.texImage2D(gl.TEXTURE_2D, mipLevel, internalFormat, srcFormat, srcType, inputImage);
+						this.setUniform3iv('constants_' + name + 'Dim', _dim6);
+						this.setUniform2iv('constants_' + name + 'Size', _size6);
+						this.setUniform1i('constants_' + name, this.constantsLength);
+						break;
+					}
+				case 'HTMLImageArray':
+					{
+						var inputImages = value;
+						var _dim7 = [inputImages[0].width, inputImages[0].height, inputImages.length];
+						var _size7 = [inputImages[0].width, inputImages[0].height];
+
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
+						gl.bindTexture(gl.TEXTURE_2D_ARRAY, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+						// Upload the images into the texture.
+						var _mipLevel2 = 0; // the largest mip
+						var _internalFormat2 = gl.RGBA; // format we want in the texture
+						var width = inputImages[0].width;
+						var height = inputImages[0].height;
+						var textureDepth = inputImages.length;
+						var border = 0;
+						var _srcFormat2 = gl.RGBA; // format of data we are supplying
+						var _srcType2 = gl.UNSIGNED_BYTE; // type of data we are supplying
+						gl.texImage3D(gl.TEXTURE_2D_ARRAY, _mipLevel2, _internalFormat2, width, height, textureDepth, border, _srcFormat2, _srcType2, null);
+						for (var i = 0; i < inputImages.length; i++) {
+							var xOffset = 0;
+							var yOffset = 0;
+							var imageDepth = 1;
+							gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, _mipLevel2, xOffset, yOffset, i, inputImages[i].width, inputImages[i].height, imageDepth, _srcFormat2, _srcType2, inputImages[i]);
+						}
+						this.setUniform3iv('constants_' + name + 'Dim', _dim7);
+						this.setUniform2iv('constants_' + name + 'Size', _size7);
+						this.setUniform1i('constants_' + name, this.constantsLength);
+						break;
+					}
+				case 'ArrayTexture(4)':
+				case 'NumberTexture':
+					{
+						var inputTexture = value;
+						var _dim8 = inputTexture.dimensions;
+						var _size8 = inputTexture.size;
+
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
+						gl.bindTexture(gl.TEXTURE_2D, inputTexture.texture);
+
+						this.setUniform3iv('constants_' + name + 'Dim', _dim8);
+						this.setUniform2iv('constants_' + name + 'Size', _size8);
+						this.setUniform1i('constants_' + name + 'BitRatio', 1); // aways float32
+						this.setUniform1i('constants_' + name, this.constantsLength);
+						break;
+					}
+				case 'Integer':
+				case 'Float':
+				default:
+					throw new Error('Input type not supported (WebGL): ' + value);
+			}
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name _getGetResultString
+   *
+   */
+
+	}, {
+		key: '_getGetResultString',
+		value: function _getGetResultString() {
+			if (!this.floatTextures) {
+				return '  return decode(texel, x, bitRatio);';
+			}
+			return '  return texel[channel];';
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name _getHeaderString
+   *
+   * @desc Get the header string for the program.
+   * This returns an empty string if no sub-kernels are defined.
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getHeaderString',
+		value: function _getHeaderString() {
+			return '';
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name _getTextureCoordinate
+   *
+   * @desc Get texture coordinate string for the program
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getTextureCoordinate',
+		value: function _getTextureCoordinate() {
+			var names = this.subKernelOutputVariableNames;
+			if (names === null || names.length < 1) {
+				return 'in highp vec2 vTexCoord;\n';
+			} else {
+				return 'out highp vec2 vTexCoord;\n';
+			}
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name _getMainParamsString
+   *
+   * @desc Generate transpiled glsl Strings for user-defined parameters sent to a kernel
+   *
+   * @param {Array} args - The actual parameters sent to the Kernel
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getMainParamsString',
+		value: function _getMainParamsString(args) {
+			var result = [];
+			var paramTypes = this.paramTypes;
+			var paramNames = this.paramNames;
+			for (var i = 0; i < paramNames.length; i++) {
+				var param = args[i];
+				var paramName = paramNames[i];
+				var paramType = paramTypes[i];
+				if (this.hardcodeConstants) {
+					if (paramType === 'Array' || paramType === 'NumberTexture' || paramType === 'ArrayTexture(4)') {
+						var paramDim = utils.getDimensions(param, true);
+						var paramSize = utils.dimToTexSize({
+							floatTextures: this.floatTextures,
+							floatOutput: this.floatOutput
+						}, paramDim);
+
+						result.push('uniform highp sampler2D user_' + paramName, 'highp ivec2 user_' + paramName + 'Size = ivec2(' + paramSize[0] + ', ' + paramSize[1] + ')', 'highp ivec3 user_' + paramName + 'Dim = ivec3(' + paramDim[0] + ', ' + paramDim[1] + ', ' + paramDim[2] + ')', 'uniform highp int user_' + paramName + 'BitRatio');
+					} else if (paramType === 'Integer') {
+						result.push('highp float user_' + paramName + ' = ' + param + '.0');
+					} else if (paramType === 'Float') {
+						result.push('highp float user_' + paramName + ' = ' + param);
+					}
+				} else {
+					if (paramType === 'Array' || paramType === 'NumberTexture' || paramType === 'ArrayTexture(4)' || paramType === 'Input' || paramType === 'HTMLImage') {
+						result.push('uniform highp sampler2D user_' + paramName, 'uniform highp ivec2 user_' + paramName + 'Size', 'uniform highp ivec3 user_' + paramName + 'Dim');
+						if (paramType !== 'HTMLImage') {
+							result.push('uniform highp int user_' + paramName + 'BitRatio');
+						}
+					} else if (paramType === 'HTMLImageArray') {
+						result.push('uniform highp sampler2DArray user_' + paramName, 'uniform highp ivec2 user_' + paramName + 'Size', 'uniform highp ivec3 user_' + paramName + 'Dim');
+					} else if (paramType === 'Integer' || paramType === 'Float') {
+						result.push('uniform float user_' + paramName);
+					}
+				}
+			}
+			return this._linesToString(result);
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name _getKernelString
+   *
+   * @desc Get Kernel program string (in *glsl*) for a kernel.
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getKernelString',
+		value: function _getKernelString() {
+			var result = [];
+			var names = this.subKernelOutputVariableNames;
+			if (names !== null) {
+				result.push('float kernelResult = 0.0');
+				result.push('layout(location = 0) out vec4 data0');
+				for (var i = 0; i < names.length; i++) {
+					result.push('float ' + names[i] + ' = 0.0', 'layout(location = ' + (i + 1) + ') out vec4 data' + (i + 1));
+				}
+			} else {
+				result.push('out vec4 data0');
+				result.push('float kernelResult = 0.0');
+			}
+
+			return this._linesToString(result) + this.functionBuilder.getPrototypeString('kernel');
+		}
+
+		/**
+   *
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name _getMainResultString
+   *
+   * @desc Get main result string with checks for floatOutput, graphical, subKernelsOutputs, etc.
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getMainResultString',
+		value: function _getMainResultString() {
+			var names = this.subKernelOutputVariableNames;
+			var result = [];
+
+			if (this.floatOutput) {
+				result.push('  index *= 4');
+			}
+
+			if (this.graphical) {
+				result.push('  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  data0 = actualColor');
+			} else if (this.floatOutput) {
+				var channels = ['r', 'g', 'b', 'a'];
+
+				for (var i = 0; i < channels.length; ++i) {
+					result.push('  threadId = indexTo3D(index, uOutputDim)');
+					result.push('  kernel()');
+
+					if (names) {
+						result.push('  data0.' + channels[i] + ' = kernelResult');
+
+						for (var j = 0; j < names.length; ++j) {
+							result.push('  data' + (j + 1) + '.' + channels[i] + ' = ' + names[j]);
+						}
+					} else {
+						result.push('  data0.' + channels[i] + ' = kernelResult');
+					}
+
+					if (i < channels.length - 1) {
+						result.push('  index += 1');
+					}
+				}
+			} else if (names !== null) {
+				result.push('  threadId = indexTo3D(index, uOutputDim)');
+				result.push('  kernel()');
+				result.push('  data0 = encode32(kernelResult)');
+				for (var _i2 = 0; _i2 < names.length; _i2++) {
+					result.push('  data' + (_i2 + 1) + ' = encode32(' + names[_i2] + ')');
+				}
+			} else {
+				result.push('  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  data0 = encode32(kernelResult)');
+			}
+
+			return this._linesToString(result);
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name _addKernels
+   *
+   * @desc Adds all the sub-kernels supplied with this Kernel instance.
+   *
+   */
+
+	}, {
+		key: '_addKernels',
+		value: function _addKernels() {
+			var _this2 = this;
+
+			var builder = this.functionBuilder;
+			var gl = this._webGl;
+
+			builder.addFunctions(this.functions, {
+				constants: this.constants,
+				output: this.output
+			});
+			builder.addNativeFunctions(this.nativeFunctions);
+
+			builder.addKernel(this.fnString, {
+				prototypeOnly: false,
+				constants: this.constants,
+				output: this.output,
+				debug: this.debug,
+				loopMaxIterations: this.loopMaxIterations,
+				paramNames: this.paramNames,
+				paramTypes: this.paramTypes,
+				constantTypes: this.constantTypes,
+				fixIntegerDivisionAccuracy: this.fixIntegerDivisionAccuracy
+			});
+
+			if (this.subKernels !== null) {
+				this.subKernelOutputTextures = [];
+				this.subKernelOutputVariableNames = [];
+				this.subKernels.forEach(function (subKernel) {
+					return _this2._addSubKernel(subKernel);
+				});
+			} else if (this.subKernelProperties !== null) {
+				this.subKernelOutputTextures = [];
+				this.subKernelOutputVariableNames = [];
+				Object.keys(this.subKernelProperties).forEach(function (property) {
+					return _this2._addSubKernel(_this2.subKernelProperties[property]);
+				});
+			}
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name _getFragShaderString
+   *
+   * @desc Get the fragment shader String.
+   * If the String hasn't been compiled yet,
+   * then this method compiles it as well
+   *
+   * @param {Array} args - The actual parameters sent to the Kernel
+   *
+   * @returns {string} Fragment Shader string
+   *
+   */
+
+	}, {
+		key: '_getFragShaderString',
+		value: function _getFragShaderString(args) {
+			if (this.compiledFragShaderString !== null) {
+				return this.compiledFragShaderString;
+			}
+			return this.compiledFragShaderString = this._replaceArtifacts(this.constructor.fragShaderString, this._getFragShaderArtifactMap(args));
+		}
+
+		/**
+   * @memberOf WebGL2Kernel#
+   * @function
+   * @name _getVertShaderString
+   *
+   * @desc Get the vertical shader String
+   *
+   * @param {Array} args - The actual parameters sent to the Kernel
+   *
+   * @returns {string} Vertical Shader string
+   *
+   */
+
+	}, {
+		key: '_getVertShaderString',
+		value: function _getVertShaderString(args) {
+			if (this.compiledVertShaderString !== null) {
+				return this.compiledVertShaderString;
+			}
+			return this.compiledVertShaderString = this.constructor.vertShaderString;
+		}
+	}], [{
+		key: 'fragShaderString',
+		get: function get() {
+			return fragShaderString;
+		}
+	}, {
+		key: 'vertShaderString',
+		get: function get() {
+			return vertShaderString;
+		}
+	}]);
+
+	return WebGL2Kernel;
+}(WebGLKernel);
+},{"../../core/texture":87,"../../core/utils":89,"../web-gl/kernel":78,"./shader-frag":72,"./shader-vert":73}],71:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var RunnerBase = require('../runner-base');
+var WebGL2FunctionBuilder = require('./function-builder');
+var WebGL2Kernel = require('./kernel');
+
+module.exports = function (_RunnerBase) {
+	_inherits(WebGL2Runner, _RunnerBase);
+
+	/**
+  * @constructor WebGL2Runner
+  *
+  * @extends RunnerBase
+ 	 * @desc Instantiates a Runner instance for the kernel.
+  *
+  * @param {Object} settings - Settings to instantiate properties in RunnerBase, with given values
+  *
+  */
+	function WebGL2Runner(settings) {
+		_classCallCheck(this, WebGL2Runner);
+
+		var _this = _possibleConstructorReturn(this, (WebGL2Runner.__proto__ || Object.getPrototypeOf(WebGL2Runner)).call(this, new WebGL2FunctionBuilder(), settings));
+
+		_this.Kernel = WebGL2Kernel;
+		_this.kernel = null;
+		return _this;
+	}
+
+	/**
+  * @memberOf WebGL2Runner#
+  * @function
+  * @name getMode
+  *
+  * @desc Return the current mode in which gpu.js is executing.
+  *
+  * @returns {String} The current mode; "gpu".
+  *
+  */
+
+
+	_createClass(WebGL2Runner, [{
+		key: 'getMode',
+		value: function getMode() {
+			return 'gpu';
+		}
+	}]);
+
+	return WebGL2Runner;
+}(RunnerBase);
+},{"../runner-base":67,"./function-builder":68,"./kernel":70}],72:[function(require,module,exports){
+"use strict";
+
+module.exports = "#version 300 es\n__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst float LOOP_MAX = __LOOP_MAX__;\n\n__CONSTANTS__;\n\nin vec2 vTexCoord;\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x/y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 rgba) {\n  __DECODE32_ENDIANNESS__;\n  rgba *= 255.0;\n  vec2 gte128;\n  gte128.x = rgba.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = rgba.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * rgba.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  rgba.b = rgba.b - 128.0 * gte128.x;\n  res = dot(rgba, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nvec4 encode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 rgba = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  rgba.rg = integerMod(rgba.rg, 256.0);\n  rgba.b = integerMod(rgba.b, 128.0);\n  rgba.a = exponent*0.5 + 63.5;\n  rgba.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  rgba = floor(rgba);\n  rgba *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return rgba;\n}\n// Dragons end here\n\nfloat decode(vec4 rgba, int x, int bitRatio) {\n  if (bitRatio == 1) {\n    return decode32(rgba);\n  }\n  __DECODE32_ENDIANNESS__;\n  int channel = integerMod(x, bitRatio);\n  if (bitRatio == 4) {\n    return rgba[channel] * 255.0;\n  }\n  else {\n    return rgba[channel*2] * 255.0 + rgba[channel*2 + 1] * 65280.0;\n  }\n}\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio,  int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  __GET_RESULT__;\n  \n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture(tex, st / vec2(texSize));\n}\n\nvec4 getImage3D(sampler2DArray tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture(tex, vec3(st / vec2(texSize), z));\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio, int y, int x) {\n  return get(tex, texSize, texDim, bitRatio, 0, y, x);\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio, int x) {\n  return get(tex, texSize, texDim, bitRatio, 0, 0, x);\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int y, int x) {\n  return getImage2D(tex, texSize, texDim, 0, y, x);\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int x) {\n  return getImage2D(tex, texSize, texDim, 0, 0, x);\n}\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\n__MAIN_PARAMS__;\n__MAIN_CONSTANTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
+},{}],73:[function(require,module,exports){
+"use strict";
+
+module.exports = "#version 300 es\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nin vec2 aPos;\nin vec2 aTexCoord;\n\nout vec2 vTexCoord;\nuniform vec2 ratio;\n\nvoid main(void) {\n  gl_Position = vec4((aPos + vec2(1)) * ratio + vec2(-1), 0, 1);\n  vTexCoord = aTexCoord;\n}";
+},{}],74:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var WebGLKernel = require('./kernel');
+var utils = require('../../core/utils');
+
+/**
+ * @class WebGLValidatorKernel
+ *
+ * @desc Helper class for WebGLKernel to validate texture size and dimensions.
+ *
+ */
+module.exports = function (_WebGLKernel) {
+	_inherits(WebGL2ValidatorKernel, _WebGLKernel);
+
+	function WebGL2ValidatorKernel() {
+		_classCallCheck(this, WebGL2ValidatorKernel);
+
+		return _possibleConstructorReturn(this, (WebGL2ValidatorKernel.__proto__ || Object.getPrototypeOf(WebGL2ValidatorKernel)).apply(this, arguments));
+	}
+
+	_createClass(WebGL2ValidatorKernel, [{
+		key: 'validateOptions',
+
+
+		/** 
+   * @memberOf WebGLValidatorKernel#
+   * @function
+   * @name validateOptions
+   *
+   */
+		value: function validateOptions() {
+			this._webGl.getExtension('EXT_color_buffer_float');
+			this.texSize = utils.dimToTexSize({
+				floatTextures: this.floatTextures,
+				floatOutput: this.floatOutput
+			}, this.output, true);
+		}
+	}]);
+
+	return WebGL2ValidatorKernel;
+}(WebGLKernel);
+},{"../../core/utils":89,"./kernel":70}],75:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FunctionBuilderBase = require('../function-builder-base');
+var WebGLFunctionNode = require('./function-node');
+
+/**
+ * @class WebGLFunctionBuilder
+ *
+ * @extends FunctionBuilderBase
+ *
+ * @desc Builds webGl functions (shaders) from JavaScript function Strings
+ *
+ */
+module.exports = function (_FunctionBuilderBase) {
+	_inherits(WebGLFunctionBuilder, _FunctionBuilderBase);
+
+	function WebGLFunctionBuilder() {
+		_classCallCheck(this, WebGLFunctionBuilder);
+
+		var _this = _possibleConstructorReturn(this, (WebGLFunctionBuilder.__proto__ || Object.getPrototypeOf(WebGLFunctionBuilder)).call(this));
+
+		_this.Node = WebGLFunctionNode;
+		return _this;
+	}
+
+	//---------------------------------------------------------
+	//
+	//  Polyfill stuff
+	//
+	//---------------------------------------------------------
+
+	// Round function used in polyfill
+
+
+	_createClass(WebGLFunctionBuilder, [{
+		key: 'polyfillStandardFunctions',
+
+
+		/**
+   * @memberOf FunctionBuilderBase#
+   * @function
+   * @name polyfillStandardFunctions
+   *
+   * @desc Polyfill in the missing Math functions (round)
+   *
+   */
+		value: function polyfillStandardFunctions() {
+			this.addFunction('round', _round);
+		}
+	}], [{
+		key: 'round',
+		value: function round(a) {
+			return _round(a);
+		}
+	}]);
+
+	return WebGLFunctionBuilder;
+}(FunctionBuilderBase);
+
+function _round(a) {
+	return Math.floor(a + 0.5);
+}
+},{"../function-builder-base":63,"./function-node":76}],76:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FunctionNodeBase = require('../function-node-base');
+var utils = require('../../core/utils');
+// Closure capture for the ast function, prevent collision with existing AST functions
+// The prefixes to use
+var jsMathPrefix = 'Math.';
+var localPrefix = 'this.';
+var constantsPrefix = 'this.constants.';
+
+var DECODE32_ENCODE32 = /decode32\(\s+encode32\(/g;
+var ENCODE32_DECODE32 = /encode32\(\s+decode32\(/g;
+
+// these debugs were hugely usefull...
+// TODO: optimise out - webpack/babel options? maybe some generic logging support in core/utils?
+// const debugLog = console.log
+var debugLog = function debugLog() {};
+/**
+ * @class WebGLFunctionNode
+ *
+ * @desc [INTERNAL] Takes in a function node, and does all the AST voodoo required to generate its respective webGL code.
+ *
+ * @extends FunctionNodeBase
+ *
+ * @param {functionNode} inNode - The function node object
+ *
+ * @returns the converted webGL function string
+ *
+ */
+module.exports = function (_FunctionNodeBase) {
+	_inherits(WebGLFunctionNode, _FunctionNodeBase);
+
+	function WebGLFunctionNode() {
+		_classCallCheck(this, WebGLFunctionNode);
+
+		return _possibleConstructorReturn(this, (WebGLFunctionNode.__proto__ || Object.getPrototypeOf(WebGLFunctionNode)).apply(this, arguments));
+	}
+
+	_createClass(WebGLFunctionNode, [{
+		key: 'generate',
+		value: function generate() {
+			if (this.debug) {
+				debugLog(this);
+			}
+			if (this.prototypeOnly) {
+				return this.astFunctionPrototype(this.getJsAST(), []).join('').trim();
+			} else {
+				this.functionStringArray = this.astGeneric(this.getJsAST(), []);
+			}
+			this.functionString = webGlRegexOptimize(this.functionStringArray.join('').trim());
+			return this.functionString;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astFunctionDeclaration
+   *
+   * @desc Parses the abstract syntax tree for to its *named function declaration*
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astFunctionDeclaration',
+		value: function astFunctionDeclaration(ast, retArr) {
+			this.builder.addFunction(null, utils.getAstString(this.jsFunctionString, ast));
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astFunctionPrototype
+   * @static
+   *
+   * @desc Parses the abstract syntax tree for to its *named function prototype*
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astFunctionPrototype',
+		value: function astFunctionPrototype(ast, retArr) {
+			// Setup function return type and name
+			if (this.isRootKernel || this.isSubKernel) {
+				return retArr;
+			}
+
+			var returnType = this.returnType;
+			var type = typeMap[returnType];
+			if (!type) {
+				throw new Error('unknown type ' + returnType);
+			}
+			retArr.push(type);
+			retArr.push(' ');
+			retArr.push(this.functionName);
+			retArr.push('(');
+
+			// Arguments handling
+			for (var i = 0; i < this.paramNames.length; ++i) {
+				if (i > 0) {
+					retArr.push(', ');
+				}
+
+				retArr.push(this.paramTypes[i]);
+				retArr.push(' ');
+				retArr.push('user_');
+				retArr.push(this.paramNames[i]);
+			}
+
+			retArr.push(');\n');
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astFunctionExpression
+   *
+   * @desc Parses the abstract syntax tree for to its *named function*
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astFunctionExpression',
+		value: function astFunctionExpression(ast, retArr) {
+
+			// Setup function return type and name
+			if (this.isRootKernel) {
+				retArr.push('void');
+			} else {
+				var returnType = this.returnType;
+				var type = typeMap[returnType];
+				if (!type) {
+					throw new Error('unknown type ' + returnType);
+				}
+				retArr.push(type);
+			}
+			retArr.push(' ');
+			retArr.push(this.functionName);
+			retArr.push('(');
+
+			if (!this.isRootKernel) {
+				// Arguments handling
+				for (var i = 0; i < this.paramNames.length; ++i) {
+					var paramName = this.paramNames[i];
+
+					if (i > 0) {
+						retArr.push(', ');
+					}
+					var paramType = this.getParamType(paramName);
+					var _type = typeMap[paramType];
+					if (!_type) {
+						throw new Error('unknown type ' + paramType);
+					}
+					retArr.push(_type);
+					retArr.push(' ');
+					retArr.push('user_');
+					retArr.push(paramName);
+				}
+			}
+
+			// Function opening
+			retArr.push(') {\n');
+
+			// Body statement iteration
+			for (var _i = 0; _i < ast.body.body.length; ++_i) {
+				this.astGeneric(ast.body.body[_i], retArr);
+				retArr.push('\n');
+			}
+
+			// Function closing
+			retArr.push('}\n');
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astReturnStatement
+   *
+   * @desc Parses the abstract syntax tree for to *return* statement
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astReturnStatement',
+		value: function astReturnStatement(ast, retArr) {
+			if (this.isRootKernel) {
+				retArr.push('kernelResult = ');
+				this.astGeneric(ast.argument, retArr);
+				retArr.push(';');
+				retArr.push('return;');
+			} else if (this.isSubKernel) {
+				retArr.push(this.functionName + 'Result = ');
+				this.astGeneric(ast.argument, retArr);
+				retArr.push(';');
+				retArr.push('return ' + this.functionName + 'Result;');
+			} else {
+				retArr.push('return ');
+				this.astGeneric(ast.argument, retArr);
+				retArr.push(';');
+			}
+
+			//throw this.astErrorOutput(
+			//	'Non main function return, is not supported : '+this.currentFunctionNamespace,
+			//	ast
+			//);
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astLiteral
+   *
+   * @desc Parses the abstract syntax tree for *literal value*
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astLiteral',
+		value: function astLiteral(ast, retArr) {
+
+			// Reject non numeric literals
+			if (isNaN(ast.value)) {
+				throw this.astErrorOutput('Non-numeric literal not supported : ' + ast.value, ast);
+			}
+
+			// Push the literal value as a float/int
+			retArr.push(ast.value);
+
+			var inGetParams = this.isState('in-get-call-parameters');
+			// If it was an int, node made a float if necessary
+			if (Number.isInteger(ast.value)) {
+				if (!inGetParams) {
+					retArr.push('.0');
+				}
+			} else if (inGetParams) {
+				// or cast to an int as we are addressing an input array
+				retArr.pop();
+				retArr.push('int(');
+				retArr.push(ast.value);
+				retArr.push(')');
+			}
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astBinaryExpression
+   *
+   * @desc Parses the abstract syntax tree for *binary* expression
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astBinaryExpression',
+		value: function astBinaryExpression(ast, retArr) {
+			var inGetParams = this.isState('in-get-call-parameters');
+			if (inGetParams) {
+				this.pushState('not-in-get-call-parameters');
+				retArr.push('int');
+			}
+			retArr.push('(');
+
+			if (ast.operator === '%') {
+				retArr.push('mod(');
+				this.astGeneric(ast.left, retArr);
+				retArr.push(',');
+				this.astGeneric(ast.right, retArr);
+				retArr.push(')');
+			} else if (ast.operator === '===') {
+				this.astGeneric(ast.left, retArr);
+				retArr.push('==');
+				this.astGeneric(ast.right, retArr);
+			} else if (ast.operator === '!==') {
+				this.astGeneric(ast.left, retArr);
+				retArr.push('!=');
+				this.astGeneric(ast.right, retArr);
+			} else if (this.fixIntegerDivisionAccuracy && ast.operator === '/') {
+				retArr.push('div_with_int_check(');
+				this.astGeneric(ast.left, retArr);
+				retArr.push(', ');
+				this.astGeneric(ast.right, retArr);
+				retArr.push(')');
+			} else {
+				this.astGeneric(ast.left, retArr);
+				retArr.push(ast.operator);
+				this.astGeneric(ast.right, retArr);
+			}
+
+			retArr.push(')');
+
+			if (inGetParams) {
+				this.popState('not-in-get-call-parameters');
+			}
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astIdentifierExpression
+   *
+   * @desc Parses the abstract syntax tree for *identifier* expression
+   *
+   * @param {Object} idtNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astIdentifierExpression',
+		value: function astIdentifierExpression(idtNode, retArr) {
+			if (idtNode.type !== 'Identifier') {
+				throw this.astErrorOutput('IdentifierExpression - not an Identifier', idtNode);
+			}
+			// do we need to cast addressing vales to float?
+			var castFloat = !this.isState('in-get-call-parameters');
+
+			switch (idtNode.name) {
+				case 'gpu_threadX':
+					castFloat && retArr.push('float(');
+					retArr.push('threadId.x');
+					castFloat && retArr.push(')');
+					break;
+				case 'gpu_threadY':
+					castFloat && retArr.push('float(');
+					retArr.push('threadId.y');
+					castFloat && retArr.push(')');
+					break;
+				case 'gpu_threadZ':
+					castFloat && retArr.push('float(');
+					retArr.push('threadId.z');
+					castFloat && retArr.push(')');
+					break;
+				case 'gpu_outputX':
+					retArr.push('uOutputDim.x');
+					break;
+				case 'gpu_outputY':
+					retArr.push('uOutputDim.y');
+					break;
+				case 'gpu_outputZ':
+					retArr.push('uOutputDim.z');
+					break;
+				case 'Infinity':
+					// https://stackoverflow.com/a/47543127/1324039
+					retArr.push('3.402823466e+38');
+					break;
+				default:
+					var userParamName = this.getUserParamName(idtNode.name);
+					if (userParamName !== null) {
+						this.pushParameter(retArr, 'user_' + userParamName);
+					} else {
+						this.pushParameter(retArr, 'user_' + idtNode.name);
+					}
+			}
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astForStatement
+   *
+   * @desc Parses the abstract syntax tree forfor *for-loop* expression
+   *
+   * @param {Object} forNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the parsed webgl string
+   */
+
+	}, {
+		key: 'astForStatement',
+		value: function astForStatement(forNode, retArr) {
+			if (forNode.type !== 'ForStatement') {
+				throw this.astErrorOutput('Invalid for statment', forNode);
+			}
+
+			if (forNode.test && forNode.test.type === 'BinaryExpression') {
+				if (forNode.test.right.type === 'Identifier' && forNode.test.operator === '<' && this.isIdentifierConstant(forNode.test.right.name) === false) {
+
+					if (!this.loopMaxIterations) {
+						console.warn('Warning: loopMaxIterations is not set! Using default of 1000 which may result in unintended behavior.');
+						console.warn('Set loopMaxIterations or use a for loop of fixed length to silence this message.');
+					}
+
+					retArr.push('for (');
+					this.astGeneric(forNode.init, retArr);
+					this.astGeneric(forNode.test.left, retArr);
+					retArr.push(forNode.test.operator);
+					retArr.push('LOOP_MAX');
+					retArr.push(';');
+					this.astGeneric(forNode.update, retArr);
+					retArr.push(')');
+
+					retArr.push('{\n');
+					retArr.push('if (');
+					this.astGeneric(forNode.test.left, retArr);
+					retArr.push(forNode.test.operator);
+					this.astGeneric(forNode.test.right, retArr);
+					retArr.push(') {\n');
+					if (forNode.body.type === 'BlockStatement') {
+						for (var i = 0; i < forNode.body.body.length; i++) {
+							this.astGeneric(forNode.body.body[i], retArr);
+						}
+					} else {
+						this.astGeneric(forNode.body, retArr);
+					}
+					retArr.push('\n} else {\n');
+					retArr.push('break;\n');
+					retArr.push('}\n');
+					retArr.push('}\n');
+
+					return retArr;
+				} else {
+					var declarations = JSON.parse(JSON.stringify(forNode.init.declarations));
+					var updateArgument = forNode.update.argument;
+					if (!Array.isArray(declarations) || declarations.length < 1) {
+						debugLog(this.jsFunctionString);
+						throw new Error('Error: Incompatible for loop declaration');
+					}
+
+					if (declarations.length > 1) {
+						var initArgument = null;
+						for (var _i2 = 0; _i2 < declarations.length; _i2++) {
+							var declaration = declarations[_i2];
+							if (declaration.id.name === updateArgument.name) {
+								initArgument = declaration;
+								declarations.splice(_i2, 1);
+							} else {
+								retArr.push('float ');
+								this.astGeneric(declaration, retArr);
+								retArr.push(';');
+							}
+						}
+
+						retArr.push('for (float ');
+						this.astGeneric(initArgument, retArr);
+						retArr.push(';');
+					} else {
+						retArr.push('for (');
+						this.astGeneric(forNode.init, retArr);
+					}
+
+					this.astGeneric(forNode.test, retArr);
+					retArr.push(';');
+					this.astGeneric(forNode.update, retArr);
+					retArr.push(')');
+					this.astGeneric(forNode.body, retArr);
+					return retArr;
+				}
+			}
+
+			throw this.astErrorOutput('Invalid for statement', forNode);
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astWhileStatement
+   *
+   * @desc Parses the abstract syntax tree for *while* loop
+   *
+   *
+   * @param {Object} whileNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the parsed webgl string
+   */
+
+	}, {
+		key: 'astWhileStatement',
+		value: function astWhileStatement(whileNode, retArr) {
+			if (whileNode.type !== 'WhileStatement') {
+				throw this.astErrorOutput('Invalid while statment', whileNode);
+			}
+
+			retArr.push('for (float i = 0.0; i < LOOP_MAX; i++) {');
+			retArr.push('if (');
+			this.astGeneric(whileNode.test, retArr);
+			retArr.push(') {\n');
+			this.astGeneric(whileNode.body, retArr);
+			retArr.push('} else {\n');
+			retArr.push('break;\n');
+			retArr.push('}\n');
+			retArr.push('}\n');
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astWhileStatement
+   *
+   * @desc Parses the abstract syntax tree for *do while* loop
+   *
+   *
+   * @param {Object} doWhileNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the parsed webgl string
+   */
+
+	}, {
+		key: 'astDoWhileStatement',
+		value: function astDoWhileStatement(doWhileNode, retArr) {
+			if (doWhileNode.type !== 'DoWhileStatement') {
+				throw this.astErrorOutput('Invalid while statment', doWhileNode);
+			}
+
+			retArr.push('for (float i = 0.0; i < LOOP_MAX; i++) {');
+			this.astGeneric(doWhileNode.body, retArr);
+			retArr.push('if (!');
+			this.astGeneric(doWhileNode.test, retArr);
+			retArr.push(') {\n');
+			retArr.push('break;\n');
+			retArr.push('}\n');
+			retArr.push('}\n');
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astAssignmentExpression
+   *
+   * @desc Parses the abstract syntax tree for *Assignment* Expression
+   *
+   * @param {Object} assNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astAssignmentExpression',
+		value: function astAssignmentExpression(assNode, retArr) {
+			if (assNode.operator === '%=') {
+				this.astGeneric(assNode.left, retArr);
+				retArr.push('=');
+				retArr.push('mod(');
+				this.astGeneric(assNode.left, retArr);
+				retArr.push(',');
+				this.astGeneric(assNode.right, retArr);
+				retArr.push(')');
+			} else {
+				this.astGeneric(assNode.left, retArr);
+				retArr.push(assNode.operator);
+				this.astGeneric(assNode.right, retArr);
+				return retArr;
+			}
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astEmptyStatement
+   *
+   * @desc Parses the abstract syntax tree for an *Empty* Statement
+   *
+   * @param {Object} eNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astEmptyStatement',
+		value: function astEmptyStatement(eNode, retArr) {
+			//retArr.push(';\n');
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astBlockStatement
+   *
+   * @desc Parses the abstract syntax tree for *Block* statement
+   *
+   * @param {Object} bNode - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astBlockStatement',
+		value: function astBlockStatement(bNode, retArr) {
+			retArr.push('{\n');
+			for (var i = 0; i < bNode.body.length; i++) {
+				this.astGeneric(bNode.body[i], retArr);
+			}
+			retArr.push('}\n');
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astExpressionStatement
+   *
+   * @desc Parses the abstract syntax tree for *generic expression* statement
+   *
+   * @param {Object} esNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astExpressionStatement',
+		value: function astExpressionStatement(esNode, retArr) {
+			this.astGeneric(esNode.expression, retArr);
+			retArr.push(';');
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astVariableDeclaration
+   *
+   * @desc Parses the abstract syntax tree for *Variable Declaration*
+   *
+   * @param {Object} vardecNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astVariableDeclaration',
+		value: function astVariableDeclaration(vardecNode, retArr) {
+			for (var i = 0; i < vardecNode.declarations.length; i++) {
+				var declaration = vardecNode.declarations[i];
+				if (i > 0) {
+					retArr.push(',');
+				}
+				var retDeclaration = [];
+				this.astGeneric(declaration, retDeclaration);
+				var declarationType = 'Number';
+				if (i === 0) {
+					var init = declaration.init;
+					if (init) {
+						if (init.object) {
+							if (init.object.type === 'MemberExpression' && init.object.object) {
+								// this.thread.x, this.thread.y, this.thread.z
+								if (init.object.object.type === 'ThisExpression' && init.object.property && (init.object.property.name === 'thread' || init.object.property.name === 'output')) {
+									declarationType = 'Integer';
+								}
+								// param[]
+								else if (init.object.object.type === 'Identifier') {
+										var _type2 = this.getParamType(init.object.object.name);
+										declarationType = typeLookupMap[_type2];
+									}
+									// param[][]
+									else if (init.object.object.object && init.object.object.object.type === 'Identifier') {
+											var _type3 = this.getParamType(init.object.object.object.name);
+											declarationType = typeLookupMap[_type3];
+										}
+										// this.constants.param[]
+										else if (init.object.object.object && init.object.object.object.object && init.object.object.object.object.type === 'ThisExpression' && init.object.object.object.property.name === 'constants') {
+												var _type4 = this.getConstantType(init.object.object.property.name);
+												declarationType = typeLookupMap[_type4];
+											}
+											// this.constants.param[][]
+											else if (init.object.object.object && init.object.object.object.object && init.object.object.object.object.object && init.object.object.object.object.object.type === 'ThisExpression' && init.object.object.object.object.property.name === 'constants') {
+													var _type5 = this.getConstantType(init.object.object.object.property.name);
+													declarationType = typeLookupMap[_type5];
+												}
+							}
+							if (!declarationType) {
+								throw new Error('unknown lookup type ' + typeLookupMap);
+							}
+						} else {
+							if (init.name && this.declarations[init.name]) {
+								declarationType = this.declarations[init.name];
+							} else if (init.type === 'ArrayExpression') {
+								declarationType = 'Array(' + init.elements.length + ')';
+							} else if (init.type === 'CallExpression') {
+								var node = this.builder.nodeMap[init.callee.name];
+								if (node && node.returnType) {
+									declarationType = node.returnType;
+								}
+							}
+						}
+					}
+					var type = typeMap[declarationType];
+					if (!type) {
+						throw new Error('type ' + declarationType + ' not handled');
+					}
+					retArr.push(type + ' ');
+				}
+				this.declarations[declaration.id.name] = declarationType;
+				retArr.push.apply(retArr, retDeclaration);
+			}
+			retArr.push(';');
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astVariableDeclarator
+   *
+   * @desc Parses the abstract syntax tree for *Variable Declarator*
+   *
+   * @param {Object} ivardecNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astVariableDeclarator',
+		value: function astVariableDeclarator(ivardecNode, retArr) {
+			this.astGeneric(ivardecNode.id, retArr);
+			if (ivardecNode.init !== null) {
+				retArr.push('=');
+				this.astGeneric(ivardecNode.init, retArr);
+			}
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astIfStatement
+   *
+   * @desc Parses the abstract syntax tree for *If* Statement
+   *
+   * @param {Object} ifNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astIfStatement',
+		value: function astIfStatement(ifNode, retArr) {
+			retArr.push('if (');
+			this.astGeneric(ifNode.test, retArr);
+			retArr.push(')');
+			if (ifNode.consequent.type === 'BlockStatement') {
+				this.astGeneric(ifNode.consequent, retArr);
+			} else {
+				retArr.push(' {\n');
+				this.astGeneric(ifNode.consequent, retArr);
+				retArr.push('\n}\n');
+			}
+
+			if (ifNode.alternate) {
+				retArr.push('else ');
+				if (ifNode.alternate.type === 'BlockStatement') {
+					this.astGeneric(ifNode.alternate, retArr);
+				} else {
+					retArr.push(' {\n');
+					this.astGeneric(ifNode.alternate, retArr);
+					retArr.push('\n}\n');
+				}
+			}
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astBreakStatement
+   *
+   * @desc Parses the abstract syntax tree for *Break* Statement
+   *
+   * @param {Object} brNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astBreakStatement',
+		value: function astBreakStatement(brNode, retArr) {
+			retArr.push('break;\n');
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astContinueStatement
+   *
+   * @desc Parses the abstract syntax tree for *Continue* Statement
+   *
+   * @param {Object} crNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astContinueStatement',
+		value: function astContinueStatement(crNode, retArr) {
+			retArr.push('continue;\n');
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astLogicalExpression
+   *
+   * @desc Parses the abstract syntax tree for *Logical* Expression
+   *
+   * @param {Object} logNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astLogicalExpression',
+		value: function astLogicalExpression(logNode, retArr) {
+			retArr.push('(');
+			this.astGeneric(logNode.left, retArr);
+			retArr.push(logNode.operator);
+			this.astGeneric(logNode.right, retArr);
+			retArr.push(')');
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astUpdateExpression
+   *
+   * @desc Parses the abstract syntax tree for *Update* Expression
+   *
+   * @param {Object} uNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astUpdateExpression',
+		value: function astUpdateExpression(uNode, retArr) {
+			if (uNode.prefix) {
+				retArr.push(uNode.operator);
+				this.astGeneric(uNode.argument, retArr);
+			} else {
+				this.astGeneric(uNode.argument, retArr);
+				retArr.push(uNode.operator);
+			}
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astUnaryExpression
+   *
+   * @desc Parses the abstract syntax tree for *Unary* Expression
+   *
+   * @param {Object} uNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astUnaryExpression',
+		value: function astUnaryExpression(uNode, retArr) {
+			if (uNode.prefix) {
+				retArr.push(uNode.operator);
+				this.astGeneric(uNode.argument, retArr);
+			} else {
+				this.astGeneric(uNode.argument, retArr);
+				retArr.push(uNode.operator);
+			}
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astThisExpression
+   *
+   * @desc Parses the abstract syntax tree for *This* expression
+   *
+   * @param {Object} tNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astThisExpression',
+		value: function astThisExpression(tNode, retArr) {
+			retArr.push('this');
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astMemberExpression
+   *
+   * @desc Parses the abstract syntax tree for *Member* Expression
+   *
+   * @param {Object} mNode - An ast Node
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astMemberExpression',
+		value: function astMemberExpression(mNode, retArr) {
+			debugLog("[in] astMemberExpression " + mNode.object.type);
+			if (mNode.computed) {
+				if (mNode.object.type === 'Identifier' || mNode.object.type === 'MemberExpression' &&
+				// mNode.object.object &&
+				mNode.object.object.object && mNode.object.object.object.type === 'ThisExpression' && mNode.object.object.property.name === 'constants') {
+					// Working logger
+					var reqName = mNode.object.name;
+					var funcName = this.functionName || 'kernel';
+					var assumeNotTexture = false;
+
+					// Possibly an array request - handle it as such
+					if (this.paramNames) {
+						var idx = this.paramNames.indexOf(reqName);
+						if (idx >= 0 && this.paramTypes[idx] === 'Number') {
+							assumeNotTexture = true;
+						}
+					}
+					debugLog("- astMemberExpression " + reqName + " " + funcName);
+					if (assumeNotTexture) {
+						// Get from array
+						this.astGeneric(mNode.object, retArr);
+						retArr.push('[int(');
+						this.astGeneric(mNode.property, retArr);
+						retArr.push(')]');
+					} else {
+						var isInGetParams = this.isState('in-get-call-parameters');
+						var multiMemberExpression = this.isState('multi-member-expression');
+						if (multiMemberExpression) {
+							this.popState('multi-member-expression');
+						}
+						this.pushState('not-in-get-call-parameters');
+
+						// This normally refers to the global read only input vars
+						var variableType = null;
+						if (mNode.object.name) {
+							if (this.declarations[mNode.object.name]) {
+								variableType = this.declarations[mNode.object.name];
+							} else {
+								variableType = this.getParamType(mNode.object.name);
+							}
+						} else if (mNode.object && mNode.object.object && mNode.object.object.object && mNode.object.object.object.type === 'ThisExpression') {
+							variableType = this.getConstantType(mNode.object.property.name);
+						}
+						switch (variableType) {
+							case 'Array(2)':
+							case 'Array(3)':
+							case 'Array(4)':
+								// Get from local vec4
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('[');
+								retArr.push(mNode.property.raw);
+								retArr.push(']');
+								if (multiMemberExpression) {
+									this.popState('not-in-get-call-parameters');
+								}
+								break;
+							case 'HTMLImageArray':
+								// Get from image
+								retArr.push('getImage3D(');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push(', ivec2(');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Size[0],');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Size[1]), ivec3(');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Dim[0],');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Dim[1],');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Dim[2]');
+								retArr.push('), ');
+								this.popState('not-in-get-call-parameters');
+								this.pushState('in-get-call-parameters');
+								this.astGeneric(mNode.property, retArr);
+								if (!multiMemberExpression) {
+									this.popState('in-get-call-parameters');
+								}
+								retArr.push(')');
+								break;
+							case 'ArrayTexture(4)':
+							case 'HTMLImage':
+								// Get from image
+								retArr.push('getImage2D(');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push(', ivec2(');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Size[0],');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Size[1]), ivec3(');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Dim[0],');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Dim[1],');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Dim[2]');
+								retArr.push('), ');
+								this.popState('not-in-get-call-parameters');
+								this.pushState('in-get-call-parameters');
+								this.astGeneric(mNode.property, retArr);
+								if (!multiMemberExpression) {
+									this.popState('in-get-call-parameters');
+								}
+								retArr.push(')');
+								break;
+							default:
+								// Get from texture
+								if (isInGetParams) {
+									retArr.push('int(');
+								}
+								retArr.push('get(');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push(', ivec2(');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Size[0],');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Size[1]), ivec3(');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Dim[0],');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Dim[1],');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('Dim[2]');
+								retArr.push('), ');
+								this.astGeneric(mNode.object, retArr);
+								retArr.push('BitRatio');
+								retArr.push(', ');
+								this.popState('not-in-get-call-parameters');
+								this.pushState('in-get-call-parameters');
+								this.astGeneric(mNode.property, retArr);
+								if (!multiMemberExpression) {
+									this.popState('in-get-call-parameters');
+								}
+								retArr.push(')');
+								if (isInGetParams) {
+									retArr.push(')');
+								}
+								break;
+						}
+					}
+				} else {
+
+					debugLog("- astMemberExpression obj:", mNode.object);
+					var stateStackDepth = this.states.length;
+					var startedInGetParamsState = this.isState('in-get-call-parameters');
+					if (!startedInGetParamsState) {
+						this.pushState('multi-member-expression');
+					}
+					this.astGeneric(mNode.object, retArr);
+					if (this.isState('multi-member-expression')) {
+						this.popState('multi-member-expression');
+					}
+					var changedGetParamsState = !startedInGetParamsState && this.isState('in-get-call-parameters');
+					var last = retArr.pop();
+					retArr.push(',');
+					debugLog("- astMemberExpression prop:", mNode.property);
+					var shouldPopParamState = this.isState('should-pop-in-get-call-parameters');
+					if (shouldPopParamState) {
+						// go back to in-get-call-parameters state
+						this.popState('should-pop-in-get-call-parameters');
+					}
+					this.astGeneric(mNode.property, retArr);
+					retArr.push(last);
+
+					if (changedGetParamsState) {
+						// calling memberExpression should pop...
+						this.pushState('should-pop-in-get-call-parameters');
+					} else if (shouldPopParamState) {
+						// do the popping!
+						this.popState('in-get-call-parameters');
+					}
+				}
+			} else {
+
+				// Unroll the member expression
+				var unrolled = this.astMemberExpressionUnroll(mNode);
+				var unrolled_lc = unrolled.toLowerCase();
+				debugLog("- astMemberExpression unrolled:", unrolled);
+				// Its a constant, remove this.constants.
+				if (unrolled.indexOf(constantsPrefix) === 0) {
+					unrolled = 'constants_' + unrolled.slice(constantsPrefix.length);
+				}
+
+				// do we need to cast addressing vales to float?
+				var castFloat = !this.isState('in-get-call-parameters');
+
+				switch (unrolled_lc) {
+					case 'this.thread.x':
+						castFloat && retArr.push('float(');
+						retArr.push('threadId.x');
+						castFloat && retArr.push(')');
+						break;
+					case 'this.thread.y':
+						castFloat && retArr.push('float(');
+						retArr.push('threadId.y');
+						castFloat && retArr.push(')');
+						break;
+					case 'this.thread.z':
+						castFloat && retArr.push('float(');
+						retArr.push('threadId.z');
+						castFloat && retArr.push(')');
+						break;
+					case 'this.output.x':
+						retArr.push(this.output[0] + '.0');
+						break;
+					case 'this.output.y':
+						retArr.push(this.output[1] + '.0');
+						break;
+					case 'this.output.z':
+						retArr.push(this.output[2] + '.0');
+						break;
+					default:
+						if (mNode.object && mNode.object.name && this.declarations[mNode.object.name]) {
+							retArr.push('user_');
+						}
+						retArr.push(unrolled);
+				}
+			}
+			debugLog("[out] astMemberExpression " + mNode.object.type);
+			return retArr;
+		}
+	}, {
+		key: 'astSequenceExpression',
+		value: function astSequenceExpression(sNode, retArr) {
+			for (var i = 0; i < sNode.expressions.length; i++) {
+				if (i > 0) {
+					retArr.push(',');
+				}
+				this.astGeneric(sNode.expressions, retArr);
+			}
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astCallExpression
+   *
+   * @desc Parses the abstract syntax tree for *call* expression
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns  {Array} the append retArr
+   */
+
+	}, {
+		key: 'astCallExpression',
+		value: function astCallExpression(ast, retArr) {
+			if (ast.callee) {
+				// Get the full function call, unrolled
+				var funcName = this.astMemberExpressionUnroll(ast.callee);
+
+				// Its a math operator, remove the prefix
+				if (funcName.indexOf(jsMathPrefix) === 0) {
+					funcName = funcName.slice(jsMathPrefix.length);
+				}
+
+				// Its a local function, remove this
+				if (funcName.indexOf(localPrefix) === 0) {
+					funcName = funcName.slice(localPrefix.length);
+				}
+
+				// if this if grows to more than one, lets use a switch
+				if (funcName === 'atan2') {
+					funcName = 'atan';
+				}
+
+				// Register the function into the called registry
+				if (this.calledFunctions.indexOf(funcName) < 0) {
+					this.calledFunctions.push(funcName);
+				}
+				if (!this.hasOwnProperty('funcName')) {
+					this.calledFunctionsArguments[funcName] = [];
+				}
+
+				var functionArguments = [];
+				this.calledFunctionsArguments[funcName].push(functionArguments);
+
+				// Call the function
+				retArr.push(funcName);
+
+				// Open arguments space
+				retArr.push('(');
+
+				// Add the vars
+				for (var i = 0; i < ast.arguments.length; ++i) {
+					var argument = ast.arguments[i];
+					if (i > 0) {
+						retArr.push(', ');
+					}
+					this.astGeneric(argument, retArr);
+					if (argument.type === 'Identifier') {
+						var paramIndex = this.paramNames.indexOf(argument.name);
+						if (paramIndex === -1) {
+							functionArguments.push(null);
+						} else {
+							functionArguments.push({
+								name: argument.name,
+								type: this.paramTypes[paramIndex] || 'Number'
+							});
+						}
+					} else {
+						functionArguments.push(null);
+					}
+				}
+
+				// Close arguments space
+				retArr.push(')');
+
+				return retArr;
+			}
+
+			// Failure, unknown expression
+			throw this.astErrorOutput('Unknown CallExpression', ast);
+
+			return retArr;
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name astArrayExpression
+   *
+   * @desc Parses the abstract syntax tree for *Array* Expression
+   *
+   * @param {Object} ast - the AST object to parse
+   * @param {Array} retArr - return array string
+   *
+   * @returns {Array} the append retArr
+   */
+
+	}, {
+		key: 'astArrayExpression',
+		value: function astArrayExpression(arrNode, retArr) {
+			var arrLen = arrNode.elements.length;
+
+			retArr.push('vec' + arrLen + '(');
+			for (var i = 0; i < arrLen; ++i) {
+				if (i > 0) {
+					retArr.push(', ');
+				}
+				var subNode = arrNode.elements[i];
+				this.astGeneric(subNode, retArr);
+			}
+			retArr.push(')');
+
+			return retArr;
+
+			// // Failure, unknown expression
+			// throw this.astErrorOutput(
+			// 	'Unknown  ArrayExpression',
+			// 	arrNode
+			//);
+		}
+
+		/**
+   * @memberOf WebGLFunctionNode#
+   * @function
+   * @name getFunctionPrototypeString
+   *
+   * @desc Returns the converted webgl shader function equivalent of the JS function
+   *
+   * @returns {String} webgl function string, result is cached under this.getFunctionPrototypeString
+   *
+   */
+
+	}, {
+		key: 'getFunctionPrototypeString',
+		value: function getFunctionPrototypeString() {
+			if (this.webGlFunctionPrototypeString) {
+				return this.webGlFunctionPrototypeString;
+			}
+			return this.webGlFunctionPrototypeString = this.generate();
+		}
+	}, {
+		key: 'build',
+		value: function build() {
+			return this.getFunctionPrototypeString().length > 0;
+		}
+	}]);
+
+	return WebGLFunctionNode;
+}(FunctionNodeBase);
+
+var typeMap = {
+	'Array': 'sampler2D',
+	'Array(2)': 'vec2',
+	'Array(3)': 'vec3',
+	'Array(4)': 'vec4',
+	'Array2D': 'sampler2D',
+	'Array3D': 'sampler2D',
+	'Float': 'float',
+	'Input': 'sampler2D',
+	'Integer': 'float',
+	'Number': 'float',
+	'NumberTexture': 'sampler2D',
+	'ArrayTexture(4)': 'sampler2D'
+};
+
+var typeLookupMap = {
+	'Array': 'Number',
+	'Array2D': 'Number',
+	'Array3D': 'Number',
+	'HTMLImage': 'Array(4)',
+	'HTMLImageArray': 'Array(4)',
+	'NumberTexture': 'Number',
+	'ArrayTexture(4)': 'Array(4)'
+};
+
+/**
+ * @ignore
+ * @function
+ * @name webgl_regex_optimize
+ *
+ * @desc [INTERNAL] Takes the near final webgl function string, and do regex search and replacments.
+ * For voodoo optimize out the following:
+ *
+ * - decode32(encode32( <br>
+ * - encode32(decode32( <br>
+ *
+ * @param {String} inStr - The webGl function String
+ *
+ */
+function webGlRegexOptimize(inStr) {
+	return inStr.replace(DECODE32_ENCODE32, '((').replace(ENCODE32_DECODE32, '((');
+}
+},{"../../core/utils":89,"../function-node-base":64}],77:[function(require,module,exports){
+'use strict';
+
+var utils = require('../../core/utils');
+var kernelRunShortcut = require('../kernel-run-shortcut');
+var Input = require('../../core/input');
+var Texture = require('../../core/texture');
+
+function removeFnNoise(fn) {
+  if (/^function /.test(fn)) {
+    fn = fn.substring(9);
+  }
+  return fn.replace(/[_]typeof/g, 'typeof');
+}
+
+function removeNoise(str) {
+  return str.replace(/[_]typeof/g, 'typeof');
+}
+
+module.exports = function (gpuKernel, name) {
+  return '() => {\n    ' + kernelRunShortcut.toString() + ';\n    const utils = {\n      allPropertiesOf: ' + removeNoise(utils.allPropertiesOf.toString()) + ',\n      clone: ' + removeNoise(utils.clone.toString()) + ',\n      splitArray: ' + removeNoise(utils.splitArray.toString()) + ',\n      getArgumentType: ' + removeNoise(utils.getArgumentType.toString()) + ',\n      getDimensions: ' + removeNoise(utils.getDimensions.toString()) + ',\n      dimToTexSize: ' + removeNoise(utils.dimToTexSize.toString()) + ',\n      flattenTo: ' + removeNoise(utils.flattenTo.toString()) + ',\n      flatten2dArrayTo: ' + removeNoise(utils.flatten2dArrayTo.toString()) + ',\n      flatten3dArrayTo: ' + removeNoise(utils.flatten3dArrayTo.toString()) + ',\n      systemEndianness: \'' + removeNoise(utils.systemEndianness()) + '\',\n      initWebGl: ' + removeNoise(utils.initWebGl.toString()) + ',\n      isArray: ' + removeNoise(utils.isArray.toString()) + ',\n      checkOutput: ' + removeNoise(utils.checkOutput.toString()) + '\n    };\n    const Utils = utils;\n    const canvases = [];\n    const maxTexSizes = {};\n    let Texture = function() {};\n    let Input = function() {}; \n    class ' + (name || 'Kernel') + ' {\n      constructor() {\n        this.maxTexSize = null;\n        this.argumentsLength = 0;\n        this.constantsLength = 0;\n        this._canvas = null;\n        this._webGl = null;\n        this.program = null;\n        this.outputToTexture = ' + (gpuKernel.outputToTexture ? 'true' : 'false') + ';\n        this.paramNames = ' + JSON.stringify(gpuKernel.paramNames) + ';\n        this.paramTypes = ' + JSON.stringify(gpuKernel.paramTypes) + ';\n        this.texSize = ' + JSON.stringify(gpuKernel.texSize) + ';\n        this.output = ' + JSON.stringify(gpuKernel.output) + ';\n        this.compiledFragShaderString = `' + gpuKernel.compiledFragShaderString + '`;\n\t\t    this.compiledVertShaderString = `' + gpuKernel.compiledVertShaderString + '`;\n\t\t    this.programUniformLocationCache = {};\n\t\t    this.textureCache = {};\n\t\t    this.subKernelOutputTextures = null;\n\t\t    this.subKernelOutputVariableNames = null;\n\t\t    this.uniform1fCache = {};\n\t\t    this.uniform1iCache = {};\n\t\t    this.uniform2fCache = {};\n\t\t    this.uniform2fvCache = {};\n\t\t    this.uniform2ivCache = {};\n\t\t    this.uniform3fvCache = {};\n\t\t    this.uniform3ivCache = {};\n      }\n      _getFragShaderString() { return this.compiledFragShaderString; }\n      _getVertShaderString() { return this.compiledVertShaderString; }\n      validateOptions() {}\n      setupParams() {}\n      setupConstants() {}\n      setCanvas(canvas) { this._canvas = canvas; return this; }\n      setWebGl(webGl) { this._webGl = webGl; return this; }\n      setTexture(Type) { Texture = Type; }\n      setInput(Type) { Input = Type; }\n      ' + removeFnNoise(gpuKernel.getUniformLocation.toString()) + '\n      ' + removeFnNoise(gpuKernel.build.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.run.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel._addArgument.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel._formatArrayTransfer.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.getArgumentTexture.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.getTextureCache.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.getOutputTexture.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.renderOutput.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.updateMaxTexSize.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel._setupOutputTexture.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.detachTextureCache.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform1f.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform1i.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform2f.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform2fv.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform2iv.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform3fv.toString()) + '\n\t\t  ' + removeFnNoise(gpuKernel.setUniform3iv.toString()) + '\n    };\n    return kernelRunShortcut(new Kernel());\n  };';
+};
+},{"../../core/input":86,"../../core/texture":87,"../../core/utils":89,"../kernel-run-shortcut":66}],78:[function(require,module,exports){
+'use strict';
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var KernelBase = require('../kernel-base');
+var utils = require('../../core/utils');
+var Texture = require('../../core/texture');
+var fragShaderString = require('./shader-frag');
+var vertShaderString = require('./shader-vert');
+var kernelString = require('./kernel-string');
+var canvases = [];
+var maxTexSizes = {};
+
+module.exports = function (_KernelBase) {
+	_inherits(WebGLKernel, _KernelBase);
+
+	_createClass(WebGLKernel, null, [{
+		key: 'fragShaderString',
+		get: function get() {
+			return fragShaderString;
+		}
+	}, {
+		key: 'vertShaderString',
+		get: function get() {
+			return vertShaderString;
+		}
+		/**
+   * @constructor WebGLKernel
+   *
+   * @desc Kernel Implementation for WebGL.
+   * <p>This builds the shaders and runs them on the GPU,
+   * the outputs the result back as float(enabled by default) and Texture.</p>
+   *
+   * @extends KernelBase
+   *
+   * @prop {Object} textureCache - webGl Texture cache
+   * @prop {Object} threadDim - The thread dimensions, x, y and z
+   * @prop {Object} programUniformLocationCache - Location of program variables in memory
+   * @prop {Object} framebuffer - Webgl frameBuffer
+   * @prop {Object} buffer - WebGL buffer
+   * @prop {Object} program - The webGl Program
+   * @prop {Object} functionBuilder - Function Builder instance bound to this Kernel
+   * @prop {Boolean} outputToTexture - Set output type to Texture, instead of float
+   * @prop {String} endianness - Endian information like Little-endian, Big-endian.
+   * @prop {Array} paramTypes - Types of parameters sent to the Kernel
+   * @prop {number} argumentsLength - Number of parameters sent to the Kernel
+   * @prop {String} compiledFragShaderString - Compiled fragment shader string
+   * @prop {String} compiledVertShaderString - Compiled Vertical shader string
+   */
+
+	}]);
+
+	function WebGLKernel(fnString, settings) {
+		_classCallCheck(this, WebGLKernel);
+
+		var _this = _possibleConstructorReturn(this, (WebGLKernel.__proto__ || Object.getPrototypeOf(WebGLKernel)).call(this, fnString, settings));
+
+		_this.textureCache = {};
+		_this.threadDim = {};
+		_this.programUniformLocationCache = {};
+		_this.framebuffer = null;
+
+		_this.buffer = null;
+		_this.program = null;
+		_this.outputToTexture = settings.outputToTexture;
+		_this.endianness = utils.systemEndianness();
+		_this.subKernelOutputTextures = null;
+		_this.subKernelOutputVariableNames = null;
+		_this.argumentsLength = 0;
+		_this.constantsLength = 0;
+		_this.compiledFragShaderString = null;
+		_this.compiledVertShaderString = null;
+		_this.fragShader = null;
+		_this.vertShader = null;
+		_this.drawBuffersMap = null;
+		_this.outputTexture = null;
+		_this.maxTexSize = null;
+		_this.uniform1fCache = {};
+		_this.uniform1iCache = {};
+		_this.uniform2fCache = {};
+		_this.uniform2fvCache = {};
+		_this.uniform2ivCache = {};
+		_this.uniform3fvCache = {};
+		_this.uniform3ivCache = {};
+		if (!_this._webGl) _this._webGl = _this.initWebGl();
+		return _this;
+	}
+
+	_createClass(WebGLKernel, [{
+		key: 'initWebGl',
+		value: function initWebGl() {
+			return utils.initWebGl(this.getCanvas());
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name validateOptions
+   *
+   * @desc Validate options related to Kernel, such as
+   * floatOutputs and Textures, texSize, output,
+   * graphical output.
+   *
+   */
+
+	}, {
+		key: 'validateOptions',
+		value: function validateOptions() {
+			var isFloatReadPixel = utils.isFloatReadPixelsSupported();
+			if (this.floatTextures === true && !utils.OES_texture_float) {
+				throw new Error('Float textures are not supported on this browser');
+			} else if (this.floatOutput === true && this.floatOutputForce !== true && !isFloatReadPixel) {
+				throw new Error('Float texture outputs are not supported on this browser');
+			} else if (this.floatTextures === undefined && utils.OES_texture_float) {
+				this.floatTextures = true;
+				this.floatOutput = isFloatReadPixel;
+			}
+
+			var hasIntegerDivisionBug = utils.hasIntegerDivisionAccuracyBug();
+			if (this.fixIntegerDivisionAccuracy === null) {
+				this.fixIntegerDivisionAccuracy = hasIntegerDivisionBug;
+			} else if (this.fixIntegerDivisionAccuracy && !hasIntegerDivisionBug) {
+				this.fixIntegerDivisionAccuracy = false;
+			}
+
+			utils.checkOutput(this.output);
+
+			if (!this.output || this.output.length === 0) {
+				if (arguments.length !== 1) {
+					throw new Error('Auto output only supported for kernels with only one input');
+				}
+
+				var argType = utils.getArgumentType(arguments[0]);
+				if (argType === 'Array') {
+					this.output = utils.getDimensions(argType);
+				} else if (argType === 'NumberTexture' || argType === 'ArrayTexture(4)') {
+					this.output = arguments[0].output;
+				} else {
+					throw new Error('Auto output not supported for input type: ' + argType);
+				}
+			}
+
+			this.texSize = utils.dimToTexSize({
+				floatTextures: this.floatTextures,
+				floatOutput: this.floatOutput
+			}, this.output, true);
+
+			if (this.graphical) {
+				if (this.output.length !== 2) {
+					throw new Error('Output must have 2 dimensions on graphical mode');
+				}
+
+				if (this.floatOutput) {
+					this.floatOutput = false;
+					console.warn('Cannot use graphical mode and float output at the same time');
+				}
+
+				this.texSize = utils.clone(this.output);
+			} else if (this.floatOutput === undefined && utils.OES_texture_float) {
+				this.floatOutput = true;
+			}
+		}
+	}, {
+		key: 'updateMaxTexSize',
+		value: function updateMaxTexSize() {
+			var texSize = this.texSize;
+			var canvas = this._canvas;
+			if (this.maxTexSize === null) {
+				var canvasIndex = canvases.indexOf(canvas);
+				if (canvasIndex === -1) {
+					canvasIndex = canvases.length;
+					canvases.push(canvas);
+					maxTexSizes[canvasIndex] = [texSize[0], texSize[1]];
+				}
+				this.maxTexSize = maxTexSizes[canvasIndex];
+			}
+			if (this.maxTexSize[0] < texSize[0]) {
+				this.maxTexSize[0] = texSize[0];
+			}
+			if (this.maxTexSize[1] < texSize[1]) {
+				this.maxTexSize[1] = texSize[1];
+			}
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name build
+   *
+   * @desc Builds the Kernel, by compiling Fragment and Vertical Shaders,
+   * and instantiates the program.
+   *
+   */
+
+	}, {
+		key: 'build',
+		value: function build() {
+			this.validateOptions();
+			this.setupConstants();
+			this.setupParams(arguments);
+			this.updateMaxTexSize();
+			var texSize = this.texSize;
+			var gl = this._webGl;
+			var canvas = this._canvas;
+			gl.enable(gl.SCISSOR_TEST);
+			gl.viewport(0, 0, this.maxTexSize[0], this.maxTexSize[1]);
+			canvas.width = this.maxTexSize[0];
+			canvas.height = this.maxTexSize[1];
+			var threadDim = this.threadDim = utils.clone(this.output);
+			while (threadDim.length < 3) {
+				threadDim.push(1);
+			}
+
+			if (this.functionBuilder) this._addKernels();
+
+			var compiledVertShaderString = this._getVertShaderString(arguments);
+			var vertShader = gl.createShader(gl.VERTEX_SHADER);
+			gl.shaderSource(vertShader, compiledVertShaderString);
+			gl.compileShader(vertShader);
+			this.vertShader = vertShader;
+
+			var compiledFragShaderString = this._getFragShaderString(arguments);
+			var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+			gl.shaderSource(fragShader, compiledFragShaderString);
+			gl.compileShader(fragShader);
+			this.fragShader = fragShader;
+
+			if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
+				console.log(compiledVertShaderString);
+				console.error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(vertShader));
+				throw new Error('Error compiling vertex shader');
+			}
+			if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
+				console.log(compiledFragShaderString);
+				console.error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(fragShader));
+				throw new Error('Error compiling fragment shader');
+			}
+
+			if (this.debug) {
+				console.log('Options:');
+				console.dir(this);
+				console.log('GLSL Shader Output:');
+				console.log(compiledFragShaderString);
+			}
+
+			var program = this.program = gl.createProgram();
+			gl.attachShader(program, vertShader);
+			gl.attachShader(program, fragShader);
+			gl.linkProgram(program);
+			this.framebuffer = gl.createFramebuffer();
+			this.framebuffer.width = texSize[0];
+			this.framebuffer.height = texSize[1];
+
+			var vertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+			var texCoords = new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]);
+
+			var texCoordOffset = vertices.byteLength;
+
+			var buffer = this.buffer;
+			if (!buffer) {
+				buffer = this.buffer = gl.createBuffer();
+				gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+				gl.bufferData(gl.ARRAY_BUFFER, vertices.byteLength + texCoords.byteLength, gl.STATIC_DRAW);
+			} else {
+				gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+			}
+
+			gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices);
+			gl.bufferSubData(gl.ARRAY_BUFFER, texCoordOffset, texCoords);
+
+			var aPosLoc = gl.getAttribLocation(this.program, 'aPos');
+			gl.enableVertexAttribArray(aPosLoc);
+			gl.vertexAttribPointer(aPosLoc, 2, gl.FLOAT, gl.FALSE, 0, 0);
+			var aTexCoordLoc = gl.getAttribLocation(this.program, 'aTexCoord');
+			gl.enableVertexAttribArray(aTexCoordLoc);
+			gl.vertexAttribPointer(aTexCoordLoc, 2, gl.FLOAT, gl.FALSE, 0, texCoordOffset);
+			gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
+
+			for (var p in this.constants) {
+				var value = this.constants[p];
+				var type = utils.getArgumentType(value);
+				if (type === 'Float' || type === 'Integer') {
+					continue;
+				}
+				gl.useProgram(this.program);
+				this._addConstant(this.constants[p], type, p);
+				this.constantsLength++;
+			}
+
+			if (!this.outputImmutable) {
+				this._setupOutputTexture();
+				if (this.subKernelOutputVariableNames !== null && this.subKernelOutputVariableNames.length > 0) {
+					this._setupSubOutputTextures(this.subKernelOutputVariableNames.length);
+				}
+			}
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name run
+   *
+   * @desc Run the kernel program, and send the output to renderOutput
+   *
+   * <p> This method calls a helper method *renderOutput* to return the result. </p>
+   *
+   * @returns {Object|Undefined} Result The final output of the program, as float, and as Textures for reuse.
+   *
+   *
+   */
+
+	}, {
+		key: 'run',
+		value: function run() {
+			if (this.program === null) {
+				this.build.apply(this, arguments);
+			}
+			var paramNames = this.paramNames;
+			var paramTypes = this.paramTypes;
+			var texSize = this.texSize;
+			var gl = this._webGl;
+
+			gl.useProgram(this.program);
+			gl.scissor(0, 0, texSize[0], texSize[1]);
+
+			if (!this.hardcodeConstants) {
+				this.setUniform3iv('uOutputDim', this.threadDim);
+				this.setUniform2iv('uTexSize', texSize);
+			}
+
+			this.setUniform2f('ratio', texSize[0] / this.maxTexSize[0], texSize[1] / this.maxTexSize[1]);
+
+			this.argumentsLength = 0;
+			for (var texIndex = 0; texIndex < paramNames.length; texIndex++) {
+				this._addArgument(arguments[texIndex], paramTypes[texIndex], paramNames[texIndex]);
+			}
+
+			if (this.graphical) {
+				if (this.outputToTexture) {
+					gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+					gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
+					if (!this.outputTexture || this.outputImmutable) {
+						this._setupOutputTexture();
+					}
+					gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+					return new Texture(this.outputTexture, texSize, this.threadDim, this.output, this._webGl, 'ArrayTexture(4)');
+				}
+				gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+				gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+				return;
+			}
+
+			gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
+			if (this.outputImmutable) {
+				this._setupOutputTexture();
+			}
+			var outputTexture = this.outputTexture;
+
+			if (this.subKernelOutputVariableNames !== null) {
+				if (this.outputImmutable) {
+					this.subKernelOutputTextures = [];
+					this._setupSubOutputTextures(this.subKernelOutputVariableNames.length);
+				}
+				this.drawBuffers.drawBuffersWEBGL(this.drawBuffersMap);
+			}
+
+			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+			if (this.subKernelOutputTextures !== null) {
+				if (this.subKernels !== null) {
+					var output = [];
+					output.result = this.renderOutput(outputTexture);
+					for (var i = 0; i < this.subKernels.length; i++) {
+						output.push(new Texture(this.subKernelOutputTextures[i], texSize, this.threadDim, this.output, this._webGl));
+					}
+					return output;
+				} else if (this.subKernelProperties !== null) {
+					var _output = {
+						result: this.renderOutput(outputTexture)
+					};
+					var _i = 0;
+					for (var p in this.subKernelProperties) {
+						if (!this.subKernelProperties.hasOwnProperty(p)) continue;
+						_output[p] = new Texture(this.subKernelOutputTextures[_i], texSize, this.threadDim, this.output, this._webGl);
+						_i++;
+					}
+					return _output;
+				}
+			}
+
+			return this.renderOutput(outputTexture);
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name renderOutput
+   *
+   *
+   * @desc Helper function to return webGl function's output.
+   * Since the program runs on GPU, we need to get the
+   * output of the program back to CPU and then return them.
+   *
+   * *Note*: This should not be called directly.
+   *
+   * @param {Object} outputTexture - Output Texture returned by webGl program
+   *
+   * @returns {Object|Array} result
+   *
+   *
+   */
+
+	}, {
+		key: 'renderOutput',
+		value: function renderOutput(outputTexture) {
+			var texSize = this.texSize;
+			var gl = this._webGl;
+			var threadDim = this.threadDim;
+			var output = this.output;
+			if (this.outputToTexture) {
+				return new Texture(outputTexture, texSize, this.threadDim, output, this._webGl);
+			} else {
+				var result = void 0;
+				if (this.floatOutput) {
+					var w = texSize[0];
+					var h = Math.ceil(texSize[1] / 4);
+					result = new Float32Array(w * h * 4);
+					gl.readPixels(0, 0, w, h, gl.RGBA, gl.FLOAT, result);
+				} else {
+					var bytes = new Uint8Array(texSize[0] * texSize[1] * 4);
+					gl.readPixels(0, 0, texSize[0], texSize[1], gl.RGBA, gl.UNSIGNED_BYTE, bytes);
+					result = new Float32Array(bytes.buffer);
+				}
+
+				result = result.subarray(0, threadDim[0] * threadDim[1] * threadDim[2]);
+
+				if (output.length === 1) {
+					return result;
+				} else if (output.length === 2) {
+					return utils.splitArray(result, output[0]);
+				} else if (output.length === 3) {
+					var cube = utils.splitArray(result, output[0] * output[1]);
+					return cube.map(function (x) {
+						return utils.splitArray(x, output[0]);
+					});
+				}
+			}
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name getOutputTexture
+   *
+   * @desc This return defined outputTexture, which is setup in .build(), or if immutable, is defined in .run()
+   *
+   * @returns {Object} Output Texture Cache
+   *
+   */
+
+	}, {
+		key: 'getOutputTexture',
+		value: function getOutputTexture() {
+			return this.outputTexture;
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _setupOutputTexture
+   * @private
+   *
+   * @desc Setup and replace output texture
+   */
+
+	}, {
+		key: '_setupOutputTexture',
+		value: function _setupOutputTexture() {
+			var gl = this._webGl;
+			var texSize = this.texSize;
+			var texture = this.outputTexture = this._webGl.createTexture();
+			gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.paramNames.length);
+			gl.bindTexture(gl.TEXTURE_2D, texture);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			if (this.floatOutput) {
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.FLOAT, null);
+			} else {
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+			}
+			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @param length
+   * @private
+   *
+   * @desc Setup and replace sub-output textures
+   */
+
+	}, {
+		key: '_setupSubOutputTextures',
+		value: function _setupSubOutputTextures(length) {
+			var gl = this._webGl;
+			var texSize = this.texSize;
+			var drawBuffersMap = this.drawBuffersMap = [gl.COLOR_ATTACHMENT0];
+			var textures = this.subKernelOutputTextures = [];
+			for (var i = 0; i < length; i++) {
+				var texture = this._webGl.createTexture();
+				textures.push(texture);
+				drawBuffersMap.push(gl.COLOR_ATTACHMENT0 + i + 1);
+				gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.paramNames.length + i);
+				gl.bindTexture(gl.TEXTURE_2D, texture);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+				if (this.floatOutput) {
+					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.FLOAT, null);
+				} else {
+					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+				}
+				gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i + 1, gl.TEXTURE_2D, texture, 0);
+			}
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name getArgumentTexture
+   *
+   * @desc This uses *getTextureCache** to get the Texture Cache of the argument supplied
+   *
+   * @param {String} name - Name of the argument
+   *
+   * 	Texture cache for the supplied argument
+   *
+   */
+
+	}, {
+		key: 'getArgumentTexture',
+		value: function getArgumentTexture(name) {
+			return this.getTextureCache('ARGUMENT_' + name);
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @name getTextureCache
+   * @function
+   *
+   * @desc Returns the Texture Cache of the supplied parameter (can be kernel, sub-kernel or argument)
+   *
+   * @param {String} name - Name of the subkernel, argument, or kernel.
+   *
+   * @returns {Object} Texture cache
+   *
+   */
+
+	}, {
+		key: 'getTextureCache',
+		value: function getTextureCache(name) {
+			if (this.textureCache.hasOwnProperty(name)) {
+				return this.textureCache[name];
+			}
+			return this.textureCache[name] = this._webGl.createTexture();
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @name detachTextureCache
+   * @function
+   * @desc removes a texture from the kernel's cache
+   * @param {String} name - Name of texture
+   */
+
+	}, {
+		key: 'detachTextureCache',
+		value: function detachTextureCache(name) {
+			delete this.textureCache[name];
+		}
+	}, {
+		key: 'setUniform1f',
+		value: function setUniform1f(name, value) {
+			if (this.uniform1fCache.hasOwnProperty(name)) {
+				var cache = this.uniform1fCache[name];
+				if (value === cache) {
+					return;
+				}
+			}
+			this.uniform1fCache[name] = value;
+			var loc = this.getUniformLocation(name);
+			this._webGl.uniform1f(loc, value);
+		}
+	}, {
+		key: 'setUniform1i',
+		value: function setUniform1i(name, value) {
+			if (this.uniform1iCache.hasOwnProperty(name)) {
+				var cache = this.uniform1iCache[name];
+				if (value === cache) {
+					return;
+				}
+			}
+			this.uniform1iCache[name] = value;
+			var loc = this.getUniformLocation(name);
+			this._webGl.uniform1i(loc, value);
+		}
+	}, {
+		key: 'setUniform2f',
+		value: function setUniform2f(name, value1, value2) {
+			if (this.uniform2fCache.hasOwnProperty(name)) {
+				var cache = this.uniform2fCache[name];
+				if (value1 === cache[0] && value2 === cache[1]) {
+					return;
+				}
+			}
+			this.uniform2fCache[name] = [value1, value2];
+			var loc = this.getUniformLocation(name);
+			this._webGl.uniform2f(loc, value1, value2);
+		}
+	}, {
+		key: 'setUniform2fv',
+		value: function setUniform2fv(name, value) {
+			if (this.uniform2fvCache.hasOwnProperty(name)) {
+				var cache = this.uniform2fvCache[name];
+				if (value[0] === cache[0] && value[1] === cache[1]) {
+					return;
+				}
+			}
+			this.uniform2fvCache[name] = value;
+			var loc = this.getUniformLocation(name);
+			this._webGl.uniform2fv(loc, value);
+		}
+	}, {
+		key: 'setUniform2iv',
+		value: function setUniform2iv(name, value) {
+			if (this.uniform2ivCache.hasOwnProperty(name)) {
+				var cache = this.uniform2ivCache[name];
+				if (value[0] === cache[0] && value[1] === cache[1]) {
+					return;
+				}
+			}
+			this.uniform2ivCache[name] = value;
+			var loc = this.getUniformLocation(name);
+			this._webGl.uniform2iv(loc, value);
+		}
+	}, {
+		key: 'setUniform3fv',
+		value: function setUniform3fv(name, value) {
+			if (this.uniform3fvCache.hasOwnProperty(name)) {
+				var cache = this.uniform3fvCache[name];
+				if (value[0] === cache[0] && value[1] === cache[1] && value[2] === cache[2]) {
+					return;
+				}
+			}
+			this.uniform3fvCache[name] = value;
+			var loc = this.getUniformLocation(name);
+			this._webGl.uniform3fv(loc, value);
+		}
+	}, {
+		key: 'setUniform3iv',
+		value: function setUniform3iv(name, value) {
+			if (this.uniform3ivCache.hasOwnProperty(name)) {
+				var cache = this.uniform3ivCache[name];
+				if (value[0] === cache[0] && value[1] === cache[1] && value[2] === cache[2]) {
+					return;
+				}
+			}
+			this.uniform3ivCache[name] = value;
+			var loc = this.getUniformLocation(name);
+			this._webGl.uniform3iv(loc, value);
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name getUniformLocation
+   *
+   * @desc Return WebGlUniformLocation for various variables
+   * related to webGl program, such as user-defiend variables,
+   * as well as, dimension sizes, etc.
+   *
+   */
+
+	}, {
+		key: 'getUniformLocation',
+		value: function getUniformLocation(name) {
+			if (this.programUniformLocationCache.hasOwnProperty(name)) {
+				return this.programUniformLocationCache[name];
+			}
+			return this.programUniformLocationCache[name] = this._webGl.getUniformLocation(this.program, name);
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getFragShaderArtifactMap
+   *
+   * @desc Generate Shader artifacts for the kernel program.
+   * The final object contains HEADER, KERNEL, MAIN_RESULT, and others.
+   *
+   * @param {Array} args - The actual parameters sent to the Kernel
+   *
+   * @returns {Object} An object containing the Shader Artifacts(CONSTANTS, HEADER, KERNEL, etc.)
+   *
+   */
+
+	}, {
+		key: '_getFragShaderArtifactMap',
+		value: function _getFragShaderArtifactMap(args) {
+			return {
+				HEADER: this._getHeaderString(),
+				LOOP_MAX: this._getLoopMaxString(),
+				CONSTANTS: this._getConstantsString(),
+				DECODE32_ENDIANNESS: this._getDecode32EndiannessString(),
+				ENCODE32_ENDIANNESS: this._getEncode32EndiannessString(),
+				DIVIDE_WITH_INTEGER_CHECK: this._getDivideWithIntegerCheckString(),
+				GET_WRAPAROUND: this._getGetWraparoundString(),
+				GET_TEXTURE_CHANNEL: this._getGetTextureChannelString(),
+				GET_TEXTURE_INDEX: this._getGetTextureIndexString(),
+				GET_RESULT: this._getGetResultString(),
+				MAIN_PARAMS: this._getMainParamsString(args),
+				MAIN_CONSTANTS: this._getMainConstantsString(),
+				KERNEL: this._getKernelString(),
+				MAIN_RESULT: this._getMainResultString()
+			};
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _addArgument
+   *
+   * @desc Adds kernel parameters to the Argument Texture,
+   * binding it to the webGl instance, etc.
+   *
+   * @param {Array|Texture|Number} value - The actual argument supplied to the kernel
+   * @param {String} type - Type of the argument
+   * @param {String} name - Name of the argument
+   *
+   */
+
+	}, {
+		key: '_addArgument',
+		value: function _addArgument(value, type, name) {
+			var gl = this._webGl;
+			var argumentTexture = this.getArgumentTexture(name);
+			if (value instanceof Texture) {
+				type = value.type;
+			}
+			switch (type) {
+				case 'Array':
+				case 'Array(2)':
+				case 'Array(3)':
+				case 'Array(4)':
+				case 'Array2D':
+				case 'Array3D':
+					{
+						var dim = utils.getDimensions(value, true);
+						var size = utils.dimToTexSize({
+							floatTextures: this.floatTextures,
+							floatOutput: this.floatOutput
+						}, dim);
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
+						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+						var length = size[0] * size[1];
+
+						var _formatArrayTransfer2 = this._formatArrayTransfer(value, length),
+						    valuesFlat = _formatArrayTransfer2.valuesFlat,
+						    bitRatio = _formatArrayTransfer2.bitRatio;
+
+						var buffer = void 0;
+						if (this.floatTextures) {
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0], size[1], 0, gl.RGBA, gl.FLOAT, valuesFlat);
+						} else {
+							buffer = new Uint8Array(valuesFlat.buffer);
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0] / bitRatio, size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
+						}
+
+						if (!this.hardcodeConstants) {
+							this.setUniform3iv('user_' + name + 'Dim', dim);
+							this.setUniform2iv('user_' + name + 'Size', size);
+						}
+						this.setUniform1i('user_' + name + 'BitRatio', bitRatio);
+						this.setUniform1i('user_' + name, this.argumentsLength);
+						break;
+					}
+				case 'Integer':
+				case 'Float':
+				case 'Number':
+					{
+						this.setUniform1f('user_' + name, value);
+						break;
+					}
+				case 'Input':
+					{
+						var input = value;
+						var _dim = input.size;
+						var _size = utils.dimToTexSize({
+							floatTextures: this.floatTextures,
+							floatOutput: this.floatOutput
+						}, _dim);
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
+						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+						var _length = _size[0] * _size[1];
+
+						var _formatArrayTransfer3 = this._formatArrayTransfer(value.value, _length),
+						    _valuesFlat = _formatArrayTransfer3.valuesFlat,
+						    _bitRatio = _formatArrayTransfer3.bitRatio;
+
+						if (this.floatTextures) {
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size[0], _size[1], 0, gl.RGBA, gl.FLOAT, inputArray);
+						} else {
+							var _buffer = new Uint8Array(_valuesFlat.buffer);
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size[0] / _bitRatio, _size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, _buffer);
+						}
+
+						if (!this.hardcodeConstants) {
+							this.setUniform3iv('user_' + name + 'Dim', _dim);
+							this.setUniform2iv('user_' + name + 'Size', _size);
+						}
+						this.setUniform1i('user_' + name + 'BitRatio', _bitRatio);
+						this.setUniform1i('user_' + name, this.argumentsLength);
+						break;
+					}
+				case 'HTMLImage':
+					{
+						var inputImage = value;
+						var _dim2 = [inputImage.width, inputImage.height, 1];
+						var _size2 = [inputImage.width, inputImage.height];
+
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
+						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+						gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+						// Upload the image into the texture.
+						var mipLevel = 0; // the largest mip
+						var internalFormat = gl.RGBA; // format we want in the texture
+						var srcFormat = gl.RGBA; // format of data we are supplying
+						var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
+						gl.texImage2D(gl.TEXTURE_2D, mipLevel, internalFormat, srcFormat, srcType, inputImage);
+						this.setUniform3iv('user_' + name + 'Dim', _dim2);
+						this.setUniform2iv('user_' + name + 'Size', _size2);
+						this.setUniform1i('user_' + name, this.argumentsLength);
+						break;
+					}
+				case 'ArrayTexture(4)':
+				case 'NumberTexture':
+					{
+						var inputTexture = value;
+						var _dim3 = inputTexture.dimensions;
+						var _size3 = inputTexture.size;
+
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength + this.argumentsLength);
+						gl.bindTexture(gl.TEXTURE_2D, inputTexture.texture);
+
+						this.setUniform3iv('user_' + name + 'Dim', _dim3);
+						this.setUniform2iv('user_' + name + 'Size', _size3);
+						this.setUniform1i('user_' + name + 'BitRatio', 1); // aways float32
+						this.setUniform1i('user_' + name, this.argumentsLength);
+						break;
+					}
+				default:
+					throw new Error('Input type not supported (WebGL): ' + value);
+			}
+			this.argumentsLength++;
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _addConstant
+   *
+   * @desc Adds kernel parameters to the Argument Texture,
+   * binding it to the webGl instance, etc.
+   *
+   * @param {Array|Texture|Number} value - The actual argument supplied to the kernel
+   * @param {String} type - Type of the argument
+   * @param {String} name - Name of the argument
+   *
+   */
+
+	}, {
+		key: '_addConstant',
+		value: function _addConstant(value, type, name) {
+			var gl = this._webGl;
+			var argumentTexture = this.getArgumentTexture(name);
+			if (value instanceof Texture) {
+				type = value.type;
+			}
+			switch (type) {
+				case 'Array':
+					{
+						var dim = utils.getDimensions(value, true);
+						var size = utils.dimToTexSize({
+							floatTextures: this.floatTextures,
+							floatOutput: this.floatOutput
+						}, dim);
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
+						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+						var length = size[0] * size[1];
+
+						var _formatArrayTransfer4 = this._formatArrayTransfer(value, length),
+						    valuesFlat = _formatArrayTransfer4.valuesFlat,
+						    bitRatio = _formatArrayTransfer4.bitRatio;
+
+						var buffer = void 0;
+						if (this.floatTextures) {
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0], size[1], 0, gl.RGBA, gl.FLOAT, valuesFlat);
+						} else {
+							buffer = new Uint8Array(valuesFlat.buffer);
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, size[0] / bitRatio, size[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
+						}
+
+						if (!this.hardcodeConstants) {
+							this.setUniform3iv('constants_' + name + 'Dim', dim);
+							this.setUniform2iv('constants_' + name + 'Size', size);
+						}
+						this.setUniform1i('constants_' + name + 'BitRatio', bitRatio);
+						this.setUniform1i('constants_' + name, this.constantsLength);
+						break;
+					}
+				case 'Input':
+					{
+						var input = value;
+						var _dim4 = input.size;
+						var _size4 = utils.dimToTexSize({
+							floatTextures: this.floatTextures,
+							floatOutput: this.floatOutput
+						}, _dim4);
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
+						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+						var _length2 = _size4[0] * _size4[1];
+
+						var _formatArrayTransfer5 = this._formatArrayTransfer(value.value, _length2),
+						    _valuesFlat2 = _formatArrayTransfer5.valuesFlat,
+						    _bitRatio2 = _formatArrayTransfer5.bitRatio;
+
+						if (this.floatTextures) {
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size4[0], _size4[1], 0, gl.RGBA, gl.FLOAT, inputArray);
+						} else {
+							var _buffer2 = new Uint8Array(_valuesFlat2.buffer);
+							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _size4[0] / _bitRatio2, _size4[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, _buffer2);
+						}
+
+						if (!this.hardcodeConstants) {
+							this.setUniform3iv('constants_' + name + 'Dim', _dim4);
+							this.setUniform2iv('constants_' + name + 'Size', _size4);
+						}
+						this.setUniform1i('constants_' + name + 'BitRatio', _bitRatio2);
+						this.setUniform1i('constants_' + name, this.constantsLength);
+						break;
+					}
+				case 'HTMLImage':
+					{
+						var inputImage = value;
+						var _dim5 = [inputImage.width, inputImage.height, 1];
+						var _size5 = [inputImage.width, inputImage.height];
+
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
+						gl.bindTexture(gl.TEXTURE_2D, argumentTexture);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+						gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+						// Upload the image into the texture.
+						var mipLevel = 0; // the largest mip
+						var internalFormat = gl.RGBA; // format we want in the texture
+						var srcFormat = gl.RGBA; // format of data we are supplying
+						var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
+						gl.texImage2D(gl.TEXTURE_2D, mipLevel, internalFormat, srcFormat, srcType, inputImage);
+						this.setUniform3iv('constants_' + name + 'Dim', _dim5);
+						this.setUniform2iv('constants_' + name + 'Size', _size5);
+						this.setUniform1i('constants_' + name, this.constantsLength);
+						break;
+					}
+				case 'ArrayTexture(4)':
+				case 'NumberTexture':
+					{
+						var inputTexture = value;
+						var _dim6 = inputTexture.dimensions;
+						var _size6 = inputTexture.size;
+
+						gl.activeTexture(gl.TEXTURE0 + this.constantsLength);
+						gl.bindTexture(gl.TEXTURE_2D, inputTexture.texture);
+
+						this.setUniform3iv('constants_' + name + 'Dim', _dim6);
+						this.setUniform2iv('constants_' + name + 'Size', _size6);
+						this.setUniform1i('constants_' + name + 'BitRatio', 1); // aways float32
+						this.setUniform1i('constants_' + name, this.constantsLength);
+						break;
+					}
+				case 'Integer':
+				case 'Float':
+				default:
+					throw new Error('Input type not supported (WebGL): ' + value);
+			}
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _formatArrayTransfer
+   *
+   * @desc Adds kernel parameters to the Argument Texture,
+   * binding it to the webGl instance, etc.
+   *
+   * @param {Array} value - The actual argument supplied to the kernel
+   * @param {String} length - the expected total length of the output array
+   *
+   * @returns {Object} bitRatio - bit storage ratio of source to target 'buffer', i.e. if 8bit array -> 32bit tex = 4
+   * 				     valuesFlat - flattened array to transfer
+   */
+
+	}, {
+		key: '_formatArrayTransfer',
+		value: function _formatArrayTransfer(value, length) {
+			var bitRatio = 1; // bit storage ratio of source to target 'buffer', i.e. if 8bit array -> 32bit tex = 4
+			var valuesFlat = value;
+			if (utils.isArray(value[0]) || this.floatTextures) {
+				// not already flat
+				valuesFlat = new Float32Array(length);
+				utils.flattenTo(value, valuesFlat);
+			} else {
+
+				switch (value.constructor) {
+					case Uint8Array:
+					case Int8Array:
+						bitRatio = 4;
+						break;
+					case Uint16Array:
+					case Int16Array:
+						bitRatio = 2;
+					case Float32Array:
+					case Int32Array:
+						break;
+
+					default:
+						valuesFlat = new Float32Array(length);
+						utils.flattenTo(value, valuesFlat);
+				}
+			}
+			return {
+				bitRatio: bitRatio,
+				valuesFlat: valuesFlat
+			};
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getHeaderString
+   *
+   * @desc Get the header string for the program.
+   * This returns an empty string if no sub-kernels are defined.
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getHeaderString',
+		value: function _getHeaderString() {
+			return this.subKernels !== null || this.subKernelProperties !== null ?
+			//webgl2 '#version 300 es\n' :
+			'#extension GL_EXT_draw_buffers : require\n' : '';
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getLoopMaxString
+   *
+   * @desc Get the maximum loop size String.
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getLoopMaxString',
+		value: function _getLoopMaxString() {
+			return this.loopMaxIterations ? ' ' + parseInt(this.loopMaxIterations) + '.0;\n' : ' 1000.0;\n';
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getConstantsString
+   *
+   * @desc Generate transpiled glsl Strings for constant parameters sent to a kernel
+   *
+   * They can be defined by *hardcodeConstants*
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getConstantsString',
+		value: function _getConstantsString() {
+			var result = [];
+			var threadDim = this.threadDim;
+			var texSize = this.texSize;
+			if (this.hardcodeConstants) {
+				result.push('ivec3 uOutputDim = ivec3(' + threadDim[0] + ',' + threadDim[1] + ', ' + threadDim[2] + ')', 'ivec2 uTexSize = ivec2(' + texSize[0] + ', ' + texSize[1] + ')');
+			} else {
+				result.push('uniform ivec3 uOutputDim', 'uniform ivec2 uTexSize');
+			}
+
+			return this._linesToString(result);
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getTextureCoordinate
+   *
+   * @desc Get texture coordinate string for the program
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getTextureCoordinate',
+		value: function _getTextureCoordinate() {
+			var names = this.subKernelOutputVariableNames;
+			if (names === null || names.length < 1) {
+				return 'varying vec2 vTexCoord;\n';
+			} else {
+				return 'out vec2 vTexCoord;\n';
+			}
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getDecode32EndiannessString
+   *
+   * @desc Get Decode32 endianness string for little-endian and big-endian
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getDecode32EndiannessString',
+		value: function _getDecode32EndiannessString() {
+			return this.endianness === 'LE' ? '' : '  rgba.rgba = rgba.abgr;\n';
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getEncode32EndiannessString
+   *
+   * @desc Get Encode32 endianness string for little-endian and big-endian
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getEncode32EndiannessString',
+		value: function _getEncode32EndiannessString() {
+			return this.endianness === 'LE' ? '' : '  rgba.rgba = rgba.abgr;\n';
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getDivideWithIntegerCheckString
+   *
+   * @desc if fixIntegerDivisionAccuracy provide method to replace /
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getDivideWithIntegerCheckString',
+		value: function _getDivideWithIntegerCheckString() {
+			return this.fixIntegerDivisionAccuracy ? '\n\t\t\t  float div_with_int_check(float x, float y) {\n\t\t\t  if (floor(x) == x && floor(y) == y && integerMod(x, y) == 0.0) {\n\t\t\t    return float(int(x)/int(y));\n\t\t\t  }\n\t\t\t  return x / y;\n\t\t\t}\n\t\t\t' : '';
+		}
+
+		/**
+   * @function
+   * @memberOf WebGLKernel#
+   * @name _getGetWraparoundString
+   *
+   * @returns {String} wraparound string
+   */
+
+	}, {
+		key: '_getGetWraparoundString',
+		value: function _getGetWraparoundString() {
+			return this.wraparound ? '  xyz = mod(xyz, texDim);\n' : '';
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getGetTextureChannelString
+   *
+   */
+
+	}, {
+		key: '_getGetTextureChannelString',
+		value: function _getGetTextureChannelString() {
+			if (!this.floatTextures) return '';
+
+			return this._linesToString(['  int channel = integerMod(index, 4)', '  index = index / 4']);
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getGetTextureIndexString
+   *
+   * @desc Get generic texture index string, if floatTextures flag is true.
+   *
+   * @example
+   * '  index = float(int(index)/4);\n'
+   *
+   */
+
+	}, {
+		key: '_getGetTextureIndexString',
+		value: function _getGetTextureIndexString() {
+			return this.floatTextures ? '  index = index / 4;\n' : '';
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getGetResultString
+   *
+   */
+
+	}, {
+		key: '_getGetResultString',
+		value: function _getGetResultString() {
+			if (!this.floatTextures) {
+				return '  return decode(texel, x, bitRatio);';
+			}
+			return this._linesToString(['  if (channel == 0) return texel.r', '  if (channel == 1) return texel.g', '  if (channel == 2) return texel.b', '  if (channel == 3) return texel.a']);
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getMainParamsString
+   *
+   * @desc Generate transpiled glsl Strings for user-defined parameters sent to a kernel
+   *
+   * @param {Array} args - The actual parameters sent to the Kernel
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getMainParamsString',
+		value: function _getMainParamsString(args) {
+			var result = [];
+			var paramTypes = this.paramTypes;
+			var paramNames = this.paramNames;
+			for (var i = 0; i < paramNames.length; i++) {
+				var param = args[i];
+				var paramName = paramNames[i];
+				var paramType = paramTypes[i];
+				if (this.hardcodeConstants) {
+					if (paramType === 'Array' || paramType === 'NumberTexture' || paramType === 'ArrayTexture(4)') {
+						var paramDim = utils.getDimensions(param, true);
+						var paramSize = utils.dimToTexSize({
+							floatTextures: this.floatTextures,
+							floatOutput: this.floatOutput
+						}, paramDim);
+
+						result.push('uniform sampler2D user_' + paramName, 'ivec2 user_' + paramName + 'Size = ivec2(' + paramSize[0] + ', ' + paramSize[1] + ')', 'ivec3 user_' + paramName + 'Dim = ivec3(' + paramDim[0] + ', ' + paramDim[1] + ', ' + paramDim[2] + ')', 'uniform int user_' + paramName + 'BitRatio');
+					} else if (paramType === 'Integer') {
+						result.push('float user_' + paramName + ' = ' + param + '.0');
+					} else if (paramType === 'Float') {
+						result.push('float user_' + paramName + ' = ' + param);
+					}
+				} else {
+					if (paramType === 'Array' || paramType === 'NumberTexture' || paramType === 'ArrayTexture(4)' || paramType === 'Input' || paramType === 'HTMLImage') {
+						result.push('uniform sampler2D user_' + paramName, 'uniform ivec2 user_' + paramName + 'Size', 'uniform ivec3 user_' + paramName + 'Dim');
+						if (paramType !== 'HTMLImage') {
+							result.push('uniform int user_' + paramName + 'BitRatio');
+						}
+					} else if (paramType === 'Integer' || paramType === 'Float') {
+						result.push('uniform float user_' + paramName);
+					} else {
+						throw new Error('Param type ' + paramType + ' not supported in WebGL, only WebGL2');
+					}
+				}
+			}
+			return this._linesToString(result);
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getMainConstantsString
+   *
+   */
+
+	}, {
+		key: '_getMainConstantsString',
+		value: function _getMainConstantsString() {
+			var result = [];
+			if (this.constants) {
+				for (var name in this.constants) {
+					if (!this.constants.hasOwnProperty(name)) continue;
+					var value = this.constants[name];
+					var type = utils.getArgumentType(value);
+					switch (type) {
+						case 'Integer':
+							result.push('const float constants_' + name + ' = ' + parseInt(value) + '.0');
+							break;
+						case 'Float':
+							result.push('const float constants_' + name + ' = ' + parseFloat(value));
+							break;
+						case 'Array':
+						case 'Input':
+						case 'HTMLImage':
+						case 'NumberTexture':
+						case 'ArrayTexture(4)':
+							result.push('uniform sampler2D constants_' + name, 'uniform ivec2 constants_' + name + 'Size', 'uniform ivec3 constants_' + name + 'Dim', 'uniform int constants_' + name + 'BitRatio');
+							break;
+						default:
+							throw new Error('Unsupported constant ' + name + ' type ' + type);
+					}
+				}
+			}
+			return this._linesToString(result);
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getKernelString
+   *
+   * @desc Get Kernel program string (in *glsl*) for a kernel.
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getKernelString',
+		value: function _getKernelString() {
+			var result = [];
+			var names = this.subKernelOutputVariableNames;
+			if (names !== null) {
+				result.push('float kernelResult = 0.0');
+				for (var i = 0; i < names.length; i++) {
+					result.push('float ' + names[i] + ' = 0.0');
+				}
+			} else {
+				result.push('float kernelResult = 0.0');
+			}
+
+			return this._linesToString(result) + this.functionBuilder.getPrototypeString('kernel');
+		}
+
+		/**
+   *
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getMainResultString
+   *
+   * @desc Get main result string with checks for floatOutput, graphical, subKernelsOutputs, etc.
+   *
+   * @returns {String} result
+   *
+   */
+
+	}, {
+		key: '_getMainResultString',
+		value: function _getMainResultString() {
+			var names = this.subKernelOutputVariableNames;
+			var result = [];
+
+			if (this.floatOutput) {
+				result.push('  index *= 4');
+			}
+
+			if (this.graphical) {
+				result.push('  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  gl_FragColor = actualColor');
+			} else if (this.floatOutput) {
+				var channels = ['r', 'g', 'b', 'a'];
+
+				for (var i = 0; i < channels.length; ++i) {
+					result.push('  threadId = indexTo3D(index, uOutputDim)');
+					result.push('  kernel()');
+
+					if (names) {
+						result.push('  gl_FragData[0].' + channels[i] + ' = kernelResult');
+
+						for (var j = 0; j < names.length; ++j) {
+							result.push('  gl_FragData[' + (j + 1) + '].' + channels[i] + ' = ' + names[j]);
+						}
+					} else {
+						result.push('  gl_FragColor.' + channels[i] + ' = kernelResult');
+					}
+
+					if (i < channels.length - 1) {
+						result.push('  index += 1');
+					}
+				}
+			} else if (names !== null) {
+				result.push('  threadId = indexTo3D(index, uOutputDim)');
+				result.push('  kernel()');
+				result.push('  gl_FragData[0] = encode32(kernelResult)');
+				for (var _i2 = 0; _i2 < names.length; _i2++) {
+					result.push('  gl_FragData[' + (_i2 + 1) + '] = encode32(' + names[_i2] + ')');
+				}
+			} else {
+				result.push('  threadId = indexTo3D(index, uOutputDim)', '  kernel()', '  gl_FragColor = encode32(kernelResult)');
+			}
+
+			return this._linesToString(result);
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _linesToString
+   *
+   * @param {Array} lines - An Array of strings
+   *
+   * @returns {String} Single combined String, seperated by *\n*
+   *
+   */
+
+	}, {
+		key: '_linesToString',
+		value: function _linesToString(lines) {
+			if (lines.length > 0) {
+				return lines.join(';\n') + ';\n';
+			} else {
+				return '\n';
+			}
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _replaceArtifacts
+   *
+   * @param {String} src - Shader string
+   * @param {Array} map - Variables/Constants associated with shader
+   *
+   */
+
+	}, {
+		key: '_replaceArtifacts',
+		value: function _replaceArtifacts(src, map) {
+			return src.replace(/[ ]*__([A-Z]+[0-9]*([_]?[A-Z])*)__;\n/g, function (match, artifact) {
+				if (map.hasOwnProperty(artifact)) {
+					return map[artifact];
+				}
+				throw 'unhandled artifact ' + artifact;
+			});
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _addKernels
+   *
+   * @desc Adds all the sub-kernels supplied with this Kernel instance.
+   *
+   */
+
+	}, {
+		key: '_addKernels',
+		value: function _addKernels() {
+			var _this2 = this;
+
+			var builder = this.functionBuilder;
+			var gl = this._webGl;
+
+			builder.addFunctions(this.functions, {
+				constants: this.constants,
+				output: this.output
+			});
+			builder.addNativeFunctions(this.nativeFunctions);
+
+			builder.addKernel(this.fnString, {
+				prototypeOnly: false,
+				constants: this.constants,
+				output: this.output,
+				debug: this.debug,
+				loopMaxIterations: this.loopMaxIterations,
+				paramNames: this.paramNames,
+				paramTypes: this.paramTypes,
+				constantTypes: this.constantTypes,
+				fixIntegerDivisionAccuracy: this.fixIntegerDivisionAccuracy
+			});
+
+			if (this.subKernels !== null) {
+				var drawBuffers = this.drawBuffers = gl.getExtension('WEBGL_draw_buffers');
+				if (!drawBuffers) throw new Error('could not instantiate draw buffers extension');
+				this.subKernelOutputVariableNames = [];
+				this.subKernels.forEach(function (subKernel) {
+					return _this2._addSubKernel(subKernel);
+				});
+			} else if (this.subKernelProperties !== null) {
+				var _drawBuffers = this.drawBuffers = gl.getExtension('WEBGL_draw_buffers');
+				if (!_drawBuffers) throw new Error('could not instantiate draw buffers extension');
+				this.subKernelOutputVariableNames = [];
+				Object.keys(this.subKernelProperties).forEach(function (property) {
+					return _this2._addSubKernel(_this2.subKernelProperties[property]);
+				});
+			}
+		}
+	}, {
+		key: '_addSubKernel',
+		value: function _addSubKernel(subKernel) {
+			this.functionBuilder.addSubKernel(subKernel, {
+				prototypeOnly: false,
+				constants: this.constants,
+				output: this.output,
+				debug: this.debug,
+				loopMaxIterations: this.loopMaxIterations,
+				fixIntegerDivisionAccuracy: this.fixIntegerDivisionAccuracy
+			});
+			this.subKernelOutputVariableNames.push(subKernel.name + 'Result');
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getFragShaderString
+   *
+   * @desc Get the fragment shader String.
+   * If the String hasn't been compiled yet,
+   * then this method compiles it as well
+   *
+   * @param {Array} args - The actual parameters sent to the Kernel
+   *
+   * @returns {string} Fragment Shader string
+   *
+   */
+
+	}, {
+		key: '_getFragShaderString',
+		value: function _getFragShaderString(args) {
+			if (this.compiledFragShaderString !== null) {
+				return this.compiledFragShaderString;
+			}
+			return this.compiledFragShaderString = this._replaceArtifacts(this.constructor.fragShaderString, this._getFragShaderArtifactMap(args));
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name _getVertShaderString
+   *
+   * @desc Get the vertical shader String
+   *
+   * @param {Array} args - The actual parameters sent to the Kernel
+   *
+   * @returns {string} Vertical Shader string
+   *
+   */
+
+	}, {
+		key: '_getVertShaderString',
+		value: function _getVertShaderString(args) {
+			if (this.compiledVertShaderString !== null) {
+				return this.compiledVertShaderString;
+			}
+			return this.compiledVertShaderString = this.constructor.vertShaderString;
+		}
+
+		/**
+   * @memberOf WebGLKernel#
+   * @function
+   * @name toString
+   *
+   * @desc Returns the *pre-compiled* Kernel as a JS Object String, that can be reused.
+   *
+   */
+
+	}, {
+		key: 'toString',
+		value: function toString() {
+			return kernelString(this);
+		}
+	}, {
+		key: 'addFunction',
+		value: function addFunction(fn) {
+			this.functionBuilder.addFunction(null, fn);
+		}
+	}, {
+		key: 'destroy',
+		value: function destroy(removeCanvasReferences) {
+			_get(WebGLKernel.prototype.__proto__ || Object.getPrototypeOf(WebGLKernel.prototype), 'destroy', this).call(this);
+			if (this.outputTexture) {
+				this._webGl.deleteTexture(this.outputTexture);
+			}
+			if (this.buffer) {
+				this._webGl.deleteBuffer(this.buffer);
+			}
+			if (this.framebuffer) {
+				this._webGl.deleteFramebuffer(this.framebuffer);
+			}
+
+			if (this.vertShader) {
+				this._webGl.deleteShader(this.vertShader);
+			}
+
+			if (this.fragShader) {
+				this._webGl.deleteShader(this.fragShader);
+			}
+
+			if (this.program) {
+				this._webGl.deleteProgram(this.program);
+			}
+
+			var keys = Object.keys(this.textureCache);
+
+			for (var i = 0; i < keys.length; i++) {
+				var name = keys[i];
+				this._webGl.deleteTexture(this.textureCache[name]);
+			}
+
+			if (this.subKernelOutputTextures) {
+				for (var _i3 = 0; _i3 < this.subKernelOutputTextures.length; _i3++) {
+					this._webGl.deleteTexture(this.subKernelOutputTextures[_i3]);
+				}
+			}
+			if (removeCanvasReferences) {
+				var idx = canvases.indexOf(this._canvas);
+				if (idx >= 0) {
+					canvases[idx] = null;
+					maxTexSizes[idx] = null;
+				}
+			}
+			delete this._webGl;
+		}
+	}]);
+
+	return WebGLKernel;
+}(KernelBase);
+},{"../../core/texture":87,"../../core/utils":89,"../kernel-base":65,"./kernel-string":77,"./shader-frag":80,"./shader-vert":81}],79:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var RunnerBase = require('../runner-base');
+var WebGLKernel = require('./kernel');
+var WebGLFunctionBuilder = require('./function-builder');
+
+module.exports = function (_RunnerBase) {
+	_inherits(WebGLRunner, _RunnerBase);
+
+	/**
+  * @constructor WebGLRunner
+  *
+ 	 * @extends RunnerBase
+  	 * @desc Instantiates a Runner instance for the kernel.
+  * 
+  * @param {Object} settings - Settings to instantiate properties in RunnerBase, with given values
+  *
+  */
+	function WebGLRunner(settings) {
+		_classCallCheck(this, WebGLRunner);
+
+		var _this = _possibleConstructorReturn(this, (WebGLRunner.__proto__ || Object.getPrototypeOf(WebGLRunner)).call(this, new WebGLFunctionBuilder(), settings));
+
+		_this.Kernel = WebGLKernel;
+		_this.kernel = null;
+		return _this;
+	}
+
+	/**
+  * @memberOf WebGLRunner#
+  * @function
+  * @name getMode
+  *
+  * @desc Return the current mode in which gpu.js is executing.
+  * 
+  * @returns {String} The current mode; "cpu".
+  *
+  */
+
+
+	_createClass(WebGLRunner, [{
+		key: 'getMode',
+		value: function getMode() {
+			return 'gpu';
+		}
+	}]);
+
+	return WebGLRunner;
+}(RunnerBase);
+},{"../runner-base":67,"./function-builder":75,"./kernel":78}],80:[function(require,module,exports){
+"use strict";
+
+module.exports = "__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst float LOOP_MAX = __LOOP_MAX__;\n\n__CONSTANTS__;\n\nvarying vec2 vTexCoord;\n\nvec4 round(vec4 x) {\n  return floor(x + 0.5);\n}\n\nfloat round(float x) {\n  return floor(x + 0.5);\n}\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x / y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 rgba) {\n  __DECODE32_ENDIANNESS__;\n  rgba *= 255.0;\n  vec2 gte128;\n  gte128.x = rgba.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = rgba.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * rgba.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  rgba.b = rgba.b - 128.0 * gte128.x;\n  res = dot(rgba, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nvec4 encode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 rgba = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  rgba.rg = integerMod(rgba.rg, 256.0);\n  rgba.b = integerMod(rgba.b, 128.0);\n  rgba.a = exponent*0.5 + 63.5;\n  rgba.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  rgba = floor(rgba);\n  rgba *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return rgba;\n}\n// Dragons end here\n\nfloat decode(vec4 rgba, int x, int bitRatio) {\n  if (bitRatio == 1) {\n    return decode32(rgba);\n  }\n  __DECODE32_ENDIANNESS__;\n  int channel = integerMod(x, bitRatio);\n  if (bitRatio == 4) {\n    if (channel == 0) return rgba.r * 255.0;\n    if (channel == 1) return rgba.g * 255.0;\n    if (channel == 2) return rgba.b * 255.0;\n    if (channel == 3) return rgba.a * 255.0;\n  }\n  else {\n    if (channel == 0) return rgba.r * 255.0 + rgba.g * 65280.0;\n    if (channel == 1) return rgba.b * 255.0 + rgba.a * 65280.0;\n  }\n}\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio,  int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  __GET_RESULT__;\n  \n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  __GET_TEXTURE_CHANNEL__;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  __GET_TEXTURE_INDEX__;\n  return texture2D(tex, st / vec2(texSize));\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio, int y, int x) {\n  return get(tex, texSize, texDim, bitRatio, int(0), y, x);\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int y, int x) {\n  return getImage2D(tex, texSize, texDim, int(0), y, x);\n}\n\nfloat get(sampler2D tex, ivec2 texSize, ivec3 texDim, int bitRatio, int x) {\n  return get(tex, texSize, texDim, bitRatio, int(0), int(0), x);\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int x) {\n  return getImage2D(tex, texSize, texDim, int(0), int(0), x);\n}\n\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\nvoid color(sampler2D image) {\n  actualColor = texture2D(image, vTexCoord);\n}\n\n__MAIN_PARAMS__;\n__MAIN_CONSTANTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
+},{}],81:[function(require,module,exports){
+"use strict";
+
+module.exports = "precision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nattribute vec2 aPos;\nattribute vec2 aTexCoord;\n\nvarying vec2 vTexCoord;\nuniform vec2 ratio;\n\nvoid main(void) {\n  gl_Position = vec4((aPos + vec2(1)) * ratio + vec2(-1), 0, 1);\n  vTexCoord = aTexCoord;\n}";
+},{}],82:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var WebGLKernel = require('./kernel');
+var utils = require('../../core/utils');
+
+/**
+ * @class WebGLValidatorKernel
+ *
+ * @desc Helper class for WebGLKernel to validate texture size and dimensions.
+ *
+ */
+module.exports = function (_WebGLKernel) {
+	_inherits(WebGLValidatorKernel, _WebGLKernel);
+
+	function WebGLValidatorKernel() {
+		_classCallCheck(this, WebGLValidatorKernel);
+
+		return _possibleConstructorReturn(this, (WebGLValidatorKernel.__proto__ || Object.getPrototypeOf(WebGLValidatorKernel)).apply(this, arguments));
+	}
+
+	_createClass(WebGLValidatorKernel, [{
+		key: 'validateOptions',
+
+
+		/** 
+   * @memberOf WebGLValidatorKernel#
+   * @function
+   * @name validateOptions
+   *
+   */
+		value: function validateOptions() {
+			this.texSize = utils.dimToTexSize({
+				floatTextures: this.floatTextures,
+				floatOutput: this.floatOutput
+			}, this.output, true);
+		}
+	}]);
+
+	return WebGLValidatorKernel;
+}(WebGLKernel);
+},{"../../core/utils":89,"./kernel":78}],83:[function(require,module,exports){
+'use strict';
+
+var utils = require('./utils');
+module.exports = function alias(name, fn) {
+	var fnString = fn.toString();
+	return new Function('return function ' + name + ' (' + utils.getParamNamesFromString(fnString).join(', ') + ') {' + utils.getFunctionBodyFromString(fnString) + '}')();
+};
+},{"./utils":89}],84:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var UtilsCore = require("./utils-core");
+
+/**
+ * This is a minimalistic version of GPU.js used 
+ * to run precompiled GPU.JS code.
+ *
+ * This intentionally excludes the JS AST compiller : which is 400kb alone/
+ *
+ * @class GPUCore
+ */
+module.exports = function () {
+	function GPUCore() {
+		_classCallCheck(this, GPUCore);
+	}
+
+	_createClass(GPUCore, null, [{
+		key: "validateKernelObj",
+
+
+		/**
+   * @name validateKernelObj
+   * @function
+   * @static
+   * @memberOf GPUCore
+   *
+   * @description Validates the KernelObj to comply with the defined format
+   * Note that this does only a limited sanity check, and does not  
+   * guarantee a full working validation.
+   *
+   * For the kernel object format see : <kernelObj-format>
+   *
+   * @param {Object|String} kernelObj - KernelObj used to validate
+   *
+   * @returns {Object} The validated kernel object, converted from JSON if needed
+   *
+   */
+		value: function validateKernelObj(kernelObj) {
+
+			// NULL validation
+			if (kernelObj === null) {
+				throw "KernelObj being validated is NULL";
+			}
+
+			// String JSON conversion
+			if (typeof kernelObj === "string") {
+				try {
+					kernelObj = JSON.parse(kernelObj);
+				} catch (e) {
+					console.error(e);
+					throw "Failed to convert KernelObj from JSON string";
+				}
+
+				// NULL validation
+				if (kernelObj === null) {
+					throw "Invalid (NULL) KernelObj JSON string representation";
+				}
+			}
+
+			// Check for kernel obj flag
+			if (kernelObj.isKernelObj !== true) {
+				throw "Failed missing isKernelObj flag check";
+			}
+
+			// Return the validated kernelObj
+			return kernelObj;
+		}
+
+		/**
+   * @name loadKernelObj
+   * @function
+   * @static
+   * @memberOf GPUCore
+   *
+   * @description Loads the precompiled kernel object. For GPUCore this is the ONLY way to create the kernel.
+   * To generate the kernelObj use <Kernel.exportKernelObj>
+   *
+   * Note that this function calls <validateKernelObj> internally, and throws an exception if it fails.
+   *
+   * @see GPUCore.validateKernelObj
+   * @see	Kernel.exportKernelObj
+   *
+   * @param {Object} kernelObj - The precompiled kernel object
+   * @param {Object} inOpt - [Optional] the option overrides to use
+   *
+   * @returns {Function} The kernel function
+   * 
+   */
+
+	}, {
+		key: "loadKernelObj",
+		value: function loadKernelObj(kernelObj, inOpt) {
+
+			// Validates the kernelObj, throws an exception if it fails
+			kernelObj = validateKernelObj(kernelObj);
+		}
+	}]);
+
+	return GPUCore;
+}();
+},{"./utils-core":88}],85:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var utils = require('./utils');
+var WebGLRunner = require('../backend/web-gl/runner');
+var WebGL2Runner = require('../backend/web-gl2/runner');
+var CPURunner = require('../backend/cpu/runner');
+var WebGLValidatorKernel = require('../backend/web-gl/validator-kernel');
+var WebGL2ValidatorKernel = require('../backend/web-gl2/validator-kernel');
+var GPUCore = require("./gpu-core");
+
+/**
+ * Initialises the GPU.js library class which manages the webGlContext for the created functions.
+ * @class
+ * @extends GPUCore
+ */
+
+var GPU = function (_GPUCore) {
+	_inherits(GPU, _GPUCore);
+
+	/**
+  * Creates an instance of GPU.
+  * @param {any} settings - Settings to set mode, andother properties. See #GPUCore
+  * @memberOf GPU#
+  */
+	function GPU(settings) {
+		_classCallCheck(this, GPU);
+
+		var _this = _possibleConstructorReturn(this, (GPU.__proto__ || Object.getPrototypeOf(GPU)).call(this, settings));
+
+		settings = settings || {};
+		_this._canvas = settings.canvas || null;
+		_this._webGl = settings.webGl || null;
+		var mode = settings.mode;
+		var detectedMode = void 0;
+		if (!utils.isWebGlSupported()) {
+			if (mode && mode !== 'cpu') {
+				throw new Error('A requested mode of "' + mode + '" and is not supported');
+			} else {
+				console.warn('Warning: gpu not supported, falling back to cpu support');
+				detectedMode = 'cpu';
+			}
+		} else {
+			if (_this._webGl) {
+				if (typeof WebGL2RenderingContext !== 'undefined' && _this._webGl.constructor === WebGL2RenderingContext) {
+					detectedMode = 'webgl2';
+				} else if (typeof WebGLRenderingContext !== 'undefined' && _this._webGl.constructor === WebGLRenderingContext) {
+					detectedMode = 'webgl';
+				} else {
+					throw new Error('unknown WebGL Context');
+				}
+			} else {
+				detectedMode = mode || 'gpu';
+			}
+		}
+		_this.kernels = [];
+
+		var runnerSettings = {
+			canvas: _this._canvas,
+			webGl: _this._webGl
+		};
+
+		switch (detectedMode) {
+			// public options
+			case 'cpu':
+				_this._runner = new CPURunner(runnerSettings);
+				break;
+			case 'gpu':
+				var Runner = _this.getGPURunner();
+				_this._runner = new Runner(runnerSettings);
+				break;
+
+			// private explicit options for testing
+			case 'webgl2':
+				_this._runner = new WebGL2Runner(runnerSettings);
+				break;
+			case 'webgl':
+				_this._runner = new WebGLRunner(runnerSettings);
+				break;
+
+			// private explicit options for internal
+			case 'webgl2-validator':
+				_this._runner = new WebGL2Runner(runnerSettings);
+				_this._runner.Kernel = WebGL2ValidatorKernel;
+				break;
+			case 'webgl-validator':
+				_this._runner = new WebGLRunner(runnerSettings);
+				_this._runner.Kernel = WebGLValidatorKernel;
+				break;
+			default:
+				throw new Error('"' + mode + '" mode is not defined');
+		}
+		return _this;
+	}
+	/**
+  *
+  * This creates a callable function object to call the kernel function with the argument parameter set
+  *
+  * @name createKernel
+  * @function
+  * @memberOf GPU##
+  *
+  * @param {Function} fn - The calling to perform the conversion
+  * @param {Object} [settings] - The parameter configuration object
+  * @property {String} settings.dimensions - Thread dimension array (Defaults to [1024])
+  * @property {String} settings.mode - CPU / GPU configuration mode (Defaults to null)
+  *
+  * The following modes are supported
+  * *'falsey'* : Attempts to build GPU mode, else fallbacks
+  * *'gpu'* : Attempts to build GPU mode, else fallbacks
+  * *'cpu'* : Forces JS fallback mode only
+  *
+  *
+  * @returns {Function} callable function to run
+  *
+  */
+
+
+	_createClass(GPU, [{
+		key: 'createKernel',
+		value: function createKernel(fn, settings) {
+			//
+			// basic parameters safety checks
+			//
+			if (typeof fn === 'undefined') {
+				throw 'Missing fn parameter';
+			}
+			if (!utils.isFunction(fn) && typeof fn !== 'string') {
+				throw 'fn parameter not a function';
+			}
+
+			var mergedSettings = Object.assign({
+				webGl: this._webGl,
+				canvas: this._canvas
+			}, settings || {});
+
+			var kernel = this._runner.buildKernel(fn, mergedSettings);
+
+			//if canvas didn't come from this, propagate from kernel
+			if (!this._canvas) {
+				this._canvas = kernel.getCanvas();
+			}
+			if (!this._runner.canvas) {
+				this._runner.canvas = kernel.getCanvas();
+			}
+
+			this.kernels.push(kernel);
+
+			return kernel;
+		}
+
+		/**
+   *
+   * Create a super kernel which executes sub kernels
+   * and saves their output to be used with the next sub kernel.
+   * This can be useful if we want to save the output on one kernel,
+   * and then use it as an input to another kernel. *Machine Learning*
+   *
+   * @name createKernelMap
+   * @function
+   * @memberOf GPU#
+   *
+   * @param {Object|Array} subKernels - Sub kernels for this kernel
+   * @param {Function} rootKernel - Root kernel
+   *
+   * @returns {Function} callable kernel function
+   *
+   * @example
+   * const megaKernel = gpu.createKernelMap({
+   *   addResult: function add(a, b) {
+   *     return a[this.thread.x] + b[this.thread.x];
+   *   },
+   *   multiplyResult: function multiply(a, b) {
+   *     return a[this.thread.x] * b[this.thread.x];
+   *   },
+   *  }, function(a, b, c) {
+   *       return multiply(add(a, b), c);
+   * });
+   *
+   * megaKernel(a, b, c);
+   *
+   * Note: You can also define subKernels as an array of functions.
+   * > [add, multiply]
+   *
+   */
+
+	}, {
+		key: 'createKernelMap',
+		value: function createKernelMap() {
+			var fn = void 0;
+			var settings = void 0;
+			if (typeof arguments[arguments.length - 2] === 'function') {
+				fn = arguments[arguments.length - 2];
+				settings = arguments[arguments.length - 1];
+			} else {
+				fn = arguments[arguments.length - 1];
+			}
+
+			if (!utils.isWebGlDrawBuffersSupported()) {
+				this._runner = new CPURunner(settings);
+			}
+
+			var kernel = this.createKernel(fn, settings);
+			if (Array.isArray(arguments[0])) {
+				var functions = arguments[0];
+				for (var i = 0; i < functions.length; i++) {
+					kernel.addSubKernel(functions[i]);
+				}
+			} else {
+				var _functions = arguments[0];
+				for (var p in _functions) {
+					if (!_functions.hasOwnProperty(p)) continue;
+					kernel.addSubKernelProperty(p, _functions[p]);
+				}
+			}
+
+			return kernel;
+		}
+
+		/**
+   *
+   * Combine different kernels into one super Kernel,
+   * useful to perform multiple operations inside one
+   * kernel without the penalty of data transfer between
+   * cpu and gpu.
+   *
+   * The number of kernel functions sent to this method can be variable.
+   * You can send in one, two, etc.
+   *
+   * @name combineKernels
+   * @function
+   * @memberOf GPU#
+   *
+   * @param {Function} subKernels - Kernel function(s) to combine.
+   * @param {Function} rootKernel - Root kernel to combine kernels into
+   *
+   * @example
+   * 	combineKernels(add, multiply, function(a,b,c){
+   *	 	return add(multiply(a,b), c)
+   *	})
+   *
+   * @returns {Function} Callable kernel function
+   *
+   */
+
+	}, {
+		key: 'combineKernels',
+		value: function combineKernels() {
+			var lastKernel = arguments[arguments.length - 2];
+			var combinedKernel = arguments[arguments.length - 1];
+			if (this.getMode() === 'cpu') return combinedKernel;
+
+			var canvas = arguments[0].getCanvas();
+			var webGl = arguments[0].getWebGl();
+
+			for (var i = 0; i < arguments.length - 1; i++) {
+				arguments[i].setCanvas(canvas).setWebGl(webGl).setOutputToTexture(true);
+			}
+
+			return function () {
+				combinedKernel.apply(null, arguments);
+				var texSize = lastKernel.texSize;
+				var gl = lastKernel.getWebGl();
+				var threadDim = lastKernel.threadDim;
+				var result = void 0;
+				if (lastKernel.floatOutput) {
+					var w = texSize[0];
+					var h = Math.ceil(texSize[1] / 4);
+					result = new Float32Array(w * h * 4);
+					gl.readPixels(0, 0, w, h, gl.RGBA, gl.FLOAT, result);
+				} else {
+					var bytes = new Uint8Array(texSize[0] * texSize[1] * 4);
+					gl.readPixels(0, 0, texSize[0], texSize[1], gl.RGBA, gl.UNSIGNED_BYTE, bytes);
+					result = new Float32Array(bytes.buffer);
+				}
+
+				result = result.subarray(0, threadDim[0] * threadDim[1] * threadDim[2]);
+
+				if (lastKernel.output.length === 1) {
+					return result;
+				} else if (lastKernel.output.length === 2) {
+					return utils.splitArray(result, lastKernel.output[0]);
+				} else if (lastKernel.output.length === 3) {
+					var cube = utils.splitArray(result, lastKernel.output[0] * lastKernel.output[1]);
+					return cube.map(function (x) {
+						return utils.splitArray(x, lastKernel.output[0]);
+					});
+				}
+			};
+		}
+	}, {
+		key: 'getGPURunner',
+		value: function getGPURunner() {
+			if (typeof WebGL2RenderingContext !== 'undefined' && utils.isWebGl2Supported()) return WebGL2Runner;
+			if (typeof WebGLRenderingContext !== 'undefined') return WebGLRunner;
+		}
+
+		/**
+   *
+   * Adds additional functions, that the kernel may call.
+   *
+   * @name addFunction
+   * @function
+   * @memberOf GPU#
+   *
+   * @param {Function|String} fn - JS Function to do conversion
+   * @param {Object} options
+   *
+   * @returns {GPU} returns itself
+   *
+   */
+
+	}, {
+		key: 'addFunction',
+		value: function addFunction(fn, options) {
+			this._runner.functionBuilder.addFunction(null, fn, options);
+			return this;
+		}
+
+		/**
+   *
+   * Adds additional native functions, that the kernel may call.
+   *
+   * @name addNativeFunction
+   * @function
+   * @memberOf GPU#
+   *
+   * @param {String} name - native function name, used for reverse lookup
+   * @param {String} nativeFunction - the native function implementation, as it would be defined in it's entirety
+   *
+   * @returns {GPU} returns itself
+   *
+   */
+
+	}, {
+		key: 'addNativeFunction',
+		value: function addNativeFunction(name, nativeFunction) {
+			this._runner.functionBuilder.addNativeFunction(name, nativeFunction);
+			return this;
+		}
+
+		/**
+   *
+   * Return the current mode in which gpu.js is executing.
+   * @name getMode
+   * @function
+   * @memberOf GPU#
+   *
+   * @returns {String} The current mode, "cpu", "webgl", etc.
+   *
+   */
+
+	}, {
+		key: 'getMode',
+		value: function getMode() {
+			return this._runner.getMode();
+		}
+
+		/**
+   *
+   * Return TRUE, if browser supports WebGl AND Canvas
+   *
+   * @name get isWebGlSupported
+   * @function
+   * @memberOf GPU#
+   *
+   * Note: This function can also be called directly `GPU.isWebGlSupported()`
+   *
+   * @returns {Boolean} TRUE if browser supports webGl
+   *
+   */
+
+	}, {
+		key: 'isWebGlSupported',
+		value: function isWebGlSupported() {
+			return utils.isWebGlSupported();
+		}
+
+		/**
+   *
+   * Return TRUE, if system has integer division accuracy issue
+   *
+   * @name get hasIntegerDivisionAccuracyBug
+   * @function
+   * @memberOf GPU#
+   *
+   * Note: This function can also be called directly `GPU.hasIntegerDivisionAccuracyBug()`
+   *
+   * @returns {Boolean} TRUE if system has integer division accuracy issue
+   *
+   *
+   */
+
+	}, {
+		key: 'hasIntegerDivisionAccuracyBug',
+		value: function hasIntegerDivisionAccuracyBug() {
+			return utils.hasIntegerDivisionAccuracyBug();
+		}
+
+		/**
+   *
+   * Return the canvas object bound to this gpu instance.
+   *
+   * @name getCanvas
+   * @function
+   * @memberOf GPU#
+   *
+   * @returns {Object} Canvas object if present
+   *
+   */
+
+	}, {
+		key: 'getCanvas',
+		value: function getCanvas() {
+			return this._canvas;
+		}
+
+		/**
+   *
+   * Return the webGl object bound to this gpu instance.
+   *
+   * @name getWebGl
+   * @function
+   * @memberOf GPU#
+   *
+   * @returns {Object} WebGl object if present
+   *
+   */
+
+	}, {
+		key: 'getWebGl',
+		value: function getWebGl() {
+			return this._webGl;
+		}
+
+		/**
+   *
+   * Destroys all memory associated with gpu.js & the webGl if we created it
+   *
+   * @name destroy
+   * @function
+   * @memberOf GPU#
+   *
+   *
+   */
+
+	}, {
+		key: 'destroy',
+		value: function destroy() {
+			var _this2 = this;
+
+			// perform on next runloop - for some reason we dont get lose context events 
+			// if webGl is created and destroyed in the same run loop.
+			setTimeout(function () {
+				var kernels = _this2.kernels;
+
+				var destroyWebGl = !_this2._webGl && kernels.length && kernels[0]._webGl;
+				for (var i = 0; i < _this2.kernels.length; i++) {
+					_this2.kernels[i].destroy(true); // remove canvas if exists
+				}
+
+				if (destroyWebGl) {
+					destroyWebGl.OES_texture_float = null;
+					destroyWebGl.OES_texture_float_linear = null;
+					destroyWebGl.OES_element_index_uint = null;
+					var loseContextExt = destroyWebGl.getExtension('WEBGL_lose_context');
+					if (loseContextExt) {
+						loseContextExt.loseContext();
+					}
+				}
+			}, 0);
+		}
+	}]);
+
+	return GPU;
+}(GPUCore);
+
+;
+
+// This ensure static methods are "inherited"
+// See: https://stackoverflow.com/questions/5441508/how-to-inherit-static-methods-from-base-class-in-javascript
+Object.assign(GPU, GPUCore);
+
+module.exports = GPU;
+},{"../backend/cpu/runner":62,"../backend/web-gl/runner":79,"../backend/web-gl/validator-kernel":82,"../backend/web-gl2/runner":71,"../backend/web-gl2/validator-kernel":74,"./gpu-core":84,"./utils":89}],86:[function(require,module,exports){
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+module.exports = function Input(value, size) {
+	_classCallCheck(this, Input);
+
+	this.value = value;
+	if (Array.isArray(size)) {
+		this.size = [];
+		for (var i = 0; i < size.length; i++) {
+			this.size[i] = size[i];
+		}
+		while (this.size.length < 3) {
+			this.size.push(1);
+		}
+	} else {
+		if (size.z) {
+			this.size = [size.x, size.y, size.z];
+		} else if (size.y) {
+			this.size = [size.x, size.y, 1];
+		} else {
+			this.size = [size.x, 1, 1];
+		}
+	}
+};
+},{}],87:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+module.exports = function () {
+
+	/**
+  * @desc WebGl Texture implementation in JS
+  * @constructor Texture
+  * @param {Object} texture
+  * @param {Array} size
+  * @param dimensions
+  * @param {Array} output
+  * @param {Object} webGl
+  * @param {String} [type]
+  */
+	function Texture(texture, size, dimensions, output, webGl) {
+		var type = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 'NumberTexture';
+
+		_classCallCheck(this, Texture);
+
+		this.texture = texture;
+		this.size = size;
+		this.dimensions = dimensions;
+		this.output = output;
+		this.webGl = webGl;
+		this.kernel = null;
+		this.type = type;
+	}
+
+	/**
+  * @name toArray
+  * @function
+  * @memberOf Texture#
+  *
+  * @desc Converts the Texture into a JavaScript Array.
+  * 
+  * @param {Object} The `gpu` Object
+  *
+  */
+
+
+	_createClass(Texture, [{
+		key: 'toArray',
+		value: function toArray(gpu) {
+			if (!gpu) throw new Error('You need to pass the GPU object for toArray to work.');
+			if (this.kernel) return this.kernel(this);
+
+			this.kernel = gpu.createKernel(function (x) {
+				return x[this.thread.z][this.thread.y][this.thread.x];
+			}).setOutput(this.output);
+
+			return this.kernel(this);
+		}
+
+		/**
+   * @name delete
+   * @desc Deletes the Texture.
+   * @function
+   * @memberOf Texture#
+   *
+   *
+   */
+
+	}, {
+		key: 'delete',
+		value: function _delete() {
+			return this.webGl.deleteTexture(this.texture);
+		}
+	}]);
+
+	return Texture;
+}();
+},{}],88:[function(require,module,exports){
+'use strict';
+
+/**
+ *
+ * @desc Reduced subset of Utils, used exclusively in gpu-core.js
+ * Various utility functions / snippets of code that GPU.JS uses internally.\
+ * This covers various snippets of code that is not entirely gpu.js specific (ie. may find uses elsewhere)
+ *
+ * Note that all methods in this class is 'static' by nature `UtilsCore.functionName()`
+ *
+ * @class UtilsCore
+ *
+ */
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var UtilsCore = function () {
+	function UtilsCore() {
+		_classCallCheck(this, UtilsCore);
+	}
+
+	_createClass(UtilsCore, null, [{
+		key: 'isCanvas',
+
+
+		/**
+   * @typedef {Object} webGlContext
+   */
+
+		/**
+   * @typedef {Object} CanvasDOMObject
+   */
+
+		//-----------------------------------------------------------------------------
+		//
+		//  Canvas validation and support
+		//
+		//-----------------------------------------------------------------------------
+
+		/**
+   * @name isCanvas
+   * @static
+   * @function
+   * @memberOf UtilsCore
+   *
+   *
+   * @desc Return TRUE, on a valid DOM canvas or OffscreenCanvas object
+   *
+   * Note: This does just a VERY simply sanity check. And may give false positives.
+   *
+   * @param {CanvasDOMObject} canvasObj - Object to validate
+   *
+   * @returns {Boolean} TRUE if the object is a DOM canvas or OffscreenCanvas
+   *
+   */
+		value: function isCanvas(canvasObj) {
+			return canvasObj !== null && (canvasObj.nodeName && canvasObj.getContext && canvasObj.nodeName.toUpperCase() === 'CANVAS' || typeof OffscreenCanvas !== 'undefined' && canvasObj instanceof OffscreenCanvas);
+		}
+
+		/**
+   * @name isCanvasSupported
+   * @function
+   * @static
+   * @memberOf UtilsCore
+   *
+   * @desc Return TRUE, if browser supports canvas
+   *
+   * @returns {Boolean} TRUE if browser supports canvas
+   *
+   */
+
+	}, {
+		key: 'isCanvasSupported',
+		value: function isCanvasSupported() {
+			return _isCanvasSupported;
+		}
+
+		/**
+   * @name initCanvas
+   * @function
+   * @static
+   * @memberOf UtilsCore
+   *
+   * @desc Initiate and returns a canvas, for usage in init_webgl.
+   * Returns only if canvas is supported by browser.
+   *
+   * @returns {CanvasDOMObject} CanvasDOMObject if supported by browser, else null
+   *
+   */
+
+	}, {
+		key: 'initCanvas',
+		value: function initCanvas() {
+			// Fail fast if browser previously detected no support
+			if (!_isCanvasSupported) {
+				return null;
+			}
+
+			// Create a new canvas DOM
+			var canvas = typeof document !== 'undefined' ? document.createElement('canvas') : new OffscreenCanvas(0, 0);
+
+			// Default width and height, to fix webgl issue in safari
+			canvas.width = 2;
+			canvas.height = 2;
+
+			// Returns the canvas
+			return canvas;
+		}
+
+		//-----------------------------------------------------------------------------
+		//
+		//  Webgl validation and support
+		//
+		//-----------------------------------------------------------------------------
+
+
+		/**
+   *
+   * @name isWebGl
+   * @function
+   * @static
+   * @memberOf UtilsCore
+   *
+   * @desc Return TRUE, on a valid webGlContext object
+   *
+   * Note: This does just a VERY simply sanity check. And may give false positives.
+   *
+   * @param {webGlContext} webGlObj - Object to validate
+   *
+   * @returns {Boolean} TRUE if the object is a webGlContext object
+   *
+   */
+
+	}, {
+		key: 'isWebGl',
+		value: function isWebGl(webGlObj) {
+			return webGlObj && typeof webGlObj.getExtension === 'function';
+		}
+
+		/**
+   *
+   * @name isWebGl2
+   * @function
+   * @static
+   * @memberOf UtilsCore
+   *
+   * @desc Return TRUE, on a valid webGl2Context object
+   *
+   * Note: This does just a VERY simply sanity check. And may give false positives.
+   *
+   * @param {webGlContext} webGl2Obj - Object to validate
+   *
+   * @returns {Boolean} TRUE if the object is a webGl2Context object
+   *
+   */
+
+	}, {
+		key: 'isWebGl2',
+		value: function isWebGl2(webGl2Obj) {
+			return webGl2Obj && typeof WebGL2RenderingContext !== 'undefined' && webGl2Obj instanceof WebGL2RenderingContext;
+		}
+
+		/**
+   * @name isWebGlSupported
+   * @function
+   * @static
+   * @memberOf UtilsCore
+   *
+   * @desc Return TRUE, if browser supports webgl
+   *
+   * @returns {Boolean} TRUE if browser supports webgl
+   *
+   */
+
+	}, {
+		key: 'isWebGlSupported',
+		value: function isWebGlSupported() {
+			return _isWebGlSupported;
+		}
+
+		/**
+   * @name isWebGlSupported2
+   * @function
+   * @static
+   * @memberOf UtilsCore
+   *
+   * @desc Return TRUE, if browser supports webgl2
+   *
+   * @returns {Boolean} TRUE if browser supports webgl2
+   *
+   */
+
+	}, {
+		key: 'isWebGl2Supported',
+		value: function isWebGl2Supported() {
+			return _isWebGl2Supported;
+		}
+	}, {
+		key: 'isWebGlDrawBuffersSupported',
+		value: function isWebGlDrawBuffersSupported() {
+			return _isWebGlDrawBuffersSupported;
+		}
+
+		// Default webgl options to use
+
+	}, {
+		key: 'initWebGlDefaultOptions',
+		value: function initWebGlDefaultOptions() {
+			return {
+				alpha: false,
+				depth: false,
+				antialias: false
+			};
+		}
+
+		/**
+   * @name initWebGl
+   * @function
+   * @static
+   * @memberOf UtilsCore
+   *
+   * @desc Initiate and returns a webGl, from a canvas object
+   * Returns only if webGl is supported by browser.
+   *
+   * @param {CanvasDOMObject} canvasObj - Object to validate
+   *
+   * @returns {CanvasDOMObject} CanvasDOMObject if supported by browser, else null
+   *
+   */
+
+	}, {
+		key: 'initWebGl',
+		value: function initWebGl(canvasObj) {
+
+			// First time setup, does the browser support check memorizer
+			if (typeof _isCanvasSupported !== 'undefined' || canvasObj === null) {
+				if (!_isCanvasSupported) {
+					return null;
+				}
+			}
+
+			// Fail fast for invalid canvas object
+			if (!UtilsCore.isCanvas(canvasObj)) {
+				throw new Error('Invalid canvas object - ' + canvasObj);
+			}
+
+			// Create a new canvas DOM
+			var webGl = null;
+			var defaultOptions = UtilsCore.initWebGlDefaultOptions();
+			try {
+				webGl = canvasObj.getContext('experimental-webgl', defaultOptions);
+			} catch (e) {
+				// 'experimental-webgl' is not a supported context type
+				// fallback to 'webgl2' or 'webgl' below
+			}
+
+			if (webGl === null) {
+				webGl = canvasObj.getContext('webgl2', defaultOptions) || canvasObj.getContext('webgl', defaultOptions);
+			}
+
+			if (webGl) {
+				// Get the extension that is needed
+				webGl.OES_texture_float = webGl.getExtension('OES_texture_float');
+				webGl.OES_texture_float_linear = webGl.getExtension('OES_texture_float_linear');
+				webGl.OES_element_index_uint = webGl.getExtension('OES_element_index_uint');
+			}
+
+			// Returns the canvas
+			return webGl;
+		}
+
+		/**
+   * @name initWebGl2
+   * @function
+   * @static
+   * @memberOf UtilsCore
+   *
+   * @desc Initiate and returns a webGl, from a canvas object
+   * Returns only if webGl is supported by browser.
+   *
+   * @param {CanvasDOMObject} canvasObj - Object to validate
+   *
+   * @returns {CanvasDOMObject} CanvasDOMObject if supported by browser, else null
+   *
+   */
+
+	}, {
+		key: 'initWebGl2',
+		value: function initWebGl2(canvasObj) {
+
+			// First time setup, does the browser support check memorizer
+			if (typeof _isCanvasSupported !== 'undefined' || canvasObj === null) {
+				if (!_isCanvasSupported) {
+					return null;
+				}
+			}
+
+			// Fail fast for invalid canvas object
+			if (!UtilsCore.isCanvas(canvasObj)) {
+				throw new Error('Invalid canvas object - ' + canvasObj);
+			}
+
+			// Create a new canvas DOM
+			return canvasObj.getContext('webgl2', UtilsCore.initWebGlDefaultOptions());
+		}
+
+		/**
+   * @function
+   * @static
+   * @memberOf UtilsCore
+   * @param {number[]} output
+   * @throws if not correctly defined
+   */
+
+	}, {
+		key: 'checkOutput',
+		value: function checkOutput(output) {
+			if (!output || !Array.isArray(output)) throw new Error('kernel.output not an array');
+			for (var i = 0; i < output.length; i++) {
+				if (isNaN(output[i]) || output[i] < 1) {
+					throw new Error('kernel.output[' + i + '] incorrectly defined as `' + output[i] + '`, needs to be numeric, and greater than 0');
+				}
+			}
+		}
+	}]);
+
+	return UtilsCore;
+}();
+
+//-----------------------------------------------------------------------------
+//
+//  Canvas & Webgl validation and support constants
+//
+//-----------------------------------------------------------------------------
+
+var _isCanvasSupported = typeof document !== 'undefined' ? UtilsCore.isCanvas(document.createElement('canvas')) : typeof OffscreenCanvas !== 'undefined';
+var _testingWebGl = UtilsCore.initWebGl(UtilsCore.initCanvas());
+var _testingWebGl2 = UtilsCore.initWebGl2(UtilsCore.initCanvas());
+var _isWebGlSupported = UtilsCore.isWebGl(_testingWebGl);
+var _isWebGl2Supported = UtilsCore.isWebGl2(_testingWebGl2);
+var _isWebGlDrawBuffersSupported = _isWebGlSupported && Boolean(_testingWebGl.getExtension('WEBGL_draw_buffers'));
+
+if (_isWebGlSupported) {
+	UtilsCore.OES_texture_float = _testingWebGl.OES_texture_float;
+	UtilsCore.OES_texture_float_linear = _testingWebGl.OES_texture_float_linear;
+	UtilsCore.OES_element_index_uint = _testingWebGl.OES_element_index_uint;
+} else {
+	UtilsCore.OES_texture_float = false;
+	UtilsCore.OES_texture_float_linear = false;
+	UtilsCore.OES_element_index_uint = false;
+}
+
+module.exports = UtilsCore;
+},{}],89:[function(require,module,exports){
+'use strict';
+
+/**
+ * 
+ * @classdesc Various utility functions / snippets of code that GPU.JS uses internally.\
+ * This covers various snippets of code that is not entirely gpu.js specific (ie. may find uses elsewhere)
+ *
+ * Note that all methods in this class are *static* by nature `Utils.functionName()`
+ * 
+ * @class Utils
+ * @extends UtilsCore
+ *
+ */
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var UtilsCore = require("./utils-core");
+var Input = require('./input');
+var Texture = require('./texture');
+// FUNCTION_NAME regex
+var FUNCTION_NAME = /function ([^(]*)/;
+
+// STRIP COMMENTS regex
+var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+
+// ARGUMENT NAMES regex
+var ARGUMENT_NAMES = /([^\s,]+)/g;
+
+var _systemEndianness = function () {
+	var b = new ArrayBuffer(4);
+	var a = new Uint32Array(b);
+	var c = new Uint8Array(b);
+	a[0] = 0xdeadbeef;
+	if (c[0] === 0xef) return 'LE';
+	if (c[0] === 0xde) return 'BE';
+	throw new Error('unknown endianness');
+}();
+
+var _isFloatReadPixelsSupported = null;
+var _isFloatReadPixelsSupportedWebGL2 = null;
+
+var _isMixedIdentifiersSupported = function () {
+	try {
+		new Function('let i = 1; const j = 1;')();
+		return true;
+	} catch (e) {
+		return false;
+	}
+}();
+
+var _hasIntegerDivisionAccuracyBug = null;
+
+/**
+ * @class
+ * @extends UtilsCore
+ */
+
+var Utils = function (_UtilsCore) {
+	_inherits(Utils, _UtilsCore);
+
+	function Utils() {
+		_classCallCheck(this, Utils);
+
+		return _possibleConstructorReturn(this, (Utils.__proto__ || Object.getPrototypeOf(Utils)).apply(this, arguments));
+	}
+
+	_createClass(Utils, null, [{
+		key: 'systemEndianness',
+
+
+		//-----------------------------------------------------------------------------
+		//
+		//  System values support (currently only endianness)
+		//
+		//-----------------------------------------------------------------------------
+
+		/**
+   * @memberOf Utils
+   * @name systemEndianness
+   * @function
+   * @static
+   *
+   * Gets the system endianness, and cache it
+   *
+   * @returns {String} 'LE' or 'BE' depending on system architecture
+   *
+   * Credit: https://gist.github.com/TooTallNate/4750953
+   */
+		value: function systemEndianness() {
+			return _systemEndianness;
+		}
+
+		//-----------------------------------------------------------------------------
+		//
+		//  Function and function string validations
+		//
+		//-----------------------------------------------------------------------------
+
+		/**
+   * @memberOf Utils
+   * @name isFunction
+   * @function
+   * @static
+   *
+   * Return TRUE, on a JS function
+   *
+   * @param {Function} funcObj - Object to validate if its a function
+   *
+   * @returns	{Boolean} TRUE if the object is a JS function
+   *
+   */
+
+	}, {
+		key: 'isFunction',
+		value: function isFunction(funcObj) {
+			return typeof funcObj === 'function';
+		}
+
+		/**
+   * @memberOf Utils
+   * @name isFunctionString
+   * @function
+   * @static
+   *
+   * Return TRUE, on a valid JS function string
+   *
+   * Note: This does just a VERY simply sanity check. And may give false positives.
+   *
+   * @param {String} funcStr - String of JS function to validate
+   *
+   * @returns {Boolean} TRUE if the string passes basic validation
+   *
+   */
+
+	}, {
+		key: 'isFunctionString',
+		value: function isFunctionString(funcStr) {
+			if (funcStr !== null) {
+				return funcStr.toString().slice(0, 'function'.length).toLowerCase() === 'function';
+			}
+			return false;
+		}
+
+		/**
+   * @memberOf Utils
+   * @name getFunctionName_fromString
+   * @function
+   * @static
+   *
+   * Return the function name from a JS function string
+   *
+   * @param {String} funcStr - String of JS function to validate
+   *
+   * @returns {String} Function name string (if found)
+   *
+   */
+
+	}, {
+		key: 'getFunctionNameFromString',
+		value: function getFunctionNameFromString(funcStr) {
+			return FUNCTION_NAME.exec(funcStr)[1];
+		}
+	}, {
+		key: 'getFunctionBodyFromString',
+		value: function getFunctionBodyFromString(funcStr) {
+			return funcStr.substring(funcStr.indexOf('{') + 1, funcStr.lastIndexOf('}'));
+		}
+
+		/**
+   * @memberOf Utils
+   * @name getParamNames_fromString
+   * @function
+   * @static
+   *
+   * Return list of parameter names extracted from the JS function string
+   *
+   * @param {String} funcStr - String of JS function to validate
+   *
+   * @returns {String[]}  Array representing all the parameter names
+   *
+   */
+
+	}, {
+		key: 'getParamNamesFromString',
+		value: function getParamNamesFromString(func) {
+			var fnStr = func.toString().replace(STRIP_COMMENTS, '');
+			var result = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
+			if (result === null) result = [];
+			return result;
+		}
+
+		//-----------------------------------------------------------------------------
+		//
+		//  Object / function cloning and manipulation
+		//
+		//-----------------------------------------------------------------------------
+
+		/**
+   * @memberOf Utils
+   * @name clone
+   * @function
+   * @static
+   *
+   * Returns a clone
+   *
+   * @param {Object} obj - Object to clone
+   *
+   * @returns {Object}  Cloned object
+   *
+   */
+
+	}, {
+		key: 'clone',
+		value: function clone(obj) {
+			if (obj === null || (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object' || obj.hasOwnProperty('isActiveClone')) return obj;
+
+			var temp = obj.constructor(); // changed
+
+			for (var key in obj) {
+				if (Object.prototype.hasOwnProperty.call(obj, key)) {
+					obj.isActiveClone = null;
+					temp[key] = Utils.clone(obj[key]);
+					delete obj.isActiveClone;
+				}
+			}
+
+			return temp;
+		}
+
+		/**
+   * @memberOf Utils
+   * @name newPromise
+   * @function
+   * @static
+   *
+   * Returns a `new Promise` object based on the underlying implmentation
+   *
+   * @param {Function} executor - Promise builder function
+   *
+   * @returns {Promise}  Promise object
+   *
+   */
+
+	}, {
+		key: 'newPromise',
+		value: function newPromise(executor) {
+			var simple = Promise || small_promise;
+			if (simple === null) {
+				throw TypeError('Browser is missing Promise implementation. Consider adding small_promise.js polyfill');
+			}
+			return new simple(executor);
+		}
+
+		/**
+   * @memberOf Utils
+   * @name functionBinder
+   * @function
+   * @static
+   *
+   * Limited implementation of Function.bind, with fallback
+   *
+   * @param {Function} inFunc - to setup bind on
+   * @param {Object} thisObj - The this parameter to assume inside the binded function
+   *
+   * @returns {Function}  The binded function
+   *
+   */
+
+	}, {
+		key: 'functionBinder',
+		value: function functionBinder(inFunc, thisObj) {
+			if (inFunc.bind) {
+				return inFunc.bind(thisObj);
+			}
+
+			return function () {
+				var args = arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments);
+				return inFunc.apply(thisObj, args);
+			};
+		}
+
+		/**
+   * @memberOf Utils
+   * @name isArray
+   * @function
+   * @static
+   *
+   * * Checks if is an array or Array-like object
+   *
+   * @param {Object} arg - The argument object to check if is array
+   *
+   * @returns {Boolean}  true if is array or Array-like object
+   *
+   */
+
+	}, {
+		key: 'isArray',
+		value: function isArray(array) {
+			if (isNaN(array.length)) {
+				return false;
+			}
+
+			return true;
+		}
+
+		/**
+   * @memberOf Utils
+   * @name getArgumentType
+   * @function
+   * @static
+   *
+   * Evaluate the argument type, to apply respective logic for it
+   *
+   * @param {Object} arg - The argument object to evaluate type
+   *
+   * @returns {String}  Argument type Array/Number/Float/Texture/Unknown
+   *
+   */
+
+	}, {
+		key: 'getArgumentType',
+		value: function getArgumentType(arg) {
+			if (Utils.isArray(arg)) {
+				if (arg[0].nodeName === 'IMG') {
+					return 'HTMLImageArray';
+				}
+				return 'Array';
+			} else if (typeof arg === 'number') {
+				if (Number.isInteger(arg)) {
+					return 'Integer';
+				}
+				return 'Float';
+			} else if (arg instanceof Texture) {
+				return arg.type;
+			} else if (arg instanceof Input) {
+				return 'Input';
+			} else if (arg.nodeName === 'IMG') {
+				return 'HTMLImage';
+			} else {
+				return 'Unknown';
+			}
+		}
+		/**
+   * @typedef {Object} gpuJSObject
+   */
+
+		/**
+   * @memberOf Utils
+   * @name isFloatReadPixelsSupported
+   * @function
+   * @static
+   *
+   * Checks if the browser supports readPixels with float type
+   *
+   * @returns {Boolean} true if browser supports
+   *
+   */
+
+	}, {
+		key: 'isFloatReadPixelsSupported',
+		value: function isFloatReadPixelsSupported() {
+			if (_isFloatReadPixelsSupported !== null) {
+				return _isFloatReadPixelsSupported;
+			}
+
+			var GPU = require('../index');
+			var gpu = new GPU({
+				mode: 'webgl-validator'
+			});
+			var x = gpu.createKernel(function () {
+				return 1;
+			}, {
+				output: [2],
+				floatTextures: true,
+				floatOutput: true,
+				floatOutputForce: true
+			})();
+
+			_isFloatReadPixelsSupported = x[0] === 1;
+			gpu.destroy();
+			return _isFloatReadPixelsSupported;
+		}
+
+		/**
+   * @memberOf Utils
+   * @name isFloatReadPixelsSupportedWebGL2
+   * @function
+   * @static
+   *
+   * Checks if the browser supports readPixels with float type
+   *
+   * @returns {Boolean} true if browser supports
+   *
+   */
+
+	}, {
+		key: 'isFloatReadPixelsSupportedWebGL2',
+		value: function isFloatReadPixelsSupportedWebGL2() {
+			if (_isFloatReadPixelsSupportedWebGL2 !== null) {
+				return _isFloatReadPixelsSupportedWebGL2;
+			}
+
+			var GPU = require('../index');
+			var gpu = new GPU({
+				mode: 'webgl2-validator'
+			});
+			var x = gpu.createKernel(function () {
+				return 1;
+			}, {
+				output: [2],
+				floatTextures: true,
+				floatOutput: true,
+				floatOutputForce: true
+			})();
+
+			_isFloatReadPixelsSupportedWebGL2 = x[0] === 1;
+			gpu.destroy();
+			return _isFloatReadPixelsSupportedWebGL2;
+		}
+
+		/**
+   * @memberOf Utils
+   * @name hasIntegerDivisionAccuracyBug
+   * @function
+   * @static
+   *
+   * Checks if the system has inaccuracies when dividing integers
+   *
+   * @returns {Boolean} true if bug is exhibited on this system
+   *
+   */
+
+	}, {
+		key: 'hasIntegerDivisionAccuracyBug',
+		value: function hasIntegerDivisionAccuracyBug() {
+			if (_hasIntegerDivisionAccuracyBug !== null) {
+				return _hasIntegerDivisionAccuracyBug;
+			}
+
+			var GPU = require('../index');
+			var gpu = new GPU({
+				mode: 'webgl-validator'
+			});
+			var x = gpu.createKernel(function (v1, v2) {
+				return v1[this.thread.x] / v2[this.thread.x];
+			}, {
+				output: [1]
+			})([6, 6030401], [3, 3991]);
+
+			// have we not got whole numbers for 6/3 or 6030401/3991
+			// add more here if others see this problem
+			_hasIntegerDivisionAccuracyBug = x[0] !== 2 || x[1] !== 1511;
+			gpu.destroy();
+			return _hasIntegerDivisionAccuracyBug;
+		}
+	}, {
+		key: 'isMixedIdentifiersSupported',
+		value: function isMixedIdentifiersSupported() {
+			return _isMixedIdentifiersSupported;
+		}
+	}, {
+		key: 'dimToTexSize',
+		value: function dimToTexSize(opt, dimensions, output) {
+			var numTexels = dimensions[0];
+			var w = dimensions[0];
+			var h = dimensions[1];
+			for (var i = 1; i < dimensions.length; i++) {
+				numTexels *= dimensions[i];
+			}
+
+			if (opt.floatTextures && (!output || opt.floatOutput)) {
+				w = numTexels = Math.ceil(numTexels / 4);
+			}
+			// if given dimensions == a 2d image
+			if (h > 1 && w * h === numTexels) {
+				return [w, h];
+			}
+			// find as close to square width, height sizes as possible
+			var sqrt = Math.sqrt(numTexels);
+			var high = Math.ceil(sqrt);
+			var low = Math.floor(sqrt);
+			while (high * low > numTexels) {
+				high--;
+				low = Math.ceil(numTexels / high);
+			}
+			w = low;
+			h = Math.ceil(numTexels / w);
+			return [w, h];
+		}
+
+		/**
+   * @memberOf Utils
+   * @name getDimensions
+   * @function
+   * @static
+   *
+   * Return the dimension of an array.
+   * 
+   * @param {Array|String} x - The array
+   * @param {number} [pad] - To include padding in the dimension calculation [Optional]
+   *
+   *
+   *
+   */
+
+	}, {
+		key: 'getDimensions',
+		value: function getDimensions(x, pad) {
+			var ret = void 0;
+			if (Utils.isArray(x)) {
+				var dim = [];
+				var temp = x;
+				while (Utils.isArray(temp)) {
+					dim.push(temp.length);
+					temp = temp[0];
+				}
+				ret = dim.reverse();
+			} else if (x instanceof Texture) {
+				ret = x.output;
+			} else if (x instanceof Input) {
+				ret = x.size;
+			} else {
+				throw 'Unknown dimensions of ' + x;
+			}
+
+			if (pad) {
+				ret = Utils.clone(ret);
+				while (ret.length < 3) {
+					ret.push(1);
+				}
+			}
+			// return ret;
+			return new Int32Array(ret);
+		}
+
+		/**
+   * @memberOf Utils
+   * @name pad
+   * @function
+   * @static
+   *
+   * Pad an array AND its elements with leading and ending zeros
+   *
+   * @param {Array} arr - the array to pad zeros to
+   * @param {number} padding - amount of padding
+   *
+   * @returns {Array} Array with leading and ending zeros, and all the elements padded by zeros.
+   *
+   */
+
+	}, {
+		key: 'pad',
+		value: function pad(arr, padding) {
+			function zeros(n) {
+				return Array.apply(null, new Array(n)).map(Number.prototype.valueOf, 0);
+			}
+
+			var len = arr.length + padding * 2;
+
+			var ret = arr.map(function (x) {
+				return [].concat(zeros(padding), x, zeros(padding));
+			});
+
+			for (var i = 0; i < padding; i++) {
+				ret = [].concat([zeros(len)], ret, [zeros(len)]);
+			}
+
+			return ret;
+		}
+
+		/**
+   * @memberOf Utils
+   * @name flatten2dArrayTo
+   * @function
+   * @static
+   *
+   * Puts a nested 2d array into a one-dimensional target array
+   * @param {Array|*} array
+   * @param {Float32Array|Float64Array} target
+   */
+
+	}, {
+		key: 'flatten2dArrayTo',
+		value: function flatten2dArrayTo(array, target) {
+			var offset = 0;
+			for (var y = 0; y < array.length; y++) {
+				target.set(array[y], offset);
+				offset += array[y].length;
+			}
+		}
+
+		/**
+   * @memberOf Utils
+   * @name flatten3dArrayTo
+   * @function
+   * @static
+   *
+   * Puts a nested 3d array into a one-dimensional target array
+   * @param {Array|*} array
+   * @param {Float32Array|Float64Array} target
+   */
+
+	}, {
+		key: 'flatten3dArrayTo',
+		value: function flatten3dArrayTo(array, target) {
+			var offset = 0;
+			for (var z = 0; z < array.length; z++) {
+				for (var y = 0; y < array[z].length; y++) {
+					target.set(array[z][y], offset);
+					offset += array[z][y].length;
+				}
+			}
+		}
+
+		/**
+   * @memberOf Utils
+   * @name flatten3dArrayTo
+   * @function
+   * @static
+   *
+   * Puts a nested 1d, 2d, or 3d array into a one-dimensional target array
+   * @param {Array|*} array
+   * @param {Float32Array|Float64Array} target
+   */
+
+	}, {
+		key: 'flattenTo',
+		value: function flattenTo(array, target) {
+			if (Utils.isArray(array[0])) {
+				if (Utils.isArray(array[0][0])) {
+					Utils.flatten3dArrayTo(array, target);
+				} else {
+					Utils.flatten2dArrayTo(array, target);
+				}
+			} else {
+				target.set(array);
+			}
+		}
+
+		/**
+   * @memberOf Utils
+   * @name splitArray
+   * @function
+   * @static
+   *
+   * Splits an array into smaller arrays.
+   * Number of elements in one small chunk is given by `part`
+   *
+   * @param {Array} array - The array to split into chunks
+   * @param {Array} part - elements in one chunk
+   *
+  	 * @returns {Array} An array of smaller chunks
+   *
+   */
+
+	}, {
+		key: 'splitArray',
+		value: function splitArray(array, part) {
+			var result = [];
+			for (var i = 0; i < array.length; i += part) {
+				result.push(new array.constructor(array.buffer, i * 4 + array.byteOffset, part));
+			}
+			return result;
+		}
+	}, {
+		key: 'getAstString',
+		value: function getAstString(source, ast) {
+			var lines = Array.isArray(source) ? source : source.split(/\r?\n/g);
+			var start = ast.loc.start;
+			var end = ast.loc.end;
+			var result = [];
+			result.push(lines[start.line - 1].slice(start.column));
+			for (var i = start.line; i < end.line - 1; i++) {
+				result.push(lines[i]);
+			}
+			result.push(lines[end.line - 1].slice(0, end.column));
+			return result.join('\n');
+		}
+	}, {
+		key: 'allPropertiesOf',
+		value: function allPropertiesOf(obj) {
+			var props = [];
+
+			do {
+				props.push.apply(props, Object.getOwnPropertyNames(obj));
+			} while (obj = Object.getPrototypeOf(obj));
+
+			return props;
+		}
+	}]);
+
+	return Utils;
+}(UtilsCore);
+
+// This ensure static methods are "inherited"
+// See: https://stackoverflow.com/questions/5441508/how-to-inherit-static-methods-from-base-class-in-javascript
+
+
+Object.assign(Utils, UtilsCore);
+
+module.exports = Utils;
+},{"../index":90,"./input":86,"./texture":87,"./utils-core":88}],90:[function(require,module,exports){
+'use strict';
+
+var GPU = require('./core/gpu');
+var alias = require('./core/alias');
+var utils = require('./core/utils');
+var Input = require('./core/input');
+var Texture = require('./core/texture');
+
+var CPUFunctionBuilder = require('./backend/cpu/function-builder');
+var CPUFunctionNode = require('./backend/cpu/function-node');
+var CPUKernel = require('./backend/cpu/kernel');
+var CPURunner = require('./backend/cpu/runner');
+
+var WebGLFunctionBuilder = require('./backend/web-gl/function-builder');
+var WebGLFunctionNode = require('./backend/web-gl/function-node');
+var WebGLKernel = require('./backend/web-gl/kernel');
+var WebGLRunner = require('./backend/web-gl/runner');
+
+var WebGL2FunctionBuilder = require('./backend/web-gl2/function-builder');
+var WebGL2FunctionNode = require('./backend/web-gl2/function-node');
+var WebGL2Kernel = require('./backend/web-gl2/kernel');
+var WebGL2Runner = require('./backend/web-gl2/runner');
+
+GPU.alias = alias;
+GPU.utils = utils;
+GPU.Texture = Texture;
+GPU.Input = Input;
+GPU.input = function (value, size) {
+	return new Input(value, size);
+};
+
+GPU.CPUFunctionBuilder = CPUFunctionBuilder;
+GPU.CPUFunctionNode = CPUFunctionNode;
+GPU.CPUKernel = CPUKernel;
+GPU.CPURunner = CPURunner;
+
+GPU.WebGLFunctionBuilder = WebGLFunctionBuilder;
+GPU.WebGLFunctionNode = WebGLFunctionNode;
+GPU.WebGLKernel = WebGLKernel;
+GPU.WebGLRunner = WebGLRunner;
+
+GPU.WebGL2FunctionBuilder = WebGL2FunctionBuilder;
+GPU.WebGL2FunctionNode = WebGL2FunctionNode;
+GPU.WebGL2Kernel = WebGL2Kernel;
+GPU.WebGL2Runner = WebGL2Runner;
+
+if (typeof module !== 'undefined') {
+	module.exports = GPU;
+}
+if (typeof window !== 'undefined') {
+	window.GPU = GPU;
+}
+if (typeof self !== 'undefined') {
+	self.GPU = GPU;
+}
+},{"./backend/cpu/function-builder":58,"./backend/cpu/function-node":59,"./backend/cpu/kernel":61,"./backend/cpu/runner":62,"./backend/web-gl/function-builder":75,"./backend/web-gl/function-node":76,"./backend/web-gl/kernel":78,"./backend/web-gl/runner":79,"./backend/web-gl2/function-builder":68,"./backend/web-gl2/function-node":69,"./backend/web-gl2/kernel":70,"./backend/web-gl2/runner":71,"./core/alias":83,"./core/gpu":85,"./core/input":86,"./core/texture":87,"./core/utils":89}],91:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -24436,7 +24514,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],91:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -24461,7 +24539,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],92:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -24484,14 +24562,14 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],93:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],94:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -24539,7 +24617,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 
 
 }).call(this,require('_process'))
-},{"_process":95}],95:[function(require,module,exports){
+},{"_process":96}],96:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -24725,10 +24803,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],96:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 module.exports = require('./lib/_stream_duplex.js');
 
-},{"./lib/_stream_duplex.js":97}],97:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":98}],98:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -24860,7 +24938,7 @@ Duplex.prototype._destroy = function (err, cb) {
 
   pna.nextTick(cb, err);
 };
-},{"./_stream_readable":99,"./_stream_writable":101,"core-util-is":54,"inherits":91,"process-nextick-args":94}],98:[function(require,module,exports){
+},{"./_stream_readable":100,"./_stream_writable":102,"core-util-is":56,"inherits":92,"process-nextick-args":95}],99:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -24908,7 +24986,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":100,"core-util-is":54,"inherits":91}],99:[function(require,module,exports){
+},{"./_stream_transform":101,"core-util-is":56,"inherits":92}],100:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -25930,7 +26008,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./_stream_duplex":97,"./internal/streams/BufferList":102,"./internal/streams/destroy":103,"./internal/streams/stream":104,"_process":95,"core-util-is":54,"events":55,"inherits":91,"isarray":93,"process-nextick-args":94,"safe-buffer":110,"string_decoder/":105,"util":52}],100:[function(require,module,exports){
+},{"./_stream_duplex":98,"./internal/streams/BufferList":103,"./internal/streams/destroy":104,"./internal/streams/stream":105,"_process":96,"core-util-is":56,"events":57,"inherits":92,"isarray":94,"process-nextick-args":95,"safe-buffer":110,"string_decoder/":112,"util":54}],101:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -26145,7 +26223,7 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":97,"core-util-is":54,"inherits":91}],101:[function(require,module,exports){
+},{"./_stream_duplex":98,"core-util-is":56,"inherits":92}],102:[function(require,module,exports){
 (function (process,global,setImmediate){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -26835,7 +26913,7 @@ Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("timers").setImmediate)
-},{"./_stream_duplex":97,"./internal/streams/destroy":103,"./internal/streams/stream":104,"_process":95,"core-util-is":54,"inherits":91,"process-nextick-args":94,"safe-buffer":110,"timers":115,"util-deprecate":116}],102:[function(require,module,exports){
+},{"./_stream_duplex":98,"./internal/streams/destroy":104,"./internal/streams/stream":105,"_process":96,"core-util-is":56,"inherits":92,"process-nextick-args":95,"safe-buffer":110,"timers":116,"util-deprecate":117}],103:[function(require,module,exports){
 'use strict';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -26915,7 +26993,7 @@ if (util && util.inspect && util.inspect.custom) {
     return this.constructor.name + ' ' + obj;
   };
 }
-},{"safe-buffer":110,"util":52}],103:[function(require,module,exports){
+},{"safe-buffer":110,"util":54}],104:[function(require,module,exports){
 'use strict';
 
 /*<replacement>*/
@@ -26990,10 +27068,221 @@ module.exports = {
   destroy: destroy,
   undestroy: undestroy
 };
-},{"process-nextick-args":94}],104:[function(require,module,exports){
+},{"process-nextick-args":95}],105:[function(require,module,exports){
 module.exports = require('events').EventEmitter;
 
-},{"events":55}],105:[function(require,module,exports){
+},{"events":57}],106:[function(require,module,exports){
+module.exports = require('./readable').PassThrough
+
+},{"./readable":107}],107:[function(require,module,exports){
+exports = module.exports = require('./lib/_stream_readable.js');
+exports.Stream = exports;
+exports.Readable = exports;
+exports.Writable = require('./lib/_stream_writable.js');
+exports.Duplex = require('./lib/_stream_duplex.js');
+exports.Transform = require('./lib/_stream_transform.js');
+exports.PassThrough = require('./lib/_stream_passthrough.js');
+
+},{"./lib/_stream_duplex.js":98,"./lib/_stream_passthrough.js":99,"./lib/_stream_readable.js":100,"./lib/_stream_transform.js":101,"./lib/_stream_writable.js":102}],108:[function(require,module,exports){
+module.exports = require('./readable').Transform
+
+},{"./readable":107}],109:[function(require,module,exports){
+module.exports = require('./lib/_stream_writable.js');
+
+},{"./lib/_stream_writable.js":102}],110:[function(require,module,exports){
+/* eslint-disable node/no-deprecated-api */
+var buffer = require('buffer')
+var Buffer = buffer.Buffer
+
+// alternative to using Object.keys for old browsers
+function copyProps (src, dst) {
+  for (var key in src) {
+    dst[key] = src[key]
+  }
+}
+if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
+  module.exports = buffer
+} else {
+  // Copy properties from require('buffer')
+  copyProps(buffer, exports)
+  exports.Buffer = SafeBuffer
+}
+
+function SafeBuffer (arg, encodingOrOffset, length) {
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+// Copy static methods from Buffer
+copyProps(Buffer, SafeBuffer)
+
+SafeBuffer.from = function (arg, encodingOrOffset, length) {
+  if (typeof arg === 'number') {
+    throw new TypeError('Argument must not be a number')
+  }
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+SafeBuffer.alloc = function (size, fill, encoding) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  var buf = Buffer(size)
+  if (fill !== undefined) {
+    if (typeof encoding === 'string') {
+      buf.fill(fill, encoding)
+    } else {
+      buf.fill(fill)
+    }
+  } else {
+    buf.fill(0)
+  }
+  return buf
+}
+
+SafeBuffer.allocUnsafe = function (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  return Buffer(size)
+}
+
+SafeBuffer.allocUnsafeSlow = function (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  return buffer.SlowBuffer(size)
+}
+
+},{"buffer":55}],111:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+module.exports = Stream;
+
+var EE = require('events').EventEmitter;
+var inherits = require('inherits');
+
+inherits(Stream, EE);
+Stream.Readable = require('readable-stream/readable.js');
+Stream.Writable = require('readable-stream/writable.js');
+Stream.Duplex = require('readable-stream/duplex.js');
+Stream.Transform = require('readable-stream/transform.js');
+Stream.PassThrough = require('readable-stream/passthrough.js');
+
+// Backwards-compat with node 0.4.x
+Stream.Stream = Stream;
+
+
+
+// old-style streams.  Note that the pipe method (the only relevant
+// part of this class) is overridden in the Readable class.
+
+function Stream() {
+  EE.call(this);
+}
+
+Stream.prototype.pipe = function(dest, options) {
+  var source = this;
+
+  function ondata(chunk) {
+    if (dest.writable) {
+      if (false === dest.write(chunk) && source.pause) {
+        source.pause();
+      }
+    }
+  }
+
+  source.on('data', ondata);
+
+  function ondrain() {
+    if (source.readable && source.resume) {
+      source.resume();
+    }
+  }
+
+  dest.on('drain', ondrain);
+
+  // If the 'end' option is not supplied, dest.end() will be called when
+  // source gets the 'end' or 'close' events.  Only dest.end() once.
+  if (!dest._isStdio && (!options || options.end !== false)) {
+    source.on('end', onend);
+    source.on('close', onclose);
+  }
+
+  var didOnEnd = false;
+  function onend() {
+    if (didOnEnd) return;
+    didOnEnd = true;
+
+    dest.end();
+  }
+
+
+  function onclose() {
+    if (didOnEnd) return;
+    didOnEnd = true;
+
+    if (typeof dest.destroy === 'function') dest.destroy();
+  }
+
+  // don't leave dangling pipes when there are errors.
+  function onerror(er) {
+    cleanup();
+    if (EE.listenerCount(this, 'error') === 0) {
+      throw er; // Unhandled stream error in pipe.
+    }
+  }
+
+  source.on('error', onerror);
+  dest.on('error', onerror);
+
+  // remove all the event listeners that were added.
+  function cleanup() {
+    source.removeListener('data', ondata);
+    dest.removeListener('drain', ondrain);
+
+    source.removeListener('end', onend);
+    source.removeListener('close', onclose);
+
+    source.removeListener('error', onerror);
+    dest.removeListener('error', onerror);
+
+    source.removeListener('end', cleanup);
+    source.removeListener('close', cleanup);
+
+    dest.removeListener('close', cleanup);
+  }
+
+  source.on('end', cleanup);
+  source.on('close', cleanup);
+
+  dest.on('close', cleanup);
+
+  dest.emit('pipe', source);
+
+  // Allow for unix-like usage: A.pipe(B).pipe(C)
+  return dest;
+};
+
+},{"events":57,"inherits":92,"readable-stream/duplex.js":97,"readable-stream/passthrough.js":106,"readable-stream/readable.js":107,"readable-stream/transform.js":108,"readable-stream/writable.js":109}],112:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -27290,218 +27579,7 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"safe-buffer":110}],106:[function(require,module,exports){
-module.exports = require('./readable').PassThrough
-
-},{"./readable":107}],107:[function(require,module,exports){
-exports = module.exports = require('./lib/_stream_readable.js');
-exports.Stream = exports;
-exports.Readable = exports;
-exports.Writable = require('./lib/_stream_writable.js');
-exports.Duplex = require('./lib/_stream_duplex.js');
-exports.Transform = require('./lib/_stream_transform.js');
-exports.PassThrough = require('./lib/_stream_passthrough.js');
-
-},{"./lib/_stream_duplex.js":97,"./lib/_stream_passthrough.js":98,"./lib/_stream_readable.js":99,"./lib/_stream_transform.js":100,"./lib/_stream_writable.js":101}],108:[function(require,module,exports){
-module.exports = require('./readable').Transform
-
-},{"./readable":107}],109:[function(require,module,exports){
-module.exports = require('./lib/_stream_writable.js');
-
-},{"./lib/_stream_writable.js":101}],110:[function(require,module,exports){
-/* eslint-disable node/no-deprecated-api */
-var buffer = require('buffer')
-var Buffer = buffer.Buffer
-
-// alternative to using Object.keys for old browsers
-function copyProps (src, dst) {
-  for (var key in src) {
-    dst[key] = src[key]
-  }
-}
-if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
-  module.exports = buffer
-} else {
-  // Copy properties from require('buffer')
-  copyProps(buffer, exports)
-  exports.Buffer = SafeBuffer
-}
-
-function SafeBuffer (arg, encodingOrOffset, length) {
-  return Buffer(arg, encodingOrOffset, length)
-}
-
-// Copy static methods from Buffer
-copyProps(Buffer, SafeBuffer)
-
-SafeBuffer.from = function (arg, encodingOrOffset, length) {
-  if (typeof arg === 'number') {
-    throw new TypeError('Argument must not be a number')
-  }
-  return Buffer(arg, encodingOrOffset, length)
-}
-
-SafeBuffer.alloc = function (size, fill, encoding) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  var buf = Buffer(size)
-  if (fill !== undefined) {
-    if (typeof encoding === 'string') {
-      buf.fill(fill, encoding)
-    } else {
-      buf.fill(fill)
-    }
-  } else {
-    buf.fill(0)
-  }
-  return buf
-}
-
-SafeBuffer.allocUnsafe = function (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  return Buffer(size)
-}
-
-SafeBuffer.allocUnsafeSlow = function (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  return buffer.SlowBuffer(size)
-}
-
-},{"buffer":53}],111:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-module.exports = Stream;
-
-var EE = require('events').EventEmitter;
-var inherits = require('inherits');
-
-inherits(Stream, EE);
-Stream.Readable = require('readable-stream/readable.js');
-Stream.Writable = require('readable-stream/writable.js');
-Stream.Duplex = require('readable-stream/duplex.js');
-Stream.Transform = require('readable-stream/transform.js');
-Stream.PassThrough = require('readable-stream/passthrough.js');
-
-// Backwards-compat with node 0.4.x
-Stream.Stream = Stream;
-
-
-
-// old-style streams.  Note that the pipe method (the only relevant
-// part of this class) is overridden in the Readable class.
-
-function Stream() {
-  EE.call(this);
-}
-
-Stream.prototype.pipe = function(dest, options) {
-  var source = this;
-
-  function ondata(chunk) {
-    if (dest.writable) {
-      if (false === dest.write(chunk) && source.pause) {
-        source.pause();
-      }
-    }
-  }
-
-  source.on('data', ondata);
-
-  function ondrain() {
-    if (source.readable && source.resume) {
-      source.resume();
-    }
-  }
-
-  dest.on('drain', ondrain);
-
-  // If the 'end' option is not supplied, dest.end() will be called when
-  // source gets the 'end' or 'close' events.  Only dest.end() once.
-  if (!dest._isStdio && (!options || options.end !== false)) {
-    source.on('end', onend);
-    source.on('close', onclose);
-  }
-
-  var didOnEnd = false;
-  function onend() {
-    if (didOnEnd) return;
-    didOnEnd = true;
-
-    dest.end();
-  }
-
-
-  function onclose() {
-    if (didOnEnd) return;
-    didOnEnd = true;
-
-    if (typeof dest.destroy === 'function') dest.destroy();
-  }
-
-  // don't leave dangling pipes when there are errors.
-  function onerror(er) {
-    cleanup();
-    if (EE.listenerCount(this, 'error') === 0) {
-      throw er; // Unhandled stream error in pipe.
-    }
-  }
-
-  source.on('error', onerror);
-  dest.on('error', onerror);
-
-  // remove all the event listeners that were added.
-  function cleanup() {
-    source.removeListener('data', ondata);
-    dest.removeListener('drain', ondrain);
-
-    source.removeListener('end', onend);
-    source.removeListener('close', onclose);
-
-    source.removeListener('error', onerror);
-    dest.removeListener('error', onerror);
-
-    source.removeListener('end', cleanup);
-    source.removeListener('close', cleanup);
-
-    dest.removeListener('close', cleanup);
-  }
-
-  source.on('end', cleanup);
-  source.on('close', cleanup);
-
-  dest.on('close', cleanup);
-
-  dest.emit('pipe', source);
-
-  // Allow for unix-like usage: A.pipe(B).pipe(C)
-  return dest;
-};
-
-},{"events":55,"inherits":91,"readable-stream/duplex.js":96,"readable-stream/passthrough.js":106,"readable-stream/readable.js":107,"readable-stream/transform.js":108,"readable-stream/writable.js":109}],112:[function(require,module,exports){
+},{"safe-buffer":110}],113:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27641,7 +27719,7 @@ var Block = function () {
 exports.default = Block;
 ;
 
-},{"./":113}],113:[function(require,module,exports){
+},{"./":114}],114:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27668,7 +27746,7 @@ if (typeof window !== 'undefined') {
   window.Thaw.Block = _block2.default;
 }
 
-},{"./block":112,"./thaw":114}],114:[function(require,module,exports){
+},{"./block":113,"./thaw":115}],115:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27913,7 +27991,7 @@ function thaw(items) {
   return new Thaw(items, options);
 }
 
-},{}],115:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 (function (setImmediate,clearImmediate){
 var nextTick = require('process/browser.js').nextTick;
 var apply = Function.prototype.apply;
@@ -27992,7 +28070,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
   delete immediateIds[id];
 };
 }).call(this,require("timers").setImmediate,require("timers").clearImmediate)
-},{"process/browser.js":95,"timers":115}],116:[function(require,module,exports){
+},{"process/browser.js":96,"timers":116}],117:[function(require,module,exports){
 (function (global){
 
 /**
@@ -28063,5 +28141,5 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[50])(50)
+},{}]},{},[51])(51)
 });

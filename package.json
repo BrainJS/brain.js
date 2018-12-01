@@ -35,6 +35,7 @@
   },
   "main": "./index.js",
   "devDependencies": {
+    "fast-xml-parser": "^3.12.9",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.14.0",
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
