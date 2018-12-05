@@ -506,7 +506,7 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 ### `toSVG`
 
 ```js
-<script src="../../src/utilities/svg.js"></script> 
+<script src="../../src/utilities/svg.min.js"></script> 
 ```
 Renders the network topology of a feedforward network
 ```js
