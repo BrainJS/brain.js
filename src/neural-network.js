@@ -116,7 +116,7 @@ export default class NeuralNetwork {
    * @param activation supported inputs: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
    */
   setActivation(activation) {
-    this.activation = (activation) ? activation : this.activation;
+    this.activation = activation ? activation : this.activation;
     switch (this.activation) {
       case 'sigmoid':
         this.runInput = this.runInput || this._runInputSigmoid;
@@ -305,7 +305,12 @@ export default class NeuralNetwork {
    *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
    */
   updateTrainingOptions(options) {
-    Object.keys(this.constructor.trainDefaults).forEach(p => this.trainOpts[p] = (options.hasOwnProperty(p)) ? options[p] : this.trainOpts[p]);
+    const trainDefaults = this.constructor.trainDefaults;
+    for (const p in trainDefaults) {
+      if (!trainDefaults.hasOwnProperty(p)) continue;
+      if (!options.hasOwnProperty(p)) continue;
+      this.trainOpts[p] = options[p];
+    }
     this.validateTrainingOptions(this.trainOpts);
     this.setLogMethod(options.log || this.trainOpts.log);
     this.activation = options.activation || this.activation;
@@ -327,11 +332,13 @@ export default class NeuralNetwork {
       callbackPeriod: (val) => { return typeof val === 'number' && val > 0; },
       timeout: (val) => { return typeof val === 'number' && val > 0 }
     };
-    Object.keys(this.constructor.trainDefaults).forEach(key => {
-      if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
-        throw new Error(`[${key}, ${options[key]}] is out of normal training range, your network will probably not train.`);
+    for (const p in validations) {
+      if (!validations.hasOwnProperty(p)) continue;
+      if (!options.hasOwnProperty(p)) continue;
+      if (!validations[p](options[p])) {
+        throw new Error(`[${p}, ${options[p]}] is out of normal training range, your network will probably not train.`);
       }
-    });
+    }
   }
 
   /**
@@ -956,6 +963,7 @@ export default class NeuralNetwork {
    * @returns {NeuralNetwork}
    */
   fromJSON(json) {
+    Object.assign(this, this.constructor.defaults, json);
     this.sizes = json.sizes;
     this.initialize();
 
@@ -981,7 +989,6 @@ export default class NeuralNetwork {
     if (json.hasOwnProperty('trainOpts')) {
       this.updateTrainingOptions(json.trainOpts);
     }
-    this.setActivation(this.activation || 'sigmoid');
     return this;
   }
 

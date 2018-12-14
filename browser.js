@@ -6,7 +6,7 @@
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Heather Arthur <fayearthur@gmail.com>
  *   homepage: https://github.com/brainjs/brain.js#readme
- *   version: 1.6.0
+ *   version: 1.6.1
  *
  * acorn:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -1538,11 +1538,12 @@ var NeuralNetwork = function () {
   }, {
     key: 'updateTrainingOptions',
     value: function updateTrainingOptions(options) {
-      var _this2 = this;
-
-      Object.keys(this.constructor.trainDefaults).forEach(function (p) {
-        return _this2.trainOpts[p] = options.hasOwnProperty(p) ? options[p] : _this2.trainOpts[p];
-      });
+      var trainDefaults = this.constructor.trainDefaults;
+      for (var p in trainDefaults) {
+        if (!trainDefaults.hasOwnProperty(p)) continue;
+        if (!options.hasOwnProperty(p)) continue;
+        this.trainOpts[p] = options[p];
+      }
       this.validateTrainingOptions(this.trainOpts);
       this.setLogMethod(options.log || this.trainOpts.log);
       this.activation = options.activation || this.activation;
@@ -1585,11 +1586,13 @@ var NeuralNetwork = function () {
           return typeof val === 'number' && val > 0;
         }
       };
-      Object.keys(this.constructor.trainDefaults).forEach(function (key) {
-        if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
-          throw new Error('[' + key + ', ' + options[key] + '] is out of normal training range, your network will probably not train.');
+      for (var p in validations) {
+        if (!validations.hasOwnProperty(p)) continue;
+        if (!options.hasOwnProperty(p)) continue;
+        if (!validations[p](options[p])) {
+          throw new Error('[' + p + ', ' + options[p] + '] is out of normal training range, your network will probably not train.');
         }
-      });
+      }
     }
 
     /**
@@ -1601,11 +1604,11 @@ var NeuralNetwork = function () {
   }, {
     key: 'getTrainOptsJSON',
     value: function getTrainOptsJSON() {
-      var _this3 = this;
+      var _this2 = this;
 
       return Object.keys(this.constructor.trainDefaults).reduce(function (opts, opt) {
-        if (opt === 'timeout' && _this3.trainOpts[opt] === Infinity) return opts;
-        if (_this3.trainOpts[opt]) opts[opt] = _this3.trainOpts[opt];
+        if (opt === 'timeout' && _this2.trainOpts[opt] === Infinity) return opts;
+        if (_this2.trainOpts[opt]) opts[opt] = _this2.trainOpts[opt];
         if (opt === 'log') opts.log = typeof opts.log === 'function';
         return opts;
       }, {});
@@ -1762,7 +1765,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'trainAsync',
     value: function trainAsync(data) {
-      var _this4 = this;
+      var _this3 = this;
 
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -1778,10 +1781,10 @@ var NeuralNetwork = function () {
 
       return new Promise(function (resolve, reject) {
         try {
-          var thawedTrain = new _thaw2.default(new Array(_this4.trainOpts.iterations), {
+          var thawedTrain = new _thaw2.default(new Array(_this3.trainOpts.iterations), {
             delay: true,
             each: function each() {
-              return _this4.trainingTick(data, status, endTime) || thawedTrain.stop();
+              return _this3.trainingTick(data, status, endTime) || thawedTrain.stop();
             },
             done: function done() {
               return resolve(status);
@@ -2115,7 +2118,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'test',
     value: function test(data) {
-      var _this5 = this;
+      var _this4 = this;
 
       data = this.formatData(data);
       // for binary classification problems with one output node
@@ -2133,9 +2136,9 @@ var NeuralNetwork = function () {
         var trueNeg = 0;
 
         var _loop = function _loop(i) {
-          var output = _this5.runInput(data[i].input);
+          var output = _this4.runInput(data[i].input);
           var target = data[i].output;
-          var actual = output[0] > _this5.binaryThresh ? 1 : 0;
+          var actual = output[0] > _this4.binaryThresh ? 1 : 0;
           var expected = target[0];
 
           if (actual !== expected) {
@@ -2182,7 +2185,7 @@ var NeuralNetwork = function () {
       }
 
       var _loop2 = function _loop2(i) {
-        var output = _this5.runInput(data[i].input);
+        var output = _this4.runInput(data[i].input);
         var target = data[i].output;
         var actual = output.indexOf((0, _max2.default)(output));
         var expected = target.indexOf((0, _max2.default)(target));
@@ -2302,6 +2305,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'fromJSON',
     value: function fromJSON(json) {
+      Object.assign(this, this.constructor.defaults, json);
       this.sizes = json.sizes;
       this.initialize();
 
@@ -2326,7 +2330,6 @@ var NeuralNetwork = function () {
       if (json.hasOwnProperty('trainOpts')) {
         this.updateTrainingOptions(json.trainOpts);
       }
-      this.setActivation(this.activation || 'sigmoid');
       return this;
     }
 
@@ -2397,7 +2400,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'isRunnable',
     get: function get() {
-      var _this6 = this;
+      var _this5 = this;
 
       if (!this.runInput) {
         console.error('Activation function has not been initialized, did you run train()?');
@@ -2405,7 +2408,7 @@ var NeuralNetwork = function () {
       }
 
       var checkFns = ['sizes', 'outputLayer', 'biases', 'weights', 'outputs', 'deltas', 'changes', 'errors'].filter(function (c) {
-        return _this6[c] === null;
+        return _this5[c] === null;
       });
 
       if (checkFns.length > 0) {

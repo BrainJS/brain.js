@@ -2,9 +2,8 @@ import assert from 'assert';
 import NeuralNetwork from './../../src/neural-network';
 
 describe('JSON', () => {
-  const originalNet = new NeuralNetwork();
-
-  let trainingOpts = {
+  const originalNet = new NeuralNetwork({ activation: 'leaky-relu' });
+  const trainingOpts = {
     iterations: 200,
     errorThresh: 0.05,
     log: () => {},
@@ -200,7 +199,7 @@ describe('JSON', () => {
 
 
 describe('default net json', () => {
-  const originalNet = new NeuralNetwork();
+  const originalNet = new NeuralNetwork({ activation: 'leaky-relu' });
 
   originalNet.train([
     {
@@ -210,7 +209,7 @@ describe('default net json', () => {
       input: {'0': Math.random(), b: Math.random()},
       output: {c: Math.random(), '0': Math.random()}
     }
-  ]);
+  ], { timeout: 4 });
 
   const serialized = originalNet.toJSON();
   const serializedNet = new NeuralNetwork()
