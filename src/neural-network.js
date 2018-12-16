@@ -275,7 +275,7 @@ export default class NeuralNetwork {
   /**
    *
    * @param data
-   * Verifies network sizes are initilaized
+   * Verifies network sizes are initialized
    * If they are not it will initialize them based off the data set.
    */
   verifyIsInitialized(data) {
@@ -308,8 +308,9 @@ export default class NeuralNetwork {
     const trainDefaults = this.constructor.trainDefaults;
     for (const p in trainDefaults) {
       if (!trainDefaults.hasOwnProperty(p)) continue;
-      if (!options.hasOwnProperty(p)) continue;
-      this.trainOpts[p] = options[p];
+      this.trainOpts[p] = options.hasOwnProperty(p)
+        ? options[p]
+        : trainDefaults[p];
     }
     this.validateTrainingOptions(this.trainOpts);
     this.setLogMethod(options.log || this.trainOpts.log);
@@ -350,6 +351,7 @@ export default class NeuralNetwork {
     return Object.keys(this.constructor.trainDefaults)
       .reduce((opts, opt) => {
         if (opt === 'timeout' && this.trainOpts[opt] === Infinity) return opts;
+        if (opt === 'callback') return opts;
         if (this.trainOpts[opt]) opts[opt] = this.trainOpts[opt];
         if (opt === 'log') opts.log = typeof opts.log === 'function';
         return opts;
@@ -948,7 +950,7 @@ export default class NeuralNetwork {
       }
     }
     return {
-      sizes: this.sizes,
+      sizes: this.sizes.slice(0),
       layers,
       outputLookup: this.outputLookup !== null,
       inputLookup: this.inputLookup !== null,

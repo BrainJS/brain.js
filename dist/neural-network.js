@@ -315,7 +315,7 @@ var NeuralNetwork = function () {
     /**
      *
      * @param data
-     * Verifies network sizes are initilaized
+     * Verifies network sizes are initialized
      * If they are not it will initialize them based off the data set.
      */
 
@@ -356,8 +356,7 @@ var NeuralNetwork = function () {
       var trainDefaults = this.constructor.trainDefaults;
       for (var p in trainDefaults) {
         if (!trainDefaults.hasOwnProperty(p)) continue;
-        if (!options.hasOwnProperty(p)) continue;
-        this.trainOpts[p] = options[p];
+        this.trainOpts[p] = options.hasOwnProperty(p) ? options[p] : trainDefaults[p];
       }
       this.validateTrainingOptions(this.trainOpts);
       this.setLogMethod(options.log || this.trainOpts.log);
@@ -423,6 +422,7 @@ var NeuralNetwork = function () {
 
       return Object.keys(this.constructor.trainDefaults).reduce(function (opts, opt) {
         if (opt === 'timeout' && _this2.trainOpts[opt] === Infinity) return opts;
+        if (opt === 'callback') return opts;
         if (_this2.trainOpts[opt]) opts[opt] = _this2.trainOpts[opt];
         if (opt === 'log') opts.log = typeof opts.log === 'function';
         return opts;
@@ -1102,7 +1102,7 @@ var NeuralNetwork = function () {
         }
       }
       return {
-        sizes: this.sizes,
+        sizes: this.sizes.slice(0),
         layers: layers,
         outputLookup: this.outputLookup !== null,
         inputLookup: this.inputLookup !== null,
