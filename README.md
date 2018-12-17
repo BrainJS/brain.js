@@ -46,6 +46,7 @@
     + [Transform](#transform)
 - [Utilities](#utilities)
     + [`likely`](#likely)
+    + [`toSVG`](#toSVG)
 - [Neural Network Types](#neural-network-types)
     + [Why different Neural Network Types?](#why-different-neural-network-types)
 
@@ -501,6 +502,21 @@ const key = likely(input, net);
 ```
 
 Likely example see: [simple letter detection](./examples/which-letter-simple.js)
+
+### `toSVG`
+
+```js
+<script src="../../src/utilities/svg.min.js"></script> 
+```
+Renders the network topology of a feedforward network
+```js
+document.getElementById('result').innerHTML = brain.utilities.toSVG{network,options)
+```
+
+toSVG example see: [network rendering](./examples/rendering-svg.html)
+
+The user interface used:
+![screenshot1](https://user-images.githubusercontent.com/43925925/48969024-e526ed80-f000-11e8-85bd-e10967cfaee2.png)
 
 # Neural Network Types
 * [`brain.NeuralNetwork`](src/neural-network.js) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation

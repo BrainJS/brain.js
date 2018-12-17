@@ -20,7 +20,8 @@ var utilities = {
   range: require('./dist/utilities/range').default,
   toArray: require('./dist/utilities/to-array').default,
   DataFormatter: require('./dist/utilities/data-formatter').default,
-  zeros: require('./dist/utilities/zeros').default
+  zeros: require('./dist/utilities/zeros').default,
+  toSVG: require('./dist/utilities/to-svg').default
 };
 
 var brain = {
