@@ -1,0 +1,179 @@
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>brain.js network rendering example</title>
+		<meta charset="UTF-8">
+		<style> 
+            .flex-container {
+                display: flex;
+                flex-flow: row wrap;
+                background-color: #f1f1f1;
+            }
+
+            .flex-container > div {
+                background-color: #f1f1f1;
+                margin: 10px;
+                padding: 20px 0px 30px 50px;
+                font-size: 20px;
+            }
+            .flex-container2 {
+                display: flex;
+                justify-content: space-between;
+                background-color: #f1f1f1;
+            }
+
+            .flex-container2 > div {
+                background-color: #f1f1f1;
+                margin: 0px;
+                padding: 4px;
+                font-size: 20px;
+            }
+
+            .formWrapper{
+                margin: 0 auto;
+                max-width: 200px;
+                padding: 15px;
+                align-self: flex-start
+            }
+
+            .inputWrapper{
+                padding: 0 0 10px 0;
+            }
+            
+            .inputLabel{
+                padding: 0 0 5px 0;
+                color: #808080;
+            }
+            .numeric{
+                text-align: right;
+                width: 50px;
+            }
+
+            button{
+                background-color: rgb(0, 75, 0);
+                color: #fff;
+                border-radius: 10px;
+                text-transform: uppercase;
+                font-weight: bold;
+                text-align: center;
+                display: inline-block;
+                padding: 15px;
+                width: 150px;
+                cursor: pointer;
+            }
+            button:hover,button:active,button:visited{
+                background-color: green;
+            }
+        </style>
+		<script src="../browser.min.js"></script>
+	</head>
+	<body >
+		<div class="flex-container">
+			<div class="formWrapper" style="flex-grow: 1;width:400px">
+				<form id="network-settings" action="" method="POST">
+					<div class="inputWrapper">
+						<div class="inputLabel">Network size</div>
+						<input type="text" name="size" placeholder="" value="10,8,6,2"/> 
+					</div>
+					<div class="flex-container2">
+						<div class="inputWrapper">
+							<div class="inputLabel">Height</div>
+							<input type="text" class="numeric" name="height" placeholder="Height" value="400"/> 
+						</div>
+						<div class="inputWrapper">
+							<div class="inputLabel">Width</div>
+							<input type="text" class="numeric" name="width" placeholder="Width" value="600"/> 
+						</div>
+					</div>
+					<div class="flex-container2">
+						<div class="inputWrapper">
+							<div class="inputLabel">Neuron radius</div>
+							<input type="text" name="radius" class="numeric" placeholder="in pixels" value="6"/> 
+						</div>
+					</div>
+					<div class="inputWrapper">
+						<div class="inputLabel">Inputs color</div>
+						<input type="text" name="inp-color" placeholder="" value="rgba(0, 128, 0, 0.5)"/> 
+					</div>
+					<div class="inputWrapper">
+						<div class="inputLabel">Hidden color</div>
+						<input type="text" name="hid-color" placeholder="" value="rgba(255, 127, 80, 0.5)"/> 
+					</div>
+					<div class="inputWrapper">
+						<div class="inputLabel">Outputs color</div>
+						<input type="text" name="out-color" placeholder="" value="rgba(100, 149, 237, 0.5)"/> 
+					</div>
+					<div class="inputWrapper">
+						<div class="inputLabel">Line width</div>
+						<input type="text" class="numeric" name="lineWidth" placeholder="number" value="0.5"/> 
+					</div>
+					<div class="inputWrapper">
+						<div class="inputLabel">Line color</div>
+						<input type="text" name="lineColor" placeholder="css color" value="black"/> 
+					</div>
+					<div class="inputWrapper">
+						<div class="inputLabel">Font size</div>
+						<input type="text" name="fontSize" placeholder="size in px" value="14px"/> 
+					</div>
+					<div class="inputWrapper">
+						<div class="inputLabel">Inputs' labels</div>
+						<textarea rows="3" name="inp-labels" cols="23" placeholder="inputs' labels seperated by commas"></textarea>
+					</div>
+					<div class="inputWrapper ctaWrapper">
+						<button id="submit" type="submit">Render</button>
+					</div>
+				</form>
+			</div style="flex-grow: 2">
+			<div id="result" style="padding-top:100px;padding-left: 100px">					
+			</div>
+		</div>
+	
+		
+		<script>
+			document.getElementById('network-settings').addEventListener("submit", function(e){
+				// Stop it from submitting
+				e.preventDefault();
+				const size = this.elements.namedItem("size").value.split(",").map((item)=> {
+					return parseInt(item, 10);
+				});
+				const config = {
+					inputSize: size[0],
+					inputRange: size[0],
+					hiddenLayers: size.slice(1,size.length-1),
+					outputSize: size[size.length-1]
+				};
+				const network = new brain.NeuralNetwork(config);
+				const options = constructOptions(this);
+				
+                document.getElementById('result').innerHTML=brain.utilities.toSVG(network,options);
+			});
+
+			function constructOptions(form){
+				const options={}
+				options.height = Number(form.elements.namedItem("height").value)
+				options.width = Number(form.elements.namedItem("width").value)
+				options.radius = Number(form.elements.namedItem("radius").value)
+				options.line = {}
+				options.inputs = {}
+				options.hidden = {}
+				options.outputs = {}
+				options.line.width = Number(form.elements.namedItem("lineWidth").value)
+				options.line.color = form.elements.namedItem("lineColor").value
+				options.inputs.color = form.elements.namedItem("inp-color").value
+				options.hidden.color = form.elements.namedItem("hid-color").value
+				options.outputs.color = form.elements.namedItem("out-color").value
+				options.fontSize = form.elements.namedItem("fontSize").value
+
+				tempInpLabels = form.elements.namedItem("inp-labels").value
+				options.inputs.label = []
+				tempInpLabels.split(',').forEach(element => options.inputs.label.push(element))
+
+				return options
+			}
+
+			// Click programmatically
+			document.getElementById('submit').click();
+		</script>
+	</body>
+</html>
