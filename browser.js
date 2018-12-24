@@ -746,7 +746,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       this.runInput(value.input);
 
       // back propagate
-      this.calculateDeltas(value.target);
+      this.calculateDeltas(value.output);
       this.adjustWeights();
 
       if (logErrorRate) {

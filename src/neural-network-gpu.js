@@ -48,7 +48,7 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     this.runInput(value.input);
 
     // back propagate
-    this.calculateDeltas(value.target);
+    this.calculateDeltas(value.output);
     this.adjustWeights();
 
     if (logErrorRate) {
