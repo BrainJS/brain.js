@@ -2,187 +2,603 @@ import assert from 'assert';
 import NeuralNetwork from './../../src/neural-network';
 
 describe('JSON', () => {
-  const originalNet = new NeuralNetwork();
+  describe('.toJSON() serialization', () => {
+    describe('json.sizes', () => {
+      it('copies json.sizes correctly [1,2,3]', () => {
+        const net = new NeuralNetwork();
+        net.sizes = [1,2,3];
+        const json = net.toJSON();
+        assert.deepEqual(json.sizes, [1,2,3]);
+      });
+      it('copies json.sizes correctly [3,2,1]', () => {
+        const net = new NeuralNetwork();
+        net.sizes = [3,2,1];
+        const json = net.toJSON();
+        assert.deepEqual(json.sizes, [3,2,1]);
+      });
+    });
 
-  let trainingOpts = {
-    iterations: 200,
-    errorThresh: 0.05,
-    log: () => {},
-    logPeriod: 3,
-    learningRate: 0.03,
-    momentum: 0.01,
-    callbackPeriod: 5,
-    timeout: 3000
-  };
-  originalNet.train([
-    {
-      input: {'0': Math.random(), b: Math.random()},
-      output: {c: Math.random(), '0': Math.random()}
-    }, {
-      input: {'0': Math.random(), b: Math.random()},
-      output: {c: Math.random(), '0': Math.random()}
-    }
-  ], trainingOpts);
-
-  trainingOpts.log = true;
-
-  const serialized = originalNet.toJSON();
-  const serializedNet = new NeuralNetwork()
-    .fromJSON(
-      JSON.parse(
-        JSON.stringify(serialized)
-      )
-    );
-
-  const input = {'0' : Math.random(), b: Math.random()};
-  describe('.toJSON()', () => {
-    describe('.layers', () => {
-
-      it('layer count is correct', () => {
-        assert.equal(serialized.layers.length, 3);
-        originalNet.sizes.forEach((size, i) => {
-          assert.equal(size, Object.keys(serialized.layers[i]).length);
+    describe('json.layers[0] (input layer)', () => {
+      describe('as array', () => {
+        it('describes it with integer keys', () => {
+          const net = new NeuralNetwork();
+          net.sizes = [3];
+          const json = net.toJSON();
+          assert.deepEqual(json.layers[0], { 0: {}, 1: {}, 2: {} });
         });
       });
-
-      describe('input layer', () => {
-        const inputLayer = serialized.layers[0];
-        it('is empty, but describes input', () => {
-          const keys = Object.keys(inputLayer);
-          assert(keys.length === 2);
-          assert(inputLayer.hasOwnProperty('0'));
-          assert(inputLayer.hasOwnProperty('b'));
-          assert(Object.keys(inputLayer['0']).length === 0);
-          assert(Object.keys(inputLayer['b']).length === 0);
-        });
-      });
-
-      describe('hidden layers', () => {
-        it('are populated exactly from original net', () => {
-          assert.equal(serialized.layers[1][0].bias, originalNet.biases[1][0]);
-          assert.equal(serialized.layers[1][1].bias, originalNet.biases[1][1]);
-          assert.equal(serialized.layers[1][2].bias, originalNet.biases[1][2]);
-          assert.equal(serialized.layers[2]['0'].bias, originalNet.biases[2][0]);
-          assert.equal(serialized.layers[2]['c'].bias, originalNet.biases[2][1]);
+      describe('as object', () => {
+        it('describes it with string keys', () => {
+          const net = new NeuralNetwork();
+          net.inputLookup = { zero: 0, one: 1, two: 2 };
+          net.inputLookupLength = 3;
+          net.sizes = [];
+          const json = net.toJSON();
+          assert.deepEqual(json.layers[0], { zero: {}, one: {}, two: {} });
         });
       });
     });
 
-    describe('.activation', () => {
-      it('exports correctly', () => {
-        assert.equal(serialized.activation, originalNet.activation);
+    describe('hidden layers', () => {
+      it('copies biases correctly', () => {
+        const net = new NeuralNetwork({ hiddenLayers: [3] });
+        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        const json = net.toJSON();
+        assert.equal(Object.keys(json.layers[1]).length, net.biases[1].length);
+        assert.equal(json.layers[1][0].bias, net.biases[1][0]);
+        assert.equal(json.layers[1][1].bias, net.biases[1][1]);
+        assert.equal(json.layers[1][2].bias, net.biases[1][2]);
+      });
+      it('copies weights correctly', () => {
+        const net = new NeuralNetwork({ hiddenLayers: [3] });
+        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        const json = net.toJSON();
+        assert.equal(Object.keys(json.layers[1]).length, net.weights[1].length);
+        assert.deepEqual(json.layers[1][0].weights, net.weights[1][0]);
+        assert.deepEqual(json.layers[1][1].weights, net.weights[1][1]);
+        assert.deepEqual(json.layers[1][2].weights, net.weights[1][2]);
+      });
+    });
+
+    describe('output layer', () => {
+      it('copies biases correctly', () => {
+        const net = new NeuralNetwork({ hiddenLayers: [3] });
+        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        const json = net.toJSON();
+        assert.equal(Object.keys(json.layers[2]).length, net.biases[2].length);
+        assert.equal(json.layers[2][0].bias, net.biases[2][0]);
+        assert.equal(json.layers[2][1].bias, net.biases[2][1]);
+        assert.equal(json.layers[2][2].bias, net.biases[2][2]);
+      });
+      it('copies weights correctly', () => {
+        const net = new NeuralNetwork({ hiddenLayers: [3] });
+        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        const json = net.toJSON();
+        assert.equal(Object.keys(json.layers[2]).length, net.weights[2].length);
+        assert.deepEqual(json.layers[2][0].weights, net.weights[2][0]);
+        assert.deepEqual(json.layers[2][1].weights, net.weights[2][1]);
+        assert.deepEqual(json.layers[2][2].weights, net.weights[2][2]);
+      });
+    });
+
+    describe('json.activation', () => {
+      it('exports default correctly', () => {
+        const net = new NeuralNetwork();
+        net.sizes = [];
+        assert.equal(net.activation, NeuralNetwork.defaults.activation);
+        const json = net.toJSON();
+        assert.equal(json.activation, NeuralNetwork.defaults.activation);
+      });
+      it('exports non-default correctly', () => {
+        const net = new NeuralNetwork({ activation: 'leaky-relu' });
+        net.sizes = [];
+        assert.equal(net.activation, 'leaky-relu');
+        const json = net.toJSON();
+        assert.equal(json.activation, 'leaky-relu');
       });
     });
 
     describe('.trainOpts', () => {
-      it('training options iterations', () => {
-        assert.equal(trainingOpts.iterations, serialized.trainOpts.iterations, `trainingOpts are: ${trainingOpts.iterations} serialized should be the same but are: ${serialized.trainOpts.iterations}`);
+      describe('.iterations', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.iterations, NeuralNetwork.trainDefaults.iterations);
+        });
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { iterations: 3 });
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.iterations, 3);
+        });
       });
 
-      it('training options errorThresh', () => {
-        assert.equal(trainingOpts.errorThresh, serialized.trainOpts.errorThresh, `trainingOpts are: ${trainingOpts.errorThresh} serialized should be the same but are: ${serialized.trainOpts.errorThresh}`);
+      describe('.errorThresh', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.errorThresh, NeuralNetwork.trainDefaults.errorThresh);
+        });
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { errorThresh: 0.05 });
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.errorThresh, 0.05);
+        });
       });
 
-      it('training options log', () => {
-        assert.equal(trainingOpts.log, serialized.trainOpts.log, `log are: ${trainingOpts.log} serialized should be the same but are: ${serialized.trainOpts.log}`);
+      describe('.log', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.log, NeuralNetwork.trainDefaults.log);
+        });
+        it('copies custom value when defined as boolean', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          const log = true;
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { log });
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.log, log);
+        });
+        it('uses `true` when used with a custom function', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          const log = () => {};
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { log });
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.log, true);
+        });
       });
 
-      it('training options logPeriod', () => {
-        assert.equal(trainingOpts.logPeriod, serialized.trainOpts.logPeriod, `trainingOpts are: ${trainingOpts.logPeriod} serialized should be the same but are: ${serialized.trainOpts.logPeriod}`);
+      describe('.logPeriod', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.logPeriod, NeuralNetwork.trainDefaults.logPeriod);
+        });
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { logPeriod: 4 });
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.logPeriod, 4);
+        });
       });
 
-      it('training options learningRate', () => {
-        assert.equal(trainingOpts.learningRate, serialized.trainOpts.learningRate, `trainingOpts are: ${trainingOpts.learningRate} serialized should be the same but are: ${serialized.trainOpts.learningRate}`);
+      describe('.learningRate', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.learningRate, NeuralNetwork.trainDefaults.learningRate);
+        });
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { learningRate: 0.72 });
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.learningRate, 0.72);
+        });
       });
 
-      it('training options momentum', () => {
-        assert.equal(trainingOpts.momentum, serialized.trainOpts.momentum, `trainingOpts are: ${trainingOpts.momentum} serialized should be the same but are: ${serialized.trainOpts.momentum}`);
+      describe('.momentum', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.momentum, NeuralNetwork.trainDefaults.momentum);
+        });
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { momentum: 0.313 });
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.momentum, 0.313);
+        });
       });
 
-      it('training options callback', () => {
-        assert.equal(trainingOpts.callback, serialized.trainOpts.callback, `trainingOpts are: ${trainingOpts.callback} serialized should be the same but are: ${serialized.trainOpts.callback}`);
+      describe('.callback', () => {
+        it('does not copy', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.callback, undefined);
+        });
+        it('does not copy when used with custom value', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          const callback = () => {};
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { callback });
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.callback, undefined);
+        });
       });
 
-      it('training options callbackPeriod', () => {
-        assert.equal(trainingOpts.callbackPeriod, serialized.trainOpts.callbackPeriod, `trainingOpts are: ${trainingOpts.callbackPeriod} serialized should be the same but are: ${serialized.trainOpts.callbackPeriod}`);
+      describe('.callbackPeriod', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.callbackPeriod, NeuralNetwork.trainDefaults.callbackPeriod);
+        });
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { callbackPeriod: 50 });
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.callbackPeriod, 50);
+        });
       });
 
-      it('training options timeout', () => {
-        assert.equal(trainingOpts.timeout, serialized.trainOpts.timeout, `trainingOpts are: ${trainingOpts.timeout} serialized should be the same but are: ${serialized.trainOpts.timeout}`);
+      describe('.timeout', () => {
+        it('uses undefined in place of Infinity when no value used for default value', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          assert.equal(NeuralNetwork.trainDefaults.timeout, Infinity);
+          assert.equal(json.trainOpts.timeout, undefined);
+        });
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { timeout: 50 });
+          const json = net.toJSON();
+          assert.equal(json.trainOpts.timeout, 50);
+        });
+      });
+    });
+  });
+
+  describe('.fromJSON() deserialization', () => {
+    describe('json.sizes', () => {
+      it('copies json.sizes correctly [1,2,3]', () => {
+        const net = new NeuralNetwork();
+        net.sizes = [1,2,3];
+        net.initialize();
+        const json = net.toJSON();
+        const newNet = new NeuralNetwork()
+          .fromJSON(json);
+        assert.deepEqual(newNet.sizes, [1,2,3]);
+      });
+      it('copies json.sizes correctly [3,2,1]', () => {
+        const net = new NeuralNetwork();
+        net.sizes = [3,2,1];
+        net.initialize();
+        const json = net.toJSON();
+        const newNet = new NeuralNetwork()
+          .fromJSON(json);
+        assert.deepEqual(newNet.sizes, [3,2,1]);
       });
     });
 
-  });
-
-  describe('.fromJSON()', () => {
-    describe('importing values', () => {
-      describe('.layers', () => {
-        it('layer count is correct', () => {
-          assert.equal(serializedNet.biases.length, 3);
-          assert.equal(serializedNet.biases['1'].length, 3);
-          assert.equal(serializedNet.weights.length, 3);
+    describe('json.layers[0] (input layer)', () => {
+      describe('as array', () => {
+        it('describes it with integer keys', () => {
+          const net = new NeuralNetwork();
+          net.sizes = [3];
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.deepEqual(newNet.layers[0], { 0: {}, 1: {}, 2: {} });
         });
+      });
+      describe('as object', () => {
+        it('describes it with string keys', () => {
+          const net = new NeuralNetwork();
+          net.inputLookup = { zero: 0, one: 1, two: 2 };
+          net.inputLookupLength = 3;
+          net.sizes = [];
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.deepEqual(newNet.layers[0], { zero: {}, one: {}, two: {} });
+        });
+      });
+    });
 
-        describe('hidden layers', () => {
-          it('are populated exactly from serialized', () => {
-            assert.equal(serializedNet.biases[1][0], serialized.layers[1][0].bias);
-            assert.equal(serializedNet.biases[1][1], serialized.layers[1][1].bias);
-            assert.equal(serializedNet.biases[1][2], serialized.layers[1][2].bias);
-            assert.equal(serializedNet.biases[2][0], serialized.layers[2]['0'].bias);
-            assert.equal(serializedNet.biases[2][1], serialized.layers[2]['c'].bias);
-          });
+    describe('hidden layers', () => {
+      it('copies biases correctly', () => {
+        const net = new NeuralNetwork({ hiddenLayers: [3] });
+        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        const json = net.toJSON();
+        const newNet = new NeuralNetwork()
+          .fromJSON(json);
+        assert.equal(newNet.biases[1].length, net.biases[1].length);
+        assert.equal(newNet.biases[1][0], net.biases[1][0]);
+        assert.equal(newNet.biases[1][1], net.biases[1][1]);
+        assert.equal(newNet.biases[1][2], net.biases[1][2]);
+      });
+      it('copies weights correctly', () => {
+        const net = new NeuralNetwork({ hiddenLayers: [3] });
+        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        const json = net.toJSON();
+        const newNet = new NeuralNetwork()
+          .fromJSON(json);
+        assert.equal(newNet.weights[1].length, net.weights[1].length);
+        assert.deepEqual(newNet.weights[1][0], net.weights[1][0]);
+        assert.deepEqual(newNet.weights[1][1], net.weights[1][1]);
+        assert.deepEqual(newNet.weights[1][2], net.weights[1][2]);
+      });
+    });
+
+    describe('output layer', () => {
+      it('copies biases correctly', () => {
+        const net = new NeuralNetwork({ hiddenLayers: [3] });
+        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        const json = net.toJSON();
+        const newNet = new NeuralNetwork()
+          .fromJSON(json);
+        assert.equal(newNet.biases[2].length, net.biases[2].length);
+        assert.equal(newNet.biases[2][0], net.biases[2][0]);
+        assert.equal(newNet.biases[2][1], net.biases[2][1]);
+        assert.equal(newNet.biases[2][2], net.biases[2][2]);
+      });
+      it('copies weights correctly', () => {
+        const net = new NeuralNetwork({ hiddenLayers: [3] });
+        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        const json = net.toJSON();
+        const newNet = new NeuralNetwork()
+          .fromJSON(json);
+        assert.equal(newNet.weights[2].length, net.weights[2].length);
+        assert.deepEqual(newNet.weights[2][0], net.weights[2][0]);
+        assert.deepEqual(newNet.weights[2][1], net.weights[2][1]);
+        assert.deepEqual(newNet.weights[2][2], net.weights[2][2]);
+      });
+    });
+
+    describe('json.activation', () => {
+      it('exports default correctly', () => {
+        const net = new NeuralNetwork();
+        net.sizes = [];
+        assert.equal(net.activation, NeuralNetwork.defaults.activation);
+        const json = net.toJSON();
+        const newNet = new NeuralNetwork()
+          .fromJSON(json);
+        assert.equal(newNet.activation, NeuralNetwork.defaults.activation);
+      });
+      it('exports non-default correctly', () => {
+        const net = new NeuralNetwork({ activation: 'leaky-relu' });
+        net.sizes = [];
+        assert.equal(net.activation, 'leaky-relu');
+        const json = net.toJSON();
+        const newNet = new NeuralNetwork()
+          .fromJSON(json);
+        assert.equal(newNet.activation, 'leaky-relu');
+      });
+    });
+
+    describe('.trainOpts', () => {
+      describe('.iterations', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.iterations, NeuralNetwork.trainDefaults.iterations);
+        });
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { iterations: 3 });
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.iterations, 3);
         });
       });
 
-      describe('.activation', () => {
-        it('exports correctly', () => {
-          assert.equal(serializedNet.activation, serialized.activation);
+      describe('.errorThresh', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.errorThresh, NeuralNetwork.trainDefaults.errorThresh);
+        });
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { errorThresh: 0.05 });
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.errorThresh, 0.05);
         });
       });
 
-      describe('.trainOpts', () => {
-        it('training options iterations', () => {
-          assert.equal(trainingOpts.iterations, serializedNet.trainOpts.iterations, `trainingOpts are: ${trainingOpts.iterations} serializedNet should be the same but are: ${serializedNet.trainOpts.iterations}`);
+      describe('.log', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.log, NeuralNetwork.trainDefaults.log);
         });
-
-        it('training options errorThresh', () => {
-          assert.equal(trainingOpts.errorThresh, serializedNet.trainOpts.errorThresh, `trainingOpts are: ${trainingOpts.errorThresh} serializedNet should be the same but are: ${serializedNet.trainOpts.errorThresh}`);
+        it('uses console.log for `true`', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          const log = true;
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { log });
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.log, console.log);
         });
-
-        it('training options log', () => {
-          // Should have inflated to console.log
-          assert.equal(console.log, serializedNet.trainOpts.log, `log are: ${trainingOpts.log} serializedNet should be the same but are: ${serializedNet.trainOpts.log}`);
+        it('reverts to console.log when used with custom function', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          const log = () => {};
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { log });
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.log, console.log);
         });
+      });
 
-        it('training options logPeriod', () => {
-          assert.equal(trainingOpts.logPeriod, serializedNet.trainOpts.logPeriod, `trainingOpts are: ${trainingOpts.logPeriod} serializedNet should be the same but are: ${serializedNet.trainOpts.logPeriod}`);
+      describe('.logPeriod', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.logPeriod, NeuralNetwork.trainDefaults.logPeriod);
         });
-
-        it('training options learningRate', () => {
-          assert.equal(trainingOpts.learningRate, serializedNet.trainOpts.learningRate, `trainingOpts are: ${trainingOpts.learningRate} serializedNet should be the same but are: ${serializedNet.trainOpts.learningRate}`);
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { logPeriod: 4 });
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.logPeriod, 4);
         });
+      });
 
-        it('training options momentum', () => {
-          assert.equal(trainingOpts.momentum, serializedNet.trainOpts.momentum, `trainingOpts are: ${trainingOpts.momentum} serializedNet should be the same but are: ${serializedNet.trainOpts.momentum}`);
+      describe('.learningRate', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.learningRate, NeuralNetwork.trainDefaults.learningRate);
         });
-
-        it('training options callback', () => {
-          assert.equal(trainingOpts.callback, serializedNet.trainOpts.callback, `trainingOpts are: ${trainingOpts.callback} serializedNet should be the same but are: ${serializedNet.trainOpts.callback}`);
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { learningRate: 0.72 });
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.learningRate, 0.72);
         });
+      });
 
-        it('training options callbackPeriod', () => {
-          assert.equal(trainingOpts.callbackPeriod, serializedNet.trainOpts.callbackPeriod, `trainingOpts are: ${trainingOpts.callbackPeriod} serializedNet should be the same but are: ${serializedNet.trainOpts.callbackPeriod}`);
+      describe('.momentum', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.momentum, NeuralNetwork.trainDefaults.momentum);
         });
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { momentum: 0.313 });
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.momentum, 0.313);
+        });
+      });
 
-        it('training options timeout', () => {
-          assert.equal(trainingOpts.timeout, serializedNet.trainOpts.timeout, `trainingOpts are: ${trainingOpts.timeout} serializedNet should be the same but are: ${serializedNet.trainOpts.timeout}`);
+      describe('.callback', () => {
+        it('does not copy', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.callback, undefined);
+        });
+        it('does not copy when used with custom value', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          const callback = () => {};
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { callback });
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.callback, undefined);
+        });
+      });
+
+      describe('.callbackPeriod', () => {
+        it('copies default value when no value used', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.callbackPeriod, NeuralNetwork.trainDefaults.callbackPeriod);
+        });
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { callbackPeriod: 50 });
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.callbackPeriod, 50);
+        });
+      });
+
+      describe('.timeout', () => {
+        it('uses undefined in place of Infinity when no value used for default value', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }]);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(NeuralNetwork.trainDefaults.timeout, Infinity);
+          assert.equal(newNet.trainOpts.timeout, Infinity);
+        });
+        it('copies custom value when defined', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [2] });
+          net.trainingTick = () => {};
+          net.train([{ input: [], output: [] }], { timeout: 50 });
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork()
+            .fromJSON(json);
+          assert.equal(newNet.trainOpts.timeout, 50);
         });
       });
     });
 
     it('can run originalNet, and serializedNet, with same output', () => {
-      const output1 = originalNet.run(input);
-      const output2 = serializedNet.run(input);
+      const net = new NeuralNetwork({ hiddenLayers: [3] });
+      net.train([
+        { input: [1,1,1], output: [1,1,1] }
+      ], {
+        iterations: 3
+      });
+      const input = [1,1,1];
+      const json = net.toJSON();
+      const newNet = new NeuralNetwork().fromJSON(json);
+      const output1 = net.run(input);
+      const output2 = newNet.run(input);
       assert.deepEqual(output2, output1,
         'loading json serialized network failed');
     });
@@ -200,7 +616,7 @@ describe('JSON', () => {
 
 
 describe('default net json', () => {
-  const originalNet = new NeuralNetwork();
+  const originalNet = new NeuralNetwork({ activation: 'leaky-relu' });
 
   originalNet.train([
     {
@@ -210,7 +626,7 @@ describe('default net json', () => {
       input: {'0': Math.random(), b: Math.random()},
       output: {c: Math.random(), '0': Math.random()}
     }
-  ]);
+  ], { timeout: 4 });
 
   const serialized = originalNet.toJSON();
   const serializedNet = new NeuralNetwork()
@@ -275,5 +691,5 @@ describe('default net json', () => {
     };
     net.fromJSON({ sizes: [], layers: [] });
     assert(net.activation === 'sigmoid');
-  })
-})
+  });
+});
