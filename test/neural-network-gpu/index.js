@@ -108,4 +108,52 @@ describe('NeuralNetworkGPU', () => {
       assert.deepEqual(output, target);
     });
   });
+
+  describe('.trainPattern()', () => {
+    describe('when called with logErrorRate = falsey', () => {
+      it('calls .runInput(), .calculateDeltas(), and .adjustWeights()', () => {
+        const net = new NeuralNetworkGPU();
+        net.runInput = sinon.stub();
+        net.calculateDeltas = sinon.stub();
+        net.adjustWeights = sinon.stub();
+        net.getMSE = sinon.stub();
+
+        net.trainPattern({ input: 'input', output: 'output' });
+
+        assert.ok(net.runInput.called);
+        assert.equal(net.runInput.args[0], 'input');
+
+        assert.ok(net.calculateDeltas.called);
+        assert.equal(net.calculateDeltas.args[0], 'output');
+
+        assert.ok(net.adjustWeights.called);
+
+        assert.ok(net.getMSE.called === false);
+      });
+    });
+    describe('when called with logErrorRate = truthy', () => {
+      it('calls .runInput(), .calculateDeltas(), and .adjustWeights()', () => {
+        const net = new NeuralNetworkGPU();
+        net.runInput = sinon.stub();
+        net.calculateDeltas = sinon.stub();
+        net.adjustWeights = sinon.stub();
+        net.getMSE = sinon.stub();
+        net.getMSE.returns([1]);
+        net.outputLayer = 0;
+        net.errors = { '0': {} };
+
+        net.trainPattern({ input: 'input', output: 'output' }, true);
+
+        assert.ok(net.runInput.called);
+        assert.equal(net.runInput.args[0], 'input');
+
+        assert.ok(net.calculateDeltas.called);
+        assert.equal(net.calculateDeltas.args[0], 'output');
+
+        assert.ok(net.adjustWeights.called);
+
+        assert.ok(net.getMSE.called);
+      });
+    });
+  });
 });
