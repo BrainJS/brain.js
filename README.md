@@ -545,7 +545,7 @@ Create issues [here](https://github.com/BrainJS/brain.js/issues) and follow the 
 ### Contributors
 
 This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
-<a href="graphs/contributors"><img src="https://opencollective.com/brainjs/contributors.svg?width=890&button=false" /></a>
+<a href="/BrainJS/brain.js/graphs/contributors"><img src="https://opencollective.com/brainjs/contributors.svg?width=890&button=false" /></a>
 
 
 ### Backers
