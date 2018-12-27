@@ -12,7 +12,7 @@
 
 `brain.js` is a library of [Neural Networks](http://en.wikipedia.org/wiki/Artificial_neural_network) written in JavaScript.
 
-**NEW!** ![A fun and practical introduction to Brain.js](https://scrimba.com/g/gneuralnetworks)
+**NEW!** [A fun and practical introduction to Brain.js](https://scrimba.com/g/gneuralnetworks)
 
 :bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
 
