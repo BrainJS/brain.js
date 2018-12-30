@@ -512,7 +512,7 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 ```
 Renders the network topology of a feedforward network
 ```js
-document.getElementById('result').innerHTML = brain.utilities.toSVG(network, options)
+document.getElementById('result').innerHTML = brain.utilities.toSVG(network,options)
 ```
 
 toSVG example see: [network rendering](./examples/rendering-svg.html)
