@@ -26,6 +26,7 @@ And since supporting doesn't require much effort and still can make a hudge diff
 ### Links
 
 Get involved into W3C machine learning ongoing standardization proces [here](https://www.w3.org/community/webmachinelearning/).
+
 You can also join our open discussion about standardization [here](https://github.com/BrainJS/brain.js/issues/337).
 
 ## Table of Contents
