@@ -18,9 +18,9 @@ const net = new LSTM();
 const mathProblems = [
   '0+0=0',
   '0+1=1',
-  '1+0=2',
+  '1+0=1',
   '0+2=2',
-  '2+0=3',
+  '2+0=2',
   '0+3=3',
   '3+0=3',
   '0+4=4',
@@ -108,22 +108,25 @@ const mathProblems = [
   '6+9=15',
   '9+6=15',
   '7+7=14',
-  '7+8=16',
-  '8+7=16',
-  '7+9=17',
-  '9+7=17',
-  '8+8=17',
-  '8+9=18',
-  '9+8=18',
+  '7+8=15',
+  '8+7=15',
+  '7+9=16',
+  '9+7=16',
+  '8+8=16',
+  '8+9=17',
+  '9+8=17',
   '9+9=18'
 ];
 
 net.train(mathProblems, { log: true, errorThresh: 0.03 });
 
+let errors = 0;
 for (let i = 0; i < mathProblems.length; i++) {
   const input = mathProblems[i].split('=')[0] + '=';
   const output = net.run(input);
   const predictedMathProblem = input + output;
-  console.log(input + output);
-  assert(mathProblems.indexOf(predictedMathProblem) > -1);
+  const error = mathProblems.indexOf(predictedMathProblem) <= -1 ? 1 : 0;
+  errors += error;
+  console.log(input + output + (error ? " - error" : ""));
 }
+console.log("Errors: " + errors / mathProblems.length);
