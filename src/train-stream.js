@@ -83,7 +83,7 @@ export default class TrainStream extends Writable {
    */
   finishStreamIteration() {
     if (this.dataFormatDetermined && this.size !== this.count) {
-      this.log('This iteration\'s data length was different from the first.');
+      console.log('This iteration\'s data length was different from the first.');
     }
 
     if (!this.dataFormatDetermined) {
@@ -100,7 +100,7 @@ export default class TrainStream extends Writable {
     const error = this.sum / this.size;
 
     if (this.log && (this.i % this.logPeriod === 0)) {
-      this.log(`iterations: ${ this.i}, training error: ${ error }`);
+      console.log(`iterations: ${ this.i}, training error: ${ error }`);
     }
     if (this.callback && (this.i % this.callbackPeriod === 0)) {
       this.callback({
