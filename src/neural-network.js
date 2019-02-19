@@ -982,9 +982,11 @@ export default class NeuralNetwork {
         const nodes = Object.keys(layer);
         this.sizes[i] = nodes.length;
         for (let j in nodes) {
-          const node = nodes[j];
-          this.biases[i][j] = layer[node].bias;
-          this.weights[i][j] = toArray(layer[node].weights);
+          if (nodes.hasOwnProperty(j)) {
+            const node = nodes[j];
+            this.biases[i][j] = layer[node].bias;
+            this.weights[i][j] = toArray(layer[node].weights);
+          }
         }
       }
     }
