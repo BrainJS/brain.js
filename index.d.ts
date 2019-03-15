@@ -1,22 +1,87 @@
 /* NeuralNetwork section */
 export interface INeuralNetworkOptions {
+  /**
+   * @default 0.5
+   */
   binaryThresh?: number;
+
+  /**
+   * array of int for the sizes of the hidden layers in the network
+   * 
+   * @default [3]
+   */
   hiddenLayers?: number[];
+
+  /**
+   * supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
+   * 
+   * @default 'sigmoid'
+   */
   activation?: NeuralNetworkActivation;
+  
+  /**
+   * supported for activation type 'leaky-relu'
+   * 
+   * @default 0.01
+   */
   leakyReluAlpha?: number;
 }
 
 export type NeuralNetworkActivation = 'sigmoid' | 'relu' | 'leaky-relu' | 'tanh';
 
 export interface INeuralNetworkTrainingOptions {
+  /**
+   * the maximum times to iterate the training data --> number greater than 0
+   * @default 20000
+   */
   iterations?: number;
+
+  /**
+   * the acceptable error percentage from training data --> number between 0 and 1
+   * @default 0.005
+   */
   errorThresh?: number;
+
+  /**
+   * true to use console.log, when a function is supplied it is used --> Either true or a function
+   * @default false
+   */
   log?: boolean | INeuralNetworkTrainingCallback;
+
+  /**
+   * iterations between logging out --> number greater than 0
+   * @default 10
+   */
   logPeriod?: number;
+
+  /**
+   * scales with delta to effect training rate --> number between 0 and 1
+   * @default 0.3
+   */
   learningRate?: number;
+
+  /**
+   * scales with next layer's change value --> number between 0 and 1
+   * @default 0.1
+   */
   momentum?: number;
+
+  /**
+   * a periodic call back that can be triggered while training --> null or function
+   * @default null
+   */
   callback?: INeuralNetworkTrainingCallback | number;
+
+  /**
+   * the number of iterations through the training data between callback calls --> number greater than 0
+   * @default 10
+   */
   callbackPeriod?: number;
+
+  /**
+   * the max number of milliseconds to train for --> number greater than 0
+   * @default Infinity
+   */
   timeout?: number;
   praxis?: null | 'adam'
 }
