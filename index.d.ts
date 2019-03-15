@@ -1,8 +1,29 @@
 /* NeuralNetwork section */
 export interface INeuralNetworkOptions {
+  /**
+   * @default 0.5
+   */
   binaryThresh?: number;
+
+  /**
+   * array of int for the sizes of the hidden layers in the network
+   * 
+   * @default [3]
+   */
   hiddenLayers?: number[];
+
+  /**
+   * supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
+   * 
+   * @default 'sigmoid'
+   */
   activation?: NeuralNetworkActivation;
+  
+  /**
+   * supported for activation type 'leaky-relu'
+   * 
+   * @default 0.01
+   */
   leakyReluAlpha?: number;
 }
 
