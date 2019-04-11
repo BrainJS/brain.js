@@ -10,7 +10,7 @@ import { randomF } from '../utilities/random';
 import zeros from '../utilities/zeros';
 import DataFormatter from '../utilities/data-formatter';
 export default class RNN extends BaseInterface {
-  constructor(options) {
+  constructor(options = {}) {
     super(options);
 
     this.stepCache = {};

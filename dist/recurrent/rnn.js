@@ -59,7 +59,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var RNN = function (_BaseInterface) {
   _inherits(RNN, _BaseInterface);
 
-  function RNN(options) {
+  function RNN() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     _classCallCheck(this, RNN);
 
     var _this = _possibleConstructorReturn(this, (RNN.__proto__ || Object.getPrototypeOf(RNN)).call(this, options));

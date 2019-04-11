@@ -41,7 +41,7 @@ export default class NeuralNetwork extends BaseInterface {
     };
   }
 
-  constructor(options) {
+  constructor(options = {}) {
     super(options);
 
     this.sizes = null;

@@ -90,7 +90,9 @@ var NeuralNetwork = function (_BaseInterface) {
     }
   }]);
 
-  function NeuralNetwork(options) {
+  function NeuralNetwork() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     _classCallCheck(this, NeuralNetwork);
 
     var _this = _possibleConstructorReturn(this, (NeuralNetwork.__proto__ || Object.getPrototypeOf(NeuralNetwork)).call(this, options));
