@@ -411,6 +411,11 @@ var BaseInterface = function () {
     // These methods to be implimented in subclasses
 
   }, {
+    key: 'run',
+    value: function run() {
+      throw new Error('not yet implemented');
+    }
+  }, {
     key: 'trainPattern',
     value: function trainPattern() {
       throw new Error('not yet implemented');

@@ -204,6 +204,10 @@ export default class BaseInterface {
 
   // These methods to be implimented in subclasses
 
+  run() {
+    throw new Error('not yet implemented');   
+  }
+
   trainPattern() {
     throw new Error('not yet implemented');
   }
@@ -223,5 +227,4 @@ export default class BaseInterface {
   toFunction() {
     throw new Error('not yet implemented');
   }
-
 }
