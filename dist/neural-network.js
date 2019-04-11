@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _thaw = require('thaw.js');
+var _baseInterface = require('./base-interface');
 
-var _thaw2 = _interopRequireDefault(_thaw);
+var _baseInterface2 = _interopRequireDefault(_baseInterface);
 
 var _lookup2 = require('./lookup');
 
@@ -48,11 +48,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 /**
  * @param {object} options
  * @constructor
  */
-var NeuralNetwork = function () {
+var NeuralNetwork = function (_BaseInterface) {
+  _inherits(NeuralNetwork, _BaseInterface);
+
   _createClass(NeuralNetwork, null, [{
     key: 'trainDefaults',
     get: function get() {
@@ -84,36 +90,29 @@ var NeuralNetwork = function () {
     }
   }]);
 
-  function NeuralNetwork() {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
+  function NeuralNetwork(options) {
     _classCallCheck(this, NeuralNetwork);
 
-    Object.assign(this, this.constructor.defaults, options);
-    this.trainOpts = {};
-    this.updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
+    var _this = _possibleConstructorReturn(this, (NeuralNetwork.__proto__ || Object.getPrototypeOf(NeuralNetwork)).call(this, options));
 
-    this.sizes = null;
-    this.outputLayer = null;
-    this.biases = null; // weights for bias nodes
-    this.weights = null;
-    this.outputs = null;
+    _this.sizes = null;
+    _this.outputLayer = null;
+    _this.biases = null; // weights for bias nodes
+    _this.weights = null;
+    _this.outputs = null;
 
     // state for training
-    this.deltas = null;
-    this.changes = null; // for momentum
-    this.errors = null;
-    this.errorCheckInterval = 1;
-    if (!this.constructor.prototype.hasOwnProperty('runInput')) {
-      this.runInput = null;
+    _this.deltas = null;
+    _this.changes = null; // for momentum
+    _this.errors = null;
+    _this.errorCheckInterval = 1;
+    if (!_this.constructor.prototype.hasOwnProperty('runInput')) {
+      _this.runInput = null;
     }
-    if (!this.constructor.prototype.hasOwnProperty('calculateDeltas')) {
-      this.calculateDeltas = null;
+    if (!_this.constructor.prototype.hasOwnProperty('calculateDeltas')) {
+      _this.calculateDeltas = null;
     }
-    this.inputLookup = null;
-    this.inputLookupLength = null;
-    this.outputLookup = null;
-    this.outputLookupLength = null;
+    return _this;
   }
 
   /**
@@ -322,7 +321,7 @@ var NeuralNetwork = function () {
   }, {
     key: 'verifyIsInitialized',
     value: function verifyIsInitialized(data) {
-      var _this = this;
+      var _this2 = this;
 
       if (this.sizes) return;
 
@@ -332,81 +331,12 @@ var NeuralNetwork = function () {
         this.sizes.push(Math.max(3, Math.floor(data[0].input.length / 2)));
       } else {
         this.hiddenLayers.forEach(function (size) {
-          _this.sizes.push(size);
+          _this2.sizes.push(size);
         });
       }
       this.sizes.push(data[0].output.length);
 
       this.initialize();
-    }
-
-    /**
-     *
-     * @param options
-     *    Supports all `trainDefaults` properties
-     *    also supports:
-     *       learningRate: (number),
-     *       momentum: (number),
-     *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
-     */
-
-  }, {
-    key: 'updateTrainingOptions',
-    value: function updateTrainingOptions(options) {
-      var trainDefaults = this.constructor.trainDefaults;
-      for (var p in trainDefaults) {
-        if (!trainDefaults.hasOwnProperty(p)) continue;
-        this.trainOpts[p] = options.hasOwnProperty(p) ? options[p] : trainDefaults[p];
-      }
-      this.validateTrainingOptions(this.trainOpts);
-      this.setLogMethod(options.log || this.trainOpts.log);
-      this.activation = options.activation || this.activation;
-    }
-
-    /**
-     *
-     * @param options
-     */
-
-  }, {
-    key: 'validateTrainingOptions',
-    value: function validateTrainingOptions(options) {
-      var validations = {
-        iterations: function iterations(val) {
-          return typeof val === 'number' && val > 0;
-        },
-        errorThresh: function errorThresh(val) {
-          return typeof val === 'number' && val > 0 && val < 1;
-        },
-        log: function log(val) {
-          return typeof val === 'function' || typeof val === 'boolean';
-        },
-        logPeriod: function logPeriod(val) {
-          return typeof val === 'number' && val > 0;
-        },
-        learningRate: function learningRate(val) {
-          return typeof val === 'number' && val > 0 && val < 1;
-        },
-        momentum: function momentum(val) {
-          return typeof val === 'number' && val > 0 && val < 1;
-        },
-        callback: function callback(val) {
-          return typeof val === 'function' || val === null;
-        },
-        callbackPeriod: function callbackPeriod(val) {
-          return typeof val === 'number' && val > 0;
-        },
-        timeout: function timeout(val) {
-          return typeof val === 'number' && val > 0;
-        }
-      };
-      for (var p in validations) {
-        if (!validations.hasOwnProperty(p)) continue;
-        if (!options.hasOwnProperty(p)) continue;
-        if (!validations[p](options[p])) {
-          throw new Error('[' + p + ', ' + options[p] + '] is out of normal training range, your network will probably not train.');
-        }
-      }
     }
 
     /**
@@ -418,198 +348,15 @@ var NeuralNetwork = function () {
   }, {
     key: 'getTrainOptsJSON',
     value: function getTrainOptsJSON() {
-      var _this2 = this;
+      var _this3 = this;
 
       return Object.keys(this.constructor.trainDefaults).reduce(function (opts, opt) {
-        if (opt === 'timeout' && _this2.trainOpts[opt] === Infinity) return opts;
+        if (opt === 'timeout' && _this3.trainOpts[opt] === Infinity) return opts;
         if (opt === 'callback') return opts;
-        if (_this2.trainOpts[opt]) opts[opt] = _this2.trainOpts[opt];
+        if (_this3.trainOpts[opt]) opts[opt] = _this3.trainOpts[opt];
         if (opt === 'log') opts.log = typeof opts.log === 'function';
         return opts;
       }, {});
-    }
-
-    /**
-     *
-     * @param log
-     * if a method is passed in method is used
-     * if false passed in nothing is logged
-     * @returns error
-     */
-
-  }, {
-    key: 'setLogMethod',
-    value: function setLogMethod(log) {
-      if (typeof log === 'function') {
-        this.trainOpts.log = log;
-      } else if (log) {
-        this.trainOpts.log = console.log;
-      } else {
-        this.trainOpts.log = false;
-      }
-    }
-
-    /**
-     *
-     * @param data
-     * @returns {Number} error
-     */
-
-  }, {
-    key: 'calculateTrainingError',
-    value: function calculateTrainingError(data) {
-      var sum = 0;
-      for (var i = 0; i < data.length; ++i) {
-        sum += this.trainPattern(data[i], true);
-      }
-      return sum / data.length;
-    }
-
-    /**
-     * @param data
-     */
-
-  }, {
-    key: 'trainPatterns',
-    value: function trainPatterns(data) {
-      for (var i = 0; i < data.length; ++i) {
-        this.trainPattern(data[i]);
-      }
-    }
-
-    /**
-     *
-     * @param {object} data
-     * @param {object} status { iterations: number, error: number }
-     * @param endTime
-     */
-
-  }, {
-    key: 'trainingTick',
-    value: function trainingTick(data, status, endTime) {
-      if (status.iterations >= this.trainOpts.iterations || status.error <= this.trainOpts.errorThresh || Date.now() >= endTime) {
-        return false;
-      }
-
-      status.iterations++;
-
-      if (this.trainOpts.log && status.iterations % this.trainOpts.logPeriod === 0) {
-        status.error = this.calculateTrainingError(data);
-        this.trainOpts.log('iterations: ' + status.iterations + ', training error: ' + status.error);
-      } else {
-        if (status.iterations % this.errorCheckInterval === 0) {
-          status.error = this.calculateTrainingError(data);
-        } else {
-          this.trainPatterns(data);
-        }
-      }
-
-      if (this.trainOpts.callback && status.iterations % this.trainOpts.callbackPeriod === 0) {
-        this.trainOpts.callback({
-          iterations: status.iterations,
-          error: status.error
-        });
-      }
-      return true;
-    }
-
-    /**
-     *
-     * @param data
-     * @param options
-     * @protected
-     * @return {object} { data, status, endTime }
-     */
-
-  }, {
-    key: 'prepTraining',
-    value: function prepTraining(data, options) {
-      this.updateTrainingOptions(options);
-      data = this.formatData(data);
-      var endTime = Date.now() + this.trainOpts.timeout;
-
-      var status = {
-        error: 1,
-        iterations: 0
-      };
-
-      this.verifyIsInitialized(data);
-
-      return {
-        data: data,
-        status: status,
-        endTime: endTime
-      };
-    }
-
-    /**
-     *
-     * @param data
-     * @param options
-     * @returns {object} {error: number, iterations: number}
-     */
-
-  }, {
-    key: 'train',
-    value: function train(data) {
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      var status = void 0,
-          endTime = void 0;
-
-      var _prepTraining = this.prepTraining(data, options);
-
-      data = _prepTraining.data;
-      status = _prepTraining.status;
-      endTime = _prepTraining.endTime;
-
-
-      while (this.trainingTick(data, status, endTime)) {}
-      return status;
-    }
-
-    /**
-     *
-     * @param data
-     * @param options
-     * @returns {Promise}
-     * @resolves {{error: number, iterations: number}}
-     * @rejects {{trainError: string, status: {error: number, iterations: number}}
-     */
-
-  }, {
-    key: 'trainAsync',
-    value: function trainAsync(data) {
-      var _this3 = this;
-
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      var status = void 0,
-          endTime = void 0;
-
-      var _prepTraining2 = this.prepTraining(data, options);
-
-      data = _prepTraining2.data;
-      status = _prepTraining2.status;
-      endTime = _prepTraining2.endTime;
-
-
-      return new Promise(function (resolve, reject) {
-        try {
-          var thawedTrain = new _thaw2.default(new Array(_this3.trainOpts.iterations), {
-            delay: true,
-            each: function each() {
-              return _this3.trainingTick(data, status, endTime) || thawedTrain.stop();
-            },
-            done: function done() {
-              return resolve(status);
-            }
-          });
-          thawedTrain.tick();
-        } catch (trainError) {
-          reject({ trainError: trainError, status: status });
-        }
-      });
     }
 
     /**
@@ -1136,9 +883,11 @@ var NeuralNetwork = function () {
           var nodes = Object.keys(layer);
           this.sizes[i] = nodes.length;
           for (var j in nodes) {
-            var node = nodes[j];
-            this.biases[i][j] = layer[node].bias;
-            this.weights[i][j] = (0, _toArray2.default)(layer[node].weights);
+            if (nodes.hasOwnProperty(j)) {
+              var node = nodes[j];
+              this.biases[i][j] = layer[node].bias;
+              this.weights[i][j] = (0, _toArray2.default)(layer[node].weights);
+            }
           }
         }
       }
@@ -1235,7 +984,7 @@ var NeuralNetwork = function () {
   }]);
 
   return NeuralNetwork;
-}();
+}(_baseInterface2.default);
 
 exports.default = NeuralNetwork;
 

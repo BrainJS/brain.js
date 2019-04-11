@@ -6,6 +6,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _baseInterface = require('../base-interface');
+
+var _baseInterface2 = _interopRequireDefault(_baseInterface);
+
 var _matrix = require('./matrix');
 
 var _matrix2 = _interopRequireDefault(_matrix);
@@ -44,38 +48,31 @@ var _dataFormatter = require('../utilities/data-formatter');
 
 var _dataFormatter2 = _interopRequireDefault(_dataFormatter);
 
-var _neuralNetwork = require('../neural-network');
-
-var _neuralNetwork2 = _interopRequireDefault(_neuralNetwork);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var RNN = function () {
-  function RNN() {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var RNN = function (_BaseInterface) {
+  _inherits(RNN, _BaseInterface);
+
+  function RNN(options) {
     _classCallCheck(this, RNN);
 
-    var defaults = this.constructor.defaults;
+    var _this = _possibleConstructorReturn(this, (RNN.__proto__ || Object.getPrototypeOf(RNN)).call(this, options));
 
-    Object.assign(this, defaults, options);
-    this.trainOpts = {};
-    this.updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
-
-    this.stepCache = {};
-    this.runs = 0;
-    this.ratioClipped = null;
-    this.model = null;
-    this.inputLookup = null;
-    this.inputLookupLength = null;
-    this.outputLookup = null;
-    this.outputLookupLength = null;
+    _this.stepCache = {};
+    _this.runs = 0;
+    _this.ratioClipped = null;
+    _this.model = null;
 
     if (options.json) {
-      this.fromJSON(options.json);
+      _this.fromJSON(options.json);
     }
+    return _this;
   }
 
   _createClass(RNN, [{
@@ -431,139 +428,6 @@ var RNN = function () {
 
     /**
      *
-     * @param options
-     *    Supports all `trainDefaults` properties
-     *    also supports:
-     *       learningRate: (number),
-     *       momentum: (number),
-     *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
-     */
-
-  }, {
-    key: 'updateTrainingOptions',
-    value: function updateTrainingOptions(options) {
-      var _this = this;
-
-      Object.keys(this.constructor.trainDefaults).forEach(function (p) {
-        return _this.trainOpts[p] = options.hasOwnProperty(p) ? options[p] : _this.trainOpts[p];
-      });
-      this.validateTrainingOptions(this.trainOpts);
-      this.setLogMethod(options.log || this.trainOpts.log);
-      this.activation = options.activation || this.activation;
-    }
-  }, {
-    key: 'validateTrainingOptions',
-    value: function validateTrainingOptions(options) {
-      _neuralNetwork2.default.prototype.validateTrainingOptions.call(this, options);
-    }
-
-    /**
-     *
-     * @param log
-     * if a method is passed in method is used
-     * if false passed in nothing is logged
-     * @returns error
-     */
-
-  }, {
-    key: 'setLogMethod',
-    value: function setLogMethod(log) {
-      if (typeof log === 'function') {
-        this.trainOpts.log = log;
-      } else if (log) {
-        this.trainOpts.log = console.log;
-      } else {
-        this.trainOpts.log = false;
-      }
-    }
-
-    /**
-     *
-     * @param data
-     * @param options
-     * @protected
-     * @return {object} { data, status, endTime }
-     */
-
-  }, {
-    key: 'prepTraining',
-    value: function prepTraining(data, options) {
-      this.updateTrainingOptions(options);
-      data = this.formatData(data);
-      var endTime = Date.now() + this.trainOpts.timeout;
-
-      var status = {
-        error: 1,
-        iterations: 0
-      };
-
-      this.verifyIsInitialized(data);
-
-      return {
-        data: data,
-        status: status,
-        endTime: endTime
-      };
-    }
-
-    /**
-     *
-     * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
-     * @param {Object} [options]
-     * @returns {{error: number, iterations: number}}
-     */
-
-  }, {
-    key: 'train',
-    value: function train(data) {
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      this.trainOpts = options = Object.assign({}, this.constructor.trainDefaults, options);
-      var iterations = options.iterations;
-      var errorThresh = options.errorThresh;
-      var log = options.log === true ? console.log : options.log;
-      var logPeriod = options.logPeriod;
-      var callback = options.callback;
-      var callbackPeriod = options.callbackPeriod;
-      var error = Infinity;
-      var i = void 0;
-
-      if (this.hasOwnProperty('setupData')) {
-        data = this.setupData(data);
-      }
-
-      this.verifyIsInitialized();
-
-      for (i = 0; i < iterations && error > errorThresh; i++) {
-        var sum = 0;
-        for (var j = 0; j < data.length; j++) {
-          var err = this.trainPattern(data[j], true);
-          sum += err;
-        }
-        error = sum / data.length;
-
-        if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
-        if (log && i % logPeriod === 0) {
-          log('iterations: ' + i + ', training error: ' + error);
-        }
-        if (callback && i % callbackPeriod === 0) {
-          callback({ error: error, iterations: i });
-        }
-      }
-
-      return {
-        error: error,
-        iterations: i
-      };
-    }
-  }, {
-    key: 'addFormat',
-    value: function addFormat() {
-      throw new Error('not yet implemented');
-    }
-
-    /**
-     *
      * @returns {Object}
      */
 
@@ -771,7 +635,7 @@ var RNN = function () {
   }]);
 
   return RNN;
-}();
+}(_baseInterface2.default);
 
 exports.default = RNN;
 
