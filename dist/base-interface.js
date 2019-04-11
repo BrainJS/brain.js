@@ -200,7 +200,7 @@ var BaseInterface = function () {
     key: 'prepTraining',
     value: function prepTraining(data, options) {
       this.updateTrainingOptions(options);
-      data = this.formatData(data);
+      if (this.formatData) data = this.formatData(data);
       var endTime = Date.now() + this.trainOpts.timeout;
 
       var status = {

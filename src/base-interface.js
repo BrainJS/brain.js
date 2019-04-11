@@ -145,7 +145,7 @@ export default class BaseInterface {
    */
   prepTraining(data, options) {
     this.updateTrainingOptions(options);
-    data = this.formatData(data);
+    if (this.formatData) data = this.formatData(data);
     const endTime = Date.now() + this.trainOpts.timeout;
 
     const status = {
