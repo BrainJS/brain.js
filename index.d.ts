@@ -258,6 +258,8 @@ export declare namespace recurrent {
     run<TInput, TOutput>(data: TInput): TOutput;
     train(data: IRNNTrainingData[], options: INeuralNetworkTrainingOptions): INeuralNetworkState;
     train<T>(data: T, options: INeuralNetworkTrainingOptions): INeuralNetworkState;
+    trainAsync(data: IRNNTrainingData[], options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
+    trainAsync<T>(data: T, options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
   }
   class LSTM extends recurrent.RNN {}
   class GRU extends recurrent.RNN {}
