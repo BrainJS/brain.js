@@ -1,3 +1,4 @@
+import BaseInterface from '../base-interface';
 import Matrix from './matrix';
 import RandomMatrix from './matrix/random-matrix';
 import Equation from './matrix/equation';
@@ -8,24 +9,14 @@ import copy from './matrix/copy';
 import { randomF } from '../utilities/random';
 import zeros from '../utilities/zeros';
 import DataFormatter from '../utilities/data-formatter';
-import NeuralNetwork from '../neural-network';
-
-export default class RNN {
-  constructor(options = {}) {
-    const defaults = this.constructor.defaults;
-
-    Object.assign(this, defaults, options);
-    this.trainOpts = {};
-    this.updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
+export default class RNN extends BaseInterface {
+  constructor(options) {
+    super(options);
 
     this.stepCache = {};
     this.runs = 0;
     this.ratioClipped = null;
     this.model = null;
-    this.inputLookup = null;
-    this.inputLookupLength = null;
-    this.outputLookup = null;
-    this.outputLookupLength = null;
 
     if (options.json) {
       this.fromJSON(options.json);
@@ -371,119 +362,6 @@ export default class RNN {
     if (!this.model) {
       this.initialize();
     }
-  }
-
-  /**
-   *
-   * @param options
-   *    Supports all `trainDefaults` properties
-   *    also supports:
-   *       learningRate: (number),
-   *       momentum: (number),
-   *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
-   */
-  updateTrainingOptions(options) {
-    Object.keys(this.constructor.trainDefaults).forEach(p => this.trainOpts[p] = (options.hasOwnProperty(p)) ? options[p] : this.trainOpts[p]);
-    this.validateTrainingOptions(this.trainOpts);
-    this.setLogMethod(options.log || this.trainOpts.log);
-    this.activation = options.activation || this.activation;
-  }
-
-  validateTrainingOptions(options) {
-    NeuralNetwork.prototype.validateTrainingOptions.call(this, options);
-  }
-
-  /**
-   *
-   * @param log
-   * if a method is passed in method is used
-   * if false passed in nothing is logged
-   * @returns error
-   */
-  setLogMethod(log) {
-    if (typeof log === 'function'){
-      this.trainOpts.log = log;
-    } else if (log) {
-      this.trainOpts.log = console.log;
-    } else {
-      this.trainOpts.log = false;
-    }
-  }
-
-  /**
-   *
-   * @param data
-   * @param options
-   * @protected
-   * @return {object} { data, status, endTime }
-   */
-  prepTraining(data, options) {
-    this.updateTrainingOptions(options);
-    data = this.formatData(data);
-    const endTime = Date.now() + this.trainOpts.timeout;
-
-    const status = {
-      error: 1,
-      iterations: 0
-    };
-
-    this.verifyIsInitialized(data);
-
-    return {
-      data,
-      status,
-      endTime
-    };
-  }
-
-  /**
-   *
-   * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
-   * @param {Object} [options]
-   * @returns {{error: number, iterations: number}}
-   */
-  train(data, options = {}) {
-    this.trainOpts = options = Object.assign({}, this.constructor.trainDefaults, options);
-    let iterations = options.iterations;
-    let errorThresh = options.errorThresh;
-    let log = options.log === true ? console.log : options.log;
-    let logPeriod = options.logPeriod;
-    let callback = options.callback;
-    let callbackPeriod = options.callbackPeriod;
-    let error = Infinity;
-    let i;
-
-    if (this.hasOwnProperty('setupData')) {
-      data = this.setupData(data);
-    }
-
-    this.verifyIsInitialized();
-
-    for (i = 0; i < iterations && error > errorThresh; i++) {
-      let sum = 0;
-      for (let j = 0; j < data.length; j++) {
-        const err = this.trainPattern(data[j], true);
-        sum += err;
-      }
-      error = sum / data.length;
-
-      if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
-      if (log && (i % logPeriod === 0)) {
-        log(`iterations: ${ i }, training error: ${ error }`);
-      }
-      if (callback && (i % callbackPeriod === 0)) {
-        callback({ error: error, iterations: i });
-      }
-    }
-
-    return {
-      error: error,
-      iterations: i
-    };
-  }
-
-  addFormat() {
-    throw new Error('not yet implemented');
   }
 
   /**
