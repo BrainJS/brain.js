@@ -145,6 +145,7 @@ export default class BaseInterface {
    */
   prepTraining(data, options) {
     this.updateTrainingOptions(options);
+    if (this.setupData) data = this.setupData(data);
     if (this.formatData) data = this.formatData(data);
     const endTime = Date.now() + this.trainOpts.timeout;
 
@@ -210,6 +211,10 @@ export default class BaseInterface {
 
   trainPattern() {
     throw new Error('not yet implemented');
+  }
+
+  verifyIsInitialized() {
+    throw new Error('not yet implemented');   
   }
 
   addFormat() {

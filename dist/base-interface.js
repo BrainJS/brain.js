@@ -200,6 +200,7 @@ var BaseInterface = function () {
     key: 'prepTraining',
     value: function prepTraining(data, options) {
       this.updateTrainingOptions(options);
+      if (this.setupData) data = this.setupData(data);
       if (this.formatData) data = this.formatData(data);
       var endTime = Date.now() + this.trainOpts.timeout;
 
@@ -297,6 +298,11 @@ var BaseInterface = function () {
   }, {
     key: 'trainPattern',
     value: function trainPattern() {
+      throw new Error('not yet implemented');
+    }
+  }, {
+    key: 'verifyIsInitialized',
+    value: function verifyIsInitialized() {
       throw new Error('not yet implemented');
     }
   }, {
