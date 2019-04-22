@@ -226,10 +226,10 @@ var FullyConnected = function (_Filter) {
     value: function compare() {
       this.inputLayer.deltas = this.compareInputDeltasKernel(this.inputLayer.deltas, this.deltas, this.filters);
 
-      //TODO: handle biasDeltas learn
+      // TODO: handle biasDeltas learn
       this.biasDeltas = this.compareBiasesKernel(this.biases, this.deltas);
 
-      //TODO: handle filterDeltas learn
+      // TODO: handle filterDeltas learn
       this.filterDeltas = this.compareFilterDeltasKernel(this.filterDeltas, this.inputLayer.weights, this.deltas);
     }
   }]);

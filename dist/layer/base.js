@@ -151,7 +151,7 @@ var Base = function () {
     value: function learn(previousLayer, nextLayer, learningRate) {
       this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
 
-      //TODO: put into a kernel
+      // TODO: put into a kernel
       if (this.depth > 1) {
         this.deltas = (0, _zeros3d2.default)(this.width, this.height, this.depth);
       } else {

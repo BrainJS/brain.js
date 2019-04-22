@@ -145,7 +145,7 @@ var Pool = function (_Filter) {
 
     _this.width = Math.floor((inputLayer.width + _this.paddingX * 2 - _this.filterWidth) / _this.strideX + 1);
     _this.height = Math.floor((inputLayer.height + _this.paddingY * 2 - _this.filterHeight) / _this.strideY + 1);
-    //TODO: handle 1 depth?
+    // TODO: handle 1 depth?
     _this.depth = _this.filterCount;
 
     _this.weights = (0, _randos3d2.default)(_this.width, _this.height, _this.depth);

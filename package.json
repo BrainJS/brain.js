@@ -5,7 +5,7 @@
     "url": "https://github.com/brainjs/brain.js/issues"
   },
   "dependencies": {
-    "gpu.js": "^1.5.5",
+    "gpu.js": "^2.0.0-rc.7",
     "thaw.js": "^2.0.0"
   },
   "description": "Neural networks in JavaScript",
@@ -13,7 +13,7 @@
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
-    "eslint": "^5.2.0",
+    "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-import": "^2.13.0",
@@ -22,7 +22,7 @@
     "eslint-plugin-react": "^7.10.0",
     "gpu-mock.js": "^1.0.1",
     "jest": "^23.4.2",
-    "parcel-bundler": "^1.9.7",
+    "parcel-bundler": "^1.12.3",
     "prettier": "^1.13.7"
   },
   "files": [
@@ -77,8 +77,8 @@
   },
   "scripts": {
     "build": "npx babel src --out-dir dist",
-    "bundle-web": "parcel build ./src/index.js --out-dir ./dist --out-file brain-browser.js --no-minify",
-    "bundle-web:minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain-browser.min.js",
+    "bundle-web": "parcel build ./dist/index.js --out-dir ./dist --out-file brain-browser.js --no-minify",
+    "bundle-web:minified": "parcel build ./dist/index.js --out-dir ./dist --out-file brain-browser.min.js",
     "dist": "npm run build && npm run bundle-web && npm run bundle-web:minified",
     "lint": "eslint --ext .js ./src ./__tests__",
     "lint:fix": "eslint --ext .js --fix ./src ./__tests__",
