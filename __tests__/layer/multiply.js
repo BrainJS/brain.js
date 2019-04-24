@@ -131,7 +131,7 @@ describe('Multiply Layer', () => {
         multiplyLayer.setupKernels();
         multiplyLayer.predict();
 
-        expect(multiplyLayer.weights).toEqual([[58, 64], [139, 154]]);
+        expect(multiplyLayer.weights).toEqual([new Float32Array([58, 64]), new Float32Array([139, 154])]);
       });
     });
     describe('when used with Input layer', () => {

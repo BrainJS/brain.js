@@ -1,4 +1,4 @@
-import GPU from 'gpu.js';
+import { GPU } from 'gpu.js';
 
 let gpuInstance = null;
 
@@ -17,9 +17,11 @@ export function makeKernel(fn, settings) {
   if (settings.hasOwnProperty('map')) {
     return gpuInstance
       .createKernelMap(settings.map, fn, settings)
-      .setOutputToTexture(true);
+      .setPipeline(true);
   }
-  return gpuInstance.createKernel(fn, settings).setOutputToTexture(true);
+  return gpuInstance
+    .createKernel(fn, settings)
+    .setPipeline(true);
 }
 
 export function kernelInput(input, size) {

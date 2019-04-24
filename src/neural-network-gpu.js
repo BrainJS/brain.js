@@ -1,4 +1,4 @@
-import GPU from 'gpu.js';
+import { GPU } from 'gpu.js';
 import NeuralNetwork from './neural-network';
 import lookup from './lookup';
 
