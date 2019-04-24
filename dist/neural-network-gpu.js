@@ -10,8 +10,6 @@ var _get = function get(object, property, receiver) { if (object === null) objec
 
 var _gpu = require('gpu.js');
 
-var _gpu2 = _interopRequireDefault(_gpu);
-
 var _neuralNetwork = require('./neural-network');
 
 var _neuralNetwork2 = _interopRequireDefault(_neuralNetwork);
@@ -144,7 +142,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     _this.weightsCopies = [];
     _this.copyWeights = [];
     _this.errorCheckInterval = 100;
-    _this.gpu = new _gpu2.default({ mode: options.mode });
+    _this.gpu = new _gpu.GPU({ mode: options.mode });
     return _this;
   }
 
@@ -282,8 +280,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       for (var layer = this.outputLayer; layer > 0; layer--) {
         if (layer === this.outputLayer) {
           this.backwardPropagate[layer] = this.gpu.createKernelMap({
-            error: _gpu2.default.alias('calcErrorOutput', calcErrorOutput),
-            deltas: _gpu2.default.alias('calcDeltas', calcDeltas)
+            error: _gpu.GPU.alias('calcErrorOutput', calcErrorOutput),
+            deltas: _gpu.GPU.alias('calcDeltas', calcDeltas)
           }, function (outputs, targets) {
             var output = outputs[_this3.thread.x];
             return calcDeltas(calcErrorOutput(output, targets), output);
@@ -294,8 +292,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
           });
         } else {
           this.backwardPropagate[layer] = this.gpu.createKernelMap({
-            error: _gpu2.default.alias('calcError', calcError),
-            deltas: _gpu2.default.alias('calcDeltas', calcDeltas)
+            error: _gpu.GPU.alias('calcError', calcError),
+            deltas: _gpu.GPU.alias('calcDeltas', calcDeltas)
           }, function (nextWeights, outputs, nextDeltas) {
             var output = outputs[_this3.thread.x];
             return calcDeltas(calcError(nextWeights, nextDeltas), output);
@@ -333,8 +331,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
         this.changesPropagate[layer] = this.gpu.createKernelMap({
-          weights: _gpu2.default.alias('addWeights', addWeights),
-          changes: _gpu2.default.alias('calcChanges', calcChanges)
+          weights: _gpu.GPU.alias('addWeights', addWeights),
+          changes: _gpu.GPU.alias('calcChanges', calcChanges)
         }, function (previousOutputs, deltas, weights, changes) {
           var change = calcChanges(changes, deltas, previousOutputs);
 

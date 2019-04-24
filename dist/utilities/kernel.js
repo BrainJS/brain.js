@@ -10,10 +10,6 @@ exports.kernelInput = kernelInput;
 
 var _gpu = require('gpu.js');
 
-var _gpu2 = _interopRequireDefault(_gpu);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 var gpuInstance = null;
 
 function setup(value) {
@@ -26,14 +22,14 @@ function teardown() {
 
 function makeKernel(fn, settings) {
   if (gpuInstance === null) {
-    setup(new _gpu2.default({ mode: 'cpu' }));
+    setup(new _gpu.GPU({ mode: 'cpu' }));
   }
   if (settings.hasOwnProperty('map')) {
-    return gpuInstance.createKernelMap(settings.map, fn, settings).setOutputToTexture(true);
+    return gpuInstance.createKernelMap(settings.map, fn, settings).setPipeline(true);
   }
-  return gpuInstance.createKernel(fn, settings).setOutputToTexture(true);
+  return gpuInstance.createKernel(fn, settings).setPipeline(true);
 }
 
 function kernelInput(input, size) {
-  return _gpu2.default.input(input, size);
+  return _gpu.GPU.input(input, size);
 }
