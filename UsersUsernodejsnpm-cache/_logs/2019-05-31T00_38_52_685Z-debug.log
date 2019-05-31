@@ -1,0 +1,33 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'run',
+1 verbose cli   'browser.min.js' ]
+2 info using npm@6.4.1
+3 info using node@v10.15.1
+4 verbose stack Error: missing script: browser.min.js
+4 verbose stack
+4 verbose stack Did you mean one of these?
+4 verbose stack     browser-min
+4 verbose stack     browser
+4 verbose stack     at run (C:\Program Files\nodejs\node_modules\npm\lib\run-script.js:155:19)
+4 verbose stack     at C:\Program Files\nodejs\node_modules\npm\lib\run-script.js:63:5
+4 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\read-package-json\read-json.js:115:5
+4 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\read-package-json\read-json.js:418:5
+4 verbose stack     at checkBinReferences_ (C:\Program Files\nodejs\node_modules\npm\node_modules\read-package-json\read-json.js:373:45)
+4 verbose stack     at final (C:\Program Files\nodejs\node_modules\npm\node_modules\read-package-json\read-json.js:416:3)
+4 verbose stack     at then (C:\Program Files\nodejs\node_modules\npm\node_modules\read-package-json\read-json.js:160:5)
+4 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\read-package-json\read-json.js:364:12
+4 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\graceful-fs\graceful-fs.js:78:16
+4 verbose stack     at FSReqWrap.readFileAfterClose [as oncomplete] (internal/fs/read_file_context.js:53:3)
+5 verbose cwd C:\Users\user\Documents\nodeWorkplace\brain9
+6 verbose Windows_NT 10.0.17134
+7 verbose argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "run" "browser.min.js"
+8 verbose node v10.15.1
+9 verbose npm  v6.4.1
+10 error missing script: browser.min.js
+10 error
+10 error Did you mean one of these?
+10 error     browser-min
+10 error     browser
+11 verbose exit [ 1, true ]

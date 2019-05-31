@@ -22,7 +22,9 @@ export default function toSVG(network, options) {
         height: '250'
     };
 
-    const size =  typeof(network.inputSize) == 'number' && typeof(network.outputSize) == 'number' && network.inputSize > 0 && network.outputSize> 0 ? [network.inputSize, ...network.hiddenLayers, network.outputSize]:false;
+    let size =  typeof(network.inputSize) == 'number' && typeof(network.outputSize) == 'number' && network.inputSize > 0 && network.outputSize> 0 ? [network.inputSize, ...network.hiddenLayers, network.outputSize]:false;
+    if(!size) size = network.sizes;
+     
     options = Object.assign(defaultOptions, options);      
     options.inputs.label = options.inputs.label.length == network.inputSize ? options.inputs.label : false;        
     if(size){
