@@ -1030,6 +1030,35 @@ var utils = {
     } else {
       console.warn("You are using a deprecated ".concat(type, " \"").concat(oldName, "\". It has been removed. Fixing, but please upgrade as it will soon be removed."));
     }
+  },
+
+  /**
+   *
+   * @param {String|Function} source
+   * @param {IFunctionSettings} [settings]
+   * @returns {IFunction}
+   */
+  functionToIFunction: function functionToIFunction(source, settings) {
+    settings = settings || {};
+    if (typeof source !== 'string' && typeof source !== 'function') throw new Error('source not a string or function');
+    var sourceString = typeof source === 'string' ? source : source.toString();
+    var argumentTypes = [];
+
+    if (Array.isArray(settings.argumentTypes)) {
+      argumentTypes = settings.argumentTypes;
+    } else if (_typeof(settings.argumentTypes) === 'object') {
+      argumentTypes = utils.getArgumentNamesFromString(sourceString).map(function (name) {
+        return settings.argumentTypes[name];
+      }) || [];
+    } else {
+      argumentTypes = settings.argumentTypes || [];
+    }
+
+    return {
+      source: sourceString,
+      argumentTypes: argumentTypes,
+      returnType: settings.returnType || null
+    };
   }
 };
 
@@ -1170,7 +1199,7 @@ function () {
     this.constants = null;
     this.constantTypes = null;
     this.constantBitRatios = null;
-    this.hardcodeConstants = null;
+    this.hardcodeConstants = false;
     /**
      *
      * @type {Object}
@@ -1213,7 +1242,6 @@ function () {
      */
 
     this.validate = true;
-    this.wraparound = null;
     /**
      * Enforces kernel to write to a new array or texture on run
      * @type {Boolean}
@@ -1236,11 +1264,21 @@ function () {
     value: function mergeSettings(settings) {
       for (var p in settings) {
         if (!settings.hasOwnProperty(p) || !this.hasOwnProperty(p)) continue;
-        this[p] = settings[p];
-      }
 
-      if (settings.hasOwnProperty('output') && !Array.isArray(settings.output)) {
-        this.setOutput(settings.output); // Flatten output object
+        if (p === 'output') {
+          if (!Array.isArray(settings.output)) {
+            this.setOutput(settings.output); // Flatten output object
+
+            continue;
+          }
+        } else if (p === 'functions' && typeof settings.functions[0] === 'function') {
+          this.functions = settings.functions.map(function (source) {
+            return utils.functionToIFunction(source);
+          });
+          continue;
+        }
+
+        this[p] = settings[p];
       }
 
       if (!this.canvas) this.canvas = this.initCanvas();
@@ -1431,6 +1469,25 @@ function () {
       return this;
     }
     /**
+     *
+     * @param {IFunction[]|KernelFunction[]} functions
+     * @returns {Kernel}
+     */
+
+  }, {
+    key: "setFunctions",
+    value: function setFunctions(functions) {
+      if (typeof functions[0] === 'function') {
+        this.functions = functions.map(function (source) {
+          return utils.functionToIFunction(source);
+        });
+      } else {
+        this.functions = functions;
+      }
+
+      return this;
+    }
+    /**
      * Set writing to texture on/off
      * @param flag
      * @returns {Kernel}
@@ -1439,6 +1496,25 @@ function () {
   }, {
     key: "setPipeline",
     value: function setPipeline(flag) {
+      this.pipeline = flag;
+      return this;
+    }
+    /**
+     * Set precision to 'unsigned' or 'single'
+     * @param {String} flag 'unsigned' or 'single'
+     * @returns {Kernel}
+     */
+
+  }, {
+    key: "setPrecision",
+    value: function setPrecision(flag) {
+      this.precision = flag;
+      return this;
+    }
+  }, {
+    key: "setOutputToTexture",
+    value: function setOutputToTexture(flag) {
+      utils.warnDeprecated('method', 'setOutputToTexture', 'setPipeline');
       this.pipeline = flag;
       return this;
     }
@@ -2290,7 +2366,7 @@ function () {
 module.exports = {
   FunctionBuilder: FunctionBuilder
 };
-},{}],"Wqy/":[function(require,module,exports) {
+},{}],"1lTX":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5252,10 +5328,6 @@ pp$3.parseTemplate = function (ref) {
   node.quasis = [curElt];
 
   while (!curElt.tail) {
-    if (this$1.type === types.eof) {
-      this$1.raise(this$1.pos, "Unterminated template literal");
-    }
-
     this$1.expect(types.dollarBraceL);
     node.expressions.push(this$1.parseExpression());
     this$1.expect(types.braceR);
@@ -6072,7 +6144,7 @@ types.star.updateContext = function (prevType) {
 types.name.updateContext = function (prevType) {
   var allowed = false;
 
-  if (this.options.ecmaVersion >= 6 && prevType !== types.dot) {
+  if (this.options.ecmaVersion >= 6) {
     if (this.value === "of" && !this.exprAllowed || this.value === "yield" && this.inGeneratorContext()) {
       allowed = true;
     }
@@ -8555,7 +8627,7 @@ pp$8.readWord = function () {
 // [walk]: util/walk.js
 
 
-var version = "5.7.3"; // The main exported interface (under `self.acorn` when in the
+var version = "5.7.2"; // The main exported interface (under `self.acorn` when in the
 // browser) is a `parse` function that takes a code string and
 // returns an abstract syntax tree as specified by [Mozilla parser
 // API][api].
@@ -10050,6 +10122,11 @@ function () {
       return name + this._internalVariableNames[name];
     }
   }, {
+    key: "varWarn",
+    value: function varWarn() {
+      console.warn('var declarations are deprecated, weird things happen when falling back to CPU because var scope differs in javascript than in most languages.  Use const or let');
+    }
+  }, {
     key: "state",
     get: function get() {
       return this.states[this.states.length - 1];
@@ -10079,7 +10156,7 @@ var typeLookupMap = {
 module.exports = {
   FunctionNode: FunctionNode
 };
-},{"../utils":"9h1E","acorn":"Wqy/"}],"JBVu":[function(require,module,exports) {
+},{"../utils":"9h1E","acorn":"1lTX"}],"JBVu":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -10778,11 +10855,6 @@ function (_FunctionNode) {
     value: function astDebuggerStatement(arrNode, retArr) {
       retArr.push('debugger;');
       return retArr;
-    }
-  }, {
-    key: "varWarn",
-    value: function varWarn() {
-      console.warn('var declarations are not supported, weird things happen.  Use const or let');
     }
   }]);
 
@@ -12559,7 +12631,6 @@ function (_Kernel) {
 
       var xResults = new Array(xMax);
       var xResultsMax = xMax * 4;
-      console.log(pixels);
       var i = 0;
 
       for (var x = 0; x < xResultsMax; x += 4) {
@@ -13486,6 +13557,10 @@ function (_FunctionNode) {
   }, {
     key: "astVariableDeclaration",
     value: function astVariableDeclaration(varDecNode, retArr) {
+      if (varDecNode.kind === 'var') {
+        this.varWarn();
+      }
+
       var declarations = varDecNode.declarations;
 
       if (!declarations || !declarations[0] || !declarations[0].init) {
@@ -14164,7 +14239,7 @@ module.exports = {
   source: source
 };
 },{}],"+HoT":[function(require,module,exports) {
-var fragmentShader = "__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst int LOOP_MAX = __LOOP_MAX__;\n\n__PLUGINS__;\n__CONSTANTS__;\n\nvarying vec2 vTexCoord;\n\nvec4 round(vec4 x) {\n  return floor(x + 0.5);\n}\n\nfloat round(float x) {\n  return floor(x + 0.5);\n}\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x / y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 texel) {\n  __DECODE32_ENDIANNESS__;\n  texel *= 255.0;\n  vec2 gte128;\n  gte128.x = texel.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = texel.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * texel.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  texel.b = texel.b - 128.0 * gte128.x;\n  res = dot(texel, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nfloat decode16(vec4 texel, int index) {\n\tint channel = integerMod(index, 2);\n\tif (channel == 0) return texel.r * 255.0 + texel.g * 65280.0;\n\tif (channel == 1) return texel.b * 255.0 + texel.a * 65280.0;\n\treturn 0.0;\n}\n\nfloat decode8(vec4 texel, int index) {\n  int channel = integerMod(index, 4);\n  if (channel == 0) return texel.r * 255.0;\n  if (channel == 1) return texel.g * 255.0;\n  if (channel == 2) return texel.b * 255.0;\n  if (channel == 3) return texel.a * 255.0;\n  return 0.0;\n}\n\nvec4 encode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 texel = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  texel.rg = integerMod(texel.rg, 256.0);\n  texel.b = integerMod(texel.b, 128.0);\n  texel.a = exponent*0.5 + 63.5;\n  texel.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  texel = floor(texel);\n  texel *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return texel;\n}\n// Dragons end here\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  return decode32(texel);\n}\n\nfloat get16(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x * 2;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize.x * 2, texSize.y));\n  return decode16(texel, index);\n}\n\nfloat get8(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x * 4;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize.x * 4, texSize.y));\n  return decode8(texel, index);\n}\n\nfloat getMemoryOptimized32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int channel = integerMod(index, 4);\n  index = index / 4;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  if (channel == 0) return texel.r;\n  if (channel == 1) return texel.g;\n  if (channel == 2) return texel.b;\n  if (channel == 3) return texel.a;\n  return 0.0;\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  return texture2D(tex, st / vec2(texSize));\n}\n\nfloat getFloatFromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return result[0];\n}\n\nvec2 getVec2FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec2(result[0], result[1]);\n}\n\nvec3 getVec3FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec3(result[0], result[1], result[2]);\n}\n\nvec4 getVec4FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  return getImage2D(tex, texSize, texDim, z, y, x);\n}\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\nvoid color(sampler2D image) {\n  actualColor = texture2D(image, vTexCoord);\n}\n\n__MAIN_CONSTANTS__;\n__MAIN_ARGUMENTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
+var fragmentShader = "__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst int LOOP_MAX = __LOOP_MAX__;\n\n__PLUGINS__;\n__CONSTANTS__;\n\nvarying vec2 vTexCoord;\n\nvec4 round(vec4 x) {\n  return floor(x + 0.5);\n}\n\nfloat round(float x) {\n  return floor(x + 0.5);\n}\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x / y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 texel) {\n  __DECODE32_ENDIANNESS__;\n  texel *= 255.0;\n  vec2 gte128;\n  gte128.x = texel.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = texel.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * texel.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  texel.b = texel.b - 128.0 * gte128.x;\n  res = dot(texel, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nfloat decode16(vec4 texel, int index) {\n\tint channel = integerMod(index, 2);\n\tif (channel == 0) return texel.r * 255.0 + texel.g * 65280.0;\n\tif (channel == 1) return texel.b * 255.0 + texel.a * 65280.0;\n\treturn 0.0;\n}\n\nfloat decode8(vec4 texel, int index) {\n  int channel = integerMod(index, 4);\n  if (channel == 0) return texel.r * 255.0;\n  if (channel == 1) return texel.g * 255.0;\n  if (channel == 2) return texel.b * 255.0;\n  if (channel == 3) return texel.a * 255.0;\n  return 0.0;\n}\n\nvec4 encode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 texel = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  texel.rg = integerMod(texel.rg, 256.0);\n  texel.b = integerMod(texel.b, 128.0);\n  texel.a = exponent*0.5 + 63.5;\n  texel.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  texel = floor(texel);\n  texel *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return texel;\n}\n// Dragons end here\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  return decode32(texel);\n}\n\nfloat get16(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x * 2;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize.x * 2, texSize.y));\n  return decode16(texel, index);\n}\n\nfloat get8(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x * 4;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize.x * 4, texSize.y));\n  return decode8(texel, index);\n}\n\nfloat getMemoryOptimized32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int channel = integerMod(index, 4);\n  index = index / 4;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  if (channel == 0) return texel.r;\n  if (channel == 1) return texel.g;\n  if (channel == 2) return texel.b;\n  if (channel == 3) return texel.a;\n  return 0.0;\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  return texture2D(tex, st / vec2(texSize));\n}\n\nfloat getFloatFromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return result[0];\n}\n\nvec2 getVec2FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec2(result[0], result[1]);\n}\n\nvec3 getVec3FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec3(result[0], result[1], result[2]);\n}\n\nvec4 getVec4FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  return getImage2D(tex, texSize, texDim, z, y, x);\n}\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\nvoid color(sampler2D image) {\n  actualColor = texture2D(image, vTexCoord);\n}\n\n__MAIN_CONSTANTS__;\n__MAIN_ARGUMENTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
 module.exports = {
   fragmentShader: fragmentShader
 };
@@ -14203,7 +14278,7 @@ function boolToString(value) {
 }
 
 function webGLKernelString(gpuKernel, name) {
-  return "() => {\n    ".concat(kernelRunShortcut.toString(), ";\n    const utils = {\n      allPropertiesOf: ").concat(removeNoise(utils.allPropertiesOf.toString()), ",\n      clone: ").concat(removeNoise(utils.clone.toString()), ",\n      splitArray: ").concat(removeNoise(utils.splitArray.toString()), ",\n      getVariableType: ").concat(removeNoise(utils.getVariableType.toString()), ",\n      getDimensions: ").concat(removeNoise(utils.getDimensions.toString()), ",\n      dimToTexSize: ").concat(removeNoise(utils.dimToTexSize.toString()), ",\n      closestSquareDimensions: ").concat(removeNoise(utils.closestSquareDimensions.toString()), ",\n      getMemoryOptimizedFloatTextureSize: ").concat(removeNoise(utils.getMemoryOptimizedFloatTextureSize.toString()), ",\n      roundTo: ").concat(removeNoise(utils.roundTo.toString()), ",\n      flattenTo: ").concat(removeNoise(utils.flattenTo.toString()), ",\n      flatten2dArrayTo: ").concat(removeNoise(utils.flatten2dArrayTo.toString()), ",\n      flatten3dArrayTo: ").concat(removeNoise(utils.flatten3dArrayTo.toString()), ",\n      systemEndianness: ").concat(removeNoise(utils.getSystemEndianness.toString()), ",\n      isArray: ").concat(removeNoise(utils.isArray.toString()), "\n    };\n    const canvases = [];\n    const maxTexSizes = {};\n    let Texture = function() {};\n    let Input = function() {}; \n    class ").concat(name || 'Kernel', " {\n      constructor() {\n        this.maxTexSize = null;\n        this.argumentsLength = 0;\n        this.constantsLength = 0;\n        this.constantBitRatios = ").concat(gpuKernel.constantBitRatios ? JSON.stringify(gpuKernel.constantBitRatios) : 'null', ";\n        this.canvas = null;\n        this.context = null;\n        this.program = null;\n        this.subKernels = null;\n        this.subKernelNames = null;\n        this.wraparound = null;\n        this.drawBuffersMap = ").concat(gpuKernel.drawBuffersMap ? JSON.stringify(gpuKernel.drawBuffersMap) : 'null', ";\n        this.endianness = '").concat(gpuKernel.endianness, "';\n        this.graphical = ").concat(boolToString(gpuKernel.graphical), ";\n        this.optimizeFloatMemory = ").concat(boolToString(gpuKernel.optimizeFloatMemory), ";\n        this.precision = \"").concat(gpuKernel.precision, "\";\n        // TODO: not sure how to handle\n        this.floatOutputForce = ").concat(boolToString(gpuKernel.floatOutputForce), ";\n        this.hardcodeConstants = ").concat(boolToString(gpuKernel.hardcodeConstants), ";\n        this.pipeline = ").concat(boolToString(gpuKernel.pipeline), ";\n        this.argumentNames = ").concat(JSON.stringify(gpuKernel.argumentNames), ";\n        this.argumentTypes = ").concat(JSON.stringify(gpuKernel.argumentTypes), ";\n        this.argumentBitRatios = ").concat(JSON.stringify(gpuKernel.argumentBitRatios), ";\n       \n        this.texSize = ").concat(JSON.stringify(Array.from(gpuKernel.texSize)), ";\n        this.output = ").concat(JSON.stringify(gpuKernel.output), ";\n        this.compiledFragmentShader = `").concat(gpuKernel.compiledFragmentShader, "`;\n\t\t    this.compiledVertexShader = `").concat(gpuKernel.compiledVertexShader, "`;\n\t\t    this.returnType = '").concat(gpuKernel.returnType, "';\n\t\t    this.programUniformLocationCache = {};\n\t\t    this.textureCache = {};\n\t\t    this.subKernelOutputTextures = null;\n\t\t    this.extensions = {};\n\t\t    this.uniform1fCache = {};\n\t\t    this.uniform1iCache = {};\n\t\t    this.uniform2fCache = {};\n\t\t    this.uniform2fvCache = {};\n\t\t    this.uniform2ivCache = {};\n\t\t    this.uniform3fvCache = {};\n\t\t    this.uniform3ivCache = {};\n      }\n      getFragmentShader() { return this.compiledFragmentShader; }\n      getVertexShader() { return this.compiledVertexShader; }\n      validateSettings() {}\n      initExtensions() {}\n      setupArguments() {}\n      setupConstants() {}\n      setCanvas(canvas) { this.canvas = canvas; return this; }\n      setContext(context) { this.context = context; return this; }\n      setTexture(Type) { Texture = Type; }\n      setInput(Type) { Input = Type; }\n      ").concat(removeFnNoise(gpuKernel.getUniformLocation.toString()), "\n      ").concat(removeFnNoise(gpuKernel.build.toString()), "\n      translateSource() {}\n      pickRenderStrategy() {}\n\t\t  ").concat(removeFnNoise(gpuKernel.run.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.addArgument.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.formatArrayTransfer.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.checkOutput.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.getArgumentTexture.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.getTextureCache.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.getOutputTexture.toString()), "\n\t\t  renderOutput() { ").concat(utils.getFunctionBodyFromString(removeFnNoise(gpuKernel.renderOutput.toString())), " }\n\t\t  ").concat(removeFnNoise(gpuKernel.readPackedPixelsToFloat32Array.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.readPackedPixelsToUint8Array.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.readFloatPixelsToFloat32Array.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.updateMaxTexSize.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel._setupOutputTexture.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.detachTextureCache.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform1f.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform1i.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform2f.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform2fv.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform2iv.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform3fv.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform3iv.toString()), "\n\t\t  getReturnTextureType() { return \"").concat(gpuKernel.getReturnTextureType(), "\"; }\n    };\n    return kernelRunShortcut(new ").concat(name || 'Kernel', "());\n  };");
+  return "() => {\n    ".concat(kernelRunShortcut.toString(), ";\n    const utils = {\n      allPropertiesOf: ").concat(removeNoise(utils.allPropertiesOf.toString()), ",\n      clone: ").concat(removeNoise(utils.clone.toString()), ",\n      splitArray: ").concat(removeNoise(utils.splitArray.toString()), ",\n      getVariableType: ").concat(removeNoise(utils.getVariableType.toString()), ",\n      getDimensions: ").concat(removeNoise(utils.getDimensions.toString()), ",\n      dimToTexSize: ").concat(removeNoise(utils.dimToTexSize.toString()), ",\n      closestSquareDimensions: ").concat(removeNoise(utils.closestSquareDimensions.toString()), ",\n      getMemoryOptimizedFloatTextureSize: ").concat(removeNoise(utils.getMemoryOptimizedFloatTextureSize.toString()), ",\n      getMemoryOptimizedPackedTextureSize: ").concat(removeNoise(utils.getMemoryOptimizedPackedTextureSize.toString()), ",\n      roundTo: ").concat(removeNoise(utils.roundTo.toString()), ",\n      flattenTo: ").concat(removeNoise(utils.flattenTo.toString()), ",\n      flatten2dArrayTo: ").concat(removeNoise(utils.flatten2dArrayTo.toString()), ",\n      flatten3dArrayTo: ").concat(removeNoise(utils.flatten3dArrayTo.toString()), ",\n      systemEndianness: ").concat(removeNoise(utils.getSystemEndianness.toString()), ",\n      isArray: ").concat(removeNoise(utils.isArray.toString()), "\n    };\n    const canvases = [];\n    const maxTexSizes = {};\n    let Texture = function() {};\n    let Input = function() {}; \n    class ").concat(name || 'Kernel', " {\n      constructor() {\n        this.maxTexSize = null;\n        this.argumentsLength = 0;\n        this.constantsLength = 0;\n        this.constantBitRatios = ").concat(gpuKernel.constantBitRatios ? JSON.stringify(gpuKernel.constantBitRatios) : 'null', ";\n        this.canvas = null;\n        this.context = null;\n        this.program = null;\n        this.subKernels = null;\n        this.subKernelNames = null;\n        this.drawBuffersMap = ").concat(gpuKernel.drawBuffersMap ? JSON.stringify(gpuKernel.drawBuffersMap) : 'null', ";\n        this.endianness = '").concat(gpuKernel.endianness, "';\n        this.graphical = ").concat(boolToString(gpuKernel.graphical), ";\n        this.optimizeFloatMemory = ").concat(boolToString(gpuKernel.optimizeFloatMemory), ";\n        this.precision = \"").concat(gpuKernel.precision, "\";\n        // TODO: not sure how to handle\n        this.floatOutputForce = ").concat(boolToString(gpuKernel.floatOutputForce), ";\n        this.hardcodeConstants = ").concat(boolToString(gpuKernel.hardcodeConstants), ";\n        this.pipeline = ").concat(boolToString(gpuKernel.pipeline), ";\n        this.argumentNames = ").concat(JSON.stringify(gpuKernel.argumentNames), ";\n        this.argumentTypes = ").concat(JSON.stringify(gpuKernel.argumentTypes), ";\n        this.argumentBitRatios = ").concat(JSON.stringify(gpuKernel.argumentBitRatios), ";\n       \n        this.texSize = ").concat(JSON.stringify(Array.from(gpuKernel.texSize)), ";\n        this.output = ").concat(JSON.stringify(gpuKernel.output), ";\n        this.compiledFragmentShader = `").concat(gpuKernel.compiledFragmentShader, "`;\n\t\t    this.compiledVertexShader = `").concat(gpuKernel.compiledVertexShader, "`;\n\t\t    this.returnType = '").concat(gpuKernel.returnType, "';\n\t\t    this.programUniformLocationCache = {};\n\t\t    this.textureCache = {};\n\t\t    this.subKernelOutputTextures = null;\n\t\t    this.extensions = {};\n\t\t    this.uniform1fCache = {};\n\t\t    this.uniform1iCache = {};\n\t\t    this.uniform2fCache = {};\n\t\t    this.uniform2fvCache = {};\n\t\t    this.uniform2ivCache = {};\n\t\t    this.uniform3fvCache = {};\n\t\t    this.uniform3ivCache = {};\n      }\n      getFragmentShader() { return this.compiledFragmentShader; }\n      getVertexShader() { return this.compiledVertexShader; }\n      validateSettings() {}\n      initExtensions() {}\n      setupArguments() {}\n      setupConstants() {}\n      setCanvas(canvas) { this.canvas = canvas; return this; }\n      setContext(context) { this.context = context; return this; }\n      setTexture(Type) { Texture = Type; }\n      setInput(Type) { Input = Type; }\n      ").concat(removeFnNoise(gpuKernel.getUniformLocation.toString()), "\n      ").concat(removeFnNoise(gpuKernel.build.toString()), "\n      translateSource() {}\n      pickRenderStrategy() {}\n\t\t  ").concat(removeFnNoise(gpuKernel.run.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.addArgument.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.formatArrayTransfer.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.checkOutput.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.getArgumentTexture.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.getTextureCache.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.getOutputTexture.toString()), "\n\t\t  renderOutput() { ").concat(utils.getFunctionBodyFromString(removeFnNoise(gpuKernel.renderOutput.toString())), " }\n\t\t  ").concat(removeFnNoise(gpuKernel.readPackedPixelsToFloat32Array.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.readPackedPixelsToUint8Array.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.readFloatPixelsToFloat32Array.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.updateMaxTexSize.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel._setupOutputTexture.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.detachTextureCache.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform1f.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform1i.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform2f.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform2fv.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform2iv.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform3fv.toString()), "\n\t\t  ").concat(removeFnNoise(gpuKernel.setUniform3iv.toString()), "\n\t\t  getReturnTextureType() { return \"").concat(gpuKernel.getReturnTextureType(), "\"; }\n    };\n    return kernelRunShortcut(new ").concat(name || 'Kernel', "());\n  };");
 }
 
 module.exports = {
@@ -14300,16 +14375,16 @@ function (_GLKernel) {
         testCanvas = new OffscreenCanvas(0, 0);
       }
 
-      if (testCanvas) {
-        testContext = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
-        testExtensions = {
-          OES_texture_float: testContext.getExtension('OES_texture_float'),
-          OES_texture_float_linear: testContext.getExtension('OES_texture_float_linear'),
-          OES_element_index_uint: testContext.getExtension('OES_element_index_uint'),
-          WEBGL_draw_buffers: testContext.getExtension('WEBGL_draw_buffers')
-        };
-        features = this.getFeatures();
-      }
+      if (!testCanvas) return;
+      testContext = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+      if (!testContext || !testContext.getExtension) return;
+      testExtensions = {
+        OES_texture_float: testContext.getExtension('OES_texture_float'),
+        OES_texture_float_linear: testContext.getExtension('OES_texture_float_linear'),
+        OES_element_index_uint: testContext.getExtension('OES_element_index_uint'),
+        WEBGL_draw_buffers: testContext.getExtension('WEBGL_draw_buffers')
+      };
+      features = this.getFeatures();
     }
   }, {
     key: "isContextMatch",
@@ -15202,7 +15277,6 @@ function (_GLKernel) {
         DECODE32_ENDIANNESS: this._getDecode32EndiannessString(),
         ENCODE32_ENDIANNESS: this._getEncode32EndiannessString(),
         DIVIDE_WITH_INTEGER_CHECK: this._getDivideWithIntegerCheckString(),
-        GET_WRAPAROUND: this._getGetWraparoundString(),
         MAIN_CONSTANTS: this._getMainConstantsString(),
         MAIN_ARGUMENTS: this._getMainArgumentsString(args),
         KERNEL: this.getKernelString(),
@@ -15787,15 +15861,6 @@ function (_GLKernel) {
       return this.fixIntegerDivisionAccuracy ? "float div_with_int_check(float x, float y) {\n  if (floor(x) == x && floor(y) == y && integerMod(x, y) == 0.0) {\n    return float(int(x)/int(y));\n  }\n  return x / y;\n}" : '';
     }
     /**
-     * @returns {String} wraparound string
-     */
-
-  }, {
-    key: "_getGetWraparoundString",
-    value: function _getGetWraparoundString() {
-      return this.wraparound ? '  xyz = mod(xyz, texDim);\n' : '';
-    }
-    /**
      * @desc Generate transpiled glsl Strings for user-defined parameters sent to a kernel
      * @param {Array} args - The actual parameters sent to the Kernel
      * @returns {String} result
@@ -15841,7 +15906,7 @@ function (_GLKernel) {
 
             case 'Float':
             case 'Number':
-              result.push("float user_".concat(name, " = ").concat(value));
+              result.push("float user_".concat(name, " = ").concat(Number.isInteger(value) ? value + '.0' : value));
               break;
 
             default:
@@ -16404,6 +16469,7 @@ function (_WebGLKernel) {
       testContext = getContext(2, 2, {
         preserveDrawingBuffer: true
       });
+      if (!testContext || !testContext.getExtension) return;
       testExtensions = {
         STACKGL_resize_drawingbuffer: testContext.getExtension('STACKGL_resize_drawingbuffer'),
         STACKGL_destroy_context: testContext.getExtension('STACKGL_destroy_context'),
@@ -16566,7 +16632,7 @@ module.exports = {
   WebGL2FunctionNode: WebGL2FunctionNode
 };
 },{"../web-gl/function-node":"TrAu"}],"3K6r":[function(require,module,exports) {
-var fragmentShader = "#version 300 es\n__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst int LOOP_MAX = __LOOP_MAX__;\n\n__PLUGINS__;\n__CONSTANTS__;\n\nin vec2 vTexCoord;\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x/y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 texel) {\n  __DECODE32_ENDIANNESS__;\n  texel *= 255.0;\n  vec2 gte128;\n  gte128.x = texel.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = texel.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * texel.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  texel.b = texel.b - 128.0 * gte128.x;\n  res = dot(texel, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nfloat decode16(vec4 texel, int index) {\n  int channel = integerMod(index, 2);\n  return texel[channel*2] * 255.0 + texel[channel*2 + 1] * 65280.0;\n}\n\nfloat decode8(vec4 texel, int index) {\n\tint channel = integerMod(index, 4);\n  return texel[channel] * 255.0;\n}\n\nvec4 encode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 texel = vec4(F * exp2(23.0 - exponent)) * SCALE_FACTOR_INV;\n  texel.rg = integerMod(texel.rg, 256.0);\n  texel.b = integerMod(texel.b, 128.0);\n  texel.a = exponent * 0.5 + 63.5;\n  texel.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  texel = floor(texel);\n  texel *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return texel;\n}\n// Dragons end here\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  return decode32(texel);\n}\n\nfloat get16(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + (texDim.x * (xyz.y + (texDim.y * xyz.z)));\n  int w = texSize.x * 2;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize.x * 2, texSize.y));\n  return decode16(texel, index);\n}\n\nfloat get8(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + (texDim.x * (xyz.y + (texDim.y * xyz.z)));\n  int w = texSize.x * 4;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize.x * 4, texSize.y));\n  return decode8(texel, index);\n}\n\nfloat getMemoryOptimized32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + (texDim.x * (xyz.y + (texDim.y * xyz.z)));\n  int channel = integerMod(index, 4);\n  index = index / 4;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  index = index / 4;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  return texel[channel];\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  return texture(tex, st / vec2(texSize));\n}\n\nvec4 getImage3D(sampler2DArray tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  __GET_WRAPAROUND__;\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  return texture(tex, vec3(st / vec2(texSize), z));\n}\n\nfloat getFloatFromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return result[0];\n}\n\nvec2 getVec2FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec2(result[0], result[1]);\n}\n\nvec3 getVec3FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec3(result[0], result[1], result[2]);\n}\n\nvec4 getVec4FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  return getImage2D(tex, texSize, texDim, z, y, x);\n}\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\n__MAIN_CONSTANTS__;\n__MAIN_ARGUMENTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
+var fragmentShader = "#version 300 es\n__HEADER__;\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\n\nconst int LOOP_MAX = __LOOP_MAX__;\n\n__PLUGINS__;\n__CONSTANTS__;\n\nin vec2 vTexCoord;\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x/y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 texel) {\n  __DECODE32_ENDIANNESS__;\n  texel *= 255.0;\n  vec2 gte128;\n  gte128.x = texel.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = texel.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * texel.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  texel.b = texel.b - 128.0 * gte128.x;\n  res = dot(texel, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nfloat decode16(vec4 texel, int index) {\n  int channel = integerMod(index, 2);\n  return texel[channel*2] * 255.0 + texel[channel*2 + 1] * 65280.0;\n}\n\nfloat decode8(vec4 texel, int index) {\n\tint channel = integerMod(index, 4);\n  return texel[channel] * 255.0;\n}\n\nvec4 encode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 texel = vec4(F * exp2(23.0 - exponent)) * SCALE_FACTOR_INV;\n  texel.rg = integerMod(texel.rg, 256.0);\n  texel.b = integerMod(texel.b, 128.0);\n  texel.a = exponent * 0.5 + 63.5;\n  texel.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  texel = floor(texel);\n  texel *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return texel;\n}\n// Dragons end here\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  return decode32(texel);\n}\n\nfloat get16(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  int index = xyz.x + (texDim.x * (xyz.y + (texDim.y * xyz.z)));\n  int w = texSize.x * 2;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize.x * 2, texSize.y));\n  return decode16(texel, index);\n}\n\nfloat get8(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  int index = xyz.x + (texDim.x * (xyz.y + (texDim.y * xyz.z)));\n  int w = texSize.x * 4;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize.x * 4, texSize.y));\n  return decode8(texel, index);\n}\n\nfloat getMemoryOptimized32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  int index = xyz.x + (texDim.x * (xyz.y + (texDim.y * xyz.z)));\n  int channel = integerMod(index, 4);\n  index = index / 4;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  index = index / 4;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  return texel[channel];\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  return texture(tex, st / vec2(texSize));\n}\n\nvec4 getImage3D(sampler2DArray tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  ivec3 xyz = ivec3(x, y, z);\n  int index = xyz.x + texDim.x * (xyz.y + texDim.y * xyz.z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  return texture(tex, vec3(st / vec2(texSize), z));\n}\n\nfloat getFloatFromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return result[0];\n}\n\nvec2 getVec2FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec2(result[0], result[1]);\n}\n\nvec3 getVec3FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec3(result[0], result[1], result[2]);\n}\n\nvec4 getVec4FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  return getImage2D(tex, texSize, texDim, z, y, x);\n}\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\n__MAIN_CONSTANTS__;\n__MAIN_ARGUMENTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
 module.exports = {
   fragmentShader: fragmentShader
 };
@@ -17573,7 +17639,7 @@ function (_WebGLKernel) {
 
             case 'Float':
             case 'Number':
-              result.push("highp float user_".concat(name, " = ").concat(value));
+              result.push("highp float user_".concat(name, " = ").concat(Number.isInteger(value) ? value + '.0' : value));
               break;
 
             default:
@@ -17869,15 +17935,14 @@ function (_WebGLKernel) {
         testCanvas = new OffscreenCanvas(0, 0);
       }
 
-      if (testCanvas) {
-        testContext = testCanvas.getContext('webgl2');
-        if (!testContext) return;
-        testExtensions = {
-          EXT_color_buffer_float: testContext.getExtension('EXT_color_buffer_float'),
-          OES_texture_float_linear: testContext.getExtension('OES_texture_float_linear')
-        };
-        features = this.getFeatures();
-      }
+      if (!testCanvas) return;
+      testContext = testCanvas.getContext('webgl2');
+      if (!testContext || !testContext.getExtension) return;
+      testExtensions = {
+        EXT_color_buffer_float: testContext.getExtension('EXT_color_buffer_float'),
+        OES_texture_float_linear: testContext.getExtension('OES_texture_float_linear')
+      };
+      features = this.getFeatures();
     }
   }, {
     key: "isContextMatch",
@@ -17954,10 +18019,6 @@ module.exports = {
   WebGL2Kernel: WebGL2Kernel
 };
 },{"../web-gl/kernel":"uiFz","./function-node":"IZrg","../function-builder":"HOQD","../../utils":"9h1E","../../texture":"5wk/","./fragment-shader":"3K6r","./vertex-shader":"sORU"}],"1esj":[function(require,module,exports) {
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -18396,26 +18457,7 @@ function () {
   }, {
     key: "addFunction",
     value: function addFunction(source, settings) {
-      settings = settings || {};
-      if (typeof source !== 'string' && typeof source !== 'function') throw new Error('source not a string or function');
-      var sourceString = typeof source === 'string' ? source : source.toString();
-      var argumentTypes = [];
-
-      if (Array.isArray(settings.argumentTypes)) {
-        argumentTypes = settings.argumentTypes;
-      } else if (_typeof(settings.argumentTypes) === 'object') {
-        argumentTypes = utils.getArgumentNamesFromString(sourceString).map(function (name) {
-          return settings.argumentTypes[name];
-        }) || [];
-      } else {
-        argumentTypes = settings.argumentTypes || [];
-      }
-
-      this.functions.push({
-        source: sourceString,
-        argumentTypes: argumentTypes,
-        returnType: settings.returnType
-      });
+      this.functions.push(utils.functionToIFunction(source, settings));
       return this;
     }
     /**
@@ -18479,7 +18521,7 @@ function upgradeDeprecatedCreateKernelSettings(settings) {
     return;
   }
 
-  var upgradedSettings = _objectSpread({}, settings);
+  var upgradedSettings = Object.assign({}, settings);
 
   if (settings.hasOwnProperty('floatOutput')) {
     utils.warnDeprecated('setting', 'floatOutput', 'precision');
@@ -18610,14 +18652,6 @@ exports.kernelInput = kernelInput;
 
 var _gpu = require('gpu.js');
 
-var _gpu2 = _interopRequireDefault(_gpu);
-
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : {
-    default: obj
-  };
-}
-
 var gpuInstance = null;
 
 function setup(value) {
@@ -18630,20 +18664,20 @@ function teardown() {
 
 function makeKernel(fn, settings) {
   if (gpuInstance === null) {
-    setup(new _gpu2.default({
+    setup(new _gpu.GPU({
       mode: 'cpu'
     }));
   }
 
   if (settings.hasOwnProperty('map')) {
-    return gpuInstance.createKernelMap(settings.map, fn, settings).setOutputToTexture(true);
+    return gpuInstance.createKernelMap(settings.map, fn, settings).setPipeline(true);
   }
 
-  return gpuInstance.createKernel(fn, settings).setOutputToTexture(true);
+  return gpuInstance.createKernel(fn, settings).setPipeline(true);
 }
 
 function kernelInput(input, size) {
-  return _gpu2.default.input(input, size);
+  return _gpu.GPU.input(input, size);
 }
 },{"gpu.js":"Ft/B"}],"M4LY":[function(require,module,exports) {
 "use strict";
@@ -25121,14 +25155,14 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 
-},{"process":"pBGv"}],"upBv":[function(require,module,exports) {
+},{"process":"pBGv"}],"REa7":[function(require,module,exports) {
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],"Q8A6":[function(require,module,exports) {
+},{}],"1ExO":[function(require,module,exports) {
 module.exports = require('events').EventEmitter;
 
 },{"events":"FRpO"}],"yh9p":[function(require,module,exports) {
@@ -27163,7 +27197,7 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":"yh9p","ieee754":"JgNJ","isarray":"upBv","buffer":"dskh"}],"38Wu":[function(require,module,exports) {
+},{"base64-js":"yh9p","ieee754":"JgNJ","isarray":"REa7","buffer":"dskh"}],"38Wu":[function(require,module,exports) {
 
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
@@ -27340,7 +27374,7 @@ function objectToString(o) {
 
 },{"buffer":"dskh"}],"70rD":[function(require,module,exports) {
 
-},{}],"Um5I":[function(require,module,exports) {
+},{}],"wl+m":[function(require,module,exports) {
 
 'use strict';
 
@@ -27421,7 +27455,7 @@ if (util && util.inspect && util.inspect.custom) {
     return this.constructor.name + ' ' + obj;
   };
 }
-},{"safe-buffer":"38Wu","util":"70rD"}],"avqi":[function(require,module,exports) {
+},{"safe-buffer":"38Wu","util":"70rD"}],"GRUB":[function(require,module,exports) {
 'use strict';
 
 /*<replacement>*/
@@ -27566,7 +27600,7 @@ function config (name) {
   return String(val).toLowerCase() === 'true';
 }
 
-},{}],"3I0x":[function(require,module,exports) {
+},{}],"WSyY":[function(require,module,exports) {
 var process = require("process");
 
 var global = arguments[3];
@@ -28246,7 +28280,7 @@ Writable.prototype._destroy = function (err, cb) {
   this.end();
   cb(err);
 };
-},{"process-nextick-args":"Yj0v","core-util-is":"Q14w","inherits":"4Bm0","util-deprecate":"yM1o","./internal/streams/stream":"Q8A6","safe-buffer":"38Wu","./internal/streams/destroy":"avqi","./_stream_duplex":"wldW","process":"pBGv"}],"wldW":[function(require,module,exports) {
+},{"process-nextick-args":"Yj0v","core-util-is":"Q14w","inherits":"4Bm0","util-deprecate":"yM1o","./internal/streams/stream":"1ExO","safe-buffer":"38Wu","./internal/streams/destroy":"GRUB","./_stream_duplex":"Hba+","process":"pBGv"}],"Hba+":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -28378,7 +28412,7 @@ Duplex.prototype._destroy = function (err, cb) {
 
   pna.nextTick(cb, err);
 };
-},{"process-nextick-args":"Yj0v","core-util-is":"Q14w","inherits":"4Bm0","./_stream_readable":"Ogwm","./_stream_writable":"3I0x"}],"3+3F":[function(require,module,exports) {
+},{"process-nextick-args":"Yj0v","core-util-is":"Q14w","inherits":"4Bm0","./_stream_readable":"DHrQ","./_stream_writable":"WSyY"}],"BUbk":[function(require,module,exports) {
 
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -28676,7 +28710,7 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"safe-buffer":"38Wu"}],"Ogwm":[function(require,module,exports) {
+},{"safe-buffer":"38Wu"}],"DHrQ":[function(require,module,exports) {
 
 var global = arguments[3];
 var process = require("process");
@@ -29699,7 +29733,7 @@ function indexOf(xs, x) {
   }
   return -1;
 }
-},{"process-nextick-args":"Yj0v","isarray":"upBv","events":"FRpO","./internal/streams/stream":"Q8A6","safe-buffer":"38Wu","core-util-is":"Q14w","inherits":"4Bm0","util":"70rD","./internal/streams/BufferList":"Um5I","./internal/streams/destroy":"avqi","./_stream_duplex":"wldW","string_decoder/":"3+3F","process":"pBGv"}],"I3bg":[function(require,module,exports) {
+},{"process-nextick-args":"Yj0v","isarray":"REa7","events":"FRpO","./internal/streams/stream":"1ExO","safe-buffer":"38Wu","core-util-is":"Q14w","inherits":"4Bm0","util":"70rD","./internal/streams/BufferList":"wl+m","./internal/streams/destroy":"GRUB","./_stream_duplex":"Hba+","string_decoder/":"BUbk","process":"pBGv"}],"7tlB":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -29914,7 +29948,7 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":"wldW","core-util-is":"Q14w","inherits":"4Bm0"}],"kQBK":[function(require,module,exports) {
+},{"./_stream_duplex":"Hba+","core-util-is":"Q14w","inherits":"4Bm0"}],"nwyA":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -29962,7 +29996,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":"I3bg","core-util-is":"Q14w","inherits":"4Bm0"}],"uwsL":[function(require,module,exports) {
+},{"./_stream_transform":"7tlB","core-util-is":"Q14w","inherits":"4Bm0"}],"tzeh":[function(require,module,exports) {
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = exports;
 exports.Readable = exports;
@@ -29971,19 +30005,19 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_readable.js":"Ogwm","./lib/_stream_writable.js":"3I0x","./lib/_stream_duplex.js":"wldW","./lib/_stream_transform.js":"I3bg","./lib/_stream_passthrough.js":"kQBK"}],"GAH2":[function(require,module,exports) {
+},{"./lib/_stream_readable.js":"DHrQ","./lib/_stream_writable.js":"WSyY","./lib/_stream_duplex.js":"Hba+","./lib/_stream_transform.js":"7tlB","./lib/_stream_passthrough.js":"nwyA"}],"LnjZ":[function(require,module,exports) {
 module.exports = require('./lib/_stream_writable.js');
 
-},{"./lib/_stream_writable.js":"3I0x"}],"dMbb":[function(require,module,exports) {
+},{"./lib/_stream_writable.js":"WSyY"}],"kT1X":[function(require,module,exports) {
 module.exports = require('./lib/_stream_duplex.js');
 
-},{"./lib/_stream_duplex.js":"wldW"}],"yG3q":[function(require,module,exports) {
+},{"./lib/_stream_duplex.js":"Hba+"}],"A9/K":[function(require,module,exports) {
 module.exports = require('./readable').Transform
 
-},{"./readable":"uwsL"}],"jlpe":[function(require,module,exports) {
+},{"./readable":"tzeh"}],"C6nS":[function(require,module,exports) {
 module.exports = require('./readable').PassThrough
 
-},{"./readable":"uwsL"}],"fnRj":[function(require,module,exports) {
+},{"./readable":"tzeh"}],"fnRj":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -30112,7 +30146,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":"FRpO","inherits":"4Bm0","readable-stream/readable.js":"uwsL","readable-stream/writable.js":"GAH2","readable-stream/duplex.js":"dMbb","readable-stream/transform.js":"yG3q","readable-stream/passthrough.js":"jlpe"}],"vEEq":[function(require,module,exports) {
+},{"events":"FRpO","inherits":"4Bm0","readable-stream/readable.js":"tzeh","readable-stream/writable.js":"LnjZ","readable-stream/duplex.js":"kT1X","readable-stream/transform.js":"A9/K","readable-stream/passthrough.js":"C6nS"}],"vEEq":[function(require,module,exports) {
 'use strict';
 
 var _typeof = typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol" ? function (obj) { return _typeof2(obj); } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof2(obj); };
@@ -31764,8 +31798,6 @@ var _get = function get(object, property, receiver) {
 
 var _gpu = require('gpu.js');
 
-var _gpu2 = _interopRequireDefault(_gpu);
-
 var _neuralNetwork = require('./neural-network');
 
 var _neuralNetwork2 = _interopRequireDefault(_neuralNetwork);
@@ -31938,7 +31970,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     _this.weightsCopies = [];
     _this.copyWeights = [];
     _this.errorCheckInterval = 100;
-    _this.gpu = new _gpu2.default({
+    _this.gpu = new _gpu.GPU({
       mode: options.mode
     });
     return _this;
@@ -32086,8 +32118,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       for (var layer = this.outputLayer; layer > 0; layer--) {
         if (layer === this.outputLayer) {
           this.backwardPropagate[layer] = this.gpu.createKernelMap({
-            error: _gpu2.default.alias('calcErrorOutput', calcErrorOutput),
-            deltas: _gpu2.default.alias('calcDeltas', calcDeltas)
+            error: _gpu.GPU.alias('calcErrorOutput', calcErrorOutput),
+            deltas: _gpu.GPU.alias('calcDeltas', calcDeltas)
           }, function (outputs, targets) {
             var output = outputs[_this3.thread.x];
             return calcDeltas(calcErrorOutput(output, targets), output);
@@ -32098,8 +32130,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
           });
         } else {
           this.backwardPropagate[layer] = this.gpu.createKernelMap({
-            error: _gpu2.default.alias('calcError', calcError),
-            deltas: _gpu2.default.alias('calcDeltas', calcDeltas)
+            error: _gpu.GPU.alias('calcError', calcError),
+            deltas: _gpu.GPU.alias('calcDeltas', calcDeltas)
           }, function (nextWeights, outputs, nextDeltas) {
             var output = outputs[_this3.thread.x];
             return calcDeltas(calcError(nextWeights, nextDeltas), output);
@@ -32137,8 +32169,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
         this.changesPropagate[layer] = this.gpu.createKernelMap({
-          weights: _gpu2.default.alias('addWeights', addWeights),
-          changes: _gpu2.default.alias('calcChanges', calcChanges)
+          weights: _gpu.GPU.alias('addWeights', addWeights),
+          changes: _gpu.GPU.alias('calcChanges', calcChanges)
         }, function (previousOutputs, deltas, weights, changes) {
           var change = calcChanges(changes, deltas, previousOutputs);
           return addWeights(change, weights);

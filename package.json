@@ -1,11 +1,12 @@
 {
   "author": "Heather Arthur <fayearthur@gmail.com>",
+  "type": "module",
   "browser": "./dist/brain-browser.js",
   "bugs": {
     "url": "https://github.com/brainjs/brain.js/issues"
   },
   "dependencies": {
-    "gpu.js": "^2.0.0-rc.9",
+    "gpu.js": "^2.0.0-rc.17",
     "thaw.js": "^2.0.0"
   },
   "description": "Neural networks in JavaScript",
