@@ -1,5 +1,4 @@
-var assert = require('assert');
-var brain = require('../../../src');
+import brain from '../../../src';
 
 var net = new brain.NeuralNetwork();
 var xor = [

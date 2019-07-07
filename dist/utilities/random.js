@@ -38,3 +38,5 @@ function randomN(mu, std) {
 
 gaussRandom.returnV = false;
 gaussRandom.vVal = 0;
+
+exports.default = { randomFloat: randomFloat, randomInteger: randomInteger, randomN: randomN };

@@ -1,4 +1,4 @@
-import { randomF as _randomF } from '../../utilities/random';
+import { randomFloat as _randomF } from '../../utilities/random';
 
 // prevent parser from renaming when calling toString() method later
 const randomF = _randomF;

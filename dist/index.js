@@ -1,5 +1,9 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _activation = require('./activation');
 
 var _activation2 = _interopRequireDefault(_activation);
@@ -179,6 +183,4 @@ if (typeof window !== 'undefined') {
   window.brain = brain; //eslint-disable-line
 }
 
-if (typeof module !== 'undefined') {
-  module.exports = brain;
-}
+exports.default = brain;

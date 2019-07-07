@@ -77,6 +77,4 @@ if (typeof window !== 'undefined') {
   window.brain = brain //eslint-disable-line
 }
 
-if (typeof module !== 'undefined') {
-  module.exports = brain;
-}
+export default brain;

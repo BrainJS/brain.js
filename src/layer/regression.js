@@ -1,6 +1,6 @@
 import Base from './base';
 
-class Regression extends Base {
+export default class Regression extends Base {
   constructor(settings) {
     super(settings);
     this.validate();

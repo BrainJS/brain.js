@@ -30,3 +30,5 @@ export function randomN(mu, std) {
 
 gaussRandom.returnV = false;
 gaussRandom.vVal = 0;
+
+export default { randomFloat, randomInteger, randomN };

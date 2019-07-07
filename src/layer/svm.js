@@ -1,6 +1,6 @@
 import Base from './base';
 
-class Regression extends Base {
+export default class Regression extends Base {
   predict() {
     this.weights = this.inputs;
     this.validate();

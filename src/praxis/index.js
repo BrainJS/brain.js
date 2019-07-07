@@ -7,7 +7,7 @@ function momentumRootMeanSquaredPropagation(layer, settings) {
 }
 
 const mRmsProp = momentumRootMeanSquaredPropagation;
-export {
+export default {
   MomentumRootMeanSquaredPropagation,
   momentumRootMeanSquaredPropagation,
   MRmsProp,

@@ -8,7 +8,7 @@ exports.default = sampleI;
 var _random = require('../../utilities/random');
 
 // prevent parser from renaming when calling toString() method later
-var randomF = _random.randomF;
+var randomF = _random.randomFloat;
 /**
  *
  * @param {Matrix} m

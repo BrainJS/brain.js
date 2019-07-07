@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.mRmsProp = exports.MRmsProp = exports.momentumRootMeanSquaredPropagation = exports.MomentumRootMeanSquaredPropagation = undefined;
 
 var _momentumRootMeanSquaredPropagation = require('./momentum-root-mean-squared-propagation');
 
@@ -16,7 +15,9 @@ function momentumRootMeanSquaredPropagation(layer, settings) {
 }
 
 var mRmsProp = momentumRootMeanSquaredPropagation;
-exports.MomentumRootMeanSquaredPropagation = _momentumRootMeanSquaredPropagation2.default;
-exports.momentumRootMeanSquaredPropagation = momentumRootMeanSquaredPropagation;
-exports.MRmsProp = _momentumRootMeanSquaredPropagation.MRmsProp;
-exports.mRmsProp = mRmsProp;
+exports.default = {
+  MomentumRootMeanSquaredPropagation: _momentumRootMeanSquaredPropagation2.default,
+  momentumRootMeanSquaredPropagation: momentumRootMeanSquaredPropagation,
+  MRmsProp: _momentumRootMeanSquaredPropagation.MRmsProp,
+  mRmsProp: mRmsProp
+};

@@ -109,6 +109,12 @@ You check out this fantastic screencast, which explains how to train a simple ne
 - [writing a children's book using a recurrent neural neural network](./examples/childrens-book.js)
 - [simple letter detection](./examples/which-letter-simple.js)
 
+You can run these examples in nodejs like this:
+
+```
+node -r esm examples/javascript/which-letter-simple.js
+```
+
 # Usage
 
 ### Node
