@@ -41,6 +41,7 @@
     "globals": {},
     "setupFiles": [],
     "testPathIgnorePatterns": [
+      "__tests__/test-utils.js",
       "__tests__/.eslintrc.js"
     ],
     "verbose": false
