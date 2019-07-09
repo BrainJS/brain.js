@@ -1,4 +1,4 @@
-import Base from '../../src/layer/base';
+const Base = require('../../src/layer/base');
 
 describe('Base Layer', () => {
   describe('dimensions', () => {

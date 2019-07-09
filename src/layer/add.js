@@ -1,15 +1,15 @@
-import { makeKernel } from '../utilities/kernel';
-import zeros2D from '../utilities/zeros-2d';
-import { Operator } from './types';
+const makeKernel = require('../utilities/kernel').makeKernel;
+const zeros2D = require('../utilities/zeros-2d');
+const Operator = require('./types').Operator;
 
-export function predict(inputWeights1, inputWeights2) {
+function predict(inputWeights1, inputWeights2) {
   return (
     inputWeights1[this.thread.y][this.thread.x] +
     inputWeights2[this.thread.y][this.thread.x]
   );
 }
 
-export default class Add extends Operator {
+class Add extends Operator {
   constructor(inputLayer1, inputLayer2) {
     super();
     this.inputLayer1 = inputLayer1;
@@ -59,3 +59,5 @@ export default class Add extends Operator {
     this.inputLayer2.deltas = this.deltas;
   }
 }
+
+module.exports = { Add, predict };

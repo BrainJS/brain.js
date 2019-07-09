@@ -1,11 +1,11 @@
-import { makeKernel } from '../utilities/kernel';
-import zeros2D from '../utilities/zeros-2d';
+const makeKernel = require('../utilities/kernel').makeKernel;
+const zeros2D = require('../utilities/zeros-2d');
 
 function getMomentum(delta, decay, previousMomentum) {
   return previousMomentum * decay + (1 - decay) * delta * delta;
 }
 
-export function clipByValue(value, max, min) {
+function clipByValue(value, max, min) {
   if (value > max) {
     return max;
   }
@@ -45,7 +45,7 @@ function momentumRootMeanSquaredPropagation(
   );
 }
 
-export function isClippedByValue(value, max, min) {
+function isClippedByValue(value, max, min) {
   if (value > max) {
     return 1;
   }
@@ -55,7 +55,7 @@ export function isClippedByValue(value, max, min) {
   return 0;
 }
 
-export default class MomentumRootMeanSquaredPropagation {
+class MomentumRootMeanSquaredPropagation {
   static get defaults() {
     return {
       decayRate: 0.999,
@@ -105,4 +105,4 @@ export default class MomentumRootMeanSquaredPropagation {
  */
 const MRmsProp = MomentumRootMeanSquaredPropagation;
 
-export { getMomentum, MRmsProp };
+module.exports = { MomentumRootMeanSquaredPropagation, getMomentum, MRmsProp, clipByValue, isClippedByValue };

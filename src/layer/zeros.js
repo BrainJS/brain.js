@@ -1,7 +1,7 @@
-import zeros2D from '../utilities/zeros-2d';
-import { Model } from './types';
+const zeros2D = require('../utilities/zeros-2d');
+const Model = require('./types').Model;
 
-export default class Zeros extends Model {
+class Zeros extends Model {
   constructor(settings) {
     super(settings);
     this.validate();
@@ -17,3 +17,5 @@ export default class Zeros extends Model {
     // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 }
+
+module.exports = Zeros;

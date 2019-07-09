@@ -1,8 +1,8 @@
-import Matrix from './matrix';
-import RandomMatrix from './matrix/random-matrix';
-import RNN from './rnn';
+const Matrix = require('./matrix');
+const RandomMatrix = require('./matrix/random-matrix');
+const RNN = require('./rnn');
 
-export default class GRU extends RNN {
+class GRU extends RNN {
   static getModel(hiddenSize, prevSize) {
     return {
       // update Gate
@@ -90,3 +90,5 @@ export default class GRU extends RNN {
     );
   }
 }
+
+module.exports = GRU;

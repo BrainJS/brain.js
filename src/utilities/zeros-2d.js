@@ -1,6 +1,6 @@
-import zeros from './zeros';
+const zeros = require('./zeros');
 
-export default function zeros2D(width, height) {
+module.exports = function zeros2D(width, height) {
   const result = new Array(height);
   for (let y = 0; y < height; y++) {
     result[y] = zeros(width);

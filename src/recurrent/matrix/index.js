@@ -1,4 +1,4 @@
-import zeros from '../../utilities/zeros';
+const zeros = require('../../utilities/zeros');
 
 /**
  * A matrix
@@ -6,7 +6,7 @@ import zeros from '../../utilities/zeros';
  * @param {Number} [columns]
  * @constructor
  */
-export default class Matrix {
+class Matrix {
   constructor(rows, columns) {
     if (rows === undefined) return;
     if (columns === undefined) return;
@@ -143,3 +143,5 @@ export default class Matrix {
     return deltas;
   }
 }
+
+module.exports = Matrix;

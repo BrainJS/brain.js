@@ -1,30 +1,30 @@
-import Add from './add';
-import Base from './base';
-import Convolution from './convolution';
-import Dropout from './dropout';
+const Add = require('./add').Add;
+const Base = require('./base');
+const Convolution = require('./convolution').Convolution;
+const Dropout = require('./dropout').Dropout;
 // import feedForward from './feed-forward'
-import FullyConnected from './fully-connected';
+const FullyConnected = require('./fully-connected').FullyConnected;
 // import gru from './gru'
-import Input from './input';
-import LeakyRelu from './leaky-relu';
+const Input = require('./input');
+const LeakyRelu = require('./leaky-relu').LeakyRelu;
 // import lstm from './lstm'
-import Multiply from './multiply';
-import MultiplyElement from './multiply-element';
-import Negative from './negative';
-import Ones from './ones';
+const Multiply = require('./multiply').Multiply;
+const MultiplyElement = require('./multiply-element');
+const Negative = require('./negative');
+const Ones = require('./ones');
 // import output from './output'
-import Pool from './pool';
-import Random from './random';
+const Pool = require('./pool').Pool;
+const Random = require('./random');
 // import recurrent from './recurrent'
-import Regression from './regression';
-import Relu from './relu';
-import Sigmoid from './sigmoid';
-import SoftMax from './soft-max';
-import SVM from './svm';
-import Tanh from './tanh';
-import Target from './target';
-import Transpose from './transpose';
-import Zeros from './zeros';
+const Regression = require('./regression');
+const Relu = require('./relu').Relu;
+const Sigmoid = require('./sigmoid').Sigmoid;
+const SoftMax = require('./soft-max').SoftMax;
+const SVM = require('./svm');
+const Tanh = require('./tanh').Tanh;
+const Target = require('./target');
+const Transpose = require('./transpose');
+const Zeros = require('./zeros');
 
 function add(inputLayer1, inputLayer2) {
   return new Add(inputLayer1, inputLayer2);
@@ -110,7 +110,7 @@ function zeros(settings) {
   return new Zeros(settings);
 }
 
-export {
+module.exports = {
   Add,
   add,
   Base,

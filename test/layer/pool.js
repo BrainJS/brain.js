@@ -1,6 +1,7 @@
-import {assert} from 'chai';
-import gpuMock from 'gpu-mock.js';
-import { predict, compare } from '../../src/layer/pool';
+const assert = require('chai').assert;
+const gpuMock = require('gpu-mock.js');
+const pool = require('../../src/layer/pool');
+const { predict, compare } = pool;
 
 describe('Pool Layer', () => {
   describe('.predict (forward propagation)', () => {

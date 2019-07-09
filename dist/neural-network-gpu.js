@@ -1,30 +1,21 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _gpu = require('gpu.js');
-
-var _neuralNetwork = require('./neural-network');
-
-var _neuralNetwork2 = _interopRequireDefault(_neuralNetwork);
-
-var _lookup = require('./lookup');
-
-var _lookup2 = _interopRequireDefault(_lookup);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var gpujs = require('gpu.js');
+var GPU = gpujs.GPU,
+    alias = gpujs.alias;
+
+var NeuralNetwork = require('./neural-network');
+var lookup = require('./lookup');
 
 function weightedSumSigmoid(weights, biases, inputs) {
   var sum = biases[this.thread.x];
@@ -142,7 +133,7 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     _this.weightsCopies = [];
     _this.copyWeights = [];
     _this.errorCheckInterval = 100;
-    _this.gpu = new _gpu.GPU({ mode: options.mode });
+    _this.gpu = new GPU({ mode: options.mode });
     return _this;
   }
 
@@ -277,8 +268,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
       for (var layer = this.outputLayer; layer > 0; layer--) {
         if (layer === this.outputLayer) {
           this.backwardPropagate[layer] = this.gpu.createKernelMap({
-            error: (0, _gpu.alias)('calcErrorOutput', calcErrorOutput),
-            deltas: (0, _gpu.alias)('calcDeltas', calcDeltas)
+            error: alias('calcErrorOutput', calcErrorOutput),
+            deltas: alias('calcDeltas', calcDeltas)
           }, function (outputs, targets) {
             var output = outputs[this.thread.x];
             return calcDeltas(calcErrorOutput(output, targets), output);
@@ -288,8 +279,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
           });
         } else {
           this.backwardPropagate[layer] = this.gpu.createKernelMap({
-            error: (0, _gpu.alias)('calcError', calcError),
-            deltas: (0, _gpu.alias)('calcDeltas', calcDeltas)
+            error: alias('calcError', calcError),
+            deltas: alias('calcDeltas', calcDeltas)
           }, function (nextWeights, outputs, nextDeltas) {
             var output = outputs[this.thread.x];
             return calcDeltas(calcError(nextWeights, nextDeltas), output);
@@ -326,8 +317,8 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
         this.changesPropagate[layer] = this.gpu.createKernelMap({
-          weights: (0, _gpu.alias)('addWeights', addWeights),
-          changes: (0, _gpu.alias)('calcChanges', calcChanges)
+          weights: alias('addWeights', addWeights),
+          changes: alias('calcChanges', calcChanges)
         }, function (previousOutputs, deltas, weights, changes) {
           var change = calcChanges(changes, deltas, previousOutputs);
 
@@ -420,14 +411,14 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
     value: function run(input) {
       if (!this.isRunnable) return null;
       if (this.inputLookup) {
-        input = _lookup2.default.toArray(this.inputLookup, input);
+        input = lookup.toArray(this.inputLookup, input);
       }
       var inputTexture = this._texturizeInputData(input);
       var outputTextures = this.runInput(inputTexture);
       var output = outputTextures.toArray(this.gpu);
 
       if (this.outputLookup) {
-        output = _lookup2.default.toHash(this.outputLookup, output);
+        output = lookup.toHash(this.outputLookup, output);
       }
       return output;
     }
@@ -519,6 +510,6 @@ var NeuralNetworkGPU = function (_NeuralNetwork) {
   }]);
 
   return NeuralNetworkGPU;
-}(_neuralNetwork2.default);
+}(NeuralNetwork);
 
-exports.default = NeuralNetworkGPU;
+module.exports = NeuralNetworkGPU;

@@ -3,7 +3,7 @@
  * @param {Matrix} m
  * @returns {number}
  */
-export default function maxI(m) {
+module.exports = function maxI(m) {
   // argmax of array w
   const { weights } = m;
   let maxv = weights[0];

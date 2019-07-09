@@ -1,5 +1,6 @@
-import Matrix from '.';
-import { randomN } from '../../utilities/random';
+const Matrix = require('.');
+const randomN = require('../../utilities/random').randomN;
+
 /**
  *
  * @param {Number} rows
@@ -8,7 +9,7 @@ import { randomN } from '../../utilities/random';
  * @param std
  * @constructor
  */
-export default class extends Matrix {
+class RandomNMatrix extends Matrix {
   constructor(rows, columns, mu, std) {
     super(rows, columns);
     this.fillRandN(mu, std);
@@ -21,3 +22,5 @@ export default class extends Matrix {
     }
   }
 }
+
+module.exports = RandomNMatrix;

@@ -1,18 +1,6 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _stream = require('stream');
-
-var _lookup = require('./lookup');
-
-var _lookup2 = _interopRequireDefault(_lookup);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -21,6 +9,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var Writable = require('stream').Writable;
+var lookup = require('./lookup');
 
 /**
  *
@@ -148,9 +139,9 @@ var TrainStream = function (_Writable) {
 
       if (!this.dataFormatDetermined) {
         // create the lookup
-        this.neuralNetwork.inputLookup = _lookup2.default.lookupFromArray(this.inputKeys);
+        this.neuralNetwork.inputLookup = lookup.lookupFromArray(this.inputKeys);
         if (!Array.isArray(this.firstDatum.output)) {
-          this.neuralNetwork.outputLookup = _lookup2.default.lookupFromArray(this.outputKeys);
+          this.neuralNetwork.outputLookup = lookup.lookupFromArray(this.outputKeys);
         }
 
         var data = this.neuralNetwork.formatData(this.firstDatum);
@@ -216,6 +207,6 @@ var TrainStream = function (_Writable) {
   }]);
 
   return TrainStream;
-}(_stream.Writable);
+}(Writable);
 
-exports.default = TrainStream;
+module.exports = TrainStream;

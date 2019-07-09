@@ -1,15 +1,11 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = rowPluck;
 /**
  * @param {Matrix} product
  * @param {Matrix} left
  * @param {Number} rowPluckIndex
  */
-function rowPluck(product, left, rowPluckIndex) {
+module.exports = function rowPluck(product, left, rowPluckIndex) {
   var columns = left.columns;
 
   var rowBase = columns * rowPluckIndex;
@@ -17,4 +13,4 @@ function rowPluck(product, left, rowPluckIndex) {
     product.weights[column] = left.weights[rowBase + column];
     product.deltas[column] = 0;
   }
-}
+};

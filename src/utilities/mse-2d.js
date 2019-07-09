@@ -1,4 +1,4 @@
-export default function mse2d(errors) {
+module.exports = function mse2d(errors) {
   // mean squared error 2d
   let sum = 0;
   const length = errors.length * errors[0].length;

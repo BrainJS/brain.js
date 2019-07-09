@@ -1,24 +1,11 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.MRmsProp = exports.getMomentum = undefined;
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-exports.clipByValue = clipByValue;
-exports.isClippedByValue = isClippedByValue;
-
-var _kernel = require('../utilities/kernel');
-
-var _zeros2d = require('../utilities/zeros-2d');
-
-var _zeros2d2 = _interopRequireDefault(_zeros2d);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var makeKernel = require('../utilities/kernel').makeKernel;
+var zeros2D = require('../utilities/zeros-2d');
 
 function getMomentum(delta, decay, previousMomentum) {
   return previousMomentum * decay + (1 - decay) * delta * delta;
@@ -79,7 +66,7 @@ var MomentumRootMeanSquaredPropagation = function () {
     this.layer = layer;
     this.width = layer.width;
     this.height = layer.height;
-    this.momentums = (0, _zeros2d2.default)(layer.width, layer.height);
+    this.momentums = zeros2D(layer.width, layer.height);
     Object.assign(this, this.constructor.defaults, settings);
     this.setupKernels();
   }
@@ -94,7 +81,7 @@ var MomentumRootMeanSquaredPropagation = function () {
   }, {
     key: 'setupKernels',
     value: function setupKernels() {
-      this.kernel = (0, _kernel.makeKernel)(momentumRootMeanSquaredPropagation, {
+      this.kernel = makeKernel(momentumRootMeanSquaredPropagation, {
         output: [this.width, this.height],
         constants: {
           clipValue: this.clipValue,
@@ -120,8 +107,6 @@ var MomentumRootMeanSquaredPropagation = function () {
  */
 
 
-exports.default = MomentumRootMeanSquaredPropagation;
 var MRmsProp = MomentumRootMeanSquaredPropagation;
 
-exports.getMomentum = getMomentum;
-exports.MRmsProp = MRmsProp;
+module.exports = { MomentumRootMeanSquaredPropagation: MomentumRootMeanSquaredPropagation, getMomentum: getMomentum, MRmsProp: MRmsProp, clipByValue: clipByValue, isClippedByValue: isClippedByValue };

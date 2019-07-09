@@ -1,6 +1,8 @@
-import {assert} from 'chai';
-import gpuMock from 'gpu-mock.js';
-import { predict, compare } from '../../src/layer/leaky-relu';
+const assert = require('chai').assert;
+const gpuMock = require('gpu-mock.js');
+const llr = require('../../src/layer/leaky-relu');
+const predict = llr.predict;
+const compare = llr.predict;
 
 describe('Leaky Relu Layer', () => {
   describe('.predict (forward propagation)', () => {

@@ -1,16 +1,12 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = multiply;
 /**
  * multiply {left} and {right} matrix weights to {into}
  * @param {Matrix} product
  * @param {Matrix} left
  * @param {Matrix} right
  */
-function multiply(product, left, right) {
+module.exports = function multiply(product, left, right) {
   var leftRows = left.rows;
   var leftColumns = left.columns;
   var rightColumns = right.columns;
@@ -35,4 +31,4 @@ function multiply(product, left, right) {
       product.weights[rightRowBase + rightColumn] = dot;
     }
   }
-}
+};

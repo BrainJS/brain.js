@@ -7,7 +7,7 @@
  * @param {object} testSet
  * @returns {void|*}
  */
-export function testPartition(Classifier, opts, trainOpts, trainSet, testSet) {
+function testPartition(Classifier, opts, trainOpts, trainSet, testSet) {
   const classifier = new Classifier(opts);
   const beginTrain = Date.now();
   const trainingStats = classifier.train(trainSet, trainOpts);
@@ -32,7 +32,7 @@ export function testPartition(Classifier, opts, trainOpts, trainSet, testSet) {
  * Using Durstenfeld shuffle algorithm.
  * source: http://stackoverflow.com/a/12646864/1324039
  */
-export function shuffleArray(array) {
+function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     const temp = array[i];
@@ -70,7 +70,7 @@ export function shuffleArray(array) {
  *  }
  * }
  */
-export default function crossValidate(Classifier, data, opts, trainOpts, k) {
+function crossValidate(Classifier, data, opts, trainOpts, k) {
   k = k || 4;
   const size = data.length / k;
 
@@ -140,3 +140,5 @@ export default function crossValidate(Classifier, data, opts, trainOpts, k) {
     misclasses,
   };
 }
+
+module.exports = { testPartition, shuffleArray, crossValidate };

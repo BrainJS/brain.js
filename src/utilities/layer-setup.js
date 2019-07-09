@@ -1,4 +1,4 @@
-export function setStride(layer, settings) {
+function setStride(layer, settings) {
   const { defaults } = layer.constructor;
 
   if (settings.hasOwnProperty('stride')) {
@@ -19,7 +19,7 @@ export function setStride(layer, settings) {
   }
 }
 
-export function setPadding(layer, settings) {
+function setPadding(layer, settings) {
   const { defaults } = layer.constructor;
 
   if (settings.hasOwnProperty('padding')) {
@@ -39,3 +39,5 @@ export function setPadding(layer, settings) {
     }
   }
 }
+
+module.exports = { setStride, setPadding };

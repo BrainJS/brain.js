@@ -1,5 +1,5 @@
-import gpuMock from 'gpu-mock.js';
-import { predict } from '../../src/layer/add';
+const gpuMock = require('gpu-mock.js');
+const predict = require('../../src/layer/add').predict;
 
 describe('Add Layer', () => {
   describe('.predict (forward propagation)', () => {

@@ -1,5 +1,5 @@
 // TODO: implement and test
-export default class Adam {}
+class Adam {}
 
 function adam() {
   // gradient = grad_fun(theta)
@@ -21,3 +21,5 @@ function adam() {
   // var dx =  - this.learning_rate * biasCorr1 / (Math.sqrt(biasCorr2) + this.eps);
   // p[j] += dx;
 }
+
+module.exports = Adam;

@@ -1,57 +1,26 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _thaw = require('thaw.js');
-
-var _thaw2 = _interopRequireDefault(_thaw);
-
-var _lookup = require('./lookup');
-
-var _lookup2 = _interopRequireDefault(_lookup);
-
-var _trainStream = require('./train-stream');
-
-var _trainStream2 = _interopRequireDefault(_trainStream);
-
-var _max = require('./utilities/max');
-
-var _max2 = _interopRequireDefault(_max);
-
-var _mse = require('./utilities/mse');
-
-var _mse2 = _interopRequireDefault(_mse);
-
-var _randos = require('./utilities/randos');
-
-var _randos2 = _interopRequireDefault(_randos);
-
-var _range = require('./utilities/range');
-
-var _range2 = _interopRequireDefault(_range);
-
-var _toArray = require('./utilities/to-array');
-
-var _toArray2 = _interopRequireDefault(_toArray);
-
-var _zeros = require('./utilities/zeros');
-
-var _zeros2 = _interopRequireDefault(_zeros);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var Thaw = require('thaw.js');
+var lookup = require('./lookup');
+var TrainStream = require('./train-stream');
+var max = require('./utilities/max');
+var mse = require('./utilities/mse');
+var randos = require('./utilities/randos');
+var range = require('./utilities/range');
+var toArray = require('./utilities/to-array');
+var zeros = require('./utilities/zeros');
+
 /**
  * @param {object} options
  * @constructor
  */
+
 var NeuralNetwork = function () {
   _createClass(NeuralNetwork, null, [{
     key: '_validateTrainingOptions',
@@ -176,19 +145,19 @@ var NeuralNetwork = function () {
 
       for (var layer = 0; layer <= this.outputLayer; layer++) {
         var size = this.sizes[layer];
-        this.deltas[layer] = (0, _zeros2.default)(size);
-        this.errors[layer] = (0, _zeros2.default)(size);
-        this.outputs[layer] = (0, _zeros2.default)(size);
+        this.deltas[layer] = zeros(size);
+        this.errors[layer] = zeros(size);
+        this.outputs[layer] = zeros(size);
 
         if (layer > 0) {
-          this.biases[layer] = (0, _randos2.default)(size);
+          this.biases[layer] = randos(size);
           this.weights[layer] = new Array(size);
           this.changes[layer] = new Array(size);
 
           for (var node = 0; node < size; node++) {
             var prevSize = this.sizes[layer - 1];
-            this.weights[layer][node] = (0, _randos2.default)(prevSize);
-            this.changes[layer][node] = (0, _zeros2.default)(prevSize);
+            this.weights[layer][node] = randos(prevSize);
+            this.changes[layer][node] = zeros(prevSize);
           }
         }
       }
@@ -244,13 +213,13 @@ var NeuralNetwork = function () {
     value: function run(input) {
       if (!this.isRunnable) return null;
       if (this.inputLookup) {
-        input = _lookup2.default.toArray(this.inputLookup, input);
+        input = lookup.toArray(this.inputLookup, input);
       }
 
       var output = [].concat(_toConsumableArray(this.runInput(input)));
 
       if (this.outputLookup) {
-        output = _lookup2.default.toHash(this.outputLookup, output);
+        output = lookup.toHash(this.outputLookup, output);
       }
       return output;
     }
@@ -583,7 +552,7 @@ var NeuralNetwork = function () {
 
       return new Promise(function (resolve, reject) {
         try {
-          var thawedTrain = new _thaw2.default(new Array(_this4.trainOpts.iterations), {
+          var thawedTrain = new Thaw(new Array(_this4.trainOpts.iterations), {
             delay: true,
             each: function each() {
               return _this4._trainingTick(data, status, endTime) || thawedTrain.stop();
@@ -616,7 +585,7 @@ var NeuralNetwork = function () {
       this._adjustWeights();
 
       if (logErrorRate) {
-        return (0, _mse2.default)(this.errors[this.outputLayer]);
+        return mse(this.errors[this.outputLayer]);
       }
       return null;
     }
@@ -777,24 +746,24 @@ var NeuralNetwork = function () {
       var datumCheck = data[0].input;
       if (!Array.isArray(datumCheck) && !(datumCheck instanceof Float32Array)) {
         if (!this.inputLookup) {
-          this.inputLookup = _lookup2.default.buildLookup(data.map(function (value) {
+          this.inputLookup = lookup.buildLookup(data.map(function (value) {
             return value.input;
           }));
         }
         data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this5.inputLookup, datum.input);
+          var array = lookup.toArray(_this5.inputLookup, datum.input);
           return Object.assign({}, datum, { input: array });
         }, this);
       }
 
       if (!Array.isArray(data[0].output)) {
         if (!this.outputLookup) {
-          this.outputLookup = _lookup2.default.buildLookup(data.map(function (value) {
+          this.outputLookup = lookup.buildLookup(data.map(function (value) {
             return value.output;
           }));
         }
         data = data.map(function (datum) {
-          var array = _lookup2.default.toArray(_this5.outputLookup, datum.output);
+          var array = lookup.toArray(_this5.outputLookup, datum.output);
           return Object.assign({}, datum, { output: array });
         }, this);
       }
@@ -844,8 +813,8 @@ var NeuralNetwork = function () {
           // eslint-disable-next-line
           expected = target[0];
         } else {
-          actual = output.indexOf((0, _max2.default)(output));
-          expected = target.indexOf((0, _max2.default)(target));
+          actual = output.indexOf(max(output));
+          expected = target.indexOf(max(target));
         }
 
         if (actual !== expected) {
@@ -872,7 +841,7 @@ var NeuralNetwork = function () {
         var errors = output.map(function (value, j) {
           return target[j] - value;
         });
-        sum += (0, _mse2.default)(errors);
+        sum += mse(errors);
       };
 
       for (var i = 0; i < data.length; i++) {
@@ -954,7 +923,7 @@ var NeuralNetwork = function () {
         } else if (layer === _this7.outputLayer && _this7.outputLookup) {
           nodes = Object.keys(_this7.outputLookup);
         } else {
-          nodes = (0, _range2.default)(0, _this7.sizes[layer]);
+          nodes = range(0, _this7.sizes[layer]);
         }
 
         var _loop3 = function _loop3(j) {
@@ -1010,9 +979,9 @@ var NeuralNetwork = function () {
       var _loop4 = function _loop4(i) {
         var layer = json.layers[i];
         if (i === 0 && (!layer[0] || json.inputLookup)) {
-          _this8.inputLookup = _lookup2.default.lookupFromHash(layer);
+          _this8.inputLookup = lookup.lookupFromHash(layer);
         } else if (i === _this8.outputLayer && (!layer[0] || json.outputLookup)) {
-          _this8.outputLookup = _lookup2.default.lookupFromHash(layer);
+          _this8.outputLookup = lookup.lookupFromHash(layer);
         }
         if (i > 0) {
           var _nodes = Object.keys(layer);
@@ -1021,7 +990,7 @@ var NeuralNetwork = function () {
           Object.keys(_nodes).forEach(function (j) {
             var node = _nodes[j];
             _this8.biases[i][j] = layer[node].bias;
-            _this8.weights[i][j] = (0, _toArray2.default)(layer[node].weights);
+            _this8.weights[i][j] = toArray(layer[node].weights);
           });
         }
       };
@@ -1110,7 +1079,7 @@ var NeuralNetwork = function () {
       opts = opts || {};
       opts.neuralNetwork = this;
       this.setActivation();
-      this.trainStream = new _trainStream2.default(opts);
+      this.trainStream = new TrainStream(opts);
       return this.trainStream;
     }
   }, {
@@ -1138,4 +1107,4 @@ var NeuralNetwork = function () {
   return NeuralNetwork;
 }();
 
-exports.default = NeuralNetwork;
+module.exports = NeuralNetwork;

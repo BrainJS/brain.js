@@ -1,6 +1,6 @@
-import randomWeight from './random-weight';
+const randomWeight = require('./random-weight');
 
-export default function randos(size) {
+module.exports = function randos(size) {
   const array = new Float32Array(size);
   for (let i = 0; i < size; i++) {
     array[i] = randomWeight();

@@ -1,13 +1,13 @@
-import MomentumRootMeanSquaredPropagation, {
-  MRmsProp,
-} from './momentum-root-mean-squared-propagation';
+const mrmsp = require('./momentum-root-mean-squared-propagation');
+const MomentumRootMeanSquaredPropagation = mrmsp.MomentumRootMeanSquaredPropagation;
+const MRmsProp = mrmsp.MRmsProp;
 
 function momentumRootMeanSquaredPropagation(layer, settings) {
   return new MomentumRootMeanSquaredPropagation(layer, settings);
 }
 
 const mRmsProp = momentumRootMeanSquaredPropagation;
-export {
+module.exports = {
   MomentumRootMeanSquaredPropagation,
   momentumRootMeanSquaredPropagation,
   MRmsProp,

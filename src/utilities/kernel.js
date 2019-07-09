@@ -1,16 +1,16 @@
-import { GPU } from 'gpu.js';
+const GPU = require('gpu.js').GPU;
 
 let gpuInstance = null;
 
-export function setup(value) {
+function setup(value) {
   gpuInstance = value;
 }
 
-export function teardown() {
+function teardown() {
   gpuInstance = null;
 }
 
-export function makeKernel(fn, settings) {
+function makeKernel(fn, settings) {
   if (gpuInstance === null) {
     setup(new GPU({ mode: 'cpu' }));
   }
@@ -24,6 +24,8 @@ export function makeKernel(fn, settings) {
     .setPipeline(true);
 }
 
-export function kernelInput(input, size) {
+function kernelInput(input, size) {
   return GPU.input(input, size);
 }
+
+module.exports = { setup, teardown, makeKernel, kernelInput };

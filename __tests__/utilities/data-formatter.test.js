@@ -1,4 +1,4 @@
-import DataFormatter from '../../src/utilities/data-formatter';
+const DataFormatter = require('../../src/utilities/data-formatter');
 
 describe('DataFormatter', () => {
   test('does not have zeros', () => {

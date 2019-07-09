@@ -4,7 +4,7 @@
  * @param {NeuralNetwork} net
  * @returns {*}
  */
-export default function likely(input, net) {
+module.exports = function likely(input, net) {
   const output = net.run(input);
   let maxProp = null;
   let maxValue = -1;

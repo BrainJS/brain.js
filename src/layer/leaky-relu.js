@@ -1,19 +1,21 @@
-import { Activation } from './types';
-import { makeKernel } from '../utilities/kernel';
-import { activate, measure } from '../activation/leaky-relu';
+const Activation = require('./types').Activation;
+const makeKernel = require('../utilities/kernel').makeKernel;
+const lra = require('../activation/leaky-relu');
+const activate = lra.activate;
+const measure = lra.measure;
 
-export function predict(inputs) {
+function predict(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-export function compare(weights, deltas) {
+function compare(weights, deltas) {
   return measure(
     weights[this.thread.y][this.thread.x],
     deltas[this.thread.y][this.thread.x]
   );
 }
 
-export default class LeakyRelu extends Activation {
+class LeakyRelu extends Activation {
   constructor(inputLayer) {
     super();
     this.inputLayer = inputLayer;
@@ -42,3 +44,5 @@ export default class LeakyRelu extends Activation {
     this.deltas = this.compareKernel(this.weights, this.deltas);
   }
 }
+
+module.exports = { LeakyRelu, predict, compare };

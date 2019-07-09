@@ -1,4 +1,4 @@
-import MomentumRootMeanSquaredPropagation from '../../src/praxis/momentum-root-mean-squared-propagation';
+const MomentumRootMeanSquaredPropagation = require('../../src/praxis/momentum-root-mean-squared-propagation').MomentumRootMeanSquaredPropagation;
 
 describe('MomentumRootMeanSquaredPropagation', () => {
   describe('.run()', () => {

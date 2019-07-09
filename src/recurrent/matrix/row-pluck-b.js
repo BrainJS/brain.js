@@ -4,7 +4,7 @@
  * @param {Matrix} left
  * @param {Number} rowIndex
  */
-export default function rowPluckB(product, left, rowIndex) {
+module.exports = function rowPluckB(product, left, rowIndex) {
   const { columns } = left;
   const rowBase = columns * rowIndex;
   for (let column = 0; column < columns; column++) {

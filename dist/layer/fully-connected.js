@@ -1,56 +1,23 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-exports.predict = predict;
-exports.predict3D = predict3D;
-exports.compareInputDeltas = compareInputDeltas;
-exports.compareInputDeltas3D = compareInputDeltas3D;
-exports.compareBiases = compareBiases;
-exports.compareFilterDeltas = compareFilterDeltas;
-exports.compareFilterDeltas3D = compareFilterDeltas3D;
-
-var _types = require('./types');
-
-var _kernel = require('../utilities/kernel');
-
-var _values = require('../utilities/values');
-
-var _values2 = _interopRequireDefault(_values);
-
-var _randos2d = require('../utilities/randos-2d');
-
-var _randos2d2 = _interopRequireDefault(_randos2d);
-
-var _randos3d = require('../utilities/randos-3d');
-
-var _randos3d2 = _interopRequireDefault(_randos3d);
-
-var _zeros = require('../utilities/zeros');
-
-var _zeros2 = _interopRequireDefault(_zeros);
-
-var _zeros2d = require('../utilities/zeros-2d');
-
-var _zeros2d2 = _interopRequireDefault(_zeros2d);
-
-var _zeros3d = require('../utilities/zeros-3d');
-
-var _zeros3d2 = _interopRequireDefault(_zeros3d);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Filter = require('./types').Filter;
+var makeKernel = require('../utilities/kernel').makeKernel;
+var values = require('../utilities/values');
+var randos2D = require('../utilities/randos-2d');
+var randos3D = require('../utilities/randos-3d');
+var zeros = require('../utilities/zeros');
+var zeros2D = require('../utilities/zeros-2d');
+var zeros3D = require('../utilities/zeros-3d');
 
 function predict(inputs, filters, biases) {
   var output = 0;
@@ -136,18 +103,18 @@ var FullyConnected = function (_Filter) {
 
     var connectionCount = inputLayer.width * inputLayer.height * inputLayer.depth;
 
-    _this.biases = (0, _values2.default)(_this.height, _this.bias);
-    _this.biasDeltas = (0, _zeros2.default)(_this.height);
+    _this.biases = values(_this.height, _this.bias);
+    _this.biasDeltas = zeros(_this.height);
 
-    _this.filters = (0, _randos2d2.default)(connectionCount, _this.height);
-    _this.filterDeltas = (0, _zeros2d2.default)(connectionCount, _this.height);
+    _this.filters = randos2D(connectionCount, _this.height);
+    _this.filterDeltas = zeros2D(connectionCount, _this.height);
 
     if (_this.depth > 1) {
-      _this.weights = (0, _randos3d2.default)(_this.width, _this.height);
-      _this.deltas = (0, _zeros3d2.default)(_this.width, _this.height);
+      _this.weights = randos3D(_this.width, _this.height);
+      _this.deltas = zeros3D(_this.width, _this.height);
     } else if (_this.height > 1) {
-      _this.weights = (0, _randos2d2.default)(_this.width, _this.height);
-      _this.deltas = (0, _zeros2d2.default)(_this.width, _this.height);
+      _this.weights = randos2D(_this.width, _this.height);
+      _this.deltas = zeros2D(_this.width, _this.height);
     }
     return _this;
   }
@@ -165,7 +132,7 @@ var FullyConnected = function (_Filter) {
 
       var connectionCount = inputLayer.width * inputLayer.height * inputLayer.depth;
       if (inputLayer.depth > 1) {
-        this.predictKernel = (0, _kernel.makeKernel)(predict3D, {
+        this.predictKernel = makeKernel(predict3D, {
           output: [this.width, this.height],
           constants: {
             inputHeight: inputLayer.height,
@@ -174,7 +141,7 @@ var FullyConnected = function (_Filter) {
           }
         });
 
-        this.compareFilterDeltasKernel = (0, _kernel.makeKernel)(compareFilterDeltas3D, {
+        this.compareFilterDeltasKernel = makeKernel(compareFilterDeltas3D, {
           output: [connectionCount, this.height],
           constants: {
             inputWidth: inputLayer.width,
@@ -182,14 +149,14 @@ var FullyConnected = function (_Filter) {
           }
         });
 
-        this.compareInputDeltasKernel = (0, _kernel.makeKernel)(compareInputDeltas3D, {
+        this.compareInputDeltasKernel = makeKernel(compareInputDeltas3D, {
           output: [inputLayer.width, inputLayer.height, inputLayer.depth],
           constants: {
             filterCount: this.height
           }
         });
       } else {
-        this.predictKernel = (0, _kernel.makeKernel)(predict, {
+        this.predictKernel = makeKernel(predict, {
           output: [this.width, this.height],
           constants: {
             inputHeight: inputLayer.height,
@@ -197,14 +164,14 @@ var FullyConnected = function (_Filter) {
           }
         });
 
-        this.compareFilterDeltasKernel = (0, _kernel.makeKernel)(compareFilterDeltas, {
+        this.compareFilterDeltasKernel = makeKernel(compareFilterDeltas, {
           output: [connectionCount, this.height],
           constants: {
             inputWidth: inputLayer.width
           }
         });
 
-        this.compareInputDeltasKernel = (0, _kernel.makeKernel)(compareInputDeltas, {
+        this.compareInputDeltasKernel = makeKernel(compareInputDeltas, {
           output: [inputLayer.width, inputLayer.height],
           constants: {
             filterCount: this.height
@@ -212,7 +179,7 @@ var FullyConnected = function (_Filter) {
         });
       }
 
-      this.compareBiasesKernel = (0, _kernel.makeKernel)(compareBiases, {
+      this.compareBiasesKernel = makeKernel(compareBiases, {
         output: [this.width, this.height]
       });
     }
@@ -235,6 +202,6 @@ var FullyConnected = function (_Filter) {
   }]);
 
   return FullyConnected;
-}(_types.Filter);
+}(Filter);
 
-exports.default = FullyConnected;
+module.exports = { FullyConnected: FullyConnected, predict: predict, predict3D: predict3D, compareInputDeltas: compareInputDeltas, compareInputDeltas3D: compareInputDeltas3D, compareBiases: compareBiases, compareFilterDeltas: compareFilterDeltas, compareFilterDeltas3D: compareFilterDeltas3D };

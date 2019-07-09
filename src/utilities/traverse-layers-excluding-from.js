@@ -1,4 +1,4 @@
-export default function traverseLayersExcludingFrom(
+module.exports = function traverseLayersExcludingFrom(
   layer,
   inputLayer,
   recurrentLayer,

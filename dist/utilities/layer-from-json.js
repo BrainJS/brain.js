@@ -1,12 +1,8 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = layerFromJSON;
 var layer = require('../layer');
 
-function layerFromJSON(jsonLayer) {
+module.exports = function layerFromJSON(jsonLayer) {
   if (!layer.hasOwnProperty(jsonLayer.type)) return null;
   var Layer = layer[jsonLayer.type];
 
@@ -20,4 +16,4 @@ function layerFromJSON(jsonLayer) {
   });
 
   return realLayer;
-}
+};

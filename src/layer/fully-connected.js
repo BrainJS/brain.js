@@ -1,13 +1,13 @@
-import { Filter } from './types';
-import { makeKernel } from '../utilities/kernel';
-import values from '../utilities/values';
-import randos2D from '../utilities/randos-2d';
-import randos3D from '../utilities/randos-3d';
-import zeros from '../utilities/zeros';
-import zeros2D from '../utilities/zeros-2d';
-import zeros3D from '../utilities/zeros-3d';
+const Filter = require('./types').Filter;
+const makeKernel = require('../utilities/kernel').makeKernel;
+const values = require('../utilities/values');
+const randos2D = require('../utilities/randos-2d');
+const randos3D = require('../utilities/randos-3d');
+const zeros = require('../utilities/zeros');
+const zeros2D = require('../utilities/zeros-2d');
+const zeros3D = require('../utilities/zeros-3d');
 
-export function predict(inputs, filters, biases) {
+function predict(inputs, filters, biases) {
   let output = 0;
   let i = 0;
   for (let y = 0; y < this.constants.inputHeight; y++) {
@@ -19,7 +19,7 @@ export function predict(inputs, filters, biases) {
   return output + biases[this.thread.x];
 }
 
-export function predict3D(inputs, filters, biases) {
+function predict3D(inputs, filters, biases) {
   let output = 0;
   let i = 0;
   for (let z = 0; z < this.constants.inputDepth; z++) {
@@ -33,7 +33,7 @@ export function predict3D(inputs, filters, biases) {
   return output + biases[this.thread.x];
 }
 
-export function compareInputDeltas(inputDeltas, deltas, filters) {
+function compareInputDeltas(inputDeltas, deltas, filters) {
   let sum = 0;
   const filterX = this.thread.x + (this.thread.y * this.output.x);
   for (let filterY = 0; filterY < this.constants.filterCount; filterY++) {
@@ -42,7 +42,7 @@ export function compareInputDeltas(inputDeltas, deltas, filters) {
   return sum + inputDeltas[this.thread.y][this.thread.x];
 }
 
-export function compareInputDeltas3D(inputDeltas, deltas, filters) {
+function compareInputDeltas3D(inputDeltas, deltas, filters) {
   let sum = 0;
   const filterX = this.thread.x + (this.thread.y * this.output.x);
   for (let filterY = 0; filterY < this.constants.filterCount; filterY++) {
@@ -51,22 +51,22 @@ export function compareInputDeltas3D(inputDeltas, deltas, filters) {
   return sum + inputDeltas[this.thread.z][this.thread.y][this.thread.x];
 }
 
-export function compareBiases(biases, deltas) {
+function compareBiases(biases, deltas) {
   return biases[this.thread.x] + deltas[this.thread.y][this.thread.x];
 }
 
-export function compareFilterDeltas(filterDeltas, inputWeights, deltas) {
+function compareFilterDeltas(filterDeltas, inputWeights, deltas) {
   return filterDeltas[this.thread.y][this.thread.x] + (inputWeights[this.thread.y][this.thread.x] * deltas[this.constants.deltaY][this.constants.deltaX]);
 }
 
-export function compareFilterDeltas3D(filterDeltas, inputWeights, deltas) {
+function compareFilterDeltas3D(filterDeltas, inputWeights, deltas) {
   const inputZ = Math.floor(this.thread.x / (this.constants.inputWidth * this.constants.inputHeight));
   const inputY = Math.floor((this.thread.x - inputZ * this.constants.inputWidth * this.constants.inputHeight) / this.constants.inputWidth);
   const inputX = this.thread.x - this.constants.inputWidth * (inputY + this.constants.inputHeight * inputZ);
   return filterDeltas[this.thread.y][this.thread.x] + (inputWeights[inputZ][inputY][inputX] * deltas[0][this.thread.y]);
 }
 
-export default class FullyConnected extends Filter {
+class FullyConnected extends Filter {
   static get defaults() {
     return {
       bias: 0.1,
@@ -185,3 +185,5 @@ export default class FullyConnected extends Filter {
     );
   }
 }
+
+module.exports = { FullyConnected, predict, predict3D, compareInputDeltas, compareInputDeltas3D, compareBiases, compareFilterDeltas, compareFilterDeltas3D };

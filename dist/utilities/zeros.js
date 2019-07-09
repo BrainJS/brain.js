@@ -1,9 +1,5 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = zeros;
-function zeros(size) {
+module.exports = function zeros(size) {
   return new Float32Array(size);
-}
+};

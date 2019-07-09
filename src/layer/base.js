@@ -1,7 +1,7 @@
-import zeros2D from '../utilities/zeros-2d';
-import zeros3D from '../utilities/zeros-3d';
+const zeros2D = require('../utilities/zeros-2d');
+const zeros3D = require('../utilities/zeros-3d');
 
-export default class Base {
+class Base {
   static get defaults() {
     return {
       width: 1,
@@ -163,3 +163,5 @@ export default class Base {
     return jsonLayer;
   }
 }
+
+module.exports = Base;

@@ -1,8 +1,8 @@
-import ones2D from '../utilities/ones-2d';
-import zeros2D from '../utilities/zeros-2d';
-import { Model } from './types';
+const ones2D = require('../utilities/ones-2d');
+const zeros2D = require('../utilities/zeros-2d');
+const Model = require('./types').Model;
 
-export default class Ones extends Model {
+class Ones extends Model {
   constructor(settings) {
     super(settings);
     this.validate();
@@ -10,3 +10,5 @@ export default class Ones extends Model {
     this.deltas = zeros2D(this.width, this.height);
   }
 }
+
+module.exports = Ones;

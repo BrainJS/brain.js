@@ -1,14 +1,15 @@
-import gpuMock from 'gpu-mock.js';
-import {
-  predict,
-  predict3D,
-  compareBiases,
-  compareFilterDeltas,
-  compareFilterDeltas3D,
-  compareInputDeltas,
-  compareInputDeltas3D,
-} from '../../src/layer/fully-connected';
-import { onePlusPlus2D, zero2D } from '../test-utils';
+const gpuMock = require('gpu-mock.js');
+const fc = require('../../src/layer/fully-connected');
+const predict = fc.predict;
+const predict3D = fc.predict3D;
+const compareBiases = fc.compareBiases;
+const compareFilterDeltas = fc.compareFilterDeltas;
+const compareFilterDeltas3D = fc.compareFilterDeltas3D;
+const compareInputDeltas = fc.compareInputDeltas;
+const compareInputDeltas3D = fc.compareInputDeltas3D;
+const utils = require('../test-utils');
+const onePlusPlus2D = utils.onePlusPlus2D;
+const zero2D = utils.zero2D;
 
 describe('FullyConnected Layer', () => {
   describe('.predict (forward propagation)', () => {

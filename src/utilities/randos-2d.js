@@ -1,6 +1,6 @@
-import randos from './randos';
+const randos = require('./randos');
 
-export default function randos2D(width, height) {
+module.exports = function randos2D(width, height) {
   const result = new Array(height);
   for (let y = 0; y < height; y++) {
     result[y] = randos(width);

@@ -3,7 +3,7 @@
  * @param values
  * @returns {*}
  */
-export default function toArray(values) {
+module.exports = function toArray(values) {
   if (Array.isArray(values)) {
     return values;
   }

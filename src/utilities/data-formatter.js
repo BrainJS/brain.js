@@ -4,7 +4,7 @@
  * @param maxThreshold
  * @constructor
  */
-export default class DataFormatter {
+class DataFormatter {
   constructor(values, maxThreshold = 0) {
     if (values === undefined) return;
 
@@ -199,3 +199,5 @@ ${this.toCharacters
 `;
   }
 }
+
+module.exports = DataFormatter;

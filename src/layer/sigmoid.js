@@ -1,19 +1,20 @@
-import { Activation } from './types';
-import { makeKernel } from '../utilities/kernel';
-import { activate, measure } from '../activation/sigmoid';
-import zeros2D from '../utilities/zeros-2d';
+const Activation = require('./types').Activation;
+const makeKernel = require('../utilities/kernel').makeKernel;
+const sigmoid = require('../activation/sigmoid');
+const { activate, measure } = sigmoid;
+const zeros2D = require('../utilities/zeros-2d');
 
-export function predict(inputs) {
+function predict(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-export function compare(weights, deltas) {
+function compare(weights, deltas) {
   const weight = weights[this.thread.y][this.thread.x];
   const delta = deltas[this.thread.y][this.thread.x];
   return measure(weight, delta);
 }
 
-export default class Sigmoid extends Activation {
+class Sigmoid extends Activation {
   constructor(inputLayer) {
     super();
     this.inputLayer = inputLayer;
@@ -46,3 +47,5 @@ export default class Sigmoid extends Activation {
     this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
   }
 }
+
+module.exports = { Sigmoid, predict, compare };

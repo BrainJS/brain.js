@@ -1,9 +1,9 @@
-import Matrix from './matrix';
-import RandomMatrix from './matrix/random-matrix';
-import Equation from './matrix/equation';
-import RNN from './rnn';
+const Matrix = require('./matrix');
+const RandomMatrix = require('./matrix/random-matrix');
+const Equation = require('./matrix/equation');
+const RNN = require('./rnn');
 
-export default class RNNTimeStep extends RNN {
+class RNNTimeStep extends RNN {
   // eslint-disable-next-line
   constructor(options) {
     super(options);
@@ -188,3 +188,5 @@ RNNTimeStep.defaults = {
 };
 
 RNNTimeStep.trainDefaults = RNN.trainDefaults;
+
+module.exports = RNNTimeStep;

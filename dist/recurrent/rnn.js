@@ -1,52 +1,19 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _matrix = require('./matrix');
-
-var _matrix2 = _interopRequireDefault(_matrix);
-
-var _randomMatrix = require('./matrix/random-matrix');
-
-var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
-
-var _equation = require('./matrix/equation');
-
-var _equation2 = _interopRequireDefault(_equation);
-
-var _sampleI = require('./matrix/sample-i');
-
-var _sampleI2 = _interopRequireDefault(_sampleI);
-
-var _maxI = require('./matrix/max-i');
-
-var _maxI2 = _interopRequireDefault(_maxI);
-
-var _softmax = require('./matrix/softmax');
-
-var _softmax2 = _interopRequireDefault(_softmax);
-
-var _copy = require('./matrix/copy');
-
-var _copy2 = _interopRequireDefault(_copy);
-
-var _random = require('../utilities/random');
-
-var _zeros = require('../utilities/zeros');
-
-var _zeros2 = _interopRequireDefault(_zeros);
-
-var _dataFormatter = require('../utilities/data-formatter');
-
-var _dataFormatter2 = _interopRequireDefault(_dataFormatter);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Matrix = require('./matrix');
+var RandomMatrix = require('./matrix/random-matrix');
+var Equation = require('./matrix/equation');
+var sampleI = require('./matrix/sample-i');
+var maxI = require('./matrix/max-i');
+var softmax = require('./matrix/softmax');
+var copy = require('./matrix/copy');
+var randomFloat = require('../utilities/random').randomFloat;
+var zeros = require('../utilities/zeros');
+var DataFormatter = require('../utilities/data-formatter');
 
 var RNN = function () {
   function RNN() {
@@ -68,7 +35,7 @@ var RNN = function () {
     this.model = null;
 
     this.initialLayerInputs = this.hiddenSizes.map(function () {
-      return new _matrix2.default(_this.hiddenSizes[0], 1);
+      return new Matrix(_this.hiddenSizes[0], 1);
     });
     this.inputLookup = null;
     this.outputLookup = null;
@@ -129,7 +96,7 @@ var RNN = function () {
     key: 'createInputMatrix',
     value: function createInputMatrix() {
       // 0 is end, so add 1 to offset
-      this.model.input = new _randomMatrix2.default(this.inputRange + 1, this.inputSize, 0.08);
+      this.model.input = new RandomMatrix(this.inputRange + 1, this.inputSize, 0.08);
     }
   }, {
     key: 'createOutputMatrix',
@@ -142,10 +109,10 @@ var RNN = function () {
 
       // 0 is end, so add 1 to offset
       // whd
-      model.outputConnector = new _randomMatrix2.default(outputSize + 1, lastHiddenSize, 0.08);
+      model.outputConnector = new RandomMatrix(outputSize + 1, lastHiddenSize, 0.08);
       // 0 is end, so add 1 to offset
       // bd
-      model.output = new _matrix2.default(outputSize + 1, 1);
+      model.output = new Matrix(outputSize + 1, 1);
     }
   }, {
     key: 'bindEquation',
@@ -155,7 +122,7 @@ var RNN = function () {
           hiddenSizes = _model2.hiddenSizes;
       var hiddenLayers = model.hiddenLayers;
 
-      var equation = new _equation2.default();
+      var equation = new Equation();
       var outputs = [];
       var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs;
 
@@ -248,7 +215,7 @@ var RNN = function () {
         var output = equation.run(source);
         // set gradients into log probabilities
         var logProbabilities = output; // interpret output as log probabilities
-        var probabilities = (0, _softmax2.default)(output); // compute the softmax probabilities
+        var probabilities = softmax(output); // compute the softmax probabilities
 
         log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
         cost += -Math.log(probabilities.weights[target]);
@@ -306,7 +273,7 @@ var RNN = function () {
             deltas = matrix.deltas;
 
         if (!(matrixIndex in this.stepCache)) {
-          this.stepCache[matrixIndex] = (0, _zeros2.default)(matrix.rows * matrix.columns);
+          this.stepCache[matrixIndex] = zeros(matrix.rows * matrix.columns);
         }
         var cache = this.stepCache[matrixIndex];
         for (var i = 0; i < weights.length; i++) {
@@ -370,8 +337,8 @@ var RNN = function () {
         var equation = model.equations[i];
         // sample predicted letter
         var outputMatrix = equation.run(previousIndex);
-        var logProbabilities = new _matrix2.default(model.output.rows, model.output.columns);
-        (0, _copy2.default)(logProbabilities, outputMatrix);
+        var logProbabilities = new Matrix(model.output.rows, model.output.columns);
+        copy(logProbabilities, outputMatrix);
         if (temperature !== 1 && isSampleI) {
           /**
            * scale log probabilities by temperature and re-normalize
@@ -384,8 +351,8 @@ var RNN = function () {
           }
         }
 
-        var probs = (0, _softmax2.default)(logProbabilities);
-        var nextIndex = isSampleI ? (0, _sampleI2.default)(probs) : (0, _maxI2.default)(probs);
+        var probs = softmax(logProbabilities);
+        var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);
 
         i++;
         if (nextIndex === 0) {
@@ -543,20 +510,20 @@ var RNN = function () {
       var allMatrices = model.allMatrices;
 
 
-      model.input = _matrix2.default.fromJSON(json.input);
+      model.input = Matrix.fromJSON(json.input);
       allMatrices.push(model.input);
       model.hiddenLayers = json.hiddenLayers.map(function (hiddenLayer) {
         var layers = {};
 
         Object.keys(hiddenLayer).forEach(function (p) {
-          layers[p] = _matrix2.default.fromJSON(hiddenLayer[p]);
+          layers[p] = Matrix.fromJSON(hiddenLayer[p]);
           allMatrices.push(layers[p]);
         });
 
         return layers;
       });
-      model.outputConnector = _matrix2.default.fromJSON(json.outputConnector);
-      model.output = _matrix2.default.fromJSON(json.output);
+      model.outputConnector = Matrix.fromJSON(json.outputConnector);
+      model.output = Matrix.fromJSON(json.output);
       allMatrices.push(model.outputConnector);
       allMatrices.push(model.output);
 
@@ -565,7 +532,7 @@ var RNN = function () {
       });
 
       if (options.hasOwnProperty('dataFormatter') && options.dataFormatter !== null) {
-        this.dataFormatter = _dataFormatter2.default.fromJSON(options.dataFormatter);
+        this.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);
         delete options.dataFormatter;
       }
 
@@ -696,7 +663,7 @@ var RNN = function () {
         }
       }
 
-      var src = '\n  if (typeof rawInput === \'undefined\') rawInput = [];\n  if (typeof maxPredictionLength === \'undefined\') maxPredictionLength = 100;\n  if (typeof isSampleI === \'undefined\') isSampleI = false;\n  if (typeof temperature === \'undefined\') temperature = 1;\n  ' + (this.dataFormatter !== null ? this.dataFormatter.toFunctionString() : '') + '\n\n  var input = ' + (this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput') + ';\n  var json = ' + jsonString + ';\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ' + statesRaw.join(';\n    ') + ';\n    for (var stateIndex = 0, stateMax = ' + statesRaw.length + '; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n\n      switch (state.name) {\n' + innerFunctionsSwitch.join('\n') + '\n      }\n    }\n\n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n\n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ' + (this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })') + ';\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ' + (this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? 'function formatDataIn(input, output) { ' + toInner(this.formatDataIn.toString()).replace(/this[.]dataFormatter[\n\s]+[.]/g, '').replace(/this[.]dataFormatter[.]/g, '').replace(/this[.]dataFormatter/g, 'true') + ' }' : '') + '\n  ' + (this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? 'function formatDataOut(input, output) { ' + toInner(this.formatDataOut.toString()).replace(/this[.]dataFormatter[\n\s]+[.]/g, '').replace(/this[.]dataFormatter[.]/g, '').replace(/this[.]dataFormatter/g, 'true') + ' }' : '') + '\n  ' + _zeros2.default.toString() + '\n  ' + _softmax2.default.toString().replace('_2.default', 'Matrix') + '\n  ' + _random.randomFloat.toString() + '\n  ' + _sampleI2.default.toString() + '\n  ' + _maxI2.default.toString();
+      var src = '\n  if (typeof rawInput === \'undefined\') rawInput = [];\n  if (typeof maxPredictionLength === \'undefined\') maxPredictionLength = 100;\n  if (typeof isSampleI === \'undefined\') isSampleI = false;\n  if (typeof temperature === \'undefined\') temperature = 1;\n  ' + (this.dataFormatter !== null ? this.dataFormatter.toFunctionString() : '') + '\n\n  var input = ' + (this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput') + ';\n  var json = ' + jsonString + ';\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ' + statesRaw.join(';\n    ') + ';\n    for (var stateIndex = 0, stateMax = ' + statesRaw.length + '; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n\n      switch (state.name) {\n' + innerFunctionsSwitch.join('\n') + '\n      }\n    }\n\n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n\n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ' + (this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })') + ';\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ' + (this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? 'function formatDataIn(input, output) { ' + toInner(this.formatDataIn.toString()).replace(/this[.]dataFormatter[\n\s]+[.]/g, '').replace(/this[.]dataFormatter[.]/g, '').replace(/this[.]dataFormatter/g, 'true') + ' }' : '') + '\n  ' + (this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? 'function formatDataOut(input, output) { ' + toInner(this.formatDataOut.toString()).replace(/this[.]dataFormatter[\n\s]+[.]/g, '').replace(/this[.]dataFormatter[.]/g, '').replace(/this[.]dataFormatter/g, 'true') + ' }' : '') + '\n  ' + zeros.toString() + '\n  ' + softmax.toString().replace('_2.default', 'Matrix') + '\n  ' + randomFloat.toString() + '\n  ' + sampleI.toString() + '\n  ' + maxI.toString();
       // eslint-disable-next-line
       return new Function('rawInput', 'maxPredictionLength', 'isSampleI', 'temperature', src);
     }
@@ -715,11 +682,11 @@ var RNN = function () {
     value: function getModel(hiddenSize, prevSize) {
       return {
         // wxh
-        weight: new _randomMatrix2.default(hiddenSize, prevSize, 0.08),
+        weight: new RandomMatrix(hiddenSize, prevSize, 0.08),
         // whh
-        transition: new _randomMatrix2.default(hiddenSize, hiddenSize, 0.08),
+        transition: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
         // bhh
-        bias: new _matrix2.default(hiddenSize, 1)
+        bias: new Matrix(hiddenSize, 1)
       };
     }
 
@@ -745,9 +712,6 @@ var RNN = function () {
 
   return RNN;
 }();
-
-exports.default = RNN;
-
 
 RNN.defaults = {
   inputSize: 20,
@@ -776,7 +740,7 @@ RNN.defaults = {
         for (var i = 0; i < data.length; i++) {
           values.push(data[i]);
         }
-        this.dataFormatter = new _dataFormatter2.default(values);
+        this.dataFormatter = new DataFormatter(values);
       }
       for (var _i = 0, max = data.length; _i < max; _i++) {
         result.push(this.formatDataIn(data[_i]));
@@ -787,7 +751,7 @@ RNN.defaults = {
           values.push(data[_i2].input);
           values.push(data[_i2].output);
         }
-        this.dataFormatter = _dataFormatter2.default.fromArrayInputOutput(values);
+        this.dataFormatter = DataFormatter.fromArrayInputOutput(values);
       }
       for (var _i3 = 0, _max = data.length; _i3 < _max; _i3++) {
         result.push(this.formatDataIn(data[_i3].input, data[_i3].output));
@@ -840,3 +804,5 @@ RNN.trainDefaults = {
   callbackPeriod: 10,
   keepNetworkIntact: false
 };
+
+module.exports = RNN;

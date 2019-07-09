@@ -1,11 +1,11 @@
-import { Modifier } from './types';
-import { makeKernel } from '../utilities/kernel';
+const Modifier = require('./types').Modifier;
+const makeKernel = require('../utilities/kernel').makeKernel;
 
 function transpose(array) {
   return array[this.thread.x][this.thread.y];
 }
 
-export default class Transpose extends Modifier {
+class Transpose extends Modifier {
   constructor(inputLayer) {
     super();
     this.inputLayer = inputLayer;
@@ -31,3 +31,5 @@ export default class Transpose extends Modifier {
     this.inputLayer.deltas = this.predictKernel(this.deltas);
   }
 }
+
+module.exports = Transpose;

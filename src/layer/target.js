@@ -1,8 +1,8 @@
-import { makeKernel } from '../utilities/kernel';
-import zeros from '../utilities/zeros';
-import zeros2D from '../utilities/zeros-2d';
-import zeros3D from '../utilities/zeros-3d';
-import { Filter } from './types';
+const makeKernel = require('../utilities/kernel').makeKernel;
+const zeros = require('../utilities/zeros');
+const zeros2D = require('../utilities/zeros-2d');
+const zeros3D = require('../utilities/zeros-3d');
+const Filter = require('./types').Filter;
 
 function compare1D(weights, targetValues) {
   return weights[this.thread.y][this.thread.x] - targetValues[this.thread.x];
@@ -15,7 +15,7 @@ function compare2D(weights, targetValues) {
   );
 }
 
-export default class Target extends Filter {
+class Target extends Filter {
   constructor(settings, inputLayer) {
     super(settings);
     this.inputLayer = inputLayer;
@@ -58,3 +58,5 @@ export default class Target extends Filter {
     this.inputLayer.deltas = this.deltas;
   }
 }
+
+module.exports = Target;

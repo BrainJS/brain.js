@@ -1,90 +1,26 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _ = require('.');
-
-var _2 = _interopRequireDefault(_);
-
-var _onesMatrix = require('./ones-matrix');
-
-var _onesMatrix2 = _interopRequireDefault(_onesMatrix);
-
-var _copy = require('./copy');
-
-var _copy2 = _interopRequireDefault(_copy);
-
-var _cloneNegative2 = require('./clone-negative');
-
-var _cloneNegative3 = _interopRequireDefault(_cloneNegative2);
-
-var _add2 = require('./add');
-
-var _add3 = _interopRequireDefault(_add2);
-
-var _addB = require('./add-b');
-
-var _addB2 = _interopRequireDefault(_addB);
-
-var _allOnes2 = require('./all-ones');
-
-var _allOnes3 = _interopRequireDefault(_allOnes2);
-
-var _multiply2 = require('./multiply');
-
-var _multiply3 = _interopRequireDefault(_multiply2);
-
-var _multiplyB = require('./multiply-b');
-
-var _multiplyB2 = _interopRequireDefault(_multiplyB);
-
-var _multiplyElement2 = require('./multiply-element');
-
-var _multiplyElement3 = _interopRequireDefault(_multiplyElement2);
-
-var _multiplyElementB = require('./multiply-element-b');
-
-var _multiplyElementB2 = _interopRequireDefault(_multiplyElementB);
-
-var _relu2 = require('./relu');
-
-var _relu3 = _interopRequireDefault(_relu2);
-
-var _reluB = require('./relu-b');
-
-var _reluB2 = _interopRequireDefault(_reluB);
-
-var _rowPluck = require('./row-pluck');
-
-var _rowPluck2 = _interopRequireDefault(_rowPluck);
-
-var _rowPluckB = require('./row-pluck-b');
-
-var _rowPluckB2 = _interopRequireDefault(_rowPluckB);
-
-var _sigmoid2 = require('./sigmoid');
-
-var _sigmoid3 = _interopRequireDefault(_sigmoid2);
-
-var _sigmoidB = require('./sigmoid-b');
-
-var _sigmoidB2 = _interopRequireDefault(_sigmoidB);
-
-var _tanh2 = require('./tanh');
-
-var _tanh3 = _interopRequireDefault(_tanh2);
-
-var _tanhB = require('./tanh-b');
-
-var _tanhB2 = _interopRequireDefault(_tanhB);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Matrix = require('.');
+var _cloneNegative = require('./clone-negative');
+var _add = require('./add');
+var addB = require('./add-b');
+var _allOnes = require('./all-ones');
+var _multiply = require('./multiply');
+var multiplyB = require('./multiply-b');
+var _multiplyElement = require('./multiply-element');
+var multiplyElementB = require('./multiply-element-b');
+var _relu = require('./relu');
+var reluB = require('./relu-b');
+var rowPluck = require('./row-pluck');
+var rowPluckB = require('./row-pluck-b');
+var _sigmoid = require('./sigmoid');
+var sigmoidB = require('./sigmoid-b');
+var _tanh = require('./tanh');
+var tanhB = require('./tanh-b');
 
 var Equation = function () {
   function Equation() {
@@ -109,13 +45,13 @@ var Equation = function () {
       if (left.weights.length !== right.weights.length) {
         throw new Error('misaligned matrices');
       }
-      var product = new _2.default(left.rows, left.columns);
+      var product = new Matrix(left.rows, left.columns);
       this.states.push({
         left: left,
         right: right,
         product: product,
-        forwardFn: _add3.default,
-        backpropagationFn: _addB2.default
+        forwardFn: _add,
+        backpropagationFn: addB
       });
       return product;
     }
@@ -130,11 +66,11 @@ var Equation = function () {
   }, {
     key: 'allOnes',
     value: function allOnes(rows, columns) {
-      var product = new _2.default(rows, columns);
+      var product = new Matrix(rows, columns);
       this.states.push({
         left: product,
         product: product,
-        forwardFn: _allOnes3.default
+        forwardFn: _allOnes
       });
       return product;
     }
@@ -148,11 +84,11 @@ var Equation = function () {
   }, {
     key: 'cloneNegative',
     value: function cloneNegative(m) {
-      var product = new _2.default(m.rows, m.columns);
+      var product = new Matrix(m.rows, m.columns);
       this.states.push({
         left: m,
         product: product,
-        forwardFn: _cloneNegative3.default
+        forwardFn: _cloneNegative
       });
       return product;
     }
@@ -186,13 +122,13 @@ var Equation = function () {
       if (left.columns !== right.rows) {
         throw new Error('misaligned matrices');
       }
-      var product = new _2.default(left.rows, right.columns);
+      var product = new Matrix(left.rows, right.columns);
       this.states.push({
         left: left,
         right: right,
         product: product,
-        forwardFn: _multiply3.default,
-        backpropagationFn: _multiplyB2.default
+        forwardFn: _multiply,
+        backpropagationFn: multiplyB
       });
       return product;
     }
@@ -210,13 +146,13 @@ var Equation = function () {
       if (left.weights.length !== right.weights.length) {
         throw new Error('misaligned matrices');
       }
-      var product = new _2.default(left.rows, left.columns);
+      var product = new Matrix(left.rows, left.columns);
       this.states.push({
         left: left,
         right: right,
         product: product,
-        forwardFn: _multiplyElement3.default,
-        backpropagationFn: _multiplyElementB2.default
+        forwardFn: _multiplyElement,
+        backpropagationFn: multiplyElementB
       });
       return product;
     }
@@ -230,12 +166,12 @@ var Equation = function () {
   }, {
     key: 'relu',
     value: function relu(m) {
-      var product = new _2.default(m.rows, m.columns);
+      var product = new Matrix(m.rows, m.columns);
       this.states.push({
         left: m,
         product: product,
-        forwardFn: _relu3.default,
-        backpropagationFn: _reluB2.default
+        forwardFn: _relu,
+        backpropagationFn: reluB
       });
       return product;
     }
@@ -269,15 +205,15 @@ var Equation = function () {
     key: 'inputMatrixToRow',
     value: function inputMatrixToRow(m) {
       var self = this;
-      var product = new _2.default(m.columns, 1);
+      var product = new Matrix(m.columns, 1);
       this.states.push({
         left: m,
         get right() {
           return self.inputRow;
         },
         product: product,
-        forwardFn: _rowPluck2.default,
-        backpropagationFn: _rowPluckB2.default
+        forwardFn: rowPluck,
+        backpropagationFn: rowPluckB
       });
       return product;
     }
@@ -291,12 +227,12 @@ var Equation = function () {
   }, {
     key: 'sigmoid',
     value: function sigmoid(m) {
-      var product = new _2.default(m.rows, m.columns);
+      var product = new Matrix(m.rows, m.columns);
       this.states.push({
         left: m,
         product: product,
-        forwardFn: _sigmoid3.default,
-        backpropagationFn: _sigmoidB2.default
+        forwardFn: _sigmoid,
+        backpropagationFn: sigmoidB
       });
       return product;
     }
@@ -310,12 +246,12 @@ var Equation = function () {
   }, {
     key: 'tanh',
     value: function tanh(m) {
-      var product = new _2.default(m.rows, m.columns);
+      var product = new Matrix(m.rows, m.columns);
       this.states.push({
         left: m,
         product: product,
-        forwardFn: _tanh3.default,
-        backpropagationFn: _tanhB2.default
+        forwardFn: _tanh,
+        backpropagationFn: tanhB
       });
       return product;
     }
@@ -415,4 +351,4 @@ var Equation = function () {
   return Equation;
 }();
 
-exports.default = Equation;
+module.exports = Equation;

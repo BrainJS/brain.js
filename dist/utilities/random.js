@@ -1,11 +1,5 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.randomFloat = randomFloat;
-exports.randomInteger = randomInteger;
-exports.randomN = randomN;
 function randomFloat(a, b) {
   return Math.random() * (b - a) + a;
 }
@@ -38,3 +32,5 @@ function randomN(mu, std) {
 
 gaussRandom.returnV = false;
 gaussRandom.vVal = 0;
+
+module.exports = { randomFloat: randomFloat, randomInteger: randomInteger, randomN: randomN };

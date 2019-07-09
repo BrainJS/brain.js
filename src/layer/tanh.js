@@ -1,20 +1,20 @@
-import { Activation } from './types';
-import { makeKernel } from '../utilities/kernel';
-import { tanhDerivative } from '../activation/tanh';
-import zeros2D from '../utilities/zeros-2d';
+const Activation = require('./types').Activation;
+const makeKernel = require('../utilities/kernel').makeKernel;
+const tanhDerivative = require('../activation/tanh').tanhDerivative;
+const zeros2D = require('../utilities/zeros-2d');
 
-export function predict(inputs) {
+function predict(inputs) {
   return Math.tanh(inputs[this.thread.y][this.thread.x]);
 }
 
-export function compare(weights, errors) {
+function compare(weights, errors) {
   return tanhDerivative(
     weights[this.thread.y][this.thread.x],
     errors[this.thread.y][this.thread.x]
   );
 }
 
-export default class Tanh extends Activation {
+class Tanh extends Activation {
   constructor(inputLayer) {
     super();
     this.inputLayer = inputLayer;
@@ -47,3 +47,5 @@ export default class Tanh extends Activation {
     this.deltas = this.compareKernel(this.weights, this.deltas);
   }
 }
+
+module.exports = { Tanh, predict, compare };

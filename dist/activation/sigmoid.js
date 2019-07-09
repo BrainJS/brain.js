@@ -1,10 +1,5 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.activate = activate;
-exports.measure = measure;
 /**
  * sigmoid activation
  * @param value
@@ -23,3 +18,5 @@ function activate(value) {
 function measure(weight, error) {
   return weight * (1 - weight) * error;
 }
+
+module.exports = { activate: activate, measure: measure };

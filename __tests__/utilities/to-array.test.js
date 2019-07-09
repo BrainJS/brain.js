@@ -1,4 +1,4 @@
-import toArray from '../../src/utilities/to-array';
+const toArray = require('../../src/utilities/to-array');
 
 describe('to-array', () => {
   test('should convert object to array', () => {

@@ -1,15 +1,15 @@
-import Matrix from './matrix';
-import RandomMatrix from './matrix/random-matrix';
-import Equation from './matrix/equation';
-import sampleI from './matrix/sample-i';
-import maxI from './matrix/max-i';
-import softmax from './matrix/softmax';
-import copy from './matrix/copy';
-import { randomFloat } from '../utilities/random';
-import zeros from '../utilities/zeros';
-import DataFormatter from '../utilities/data-formatter';
+const Matrix = require('./matrix');
+const RandomMatrix = require('./matrix/random-matrix');
+const Equation = require('./matrix/equation');
+const sampleI = require('./matrix/sample-i');
+const maxI = require('./matrix/max-i');
+const softmax = require('./matrix/softmax');
+const copy = require('./matrix/copy');
+const randomFloat = require('../utilities/random').randomFloat;
+const zeros = require('../utilities/zeros');
+const DataFormatter = require('../utilities/data-formatter');
 
-export default class RNN {
+class RNN {
   constructor(options = {}) {
     const { defaults } = this.constructor;
 
@@ -872,3 +872,5 @@ RNN.trainDefaults = {
   callbackPeriod: 10,
   keepNetworkIntact: false,
 };
+
+module.exports = RNN;

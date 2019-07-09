@@ -1,4 +1,5 @@
-import { randomFloat, randomInteger, randomN } from '../../src/utilities/random';
+const random = require('../../src/utilities/random');
+const { randomFloat, randomInteger, randomN } = random;
 
 describe('random', () => {
   test('randomF', () => {

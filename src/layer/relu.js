@@ -1,32 +1,33 @@
-import { Activation } from './types';
-import { makeKernel } from '../utilities/kernel';
-import { activate, measure } from '../activation/relu';
-import zeros2D from '../utilities/zeros-2d';
-import zeros3D from '../utilities/zeros-3d';
+const Activation = require('./types').Activation;
+const makeKernel = require('../utilities/kernel').makeKernel;
+const relu = require('../activation/relu');
+const { activate, measure } = relu;
+const zeros2D = require('../utilities/zeros-2d');
+const zeros3D = require('../utilities/zeros-3d');
 
-export function predict(inputs) {
+function predict(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-export function compare(weights, deltas) {
+function compare(weights, deltas) {
   return measure(
     weights[this.thread.y][this.thread.x],
     deltas[this.thread.y][this.thread.x]
   );
 }
 
-export function predict3D(inputs) {
+function predict3D(inputs) {
   return activate(inputs[this.thread.z][this.thread.y][this.thread.x]);
 }
 
-export function compare3D(weights, deltas) {
+function compare3D(weights, deltas) {
   return measure(
     weights[this.thread.z][this.thread.y][this.thread.x],
     deltas[this.thread.z][this.thread.y][this.thread.x]
   );
 }
 
-export default class Relu extends Activation {
+class Relu extends Activation {
   constructor(inputLayer) {
     super();
     this.inputLayer = inputLayer;
@@ -79,3 +80,5 @@ export default class Relu extends Activation {
     this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
   }
 }
+
+module.exports = { Relu, predict, compare, predict3D, compare3D };

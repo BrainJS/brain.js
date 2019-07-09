@@ -1,16 +1,12 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = likely;
 /**
  *
  * @param {*} input
  * @param {NeuralNetwork} net
  * @returns {*}
  */
-function likely(input, net) {
+module.exports = function likely(input, net) {
   var output = net.run(input);
   var maxProp = null;
   var maxValue = -1;
@@ -24,4 +20,4 @@ function likely(input, net) {
   });
 
   return maxProp;
-}
+};

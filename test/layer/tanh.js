@@ -1,6 +1,7 @@
-import {assert} from 'chai';
-import gpuMock from 'gpu-mock.js';
-import { predict, compare } from '../../src/layer/tanh';
+const assert = require('chai').assert;
+const gpuMock = require('gpu-mock.js');
+const tanh = require('../../src/layer/tanh');
+const { predict, compare } = tanh;
 
 describe('Tanh Layer', () => {
   describe('.predict (forward propagation)', () => {

@@ -1,10 +1,5 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.setStride = setStride;
-exports.setPadding = setPadding;
 function setStride(layer, settings) {
   var defaults = layer.constructor.defaults;
 
@@ -48,3 +43,5 @@ function setPadding(layer, settings) {
     }
   }
 }
+
+module.exports = { setStride: setStride, setPadding: setPadding };

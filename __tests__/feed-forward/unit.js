@@ -1,4 +1,4 @@
-import brain from '../../src';
+const brain = require('../../src');
 
 const { FeedForward, layer } = brain;
 

@@ -1,12 +1,13 @@
-import { makeKernel } from '../utilities/kernel';
-import { setStride, setPadding } from '../utilities/layer-setup';
-import { Filter } from './types';
-import randos from '../utilities/randos';
-import randos3D from '../utilities/randos-3d';
-import zeros3D from '../utilities/zeros-3d';
-import values from '../utilities/values';
+const makeKernel = require('../utilities/kernel').makeKernel;
+const uls = require('../utilities/layer-setup');
+const { setStride, setPadding } = uls;
+const Filter = require('./types').Filter;
+const randos = require('../utilities/randos');
+const randos3D = require('../utilities/randos-3d');
+const zeros3D = require('../utilities/zeros-3d');
+const values = require('../utilities/values');
 
-export function predict(inputs, filters, biases) {
+function predict(inputs, filters, biases) {
   const startFilterX = this.constants.paddingX - (this.thread.x * this.constants.strideX);
   const startInputX = (this.thread.x * this.constants.strideX) - this.constants.paddingX;
   const endFilterX = Math.min(this.constants.filterWidth, startFilterX + this.constants.inputWidth);
@@ -26,7 +27,7 @@ export function predict(inputs, filters, biases) {
   return sum + biases[this.thread.z];
 }
 
-export function compareFilterDeltas(filterDeltas, inputs, deltas) {
+function compareFilterDeltas(filterDeltas, inputs, deltas) {
   const startDeltaX = Math.max(0, Math.ceil((this.constants.paddingX - this.thread.x) / this.constants.strideX));
   const startInputX = startDeltaX * this.constants.strideX + this.thread.x - this.constants.paddingX;
   const endDeltaX = Math.min(this.constants.deltaWidth, Math.floor(((this.constants.inputWidth - 1) - this.thread.x + this.constants.paddingX) / this.constants.strideX) + 1);
@@ -44,7 +45,7 @@ export function compareFilterDeltas(filterDeltas, inputs, deltas) {
   return sum;
 }
 
-export function compareInputDeltas(inputDeltas, filters, deltas) {
+function compareInputDeltas(inputDeltas, filters, deltas) {
   const x = this.thread.x + this.constants.paddingX;
   const startDeltaX = x < this.constants.filterWidth ? 0 : Math.floor((x - this.constants.filterWidth + this.constants.strideX) / this.constants.strideX);
   const startFilterX = x - startDeltaX * this.constants.strideX;
@@ -66,7 +67,7 @@ export function compareInputDeltas(inputDeltas, filters, deltas) {
   return sum;
 }
 
-export function compareBiases(biasDeltas, deltas) {
+function compareBiases(biasDeltas, deltas) {
   let sum = 0;
   for (let y = 0; y < this.constants.deltaHeight; y++) {
     for (let x = 0; x < this.constants.deltaWidth; x++) {
@@ -76,7 +77,7 @@ export function compareBiases(biasDeltas, deltas) {
   return biasDeltas[this.thread.z][this.thread.y][this.thread.x] + sum;
 }
 
-export default class Convolution extends Filter {
+class Convolution extends Filter {
   static get defaults() {
     return {
       stride: 0,
@@ -209,3 +210,5 @@ export default class Convolution extends Filter {
     this.deltas = zeros3D(this.width, this.height, this.depth);
   }
 }
+
+module.exports = { Convolution, predict, compareFilterDeltas, compareInputDeltas, compareBiases };

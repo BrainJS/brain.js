@@ -4,7 +4,7 @@
  * @param weight
  * @returns {number}
  */
-export function activate(weight) {
+function activate(weight) {
   return Math.max(0, weight);
 }
 
@@ -14,9 +14,11 @@ export function activate(weight) {
  * @param delta
  * @returns {number}
  */
-export function measure(weight, delta) {
+function measure(weight, delta) {
   if (weight <= 0) {
     return 0;
   }
   return delta;
 }
+
+module.exports = { activate, measure };

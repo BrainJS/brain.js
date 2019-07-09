@@ -1,18 +1,11 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 // TODO: implement and test
 var Adam = function Adam() {
   _classCallCheck(this, Adam);
 };
-
-exports.default = Adam;
-
 
 function adam() {
   // gradient = grad_fun(theta)
@@ -34,3 +27,5 @@ function adam() {
   // var dx =  - this.learning_rate * biasCorr1 / (Math.sqrt(biasCorr2) + this.eps);
   // p[j] += dx;
 }
+
+module.exports = Adam;

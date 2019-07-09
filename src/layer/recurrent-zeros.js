@@ -1,7 +1,7 @@
-import zeros2D from '../utilities/zeros-2d';
-import { Internal } from './types';
+const zeros2D = require('../utilities/zeros-2d');
+const Internal = require('./types').Internal;
 
-export default class RecurrentZeros extends Internal {
+class RecurrentZeros extends Internal {
   setDimensions(width, height) {
     this.praxis = null;
     this.width = width;
@@ -43,3 +43,5 @@ export default class RecurrentZeros extends Internal {
     throw new Error(`${this.constructor.name}-reset is not yet implemented`);
   }
 }
+
+module.exports = RecurrentZeros;

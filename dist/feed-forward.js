@@ -1,40 +1,17 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-// import TrainStream from './train-stream'
-
-
-var _lookup = require('./lookup');
-
-var _lookup2 = _interopRequireDefault(_lookup);
-
-var _mse2d = require('./utilities/mse-2d');
-
-var _mse2d2 = _interopRequireDefault(_mse2d);
-
-var _layerFromJson = require('./utilities/layer-from-json');
-
-var _layerFromJson2 = _interopRequireDefault(_layerFromJson);
-
-var _praxis2 = require('./praxis');
-
-var _praxis = _interopRequireWildcard(_praxis2);
-
-var _flattenLayers = require('./utilities/flatten-layers');
-
-var _flattenLayers2 = _interopRequireDefault(_flattenLayers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var lookup = require('./lookup');
+// import TrainStream from './train-stream'
+var mse2d = require('./utilities/mse-2d');
+var layerFromJSON = require('./utilities/layer-from-json');
+var _praxis = require('./praxis');
+var flattenLayers = require('./utilities/flatten-layers');
 
 var FeedForward = function () {
   _createClass(FeedForward, [{
@@ -191,7 +168,7 @@ var FeedForward = function () {
       layers.push(this._inputLayer);
       layers.push.apply(layers, _toConsumableArray(hiddenLayers));
       layers.push(this._outputLayer);
-      this.layers = (0, _flattenLayers2.default)(layers);
+      this.layers = flattenLayers(layers);
     }
   }, {
     key: '_connectHiddenLayers',
@@ -232,13 +209,13 @@ var FeedForward = function () {
     key: 'run',
     value: function run(input) {
       if (this.inputLookup) {
-        input = _lookup2.default.toArray(this.inputLookup, input);
+        input = lookup.toArray(this.inputLookup, input);
       }
 
       var output = this.runInput(input);
 
       if (this.outputLookup) {
-        output = _lookup2.default.toHash(this.outputLookup, output);
+        output = lookup.toHash(this.outputLookup, output);
       }
       return output;
     }
@@ -384,7 +361,7 @@ var FeedForward = function () {
       this._adjustWeights();
 
       if (logErrorRate) {
-        return (0, _mse2d2.default)(this._outputLayer.errors.hasOwnProperty('toArray') ? this._outputLayer.errors.toArray() : this._outputLayer.errors);
+        return mse2d(this._outputLayer.errors.hasOwnProperty('toArray') ? this._outputLayer.errors.toArray() : this._outputLayer.errors);
       }
       return null;
     }
@@ -430,24 +407,24 @@ var FeedForward = function () {
       var datum = data[0].input;
       if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
         if (!this.inputLookup) {
-          this.inputLookup = _lookup2.default.buildLookup(data.map(function (value) {
+          this.inputLookup = lookup.buildLookup(data.map(function (value) {
             return value.input;
           }));
         }
         data = data.map(function (datumParam) {
-          var array = _lookup2.default.toArray(_this2.inputLookup, datumParam.input);
+          var array = lookup.toArray(_this2.inputLookup, datumParam.input);
           return Object.assign({}, datumParam, { input: array });
         }, this);
       }
 
       if (!Array.isArray(data[0].output)) {
         if (!this.outputLookup) {
-          this.outputLookup = _lookup2.default.buildLookup(data.map(function (value) {
+          this.outputLookup = lookup.buildLookup(data.map(function (value) {
             return value.output;
           }));
         }
         data = data.map(function (datumParam) {
-          var array = _lookup2.default.toArray(_this2.outputLookup, datumParam.output);
+          var array = lookup.toArray(_this2.outputLookup, datumParam.output);
           return Object.assign({}, datumParam, { output: array });
         }, this);
       }
@@ -530,14 +507,14 @@ var FeedForward = function () {
     value: function fromJSON(json, getLayer) {
       var jsonLayers = json.layers;
       var layers = [];
-      var inputLayer = (0, _layerFromJson2.default)(jsonLayers[0]) || getLayer(jsonLayers[0]);
+      var inputLayer = layerFromJSON(jsonLayers[0]) || getLayer(jsonLayers[0]);
       layers.push(inputLayer);
 
       for (var i = 1; i < jsonLayers.length; i++) {
         var jsonLayer = jsonLayers[i];
         if (jsonLayer.hasOwnProperty('inputLayerIndex')) {
           var inputLayer1 = layers[jsonLayer.inputLayerIndex];
-          layers.push((0, _layerFromJson2.default)(jsonLayer, inputLayer1) || getLayer(jsonLayer, inputLayer1));
+          layers.push(layerFromJSON(jsonLayer, inputLayer1) || getLayer(jsonLayer, inputLayer1));
         } else {
           if (!jsonLayer.hasOwnProperty('inputLayer1Index')) throw new Error('inputLayer1Index not defined');
           if (!jsonLayer.hasOwnProperty('inputLayer2Index')) throw new Error('inputLayer2Index not defined');
@@ -547,7 +524,7 @@ var FeedForward = function () {
           if (_inputLayer === undefined) throw new Error('layer of index ' + jsonLayer.inputLayer1Index + ' not found');
           if (inputLayer2 === undefined) throw new Error('layer of index ' + jsonLayer.inputLayer2Index + ' not found');
 
-          layers.push((0, _layerFromJson2.default)(jsonLayer, inputLayer) || getLayer(jsonLayer, _inputLayer, inputLayer2));
+          layers.push(layerFromJSON(jsonLayer, inputLayer) || getLayer(jsonLayer, _inputLayer, inputLayer2));
         }
       }
 
@@ -560,4 +537,4 @@ var FeedForward = function () {
   return FeedForward;
 }();
 
-exports.default = FeedForward;
+module.exports = FeedForward;

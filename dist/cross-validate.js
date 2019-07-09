@@ -1,11 +1,5 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.testPartition = testPartition;
-exports.shuffleArray = shuffleArray;
-exports.default = crossValidate;
 /**
  *
  * @param {NeuralNetwork|constructor} Classifier
@@ -152,3 +146,5 @@ function crossValidate(Classifier, data, opts, trainOpts, k) {
     misclasses: misclasses
   };
 }
+
+module.exports = { testPartition: testPartition, shuffleArray: shuffleArray, crossValidate: crossValidate };

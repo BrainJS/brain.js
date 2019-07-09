@@ -1,4 +1,4 @@
-import { randomF as _randomF } from '../../utilities/random';
+const _randomF = require('../../utilities/random').randomFloat;
 
 // prevent parser from renaming when calling toString() method later
 const randomF = _randomF;
@@ -7,7 +7,7 @@ const randomF = _randomF;
  * @param {Matrix} m
  * @returns {number}
  */
-export default function sampleI(m) {
+module.exports = function sampleI(m) {
   // sample argmax from w, assuming w are
   // probabilities that sum to one
   const r = randomF(0, 1);

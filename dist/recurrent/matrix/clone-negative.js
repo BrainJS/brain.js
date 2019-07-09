@@ -1,15 +1,11 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = cloneNegative;
 /**
  *
  * @param {Matrix} product
  * @param {Matrix} left
  */
-function cloneNegative(product, left) {
+module.exports = function cloneNegative(product, left) {
   product.rows = parseInt(left.rows, 10);
   product.columns = parseInt(left.columns, 10);
   product.weights = left.weights.slice(0);
@@ -18,4 +14,4 @@ function cloneNegative(product, left) {
     product.weights[i] = -left.weights[i];
     product.deltas[i] = 0;
   }
-}
+};

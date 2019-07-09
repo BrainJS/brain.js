@@ -1,5 +1,5 @@
-import Matrix from '.';
-import { randomFloat } from '../../utilities/random';
+const Matrix = require('.');
+const randomFloat = require('../../utilities/random').randomFloat;
 
 /** return Matrix but filled with random numbers from gaussian
  * @param {Number} [rows]
@@ -7,7 +7,7 @@ import { randomFloat } from '../../utilities/random';
  * @param std
  * @constructor
  */
-export default class RandomMatrix extends Matrix {
+class RandomMatrix extends Matrix {
   constructor(rows, columns, std) {
     super(rows, columns);
     this.rows = rows;
@@ -18,3 +18,5 @@ export default class RandomMatrix extends Matrix {
     }
   }
 }
+
+module.exports = RandomMatrix;

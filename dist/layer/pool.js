@@ -1,38 +1,23 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-exports.predict = predict;
-exports.compare = compare;
-exports.compare3D = compare3D;
-
-var _types = require('./types');
-
-var _kernel = require('../utilities/kernel');
-
-var _layerSetup = require('../utilities/layer-setup');
-
-var _zeros3d = require('../utilities/zeros-3d');
-
-var _zeros3d2 = _interopRequireDefault(_zeros3d);
-
-var _randos3d = require('../utilities/randos-3d');
-
-var _randos3d2 = _interopRequireDefault(_randos3d);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Filter = require('./types').Filter;
+var makeKernel = require('../utilities/kernel').makeKernel;
+var ls = require('../utilities/layer-setup');
+var setPadding = ls.setPadding,
+    setStride = ls.setStride;
+
+var zeros3D = require('../utilities/zeros-3d');
+var randos3D = require('../utilities/randos-3d');
 
 function setSwitchY(value) {
   return value;
@@ -132,12 +117,12 @@ var Pool = function (_Filter) {
     _this.stride = null;
     _this.strideX = null;
     _this.strideY = null;
-    (0, _layerSetup.setStride)(_this, settings);
+    setStride(_this, settings);
 
     _this.padding = null;
     _this.paddingX = null;
     _this.paddingY = null;
-    (0, _layerSetup.setPadding)(_this, settings);
+    setPadding(_this, settings);
 
     _this.filterCount = settings.filterCount;
     _this.filterWidth = settings.filterWidth;
@@ -148,11 +133,11 @@ var Pool = function (_Filter) {
     // TODO: handle 1 depth?
     _this.depth = _this.filterCount;
 
-    _this.weights = (0, _randos3d2.default)(_this.width, _this.height, _this.depth);
-    _this.deltas = (0, _zeros3d2.default)(_this.width, _this.height, _this.depth);
+    _this.weights = randos3D(_this.width, _this.height, _this.depth);
+    _this.deltas = zeros3D(_this.width, _this.height, _this.depth);
 
-    _this.filters = (0, _randos3d2.default)(_this.filterWidth, _this.filterHeight, _this.filterCount);
-    _this.filterDeltas = (0, _zeros3d2.default)(_this.filterWidth, _this.filterHeight, _this.filterCount);
+    _this.filters = randos3D(_this.filterWidth, _this.filterHeight, _this.filterCount);
+    _this.filterDeltas = zeros3D(_this.filterWidth, _this.filterHeight, _this.filterCount);
 
     _this.learnFilters = null;
     _this.learnInputs = null;
@@ -164,7 +149,7 @@ var Pool = function (_Filter) {
   _createClass(Pool, [{
     key: 'setupKernels',
     value: function setupKernels() {
-      this.predictKernel = (0, _kernel.makeKernel)(predict, {
+      this.predictKernel = makeKernel(predict, {
         output: [this.width, this.height, this.depth],
         map: {
           switchX: setSwitchX,
@@ -180,7 +165,7 @@ var Pool = function (_Filter) {
         }
       });
 
-      this.compareKernel = (0, _kernel.makeKernel)(compare, {
+      this.compareKernel = makeKernel(compare, {
         output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth],
         constants: {
           outputWidth: this.width,
@@ -218,6 +203,6 @@ var Pool = function (_Filter) {
   }]);
 
   return Pool;
-}(_types.Filter);
+}(Filter);
 
-exports.default = Pool;
+module.exports = { Pool: Pool, predict: predict, compare: compare, compare3D: compare3D };

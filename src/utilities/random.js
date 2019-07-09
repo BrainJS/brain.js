@@ -1,4 +1,4 @@
-export function randomFloat(a, b) {
+function randomFloat(a, b) {
   return Math.random() * (b - a) + a;
 }
 
@@ -20,13 +20,15 @@ function gaussRandom() {
   return u * c;
 }
 
-export function randomInteger(a, b) {
+function randomInteger(a, b) {
   return Math.floor(Math.random() * (b - a) + a);
 }
 
-export function randomN(mu, std) {
+function randomN(mu, std) {
   return mu + gaussRandom() * std;
 }
 
 gaussRandom.returnV = false;
 gaussRandom.vVal = 0;
+
+module.exports = { randomFloat, randomInteger, randomN };

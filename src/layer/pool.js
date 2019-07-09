@@ -1,8 +1,9 @@
-import { Filter } from './types';
-import { makeKernel } from '../utilities/kernel';
-import { setPadding, setStride } from '../utilities/layer-setup';
-import zeros3D from '../utilities/zeros-3d';
-import randos3D from "../utilities/randos-3d";
+const Filter = require('./types').Filter;
+const makeKernel = require('../utilities/kernel').makeKernel;
+const ls = require('../utilities/layer-setup');
+const { setPadding, setStride } = ls;
+const zeros3D = require('../utilities/zeros-3d');
+const randos3D = require('../utilities/randos-3d');
 
 function setSwitchY(value) {
   return value;
@@ -12,7 +13,7 @@ function setSwitchX(value) {
   return value;
 }
 
-export function predict(inputs) {
+function predict(inputs) {
   const x = Math.floor(
     (this.thread.x / this.output.x) * this.constants.inputWidth -
       this.constants.paddingX
@@ -51,7 +52,7 @@ export function predict(inputs) {
   return largestValue;
 }
 
-export function compare(deltas, switchY, switchX) {
+function compare(deltas, switchY, switchX) {
   const x = Math.floor(
     (this.thread.x / this.output.x) * this.constants.outputWidth
   );
@@ -74,7 +75,7 @@ export function compare(deltas, switchY, switchX) {
   return value;
 }
 
-export function compare3D(deltas, switchY, switchX) {
+function compare3D(deltas, switchY, switchX) {
   const x = Math.floor(
     (this.thread.x / this.output.x) * this.constants.outputWidth
   );
@@ -97,7 +98,7 @@ export function compare3D(deltas, switchY, switchX) {
   return value;
 }
 
-export default class Pool extends Filter {
+class Pool extends Filter {
   static get defaults() {
     return {
       padding: 0,
@@ -204,3 +205,5 @@ export default class Pool extends Filter {
     if (type !== typeof this.inputLayer.deltas[0][0][0]) debugger;
   }
 }
+
+module.exports = { Pool, predict, compare, compare3D };

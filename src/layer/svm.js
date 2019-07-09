@@ -1,4 +1,4 @@
-import Base from './base';
+const Base = require('./base');
 
 class Regression extends Base {
   predict() {
@@ -21,3 +21,5 @@ function learn(target) {
   //   loss += ydiff;
   // }
 }
+
+module.exports = Regression;

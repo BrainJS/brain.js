@@ -1,12 +1,12 @@
-import RecurrentConnection from './layer/recurrent-connection';
-import RecurrentInput from './layer/recurrent-input';
-import RecurrentZeros from './layer/recurrent-zeros';
-import flattenLayers from './utilities/flatten-layers';
-import mse2d from './utilities/mse-2d';
-import FeedForward from './feed-forward';
-// import Base from './layer/base'
+const RecurrentConnection = require('./layer/recurrent-connection');
+const RecurrentInput = require('./layer/recurrent-input');
+const RecurrentZeros = require('./layer/recurrent-zeros');
+const flattenLayers = require('./utilities/flatten-layers');
+const mse2d = require('./utilities/mse-2d');
+const FeedForward = require('./feed-forward');
+// const Base from './layer/base'
 
-export default class Recurrent extends FeedForward {
+class Recurrent extends FeedForward {
   static get structure() {
     return {
       /**
@@ -303,3 +303,5 @@ export default class Recurrent extends FeedForward {
     return null;
   }
 }
+
+module.exports = Recurrent;

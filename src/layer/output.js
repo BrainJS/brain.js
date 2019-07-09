@@ -1,6 +1,7 @@
-import { add, multiply, random, target, zeros } from '.';
+const layer = require('.');
+const { add, multiply, random, target, zeros } = layer;
 
-export default (settings, inputLayer) => {
+module.exports = (settings, inputLayer) => {
   const { height } = settings;
   const outputGate = random({ height, width: inputLayer.height });
   const output = zeros({ height });

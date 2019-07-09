@@ -1,45 +1,23 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-exports.predict = predict;
-exports.compareFilterDeltas = compareFilterDeltas;
-exports.compareInputDeltas = compareInputDeltas;
-exports.compareBiases = compareBiases;
-
-var _kernel = require('../utilities/kernel');
-
-var _layerSetup = require('../utilities/layer-setup');
-
-var _types = require('./types');
-
-var _randos = require('../utilities/randos');
-
-var _randos2 = _interopRequireDefault(_randos);
-
-var _randos3d = require('../utilities/randos-3d');
-
-var _randos3d2 = _interopRequireDefault(_randos3d);
-
-var _zeros3d = require('../utilities/zeros-3d');
-
-var _zeros3d2 = _interopRequireDefault(_zeros3d);
-
-var _values = require('../utilities/values');
-
-var _values2 = _interopRequireDefault(_values);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var makeKernel = require('../utilities/kernel').makeKernel;
+var uls = require('../utilities/layer-setup');
+var setStride = uls.setStride,
+    setPadding = uls.setPadding;
+
+var Filter = require('./types').Filter;
+var randos = require('../utilities/randos');
+var randos3D = require('../utilities/randos-3d');
+var zeros3D = require('../utilities/zeros-3d');
+var values = require('../utilities/values');
 
 function predict(inputs, filters, biases) {
   var startFilterX = this.constants.paddingX - this.thread.x * this.constants.strideX;
@@ -136,12 +114,12 @@ var Convolution = function (_Filter) {
     _this.stride = null;
     _this.strideX = null;
     _this.strideY = null;
-    (0, _layerSetup.setStride)(_this, settings);
+    setStride(_this, settings);
 
     _this.padding = null;
     _this.paddingX = null;
     _this.paddingY = null;
-    (0, _layerSetup.setPadding)(_this, settings);
+    setPadding(_this, settings);
 
     _this.filterCount = settings.filterCount;
     _this.filterWidth = settings.filterWidth;
@@ -150,14 +128,14 @@ var Convolution = function (_Filter) {
     _this.width = Math.floor((inputLayer.width + _this.paddingX * 2 - _this.filterWidth) / _this.strideX + 1);
     _this.height = Math.floor((inputLayer.height + _this.paddingY * 2 - _this.filterHeight) / _this.strideY + 1);
     _this.depth = _this.filterCount;
-    _this.weights = (0, _randos3d2.default)(_this.width, _this.height, _this.depth);
-    _this.deltas = (0, _zeros3d2.default)(_this.width, _this.height, _this.depth);
+    _this.weights = randos3D(_this.width, _this.height, _this.depth);
+    _this.deltas = zeros3D(_this.width, _this.height, _this.depth);
 
-    _this.biases = (0, _values2.default)(_this.depth, _this.bias);
-    _this.biasDeltas = (0, _randos2.default)(_this.depth);
+    _this.biases = values(_this.depth, _this.bias);
+    _this.biasDeltas = randos(_this.depth);
 
-    _this.filters = (0, _randos3d2.default)(_this.filterWidth, _this.filterHeight, _this.filterCount);
-    _this.filterDeltas = (0, _zeros3d2.default)(_this.filterWidth, _this.filterHeight, _this.filterCount);
+    _this.filters = randos3D(_this.filterWidth, _this.filterHeight, _this.filterCount);
+    _this.filterDeltas = zeros3D(_this.filterWidth, _this.filterHeight, _this.filterCount);
 
     _this.learnFilters = null;
     _this.learnInputs = null;
@@ -169,7 +147,7 @@ var Convolution = function (_Filter) {
   _createClass(Convolution, [{
     key: 'setupKernels',
     value: function setupKernels() {
-      this.predictKernel = (0, _kernel.makeKernel)(predict, {
+      this.predictKernel = makeKernel(predict, {
         constants: {
           inputWidth: this.inputLayer.width,
           inputHeight: this.inputLayer.height,
@@ -184,7 +162,7 @@ var Convolution = function (_Filter) {
         output: [this.width, this.height, this.depth]
       });
 
-      this.compareFilterDeltasKernel = (0, _kernel.makeKernel)(compareFilterDeltas, {
+      this.compareFilterDeltasKernel = makeKernel(compareFilterDeltas, {
         constants: {
           deltasWidth: this.width,
           deltasHeight: this.height,
@@ -202,14 +180,14 @@ var Convolution = function (_Filter) {
         output: [this.width, this.height, this.depth]
       });
 
-      this.compareInputDeltasKernel = (0, _kernel.makeKernel)(compareInputDeltas, {
+      this.compareInputDeltasKernel = makeKernel(compareInputDeltas, {
         constants: {
           filterCount: this.filterCount
         },
         output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth]
       });
 
-      this.compareBiasesKernel = (0, _kernel.makeKernel)(compareBiases, {
+      this.compareBiasesKernel = makeKernel(compareBiases, {
         output: [1, 1, this.depth],
         constants: {
           deltaWidth: this.width,
@@ -235,11 +213,11 @@ var Convolution = function (_Filter) {
     value: function learn(previousLayer, nextLayer, learningRate) {
       // TODO: handle filters
       this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
-      this.deltas = (0, _zeros3d2.default)(this.width, this.height, this.depth);
+      this.deltas = zeros3D(this.width, this.height, this.depth);
     }
   }]);
 
   return Convolution;
-}(_types.Filter);
+}(Filter);
 
-exports.default = Convolution;
+module.exports = { Convolution: Convolution, predict: predict, compareFilterDeltas: compareFilterDeltas, compareInputDeltas: compareInputDeltas, compareBiases: compareBiases };

@@ -1,6 +1,6 @@
-import * as leakyRelu from './leaky-relu';
-import * as relu from './relu';
-import * as sigmoid from './sigmoid';
-import * as tanh from './tanh';
+const leakyRelu = require('./leaky-relu');
+const relu = require('./relu');
+const sigmoid = require('./sigmoid');
+const tanh = require('./tanh');
 
-export { leakyRelu, relu, sigmoid, tanh };
+module.exports = { leakyRelu, relu, sigmoid, tanh };

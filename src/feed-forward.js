@@ -1,11 +1,11 @@
-import lookup from './lookup';
+const lookup = require('./lookup');
 // import TrainStream from './train-stream'
-import mse2d from './utilities/mse-2d';
-import layerFromJSON from './utilities/layer-from-json';
-import * as praxis from './praxis';
-import flattenLayers from './utilities/flatten-layers';
+const mse2d = require('./utilities/mse-2d');
+const layerFromJSON = require('./utilities/layer-from-json');
+const praxis = require('./praxis');
+const flattenLayers = require('./utilities/flatten-layers');
 
-export default class FeedForward {
+class FeedForward {
   static get trainDefaults() {
     return {
       iterations: 20000,
@@ -475,3 +475,5 @@ export default class FeedForward {
     );
   }
 }
+
+module.exports = FeedForward;

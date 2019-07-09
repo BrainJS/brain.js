@@ -1,23 +1,15 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-exports.trainingPredict = trainingPredict;
-exports.predict = predict;
-
-var _types = require('./types');
-
-var _kernel = require('../utilities/kernel');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Filter = require('./types').Filter;
+var makeKernel = require('../utilities/kernel').makeKernel;
 
 // TODO: implement random in glsl in gpu.js
 function trainingPredict(inputs) {
@@ -61,11 +53,11 @@ var Dropout = function (_Filter) {
     key: 'setupKernels',
     value: function setupKernels() {
       if (this.isTraining) {
-        this.predictKernel = (0, _kernel.makeKernel)(trainingPredict, {
+        this.predictKernel = makeKernel(trainingPredict, {
           output: [this.width, this.height, this.depth]
         });
       } else {
-        this.predictKernel = (0, _kernel.makeKernel)(predict, {
+        this.predictKernel = makeKernel(predict, {
           output: [this.width, this.height, this.depth]
         });
       }
@@ -83,6 +75,6 @@ var Dropout = function (_Filter) {
   }]);
 
   return Dropout;
-}(_types.Filter);
+}(Filter);
 
-exports.default = Dropout;
+module.exports = { Dropout: Dropout, trainingPredict: trainingPredict, predict: predict };

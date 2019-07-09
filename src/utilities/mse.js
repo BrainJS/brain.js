@@ -1,4 +1,4 @@
-export default function mse(errors) {
+module.exports = function mse(errors) {
   // mean squared error
   let sum = 0;
   for (let i = 0; i < errors.length; i++) {
