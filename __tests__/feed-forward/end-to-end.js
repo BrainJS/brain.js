@@ -1,7 +1,5 @@
-import brain from '../../src';
-import zeros2D from '../../src/utilities/zeros-2d';
-
-const { layer, NeuralNetwork, FeedForward } = brain;
+const { layer, NeuralNetwork, FeedForward } = require('../../src');
+const zeros2D = require('../../src/utilities/zeros-2d');
 
 const {
   // Base,

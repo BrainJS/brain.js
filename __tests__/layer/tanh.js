@@ -1,5 +1,5 @@
-import gpuMock from 'gpu-mock.js';
-import { predict, compare } from '../../src/layer/tanh';
+const gpuMock = require('gpu-mock.js');
+const { predict, compare } = require('../../src/layer/tanh');
 
 function shave(array) {
   const result = [];
