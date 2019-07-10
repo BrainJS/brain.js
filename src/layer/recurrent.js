@@ -1,5 +1,4 @@
-const layer = require('.');
-const { relu, add, multiply, random, zeros } = layer;
+const { relu, add, multiply, random, zeros } = require('.');
 
 module.exports = (settings, input, recurrentInput) => {
   const { height } = settings;

@@ -1,4 +1,3 @@
-const layer = require('.');
 const {
   add,
   negative,
@@ -9,7 +8,7 @@ const {
   random,
   tanh,
   zeros,
-} = layer;
+} = require('.');
 
 module.exports = (settings, recurrentInput, input) => {
   const { height } = settings;

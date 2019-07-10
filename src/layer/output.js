@@ -1,5 +1,4 @@
-const layer = require('.');
-const { add, multiply, random, target, zeros } = layer;
+const { add, multiply, random, target, zeros } = require('.');
 
 module.exports = (settings, inputLayer) => {
   const { height } = settings;

@@ -1,7 +1,6 @@
 const gpuMock = require('gpu-mock.js');
 const Input = require('../../src/layer/input');
-const multiply = require('../../src/layer/multiply');
-const { Multiply, predict, compareFromX, compareFromY } = multiply;
+const { Multiply, predict, compareFromX, compareFromY } = require('../../src/layer/multiply');
 const Random = require('../../src/layer/random');
 
 describe('Multiply Layer', () => {

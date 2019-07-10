@@ -1,6 +1,5 @@
 const makeKernel = require('../utilities/kernel').makeKernel;
-const uls = require('../utilities/layer-setup');
-const { setStride, setPadding } = uls;
+const { setStride, setPadding } = require('../utilities/layer-setup');
 const Filter = require('./types').Filter;
 const randos = require('../utilities/randos');
 const randos3D = require('../utilities/randos-3d');

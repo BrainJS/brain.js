@@ -1,5 +1,4 @@
-const layer = require('./index');
-const { add, multiply, random, sigmoid } = layer;
+const { add, multiply, random, sigmoid } = require('./index');
 
 module.exports = function feedForward(settings, input) {
   const { height } = settings;

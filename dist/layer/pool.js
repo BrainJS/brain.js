@@ -12,9 +12,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var Filter = require('./types').Filter;
 var makeKernel = require('../utilities/kernel').makeKernel;
-var ls = require('../utilities/layer-setup');
-var setPadding = ls.setPadding,
-    setStride = ls.setStride;
+
+var _require = require('../utilities/layer-setup'),
+    setPadding = _require.setPadding,
+    setStride = _require.setStride;
 
 var zeros3D = require('../utilities/zeros-3d');
 var randos3D = require('../utilities/randos-3d');

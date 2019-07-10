@@ -1,12 +1,11 @@
 'use strict';
 
-var layer = require('.');
-var relu = layer.relu,
-    add = layer.add,
-    multiply = layer.multiply,
-    random = layer.random,
-    zeros = layer.zeros;
-
+var _require = require('.'),
+    relu = _require.relu,
+    add = _require.add,
+    multiply = _require.multiply,
+    random = _require.random,
+    zeros = _require.zeros;
 
 module.exports = function (settings, input, recurrentInput) {
   var height = settings.height;

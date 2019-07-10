@@ -1,6 +1,5 @@
 const gpuMock = require('gpu-mock.js');
-const pool = require('../../src/layer/pool');
-const { Pool, predict, compare, compare3D } = pool;
+const { Pool, predict, compare, compare3D } = require('../../src/layer/pool');
 
 describe('Pool Layer', () => {
   describe('constructor', () => {

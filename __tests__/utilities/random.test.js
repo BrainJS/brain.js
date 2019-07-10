@@ -1,5 +1,4 @@
-const random = require('../../src/utilities/random');
-const { randomFloat, randomInteger, randomN } = random;
+const { randomFloat, randomInteger, randomN } = require('../../src/utilities/random');
 
 describe('random', () => {
   test('randomF', () => {

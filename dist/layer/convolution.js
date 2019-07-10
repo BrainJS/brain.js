@@ -9,9 +9,10 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var makeKernel = require('../utilities/kernel').makeKernel;
-var uls = require('../utilities/layer-setup');
-var setStride = uls.setStride,
-    setPadding = uls.setPadding;
+
+var _require = require('../utilities/layer-setup'),
+    setStride = _require.setStride,
+    setPadding = _require.setPadding;
 
 var Filter = require('./types').Filter;
 var randos = require('../utilities/randos');

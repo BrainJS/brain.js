@@ -24592,10 +24592,9 @@ function _inherits(subClass, superClass) {
 
 var makeKernel = require('../utilities/kernel').makeKernel;
 
-var uls = require('../utilities/layer-setup');
-
-var setStride = uls.setStride,
-    setPadding = uls.setPadding;
+var _require = require('../utilities/layer-setup'),
+    setStride = _require.setStride,
+    setPadding = _require.setPadding;
 
 var Filter = require('./types').Filter;
 
@@ -26096,10 +26095,9 @@ var Filter = require('./types').Filter;
 
 var makeKernel = require('../utilities/kernel').makeKernel;
 
-var ls = require('../utilities/layer-setup');
-
-var setPadding = ls.setPadding,
-    setStride = ls.setStride;
+var _require = require('../utilities/layer-setup'),
+    setPadding = _require.setPadding,
+    setStride = _require.setStride;
 
 var zeros3D = require('../utilities/zeros-3d');
 
@@ -26536,10 +26534,9 @@ var Activation = require('./types').Activation;
 
 var makeKernel = require('../utilities/kernel').makeKernel;
 
-var relu = require('../activation/relu');
-
-var activate = relu.activate,
-    measure = relu.measure;
+var _require = require('../activation/relu'),
+    activate = _require.activate,
+    measure = _require.measure;
 
 var zeros2D = require('../utilities/zeros-2d');
 
@@ -26700,10 +26697,9 @@ var Activation = require('./types').Activation;
 
 var makeKernel = require('../utilities/kernel').makeKernel;
 
-var sigmoid = require('../activation/sigmoid');
-
-var activate = sigmoid.activate,
-    measure = sigmoid.measure;
+var _require = require('../activation/sigmoid'),
+    activate = _require.activate,
+    measure = _require.measure;
 
 var zeros2D = require('../utilities/zeros-2d');
 
@@ -36523,10 +36519,9 @@ function _inherits(subClass, superClass) {
   if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
 }
 
-var gpujs = require('gpu.js');
-
-var GPU = gpujs.GPU,
-    alias = gpujs.alias;
+var _require = require('gpu.js'),
+    GPU = _require.GPU,
+    alias = _require.alias;
 
 var NeuralNetwork = require('./neural-network');
 
@@ -40767,12 +40762,11 @@ module.exports = GRUTimeStep;
 },{"./gru":"wLPK","./rnn-time-step":"zri4"}],"nL/1":[function(require,module,exports) {
 'use strict';
 
-var layer = require('./index');
-
-var add = layer.add,
-    multiply = layer.multiply,
-    random = layer.random,
-    sigmoid = layer.sigmoid;
+var _require = require('./index'),
+    add = _require.add,
+    multiply = _require.multiply,
+    random = _require.random,
+    sigmoid = _require.sigmoid;
 
 module.exports = function feedForward(settings, input) {
   var height = settings.height;
@@ -40790,17 +40784,16 @@ module.exports = function feedForward(settings, input) {
 },{"./index":"X3lc"}],"v+cs":[function(require,module,exports) {
 'use strict';
 
-var layer = require('.');
-
-var add = layer.add,
-    negative = layer.negative,
-    multiply = layer.multiply,
-    multiplyElement = layer.multiplyElement,
-    ones = layer.ones,
-    sigmoid = layer.sigmoid,
-    random = layer.random,
-    tanh = layer.tanh,
-    zeros = layer.zeros;
+var _require = require('.'),
+    add = _require.add,
+    negative = _require.negative,
+    multiply = _require.multiply,
+    multiplyElement = _require.multiplyElement,
+    ones = _require.ones,
+    sigmoid = _require.sigmoid,
+    random = _require.random,
+    tanh = _require.tanh,
+    zeros = _require.zeros;
 
 module.exports = function (settings, recurrentInput, input) {
   var height = settings.height;
@@ -40847,15 +40840,14 @@ module.exports = function (settings, recurrentInput, input) {
 },{".":"X3lc"}],"Mqbi":[function(require,module,exports) {
 'use strict';
 
-var layer = require('./index');
-
-var add = layer.add,
-    multiply = layer.multiply,
-    multiplyElement = layer.multiplyElement,
-    random = layer.random,
-    sigmoid = layer.sigmoid,
-    tanh = layer.tanh,
-    zeros = layer.zeros;
+var _require = require('./index'),
+    add = _require.add,
+    multiply = _require.multiply,
+    multiplyElement = _require.multiplyElement,
+    random = _require.random,
+    sigmoid = _require.sigmoid,
+    tanh = _require.tanh,
+    zeros = _require.zeros;
 
 module.exports = function (settings, recurrentInput, input) {
   var height = settings.height;
@@ -40920,13 +40912,12 @@ module.exports = function (settings, recurrentInput, input) {
 },{"./index":"X3lc"}],"7ERy":[function(require,module,exports) {
 'use strict';
 
-var layer = require('.');
-
-var relu = layer.relu,
-    add = layer.add,
-    multiply = layer.multiply,
-    random = layer.random,
-    zeros = layer.zeros;
+var _require = require('.'),
+    relu = _require.relu,
+    add = _require.add,
+    multiply = _require.multiply,
+    random = _require.random,
+    zeros = _require.zeros;
 
 module.exports = function (settings, input, recurrentInput) {
   var height = settings.height;
@@ -40953,13 +40944,12 @@ module.exports = function (settings, input, recurrentInput) {
 },{".":"X3lc"}],"YS3q":[function(require,module,exports) {
 'use strict';
 
-var layer = require('.');
-
-var add = layer.add,
-    multiply = layer.multiply,
-    random = layer.random,
-    target = layer.target,
-    zeros = layer.zeros;
+var _require = require('.'),
+    add = _require.add,
+    multiply = _require.multiply,
+    random = _require.random,
+    target = _require.target,
+    zeros = _require.zeros;
 
 module.exports = function (settings, inputLayer) {
   var height = settings.height;

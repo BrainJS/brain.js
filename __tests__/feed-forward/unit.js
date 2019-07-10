@@ -1,6 +1,4 @@
-const brain = require('../../src');
-
-const { FeedForward, layer } = brain;
+const { FeedForward, layer } = require('../../src');
 
 const {
   Add,

@@ -1,4 +1,4 @@
-const brain = require('../../src');
+const { layer } = require('../../src');
 
 const Recurrent = require('../../src/recurrent');
 const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
@@ -6,8 +6,6 @@ const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
 // import RandomMatrix from '../../src/recurrent/matrix/random-matrix'
 // import Matrix from '../../src/recurrent/matrix'
 const zeros2D = require('../../src/utilities/zeros-2d');
-
-const { layer } = brain;
 
 const { add, input, multiply, output, random, recurrent } = layer;
 

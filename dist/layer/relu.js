@@ -10,9 +10,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var Activation = require('./types').Activation;
 var makeKernel = require('../utilities/kernel').makeKernel;
-var relu = require('../activation/relu');
-var activate = relu.activate,
-    measure = relu.measure;
+
+var _require = require('../activation/relu'),
+    activate = _require.activate,
+    measure = _require.measure;
 
 var zeros2D = require('../utilities/zeros-2d');
 var zeros3D = require('../utilities/zeros-3d');

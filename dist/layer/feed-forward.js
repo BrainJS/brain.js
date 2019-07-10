@@ -1,11 +1,10 @@
 'use strict';
 
-var layer = require('./index');
-var add = layer.add,
-    multiply = layer.multiply,
-    random = layer.random,
-    sigmoid = layer.sigmoid;
-
+var _require = require('./index'),
+    add = _require.add,
+    multiply = _require.multiply,
+    random = _require.random,
+    sigmoid = _require.sigmoid;
 
 module.exports = function feedForward(settings, input) {
   var height = settings.height;

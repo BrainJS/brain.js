@@ -1,7 +1,6 @@
 const Activation = require('./types').Activation;
 const makeKernel = require('../utilities/kernel').makeKernel;
-const sigmoid = require('../activation/sigmoid');
-const { activate, measure } = sigmoid;
+const { activate, measure } = require('../activation/sigmoid');
 const zeros2D = require('../utilities/zeros-2d');
 
 function predict(inputs) {

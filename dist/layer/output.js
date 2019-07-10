@@ -1,12 +1,11 @@
 'use strict';
 
-var layer = require('.');
-var add = layer.add,
-    multiply = layer.multiply,
-    random = layer.random,
-    target = layer.target,
-    zeros = layer.zeros;
-
+var _require = require('.'),
+    add = _require.add,
+    multiply = _require.multiply,
+    random = _require.random,
+    target = _require.target,
+    zeros = _require.zeros;
 
 module.exports = function (settings, inputLayer) {
   var height = settings.height;

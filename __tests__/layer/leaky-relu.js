@@ -1,7 +1,5 @@
 const gpuMock = require('gpu-mock.js');
-const llr = require('../../src/layer/leaky-relu');
-const predict = llr.predict;
-const compare = llr.predict;
+const { predict, compare } = require('../../src/layer/leaky-relu');
 
 describe('Leaky Relu Layer', () => {
   describe('.predict (forward propagation)', () => {

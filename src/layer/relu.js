@@ -1,7 +1,6 @@
 const Activation = require('./types').Activation;
 const makeKernel = require('../utilities/kernel').makeKernel;
-const relu = require('../activation/relu');
-const { activate, measure } = relu;
+const { activate, measure } = require('../activation/relu');
 const zeros2D = require('../utilities/zeros-2d');
 const zeros3D = require('../utilities/zeros-3d');
 

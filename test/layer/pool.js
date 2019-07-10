@@ -1,7 +1,6 @@
 const assert = require('chai').assert;
 const gpuMock = require('gpu-mock.js');
-const pool = require('../../src/layer/pool');
-const { predict, compare } = pool;
+const { predict, compare } = require('../../src/layer/pool');
 
 describe('Pool Layer', () => {
   describe('.predict (forward propagation)', () => {

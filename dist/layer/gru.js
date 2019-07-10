@@ -1,16 +1,15 @@
 'use strict';
 
-var layer = require('.');
-var add = layer.add,
-    negative = layer.negative,
-    multiply = layer.multiply,
-    multiplyElement = layer.multiplyElement,
-    ones = layer.ones,
-    sigmoid = layer.sigmoid,
-    random = layer.random,
-    tanh = layer.tanh,
-    zeros = layer.zeros;
-
+var _require = require('.'),
+    add = _require.add,
+    negative = _require.negative,
+    multiply = _require.multiply,
+    multiplyElement = _require.multiplyElement,
+    ones = _require.ones,
+    sigmoid = _require.sigmoid,
+    random = _require.random,
+    tanh = _require.tanh,
+    zeros = _require.zeros;
 
 module.exports = function (settings, recurrentInput, input) {
   var height = settings.height;

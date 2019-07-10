@@ -1,4 +1,3 @@
-const layer = require('./index');
 const {
   add,
   multiply,
@@ -7,7 +6,7 @@ const {
   sigmoid,
   tanh,
   zeros,
-} = layer;
+} = require('./index');
 
 module.exports = (settings, recurrentInput, input) => {
   const { height } = settings;

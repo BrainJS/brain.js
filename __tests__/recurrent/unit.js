@@ -1,8 +1,7 @@
-const brain = require('../../src');
+const { Recurrent, layer } = require('../../src');
 // import RecurrentConnection from '../../src/layer/recurrent-connection'
 const Filter = require('../../src/layer/types').Filter;
 
-const { Recurrent, layer } = brain;
 const { add, input, multiply, output, random, recurrent } = layer;
 
 describe('Recurrent Class: Unit', () => {
