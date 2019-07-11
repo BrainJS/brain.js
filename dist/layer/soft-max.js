@@ -1,63 +1,21 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-exports.getMaxValue = getMaxValue;
-exports.getMaxValue2D = getMaxValue2D;
-exports.getMaxValue3D = getMaxValue3D;
-exports.getSum = getSum;
-exports.getSum2D = getSum2D;
-exports.getSum3D = getSum3D;
-exports.getExponentials = getExponentials;
-exports.getExponentials2D = getExponentials2D;
-exports.getExponentials3D = getExponentials3D;
-exports.predict = predict;
-exports.predict2D = predict2D;
-exports.predict3D = predict3D;
-exports.compare = compare;
-exports.compare2D = compare2D;
-exports.compare3D = compare3D;
-exports.loss = loss;
-
-var _kernel = require('../utilities/kernel');
-
-var _types = require('./types');
-
-var _randos = require('../utilities/randos');
-
-var _randos2 = _interopRequireDefault(_randos);
-
-var _randos2d = require('../utilities/randos-2d');
-
-var _randos2d2 = _interopRequireDefault(_randos2d);
-
-var _randos3d = require('../utilities/randos-3d');
-
-var _randos3d2 = _interopRequireDefault(_randos3d);
-
-var _zeros = require('../utilities/zeros');
-
-var _zeros2 = _interopRequireDefault(_zeros);
-
-var _zeros2d = require('../utilities/zeros-2d');
-
-var _zeros2d2 = _interopRequireDefault(_zeros2d);
-
-var _zeros3d = require('../utilities/zeros-3d');
-
-var _zeros3d2 = _interopRequireDefault(_zeros3d);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var makeKernel = require('../utilities/kernel');
+var Filter = require('./types').Filter;
+var randos = require('../utilities/randos');
+var randos2D = require('../utilities/randos-2d');
+var randos3D = require('../utilities/randos-3d');
+var zeros = require('../utilities/zeros');
+var zeros2D = require('../utilities/zeros-2d');
+var zeros3D = require('../utilities/zeros-3d');
 
 function getMaxValue(inputs) {
   var maxInput = -Infinity;
@@ -202,15 +160,15 @@ var SoftMax = function (_Filter) {
     _this.validate();
     if (_this.height > 1) {
       if (_this.depth > 1) {
-        _this.weights = (0, _randos3d2.default)(_this.width, _this.height, _this.depth);
-        _this.deltas = (0, _zeros3d2.default)(_this.width, _this.height, _this.depth);
+        _this.weights = randos3D(_this.width, _this.height, _this.depth);
+        _this.deltas = zeros3D(_this.width, _this.height, _this.depth);
       } else {
-        _this.weights = (0, _randos2d2.default)(_this.width, _this.height);
-        _this.deltas = (0, _zeros2d2.default)(_this.width, _this.height);
+        _this.weights = randos2D(_this.width, _this.height);
+        _this.deltas = zeros2D(_this.width, _this.height);
       }
     } else {
-      _this.weights = (0, _randos2.default)(_this.width);
-      _this.deltas = (0, _zeros2.default)(_this.width);
+      _this.weights = randos(_this.width);
+      _this.deltas = zeros(_this.width);
     }
     return _this;
   }
@@ -223,10 +181,10 @@ var SoftMax = function (_Filter) {
           depth = this.depth;
 
       if (depth > 1) {
-        this.getExponentialsKernel = (0, _kernel.makeKernel)(getExponentials3D, {
+        this.getExponentialsKernel = makeKernel(getExponentials3D, {
           output: [width, height, depth]
         });
-        this.getMaxValueKernel = (0, _kernel.makeKernel)(getMaxValue3D, {
+        this.getMaxValueKernel = makeKernel(getMaxValue3D, {
           output: [1, 1, 1],
           constants: {
             inputWidth: width,
@@ -234,7 +192,7 @@ var SoftMax = function (_Filter) {
             inputDepth: depth
           }
         });
-        this.getSumKernel = (0, _kernel.makeKernel)(getSum3D, {
+        this.getSumKernel = makeKernel(getSum3D, {
           output: [1, 1, 1],
           constants: {
             inputWidth: width,
@@ -242,34 +200,34 @@ var SoftMax = function (_Filter) {
             inputDepth: depth
           }
         });
-        this.predictKernel = (0, _kernel.makeKernel)(predict3D, {
+        this.predictKernel = makeKernel(predict3D, {
           output: [width, height, depth]
         });
-        this.compareKernel = (0, _kernel.makeKernel)(compare3D, {
+        this.compareKernel = makeKernel(compare3D, {
           output: [width, height, depth]
         });
       } else {
-        this.getExponentialsKernel = (0, _kernel.makeKernel)(getExponentials, {
+        this.getExponentialsKernel = makeKernel(getExponentials, {
           output: [width, height]
         });
-        this.getMaxValueKernel = (0, _kernel.makeKernel)(getMaxValue2D, {
+        this.getMaxValueKernel = makeKernel(getMaxValue2D, {
           output: [1, 1],
           constants: {
             inputWidth: width,
             inputHeight: height
           }
         });
-        this.getSumKernel = (0, _kernel.makeKernel)(getSum2D, {
+        this.getSumKernel = makeKernel(getSum2D, {
           output: [1, 1],
           constants: {
             inputWidth: width,
             inputHeight: height
           }
         });
-        this.predictKernel = (0, _kernel.makeKernel)(predict2D, {
+        this.predictKernel = makeKernel(predict2D, {
           output: [width, height]
         });
-        this.compareKernel = (0, _kernel.makeKernel)(compare2D, {
+        this.compareKernel = makeKernel(compare2D, {
           output: [width, height]
         });
       }
@@ -292,6 +250,12 @@ var SoftMax = function (_Filter) {
   }]);
 
   return SoftMax;
-}(_types.Filter);
+}(Filter);
 
-exports.default = SoftMax;
+module.exports = { SoftMax: SoftMax,
+  getMaxValue: getMaxValue, getMaxValue2D: getMaxValue2D, getMaxValue3D: getMaxValue3D,
+  getSum: getSum, getSum2D: getSum2D, getSum3D: getSum3D,
+  getExponentials: getExponentials, getExponentials2D: getExponentials2D, getExponentials3D: getExponentials3D,
+  predict: predict, predict2D: predict2D, predict3D: predict3D,
+  compare: compare, compare2D: compare2D, compare3D: compare3D,
+  loss: loss };

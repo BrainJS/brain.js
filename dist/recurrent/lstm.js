@@ -1,30 +1,16 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _matrix = require('./matrix');
-
-var _matrix2 = _interopRequireDefault(_matrix);
-
-var _randomMatrix = require('./matrix/random-matrix');
-
-var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
-
-var _rnn = require('./rnn');
-
-var _rnn2 = _interopRequireDefault(_rnn);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Matrix = require('./matrix');
+var RandomMatrix = require('./matrix/random-matrix');
+var RNN = require('./rnn');
 
 var LSTM = function (_RNN) {
   _inherits(LSTM, _RNN);
@@ -41,22 +27,22 @@ var LSTM = function (_RNN) {
       return {
         // gates parameters
         // wix
-        inputMatrix: new _randomMatrix2.default(hiddenSize, prevSize, 0.08), // wih
-        inputHidden: new _randomMatrix2.default(hiddenSize, hiddenSize, 0.08), // bi
-        inputBias: new _matrix2.default(hiddenSize, 1),
+        inputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wih
+        inputHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bi
+        inputBias: new Matrix(hiddenSize, 1),
         // wfx
-        forgetMatrix: new _randomMatrix2.default(hiddenSize, prevSize, 0.08), // wfh
-        forgetHidden: new _randomMatrix2.default(hiddenSize, hiddenSize, 0.08), // bf
-        forgetBias: new _matrix2.default(hiddenSize, 1),
+        forgetMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wfh
+        forgetHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bf
+        forgetBias: new Matrix(hiddenSize, 1),
         // wox
-        outputMatrix: new _randomMatrix2.default(hiddenSize, prevSize, 0.08), // woh
-        outputHidden: new _randomMatrix2.default(hiddenSize, hiddenSize, 0.08), // bo
-        outputBias: new _matrix2.default(hiddenSize, 1),
+        outputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // woh
+        outputHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bo
+        outputBias: new Matrix(hiddenSize, 1),
         // cell write params
         // wcx
-        cellActivationMatrix: new _randomMatrix2.default(hiddenSize, prevSize, 0.08), // wch
-        cellActivationHidden: new _randomMatrix2.default(hiddenSize, hiddenSize, 0.08), // bc
-        cellActivationBias: new _matrix2.default(hiddenSize, 1)
+        cellActivationMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wch
+        cellActivationHidden: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bc
+        cellActivationBias: new Matrix(hiddenSize, 1)
       };
     }
 
@@ -99,6 +85,6 @@ var LSTM = function (_RNN) {
   }]);
 
   return LSTM;
-}(_rnn2.default);
+}(RNN);
 
-exports.default = LSTM;
+module.exports = LSTM;

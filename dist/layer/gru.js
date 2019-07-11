@@ -1,30 +1,35 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+var _require = require('.'),
+    add = _require.add,
+    negative = _require.negative,
+    multiply = _require.multiply,
+    multiplyElement = _require.multiplyElement,
+    ones = _require.ones,
+    sigmoid = _require.sigmoid,
+    random = _require.random,
+    tanh = _require.tanh,
+    zeros = _require.zeros;
 
-var _ = require('.');
-
-exports.default = function (settings, recurrentInput, input) {
+module.exports = function (settings, recurrentInput, input) {
   var height = settings.height;
 
-  var updateGateWeights = (0, _.random)({ height: height, width: input.height });
-  var updateGatePeepholes = (0, _.random)({ width: height, height: height });
-  var updateGateBias = (0, _.zeros)({ height: height });
-  var updateGate = (0, _.sigmoid)((0, _.add)((0, _.add)((0, _.multiply)(updateGateWeights, input), (0, _.multiply)(updateGatePeepholes, recurrentInput)), updateGateBias));
+  var updateGateWeights = random({ height: height, width: input.height });
+  var updateGatePeepholes = random({ width: height, height: height });
+  var updateGateBias = zeros({ height: height });
+  var updateGate = sigmoid(add(add(multiply(updateGateWeights, input), multiply(updateGatePeepholes, recurrentInput)), updateGateBias));
 
-  var resetGateWeights = (0, _.random)({ height: height, width: input.height });
-  var resetGatePeepholes = (0, _.random)({ width: height, height: height });
-  var resetGateBias = (0, _.zeros)({ height: height });
-  var resetGate = (0, _.sigmoid)((0, _.add)((0, _.add)((0, _.multiply)(resetGateWeights, input), (0, _.multiply)(resetGatePeepholes, recurrentInput)), resetGateBias));
+  var resetGateWeights = random({ height: height, width: input.height });
+  var resetGatePeepholes = random({ width: height, height: height });
+  var resetGateBias = zeros({ height: height });
+  var resetGate = sigmoid(add(add(multiply(resetGateWeights, input), multiply(resetGatePeepholes, recurrentInput)), resetGateBias));
 
-  var cellWeights = (0, _.random)({ height: height, width: input.height });
-  var cellPeepholes = (0, _.random)({ width: height, height: height });
-  var cellBias = (0, _.zeros)({ height: height });
-  var cell = (0, _.tanh)((0, _.add)((0, _.add)((0, _.multiply)(cellWeights, input), (0, _.multiply)(cellPeepholes, (0, _.multiplyElement)(resetGate, recurrentInput))), cellBias));
+  var cellWeights = random({ height: height, width: input.height });
+  var cellPeepholes = random({ width: height, height: height });
+  var cellBias = zeros({ height: height });
+  var cell = tanh(add(add(multiply(cellWeights, input), multiply(cellPeepholes, multiplyElement(resetGate, recurrentInput))), cellBias));
 
   // compute hidden state as gated, saturated cell activations
   // negate updateGate
-  return (0, _.add)((0, _.multiplyElement)((0, _.add)((0, _.ones)(updateGate.rows, updateGate.columns), (0, _.negative)(updateGate)), cell), (0, _.multiplyElement)(recurrentInput, updateGate));
+  return add(multiplyElement(add(ones(updateGate.rows, updateGate.columns), negative(updateGate)), cell), multiplyElement(recurrentInput, updateGate));
 };

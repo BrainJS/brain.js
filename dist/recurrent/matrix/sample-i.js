@@ -1,20 +1,15 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = sampleI;
-
-var _random = require('../../utilities/random');
+var _randomF = require('../../utilities/random').randomFloat;
 
 // prevent parser from renaming when calling toString() method later
-var randomF = _random.randomF;
+var randomF = _randomF;
 /**
  *
  * @param {Matrix} m
  * @returns {number}
  */
-function sampleI(m) {
+module.exports = function sampleI(m) {
   // sample argmax from w, assuming w are
   // probabilities that sum to one
   var r = randomF(0, 1);
@@ -29,4 +24,4 @@ function sampleI(m) {
     }
     i++;
   }
-}
+};

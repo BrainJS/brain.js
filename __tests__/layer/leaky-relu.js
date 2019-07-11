@@ -1,5 +1,5 @@
-import gpuMock from 'gpu-mock.js';
-import { predict, compare } from '../../src/layer/leaky-relu';
+const gpuMock = require('gpu-mock.js');
+const { predict, compare } = require('../../src/layer/leaky-relu');
 
 describe('Leaky Relu Layer', () => {
   describe('.predict (forward propagation)', () => {

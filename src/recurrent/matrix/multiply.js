@@ -4,7 +4,7 @@
  * @param {Matrix} left
  * @param {Matrix} right
  */
-export default function multiply(product, left, right) {
+module.exports = function multiply(product, left, right) {
   const leftRows = left.rows;
   const leftColumns = left.columns;
   const rightColumns = right.columns;

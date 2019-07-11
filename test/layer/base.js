@@ -1,5 +1,6 @@
-import Base from '../../src/layer/base';
-import {assert} from 'chai';
+const Base = require('../../src/layer/base');
+const assert = require('chai').assert;
+
 describe('Base Layer', () => {
   describe('dimensions', () => {
     describe('when given undefined for width, height, and depth', () => {

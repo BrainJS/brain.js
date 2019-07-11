@@ -1,5 +1,5 @@
-import {assert} from 'chai';
-import TimeStep from '../../src/recurrent/time-step';
+const assert = require('chai').assert;
+const TimeStep = require('../../src/recurrent/time-step');
 
 /* NOTE: TimeStep here is deprecated though being committed as something new, it is the first feature we want using
  recurrent.js because it is simple one of the simplest recurrent neural networks and serves as a baseline to completing

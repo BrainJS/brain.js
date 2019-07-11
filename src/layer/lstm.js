@@ -1,4 +1,4 @@
-import {
+const {
   add,
   multiply,
   multiplyElement,
@@ -6,9 +6,9 @@ import {
   sigmoid,
   tanh,
   zeros,
-} from './index';
+} = require('./index');
 
-export default (settings, recurrentInput, input) => {
+module.exports = (settings, recurrentInput, input) => {
   const { height } = settings;
   const inputGateWeights = random({ height, width: input.height });
   const inputGatePeepholes = random({ width: height, height });

@@ -1,22 +1,11 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _zeros2d = require('../utilities/zeros-2d');
-
-var _zeros2d2 = _interopRequireDefault(_zeros2d);
-
-var _zeros3d = require('../utilities/zeros-3d');
-
-var _zeros3d2 = _interopRequireDefault(_zeros3d);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var zeros2D = require('../utilities/zeros-2d');
+var zeros3D = require('../utilities/zeros-3d');
 
 var Base = function () {
   _createClass(Base, null, [{
@@ -153,9 +142,9 @@ var Base = function () {
 
       // TODO: put into a kernel
       if (this.depth > 1) {
-        this.deltas = (0, _zeros3d2.default)(this.width, this.height, this.depth);
+        this.deltas = zeros3D(this.width, this.height, this.depth);
       } else {
-        this.deltas = (0, _zeros2d2.default)(this.width, this.height);
+        this.deltas = zeros2D(this.width, this.height);
       }
     }
   }, {
@@ -189,4 +178,4 @@ var Base = function () {
   return Base;
 }();
 
-exports.default = Base;
+module.exports = Base;

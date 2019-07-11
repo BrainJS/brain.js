@@ -1,11 +1,10 @@
-import gpuMock from 'gpu-mock.js';
-import {
-  predict,
-  compareFilterDeltas,
-  compareInputDeltas,
-  compareBiases,
-} from '../../src/layer/convolution';
-import { onePlusPlus3D } from '../test-utils';
+const gpuMock = require('gpu-mock.js');
+const convolution = require('../../src/layer/convolution');
+const predict = convolution.predict;
+const compareFilterDeltas = convolution.compareFilterDeltas;
+const compareInputDeltas = convolution.compareInputDeltas;
+const compareBiases = convolution.compareBiases;
+const onePlusPlus3D = require('../test-utils').onePlusPlus3D;
 
 describe('Convolution Layer', () => {
   describe('.predict (forward propagation)', () => {

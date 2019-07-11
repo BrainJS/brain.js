@@ -1,10 +1,6 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = traverseLayersFrom;
-function traverseLayersFrom(layer, cb) {
+module.exports = function traverseLayersFrom(layer, cb) {
   if (layer.hasOwnProperty('inputLayer')) {
     traverseLayersFrom(layer.inputLayer, cb);
   } else {
@@ -16,4 +12,4 @@ function traverseLayersFrom(layer, cb) {
     }
   }
   cb(layer);
-}
+};

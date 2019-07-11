@@ -1,18 +1,10 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _zeros = require('../../utilities/zeros');
-
-var _zeros2 = _interopRequireDefault(_zeros);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var zeros = require('../../utilities/zeros');
 
 /**
  * A matrix
@@ -20,6 +12,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @param {Number} [columns]
  * @constructor
  */
+
 var Matrix = function () {
   function Matrix(rows, columns) {
     _classCallCheck(this, Matrix);
@@ -29,8 +22,8 @@ var Matrix = function () {
 
     this.rows = rows;
     this.columns = columns;
-    this.weights = (0, _zeros2.default)(rows * columns);
-    this.deltas = (0, _zeros2.default)(rows * columns);
+    this.weights = zeros(rows * columns);
+    this.deltas = zeros(rows * columns);
   }
 
   /**
@@ -179,4 +172,4 @@ var Matrix = function () {
   return Matrix;
 }();
 
-exports.default = Matrix;
+module.exports = Matrix;

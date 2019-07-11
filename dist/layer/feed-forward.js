@@ -1,17 +1,16 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = feedForward;
+var _require = require('./index'),
+    add = _require.add,
+    multiply = _require.multiply,
+    random = _require.random,
+    sigmoid = _require.sigmoid;
 
-var _index = require('./index');
-
-function feedForward(settings, input) {
+module.exports = function feedForward(settings, input) {
   var height = settings.height;
 
-  var weights = (0, _index.random)({ name: 'weights', height: height, width: input.height });
-  var biases = (0, _index.random)({ name: 'biases', height: height });
+  var weights = random({ name: 'weights', height: height, width: input.height });
+  var biases = random({ name: 'biases', height: height });
 
-  return (0, _index.sigmoid)((0, _index.add)((0, _index.multiply)(weights, input), biases));
-}
+  return sigmoid(add(multiply(weights, input), biases));
+};

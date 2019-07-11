@@ -1,34 +1,18 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _kernel = require('../utilities/kernel');
-
-var _zeros = require('../utilities/zeros');
-
-var _zeros2 = _interopRequireDefault(_zeros);
-
-var _zeros2d = require('../utilities/zeros-2d');
-
-var _zeros2d2 = _interopRequireDefault(_zeros2d);
-
-var _zeros3d = require('../utilities/zeros-3d');
-
-var _zeros3d2 = _interopRequireDefault(_zeros3d);
-
-var _types = require('./types');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var makeKernel = require('../utilities/kernel').makeKernel;
+var zeros = require('../utilities/zeros');
+var zeros2D = require('../utilities/zeros-2d');
+var zeros3D = require('../utilities/zeros-3d');
+var Filter = require('./types').Filter;
 
 function compare1D(weights, targetValues) {
   return weights[this.thread.y][this.thread.x] - targetValues[this.thread.x];
@@ -52,17 +36,17 @@ var Target = function (_Filter) {
     _this.depth = inputLayer.depth;
     _this.validate();
     if (_this.depth > 1) {
-      _this.weights = (0, _zeros3d2.default)(_this.width, _this.height, _this.depth);
-      _this.deltas = (0, _zeros3d2.default)(_this.width, _this.height, _this.depth);
-      _this.errors = (0, _zeros3d2.default)(_this.width, _this.height, _this.depth);
+      _this.weights = zeros3D(_this.width, _this.height, _this.depth);
+      _this.deltas = zeros3D(_this.width, _this.height, _this.depth);
+      _this.errors = zeros3D(_this.width, _this.height, _this.depth);
     } else if (_this.height > 1) {
-      _this.weights = (0, _zeros2d2.default)(_this.width, _this.height);
-      _this.deltas = (0, _zeros2d2.default)(_this.width, _this.height);
-      _this.errors = (0, _zeros2d2.default)(_this.width, _this.height);
+      _this.weights = zeros2D(_this.width, _this.height);
+      _this.deltas = zeros2D(_this.width, _this.height);
+      _this.errors = zeros2D(_this.width, _this.height);
     } else {
-      _this.weights = (0, _zeros2.default)(_this.width);
-      _this.deltas = (0, _zeros2.default)(_this.width);
-      _this.errors = (0, _zeros2.default)(_this.width);
+      _this.weights = zeros(_this.width);
+      _this.deltas = zeros(_this.width);
+      _this.errors = zeros(_this.width);
     }
     return _this;
   }
@@ -71,7 +55,7 @@ var Target = function (_Filter) {
     key: 'setupKernels',
     value: function setupKernels() {
       var compareFn = this.width === 1 ? compare1D : compare2D;
-      this.compareKernel = (0, _kernel.makeKernel)(compareFn, {
+      this.compareKernel = makeKernel(compareFn, {
         output: [this.width, this.height]
       });
     }
@@ -93,6 +77,6 @@ var Target = function (_Filter) {
   }]);
 
   return Target;
-}(_types.Filter);
+}(Filter);
 
-exports.default = Target;
+module.exports = Target;

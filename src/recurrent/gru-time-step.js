@@ -1,8 +1,8 @@
 // import Matrix from './matrix'
-import GRU from './gru';
-import RNNTimeStep from './rnn-time-step';
+const GRU = require('./gru');
+const RNNTimeStep = require('./rnn-time-step');
 
-export default class GRUTimeStep extends RNNTimeStep {
+class GRUTimeStep extends RNNTimeStep {
   static getModel(hiddenSize, prevSize) {
     return GRU.prototype.getModel(hiddenSize, prevSize);
   }
@@ -24,3 +24,5 @@ export default class GRUTimeStep extends RNNTimeStep {
     );
   }
 }
+
+module.exports = GRUTimeStep;

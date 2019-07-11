@@ -1,4 +1,4 @@
-import range from '../../src/utilities/range';
+const range = require('../../src/utilities/range');
 
 describe('range', () => {
   test('should return range from start & end', () => {

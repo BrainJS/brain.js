@@ -1,8 +1,8 @@
-import Matrix from './matrix';
-import LSTM from './lstm';
-import RNNTimeStep from './rnn-time-step';
+const Matrix = require('./matrix');
+const LSTM = require('./lstm');
+const RNNTimeStep = require('./rnn-time-step');
 
-export default class LSTMTimeStep extends RNNTimeStep {
+class LSTMTimeStep extends RNNTimeStep {
   getModel(hiddenSize, prevSize) {
     return LSTM.prototype.getModel.call(this, hiddenSize, prevSize);
   }
@@ -25,3 +25,5 @@ export default class LSTMTimeStep extends RNNTimeStep {
     );
   }
 }
+
+module.exports = LSTMTimeStep;

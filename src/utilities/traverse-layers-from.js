@@ -1,4 +1,4 @@
-export default function traverseLayersFrom(layer, cb) {
+module.exports = function traverseLayersFrom(layer, cb) {
   if (layer.hasOwnProperty('inputLayer')) {
     traverseLayersFrom(layer.inputLayer, cb);
   } else {

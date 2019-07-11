@@ -1,8 +1,8 @@
-import Matrix from './matrix';
-import RandomMatrix from './matrix/random-matrix';
-import RNN from './rnn';
+const Matrix = require('./matrix');
+const RandomMatrix = require('./matrix/random-matrix');
+const RNN = require('./rnn');
 
-export default class LSTM extends RNN {
+class LSTM extends RNN {
   static getModel(hiddenSize, prevSize) {
     return {
       // gates parameters
@@ -92,3 +92,5 @@ export default class LSTM extends RNN {
     return multiplyElement(outputGate, tanh(cell));
   }
 }
+
+module.exports = LSTM;

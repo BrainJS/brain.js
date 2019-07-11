@@ -1,6 +1,10 @@
-import {assert} from 'chai';
-import gpuMock from 'gpu-mock.js';
-import { predict, compareFilters, compareInputs, compareBiases } from '../../src/layer/convolution';
+const assert = require('chai').assert;
+const gpuMock = require('gpu-mock.js');
+const convolution = require('../../src/layer/convolution');
+const predict = convolution.predict;
+const compareFilterDeltas = convolution.compareFilterDeltas;
+const compareInputDeltas = convolution.compareInputDeltas;
+const compareBiases = convolution.compareBiases;
 
 describe('Convolution Layer', () => {
   describe('.predict (forward propagation)', () => {

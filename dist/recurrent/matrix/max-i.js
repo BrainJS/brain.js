@@ -1,15 +1,11 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = maxI;
 /**
  *
  * @param {Matrix} m
  * @returns {number}
  */
-function maxI(m) {
+module.exports = function maxI(m) {
   // argmax of array w
   var weights = m.weights;
 
@@ -23,4 +19,4 @@ function maxI(m) {
     maxv = v;
   }
   return maxix;
-}
+};

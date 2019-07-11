@@ -1,19 +1,19 @@
-import { Filter } from './types';
-import { makeKernel } from '../utilities/kernel';
+const Filter = require('./types').Filter;
+const makeKernel = require('../utilities/kernel').makeKernel;
 
 // TODO: implement random in glsl in gpu.js
-export function trainingPredict(inputs) {
+function trainingPredict(inputs) {
   if (Math.random() < this.constants.probability) {
     return 0;
   }
   return inputs[this.thread.y][this.thread.x];
 }
 
-export function predict(inputs) {
+function predict(inputs) {
   return inputs[this.thread.y][this.thread.x] * this.constants.probability;
 }
 
-export default class Dropout extends Filter {
+class Dropout extends Filter {
   static get defaults() {
     return {
       width: 0,
@@ -50,3 +50,5 @@ export default class Dropout extends Filter {
     this.deltas = this.learnKernel(this.deltas);
   }
 }
+
+module.exports = { Dropout, trainingPredict, predict };

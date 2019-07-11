@@ -3,7 +3,7 @@
  * @param weight
  * @returns {number}
  */
-export function tanh(weight) {
+function tanh(weight) {
   return Math.tanh(weight);
 }
 
@@ -13,6 +13,8 @@ export function tanh(weight) {
  * @param error
  * @returns {number}
  */
-export function tanhDerivative(weight, error) {
+function tanhDerivative(weight, error) {
   return (1 - weight * weight) * error;
 }
+
+module.exports = { tanh, tanhDerivative };

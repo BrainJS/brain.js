@@ -1,8 +1,8 @@
-import { makeKernel } from '../utilities/kernel';
-import zeros2D from '../utilities/zeros-2d';
-import { Operator } from './types';
+const makeKernel = require('../utilities/kernel').makeKernel;
+const zeros2D = require('../utilities/zeros-2d');
+const Operator = require('./types').Operator;
 
-export function predict(weights1, weights2) {
+function predict(weights1, weights2) {
   let sum = 0;
   for (let i = 0; i < this.constants.size; i++) {
     sum += weights1[this.thread.y][i] * weights2[i][this.thread.x];
@@ -10,7 +10,7 @@ export function predict(weights1, weights2) {
   return sum;
 }
 
-export function compareFromX(deltas, inputDeltas, inputWeights) {
+function compareFromX(deltas, inputDeltas, inputWeights) {
   let sum = inputDeltas[this.thread.y][this.thread.x];
   for (let i = 0; i < this.constants.size; i++) {
     sum += deltas[this.thread.y][i] * inputWeights[this.thread.x][i];
@@ -18,7 +18,7 @@ export function compareFromX(deltas, inputDeltas, inputWeights) {
   return sum;
 }
 
-export function compareFromY(deltas, inputDeltas, inputWeights) {
+function compareFromY(deltas, inputDeltas, inputWeights) {
   let sum = inputDeltas[this.thread.y][this.thread.x];
   for (let i = 0; i < this.constants.size; i++) {
     sum += deltas[i][this.thread.x] * inputWeights[i][this.thread.y];
@@ -26,7 +26,7 @@ export function compareFromY(deltas, inputDeltas, inputWeights) {
   return sum;
 }
 
-export default class Multiply extends Operator {
+class Multiply extends Operator {
   constructor(inputLayer1, inputLayer2) {
     super();
     this.inputLayer1 = inputLayer1;
@@ -101,3 +101,5 @@ export default class Multiply extends Operator {
     this.inputLayer1.deltas = newDeltas1;
   }
 }
+
+module.exports = { Multiply, predict, compareFromX, compareFromY };

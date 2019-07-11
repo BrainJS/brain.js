@@ -1,16 +1,12 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = multiplyB;
 /**
  * multiplies {from} deltas to {left} and {right}
  * @param {Matrix} product
  * @param {Matrix} left
  * @param {Matrix} right
  */
-function multiplyB(product, left, right) {
+module.exports = function multiplyB(product, left, right) {
   var leftRows = left.rows;
   var leftColumns = left.columns;
   var rightColumns = right.columns;
@@ -32,4 +28,4 @@ function multiplyB(product, left, right) {
       }
     }
   }
-}
+};

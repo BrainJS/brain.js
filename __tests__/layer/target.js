@@ -1,4 +1,4 @@
-import Target from '../../src/layer/target';
+const Target = require('../../src/layer/target');
 
 describe('Target Layer', () => {
   test('is fully back propagating values to deltas', () => {

@@ -1,8 +1,8 @@
-import {assert} from 'chai';
-import gpuMock from 'gpu-mock.js';
-import Input from '../../src/layer/input';
-import Multiply, { predict, compareFromX, compareFromY } from '../../src/layer/multiply';
-import Random from '../../src/layer/random';
+const assert = require('chai').assert;
+const gpuMock = require('gpu-mock.js');
+const Input = require('../../src/layer/input').Input;
+const { Multiply, predict, compareFromX, compareFromY } = require('../../src/layer/multiply');
+const Random = require('../../src/layer/random');
 
 describe('Multiply Layer', () => {
   describe('.predict (forward propagation)', () => {

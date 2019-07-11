@@ -1,13 +1,11 @@
-import brain from '../../src';
+const { layer } = require('../../src');
 
-import Recurrent from '../../src/recurrent';
-import RNNTimeStep from '../../src/recurrent/rnn-time-step';
+const Recurrent = require('../../src/recurrent');
+const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
 // import Equation from '../../src/recurrent/matrix/equation'
 // import RandomMatrix from '../../src/recurrent/matrix/random-matrix'
 // import Matrix from '../../src/recurrent/matrix'
-import zeros2D from '../../src/utilities/zeros-2d';
-
-const { layer } = brain;
+const zeros2D = require('../../src/utilities/zeros-2d');
 
 const { add, input, multiply, output, random, recurrent } = layer;
 

@@ -1,4 +1,3 @@
-var assert = require('assert');
 var brain = require('../../../src');
 
 var net = new brain.NeuralNetwork();

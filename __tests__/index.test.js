@@ -1,4 +1,4 @@
-import brain from '../src/index';
+const brain = require('../src/index');
 
 describe('index', () => {
   test('brain', () => {

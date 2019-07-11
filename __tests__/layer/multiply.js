@@ -1,11 +1,7 @@
-import gpuMock from 'gpu-mock.js';
-import Input from '../../src/layer/input';
-import Multiply, {
-  predict,
-  compareFromX,
-  compareFromY,
-} from '../../src/layer/multiply';
-import Random from '../../src/layer/random';
+const gpuMock = require('gpu-mock.js');
+const Input = require('../../src/layer/input');
+const { Multiply, predict, compareFromX, compareFromY } = require('../../src/layer/multiply');
+const Random = require('../../src/layer/random');
 
 describe('Multiply Layer', () => {
   describe('.predict (forward propagation)', () => {

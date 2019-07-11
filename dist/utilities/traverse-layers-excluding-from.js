@@ -1,10 +1,6 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = traverseLayersExcludingFrom;
-function traverseLayersExcludingFrom(layer, inputLayer, recurrentLayer, cb) {
+module.exports = function traverseLayersExcludingFrom(layer, inputLayer, recurrentLayer, cb) {
   if (layer === inputLayer || layer === recurrentLayer) return;
   if (layer.hasOwnProperty('inputLayer')) {
     traverseLayersExcludingFrom(layer.inputLayer, inputLayer, recurrentLayer, cb);
@@ -17,4 +13,4 @@ function traverseLayersExcludingFrom(layer, inputLayer, recurrentLayer, cb) {
     }
   }
   cb(layer);
-}
+};

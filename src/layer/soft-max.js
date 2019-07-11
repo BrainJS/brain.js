@@ -1,13 +1,13 @@
-import { makeKernel } from '../utilities/kernel';
-import { Filter } from './types';
-import randos from '../utilities/randos';
-import randos2D from '../utilities/randos-2d';
-import randos3D from '../utilities/randos-3d';
-import zeros from '../utilities/zeros';
-import zeros2D from '../utilities/zeros-2d';
-import zeros3D from '../utilities/zeros-3d';
+const makeKernel = require('../utilities/kernel');
+const Filter = require('./types').Filter;
+const randos = require('../utilities/randos');
+const randos2D = require('../utilities/randos-2d');
+const randos3D = require('../utilities/randos-3d');
+const zeros = require('../utilities/zeros');
+const zeros2D = require('../utilities/zeros-2d');
+const zeros3D = require('../utilities/zeros-3d');
 
-export function getMaxValue(inputs) {
+function getMaxValue(inputs) {
   let maxInput = -Infinity;
   for (let x = 0; x < this.constants.inputWidth; x++) {
     const input = inputs[x];
@@ -18,7 +18,7 @@ export function getMaxValue(inputs) {
   return maxInput;
 }
 
-export function getMaxValue2D(inputs) {
+function getMaxValue2D(inputs) {
   let maxInput = -Infinity;
   for (let y = 0; y < this.constants.inputHeight; y++) {
     for (let x = 0; x < this.constants.inputWidth; x++) {
@@ -31,7 +31,7 @@ export function getMaxValue2D(inputs) {
   return maxInput;
 }
 
-export function getMaxValue3D(inputs) {
+function getMaxValue3D(inputs) {
   let maxInput = -Infinity;
   for (let z = 0; z < this.constants.inputDepth; z++) {
     for (let y = 0; y < this.constants.inputHeight; y++) {
@@ -46,7 +46,7 @@ export function getMaxValue3D(inputs) {
   return maxInput;
 }
 
-export function getSum(inputs) {
+function getSum(inputs) {
   let sum = 0;
   for (let x = 0; x < this.constants.inputWidth; x++) {
     sum += inputs[x];
@@ -54,7 +54,7 @@ export function getSum(inputs) {
   return sum;
 }
 
-export function getSum2D(inputs) {
+function getSum2D(inputs) {
   let sum = 0;
   for (let y = 0; y < this.constants.inputHeight; y++) {
     for (let x = 0; x < this.constants.inputWidth; x++) {
@@ -64,7 +64,7 @@ export function getSum2D(inputs) {
   return sum;
 }
 
-export function getSum3D(inputs) {
+function getSum3D(inputs) {
   let sum = 0;
   for (let z = 0; z < this.constants.inputDepth; z++) {
     for (let y = 0; y < this.constants.inputHeight; y++) {
@@ -76,45 +76,45 @@ export function getSum3D(inputs) {
   return sum;
 }
 
-export function getExponentials(inputs, maxInput) {
+function getExponentials(inputs, maxInput) {
   return Math.exp(
     inputs[this.thread.x] - maxInput[0]
   );
 }
 
-export function getExponentials2D(inputs, maxInput) {
+function getExponentials2D(inputs, maxInput) {
   return Math.exp(
     inputs[this.thread.y][this.thread.x] - maxInput[0]
   );
 }
 
-export function getExponentials3D(inputs, maxInput) {
+function getExponentials3D(inputs, maxInput) {
   return Math.exp(
     inputs[this.thread.z][this.thread.y][this.thread.x] - maxInput[0]
   );
 }
 
-export function predict(exponentials, exponentialsSum) {
+function predict(exponentials, exponentialsSum) {
   return (
     exponentials[this.thread.x] / exponentialsSum[0]
   );
 }
 
-export function predict2D(exponentials, exponentialsSum) {
+function predict2D(exponentials, exponentialsSum) {
   return (
     exponentials[this.thread.y][this.thread.x] /
     exponentialsSum[0]
   );
 }
 
-export function predict3D(exponentials, exponentialsSum) {
+function predict3D(exponentials, exponentialsSum) {
   return (
     exponentials[this.thread.z][this.thread.y][this.thread.x] /
     exponentialsSum[0]
   );
 }
 
-export function compare(target, exponentials) {
+function compare(target, exponentials) {
   let indicator = 0;
   if (this.thread.x === target) {
     indicator = 1;
@@ -122,7 +122,7 @@ export function compare(target, exponentials) {
   return -(indicator - exponentials[this.thread.x]);
 }
 
-export function compare2D(target, exponentials) {
+function compare2D(target, exponentials) {
   let indicator = 0;
   const index = this.thread.x + (this.thread.y * this.output.x);
   if (index === target) {
@@ -131,7 +131,7 @@ export function compare2D(target, exponentials) {
   return -(indicator - exponentials[this.thread.y][this.thread.x]);
 }
 
-export function compare3D(target, exponentials) {
+function compare3D(target, exponentials) {
   let indicator = 0;
   const index = this.thread.x
     + (this.thread.y * this.output.x)
@@ -142,13 +142,13 @@ export function compare3D(target, exponentials) {
   return -(indicator - exponentials[this.thread.z][this.thread.y][this.thread.x]);
 }
 
-export function loss(exponentials) {
+function loss(exponentials) {
   return -Math.log();
 }
 
 // TODO: handle: `return -Math.log(this.es[y]);` in learn
 
-export default class SoftMax extends Filter {
+class SoftMax extends Filter {
   constructor(inputLayer) {
     super();
     this.width = inputLayer.width;
@@ -244,3 +244,11 @@ export default class SoftMax extends Filter {
     this.inputLayer.deltas = this.deltas;
   }
 }
+
+module.exports = { SoftMax,
+  getMaxValue, getMaxValue2D, getMaxValue3D,
+  getSum, getSum2D, getSum3D,
+  getExponentials, getExponentials2D, getExponentials3D,
+  predict, predict2D, predict3D,
+  compare, compare2D, compare3D,
+  loss };

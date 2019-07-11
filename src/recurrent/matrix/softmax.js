@@ -1,11 +1,11 @@
-import Matrix from '.';
+const Matrix = require('.');
 
 /**
  *
  * @param {Matrix} m
  * @returns {Matrix}
  */
-export default function softmax(m) {
+module.exports = function softmax(m) {
   const result = new Matrix(m.rows, m.columns); // probability volume
   let maxVal = -999999;
   for (let i = 0; i < m.weights.length; i++) {

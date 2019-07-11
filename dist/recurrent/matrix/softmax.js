@@ -1,23 +1,14 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = softmax;
-
-var _ = require('.');
-
-var _2 = _interopRequireDefault(_);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var Matrix = require('.');
 
 /**
  *
  * @param {Matrix} m
  * @returns {Matrix}
  */
-function softmax(m) {
-  var result = new _2.default(m.rows, m.columns); // probability volume
+module.exports = function softmax(m) {
+  var result = new Matrix(m.rows, m.columns); // probability volume
   var maxVal = -999999;
   for (var i = 0; i < m.weights.length; i++) {
     if (m.weights[i] > maxVal) {
@@ -39,4 +30,4 @@ function softmax(m) {
   // since we will use the computed probabilities outside
   // to set gradients directly on m
   return result;
-}
+};

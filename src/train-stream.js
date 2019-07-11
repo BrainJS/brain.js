@@ -1,5 +1,5 @@
-import { Writable } from 'stream';
-import lookup from './lookup';
+const Writable = require('stream').Writable;
+const lookup = require('./lookup');
 
 /**
  *
@@ -18,7 +18,7 @@ function uniques(arr) {
  * @returns {TrainStream}
  * @constructor
  */
-export default class TrainStream extends Writable {
+class TrainStream extends Writable {
   constructor(opts) {
     super({
       objectMode: true,
@@ -184,3 +184,5 @@ export default class TrainStream extends Writable {
     }
   }
 }
+
+module.exports = TrainStream;

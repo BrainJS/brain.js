@@ -1,6 +1,6 @@
-import { makeKernel } from '../utilities/kernel';
-import { Operator } from './types';
-import zeros2D from '../utilities/zeros-2d';
+const makeKernel = require('../utilities/kernel').makeKernel;
+const Operator = require('./types').Operator;
+const zeros2D = require('../utilities/zeros-2d');
 
 function predict(weights, inputLayerWeights) {
   return (
@@ -15,7 +15,7 @@ function compare(weights, deltas) {
   );
 }
 
-export default class MultiplyElement extends Operator {
+class MultiplyElement extends Operator {
   constructor(inputLayer1, inputLayer2) {
     super();
     this.inputLayer1 = inputLayer1;
@@ -65,3 +65,5 @@ export default class MultiplyElement extends Operator {
     this.deltas = this.compareKernel(this.weights, this.deltas);
   }
 }
+
+module.exports = MultiplyElement;

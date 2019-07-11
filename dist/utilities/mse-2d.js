@@ -1,10 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = mse2d;
-function mse2d(errors) {
+module.exports = function mse2d(errors) {
   // mean squared error 2d
   var sum = 0;
   var length = errors.length * errors[0].length;
@@ -14,4 +10,4 @@ function mse2d(errors) {
     }
   }
   return sum / length;
-}
+};

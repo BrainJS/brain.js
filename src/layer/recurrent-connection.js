@@ -1,7 +1,7 @@
-import { Internal } from './types';
-import zeros2D from '../utilities/zeros-2d';
+const Internal = require('./types').Internal;
+const zeros2D = require('../utilities/zeros-2d');
 
-export default class RecurrentConnection extends Internal {
+class RecurrentConnection extends Internal {
   setLayer(layer) {
     this.layer = layer;
   }
@@ -62,3 +62,5 @@ export default class RecurrentConnection extends Internal {
     // )
   }
 }
+
+module.exports = RecurrentConnection;

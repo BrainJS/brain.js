@@ -1,11 +1,11 @@
-import { makeKernel } from '../utilities/kernel';
-import { Modifier } from './types';
+const makeKernel = require('../utilities/kernel').makeKernel;
+const Modifier = require('./types').Modifier;
 
 function predict(weights) {
   return -weights[this.thread.y][this.thread.x];
 }
 
-export default class Negative extends Modifier {
+class Negative extends Modifier {
   constructor(settings, inputLayer) {
     super(settings);
     this.inputLayer = inputLayer;
@@ -22,3 +22,5 @@ export default class Negative extends Modifier {
     this.weights = this.predictKernel(this.inputLayer.weights);
   }
 }
+
+module.exports = Negative;

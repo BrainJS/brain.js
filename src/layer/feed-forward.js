@@ -1,6 +1,6 @@
-import { add, multiply, random, sigmoid } from './index';
+const { add, multiply, random, sigmoid } = require('./index');
 
-export default function feedForward(settings, input) {
+module.exports = function feedForward(settings, input) {
   const { height } = settings;
   const weights = random({ name: 'weights', height, width: input.height });
   const biases = random({ name: 'biases', height });

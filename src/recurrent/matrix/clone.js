@@ -1,10 +1,10 @@
-import Matrix from '.';
+const Matrix = require('.');
 
 /**
  *
  * @param {Matrix} product
  */
-export default function clone(product) {
+module.exports = function clone(product) {
   const cloned = new Matrix();
   cloned.rows = parseInt(product.rows, 10);
   cloned.columns = parseInt(product.columns, 10);

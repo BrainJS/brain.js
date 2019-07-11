@@ -1,5 +1,5 @@
-import {assert} from 'chai';
-import Input from '../../src/layer/input';
+const assert = require('chai').assert;
+const Input = require('../../src/layer/input');
 
 describe('Input Layer', () => {
   describe('.predict (forward propagation)', () => {

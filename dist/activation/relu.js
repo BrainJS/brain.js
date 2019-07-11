@@ -1,10 +1,5 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.activate = activate;
-exports.measure = measure;
 /**
  * Relu Activation, aka Rectified Linear Unit Activation
  * @description https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
@@ -27,3 +22,5 @@ function measure(weight, delta) {
   }
   return delta;
 }
+
+module.exports = { activate: activate, measure: measure };

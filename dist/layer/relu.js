@@ -1,31 +1,6 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-exports.predict = predict;
-exports.compare = compare;
-exports.predict3D = predict3D;
-exports.compare3D = compare3D;
-
-var _types = require('./types');
-
-var _kernel = require('../utilities/kernel');
-
-var _relu = require('../activation/relu');
-
-var _zeros2d = require('../utilities/zeros-2d');
-
-var _zeros2d2 = _interopRequireDefault(_zeros2d);
-
-var _zeros3d = require('../utilities/zeros-3d');
-
-var _zeros3d2 = _interopRequireDefault(_zeros3d);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -33,20 +8,30 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var Activation = require('./types').Activation;
+var makeKernel = require('../utilities/kernel').makeKernel;
+
+var _require = require('../activation/relu'),
+    activate = _require.activate,
+    measure = _require.measure;
+
+var zeros2D = require('../utilities/zeros-2d');
+var zeros3D = require('../utilities/zeros-3d');
+
 function predict(inputs) {
-  return (0, _relu.activate)(inputs[this.thread.y][this.thread.x]);
+  return activate(inputs[this.thread.y][this.thread.x]);
 }
 
 function compare(weights, deltas) {
-  return (0, _relu.measure)(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
+  return measure(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
 }
 
 function predict3D(inputs) {
-  return (0, _relu.activate)(inputs[this.thread.z][this.thread.y][this.thread.x]);
+  return activate(inputs[this.thread.z][this.thread.y][this.thread.x]);
 }
 
 function compare3D(weights, deltas) {
-  return (0, _relu.measure)(weights[this.thread.z][this.thread.y][this.thread.x], deltas[this.thread.z][this.thread.y][this.thread.x]);
+  return measure(weights[this.thread.z][this.thread.y][this.thread.x], deltas[this.thread.z][this.thread.y][this.thread.x]);
 }
 
 var Relu = function (_Activation) {
@@ -68,12 +53,12 @@ var Relu = function (_Activation) {
     _this.validate();
     if (depth > 1) {
       _this.depth = depth;
-      _this.weights = (0, _zeros3d2.default)(width, height, depth);
-      _this.deltas = (0, _zeros3d2.default)(width, height, depth);
+      _this.weights = zeros3D(width, height, depth);
+      _this.deltas = zeros3D(width, height, depth);
     } else {
       _this.depth = 1;
-      _this.weights = (0, _zeros2d2.default)(width, height);
-      _this.deltas = (0, _zeros2d2.default)(width, height);
+      _this.weights = zeros2D(width, height);
+      _this.deltas = zeros2D(width, height);
     }
     return _this;
   }
@@ -87,24 +72,24 @@ var Relu = function (_Activation) {
           depth = _inputLayer.depth;
 
       if (this.depth > 1) {
-        this.predictKernel = (0, _kernel.makeKernel)(predict3D, {
+        this.predictKernel = makeKernel(predict3D, {
           output: [width, height, depth],
-          functions: [_relu.activate]
+          functions: [activate]
         });
 
-        this.compareKernel = (0, _kernel.makeKernel)(compare3D, {
+        this.compareKernel = makeKernel(compare3D, {
           output: [width, height, depth],
-          functions: [_relu.measure]
+          functions: [measure]
         });
       } else {
-        this.predictKernel = (0, _kernel.makeKernel)(predict, {
+        this.predictKernel = makeKernel(predict, {
           output: [width, height],
-          functions: [_relu.activate]
+          functions: [activate]
         });
 
-        this.compareKernel = (0, _kernel.makeKernel)(compare, {
+        this.compareKernel = makeKernel(compare, {
           output: [width, height],
-          functions: [_relu.measure]
+          functions: [measure]
         });
       }
     }
@@ -121,6 +106,6 @@ var Relu = function (_Activation) {
   }]);
 
   return Relu;
-}(_types.Activation);
+}(Activation);
 
-exports.default = Relu;
+module.exports = { Relu: Relu, predict: predict, compare: compare, predict3D: predict3D, compare3D: compare3D };

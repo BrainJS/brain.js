@@ -1,5 +1,8 @@
-import gpuMock from 'gpu-mock.js';
-import Dropout, { trainingPredict, predict } from '../../src/layer/dropout';
+const gpuMock = require('gpu-mock.js');
+const dropout = require('../../src/layer/dropout');
+const Dropout = dropout.Dropout;
+const trainingPredict = dropout.trainingPredict;
+const predict = dropout.predict;
 
 describe('Dropout Layer', () => {
   describe('.trainingPredict (forward propagation)', () => {

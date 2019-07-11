@@ -1,19 +1,6 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-exports.predict = predict;
-exports.compare = compare;
-
-var _types = require('./types');
-
-var _kernel = require('../utilities/kernel');
-
-var _leakyRelu = require('../activation/leaky-relu');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -21,12 +8,18 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var Activation = require('./types').Activation;
+var makeKernel = require('../utilities/kernel').makeKernel;
+var lra = require('../activation/leaky-relu');
+var activate = lra.activate;
+var measure = lra.measure;
+
 function predict(inputs) {
-  return (0, _leakyRelu.activate)(inputs[this.thread.y][this.thread.x]);
+  return activate(inputs[this.thread.y][this.thread.x]);
 }
 
 function compare(weights, deltas) {
-  return (0, _leakyRelu.measure)(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
+  return measure(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
 }
 
 var LeakyRelu = function (_Activation) {
@@ -52,12 +45,12 @@ var LeakyRelu = function (_Activation) {
   _createClass(LeakyRelu, [{
     key: 'setupKernels',
     value: function setupKernels() {
-      this.predictKernel = (0, _kernel.makeKernel)(predict, {
-        functions: [_leakyRelu.activate]
+      this.predictKernel = makeKernel(predict, {
+        functions: [activate]
       });
 
-      this.compareKernel = (0, _kernel.makeKernel)(compare, {
-        functions: [_leakyRelu.measure]
+      this.compareKernel = makeKernel(compare, {
+        functions: [measure]
       });
     }
   }, {
@@ -73,6 +66,6 @@ var LeakyRelu = function (_Activation) {
   }]);
 
   return LeakyRelu;
-}(_types.Activation);
+}(Activation);
 
-exports.default = LeakyRelu;
+module.exports = { LeakyRelu: LeakyRelu, predict: predict, compare: compare };

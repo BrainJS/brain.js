@@ -1,8 +1,8 @@
-import { Model } from './types';
-import zeros2D from '../utilities/zeros-2d';
-import { kernelInput } from '../utilities/kernel';
+const Model = require('./types').Model;
+const zeros2D = require('../utilities/zeros-2d');
+const kernelInput = require('../utilities/kernel').kernelInput;
 
-export default class Input extends Model {
+class Input extends Model {
   constructor(settings) {
     super(settings);
     if (this.width === 1) {
@@ -58,3 +58,5 @@ export default class Input extends Model {
     return jsonLayer;
   }
 }
+
+module.exports = Input;

@@ -1,5 +1,5 @@
-import gpuMock from 'gpu-mock.js';
-import { predict, compare } from '../../src/layer/sigmoid';
+const gpuMock = require('gpu-mock.js');
+const { predict, compare } = require('../../src/layer/sigmoid');
 
 describe('Sigmoid Layer', () => {
   describe('.predict (forward propagation)', () => {

@@ -1,4 +1,4 @@
-import {
+const {
   add,
   negative,
   multiply,
@@ -8,9 +8,9 @@ import {
   random,
   tanh,
   zeros,
-} from '.';
+} = require('.');
 
-export default (settings, recurrentInput, input) => {
+module.exports = (settings, recurrentInput, input) => {
   const { height } = settings;
   const updateGateWeights = random({ height, width: input.height });
   const updateGatePeepholes = random({ width: height, height });

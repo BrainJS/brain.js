@@ -1,4 +1,4 @@
-import randomWeight from '../../src/utilities/random-weight';
+const randomWeight = require('../../src/utilities/random-weight');
 
 describe('randomWeight', () => {
   test('weight', () => {

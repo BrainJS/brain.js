@@ -1,4 +1,4 @@
-import Input from '../../src/layer/input';
+const Input = require('../../src/layer/input');
 
 describe('Input Layer', () => {
   describe('.predict (forward propagation)', () => {

@@ -1,8 +1,10 @@
-import Base from './base';
+const Base = require('./base');
 
-export class Activation extends Base {}
-export class Internal {}
-export class Filter extends Base {}
-export class Model extends Base {}
-export class Modifier extends Base {}
-export class Operator extends Base {}
+class Activation extends Base {}
+class Internal {}
+class Filter extends Base {}
+class Model extends Base {}
+class Modifier extends Base {}
+class Operator extends Base {}
+
+module.exports = { Activation, Internal, Filter, Model, Modifier, Operator };

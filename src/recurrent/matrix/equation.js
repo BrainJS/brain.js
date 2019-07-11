@@ -1,24 +1,22 @@
-import Matrix from '.';
-import OnesMatrix from './ones-matrix';
-import copy from './copy';
-import cloneNegative from './clone-negative';
-import add from './add';
-import addB from './add-b';
-import allOnes from './all-ones';
-import multiply from './multiply';
-import multiplyB from './multiply-b';
-import multiplyElement from './multiply-element';
-import multiplyElementB from './multiply-element-b';
-import relu from './relu';
-import reluB from './relu-b';
-import rowPluck from './row-pluck';
-import rowPluckB from './row-pluck-b';
-import sigmoid from './sigmoid';
-import sigmoidB from './sigmoid-b';
-import tanh from './tanh';
-import tanhB from './tanh-b';
+const Matrix = require('.');
+const cloneNegative = require('./clone-negative');
+const add = require('./add');
+const addB = require('./add-b');
+const allOnes = require('./all-ones');
+const multiply = require('./multiply');
+const multiplyB = require('./multiply-b');
+const multiplyElement = require('./multiply-element');
+const multiplyElementB = require('./multiply-element-b');
+const relu = require('./relu');
+const reluB = require('./relu-b');
+const rowPluck = require('./row-pluck');
+const rowPluckB = require('./row-pluck-b');
+const sigmoid = require('./sigmoid');
+const sigmoidB = require('./sigmoid-b');
+const tanh = require('./tanh');
+const tanhB = require('./tanh-b');
 
-export default class Equation {
+class Equation {
   constructor() {
     this.inputRow = 0;
     this.inputValue = null;
@@ -294,3 +292,5 @@ export default class Equation {
     return state.product;
   }
 }
+
+module.exports = Equation;

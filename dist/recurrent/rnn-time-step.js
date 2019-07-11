@@ -1,34 +1,17 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _matrix = require('./matrix');
-
-var _matrix2 = _interopRequireDefault(_matrix);
-
-var _randomMatrix = require('./matrix/random-matrix');
-
-var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
-
-var _equation = require('./matrix/equation');
-
-var _equation2 = _interopRequireDefault(_equation);
-
-var _rnn = require('./rnn');
-
-var _rnn2 = _interopRequireDefault(_rnn);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Matrix = require('./matrix');
+var RandomMatrix = require('./matrix/random-matrix');
+var Equation = require('./matrix/equation');
+var RNN = require('./rnn');
 
 var RNNTimeStep = function (_RNN) {
   _inherits(RNNTimeStep, _RNN);
@@ -43,7 +26,7 @@ var RNNTimeStep = function (_RNN) {
   _createClass(RNNTimeStep, [{
     key: 'createInputMatrix',
     value: function createInputMatrix() {
-      this.model.input = new _randomMatrix2.default(this.inputSize, 1, 0.08);
+      this.model.input = new RandomMatrix(this.inputSize, 1, 0.08);
     }
   }, {
     key: 'createOutputMatrix',
@@ -54,9 +37,9 @@ var RNNTimeStep = function (_RNN) {
       var lastHiddenSize = this.hiddenSizes[this.hiddenSizes.length - 1];
 
       // whd
-      model.outputConnector = new _randomMatrix2.default(outputSize, lastHiddenSize, 0.08);
+      model.outputConnector = new RandomMatrix(outputSize, lastHiddenSize, 0.08);
       // bd
-      model.output = new _matrix2.default(outputSize, 1);
+      model.output = new Matrix(outputSize, 1);
     }
   }, {
     key: 'bindEquation',
@@ -65,7 +48,7 @@ var RNNTimeStep = function (_RNN) {
           hiddenSizes = this.hiddenSizes;
       var hiddenLayers = model.hiddenLayers;
 
-      var equation = new _equation2.default();
+      var equation = new Equation();
       var outputs = [];
       var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs;
 
@@ -204,10 +187,7 @@ var RNNTimeStep = function (_RNN) {
   }]);
 
   return RNNTimeStep;
-}(_rnn2.default);
-
-exports.default = RNNTimeStep;
-
+}(RNN);
 
 RNNTimeStep.defaults = {
   inputSize: 1,
@@ -222,4 +202,6 @@ RNNTimeStep.defaults = {
   dataFormatter: null
 };
 
-RNNTimeStep.trainDefaults = _rnn2.default.trainDefaults;
+RNNTimeStep.trainDefaults = RNN.trainDefaults;
+
+module.exports = RNNTimeStep;

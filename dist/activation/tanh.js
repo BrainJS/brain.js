@@ -1,10 +1,5 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.tanh = tanh;
-exports.tanhDerivative = tanhDerivative;
 /**
  *
  * @param weight
@@ -23,3 +18,5 @@ function tanh(weight) {
 function tanhDerivative(weight, error) {
   return (1 - weight * weight) * error;
 }
+
+module.exports = { tanh: tanh, tanhDerivative: tanhDerivative };

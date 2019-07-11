@@ -1,5 +1,5 @@
 /* Functions for turning sparse hashes into arrays and vice versa */
-export default class lookup {
+class lookup {
   /**
    * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
    * @param {Object} hashes
@@ -80,3 +80,5 @@ export default class lookup {
     return lookupHash;
   }
 }
+
+module.exports = lookup;

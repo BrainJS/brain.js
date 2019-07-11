@@ -1,4 +1,4 @@
-export function onePlusPlus3D(width, height, depth) {
+function onePlusPlus3D(width, height, depth) {
   const grid = [];
   let i = 1;
   for (let z = 0; z < depth; z++) {
@@ -15,7 +15,7 @@ export function onePlusPlus3D(width, height, depth) {
   return grid;
 }
 
-export function onePlusPlus2D(width, height) {
+function onePlusPlus2D(width, height) {
   const rows = [];
   let i = 1;
   for (let y = 0; y < height; y++) {
@@ -28,7 +28,7 @@ export function onePlusPlus2D(width, height) {
   return rows;
 }
 
-export function zero3D(width, height, depth) {
+function zero3D(width, height, depth) {
   const grid = [];
   for (let z = 0; z < depth; z++) {
     const rows = [];
@@ -44,7 +44,7 @@ export function zero3D(width, height, depth) {
   return grid;
 }
 
-export function zero2D(width, height) {
+function zero2D(width, height) {
   const rows = [];
   for (let y = 0; y < height; y++) {
     const columns = [];
@@ -55,3 +55,5 @@ export function zero2D(width, height) {
   }
   return rows;
 }
+
+module.exports = { onePlusPlus3D, onePlusPlus2D, zero3D, zero2D, };

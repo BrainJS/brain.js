@@ -1,30 +1,16 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _matrix = require('./matrix');
-
-var _matrix2 = _interopRequireDefault(_matrix);
-
-var _randomMatrix = require('./matrix/random-matrix');
-
-var _randomMatrix2 = _interopRequireDefault(_randomMatrix);
-
-var _rnn = require('./rnn');
-
-var _rnn2 = _interopRequireDefault(_rnn);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Matrix = require('./matrix');
+var RandomMatrix = require('./matrix/random-matrix');
+var RNN = require('./rnn');
 
 var GRU = function (_RNN) {
   _inherits(GRU, _RNN);
@@ -41,19 +27,19 @@ var GRU = function (_RNN) {
       return {
         // update Gate
         // wzxh
-        updateGateInputMatrix: new _randomMatrix2.default(hiddenSize, prevSize, 0.08), // wzhh
-        updateGateHiddenMatrix: new _randomMatrix2.default(hiddenSize, hiddenSize, 0.08), // bz
-        updateGateBias: new _matrix2.default(hiddenSize, 1),
+        updateGateInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wzhh
+        updateGateHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bz
+        updateGateBias: new Matrix(hiddenSize, 1),
         // reset Gate
         // wrxh
-        resetGateInputMatrix: new _randomMatrix2.default(hiddenSize, prevSize, 0.08), // wrhh
-        resetGateHiddenMatrix: new _randomMatrix2.default(hiddenSize, hiddenSize, 0.08), // br
-        resetGateBias: new _matrix2.default(hiddenSize, 1),
+        resetGateInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wrhh
+        resetGateHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // br
+        resetGateBias: new Matrix(hiddenSize, 1),
         // cell write parameters
         // wcxh
-        cellWriteInputMatrix: new _randomMatrix2.default(hiddenSize, prevSize, 0.08), // wchh
-        cellWriteHiddenMatrix: new _randomMatrix2.default(hiddenSize, hiddenSize, 0.08), // bc
-        cellWriteBias: new _matrix2.default(hiddenSize, 1)
+        cellWriteInputMatrix: new RandomMatrix(hiddenSize, prevSize, 0.08), // wchh
+        cellWriteHiddenMatrix: new RandomMatrix(hiddenSize, hiddenSize, 0.08), // bc
+        cellWriteBias: new Matrix(hiddenSize, 1)
       };
     }
 
@@ -93,6 +79,6 @@ var GRU = function (_RNN) {
   }]);
 
   return GRU;
-}(_rnn2.default);
+}(RNN);
 
-exports.default = GRU;
+module.exports = GRU;

@@ -1,6 +1,6 @@
-import assert from 'assert';
-import gpuMock from 'gpu-mock.js';
-import {
+const assert = require('assert');
+const gpuMock = require('gpu-mock.js');
+const {
   compare,
   compare2D,
   compare3D,
@@ -16,7 +16,7 @@ import {
   predict,
   predict2D,
   predict3D,
-} from '../../src/layer/soft-max';
+} = require('../../src/layer/soft-max');
 
 describe('SoftMax', () => {
   describe('.compare', () => {

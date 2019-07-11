@@ -1,6 +1,6 @@
-import { relu, add, multiply, random, zeros } from '.';
+const { relu, add, multiply, random, zeros } = require('.');
 
-export default (settings, input, recurrentInput) => {
+module.exports = (settings, input, recurrentInput) => {
   const { height } = settings;
 
   recurrentInput.setDimensions(1, height);

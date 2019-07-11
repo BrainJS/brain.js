@@ -1,14 +1,6 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.setup = setup;
-exports.teardown = teardown;
-exports.makeKernel = makeKernel;
-exports.kernelInput = kernelInput;
-
-var _gpu = require('gpu.js');
+var GPU = require('gpu.js').GPU;
 
 var gpuInstance = null;
 
@@ -22,7 +14,7 @@ function teardown() {
 
 function makeKernel(fn, settings) {
   if (gpuInstance === null) {
-    setup(new _gpu.GPU({ mode: 'cpu' }));
+    setup(new GPU({ mode: 'cpu' }));
   }
   if (settings.hasOwnProperty('map')) {
     return gpuInstance.createKernelMap(settings.map, fn, settings).setPipeline(true);
@@ -31,5 +23,7 @@ function makeKernel(fn, settings) {
 }
 
 function kernelInput(input, size) {
-  return _gpu.GPU.input(input, size);
+  return GPU.input(input, size);
 }
+
+module.exports = { setup: setup, teardown: teardown, makeKernel: makeKernel, kernelInput: kernelInput };

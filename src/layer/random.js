@@ -1,8 +1,8 @@
-import { Model } from './types';
-import randos2D from '../utilities/randos-2d';
-import zeros2D from '../utilities/zeros-2d';
+const Model = require('./types').Model;
+const randos2D = require('../utilities/randos-2d');
+const zeros2D = require('../utilities/zeros-2d');
 
-export default class Random extends Model {
+class Random extends Model {
   constructor(settings) {
     super(settings);
     this.validate();
@@ -18,3 +18,5 @@ export default class Random extends Model {
     // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 }
+
+module.exports = Random;

@@ -1,28 +1,18 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _kernel = require('../utilities/kernel');
-
-var _types = require('./types');
-
-var _zeros2d = require('../utilities/zeros-2d');
-
-var _zeros2d2 = _interopRequireDefault(_zeros2d);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var makeKernel = require('../utilities/kernel').makeKernel;
+var Operator = require('./types').Operator;
+var zeros2D = require('../utilities/zeros-2d');
 
 function predict(weights, inputLayerWeights) {
   return weights[this.thread.y][this.thread.x] * inputLayerWeights[this.thread.y][this.thread.x];
@@ -46,8 +36,8 @@ var MultiplyElement = function (_Operator) {
     _this.width = inputLayer1.width;
     _this.height = inputLayer1.height;
     _this.validate();
-    _this.weights = (0, _zeros2d2.default)(_this.width, _this.height);
-    _this.deltas = (0, _zeros2d2.default)(_this.width, _this.height);
+    _this.weights = zeros2D(_this.width, _this.height);
+    _this.deltas = zeros2D(_this.width, _this.height);
     return _this;
   }
 
@@ -66,11 +56,11 @@ var MultiplyElement = function (_Operator) {
   }, {
     key: 'setupKernels',
     value: function setupKernels() {
-      this.predictKernel = (0, _kernel.makeKernel)(predict, {
+      this.predictKernel = makeKernel(predict, {
         output: [this.width, this.height]
       });
 
-      this.compareKernel = (0, _kernel.makeKernel)(compare, {
+      this.compareKernel = makeKernel(compare, {
         output: [this.width, this.height]
       });
     }
@@ -87,6 +77,6 @@ var MultiplyElement = function (_Operator) {
   }]);
 
   return MultiplyElement;
-}(_types.Operator);
+}(Operator);
 
-exports.default = MultiplyElement;
+module.exports = MultiplyElement;

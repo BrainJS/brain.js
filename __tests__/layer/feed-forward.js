@@ -1,4 +1,4 @@
-import feedForward from '../../src/layer/feed-forward';
+const feedForward = require('../../src/layer/feed-forward');
 
 describe('FeedForward Layer', () => {
   test('properly sets width and height', () => {

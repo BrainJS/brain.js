@@ -1,4 +1,4 @@
-import ones from '../../src/utilities/ones';
+const ones = require('../../src/utilities/ones');
 
 describe('ones', () => {
   test('should return an array with all ones', () => {

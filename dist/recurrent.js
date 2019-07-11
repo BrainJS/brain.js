@@ -1,38 +1,8 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _recurrentConnection = require('./layer/recurrent-connection');
-
-var _recurrentConnection2 = _interopRequireDefault(_recurrentConnection);
-
-var _recurrentInput = require('./layer/recurrent-input');
-
-var _recurrentInput2 = _interopRequireDefault(_recurrentInput);
-
-var _recurrentZeros = require('./layer/recurrent-zeros');
-
-var _recurrentZeros2 = _interopRequireDefault(_recurrentZeros);
-
-var _flattenLayers = require('./utilities/flatten-layers');
-
-var _flattenLayers2 = _interopRequireDefault(_flattenLayers);
-
-var _mse2d = require('./utilities/mse-2d');
-
-var _mse2d2 = _interopRequireDefault(_mse2d);
-
-var _feedForward = require('./feed-forward');
-
-var _feedForward2 = _interopRequireDefault(_feedForward);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -42,7 +12,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// import Base from './layer/base'
+var RecurrentConnection = require('./layer/recurrent-connection');
+var RecurrentInput = require('./layer/recurrent-input');
+var RecurrentZeros = require('./layer/recurrent-zeros');
+var flattenLayers = require('./utilities/flatten-layers');
+var mse2d = require('./utilities/mse-2d');
+var FeedForward = require('./feed-forward');
+// const Base from './layer/base'
 
 var Recurrent = function (_FeedForward) {
   _inherits(Recurrent, _FeedForward);
@@ -64,7 +40,7 @@ var Recurrent = function (_FeedForward) {
       initialLayers.push(inputLayer);
       initialLayers.push.apply(initialLayers, _toConsumableArray(hiddenLayers));
       initialLayers.push(outputLayer);
-      var flattenedLayers = (0, _flattenLayers2.default)(initialLayers);
+      var flattenedLayers = flattenLayers(initialLayers);
       this._inputLayers = flattenedLayers.slice(0, flattenedLayers.indexOf(inputLayer) + 1);
       this._hiddenLayers = [flattenedLayers.slice(flattenedLayers.indexOf(inputLayer) + 1, flattenedLayers.indexOf(hiddenLayers[hiddenLayers.length - 1]) + 1)];
       this._outputLayers = flattenedLayers.slice(flattenedLayers.indexOf(hiddenLayers[hiddenLayers.length - 1]) + 1);
@@ -86,7 +62,7 @@ var Recurrent = function (_FeedForward) {
     value: function _connectHiddenLayers(previousLayer) {
       var hiddenLayers = [];
       for (var i = 0; i < this.hiddenLayers.length; i++) {
-        var recurrentInput = new _recurrentZeros2.default();
+        var recurrentInput = new RecurrentZeros();
         var hiddenLayer = this.hiddenLayers[i](previousLayer, recurrentInput, i);
         previousLayer = hiddenLayer;
         hiddenLayers.push(hiddenLayer);
@@ -125,7 +101,7 @@ var Recurrent = function (_FeedForward) {
                 case 'RecurrentInput':
                 case 'RecurrentZeros':
                 default:
-                  layer = new _recurrentInput2.default();
+                  layer = new RecurrentInput();
                   layer.setDimensions(previousHiddenLayer.width, previousHiddenLayer.height);
                   layer.setRecurrentInput(previousHiddenLayers[this._recurrentIndices[recurrentIndex]]);
                   recurrentIndex++;
@@ -164,7 +140,7 @@ var Recurrent = function (_FeedForward) {
     key: 'initialize',
     value: function initialize() {
       this._previousInputs = [];
-      this._outputConnection = new _recurrentConnection2.default();
+      this._outputConnection = new RecurrentConnection();
       this._connectLayers();
       this.initializeLayers(this._model);
       this.initializeLayers(this._inputLayers);
@@ -279,7 +255,7 @@ var Recurrent = function (_FeedForward) {
 
       if (logErrorRate) {
         var outputLayer = this._outputLayers[this._outputLayers.length - 1];
-        return (0, _mse2d2.default)(outputLayer.errors.hasOwnProperty('toArray') ? outputLayer.errors.toArray() : outputLayer.errors);
+        return mse2d(outputLayer.errors.hasOwnProperty('toArray') ? outputLayer.errors.toArray() : outputLayer.errors);
       }
       return null;
     }
@@ -317,6 +293,6 @@ var Recurrent = function (_FeedForward) {
   }]);
 
   return Recurrent;
-}(_feedForward2.default);
+}(FeedForward);
 
-exports.default = Recurrent;
+module.exports = Recurrent;

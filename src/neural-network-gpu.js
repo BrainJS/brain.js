@@ -1,6 +1,6 @@
-import { GPU, alias } from 'gpu.js';
-import NeuralNetwork from './neural-network';
-import lookup from './lookup';
+const { GPU, alias } = require('gpu.js');
+const NeuralNetwork = require('./neural-network');
+const lookup = require('./lookup');
 
 function weightedSumSigmoid(weights, biases, inputs) {
   let sum = biases[this.thread.x];
@@ -103,7 +103,7 @@ function mse(errors) {
  * @param {object} options
  * @constructor
  */
-export default class NeuralNetworkGPU extends NeuralNetwork {
+class NeuralNetworkGPU extends NeuralNetwork {
   constructor(options = {}) {
     super(options);
     this.forwardPropagate = [];
@@ -487,3 +487,5 @@ export default class NeuralNetworkGPU extends NeuralNetwork {
     );
   }
 }
+
+module.exports = NeuralNetworkGPU;

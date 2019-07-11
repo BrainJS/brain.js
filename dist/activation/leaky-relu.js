@@ -1,10 +1,5 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.activate = activate;
-exports.measure = measure;
 /**
  * Leaky Relu Activation, aka Leaky Rectified Linear Unit Activation
  * @description https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
@@ -24,3 +19,5 @@ function activate(weight) {
 function measure(weight, error) {
   return weight > 0 ? error : 0.01 * error;
 }
+
+module.exports = { activate: activate, measure: measure };

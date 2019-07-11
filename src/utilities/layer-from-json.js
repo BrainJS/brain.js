@@ -1,6 +1,6 @@
 const layer = require('../layer');
 
-export default function layerFromJSON(jsonLayer) {
+module.exports = function layerFromJSON(jsonLayer) {
   if (!layer.hasOwnProperty(jsonLayer.type)) return null;
   const Layer = layer[jsonLayer.type];
 
