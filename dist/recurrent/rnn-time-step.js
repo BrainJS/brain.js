@@ -942,7 +942,9 @@ var RNNTimeStep = function (_RNN) {
           return layers;
         }),
         outputConnector: this.model.outputConnector.toJSON(),
-        output: this.model.output.toJSON()
+        output: this.model.output.toJSON(),
+        outputLookup: this.outputLookup,
+        outputLookupLength: this.outputLookupLength
       };
     }
   }, {
@@ -976,6 +978,9 @@ var RNNTimeStep = function (_RNN) {
       if (options.hiddenSizes) {
         this.hiddenLayers = options.hiddenSizes;
       }
+
+      this.outputLookup = json.outputLookup;
+      this.outputLookupLength = json.outputLookupLength;
 
       this.model = {
         hiddenLayers: hiddenLayers,
