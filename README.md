@@ -200,7 +200,7 @@ Each training pattern can either:
 * Be an array of values
 * Be a string
 * Have an `input` and an `output`
-  * Either of which can an array of values or a string
+  * Either of which can have an array of values or a string
 
 CAUTION: When using an array of values, you can use ANY value, however, the values are represented in the neural network by a single input.  So the more _distinct values_ has _the larger your input layer_.  If you have a hundreds, thousands, or millions of floating point values _THIS IS NOT THE RIGHT CLASS FOR THE JOB_.  Also, when deviating from strings, this gets into beta
 
