@@ -1,4 +1,4 @@
-const Base = require('./base');
+const { Base } = require('./base');
 
 class Regression extends Base {
   constructor(settings) {
@@ -20,5 +20,12 @@ function learn(inputs, targets) {
 }
 
 // TODO: handle `loss += 0.5*dy*dy;` total and sum in learn
+function regression(settings, inputLayer) {
+  return new Regression(settings, inputLayer);
+}
 
-module.exports = Regression;
+module.exports = {
+  Regression,
+  regression,
+  learn
+};

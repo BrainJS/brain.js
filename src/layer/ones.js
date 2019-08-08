@@ -1,6 +1,6 @@
 const ones2D = require('../utilities/ones-2d');
 const zeros2D = require('../utilities/zeros-2d');
-const Model = require('./types').Model;
+const { Model } = require('./types');
 
 class Ones extends Model {
   constructor(settings) {
@@ -11,4 +11,11 @@ class Ones extends Model {
   }
 }
 
-module.exports = Ones;
+function ones(settings) {
+  return new Ones(settings);
+}
+
+module.exports = {
+  Ones,
+  ones
+};

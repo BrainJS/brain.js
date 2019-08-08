@@ -1,5 +1,5 @@
-const Activation = require('./types').Activation;
-const makeKernel = require('../utilities/kernel').makeKernel;
+const { Activation } = require('./types');
+const { makeKernel } = require('../utilities/kernel');
 const { activate, measure } = require('../activation/relu');
 const zeros2D = require('../utilities/zeros-2d');
 const zeros3D = require('../utilities/zeros-3d');
@@ -80,4 +80,8 @@ class Relu extends Activation {
   }
 }
 
-module.exports = { Relu, predict, compare, predict3D, compare3D };
+function relu(inputLayer) {
+  return new Relu(inputLayer);
+}
+
+module.exports = { Relu, relu, predict, compare, predict3D, compare3D };

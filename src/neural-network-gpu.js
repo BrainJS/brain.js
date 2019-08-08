@@ -190,14 +190,13 @@ class NeuralNetworkGPU extends NeuralNetwork {
       });
     }
 
-    this._texturizeInputData = this.gpu.createKernel(
-      value => value[this.thread.x],
-      {
-        output: [this.sizes[1]],
-        pipeline: true,
-        immutable: true,
-      }
-    );
+    this._texturizeInputData = this.gpu.createKernel(function(value) {
+      return value[this.thread.x];
+    }, {
+      output: [this.sizes[1]],
+      pipeline: true,
+      immutable: true,
+    });
   }
 
   /**
@@ -321,7 +320,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       );
 
       this.copyChanges[layer] = this.gpu.createKernel(
-        value => value[this.thread.y][this.thread.x],
+        function(value) { return value[this.thread.y][this.thread.x]; },
         {
           output: this.changesPropagate[layer].output,
           pipeline: true,
@@ -329,7 +328,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       );
 
       this.copyWeights[layer] = this.gpu.createKernel(
-        value => value[this.thread.y][this.thread.x],
+        function (value) { return value[this.thread.y][this.thread.x]; },
         {
           output: this.changesPropagate[layer].output,
           pipeline: true,
@@ -364,7 +363,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
         },
       });
       this.copyBias[layer] = this.gpu.createKernel(
-        value => value[this.thread.x],
+        function(value) { return value[this.thread.x]; },
         {
           output: this.biasesPropagate[layer].output,
           pipeline: true,
@@ -404,7 +403,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
     }
     const inputTexture = this._texturizeInputData(input);
     const outputTextures = this.runInput(inputTexture);
-    let output = outputTextures.toArray(this.gpu);
+    let output = outputTextures.toArray ? outputTextures.toArray() : outputTextures;
 
     if (this.outputLookup) {
       output = lookup.toHash(this.outputLookup, output);
@@ -462,7 +461,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
     this._verifyIsInitialized(data);
 
     const texturizeOutputData = this.gpu.createKernel(
-      value => value[this.thread.x],
+      function(value) { return value[this.thread.x]; },
       {
         output: [data[0].output.length],
         pipeline: true,

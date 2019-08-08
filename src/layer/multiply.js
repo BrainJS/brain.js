@@ -1,6 +1,6 @@
-const makeKernel = require('../utilities/kernel').makeKernel;
+const { makeKernel } = require('../utilities/kernel');
 const zeros2D = require('../utilities/zeros-2d');
-const Operator = require('./types').Operator;
+const { Operator } = require('./types');
 
 function predict(weights1, weights2) {
   let sum = 0;
@@ -27,7 +27,7 @@ function compareFromY(deltas, inputDeltas, inputWeights) {
 }
 
 class Multiply extends Operator {
-  constructor(inputLayer1, inputLayer2) {
+  constructor(inputLayer1, inputLayer2, settings = {}) {
     super();
     this.inputLayer1 = inputLayer1;
     this.inputLayer2 = inputLayer2;
@@ -39,6 +39,8 @@ class Multiply extends Operator {
     this.validate();
     this.weights = zeros2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
+
+    this.setupPraxis(settings);
   }
 
   validate() {
@@ -102,4 +104,8 @@ class Multiply extends Operator {
   }
 }
 
-module.exports = { Multiply, predict, compareFromX, compareFromY };
+function multiply(inputLayer1, inputLayer2, settings) {
+  return new Multiply(inputLayer1, inputLayer2, settings);
+}
+
+module.exports = { Multiply, multiply, predict, compareFromX, compareFromY };

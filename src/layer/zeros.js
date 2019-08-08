@@ -1,5 +1,5 @@
 const zeros2D = require('../utilities/zeros-2d');
-const Model = require('./types').Model;
+const { Model } = require('./types');
 
 class Zeros extends Model {
   constructor(settings) {
@@ -18,4 +18,11 @@ class Zeros extends Model {
   }
 }
 
-module.exports = Zeros;
+function zeros(settings) {
+  return new Zeros(settings);
+}
+
+module.exports = {
+  Zeros,
+  zeros
+};

@@ -1,6 +1,6 @@
 // import zeros2D from '../utilities/zeros-2d'
-const Internal = require('./types').Internal;
-const Base = require('./base');
+const { Internal } = require('./types');
+const { Base } = require('./base');
 
 class RecurrentInput extends Internal {
   setRecurrentInput(recurrentInput) {
@@ -73,4 +73,6 @@ class RecurrentInput extends Internal {
   }
 }
 
-module.exports = RecurrentInput;
+module.exports = {
+  RecurrentInput
+};

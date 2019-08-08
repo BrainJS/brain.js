@@ -1,10 +1,18 @@
+const { GPU } = require('gpu.js');
 const { Recurrent, layer } = require('../../src');
+const { setup, teardown } = require('../../src/utilities/kernel');
 // import RecurrentConnection from '../../src/layer/recurrent-connection'
-const Filter = require('../../src/layer/types').Filter;
+const { Filter } = require('../../src/layer/types');
 
 const { add, input, multiply, output, random, recurrent } = layer;
 
 describe('Recurrent Class: Unit', () => {
+  beforeEach(() => {
+    setup(new GPU({ mode: 'cpu' }));
+  });
+  afterEach(() => {
+    teardown();
+  });
   describe('.initialize()', () => {
     test('can validate a simple recurrent neural network', () => {
       const net = new Recurrent({
@@ -217,6 +225,8 @@ describe('Recurrent Class: Unit', () => {
       const outputLayers2Weights = net._outputLayers[2].weights;
       const outputLayers3Weights = net._outputLayers[3].weights;
 
+      net._calculateDeltas([1], 0);
+      net._calculateDeltas([1], 1);
       net._adjustWeights();
 
       // weights are adjusted
@@ -260,16 +270,16 @@ describe('Recurrent Class: Unit', () => {
 
       net.initialize();
       net.initializeDeep();
-      // net._inputLayers[0].compare = sinon.spy()
-      // net._hiddenLayers[0][0].compare = sinon.spy()
-      // net._hiddenLayers[1][0].compare = sinon.spy()
-      // net._outputLayers[0].compare = sinon.spy()
+      net._inputLayers[0].compare = jest.fn();
+      net._hiddenLayers[0][0].compare = jest.fn();
+      net._hiddenLayers[1][0].compare = jest.fn();
+      net._outputLayers[0].compare = jest.fn();
       net.runInput([0, 1]);
       net._trainPattern([0, 1], [2]);
 
-      expect(net._outputLayers[0].compare.callCount).toEqual(2);
-      expect(net._outputLayers[0].compare.firstCall.args).toEqual([[2]]);
-      expect(net._outputLayers[0].compare.secondCall.args).toEqual([[1]]);
+      // expect(net._outputLayers[0].compare).toHaveBeenCalledWith(2);
+      expect(net._outputLayers[0].compare).toHaveBeenCalledWith([2]);
+      expect(net._outputLayers[0].compare).toHaveBeenCalledWith([1]);
     });
     describe('when called more than once', () => {
       test('continuously updates output layer', () => {
@@ -285,7 +295,7 @@ describe('Recurrent Class: Unit', () => {
         net.initializeDeep();
 
         const lastOutputLayer = net._outputLayers[net._outputLayers.length - 1];
-        expect(lastOutputLayer.weights).toEqual([[0]]);
+        expect(Array.from(lastOutputLayer.weights)).toEqual([0]);
         net._trainPattern([1, 2], [3]);
         const weights1 = lastOutputLayer.weights;
         expect(weights1).not.toEqual([[0]]);

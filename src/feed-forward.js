@@ -4,6 +4,7 @@ const mse2d = require('./utilities/mse-2d');
 const layerFromJSON = require('./utilities/layer-from-json');
 const praxis = require('./praxis');
 const flattenLayers = require('./utilities/flatten-layers');
+const { makeKernel } = require('./utilities/kernel');
 
 class FeedForward {
   static get trainDefaults() {
@@ -15,6 +16,7 @@ class FeedForward {
       learningRate: 0.3,
       callback: null,
       callbackPeriod: 10,
+      errorCheckInterval: 100,
       reinforce: false,
     };
   }
@@ -26,7 +28,8 @@ class FeedForward {
       hiddenLayers: null,
       inputLayer: null,
       outputLayer: null,
-      praxis: layer => praxis.momentumRootMeanSquaredPropagation(layer),
+      praxisOpts: null,
+      praxis: (layer, settings) => praxis.momentumRootMeanSquaredPropagation(layer, settings),
     };
   }
 
@@ -109,7 +112,8 @@ class FeedForward {
     this.inputLayer = null;
     this.hiddenLayers = null;
     this.outputLayer = null;
-    this.errorCheckInterval = 100;
+    this.praxisOpts = null;
+    this.praxis = null;
     Object.assign(this, this.constructor.defaults, options);
     this.trainOpts = {};
     this._updateTrainingOptions(
@@ -152,7 +156,7 @@ class FeedForward {
       const layer = layers[i];
       layer.setupKernels();
       if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
-        layer.praxis = this.praxis(layer);
+        layer.praxis = this.praxis(layer, this.praxisOpts);
       }
     }
   }
@@ -168,6 +172,10 @@ class FeedForward {
     }
 
     let output = this.runInput(input);
+
+    if (output.toArray) {
+      output = output.toArray();
+    }
 
     if (this.outputLookup) {
       output = lookup.toHash(this.outputLookup, output);
@@ -191,8 +199,8 @@ class FeedForward {
    */
   train(data, options = {}) {
     let status;
-    let endTime
-    ;({ data, status, endTime } = this._prepTraining(data, options));
+    let endTime;
+    ({ data, status, endTime } = this._prepTraining(data, options));
 
     while (this._trainingTick(data, status, endTime));
     return status;
@@ -202,7 +210,7 @@ class FeedForward {
    *
    * @param {object} data
    * @param {object} status { iterations: number, error: number }
-   * @param endTime
+   * @param {Number} endTime
    */
   _trainingTick(data, status, endTime) {
     if (
@@ -223,7 +231,7 @@ class FeedForward {
       this.trainOpts.log(
         `iterations: ${status.iterations}, training error: ${status.error}`
       );
-    } else if (status.iterations % this.errorCheckInterval === 0) {
+    } else if (status.iterations % this.trainOpts.errorCheckInterval === 0) {
       status.error = this._calculateTrainingError(data);
     } else {
       this._trainPatterns(data);
@@ -247,7 +255,10 @@ class FeedForward {
    */
   _prepTraining(data, options) {
     this._updateTrainingOptions(options);
-    data = this._formatData(data);
+    if (this.trainOpts.callback && this.trainOpts.callbackPeriod !== this.trainOpts.errorCheckInterval) {
+      console.warn(`options.callbackPeriod with value of ${ this.trainOpts.callbackPeriod } does not match options.errorCheckInterval with value of ${ this.trainOpts.errorCheckInterval }, if logging error, it will repeat.  These values may need to match`);
+    }
+    const formattedData = this._formatData(data);
     const endTime = Date.now() + this.trainOpts.timeout;
 
     const status = {
@@ -255,10 +266,34 @@ class FeedForward {
       iterations: 0,
     };
 
-    this.initialize();
+    if (!options.reinforce) {
+      this.initialize();
+    }
+
+    const transferredData = new Array(formattedData.length);
+    const transferInput = makeKernel(function(value) {
+      return value[this.thread.x];
+    }, {
+      immutable: true,
+      output: [formattedData[0].input.length]
+    });
+    const transferOutput = makeKernel(function(value) {
+      return value[this.thread.x];
+    }, {
+      immutable: true,
+      output: [formattedData[0].output.length]
+    });
+
+    for (let i = 0; i < formattedData.length; i++) {
+      const formattedDatum = formattedData[i];
+      transferredData[i] = {
+        input: transferInput(formattedDatum.input),
+        output: transferOutput(formattedDatum.output),
+      };
+    }
 
     return {
-      data,
+      data: transferredData,
       status,
       endTime,
     };
@@ -303,7 +338,7 @@ class FeedForward {
 
     if (logErrorRate) {
       return mse2d(
-        this._outputLayer.errors.hasOwnProperty('toArray')
+        this._outputLayer.errors.toArray
           ? this._outputLayer.errors.toArray()
           : this._outputLayer.errors
       );
@@ -344,8 +379,8 @@ class FeedForward {
     }
 
     // turn sparse hash input into arrays with 0s as filler
-    const datum = data[0].input;
-    if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
+    const inputDatumCheck = data[0].input;
+    if (!Array.isArray(inputDatumCheck) && !(inputDatumCheck instanceof Float32Array)) {
       if (!this.inputLookup) {
         this.inputLookup = lookup.buildLookup(data.map(value => value.input));
       }
@@ -355,7 +390,8 @@ class FeedForward {
       }, this);
     }
 
-    if (!Array.isArray(data[0].output)) {
+    const outputDatumCheck = data[0].output;
+    if (!Array.isArray(outputDatumCheck) && !(outputDatumCheck instanceof Float32Array)) {
       if (!this.outputLookup) {
         this.outputLookup = lookup.buildLookup(data.map(value => value.output));
       }
@@ -476,4 +512,6 @@ class FeedForward {
   }
 }
 
-module.exports = FeedForward;
+module.exports = {
+  FeedForward
+};

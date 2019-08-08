@@ -1,5 +1,5 @@
-const makeKernel = require('../utilities/kernel').makeKernel;
-const Modifier = require('./types').Modifier;
+const { makeKernel } = require('../utilities/kernel');
+const { Modifier } = require('./types');
 
 function predict(weights) {
   return -weights[this.thread.y][this.thread.x];
@@ -23,4 +23,8 @@ class Negative extends Modifier {
   }
 }
 
-module.exports = Negative;
+function negative(settings, inputLayer) {
+  return new Negative(settings, inputLayer);
+}
+
+module.exports = { Negative, negative, predict };

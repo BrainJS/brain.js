@@ -1,18 +1,17 @@
-const makeKernel = require('../utilities/kernel').makeKernel;
+const { makeKernel } = require('../utilities/kernel');
 const zeros = require('../utilities/zeros');
 const zeros2D = require('../utilities/zeros-2d');
 const zeros3D = require('../utilities/zeros-3d');
-const Filter = require('./types').Filter;
+const { Filter } = require('./types');
 
 function compare1D(weights, targetValues) {
+  // return targetValues[this.thread.x] - weights[this.thread.y][this.thread.x];
   return weights[this.thread.y][this.thread.x] - targetValues[this.thread.x];
 }
 
 function compare2D(weights, targetValues) {
-  return (
-    weights[this.thread.y][this.thread.x] -
-    targetValues[this.thread.y][this.thread.x]
-  );
+  // return targetValues[this.thread.y][this.thread.x] - weights[this.thread.y][this.thread.x];
+  return weights[this.thread.y][this.thread.x] - targetValues[this.thread.y][this.thread.x];
 }
 
 class Target extends Filter {
@@ -59,4 +58,11 @@ class Target extends Filter {
   }
 }
 
-module.exports = Target;
+function target(settings, inputLayer) {
+  return new Target(settings, inputLayer);
+}
+
+module.exports = {
+  Target,
+  target
+};

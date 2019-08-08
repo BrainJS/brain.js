@@ -1,6 +1,6 @@
-const Base = require('./base');
+const { Base } = require('./base');
 
-class Regression extends Base {
+class SVM extends Base {
   predict() {
     this.weights = this.inputs;
     this.validate();
@@ -22,4 +22,11 @@ function learn(target) {
   // }
 }
 
-module.exports = Regression;
+function svm(settings, inputLayer) {
+  return new SVM(settings, inputLayer);
+}
+
+module.exports = {
+  SVM,
+  svm
+};

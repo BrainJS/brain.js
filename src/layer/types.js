@@ -1,4 +1,4 @@
-const Base = require('./base');
+const { Base } = require('./base');
 
 class Activation extends Base {}
 class Internal {}

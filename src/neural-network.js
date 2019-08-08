@@ -230,6 +230,7 @@ class NeuralNetwork {
         const weights = this.weights[layer][node];
 
         let sum = this.biases[layer][node];
+
         for (let k = 0; k < weights.length; k++) {
           sum += weights[k] * input[k];
         }
@@ -478,8 +479,8 @@ class NeuralNetwork {
    */
   train(data, options = {}) {
     let status;
-    let endTime
-    ;({ data, status, endTime } = this._prepTraining(data, options));
+    let endTime;
+    ({ data, status, endTime } = this._prepTraining(data, options));
 
     while (this._trainingTick(data, status, endTime));
     return status;
@@ -667,8 +668,8 @@ class NeuralNetwork {
       data = tmp;
     }
     // turn sparse hash input into arrays with 0s as filler
-    const datumCheck = data[0].input;
-    if (!Array.isArray(datumCheck) && !(datumCheck instanceof Float32Array)) {
+    const inputDatumCheck = data[0].input;
+    if (!Array.isArray(inputDatumCheck) && !(inputDatumCheck instanceof Float32Array)) {
       if (!this.inputLookup) {
         this.inputLookup = lookup.buildLookup(data.map(value => value.input));
       }
@@ -678,7 +679,8 @@ class NeuralNetwork {
       }, this);
     }
 
-    if (!Array.isArray(data[0].output)) {
+    const outputDatumCheck = data[0].output;
+    if (!Array.isArray(outputDatumCheck) && !(outputDatumCheck instanceof Float32Array)) {
       if (!this.outputLookup) {
         this.outputLookup = lookup.buildLookup(data.map(value => value.output));
       }

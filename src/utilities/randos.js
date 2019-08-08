@@ -6,4 +6,4 @@ module.exports = function randos(size) {
     array[i] = randomWeight();
   }
   return array;
-}
+};

@@ -1,5 +1,5 @@
-const Activation = require('./types').Activation;
-const makeKernel = require('../utilities/kernel').makeKernel;
+const { Activation } = require('./types');
+const { makeKernel } = require('../utilities/kernel');
 const lra = require('../activation/leaky-relu');
 const activate = lra.activate;
 const measure = lra.measure;
@@ -45,4 +45,8 @@ class LeakyRelu extends Activation {
   }
 }
 
-module.exports = { LeakyRelu, predict, compare };
+function leakyRelu(inputLayer) {
+  return new LeakyRelu(inputLayer);
+}
+
+module.exports = { LeakyRelu, leakyRelu, predict, compare };

@@ -1,7 +1,15 @@
-const gpuMock = require('gpu-mock.js');
+const { GPU } = require('gpu.js');
+const { gpuMock } = require('gpu-mock.js');
 const { Pool, predict, compare, compare3D } = require('../../src/layer/pool');
+const { setup, teardown } = require('../../src/utilities/kernel');
 
 describe('Pool Layer', () => {
+  beforeEach(() => {
+    setup(new GPU({ mode: 'cpu' }));
+  });
+  afterEach(() => {
+    teardown();
+  });
   describe('constructor', () => {
     test('correctly sets dimensions', () => {
       const layer = new Pool(
@@ -40,7 +48,9 @@ describe('Pool Layer', () => {
         },
       })(inputs);
 
-      expect(results).toEqual([[9]]);
+      expect(results).toEqual([
+        new Float32Array([9])
+      ]);
     });
   });
   describe('.compare (back propagation)', () => {
@@ -58,7 +68,10 @@ describe('Pool Layer', () => {
         },
       })(deltas, switchY, switchX);
 
-      expect(results).toEqual([[4,3], [2,1]]);
+      expect(results).toEqual([
+        new Float32Array([4,3]),
+        new Float32Array([2,1])
+      ]);
     });
     test('can pool a simple matrix', () => {
       const deltas = [[1,2],[3,4]];
@@ -74,7 +87,10 @@ describe('Pool Layer', () => {
         },
       })(deltas, switchY, switchX);
 
-      expect(results).toEqual([[0,0], [0,10]]);
+      expect(results).toEqual([
+        new Float32Array([0,0]),
+        new Float32Array([0,10])
+      ]);
     });
   });
   describe('.compare3D (back propagation)', () => {
@@ -92,7 +108,10 @@ describe('Pool Layer', () => {
         },
       })(deltas, switchY, switchX);
 
-      expect(results).toEqual([[[4,3], [2,1]]]);
+      expect(results).toEqual([[
+        new Float32Array([4,3]),
+        new Float32Array([2,1])
+      ]]);
     });
     test('can pool a simple matrix', () => {
       const deltas = [[[1,2],[3,4]]];
@@ -108,7 +127,10 @@ describe('Pool Layer', () => {
         },
       })(deltas, switchY, switchX);
 
-      expect(results).toEqual([[[0,0], [0,10]]]);
+      expect(results).toEqual([[
+        new Float32Array([0,0]),
+        new Float32Array([0,10])
+      ]]);
     });
   });
 });

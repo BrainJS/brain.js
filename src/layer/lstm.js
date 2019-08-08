@@ -1,14 +1,12 @@
-const {
-  add,
-  multiply,
-  multiplyElement,
-  random,
-  sigmoid,
-  tanh,
-  zeros,
-} = require('./index');
+const { add } = require('./add');
+const { multiply } = require('./multiply');
+const { multiplyElement } = require('./multiply-element');
+const { random } = require('./random');
+const { sigmoid } = require('./sigmoid');
+const { tanh } = require('./tanh');
+const { zeros } = require('./zeros');
 
-module.exports = (settings, recurrentInput, input) => {
+function lstm(settings, recurrentInput, input) {
   const { height } = settings;
   const inputGateWeights = random({ height, width: input.height });
   const inputGatePeepholes = random({ width: height, height });
@@ -69,4 +67,8 @@ module.exports = (settings, recurrentInput, input) => {
 
   // compute hidden state as gated, saturated cell activations
   return multiplyElement(outputGate, tanh(cell));
+}
+
+module.exports = {
+  lstm
 };

@@ -1,12 +1,16 @@
-const gpuMock = require('gpu-mock.js');
-const convolution = require('../../src/layer/convolution');
-const predict = convolution.predict;
-const compareFilterDeltas = convolution.compareFilterDeltas;
-const compareInputDeltas = convolution.compareInputDeltas;
-const compareBiases = convolution.compareBiases;
-const onePlusPlus3D = require('../test-utils').onePlusPlus3D;
+const { GPU } = require('gpu.js');
+const { gpuMock } = require('gpu-mock.js');
+const { predict, compareFilterDeltas, compareInputDeltas, compareBiases } = require('../../src/layer/convolution');
+const { setup, teardown } = require('../../src/utilities/kernel');
+const { onePlusPlus3D } = require('../test-utils');
 
 describe('Convolution Layer', () => {
+  beforeEach(() => {
+    setup(new GPU({ mode: 'cpu' }));
+  });
+  afterEach(() => {
+    teardown();
+  });
   describe('.predict (forward propagation)', () => {
     test('can convolution a simple matrix', () => {
       const inputs = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]];
@@ -29,7 +33,11 @@ describe('Convolution Layer', () => {
         },
       })(filters, inputs, biases);
 
-      expect(results).toEqual([[286, 187, 91], [155, 95, 43], [51, 27, 10]]);
+      expect(results).toEqual([
+        new Float32Array([286, 187, 91]),
+        new Float32Array([155, 95, 43]),
+        new Float32Array([51, 27, 10])
+      ]);
     });
   });
 
@@ -66,7 +74,10 @@ describe('Convolution Layer', () => {
         },
       })(filterDeltas, inputs, deltas);
 
-      expect(results).toEqual([[[45, 56], [87, 98]]]);
+      expect(results).toEqual([[
+        new Float32Array([45, 56]),
+        new Float32Array([87, 98])
+      ]]);
     });
   });
 
@@ -92,7 +103,11 @@ describe('Convolution Layer', () => {
         },
       })(inputDeltas, filters, deltas);
 
-      expect(results).toEqual([[2, 6, 13], [12, 31, 62], [37, 92, 174]]);
+      expect(results).toEqual([
+        new Float32Array([2, 6, 13]),
+        new Float32Array([12, 31, 62]),
+        new Float32Array([37, 92, 174])
+      ]);
     });
   });
 
@@ -118,14 +133,14 @@ describe('Convolution Layer', () => {
       });
       const result = kernel(biasDeltas, deltas);
       const expectedBiasDeltas = [
-        [[48]],
-        [[52]],
-        [[56]],
-        [[60]],
-        [[64]],
-        [[68]],
-        [[72]],
-        [[76]],
+        [new Float32Array([48])],
+        [new Float32Array([52])],
+        [new Float32Array([56])],
+        [new Float32Array([60])],
+        [new Float32Array([64])],
+        [new Float32Array([68])],
+        [new Float32Array([72])],
+        [new Float32Array([76])],
       ];
 
       expect(result).toEqual(expectedBiasDeltas);
@@ -141,14 +156,14 @@ describe('Convolution Layer', () => {
       });
       const result = kernel(biasDeltas, deltas);
       const expectedBiasDeltas = [
-        [[48]],
-        [[53]],
-        [[58]],
-        [[63]],
-        [[68]],
-        [[73]],
-        [[78]],
-        [[83]],
+        [new Float32Array([48])],
+        [new Float32Array([53])],
+        [new Float32Array([58])],
+        [new Float32Array([63])],
+        [new Float32Array([68])],
+        [new Float32Array([73])],
+        [new Float32Array([78])],
+        [new Float32Array([83])],
       ];
 
       expect(result).toEqual(expectedBiasDeltas);

@@ -1,8 +1,17 @@
-const gpuMock = require('gpu-mock.js');
+const { GPU } = require('gpu.js');
+const { gpuMock } = require('gpu-mock.js');
+
 const { predict, predict3D, compareBiases, compareFilterDeltas, compareFilterDeltas3D, compareInputDeltas, compareInputDeltas3D } = require('../../src/layer/fully-connected');
 const { onePlusPlus2D, zero2D } = require('../test-utils');
+const { setup, teardown } = require('../../src/utilities/kernel');
 
 describe('FullyConnected Layer', () => {
+  beforeEach(() => {
+    setup(new GPU({ mode: 'cpu' }));
+  });
+  afterEach(() => {
+    teardown();
+  });
   describe('.predict (forward propagation)', () => {
     test('can predict a simple matrix', () => {
       const weights = [[1, 2], [3, 4]];
@@ -22,12 +31,12 @@ describe('FullyConnected Layer', () => {
         },
       });
 
-      expect(kernel(weights, filters, biases)).toEqual([
+      expect(kernel(weights, filters, biases)).toEqual(new Float32Array([
         30.2,
         70.2,
         110.2,
         150.2,
-      ]);
+      ]));
     });
 
     test('can predict a matrix', () => {
@@ -54,7 +63,7 @@ describe('FullyConnected Layer', () => {
         [0, 1, 2, 3, 4, 5, 6, 7, 8]
       );
 
-      expect(results).toEqual([204, 205, 206, 207, 208, 209, 210, 211, 212]);
+      expect(results).toEqual(new Float32Array([204, 205, 206, 207, 208, 209, 210, 211, 212]));
     });
   });
 
@@ -78,7 +87,7 @@ describe('FullyConnected Layer', () => {
       });
 
       expect(kernel(weights, filters, biases)).toEqual([
-        [30.2, 70.2, 110.2, 150.2],
+        new Float32Array([30.2, 70.2, 110.2, 150.2]),
       ]);
     });
 
@@ -106,7 +115,9 @@ describe('FullyConnected Layer', () => {
         [0, 1, 2, 3, 4, 5, 6, 7, 8]
       );
 
-      expect(results).toEqual([[204, 205, 206, 207, 208, 209, 210, 211, 212]]);
+      expect(results).toEqual([
+        new Float32Array([204, 205, 206, 207, 208, 209, 210, 211, 212])
+      ]);
     });
   });
 
@@ -121,7 +132,7 @@ describe('FullyConnected Layer', () => {
         },
       });
 
-      expect(kernel(biases, deltas)).toEqual([1, 2, 3, 4]);
+      expect(kernel(biases, deltas)).toEqual(new Float32Array([1, 2, 3, 4]));
     });
 
     test('can add a simple matrix', () => {
@@ -134,7 +145,7 @@ describe('FullyConnected Layer', () => {
         },
       });
 
-      expect(kernel(biases, deltas)).toEqual([2, 4, 6, 8]);
+      expect(kernel(biases, deltas)).toEqual(new Float32Array([2, 4, 6, 8]));
     });
   });
 
@@ -154,10 +165,10 @@ describe('FullyConnected Layer', () => {
       });
 
       expect(kernel(filterDeltas, inputWeights, deltas)).toEqual([
-        [1, 2, 3, 4],
-        [5, 6, 7, 8],
-        [9, 10, 11, 12],
-        [13, 14, 15, 16]
+        new Float32Array([1, 2, 3, 4]),
+        new Float32Array([5, 6, 7, 8]),
+        new Float32Array([9, 10, 11, 12]),
+        new Float32Array([13, 14, 15, 16])
       ]);
     });
 
@@ -176,10 +187,10 @@ describe('FullyConnected Layer', () => {
       });
 
       expect(kernel(filterDeltas, inputWeights, deltas)).toEqual([
-        [2, 4, 6, 8],
-        [10, 12, 14, 16],
-        [18, 20, 22, 24],
-        [26, 28, 30, 32]
+        new Float32Array([2, 4, 6, 8]),
+        new Float32Array([10, 12, 14, 16]),
+        new Float32Array([18, 20, 22, 24]),
+        new Float32Array([26, 28, 30, 32])
       ]);
     });
   });
@@ -203,10 +214,10 @@ describe('FullyConnected Layer', () => {
       });
 
       expect(kernel(filterDeltas, inputWeights, deltas)).toEqual([
-        [1, 2, 3, 4],
-        [2, 4, 6, 8],
-        [3, 6, 9, 12],
-        [4, 8, 12, 16],
+        new Float32Array([1, 2, 3, 4]),
+        new Float32Array([2, 4, 6, 8]),
+        new Float32Array([3, 6, 9, 12]),
+        new Float32Array([4, 8, 12, 16]),
       ]);
     });
 
@@ -228,10 +239,10 @@ describe('FullyConnected Layer', () => {
       });
 
       expect(kernel(filterDeltas, inputWeights, deltas)).toEqual([
-        [2, 4, 6, 8],
-        [7, 10, 13, 16],
-        [12, 16, 20, 24],
-        [17, 22, 27, 32],
+        new Float32Array([2, 4, 6, 8]),
+        new Float32Array([7, 10, 13, 16]),
+        new Float32Array([12, 16, 20, 24]),
+        new Float32Array([17, 22, 27, 32]),
       ]);
     });
   });
@@ -253,8 +264,8 @@ describe('FullyConnected Layer', () => {
       });
 
       expect(kernel(inputDeltas, deltas, filters)).toEqual([
-        [90, 100],
-        [110, 120],
+        new Float32Array([90, 100]),
+        new Float32Array([110, 120]),
       ]);
     });
 
@@ -275,8 +286,8 @@ describe('FullyConnected Layer', () => {
       });
 
       expect(kernel(inputDeltas, deltas, filters)).toEqual([
-        [91, 102],
-        [113, 124],
+        new Float32Array([91, 102]),
+        new Float32Array([113, 124]),
       ]);
     });
   });
@@ -298,7 +309,10 @@ describe('FullyConnected Layer', () => {
       });
 
       expect(kernel(inputDeltas, deltas, filters)).toEqual([
-        [[90, 100], [110, 120]],
+        [
+          new Float32Array([90, 100]),
+          new Float32Array([110, 120])
+        ],
       ]);
     });
     test('can add a simple matrix', () => {
@@ -318,7 +332,10 @@ describe('FullyConnected Layer', () => {
       });
 
       expect(kernel(inputDeltas, deltas, filters)).toEqual([
-        [[91, 102], [113, 124]],
+        [
+          new Float32Array([91, 102]),
+          new Float32Array([113, 124])
+        ],
       ]);
     });
   });

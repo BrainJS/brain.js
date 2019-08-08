@@ -1,4 +1,4 @@
-const Model = require('./types').Model;
+const { Model } = require('./types');
 const randos2D = require('../utilities/randos-2d');
 const zeros2D = require('../utilities/zeros-2d');
 
@@ -19,4 +19,11 @@ class Random extends Model {
   }
 }
 
-module.exports = Random;
+function random(settings) {
+  return new Random(settings);
+}
+
+module.exports = {
+  Random,
+  random
+};

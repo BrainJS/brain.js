@@ -1,4 +1,4 @@
-const recurrent = require('../../src/layer/recurrent');
+const { recurrent } = require('../../src/layer/recurrent');
 
 describe('Recurrent Layer', () => {
   test('properly sets width and height', () => {

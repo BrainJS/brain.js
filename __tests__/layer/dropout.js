@@ -1,10 +1,16 @@
-const gpuMock = require('gpu-mock.js');
-const dropout = require('../../src/layer/dropout');
-const Dropout = dropout.Dropout;
-const trainingPredict = dropout.trainingPredict;
-const predict = dropout.predict;
+const { GPU } = require('gpu.js');
+const { gpuMock } = require('gpu-mock.js');
+
+const { Dropout, trainingPredict, predict } = require('../../src/layer/dropout');
+const { setup, teardown } = require('../../src/utilities/kernel');
 
 describe('Dropout Layer', () => {
+  beforeEach(() => {
+    setup(new GPU({ mode: 'cpu' }));
+  });
+  afterEach(() => {
+    teardown();
+  });
   describe('.trainingPredict (forward propagation)', () => {
     test('can dropout a simple matrix', () => {
       const inputs = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
@@ -48,7 +54,11 @@ describe('Dropout Layer', () => {
         },
       })(inputs);
 
-      expect(results).toEqual([[0.5, 1, 1.5], [2, 2.5, 3], [3.5, 4, 4.5]]);
+      expect(results).toEqual([
+        new Float32Array([0.5, 1, 1.5]),
+        new Float32Array([2, 2.5, 3]),
+        new Float32Array([3.5, 4, 4.5])
+      ]);
     });
   });
 });

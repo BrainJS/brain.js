@@ -1,7 +1,7 @@
 export interface INeuralNetworkDefaultOptions {
   binaryThresh: number;
   hiddenLayers: number[];
-  activation: NeuralNetworkActivation
+  activation: NeuralNetworkActivation;
 }
 
 export type NeuralNetworkActivation = 'sigmoid' | 'relu' | 'leaky-relu' | 'tanh';
@@ -48,8 +48,26 @@ export class NeuralNetwork {
   public createTrainStream(options: ITrainStreamOptions): ITrainStream;
 }
 
+export class NeuralNetworkGPU extends NeuralNetwork {
+
+}
+
 export declare namespace recurrent {
   class LSTM extends NeuralNetwork {}
 }
 
 export function likely<T>(input: T, net: NeuralNetwork): any;
+
+export class FeedForward {
+  constructor(options?: IFeedForwardOptions);
+}
+
+export interface IFeedForwardOptions {
+  learningRate?: number;
+  binaryThresh?: number;
+  hiddenLayers?: any;
+  inputLayer?: any;
+  outputLayer?: any;
+  praxisOpts?: object;
+  praxis?: any;
+}

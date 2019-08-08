@@ -1,10 +1,12 @@
-const gpuMock = require('gpu-mock.js');
+const { GPU } = require('gpu.js');
+const { gpuMock } = require('gpu-mock.js');
 const { predict, compare } = require('../../src/layer/tanh');
+const { setup, teardown } = require('../../src/utilities/kernel');
 
 function shave(array) {
   const result = [];
   for (let i = 0; i < array.length; i++) {
-    if (Array.isArray(array[i])) {
+    if (Array.isArray(array[i]) || array[i].constructor === Float32Array) {
       result.push(shave(array[i]));
     } else {
       result.push(array[i].toFixed(16));
@@ -13,6 +15,12 @@ function shave(array) {
 }
 
 describe('Tanh Layer', () => {
+  beforeEach(() => {
+    setup(new GPU({ mode: 'cpu' }));
+  });
+  afterEach(() => {
+    teardown();
+  });
   describe('.predict (forward propagation)', () => {
     test('can tanh a simple matrix', () => {
       const inputs = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9]];

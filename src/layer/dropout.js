@@ -1,5 +1,5 @@
-const Filter = require('./types').Filter;
-const makeKernel = require('../utilities/kernel').makeKernel;
+const { Filter } = require('./types');
+const { makeKernel } = require('../utilities/kernel');
 
 // TODO: implement random in glsl in gpu.js
 function trainingPredict(inputs) {
@@ -51,4 +51,8 @@ class Dropout extends Filter {
   }
 }
 
-module.exports = { Dropout, trainingPredict, predict };
+function dropout(settings, inputLayer) {
+  return new Dropout(settings, inputLayer);
+}
+
+module.exports = { Dropout, dropout, trainingPredict, predict };

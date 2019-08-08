@@ -1,5 +1,5 @@
 const zeros2D = require('../utilities/zeros-2d');
-const Internal = require('./types').Internal;
+const { Internal } = require('./types');
 
 class RecurrentZeros extends Internal {
   setDimensions(width, height) {
@@ -44,4 +44,6 @@ class RecurrentZeros extends Internal {
   }
 }
 
-module.exports = RecurrentZeros;
+module.exports = {
+  RecurrentZeros
+};

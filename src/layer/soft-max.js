@@ -1,5 +1,5 @@
-const makeKernel = require('../utilities/kernel');
-const Filter = require('./types').Filter;
+const { makeKernel } = require('../utilities/kernel');
+const { Filter } = require('./types');
 const randos = require('../utilities/randos');
 const randos2D = require('../utilities/randos-2d');
 const randos3D = require('../utilities/randos-3d');
@@ -245,10 +245,16 @@ class SoftMax extends Filter {
   }
 }
 
-module.exports = { SoftMax,
+function softMax(settings, inputLayer) {
+  return new SoftMax(settings, inputLayer);
+}
+
+module.exports = {
+  SoftMax, softMax,
   getMaxValue, getMaxValue2D, getMaxValue3D,
   getSum, getSum2D, getSum3D,
   getExponentials, getExponentials2D, getExponentials3D,
   predict, predict2D, predict3D,
   compare, compare2D, compare3D,
-  loss };
+  loss
+};

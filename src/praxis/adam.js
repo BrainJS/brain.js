@@ -22,4 +22,6 @@ function adam() {
   // p[j] += dx;
 }
 
-module.exports = Adam;
+module.exports = {
+  Adam, adam
+};

@@ -1,5 +1,7 @@
-const makeKernel = require('../utilities/kernel').makeKernel;
+const { makeKernel, makeDevKernel } = require('../utilities/kernel');
 const zeros2D = require('../utilities/zeros-2d');
+
+const { Base } = require('./base');
 
 function getMomentum(delta, decay, previousMomentum) {
   return previousMomentum * decay + (1 - decay) * delta * delta;
@@ -19,7 +21,7 @@ function clipByValue(value, max, min) {
  * @description Momentum Root Mean Square Propagation Function
  * @returns {number}
  */
-function momentumRootMeanSquaredPropagation(
+function update(
   weights,
   deltas,
   previousMomentums
@@ -55,23 +57,20 @@ function isClippedByValue(value, max, min) {
   return 0;
 }
 
-class MomentumRootMeanSquaredPropagation {
+class MomentumRootMeanSquaredPropagation extends Base {
   static get defaults() {
     return {
       decayRate: 0.999,
       regularizationStrength: 0.000001,
       learningRate: 0.01,
       smoothEps: 1e-8,
-      clipValue: 5,
+      clipValue: 5
     };
   }
 
   constructor(layer, settings = {}) {
-    this.layer = layer;
-    this.width = layer.width;
-    this.height = layer.height;
+    super(layer, settings);
     this.momentums = zeros2D(layer.width, layer.height);
-    Object.assign(this, this.constructor.defaults, settings);
     this.setupKernels();
   }
 
@@ -82,7 +81,7 @@ class MomentumRootMeanSquaredPropagation {
   }
 
   setupKernels() {
-    this.kernel = makeKernel(momentumRootMeanSquaredPropagation, {
+    this.kernel = makeKernel(update, {
       output: [this.width, this.height],
       constants: {
         clipValue: this.clipValue,
@@ -99,10 +98,19 @@ class MomentumRootMeanSquaredPropagation {
   }
 }
 
+function momentumRootMeanSquaredPropagation(layer, settings) {
+  return new MomentumRootMeanSquaredPropagation(layer, settings);
+}
+
 /**
  * @description Mathematician friendly name of MomentumRootMeanSquaredPropagation class. For those that are not mere mortals
  * @type {MomentumRootMeanSquaredPropagation}
  */
 const MRmsProp = MomentumRootMeanSquaredPropagation;
+const mRmsProp = momentumRootMeanSquaredPropagation;
 
-module.exports = { MomentumRootMeanSquaredPropagation, getMomentum, MRmsProp, clipByValue, isClippedByValue };
+module.exports = {
+  MomentumRootMeanSquaredPropagation, momentumRootMeanSquaredPropagation,
+  MRmsProp, mRmsProp,
+  getMomentum, clipByValue, isClippedByValue
+};

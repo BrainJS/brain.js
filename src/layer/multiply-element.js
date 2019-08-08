@@ -1,5 +1,5 @@
-const makeKernel = require('../utilities/kernel').makeKernel;
-const Operator = require('./types').Operator;
+const { makeKernel } = require('../utilities/kernel');
+const { Operator } = require('./types');
 const zeros2D = require('../utilities/zeros-2d');
 
 function predict(weights, inputLayerWeights) {
@@ -66,4 +66,8 @@ class MultiplyElement extends Operator {
   }
 }
 
-module.exports = MultiplyElement;
+function multiplyElement(inputLayer1, inputLayer2) {
+  return new MultiplyElement(inputLayer1, inputLayer2);
+}
+
+module.exports = { MultiplyElement, multiplyElement };

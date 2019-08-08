@@ -1,5 +1,9 @@
 const assert = require('assert');
-const gpuMock = require('gpu-mock.js');
+const { GPU } = require('gpu.js');
+const { gpuMock } = require('gpu-mock.js');
+
+const { setup, teardown } = require('../../src/utilities/kernel');
+
 const {
   compare,
   compare2D,
@@ -19,6 +23,12 @@ const {
 } = require('../../src/layer/soft-max');
 
 describe('SoftMax', () => {
+  beforeEach(() => {
+    setup(new GPU({ mode: 'cpu' }));
+  });
+  afterEach(() => {
+    teardown();
+  });
   describe('.compare', () => {
     it('can run on a simple matrix', () => {
       const exponentials = [1,2,3,4];
@@ -166,14 +176,14 @@ describe('SoftMax', () => {
       });
       const result = kernel(weights, [0]);
       assert.deepEqual(result, [
-        [
+        new Float32Array([
           Math.exp(1),
           Math.exp(2),
-        ],
-        [
+        ]),
+        new Float32Array([
           Math.exp(3),
           Math.exp(4),
-        ]
+        ])
       ]);
     });
     it('can subtract maxInput and run on a simple matrix', () => {
@@ -186,14 +196,14 @@ describe('SoftMax', () => {
       });
       const result = kernel(weights, [4]);
       assert.deepEqual(result, [
-        [
+        new Float32Array([
           Math.exp(1 - 4),
           Math.exp(2 - 4),
-        ],
-        [
+        ]),
+        new Float32Array([
           Math.exp(3 - 4),
           Math.exp(4 - 4),
-        ]
+        ])
       ]);
     });
   });
@@ -215,24 +225,24 @@ describe('SoftMax', () => {
       const result = kernel(weights, [0]);
       assert.deepEqual(result, [
         [
-          [
+          new Float32Array([
             Math.exp(1),
             Math.exp(2),
-          ],
-          [
+          ]),
+          new Float32Array([
             Math.exp(3),
             Math.exp(4),
-          ]
+          ])
         ],
         [
-          [
+          new Float32Array([
             Math.exp(5),
             Math.exp(6),
-          ],
-          [
+          ]),
+          new Float32Array([
             Math.exp(7),
             Math.exp(8),
-          ]
+          ])
         ]
       ]);
     });
@@ -253,24 +263,24 @@ describe('SoftMax', () => {
       const result = kernel(weights, [4]);
       assert.deepEqual(result, [
         [
-          [
+          new Float32Array([
             Math.exp(1 - 4),
             Math.exp(2 - 4),
-          ],
-          [
+          ]),
+          new Float32Array([
             Math.exp(3 - 4),
             Math.exp(4 - 4),
-          ]
+          ])
         ],
         [
-          [
+          new Float32Array([
             Math.exp(5 - 4),
             Math.exp(6 - 4),
-          ],
-          [
+          ]),
+          new Float32Array([
             Math.exp(7 - 4),
             Math.exp(8 - 4),
-          ]
+          ])
         ]
       ]);
     });

@@ -10,10 +10,11 @@ class Base {
       weights: null,
       deltas: null,
       name: null,
+      praxisOpts: null,
     };
   }
 
-  constructor(settings = {}) {
+  constructor(settings) {
     // size
     this.width = null;
     this.height = null;
@@ -23,23 +24,22 @@ class Base {
     this.weights = null;
 
     this.praxis = null;
+    this.praxisOpts = null;
+
     if (this.constructor !== Base) {
       Object.assign(this, Base.defaults, settings);
     }
     Object.assign(this, this.constructor.defaults, settings);
 
     // special settings
+    this.setupPraxis(settings);
+  }
+
+  setupPraxis(settings) {
+    if (!settings) return;
     if (settings.hasOwnProperty('praxis')) {
       if (typeof settings.praxis === 'function') {
-        this.praxis = settings.praxis(
-          Object.assign(
-            {
-              height: this.height,
-              width: this.width,
-            },
-            settings
-          )
-        );
+        this.praxis = settings.praxis(this, settings.praxisOpts);
       } else {
         this.praxis = settings.praxis;
       }
@@ -164,4 +164,6 @@ class Base {
   }
 }
 
-module.exports = Base;
+module.exports = {
+  Base
+};

@@ -6,4 +6,4 @@ module.exports = function zeros2D(width, height) {
     result[y] = zeros(width);
   }
   return result;
-}
+};

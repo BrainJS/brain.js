@@ -1,9 +1,17 @@
-const gpuMock = require('gpu-mock.js');
-const Input = require('../../src/layer/input');
+const { GPU } = require('gpu.js');
+const { gpuMock } = require('gpu-mock.js');
+const { Input } = require('../../src/layer/input');
 const { Multiply, predict, compareFromX, compareFromY } = require('../../src/layer/multiply');
-const Random = require('../../src/layer/random');
+const { Random } = require('../../src/layer/random');
+const { setup, teardown } = require('../../src/utilities/kernel');
 
 describe('Multiply Layer', () => {
+  beforeEach(() => {
+    setup(new GPU({ mode: 'cpu' }));
+  });
+  afterEach(() => {
+    teardown();
+  });
   describe('.predict (forward propagation)', () => {
     test('can multiply a simple matrix', () => {
       const inputs1 = [[1, 2, 3], [4, 5, 6]];
@@ -15,7 +23,10 @@ describe('Multiply Layer', () => {
         },
       })(inputs1, inputs2);
 
-      expect(results).toEqual([[58, 64], [139, 154]]);
+      expect(results).toEqual([
+        new Float32Array([58, 64]),
+        new Float32Array([139, 154])
+      ]);
     });
   });
   describe('.compareFromX (back propagation)', () => {
@@ -30,7 +41,10 @@ describe('Multiply Layer', () => {
         },
       })(deltas, m1, m2);
 
-      expect(result).toEqual([[21, 21], [21, 21]]);
+      expect(result).toEqual([
+        new Float32Array([21, 21]),
+        new Float32Array([21, 21])
+      ]);
     });
     test('can compare a simple matrix', () => {
       const deltas = [[1], [2], [3]];
@@ -43,7 +57,11 @@ describe('Multiply Layer', () => {
         },
       })(deltas, inputDeltas, inputWeights);
 
-      expect(result).toEqual([[2, 4], [5, 8], [8, 12]]);
+      expect(result).toEqual([
+        new Float32Array([2, 4]),
+        new Float32Array([5, 8]),
+        new Float32Array([8, 12])
+      ]);
     });
   });
   describe('.compareFromY (back propagation)', () => {
@@ -58,7 +76,10 @@ describe('Multiply Layer', () => {
         },
       })(deltas, m1, m2);
 
-      expect(result).toEqual([[21, 21], [21, 21]]);
+      expect(result).toEqual([
+        new Float32Array([21, 21]),
+        new Float32Array([21, 21])
+      ]);
     });
     test('can compare a simple matrix 3x1 * 2x1 = 3x2', () => {
       const deltas = [[1], [2], [3]];
@@ -71,7 +92,10 @@ describe('Multiply Layer', () => {
         },
       })(deltas, inputDeltas, inputWeights);
 
-      expect(result).toEqual([[23], [30]]);
+      expect(result).toEqual([
+        new Float32Array([23]),
+        new Float32Array([30])
+      ]);
     });
     test('can compare a simple matrix 3x1 * 1x3 = 3x1', () => {
       const deltas = [[1, 2, 3]];
@@ -84,7 +108,11 @@ describe('Multiply Layer', () => {
         },
       })(deltas, inputDeltas, inputWeights);
 
-      expect(result).toEqual([[2], [4], [6]]);
+      expect(result).toEqual([
+        new Float32Array([2]),
+        new Float32Array([4]),
+        new Float32Array([6])
+      ]);
     });
   });
   describe('.validate', () => {

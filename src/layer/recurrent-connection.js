@@ -1,4 +1,4 @@
-const Internal = require('./types').Internal;
+const { Internal } = require('./types');
 const zeros2D = require('../utilities/zeros-2d');
 
 class RecurrentConnection extends Internal {
@@ -63,4 +63,6 @@ class RecurrentConnection extends Internal {
   }
 }
 
-module.exports = RecurrentConnection;
+module.exports = {
+  RecurrentConnection
+};

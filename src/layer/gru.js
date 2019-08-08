@@ -1,16 +1,14 @@
-const {
-  add,
-  negative,
-  multiply,
-  multiplyElement,
-  ones,
-  sigmoid,
-  random,
-  tanh,
-  zeros,
-} = require('.');
+const { add } = require('./add');
+const { negative } = require('./negative');
+const { multiply } = require('./multiply');
+const { multiplyElement } = require('./multiply-element');
+const { ones } = require('./ones');
+const { sigmoid } = require('./sigmoid');
+const { random } = require('./random');
+const { tanh } = require('./tanh');
+const { zeros } = require('./zeros');
 
-module.exports = (settings, recurrentInput, input) => {
+function gru(settings, recurrentInput, input) {
   const { height } = settings;
   const updateGateWeights = random({ height, width: input.height });
   const updateGatePeepholes = random({ width: height, height });
@@ -60,4 +58,8 @@ module.exports = (settings, recurrentInput, input) => {
     ),
     multiplyElement(recurrentInput, updateGate)
   );
+}
+
+module.exports = {
+  gru
 };

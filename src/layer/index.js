@@ -1,132 +1,53 @@
-const Add = require('./add').Add;
-const Base = require('./base');
-const Convolution = require('./convolution').Convolution;
-const Dropout = require('./dropout').Dropout;
-// import feedForward from './feed-forward'
-const FullyConnected = require('./fully-connected').FullyConnected;
-// import gru from './gru'
-const Input = require('./input');
-const LeakyRelu = require('./leaky-relu').LeakyRelu;
-// import lstm from './lstm'
-const Multiply = require('./multiply').Multiply;
-const MultiplyElement = require('./multiply-element');
-const Negative = require('./negative');
-const Ones = require('./ones');
-// import output from './output'
-const Pool = require('./pool').Pool;
-const Random = require('./random');
-// import recurrent from './recurrent'
-const Regression = require('./regression');
-const Relu = require('./relu').Relu;
-const Sigmoid = require('./sigmoid').Sigmoid;
-const SoftMax = require('./soft-max').SoftMax;
-const SVM = require('./svm');
-const Tanh = require('./tanh').Tanh;
-const Target = require('./target');
-const Transpose = require('./transpose');
-const Zeros = require('./zeros');
+const { Add, add } = require('./add');
+const { arthurFeedForward } = require('./arthur-feed-forward');
+const { Base } = require('./base');
+const { Convolution, convolution } = require('./convolution');
+const { Dropout, dropout } = require('./dropout');
+const { feedForward } = require('./feed-forward');
+const { FullyConnected, fullyConnected } = require('./fully-connected');
+const { gru } = require('./gru');
+const { Input, input } = require('./input');
+const { LeakyRelu, leakyRelu } = require('./leaky-relu');
+const { lstm } = require('./lstm');
+const { Multiply, multiply } = require('./multiply');
+const { MultiplyElement, multiplyElement } = require('./multiply-element');
+const { Negative, negative } = require('./negative');
+const { Ones, ones } = require('./ones');
+const { output } = require('./output');
+const { Pool, pool } = require('./pool');
+const { Random, random } = require('./random');
+const { recurrent } = require('./recurrent');
+const { Regression, regression } = require('./regression');
+const { Relu, relu } = require('./relu');
+const { Sigmoid, sigmoid } = require('./sigmoid');
+const { SoftMax, softMax } = require('./soft-max');
+const { SVM, svm } = require('./svm');
+const { Tanh, tanh } = require('./tanh');
+const { Target, target } = require('./target');
+const { Transpose, transpose } = require('./transpose');
+const { Zeros, zeros } = require('./zeros');
 
-function add(inputLayer1, inputLayer2) {
-  return new Add(inputLayer1, inputLayer2);
-}
-
-function convolution(settings, inputLayer) {
-  return new Convolution(settings, inputLayer);
-}
-
-function dropout(settings, inputLayer) {
-  return new Dropout(settings, inputLayer);
-}
-
-function fullyConnected(settings, inputLayer) {
-  return new FullyConnected(settings, inputLayer);
-}
-
-function input(settings) {
-  return new Input(settings);
-}
-
-function leakyRelu(inputLayer) {
-  return new LeakyRelu(inputLayer);
-}
-
-function multiply(inputLayer1, inputLayer2) {
-  return new Multiply(inputLayer1, inputLayer2);
-}
-
-function multiplyElement(inputLayer1, inputLayer2) {
-  return new MultiplyElement(inputLayer1, inputLayer2);
-}
-
-function negative(settings, inputLayer) {
-  return new Negative(settings, inputLayer);
-}
-
-function ones(settings) {
-  return new Ones(settings);
-}
-
-function pool(settings, inputLayer) {
-  return new Pool(settings, inputLayer);
-}
-
-function random(settings) {
-  return new Random(settings);
-}
-
-function regression(settings, inputLayer) {
-  return new Regression(settings, inputLayer);
-}
-
-function relu(inputLayer) {
-  return new Relu(inputLayer);
-}
-
-function sigmoid(inputLayer) {
-  return new Sigmoid(inputLayer);
-}
-
-function softMax(settings, inputLayer) {
-  return new SoftMax(settings, inputLayer);
-}
-
-function svm(settings, inputLayer) {
-  return new SVM(settings, inputLayer);
-}
-
-function tanh(inputLayer) {
-  return new Tanh(inputLayer);
-}
-
-function target(settings, inputLayer) {
-  return new Target(settings, inputLayer);
-}
-
-function transpose(inputLayer) {
-  return new Transpose(inputLayer);
-}
-
-function zeros(settings) {
-  return new Zeros(settings);
-}
-
+/**
+ * @description Layer API, to make it easier to use layers for the world
+ */
 module.exports = {
   Add,
   add,
+  arthurFeedForward,
   Base,
   Convolution,
   convolution,
   Dropout,
   dropout,
-  // feedForward,
+  feedForward,
   FullyConnected,
   fullyConnected,
-  // gru,
+  gru,
   Input,
   input,
   LeakyRelu,
   leakyRelu,
-  // lstm,
+  lstm,
   Multiply,
   multiply,
   MultiplyElement,
@@ -135,12 +56,12 @@ module.exports = {
   negative,
   Ones,
   ones,
-  // output,
+  output,
   Pool,
   pool,
   Random,
   random,
-  // recurrent,
+  recurrent,
   Regression,
   regression,
   Relu,

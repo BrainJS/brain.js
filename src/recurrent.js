@@ -1,9 +1,9 @@
-const RecurrentConnection = require('./layer/recurrent-connection');
-const RecurrentInput = require('./layer/recurrent-input');
-const RecurrentZeros = require('./layer/recurrent-zeros');
+const { RecurrentConnection } = require('./layer/recurrent-connection');
+const { RecurrentInput } = require('./layer/recurrent-input');
+const { RecurrentZeros } = require('./layer/recurrent-zeros');
 const flattenLayers = require('./utilities/flatten-layers');
 const mse2d = require('./utilities/mse-2d');
-const FeedForward = require('./feed-forward');
+const { FeedForward } = require('./feed-forward');
 // const Base from './layer/base'
 
 class Recurrent extends FeedForward {
@@ -304,4 +304,6 @@ class Recurrent extends FeedForward {
   }
 }
 
-module.exports = Recurrent;
+module.exports = {
+  Recurrent
+};

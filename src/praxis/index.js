@@ -1,15 +1,15 @@
-const mrmsp = require('./momentum-root-mean-squared-propagation');
-const MomentumRootMeanSquaredPropagation = mrmsp.MomentumRootMeanSquaredPropagation;
-const MRmsProp = mrmsp.MRmsProp;
+const { Adam, adam } = require('./adam');
+const { ArthurDeviationBiases, arthurDeviationBiases } = require('./arthur-deviation-biases');
+const { ArthurDeviationWeights, arthurDeviationWeights } = require('./arthur-deviation-weights');
+const {
+  MomentumRootMeanSquaredPropagation, momentumRootMeanSquaredPropagation,
+  MRmsProp, mRmsProp
+} = require('./momentum-root-mean-squared-propagation');
 
-function momentumRootMeanSquaredPropagation(layer, settings) {
-  return new MomentumRootMeanSquaredPropagation(layer, settings);
-}
-
-const mRmsProp = momentumRootMeanSquaredPropagation;
 module.exports = {
-  MomentumRootMeanSquaredPropagation,
-  momentumRootMeanSquaredPropagation,
-  MRmsProp,
-  mRmsProp,
+  Adam, adam,
+  ArthurDeviationBiases, arthurDeviationBiases,
+  ArthurDeviationWeights, arthurDeviationWeights,
+  MomentumRootMeanSquaredPropagation, momentumRootMeanSquaredPropagation,
+  MRmsProp, mRmsProp,
 };

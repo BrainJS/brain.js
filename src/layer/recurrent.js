@@ -1,6 +1,10 @@
-const { relu, add, multiply, random, zeros } = require('.');
+const { relu } = require('./relu');
+const { add } = require('./add');
+const { multiply } = require('./multiply');
+const { random } = require('./random');
+const { zeros } = require('./zeros');
 
-module.exports = (settings, input, recurrentInput) => {
+function recurrent(settings, input, recurrentInput) {
   const { height } = settings;
 
   recurrentInput.setDimensions(1, height);
@@ -18,4 +22,8 @@ module.exports = (settings, input, recurrentInput) => {
       bias
     )
   );
+}
+
+module.exports = {
+  recurrent
 };

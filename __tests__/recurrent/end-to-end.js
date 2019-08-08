@@ -1,6 +1,9 @@
-const { layer } = require('../../src');
+const { GPU } = require('gpu.js');
 
-const Recurrent = require('../../src/recurrent');
+const { layer } = require('../../src');
+const { setup, teardown } = require('../../src/utilities/kernel');
+
+const { Recurrent } = require('../../src/recurrent');
 const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
 // import Equation from '../../src/recurrent/matrix/equation'
 // import RandomMatrix from '../../src/recurrent/matrix/random-matrix'
@@ -10,6 +13,12 @@ const zeros2D = require('../../src/utilities/zeros-2d');
 const { add, input, multiply, output, random, recurrent } = layer;
 
 describe('Recurrent Class: End to End', () => {
+  beforeEach(() => {
+    setup(new GPU({ mode: 'cpu' }));
+  });
+  afterEach(() => {
+    teardown();
+  });
   describe('when configured like RNNTimeStep', () => {
     test('forward propagates equivalent to baseline', () => {
       const timeStep = new RNNTimeStep({
@@ -130,7 +139,7 @@ describe('Recurrent Class: End to End', () => {
       timeStep.runInput([2, 3]);
       recurrentNet.run([2, 3]);
 
-      expect(recurrentNet._inputLayers[0].weights[0]).toEqual(
+      expect(recurrentNet._inputLayers[0].weights[0][0]).toEqual(
         timeStep.model.input.weights[0]
       );
 
@@ -194,20 +203,20 @@ describe('Recurrent Class: End to End', () => {
       expect(recurrentNet._outputLayers[1].weights[2][0]).toEqual(
         timeStep.model.equations[0].states[5].product.weights[2]
       );
-      expect(recurrentNet._outputLayers[2].weights[0]).toEqual(
+      expect(recurrentNet._outputLayers[2].weights[0][0]).toEqual(
         timeStep.model.equations[0].states[6].product.weights[0]
       );
-      expect(recurrentNet._outputLayers[4].weights[0]).toEqual(
+      expect(recurrentNet._outputLayers[4].weights[0][0]).toEqual(
         timeStep.model.equations[0].states[7].product.weights[0]
       );
 
       recurrentNet._calculateDeltas([3], 0);
       timeStep.runBackpropagate();
 
-      expect(recurrentNet._outputLayers[5].deltas[0]).toEqual(
+      expect(recurrentNet._outputLayers[5].deltas[0][0]).toEqual(
         timeStep.model.equations[0].states[7].product.deltas[0]
       );
-      expect(recurrentNet._outputLayers[4].deltas[0]).toEqual(
+      expect(recurrentNet._outputLayers[4].deltas[0][0]).toEqual(
         timeStep.model.equations[0].states[6].product.deltas[0]
       );
       expect(recurrentNet._outputLayers[1].deltas[0][0]).toEqual(
@@ -270,7 +279,7 @@ describe('Recurrent Class: End to End', () => {
         timeStep.model.equations[0].states[1].product.deltas[2]
       );
 
-      expect(recurrentNet._inputLayers[0].deltas[0]).toEqual(
+      expect(recurrentNet._inputLayers[0].deltas[0][0]).toEqual(
         timeStep.model.input.deltas[0]
       );
     });
@@ -721,10 +730,10 @@ describe('Recurrent Class: End to End', () => {
     expect(net._hiddenLayers[0].length).toEqual(6);
     expect(net._hiddenLayers[1].length).toEqual(6);
     let error = Infinity;
-    for (let i = 0; i < 100 && error > 0.005; i++) {
+    for (let i = 0; i < 101 && error > 0.005; i++) {
       error = net._trainPattern([1, 2], [3], true);
     }
-    expect(error < 0.005).toBeTruthy();
+    expect(error).toBeLessThan(0.005);
   });
   test('can learn 1,2,3 using .train()', () => {
     const net = new Recurrent({
@@ -740,7 +749,9 @@ describe('Recurrent Class: End to End', () => {
         input: [1, 2],
         output: [3],
       },
-    ]);
+    ],{
+      errorCheckInterval: 1,
+    });
     expect(results.error < 0.01).toBeTruthy();
   });
 });

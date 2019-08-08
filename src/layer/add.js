@@ -1,16 +1,13 @@
-const makeKernel = require('../utilities/kernel').makeKernel;
+const { makeKernel } = require('../utilities/kernel');
 const zeros2D = require('../utilities/zeros-2d');
-const Operator = require('./types').Operator;
+const { Operator } = require('./types');
 
 function predict(inputWeights1, inputWeights2) {
-  return (
-    inputWeights1[this.thread.y][this.thread.x] +
-    inputWeights2[this.thread.y][this.thread.x]
-  );
+  return inputWeights1[this.thread.y][this.thread.x] + inputWeights2[this.thread.y][this.thread.x];
 }
 
 class Add extends Operator {
-  constructor(inputLayer1, inputLayer2) {
+  constructor(inputLayer1, inputLayer2, settings) {
     super();
     this.inputLayer1 = inputLayer1;
     this.inputLayer2 = inputLayer2;
@@ -19,6 +16,7 @@ class Add extends Operator {
     this.validate();
     this.weights = zeros2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
+    this.setupPraxis(settings);
   }
 
   validate() {
@@ -60,4 +58,8 @@ class Add extends Operator {
   }
 }
 
-module.exports = { Add, predict };
+function add(inputLayer1, inputLayer2, settings) {
+  return new Add(inputLayer1, inputLayer2, settings);
+}
+
+module.exports = { Add, add, predict };

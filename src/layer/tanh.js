@@ -1,6 +1,6 @@
-const Activation = require('./types').Activation;
-const makeKernel = require('../utilities/kernel').makeKernel;
-const tanhDerivative = require('../activation/tanh').tanhDerivative;
+const { Activation } = require('./types');
+const { makeKernel } = require('../utilities/kernel');
+const { tanhDerivative } = require('../activation/tanh');
 const zeros2D = require('../utilities/zeros-2d');
 
 function predict(inputs) {
@@ -48,4 +48,8 @@ class Tanh extends Activation {
   }
 }
 
-module.exports = { Tanh, predict, compare };
+function tanh(inputLayer) {
+  return new Tanh(inputLayer);
+}
+
+module.exports = { Tanh, tanh, predict, compare };

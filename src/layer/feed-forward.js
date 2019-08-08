@@ -1,9 +1,15 @@
-const { add, multiply, random, sigmoid } = require('./index');
+const { random } = require('./random');
+const { add } = require('./add');
+const { multiply } = require('./multiply');
+const { sigmoid } = require('./sigmoid');
 
-module.exports = function feedForward(settings, input) {
+function feedForward(settings, input) {
   const { height } = settings;
   const weights = random({ name: 'weights', height, width: input.height });
   const biases = random({ name: 'biases', height });
-
   return sigmoid(add(multiply(weights, input), biases));
 }
+
+module.exports = {
+  feedForward
+};

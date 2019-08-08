@@ -1,6 +1,15 @@
-const Target = require('../../src/layer/target');
+const { GPU } = require('gpu.js');
+
+const { Target } = require('../../src/layer/target');
+const { setup, teardown } = require('../../src/utilities/kernel');
 
 describe('Target Layer', () => {
+  beforeEach(() => {
+    setup(new GPU({ mode: 'cpu' }));
+  });
+  afterEach(() => {
+    teardown();
+  });
   test('is fully back propagating values to deltas', () => {
     const input = { width: 1, height: 1, weights: [[1]], deltas: [[0]] };
     const target = new Target({ width: 1, height: 1 }, input);

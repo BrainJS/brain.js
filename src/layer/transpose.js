@@ -1,9 +1,11 @@
-const Modifier = require('./types').Modifier;
-const makeKernel = require('../utilities/kernel').makeKernel;
+const { Modifier } = require('./types');
+const { makeKernel } = require('../utilities/kernel');
 
-function transpose(array) {
+function predict(array) {
   return array[this.thread.x][this.thread.y];
 }
+
+const compare = predict;
 
 class Transpose extends Modifier {
   constructor(inputLayer) {
@@ -15,10 +17,10 @@ class Transpose extends Modifier {
   }
 
   setupKernels() {
-    this.predictKernel = makeKernel(transpose, {
+    this.predictKernel = makeKernel(predict, {
       output: [this.height, this.width],
     });
-    this.compareKernel = makeKernel(transpose, {
+    this.compareKernel = makeKernel(compare, {
       output: [this.width, this.height],
     });
   }
@@ -28,8 +30,16 @@ class Transpose extends Modifier {
   }
 
   compare() {
+    // TODO: needs switched to this.compareKernel?
     this.inputLayer.deltas = this.predictKernel(this.deltas);
   }
 }
 
-module.exports = Transpose;
+function transpose(inputLayer) {
+  return new Transpose(inputLayer);
+}
+
+module.exports = {
+  Transpose,
+  transpose,
+};

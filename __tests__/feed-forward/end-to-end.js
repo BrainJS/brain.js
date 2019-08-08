@@ -1,30 +1,21 @@
-const { layer, NeuralNetwork, FeedForward } = require('../../src');
-const zeros2D = require('../../src/utilities/zeros-2d');
+const { GPU } = require('gpu.js');
+const NeuralNetwork = require('../../src/neural-network');
+const { FeedForward } = require('../../src/feed-forward');
+const { add } = require('../../src/layer/add');
+const { random } = require('../../src/layer/random');
+const { input } = require('../../src/layer/input');
+const { output } = require('../../src/layer/output');
+const { Target, target } = require('../../src/layer/target');
+const { Sigmoid, sigmoid } = require('../../src/layer/sigmoid');
+const { Multiply, multiply } = require('../../src/layer/multiply');
+const { feedForward: feedForwardLayer } = require('../../src/layer/feed-forward');
+const { arthurFeedForward } = require('../../src/layer/arthur-feed-forward');
 
-const {
-  // Base,
-  // Convolution,
-  // convolution,
-  feedForward,
-  // Input,
-  input,
-  // multiply,
-  // Output,
-  output,
-  // Pool,
-  // pool,
-  // random,
-  // Relu,
-  // relu,
-  Sigmoid,
-  // sigmoid,
-  // SoftMax,
-  // softMax,
-  Target,
-  target,
-  // Zeros,
-  // zeros,
-} = layer;
+const { arthurDeviationWeights } = require('../../src/praxis/arthur-deviation-weights');
+const { arthurDeviationBiases } = require('../../src/praxis/arthur-deviation-biases');
+const { momentumRootMeanSquaredPropagation } = require('../../src/praxis/momentum-root-mean-squared-propagation');
+const zeros2D = require('../../src/utilities/zeros-2d');
+const { setup, teardown } = require('../../src/utilities/kernel');
 
 const xorTrainingData = [
   { input: [0, 0], output: [0] },
@@ -36,29 +27,36 @@ const xorTrainingData = [
 /* eslint-disable no-multi-assign */
 
 describe('FeedForward Class: End to End', () => {
+  beforeEach(() => {
+    setup(new GPU({ mode: 'cpu' }));
+  });
+  afterEach(() => {
+    teardown();
+  });
+  /**
+   *
+   * @param {FeedForward} ff
+   * @param {NeuralNetwork} net
+   * @param {String} layerName
+   */
   describe('when configured like NeuralNetwork', () => {
-    test('outputs the exact same values', () => {
-      const standardNet = new NeuralNetwork([2, 3, 1]);
+    function setupTwinXORNetworks(useDecimals) {
+      const standardNet = new NeuralNetwork();
+      function noopPraxis() {
+        return { run: (layer) => layer.weights };
+      }
       const ffNet = new FeedForward({
-        inputLayer: () => input({ height: 2 }),
+        inputLayer: () => input({ height: 2, name: 'input', praxis: noopPraxis }),
         hiddenLayers: [
-          inputLayer => feedForward({ height: 3 }, inputLayer),
-          inputLayer => feedForward({ height: 1 }, inputLayer),
+          inputLayer => arthurFeedForward({ height: 3 }, inputLayer),
+          inputLayer => arthurFeedForward({ height: 1 }, inputLayer),
         ],
-        outputLayer: inputLayer => target({ height: 1 }, inputLayer),
+        outputLayer: inputLayer => target({ height: 1, name: 'output', praxis: noopPraxis }, inputLayer),
       });
 
       ffNet.initialize();
-      // learning deviates, which we'll test elsewhere, for the time being, just don't learn
-      standardNet._adjustWeights = () => {};
-      ffNet.layers.forEach(l => {
-        l.praxis.run = () => {};
-        l.learn = () => {};
-      });
-      standardNet.train([{ input: [1, 1], output: [0] }], {
-        iterations: 1,
-      });
-      ffNet.train([{ input: [1, 1], output: [0] }], {
+
+      standardNet.train([{ input: [1, 1], output: [1] }], {
         iterations: 1,
       });
 
@@ -66,72 +64,141 @@ describe('FeedForward Class: End to End', () => {
       const biasLayers = ffNet.layers.filter(l => l.name === 'biases');
       const weightLayers = ffNet.layers.filter(l => l.name === 'weights');
       const sigmoidLayers = ffNet.layers.filter(l => l.constructor === Sigmoid);
+      const targetLayer = ffNet.layers[ffNet.layers.length - 1];
 
-      // zero out
-      ffNet.layers.forEach(l => {
-        l.deltas = zeros2D(l.width, l.height);
-        l.weights = zeros2D(l.width, l.height);
-      });
-
-      standardNet.deltas.forEach(deltas => {
-        for (let i = 0; i < deltas.length; i++) {
-          deltas[i] = 0;
-        }
-      });
-      standardNet.outputs[1][0] = 0;
-      standardNet.outputs[1][1] = 0;
-      standardNet.outputs[1][2] = 0;
-      standardNet.outputs[2][0] = 0;
-      standardNet.errors[0][0] = 0;
-      standardNet.errors[0][1] = 0;
-      standardNet.errors[1][0] = 0;
-      standardNet.errors[1][1] = 0;
-      standardNet.errors[1][2] = 0;
-      standardNet.errors[2][0] = 0;
-
+      // Use whole numbers to better test accuracy
       // set biases
-      standardNet.biases[1][0] = biasLayers[0].weights[0][0] = 5;
-      standardNet.biases[1][1] = biasLayers[0].weights[1][0] = 7;
-      standardNet.biases[1][2] = biasLayers[0].weights[2][0] = 2;
-      standardNet.biases[2][0] = biasLayers[1].weights[0][0] = 7;
+      expect(standardNet.biases[1].length).toBe(3);
+      standardNet.biases[1][0] = biasLayers[0].weights[0][0] = useDecimals ? .5 : 5;
+      standardNet.biases[1][1] = biasLayers[0].weights[1][0] = useDecimals ? .7 : 7;
+      standardNet.biases[1][2] = biasLayers[0].weights[2][0] = useDecimals ? .2 : 2;
+
+      expect(standardNet.biases[2].length).toBe(1);
+      standardNet.biases[2][0] = biasLayers[1].weights[0][0] = useDecimals ? .12 : 12;
 
       // set weights
-      standardNet.outputs[0][0] = ffNet._inputLayer.weights[0][0] = 1;
-      standardNet.outputs[0][1] = ffNet._inputLayer.weights[1][0] = 1;
+      expect(standardNet.weights[1].length).toBe(3);
+      expect(standardNet.weights[1][0].length).toBe(2);
+      standardNet.weights[1][0][0] = weightLayers[0].weights[0][0] = useDecimals ? .5 : 5;
+      standardNet.weights[1][0][1] = weightLayers[0].weights[0][1] = useDecimals ? .10 : 10;
+      expect(standardNet.weights[1][1].length).toBe(2);
+      standardNet.weights[1][1][0] = weightLayers[0].weights[1][0] = useDecimals ? .3 : 3;
+      standardNet.weights[1][1][1] = weightLayers[0].weights[1][1] = useDecimals ? .1 : 1;
+      expect(standardNet.weights[1][2].length).toBe(2);
+      standardNet.weights[1][2][0] = weightLayers[0].weights[2][0] = useDecimals ? .8 : 8;
+      standardNet.weights[1][2][1] = weightLayers[0].weights[2][1] = useDecimals ? .4 : 4;
 
-      standardNet.weights[1][0][0] = weightLayers[0].weights[0][0] = 5;
-      standardNet.weights[1][0][1] = weightLayers[0].weights[0][1] = 10;
-      standardNet.weights[1][1][0] = weightLayers[0].weights[1][0] = 3;
-      standardNet.weights[1][1][1] = weightLayers[0].weights[1][1] = 1;
-      standardNet.weights[1][2][0] = weightLayers[0].weights[2][0] = 8;
-      standardNet.weights[1][2][1] = weightLayers[0].weights[2][1] = 4;
+      expect(standardNet.weights[2].length).toBe(1);
+      expect(standardNet.weights[2][0].length).toBe(3);
+      standardNet.weights[2][0][0] = weightLayers[1].weights[0][0] = useDecimals ? .2 : 2;
+      standardNet.weights[2][0][1] = weightLayers[1].weights[0][1] = useDecimals ? .6 : 6;
+      standardNet.weights[2][0][2] = weightLayers[1].weights[0][2] = useDecimals ? .3 : 3;
+      return {
+        ffNet,
+        standardNet,
+        sigmoidLayers,
+        targetLayer,
+      };
+    }
+    describe('prediction', () => {
+      test('it matches NeuralNetworks.deltas & NeuralNetworks.errors for 2 inputs, 3 hidden neurons, and 1 output', () => {
+        const { standardNet, ffNet, sigmoidLayers, targetLayer } = setupTwinXORNetworks(true);
+        // learning deviates, which we'll test elsewhere, for the time being, just don't learn
+        standardNet._adjustWeights = () => {};
+        ffNet._adjustWeights = () => {};
 
-      standardNet.weights[2][0][0] = weightLayers[1].weights[0][0] = 2;
-      standardNet.weights[2][0][1] = weightLayers[1].weights[0][1] = 6;
-      standardNet.weights[2][0][2] = weightLayers[1].weights[0][2] = 3;
+        // retrain with these new weights, only ffNet needs reinforce, otherwise, values are lost
+        standardNet.train([{ input: new Float32Array([.9, .8]), output: new Float32Array([.5]) }], {
+          iterations: 1,
+        });
 
-      standardNet.train([{ input: [1, 1], output: [0] }], {
-        iterations: 1,
+        ffNet.train([{ input: new Float32Array([.9, .8]), output: new Float32Array([.5]) }], {
+          iterations: 1,
+          reinforce: true,
+        });
+
+        // test only the sigmoid layers and target layers, as that is the final equation location per layer
+        // Also, NeuralNetwork uses a negative value, while FeedForward uses a positive one
+        expect(-sigmoidLayers[0].inputLayer.deltas[0][0]).not.toEqual(0);
+        expect(-sigmoidLayers[0].inputLayer.deltas[0][0]).toEqual(standardNet.deltas[1][0]);
+        expect(-sigmoidLayers[0].inputLayer.deltas[1][0]).not.toEqual(0);
+        expect(-sigmoidLayers[0].inputLayer.deltas[1][0]).toBeCloseTo(standardNet.deltas[1][1]);
+        expect(-sigmoidLayers[0].inputLayer.deltas[2][0]).not.toEqual(0);
+        expect(-sigmoidLayers[0].inputLayer.deltas[2][0]).toEqual(standardNet.deltas[1][2]);
+
+        expect(-sigmoidLayers[1].inputLayer.deltas[0][0]).not.toEqual(0);
+        expect(-sigmoidLayers[1].inputLayer.deltas[0][0]).toEqual(standardNet.deltas[2][0]);
+
+        expect(-targetLayer.inputLayer.deltas[0][0]).not.toEqual(0);
+        expect(-targetLayer.inputLayer.deltas[0][0]).toEqual(standardNet.errors[2][0]);
       });
+    });
+    describe('comparison', () => {
+      test('it matches NeuralNetwork.outputs for 2 inputs, 3 hidden neurons, and 1 output', () => {
+        const { standardNet, ffNet, sigmoidLayers, targetLayer } = setupTwinXORNetworks(true);
+        // learning deviates, which we'll test elsewhere, for the time being, just don't learn
+        standardNet._adjustWeights = function() {};
+        ffNet._adjustWeights = function() {};
 
-      ffNet.train([{ input: [1, 1], output: [0] }], {
-        iterations: 1,
-        reinforce: true,
+        // retrain with these new weights, only ffNet needs reinforce, otherwise, values are lost
+        standardNet.train([{ input: [.9, .8], output: [.3] }], {
+          iterations: 1,
+        });
+
+        ffNet.train([{ input: [.9, .8], output: [.3] }], {
+          iterations: 1,
+          reinforce: true,
+        });
+
+        // test only the sigmoid layers, as that is the final equation location per layer
+        expect(sigmoidLayers[0].weights[0][0]).not.toEqual(0);
+        expect(sigmoidLayers[0].weights[0][0]).toEqual(standardNet.outputs[1][0]);
+        expect(sigmoidLayers[0].weights[1][0]).not.toEqual(0);
+        expect(sigmoidLayers[0].weights[1][0]).toEqual(standardNet.outputs[1][1]);
+        expect(sigmoidLayers[0].weights[2][0]).not.toEqual(0);
+        expect(sigmoidLayers[0].weights[2][0]).toEqual(standardNet.outputs[1][2]);
+
+        expect(sigmoidLayers[1].weights[0][0]).not.toEqual(0);
+        expect(sigmoidLayers[1].weights[0][0]).toEqual(standardNet.outputs[2][0]);
+
+        expect(targetLayer.weights[0][0]).not.toEqual(0);
+        expect(targetLayer.weights[0][0]).toEqual(standardNet.outputs[2][0]);
       });
+    });
+    describe('learn', () => {
+      test('is the same value for 2 inputs, 3 hidden neurons, and 1 output', () => {
+        const { standardNet, ffNet, sigmoidLayers, targetLayer } = setupTwinXORNetworks(true);
 
-      // TODO: Test fails
-      expect(standardNet.outputs[1][0]).toBeCloseTo(
-        sigmoidLayers[0].weights[0][0]
-      );
-      expect(standardNet.outputs[1][1]).toBeCloseTo(
-        sigmoidLayers[0].weights[1][0]
-      );
-      expect(standardNet.outputs[1][2]).toBeCloseTo(
-        sigmoidLayers[0].weights[2][0]
-      );
-      expect(standardNet.outputs[2][0]).toBeCloseTo(
-        sigmoidLayers[0].weights[0][0]
-      );
+        expect(sigmoidLayers[0].weights[0][0]).toEqual(0);
+        expect(sigmoidLayers[0].weights[1][0]).toEqual(0);
+        expect(sigmoidLayers[0].weights[2][0]).toEqual(0);
+
+        expect(sigmoidLayers[1].weights[0][0]).toEqual(0);
+
+        // retrain with these new weights, only ffNet needs reinforce, otherwise, values are lost
+        standardNet.train([{ input: [.9, .8], output: [.3] }], {
+          iterations: 1,
+        });
+
+        ffNet.train([{ input: [.9, .8], output: [.3] }], {
+          iterations: 1,
+          reinforce: true,
+        });
+
+        // test only the sigmoid layers, as that is the final equation location per layer
+        expect(sigmoidLayers[0].weights[0][0]).not.toEqual(0);
+        expect(sigmoidLayers[0].weights[0][0]).toEqual(standardNet.outputs[1][0]);
+        expect(sigmoidLayers[0].weights[1][0]).not.toEqual(0);
+        expect(sigmoidLayers[0].weights[1][0]).toEqual(standardNet.outputs[1][1]);
+        expect(sigmoidLayers[0].weights[2][0]).not.toEqual(0);
+        expect(sigmoidLayers[0].weights[2][0]).toEqual(standardNet.outputs[1][2]);
+
+        expect(sigmoidLayers[1].weights[0][0]).not.toEqual(0);
+        expect(sigmoidLayers[1].weights[0][0]).toEqual(standardNet.outputs[2][0]);
+
+        expect(targetLayer.weights[0][0]).not.toEqual(0);
+        expect(targetLayer.weights[0][0]).toEqual(standardNet.outputs[2][0]);
+      });
     });
   });
 
@@ -140,7 +207,7 @@ describe('FeedForward Class: End to End', () => {
       const net = new FeedForward({
         inputLayer: () => input({ width: 1, height: 1 }),
         hiddenLayers: [
-          inputLayer => feedForward({ width: 1, height: 1 }, inputLayer),
+          inputLayer => feedForwardLayer({ width: 1, height: 1 }, inputLayer),
         ],
         outputLayer: inputLayer => output({ width: 1, height: 1 }, inputLayer),
       });
@@ -153,12 +220,12 @@ describe('FeedForward Class: End to End', () => {
   });
 
   describe('.train()', () => {
-    test('outputs a number that is smaller than when it started', () => {
+    function testOutputsSmaller() {
       const net = new FeedForward({
         inputLayer: () => input({ height: 2 }),
         hiddenLayers: [
-          inputLayer => feedForward({ height: 3 }, inputLayer),
-          inputLayer => feedForward({ height: 1 }, inputLayer),
+          inputLayer => feedForwardLayer({ height: 3 }, inputLayer),
+          inputLayer => feedForwardLayer({ height: 1 }, inputLayer),
         ],
         outputLayer: inputLayer => target({ height: 1 }, inputLayer),
       });
@@ -168,6 +235,7 @@ describe('FeedForward Class: End to End', () => {
         iterations: 10,
         threshold: 0.5,
         callbackPeriod: 1,
+        errorCheckInterval: 1,
         callback: info => errors.push(info.error),
       });
 
@@ -176,43 +244,39 @@ describe('FeedForward Class: End to End', () => {
       ).toBeTruthy();
 
       expect(errors[0]).toBeGreaterThan(errors[9]);
-    });
+    }
 
-    test('can learn xor', () => {
+    function testCanLearnXOR() {
       const errors = [];
       const net = new FeedForward({
-        inputLayer: () =>
-          input({
-            height: 2,
-          }),
+        praxis: (layer) => {
+          switch (layer.name) {
+            case 'biases': return momentumRootMeanSquaredPropagation(layer, { decayRate: 0.29 });
+            case 'weights': return momentumRootMeanSquaredPropagation(layer, { decayRate: 0.29 });
+            default:
+              return {
+                run: () => {
+                  return layer.weights;
+                }
+              };
+          }
+        },
+        inputLayer: () => input({height: 2}),
         hiddenLayers: [
-          inputLayer =>
-            feedForward(
-              {
-                height: 3,
-              },
-              inputLayer
-            ),
-          inputLayer =>
-            feedForward(
-              {
-                height: 1,
-              },
-              inputLayer
-            ),
+          inputLayer => feedForwardLayer({height: 3}, inputLayer),
+          inputLayer => feedForwardLayer({height: 1}, inputLayer),
         ],
-        outputLayer: inputLayer =>
-          target(
-            {
-              height: 1,
-            },
-            inputLayer
-          ),
+        outputLayer: inputLayer => target({height: 1}, inputLayer),
       });
 
       net.train(xorTrainingData, {
         callbackPeriod: 1,
-        callback: info => errors.push(info.error),
+        errorCheckInterval: 200,
+        callback: info => {
+          if (info.iterations % 200 === 0) {
+            errors.push(info.error);
+          }
+        },
       });
 
       const result1 = net.run([0, 0]);
@@ -220,12 +284,35 @@ describe('FeedForward Class: End to End', () => {
       const result3 = net.run([1, 0]);
       const result4 = net.run([1, 1]);
 
-      // TODO: Test fails
+      expect(result1[0][0]).toBeLessThan(0.2);
+      expect(result2[0][0]).toBeGreaterThan(0.8);
+      expect(result3[0][0]).toBeGreaterThan(0.8);
+      expect(result4[0][0]).toBeLessThan(0.2);
+      expect(errors[errors.length - 1]).toBeLessThan(0.1);
+      expect(errors.length).toBeLessThan(net.trainOpts.iterations);
+    }
 
-      expect(result1[0][0]).toBeLessThan(0.5);
-      expect(result2[0][0]).toBeGreaterThan(0.5);
-      expect(result3[0][0]).toBeGreaterThan(0.5);
-      expect(result4[0][0]).toBeLessThan(0.5);
+    describe('on CPU', () => {
+      test('outputs a number that is smaller than when it started', () => {
+        testOutputsSmaller();
+      });
+      test('can learn xor', () => {
+        testCanLearnXOR();
+      });
+    });
+    describe('on GPU', () => {
+      beforeEach(() => {
+        setup(new GPU({ mode: 'gpu' }));
+      });
+      afterEach(() => {
+        teardown();
+      });
+      test('outputs a number that is smaller than when it started', () => {
+        testOutputsSmaller();
+      });
+      test('can learn xor', () => {
+        testCanLearnXOR();
+      });
     });
   });
 
@@ -242,7 +329,7 @@ describe('FeedForward Class: End to End', () => {
       const net = new FeedForward({
         inputLayer: () => input({ width: 1, height: 1 }),
         hiddenLayers: [
-          inputLayer => feedForward({ width: 1, height: 1 }, inputLayer),
+          inputLayer => feedForwardLayer({ width: 1, height: 1 }, inputLayer),
         ],
         outputLayer: inputLayer =>
           new SuperOutput({ width: 1, height: 1 }, inputLayer),

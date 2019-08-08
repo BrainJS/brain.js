@@ -1,19 +1,29 @@
-const Model = require('./types').Model;
+const { Model } = require('./types');
 const zeros2D = require('../utilities/zeros-2d');
-const kernelInput = require('../utilities/kernel').kernelInput;
+const { kernelInput } = require('../utilities/kernel');
+const { makeKernel } = require('../utilities/kernel');
 
 class Input extends Model {
   constructor(settings) {
     super(settings);
-    if (this.width === 1) {
-      this.predict = this.predict1D;
-    }
     this.validate();
     this.weights = null;
+    this.reshapeInput = null;
     this.deltas = zeros2D(this.width, this.height);
   }
 
-  setupKernels() {}
+  setupKernels() {
+    if (this.width === 1) {
+      this.predict = this.predict1D;
+      this.reshapeInput = makeKernel(function(value) {
+        return value[this.thread.y];
+      }, {
+        output: [1, this.height]
+      });
+    } else {
+      this.reshapeInput = (inputs) => inputs;
+    }
+  }
 
   predict(inputs) {
     if (inputs.length === this.height * this.width) {
@@ -29,11 +39,7 @@ class Input extends Model {
   }
 
   predict1D(inputs) {
-    const weights = [];
-    for (let x = 0; x < inputs.length; x++) {
-      weights.push([inputs[x]]);
-    }
-    this.weights = weights;
+    this.weights = this.reshapeInput(inputs);
   }
 
   compare() {
@@ -59,4 +65,11 @@ class Input extends Model {
   }
 }
 
-module.exports = Input;
+function input(settings) {
+  return new Input(settings);
+}
+
+module.exports = {
+  Input,
+  input
+};

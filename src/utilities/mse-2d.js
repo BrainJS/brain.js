@@ -8,4 +8,4 @@ module.exports = function mse2d(errors) {
     }
   }
   return sum / length;
-}
+};

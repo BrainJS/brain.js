@@ -24,8 +24,8 @@ class lookup {
     let index = 0;
 
     Object.keys(hash).forEach(i => {
-      index += 1;
       lookupHash[i] = index;
+      index += 1;
     });
 
     return lookupHash;
@@ -33,17 +33,16 @@ class lookup {
 
   /**
    * performs `{a: 0, b: 1}, {a: 6} -> [6, 0]`
-   * @param {*} lookup
+   * @param {*} lookupHash
    * @param {*} hash
-   * @returns {Array}
+   * @returns {Float32Array}
    */
   static toArray(lookupHash, hash) {
-    const array = [];
-
-    Object.keys(lookupHash).forEach(i => {
+    const keys = Object.keys(lookupHash);
+    const array = new Float32Array(keys.length);
+    keys.forEach(i => {
       array[lookupHash[i]] = hash[i] || 0;
     });
-
     return array;
   }
 

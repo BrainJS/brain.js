@@ -1,4 +1,4 @@
-const Base = require('../../src/layer/base');
+const { Base } = require('../../src/layer/base');
 
 describe('Base Layer', () => {
   describe('dimensions', () => {
@@ -10,6 +10,20 @@ describe('Base Layer', () => {
         expect(base.height).toBe(1);
         expect(base.depth).toBe(1);
       });
+    });
+  });
+
+  describe('.praxisOpts', () => {
+    test('are inherited to .praxis() call', () => {
+      const praxis = jest.fn();
+      const praxisOpts = {
+        value: 100
+      };
+      const base = new Base({
+        praxis,
+        praxisOpts
+      });
+      expect(praxis).toHaveBeenCalledWith(base, praxisOpts);
     });
   });
 });

@@ -1,5 +1,5 @@
-const Filter = require('./types').Filter;
-const makeKernel = require('../utilities/kernel').makeKernel;
+const { Filter } = require('./types');
+const { makeKernel } = require('../utilities/kernel');
 const values = require('../utilities/values');
 const randos2D = require('../utilities/randos-2d');
 const randos3D = require('../utilities/randos-3d');
@@ -186,4 +186,8 @@ class FullyConnected extends Filter {
   }
 }
 
-module.exports = { FullyConnected, predict, predict3D, compareInputDeltas, compareInputDeltas3D, compareBiases, compareFilterDeltas, compareFilterDeltas3D };
+function fullyConnected(settings, inputLayer) {
+  return new FullyConnected(settings, inputLayer);
+}
+
+module.exports = { FullyConnected, fullyConnected, predict, predict3D, compareInputDeltas, compareInputDeltas3D, compareBiases, compareFilterDeltas, compareFilterDeltas3D };

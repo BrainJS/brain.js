@@ -1,5 +1,5 @@
-const Filter = require('./types').Filter;
-const makeKernel = require('../utilities/kernel').makeKernel;
+const { Filter } = require('./types');
+const { makeKernel } = require('../utilities/kernel');
 const { setPadding, setStride } = require('../utilities/layer-setup');
 const zeros3D = require('../utilities/zeros-3d');
 const randos3D = require('../utilities/randos-3d');
@@ -205,4 +205,8 @@ class Pool extends Filter {
   }
 }
 
-module.exports = { Pool, predict, compare, compare3D };
+function pool(settings, inputLayer) {
+  return new Pool(settings, inputLayer);
+}
+
+module.exports = { Pool, pool, predict, compare, compare3D };

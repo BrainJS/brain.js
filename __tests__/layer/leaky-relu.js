@@ -1,7 +1,15 @@
-const gpuMock = require('gpu-mock.js');
+const { GPU } = require('gpu.js');
+const { gpuMock } = require('gpu-mock.js');
 const { predict, compare } = require('../../src/layer/leaky-relu');
+const { setup, teardown } = require('../../src/utilities/kernel');
 
 describe('Leaky Relu Layer', () => {
+  beforeEach(() => {
+    setup(new GPU({ mode: 'cpu' }));
+  });
+  afterEach(() => {
+    teardown();
+  });
   describe('.predict (forward propagation)', () => {
     test('can leaky relu a simple matrix', () => {
       const inputs = [[0.1, -0.2, 0.3], [-0.4, 0.5, -0.6], [0.7, -0.8, 0.9]];
@@ -10,9 +18,9 @@ describe('Leaky Relu Layer', () => {
       })(inputs);
 
       expect(results).toEqual([
-        [0.1, -0.002, 0.3],
-        [-0.004, 0.5, -0.006],
-        [0.7, -0.008, 0.9],
+        new Float32Array([0.1, -0.002, 0.3]),
+        new Float32Array([-0.004, 0.5, -0.006]),
+        new Float32Array([0.7, -0.008, 0.9]),
       ]);
     });
   });
@@ -25,7 +33,11 @@ describe('Leaky Relu Layer', () => {
         output: [3, 3],
       })(inputs, deltas);
 
-      expect(results).toEqual([[1, 0.01, 1], [0.01, 1, 0.01], [1, 0.01, 1]]);
+      expect(results).toEqual([
+        new Float32Array([1, 0.01, 1]),
+        new Float32Array([0.01, 1, 0.01]),
+        new Float32Array([1, 0.01, 1])
+      ]);
     });
   });
 });

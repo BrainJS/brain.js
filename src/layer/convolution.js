@@ -1,6 +1,6 @@
-const makeKernel = require('../utilities/kernel').makeKernel;
+const { makeKernel } = require('../utilities/kernel');
 const { setStride, setPadding } = require('../utilities/layer-setup');
-const Filter = require('./types').Filter;
+const { Filter } = require('./types');
 const randos = require('../utilities/randos');
 const randos3D = require('../utilities/randos-3d');
 const zeros3D = require('../utilities/zeros-3d');
@@ -210,4 +210,15 @@ class Convolution extends Filter {
   }
 }
 
-module.exports = { Convolution, predict, compareFilterDeltas, compareInputDeltas, compareBiases };
+function convolution(settings, inputLayer) {
+  return new Convolution(settings, inputLayer);
+}
+
+module.exports = {
+  Convolution,
+  convolution,
+  predict,
+  compareFilterDeltas,
+  compareInputDeltas,
+  compareBiases
+};
