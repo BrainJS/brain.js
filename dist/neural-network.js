@@ -1136,9 +1136,11 @@ var NeuralNetwork = function () {
           var nodes = Object.keys(layer);
           this.sizes[i] = nodes.length;
           for (var j in nodes) {
-            var node = nodes[j];
-            this.biases[i][j] = layer[node].bias;
-            this.weights[i][j] = (0, _toArray2.default)(layer[node].weights);
+            if (nodes.hasOwnProperty(j)) {
+              var node = nodes[j];
+              this.biases[i][j] = layer[node].bias;
+              this.weights[i][j] = (0, _toArray2.default)(layer[node].weights);
+            }
           }
         }
       }

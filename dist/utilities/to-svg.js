@@ -29,8 +29,11 @@ function toSVG(network, options) {
         width: '400',
         height: '250'
     };
-
+    // Get network size array if network is created from the constructor
     var size = typeof network.inputSize == 'number' && typeof network.outputSize == 'number' && network.inputSize > 0 && network.outputSize > 0 ? [network.inputSize].concat(_toConsumableArray(network.hiddenLayers), [network.outputSize]) : false;
+    // Get network size array if network is formed from a json object with fromJSON(json) method
+    if (!size) size = network.sizes;
+
     options = Object.assign(defaultOptions, options);
     options.inputs.label = options.inputs.label.length == network.inputSize ? options.inputs.label : false;
     if (size) {
