@@ -25407,11 +25407,11 @@ function () {
     this.canvas = settings.canvas || null;
     this.context = settings.context || null;
     this.mode = settings.mode;
-    if (this.mode === 'dev') return;
     this.Kernel = null;
     this.kernels = [];
     this.functions = [];
     this.nativeFunctions = [];
+    if (this.mode === 'dev') return;
     this.chooseKernel(); // add functions from settings
 
     if (settings.functions) {
@@ -25512,7 +25512,9 @@ function () {
       }
 
       if (this.mode === 'dev') {
-        return gpuMock(source, upgradeDeprecatedCreateKernelSettings(settings));
+        var devKernel = gpuMock(source, upgradeDeprecatedCreateKernelSettings(settings));
+        this.kernels.push(devKernel);
+        return devKernel;
       }
 
       source = typeof source === 'function' ? source.toString() : source;
@@ -25567,6 +25569,7 @@ function () {
               case 'Number':
               case 'Integer':
               case 'Float':
+              case 'ArrayTexture(1)':
                 argumentTypes[i] = utils.getVariableType(arg);
                 break;
 
@@ -25696,9 +25699,11 @@ function () {
         fn = arguments[arguments.length - 1];
       }
 
-      if (!this.Kernel.isSupported || !this.Kernel.features.kernelMap) {
-        if (this.mode && kernelTypes.indexOf(this.mode) < 0) {
-          throw new Error("kernelMap not supported on ".concat(this.Kernel.name));
+      if (this.mode !== 'dev') {
+        if (!this.Kernel.isSupported || !this.Kernel.features.kernelMap) {
+          if (this.mode && kernelTypes.indexOf(this.mode) < 0) {
+            throw new Error("kernelMap not supported on ".concat(this.Kernel.name));
+          }
         }
       }
 
@@ -25851,9 +25856,21 @@ function () {
         for (var i = 0; i < _this.kernels.length; i++) {
           _this.kernels[i].destroy(true); // remove canvas if exists
 
-        }
+        } // all kernels are associated with one context, go ahead and take care of it here
 
-        _this.kernels[0].kernel.constructor.destroyContext(_this.context);
+
+        var firstKernel = _this.kernels[0];
+
+        if (firstKernel) {
+          // if it is shortcut
+          if (firstKernel.kernel) {
+            firstKernel = firstKernel.kernel;
+          }
+
+          if (firstKernel.constructor.destroyContext) {
+            firstKernel.constructor.destroyContext(_this.context);
+          }
+        }
       }, 0);
     }
   }]);
@@ -25995,13 +26012,17 @@ function setup(value) {
 }
 
 function teardown() {
+  if (gpuInstance) {
+    gpuInstance.destroy();
+  }
+
   gpuInstance = null;
 }
 
 function makeKernel(fn, settings) {
   if (gpuInstance === null) {
     setup(new GPU({
-      mode: 'cpu'
+      mode: 'gpu'
     }));
   }
 
@@ -26012,6 +26033,17 @@ function makeKernel(fn, settings) {
   return gpuInstance.createKernel(fn, settings).setPipeline(true);
 }
 
+function makeDevKernel(fn, settings) {
+  if (settings && settings.map) {
+    throw new Error('map kernels are not supported by dev kernels');
+  }
+
+  var gpu = new GPU({
+    mode: 'dev'
+  });
+  return gpu.createKernel(fn, settings);
+}
+
 function kernelInput(input, size) {
   return GPU.input(input, size);
 }
@@ -26020,6 +26052,7 @@ module.exports = {
   setup: setup,
   teardown: teardown,
   makeKernel: makeKernel,
+  makeDevKernel: makeDevKernel,
   kernelInput: kernelInput
 };
 },{"gpu.js":"Ft/B"}],"M4LY":[function(require,module,exports) {
@@ -26073,14 +26106,13 @@ function () {
         depth: 1,
         weights: null,
         deltas: null,
-        name: null
+        name: null,
+        praxisOpts: null
       };
     }
   }]);
 
-  function Base() {
-    var settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
+  function Base(settings) {
     _classCallCheck(this, Base);
 
     // size
@@ -26090,6 +26122,7 @@ function () {
     this.deltas = null;
     this.weights = null;
     this.praxis = null;
+    this.praxisOpts = null;
 
     if (this.constructor !== Base) {
       Object.assign(this, Base.defaults, settings);
@@ -26097,46 +26130,53 @@ function () {
 
     Object.assign(this, this.constructor.defaults, settings); // special settings
 
-    if (settings.hasOwnProperty('praxis')) {
-      if (typeof settings.praxis === 'function') {
-        this.praxis = settings.praxis(this);
-      } else {
-        this.praxis = settings.praxis;
-      }
-    }
+    this.setupPraxis(settings);
   }
-  /*
-  get weights() {
-    return this._weights;
-  }
-   set weights(value) {
-    if (value) {
-      if (value[0].length !== this.width) {
-        throw new Error(`${this.constructor.name}.weights being set with improper value width`);
-      }
-      if (value.length !== this.height) {
-        throw new Error(`${this.constructor.name}.weights being set with improper value height`);
-      }
-    }
-    this._weights = value;
-  }
-   get deltas() {
-    return this._deltas;
-  }
-   set deltas(value) {
-    if (value) {
-      if (value[0].length !== this.width) {
-        throw new Error(`${this.constructor.name}.deltas being set with improper value width`);
-      }
-      if (value.length !== this.height) {
-        throw new Error(`${this.constructor.name}.deltas being set with improper value height`);
-      }
-    }
-    this._deltas = value;
-  } */
-
 
   _createClass(Base, [{
+    key: "setupPraxis",
+    value: function setupPraxis(settings) {
+      if (!settings) return;
+
+      if (settings.hasOwnProperty('praxis')) {
+        if (typeof settings.praxis === 'function') {
+          this.praxis = settings.praxis(this, settings.praxisOpts);
+        } else {
+          this.praxis = settings.praxis;
+        }
+      }
+    }
+    /*
+    get weights() {
+      return this._weights;
+    }
+     set weights(value) {
+      if (value) {
+        if (value[0].length !== this.width) {
+          throw new Error(`${this.constructor.name}.weights being set with improper value width`);
+        }
+        if (value.length !== this.height) {
+          throw new Error(`${this.constructor.name}.weights being set with improper value height`);
+        }
+      }
+      this._weights = value;
+    }
+     get deltas() {
+      return this._deltas;
+    }
+     set deltas(value) {
+      if (value) {
+        if (value[0].length !== this.width) {
+          throw new Error(`${this.constructor.name}.deltas being set with improper value width`);
+        }
+        if (value.length !== this.height) {
+          throw new Error(`${this.constructor.name}.deltas being set with improper value height`);
+        }
+      }
+      this._deltas = value;
+    } */
+
+  }, {
     key: "validate",
     value: function validate() {
       if (Number.isNaN(this.height)) {
@@ -26234,7 +26274,9 @@ function () {
   return Base;
 }();
 
-module.exports = Base;
+module.exports = {
+  Base: Base
+};
 },{"../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"0AN3"}],"pX1U":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -26250,7 +26292,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var Base = require('./base');
+var _require = require('./base'),
+    Base = _require.Base;
 
 var Activation =
 /*#__PURE__*/
@@ -26362,7 +26405,8 @@ var _require = require('../utilities/kernel'),
 
 var zeros2D = require('../utilities/zeros-2d');
 
-var Operator = require('./types').Operator;
+var _require2 = require('./types'),
+    Operator = _require2.Operator;
 
 function predict(inputWeights1, inputWeights2) {
   return inputWeights1[this.thread.y][this.thread.x] + inputWeights2[this.thread.y][this.thread.x];
@@ -26373,7 +26417,7 @@ var Add =
 function (_Operator) {
   _inherits(Add, _Operator);
 
-  function Add(inputLayer1, inputLayer2) {
+  function Add(inputLayer1, inputLayer2, settings) {
     var _this;
 
     _classCallCheck(this, Add);
@@ -26388,6 +26432,9 @@ function (_Operator) {
 
     _this.weights = zeros2D(_this.width, _this.height);
     _this.deltas = zeros2D(_this.width, _this.height);
+
+    _this.setupPraxis(settings);
+
     return _this;
   }
 
@@ -26428,11 +26475,690 @@ function (_Operator) {
   return Add;
 }(Operator);
 
+function add(inputLayer1, inputLayer2, settings) {
+  return new Add(inputLayer1, inputLayer2, settings);
+}
+
 module.exports = {
   Add: Add,
+  add: add,
   predict: predict
 };
-},{"../utilities/kernel":"L30b","../utilities/zeros-2d":"C4Cz","./types":"pX1U"}],"iz6h":[function(require,module,exports) {
+},{"../utilities/kernel":"L30b","../utilities/zeros-2d":"C4Cz","./types":"pX1U"}],"hKny":[function(require,module,exports) {
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Base =
+/*#__PURE__*/
+function () {
+  _createClass(Base, null, [{
+    key: "defaults",
+    get: function get() {
+      return {};
+    }
+  }]);
+
+  function Base(layer) {
+    var settings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    _classCallCheck(this, Base);
+
+    this.layer = layer;
+    this.width = layer.width || null;
+    this.height = layer.height || null;
+    this.depth = layer.depth || null;
+    Object.assign(this, this.constructor.defaults, settings);
+  }
+
+  _createClass(Base, [{
+    key: "setupKernels",
+    value: function setupKernels() {}
+  }, {
+    key: "run",
+    value: function run() {}
+  }]);
+
+  return Base;
+}();
+
+module.exports = {
+  Base: Base
+};
+},{}],"xg3/":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var _require = require('../utilities/kernel'),
+    makeKernel = _require.makeKernel;
+
+var zeros2D = require('../utilities/zeros-2d');
+
+var _require2 = require('./base'),
+    Base = _require2.Base;
+
+function updateChange(value) {
+  return value;
+}
+
+function update(changes, weights, incomingWeights, inputDeltas) {
+  var lastChange = changes[this.thread.y][this.thread.x];
+  var inputDelta = inputDeltas[this.thread.y][0];
+  var weight = weights[this.thread.y][this.thread.x];
+  var incoming = incomingWeights[this.thread.x][0];
+  var change = this.constants.learningRate * inputDelta * incoming + this.constants.momentum * lastChange;
+  updateChange(change);
+  return weight + change;
+}
+
+var ArthurDeviationWeights =
+/*#__PURE__*/
+function (_Base) {
+  _inherits(ArthurDeviationWeights, _Base);
+
+  _createClass(ArthurDeviationWeights, null, [{
+    key: "defaults",
+    get: function get() {
+      return {
+        learningRate: 0.3,
+        momentum: 0.1
+      };
+    }
+  }]);
+
+  function ArthurDeviationWeights(layer, settings) {
+    var _this;
+
+    _classCallCheck(this, ArthurDeviationWeights);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ArthurDeviationWeights).call(this, layer, settings));
+    _this.weightsLayer = null;
+    _this.incomingLayer = null;
+    _this.deltaLayer = null;
+
+    if (settings) {
+      if (settings.weightsLayer) {
+        _this.weightsLayer = settings.weightsLayer;
+      }
+
+      if (settings.incomingLayer) {
+        _this.incomingLayer = settings.incomingLayer;
+      }
+
+      if (settings.deltaLayer) {
+        _this.deltaLayer = settings.deltaLayer;
+      }
+    }
+
+    _this.changes = zeros2D(layer.width, layer.height);
+
+    _this.setupKernels();
+
+    return _this;
+  }
+
+  _createClass(ArthurDeviationWeights, [{
+    key: "run",
+    value: function run(layer, previousLayer, nextLayer, learningRate) {
+      var output = this.kernel(this.changes, this.weightsLayer.weights, this.incomingLayer.weights, this.deltaLayer.deltas);
+      this.changes = output.changes;
+      return output.result;
+    }
+  }, {
+    key: "setupKernels",
+    value: function setupKernels() {
+      this.kernel = makeKernel(update, {
+        map: {
+          changes: updateChange
+        },
+        output: [this.width, this.height],
+        constants: {
+          learningRate: this.learningRate,
+          momentum: this.momentum
+        }
+      });
+    }
+  }]);
+
+  return ArthurDeviationWeights;
+}(Base);
+
+function arthurDeviationWeights(layer, settings) {
+  return new ArthurDeviationWeights(layer, settings);
+}
+
+module.exports = {
+  ArthurDeviationWeights: ArthurDeviationWeights,
+  arthurDeviationWeights: arthurDeviationWeights
+};
+},{"../utilities/kernel":"L30b","../utilities/zeros-2d":"C4Cz","./base":"hKny"}],"GVwH":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var _require = require('../utilities/kernel'),
+    makeKernel = _require.makeKernel;
+
+var _require2 = require('./base'),
+    Base = _require2.Base;
+
+function update(weights, deltas) {
+  return weights[this.thread.y][this.thread.x] + this.constants.learningRate * deltas[this.thread.y][this.thread.x];
+}
+
+var ArthurDeviationBiases =
+/*#__PURE__*/
+function (_Base) {
+  _inherits(ArthurDeviationBiases, _Base);
+
+  _createClass(ArthurDeviationBiases, null, [{
+    key: "defaults",
+    get: function get() {
+      return {
+        learningRate: 0.3
+      };
+    }
+  }]);
+
+  function ArthurDeviationBiases(layer, settings) {
+    var _this;
+
+    _classCallCheck(this, ArthurDeviationBiases);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ArthurDeviationBiases).call(this, layer, settings));
+
+    _this.setupKernels();
+
+    return _this;
+  }
+
+  _createClass(ArthurDeviationBiases, [{
+    key: "run",
+    value: function run(layer, previousLayer, nextLayer, learningRate) {
+      var output = this.kernel(layer.weights, layer.deltas);
+      return output;
+    }
+  }, {
+    key: "setupKernels",
+    value: function setupKernels() {
+      this.kernel = makeKernel(update, {
+        output: [this.width, this.height],
+        constants: {
+          learningRate: this.learningRate
+        }
+      });
+    }
+  }]);
+
+  return ArthurDeviationBiases;
+}(Base);
+
+function arthurDeviationBiases(layer, settings) {
+  return new ArthurDeviationBiases(layer, settings);
+}
+
+module.exports = {
+  ArthurDeviationBiases: ArthurDeviationBiases,
+  arthurDeviationBiases: arthurDeviationBiases
+};
+},{"../utilities/kernel":"L30b","./base":"hKny"}],"TX07":[function(require,module,exports) {
+module.exports = function randomWeight() {
+  return Math.random() * 0.4 - 0.2;
+};
+},{}],"S8tM":[function(require,module,exports) {
+var randomWeight = require('./random-weight');
+
+module.exports = function randos(size) {
+  var array = new Float32Array(size);
+
+  for (var i = 0; i < size; i++) {
+    array[i] = randomWeight();
+  }
+
+  return array;
+};
+},{"./random-weight":"TX07"}],"pcuE":[function(require,module,exports) {
+var randos = require('./randos');
+
+module.exports = function randos2D(width, height) {
+  var result = new Array(height);
+
+  for (var y = 0; y < height; y++) {
+    result[y] = randos(width);
+  }
+
+  return result;
+};
+},{"./randos":"S8tM"}],"yQCp":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var _require = require('./types'),
+    Model = _require.Model;
+
+var randos2D = require('../utilities/randos-2d');
+
+var zeros2D = require('../utilities/zeros-2d');
+
+var Random =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(Random, _Model);
+
+  function Random(settings) {
+    var _this;
+
+    _classCallCheck(this, Random);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Random).call(this, settings));
+
+    _this.validate();
+
+    _this.weights = randos2D(_this.width, _this.height);
+    _this.deltas = zeros2D(_this.width, _this.height);
+    return _this;
+  }
+
+  _createClass(Random, [{
+    key: "predict",
+    value: function predict() {// throw new Error(`${this.constructor.name}-predict is not yet implemented`)
+    }
+  }, {
+    key: "compare",
+    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+    }
+  }]);
+
+  return Random;
+}(Model);
+
+function random(settings) {
+  return new Random(settings);
+}
+
+module.exports = {
+  Random: Random,
+  random: random
+};
+},{"./types":"pX1U","../utilities/randos-2d":"pcuE","../utilities/zeros-2d":"C4Cz"}],"xJEq":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var _require = require('../utilities/kernel'),
+    makeKernel = _require.makeKernel;
+
+var zeros2D = require('../utilities/zeros-2d');
+
+var _require2 = require('./types'),
+    Operator = _require2.Operator;
+
+function predict(weights1, weights2) {
+  var sum = 0;
+
+  for (var i = 0; i < this.constants.size; i++) {
+    sum += weights1[this.thread.y][i] * weights2[i][this.thread.x];
+  }
+
+  return sum;
+}
+
+function compareFromX(deltas, inputDeltas, inputWeights) {
+  var sum = inputDeltas[this.thread.y][this.thread.x];
+
+  for (var i = 0; i < this.constants.size; i++) {
+    sum += deltas[this.thread.y][i] * inputWeights[this.thread.x][i];
+  }
+
+  return sum;
+}
+
+function compareFromY(deltas, inputDeltas, inputWeights) {
+  var sum = inputDeltas[this.thread.y][this.thread.x];
+
+  for (var i = 0; i < this.constants.size; i++) {
+    sum += deltas[i][this.thread.x] * inputWeights[i][this.thread.y];
+  }
+
+  return sum;
+}
+
+var Multiply =
+/*#__PURE__*/
+function (_Operator) {
+  _inherits(Multiply, _Operator);
+
+  function Multiply(inputLayer1, inputLayer2) {
+    var _this;
+
+    var settings = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    _classCallCheck(this, Multiply);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Multiply).call(this));
+    _this.inputLayer1 = inputLayer1;
+    _this.inputLayer2 = inputLayer2;
+    _this.compareKernel1 = null;
+    _this.compareKernel2 = null;
+    _this.width = inputLayer2.width;
+    _this.height = inputLayer1.height;
+
+    _this.validate();
+
+    _this.weights = zeros2D(_this.width, _this.height);
+    _this.deltas = zeros2D(_this.width, _this.height);
+
+    _this.setupPraxis(settings);
+
+    return _this;
+  }
+
+  _createClass(Multiply, [{
+    key: "validate",
+    value: function validate() {
+      _get(_getPrototypeOf(Multiply.prototype), "validate", this).call(this);
+
+      if (this.inputLayer1.width !== this.inputLayer2.height) {
+        throw new Error("Layer width mismatch of ".concat(this.inputLayer1.width, " and ").concat(this.inputLayer2.height));
+      }
+    }
+  }, {
+    key: "setupKernels",
+    value: function setupKernels() {
+      this.predictKernel = makeKernel(predict, {
+        output: [this.width, this.height],
+        constants: {
+          size: this.inputLayer2.height
+        }
+      });
+      this.compareKernel1 = makeKernel(compareFromX, {
+        output: [this.inputLayer1.width, this.inputLayer1.height],
+        constants: {
+          size: this.inputLayer2.width
+        }
+      });
+      this.compareKernel2 = makeKernel(compareFromY, {
+        output: [this.inputLayer2.width, this.inputLayer2.height],
+        constants: {
+          size: this.inputLayer1.height
+        }
+      });
+    }
+  }, {
+    key: "reuseKernels",
+    value: function reuseKernels(layer) {
+      _get(_getPrototypeOf(Multiply.prototype), "reuseKernels", this).call(this, layer);
+
+      this.compareKernel1 = layer.compareKernel1;
+      this.compareKernel2 = layer.compareKernel2;
+    }
+  }, {
+    key: "predict",
+    value: function predict() {
+      this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
+    }
+  }, {
+    key: "compare",
+    value: function compare() {
+      var newDeltas1 = this.compareKernel1(this.deltas, this.inputLayer1.deltas, this.inputLayer2.weights);
+      var newDeltas2 = this.compareKernel2(this.deltas, this.inputLayer2.deltas, this.inputLayer1.weights);
+      this.inputLayer2.deltas = newDeltas2;
+      this.inputLayer1.deltas = newDeltas1;
+    }
+  }]);
+
+  return Multiply;
+}(Operator);
+
+function multiply(inputLayer1, inputLayer2, settings) {
+  return new Multiply(inputLayer1, inputLayer2, settings);
+}
+
+module.exports = {
+  Multiply: Multiply,
+  multiply: multiply,
+  predict: predict,
+  compareFromX: compareFromX,
+  compareFromY: compareFromY
+};
+},{"../utilities/kernel":"L30b","../utilities/zeros-2d":"C4Cz","./types":"pX1U"}],"ED1E":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var _require = require('./types'),
+    Activation = _require.Activation;
+
+var _require2 = require('../utilities/kernel'),
+    makeKernel = _require2.makeKernel,
+    makeDevKernel = _require2.makeDevKernel;
+
+var _require3 = require('../activation/sigmoid'),
+    activate = _require3.activate,
+    measure = _require3.measure;
+
+var zeros2D = require('../utilities/zeros-2d');
+
+function predict(inputs) {
+  return 1 / (1 + Math.exp(-inputs[this.thread.y][this.thread.x]));
+}
+
+function compare(weights, deltas) {
+  var weight = weights[this.thread.y][this.thread.x];
+  var delta = deltas[this.thread.y][this.thread.x];
+  return weight * (1 - weight) * delta;
+}
+
+var Sigmoid =
+/*#__PURE__*/
+function (_Activation) {
+  _inherits(Sigmoid, _Activation);
+
+  function Sigmoid(inputLayer, settings) {
+    var _this;
+
+    _classCallCheck(this, Sigmoid);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Sigmoid).call(this));
+    _this.inputLayer = inputLayer;
+    var width = inputLayer.width,
+        height = inputLayer.height;
+    _this.width = width;
+    _this.height = height;
+
+    _this.validate();
+
+    _this.weights = zeros2D(_this.width, _this.height);
+    _this.deltas = zeros2D(_this.width, _this.height);
+
+    _this.setupPraxis(settings);
+
+    return _this;
+  }
+
+  _createClass(Sigmoid, [{
+    key: "setupKernels",
+    value: function setupKernels() {
+      this.predictKernel = makeKernel(predict, {
+        output: [this.width, this.height],
+        functions: [activate]
+      });
+      this.compareKernel = makeKernel(compare, {
+        output: [this.width, this.height],
+        functions: [measure]
+      });
+    }
+  }, {
+    key: "predict",
+    value: function predict() {
+      this.weights = this.predictKernel(this.inputLayer.weights);
+    }
+  }, {
+    key: "compare",
+    value: function compare() {
+      this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
+    }
+  }]);
+
+  return Sigmoid;
+}(Activation);
+
+function sigmoid(inputLayer, settings) {
+  return new Sigmoid(inputLayer, settings);
+}
+
+module.exports = {
+  Sigmoid: Sigmoid,
+  sigmoid: sigmoid,
+  predict: predict,
+  compare: compare
+};
+},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/sigmoid":"thFH","../utilities/zeros-2d":"C4Cz"}],"SVHJ":[function(require,module,exports) {
+var _require = require('../praxis/arthur-deviation-weights'),
+    arthurDeviationWeights = _require.arthurDeviationWeights;
+
+var _require2 = require('../praxis/arthur-deviation-biases'),
+    arthurDeviationBiases = _require2.arthurDeviationBiases;
+
+var _require3 = require('./add'),
+    add = _require3.add;
+
+var _require4 = require('./random'),
+    random = _require4.random;
+
+var _require5 = require('./multiply'),
+    multiply = _require5.multiply;
+
+var _require6 = require('./sigmoid'),
+    sigmoid = _require6.sigmoid;
+
+function noopPraxis() {
+  return {
+    run: function run(layer) {
+      return layer.weights;
+    }
+  };
+}
+
+function arthurFeedForward(settings, inputLayer) {
+  var height = settings.height;
+
+  function weightsPraxis(layer, settings) {
+    return arthurDeviationWeights(layer, settings);
+  }
+
+  function biasesPraxis(layer, settings) {
+    return arthurDeviationBiases(layer, settings);
+  }
+
+  var weightsLayer = random({
+    name: 'weights',
+    height: height,
+    width: inputLayer.height,
+    praxis: weightsPraxis
+  });
+  var biasesLayer = random({
+    name: 'biases',
+    height: height,
+    praxis: biasesPraxis
+  });
+  var multiplyLayer = multiply(weightsLayer, inputLayer, {
+    praxis: noopPraxis
+  });
+  var addLayer = add(multiplyLayer, biasesLayer, {
+    praxis: noopPraxis
+  });
+  var sigmoidLayer = sigmoid(addLayer, {
+    praxis: noopPraxis
+  });
+  weightsLayer.praxis.weightsLayer = weightsLayer;
+  weightsLayer.praxis.incomingLayer = inputLayer;
+  weightsLayer.praxis.deltaLayer = sigmoidLayer;
+  return sigmoidLayer;
+}
+
+module.exports = {
+  arthurFeedForward: arthurFeedForward
+};
+},{"../praxis/arthur-deviation-weights":"xg3/","../praxis/arthur-deviation-biases":"GVwH","./add":"q7CK","./random":"yQCp","./multiply":"xJEq","./sigmoid":"ED1E"}],"iz6h":[function(require,module,exports) {
 function setStride(layer, settings) {
   var defaults = layer.constructor.defaults;
 
@@ -26479,35 +27205,7 @@ module.exports = {
   setStride: setStride,
   setPadding: setPadding
 };
-},{}],"TX07":[function(require,module,exports) {
-module.exports = function randomWeight() {
-  return Math.random() * 0.4 - 0.2;
-};
-},{}],"S8tM":[function(require,module,exports) {
-var randomWeight = require('./random-weight');
-
-module.exports = function randos(size) {
-  var array = new Float32Array(size);
-
-  for (var i = 0; i < size; i++) {
-    array[i] = randomWeight();
-  }
-
-  return array;
-};
-},{"./random-weight":"TX07"}],"pcuE":[function(require,module,exports) {
-var randos = require('./randos');
-
-module.exports = function randos2D(width, height) {
-  var result = new Array(height);
-
-  for (var y = 0; y < height; y++) {
-    result[y] = randos(width);
-  }
-
-  return result;
-};
-},{"./randos":"S8tM"}],"9TSf":[function(require,module,exports) {
+},{}],"9TSf":[function(require,module,exports) {
 var rondos2D = require('./randos-2d');
 
 module.exports = function randos3D(width, height, depth) {
@@ -26549,7 +27247,8 @@ var _require2 = require('../utilities/layer-setup'),
     setStride = _require2.setStride,
     setPadding = _require2.setPadding;
 
-var Filter = require('./types').Filter;
+var _require3 = require('./types'),
+    Filter = _require3.Filter;
 
 var randos = require('../utilities/randos');
 
@@ -26759,8 +27458,13 @@ function (_Filter) {
   return Convolution;
 }(Filter);
 
+function convolution(settings, inputLayer) {
+  return new Convolution(settings, inputLayer);
+}
+
 module.exports = {
   Convolution: Convolution,
+  convolution: convolution,
   predict: predict,
   compareFilterDeltas: compareFilterDeltas,
   compareInputDeltas: compareInputDeltas,
@@ -26785,10 +27489,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var Filter = require('./types').Filter;
+var _require = require('./types'),
+    Filter = _require.Filter;
 
-var _require = require('../utilities/kernel'),
-    makeKernel = _require.makeKernel; // TODO: implement random in glsl in gpu.js
+var _require2 = require('../utilities/kernel'),
+    makeKernel = _require2.makeKernel; // TODO: implement random in glsl in gpu.js
 
 
 function trainingPredict(inputs) {
@@ -26862,12 +27567,47 @@ function (_Filter) {
   return Dropout;
 }(Filter);
 
+function dropout(settings, inputLayer) {
+  return new Dropout(settings, inputLayer);
+}
+
 module.exports = {
   Dropout: Dropout,
+  dropout: dropout,
   trainingPredict: trainingPredict,
   predict: predict
 };
-},{"./types":"pX1U","../utilities/kernel":"L30b"}],"Aqg2":[function(require,module,exports) {
+},{"./types":"pX1U","../utilities/kernel":"L30b"}],"nL/1":[function(require,module,exports) {
+var _require = require('./random'),
+    random = _require.random;
+
+var _require2 = require('./add'),
+    add = _require2.add;
+
+var _require3 = require('./multiply'),
+    multiply = _require3.multiply;
+
+var _require4 = require('./sigmoid'),
+    sigmoid = _require4.sigmoid;
+
+function feedForward(settings, input) {
+  var height = settings.height;
+  var weights = random({
+    name: 'weights',
+    height: height,
+    width: input.height
+  });
+  var biases = random({
+    name: 'biases',
+    height: height
+  });
+  return sigmoid(add(multiply(weights, input), biases));
+}
+
+module.exports = {
+  feedForward: feedForward
+};
+},{"./random":"yQCp","./add":"q7CK","./multiply":"xJEq","./sigmoid":"ED1E"}],"Aqg2":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -26890,10 +27630,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var Filter = require('./types').Filter;
+var _require = require('./types'),
+    Filter = _require.Filter;
 
-var _require = require('../utilities/kernel'),
-    makeKernel = _require.makeKernel;
+var _require2 = require('../utilities/kernel'),
+    makeKernel = _require2.makeKernel;
 
 var values = require('../utilities/values');
 
@@ -27098,8 +27839,13 @@ function (_Filter) {
   return FullyConnected;
 }(Filter);
 
+function fullyConnected(settings, inputLayer) {
+  return new FullyConnected(settings, inputLayer);
+}
+
 module.exports = {
   FullyConnected: FullyConnected,
+  fullyConnected: fullyConnected,
   predict: predict,
   predict3D: predict3D,
   compareInputDeltas: compareInputDeltas,
@@ -27108,7 +27854,7 @@ module.exports = {
   compareFilterDeltas: compareFilterDeltas,
   compareFilterDeltas3D: compareFilterDeltas3D
 };
-},{"./types":"pX1U","../utilities/kernel":"L30b","../utilities/values":"Whlg","../utilities/randos-2d":"pcuE","../utilities/randos-3d":"9TSf","../utilities/zeros":"M4LY","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"0AN3"}],"qUrb":[function(require,module,exports) {
+},{"./types":"pX1U","../utilities/kernel":"L30b","../utilities/values":"Whlg","../utilities/randos-2d":"pcuE","../utilities/randos-3d":"9TSf","../utilities/zeros":"M4LY","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"0AN3"}],"kuo+":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27126,163 +27872,40 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var Model = require('./types').Model;
-
-var zeros2D = require('../utilities/zeros-2d');
-
-var kernelInput = require('../utilities/kernel').kernelInput;
-
-var Input =
-/*#__PURE__*/
-function (_Model) {
-  _inherits(Input, _Model);
-
-  function Input(settings) {
-    var _this;
-
-    _classCallCheck(this, Input);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Input).call(this, settings));
-
-    if (_this.width === 1) {
-      _this.predict = _this.predict1D;
-    }
-
-    _this.validate();
-
-    _this.weights = null;
-    _this.deltas = zeros2D(_this.width, _this.height);
-    return _this;
-  }
-
-  _createClass(Input, [{
-    key: "setupKernels",
-    value: function setupKernels() {}
-  }, {
-    key: "predict",
-    value: function predict(inputs) {
-      if (inputs.length === this.height * this.width) {
-        this.weights = kernelInput(inputs, [this.width, this.height]);
-      } else if (inputs.length === this.height && inputs[0].length === this.width) {
-        this.weights = inputs;
-      } else {
-        throw new Error('Inputs are not of sized correctly');
-      }
-    }
-  }, {
-    key: "predict1D",
-    value: function predict1D(inputs) {
-      var weights = [];
-
-      for (var x = 0; x < inputs.length; x++) {
-        weights.push([inputs[x]]);
-      }
-
-      this.weights = weights;
-    }
-  }, {
-    key: "compare",
-    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
-    }
-  }, {
-    key: "learn",
-    value: function learn() {
-      this.deltas = zeros2D(this.width, this.height);
-    }
-  }, {
-    key: "toJSON",
-    value: function toJSON() {
-      var jsonLayer = {};
-      var _this$constructor = this.constructor,
-          defaults = _this$constructor.defaults,
-          name = _this$constructor.name;
-      var keys = Object.keys(defaults);
-
-      for (var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        if (key === 'deltas' || key === 'weights') continue;
-        jsonLayer[key] = this[key];
-      }
-
-      jsonLayer.type = name;
-      return jsonLayer;
-    }
-  }]);
-
-  return Input;
-}(Model);
-
-module.exports = Input;
-},{"./types":"pX1U","../utilities/zeros-2d":"C4Cz","../utilities/kernel":"L30b"}],"JZX2":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var Activation = require('./types').Activation;
 
 var _require = require('../utilities/kernel'),
     makeKernel = _require.makeKernel;
 
-var lra = require('../activation/leaky-relu');
+var _require2 = require('./types'),
+    Modifier = _require2.Modifier;
 
-var activate = lra.activate;
-var measure = lra.measure;
-
-function predict(inputs) {
-  return activate(inputs[this.thread.y][this.thread.x]);
+function predict(weights) {
+  return -weights[this.thread.y][this.thread.x];
 }
 
-function compare(weights, deltas) {
-  return measure(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
-}
-
-var LeakyRelu =
+var Negative =
 /*#__PURE__*/
-function (_Activation) {
-  _inherits(LeakyRelu, _Activation);
+function (_Modifier) {
+  _inherits(Negative, _Modifier);
 
-  function LeakyRelu(inputLayer) {
+  function Negative(settings, inputLayer) {
     var _this;
 
-    _classCallCheck(this, LeakyRelu);
+    _classCallCheck(this, Negative);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(LeakyRelu).call(this));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Negative).call(this, settings));
     _this.inputLayer = inputLayer;
-    var width = inputLayer.width,
-        height = inputLayer.height,
-        depth = inputLayer.depth;
-    _this.width = width;
-    _this.height = height;
-    _this.depth = depth;
 
     _this.validate();
 
     return _this;
   }
 
-  _createClass(LeakyRelu, [{
+  _createClass(Negative, [{
     key: "setupKernels",
     value: function setupKernels() {
       this.predictKernel = makeKernel(predict, {
-        functions: [activate]
-      });
-      this.compareKernel = makeKernel(compare, {
-        functions: [measure]
+        output: [this.width, this.height]
       });
     }
   }, {
@@ -27290,22 +27913,21 @@ function (_Activation) {
     value: function predict() {
       this.weights = this.predictKernel(this.inputLayer.weights);
     }
-  }, {
-    key: "compare",
-    value: function compare() {
-      this.deltas = this.compareKernel(this.weights, this.deltas);
-    }
   }]);
 
-  return LeakyRelu;
-}(Activation);
+  return Negative;
+}(Modifier);
+
+function negative(settings, inputLayer) {
+  return new Negative(settings, inputLayer);
+}
 
 module.exports = {
-  LeakyRelu: LeakyRelu,
-  predict: predict,
-  compare: compare
+  Negative: Negative,
+  negative: negative,
+  predict: predict
 };
-},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/leaky-relu":"4I3O"}],"xJEq":[function(require,module,exports) {
+},{"../utilities/kernel":"L30b","./types":"pX1U"}],"vjFV":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27331,155 +27953,8 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 var _require = require('../utilities/kernel'),
     makeKernel = _require.makeKernel;
 
-var zeros2D = require('../utilities/zeros-2d');
-
-var Operator = require('./types').Operator;
-
-function predict(weights1, weights2) {
-  var sum = 0;
-
-  for (var i = 0; i < this.constants.size; i++) {
-    sum += weights1[this.thread.y][i] * weights2[i][this.thread.x];
-  }
-
-  return sum;
-}
-
-function compareFromX(deltas, inputDeltas, inputWeights) {
-  var sum = inputDeltas[this.thread.y][this.thread.x];
-
-  for (var i = 0; i < this.constants.size; i++) {
-    sum += deltas[this.thread.y][i] * inputWeights[this.thread.x][i];
-  }
-
-  return sum;
-}
-
-function compareFromY(deltas, inputDeltas, inputWeights) {
-  var sum = inputDeltas[this.thread.y][this.thread.x];
-
-  for (var i = 0; i < this.constants.size; i++) {
-    sum += deltas[i][this.thread.x] * inputWeights[i][this.thread.y];
-  }
-
-  return sum;
-}
-
-var Multiply =
-/*#__PURE__*/
-function (_Operator) {
-  _inherits(Multiply, _Operator);
-
-  function Multiply(inputLayer1, inputLayer2) {
-    var _this;
-
-    _classCallCheck(this, Multiply);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Multiply).call(this));
-    _this.inputLayer1 = inputLayer1;
-    _this.inputLayer2 = inputLayer2;
-    _this.compareKernel1 = null;
-    _this.compareKernel2 = null;
-    _this.width = inputLayer2.width;
-    _this.height = inputLayer1.height;
-
-    _this.validate();
-
-    _this.weights = zeros2D(_this.width, _this.height);
-    _this.deltas = zeros2D(_this.width, _this.height);
-    return _this;
-  }
-
-  _createClass(Multiply, [{
-    key: "validate",
-    value: function validate() {
-      _get(_getPrototypeOf(Multiply.prototype), "validate", this).call(this);
-
-      if (this.inputLayer1.width !== this.inputLayer2.height) {
-        throw new Error("Layer width mismatch of ".concat(this.inputLayer1.width, " and ").concat(this.inputLayer2.height));
-      }
-    }
-  }, {
-    key: "setupKernels",
-    value: function setupKernels() {
-      this.predictKernel = makeKernel(predict, {
-        output: [this.width, this.height],
-        constants: {
-          size: this.inputLayer2.height
-        }
-      });
-      this.compareKernel1 = makeKernel(compareFromX, {
-        output: [this.inputLayer1.width, this.inputLayer1.height],
-        constants: {
-          size: this.inputLayer2.width
-        }
-      });
-      this.compareKernel2 = makeKernel(compareFromY, {
-        output: [this.inputLayer2.width, this.inputLayer2.height],
-        constants: {
-          size: this.inputLayer1.height
-        }
-      });
-    }
-  }, {
-    key: "reuseKernels",
-    value: function reuseKernels(layer) {
-      _get(_getPrototypeOf(Multiply.prototype), "reuseKernels", this).call(this, layer);
-
-      this.compareKernel1 = layer.compareKernel1;
-      this.compareKernel2 = layer.compareKernel2;
-    }
-  }, {
-    key: "predict",
-    value: function predict() {
-      this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
-    }
-  }, {
-    key: "compare",
-    value: function compare() {
-      var newDeltas1 = this.compareKernel1(this.deltas, this.inputLayer1.deltas, this.inputLayer2.weights);
-      var newDeltas2 = this.compareKernel2(this.deltas, this.inputLayer2.deltas, this.inputLayer1.weights);
-      this.inputLayer2.deltas = newDeltas2;
-      this.inputLayer1.deltas = newDeltas1;
-    }
-  }]);
-
-  return Multiply;
-}(Operator);
-
-module.exports = {
-  Multiply: Multiply,
-  predict: predict,
-  compareFromX: compareFromX,
-  compareFromY: compareFromY
-};
-},{"../utilities/kernel":"L30b","../utilities/zeros-2d":"C4Cz","./types":"pX1U"}],"vjFV":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
-
-function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var _require = require('../utilities/kernel'),
-    makeKernel = _require.makeKernel;
-
-var Operator = require('./types').Operator;
+var _require2 = require('./types'),
+    Operator = _require2.Operator;
 
 var zeros2D = require('../utilities/zeros-2d');
 
@@ -27552,72 +28027,15 @@ function (_Operator) {
   return MultiplyElement;
 }(Operator);
 
-module.exports = MultiplyElement;
-},{"../utilities/kernel":"L30b","./types":"pX1U","../utilities/zeros-2d":"C4Cz"}],"kuo+":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var _require = require('../utilities/kernel'),
-    makeKernel = _require.makeKernel;
-
-var Modifier = require('./types').Modifier;
-
-function predict(weights) {
-  return -weights[this.thread.y][this.thread.x];
+function multiplyElement(inputLayer1, inputLayer2) {
+  return new MultiplyElement(inputLayer1, inputLayer2);
 }
 
-var Negative =
-/*#__PURE__*/
-function (_Modifier) {
-  _inherits(Negative, _Modifier);
-
-  function Negative(settings, inputLayer) {
-    var _this;
-
-    _classCallCheck(this, Negative);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Negative).call(this, settings));
-    _this.inputLayer = inputLayer;
-
-    _this.validate();
-
-    return _this;
-  }
-
-  _createClass(Negative, [{
-    key: "setupKernels",
-    value: function setupKernels() {
-      this.predictKernel = makeKernel(predict, {
-        output: [this.width, this.height]
-      });
-    }
-  }, {
-    key: "predict",
-    value: function predict() {
-      this.weights = this.predictKernel(this.inputLayer.weights);
-    }
-  }]);
-
-  return Negative;
-}(Modifier);
-
-module.exports = Negative;
-},{"../utilities/kernel":"L30b","./types":"pX1U"}],"f7P8":[function(require,module,exports) {
+module.exports = {
+  MultiplyElement: MultiplyElement,
+  multiplyElement: multiplyElement
+};
+},{"../utilities/kernel":"L30b","./types":"pX1U","../utilities/zeros-2d":"C4Cz"}],"f7P8":[function(require,module,exports) {
 module.exports = function ones(size) {
   return new Float32Array(size).fill(1);
 };
@@ -27652,7 +28070,8 @@ var ones2D = require('../utilities/ones-2d');
 
 var zeros2D = require('../utilities/zeros-2d');
 
-var Model = require('./types').Model;
+var _require = require('./types'),
+    Model = _require.Model;
 
 var Ones =
 /*#__PURE__*/
@@ -27676,8 +28095,703 @@ function (_Model) {
   return Ones;
 }(Model);
 
-module.exports = Ones;
-},{"../utilities/ones-2d":"jZTY","../utilities/zeros-2d":"C4Cz","./types":"pX1U"}],"vNYh":[function(require,module,exports) {
+function ones(settings) {
+  return new Ones(settings);
+}
+
+module.exports = {
+  Ones: Ones,
+  ones: ones
+};
+},{"../utilities/ones-2d":"jZTY","../utilities/zeros-2d":"C4Cz","./types":"pX1U"}],"YNtu":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var _require = require('./types'),
+    Activation = _require.Activation;
+
+var _require2 = require('../utilities/kernel'),
+    makeKernel = _require2.makeKernel;
+
+var _require3 = require('../activation/tanh'),
+    tanhDerivative = _require3.tanhDerivative;
+
+var zeros2D = require('../utilities/zeros-2d');
+
+function predict(inputs) {
+  return Math.tanh(inputs[this.thread.y][this.thread.x]);
+}
+
+function compare(weights, errors) {
+  return tanhDerivative(weights[this.thread.y][this.thread.x], errors[this.thread.y][this.thread.x]);
+}
+
+var Tanh =
+/*#__PURE__*/
+function (_Activation) {
+  _inherits(Tanh, _Activation);
+
+  function Tanh(inputLayer) {
+    var _this;
+
+    _classCallCheck(this, Tanh);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tanh).call(this));
+    _this.inputLayer = inputLayer;
+    var _this$inputLayer = _this.inputLayer,
+        width = _this$inputLayer.width,
+        height = _this$inputLayer.height,
+        depth = _this$inputLayer.depth;
+    _this.width = width;
+    _this.height = height;
+    _this.depth = depth;
+
+    _this.validate();
+
+    _this.weights = zeros2D(_this.width, _this.height);
+    _this.deltas = zeros2D(_this.width, _this.height);
+    return _this;
+  }
+
+  _createClass(Tanh, [{
+    key: "setupKernels",
+    value: function setupKernels() {
+      this.predictKernel = makeKernel(predict, {
+        output: [this.width, this.height]
+      });
+      this.compareKernel = makeKernel(compare, {
+        output: [this.width, this.height],
+        functions: [tanhDerivative]
+      });
+    }
+  }, {
+    key: "predict",
+    value: function predict() {
+      this.weights = this.predictKernel(this.inputLayer.weights);
+    }
+  }, {
+    key: "compare",
+    value: function compare() {
+      this.deltas = this.compareKernel(this.weights, this.deltas);
+    }
+  }]);
+
+  return Tanh;
+}(Activation);
+
+function tanh(inputLayer) {
+  return new Tanh(inputLayer);
+}
+
+module.exports = {
+  Tanh: Tanh,
+  tanh: tanh,
+  predict: predict,
+  compare: compare
+};
+},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/tanh":"v3/M","../utilities/zeros-2d":"C4Cz"}],"EO/P":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var zeros2D = require('../utilities/zeros-2d');
+
+var _require = require('./types'),
+    Model = _require.Model;
+
+var Zeros =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(Zeros, _Model);
+
+  function Zeros(settings) {
+    var _this;
+
+    _classCallCheck(this, Zeros);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Zeros).call(this, settings));
+
+    _this.validate();
+
+    _this.weights = zeros2D(_this.width, _this.height);
+    _this.deltas = zeros2D(_this.width, _this.height);
+    return _this;
+  }
+
+  _createClass(Zeros, [{
+    key: "predict",
+    value: function predict() {// throw new Error(`${this.constructor.name}-predict is not yet implemented`)
+    }
+  }, {
+    key: "compare",
+    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+    }
+  }]);
+
+  return Zeros;
+}(Model);
+
+function zeros(settings) {
+  return new Zeros(settings);
+}
+
+module.exports = {
+  Zeros: Zeros,
+  zeros: zeros
+};
+},{"../utilities/zeros-2d":"C4Cz","./types":"pX1U"}],"v+cs":[function(require,module,exports) {
+var _require = require('./add'),
+    add = _require.add;
+
+var _require2 = require('./negative'),
+    negative = _require2.negative;
+
+var _require3 = require('./multiply'),
+    multiply = _require3.multiply;
+
+var _require4 = require('./multiply-element'),
+    multiplyElement = _require4.multiplyElement;
+
+var _require5 = require('./ones'),
+    ones = _require5.ones;
+
+var _require6 = require('./sigmoid'),
+    sigmoid = _require6.sigmoid;
+
+var _require7 = require('./random'),
+    random = _require7.random;
+
+var _require8 = require('./tanh'),
+    tanh = _require8.tanh;
+
+var _require9 = require('./zeros'),
+    zeros = _require9.zeros;
+
+function gru(settings, recurrentInput, input) {
+  var height = settings.height;
+  var updateGateWeights = random({
+    height: height,
+    width: input.height
+  });
+  var updateGatePeepholes = random({
+    width: height,
+    height: height
+  });
+  var updateGateBias = zeros({
+    height: height
+  });
+  var updateGate = sigmoid(add(add(multiply(updateGateWeights, input), multiply(updateGatePeepholes, recurrentInput)), updateGateBias));
+  var resetGateWeights = random({
+    height: height,
+    width: input.height
+  });
+  var resetGatePeepholes = random({
+    width: height,
+    height: height
+  });
+  var resetGateBias = zeros({
+    height: height
+  });
+  var resetGate = sigmoid(add(add(multiply(resetGateWeights, input), multiply(resetGatePeepholes, recurrentInput)), resetGateBias));
+  var cellWeights = random({
+    height: height,
+    width: input.height
+  });
+  var cellPeepholes = random({
+    width: height,
+    height: height
+  });
+  var cellBias = zeros({
+    height: height
+  });
+  var cell = tanh(add(add(multiply(cellWeights, input), multiply(cellPeepholes, multiplyElement(resetGate, recurrentInput))), cellBias)); // compute hidden state as gated, saturated cell activations
+  // negate updateGate
+
+  return add(multiplyElement(add(ones(updateGate.rows, updateGate.columns), negative(updateGate)), cell), multiplyElement(recurrentInput, updateGate));
+}
+
+module.exports = {
+  gru: gru
+};
+},{"./add":"q7CK","./negative":"kuo+","./multiply":"xJEq","./multiply-element":"vjFV","./ones":"0122","./sigmoid":"ED1E","./random":"yQCp","./tanh":"YNtu","./zeros":"EO/P"}],"qUrb":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var _require = require('./types'),
+    Model = _require.Model;
+
+var zeros2D = require('../utilities/zeros-2d');
+
+var _require2 = require('../utilities/kernel'),
+    kernelInput = _require2.kernelInput;
+
+var _require3 = require('../utilities/kernel'),
+    makeKernel = _require3.makeKernel;
+
+var Input =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(Input, _Model);
+
+  function Input(settings) {
+    var _this;
+
+    _classCallCheck(this, Input);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Input).call(this, settings));
+
+    _this.validate();
+
+    _this.weights = null;
+    _this.reshapeInput = null;
+    _this.deltas = zeros2D(_this.width, _this.height);
+    return _this;
+  }
+
+  _createClass(Input, [{
+    key: "setupKernels",
+    value: function setupKernels() {
+      if (this.width === 1) {
+        this.predict = this.predict1D;
+        this.reshapeInput = makeKernel(function (value) {
+          return value[this.thread.y];
+        }, {
+          output: [1, this.height]
+        });
+      } else {
+        this.reshapeInput = function (inputs) {
+          return inputs;
+        };
+      }
+    }
+  }, {
+    key: "predict",
+    value: function predict(inputs) {
+      if (inputs.length === this.height * this.width) {
+        this.weights = kernelInput(inputs, [this.width, this.height]);
+      } else if (inputs.length === this.height && inputs[0].length === this.width) {
+        this.weights = inputs;
+      } else {
+        throw new Error('Inputs are not of sized correctly');
+      }
+    }
+  }, {
+    key: "predict1D",
+    value: function predict1D(inputs) {
+      this.weights = this.reshapeInput(inputs);
+    }
+  }, {
+    key: "compare",
+    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+    }
+  }, {
+    key: "learn",
+    value: function learn() {
+      this.deltas = zeros2D(this.width, this.height);
+    }
+  }, {
+    key: "toJSON",
+    value: function toJSON() {
+      var jsonLayer = {};
+      var _this$constructor = this.constructor,
+          defaults = _this$constructor.defaults,
+          name = _this$constructor.name;
+      var keys = Object.keys(defaults);
+
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        if (key === 'deltas' || key === 'weights') continue;
+        jsonLayer[key] = this[key];
+      }
+
+      jsonLayer.type = name;
+      return jsonLayer;
+    }
+  }]);
+
+  return Input;
+}(Model);
+
+function input(settings) {
+  return new Input(settings);
+}
+
+module.exports = {
+  Input: Input,
+  input: input
+};
+},{"./types":"pX1U","../utilities/zeros-2d":"C4Cz","../utilities/kernel":"L30b"}],"JZX2":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var _require = require('./types'),
+    Activation = _require.Activation;
+
+var _require2 = require('../utilities/kernel'),
+    makeKernel = _require2.makeKernel;
+
+var lra = require('../activation/leaky-relu');
+
+var activate = lra.activate;
+var measure = lra.measure;
+
+function predict(inputs) {
+  return activate(inputs[this.thread.y][this.thread.x]);
+}
+
+function compare(weights, deltas) {
+  return measure(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
+}
+
+var LeakyRelu =
+/*#__PURE__*/
+function (_Activation) {
+  _inherits(LeakyRelu, _Activation);
+
+  function LeakyRelu(inputLayer) {
+    var _this;
+
+    _classCallCheck(this, LeakyRelu);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(LeakyRelu).call(this));
+    _this.inputLayer = inputLayer;
+    var width = inputLayer.width,
+        height = inputLayer.height,
+        depth = inputLayer.depth;
+    _this.width = width;
+    _this.height = height;
+    _this.depth = depth;
+
+    _this.validate();
+
+    return _this;
+  }
+
+  _createClass(LeakyRelu, [{
+    key: "setupKernels",
+    value: function setupKernels() {
+      this.predictKernel = makeKernel(predict, {
+        functions: [activate]
+      });
+      this.compareKernel = makeKernel(compare, {
+        functions: [measure]
+      });
+    }
+  }, {
+    key: "predict",
+    value: function predict() {
+      this.weights = this.predictKernel(this.inputLayer.weights);
+    }
+  }, {
+    key: "compare",
+    value: function compare() {
+      this.deltas = this.compareKernel(this.weights, this.deltas);
+    }
+  }]);
+
+  return LeakyRelu;
+}(Activation);
+
+function leakyRelu(inputLayer) {
+  return new LeakyRelu(inputLayer);
+}
+
+module.exports = {
+  LeakyRelu: LeakyRelu,
+  leakyRelu: leakyRelu,
+  predict: predict,
+  compare: compare
+};
+},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/leaky-relu":"4I3O"}],"Mqbi":[function(require,module,exports) {
+var _require = require('./add'),
+    add = _require.add;
+
+var _require2 = require('./multiply'),
+    multiply = _require2.multiply;
+
+var _require3 = require('./multiply-element'),
+    multiplyElement = _require3.multiplyElement;
+
+var _require4 = require('./random'),
+    random = _require4.random;
+
+var _require5 = require('./sigmoid'),
+    sigmoid = _require5.sigmoid;
+
+var _require6 = require('./tanh'),
+    tanh = _require6.tanh;
+
+var _require7 = require('./zeros'),
+    zeros = _require7.zeros;
+
+function lstm(settings, recurrentInput, input) {
+  var height = settings.height;
+  var inputGateWeights = random({
+    height: height,
+    width: input.height
+  });
+  var inputGatePeepholes = random({
+    width: height,
+    height: height
+  });
+  var inputGateBias = zeros({
+    height: height
+  });
+  var inputGate = sigmoid(add(add(multiply(inputGateWeights, input), multiply(inputGatePeepholes, recurrentInput)), inputGateBias));
+  var forgetGateWeights = random({
+    height: height,
+    width: input.height
+  });
+  var forgetGatePeepholes = random({
+    width: height,
+    height: height
+  });
+  var forgetGateBias = zeros({
+    height: height
+  });
+  var forgetGate = sigmoid(add(add(multiply(forgetGateWeights, input), multiply(forgetGatePeepholes, recurrentInput)), forgetGateBias));
+  var outputGateWeights = random({
+    height: height,
+    width: input.height
+  });
+  var outputGatePeepholes = random({
+    width: height,
+    height: height
+  });
+  var outputGateBias = zeros({
+    height: height
+  });
+  var outputGate = sigmoid(add(add(multiply(outputGateWeights, input), multiply(outputGatePeepholes, recurrentInput)), outputGateBias));
+  var memoryWeights = random({
+    height: height,
+    width: input.height
+  });
+  var memoryPeepholes = random({
+    width: height,
+    height: height
+  });
+  var memoryBias = zeros({
+    height: height
+  });
+  var memory = tanh(add(add(multiply(memoryWeights, input), multiply(memoryPeepholes, recurrentInput)), memoryBias)); // compute new cell activation
+
+  var retainCell = multiplyElement(forgetGate, input); // what do we keep from cell
+
+  var writeCell = multiplyElement(inputGate, memory); // what do we write to cell
+
+  var cell = add(retainCell, writeCell); // new cell contents
+  // compute hidden state as gated, saturated cell activations
+
+  return multiplyElement(outputGate, tanh(cell));
+}
+
+module.exports = {
+  lstm: lstm
+};
+},{"./add":"q7CK","./multiply":"xJEq","./multiply-element":"vjFV","./random":"yQCp","./sigmoid":"ED1E","./tanh":"YNtu","./zeros":"EO/P"}],"xXoy":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var _require = require('../utilities/kernel'),
+    makeKernel = _require.makeKernel;
+
+var zeros = require('../utilities/zeros');
+
+var zeros2D = require('../utilities/zeros-2d');
+
+var zeros3D = require('../utilities/zeros-3d');
+
+var _require2 = require('./types'),
+    Filter = _require2.Filter;
+
+function compare1D(weights, targetValues) {
+  // return targetValues[this.thread.x] - weights[this.thread.y][this.thread.x];
+  return weights[this.thread.y][this.thread.x] - targetValues[this.thread.x];
+}
+
+function compare2D(weights, targetValues) {
+  // return targetValues[this.thread.y][this.thread.x] - weights[this.thread.y][this.thread.x];
+  return weights[this.thread.y][this.thread.x] - targetValues[this.thread.y][this.thread.x];
+}
+
+var Target =
+/*#__PURE__*/
+function (_Filter) {
+  _inherits(Target, _Filter);
+
+  function Target(settings, inputLayer) {
+    var _this;
+
+    _classCallCheck(this, Target);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Target).call(this, settings));
+    _this.inputLayer = inputLayer;
+    _this.width = inputLayer.width;
+    _this.height = inputLayer.height;
+    _this.depth = inputLayer.depth;
+
+    _this.validate();
+
+    if (_this.depth > 1) {
+      _this.weights = zeros3D(_this.width, _this.height, _this.depth);
+      _this.deltas = zeros3D(_this.width, _this.height, _this.depth);
+      _this.errors = zeros3D(_this.width, _this.height, _this.depth);
+    } else if (_this.height > 1) {
+      _this.weights = zeros2D(_this.width, _this.height);
+      _this.deltas = zeros2D(_this.width, _this.height);
+      _this.errors = zeros2D(_this.width, _this.height);
+    } else {
+      _this.weights = zeros(_this.width);
+      _this.deltas = zeros(_this.width);
+      _this.errors = zeros(_this.width);
+    }
+
+    return _this;
+  }
+
+  _createClass(Target, [{
+    key: "setupKernels",
+    value: function setupKernels() {
+      var compareFn = this.width === 1 ? compare1D : compare2D;
+      this.compareKernel = makeKernel(compareFn, {
+        output: [this.width, this.height]
+      });
+    }
+  }, {
+    key: "predict",
+    value: function predict() {
+      // NOTE: this looks like it shouldn't be, but the weights are immutable, and this is where they are reused.
+      this.weights = this.inputLayer.weights;
+    }
+  }, {
+    key: "compare",
+    value: function compare(targetValues) {
+      // this is where weights attach to deltas
+      // deltas will be zero on learn, so save it in error for comparing to mse later
+      this.errors = this.compareKernel(this.weights, targetValues);
+      this.deltas = this.errors;
+      this.inputLayer.deltas = this.deltas;
+    }
+  }]);
+
+  return Target;
+}(Filter);
+
+function target(settings, inputLayer) {
+  return new Target(settings, inputLayer);
+}
+
+module.exports = {
+  Target: Target,
+  target: target
+};
+},{"../utilities/kernel":"L30b","../utilities/zeros":"M4LY","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"0AN3","./types":"pX1U"}],"YS3q":[function(require,module,exports) {
+var _require = require('./add'),
+    add = _require.add;
+
+var _require2 = require('./multiply'),
+    multiply = _require2.multiply;
+
+var _require3 = require('./random'),
+    random = _require3.random;
+
+var _require4 = require('./target'),
+    target = _require4.target;
+
+var _require5 = require('./zeros'),
+    zeros = _require5.zeros;
+
+function output(settings, inputLayer) {
+  var height = settings.height;
+  var outputGate = random({
+    height: height,
+    width: inputLayer.height
+  });
+  var output = zeros({
+    height: height
+  });
+  var outputGateConnector = multiply(outputGate, inputLayer);
+  return target(settings, add(outputGateConnector, output));
+}
+
+module.exports = {
+  output: output
+};
+},{"./add":"q7CK","./multiply":"xJEq","./random":"yQCp","./target":"xXoy","./zeros":"EO/P"}],"vNYh":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27696,14 +28810,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var Filter = require('./types').Filter;
+var _require = require('./types'),
+    Filter = _require.Filter;
 
-var _require = require('../utilities/kernel'),
-    makeKernel = _require.makeKernel;
+var _require2 = require('../utilities/kernel'),
+    makeKernel = _require2.makeKernel;
 
-var _require2 = require('../utilities/layer-setup'),
-    setPadding = _require2.setPadding,
-    setStride = _require2.setStride;
+var _require3 = require('../utilities/layer-setup'),
+    setPadding = _require3.setPadding,
+    setStride = _require3.setStride;
 
 var zeros3D = require('../utilities/zeros-3d');
 
@@ -27898,13 +29013,18 @@ function (_Filter) {
   return Pool;
 }(Filter);
 
+function pool(settings, inputLayer) {
+  return new Pool(settings, inputLayer);
+}
+
 module.exports = {
   Pool: Pool,
+  pool: pool,
   predict: predict,
   compare: compare,
   compare3D: compare3D
 };
-},{"./types":"pX1U","../utilities/kernel":"L30b","../utilities/layer-setup":"iz6h","../utilities/zeros-3d":"0AN3","../utilities/randos-3d":"9TSf"}],"yQCp":[function(require,module,exports) {
+},{"./types":"pX1U","../utilities/kernel":"L30b","../utilities/layer-setup":"iz6h","../utilities/zeros-3d":"0AN3","../utilities/randos-3d":"9TSf"}],"BjPp":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27923,130 +29043,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var Model = require('./types').Model;
+var _require = require('./types'),
+    Activation = _require.Activation;
 
-var randos2D = require('../utilities/randos-2d');
+var _require2 = require('../utilities/kernel'),
+    makeKernel = _require2.makeKernel;
 
-var zeros2D = require('../utilities/zeros-2d');
-
-var Random =
-/*#__PURE__*/
-function (_Model) {
-  _inherits(Random, _Model);
-
-  function Random(settings) {
-    var _this;
-
-    _classCallCheck(this, Random);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Random).call(this, settings));
-
-    _this.validate();
-
-    _this.weights = randos2D(_this.width, _this.height);
-    _this.deltas = zeros2D(_this.width, _this.height);
-    return _this;
-  }
-
-  _createClass(Random, [{
-    key: "predict",
-    value: function predict() {// throw new Error(`${this.constructor.name}-predict is not yet implemented`)
-    }
-  }, {
-    key: "compare",
-    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
-    }
-  }]);
-
-  return Random;
-}(Model);
-
-module.exports = Random;
-},{"./types":"pX1U","../utilities/randos-2d":"pcuE","../utilities/zeros-2d":"C4Cz"}],"viPg":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var Base = require('./base');
-
-var Regression =
-/*#__PURE__*/
-function (_Base) {
-  _inherits(Regression, _Base);
-
-  function Regression(settings) {
-    var _this;
-
-    _classCallCheck(this, Regression);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Regression).call(this, settings));
-
-    _this.validate();
-
-    return _this;
-  }
-
-  _createClass(Regression, [{
-    key: "predict",
-    value: function predict() {
-      this.weights = this.inputs;
-    }
-  }, {
-    key: "learn",
-    value: function learn() {// throw new Error(`${this.constructor.name}-learn is not yet implemented`)
-    }
-  }]);
-
-  return Regression;
-}(Base);
-
-function learn(inputs, targets) {
-  return inputs[this.thread.x] - targets[this.thread.x];
-} // TODO: handle `loss += 0.5*dy*dy;` total and sum in learn
-
-
-module.exports = Regression;
-},{"./base":"kIeX"}],"BjPp":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var Activation = require('./types').Activation;
-
-var _require = require('../utilities/kernel'),
-    makeKernel = _require.makeKernel;
-
-var _require2 = require('../activation/relu'),
-    activate = _require2.activate,
-    measure = _require2.measure;
+var _require3 = require('../activation/relu'),
+    activate = _require3.activate,
+    measure = _require3.measure;
 
 var zeros2D = require('../utilities/zeros-2d');
 
@@ -28144,14 +29149,61 @@ function (_Activation) {
   return Relu;
 }(Activation);
 
+function relu(inputLayer) {
+  return new Relu(inputLayer);
+}
+
 module.exports = {
   Relu: Relu,
+  relu: relu,
   predict: predict,
   compare: compare,
   predict3D: predict3D,
   compare3D: compare3D
 };
-},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/relu":"kBu/","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"0AN3"}],"ED1E":[function(require,module,exports) {
+},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/relu":"kBu/","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"0AN3"}],"7ERy":[function(require,module,exports) {
+var _require = require('./relu'),
+    relu = _require.relu;
+
+var _require2 = require('./add'),
+    add = _require2.add;
+
+var _require3 = require('./multiply'),
+    multiply = _require3.multiply;
+
+var _require4 = require('./random'),
+    random = _require4.random;
+
+var _require5 = require('./zeros'),
+    zeros = _require5.zeros;
+
+function recurrent(settings, input, recurrentInput) {
+  var height = settings.height;
+  recurrentInput.setDimensions(1, height); // wxh
+
+  var weight = random({
+    name: 'weight',
+    height: height,
+    width: input.height
+  }); // whh
+
+  var transition = random({
+    name: 'transition',
+    height: height,
+    width: height
+  }); // bhh
+
+  var bias = zeros({
+    name: 'bias',
+    height: height
+  });
+  return relu(add(add(multiply(weight, input), multiply(transition, recurrentInput)), bias));
+}
+
+module.exports = {
+  recurrent: recurrent
+};
+},{"./relu":"BjPp","./add":"q7CK","./multiply":"xJEq","./random":"yQCp","./zeros":"EO/P"}],"viPg":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -28170,105 +29222,78 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var Activation = require('./types').Activation;
+var _require = require('./base'),
+    Base = _require.Base;
+
+var Regression =
+/*#__PURE__*/
+function (_Base) {
+  _inherits(Regression, _Base);
+
+  function Regression(settings) {
+    var _this;
+
+    _classCallCheck(this, Regression);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Regression).call(this, settings));
+
+    _this.validate();
+
+    return _this;
+  }
+
+  _createClass(Regression, [{
+    key: "predict",
+    value: function predict() {
+      this.weights = this.inputs;
+    }
+  }, {
+    key: "learn",
+    value: function learn() {// throw new Error(`${this.constructor.name}-learn is not yet implemented`)
+    }
+  }]);
+
+  return Regression;
+}(Base);
+
+function learn(inputs, targets) {
+  return inputs[this.thread.x] - targets[this.thread.x];
+} // TODO: handle `loss += 0.5*dy*dy;` total and sum in learn
+
+
+function regression(settings, inputLayer) {
+  return new Regression(settings, inputLayer);
+}
+
+module.exports = {
+  Regression: Regression,
+  regression: regression,
+  learn: learn
+};
+},{"./base":"kIeX"}],"nfIB":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var _require = require('../utilities/kernel'),
     makeKernel = _require.makeKernel;
 
-var _require2 = require('../activation/sigmoid'),
-    activate = _require2.activate,
-    measure = _require2.measure;
-
-var zeros2D = require('../utilities/zeros-2d');
-
-function predict(inputs) {
-  return activate(inputs[this.thread.y][this.thread.x]);
-}
-
-function compare(weights, deltas) {
-  var weight = weights[this.thread.y][this.thread.x];
-  var delta = deltas[this.thread.y][this.thread.x];
-  return measure(weight, delta);
-}
-
-var Sigmoid =
-/*#__PURE__*/
-function (_Activation) {
-  _inherits(Sigmoid, _Activation);
-
-  function Sigmoid(inputLayer) {
-    var _this;
-
-    _classCallCheck(this, Sigmoid);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Sigmoid).call(this));
-    _this.inputLayer = inputLayer;
-    var width = inputLayer.width,
-        height = inputLayer.height;
-    _this.width = width;
-    _this.height = height;
-
-    _this.validate();
-
-    _this.weights = zeros2D(_this.width, _this.height);
-    _this.deltas = zeros2D(_this.width, _this.height);
-    return _this;
-  }
-
-  _createClass(Sigmoid, [{
-    key: "setupKernels",
-    value: function setupKernels() {
-      this.predictKernel = makeKernel(predict, {
-        output: [this.width, this.height],
-        functions: [activate]
-      });
-      this.compareKernel = makeKernel(compare, {
-        output: [this.width, this.height],
-        functions: [measure]
-      });
-    }
-  }, {
-    key: "predict",
-    value: function predict() {
-      this.weights = this.predictKernel(this.inputLayer.weights);
-    }
-  }, {
-    key: "compare",
-    value: function compare() {
-      this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
-    }
-  }]);
-
-  return Sigmoid;
-}(Activation);
-
-module.exports = {
-  Sigmoid: Sigmoid,
-  predict: predict,
-  compare: compare
-};
-},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/sigmoid":"thFH","../utilities/zeros-2d":"C4Cz"}],"nfIB":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var makeKernel = require('../utilities/kernel');
-
-var Filter = require('./types').Filter;
+var _require2 = require('./types'),
+    Filter = _require2.Filter;
 
 var randos = require('../utilities/randos');
 
@@ -28543,8 +29568,13 @@ function (_Filter) {
   return SoftMax;
 }(Filter);
 
+function softMax(settings, inputLayer) {
+  return new SoftMax(settings, inputLayer);
+}
+
 module.exports = {
   SoftMax: SoftMax,
+  softMax: softMax,
   getMaxValue: getMaxValue,
   getMaxValue2D: getMaxValue2D,
   getMaxValue3D: getMaxValue3D,
@@ -28581,20 +29611,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var Base = require('./base');
+var _require = require('./base'),
+    Base = _require.Base;
 
-var Regression =
+var SVM =
 /*#__PURE__*/
 function (_Base) {
-  _inherits(Regression, _Base);
+  _inherits(SVM, _Base);
 
-  function Regression() {
-    _classCallCheck(this, Regression);
+  function SVM() {
+    _classCallCheck(this, SVM);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(Regression).apply(this, arguments));
+    return _possibleConstructorReturn(this, _getPrototypeOf(SVM).apply(this, arguments));
   }
 
-  _createClass(Regression, [{
+  _createClass(SVM, [{
     key: "predict",
     value: function predict() {
       this.weights = this.inputs;
@@ -28606,7 +29637,7 @@ function (_Base) {
     }
   }]);
 
-  return Regression;
+  return SVM;
 }(Base);
 
 function learn(target) {// if(y === i) { continue; }
@@ -28619,102 +29650,15 @@ function learn(target) {// if(y === i) { continue; }
   // }
 }
 
-module.exports = Regression;
-},{"./base":"kIeX"}],"YNtu":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var Activation = require('./types').Activation;
-
-var _require = require('../utilities/kernel'),
-    makeKernel = _require.makeKernel;
-
-var tanhDerivative = require('../activation/tanh').tanhDerivative;
-
-var zeros2D = require('../utilities/zeros-2d');
-
-function predict(inputs) {
-  return Math.tanh(inputs[this.thread.y][this.thread.x]);
+function svm(settings, inputLayer) {
+  return new SVM(settings, inputLayer);
 }
-
-function compare(weights, errors) {
-  return tanhDerivative(weights[this.thread.y][this.thread.x], errors[this.thread.y][this.thread.x]);
-}
-
-var Tanh =
-/*#__PURE__*/
-function (_Activation) {
-  _inherits(Tanh, _Activation);
-
-  function Tanh(inputLayer) {
-    var _this;
-
-    _classCallCheck(this, Tanh);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tanh).call(this));
-    _this.inputLayer = inputLayer;
-    var _this$inputLayer = _this.inputLayer,
-        width = _this$inputLayer.width,
-        height = _this$inputLayer.height,
-        depth = _this$inputLayer.depth;
-    _this.width = width;
-    _this.height = height;
-    _this.depth = depth;
-
-    _this.validate();
-
-    _this.weights = zeros2D(_this.width, _this.height);
-    _this.deltas = zeros2D(_this.width, _this.height);
-    return _this;
-  }
-
-  _createClass(Tanh, [{
-    key: "setupKernels",
-    value: function setupKernels() {
-      this.predictKernel = makeKernel(predict, {
-        output: [this.width, this.height]
-      });
-      this.compareKernel = makeKernel(compare, {
-        output: [this.width, this.height],
-        functions: [tanhDerivative]
-      });
-    }
-  }, {
-    key: "predict",
-    value: function predict() {
-      this.weights = this.predictKernel(this.inputLayer.weights);
-    }
-  }, {
-    key: "compare",
-    value: function compare() {
-      this.deltas = this.compareKernel(this.weights, this.deltas);
-    }
-  }]);
-
-  return Tanh;
-}(Activation);
 
 module.exports = {
-  Tanh: Tanh,
-  predict: predict,
-  compare: compare
+  SVM: SVM,
+  svm: svm
 };
-},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/tanh":"v3/M","../utilities/zeros-2d":"C4Cz"}],"xXoy":[function(require,module,exports) {
+},{"./base":"kIeX"}],"NJz4":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -28733,116 +29677,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var _require = require('../utilities/kernel'),
-    makeKernel = _require.makeKernel;
+var _require = require('./types'),
+    Modifier = _require.Modifier;
 
-var zeros = require('../utilities/zeros');
+var _require2 = require('../utilities/kernel'),
+    makeKernel = _require2.makeKernel;
 
-var zeros2D = require('../utilities/zeros-2d');
-
-var zeros3D = require('../utilities/zeros-3d');
-
-var Filter = require('./types').Filter;
-
-function compare1D(weights, targetValues) {
-  return weights[this.thread.y][this.thread.x] - targetValues[this.thread.x];
-}
-
-function compare2D(weights, targetValues) {
-  return weights[this.thread.y][this.thread.x] - targetValues[this.thread.y][this.thread.x];
-}
-
-var Target =
-/*#__PURE__*/
-function (_Filter) {
-  _inherits(Target, _Filter);
-
-  function Target(settings, inputLayer) {
-    var _this;
-
-    _classCallCheck(this, Target);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Target).call(this, settings));
-    _this.inputLayer = inputLayer;
-    _this.width = inputLayer.width;
-    _this.height = inputLayer.height;
-    _this.depth = inputLayer.depth;
-
-    _this.validate();
-
-    if (_this.depth > 1) {
-      _this.weights = zeros3D(_this.width, _this.height, _this.depth);
-      _this.deltas = zeros3D(_this.width, _this.height, _this.depth);
-      _this.errors = zeros3D(_this.width, _this.height, _this.depth);
-    } else if (_this.height > 1) {
-      _this.weights = zeros2D(_this.width, _this.height);
-      _this.deltas = zeros2D(_this.width, _this.height);
-      _this.errors = zeros2D(_this.width, _this.height);
-    } else {
-      _this.weights = zeros(_this.width);
-      _this.deltas = zeros(_this.width);
-      _this.errors = zeros(_this.width);
-    }
-
-    return _this;
-  }
-
-  _createClass(Target, [{
-    key: "setupKernels",
-    value: function setupKernels() {
-      var compareFn = this.width === 1 ? compare1D : compare2D;
-      this.compareKernel = makeKernel(compareFn, {
-        output: [this.width, this.height]
-      });
-    }
-  }, {
-    key: "predict",
-    value: function predict() {
-      // NOTE: this looks like it shouldn't be, but the weights are immutable, and this is where they are reused.
-      this.weights = this.inputLayer.weights;
-    }
-  }, {
-    key: "compare",
-    value: function compare(targetValues) {
-      // this is where weights attach to deltas
-      // deltas will be zero on learn, so save it in error for comparing to mse later
-      this.errors = this.compareKernel(this.weights, targetValues);
-      this.deltas = this.errors;
-      this.inputLayer.deltas = this.deltas;
-    }
-  }]);
-
-  return Target;
-}(Filter);
-
-module.exports = Target;
-},{"../utilities/kernel":"L30b","../utilities/zeros":"M4LY","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"0AN3","./types":"pX1U"}],"NJz4":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var Modifier = require('./types').Modifier;
-
-var _require = require('../utilities/kernel'),
-    makeKernel = _require.makeKernel;
-
-function transpose(array) {
+function predict(array) {
   return array[this.thread.x][this.thread.y];
 }
+
+var compare = predict;
 
 var Transpose =
 /*#__PURE__*/
@@ -28867,10 +29712,10 @@ function (_Modifier) {
   _createClass(Transpose, [{
     key: "setupKernels",
     value: function setupKernels() {
-      this.predictKernel = makeKernel(transpose, {
+      this.predictKernel = makeKernel(predict, {
         output: [this.height, this.width]
       });
-      this.compareKernel = makeKernel(transpose, {
+      this.compareKernel = makeKernel(compare, {
         output: [this.width, this.height]
       });
     }
@@ -28882,6 +29727,7 @@ function (_Modifier) {
   }, {
     key: "compare",
     value: function compare() {
+      // TODO: needs switched to this.compareKernel?
       this.inputLayer.deltas = this.predictKernel(this.deltas);
     }
   }]);
@@ -28889,214 +29735,142 @@ function (_Modifier) {
   return Transpose;
 }(Modifier);
 
-module.exports = Transpose;
-},{"./types":"pX1U","../utilities/kernel":"L30b"}],"EO/P":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var zeros2D = require('../utilities/zeros-2d');
-
-var Model = require('./types').Model;
-
-var Zeros =
-/*#__PURE__*/
-function (_Model) {
-  _inherits(Zeros, _Model);
-
-  function Zeros(settings) {
-    var _this;
-
-    _classCallCheck(this, Zeros);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Zeros).call(this, settings));
-
-    _this.validate();
-
-    _this.weights = zeros2D(_this.width, _this.height);
-    _this.deltas = zeros2D(_this.width, _this.height);
-    return _this;
-  }
-
-  _createClass(Zeros, [{
-    key: "predict",
-    value: function predict() {// throw new Error(`${this.constructor.name}-predict is not yet implemented`)
-    }
-  }, {
-    key: "compare",
-    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
-    }
-  }]);
-
-  return Zeros;
-}(Model);
-
-module.exports = Zeros;
-},{"../utilities/zeros-2d":"C4Cz","./types":"pX1U"}],"X3lc":[function(require,module,exports) {
-var Add = require('./add').Add;
-
-var Base = require('./base');
-
-var Convolution = require('./convolution').Convolution;
-
-var Dropout = require('./dropout').Dropout; // import feedForward from './feed-forward'
-
-
-var FullyConnected = require('./fully-connected').FullyConnected; // import gru from './gru'
-
-
-var Input = require('./input');
-
-var LeakyRelu = require('./leaky-relu').LeakyRelu; // import lstm from './lstm'
-
-
-var Multiply = require('./multiply').Multiply;
-
-var MultiplyElement = require('./multiply-element');
-
-var Negative = require('./negative');
-
-var Ones = require('./ones'); // import output from './output'
-
-
-var Pool = require('./pool').Pool;
-
-var Random = require('./random'); // import recurrent from './recurrent'
-
-
-var Regression = require('./regression');
-
-var Relu = require('./relu').Relu;
-
-var Sigmoid = require('./sigmoid').Sigmoid;
-
-var SoftMax = require('./soft-max').SoftMax;
-
-var SVM = require('./svm');
-
-var Tanh = require('./tanh').Tanh;
-
-var Target = require('./target');
-
-var Transpose = require('./transpose');
-
-var Zeros = require('./zeros');
-
-function add(inputLayer1, inputLayer2) {
-  return new Add(inputLayer1, inputLayer2);
-}
-
-function convolution(settings, inputLayer) {
-  return new Convolution(settings, inputLayer);
-}
-
-function dropout(settings, inputLayer) {
-  return new Dropout(settings, inputLayer);
-}
-
-function fullyConnected(settings, inputLayer) {
-  return new FullyConnected(settings, inputLayer);
-}
-
-function input(settings) {
-  return new Input(settings);
-}
-
-function leakyRelu(inputLayer) {
-  return new LeakyRelu(inputLayer);
-}
-
-function multiply(inputLayer1, inputLayer2) {
-  return new Multiply(inputLayer1, inputLayer2);
-}
-
-function multiplyElement(inputLayer1, inputLayer2) {
-  return new MultiplyElement(inputLayer1, inputLayer2);
-}
-
-function negative(settings, inputLayer) {
-  return new Negative(settings, inputLayer);
-}
-
-function ones(settings) {
-  return new Ones(settings);
-}
-
-function pool(settings, inputLayer) {
-  return new Pool(settings, inputLayer);
-}
-
-function random(settings) {
-  return new Random(settings);
-}
-
-function regression(settings, inputLayer) {
-  return new Regression(settings, inputLayer);
-}
-
-function relu(inputLayer) {
-  return new Relu(inputLayer);
-}
-
-function sigmoid(inputLayer) {
-  return new Sigmoid(inputLayer);
-}
-
-function softMax(settings, inputLayer) {
-  return new SoftMax(settings, inputLayer);
-}
-
-function svm(settings, inputLayer) {
-  return new SVM(settings, inputLayer);
-}
-
-function tanh(inputLayer) {
-  return new Tanh(inputLayer);
-}
-
-function target(settings, inputLayer) {
-  return new Target(settings, inputLayer);
-}
-
 function transpose(inputLayer) {
   return new Transpose(inputLayer);
 }
 
-function zeros(settings) {
-  return new Zeros(settings);
-}
+module.exports = {
+  Transpose: Transpose,
+  transpose: transpose
+};
+},{"./types":"pX1U","../utilities/kernel":"L30b"}],"X3lc":[function(require,module,exports) {
+var _require = require('./add'),
+    Add = _require.Add,
+    add = _require.add;
+
+var _require2 = require('./arthur-feed-forward'),
+    arthurFeedForward = _require2.arthurFeedForward;
+
+var _require3 = require('./base'),
+    Base = _require3.Base;
+
+var _require4 = require('./convolution'),
+    Convolution = _require4.Convolution,
+    convolution = _require4.convolution;
+
+var _require5 = require('./dropout'),
+    Dropout = _require5.Dropout,
+    dropout = _require5.dropout;
+
+var _require6 = require('./feed-forward'),
+    feedForward = _require6.feedForward;
+
+var _require7 = require('./fully-connected'),
+    FullyConnected = _require7.FullyConnected,
+    fullyConnected = _require7.fullyConnected;
+
+var _require8 = require('./gru'),
+    gru = _require8.gru;
+
+var _require9 = require('./input'),
+    Input = _require9.Input,
+    input = _require9.input;
+
+var _require10 = require('./leaky-relu'),
+    LeakyRelu = _require10.LeakyRelu,
+    leakyRelu = _require10.leakyRelu;
+
+var _require11 = require('./lstm'),
+    lstm = _require11.lstm;
+
+var _require12 = require('./multiply'),
+    Multiply = _require12.Multiply,
+    multiply = _require12.multiply;
+
+var _require13 = require('./multiply-element'),
+    MultiplyElement = _require13.MultiplyElement,
+    multiplyElement = _require13.multiplyElement;
+
+var _require14 = require('./negative'),
+    Negative = _require14.Negative,
+    negative = _require14.negative;
+
+var _require15 = require('./ones'),
+    Ones = _require15.Ones,
+    ones = _require15.ones;
+
+var _require16 = require('./output'),
+    output = _require16.output;
+
+var _require17 = require('./pool'),
+    Pool = _require17.Pool,
+    pool = _require17.pool;
+
+var _require18 = require('./random'),
+    Random = _require18.Random,
+    random = _require18.random;
+
+var _require19 = require('./recurrent'),
+    recurrent = _require19.recurrent;
+
+var _require20 = require('./regression'),
+    Regression = _require20.Regression,
+    regression = _require20.regression;
+
+var _require21 = require('./relu'),
+    Relu = _require21.Relu,
+    relu = _require21.relu;
+
+var _require22 = require('./sigmoid'),
+    Sigmoid = _require22.Sigmoid,
+    sigmoid = _require22.sigmoid;
+
+var _require23 = require('./soft-max'),
+    SoftMax = _require23.SoftMax,
+    softMax = _require23.softMax;
+
+var _require24 = require('./svm'),
+    SVM = _require24.SVM,
+    svm = _require24.svm;
+
+var _require25 = require('./tanh'),
+    Tanh = _require25.Tanh,
+    tanh = _require25.tanh;
+
+var _require26 = require('./target'),
+    Target = _require26.Target,
+    target = _require26.target;
+
+var _require27 = require('./transpose'),
+    Transpose = _require27.Transpose,
+    transpose = _require27.transpose;
+
+var _require28 = require('./zeros'),
+    Zeros = _require28.Zeros,
+    zeros = _require28.zeros;
+/**
+ * @description Layer API, to make it easier to use layers for the world
+ */
+
 
 module.exports = {
   Add: Add,
   add: add,
+  arthurFeedForward: arthurFeedForward,
   Base: Base,
   Convolution: Convolution,
   convolution: convolution,
   Dropout: Dropout,
   dropout: dropout,
-  // feedForward,
+  feedForward: feedForward,
   FullyConnected: FullyConnected,
   fullyConnected: fullyConnected,
-  // gru,
+  gru: gru,
   Input: Input,
   input: input,
   LeakyRelu: LeakyRelu,
   leakyRelu: leakyRelu,
-  // lstm,
+  lstm: lstm,
   Multiply: Multiply,
   multiply: multiply,
   MultiplyElement: MultiplyElement,
@@ -29105,12 +29879,12 @@ module.exports = {
   negative: negative,
   Ones: Ones,
   ones: ones,
-  // output,
+  output: output,
   Pool: Pool,
   pool: pool,
   Random: Random,
   random: random,
-  // recurrent,
+  recurrent: recurrent,
   Regression: Regression,
   regression: regression,
   Relu: Relu,
@@ -29130,7 +29904,7 @@ module.exports = {
   Zeros: Zeros,
   zeros: zeros
 };
-},{"./add":"q7CK","./base":"kIeX","./convolution":"xL0H","./dropout":"YwJF","./fully-connected":"Aqg2","./input":"qUrb","./leaky-relu":"JZX2","./multiply":"xJEq","./multiply-element":"vjFV","./negative":"kuo+","./ones":"0122","./pool":"vNYh","./random":"yQCp","./regression":"viPg","./relu":"BjPp","./sigmoid":"ED1E","./soft-max":"nfIB","./svm":"qIAv","./tanh":"YNtu","./target":"xXoy","./transpose":"NJz4","./zeros":"EO/P"}],"dfGl":[function(require,module,exports) {
+},{"./add":"q7CK","./arthur-feed-forward":"SVHJ","./base":"kIeX","./convolution":"xL0H","./dropout":"YwJF","./feed-forward":"nL/1","./fully-connected":"Aqg2","./gru":"v+cs","./input":"qUrb","./leaky-relu":"JZX2","./lstm":"Mqbi","./multiply":"xJEq","./multiply-element":"vjFV","./negative":"kuo+","./ones":"0122","./output":"YS3q","./pool":"vNYh","./random":"yQCp","./recurrent":"7ERy","./regression":"viPg","./relu":"BjPp","./sigmoid":"ED1E","./soft-max":"nfIB","./svm":"qIAv","./tanh":"YNtu","./target":"xXoy","./transpose":"NJz4","./zeros":"EO/P"}],"dfGl":[function(require,module,exports) {
 /**
  *
  * @param {*} input
@@ -29192,23 +29966,24 @@ function () {
       var lookupHash = {};
       var index = 0;
       Object.keys(hash).forEach(function (i) {
-        index += 1;
         lookupHash[i] = index;
+        index += 1;
       });
       return lookupHash;
     }
     /**
      * performs `{a: 0, b: 1}, {a: 6} -> [6, 0]`
-     * @param {*} lookup
+     * @param {*} lookupHash
      * @param {*} hash
-     * @returns {Array}
+     * @returns {Float32Array}
      */
 
   }, {
     key: "toArray",
     value: function toArray(lookupHash, hash) {
-      var array = [];
-      Object.keys(lookupHash).forEach(function (i) {
+      var keys = Object.keys(lookupHash);
+      var array = new Float32Array(keys.length);
+      keys.forEach(function (i) {
         array[lookupHash[i]] = hash[i] || 0;
       });
       return array;
@@ -29254,17 +30029,65 @@ function () {
 }();
 
 module.exports = lookup;
-},{}],"OMKX":[function(require,module,exports) {
+},{}],"MDrY":[function(require,module,exports) {
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// TODO: implement and test
+var Adam = function Adam() {
+  _classCallCheck(this, Adam);
+};
+
+function adam() {// gradient = grad_fun(theta)
+  //
+  //           # Update moment estimates
+  // moment1 = beta1 * moment1 + (1 - beta1) * gradient
+  // moment2 = beta2 * moment2 + (1 - beta2) * np.square(gradient)
+  //
+  //           # Yield adapted gradient
+  // theta = ( theta - alpha * (1 - beta2**t)**0.5 / (1 - beta1**t) *
+  //   moment1 / (epsilon + np.sqrt(moment2)) )
+  // yield theta
+  // t += 1
+  // adam update
+  // gsumi[j] = gsumi[j] * this.beta1 + (1- this.beta1) * gij; // update biased first moment estimate
+  // xsumi[j] = xsumi[j] * this.beta2 + (1-this.beta2) * gij * gij; // update biased second moment estimate
+  // var biasCorr1 = gsumi[j] * (1 - Math.pow(this.beta1, this.k)); // correct bias first moment estimate
+  // var biasCorr2 = xsumi[j] * (1 - Math.pow(this.beta2, this.k)); // correct bias second moment estimate
+  // var dx =  - this.learning_rate * biasCorr1 / (Math.sqrt(biasCorr2) + this.eps);
+  // p[j] += dx;
+}
+
+module.exports = {
+  Adam: Adam,
+  adam: adam
+};
+},{}],"OMKX":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
 var _require = require('../utilities/kernel'),
-    makeKernel = _require.makeKernel;
+    makeKernel = _require.makeKernel,
+    makeDevKernel = _require.makeDevKernel;
 
 var zeros2D = require('../utilities/zeros-2d');
+
+var _require2 = require('./base'),
+    Base = _require2.Base;
 
 function getMomentum(delta, decay, previousMomentum) {
   return previousMomentum * decay + (1 - decay) * delta * delta;
@@ -29287,7 +30110,7 @@ function clipByValue(value, max, min) {
  */
 
 
-function momentumRootMeanSquaredPropagation(weights, deltas, previousMomentums) {
+function update(weights, deltas, previousMomentums) {
   var delta = deltas[this.thread.y][this.thread.x];
   var clippedDelta = clipByValue(delta, this.constants.clipValue, -this.constants.clipValue);
   var weight = weights[this.thread.y][this.thread.x];
@@ -29310,7 +30133,9 @@ function isClippedByValue(value, max, min) {
 
 var MomentumRootMeanSquaredPropagation =
 /*#__PURE__*/
-function () {
+function (_Base) {
+  _inherits(MomentumRootMeanSquaredPropagation, _Base);
+
   _createClass(MomentumRootMeanSquaredPropagation, null, [{
     key: "defaults",
     get: function get() {
@@ -29325,16 +30150,18 @@ function () {
   }]);
 
   function MomentumRootMeanSquaredPropagation(layer) {
+    var _this;
+
     var settings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     _classCallCheck(this, MomentumRootMeanSquaredPropagation);
 
-    this.layer = layer;
-    this.width = layer.width;
-    this.height = layer.height;
-    this.momentums = zeros2D(layer.width, layer.height);
-    Object.assign(this, this.constructor.defaults, settings);
-    this.setupKernels();
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(MomentumRootMeanSquaredPropagation).call(this, layer, settings));
+    _this.momentums = zeros2D(layer.width, layer.height);
+
+    _this.setupKernels();
+
+    return _this;
   }
 
   _createClass(MomentumRootMeanSquaredPropagation, [{
@@ -29347,7 +30174,7 @@ function () {
   }, {
     key: "setupKernels",
     value: function setupKernels() {
-      this.kernel = makeKernel(momentumRootMeanSquaredPropagation, {
+      this.kernel = makeKernel(update, {
         output: [this.width, this.height],
         constants: {
           clipValue: this.clipValue,
@@ -29365,7 +30192,11 @@ function () {
   }]);
 
   return MomentumRootMeanSquaredPropagation;
-}();
+}(Base);
+
+function momentumRootMeanSquaredPropagation(layer, settings) {
+  return new MomentumRootMeanSquaredPropagation(layer, settings);
+}
 /**
  * @description Mathematician friendly name of MomentumRootMeanSquaredPropagation class. For those that are not mere mortals
  * @type {MomentumRootMeanSquaredPropagation}
@@ -29373,31 +30204,48 @@ function () {
 
 
 var MRmsProp = MomentumRootMeanSquaredPropagation;
-module.exports = {
-  MomentumRootMeanSquaredPropagation: MomentumRootMeanSquaredPropagation,
-  getMomentum: getMomentum,
-  MRmsProp: MRmsProp,
-  clipByValue: clipByValue,
-  isClippedByValue: isClippedByValue
-};
-},{"../utilities/kernel":"L30b","../utilities/zeros-2d":"C4Cz"}],"4P9L":[function(require,module,exports) {
-var mrmsp = require('./momentum-root-mean-squared-propagation');
-
-var MomentumRootMeanSquaredPropagation = mrmsp.MomentumRootMeanSquaredPropagation;
-var MRmsProp = mrmsp.MRmsProp;
-
-function momentumRootMeanSquaredPropagation(layer, settings) {
-  return new MomentumRootMeanSquaredPropagation(layer, settings);
-}
-
 var mRmsProp = momentumRootMeanSquaredPropagation;
 module.exports = {
   MomentumRootMeanSquaredPropagation: MomentumRootMeanSquaredPropagation,
   momentumRootMeanSquaredPropagation: momentumRootMeanSquaredPropagation,
   MRmsProp: MRmsProp,
+  mRmsProp: mRmsProp,
+  getMomentum: getMomentum,
+  clipByValue: clipByValue,
+  isClippedByValue: isClippedByValue
+};
+},{"../utilities/kernel":"L30b","../utilities/zeros-2d":"C4Cz","./base":"hKny"}],"4P9L":[function(require,module,exports) {
+var _require = require('./adam'),
+    Adam = _require.Adam,
+    adam = _require.adam;
+
+var _require2 = require('./arthur-deviation-biases'),
+    ArthurDeviationBiases = _require2.ArthurDeviationBiases,
+    arthurDeviationBiases = _require2.arthurDeviationBiases;
+
+var _require3 = require('./arthur-deviation-weights'),
+    ArthurDeviationWeights = _require3.ArthurDeviationWeights,
+    arthurDeviationWeights = _require3.arthurDeviationWeights;
+
+var _require4 = require('./momentum-root-mean-squared-propagation'),
+    MomentumRootMeanSquaredPropagation = _require4.MomentumRootMeanSquaredPropagation,
+    momentumRootMeanSquaredPropagation = _require4.momentumRootMeanSquaredPropagation,
+    MRmsProp = _require4.MRmsProp,
+    mRmsProp = _require4.mRmsProp;
+
+module.exports = {
+  Adam: Adam,
+  adam: adam,
+  ArthurDeviationBiases: ArthurDeviationBiases,
+  arthurDeviationBiases: arthurDeviationBiases,
+  ArthurDeviationWeights: ArthurDeviationWeights,
+  arthurDeviationWeights: arthurDeviationWeights,
+  MomentumRootMeanSquaredPropagation: MomentumRootMeanSquaredPropagation,
+  momentumRootMeanSquaredPropagation: momentumRootMeanSquaredPropagation,
+  MRmsProp: MRmsProp,
   mRmsProp: mRmsProp
 };
-},{"./momentum-root-mean-squared-propagation":"OMKX"}],"3u/j":[function(require,module,exports) {
+},{"./adam":"MDrY","./arthur-deviation-biases":"GVwH","./arthur-deviation-weights":"xg3/","./momentum-root-mean-squared-propagation":"OMKX"}],"3u/j":[function(require,module,exports) {
 module.exports = function mse2d(errors) {
   // mean squared error 2d
   var sum = 0;
@@ -29489,6 +30337,9 @@ var layerFromJSON = require('./utilities/layer-from-json');
 var _praxis = require('./praxis');
 
 var flattenLayers = require('./utilities/flatten-layers');
+
+var _require = require('./utilities/kernel'),
+    makeKernel = _require.makeKernel;
 
 var FeedForward =
 /*#__PURE__*/
@@ -29586,6 +30437,7 @@ function () {
         learningRate: 0.3,
         callback: null,
         callbackPeriod: 10,
+        errorCheckInterval: 100,
         reinforce: false
       };
     }
@@ -29598,8 +30450,9 @@ function () {
         hiddenLayers: null,
         inputLayer: null,
         outputLayer: null,
-        praxis: function praxis(layer) {
-          return _praxis.momentumRootMeanSquaredPropagation(layer);
+        praxisOpts: null,
+        praxis: function praxis(layer, settings) {
+          return _praxis.momentumRootMeanSquaredPropagation(layer, settings);
         }
       };
     }
@@ -29628,7 +30481,8 @@ function () {
     this.inputLayer = null;
     this.hiddenLayers = null;
     this.outputLayer = null;
-    this.errorCheckInterval = 100;
+    this.praxisOpts = null;
+    this.praxis = null;
     Object.assign(this, this.constructor.defaults, options);
     this.trainOpts = {};
 
@@ -29679,7 +30533,7 @@ function () {
         layer.setupKernels();
 
         if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
-          layer.praxis = this.praxis(layer);
+          layer.praxis = this.praxis(layer, this.praxisOpts);
         }
       }
     }
@@ -29697,6 +30551,10 @@ function () {
       }
 
       var output = this.runInput(input);
+
+      if (output.toArray) {
+        output = output.toArray();
+      }
 
       if (this.outputLookup) {
         output = lookup.toHash(this.outputLookup, output);
@@ -29745,7 +30603,7 @@ function () {
      *
      * @param {object} data
      * @param {object} status { iterations: number, error: number }
-     * @param endTime
+     * @param {Number} endTime
      */
 
   }, {
@@ -29760,7 +30618,7 @@ function () {
       if (this.trainOpts.log && status.iterations % this.trainOpts.logPeriod === 0) {
         status.error = this._calculateTrainingError(data);
         this.trainOpts.log("iterations: ".concat(status.iterations, ", training error: ").concat(status.error));
-      } else if (status.iterations % this.errorCheckInterval === 0) {
+      } else if (status.iterations % this.trainOpts.errorCheckInterval === 0) {
         status.error = this._calculateTrainingError(data);
       } else {
         this._trainPatterns(data);
@@ -29785,7 +30643,12 @@ function () {
     value: function _prepTraining(data, options) {
       this._updateTrainingOptions(options);
 
-      data = this._formatData(data);
+      if (this.trainOpts.callback && this.trainOpts.callbackPeriod !== this.trainOpts.errorCheckInterval) {
+        console.warn("options.callbackPeriod with value of ".concat(this.trainOpts.callbackPeriod, " does not match options.errorCheckInterval with value of ").concat(this.trainOpts.errorCheckInterval, ", if logging error, it will repeat.  These values may need to match"));
+      }
+
+      var formattedData = this._formatData(data);
+
       var endTime = Date.now() + this.trainOpts.timeout;
       var status = {
         error: 1,
@@ -29796,8 +30659,30 @@ function () {
         this.initialize();
       }
 
+      var transferredData = new Array(formattedData.length);
+      var transferInput = makeKernel(function (value) {
+        return value[this.thread.x];
+      }, {
+        immutable: true,
+        output: [formattedData[0].input.length]
+      });
+      var transferOutput = makeKernel(function (value) {
+        return value[this.thread.x];
+      }, {
+        immutable: true,
+        output: [formattedData[0].output.length]
+      });
+
+      for (var i = 0; i < formattedData.length; i++) {
+        var formattedDatum = formattedData[i];
+        transferredData[i] = {
+          input: transferInput(formattedDatum.input),
+          output: transferOutput(formattedDatum.output)
+        };
+      }
+
       return {
-        data: data,
+        data: transferredData,
         status: status,
         endTime: endTime
       };
@@ -29849,7 +30734,7 @@ function () {
       this._adjustWeights();
 
       if (logErrorRate) {
-        return mse2d(this._outputLayer.errors.hasOwnProperty('toArray') ? this._outputLayer.errors.toArray() : this._outputLayer.errors);
+        return mse2d(this._outputLayer.errors.toArray ? this._outputLayer.errors.toArray() : this._outputLayer.errors);
       }
 
       return null;
@@ -29891,9 +30776,9 @@ function () {
       } // turn sparse hash input into arrays with 0s as filler
 
 
-      var datum = data[0].input;
+      var inputDatumCheck = data[0].input;
 
-      if (!Array.isArray(datum) && !(datum instanceof Float32Array)) {
+      if (!Array.isArray(inputDatumCheck) && !(inputDatumCheck instanceof Float32Array)) {
         if (!this.inputLookup) {
           this.inputLookup = lookup.buildLookup(data.map(function (value) {
             return value.input;
@@ -29908,7 +30793,9 @@ function () {
         }, this);
       }
 
-      if (!Array.isArray(data[0].output)) {
+      var outputDatumCheck = data[0].output;
+
+      if (!Array.isArray(outputDatumCheck) && !(outputDatumCheck instanceof Float32Array)) {
         if (!this.outputLookup) {
           this.outputLookup = lookup.buildLookup(data.map(function (value) {
             return value.output;
@@ -30030,8 +30917,10 @@ function () {
   return FeedForward;
 }();
 
-module.exports = FeedForward;
-},{"./lookup":"Q1a6","./utilities/mse-2d":"3u/j","./utilities/layer-from-json":"NEs+","./praxis":"4P9L","./utilities/flatten-layers":"4Z71"}],"Mjd7":[function(require,module,exports) {
+module.exports = {
+  FeedForward: FeedForward
+};
+},{"./lookup":"Q1a6","./utilities/mse-2d":"3u/j","./utilities/layer-from-json":"NEs+","./praxis":"4P9L","./utilities/flatten-layers":"4Z71","./utilities/kernel":"L30b"}],"Mjd7":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -37211,9 +38100,9 @@ function () {
       } // turn sparse hash input into arrays with 0s as filler
 
 
-      var datumCheck = data[0].input;
+      var inputDatumCheck = data[0].input;
 
-      if (!Array.isArray(datumCheck) && !(datumCheck instanceof Float32Array)) {
+      if (!Array.isArray(inputDatumCheck) && !(inputDatumCheck instanceof Float32Array)) {
         if (!this.inputLookup) {
           this.inputLookup = lookup.buildLookup(data.map(function (value) {
             return value.input;
@@ -37228,7 +38117,9 @@ function () {
         }, this);
       }
 
-      if (!Array.isArray(data[0].output)) {
+      var outputDatumCheck = data[0].output;
+
+      if (!Array.isArray(outputDatumCheck) && !(outputDatumCheck instanceof Float32Array)) {
         if (!this.outputLookup) {
           this.outputLookup = lookup.buildLookup(data.map(function (value) {
             return value.output;
@@ -38150,7 +39041,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var Internal = require('./types').Internal;
+var _require = require('./types'),
+    Internal = _require.Internal;
 
 var zeros2D = require('../utilities/zeros-2d');
 
@@ -38232,7 +39124,9 @@ function (_Internal) {
   return RecurrentConnection;
 }(Internal);
 
-module.exports = RecurrentConnection;
+module.exports = {
+  RecurrentConnection: RecurrentConnection
+};
 },{"./types":"pX1U","../utilities/zeros-2d":"C4Cz"}],"kvWK":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -38253,9 +39147,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // import zeros2D from '../utilities/zeros-2d'
-var Internal = require('./types').Internal;
+var _require = require('./types'),
+    Internal = _require.Internal;
 
-var Base = require('./base');
+var _require2 = require('./base'),
+    Base = _require2.Base;
 
 var RecurrentInput =
 /*#__PURE__*/
@@ -38338,7 +39234,9 @@ function (_Internal) {
   return RecurrentInput;
 }(Internal);
 
-module.exports = RecurrentInput;
+module.exports = {
+  RecurrentInput: RecurrentInput
+};
 },{"./types":"pX1U","./base":"kIeX"}],"7ZE4":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -38360,7 +39258,8 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 var zeros2D = require('../utilities/zeros-2d');
 
-var Internal = require('./types').Internal;
+var _require = require('./types'),
+    Internal = _require.Internal;
 
 var RecurrentZeros =
 /*#__PURE__*/
@@ -38423,7 +39322,9 @@ function (_Internal) {
   return RecurrentZeros;
 }(Internal);
 
-module.exports = RecurrentZeros;
+module.exports = {
+  RecurrentZeros: RecurrentZeros
+};
 },{"../utilities/zeros-2d":"C4Cz","./types":"pX1U"}],"JVtt":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -38455,17 +39356,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var RecurrentConnection = require('./layer/recurrent-connection');
+var _require = require('./layer/recurrent-connection'),
+    RecurrentConnection = _require.RecurrentConnection;
 
-var RecurrentInput = require('./layer/recurrent-input');
+var _require2 = require('./layer/recurrent-input'),
+    RecurrentInput = _require2.RecurrentInput;
 
-var RecurrentZeros = require('./layer/recurrent-zeros');
+var _require3 = require('./layer/recurrent-zeros'),
+    RecurrentZeros = _require3.RecurrentZeros;
 
 var flattenLayers = require('./utilities/flatten-layers');
 
 var mse2d = require('./utilities/mse-2d');
 
-var FeedForward = require('./feed-forward'); // const Base from './layer/base'
+var _require4 = require('./feed-forward'),
+    FeedForward = _require4.FeedForward; // const Base from './layer/base'
 
 
 var Recurrent =
@@ -38789,7 +39694,9 @@ function (_FeedForward) {
   return Recurrent;
 }(FeedForward);
 
-module.exports = Recurrent;
+module.exports = {
+  Recurrent: Recurrent
+};
 },{"./layer/recurrent-connection":"sLgS","./layer/recurrent-input":"kvWK","./layer/recurrent-zeros":"7ZE4","./utilities/flatten-layers":"4Z71","./utilities/mse-2d":"3u/j","./feed-forward":"eqC7"}],"v84l":[function(require,module,exports) {
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -41374,201 +42281,7 @@ function (_RNNTimeStep) {
 }(RNNTimeStep);
 
 module.exports = GRUTimeStep;
-},{"./gru":"wLPK","./rnn-time-step":"zri4"}],"nL/1":[function(require,module,exports) {
-var _require = require('./index'),
-    add = _require.add,
-    multiply = _require.multiply,
-    random = _require.random,
-    sigmoid = _require.sigmoid;
-
-module.exports = function feedForward(settings, input) {
-  var height = settings.height;
-  var weights = random({
-    name: 'weights',
-    height: height,
-    width: input.height
-  });
-  var biases = random({
-    name: 'biases',
-    height: height
-  });
-  return sigmoid(add(multiply(weights, input), biases));
-};
-},{"./index":"X3lc"}],"v+cs":[function(require,module,exports) {
-var _require = require('.'),
-    add = _require.add,
-    negative = _require.negative,
-    multiply = _require.multiply,
-    multiplyElement = _require.multiplyElement,
-    ones = _require.ones,
-    sigmoid = _require.sigmoid,
-    random = _require.random,
-    tanh = _require.tanh,
-    zeros = _require.zeros;
-
-module.exports = function (settings, recurrentInput, input) {
-  var height = settings.height;
-  var updateGateWeights = random({
-    height: height,
-    width: input.height
-  });
-  var updateGatePeepholes = random({
-    width: height,
-    height: height
-  });
-  var updateGateBias = zeros({
-    height: height
-  });
-  var updateGate = sigmoid(add(add(multiply(updateGateWeights, input), multiply(updateGatePeepholes, recurrentInput)), updateGateBias));
-  var resetGateWeights = random({
-    height: height,
-    width: input.height
-  });
-  var resetGatePeepholes = random({
-    width: height,
-    height: height
-  });
-  var resetGateBias = zeros({
-    height: height
-  });
-  var resetGate = sigmoid(add(add(multiply(resetGateWeights, input), multiply(resetGatePeepholes, recurrentInput)), resetGateBias));
-  var cellWeights = random({
-    height: height,
-    width: input.height
-  });
-  var cellPeepholes = random({
-    width: height,
-    height: height
-  });
-  var cellBias = zeros({
-    height: height
-  });
-  var cell = tanh(add(add(multiply(cellWeights, input), multiply(cellPeepholes, multiplyElement(resetGate, recurrentInput))), cellBias)); // compute hidden state as gated, saturated cell activations
-  // negate updateGate
-
-  return add(multiplyElement(add(ones(updateGate.rows, updateGate.columns), negative(updateGate)), cell), multiplyElement(recurrentInput, updateGate));
-};
-},{".":"X3lc"}],"Mqbi":[function(require,module,exports) {
-var _require = require('./index'),
-    add = _require.add,
-    multiply = _require.multiply,
-    multiplyElement = _require.multiplyElement,
-    random = _require.random,
-    sigmoid = _require.sigmoid,
-    tanh = _require.tanh,
-    zeros = _require.zeros;
-
-module.exports = function (settings, recurrentInput, input) {
-  var height = settings.height;
-  var inputGateWeights = random({
-    height: height,
-    width: input.height
-  });
-  var inputGatePeepholes = random({
-    width: height,
-    height: height
-  });
-  var inputGateBias = zeros({
-    height: height
-  });
-  var inputGate = sigmoid(add(add(multiply(inputGateWeights, input), multiply(inputGatePeepholes, recurrentInput)), inputGateBias));
-  var forgetGateWeights = random({
-    height: height,
-    width: input.height
-  });
-  var forgetGatePeepholes = random({
-    width: height,
-    height: height
-  });
-  var forgetGateBias = zeros({
-    height: height
-  });
-  var forgetGate = sigmoid(add(add(multiply(forgetGateWeights, input), multiply(forgetGatePeepholes, recurrentInput)), forgetGateBias));
-  var outputGateWeights = random({
-    height: height,
-    width: input.height
-  });
-  var outputGatePeepholes = random({
-    width: height,
-    height: height
-  });
-  var outputGateBias = zeros({
-    height: height
-  });
-  var outputGate = sigmoid(add(add(multiply(outputGateWeights, input), multiply(outputGatePeepholes, recurrentInput)), outputGateBias));
-  var memoryWeights = random({
-    height: height,
-    width: input.height
-  });
-  var memoryPeepholes = random({
-    width: height,
-    height: height
-  });
-  var memoryBias = zeros({
-    height: height
-  });
-  var memory = tanh(add(add(multiply(memoryWeights, input), multiply(memoryPeepholes, recurrentInput)), memoryBias)); // compute new cell activation
-
-  var retainCell = multiplyElement(forgetGate, input); // what do we keep from cell
-
-  var writeCell = multiplyElement(inputGate, memory); // what do we write to cell
-
-  var cell = add(retainCell, writeCell); // new cell contents
-  // compute hidden state as gated, saturated cell activations
-
-  return multiplyElement(outputGate, tanh(cell));
-};
-},{"./index":"X3lc"}],"7ERy":[function(require,module,exports) {
-var _require = require('.'),
-    relu = _require.relu,
-    add = _require.add,
-    multiply = _require.multiply,
-    random = _require.random,
-    zeros = _require.zeros;
-
-module.exports = function (settings, input, recurrentInput) {
-  var height = settings.height;
-  recurrentInput.setDimensions(1, height); // wxh
-
-  var weight = random({
-    name: 'weight',
-    height: height,
-    width: input.height
-  }); // whh
-
-  var transition = random({
-    name: 'transition',
-    height: height,
-    width: height
-  }); // bhh
-
-  var bias = zeros({
-    name: 'bias',
-    height: height
-  });
-  return relu(add(add(multiply(weight, input), multiply(transition, recurrentInput)), bias));
-};
-},{".":"X3lc"}],"YS3q":[function(require,module,exports) {
-var _require = require('.'),
-    add = _require.add,
-    multiply = _require.multiply,
-    random = _require.random,
-    target = _require.target,
-    zeros = _require.zeros;
-
-module.exports = function (settings, inputLayer) {
-  var height = settings.height;
-  var outputGate = random({
-    height: height,
-    width: inputLayer.height
-  });
-  var output = zeros({
-    height: height
-  });
-  var outputGateConnector = multiply(outputGate, inputLayer);
-  return target(settings, add(outputGateConnector, output));
-};
-},{".":"X3lc"}],"Focm":[function(require,module,exports) {
+},{"./gru":"wLPK","./rnn-time-step":"zri4"}],"Focm":[function(require,module,exports) {
 var activation = require('./activation');
 
 var crossValidate = require('./cross-validate').crossValidate;
@@ -41581,7 +42294,8 @@ var lookup = require('./lookup');
 
 var praxis = require('./praxis');
 
-var FeedForward = require('./feed-forward');
+var _require = require('./feed-forward'),
+    FeedForward = _require.FeedForward;
 
 var NeuralNetwork = require('./neural-network');
 
@@ -41589,7 +42303,8 @@ var NeuralNetworkGPU = require('./neural-network-gpu');
 
 var TrainStream = require('./train-stream');
 
-var Recurrent = require('./recurrent');
+var _require2 = require('./recurrent'),
+    Recurrent = _require2.Recurrent;
 
 var RNNTimeStep = require('./recurrent/rnn-time-step');
 
@@ -41621,24 +42336,8 @@ var toArray = require('./utilities/to-array');
 
 var DataFormatter = require('./utilities/data-formatter');
 
-var zeros = require('./utilities/zeros'); // layer deps
+var zeros = require('./utilities/zeros');
 
-
-var feedForward = require('./layer/feed-forward');
-
-var gru = require('./layer/gru');
-
-var lstm = require('./layer/lstm');
-
-var recurrent = require('./layer/recurrent');
-
-var output = require('./layer/output');
-
-layer.feedForward = feedForward;
-layer.gru = gru;
-layer.lstm = lstm;
-layer.recurrent = recurrent;
-layer.output = output;
 var brain = {
   activation: activation,
   crossValidate: crossValidate,
@@ -41680,5 +42379,5 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined') {
   module.exports = brain;
 }
-},{"./activation":"l4U/","./cross-validate":"+wYj","./layer":"X3lc","./likely":"dfGl","./lookup":"Q1a6","./praxis":"4P9L","./feed-forward":"eqC7","./neural-network":"8epZ","./neural-network-gpu":"6trg","./train-stream":"vEEq","./recurrent":"JVtt","./recurrent/rnn-time-step":"zri4","./recurrent/lstm-time-step":"hEPI","./recurrent/gru-time-step":"+7gC","./recurrent/rnn":"gJGF","./recurrent/lstm":"e2+i","./recurrent/gru":"wLPK","./utilities/max":"UFcl","./utilities/mse":"YGn7","./utilities/ones":"f7P8","./utilities/random":"Sd27","./utilities/random-weight":"TX07","./utilities/randos":"S8tM","./utilities/range":"YhH7","./utilities/to-array":"HBY8","./utilities/data-formatter":"91u3","./utilities/zeros":"M4LY","./layer/feed-forward":"nL/1","./layer/gru":"v+cs","./layer/lstm":"Mqbi","./layer/recurrent":"7ERy","./layer/output":"YS3q"}]},{},["Focm"], null)
+},{"./activation":"l4U/","./cross-validate":"+wYj","./layer":"X3lc","./likely":"dfGl","./lookup":"Q1a6","./praxis":"4P9L","./feed-forward":"eqC7","./neural-network":"8epZ","./neural-network-gpu":"6trg","./train-stream":"vEEq","./recurrent":"JVtt","./recurrent/rnn-time-step":"zri4","./recurrent/lstm-time-step":"hEPI","./recurrent/gru-time-step":"+7gC","./recurrent/rnn":"gJGF","./recurrent/lstm":"e2+i","./recurrent/gru":"wLPK","./utilities/max":"UFcl","./utilities/mse":"YGn7","./utilities/ones":"f7P8","./utilities/random":"Sd27","./utilities/random-weight":"TX07","./utilities/randos":"S8tM","./utilities/range":"YhH7","./utilities/to-array":"HBY8","./utilities/data-formatter":"91u3","./utilities/zeros":"M4LY"}]},{},["Focm"], null)
 //# sourceMappingURL=/brain-browser.js.map
