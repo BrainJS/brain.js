@@ -9,7 +9,7 @@ function activate(weight) {
 }
 
 /**
- * Leaky Relu derivative
+ * Relu derivative
  * @param weight
  * @param delta
  * @returns {number}
