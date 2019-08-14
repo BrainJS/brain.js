@@ -92,7 +92,7 @@ describe('ArthurDeviationWeights', () => {
 
     net.deltas[2][0] = 6;
 
-    net._adjustWeights();
+    net.adjustWeights();
     const result = praxis.run();
     expect(praxis.changes[0][0]).toBe(net.changes[1][0][0]);
     expect(praxis.changes[0][1]).toBe(net.changes[1][0][1]);

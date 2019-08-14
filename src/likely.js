@@ -1,7 +1,7 @@
 /**
  *
  * @param {*} input
- * @param {NeuralNetwork} net
+ * @param {brain.NeuralNetwork} net
  * @returns {*}
  */
 module.exports = function likely(input, net) {
@@ -18,4 +18,4 @@ module.exports = function likely(input, net) {
   });
 
   return maxProp;
-}
+};

@@ -1,7 +1,5 @@
-const _randomF = require('../../utilities/random').randomFloat;
+const { randomFloat } = require('../../utilities/random');
 
-// prevent parser from renaming when calling toString() method later
-const randomF = _randomF;
 /**
  *
  * @param {Matrix} m
@@ -10,7 +8,7 @@ const randomF = _randomF;
 module.exports = function sampleI(m) {
   // sample argmax from w, assuming w are
   // probabilities that sum to one
-  const r = randomF(0, 1);
+  const r = randomFloat(0, 1);
   let x = 0;
   let i = 0;
   const w = m.weights;
@@ -22,4 +20,4 @@ module.exports = function sampleI(m) {
     }
     i++;
   }
-}
+};

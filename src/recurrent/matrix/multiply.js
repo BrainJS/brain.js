@@ -29,4 +29,4 @@ module.exports = function multiply(product, left, right) {
       product.weights[rightRowBase + rightColumn] = dot;
     }
   }
-}
+};

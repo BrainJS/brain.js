@@ -16,4 +16,4 @@ module.exports = function maxI(m) {
     maxv = v;
   }
   return maxix;
-}
+};

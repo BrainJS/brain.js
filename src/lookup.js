@@ -5,13 +5,94 @@ class lookup {
    * @param {Object} hashes
    * @returns {Object}
    */
-  static buildLookup(hashes) {
-    const reducedHash = hashes.reduce(
-      (memo, hash) => Object.assign(memo, hash),
-      {}
-    );
+  static toTable(hashes) {
+    const hash = hashes.reduce((memo, hash) => {
+      return Object.assign(memo, hash);
+    }, {});
 
-    return lookup.lookupFromHash(reducedHash);
+    return lookup.toHash(hash);
+  }
+
+  /**
+   * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
+   * @param {Object} objects2D
+   * @returns {Object}
+   */
+  static toTable2D(objects2D) {
+    const table = {};
+    let valueIndex = 0;
+    for (let i = 0; i < objects2D.length; i++) {
+      const objects = objects2D[i];
+      for (let j = 0; j < objects.length; j++) {
+        const object = objects[j];
+        for (const p in object) {
+          if (object.hasOwnProperty(p) && !table.hasOwnProperty(p)) {
+            table[p] = valueIndex++;
+          }
+        }
+      }
+    }
+    return table;
+  }
+
+  static toInputTable(data) {
+    const table = {};
+    let tableIndex = 0;
+    for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
+      for (let p in data[dataIndex].input) {
+        if (!table.hasOwnProperty(p)) {
+          table[p] = tableIndex++;
+        }
+      }
+    }
+    return table;
+  }
+
+  static toInputTable2D(data) {
+    const table = {};
+    let tableIndex = 0;
+    for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
+      const input = data[dataIndex].input;
+      for (let i = 0; i < input.length; i++) {
+        const object = input[i];
+        for (let p in object) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
+        }
+      }
+    }
+    return table;
+  }
+
+  static toOutputTable(data) {
+    const table = {};
+    let tableIndex = 0;
+    for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
+      for (let p in data[dataIndex].output) {
+        if (!table.hasOwnProperty(p)) {
+          table[p] = tableIndex++;
+        }
+      }
+    }
+    return table;
+  }
+
+  static toOutputTable2D(data) {
+    const table = {};
+    let tableIndex = 0;
+    for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
+      const output = data[dataIndex].output;
+      for (let i = 0; i < output.length; i++) {
+        const object = output[i];
+        for (let p in object) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
+        }
+      }
+    }
+    return table;
   }
 
   /**
@@ -19,47 +100,74 @@ class lookup {
    * @param {Object} hash
    * @returns {Object}
    */
-  static lookupFromHash(hash) {
-    const lookupHash = {};
+  static toHash(hash) {
+    let lookup = {};
     let index = 0;
-
-    Object.keys(hash).forEach(i => {
-      lookupHash[i] = index;
-      index += 1;
-    });
-
-    return lookupHash;
+    for (let i in hash) {
+      lookup[i] = index++;
+    }
+    return lookup;
   }
 
   /**
    * performs `{a: 0, b: 1}, {a: 6} -> [6, 0]`
-   * @param {*} lookupHash
-   * @param {*} hash
+   * @param {*} lookup
+   * @param {*} object
+   * @param {*} arrayLength
    * @returns {Float32Array}
    */
-  static toArray(lookupHash, hash) {
-    const keys = Object.keys(lookupHash);
-    const array = new Float32Array(keys.length);
-    keys.forEach(i => {
-      array[lookupHash[i]] = hash[i] || 0;
-    });
-    return array;
+  static toArray(lookup, object, arrayLength) {
+    const result = new Float32Array(arrayLength);
+    for (let p in lookup) {
+      result[lookup[p]] = object.hasOwnProperty(p) ? object[p] : 0;
+    }
+    return result;
+  }
+
+  static toArrayShort(lookup, object) {
+    const result = [];
+    for (let p in lookup) {
+      if (!object.hasOwnProperty(p)) break;
+      result[lookup[p]] = object[p];
+    }
+    return Float32Array.from(result);
+  }
+
+  static toArrays(lookup, objects, arrayLength) {
+    const result = [];
+    for (let i = 0; i < objects.length; i++) {
+      result.push(this.toArray(lookup, objects[i], arrayLength));
+    }
+    return result;
   }
 
   /**
    * performs `{a: 0, b: 1}, [6, 7] -> {a: 6, b: 7}`
-   * @param {Object} lookupHash
+   * @param {Object} lookup
    * @param {Array} array
    * @returns {Object}
    */
-  static toHash(lookupHash, array) {
-    const hash = {};
+  static toObject(lookup, array) {
+    const object = {};
+    for (let p in lookup) {
+      object[p] = array[lookup[p]];
+    }
+    return object;
+  }
 
-    Object.keys(lookupHash).forEach(i => {
-      hash[i] = array[lookupHash[i]];
-    });
-
-    return hash;
+  static toObjectPartial(lookup, array, offset = 0, limit = 0) {
+    const object = {};
+    let i = 0;
+    for (let p in lookup) {
+      if (offset > 0) {
+        if (i++ < offset) continue;
+      }
+      if (limit > 0) {
+        if (i++ >= limit) continue;
+      }
+      object[p] = array[lookup[p] - offset];
+    }
+    return object;
   }
 
   /**
@@ -68,15 +176,59 @@ class lookup {
    * @returns {*}
    */
   static lookupFromArray(array) {
-    const lookupHash = {};
+    let lookup = {};
     let z = 0;
     let i = array.length;
-
     while (i-- > 0) {
-      lookupHash[array[i]] = z++;
+      lookup[array[i]] = z++;
+    }
+    return lookup;
+  }
+
+  static dataShape(data) {
+    const shape = [];
+
+    if (data.input) {
+      shape.push('datum');
+      data = data.input;
+    } else if (Array.isArray(data)) {
+      if (data[0].input) {
+        shape.push('array', 'datum');
+        data = data[0].input;
+      } else {
+        shape.push('array');
+        data = data[0];
+      }
     }
 
-    return lookupHash;
+    let p;
+    while (data) {
+      for (p in data) { break; }
+      if (!data.hasOwnProperty(p)) break;
+      if (Array.isArray(data) || data.buffer instanceof ArrayBuffer) {
+        shape.push('array');
+        data = data[p];
+      } else if (typeof data === 'object') {
+        shape.push('object');
+        data = data[p];
+      } else {
+        throw new Error('unhandled signature');
+      }
+    }
+    shape.push(typeof data);
+    return shape;
+  }
+
+  static addKeys(value, table) {
+    if (Array.isArray(value)) return;
+    table = table || {};
+    let i = Object.keys(table).length;
+    for (const p in value) {
+      if (!value.hasOwnProperty(p)) continue;
+      if (table.hasOwnProperty(p)) continue;
+      table[p] = i++;
+    }
+    return table;
   }
 }
 

@@ -28,4 +28,4 @@ module.exports = function softmax(m) {
   // since we will use the computed probabilities outside
   // to set gradients directly on m
   return result;
-}
+};

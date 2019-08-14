@@ -45,7 +45,7 @@ describe('ArthurDeviationBiases', () => {
       layer1.weights[1][0] = net.biases[1][1] = 8;
       layer1.weights[2][0] = net.biases[1][2] = 9;
       net.biases[2][0] = 10;
-      net._adjustWeights();
+      net.adjustWeights();
       const result = praxis.run(layer1);
       expect(result[0][0]).not.toBe(0);
       expect(result[0][0]).toBe(net.biases[1][0]);

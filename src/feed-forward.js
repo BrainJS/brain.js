@@ -1,5 +1,4 @@
 const lookup = require('./lookup');
-// import TrainStream from './train-stream'
 const mse2d = require('./utilities/mse-2d');
 const layerFromJSON = require('./utilities/layer-from-json');
 const praxis = require('./praxis');

@@ -1,4 +1,6 @@
-const Matrix = require('.');
+const Matrix = require('./');
+const OnesMatrix = require('./ones-matrix');
+const copy = require('./copy');
 const cloneNegative = require('./clone-negative');
 const add = require('./add');
 const addB = require('./add-b');
@@ -15,6 +17,7 @@ const sigmoid = require('./sigmoid');
 const sigmoidB = require('./sigmoid-b');
 const tanh = require('./tanh');
 const tanhB = require('./tanh-b');
+const softmax = require('./softmax');
 
 class Equation {
   constructor() {
@@ -155,12 +158,11 @@ class Equation {
    * @returns {Matrix}
    */
   input(input) {
-    const self = this;
     this.states.push({
       product: input,
-      forwardFn: () => {
-        input.weights = self.inputValue;
-      },
+      forwardFn: (product) => {
+        product.weights = input.weights = this.inputValue;
+      }
     });
     return input;
   }
@@ -240,7 +242,7 @@ class Equation {
    * @patam {Number} [rowIndex]
    * @output {Matrix}
    */
-  run(rowIndex = 0) {
+  runIndex(rowIndex = 0) {
     this.inputRow = rowIndex;
     let state;
     for (let i = 0, max = this.states.length; i < max; i++) {
@@ -276,7 +278,25 @@ class Equation {
    * @patam {Number} [rowIndex]
    * @output {Matrix}
    */
-  runBackpropagate(rowIndex = 0) {
+  backpropagate() {
+    let i = this.states.length;
+    let state;
+    while (i-- > 0) {
+      state = this.states[i];
+      if (!state.hasOwnProperty('backpropagationFn')) {
+        continue;
+      }
+      state.backpropagationFn(state.product, state.left, state.right);
+    }
+
+    return state.product;
+  }
+
+  /**
+   * @patam {Number} [rowIndex]
+   * @output {Matrix}
+   */
+  backpropagateIndex(rowIndex = 0) {
     this.inputRow = rowIndex;
 
     let i = this.states.length;
@@ -290,6 +310,33 @@ class Equation {
     }
 
     return state.product;
+  }
+
+  predictTarget(input, target) {
+    const output = this.runInput(input);
+    let errorSum = 0;
+    for (let i = 0; i < output.weights.length; i++) {
+      const error = output.weights[i] - target[i];
+      // set gradients into log probabilities
+      errorSum += Math.abs(error);
+      // write gradients into log probabilities
+      output.deltas[i] = error;
+    }
+    return errorSum;
+  }
+
+  predictTargetIndex(input, target) {
+    const output = this.runIndex(input);
+    // set gradients into log probabilities
+    const logProbabilities = output; // interpret output as log probabilities
+    let probabilities = softmax(output); // compute the softmax probabilities
+
+    // write gradients into log probabilities
+    logProbabilities.deltas = probabilities.weights.slice(0);
+    logProbabilities.deltas[target] -= 1;
+
+    // accumulate base 2 log prob and do smoothing
+    return -Math.log2(probabilities.weights[target]);
   }
 }
 

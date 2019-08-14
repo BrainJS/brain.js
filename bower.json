@@ -24,7 +24,7 @@
     "lstm",
     "gru"
   ],
-  "main": "./dist/brain.js",
+  "main": "./dist/brain-browser.min.js",
   "ignore": [
     ".cache",
     "node_modules",
@@ -32,5 +32,5 @@
     "examples",
     "examples-typescript"
   ],
-  "version": "1.1.1"
+  "version": "2.0.0-alpha.2"
 }

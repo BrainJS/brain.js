@@ -9,4 +9,4 @@ module.exports = function addB(product, left, right) {
     left.deltas[i] = product.deltas[i];
     right.deltas[i] = product.deltas[i];
   }
-}
+};

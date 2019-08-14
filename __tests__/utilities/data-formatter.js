@@ -243,8 +243,6 @@ describe('DataFormatter', () => {
       3,
       4,
       5,
-      'stop-input',
-      'start-output',
       1,
       2,
       3,

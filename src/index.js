@@ -1,5 +1,5 @@
 const activation = require('./activation');
-const crossValidate = require('./cross-validate').crossValidate;
+const CrossValidate = require('./cross-validate');
 const layer = require('./layer');
 const likely = require('./likely');
 const lookup = require('./lookup');
@@ -25,10 +25,11 @@ const range = require('./utilities/range');
 const toArray = require('./utilities/to-array');
 const DataFormatter = require('./utilities/data-formatter');
 const zeros = require('./utilities/zeros');
+const toSVG = require('./utilities/to-svg');
 
 const brain = {
   activation,
-  crossValidate,
+  CrossValidate,
   likely,
   layer,
   lookup,
@@ -57,6 +58,7 @@ const brain = {
     toArray,
     DataFormatter,
     zeros,
+    toSVG,
   },
 };
 

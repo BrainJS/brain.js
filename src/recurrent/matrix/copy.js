@@ -8,4 +8,4 @@ module.exports = function copy(product, left) {
   product.columns = parseInt(left.columns, 10);
   product.weights = left.weights.slice(0);
   product.deltas = left.deltas.slice(0);
-}
+};

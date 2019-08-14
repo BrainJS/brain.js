@@ -8,4 +8,4 @@ module.exports = function toArray(values) {
     return values;
   }
   return new Float32Array(Object.values(values));
-}
+};

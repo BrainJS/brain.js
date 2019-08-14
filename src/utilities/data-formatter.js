@@ -14,6 +14,7 @@ class DataFormatter {
     this.indexTable = {};
     this.characterTable = {};
     this.characters = [];
+    this.specialIndexes = [];
     this.buildCharactersFromIterable(values);
     this.buildTables(maxThreshold);
   }
@@ -70,19 +71,22 @@ class DataFormatter {
 
     for (let i = 0, max = value.length; i < max; i++) {
       const character = value[i];
-      const index = indexTable[character];
+      let index = indexTable[character];
       if (index === undefined) {
-        throw new Error(`unrecognized character "${character}"`);
+        if (indexTable['unrecognized']) {
+          index = indexTable['unrecognized'];
+        } else {
+          throw new Error(`unrecognized character "${ character }"`);
+        }
       }
       if (index < maxThreshold) continue;
       result.push(index);
     }
-
     return result;
   }
 
   toIndexesInputOutput(value1, value2 = null, maxThreshold = 0) {
-    let result;
+    let result = null;
     if (typeof value1 === 'string') {
       result = this.toIndexes(
         value1.split('').concat(['stop-input', 'start-output']),
@@ -99,22 +103,28 @@ class DataFormatter {
 
     if (typeof value2 === 'string') {
       return result.concat(this.toIndexes(value2.split(''), maxThreshold));
+    } else {
+      return result.concat(this.toIndexes(value2, maxThreshold));
     }
-    return result.concat(this.toIndexes(value2, maxThreshold));
   }
 
   toCharacters(indices, maxThreshold = 0) {
     const result = [];
-    const { characterTable } = this;
+    const { indexTable, characterTable } = this;
 
     for (let i = 0, max = indices.length; i < max; i++) {
-      const index = indices[i];
+      let index = indices[i];
       if (index < maxThreshold) continue;
-      const character = characterTable[index];
+      let character = characterTable[index];
       if (character === undefined) {
-        throw new Error(`unrecognized index "${index}"`);
+        if (indexTable['unrecognized']) {
+          character = characterTable[indexTable['unrecognized']];
+        } else {
+          throw new Error(`unrecognized index "${ index }"`);
+        }
+      } else if (character !== null) {
+        result.push(character);
       }
-      result.push(character);
     }
 
     return result;
@@ -127,6 +137,10 @@ class DataFormatter {
   addInputOutput() {
     this.addSpecial('stop-input');
     this.addSpecial('start-output');
+  }
+
+  addUnrecognized() {
+    this.addSpecial('unrecognized');
   }
 
   static fromAllPrintable(maxThreshold, values = ['\n']) {
@@ -169,34 +183,38 @@ class DataFormatter {
     dataFormatter.characterTable = json.characterTable;
     dataFormatter.values = json.values;
     dataFormatter.characters = json.characters;
+    dataFormatter.specialIndexes = json.specialIndexes;
     return dataFormatter;
   }
 
-  addSpecial(...args) {
-    for (let i = 0; i < args.length; i++) {
-      const special = args[i];
-      this.indexTable[special] = this.characters.length;
-      const specialIndex = this.indexTable[special];
-      this.characterTable[specialIndex] = special;
-      this.characters.push(special);
+  addSpecial(special, character = null) {
+    let specialIndex = this.indexTable[special] = this.characters.length;
+    this.characterTable[specialIndex] = character;
+    this.specialIndexes.push(this.characters.length);
+    this.characters.push(special);
+  }
+
+  countSpecial(output) {
+    let sum = 0;
+    for (let i = 0; i < this.specialIndexes; i++) {
+      let index = -1;
+      while (index = output.indexOf(this.specialIndexes[i], index) > -1) {
+        sum++;
+      }
     }
+    return sum;
   }
 
   toFunctionString() {
     return `
-var characterTable = ${JSON.stringify(this.characterTable)};
-var indexTable = ${JSON.stringify(this.indexTable)};
-var characters = ${JSON.stringify(this.characters)};
-${this.toIndexes
-      .toString()
-      .replace(/(let|var) indexTable = this[.]indexTable;\n/, '')
-      .replace(/this[.]/g, '')}
-${this.toIndexesInputOutput.toString().replace(/this[.]/g, '')}
-${this.toCharacters
-      .toString()
-      .replace(/(let|var) characterTable = this[.]characterTable;\n/g, '')
-      .replace(/this[.]/, '')}
-`;
+var characterTable = ${ JSON.stringify(this.characterTable) };
+var indexTable = ${ JSON.stringify(this.indexTable) };
+var characters = ${ JSON.stringify(this.characters) };
+var dataFormatter = {
+  ${ this.toIndexes.toString() },
+  ${ this.toIndexesInputOutput.toString() },
+  ${ this.toCharacters.toString() }
+};`;
   }
 }
 

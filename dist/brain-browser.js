@@ -239,151 +239,226 @@ module.exports = {
   tanh: tanh
 };
 },{"./leaky-relu":"4I3O","./relu":"kBu/","./sigmoid":"thFH","./tanh":"v3/M"}],"+wYj":[function(require,module,exports) {
-/**
- *
- * @param {NeuralNetwork|constructor} Classifier
- * @param {object} opts
- * @param {object} trainOpts
- * @param {object} trainSet
- * @param {object} testSet
- * @returns {void|*}
- */
-function testPartition(Classifier, opts, trainOpts, trainSet, testSet) {
-  var classifier = new Classifier(opts);
-  var beginTrain = Date.now();
-  var trainingStats = classifier.train(trainSet, trainOpts);
-  var beginTest = Date.now();
-  var testStats = classifier.test(testSet);
-  var endTest = Date.now();
-  var stats = Object.assign({}, testStats, {
-    trainTime: beginTest - beginTrain,
-    testTime: endTest - beginTest,
-    iterations: trainingStats.iterations,
-    trainError: trainingStats.error,
-    learningRate: trainOpts.learningRate,
-    hidden: classifier.hiddenSizes,
-    network: classifier.toJSON()
-  });
-  return stats;
-}
-/**
- * Randomize array element order in-place.
- * Using Durstenfeld shuffle algorithm.
- * source: http://stackoverflow.com/a/12646864/1324039
- */
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function shuffleArray(array) {
-  for (var i = array.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var CrossValidate =
+/*#__PURE__*/
+function () {
+  /**
+   *
+   * @param {NeuralNetwork|constructor} Classifier
+   * @param {object} [options]
+   */
+  function CrossValidate(Classifier, options) {
+    _classCallCheck(this, CrossValidate);
+
+    this.Classifier = Classifier;
+    this.options = options;
+    this.json = null;
   }
-
-  return array;
-}
-/**
- *
- * @param {NeuralNetwork|constructor} Classifier
- * @param {object} data
- * @param {object} opts
- * @param {object} trainOpts
- * @param {number} k
- * @returns {
- *  {
- *    avgs: {
- *      error: number,
- *      trainTime: number,
- *      testTime: number,
- *      iterations: number,
- *      trainError: number
- *    },
- *    stats: {
- *      truePos: number,
- *      trueNeg: number,
- *      falsePos: number,
- *      falseNeg: number,
- *      total: number
- *    },
- *    sets: Array,
- *    misclasses: Array
- *  }
- * }
- */
+  /**
+   *
+   * @param {object} trainOpts
+   * @param {object} trainSet
+   * @param {object} testSet
+   * @returns {void|*}
+   */
 
 
-function crossValidate(Classifier, data, opts, trainOpts, k) {
-  k = k || 4;
-  var size = data.length / k;
+  _createClass(CrossValidate, [{
+    key: "testPartition",
+    value: function testPartition(trainOpts, trainSet, testSet) {
+      var classifier = new this.Classifier(this.options);
+      var beginTrain = Date.now();
+      var trainingStats = classifier.train(trainSet, trainOpts);
+      var beginTest = Date.now();
+      var testStats = classifier.test(testSet);
+      var endTest = Date.now();
+      var stats = Object.assign({}, testStats, {
+        trainTime: beginTest - beginTrain,
+        testTime: endTest - beginTest,
+        iterations: trainingStats.iterations,
+        error: trainingStats.error,
+        total: testStats.total,
+        learningRate: classifier.trainOpts.learningRate,
+        hiddenLayers: classifier.hiddenLayers,
+        network: classifier.toJSON()
+      });
+      return stats;
+    }
+    /**
+     * Randomize array element order in-place.
+     * Using Durstenfeld shuffle algorithm.
+     * source: http://stackoverflow.com/a/12646864/1324039
+     */
 
-  if (data.constructor === Array) {
-    shuffleArray(data);
-  } else {
-    var newData = {};
-    shuffleArray(Object.keys(data)).forEach(function (key) {
-      newData[key] = data[key];
-    });
-    data = newData;
-  }
+  }, {
+    key: "shuffleArray",
+    value: function shuffleArray(array) {
+      for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+      }
 
-  var avgs = {
-    error: 0,
-    trainTime: 0,
-    testTime: 0,
-    iterations: 0,
-    trainError: 0
-  };
-  var stats = {
-    truePos: 0,
-    trueNeg: 0,
-    falsePos: 0,
-    falseNeg: 0,
-    total: 0
-  };
-  var misclasses = [];
-  var results = [];
+      return array;
+    }
+    /**
+     *
+     * @param {object} data
+     * @param {object} trainOpts
+     * @param {number} [k]
+     * @returns {
+     *  {
+     *    avgs: {
+     *      error: number,
+     *      trainTime: number,
+     *      testTime: number,
+     *      iterations: number,
+     *      error: number
+     *    },
+     *    stats: {
+     *      truePos: number,
+     *      trueNeg: number,
+     *      falsePos: number,
+     *      falseNeg: number,
+     *      total: number
+     *    },
+     *    sets: Array
+     *  }
+     * }
+     */
 
-  var _loop = function _loop(i) {
-    var dclone = data.slice(0);
-    var testSet = dclone.splice(i * size, size);
-    var trainSet = dclone;
-    var result = testPartition(Classifier, opts, trainOpts, trainSet, testSet);
-    Object.keys(avgs).forEach(function (avg) {
-      avgs[avg] += result[avg];
-    });
-    Object.keys(stats).forEach(function (stat) {
-      stats[stat] += result[stat];
-    });
-    misclasses.concat(results.misclasses);
-    results.push(result);
-  };
+  }, {
+    key: "train",
+    value: function train(data) {
+      var trainOpts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var k = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 4;
 
-  for (var i = 0; i < k; i++) {
-    _loop(i);
-  }
+      if (data.length < k) {
+        throw new Error("Training set size is too small for ".concat(data.length, " k folds of ").concat(k));
+      }
 
-  Object.keys(avgs).forEach(function (avg) {
-    avgs[avg] /= k;
-  });
-  stats.precision = stats.truePos / (stats.truePos + stats.falsePos);
-  stats.recall = stats.truePos / (stats.truePos + stats.falseNeg);
-  stats.accuracy = (stats.trueNeg + stats.truePos) / stats.total;
-  stats.testSize = size;
-  stats.trainSize = data.length - size;
-  return {
-    avgs: avgs,
-    stats: stats,
-    sets: results,
-    misclasses: misclasses
-  };
-}
+      var size = data.length / k;
 
-module.exports = {
-  testPartition: testPartition,
-  shuffleArray: shuffleArray,
-  crossValidate: crossValidate
-};
+      if (data.constructor === Array) {
+        this.shuffleArray(data);
+      } else {
+        var newData = {};
+        this.shuffleArray(Object.keys(data)).forEach(function (key) {
+          newData[key] = data[key];
+        });
+        data = newData;
+      }
+
+      var avgs = {
+        trainTime: 0,
+        testTime: 0,
+        iterations: 0,
+        error: 0
+      };
+      var stats = {
+        total: 0
+      };
+      var binaryStats = {
+        total: 0,
+        truePos: 0,
+        trueNeg: 0,
+        falsePos: 0,
+        falseNeg: 0
+      };
+      var results = [];
+      var stat;
+      var isBinary = null;
+
+      for (var i = 0; i < k; i++) {
+        var dclone = data.slice(0);
+        var testSet = dclone.splice(i * size, size);
+        var trainSet = dclone;
+        var result = this.testPartition(trainOpts, trainSet, testSet);
+
+        if (isBinary === null) {
+          isBinary = result.hasOwnProperty('falseNeg') && result.hasOwnProperty('falsePos') && result.hasOwnProperty('trueNeg') && result.hasOwnProperty('truePos');
+
+          if (isBinary) {
+            Object.assign(stats, binaryStats);
+          }
+        }
+
+        for (stat in avgs) {
+          if (stat in avgs) {
+            avgs[stat] += result[stat];
+          }
+        }
+
+        for (stat in stats) {
+          if (stat in stats) {
+            stats[stat] += result[stat];
+          }
+        }
+
+        results.push(result);
+      }
+
+      for (stat in avgs) {
+        if (stat in avgs) {
+          avgs[stat] /= k;
+        }
+      }
+
+      if (isBinary) {
+        stats.precision = stats.truePos / (stats.truePos + stats.falsePos);
+        stats.recall = stats.truePos / (stats.truePos + stats.falseNeg);
+        stats.accuracy = (stats.trueNeg + stats.truePos) / stats.total;
+      }
+
+      stats.testSize = size;
+      stats.trainSize = data.length - size;
+      return this.json = {
+        avgs: avgs,
+        stats: stats,
+        sets: results
+      };
+    }
+  }, {
+    key: "toNeuralNetwork",
+    value: function toNeuralNetwork() {
+      return this.fromJSON(this.json);
+    }
+  }, {
+    key: "toJSON",
+    value: function toJSON() {
+      return this.json;
+    }
+  }, {
+    key: "fromJSON",
+    value: function fromJSON(crossValidateJson) {
+      var Classifier = this.Classifier;
+      var json = crossValidateJson.sets.reduce(function (prev, cur) {
+        return prev.error < cur.error ? prev : cur;
+      }, {
+        error: Infinity
+      }).network;
+
+      if (Classifier.fromJSON) {
+        return Classifier.fromJSON(json);
+      }
+
+      var instance = new Classifier();
+      instance.fromJSON(json);
+      return instance;
+    }
+  }]);
+
+  return CrossValidate;
+}();
+
+module.exports = CrossValidate;
 },{}],"qN/c":[function(require,module,exports) {
 function setupArguments(args) {
   const newArguments = new Array(args.length);
@@ -29908,7 +29983,7 @@ module.exports = {
 /**
  *
  * @param {*} input
- * @param {NeuralNetwork} net
+ * @param {brain.NeuralNetwork} net
  * @returns {*}
  */
 module.exports = function likely(input, net) {
@@ -29926,6 +30001,8 @@ module.exports = function likely(input, net) {
   return maxProp;
 };
 },{}],"Q1a6":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -29941,18 +30018,122 @@ function () {
   }
 
   _createClass(lookup, null, [{
-    key: "buildLookup",
+    key: "toTable",
 
     /**
      * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
      * @param {Object} hashes
      * @returns {Object}
      */
-    value: function buildLookup(hashes) {
-      var reducedHash = hashes.reduce(function (memo, hash) {
+    value: function toTable(hashes) {
+      var hash = hashes.reduce(function (memo, hash) {
         return Object.assign(memo, hash);
       }, {});
-      return lookup.lookupFromHash(reducedHash);
+      return lookup.toHash(hash);
+    }
+    /**
+     * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
+     * @param {Object} objects2D
+     * @returns {Object}
+     */
+
+  }, {
+    key: "toTable2D",
+    value: function toTable2D(objects2D) {
+      var table = {};
+      var valueIndex = 0;
+
+      for (var i = 0; i < objects2D.length; i++) {
+        var objects = objects2D[i];
+
+        for (var j = 0; j < objects.length; j++) {
+          var object = objects[j];
+
+          for (var p in object) {
+            if (object.hasOwnProperty(p) && !table.hasOwnProperty(p)) {
+              table[p] = valueIndex++;
+            }
+          }
+        }
+      }
+
+      return table;
+    }
+  }, {
+    key: "toInputTable",
+    value: function toInputTable(data) {
+      var table = {};
+      var tableIndex = 0;
+
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        for (var p in data[dataIndex].input) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
+        }
+      }
+
+      return table;
+    }
+  }, {
+    key: "toInputTable2D",
+    value: function toInputTable2D(data) {
+      var table = {};
+      var tableIndex = 0;
+
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        var input = data[dataIndex].input;
+
+        for (var i = 0; i < input.length; i++) {
+          var object = input[i];
+
+          for (var p in object) {
+            if (!table.hasOwnProperty(p)) {
+              table[p] = tableIndex++;
+            }
+          }
+        }
+      }
+
+      return table;
+    }
+  }, {
+    key: "toOutputTable",
+    value: function toOutputTable(data) {
+      var table = {};
+      var tableIndex = 0;
+
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        for (var p in data[dataIndex].output) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
+        }
+      }
+
+      return table;
+    }
+  }, {
+    key: "toOutputTable2D",
+    value: function toOutputTable2D(data) {
+      var table = {};
+      var tableIndex = 0;
+
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        var output = data[dataIndex].output;
+
+        for (var i = 0; i < output.length; i++) {
+          var object = output[i];
+
+          for (var p in object) {
+            if (!table.hasOwnProperty(p)) {
+              table[p] = tableIndex++;
+            }
+          }
+        }
+      }
+
+      return table;
     }
     /**
      * performs `{a: 6, b: 7} -> {a: 0, b: 1}`
@@ -29961,48 +30142,98 @@ function () {
      */
 
   }, {
-    key: "lookupFromHash",
-    value: function lookupFromHash(hash) {
-      var lookupHash = {};
+    key: "toHash",
+    value: function toHash(hash) {
+      var lookup = {};
       var index = 0;
-      Object.keys(hash).forEach(function (i) {
-        lookupHash[i] = index;
-        index += 1;
-      });
-      return lookupHash;
+
+      for (var i in hash) {
+        lookup[i] = index++;
+      }
+
+      return lookup;
     }
     /**
      * performs `{a: 0, b: 1}, {a: 6} -> [6, 0]`
-     * @param {*} lookupHash
-     * @param {*} hash
+     * @param {*} lookup
+     * @param {*} object
+     * @param {*} arrayLength
      * @returns {Float32Array}
      */
 
   }, {
     key: "toArray",
-    value: function toArray(lookupHash, hash) {
-      var keys = Object.keys(lookupHash);
-      var array = new Float32Array(keys.length);
-      keys.forEach(function (i) {
-        array[lookupHash[i]] = hash[i] || 0;
-      });
-      return array;
+    value: function toArray(lookup, object, arrayLength) {
+      var result = new Float32Array(arrayLength);
+
+      for (var p in lookup) {
+        result[lookup[p]] = object.hasOwnProperty(p) ? object[p] : 0;
+      }
+
+      return result;
+    }
+  }, {
+    key: "toArrayShort",
+    value: function toArrayShort(lookup, object) {
+      var result = [];
+
+      for (var p in lookup) {
+        if (!object.hasOwnProperty(p)) break;
+        result[lookup[p]] = object[p];
+      }
+
+      return Float32Array.from(result);
+    }
+  }, {
+    key: "toArrays",
+    value: function toArrays(lookup, objects, arrayLength) {
+      var result = [];
+
+      for (var i = 0; i < objects.length; i++) {
+        result.push(this.toArray(lookup, objects[i], arrayLength));
+      }
+
+      return result;
     }
     /**
      * performs `{a: 0, b: 1}, [6, 7] -> {a: 6, b: 7}`
-     * @param {Object} lookupHash
+     * @param {Object} lookup
      * @param {Array} array
      * @returns {Object}
      */
 
   }, {
-    key: "toHash",
-    value: function toHash(lookupHash, array) {
-      var hash = {};
-      Object.keys(lookupHash).forEach(function (i) {
-        hash[i] = array[lookupHash[i]];
-      });
-      return hash;
+    key: "toObject",
+    value: function toObject(lookup, array) {
+      var object = {};
+
+      for (var p in lookup) {
+        object[p] = array[lookup[p]];
+      }
+
+      return object;
+    }
+  }, {
+    key: "toObjectPartial",
+    value: function toObjectPartial(lookup, array) {
+      var offset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+      var limit = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+      var object = {};
+      var i = 0;
+
+      for (var p in lookup) {
+        if (offset > 0) {
+          if (i++ < offset) continue;
+        }
+
+        if (limit > 0) {
+          if (i++ >= limit) continue;
+        }
+
+        object[p] = array[lookup[p] - offset];
+      }
+
+      return object;
     }
     /**
      *
@@ -30013,15 +30244,71 @@ function () {
   }, {
     key: "lookupFromArray",
     value: function lookupFromArray(array) {
-      var lookupHash = {};
+      var lookup = {};
       var z = 0;
       var i = array.length;
 
       while (i-- > 0) {
-        lookupHash[array[i]] = z++;
+        lookup[array[i]] = z++;
       }
 
-      return lookupHash;
+      return lookup;
+    }
+  }, {
+    key: "dataShape",
+    value: function dataShape(data) {
+      var shape = [];
+
+      if (data.input) {
+        shape.push('datum');
+        data = data.input;
+      } else if (Array.isArray(data)) {
+        if (data[0].input) {
+          shape.push('array', 'datum');
+          data = data[0].input;
+        } else {
+          shape.push('array');
+          data = data[0];
+        }
+      }
+
+      var p;
+
+      while (data) {
+        for (p in data) {
+          break;
+        }
+
+        if (!data.hasOwnProperty(p)) break;
+
+        if (Array.isArray(data) || data.buffer instanceof ArrayBuffer) {
+          shape.push('array');
+          data = data[p];
+        } else if (_typeof(data) === 'object') {
+          shape.push('object');
+          data = data[p];
+        } else {
+          throw new Error('unhandled signature');
+        }
+      }
+
+      shape.push(_typeof(data));
+      return shape;
+    }
+  }, {
+    key: "addKeys",
+    value: function addKeys(value, table) {
+      if (Array.isArray(value)) return;
+      table = table || {};
+      var i = Object.keys(table).length;
+
+      for (var p in value) {
+        if (!value.hasOwnProperty(p)) continue;
+        if (table.hasOwnProperty(p)) continue;
+        table[p] = i++;
+      }
+
+      return table;
     }
   }]);
 
@@ -30327,8 +30614,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var lookup = require('./lookup'); // import TrainStream from './train-stream'
-
+var lookup = require('./lookup');
 
 var mse2d = require('./utilities/mse-2d');
 
@@ -37041,29 +37327,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
-var Writable = require('stream').Writable;
-
-var lookup = require('./lookup');
-/**
- *
- * https://gist.github.com/telekosmos/3b62a31a5c43f40849bb
- * @param arr
- * @returns {Array}
- */
-
-
-function uniques(arr) {
-  // Sets cannot contain duplicate elements, which is what we want
-  return _toConsumableArray(new Set(arr));
-}
+var _require = require('stream'),
+    Writable = _require.Writable;
 /**
  *
  * @param opts
@@ -37077,7 +37342,7 @@ var TrainStream =
 function (_Writable) {
   _inherits(TrainStream, _Writable);
 
-  function TrainStream(opts) {
+  function TrainStream(options) {
     var _this;
 
     _classCallCheck(this, TrainStream);
@@ -37085,48 +37350,53 @@ function (_Writable) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(TrainStream).call(this, {
       objectMode: true
     }));
-    opts = opts || {}; // require the neuralNetwork
+    options = options || {}; // require the neuralNetwork
 
-    if (!opts.neuralNetwork) {
+    if (!options.neuralNetwork) {
       throw new Error('no neural network specified');
     }
 
-    _this.neuralNetwork = opts.neuralNetwork;
+    var _options = options,
+        neuralNetwork = _options.neuralNetwork;
+    _this.neuralNetwork = neuralNetwork;
     _this.dataFormatDetermined = false;
-    _this.inputKeys = [];
-    _this.outputKeys = []; // keeps track of keys seen
+    _this.i = 0; // keep track of internal iterations
 
-    _this.i = 0; // keep track of the for loop i variable that we got rid of
-
-    _this.iterations = opts.iterations || 20000;
-    _this.errorThresh = opts.errorThresh || 0.005; // eslint-disable-next-line
-
-    _this.log = opts.log ? typeof opts.log === 'function' ? opts.log : console.log //eslint-disable-line
-    : false;
-    _this.logPeriod = opts.logPeriod || 10;
-    _this.callback = opts.callback;
-    _this.callbackPeriod = opts.callbackPeriod || 10;
-    _this.floodCallback = opts.floodCallback;
-    _this.doneTrainingCallback = opts.doneTrainingCallback;
     _this.size = 0;
     _this.count = 0;
     _this.sum = 0;
+    _this.floodCallback = options.floodCallback;
+    _this.doneTrainingCallback = options.doneTrainingCallback; // inherit trainOpts settings from neuralNetwork
+
+    neuralNetwork.updateTrainingOptions(options);
+    var trainOpts = neuralNetwork.trainOpts;
+    _this.iterations = trainOpts.iterations;
+    _this.errorThresh = trainOpts.errorThresh;
+    _this.log = trainOpts.log;
+    _this.logPeriod = trainOpts.logPeriod;
+    _this.callbackPeriod = trainOpts.callbackPeriod;
+    _this.callback = trainOpts.callback;
 
     _this.on('finish', _this.finishStreamIteration.bind(_assertThisInitialized(_this)));
 
-    return _possibleConstructorReturn(_this, _assertThisInitialized(_this));
+    return _this;
   }
-  /**
-   * _write expects data to be in the form of a datum. ie. {input: {a: 1 b: 0}, output: {z: 0}}
-   * @param chunk
-   * @param enc
-   * @param next
-   * @returns {*}
-   * @private
-   */
-
 
   _createClass(TrainStream, [{
+    key: "endInputs",
+    value: function endInputs() {
+      this.write(false);
+    }
+    /**
+     * _write expects data to be in the form of a datum. ie. {input: {a: 1 b: 0}, output: {z: 0}}
+     * @param chunk
+     * @param enc
+     * @param next
+     * @returns {*}
+     * @private
+     */
+
+  }, {
     key: "_write",
     value: function _write(chunk, enc, next) {
       if (!chunk) {
@@ -37137,28 +37407,16 @@ function (_Writable) {
 
       if (!this.dataFormatDetermined) {
         this.size++;
-        this.inputKeys = uniques(this.inputKeys.slice(0).concat(Object.keys(chunk.input)));
-        this.outputKeys = uniques(this.outputKeys.slice(0).concat(Object.keys(chunk.output)));
+        this.neuralNetwork.addFormat(chunk);
         this.firstDatum = this.firstDatum || chunk;
         return next();
       }
 
       this.count++;
       var data = this.neuralNetwork.formatData(chunk);
-      this.trainDatum(data[0]); // tell the Readable Stream that we are ready for more data
+      this.sum += this.neuralNetwork.trainPattern(data[0], true); // tell the Readable Stream that we are ready for more data
 
-      return next();
-    }
-    /**
-     *
-     * @param datum
-     */
-
-  }, {
-    key: "trainDatum",
-    value: function trainDatum(datum) {
-      var err = this.neuralNetwork.trainPattern(datum.input, datum.output);
-      this.sum += err;
+      next();
     }
     /**
      *
@@ -37169,35 +37427,13 @@ function (_Writable) {
     key: "finishStreamIteration",
     value: function finishStreamIteration() {
       if (this.dataFormatDetermined && this.size !== this.count) {
-        this.log("This iteration's data length was different from the first.");
+        this.log('This iteration\'s data length was different from the first.');
       }
 
       if (!this.dataFormatDetermined) {
-        // create the lookup
-        this.neuralNetwork.inputLookup = lookup.lookupFromArray(this.inputKeys);
-
-        if (!Array.isArray(this.firstDatum.output)) {
-          this.neuralNetwork.outputLookup = lookup.lookupFromArray(this.outputKeys);
-        }
-
         var data = this.neuralNetwork.formatData(this.firstDatum);
-        var sizes = [];
-        var inputSize = data[0].input.length;
-        var outputSize = data[0].output.length;
-        var hiddenSizes = this.hiddenSizes;
-
-        if (!hiddenSizes) {
-          sizes.push(Math.max(3, Math.floor(inputSize / 2)));
-        } else {
-          hiddenSizes.forEach(function (size) {
-            sizes.push(size);
-          });
-        }
-
-        sizes.unshift(inputSize);
-        sizes.push(outputSize);
+        this.neuralNetwork.verifyIsInitialized(data);
         this.dataFormatDetermined = true;
-        this.neuralNetwork.initialize(sizes);
 
         if (typeof this.floodCallback === 'function') {
           this.floodCallback();
@@ -37209,7 +37445,7 @@ function (_Writable) {
       var error = this.sum / this.size;
 
       if (this.log && this.i % this.logPeriod === 0) {
-        this.log('iterations:', this.i, 'training error:', error);
+        this.log("iterations: ".concat(this.i, ", training error: ").concat(error));
       }
 
       if (this.callback && this.i % this.callbackPeriod === 0) {
@@ -37226,17 +37462,17 @@ function (_Writable) {
 
       if (this.i < this.iterations && error > this.errorThresh) {
         if (typeof this.floodCallback === 'function') {
-          // eslint-disable-next-line
           return this.floodCallback();
         }
-      } // done training
-      else if (typeof this.doneTrainingCallback === 'function') {
-          // eslint-disable-next-line
+      } else {
+        // done training
+        if (typeof this.doneTrainingCallback === 'function') {
           return this.doneTrainingCallback({
             error: error,
             iterations: this.i
           });
         }
+      }
     }
   }]);
 
@@ -37244,7 +37480,7 @@ function (_Writable) {
 }(Writable);
 
 module.exports = TrainStream;
-},{"stream":"fnRj","./lookup":"Q1a6"}],"HBY8":[function(require,module,exports) {
+},{"stream":"fnRj"}],"HBY8":[function(require,module,exports) {
 /**
  *
  * @param values
@@ -37304,22 +37540,135 @@ module.exports = function range(start, end) {
 
   return result;
 };
+},{}],"kAwF":[function(require,module,exports) {
+function LookupTable(data, prop) {
+  this.length = 0;
+
+  if (prop) {
+    this.prop = prop;
+    var table = this.table = {};
+
+    for (var i = 0; i < data.length; i++) {
+      var datum = data[i];
+      var object = datum[prop];
+
+      for (var p in object) {
+        if (table.hasOwnProperty(p)) continue;
+        table[p] = this.length++;
+      }
+    }
+  } else if (Array.isArray(data[0])) {
+    var _table = this.table = {};
+
+    for (var _i = 0; _i < data.length; _i++) {
+      var array = data[_i];
+
+      for (var j = 0; j < array.length; j++) {
+        var _object = array[j];
+
+        for (var _p in _object) {
+          if (_table.hasOwnProperty(_p)) continue;
+          _table[_p] = this.length++;
+        }
+      }
+    }
+  } else {
+    var _table2 = this.table = {};
+
+    for (var _i2 = 0; _i2 < data.length; _i2++) {
+      var _object2 = data[_i2];
+
+      for (var _p2 in _object2) {
+        if (_table2.hasOwnProperty(_p2)) continue;
+        _table2[_p2] = this.length++;
+      }
+    }
+  }
+}
+
+module.exports = LookupTable;
+},{}],"Z8Xv":[function(require,module,exports) {
+function arraysToFloat32Arrays(arrays) {
+  var result = [];
+
+  for (var i = 0; i < arrays.length; i++) {
+    result.push(Float32Array.from(arrays[i]));
+  }
+
+  return result;
+}
+
+function arrayToFloat32Arrays(array) {
+  var result = [];
+
+  for (var i = 0; i < array.length; i++) {
+    result.push(Float32Array.from([array[i]]));
+  }
+
+  return result;
+}
+
+function arrayToFloat32Array(array) {
+  return Float32Array.from(array);
+}
+
+function objectsToFloat32Arrays(objects, table, length) {
+  var results = [];
+
+  for (var i = 0; i < objects.length; i++) {
+    var object = objects[i];
+    var result = new Float32Array(length);
+
+    for (var p in object) {
+      if (object.hasOwnProperty(p)) {
+        result[table[p]] = object[p];
+      }
+    }
+
+    results.push(result);
+  }
+
+  return results;
+}
+
+function objectToFloat32Arrays(object) {
+  var result = [];
+
+  for (var p in object) {
+    result.push(Float32Array.from([object[p]]));
+  }
+
+  return result;
+}
+
+function objectToFloat32Array(object, table, length) {
+  var result = new Float32Array(length);
+
+  for (var p in object) {
+    if (object.hasOwnProperty(p)) {
+      result[table[p]] = object[p];
+    }
+  }
+
+  return result;
+}
+
+module.exports = {
+  arraysToFloat32Arrays: arraysToFloat32Arrays,
+  arrayToFloat32Arrays: arrayToFloat32Arrays,
+  arrayToFloat32Array: arrayToFloat32Array,
+  objectsToFloat32Arrays: objectsToFloat32Arrays,
+  objectToFloat32Arrays: objectToFloat32Arrays,
+  objectToFloat32Array: objectToFloat32Array
+};
 },{}],"8epZ":[function(require,module,exports) {
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var Thaw = require('thaw.js');
+var Thaw = require('thaw.js').default;
 
 var lookup = require('./lookup');
 
@@ -37336,6 +37685,11 @@ var range = require('./utilities/range');
 var toArray = require('./utilities/to-array');
 
 var zeros = require('./utilities/zeros');
+
+var LookupTable = require('./utilities/lookup-table');
+
+var _require = require('./utilities/cast'),
+    arrayToFloat32Array = _require.arrayToFloat32Array;
 /**
  * @param {object} options
  * @constructor
@@ -37346,50 +37700,6 @@ var NeuralNetwork =
 /*#__PURE__*/
 function () {
   _createClass(NeuralNetwork, null, [{
-    key: "_validateTrainingOptions",
-
-    /**
-     *
-     * @param options
-     * @private
-     */
-    value: function _validateTrainingOptions(options) {
-      var validations = {
-        iterations: function iterations(val) {
-          return typeof val === 'number' && val > 0;
-        },
-        errorThresh: function errorThresh(val) {
-          return typeof val === 'number' && val > 0 && val < 1;
-        },
-        log: function log(val) {
-          return typeof val === 'function' || typeof val === 'boolean';
-        },
-        logPeriod: function logPeriod(val) {
-          return typeof val === 'number' && val > 0;
-        },
-        learningRate: function learningRate(val) {
-          return typeof val === 'number' && val > 0 && val < 1;
-        },
-        momentum: function momentum(val) {
-          return typeof val === 'number' && val > 0 && val < 1;
-        },
-        callback: function callback(val) {
-          return typeof val === 'function' || val === null;
-        },
-        callbackPeriod: function callbackPeriod(val) {
-          return typeof val === 'number' && val > 0;
-        },
-        timeout: function timeout(val) {
-          return typeof val === 'number' && val > 0;
-        }
-      };
-      Object.keys(NeuralNetwork.trainDefaults).forEach(function (key) {
-        if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
-          throw new Error("[".concat(key, ", ").concat(options[key], "] is out of normal training range, your network will probably not train."));
-        }
-      });
-    }
-  }, {
     key: "trainDefaults",
     get: function get() {
       return {
@@ -37409,17 +37719,21 @@ function () {
         // a periodic call back that can be triggered while training
         callbackPeriod: 10,
         // the number of iterations through the training data between callback calls
-        timeout: Infinity // the max number of milliseconds to train for
-
+        timeout: Infinity,
+        // the max number of milliseconds to train for
+        praxis: null,
+        beta1: 0.9,
+        beta2: 0.999,
+        epsilon: 1e-8
       };
     }
   }, {
     key: "defaults",
     get: function get() {
       return {
+        leakyReluAlpha: 0.01,
         binaryThresh: 0.5,
-        // ¯\_(ツ)_/¯
-        hiddenLayers: [3],
+        hiddenLayers: null,
         // array of ints for the sizes of the hidden layers in the network
         activation: 'sigmoid' // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
 
@@ -37433,11 +37747,8 @@ function () {
     _classCallCheck(this, NeuralNetwork);
 
     Object.assign(this, this.constructor.defaults, options);
-    this.hiddenSizes = options.hiddenLayers;
     this.trainOpts = {};
-
-    this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
-
+    this.updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
     this.sizes = null;
     this.outputLayer = null;
     this.biases = null; // weights for bias nodes
@@ -37458,6 +37769,11 @@ function () {
     if (!this.constructor.prototype.hasOwnProperty('calculateDeltas')) {
       this.calculateDeltas = null;
     }
+
+    this.inputLookup = null;
+    this.inputLookupLength = null;
+    this.outputLookup = null;
+    this.outputLookupLength = null;
   }
   /**
    *
@@ -37466,8 +37782,8 @@ function () {
 
 
   _createClass(NeuralNetwork, [{
-    key: "_initialize",
-    value: function _initialize() {
+    key: "initialize",
+    value: function initialize() {
       if (!this.sizes) throw new Error('Sizes must be set before initializing');
       this.outputLayer = this.sizes.length - 1;
       this.biases = []; // weights for bias nodes
@@ -37500,6 +37816,10 @@ function () {
       }
 
       this.setActivation();
+
+      if (this.trainOpts.praxis === 'adam') {
+        this._setupAdam();
+      }
     }
     /**
      *
@@ -37509,7 +37829,7 @@ function () {
   }, {
     key: "setActivation",
     value: function setActivation(activation) {
-      this.activation = activation || this.activation;
+      this.activation = activation ? activation : this.activation;
 
       switch (this.activation) {
         case 'sigmoid':
@@ -37533,7 +37853,7 @@ function () {
           break;
 
         default:
-          throw new Error("unknown activation ".concat(this.activation, ", The activation should be one of ['sigmoid', 'relu', 'leaky-relu', 'tanh']"));
+          throw new Error('unknown activation ' + this.activation + ', The activation should be one of [\'sigmoid\', \'relu\', \'leaky-relu\', \'tanh\']');
       }
     }
     /**
@@ -37553,13 +37873,13 @@ function () {
       if (!this.isRunnable) return null;
 
       if (this.inputLookup) {
-        input = lookup.toArray(this.inputLookup, input);
+        input = lookup.toArray(this.inputLookup, input, this.inputLookupLength);
       }
 
-      var output = _toConsumableArray(this.runInput(input));
+      var output = this.runInput(input).slice(0);
 
       if (this.outputLookup) {
-        output = lookup.toHash(this.outputLookup, output);
+        output = lookup.toObject(this.outputLookup, output);
       }
 
       return output;
@@ -37584,14 +37904,13 @@ function () {
 
           for (var k = 0; k < weights.length; k++) {
             sum += weights[k] * input[k];
-          } // sigmoid
+          } //sigmoid
 
 
           this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
         }
 
-        input = this.outputs[layer];
-        output = input;
+        output = input = this.outputs[layer];
       }
 
       return output;
@@ -37610,14 +37929,13 @@ function () {
 
           for (var k = 0; k < weights.length; k++) {
             sum += weights[k] * input[k];
-          } // relu
+          } //relu
 
 
           this.outputs[layer][node] = sum < 0 ? 0 : sum;
         }
 
-        input = this.outputs[layer];
-        output = input;
+        output = input = this.outputs[layer];
       }
 
       return output;
@@ -37627,6 +37945,7 @@ function () {
     value: function _runInputLeakyRelu(input) {
       this.outputs[0] = input; // set output state of input layer
 
+      var alpha = this.leakyReluAlpha;
       var output = null;
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
@@ -37636,14 +37955,13 @@ function () {
 
           for (var k = 0; k < weights.length; k++) {
             sum += weights[k] * input[k];
-          } // leaky relu
+          } //leaky relu
 
 
-          this.outputs[layer][node] = sum < 0 ? 0 : 0.01 * sum;
+          this.outputs[layer][node] = sum < 0 ? 0 : alpha * sum;
         }
 
-        input = this.outputs[layer];
-        output = input;
+        output = input = this.outputs[layer];
       }
 
       return output;
@@ -37662,14 +37980,13 @@ function () {
 
           for (var k = 0; k < weights.length; k++) {
             sum += weights[k] * input[k];
-          } // tanh
+          } //tanh
 
 
           this.outputs[layer][node] = Math.tanh(sum);
         }
 
-        input = this.outputs[layer];
-        output = input;
+        output = input = this.outputs[layer];
       }
 
       return output;
@@ -37677,34 +37994,33 @@ function () {
     /**
      *
      * @param data
-     * Verifies network sizes are initilaized
+     * Verifies network sizes are initialized
      * If they are not it will initialize them based off the data set.
      */
 
   }, {
-    key: "_verifyIsInitialized",
-    value: function _verifyIsInitialized(data) {
+    key: "verifyIsInitialized",
+    value: function verifyIsInitialized(data) {
       var _this = this;
 
       if (this.sizes) return;
       this.sizes = [];
       this.sizes.push(data[0].input.length);
 
-      if (!this.hiddenSizes) {
+      if (!this.hiddenLayers) {
         this.sizes.push(Math.max(3, Math.floor(data[0].input.length / 2)));
       } else {
-        this.hiddenSizes.forEach(function (size) {
+        this.hiddenLayers.forEach(function (size) {
           _this.sizes.push(size);
         });
       }
 
       this.sizes.push(data[0].output.length);
-
-      this._initialize();
+      this.initialize();
     }
     /**
      *
-     * @param opts
+     * @param options
      *    Supports all `trainDefaults` properties
      *    also supports:
      *       learningRate: (number),
@@ -37713,20 +38029,65 @@ function () {
      */
 
   }, {
-    key: "_updateTrainingOptions",
-    value: function _updateTrainingOptions(opts) {
-      var _this2 = this;
+    key: "updateTrainingOptions",
+    value: function updateTrainingOptions(options) {
+      var trainDefaults = this.constructor.trainDefaults;
 
-      Object.keys(NeuralNetwork.trainDefaults).forEach(function (opt) {
-        _this2.trainOpts[opt] = opts.hasOwnProperty(opt) ? opts[opt] : _this2.trainOpts[opt];
-        return _this2.trainOpts[opt];
-      });
+      for (var p in trainDefaults) {
+        if (!trainDefaults.hasOwnProperty(p)) continue;
+        this.trainOpts[p] = options.hasOwnProperty(p) ? options[p] : trainDefaults[p];
+      }
 
-      NeuralNetwork._validateTrainingOptions(this.trainOpts);
+      this.validateTrainingOptions(this.trainOpts);
+      this.setLogMethod(options.log || this.trainOpts.log);
+      this.activation = options.activation || this.activation;
+    }
+    /**
+     *
+     * @param options
+     */
 
-      this._setLogMethod(opts.log || this.trainOpts.log);
+  }, {
+    key: "validateTrainingOptions",
+    value: function validateTrainingOptions(options) {
+      var validations = {
+        iterations: function iterations(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        errorThresh: function errorThresh(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        log: function log(val) {
+          return typeof val === 'function' || typeof val === 'boolean';
+        },
+        logPeriod: function logPeriod(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        learningRate: function learningRate(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        momentum: function momentum(val) {
+          return typeof val === 'number' && val > 0 && val < 1;
+        },
+        callback: function callback(val) {
+          return typeof val === 'function' || val === null;
+        },
+        callbackPeriod: function callbackPeriod(val) {
+          return typeof val === 'number' && val > 0;
+        },
+        timeout: function timeout(val) {
+          return typeof val === 'number' && val > 0;
+        }
+      };
 
-      this.activation = opts.activation || this.activation;
+      for (var p in validations) {
+        if (!validations.hasOwnProperty(p)) continue;
+        if (!options.hasOwnProperty(p)) continue;
+
+        if (!validations[p](options[p])) {
+          throw new Error("[".concat(p, ", ").concat(options[p], "] is out of normal training range, your network will probably not train."));
+        }
+      }
     }
     /**
      *
@@ -37735,13 +38096,14 @@ function () {
      */
 
   }, {
-    key: "_getTrainOptsJSON",
-    value: function _getTrainOptsJSON() {
-      var _this3 = this;
+    key: "getTrainOptsJSON",
+    value: function getTrainOptsJSON() {
+      var _this2 = this;
 
-      return Object.keys(NeuralNetwork.trainDefaults).reduce(function (opts, opt) {
-        if (opt === 'timeout' && _this3.trainOpts[opt] === Infinity) return opts;
-        if (_this3.trainOpts[opt]) opts[opt] = _this3.trainOpts[opt];
+      return Object.keys(this.constructor.trainDefaults).reduce(function (opts, opt) {
+        if (opt === 'timeout' && _this2.trainOpts[opt] === Infinity) return opts;
+        if (opt === 'callback') return opts;
+        if (_this2.trainOpts[opt]) opts[opt] = _this2.trainOpts[opt];
         if (opt === 'log') opts.log = typeof opts.log === 'function';
         return opts;
       }, {});
@@ -37755,8 +38117,8 @@ function () {
      */
 
   }, {
-    key: "_setLogMethod",
-    value: function _setLogMethod(log) {
+    key: "setLogMethod",
+    value: function setLogMethod(log) {
       if (typeof log === 'function') {
         this.trainOpts.log = log;
       } else if (log) {
@@ -37772,26 +38134,25 @@ function () {
      */
 
   }, {
-    key: "_calculateTrainingError",
-    value: function _calculateTrainingError(data) {
+    key: "calculateTrainingError",
+    value: function calculateTrainingError(data) {
       var sum = 0;
 
       for (var i = 0; i < data.length; ++i) {
-        sum += this._trainPattern(data[i].input, data[i].output, true);
+        sum += this.trainPattern(data[i], true);
       }
 
       return sum / data.length;
     }
     /**
      * @param data
-     * @private
      */
 
   }, {
-    key: "_trainPatterns",
-    value: function _trainPatterns(data) {
+    key: "trainPatterns",
+    value: function trainPatterns(data) {
       for (var i = 0; i < data.length; ++i) {
-        this._trainPattern(data[i].input, data[i].output, false);
+        this.trainPattern(data[i]);
       }
     }
     /**
@@ -37802,8 +38163,8 @@ function () {
      */
 
   }, {
-    key: "_trainingTick",
-    value: function _trainingTick(data, status, endTime) {
+    key: "trainingTick",
+    value: function trainingTick(data, status, endTime) {
       if (status.iterations >= this.trainOpts.iterations || status.error <= this.trainOpts.errorThresh || Date.now() >= endTime) {
         return false;
       }
@@ -37811,16 +38172,21 @@ function () {
       status.iterations++;
 
       if (this.trainOpts.log && status.iterations % this.trainOpts.logPeriod === 0) {
-        status.error = this._calculateTrainingError(data);
+        status.error = this.calculateTrainingError(data);
         this.trainOpts.log("iterations: ".concat(status.iterations, ", training error: ").concat(status.error));
-      } else if (status.iterations % this.errorCheckInterval === 0) {
-        status.error = this._calculateTrainingError(data);
       } else {
-        this._trainPatterns(data);
+        if (status.iterations % this.errorCheckInterval === 0) {
+          status.error = this.calculateTrainingError(data);
+        } else {
+          this.trainPatterns(data);
+        }
       }
 
       if (this.trainOpts.callback && status.iterations % this.trainOpts.callbackPeriod === 0) {
-        this.trainOpts.callback(Object.assign(status));
+        this.trainOpts.callback({
+          iterations: status.iterations,
+          error: status.error
+        });
       }
 
       return true;
@@ -37830,23 +38196,20 @@ function () {
      * @param data
      * @param options
      * @protected
-     * @return { data, status, endTime }
+     * @return {object} { data, status, endTime }
      */
 
   }, {
-    key: "_prepTraining",
-    value: function _prepTraining(data, options) {
-      this._updateTrainingOptions(options);
-
-      data = this._formatData(data);
+    key: "prepTraining",
+    value: function prepTraining(data, options) {
+      this.updateTrainingOptions(options);
+      data = this.formatData(data);
       var endTime = Date.now() + this.trainOpts.timeout;
       var status = {
         error: 1,
         iterations: 0
       };
-
-      this._verifyIsInitialized(data);
-
+      this.verifyIsInitialized(data);
       return {
         data: data,
         status: status,
@@ -37857,23 +38220,22 @@ function () {
      *
      * @param data
      * @param options
-     * @returns {{error: number, iterations: number}}
+     * @returns {object} {error: number, iterations: number}
      */
 
   }, {
     key: "train",
     value: function train(data) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var status;
-      var endTime;
+      var status, endTime;
 
-      var _this$_prepTraining = this._prepTraining(data, options);
+      var _this$prepTraining = this.prepTraining(data, options);
 
-      data = _this$_prepTraining.data;
-      status = _this$_prepTraining.status;
-      endTime = _this$_prepTraining.endTime;
+      data = _this$prepTraining.data;
+      status = _this$prepTraining.status;
+      endTime = _this$prepTraining.endTime;
 
-      while (this._trainingTick(data, status, endTime)) {
+      while (this.trainingTick(data, status, endTime)) {
         ;
       }
 
@@ -37891,23 +38253,22 @@ function () {
   }, {
     key: "trainAsync",
     value: function trainAsync(data) {
-      var _this4 = this;
+      var _this3 = this;
 
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var status;
-      var endTime;
+      var status, endTime;
 
-      var _this$_prepTraining2 = this._prepTraining(data, options);
+      var _this$prepTraining2 = this.prepTraining(data, options);
 
-      data = _this$_prepTraining2.data;
-      status = _this$_prepTraining2.status;
-      endTime = _this$_prepTraining2.endTime;
+      data = _this$prepTraining2.data;
+      status = _this$prepTraining2.status;
+      endTime = _this$prepTraining2.endTime;
       return new Promise(function (resolve, reject) {
         try {
-          var thawedTrain = new Thaw(new Array(_this4.trainOpts.iterations), {
+          var thawedTrain = new Thaw(new Array(_this3.trainOpts.iterations), {
             delay: true,
             each: function each() {
-              return _this4._trainingTick(data, status, endTime) || thawedTrain.stop();
+              return _this3.trainingTick(data, status, endTime) || thawedTrain.stop();
             },
             done: function done() {
               return resolve(status);
@@ -37915,34 +38276,33 @@ function () {
           });
           thawedTrain.tick();
         } catch (trainError) {
-          reject(new Error({
+          reject({
             trainError: trainError,
             status: status
-          }));
+          });
         }
       });
     }
     /**
      *
-     * @param input
-     * @param target
+     * @param {object} value
+     * @param {boolean} [logErrorRate]
      */
 
   }, {
-    key: "_trainPattern",
-    value: function _trainPattern(input, target, logErrorRate) {
+    key: "trainPattern",
+    value: function trainPattern(value, logErrorRate) {
       // forward propagate
-      this.runInput(input); // back propagate
+      this.runInput(value.input); // back propagate
 
-      this.calculateDeltas(target);
-
-      this._adjustWeights();
+      this.calculateDeltas(value.output);
+      this.adjustWeights();
 
       if (logErrorRate) {
         return mse(this.errors[this.outputLayer]);
+      } else {
+        return null;
       }
-
-      return null;
     }
     /**
      *
@@ -38008,6 +38368,8 @@ function () {
   }, {
     key: "_calculateDeltasLeakyRelu",
     value: function _calculateDeltasLeakyRelu(target) {
+      var alpha = this.leakyReluAlpha;
+
       for (var layer = this.outputLayer; layer >= 0; layer--) {
         for (var node = 0; node < this.sizes[layer]; node++) {
           var output = this.outputs[layer][node];
@@ -38024,7 +38386,7 @@ function () {
           }
 
           this.errors[layer][node] = error;
-          this.deltas[layer][node] = output > 0 ? error : 0.01 * error;
+          this.deltas[layer][node] = output > 0 ? error : alpha * error;
         }
       }
     }
@@ -38062,8 +38424,8 @@ function () {
      */
 
   }, {
-    key: "_adjustWeights",
-    value: function _adjustWeights() {
+    key: "adjustWeights",
+    value: function adjustWeights() {
       for (var layer = 1; layer <= this.outputLayer; layer++) {
         var incoming = this.outputs[layer - 1];
 
@@ -38081,6 +38443,68 @@ function () {
         }
       }
     }
+  }, {
+    key: "_setupAdam",
+    value: function _setupAdam() {
+      this.biasChangesLow = [];
+      this.biasChangesHigh = [];
+      this.changesLow = [];
+      this.changesHigh = [];
+      this.iterations = 0;
+
+      for (var layer = 0; layer <= this.outputLayer; layer++) {
+        var size = this.sizes[layer];
+
+        if (layer > 0) {
+          this.biasChangesLow[layer] = zeros(size);
+          this.biasChangesHigh[layer] = zeros(size);
+          this.changesLow[layer] = new Array(size);
+          this.changesHigh[layer] = new Array(size);
+
+          for (var node = 0; node < size; node++) {
+            var prevSize = this.sizes[layer - 1];
+            this.changesLow[layer][node] = zeros(prevSize);
+            this.changesHigh[layer][node] = zeros(prevSize);
+          }
+        }
+      }
+
+      this.adjustWeights = this._adjustWeightsAdam;
+    }
+  }, {
+    key: "_adjustWeightsAdam",
+    value: function _adjustWeightsAdam() {
+      var trainOpts = this.trainOpts;
+      this.iterations++;
+
+      for (var layer = 1; layer <= this.outputLayer; layer++) {
+        var incoming = this.outputs[layer - 1];
+
+        for (var node = 0; node < this.sizes[layer]; node++) {
+          var delta = this.deltas[layer][node];
+
+          for (var k = 0; k < incoming.length; k++) {
+            var gradient = delta * incoming[k];
+            var changeLow = this.changesLow[layer][node][k] * trainOpts.beta1 + (1 - trainOpts.beta1) * gradient;
+            var changeHigh = this.changesHigh[layer][node][k] * trainOpts.beta2 + (1 - trainOpts.beta2) * gradient * gradient;
+            var momentumCorrection = changeLow / (1 - Math.pow(trainOpts.beta1, this.iterations));
+            var gradientCorrection = changeHigh / (1 - Math.pow(trainOpts.beta2, this.iterations));
+            this.changesLow[layer][node][k] = changeLow;
+            this.changesHigh[layer][node][k] = changeHigh;
+            this.weights[layer][node][k] += this.trainOpts.learningRate * momentumCorrection / (Math.sqrt(gradientCorrection) + trainOpts.epsilon);
+          }
+
+          var biasGradient = this.deltas[layer][node];
+          var biasChangeLow = this.biasChangesLow[layer][node] * trainOpts.beta1 + (1 - trainOpts.beta1) * biasGradient;
+          var biasChangeHigh = this.biasChangesHigh[layer][node] * trainOpts.beta2 + (1 - trainOpts.beta2) * biasGradient * biasGradient;
+          var biasMomentumCorrection = this.biasChangesLow[layer][node] / (1 - Math.pow(trainOpts.beta1, this.iterations));
+          var biasGradientCorrection = this.biasChangesHigh[layer][node] / (1 - Math.pow(trainOpts.beta2, this.iterations));
+          this.biasChangesLow[layer][node] = biasChangeLow;
+          this.biasChangesHigh[layer][node] = biasChangeHigh;
+          this.biases[layer][node] += trainOpts.learningRate * biasMomentumCorrection / (Math.sqrt(biasGradientCorrection) + trainOpts.epsilon);
+        }
+      }
+    }
     /**
      *
      * @param data
@@ -38088,53 +38512,91 @@ function () {
      */
 
   }, {
-    key: "_formatData",
-    value: function _formatData(data) {
-      var _this5 = this;
-
+    key: "formatData",
+    value: function formatData(data) {
       if (!Array.isArray(data)) {
         // turn stream datum into array
-        var tmp = [];
-        tmp.push(data);
-        data = tmp;
+        data = [data];
+      }
+
+      if (!Array.isArray(data[0].input)) {
+        if (this.inputLookup) {
+          this.inputLookupLength = Object.keys(this.inputLookup).length;
+        } else {
+          var inputLookup = new LookupTable(data, 'input');
+          this.inputLookup = inputLookup.table;
+          this.inputLookupLength = inputLookup.length;
+        }
+      }
+
+      if (!Array.isArray(data[0].output)) {
+        if (this.outputLookup) {
+          this.outputLookupLength = Object.keys(this.outputLookup).length;
+        } else {
+          var _lookup = new LookupTable(data, 'output');
+
+          this.outputLookup = _lookup.table;
+          this.outputLookupLength = _lookup.length;
+        }
+      }
+
+      if (typeof this._formatInput === 'undefined') {
+        this._formatInput = getTypedArrayFn(data[0].input, this.inputLookup);
+        this._formatOutput = getTypedArrayFn(data[0].output, this.outputLookup);
       } // turn sparse hash input into arrays with 0s as filler
 
 
-      var inputDatumCheck = data[0].input;
+      if (this._formatInput && this._formatOutput) {
+        var result = [];
 
-      if (!Array.isArray(inputDatumCheck) && !(inputDatumCheck instanceof Float32Array)) {
-        if (!this.inputLookup) {
-          this.inputLookup = lookup.buildLookup(data.map(function (value) {
-            return value.input;
-          }));
+        for (var i = 0; i < data.length; i++) {
+          result.push({
+            input: this._formatInput(data[i].input),
+            output: this._formatOutput(data[i].output)
+          });
         }
 
-        data = data.map(function (datum) {
-          var array = lookup.toArray(_this5.inputLookup, datum.input);
-          return Object.assign({}, datum, {
-            input: array
+        return result;
+      } else if (this._formatInput) {
+        var _result = [];
+
+        for (var _i = 0; _i < data.length; _i++) {
+          _result.push({
+            input: this._formatInput(data[_i].input),
+            output: data[_i].output
           });
-        }, this);
-      }
-
-      var outputDatumCheck = data[0].output;
-
-      if (!Array.isArray(outputDatumCheck) && !(outputDatumCheck instanceof Float32Array)) {
-        if (!this.outputLookup) {
-          this.outputLookup = lookup.buildLookup(data.map(function (value) {
-            return value.output;
-          }));
         }
 
-        data = data.map(function (datum) {
-          var array = lookup.toArray(_this5.outputLookup, datum.output);
-          return Object.assign({}, datum, {
-            output: array
+        return _result;
+      } else if (this._formatOutput) {
+        var _result2 = [];
+
+        for (var _i2 = 0; _i2 < data.length; _i2++) {
+          _result2.push({
+            input: data[_i2].input,
+            output: this._formatOutput(data[_i2].output)
           });
-        }, this);
+        }
+
+        return _result2;
       }
 
       return data;
+    }
+  }, {
+    key: "addFormat",
+    value: function addFormat(data) {
+      this.inputLookup = lookup.addKeys(data.input, this.inputLookup);
+
+      if (this.inputLookup) {
+        this.inputLookupLength = Object.keys(this.inputLookup).length;
+      }
+
+      this.outputLookup = lookup.addKeys(data.output, this.outputLookup);
+
+      if (this.outputLookup) {
+        this.outputLookupLength = Object.keys(this.outputLookup).length;
+      }
     }
     /**
      *
@@ -38142,7 +38604,7 @@ function () {
      * @returns {
      *  {
      *    error: number,
-     *    misclasses: Array
+     *    misclasses: Array,
      *  }
      * }
      */
@@ -38150,47 +38612,40 @@ function () {
   }, {
     key: "test",
     value: function test(data) {
-      var _this6 = this;
+      var _this4 = this;
 
-      data = this._formatData(data); // for binary classification problems with one output node
+      data = this.formatData(data); // for binary classification problems with one output node
 
-      var isBinary = data[0].output.length === 1;
-      var falsePos = 0;
-      var falseNeg = 0;
-      var truePos = 0;
-      var trueNeg = 0; // for classification problems
+      var isBinary = data[0].output.length === 1; // for classification problems
 
       var misclasses = []; // run each pattern through the trained network and collect
       // error and misclassification statistics
 
-      var sum = 0;
+      var errorSum = 0;
 
-      var _loop = function _loop(i) {
-        var output = _this6.runInput(data[i].input);
+      if (isBinary) {
+        var falsePos = 0;
+        var falseNeg = 0;
+        var truePos = 0;
+        var trueNeg = 0;
 
-        var target = data[i].output;
-        var actual = void 0;
-        var expected = void 0;
+        var _loop = function _loop(i) {
+          var output = _this4.runInput(data[i].input);
 
-        if (isBinary) {
-          actual = output[0] > _this6.binaryThresh ? 1 : 0; // eslint-disable-next-line
+          var target = data[i].output;
+          var actual = output[0] > _this4.binaryThresh ? 1 : 0;
+          var expected = target[0];
 
-          expected = target[0];
-        } else {
-          actual = output.indexOf(max(output));
-          expected = target.indexOf(max(target));
-        }
+          if (actual !== expected) {
+            var misclass = data[i];
+            misclasses.push({
+              input: misclass.input,
+              output: misclass.output,
+              actual: actual,
+              expected: expected
+            });
+          }
 
-        if (actual !== expected) {
-          var misclass = data[i];
-          Object.assign(misclass, {
-            actual: actual,
-            expected: expected
-          });
-          misclasses.push(misclass);
-        }
-
-        if (isBinary) {
           if (actual === 0 && expected === 0) {
             trueNeg++;
           } else if (actual === 1 && expected === 1) {
@@ -38200,38 +38655,61 @@ function () {
           } else if (actual === 1 && expected === 0) {
             falsePos++;
           }
+
+          errorSum += mse(output.map(function (value, i) {
+            return target[i] - value;
+          }));
+        };
+
+        for (var i = 0; i < data.length; i++) {
+          _loop(i);
         }
 
-        var errors = output.map(function (value, j) {
-          return target[j] - value;
-        });
-        sum += mse(errors);
-      };
-
-      for (var i = 0; i < data.length; i++) {
-        _loop(i);
-      }
-
-      var error = sum / data.length;
-      var stats = {
-        error: error,
-        misclasses: misclasses
-      };
-
-      if (isBinary) {
-        Object.assign(stats, {
+        return {
+          error: errorSum / data.length,
+          misclasses: misclasses,
+          total: data.length,
           trueNeg: trueNeg,
           truePos: truePos,
           falseNeg: falseNeg,
           falsePos: falsePos,
-          total: data.length,
-          precision: truePos / (truePos + falsePos),
-          recall: truePos / (truePos + falseNeg),
+          precision: truePos > 0 ? truePos / (truePos + falsePos) : 0,
+          recall: truePos > 0 ? truePos / (truePos + falseNeg) : 0,
           accuracy: (trueNeg + truePos) / data.length
-        });
+        };
       }
 
-      return stats;
+      var _loop2 = function _loop2(i) {
+        var output = _this4.runInput(data[i].input);
+
+        var target = data[i].output;
+        var actual = output.indexOf(max(output));
+        var expected = target.indexOf(max(target));
+
+        if (actual !== expected) {
+          var misclass = data[i];
+          misclasses.push({
+            input: misclass.input,
+            output: misclass.output,
+            actual: actual,
+            expected: expected
+          });
+        }
+
+        errorSum += mse(output.map(function (value, i) {
+          return target[i] - value;
+        }));
+      };
+
+      for (var i = 0; i < data.length; i++) {
+        _loop2(i);
+      }
+
+      return {
+        error: errorSum / data.length,
+        misclasses: misclasses,
+        total: data.length
+      };
     }
     /**
      *
@@ -38273,57 +38751,48 @@ function () {
   }, {
     key: "toJSON",
     value: function toJSON() {
-      var _this7 = this;
-
       var layers = [];
 
-      var _loop2 = function _loop2(layer) {
-        layers[layer] = [];
+      for (var layer = 0; layer <= this.outputLayer; layer++) {
+        layers[layer] = {};
         var nodes = void 0; // turn any internal arrays back into hashes for readable json
 
-        if (layer === 0 && _this7.inputLookup) {
-          nodes = Object.keys(_this7.inputLookup);
-        } else if (layer === _this7.outputLayer && _this7.outputLookup) {
-          nodes = Object.keys(_this7.outputLookup);
+        if (layer === 0 && this.inputLookup) {
+          nodes = Object.keys(this.inputLookup);
+        } else if (this.outputLookup && layer === this.outputLayer) {
+          nodes = Object.keys(this.outputLookup);
         } else {
-          nodes = range(0, _this7.sizes[layer]);
+          nodes = range(0, this.sizes[layer]);
         }
 
-        var _loop3 = function _loop3(j) {
+        for (var j = 0; j < nodes.length; j++) {
           var node = nodes[j];
           layers[layer][node] = {};
 
           if (layer > 0) {
-            layers[layer][node].bias = _this7.biases[layer][j];
-            layers[layer][node].weights = [];
-            Object.keys(layers[layer - 1]).forEach(function (k) {
+            layers[layer][node].bias = this.biases[layer][j];
+            layers[layer][node].weights = {};
+
+            for (var k in layers[layer - 1]) {
               var index = k;
 
-              if (layer === 1 && _this7.inputLookup) {
-                index = _this7.inputLookup[k];
+              if (layer === 1 && this.inputLookup) {
+                index = this.inputLookup[k];
               }
 
-              layers[layer][node].weights[k] = _this7.weights[layer][j][index];
-            });
+              layers[layer][node].weights[k] = this.weights[layer][j][index];
+            }
           }
-        };
-
-        for (var j = 0; j < nodes.length; j++) {
-          _loop3(j);
         }
-      };
-
-      for (var layer = 0; layer <= this.outputLayer; layer++) {
-        _loop2(layer);
       }
 
       return {
-        sizes: this.sizes,
+        sizes: this.sizes.slice(0),
         layers: layers,
-        outputLookup: !!this.outputLookup,
-        inputLookup: !!this.inputLookup,
+        outputLookup: this.outputLookup !== null,
+        inputLookup: this.inputLookup !== null,
         activation: this.activation,
-        trainOpts: this._getTrainOptsJSON()
+        trainOpts: this.getTrainOptsJSON()
       };
     }
     /**
@@ -38335,41 +38804,38 @@ function () {
   }, {
     key: "fromJSON",
     value: function fromJSON(json) {
-      var _this8 = this;
-
+      Object.assign(this, this.constructor.defaults, json);
       this.sizes = json.sizes;
+      this.initialize();
 
-      this._initialize();
-
-      var _loop4 = function _loop4(i) {
+      for (var i = 0; i <= this.outputLayer; i++) {
         var layer = json.layers[i];
 
         if (i === 0 && (!layer[0] || json.inputLookup)) {
-          _this8.inputLookup = lookup.lookupFromHash(layer);
-        } else if (i === _this8.outputLayer && (!layer[0] || json.outputLookup)) {
-          _this8.outputLookup = lookup.lookupFromHash(layer);
+          this.inputLookup = lookup.toHash(layer);
+          this.inputLookupLength = Object.keys(this.inputLookup).length;
+        } else if (i === this.outputLayer && (!layer[0] || json.outputLookup)) {
+          this.outputLookup = lookup.toHash(layer);
         }
 
         if (i > 0) {
           var nodes = Object.keys(layer);
-          _this8.sizes[i] = nodes.length;
-          Object.keys(nodes).forEach(function (j) {
-            var node = nodes[j];
-            _this8.biases[i][j] = layer[node].bias;
-            _this8.weights[i][j] = toArray(layer[node].weights);
-          });
-        }
-      };
+          this.sizes[i] = nodes.length;
 
-      for (var i = 0; i <= this.outputLayer; i++) {
-        _loop4(i);
+          for (var j in nodes) {
+            if (nodes.hasOwnProperty(j)) {
+              var node = nodes[j];
+              this.biases[i][j] = layer[node].bias;
+              this.weights[i][j] = toArray(layer[node].weights);
+            }
+          }
+        }
       }
 
       if (json.hasOwnProperty('trainOpts')) {
-        this._updateTrainingOptions(json.trainOpts);
+        this.updateTrainingOptions(json.trainOpts);
       }
 
-      this.setActivation(this.activation || 'sigmoid');
       return this;
     }
     /**
@@ -38381,6 +38847,8 @@ function () {
     key: "toFunction",
     value: function toFunction() {
       var activation = this.activation;
+      var leakyReluAlpha = this.leakyReluAlpha;
+      var needsVar = false;
 
       function nodeHandle(layers, layerNumber, nodeKey) {
         if (layerNumber === 0) {
@@ -38389,41 +38857,49 @@ function () {
 
         var layer = layers[layerNumber];
         var node = layer[nodeKey];
-        var result = [node.bias];
-        Object.keys(node.weights).forEach(function (w) {
+        var result = ['(', node.bias];
+
+        for (var w in node.weights) {
           if (node.weights[w] < 0) {
-            result.push("".concat(node.weights[w], "*(").concat(nodeHandle(layers, layerNumber - 1, w), ")"));
+            result.push("".concat(node.weights[w], "*").concat(nodeHandle(layers, layerNumber - 1, w)));
           } else {
-            result.push("+".concat(node.weights[w], "*(").concat(nodeHandle(layers, layerNumber - 1, w), ")"));
+            result.push("+".concat(node.weights[w], "*").concat(nodeHandle(layers, layerNumber - 1, w)));
           }
-        });
+        }
+
+        result.push(')');
 
         switch (activation) {
           case 'sigmoid':
             return "1/(1+1/Math.exp(".concat(result.join(''), "))");
 
           case 'relu':
-            return "var sum = ".concat(result.join(''), ";(sum < 0 ? 0 : sum);");
+            {
+              needsVar = true;
+              return "((v=".concat(result.join(''), ")<0?0:v)");
+            }
 
           case 'leaky-relu':
-            return "var sum = ".concat(result.join(''), ";(sum < 0 ? 0 : 0.01 * sum);");
+            {
+              needsVar = true;
+              return "((v=".concat(result.join(''), ")<0?0:").concat(leakyReluAlpha, "*v)");
+            }
 
           case 'tanh':
-            return "Math.tanh(".concat(result.join(''), ");");
+            return "Math.tanh(".concat(result.join(''), ")");
 
           default:
             throw new Error("unknown activation type ".concat(activation));
         }
       }
 
-      var _this$toJSON = this.toJSON(),
-          layers = _this$toJSON.layers;
-
+      var layers = this.toJSON().layers;
       var layersAsMath = [];
       var result;
-      Object.keys(layers[layers.length - 1]).forEach(function (l) {
-        layersAsMath.push(nodeHandle(layers, layers.length - 1, l));
-      });
+
+      for (var i in layers[layers.length - 1]) {
+        layersAsMath.push(nodeHandle(layers, layers.length - 1, i));
+      }
 
       if (this.outputLookup) {
         result = "{".concat(Object.keys(this.outputLookup).map(function (key, i) {
@@ -38431,30 +38907,14 @@ function () {
         }), "}");
       } else {
         result = "[".concat(layersAsMath.join(','), "]");
-      } // eslint-disable-next-line
+      }
 
-
-      return new Function('input', "return ".concat(result));
-    }
-    /**
-     * This will create a TrainStream (WriteStream) for us to send the training data to.
-     * @param opts training options
-     * @returns {TrainStream|*}
-     */
-
-  }, {
-    key: "createTrainStream",
-    value: function createTrainStream(opts) {
-      opts = opts || {};
-      opts.neuralNetwork = this;
-      this.setActivation();
-      this.trainStream = new TrainStream(opts);
-      return this.trainStream;
+      return new Function('input', "".concat(needsVar ? 'var v;' : '', "return ").concat(result, ";"));
     }
   }, {
     key: "isRunnable",
     get: function get() {
-      var _this9 = this;
+      var _this5 = this;
 
       if (!this.runInput) {
         console.error('Activation function has not been initialized, did you run train()?');
@@ -38462,7 +38922,7 @@ function () {
       }
 
       var checkFns = ['sizes', 'outputLayer', 'biases', 'weights', 'outputs', 'deltas', 'changes', 'errors'].filter(function (c) {
-        return _this9[c] === null;
+        return _this5[c] === null;
       });
 
       if (checkFns.length > 0) {
@@ -38477,8 +38937,27 @@ function () {
   return NeuralNetwork;
 }();
 
+function getTypedArrayFn(value, table) {
+  if (value.buffer instanceof ArrayBuffer) {
+    return null;
+  } else if (Array.isArray(value)) {
+    return arrayToFloat32Array;
+  } else {
+    var length = Object.keys(table).length;
+    return function (v) {
+      var array = new Float32Array(length);
+
+      for (var p in table) {
+        array[table[p]] = v[p] || 0;
+      }
+
+      return array;
+    };
+  }
+}
+
 module.exports = NeuralNetwork;
-},{"thaw.js":"8AZL","./lookup":"Q1a6","./train-stream":"vEEq","./utilities/max":"UFcl","./utilities/mse":"YGn7","./utilities/randos":"S8tM","./utilities/range":"YhH7","./utilities/to-array":"HBY8","./utilities/zeros":"M4LY"}],"6trg":[function(require,module,exports) {
+},{"thaw.js":"8AZL","./lookup":"Q1a6","./train-stream":"vEEq","./utilities/max":"UFcl","./utilities/mse":"YGn7","./utilities/randos":"S8tM","./utilities/range":"YhH7","./utilities/to-array":"HBY8","./utilities/zeros":"M4LY","./utilities/lookup-table":"kAwF","./utilities/cast":"Z8Xv"}],"6trg":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -38651,9 +39130,9 @@ function (_NeuralNetwork) {
 
 
   _createClass(NeuralNetworkGPU, [{
-    key: "_initialize",
-    value: function _initialize() {
-      _get(_getPrototypeOf(NeuralNetworkGPU.prototype), "_initialize", this).call(this);
+    key: "initialize",
+    value: function initialize() {
+      _get(_getPrototypeOf(NeuralNetworkGPU.prototype), "initialize", this).call(this);
 
       this.buildRunInput();
       this.buildCalculateDeltas();
@@ -38669,26 +39148,30 @@ function (_NeuralNetwork) {
     }
     /**
      *
-     * @param input
-     * @param target
+     * @param value
      * @param logErrorRate
      */
 
   }, {
-    key: "_trainPattern",
-    value: function _trainPattern(input, target, logErrorRate) {
+    key: "trainPattern",
+    value: function trainPattern(value, logErrorRate) {
       // forward propagate
-      this.runInput(input); // backward propagate
+      this.runInput(value.input); // back propagate
 
-      this.calculateDeltas(target);
-      this.getChanges();
-      this.changeBiases();
+      this.calculateDeltas(value.output);
+      this.adjustWeights();
 
       if (logErrorRate) {
         return this.getMSE(this.errors[this.outputLayer])[0];
+      } else {
+        return null;
       }
-
-      return null;
+    }
+  }, {
+    key: "adjustWeights",
+    value: function adjustWeights() {
+      this.getChanges();
+      this.changeBiases();
     }
   }, {
     key: "buildRunInput",
@@ -38726,7 +39209,7 @@ function (_NeuralNetwork) {
         });
       }
 
-      this._texturizeInputData = this.gpu.createKernel(function (value) {
+      this.texturizeInputData = this.gpu.createKernel(function (value) {
         return value[this.thread.x];
       }, {
         output: [this.sizes[1]],
@@ -38748,8 +39231,7 @@ function (_NeuralNetwork) {
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
         this.outputs[layer] = this.forwardPropagate[layer](this.weights[layer], this.biases[layer], input);
-        input = this.outputs[layer];
-        output = input;
+        output = input = this.outputs[layer];
       }
 
       return output;
@@ -38918,55 +39400,18 @@ function (_NeuralNetwork) {
       if (!this.isRunnable) return null;
 
       if (this.inputLookup) {
-        input = lookup.toArray(this.inputLookup, input);
+        input = lookup.toArray(this.inputLookup, input, this.inputLookupLength);
       }
 
-      var inputTexture = this._texturizeInputData(input);
-
+      var inputTexture = this.texturizeInputData(input);
       var outputTextures = this.runInput(inputTexture);
       var output = outputTextures.toArray ? outputTextures.toArray() : outputTextures;
 
       if (this.outputLookup) {
-        output = lookup.toHash(this.outputLookup, output);
+        output = lookup.toObject(this.outputLookup, output);
       }
 
       return output;
-    }
-    /**
-     *
-     * @param data
-     * Verifies network sizes are initilaized
-     * If they are not it will initialize them based off the data set.
-     */
-
-  }, {
-    key: "_verifyIsInitialized",
-    value: function _verifyIsInitialized(data) {
-      var _this2 = this;
-
-      if (this.sizes) return;
-      this.sizes = [];
-
-      if (!data[0].size) {
-        data[0].size = {
-          input: data[0].input.length,
-          output: data[0].output.length
-        };
-      }
-
-      this.sizes.push(data[0].size.input);
-
-      if (!this.hiddenSizes) {
-        this.sizes.push(Math.max(3, Math.floor(data[0].size.input / 2)));
-      } else {
-        this.hiddenSizes.forEach(function (size) {
-          _this2.sizes.push(size);
-        });
-      }
-
-      this.sizes.push(data[0].size.output);
-
-      this._initialize();
     }
     /**
      *
@@ -38977,21 +39422,18 @@ function (_NeuralNetwork) {
      */
 
   }, {
-    key: "_prepTraining",
-    value: function _prepTraining(data, options) {
-      var _this3 = this;
+    key: "prepTraining",
+    value: function prepTraining(data, options) {
+      var _this2 = this;
 
-      this._updateTrainingOptions(options);
-
-      data = this._formatData(data);
+      this.updateTrainingOptions(options);
+      data = this.formatData(data);
       var endTime = Date.now() + this.trainOpts.timeout;
       var status = {
         error: 1,
         iterations: 0
       };
-
-      this._verifyIsInitialized(data);
-
+      this.verifyIsInitialized(data);
       var texturizeOutputData = this.gpu.createKernel(function (value) {
         return value[this.thread.x];
       }, {
@@ -39003,7 +39445,7 @@ function (_NeuralNetwork) {
         data: data.map(function (set) {
           return {
             size: set.size,
-            input: _this3._texturizeInputData(set.input),
+            input: _this2.texturizeInputData(set.input),
             output: texturizeOutputData(set.output)
           };
         }),
@@ -39015,6 +39457,38 @@ function (_NeuralNetwork) {
     key: "toFunction",
     value: function toFunction() {
       throw new Error("".concat(this.constructor.name, "-toFunction is not yet implemented"));
+    }
+  }, {
+    key: "toJSON",
+    value: function toJSON() {
+      var _this3 = this;
+
+      if (!this.weights[1].toArray) {
+        // in fallback mode
+        return _get(_getPrototypeOf(NeuralNetworkGPU.prototype), "toJSON", this).call(this);
+      } // in GPU mode
+
+
+      var weights = [];
+      var biases = [];
+
+      for (var layer = 1; layer <= this.outputLayer; layer++) {
+        weights[layer] = Array.from(this.weights[layer].toArray(this.gpu));
+        biases[layer] = Array.from(this.biases[layer].toArray(this.gpu));
+      } // pseudo lo-fi decorator
+
+
+      return NeuralNetwork.prototype.toJSON.call({
+        inputLookup: this.inputLookup,
+        outputLookup: this.outputLookup,
+        outputLayer: this.outputLayer,
+        sizes: this.sizes,
+        getTrainOptsJSON: function getTrainOptsJSON() {
+          return _this3.getTrainOptsJSON();
+        },
+        weights: weights,
+        biases: biases
+      });
     }
   }]);
 
@@ -39146,7 +39620,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-// import zeros2D from '../utilities/zeros-2d'
 var _require = require('./types'),
     Internal = _require.Internal;
 
@@ -39973,7 +40446,66 @@ function (_Matrix) {
 }(Matrix);
 
 module.exports = RandomMatrix;
-},{".":"v84l","../../utilities/random":"Sd27"}],"gPcR":[function(require,module,exports) {
+},{".":"v84l","../../utilities/random":"Sd27"}],"yuFB":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var Matrix = require('.');
+
+var ones = require('../../utilities/ones');
+/** return Matrix but filled with random numbers from gaussian
+ * @param {Number} [rows]
+ * @param {Number} [columns]
+ * @constructor
+ */
+
+
+var OnesMatrix =
+/*#__PURE__*/
+function (_Matrix) {
+  _inherits(OnesMatrix, _Matrix);
+
+  function OnesMatrix(rows, columns) {
+    var _this;
+
+    _classCallCheck(this, OnesMatrix);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(OnesMatrix).call(this, rows, columns));
+    _this.rows = rows;
+    _this.columns = columns;
+    _this.weights = ones(rows * columns);
+    _this.deltas = ones(rows * columns);
+    return _this;
+  }
+
+  return OnesMatrix;
+}(Matrix);
+
+module.exports = OnesMatrix;
+},{".":"v84l","../../utilities/ones":"f7P8"}],"SjoR":[function(require,module,exports) {
+/*
+ *
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+module.exports = function copy(product, left) {
+  product.rows = parseInt(left.rows, 10);
+  product.columns = parseInt(left.columns, 10);
+  product.weights = left.weights.slice(0);
+  product.deltas = left.deltas.slice(0);
+};
+},{}],"gPcR":[function(require,module,exports) {
 /**
  *
  * @param {Matrix} product
@@ -40225,14 +40757,54 @@ module.exports = function tanhB(product, left) {
     left.deltas[i] = (1 - mwi * mwi) * product.deltas[i];
   }
 };
-},{}],"ytIu":[function(require,module,exports) {
+},{}],"Ens1":[function(require,module,exports) {
+var Matrix = require('.');
+/**
+ *
+ * @param {Matrix} m
+ * @returns {Matrix}
+ */
+
+
+module.exports = function softmax(m) {
+  var result = new Matrix(m.rows, m.columns); // probability volume
+
+  var maxVal = -999999;
+
+  for (var i = 0; i < m.weights.length; i++) {
+    if (m.weights[i] > maxVal) {
+      maxVal = m.weights[i];
+    }
+  }
+
+  var s = 0;
+
+  for (var _i = 0; _i < m.weights.length; _i++) {
+    result.weights[_i] = Math.exp(m.weights[_i] - maxVal);
+    s += result.weights[_i];
+  }
+
+  for (var _i2 = 0; _i2 < m.weights.length; _i2++) {
+    result.weights[_i2] /= s;
+  } // no backward pass here needed
+  // since we will use the computed probabilities outside
+  // to set gradients directly on m
+
+
+  return result;
+};
+},{".":"v84l"}],"ytIu":[function(require,module,exports) {
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var Matrix = require('.');
+var Matrix = require('./');
+
+var OnesMatrix = require('./ones-matrix');
+
+var copy = require('./copy');
 
 var _cloneNegative = require('./clone-negative');
 
@@ -40265,6 +40837,10 @@ var sigmoidB = require('./sigmoid-b');
 var _tanh = require('./tanh');
 
 var tanhB = require('./tanh-b');
+
+var softmax = require('./softmax');
+
+var __i = false;
 
 var Equation =
 /*#__PURE__*/
@@ -40427,11 +41003,12 @@ function () {
   }, {
     key: "input",
     value: function input(_input) {
-      var self = this;
+      var _this = this;
+
       this.states.push({
         product: _input,
-        forwardFn: function forwardFn() {
-          _input.weights = self.inputValue;
+        forwardFn: function forwardFn(product) {
+          product.weights = _input.weights = _this.inputValue;
         }
       });
       return _input;
@@ -40523,8 +41100,8 @@ function () {
      */
 
   }, {
-    key: "run",
-    value: function run() {
+    key: "runIndex",
+    value: function runIndex() {
       var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
       this.inputRow = rowIndex;
       var state;
@@ -40536,7 +41113,14 @@ function () {
           continue;
         }
 
-        state.forwardFn(state.product, state.left, state.right);
+        state.forwardFn(state.product, state.left, state.right); // if (i === 12) {
+        //   if (!__i) {
+        //     if (state.left) console.log(state.left.weights);
+        //     if (state.right) console.log(state.right.weights);
+        //     if (state.product) console.log(state.product.weights);
+        //     __i = true;
+        //   }
+        // }
       }
 
       return state.product;
@@ -40570,8 +41154,31 @@ function () {
      */
 
   }, {
-    key: "runBackpropagate",
-    value: function runBackpropagate() {
+    key: "backpropagate",
+    value: function backpropagate() {
+      var i = this.states.length;
+      var state;
+
+      while (i-- > 0) {
+        state = this.states[i];
+
+        if (!state.hasOwnProperty('backpropagationFn')) {
+          continue;
+        }
+
+        state.backpropagationFn(state.product, state.left, state.right);
+      }
+
+      return state.product;
+    }
+    /**
+     * @patam {Number} [rowIndex]
+     * @output {Matrix}
+     */
+
+  }, {
+    key: "backpropagateIndex",
+    value: function backpropagateIndex() {
       var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
       this.inputRow = rowIndex;
       var i = this.states.length;
@@ -40589,27 +41196,57 @@ function () {
 
       return state.product;
     }
+  }, {
+    key: "predictTarget",
+    value: function predictTarget(input, target) {
+      var output = this.runInput(input);
+      var errorSum = 0;
+
+      for (var i = 0; i < output.weights.length; i++) {
+        var error = output.weights[i] - target[i]; // set gradients into log probabilities
+
+        errorSum += Math.abs(error); // write gradients into log probabilities
+
+        output.deltas[i] = error;
+      }
+
+      return errorSum;
+    }
+  }, {
+    key: "predictTargetIndex",
+    value: function predictTargetIndex(input, target) {
+      var output = this.runIndex(input); // set gradients into log probabilities
+
+      var logProbabilities = output; // interpret output as log probabilities
+
+      var probabilities = softmax(output); // compute the softmax probabilities
+      // write gradients into log probabilities
+
+      logProbabilities.deltas = probabilities.weights.slice(0);
+      logProbabilities.deltas[target] -= 1; // accumulate base 2 log prob and do smoothing
+
+      return -Math.log2(probabilities.weights[target]);
+    }
   }]);
 
   return Equation;
 }();
 
 module.exports = Equation;
-},{".":"v84l","./clone-negative":"gPcR","./add":"2Be3","./add-b":"//pG","./all-ones":"WPA9","./multiply":"7/in","./multiply-b":"UbH8","./multiply-element":"lIUj","./multiply-element-b":"zl5N","./relu":"i7sA","./relu-b":"2PfX","./row-pluck":"OR1n","./row-pluck-b":"+DWT","./sigmoid":"flLU","./sigmoid-b":"QxYO","./tanh":"OmLq","./tanh-b":"fARu"}],"lOwB":[function(require,module,exports) {
-var _randomF = require('../../utilities/random').randomFloat; // prevent parser from renaming when calling toString() method later
-
-
-var randomF = _randomF;
+},{"./":"v84l","./ones-matrix":"yuFB","./copy":"SjoR","./clone-negative":"gPcR","./add":"2Be3","./add-b":"//pG","./all-ones":"WPA9","./multiply":"7/in","./multiply-b":"UbH8","./multiply-element":"lIUj","./multiply-element-b":"zl5N","./relu":"i7sA","./relu-b":"2PfX","./row-pluck":"OR1n","./row-pluck-b":"+DWT","./sigmoid":"flLU","./sigmoid-b":"QxYO","./tanh":"OmLq","./tanh-b":"fARu","./softmax":"Ens1"}],"lOwB":[function(require,module,exports) {
+var _require = require('../../utilities/random'),
+    randomFloat = _require.randomFloat;
 /**
  *
  * @param {Matrix} m
  * @returns {number}
  */
 
+
 module.exports = function sampleI(m) {
   // sample argmax from w, assuming w are
   // probabilities that sum to one
-  var r = randomF(0, 1);
+  var r = randomFloat(0, 1);
   var x = 0;
   var i = 0;
   var w = m.weights;
@@ -40644,54 +41281,6 @@ module.exports = function maxI(m) {
   }
 
   return maxix;
-};
-},{}],"Ens1":[function(require,module,exports) {
-var Matrix = require('.');
-/**
- *
- * @param {Matrix} m
- * @returns {Matrix}
- */
-
-
-module.exports = function softmax(m) {
-  var result = new Matrix(m.rows, m.columns); // probability volume
-
-  var maxVal = -999999;
-
-  for (var i = 0; i < m.weights.length; i++) {
-    if (m.weights[i] > maxVal) {
-      maxVal = m.weights[i];
-    }
-  }
-
-  var s = 0;
-
-  for (var _i = 0; _i < m.weights.length; _i++) {
-    result.weights[_i] = Math.exp(m.weights[_i] - maxVal);
-    s += result.weights[_i];
-  }
-
-  for (var _i2 = 0; _i2 < m.weights.length; _i2++) {
-    result.weights[_i2] /= s;
-  } // no backward pass here needed
-  // since we will use the computed probabilities outside
-  // to set gradients directly on m
-
-
-  return result;
-};
-},{".":"v84l"}],"SjoR":[function(require,module,exports) {
-/*
- *
- * @param {Matrix} product
- * @param {Matrix} left
- */
-module.exports = function copy(product, left) {
-  product.rows = parseInt(left.rows, 10);
-  product.columns = parseInt(left.columns, 10);
-  product.weights = left.weights.slice(0);
-  product.deltas = left.deltas.slice(0);
 };
 },{}],"91u3":[function(require,module,exports) {
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
@@ -40729,6 +41318,7 @@ function () {
     this.indexTable = {};
     this.characterTable = {};
     this.characters = [];
+    this.specialIndexes = [];
     this.buildCharactersFromIterable(values);
     this.buildTables(maxThreshold);
   }
@@ -40784,7 +41374,11 @@ function () {
         var index = indexTable[character];
 
         if (index === undefined) {
-          throw new Error("unrecognized character \"".concat(character, "\""));
+          if (indexTable['unrecognized']) {
+            index = indexTable['unrecognized'];
+          } else {
+            throw new Error("unrecognized character \"".concat(character, "\""));
+          }
         }
 
         if (index < maxThreshold) continue;
@@ -40798,7 +41392,7 @@ function () {
     value: function toIndexesInputOutput(value1) {
       var value2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       var maxThreshold = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-      var result;
+      var result = null;
 
       if (typeof value1 === 'string') {
         result = this.toIndexes(value1.split('').concat(['stop-input', 'start-output']), maxThreshold);
@@ -40810,16 +41404,17 @@ function () {
 
       if (typeof value2 === 'string') {
         return result.concat(this.toIndexes(value2.split(''), maxThreshold));
+      } else {
+        return result.concat(this.toIndexes(value2, maxThreshold));
       }
-
-      return result.concat(this.toIndexes(value2, maxThreshold));
     }
   }, {
     key: "toCharacters",
     value: function toCharacters(indices) {
       var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
       var result = [];
-      var characterTable = this.characterTable;
+      var indexTable = this.indexTable,
+          characterTable = this.characterTable;
 
       for (var i = 0, max = indices.length; i < max; i++) {
         var index = indices[i];
@@ -40827,10 +41422,14 @@ function () {
         var character = characterTable[index];
 
         if (character === undefined) {
-          throw new Error("unrecognized index \"".concat(index, "\""));
+          if (indexTable['unrecognized']) {
+            character = characterTable[indexTable['unrecognized']];
+          } else {
+            throw new Error("unrecognized index \"".concat(index, "\""));
+          }
+        } else if (character !== null) {
+          result.push(character);
         }
-
-        result.push(character);
       }
 
       return result;
@@ -40847,20 +41446,38 @@ function () {
       this.addSpecial('start-output');
     }
   }, {
+    key: "addUnrecognized",
+    value: function addUnrecognized() {
+      this.addSpecial('unrecognized');
+    }
+  }, {
     key: "addSpecial",
-    value: function addSpecial() {
-      for (var i = 0; i < arguments.length; i++) {
-        var special = i < 0 || arguments.length <= i ? undefined : arguments[i];
-        this.indexTable[special] = this.characters.length;
-        var specialIndex = this.indexTable[special];
-        this.characterTable[specialIndex] = special;
-        this.characters.push(special);
+    value: function addSpecial(special) {
+      var character = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+      var specialIndex = this.indexTable[special] = this.characters.length;
+      this.characterTable[specialIndex] = character;
+      this.specialIndexes.push(this.characters.length);
+      this.characters.push(special);
+    }
+  }, {
+    key: "countSpecial",
+    value: function countSpecial(output) {
+      var sum = 0;
+
+      for (var i = 0; i < this.specialIndexes; i++) {
+        var index = -1;
+
+        while (index = output.indexOf(this.specialIndexes[i], index) > -1) {
+          sum++;
+        }
       }
+
+      return sum;
     }
   }, {
     key: "toFunctionString",
     value: function toFunctionString() {
-      return "\nvar characterTable = ".concat(JSON.stringify(this.characterTable), ";\nvar indexTable = ").concat(JSON.stringify(this.indexTable), ";\nvar characters = ").concat(JSON.stringify(this.characters), ";\n").concat(this.toIndexes.toString().replace(/(let|var) indexTable = this[.]indexTable;\n/, '').replace(/this[.]/g, ''), "\n").concat(this.toIndexesInputOutput.toString().replace(/this[.]/g, ''), "\n").concat(this.toCharacters.toString().replace(/(let|var) characterTable = this[.]characterTable;\n/g, '').replace(/this[.]/, ''), "\n");
+      return "\nvar characterTable = ".concat(JSON.stringify(this.characterTable), ";\nvar indexTable = ").concat(JSON.stringify(this.indexTable), ";\nvar characters = ").concat(JSON.stringify(this.characters), ";\nvar dataFormatter = {\n  ").concat(this.toIndexes.toString(), ",\n  ").concat(this.toIndexesInputOutput.toString(), ",\n  ").concat(this.toCharacters.toString(), "\n};");
     }
   }], [{
     key: "fromAllPrintable",
@@ -40918,6 +41535,7 @@ function () {
       dataFormatter.characterTable = json.characterTable;
       dataFormatter.values = json.values;
       dataFormatter.characters = json.characters;
+      dataFormatter.specialIndexes = json.specialIndexes;
       return dataFormatter;
     }
   }]);
@@ -40947,35 +41565,39 @@ var softmax = require('./matrix/softmax');
 
 var copy = require('./matrix/copy');
 
-var randomFloat = require('../utilities/random').randomFloat;
+var _require = require('../utilities/random'),
+    randomFloat = _require.randomFloat;
 
 var zeros = require('../utilities/zeros');
 
 var DataFormatter = require('../utilities/data-formatter');
 
+var NeuralNetwork = require('../neural-network');
+
 var RNN =
 /*#__PURE__*/
 function () {
   function RNN() {
-    var _this = this;
-
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, RNN);
 
     var defaults = this.constructor.defaults;
     Object.assign(this, defaults, options);
+    this.trainOpts = {};
+    this.updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
     this.stepCache = {};
     this.runs = 0;
-    this.totalCost = null;
     this.ratioClipped = null;
     this.model = null;
-    this.initialLayerInputs = this.hiddenSizes.map(function () {
-      return new Matrix(_this.hiddenSizes[0], 1);
-    });
     this.inputLookup = null;
+    this.inputLookupLength = null;
     this.outputLookup = null;
-    this.initialize();
+    this.outputLookupLength = null;
+
+    if (options.json) {
+      this.fromJSON(options.json);
+    }
   }
 
   _createClass(RNN, [{
@@ -40987,35 +41609,27 @@ function () {
         output: null,
         equations: [],
         allMatrices: [],
-        equationConnections: []
+        equationConnections: [],
+        outputConnector: null
       };
 
-      if (this.dataFormatter !== null) {
-        this.outputSize = this.dataFormatter.characters.length;
-        this.inputRange = this.outputSize;
-        this.inputSize = this.inputRange;
+      if (this.dataFormatter) {
+        this.inputSize = this.inputRange = this.outputSize = this.dataFormatter.characters.length;
       }
 
-      if (this.json) {
-        this.fromJSON(this.json);
-      } else {
-        this.mapModel();
-      }
+      this.mapModel();
     }
   }, {
     key: "createHiddenLayers",
     value: function createHiddenLayers() {
-      var model = this.model,
-          hiddenSizes = this.hiddenSizes;
-      var hiddenLayers = model.hiddenLayers; // 0 is end, so add 1 to offset
+      //0 is end, so add 1 to offset
+      this.model.hiddenLayers.push(this.getModel(this.hiddenLayers[0], this.inputSize));
+      var prevSize = this.hiddenLayers[0];
 
-      hiddenLayers.push(RNN.getModel(hiddenSizes[0], this.inputSize));
-      var prevSize = hiddenSizes[0];
-
-      for (var d = 1; d < hiddenSizes.length; d++) {
+      for (var d = 1; d < this.hiddenLayers.length; d++) {
         // loop over depths
-        var hiddenSize = hiddenSizes[d];
-        hiddenLayers.push(RNN.getModel(hiddenSize, prevSize));
+        var hiddenSize = this.hiddenLayers[d];
+        this.model.hiddenLayers.push(this.getModel(hiddenSize, prevSize));
         prevSize = hiddenSize;
       }
     }
@@ -41027,6 +41641,35 @@ function () {
      */
 
   }, {
+    key: "getModel",
+    value: function getModel(hiddenSize, prevSize) {
+      return {
+        //wxh
+        weight: new RandomMatrix(hiddenSize, prevSize, 0.08),
+        //whh
+        transition: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
+        //bhh
+        bias: new Matrix(hiddenSize, 1)
+      };
+    }
+    /**
+     *
+     * @param {Equation} equation
+     * @param {Matrix} inputMatrix
+     * @param {Matrix} previousResult
+     * @param {Object} hiddenLayer
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "getEquation",
+    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+      var relu = equation.relu.bind(equation);
+      var add = equation.add.bind(equation);
+      var multiply = equation.multiply.bind(equation);
+      return relu(add(add(multiply(hiddenLayer.weight, inputMatrix), multiply(hiddenLayer.transition, previousResult)), hiddenLayer.bias));
+    }
+  }, {
     key: "createInputMatrix",
     value: function createInputMatrix() {
       // 0 is end, so add 1 to offset
@@ -41035,10 +41678,9 @@ function () {
   }, {
     key: "createOutputMatrix",
     value: function createOutputMatrix() {
-      var _this$model = this.model,
-          model = _this$model.model,
-          outputSize = _this$model.outputSize;
-      var lastHiddenSize = this.hiddenSizes[this.hiddenSizes.length - 1]; // 0 is end, so add 1 to offset
+      var model = this.model;
+      var outputSize = this.outputSize;
+      var lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1]; // 0 is end, so add 1 to offset
       // whd
 
       model.outputConnector = new RandomMatrix(outputSize + 1, lastHiddenSize, 0.08); // 0 is end, so add 1 to offset
@@ -41049,19 +41691,16 @@ function () {
   }, {
     key: "bindEquation",
     value: function bindEquation() {
-      var _this$model2 = this.model,
-          model = _this$model2.model,
-          hiddenSizes = _this$model2.hiddenSizes;
-      var hiddenLayers = model.hiddenLayers;
+      var model = this.model;
       var equation = new Equation();
       var outputs = [];
       var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs; // 0 index
 
-      var output = this.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], hiddenLayers[0]);
+      var output = this.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], model.hiddenLayers[0]);
       outputs.push(output); // 1+ indices
 
-      for (var i = 1, max = hiddenSizes.length; i < max; i++) {
-        output = this.getEquation(equation, output, equationConnection[i], hiddenLayers[i]);
+      for (var i = 1, max = this.hiddenLayers.length; i < max; i++) {
+        output = this.getEquation(equation, output, equationConnection[i], model.hiddenLayers[i]);
         outputs.push(output);
       }
 
@@ -41073,8 +41712,11 @@ function () {
     key: "mapModel",
     value: function mapModel() {
       var model = this.model;
-      var hiddenLayers = model.hiddenLayers,
-          allMatrices = model.allMatrices;
+      var hiddenLayers = model.hiddenLayers;
+      var allMatrices = model.allMatrices;
+      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
+        return new Matrix(size, 1);
+      });
       this.createInputMatrix();
       if (!model.input) throw new Error('net.model.input not set');
       allMatrices.push(model.input);
@@ -41082,9 +41724,12 @@ function () {
       if (!model.hiddenLayers.length) throw new Error('net.hiddenLayers not set');
 
       for (var i = 0, max = hiddenLayers.length; i < max; i++) {
-        Object.values(hiddenLayers[i]).forEach(function (val) {
-          allMatrices.push(val);
-        });
+        var hiddenMatrix = hiddenLayers[i];
+
+        for (var property in hiddenMatrix) {
+          if (!hiddenMatrix.hasOwnProperty(property)) continue;
+          allMatrices.push(hiddenMatrix[property]);
+        }
       }
 
       this.createOutputMatrix();
@@ -41095,19 +41740,21 @@ function () {
     }
     /**
      *
-     * @param {Number[]} input
-     * @param {Number} [learningRate]
+     * @param {Number[]|string[]|string} input
+     * @param {boolean} [logErrorRate]
      * @returns {number}
      */
 
   }, {
     key: "trainPattern",
-    value: function trainPattern(input) {
-      var learningRate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-      var error = this.runInput(input);
-      this.runBackpropagate(input);
-      this.step(learningRate);
-      return error;
+    value: function trainPattern(input, logErrorRate) {
+      var error = this.trainInput(input);
+      this.backpropagate(input);
+      this.adjustWeights();
+
+      if (logErrorRate) {
+        return error;
+      }
     }
     /**
      *
@@ -41116,17 +41763,16 @@ function () {
      */
 
   }, {
-    key: "runInput",
-    value: function runInput(input) {
+    key: "trainInput",
+    value: function trainInput(input) {
       this.runs++;
       var model = this.model;
       var max = input.length;
       var log2ppl = 0;
-      var cost = 0;
       var equation;
 
       while (model.equations.length <= input.length + 1) {
-        // last is zero
+        //last is zero
         this.bindEquation();
       }
 
@@ -41138,76 +41784,60 @@ function () {
 
         var target = inputIndex === max - 1 ? 0 : input[inputIndex + 1] + 1; // last step: end with END token
 
-        var output = equation.run(source); // set gradients into log probabilities
-
-        var logProbabilities = output; // interpret output as log probabilities
-
-        var probabilities = softmax(output); // compute the softmax probabilities
-
-        log2ppl += -Math.log2(probabilities.weights[target]); // accumulate base 2 log prob and do smoothing
-
-        cost += -Math.log(probabilities.weights[target]); // write gradients into log probabilities
-
-        logProbabilities.deltas = probabilities.weights.slice(0);
-        logProbabilities.deltas[target] -= 1;
+        log2ppl += equation.predictTargetIndex(source, target);
       }
 
-      this.totalCost = cost;
-      return Math.pow(2, log2ppl / (max - 1));
+      return Math.pow(2, log2ppl / (max - 1)) / 100;
     }
     /**
      * @param {Number[]} input
      */
 
   }, {
-    key: "runBackpropagate",
-    value: function runBackpropagate(input) {
+    key: "backpropagate",
+    value: function backpropagate(input) {
       var i = input.length;
       var model = this.model;
       var equations = model.equations;
 
       while (i > 0) {
-        equations[i].runBackpropagate(input[i - 1] + 1);
+        equations[i].backpropagateIndex(input[i - 1] + 1);
         i--;
       }
 
-      equations[0].runBackpropagate(0);
+      equations[0].backpropagateIndex(0);
     }
-    /**
-     *
-     * @param {Number} [learningRate]
-     */
-
   }, {
-    key: "step",
-    value: function step() {
-      var learningRate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-      // perform parameter update
-      // TODO: still not sure if this is ready for learningRate
-      var stepSize = learningRate || this.learningRate;
+    key: "adjustWeights",
+    value: function adjustWeights() {
       var regc = this.regc,
           clipval = this.clipval,
-          model = this.model;
+          model = this.model,
+          decayRate = this.decayRate,
+          stepCache = this.stepCache,
+          smoothEps = this.smoothEps,
+          trainOpts = this.trainOpts;
+      var learningRate = trainOpts.learningRate;
+      var allMatrices = model.allMatrices;
       var numClipped = 0;
       var numTot = 0;
-      var allMatrices = model.allMatrices;
 
       for (var matrixIndex = 0; matrixIndex < allMatrices.length; matrixIndex++) {
         var matrix = allMatrices[matrixIndex];
         var weights = matrix.weights,
             deltas = matrix.deltas;
 
-        if (!(matrixIndex in this.stepCache)) {
-          this.stepCache[matrixIndex] = zeros(matrix.rows * matrix.columns);
+        if (!(matrixIndex in stepCache)) {
+          stepCache[matrixIndex] = zeros(matrix.rows * matrix.columns);
         }
 
-        var cache = this.stepCache[matrixIndex];
+        var cache = stepCache[matrixIndex];
 
         for (var i = 0; i < weights.length; i++) {
           var r = deltas[i];
           var w = weights[i]; // rmsprop adaptive learning rate
 
-          cache[i] = cache[i] * this.decayRate + (1 - this.decayRate) * r * r; // gradient clip
+          cache[i] = cache[i] * decayRate + (1 - decayRate) * r * r; // gradient clip
 
           if (r > clipval) {
             r = clipval;
@@ -41221,7 +41851,7 @@ function () {
 
           numTot++; // update (and regularize)
 
-          weights[i] = w + -stepSize * r / Math.sqrt(cache[i] + this.smoothEps) - regc * w;
+          weights[i] = w + -learningRate * r / Math.sqrt(cache[i] + smoothEps) - regc * w;
         }
       }
 
@@ -41238,34 +41868,31 @@ function () {
     /**
      *
      * @param {Number[]|*} [rawInput]
-     * @param {Number} [maxPredictionLength]
      * @param {Boolean} [isSampleI]
      * @param {Number} temperature
      * @returns {*}
      */
     value: function run() {
       var rawInput = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var maxPredictionLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 100;
-      var isSampleI = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      var temperature = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
+      var isSampleI = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      var temperature = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+      var maxPredictionLength = this.maxPredictionLength + rawInput.length + (this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0);
       if (!this.isRunnable) return null;
       var input = this.formatDataIn(rawInput);
       var model = this.model;
       var output = [];
       var i = 0;
 
-      while (model.equations.length < maxPredictionLength) {
-        this.bindEquation();
-      }
-
       while (true) {
-        /* eslint-disable */
         var previousIndex = i === 0 ? 0 : i < input.length ? input[i - 1] + 1 : output[i - 1];
-        /* eslint-enable */
+
+        while (model.equations.length <= i) {
+          this.bindEquation();
+        }
 
         var equation = model.equations[i]; // sample predicted letter
 
-        var outputMatrix = equation.run(previousIndex);
+        var outputMatrix = equation.runIndex(previousIndex);
         var logProbabilities = new Matrix(model.output.rows, model.output.columns);
         copy(logProbabilities, outputMatrix);
 
@@ -41316,6 +41943,91 @@ function () {
     }
     /**
      *
+     * @param data
+     * Verifies network sizes are initilaized
+     * If they are not it will initialize them based off the data set.
+     */
+
+  }, {
+    key: "verifyIsInitialized",
+    value: function verifyIsInitialized(data) {
+      if (!this.model) {
+        this.initialize();
+      }
+    }
+    /**
+     *
+     * @param options
+     *    Supports all `trainDefaults` properties
+     *    also supports:
+     *       learningRate: (number),
+     *       momentum: (number),
+     *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
+     */
+
+  }, {
+    key: "updateTrainingOptions",
+    value: function updateTrainingOptions(options) {
+      var _this = this;
+
+      Object.keys(this.constructor.trainDefaults).forEach(function (p) {
+        return _this.trainOpts[p] = options.hasOwnProperty(p) ? options[p] : _this.trainOpts[p];
+      });
+      this.validateTrainingOptions(this.trainOpts);
+      this.setLogMethod(options.log || this.trainOpts.log);
+      this.activation = options.activation || this.activation;
+    }
+  }, {
+    key: "validateTrainingOptions",
+    value: function validateTrainingOptions(options) {
+      NeuralNetwork.prototype.validateTrainingOptions.call(this, options);
+    }
+    /**
+     *
+     * @param log
+     * if a method is passed in method is used
+     * if false passed in nothing is logged
+     * @returns error
+     */
+
+  }, {
+    key: "setLogMethod",
+    value: function setLogMethod(log) {
+      if (typeof log === 'function') {
+        this.trainOpts.log = log;
+      } else if (log) {
+        this.trainOpts.log = console.log;
+      } else {
+        this.trainOpts.log = false;
+      }
+    }
+    /**
+     *
+     * @param data
+     * @param options
+     * @protected
+     * @return {object} { data, status, endTime }
+     */
+
+  }, {
+    key: "prepTraining",
+    value: function prepTraining(data, options) {
+      this.updateTrainingOptions(options);
+      data = this.formatData(data);
+      var endTime = Date.now() + this.trainOpts.timeout;
+      var status = {
+        error: 1,
+        iterations: 0
+      };
+      this.verifyIsInitialized(data);
+      return {
+        data: data,
+        status: status,
+        endTime: endTime
+      };
+    }
+    /**
+     *
      * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
      * @param {Object} [options]
      * @returns {{error: number, iterations: number}}
@@ -41325,15 +42037,13 @@ function () {
     key: "train",
     value: function train(data) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      options = Object.assign({}, this.constructor.trainDefaults, options);
-      var _options = options,
-          iterations = _options.iterations,
-          errorThresh = _options.errorThresh,
-          logPeriod = _options.logPeriod,
-          callback = _options.callback,
-          callbackPeriod = _options.callbackPeriod;
+      this.trainOpts = options = Object.assign({}, this.constructor.trainDefaults, options);
+      var iterations = options.iterations;
+      var errorThresh = options.errorThresh;
       var log = options.log === true ? console.log : options.log;
-      var learningRate = options.learningRate || this.learningRate;
+      var logPeriod = options.logPeriod;
+      var callback = options.callback;
+      var callbackPeriod = options.callbackPeriod;
       var error = Infinity;
       var i;
 
@@ -41341,23 +42051,21 @@ function () {
         data = this.setupData(data);
       }
 
-      if (!options.keepNetworkIntact) {
-        this.initialize();
-      }
+      this.verifyIsInitialized();
 
       for (i = 0; i < iterations && error > errorThresh; i++) {
         var sum = 0;
 
         for (var j = 0; j < data.length; j++) {
-          var err = this.trainPattern(data[j], learningRate);
+          var err = this.trainPattern(data[j], true);
           sum += err;
         }
 
         error = sum / data.length;
-        if (Number.isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
+        if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
 
         if (log && i % logPeriod === 0) {
-          log('iterations:', i, 'training error:', error);
+          log("iterations: ".concat(i, ", training error: ").concat(error));
         }
 
         if (callback && i % callbackPeriod === 0) {
@@ -41373,21 +42081,10 @@ function () {
         iterations: i
       };
     }
-    /**
-     *
-     * @param data
-     * @returns {
-     *  {
-     *    error: number,
-     *    misclasses: Array
-     *  }
-     * }
-     */
-
   }, {
-    key: "test",
-    value: function test() {
-      throw new Error("".concat(this.constructor.name, "-test is not yet implemented"));
+    key: "addFormat",
+    value: function addFormat() {
+      throw new Error('not yet implemented');
     }
     /**
      *
@@ -41397,23 +42094,32 @@ function () {
   }, {
     key: "toJSON",
     value: function toJSON() {
-      var _this2 = this;
-
       var defaults = this.constructor.defaults;
+
+      if (!this.model) {
+        this.initialize();
+      }
+
       var model = this.model;
       var options = {};
-      Object.keys(defaults).forEach(function (p) {
-        options[p] = _this2[p];
-      });
+
+      for (var p in defaults) {
+        if (defaults.hasOwnProperty(p)) {
+          options[p] = this[p];
+        }
+      }
+
       return {
         type: this.constructor.name,
         options: options,
         input: model.input.toJSON(),
         hiddenLayers: model.hiddenLayers.map(function (hiddenLayer) {
           var layers = {};
-          Object.keys(hiddenLayer).forEach(function (p) {
-            layers[p] = hiddenLayer[p].toJSON();
-          });
+
+          for (var _p in hiddenLayer) {
+            layers[_p] = hiddenLayer[_p].toJSON();
+          }
+
           return layers;
         }),
         outputConnector: this.model.outputConnector.toJSON(),
@@ -41421,49 +42127,54 @@ function () {
       };
     }
   }, {
-    key: "toJSONString",
-    value: function toJSONString() {
-      return JSON.stringify(this.toJSON());
-    }
-  }, {
     key: "fromJSON",
     value: function fromJSON(json) {
-      var _this3 = this;
-
-      this.json = json;
       var defaults = this.constructor.defaults;
-      var model = this.model.model;
       var options = json.options;
-      var allMatrices = model.allMatrices;
-      model.input = Matrix.fromJSON(json.input);
-      allMatrices.push(model.input);
-      model.hiddenLayers = json.hiddenLayers.map(function (hiddenLayer) {
+      this.model = null;
+      this.hiddenLayers = null;
+      var allMatrices = [];
+      var input = Matrix.fromJSON(json.input);
+      allMatrices.push(input);
+      var hiddenLayers = []; // backward compatibility for hiddenSizes
+
+      (json.hiddenLayers || json.hiddenSizes).forEach(function (hiddenLayer) {
         var layers = {};
-        Object.keys(hiddenLayer).forEach(function (p) {
+
+        for (var p in hiddenLayer) {
           layers[p] = Matrix.fromJSON(hiddenLayer[p]);
           allMatrices.push(layers[p]);
-        });
-        return layers;
-      });
-      model.outputConnector = Matrix.fromJSON(json.outputConnector);
-      model.output = Matrix.fromJSON(json.output);
-      allMatrices.push(model.outputConnector);
-      allMatrices.push(model.output);
-      Object.keys(defaults).forEach(function (p) {
-        _this3[p] = options.hasOwnProperty(p) ? options[p] : defaults[p];
-      });
+        }
 
-      if (options.hasOwnProperty('dataFormatter') && options.dataFormatter !== null) {
-        this.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);
-        delete options.dataFormatter;
+        hiddenLayers.push(layers);
+      });
+      var outputConnector = Matrix.fromJSON(json.outputConnector);
+      allMatrices.push(outputConnector);
+      var output = Matrix.fromJSON(json.output);
+      allMatrices.push(output);
+      Object.assign(this, defaults, options); // backward compatibility
+
+      if (options.hiddenSizes) {
+        this.hiddenLayers = options.hiddenSizes;
       }
 
+      if (options.dataFormatter) {
+        this.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);
+      }
+
+      this.model = {
+        input: input,
+        hiddenLayers: hiddenLayers,
+        output: output,
+        allMatrices: allMatrices,
+        outputConnector: outputConnector,
+        equations: [],
+        equationConnections: []
+      };
+      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
+        return new Matrix(size, 1);
+      });
       this.bindEquation();
-    }
-  }, {
-    key: "fromJSONString",
-    value: function fromJSONString(json) {
-      return this.fromJSON(JSON.parse(json));
     }
     /**
      *
@@ -41479,19 +42190,6 @@ function () {
       var states = equation.states;
       var jsonString = JSON.stringify(this.toJSON());
 
-      function previousConnectionIndex(m) {
-        var connection = model.equationConnections[0];
-        var states0 = equations[0].states0;
-
-        for (var i = 0, max = states0.length; i < max; i++) {
-          if (states0[i].product === m) {
-            return i;
-          }
-        }
-
-        return connection.indexOf(m);
-      }
-
       function matrixOrigin(m, stateIndex) {
         for (var i = 0, max = states.length; i < max; i++) {
           var state = states[i];
@@ -41505,14 +42203,14 @@ function () {
                   return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
                 }
 
-                break;
+                throw Error('unknown state');
 
               case state.right:
                 if (j > -1) {
                   return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
                 }
 
-                break;
+                throw Error('unknown state');
 
               case state.product:
                 return "new Matrix(".concat(m.rows, ", ").concat(m.columns, ")");
@@ -41526,8 +42224,19 @@ function () {
           if (m === state.right) return "states[".concat(i, "].right");
           if (m === state.left) return "states[".concat(i, "].left");
         }
+      }
 
-        return null;
+      function previousConnectionIndex(m) {
+        var connection = model.equationConnections[0];
+        var states = equations[0].states;
+
+        for (var i = 0, max = states.length; i < max; i++) {
+          if (states[i].product === m) {
+            return i;
+          }
+        }
+
+        return connection.indexOf(m);
       }
 
       function matrixToString(m, stateIndex) {
@@ -41536,18 +42245,14 @@ function () {
         if (m === model.outputConnector) return "json.outputConnector";
         if (m === model.output) return "json.output";
 
-        var _loop = function _loop(i, max) {
-          var hiddenLayer = model.hiddenLayers[i]; // eslint-disable-next-line
-
-          Object.keys(hiddenLayer).forEach(function (p) {
-            if (hiddenLayer[p] === m) {
-              return "json.hiddenLayers[".concat(i, "].").concat(p);
-            }
-          });
-        };
-
         for (var i = 0, max = model.hiddenLayers.length; i < max; i++) {
-          _loop(i, max);
+          var hiddenLayer = model.hiddenLayers[i];
+
+          for (var p in hiddenLayer) {
+            if (!hiddenLayer.hasOwnProperty(p)) continue;
+            if (hiddenLayer[p] !== m) continue;
+            return "json.hiddenLayers[".concat(i, "].").concat(p);
+          }
         }
 
         return matrixOrigin(m, stateIndex);
@@ -41568,7 +42273,7 @@ function () {
 
       function fileName(fnName) {
         return "src/recurrent/matrix/".concat(fnName.replace(/[A-Z]/g, function (value) {
-          return "-".concat(value.toLowerCase());
+          return '-' + value.toLowerCase();
         }), ".js");
       }
 
@@ -41587,9 +42292,8 @@ function () {
         }
       }
 
-      var src = "\n  if (typeof rawInput === 'undefined') rawInput = [];\n  if (typeof maxPredictionLength === 'undefined') maxPredictionLength = 100;\n  if (typeof isSampleI === 'undefined') isSampleI = false;\n  if (typeof temperature === 'undefined') temperature = 1;\n  ".concat(this.dataFormatter !== null ? this.dataFormatter.toFunctionString() : '', "\n\n  var input = ").concat(this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput', ";\n  var json = ").concat(jsonString, ";\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n\n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n\n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ").concat(this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })', ";\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(this.dataFormatter !== null && typeof this.formatDataIn === 'function' ? "function formatDataIn(input, output) { ".concat(toInner(this.formatDataIn.toString()).replace(/this[.]dataFormatter[\n\s]+[.]/g, '').replace(/this[.]dataFormatter[.]/g, '').replace(/this[.]dataFormatter/g, 'true'), " }") : '', "\n  ").concat(this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? "function formatDataOut(input, output) { ".concat(toInner(this.formatDataOut.toString()).replace(/this[.]dataFormatter[\n\s]+[.]/g, '').replace(/this[.]dataFormatter[.]/g, '').replace(/this[.]dataFormatter/g, 'true'), " }") : '', "\n  ").concat(zeros.toString(), "\n  ").concat(softmax.toString().replace('_2.default', 'Matrix'), "\n  ").concat(randomFloat.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString()); // eslint-disable-next-line
-
-      return new Function('rawInput', 'maxPredictionLength', 'isSampleI', 'temperature', src);
+      var src = "\n  if (typeof rawInput === 'undefined') rawInput = [];\n  if (typeof isSampleI === 'undefined') isSampleI = false;\n  if (typeof temperature === 'undefined') temperature = 1;\n  var json = ".concat(jsonString, ";\n  ").concat(this.dataFormatter ? "".concat(this.dataFormatter.toFunctionString(), ";\n  Object.assign(dataFormatter, json.options.dataFormatter);") : '', "\n  ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? "const formatDataIn = function (input, output) { ".concat(toInner(this.formatDataIn.toString()), " }.bind({ dataFormatter });") : '', "\n  ").concat(this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? "const formatDataOut = function formatDataOut(input, output) { ".concat(toInner(this.formatDataOut.toString()), " }.bind({ dataFormatter });") : '', "\n  var input = ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput', ";\n  var maxPredictionLength = input.length + ").concat(this.maxPredictionLength, ";\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    // var state;\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n    \n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    if (_i > 15) {\n      break;\n    }\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n    \n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ").concat(this.dataFormatter && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })', ";\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros.toString(), "\n  ").concat(softmax.toString(), "\n  ").concat(randomFloat.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString());
+      return new Function('rawInput', 'isSampleI', 'temperature', src);
     }
   }, {
     key: "isRunnable",
@@ -41601,35 +42305,6 @@ function () {
 
       return true;
     }
-  }], [{
-    key: "getModel",
-    value: function getModel(hiddenSize, prevSize) {
-      return {
-        // wxh
-        weight: new RandomMatrix(hiddenSize, prevSize, 0.08),
-        // whh
-        transition: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-        // bhh
-        bias: new Matrix(hiddenSize, 1)
-      };
-    }
-    /**
-     *
-     * @param {Equation} equation
-     * @param {Matrix} inputMatrix
-     * @param {Matrix} previousResult
-     * @param {Object} hiddenLayer
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "getEquation",
-    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-      var relu = equation.relu.bind(equation);
-      var add = equation.add.bind(equation);
-      var multiply = equation.multiply.bind(equation);
-      return relu(add(add(multiply(hiddenLayer.weight, inputMatrix), multiply(hiddenLayer.transition, previousResult)), hiddenLayer.bias));
-    }
   }]);
 
   return RNN;
@@ -41638,14 +42313,13 @@ function () {
 RNN.defaults = {
   inputSize: 20,
   inputRange: 20,
-  hiddenSizes: [20, 20],
+  hiddenLayers: [20, 20],
   outputSize: 20,
-  learningRate: 0.01,
   decayRate: 0.999,
   smoothEps: 1e-8,
   regc: 0.000001,
   clipval: 5,
-  json: null,
+  maxPredictionLength: 100,
 
   /**
    *
@@ -41661,7 +42335,7 @@ RNN.defaults = {
     var result = [];
 
     if (typeof data[0] === 'string' || Array.isArray(data[0])) {
-      if (this.dataFormatter === null) {
+      if (!this.dataFormatter) {
         for (var i = 0; i < data.length; i++) {
           values.push(data[i]);
         }
@@ -41673,13 +42347,14 @@ RNN.defaults = {
         result.push(this.formatDataIn(data[_i]));
       }
     } else {
-      if (this.dataFormatter === null) {
+      if (!this.dataFormatter) {
         for (var _i2 = 0; _i2 < data.length; _i2++) {
           values.push(data[_i2].input);
           values.push(data[_i2].output);
         }
 
         this.dataFormatter = DataFormatter.fromArrayInputOutput(values);
+        this.dataFormatter.addUnrecognized();
       }
 
       for (var _i3 = 0, _max = data.length; _i3 < _max; _i3++) {
@@ -41699,12 +42374,12 @@ RNN.defaults = {
   formatDataIn: function formatDataIn(input) {
     var output = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-    if (this.dataFormatter !== null) {
+    if (this.dataFormatter) {
       if (this.dataFormatter.indexTable.hasOwnProperty('stop-input')) {
         return this.dataFormatter.toIndexesInputOutput(input, output);
+      } else {
+        return this.dataFormatter.toIndexes(input);
       }
-
-      return this.dataFormatter.toIndexes(input);
     }
 
     return input;
@@ -41717,7 +42392,7 @@ RNN.defaults = {
    * @returns {*}
    */
   formatDataOut: function formatDataOut(input, output) {
-    if (this.dataFormatter !== null) {
+    if (this.dataFormatter) {
       return this.dataFormatter.toCharacters(output).join('');
     }
 
@@ -41730,13 +42405,32 @@ RNN.trainDefaults = {
   errorThresh: 0.005,
   log: false,
   logPeriod: 10,
-  learningRate: 0.3,
+  learningRate: 0.01,
   callback: null,
-  callbackPeriod: 10,
-  keepNetworkIntact: false
+  callbackPeriod: 10
 };
 module.exports = RNN;
-},{"./matrix":"v84l","./matrix/random-matrix":"zGuK","./matrix/equation":"ytIu","./matrix/sample-i":"lOwB","./matrix/max-i":"2wnU","./matrix/softmax":"Ens1","./matrix/copy":"SjoR","../utilities/random":"Sd27","../utilities/zeros":"M4LY","../utilities/data-formatter":"91u3"}],"zri4":[function(require,module,exports) {
+},{"./matrix":"v84l","./matrix/random-matrix":"zGuK","./matrix/equation":"ytIu","./matrix/sample-i":"lOwB","./matrix/max-i":"2wnU","./matrix/softmax":"Ens1","./matrix/copy":"SjoR","../utilities/random":"Sd27","../utilities/zeros":"M4LY","../utilities/data-formatter":"91u3","../neural-network":"8epZ"}],"V51U":[function(require,module,exports) {
+function ArrayLookupTable(data, prop) {
+  this.length = 0;
+  this.prop = prop;
+  var table = this.table = {};
+
+  for (var i = 0; i < data.length; i++) {
+    var datum = data[i];
+    var input = datum[prop];
+
+    for (var j = 0; j < input.length; j++) {
+      for (var p in input[j]) {
+        if (table.hasOwnProperty(p)) continue;
+        table[p] = this.length++;
+      }
+    }
+  }
+}
+
+module.exports = ArrayLookupTable;
+},{}],"zri4":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41763,6 +42457,30 @@ var Equation = require('./matrix/equation');
 
 var RNN = require('./rnn');
 
+var zeros = require('../utilities/zeros');
+
+var softmax = require('./matrix/softmax');
+
+var _require = require('../utilities/random'),
+    randomFloat = _require.randomFloat;
+
+var sampleI = require('./matrix/sample-i');
+
+var maxI = require('./matrix/max-i');
+
+var lookup = require("../lookup");
+
+var LookupTable = require('../utilities/lookup-table');
+
+var ArrayLookupTable = require('../utilities/array-lookup-table');
+
+var _require2 = require('../utilities/cast'),
+    arraysToFloat32Arrays = _require2.arraysToFloat32Arrays,
+    arrayToFloat32Arrays = _require2.arrayToFloat32Arrays,
+    objectsToFloat32Arrays = _require2.objectsToFloat32Arrays,
+    objectToFloat32Arrays = _require2.objectToFloat32Arrays,
+    objectToFloat32Array = _require2.objectToFloat32Array;
+
 var RNNTimeStep =
 /*#__PURE__*/
 function (_RNN) {
@@ -41783,29 +42501,29 @@ function (_RNN) {
   }, {
     key: "createOutputMatrix",
     value: function createOutputMatrix() {
-      var model = this.model,
-          outputSize = this.outputSize;
-      var lastHiddenSize = this.hiddenSizes[this.hiddenSizes.length - 1]; // whd
+      var model = this.model;
+      var outputSize = this.outputSize;
+      var lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1]; //whd
 
-      model.outputConnector = new RandomMatrix(outputSize, lastHiddenSize, 0.08); // bd
+      model.outputConnector = new RandomMatrix(outputSize, lastHiddenSize, 0.08); //bd
 
-      model.output = new Matrix(outputSize, 1);
+      model.output = new RandomMatrix(outputSize, 1, 0.08);
     }
   }, {
     key: "bindEquation",
     value: function bindEquation() {
-      var model = this.model,
-          hiddenSizes = this.hiddenSizes;
-      var hiddenLayers = model.hiddenLayers;
+      var model = this.model;
+      var hiddenLayers = this.hiddenLayers;
+      var layers = model.hiddenLayers;
       var equation = new Equation();
       var outputs = [];
       var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs; // 0 index
 
-      var output = RNNTimeStep.getEquation(equation, equation.input(model.input), equationConnection[0], hiddenLayers[0]);
+      var output = this.getEquation(equation, equation.input(new Matrix(this.inputSize, 1)), equationConnection[0], layers[0]);
       outputs.push(output); // 1+ indices
 
-      for (var i = 1, max = hiddenSizes.length; i < max; i++) {
-        output = RNNTimeStep.getEquation(equation, output, equationConnection[i], hiddenLayers[i]);
+      for (var i = 1, max = hiddenLayers.length; i < max; i++) {
+        output = this.getEquation(equation, output, equationConnection[i], layers[i]);
         outputs.push(output);
       }
 
@@ -41813,118 +42531,1058 @@ function (_RNN) {
       equation.add(equation.multiply(model.outputConnector, output), model.output);
       model.equations.push(equation);
     }
-    /**
-     *
-     * @param {Number[]} input
-     * @returns {number}
-     */
-
   }, {
-    key: "runInput",
-    value: function runInput(input) {
-      this.runs++;
+    key: "mapModel",
+    value: function mapModel() {
       var model = this.model;
-      var errorSum = 0;
-      var equation;
+      var hiddenLayers = model.hiddenLayers;
+      var allMatrices = model.allMatrices;
+      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
+        return new Matrix(size, 1);
+      });
+      this.createHiddenLayers();
+      if (!model.hiddenLayers.length) throw new Error('net.hiddenLayers not set');
 
-      while (model.equations.length < input.length - 1) {
-        this.bindEquation();
+      for (var i = 0, max = hiddenLayers.length; i < max; i++) {
+        var hiddenMatrix = hiddenLayers[i];
+
+        for (var property in hiddenMatrix) {
+          if (!hiddenMatrix.hasOwnProperty(property)) continue;
+          allMatrices.push(hiddenMatrix[property]);
+        }
       }
 
-      var outputs = [];
-
-      if (this.inputSize === 1) {
-        for (var inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
-          // start and end tokens are zeros
-          equation = model.equations[inputIndex];
-          var current = input[inputIndex];
-          var next = input[inputIndex + 1];
-          var output = equation.runInput([current]);
-
-          for (var i = 0; i < output.weights.length; i++) {
-            var error = output.weights[i] - next; // set gradients into log probabilities
-
-            errorSum += Math.abs(error); // write gradients into log probabilities
-
-            output.deltas[i] = error;
-            outputs.push(output.weights);
-          }
-        }
-      } else {
-        for (var _inputIndex = 0, _max = input.length - 1; _inputIndex < _max; _inputIndex++) {
-          // start and end tokens are zeros
-          equation = model.equations[_inputIndex];
-          var _current = input[_inputIndex];
-          var _next = input[_inputIndex + 1];
-
-          var _output = equation.runInput(_current);
-
-          for (var _i = 0; _i < _output.weights.length; _i++) {
-            var _error = _output.weights[_i] - _next[_i]; // set gradients into log probabilities
-
-
-            errorSum += Math.abs(_error); // write gradients into log probabilities
-
-            _output.deltas[_i] = _error;
-            outputs.push(_output.weights);
-          }
-        }
-      } // this.model.equations.length - 1;
-
-
-      this.totalCost = errorSum;
-      return errorSum;
+      this.createOutputMatrix();
+      if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
+      if (!model.output) throw new Error('net.model.output not set');
+      allMatrices.push(model.outputConnector);
+      allMatrices.push(model.output);
     }
   }, {
-    key: "runBackpropagate",
-    value: function runBackpropagate() {
+    key: "backpropagate",
+    value: function backpropagate() {
       for (var i = this.model.equations.length - 1; i > -1; i--) {
-        this.model.equations[i].runBackpropagate();
+        this.model.equations[i].backpropagate();
       }
     }
     /**
      *
-     * @param {Number[]|Number} [input]
-     * @param {Number} [maxPredictionLength]
-     * @param {Boolean} [isSampleI]
-     * @param {Number} temperature
-     * @returns {Number[]|Number}
+     * @param {number[]|number[][]|object|object[][]} [rawInput]
+     * @returns {number[]|number|object|object[]|object[][]}
      */
 
   }, {
     key: "run",
-    value: function run()
-    /* , isSampleI = false, temperature = 1 */
-    {
-      var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var maxPredictionLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+    value: function run(rawInput) {
+      if (this.inputSize === 1) {
+        if (this.outputLookup) {
+          this.run = this.runObject;
+          return this.runObject(rawInput);
+        }
+
+        this.run = this.runNumbers;
+        return this.runNumbers(rawInput);
+      }
+
+      this.run = this.runArrays;
+      return this.runArrays(rawInput);
+    }
+  }, {
+    key: "forecast",
+    value: function forecast(input, count) {
+      if (this.inputSize === 1) {
+        if (this.outputLookup) {
+          this.forecast = this.runObject;
+          return this.runObject(input);
+        }
+
+        this.forecast = this.forecastNumbers;
+        return this.forecastNumbers(input, count);
+      }
+
+      if (this.outputLookup) {
+        this.forecast = this.forecastObjects;
+        return this.forecastObjects(input, count);
+      }
+
+      this.forecast = this.forecastArrays;
+      return this.forecastArrays(input, count);
+    }
+    /**
+     *
+     * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
+     * @param {Object} [options]
+     * @returns {{error: number, iterations: number}}
+     */
+
+  }, {
+    key: "train",
+    value: function train(data) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      this.trainOpts = options = Object.assign({}, this.constructor.trainDefaults, options);
+      var iterations = options.iterations;
+      var errorThresh = options.errorThresh;
+      var log = options.log === true ? console.log : options.log;
+      var logPeriod = options.logPeriod;
+      var callback = options.callback;
+      var callbackPeriod = options.callbackPeriod;
+
+      if (this.inputSize === 1 || !this.inputSize) {
+        this.setSize(data);
+      }
+
+      data = this.formatData(data);
+      var error = Infinity;
+      var i;
+      this.verifyIsInitialized(data);
+
+      for (i = 0; i < iterations && error > errorThresh; i++) {
+        var sum = 0;
+
+        for (var j = 0; j < data.length; j++) {
+          var err = this.trainPattern(data[j], true);
+          sum += err;
+        }
+
+        error = sum / data.length;
+        if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
+
+        if (log && i % logPeriod === 0) {
+          log("iterations: ".concat(i, ", training error: ").concat(error));
+        }
+
+        if (callback && i % callbackPeriod === 0) {
+          callback({
+            error: error,
+            iterations: i
+          });
+        }
+      }
+
+      return {
+        error: error,
+        iterations: i
+      };
+    }
+    /**
+     *
+     * @param data
+     * Verifies network sizes are initialized
+     * If they are not it will initialize them based off the data set.
+     */
+
+  }, {
+    key: "verifyIsInitialized",
+    value: function verifyIsInitialized(data) {
+      if (data[0].input) {
+        this.trainInput = this.trainInputOutput;
+      } else if (data[0].length > 0) {
+        if (data[0][0].length > 0) {
+          this.trainInput = this.trainArrays;
+        } else {
+          if (this.inputSize > 1) {
+            this.trainInput = this.trainArrays;
+          } else {
+            this.trainInput = this.trainNumbers;
+          }
+        }
+      }
+
+      if (!this.model) {
+        this.initialize();
+      }
+    }
+  }, {
+    key: "setSize",
+    value: function setSize(data) {
+      var dataShape = lookup.dataShape(data).join(',');
+
+      switch (dataShape) {
+        case 'array,array,number':
+        case 'array,object,number':
+        case 'array,datum,array,number':
+        case 'array,datum,object,number':
+          // probably 1
+          break;
+
+        case 'array,array,array,number':
+          this.inputSize = this.outputSize = data[0][0].length;
+          break;
+
+        case 'array,array,object,number':
+          this.inputSize = this.outputSize = Object.keys(lookup.toTable2D(data)).length;
+          break;
+
+        case 'array,datum,array,array,number':
+          this.inputSize = this.outputSize = data[0].input[0].length;
+          break;
+
+        case 'array,datum,array,object,number':
+          this.inputSize = Object.keys(lookup.toInputTable2D(data)).length;
+          this.outputSize = Object.keys(lookup.toOutputTable2D(data)).length;
+          break;
+
+        default:
+          throw new Error('unknown data shape or configuration');
+      }
+    }
+  }, {
+    key: "trainNumbers",
+    value: function trainNumbers(input) {
+      var model = this.model;
+      var equations = model.equations;
+
+      while (equations.length < input.length) {
+        this.bindEquation();
+      }
+
+      var errorSum = 0;
+
+      for (var i = 0, max = input.length - 1; i < max; i++) {
+        errorSum += equations[i].predictTarget([input[i]], [input[i + 1]]);
+      }
+
+      this.end();
+      return errorSum / input.length;
+    }
+  }, {
+    key: "runNumbers",
+    value: function runNumbers(input) {
       if (!this.isRunnable) return null;
       var model = this.model;
+      var equations = model.equations;
 
-      while (model.equations.length < maxPredictionLength) {
+      if (this.inputLookup) {
+        input = lookup.toArray(this.inputLookup, input, this.inputLookupLength);
+      }
+
+      while (equations.length <= input.length) {
         this.bindEquation();
       }
 
       var lastOutput;
 
-      if (this.inputSize === 1) {
-        for (var i = 0; i < input.length; i++) {
-          var outputMatrix = model.equations[i].runInput([input[i]]);
-          lastOutput = outputMatrix.weights;
-        }
-      } else {
-        for (var _i2 = 0; _i2 < input.length; _i2++) {
-          var _outputMatrix = model.equations[_i2].runInput(input[_i2]);
-
-          lastOutput = _outputMatrix.weights;
-        }
+      for (var i = 0; i < input.length; i++) {
+        lastOutput = equations[i].runInput([input[i]]);
       }
 
-      if (this.outputSize === 1) {
-        return lastOutput[0];
+      this.end();
+      return lastOutput.weights[0];
+    }
+  }, {
+    key: "forecastNumbers",
+    value: function forecastNumbers(input, count) {
+      if (!this.isRunnable) return null;
+      var model = this.model;
+      var equations = model.equations;
+      var length = input.length + count;
+
+      while (equations.length <= length) {
+        this.bindEquation();
+      }
+
+      var lastOutput;
+      var equationIndex = 0;
+
+      for (var i = 0; i < input.length; i++) {
+        lastOutput = equations[equationIndex++].runInput([input[i]]);
+      }
+
+      var result = [lastOutput.weights[0]];
+
+      for (var _i = 0, max = count - 1; _i < max; _i++) {
+        lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
+        result.push(lastOutput.weights[0]);
+      }
+
+      this.end();
+      return result;
+    }
+  }, {
+    key: "runObject",
+    value: function runObject(input) {
+      if (this.inputLookup === this.outputLookup) {
+        var inputArray = lookup.toArrayShort(this.inputLookup, input);
+        return lookup.toObjectPartial(this.outputLookup, this.forecastNumbers(inputArray, this.outputLookupLength - inputArray.length), inputArray.length);
+      }
+
+      return lookup.toObject(this.outputLookup, this.forecastNumbers(lookup.toArray(this.inputLookup, input, this.inputLookupLength), this.outputLookupLength));
+    }
+  }, {
+    key: "forecastObjects",
+    value: function forecastObjects(input, count) {
+      var _this = this;
+
+      input = input.map(function (value) {
+        return lookup.toArray(_this.outputLookup, value, _this.outputLookupLength);
+      });
+      return this.forecastArrays(input, count).map(function (value) {
+        return lookup.toObject(_this.outputLookup, value);
+      });
+    }
+  }, {
+    key: "trainInputOutput",
+    value: function trainInputOutput(object) {
+      var model = this.model;
+      var input = object.input;
+      var output = object.output;
+      var totalSize = input.length + output.length;
+      var equations = model.equations;
+
+      while (equations.length < totalSize) {
+        this.bindEquation();
+      }
+
+      var errorSum = 0;
+      var equationIndex = 0;
+
+      for (var inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
+        errorSum += equations[equationIndex++].predictTarget(input[inputIndex], input[inputIndex + 1]);
+      }
+
+      errorSum += equations[equationIndex++].predictTarget(input[input.length - 1], output[0]);
+
+      for (var outputIndex = 0, _max = output.length - 1; outputIndex < _max; outputIndex++) {
+        errorSum += equations[equationIndex++].predictTarget(output[outputIndex], output[outputIndex + 1]);
+      }
+
+      this.end();
+      return errorSum / totalSize;
+    }
+  }, {
+    key: "trainArrays",
+    value: function trainArrays(input) {
+      var model = this.model;
+      var equations = model.equations;
+
+      while (equations.length < input.length) {
+        this.bindEquation();
+      }
+
+      var errorSum = 0;
+
+      for (var i = 0, max = input.length - 1; i < max; i++) {
+        errorSum += equations[i].predictTarget(input[i], input[i + 1]);
+      }
+
+      this.end();
+      return errorSum / input.length;
+    }
+  }, {
+    key: "runArrays",
+    value: function runArrays(input) {
+      if (!this.isRunnable) return null;
+      var model = this.model;
+      var equations = model.equations;
+
+      while (equations.length <= input.length) {
+        this.bindEquation();
+      }
+
+      if (this.inputLookup) {
+        input = lookup.toArrays(this.inputLookup, input, this.inputLookupLength);
+      }
+
+      var lastOutput;
+
+      for (var i = 0; i < input.length; i++) {
+        var outputMatrix = equations[i].runInput(input[i]);
+        lastOutput = outputMatrix.weights;
+      }
+
+      this.end();
+
+      if (this.outputLookup) {
+        return lookup.toObject(this.outputLookup, lastOutput);
       }
 
       return lastOutput;
+    }
+  }, {
+    key: "forecastArrays",
+    value: function forecastArrays(input, count) {
+      if (!this.isRunnable) return null;
+      var model = this.model;
+      var equations = model.equations;
+      var length = input.length + count;
+
+      while (equations.length <= length) {
+        this.bindEquation();
+      }
+
+      var lastOutput;
+      var equationIndex = 0;
+
+      for (var i = 0; i < input.length; i++) {
+        lastOutput = equations[equationIndex++].runInput(input[i]);
+      }
+
+      var result = [lastOutput.weights];
+
+      for (var _i2 = 0, max = count - 1; _i2 < max; _i2++) {
+        lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
+        result.push(lastOutput.weights.slice(0));
+      }
+
+      this.end();
+      return result;
+    }
+  }, {
+    key: "end",
+    value: function end() {
+      this.model.equations[this.model.equations.length - 1].runInput(new Float32Array(this.outputSize));
+    }
+    /**
+     *
+     * @param data
+     * @returns {*}
+     */
+
+  }, {
+    key: "formatData",
+    value: function formatData(data) {
+      var dataShape = lookup.dataShape(data).join(',');
+      var result = [];
+
+      switch (dataShape) {
+        case 'array,number':
+          {
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
+            }
+
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
+
+            for (var i = 0; i < data.length; i++) {
+              result.push(Float32Array.from([data[i]]));
+            }
+
+            return [result];
+          }
+
+        case 'array,array,number':
+          {
+            if (this.inputSize === 1 && this.outputSize === 1) {
+              for (var _i3 = 0; _i3 < data.length; _i3++) {
+                result.push(arrayToFloat32Arrays(data[_i3]));
+              }
+
+              return result;
+            }
+
+            if (this.inputSize !== data[0].length) {
+              throw new Error('inputSize must match data input size');
+            }
+
+            if (this.outputSize !== data[0].length) {
+              throw new Error('outputSize must match data input size');
+            }
+
+            for (var _i4 = 0; _i4 < data.length; _i4++) {
+              result.push(Float32Array.from(data[_i4]));
+            }
+
+            return [result];
+          }
+
+        case 'array,object,number':
+          {
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
+            }
+
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
+
+            if (!this.inputLookup) {
+              var lookupTable = new LookupTable(data);
+              this.inputLookup = this.outputLookup = lookupTable.table;
+              this.inputLookupLength = this.outputLookupLength = lookupTable.length;
+            }
+
+            for (var _i5 = 0; _i5 < data.length; _i5++) {
+              result.push(objectToFloat32Arrays(data[_i5]));
+            }
+
+            return result;
+          }
+
+        case 'array,datum,array,number':
+          {
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
+            }
+
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
+
+            for (var _i6 = 0; _i6 < data.length; _i6++) {
+              var datum = data[_i6];
+              result.push({
+                input: arrayToFloat32Arrays(datum.input),
+                output: arrayToFloat32Arrays(datum.output)
+              });
+            }
+
+            return result;
+          }
+
+        case 'array,datum,object,number':
+          {
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
+            }
+
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
+
+            if (!this.inputLookup) {
+              var inputLookup = new LookupTable(data, 'input');
+              this.inputLookup = inputLookup.table;
+              this.inputLookupLength = inputLookup.length;
+            }
+
+            if (!this.outputLookup) {
+              var outputLookup = new LookupTable(data, 'output');
+              this.outputLookup = outputLookup.table;
+              this.outputLookupLength = outputLookup.length;
+            }
+
+            for (var _i7 = 0; _i7 < data.length; _i7++) {
+              var _datum = data[_i7];
+              result.push({
+                input: objectToFloat32Arrays(_datum.input),
+                output: objectToFloat32Arrays(_datum.output)
+              });
+            }
+
+            return result;
+          }
+
+        case 'array,array,array,number':
+          {
+            for (var _i8 = 0; _i8 < data.length; _i8++) {
+              result.push(arraysToFloat32Arrays(data[_i8]));
+            }
+
+            return result;
+          }
+
+        case 'array,array,object,number':
+          {
+            if (!this.inputLookup) {
+              var _lookupTable = new LookupTable(data);
+
+              this.inputLookup = this.outputLookup = _lookupTable.table;
+              this.inputLookupLength = this.outputLookupLength = _lookupTable.length;
+            }
+
+            for (var _i9 = 0; _i9 < data.length; _i9++) {
+              var array = [];
+
+              for (var j = 0; j < data[_i9].length; j++) {
+                array.push(objectToFloat32Array(data[_i9][j], this.inputLookup, this.inputLookupLength));
+              }
+
+              result.push(array);
+            }
+
+            return result;
+          }
+
+        case 'array,datum,array,array,number':
+          {
+            if (this.inputSize === 1 && this.outputSize === 1) {
+              for (var _i10 = 0; _i10 < data.length; _i10++) {
+                var _datum2 = data[_i10];
+                result.push({
+                  input: Float32Array.from(_datum2.input),
+                  output: Float32Array.from(_datum2.output)
+                });
+              }
+            } else {
+              if (this.inputSize !== data[0].input[0].length) {
+                throw new Error('inputSize must match data input size');
+              }
+
+              if (this.outputSize !== data[0].output[0].length) {
+                throw new Error('outputSize must match data output size');
+              }
+
+              for (var _i11 = 0; _i11 < data.length; _i11++) {
+                var _datum3 = data[_i11];
+                result.push({
+                  input: arraysToFloat32Arrays(_datum3.input),
+                  output: arraysToFloat32Arrays(_datum3.output)
+                });
+              }
+            }
+
+            return result;
+          }
+
+        case 'array,datum,array,object,number':
+          {
+            if (!this.inputLookup) {
+              var _inputLookup = new ArrayLookupTable(data, 'input');
+
+              this.inputLookup = _inputLookup.table;
+              this.inputLookupLength = _inputLookup.length;
+            }
+
+            if (!this.outputLookup) {
+              var _outputLookup = new ArrayLookupTable(data, 'output');
+
+              this.outputLookup = _outputLookup.table;
+              this.outputLookupLength = _outputLookup.length;
+            }
+
+            for (var _i12 = 0; _i12 < data.length; _i12++) {
+              var _datum4 = data[_i12];
+              result.push({
+                input: objectsToFloat32Arrays(_datum4.input, this.inputLookup, this.inputLookupLength),
+                output: objectsToFloat32Arrays(_datum4.output, this.outputLookup, this.outputLookupLength)
+              });
+            }
+
+            return result;
+          }
+
+        default:
+          throw new Error('unknown data shape or configuration');
+      }
+    }
+    /**
+     *
+     * @param data
+     * @returns {
+     *  {
+     *    error: number,
+     *    misclasses: Array
+     *  }
+     * }
+     */
+
+  }, {
+    key: "test",
+    value: function test(data) {
+      var formattedData = this.formatData(data); // for classification problems
+
+      var misclasses = []; // run each pattern through the trained network and collect
+      // error and misclassification statistics
+
+      var errorSum = 0;
+      var dataShape = lookup.dataShape(data).join(',');
+
+      switch (dataShape) {
+        case 'array,array,number':
+          {
+            if (this.inputSize === 1) {
+              for (var i = 0; i < formattedData.length; i++) {
+                var input = formattedData[i];
+                var output = this.run(input.splice(0, input.length - 1));
+                var target = input[input.length - 1][0];
+                var error = target - output;
+                var errorMSE = error * error;
+                errorSum += errorMSE;
+                var errorsAbs = Math.abs(errorMSE);
+
+                if (errorsAbs > this.trainOpts.errorThresh) {
+                  var misclass = data[i];
+                  Object.assign(misclass, {
+                    value: input,
+                    actual: output
+                  });
+                  misclasses.push(misclass);
+                }
+              }
+
+              break;
+            }
+
+            throw new Error('unknown data shape or configuration');
+          }
+
+        case 'array,array,array,number':
+          {
+            for (var _i13 = 0; _i13 < formattedData.length; _i13++) {
+              var _input = formattedData[_i13];
+
+              var _output = this.run(_input.splice(0, _input.length - 1));
+
+              var _target = _input[_input.length - 1];
+              var errors = 0;
+              var errorCount = 0;
+
+              for (var j = 0; j < _output.length; j++) {
+                errorCount++;
+
+                var _error = _target[j] - _output[j]; // mse
+
+
+                errors += _error * _error;
+              }
+
+              errorSum += errors / errorCount;
+
+              var _errorsAbs = Math.abs(errors);
+
+              if (_errorsAbs > this.trainOpts.errorThresh) {
+                var _misclass = data[_i13];
+                misclasses.push({
+                  value: _misclass,
+                  actual: _output
+                });
+              }
+            }
+
+            break;
+          }
+
+        case 'array,object,number':
+          {
+            for (var _i14 = 0; _i14 < formattedData.length; _i14++) {
+              var _input2 = formattedData[_i14];
+
+              var _output2 = this.run(lookup.toObjectPartial(this.outputLookup, _input2, 0, _input2.length - 1));
+
+              var _target2 = _input2[_input2.length - 1];
+              var _errors = 0;
+              var p = void 0;
+
+              for (p in _output2) {}
+
+              var _error2 = _target2[_i14] - _output2[p]; // mse
+
+
+              _errors += _error2 * _error2;
+              errorSum += _errors;
+
+              var _errorsAbs2 = Math.abs(_errors);
+
+              if (_errorsAbs2 > this.trainOpts.errorThresh) {
+                var _misclass2 = data[_i14];
+                misclasses.push({
+                  value: _misclass2,
+                  actual: _output2
+                });
+              }
+            }
+
+            break;
+          }
+
+        case 'array,array,object,number':
+          {
+            for (var _i15 = 0; _i15 < formattedData.length; _i15++) {
+              var _input3 = formattedData[_i15];
+
+              var _output3 = this.run(_input3.slice(0, _input3.length - 1));
+
+              var _target3 = data[_i15][_input3.length - 1];
+              var _errors2 = 0;
+              var _errorCount = 0;
+
+              for (var _p in _output3) {
+                var _error3 = _target3[_p] - _output3[_p]; // mse
+
+
+                _errors2 += _error3 * _error3;
+                _errorCount++;
+              }
+
+              errorSum += _errors2 / _errorCount;
+
+              var _errorsAbs3 = Math.abs(_errors2);
+
+              if (_errorsAbs3 > this.trainOpts.errorThresh) {
+                var _misclass3 = data[_i15];
+                misclasses.push({
+                  value: _misclass3,
+                  actual: _output3
+                });
+              }
+            }
+
+            break;
+          }
+
+        case 'array,datum,array,number':
+        case 'array,datum,object,number':
+          {
+            for (var _i16 = 0; _i16 < formattedData.length; _i16++) {
+              var datum = formattedData[_i16];
+
+              var _output4 = this.forecast(datum.input, datum.output.length);
+
+              var _errors3 = 0;
+              var _errorCount2 = 0;
+
+              for (var _j = 0; _j < _output4.length; _j++) {
+                var _error4 = datum.output[_j][0] - _output4[_j];
+
+                _errors3 += _error4 * _error4;
+                _errorCount2++;
+              }
+
+              errorSum += _errors3 / _errorCount2;
+
+              var _errorsAbs4 = Math.abs(_errors3);
+
+              if (_errorsAbs4 > this.trainOpts.errorThresh) {
+                var _misclass4 = data[_i16];
+                Object.assign(_misclass4, {
+                  actual: this.outputLookup ? lookup.toObject(this.outputLookup, _output4) : _output4
+                });
+                misclasses.push(_misclass4);
+              }
+            }
+
+            break;
+          }
+
+        case 'array,datum,array,array,number':
+          {
+            for (var _i17 = 0; _i17 < formattedData.length; _i17++) {
+              var _datum5 = formattedData[_i17];
+
+              var _output5 = this.forecast(_datum5.input, _datum5.output.length);
+
+              var _errors4 = 0;
+
+              for (var _j2 = 0; _j2 < _output5.length; _j2++) {
+                for (var k = 0; k < _output5[_j2].length; k++) {
+                  var _error5 = _datum5.output[_j2][k] - _output5[_j2][k];
+
+                  _errors4 += _error5 * _error5;
+                }
+              }
+
+              errorSum += _errors4;
+
+              var _errorsAbs5 = Math.abs(_errors4);
+
+              if (_errorsAbs5 > this.trainOpts.errorThresh) {
+                var _misclass5 = data[_i17];
+                misclasses.push({
+                  input: _misclass5.input,
+                  output: _misclass5.output,
+                  actual: _output5
+                });
+              }
+            }
+
+            break;
+          }
+
+        case 'array,datum,array,object,number':
+          {
+            for (var _i18 = 0; _i18 < formattedData.length; _i18++) {
+              var _datum6 = formattedData[_i18];
+
+              var _output6 = this.forecast(_datum6.input, _datum6.output.length);
+
+              var _errors5 = 0;
+
+              for (var _j3 = 0; _j3 < _output6.length; _j3++) {
+                for (var _p2 in _output6[_j3]) {
+                  var _error6 = data[_i18].output[_j3][_p2] - _output6[_j3][_p2];
+
+                  _errors5 += _error6 * _error6;
+                }
+              }
+
+              errorSum += _errors5;
+
+              var _errorsAbs6 = Math.abs(_errors5);
+
+              if (_errorsAbs6 > this.trainOpts.errorThresh) {
+                var _misclass6 = data[_i18];
+                misclasses.push({
+                  input: _misclass6.input,
+                  output: _misclass6.output,
+                  actual: _output6
+                });
+              }
+            }
+
+            break;
+          }
+
+        default:
+          throw new Error('unknown data shape or configuration');
+      }
+
+      return {
+        error: errorSum / formattedData.length,
+        misclasses: misclasses,
+        total: formattedData.length
+      };
+    }
+  }, {
+    key: "addFormat",
+    value: function addFormat(value) {
+      var dataShape = lookup.dataShape(value).join(',');
+
+      switch (dataShape) {
+        case 'array,array,number':
+        case 'datum,array,array,number':
+        case 'array,number':
+        case 'datum,array,number':
+          return;
+
+        case 'datum,object,number':
+          {
+            this.inputLookup = lookup.addKeys(value.input, this.inputLookup);
+
+            if (this.inputLookup) {
+              this.inputLookupLength = Object.keys(this.inputLookup).length;
+            }
+
+            this.outputLookup = lookup.addKeys(value.output, this.outputLookup);
+
+            if (this.outputLookup) {
+              this.outputLookupLength = Object.keys(this.outputLookup).length;
+            }
+
+            break;
+          }
+
+        case 'object,number':
+          {
+            this.inputLookup = this.outputLookup = lookup.addKeys(value, this.inputLookup);
+
+            if (this.inputLookup) {
+              this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
+            }
+
+            break;
+          }
+
+        case 'array,object,number':
+          {
+            for (var i = 0; i < value.length; i++) {
+              this.inputLookup = this.outputLookup = lookup.addKeys(value[i], this.inputLookup);
+
+              if (this.inputLookup) {
+                this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
+              }
+            }
+
+            break;
+          }
+
+        case 'datum,array,object,number':
+          {
+            for (var _i19 = 0; _i19 < value.input.length; _i19++) {
+              this.inputLookup = lookup.addKeys(value.input[_i19], this.inputLookup);
+
+              if (this.inputLookup) {
+                this.inputLookupLength = Object.keys(this.inputLookup).length;
+              }
+            }
+
+            for (var _i20 = 0; _i20 < value.output.length; _i20++) {
+              this.outputLookup = lookup.addKeys(value.output[_i20], this.outputLookup);
+
+              if (this.outputLookup) {
+                this.outputLookupLength = Object.keys(this.outputLookup).length;
+              }
+            }
+
+            break;
+          }
+
+        default:
+          throw new Error('unknown data shape or configuration');
+      }
+    }
+    /**
+     *
+     * @returns {Object}
+     */
+
+  }, {
+    key: "toJSON",
+    value: function toJSON() {
+      var defaults = this.constructor.defaults;
+
+      if (!this.model) {
+        this.initialize();
+      }
+
+      var model = this.model;
+      var options = {};
+
+      for (var p in defaults) {
+        if (defaults.hasOwnProperty(p)) {
+          options[p] = this[p];
+        }
+      }
+
+      return {
+        type: this.constructor.name,
+        options: options,
+        hiddenLayers: model.hiddenLayers.map(function (hiddenLayer) {
+          var layers = {};
+
+          for (var _p3 in hiddenLayer) {
+            layers[_p3] = hiddenLayer[_p3].toJSON();
+          }
+
+          return layers;
+        }),
+        outputConnector: this.model.outputConnector.toJSON(),
+        output: this.model.output.toJSON()
+      };
+    }
+  }, {
+    key: "fromJSON",
+    value: function fromJSON(json) {
+      var defaults = this.constructor.defaults;
+      var options = json.options;
+      this.model = null;
+      this.hiddenLayers = null;
+      var allMatrices = [];
+      var hiddenLayers = []; // backward compatibility for hiddenSizes
+
+      (json.hiddenLayers || json.hiddenSizes).forEach(function (hiddenLayer) {
+        var layers = {};
+
+        for (var p in hiddenLayer) {
+          layers[p] = Matrix.fromJSON(hiddenLayer[p]);
+          allMatrices.push(layers[p]);
+        }
+
+        hiddenLayers.push(layers);
+      });
+      var outputConnector = Matrix.fromJSON(json.outputConnector);
+      allMatrices.push(outputConnector);
+      var output = Matrix.fromJSON(json.output);
+      allMatrices.push(output);
+      Object.assign(this, defaults, options); // backward compatibility
+
+      if (options.hiddenSizes) {
+        this.hiddenLayers = options.hiddenSizes;
+      }
+
+      this.model = {
+        hiddenLayers: hiddenLayers,
+        output: output,
+        allMatrices: allMatrices,
+        outputConnector: outputConnector,
+        equations: [],
+        equationConnections: []
+      };
+      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
+        return new Matrix(size, 1);
+      });
+      this.bindEquation();
     }
     /**
      *
@@ -41934,7 +43592,145 @@ function (_RNN) {
   }, {
     key: "toFunction",
     value: function toFunction() {
-      throw new Error("".concat(this.constructor.name, "-toFunction is not yet implemented"));
+      var model = this.model;
+      var equations = this.model.equations;
+      var inputSize = this.inputSize;
+      var inputLookup = this.inputLookup;
+      var inputLookupLength = this.inputLookupLength;
+      var outputLookup = this.outputLookup;
+      var outputLookupLength = this.outputLookupLength;
+      var equation = equations[1];
+      var states = equation.states;
+      var jsonString = JSON.stringify(this.toJSON());
+
+      function matrixOrigin(m, stateIndex) {
+        for (var i = 0, max = states.length; i < max; i++) {
+          var state = states[i];
+
+          if (i === stateIndex) {
+            var j = previousConnectionIndex(m);
+
+            switch (m) {
+              case state.left:
+                if (j > -1) {
+                  return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
+                }
+
+              case state.right:
+                if (j > -1) {
+                  return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
+                }
+
+              case state.product:
+                return "new Matrix(".concat(m.rows, ", ").concat(m.columns, ")");
+
+              default:
+                throw Error('unknown state');
+            }
+          }
+
+          if (m === state.product) return "states[".concat(i, "].product");
+          if (m === state.right) return "states[".concat(i, "].right");
+          if (m === state.left) return "states[".concat(i, "].left");
+        }
+      }
+
+      function previousConnectionIndex(m) {
+        var connection = model.equationConnections[0];
+        var states = equations[0].states;
+
+        for (var i = 0, max = states.length; i < max; i++) {
+          if (states[i].product === m) {
+            return i;
+          }
+        }
+
+        return connection.indexOf(m);
+      }
+
+      function matrixToString(m, stateIndex) {
+        if (!m || !m.rows || !m.columns) return 'null';
+        if (m === model.outputConnector) return "json.outputConnector";
+        if (m === model.output) return "json.output";
+
+        for (var i = 0, max = model.hiddenLayers.length; i < max; i++) {
+          var hiddenLayer = model.hiddenLayers[i];
+
+          for (var p in hiddenLayer) {
+            if (!hiddenLayer.hasOwnProperty(p)) continue;
+            if (hiddenLayer[p] !== m) continue;
+            return "json.hiddenLayers[".concat(i, "].").concat(p);
+          }
+        }
+
+        return matrixOrigin(m, stateIndex);
+      }
+
+      function formatInputData() {
+        if (!inputLookup) return '';
+
+        if (inputSize === 1) {
+          if (inputLookup === outputLookup) {
+            return "function lookupInput(input) {\n            var table = ".concat(JSON.stringify(inputLookup), ";\n            var result = [];\n            for (var p in table) {\n              if (!input.hasOwnProperty(p)) break;\n              result.push(Float32Array.from([input[p]]));\n            }\n            return result;\n          }");
+          }
+
+          return "function lookupInput(input) {\n          var table = ".concat(JSON.stringify(inputLookup), ";\n          var result = [];\n          for (var p in table) {\n            result.push(Float32Array.from([input[p]]));\n          }\n          return result;\n        }");
+        }
+
+        return "function lookupInput(rawInputs) {\n        var table = ".concat(JSON.stringify(inputLookup), ";\n        var result = [];\n        for (var i = 0; i < rawInputs.length; i++) {\n          var rawInput = rawInputs[i];\n          var input = new Float32Array(").concat(inputLookupLength, ");\n          for (var p in table) {\n            input[table[p]] = rawInput.hasOwnProperty(p) ? rawInput[p] : 0;\n          }\n          result.push(input);\n        }\n        return result;\n      }");
+      }
+
+      function formatOutputData() {
+        if (!outputLookup) return '';
+
+        if (inputSize === 1) {
+          if (inputLookup === outputLookup) {
+            return "function lookupOutputPartial(output, input) {\n            var table = ".concat(JSON.stringify(outputLookup), ";\n            var offset = input.length;\n            var result = {};\n            var i = 0;\n            for (var p in table) {\n              if (i++ < offset) continue;\n              result[p] = output[table[p] - offset][0];\n            }\n            return result;\n          }");
+          }
+
+          return "function lookupOutput(output) {\n          var table = ".concat(JSON.stringify(outputLookup), ";\n          var result = {};\n          for (var p in table) {\n            result[p] = output[table[p]][0];\n          }\n          return result;\n        }");
+        }
+
+        return "function lookupOutput(output) {\n        var table = ".concat(JSON.stringify(outputLookup), ";\n        var result = {};\n        for (var p in table) {\n          result[p] = output[table[p]];\n        }\n        return result;\n      }");
+      }
+
+      function toInner(fnString) {
+        // crude, but should be sufficient for now
+        // function() { body }
+        fnString = fnString.toString().split('{');
+        fnString.shift(); // body }
+
+        fnString = fnString.join('{');
+        fnString = fnString.split('}');
+        fnString.pop(); // body
+
+        return fnString.join('}').split('\n').join('\n        ').replace('product.weights = input.weights = this.inputValue;', inputLookup && inputSize === 1 ? 'product.weights = _i < input.length ? input[_i]: prevStates[prevStates.length - 1].product.weights;' : inputSize === 1 ? 'product.weights = [input[_i]];' : 'product.weights = input[_i];').replace('product.deltas[i] = 0;', '').replace('product.deltas[column] = 0;', '').replace('left.deltas[leftIndex] = 0;', '').replace('right.deltas[rightIndex] = 0;', '').replace('product.deltas = left.deltas.slice(0);', '');
+      }
+
+      function fileName(fnName) {
+        return "src/recurrent/matrix/".concat(fnName.replace(/[A-Z]/g, function (value) {
+          return '-' + value.toLowerCase();
+        }), ".js");
+      }
+
+      var statesRaw = [];
+      var usedFunctionNames = {};
+      var innerFunctionsSwitch = [];
+
+      for (var i = 0, max = states.length; i < max; i++) {
+        var state = states[i];
+        statesRaw.push("states[".concat(i, "] = {\n      name: '").concat(state.forwardFn.name, "',\n      left: ").concat(matrixToString(state.left, i), ",\n      right: ").concat(matrixToString(state.right, i), ",\n      product: ").concat(matrixToString(state.product, i), "\n    }"));
+        var fnName = state.forwardFn.name;
+
+        if (!usedFunctionNames[fnName]) {
+          usedFunctionNames[fnName] = true;
+          innerFunctionsSwitch.push("        case '".concat(fnName, "':").concat(fnName !== 'forwardFn' ? " //compiled from ".concat(fileName(fnName)) : '', "\n          ").concat(toInner(state.forwardFn.toString()), "\n          break;"));
+        }
+      }
+
+      var forceForecast = this.inputSize === 1 && this.outputLookup;
+      var src = "\n  var input = ".concat(this.inputLookup ? 'lookupInput(rawInput)' : 'rawInput', ";\n  var json = ").concat(jsonString, ";\n  var output = [];\n  var states = [];\n  var prevStates;\n  var state;\n  var max = ").concat(forceForecast ? inputLookup === outputLookup ? inputLookupLength : "input.length + ".concat(outputLookupLength - 1) : 'input.length', ";\n  for (var _i = 0; _i < max; _i++) {\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      \n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n    ").concat(inputSize === 1 && inputLookup ? 'if (_i >= input.length - 1) { output.push(state.product.weights); }' : 'output = state.product.weights;', "\n  }\n  ").concat(outputLookup ? outputLookup === inputLookup ? 'return lookupOutputPartial(output, input)' : 'return lookupOutput(output)' : inputSize === 1 ? 'return output[0]' : 'return output', ";\n  ").concat(formatInputData(), "\n  ").concat(formatOutputData(), "\n  \n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros.toString(), "\n  ").concat(softmax.toString().replace('_2.default', 'Matrix'), "\n  ").concat(randomFloat.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString());
+      return new Function('rawInput', src);
     }
   }]);
 
@@ -41943,19 +43739,17 @@ function (_RNN) {
 
 RNNTimeStep.defaults = {
   inputSize: 1,
-  hiddenSizes: [20],
+  hiddenLayers: [20],
   outputSize: 1,
-  learningRate: 0.01,
-  decayRate: 0.999,
-  smoothEps: 1e-8,
-  regc: 0.000001,
-  clipval: 5,
-  json: null,
-  dataFormatter: null
+  learningRate: RNN.defaults.learningRate,
+  decayRate: RNN.defaults.decayRate,
+  smoothEps: RNN.defaults.smoothEps,
+  regc: RNN.defaults.regc,
+  clipval: RNN.defaults.clipval
 };
 RNNTimeStep.trainDefaults = RNN.trainDefaults;
 module.exports = RNNTimeStep;
-},{"./matrix":"v84l","./matrix/random-matrix":"zGuK","./matrix/equation":"ytIu","./rnn":"gJGF"}],"e2+i":[function(require,module,exports) {
+},{"./matrix":"v84l","./matrix/random-matrix":"zGuK","./matrix/equation":"ytIu","./rnn":"gJGF","../utilities/zeros":"M4LY","./matrix/softmax":"Ens1","../utilities/random":"Sd27","./matrix/sample-i":"lOwB","./matrix/max-i":"2wnU","../lookup":"Q1a6","../utilities/lookup-table":"kAwF","../utilities/array-lookup-table":"V51U","../utilities/cast":"Z8Xv"}],"e2+i":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -42281,10 +44075,86 @@ function (_RNNTimeStep) {
 }(RNNTimeStep);
 
 module.exports = GRUTimeStep;
-},{"./gru":"wLPK","./rnn-time-step":"zri4"}],"Focm":[function(require,module,exports) {
+},{"./gru":"wLPK","./rnn-time-step":"zri4"}],"UFo7":[function(require,module,exports) {
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+function toSVG(network, options) {
+  //default values
+  var defaultOptions = {
+    line: {
+      width: '0.5',
+      color: 'black'
+    },
+    inputs: {
+      color: 'rgba(0, 128, 0, 0.5)',
+      label: false
+    },
+    outputs: {
+      color: 'rgba(100, 149, 237, 0.5)'
+    },
+    hidden: {
+      color: 'rgba(255, 127, 80, 0.5)'
+    },
+    fontSize: '14px',
+    radius: '8',
+    width: '400',
+    height: '250'
+  }; // Get network size array if network is created from the constructor
+
+  var size = typeof network.inputSize == 'number' && typeof network.outputSize == 'number' && network.inputSize > 0 && network.outputSize > 0 ? [network.inputSize].concat(_toConsumableArray(network.hiddenLayers), [network.outputSize]) : false; // Get network size array if network is formed from a json object with fromJSON(json) method
+
+  if (!size) size = network.sizes;
+  options = Object.assign(defaultOptions, options);
+  options.inputs.label = options.inputs.label.length == network.inputSize ? options.inputs.label : false;
+
+  if (size) {
+    var svg = '<svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="' + options.width + '" height="' + options.height + '">';
+    var sh = options.width / size.length;
+    size.forEach(function (neuronsNu, i) {
+      var sv = options.height / neuronsNu;
+
+      _toConsumableArray(Array(neuronsNu)).forEach(function (_, j) {
+        if (i == 0) {
+          svg += '<rect x="' + (sh / 2 - options.radius) + '" y="' + (sv / 2 + j * sv - options.radius) + '" width="' + 2 * options.radius + '" height="' + 2 * options.radius + '" stroke="black" stroke-width="1" fill="' + options.inputs.color + '" />';
+          svg += '<line x1="' + sh / 4 + '" y1="' + (sv / 2 + j * sv) + '" x2="' + (sh / 2 - options.radius) + '" y2="' + (sv / 2 + j * sv) + '" style="stroke:' + options.line.color + ';stroke-width:' + options.line.width + '" />';
+
+          if (options.inputs.label) {
+            svg += '<text x="' + sh / 8 + '" y="' + (sv / 2 + j * sv - 5) + '" fill="black" font-size= "' + options.fontSize + '">' + options.inputs.label[j] + '</text>';
+          }
+        } else {
+          var sv_1 = options.height / size[i - 1];
+
+          if (i == size.length - 1) {
+            svg += '<circle cx="' + (sh / 2 + i * sh) + '" cy="' + (sv / 2 + j * sv) + '" r="' + options.radius + '" stroke="black" stroke-width="1" fill="' + options.outputs.color + '" />';
+            svg += '<line x1="' + (sh / 2 + i * sh + options.radius) + '" y1="' + (sv / 2 + j * sv) + '" x2="' + (sh / 2 + i * sh + sh / 4) + '" y2="' + (sv / 2 + j * sv) + '" style="stroke:' + options.line.color + ';stroke-width:' + options.line.width + '" />';
+          } else {
+            svg += '<circle cx="' + (sh / 2 + i * sh) + '" cy="' + (sv / 2 + j * sv) + '" r="' + options.radius + '" stroke="black" stroke-width="1" fill="' + options.hidden.color + '" />';
+          }
+
+          for (var k = 0; k < size[i - 1]; k++) {
+            svg += '<line x1="' + (sh / 2 + (i - 1) * sh + options.radius) + '" y1="' + (sv_1 / 2 + k * sv_1) + '" x2="' + (sh / 2 + i * sh - options.radius) + '" y2="' + (sv / 2 + j * sv) + '" style="stroke:' + options.line.color + ';stroke-width:' + options.line.width + '" />';
+          }
+        }
+      });
+    });
+    svg += '</svg>';
+    return svg;
+  } else {
+    return false;
+  }
+}
+
+module.exports = toSVG;
+},{}],"Focm":[function(require,module,exports) {
 var activation = require('./activation');
 
-var crossValidate = require('./cross-validate').crossValidate;
+var CrossValidate = require('./cross-validate');
 
 var layer = require('./layer');
 
@@ -42338,9 +44208,11 @@ var DataFormatter = require('./utilities/data-formatter');
 
 var zeros = require('./utilities/zeros');
 
+var toSVG = require('./utilities/to-svg');
+
 var brain = {
   activation: activation,
-  crossValidate: crossValidate,
+  CrossValidate: CrossValidate,
   likely: likely,
   layer: layer,
   lookup: lookup,
@@ -42368,7 +44240,8 @@ var brain = {
     range: range,
     toArray: toArray,
     DataFormatter: DataFormatter,
-    zeros: zeros
+    zeros: zeros,
+    toSVG: toSVG
   }
 };
 
@@ -42379,5 +44252,5 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined') {
   module.exports = brain;
 }
-},{"./activation":"l4U/","./cross-validate":"+wYj","./layer":"X3lc","./likely":"dfGl","./lookup":"Q1a6","./praxis":"4P9L","./feed-forward":"eqC7","./neural-network":"8epZ","./neural-network-gpu":"6trg","./train-stream":"vEEq","./recurrent":"JVtt","./recurrent/rnn-time-step":"zri4","./recurrent/lstm-time-step":"hEPI","./recurrent/gru-time-step":"+7gC","./recurrent/rnn":"gJGF","./recurrent/lstm":"e2+i","./recurrent/gru":"wLPK","./utilities/max":"UFcl","./utilities/mse":"YGn7","./utilities/ones":"f7P8","./utilities/random":"Sd27","./utilities/random-weight":"TX07","./utilities/randos":"S8tM","./utilities/range":"YhH7","./utilities/to-array":"HBY8","./utilities/data-formatter":"91u3","./utilities/zeros":"M4LY"}]},{},["Focm"], null)
+},{"./activation":"l4U/","./cross-validate":"+wYj","./layer":"X3lc","./likely":"dfGl","./lookup":"Q1a6","./praxis":"4P9L","./feed-forward":"eqC7","./neural-network":"8epZ","./neural-network-gpu":"6trg","./train-stream":"vEEq","./recurrent":"JVtt","./recurrent/rnn-time-step":"zri4","./recurrent/lstm-time-step":"hEPI","./recurrent/gru-time-step":"+7gC","./recurrent/rnn":"gJGF","./recurrent/lstm":"e2+i","./recurrent/gru":"wLPK","./utilities/max":"UFcl","./utilities/mse":"YGn7","./utilities/ones":"f7P8","./utilities/random":"Sd27","./utilities/random-weight":"TX07","./utilities/randos":"S8tM","./utilities/range":"YhH7","./utilities/to-array":"HBY8","./utilities/data-formatter":"91u3","./utilities/zeros":"M4LY","./utilities/to-svg":"UFo7"}]},{},["Focm"], null)
 //# sourceMappingURL=/brain-browser.js.map

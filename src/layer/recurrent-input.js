@@ -1,4 +1,3 @@
-// import zeros2D from '../utilities/zeros-2d'
 const { Internal } = require('./types');
 const { Base } = require('./base');
 

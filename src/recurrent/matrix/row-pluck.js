@@ -10,4 +10,4 @@ module.exports = function rowPluck(product, left, rowPluckIndex) {
     product.weights[column] = left.weights[rowBase + column];
     product.deltas[column] = 0;
   }
-}
+};
