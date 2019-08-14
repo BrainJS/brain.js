@@ -11,7 +11,7 @@ function activate(weight) {
 /**
  * Leaky Relu derivative
  * @param weight
- * @param delta
+ * @param error
  * @returns {number}
  */
 function measure(weight, error) {

@@ -10,3 +10,6 @@ yarn.lock
 
 # parcel bundler cache
 .cache
+
+# code coverage
+__coverage__
