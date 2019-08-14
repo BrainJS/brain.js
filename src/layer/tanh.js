@@ -1,14 +1,14 @@
 const { Activation } = require('./types');
 const { makeKernel } = require('../utilities/kernel');
-const { tanhDerivative } = require('../activation/tanh');
+const { activate, measure } = require('../activation/tanh');
 const zeros2D = require('../utilities/zeros-2d');
 
 function predict(inputs) {
-  return Math.tanh(inputs[this.thread.y][this.thread.x]);
+  return activate(inputs[this.thread.y][this.thread.x]);
 }
 
 function compare(weights, errors) {
-  return tanhDerivative(
+  return measure(
     weights[this.thread.y][this.thread.x],
     errors[this.thread.y][this.thread.x]
   );
@@ -31,11 +31,12 @@ class Tanh extends Activation {
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
       output: [this.width, this.height],
+      functions: [activate]
     });
 
     this.compareKernel = makeKernel(compare, {
       output: [this.width, this.height],
-      functions: [tanhDerivative],
+      functions: [measure],
     });
   }
 
