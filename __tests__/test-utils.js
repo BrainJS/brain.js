@@ -130,4 +130,16 @@ function allMatrices(model, fn) {
   });
 }
 
-module.exports = { onePlusPlus3D, onePlusPlus2D, zero3D, zero2D, allMatrices, allWeights, allDeltas };
+function shave(array) {
+  const result = [];
+  for (let i = 0; i < array.length; i++) {
+    if (Array.isArray(array[i]) || array[i].constructor === Float32Array) {
+      result.push(shave(array[i]));
+    } else {
+      result.push(array[i].toFixed(8));
+    }
+  }
+  return result;
+}
+
+module.exports = { onePlusPlus3D, onePlusPlus2D, zero3D, zero2D, allMatrices, allWeights, allDeltas, shave };
