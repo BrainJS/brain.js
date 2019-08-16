@@ -1,0 +1,25 @@
+<!DOCTYPE html><html lang=en><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><!--[if IE]><link rel="icon" href="/favicon.ico"><![endif]--><title>Brain.js: Neural networks in JavaScript</title><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel=stylesheet><script>document.addEventListener('DOMContentLoaded', () => {
+
+      // Get all "navbar-burger" elements
+      const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+      // Check if there are any navbar burgers
+      if ($navbarBurgers.length > 0) {
+
+        // Add a click event on each of them
+        $navbarBurgers.forEach(el => {
+          el.addEventListener('click', () => {
+
+            // Get the target from the "data-target" attribute
+            const target = el.dataset.target;
+            const $target = document.getElementById(target);
+
+            // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+            el.classList.toggle('is-active');
+            $target.classList.toggle('is-active');
+
+          });
+        });
+      }
+
+    });</script><link href=/css/examples.f7c49284.css rel=prefetch><link href=/js/examples.bf79feeb.js rel=prefetch><link href=/js/getting-started.3281fcb7.js rel=prefetch><link href=/js/tutorial.75589435.js rel=prefetch><link href=/css/app.7a39f43b.css rel=preload as=style><link href=/js/app.46f415b9.js rel=modulepreload as=script><link href=/js/chunk-vendors.d817be43.js rel=modulepreload as=script><link href=/css/app.7a39f43b.css rel=stylesheet><link rel=icon type=image/png sizes=32x32 href=/img/icons/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/img/icons/favicon-16x16.png><link rel=manifest href=/manifest.json><meta name=theme-color content=#4DBA87><meta name=apple-mobile-web-app-capable content=no><meta name=apple-mobile-web-app-status-bar-style content=default><meta name=apple-mobile-web-app-title content=brain.js><link rel=apple-touch-icon href=/img/icons/apple-touch-icon-152x152.png><link rel=mask-icon href=/img/icons/safari-pinned-tab.svg color=#4DBA87><meta name=msapplication-TileImage content=/img/icons/msapplication-icon-144x144.png><meta name=msapplication-TileColor content=#000000></head><body class=has-navbar-fixed-top><noscript><strong>We're sorry but src doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id=app></div><script type=module src=/js/chunk-vendors.d817be43.js></script><script type=module src=/js/app.46f415b9.js></script><script>!function(){var e=document,t=e.createElement("script");if(!("noModule"in t)&&"onbeforeload"in t){var n=!1;e.addEventListener("beforeload",function(e){if(e.target===t)n=!0;else if(!e.target.hasAttribute("nomodule")||!n)return;e.preventDefault()},!0),t.type="module",t.src=".",e.head.appendChild(t),t.remove()}}();</script><script src=/js/chunk-vendors-legacy.ebe04a50.js nomodule></script><script src=/js/app-legacy.69cf6cc0.js nomodule></script></body></html>
