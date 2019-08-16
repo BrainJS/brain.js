@@ -1,17 +1,26 @@
 const { Activation } = require('./types');
 const { makeKernel } = require('../utilities/kernel');
-const lra = require('../activation/leaky-relu');
-const activate = lra.activate;
-const measure = lra.measure;
+const { activate, measure } = require('../activation/leaky-relu');
 
-function predict(inputs) {
+function predict2D(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-function compare(weights, deltas) {
+function predict3D(inputs) {
+  return activate(inputs[this.thread.z][this.thread.y][this.thread.x]);
+}
+
+function compare2D(weights, deltas) {
   return measure(
     weights[this.thread.y][this.thread.x],
     deltas[this.thread.y][this.thread.x]
+  );
+}
+
+function compare3D(weights, deltas) {
+  return measure(
+    weights[this.thread.z][this.thread.y][this.thread.x],
+    deltas[this.thread.z][this.thread.y][this.thread.x]
   );
 }
 
@@ -27,13 +36,23 @@ class LeakyRelu extends Activation {
   }
 
   setupKernels() {
-    this.predictKernel = makeKernel(predict, {
-      functions: [activate],
-    });
+    if (this.depth > 0) {
+      this.predictKernel = makeKernel(predict3D, {
+        functions: [activate],
+      });
 
-    this.compareKernel = makeKernel(compare, {
-      functions: [measure],
-    });
+      this.compareKernel = makeKernel(compare3D, {
+        functions: [measure],
+      });
+    } else {
+      this.predictKernel = makeKernel(predict2D, {
+        functions: [activate],
+      });
+
+      this.compareKernel = makeKernel(compare2D, {
+        functions: [measure],
+      });
+    }
   }
 
   predict() {
@@ -49,4 +68,4 @@ function leakyRelu(inputLayer) {
   return new LeakyRelu(inputLayer);
 }
 
-module.exports = { LeakyRelu, leakyRelu, predict, compare };
+module.exports = { LeakyRelu, leakyRelu, predict2D, predict3D, compare2D, compare3D };

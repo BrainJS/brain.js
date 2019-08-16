@@ -6,7 +6,7 @@ class Base {
     return {
       width: 1,
       height: 1,
-      depth: 1,
+      depth: null,
       weights: null,
       deltas: null,
       name: null,
@@ -18,6 +18,7 @@ class Base {
     // size
     this.width = null;
     this.height = null;
+    this.depth = null;
 
     // what matters :P
     this.deltas = null;

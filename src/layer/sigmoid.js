@@ -1,42 +1,50 @@
 const { Activation } = require('./types');
-const { makeKernel, makeDevKernel } = require('../utilities/kernel');
+const { makeKernel } = require('../utilities/kernel');
 const { activate, measure } = require('../activation/sigmoid');
-const zeros2D = require('../utilities/zeros-2d');
 
-function predict(inputs) {
+function predict2D(inputs) {
   return 1 / (1 + Math.exp(-inputs[this.thread.y][this.thread.x]));
 }
 
-function compare(weights, deltas) {
+function predict3D(inputs) {
+  return 1 / (1 + Math.exp(-inputs[this.thread.z][this.thread.y][this.thread.x]));
+}
+
+function compare2D(weights, deltas) {
   const weight = weights[this.thread.y][this.thread.x];
   const delta = deltas[this.thread.y][this.thread.x];
   return weight * (1 - weight) * delta;
 }
 
+function compare3D(weights, deltas) {
+  const weight = weights[this.thread.z][this.thread.y][this.thread.x];
+  const delta = deltas[this.thread.z][this.thread.y][this.thread.x];
+  return weight * (1 - weight) * delta;
+}
+
 class Sigmoid extends Activation {
-  constructor(inputLayer, settings) {
-    super();
-    this.inputLayer = inputLayer;
-
-    const { width, height } = inputLayer;
-    this.width = width;
-    this.height = height;
-    this.validate();
-    this.weights = zeros2D(this.width, this.height);
-    this.deltas = zeros2D(this.width, this.height);
-    this.setupPraxis(settings);
-  }
-
   setupKernels() {
-    this.predictKernel = makeKernel(predict, {
-      output: [this.width, this.height],
-      functions: [activate],
-    });
+    if (this.depth > 0) {
+      this.predictKernel = makeKernel(predict3D, {
+        output: [this.width, this.height, this.depth],
+        functions: [activate],
+      });
 
-    this.compareKernel = makeKernel(compare, {
-      output: [this.width, this.height],
-      functions: [measure],
-    });
+      this.compareKernel = makeKernel(compare3D, {
+        output: [this.width, this.height, this.depth],
+        functions: [measure],
+      });
+    } else {
+      this.predictKernel = makeKernel(predict2D, {
+        output: [this.width, this.height],
+        functions: [activate],
+      });
+
+      this.compareKernel = makeKernel(compare2D, {
+        output: [this.width, this.height],
+        functions: [measure],
+      });
+    }
   }
 
   predict() {
@@ -52,4 +60,4 @@ function sigmoid(inputLayer, settings) {
   return new Sigmoid(inputLayer, settings);
 }
 
-module.exports = { Sigmoid, sigmoid, predict, compare };
+module.exports = { Sigmoid, sigmoid, predict2D, predict3D, compare2D, compare3D };

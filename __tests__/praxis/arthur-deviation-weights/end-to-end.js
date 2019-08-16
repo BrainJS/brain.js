@@ -4,9 +4,12 @@ const { random } = require('../../src/layer/random');
 const NeuralNetwork = require('../../src/neural-network');
 const { setup, teardown } = require('../../src/utilities/kernel');
 
-describe('ArthurDeviationWeights', () => {
+/* istanbul ignore file */
+describe('ArthurDeviationWeights Class: End to End', () => {
   beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
+    setup(new GPU({
+      mode: 'cpu'
+    }));
   });
   afterEach(() => {
     teardown();
@@ -32,7 +35,7 @@ describe('ArthurDeviationWeights', () => {
       expect(result[0][0].toFixed(5)).toEqual((1.3).toFixed(5).toString());
     });
   });
-  test('matches NeuralNetwork._adjustWeights output', () => {
+  test('matches NeuralNetwork.adjustWeights output', () => {
     const xorTrainingData = [
       { input: [0, 1], output: [1] },
       { input: [0, 0], output: [0] },

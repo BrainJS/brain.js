@@ -1,6 +1,7 @@
 const activation = require('./activation');
 const CrossValidate = require('./cross-validate');
 const layer = require('./layer');
+const layerTypes = require('./layer/types');
 const likely = require('./likely');
 const lookup = require('./lookup');
 const praxis = require('./praxis');
@@ -32,6 +33,7 @@ const brain = {
   CrossValidate,
   likely,
   layer,
+  layerTypes,
   lookup,
   praxis,
   FeedForward,

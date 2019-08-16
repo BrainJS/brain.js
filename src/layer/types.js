@@ -1,6 +1,6 @@
 const { Base } = require('./base');
+const { Activation } = require('./activation');
 
-class Activation extends Base {}
 class Internal {}
 class Filter extends Base {}
 class Model extends Base {}

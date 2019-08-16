@@ -1,50 +1,45 @@
-const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
 const { Tanh, tanh: tanhLayer, predict2D, predict3D, compare2D, compare3D } = require('../../src/layer/tanh');
-const { setup, teardown } = require('../../src/utilities/kernel');
 const tanhActivation = require('../../src/activation/tanh');
 const { shave } = require('../test-utils');
 
 describe('Tanh Layer', () => {
-  beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
-  });
-  afterEach(() => {
-    teardown();
-  });
-
-  describe('predict2D (forward propagation)', () => {
+  describe('predict2D() (forward propagation)', () => {
     test('can tanh a simple matrix', () => {
-      const inputs = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9]];
-      const width = 3;
+      const inputs = [
+        [0.1, 0.2, 0.3, 0.4],
+        [0.5, 0.6, 0.7, 0.8],
+        [0.9, 1, 1.1, 1.2]
+      ];
+      const width = 4;
       const height = 3;
       const results = gpuMock(predict2D, { output: [width, height] })(inputs);
       expect(results.length).toBe(height);
       expect(results[0].length).toBe(width);
       expect(shave(results)).toEqual(
         shave([
-          [0.09966800, 0.19737533, 0.29131261],
-          [0.37994897, 0.46211717, 0.53704959],
-          [0.60436779, 0.66403675, 0.71629786],
+          [0.09966800, 0.19737533, 0.29131261, 0.37994897],
+          [0.46211717, 0.53704959, 0.60436779, 0.66403675],
+          [0.71629786, 0.76159418, 0.80049902, 0.83365458],
         ])
       );
     });
   });
 
-  describe('predict3D (forward propagation)', () => {
+  describe('predict3D() (forward propagation)', () => {
     test('can tanh a simple matrix', () => {
       const inputs = [
         [
-          [0.1, 0.2, 0.3],
-          [0.4, 0.5, 0.6],
-          [0.7, 0.8, 0.9]
+          [0.1, 0.2, 0.3, 0.4],
+          [0.5, 0.6, 0.7, 0.8],
+          [0.9, 1, 1.1, 1.2]
         ],[
-          [0.1, 0.2, 0.3],
-          [0.4, 0.5, 0.6],
-          [0.7, 0.8, 0.9]
+          [0.1, 0.2, 0.3, 0.4],
+          [0.5, 0.6, 0.7, 0.8],
+          [0.9, 1, 1.1, 1.2]
         ]
       ];
-      const width = 3;
+      const width = 4;
       const height = 3;
       const depth = 2;
       const results = gpuMock(predict3D, { output: [width, height, depth] })(inputs);
@@ -55,63 +50,71 @@ describe('Tanh Layer', () => {
       expect(shave(results)).toEqual(
         shave([
           [
-            [0.09966800, 0.19737533, 0.29131261],
-            [0.37994897, 0.46211717, 0.53704959],
-            [0.60436779, 0.66403675, 0.71629786],
+            [0.09966800, 0.19737533, 0.29131261, 0.37994897],
+            [0.46211717, 0.53704959, 0.60436779, 0.66403675],
+            [0.71629786, 0.76159418, 0.80049902, 0.83365458],
           ],[
-            [0.09966800, 0.19737533, 0.29131261],
-            [0.37994897, 0.46211717, 0.53704959],
-            [0.60436779, 0.66403675, 0.71629786],
+            [0.09966800, 0.19737533, 0.29131261, 0.37994897],
+            [0.46211717, 0.53704959, 0.60436779, 0.66403675],
+            [0.71629786, 0.76159418, 0.80049902, 0.83365458],
           ]
         ])
       );
     });
   });
 
-  describe('compare2D (back propagation)', () => {
+  describe('compare2D() (back propagation)', () => {
     test('can tanh a simple matrix', () => {
-      const inputs = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9]];
-      const deltas = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
-      const width = 3;
+      const inputs = [
+        [0.1, 0.2, 0.3, 0.4],
+        [0.5, 0.6, 0.7, 0.8],
+        [0.9, 1, 1.1, 1.2]
+      ];
+      const deltas = [
+        [1, 1, 1, 1],
+        [1, 1, 1, 1],
+        [1, 1, 1, 1]
+      ];
+      const width = 4;
       const height = 3;
       const results = gpuMock(compare2D, { output: [width, height] })(inputs, deltas);
       expect(results.length).toBe(height);
       expect(results[0].length).toBe(width);
       expect(shave(results)).toEqual(
         shave([
-          [0.99000001, 0.95999998, 0.91000003],
-          [0.83999997, 0.75000000, 0.63999999],
-          [0.50999999, 0.36000001, 0.19000000],
+          [0.99000001, 0.95999998, 0.91000003, 0.83999997],
+          [0.75000000, 0.63999999, 0.50999999, 0.36000001],
+          [0.19000000, 0.00000000, -0.20999999, -0.44000000],
         ])
       );
     });
   });
 
-  describe('compare3D (back propagation)', () => {
+  describe('compare3D() (back propagation)', () => {
     test('can tanh a simple matrix', () => {
       const inputs = [
         [
-          [0.1, 0.2, 0.3],
-          [0.4, 0.5, 0.6],
-          [0.7, 0.8, 0.9]
+          [0.1, 0.2, 0.3, 0.4],
+          [0.5, 0.6, 0.7, 0,8],
+          [0.9, 1, 1.1, 1.2]
         ], [
-          [0.1, 0.2, 0.3],
-          [0.4, 0.5, 0.6],
-          [0.7, 0.8, 0.9]
+          [0.1, 0.2, 0.3, 0.4],
+          [0.5, 0.6, 0.7, 0,8],
+          [0.9, 1, 1.1, 1.2]
         ]
       ];
       const deltas = [
         [
-          [1, 1, 1],
-          [1, 1, 1],
-          [1, 1, 1]
+          [1, 1, 1, 1],
+          [1, 1, 1, 1],
+          [1, 1, 1, 1]
         ], [
-          [1, 1, 1],
-          [1, 1, 1],
-          [1, 1, 1]
+          [1, 1, 1, 1],
+          [1, 1, 1, 1],
+          [1, 1, 1, 1]
         ]
       ];
-      const width = 3;
+      const width = 4;
       const height = 3;
       const depth = 2;
       const results = gpuMock(compare3D, { output: [width, height, depth] })(inputs, deltas);
@@ -121,50 +124,15 @@ describe('Tanh Layer', () => {
       expect(shave(results)).toEqual(
         shave([
           [
-            [0.99000001, 0.95999998, 0.91000003],
-            [0.83999997, 0.75000000, 0.63999999],
-            [0.50999999, 0.36000001, 0.19000000],
+            [0.99000001, 0.95999998, 0.91000003, 0.83999997],
+            [0.75000000, 0.63999999, 0.50999999, 1],
+            [0.19000000, 0.00000000, -0.20999999, -0.44000000],
           ],[
-            [0.99000001, 0.95999998, 0.91000003],
-            [0.83999997, 0.75000000, 0.63999999],
-            [0.50999999, 0.36000001, 0.19000000],
+            [0.99000001, 0.95999998, 0.91000003, 0.83999997],
+            [0.75000000, 0.63999999, 0.50999999, 1],
+            [0.19000000, 0.00000000, -0.20999999, -0.44000000],
           ]])
       );
-    });
-  });
-
-  describe('.constructor()', () => {
-    test('inputLayer', () => {
-      const mockInputLayer = {};
-      const l = new Tanh(mockInputLayer);
-      expect(l.inputLayer).toBe(mockInputLayer);
-    });
-    test('dimensions', () => {
-      const width = 3;
-      const height = 4;
-      const depth = 5;
-      const l = new Tanh({ width, height, depth });
-      expect(l.width).toBe(width);
-      expect(l.height).toBe(height);
-      expect(l.depth).toBe(depth);
-    });
-    test('2d weights & deltas', () => {
-      const width = 3;
-      const height = 4;
-      const l = new Tanh({ width, height });
-      expect(l.weights.length).toBe(height);
-      expect(l.weights[0].length).toBe(width);
-      expect(typeof l.weights[0][0]).toBe('number');
-    });
-    test('3d weights & deltas', () => {
-      const width = 3;
-      const height = 4;
-      const depth = 4;
-      const l = new Tanh({ width, height, depth });
-      expect(l.weights.length).toBe(depth);
-      expect(l.weights[0].length).toBe(height);
-      expect(l.weights[0][0].length).toBe(width);
-      expect(typeof l.weights[0][0][0]).toBe('number');
     });
   });
 
@@ -251,11 +219,16 @@ describe('Tanh Layer', () => {
       const height = 4;
       const depth = 5;
       const mockInputLayer = { width, height, depth };
-      const l = tanhLayer(mockInputLayer);
+      const mockPraxisInstance = {};
+      const mockPraxis = jest.fn(() => mockPraxisInstance);
+      const settings = { praxis: mockPraxis };
+      const l = tanhLayer(mockInputLayer, settings);
       expect(l.constructor).toBe(Tanh);
       expect(l.width).toBe(width);
       expect(l.height).toBe(height);
       expect(l.depth).toBe(depth);
+      expect(mockPraxis).toBeCalled();
+      expect(l.praxis).toBe(mockPraxisInstance);
     });
   });
 });

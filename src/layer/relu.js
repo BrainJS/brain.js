@@ -1,14 +1,12 @@
 const { Activation } = require('./types');
 const { makeKernel } = require('../utilities/kernel');
 const { activate, measure } = require('../activation/relu');
-const zeros2D = require('../utilities/zeros-2d');
-const zeros3D = require('../utilities/zeros-3d');
 
-function predict(inputs) {
+function predict2D(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-function compare(weights, deltas) {
+function compare2D(weights, deltas) {
   return measure(
     weights[this.thread.y][this.thread.x],
     deltas[this.thread.y][this.thread.x]
@@ -27,28 +25,9 @@ function compare3D(weights, deltas) {
 }
 
 class Relu extends Activation {
-  constructor(inputLayer) {
-    super();
-    this.inputLayer = inputLayer;
-
-    const { width, height, depth } = inputLayer;
-    this.width = width;
-    this.height = height;
-    this.validate();
-    if (depth > 1) {
-      this.depth = depth;
-      this.weights = zeros3D(width, height, depth);
-      this.deltas = zeros3D(width, height, depth);
-    } else {
-      this.depth = 1;
-      this.weights = zeros2D(width, height);
-      this.deltas = zeros2D(width, height);
-    }
-  }
-
   setupKernels() {
     const { width, height, depth } = this.inputLayer;
-    if (this.depth > 1) {
+    if (depth > 0) {
       this.predictKernel = makeKernel(predict3D, {
         output: [width, height, depth],
         functions: [activate],
@@ -59,12 +38,12 @@ class Relu extends Activation {
         functions: [measure],
       });
     } else {
-      this.predictKernel = makeKernel(predict, {
+      this.predictKernel = makeKernel(predict2D, {
         output: [width, height],
         functions: [activate],
       });
 
-      this.compareKernel = makeKernel(compare, {
+      this.compareKernel = makeKernel(compare2D, {
         output: [width, height],
         functions: [measure],
       });
@@ -80,8 +59,8 @@ class Relu extends Activation {
   }
 }
 
-function relu(inputLayer) {
-  return new Relu(inputLayer);
+function relu(inputLayer, settings) {
+  return new Relu(inputLayer, settings);
 }
 
-module.exports = { Relu, relu, predict, compare, predict3D, compare3D };
+module.exports = { Relu, relu, predict2D, compare2D, predict3D, compare3D };

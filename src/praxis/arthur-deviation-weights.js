@@ -78,5 +78,7 @@ function arthurDeviationWeights(layer, settings) {
 
 module.exports = {
   ArthurDeviationWeights,
-  arthurDeviationWeights
+  arthurDeviationWeights,
+  update,
+  updateChange,
 };
