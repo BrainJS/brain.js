@@ -250,7 +250,7 @@ class Recurrent extends FeedForward {
     }
   }
 
-  _adjustWeights() {
+  adjustWeights() {
     for (
       let hiddenLayersIndex = 0;
       hiddenLayersIndex < this._hiddenLayers.length;
@@ -290,7 +290,7 @@ class Recurrent extends FeedForward {
     // back propagate
     this._calculateDeltas(target, input.length - 1);
     this._calculateDeltas(input.slice(1), 0);
-    this._adjustWeights();
+    this.adjustWeights();
 
     if (logErrorRate) {
       const outputLayer = this._outputLayers[this._outputLayers.length - 1];
