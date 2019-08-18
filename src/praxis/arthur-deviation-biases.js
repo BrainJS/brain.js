@@ -14,6 +14,7 @@ class ArthurDeviationBiases extends Base {
 
   constructor(layer, settings) {
     super(layer, settings);
+    this.kernel = null;
     this.setupKernels();
   }
 
@@ -38,5 +39,6 @@ function arthurDeviationBiases(layer, settings) {
 
 module.exports = {
   ArthurDeviationBiases,
-  arthurDeviationBiases
+  arthurDeviationBiases,
+  update,
 };

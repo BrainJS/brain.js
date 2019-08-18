@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 const { GPU } = require('gpu.js');
 const { ArthurDeviationBiases } = require('../../src/praxis/arthur-deviation-biases');
 const { random } = require('../../src/layer/random');
@@ -18,7 +19,7 @@ describe('ArthurDeviationBiases', () => {
       const result = praxis.run(layer);
       expect(result[0][0].toFixed(5)).toEqual((1.3).toFixed(5).toString());
     });
-    test('matches NeuralNetwork._adjustWeights output', () => {
+    test('matches NeuralNetwork.adjustWeights output', () => {
       const xorTrainingData = [
         { input: [0, 1], output: [1] },
         { input: [0, 0], output: [0] },

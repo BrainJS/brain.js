@@ -1,10 +1,10 @@
-const { GPU } = require('gpu.js');
-const { ArthurDeviationWeights } = require('../../src/praxis/arthur-deviation-weights');
-const { random } = require('../../src/layer/random');
-const NeuralNetwork = require('../../src/neural-network');
-const { setup, teardown } = require('../../src/utilities/kernel');
-
 /* istanbul ignore file */
+const { GPU } = require('gpu.js');
+const { ArthurDeviationWeights } = require('../../../src/praxis/arthur-deviation-weights');
+const { random } = require('../../../src/layer/random');
+const NeuralNetwork = require('../../../src/neural-network');
+const { setup, teardown } = require('../../../src/utilities/kernel');
+
 describe('ArthurDeviationWeights Class: End to End', () => {
   beforeEach(() => {
     setup(new GPU({

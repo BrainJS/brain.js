@@ -1,6 +1,8 @@
+const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
 const { ArthurDeviationWeights, arthurDeviationWeights, update, updateChange } = require('../../../src/praxis/arthur-deviation-weights');
 const { shave } = require('../../test-utils');
+const { setup, teardown } = require('../../../src/utilities/kernel');
 
 describe('ArthurDeviationWeights Class: Unit', () => {
   describe('update()', () => {
@@ -100,6 +102,12 @@ describe('ArthurDeviationWeights Class: Unit', () => {
   });
 
   describe('arthurDeviationWeights lambda', () => {
+    beforeEach(() => {
+      setup(new GPU({ mode: 'cpu' } ));
+    });
+    afterEach(() => {
+      teardown();
+    });
     it('creates a new instance of ArthurDeviationWeights', () => {
       const mockLayer = {};
       const mockWeightsLayer = {};
