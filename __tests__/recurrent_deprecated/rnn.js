@@ -6,7 +6,7 @@ function notZero(v) {
   return v !== 0;
 }
 
-describe('rnn', () => {
+describe('RNN', () => {
   describe('constructor', () => {
     it('does not initialize model', () => {
       const net = new RNN();

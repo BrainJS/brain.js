@@ -17,8 +17,9 @@
     "eslint-plugin-jest": "^22.14.1",
     "fast-xml-parser": "^3.12.19",
     "gpu-mock.js": "^1.1.0",
-    "jest": "^24.8.0",
+    "jest": "^24.9.0",
     "parcel-bundler": "^1.12.3",
+    "parcel-plugin-bundle-visualiser": "^1.2.0",
     "prettier": "^1.18.2"
   },
   "files": [
@@ -86,5 +87,5 @@
     "test:watch": "jest --watch --env=node"
   },
   "typings": "./src/index.d.ts",
-  "version": "2.0.0-alpha.2"
+  "version": "2.0.0-alpha.3"
 }

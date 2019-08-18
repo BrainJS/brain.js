@@ -130,7 +130,7 @@ function activate(weight) {
 /**
  * Leaky Relu derivative
  * @param weight
- * @param delta
+ * @param error
  * @returns {number}
  */
 
@@ -154,7 +154,7 @@ function activate(weight) {
   return Math.max(0, weight);
 }
 /**
- * Leaky Relu derivative
+ * Relu derivative
  * @param weight
  * @param delta
  * @returns {number}
@@ -204,7 +204,7 @@ module.exports = {
  * @param weight
  * @returns {number}
  */
-function tanh(weight) {
+function activate(weight) {
   return Math.tanh(weight);
 }
 /**
@@ -215,13 +215,13 @@ function tanh(weight) {
  */
 
 
-function tanhDerivative(weight, error) {
+function measure(weight, error) {
   return (1 - weight * weight) * error;
 }
 
 module.exports = {
-  tanh: tanh,
-  tanhDerivative: tanhDerivative
+  activate: activate,
+  measure: measure
 };
 },{}],"l4U/":[function(require,module,exports) {
 var leakyRelu = require('./leaky-relu');
@@ -26178,7 +26178,7 @@ function () {
       return {
         width: 1,
         height: 1,
-        depth: 1,
+        depth: null,
         weights: null,
         deltas: null,
         name: null,
@@ -26192,7 +26192,8 @@ function () {
 
     // size
     this.width = null;
-    this.height = null; // what matters :P
+    this.height = null;
+    this.depth = null; // what matters :P
 
     this.deltas = null;
     this.weights = null;
@@ -26352,7 +26353,7 @@ function () {
 module.exports = {
   Base: Base
 };
-},{"../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"0AN3"}],"pX1U":[function(require,module,exports) {
+},{"../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"0AN3"}],"HySO":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -26370,19 +26371,72 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 var _require = require('./base'),
     Base = _require.Base;
 
+var zeros2D = require('../utilities/zeros-2d');
+
+var zeros3D = require('../utilities/zeros-3d');
+
 var Activation =
 /*#__PURE__*/
 function (_Base) {
   _inherits(Activation, _Base);
 
-  function Activation() {
+  function Activation(inputLayer, settings) {
+    var _this;
+
     _classCallCheck(this, Activation);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(Activation).apply(this, arguments));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Activation).call(this));
+    _this.inputLayer = inputLayer;
+    var width = inputLayer.width,
+        height = inputLayer.height,
+        depth = inputLayer.depth;
+    _this.predictKernel = null;
+    _this.compareKernel = null;
+    _this.width = width;
+    _this.height = height;
+
+    _this.validate();
+
+    if (depth > 0) {
+      _this.depth = depth;
+      _this.weights = zeros3D(width, height, depth);
+      _this.deltas = zeros3D(width, height, depth);
+    } else {
+      _this.weights = zeros2D(width, height);
+      _this.deltas = zeros2D(width, height);
+    }
+
+    _this.setupPraxis(settings);
+
+    return _this;
   }
 
   return Activation;
 }(Base);
+
+module.exports = {
+  Activation: Activation
+};
+},{"./base":"kIeX","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"0AN3"}],"pX1U":[function(require,module,exports) {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var _require = require('./base'),
+    Base = _require.Base;
+
+var _require2 = require('./activation'),
+    Activation = _require2.Activation;
 
 var Internal = function Internal() {
   _classCallCheck(this, Internal);
@@ -26390,8 +26444,8 @@ var Internal = function Internal() {
 
 var Filter =
 /*#__PURE__*/
-function (_Base2) {
-  _inherits(Filter, _Base2);
+function (_Base) {
+  _inherits(Filter, _Base);
 
   function Filter() {
     _classCallCheck(this, Filter);
@@ -26404,8 +26458,8 @@ function (_Base2) {
 
 var Model =
 /*#__PURE__*/
-function (_Base3) {
-  _inherits(Model, _Base3);
+function (_Base2) {
+  _inherits(Model, _Base2);
 
   function Model() {
     _classCallCheck(this, Model);
@@ -26418,8 +26472,8 @@ function (_Base3) {
 
 var Modifier =
 /*#__PURE__*/
-function (_Base4) {
-  _inherits(Modifier, _Base4);
+function (_Base3) {
+  _inherits(Modifier, _Base3);
 
   function Modifier() {
     _classCallCheck(this, Modifier);
@@ -26432,8 +26486,8 @@ function (_Base4) {
 
 var Operator =
 /*#__PURE__*/
-function (_Base5) {
-  _inherits(Operator, _Base5);
+function (_Base4) {
+  _inherits(Operator, _Base4);
 
   function Operator() {
     _classCallCheck(this, Operator);
@@ -26452,7 +26506,7 @@ module.exports = {
   Modifier: Modifier,
   Operator: Operator
 };
-},{"./base":"kIeX"}],"q7CK":[function(require,module,exports) {
+},{"./base":"kIeX","./activation":"HySO"}],"q7CK":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -26721,7 +26775,9 @@ function arthurDeviationWeights(layer, settings) {
 
 module.exports = {
   ArthurDeviationWeights: ArthurDeviationWeights,
-  arthurDeviationWeights: arthurDeviationWeights
+  arthurDeviationWeights: arthurDeviationWeights,
+  update: update,
+  updateChange: updateChange
 };
 },{"../utilities/kernel":"L30b","../utilities/zeros-2d":"C4Cz","./base":"hKny"}],"GVwH":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -26772,6 +26828,7 @@ function (_Base) {
     _classCallCheck(this, ArthurDeviationBiases);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(ArthurDeviationBiases).call(this, layer, settings));
+    _this.kernel = null;
 
     _this.setupKernels();
 
@@ -26805,7 +26862,8 @@ function arthurDeviationBiases(layer, settings) {
 
 module.exports = {
   ArthurDeviationBiases: ArthurDeviationBiases,
-  arthurDeviationBiases: arthurDeviationBiases
+  arthurDeviationBiases: arthurDeviationBiases,
+  update: update
 };
 },{"../utilities/kernel":"L30b","./base":"hKny"}],"TX07":[function(require,module,exports) {
 module.exports = function randomWeight() {
@@ -27083,22 +27141,29 @@ var _require = require('./types'),
     Activation = _require.Activation;
 
 var _require2 = require('../utilities/kernel'),
-    makeKernel = _require2.makeKernel,
-    makeDevKernel = _require2.makeDevKernel;
+    makeKernel = _require2.makeKernel;
 
 var _require3 = require('../activation/sigmoid'),
     activate = _require3.activate,
     measure = _require3.measure;
 
-var zeros2D = require('../utilities/zeros-2d');
-
-function predict(inputs) {
+function predict2D(inputs) {
   return 1 / (1 + Math.exp(-inputs[this.thread.y][this.thread.x]));
 }
 
-function compare(weights, deltas) {
+function predict3D(inputs) {
+  return 1 / (1 + Math.exp(-inputs[this.thread.z][this.thread.y][this.thread.x]));
+}
+
+function compare2D(weights, deltas) {
   var weight = weights[this.thread.y][this.thread.x];
   var delta = deltas[this.thread.y][this.thread.x];
+  return weight * (1 - weight) * delta;
+}
+
+function compare3D(weights, deltas) {
+  var weight = weights[this.thread.z][this.thread.y][this.thread.x];
+  var delta = deltas[this.thread.z][this.thread.y][this.thread.x];
   return weight * (1 - weight) * delta;
 }
 
@@ -27107,39 +27172,34 @@ var Sigmoid =
 function (_Activation) {
   _inherits(Sigmoid, _Activation);
 
-  function Sigmoid(inputLayer, settings) {
-    var _this;
-
+  function Sigmoid() {
     _classCallCheck(this, Sigmoid);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Sigmoid).call(this));
-    _this.inputLayer = inputLayer;
-    var width = inputLayer.width,
-        height = inputLayer.height;
-    _this.width = width;
-    _this.height = height;
-
-    _this.validate();
-
-    _this.weights = zeros2D(_this.width, _this.height);
-    _this.deltas = zeros2D(_this.width, _this.height);
-
-    _this.setupPraxis(settings);
-
-    return _this;
+    return _possibleConstructorReturn(this, _getPrototypeOf(Sigmoid).apply(this, arguments));
   }
 
   _createClass(Sigmoid, [{
     key: "setupKernels",
     value: function setupKernels() {
-      this.predictKernel = makeKernel(predict, {
-        output: [this.width, this.height],
-        functions: [activate]
-      });
-      this.compareKernel = makeKernel(compare, {
-        output: [this.width, this.height],
-        functions: [measure]
-      });
+      if (this.depth > 0) {
+        this.predictKernel = makeKernel(predict3D, {
+          output: [this.width, this.height, this.depth],
+          functions: [activate]
+        });
+        this.compareKernel = makeKernel(compare3D, {
+          output: [this.width, this.height, this.depth],
+          functions: [measure]
+        });
+      } else {
+        this.predictKernel = makeKernel(predict2D, {
+          output: [this.width, this.height],
+          functions: [activate]
+        });
+        this.compareKernel = makeKernel(compare2D, {
+          output: [this.width, this.height],
+          functions: [measure]
+        });
+      }
     }
   }, {
     key: "predict",
@@ -27163,10 +27223,12 @@ function sigmoid(inputLayer, settings) {
 module.exports = {
   Sigmoid: Sigmoid,
   sigmoid: sigmoid,
-  predict: predict,
-  compare: compare
+  predict2D: predict2D,
+  predict3D: predict3D,
+  compare2D: compare2D,
+  compare3D: compare3D
 };
-},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/sigmoid":"thFH","../utilities/zeros-2d":"C4Cz"}],"SVHJ":[function(require,module,exports) {
+},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/sigmoid":"thFH"}],"SVHJ":[function(require,module,exports) {
 var _require = require('../praxis/arthur-deviation-weights'),
     arthurDeviationWeights = _require.arthurDeviationWeights;
 
@@ -28197,23 +28259,30 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var _require = require('./types'),
+var _require = require('./activation'),
     Activation = _require.Activation;
 
 var _require2 = require('../utilities/kernel'),
     makeKernel = _require2.makeKernel;
 
 var _require3 = require('../activation/tanh'),
-    tanhDerivative = _require3.tanhDerivative;
+    activate = _require3.activate,
+    measure = _require3.measure;
 
-var zeros2D = require('../utilities/zeros-2d');
-
-function predict(inputs) {
-  return Math.tanh(inputs[this.thread.y][this.thread.x]);
+function predict2D(inputs) {
+  return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-function compare(weights, errors) {
-  return tanhDerivative(weights[this.thread.y][this.thread.x], errors[this.thread.y][this.thread.x]);
+function predict3D(inputs) {
+  return activate(inputs[this.thread.z][this.thread.y][this.thread.x]);
+}
+
+function compare2D(weights, errors) {
+  return measure(weights[this.thread.y][this.thread.x], errors[this.thread.y][this.thread.x]);
+}
+
+function compare3D(weights, errors) {
+  return measure(weights[this.thread.z][this.thread.y][this.thread.x], errors[this.thread.z][this.thread.y][this.thread.x]);
 }
 
 var Tanh =
@@ -28221,38 +28290,34 @@ var Tanh =
 function (_Activation) {
   _inherits(Tanh, _Activation);
 
-  function Tanh(inputLayer) {
-    var _this;
-
+  function Tanh() {
     _classCallCheck(this, Tanh);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tanh).call(this));
-    _this.inputLayer = inputLayer;
-    var _this$inputLayer = _this.inputLayer,
-        width = _this$inputLayer.width,
-        height = _this$inputLayer.height,
-        depth = _this$inputLayer.depth;
-    _this.width = width;
-    _this.height = height;
-    _this.depth = depth;
-
-    _this.validate();
-
-    _this.weights = zeros2D(_this.width, _this.height);
-    _this.deltas = zeros2D(_this.width, _this.height);
-    return _this;
+    return _possibleConstructorReturn(this, _getPrototypeOf(Tanh).apply(this, arguments));
   }
 
   _createClass(Tanh, [{
     key: "setupKernels",
     value: function setupKernels() {
-      this.predictKernel = makeKernel(predict, {
-        output: [this.width, this.height]
-      });
-      this.compareKernel = makeKernel(compare, {
-        output: [this.width, this.height],
-        functions: [tanhDerivative]
-      });
+      if (this.depth > 0) {
+        this.predictKernel = makeKernel(predict3D, {
+          output: [this.width, this.height, this.depth],
+          functions: [activate]
+        });
+        this.compareKernel = makeKernel(compare3D, {
+          output: [this.width, this.height, this.depth],
+          functions: [measure]
+        });
+      } else {
+        this.predictKernel = makeKernel(predict2D, {
+          output: [this.width, this.height],
+          functions: [activate]
+        });
+        this.compareKernel = makeKernel(compare2D, {
+          output: [this.width, this.height],
+          functions: [measure]
+        });
+      }
     }
   }, {
     key: "predict",
@@ -28269,17 +28334,19 @@ function (_Activation) {
   return Tanh;
 }(Activation);
 
-function tanh(inputLayer) {
-  return new Tanh(inputLayer);
+function tanh(inputLayer, settings) {
+  return new Tanh(inputLayer, settings);
 }
 
 module.exports = {
   Tanh: Tanh,
   tanh: tanh,
-  predict: predict,
-  compare: compare
+  predict2D: predict2D,
+  predict3D: predict3D,
+  compare2D: compare2D,
+  compare3D: compare3D
 };
-},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/tanh":"v3/M","../utilities/zeros-2d":"C4Cz"}],"EO/P":[function(require,module,exports) {
+},{"./activation":"HySO","../utilities/kernel":"L30b","../activation/tanh":"v3/M"}],"EO/P":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -28564,17 +28631,24 @@ var _require = require('./types'),
 var _require2 = require('../utilities/kernel'),
     makeKernel = _require2.makeKernel;
 
-var lra = require('../activation/leaky-relu');
+var _require3 = require('../activation/leaky-relu'),
+    activate = _require3.activate,
+    measure = _require3.measure;
 
-var activate = lra.activate;
-var measure = lra.measure;
-
-function predict(inputs) {
+function predict2D(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-function compare(weights, deltas) {
+function predict3D(inputs) {
+  return activate(inputs[this.thread.z][this.thread.y][this.thread.x]);
+}
+
+function compare2D(weights, deltas) {
   return measure(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
+}
+
+function compare3D(weights, deltas) {
+  return measure(weights[this.thread.z][this.thread.y][this.thread.x], deltas[this.thread.z][this.thread.y][this.thread.x]);
 }
 
 var LeakyRelu =
@@ -28582,34 +28656,39 @@ var LeakyRelu =
 function (_Activation) {
   _inherits(LeakyRelu, _Activation);
 
-  function LeakyRelu(inputLayer) {
-    var _this;
-
+  function LeakyRelu() {
     _classCallCheck(this, LeakyRelu);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(LeakyRelu).call(this));
-    _this.inputLayer = inputLayer;
-    var width = inputLayer.width,
-        height = inputLayer.height,
-        depth = inputLayer.depth;
-    _this.width = width;
-    _this.height = height;
-    _this.depth = depth;
-
-    _this.validate();
-
-    return _this;
+    return _possibleConstructorReturn(this, _getPrototypeOf(LeakyRelu).apply(this, arguments));
   }
 
   _createClass(LeakyRelu, [{
     key: "setupKernels",
     value: function setupKernels() {
-      this.predictKernel = makeKernel(predict, {
-        functions: [activate]
-      });
-      this.compareKernel = makeKernel(compare, {
-        functions: [measure]
-      });
+      var _this$inputLayer = this.inputLayer,
+          width = _this$inputLayer.width,
+          height = _this$inputLayer.height,
+          depth = _this$inputLayer.depth;
+
+      if (this.depth > 0) {
+        this.predictKernel = makeKernel(predict3D, {
+          output: [width, height, depth],
+          functions: [activate]
+        });
+        this.compareKernel = makeKernel(compare3D, {
+          output: [width, height, depth],
+          functions: [measure]
+        });
+      } else {
+        this.predictKernel = makeKernel(predict2D, {
+          output: [width, height],
+          functions: [activate]
+        });
+        this.compareKernel = makeKernel(compare2D, {
+          output: [width, height],
+          functions: [measure]
+        });
+      }
     }
   }, {
     key: "predict",
@@ -28626,15 +28705,17 @@ function (_Activation) {
   return LeakyRelu;
 }(Activation);
 
-function leakyRelu(inputLayer) {
-  return new LeakyRelu(inputLayer);
+function leakyRelu(inputLayer, settings) {
+  return new LeakyRelu(inputLayer, settings);
 }
 
 module.exports = {
   LeakyRelu: LeakyRelu,
   leakyRelu: leakyRelu,
-  predict: predict,
-  compare: compare
+  predict2D: predict2D,
+  predict3D: predict3D,
+  compare2D: compare2D,
+  compare3D: compare3D
 };
 },{"./types":"pX1U","../utilities/kernel":"L30b","../activation/leaky-relu":"4I3O"}],"Mqbi":[function(require,module,exports) {
 var _require = require('./add'),
@@ -29128,15 +29209,11 @@ var _require3 = require('../activation/relu'),
     activate = _require3.activate,
     measure = _require3.measure;
 
-var zeros2D = require('../utilities/zeros-2d');
-
-var zeros3D = require('../utilities/zeros-3d');
-
-function predict(inputs) {
+function predict2D(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-function compare(weights, deltas) {
+function compare2D(weights, deltas) {
   return measure(weights[this.thread.y][this.thread.x], deltas[this.thread.y][this.thread.x]);
 }
 
@@ -29153,32 +29230,10 @@ var Relu =
 function (_Activation) {
   _inherits(Relu, _Activation);
 
-  function Relu(inputLayer) {
-    var _this;
-
+  function Relu() {
     _classCallCheck(this, Relu);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Relu).call(this));
-    _this.inputLayer = inputLayer;
-    var width = inputLayer.width,
-        height = inputLayer.height,
-        depth = inputLayer.depth;
-    _this.width = width;
-    _this.height = height;
-
-    _this.validate();
-
-    if (depth > 1) {
-      _this.depth = depth;
-      _this.weights = zeros3D(width, height, depth);
-      _this.deltas = zeros3D(width, height, depth);
-    } else {
-      _this.depth = 1;
-      _this.weights = zeros2D(width, height);
-      _this.deltas = zeros2D(width, height);
-    }
-
-    return _this;
+    return _possibleConstructorReturn(this, _getPrototypeOf(Relu).apply(this, arguments));
   }
 
   _createClass(Relu, [{
@@ -29189,7 +29244,7 @@ function (_Activation) {
           height = _this$inputLayer.height,
           depth = _this$inputLayer.depth;
 
-      if (this.depth > 1) {
+      if (depth > 0) {
         this.predictKernel = makeKernel(predict3D, {
           output: [width, height, depth],
           functions: [activate]
@@ -29199,11 +29254,11 @@ function (_Activation) {
           functions: [measure]
         });
       } else {
-        this.predictKernel = makeKernel(predict, {
+        this.predictKernel = makeKernel(predict2D, {
           output: [width, height],
           functions: [activate]
         });
-        this.compareKernel = makeKernel(compare, {
+        this.compareKernel = makeKernel(compare2D, {
           output: [width, height],
           functions: [measure]
         });
@@ -29224,19 +29279,19 @@ function (_Activation) {
   return Relu;
 }(Activation);
 
-function relu(inputLayer) {
-  return new Relu(inputLayer);
+function relu(inputLayer, settings) {
+  return new Relu(inputLayer, settings);
 }
 
 module.exports = {
   Relu: Relu,
   relu: relu,
-  predict: predict,
-  compare: compare,
+  predict2D: predict2D,
+  compare2D: compare2D,
   predict3D: predict3D,
   compare3D: compare3D
 };
-},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/relu":"kBu/","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"0AN3"}],"7ERy":[function(require,module,exports) {
+},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/relu":"kBu/"}],"7ERy":[function(require,module,exports) {
 var _require = require('./relu'),
     relu = _require.relu;
 
@@ -31017,7 +31072,7 @@ function () {
 
       this._calculateDeltas(target);
 
-      this._adjustWeights();
+      this.adjustWeights();
 
       if (logErrorRate) {
         return mse2d(this._outputLayer.errors.toArray ? this._outputLayer.errors.toArray() : this._outputLayer.errors);
@@ -31037,8 +31092,8 @@ function () {
      */
 
   }, {
-    key: "_adjustWeights",
-    value: function _adjustWeights() {
+    key: "adjustWeights",
+    value: function adjustWeights() {
       for (var i = 0; i < this.layers.length; i++) {
         this.layers[i].learn(this.layers[i - 1], this.layers[i + 1], this.trainOpts.learningRate);
       }
@@ -40080,8 +40135,8 @@ function (_FeedForward) {
       }
     }
   }, {
-    key: "_adjustWeights",
-    value: function _adjustWeights() {
+    key: "adjustWeights",
+    value: function adjustWeights() {
       for (var hiddenLayersIndex = 0; hiddenLayersIndex < this._hiddenLayers.length; hiddenLayersIndex++) {
         var hiddenLayers = this._hiddenLayers[hiddenLayersIndex];
         var hiddenConnection = hiddenLayers[hiddenLayers.length - 1];
@@ -40122,7 +40177,7 @@ function (_FeedForward) {
 
       this._calculateDeltas(input.slice(1), 0);
 
-      this._adjustWeights();
+      this.adjustWeights();
 
       if (logErrorRate) {
         var outputLayer = this._outputLayers[this._outputLayers.length - 1];
@@ -40840,8 +40895,6 @@ var tanhB = require('./tanh-b');
 
 var softmax = require('./softmax');
 
-var __i = false;
-
 var Equation =
 /*#__PURE__*/
 function () {
@@ -41113,14 +41166,7 @@ function () {
           continue;
         }
 
-        state.forwardFn(state.product, state.left, state.right); // if (i === 12) {
-        //   if (!__i) {
-        //     if (state.left) console.log(state.left.weights);
-        //     if (state.right) console.log(state.right.weights);
-        //     if (state.product) console.log(state.product.weights);
-        //     __i = true;
-        //   }
-        // }
+        state.forwardFn(state.product, state.left, state.right);
       }
 
       return state.product;
@@ -42292,7 +42338,7 @@ function () {
         }
       }
 
-      var src = "\n  if (typeof rawInput === 'undefined') rawInput = [];\n  if (typeof isSampleI === 'undefined') isSampleI = false;\n  if (typeof temperature === 'undefined') temperature = 1;\n  var json = ".concat(jsonString, ";\n  ").concat(this.dataFormatter ? "".concat(this.dataFormatter.toFunctionString(), ";\n  Object.assign(dataFormatter, json.options.dataFormatter);") : '', "\n  ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? "const formatDataIn = function (input, output) { ".concat(toInner(this.formatDataIn.toString()), " }.bind({ dataFormatter });") : '', "\n  ").concat(this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? "const formatDataOut = function formatDataOut(input, output) { ".concat(toInner(this.formatDataOut.toString()), " }.bind({ dataFormatter });") : '', "\n  var input = ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput', ";\n  var maxPredictionLength = input.length + ").concat(this.maxPredictionLength, ";\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    // var state;\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n    \n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    if (_i > 15) {\n      break;\n    }\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n    \n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ").concat(this.dataFormatter && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })', ";\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros.toString(), "\n  ").concat(softmax.toString(), "\n  ").concat(randomFloat.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString());
+      var src = "\n  if (typeof rawInput === 'undefined') rawInput = [];\n  if (typeof isSampleI === 'undefined') isSampleI = false;\n  if (typeof temperature === 'undefined') temperature = 1;\n  var json = ".concat(jsonString, ";\n  ").concat(this.dataFormatter ? "".concat(this.dataFormatter.toFunctionString(), ";\n  Object.assign(dataFormatter, json.options.dataFormatter);") : '', "\n  ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? "const formatDataIn = function (input, output) { ".concat(toInner(this.formatDataIn.toString()), " }.bind({ dataFormatter });") : '', "\n  ").concat(this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? "const formatDataOut = function formatDataOut(input, output) { ".concat(toInner(this.formatDataOut.toString()), " }.bind({ dataFormatter });") : '', "\n  var input = ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput', ";\n  var maxPredictionLength = input.length + ").concat(this.maxPredictionLength, ";\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n    \n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n    \n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ").concat(this.dataFormatter && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })', ";\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros.toString(), "\n  ").concat(softmax.toString(), "\n  ").concat(randomFloat.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString());
       return new Function('rawInput', 'isSampleI', 'temperature', src);
     }
   }, {
@@ -44158,6 +44204,8 @@ var CrossValidate = require('./cross-validate');
 
 var layer = require('./layer');
 
+var layerTypes = require('./layer/types');
+
 var likely = require('./likely');
 
 var lookup = require('./lookup');
@@ -44215,6 +44263,7 @@ var brain = {
   CrossValidate: CrossValidate,
   likely: likely,
   layer: layer,
+  layerTypes: layerTypes,
   lookup: lookup,
   praxis: praxis,
   FeedForward: FeedForward,
@@ -44252,5 +44301,5 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined') {
   module.exports = brain;
 }
-},{"./activation":"l4U/","./cross-validate":"+wYj","./layer":"X3lc","./likely":"dfGl","./lookup":"Q1a6","./praxis":"4P9L","./feed-forward":"eqC7","./neural-network":"8epZ","./neural-network-gpu":"6trg","./train-stream":"vEEq","./recurrent":"JVtt","./recurrent/rnn-time-step":"zri4","./recurrent/lstm-time-step":"hEPI","./recurrent/gru-time-step":"+7gC","./recurrent/rnn":"gJGF","./recurrent/lstm":"e2+i","./recurrent/gru":"wLPK","./utilities/max":"UFcl","./utilities/mse":"YGn7","./utilities/ones":"f7P8","./utilities/random":"Sd27","./utilities/random-weight":"TX07","./utilities/randos":"S8tM","./utilities/range":"YhH7","./utilities/to-array":"HBY8","./utilities/data-formatter":"91u3","./utilities/zeros":"M4LY","./utilities/to-svg":"UFo7"}]},{},["Focm"], null)
+},{"./activation":"l4U/","./cross-validate":"+wYj","./layer":"X3lc","./layer/types":"pX1U","./likely":"dfGl","./lookup":"Q1a6","./praxis":"4P9L","./feed-forward":"eqC7","./neural-network":"8epZ","./neural-network-gpu":"6trg","./train-stream":"vEEq","./recurrent":"JVtt","./recurrent/rnn-time-step":"zri4","./recurrent/lstm-time-step":"hEPI","./recurrent/gru-time-step":"+7gC","./recurrent/rnn":"gJGF","./recurrent/lstm":"e2+i","./recurrent/gru":"wLPK","./utilities/max":"UFcl","./utilities/mse":"YGn7","./utilities/ones":"f7P8","./utilities/random":"Sd27","./utilities/random-weight":"TX07","./utilities/randos":"S8tM","./utilities/range":"YhH7","./utilities/to-array":"HBY8","./utilities/data-formatter":"91u3","./utilities/zeros":"M4LY","./utilities/to-svg":"UFo7"}]},{},["Focm"], null)
 //# sourceMappingURL=/brain-browser.js.map
