@@ -432,7 +432,7 @@ describe('Recurrent Class: End to End', () => {
         net._outputLayers[2].deltas.every(row => row.some(delta => delta !== 0))
       ).toBeTruthy();
 
-      net._adjustWeights();
+      net.adjustWeights();
 
       // weights are adjusted
       expect(modelLayer0Weights).not.toEqual(net._model[0].weights);

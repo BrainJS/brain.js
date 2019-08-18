@@ -227,7 +227,7 @@ describe('Recurrent Class: Unit', () => {
 
       net._calculateDeltas([1], 0);
       net._calculateDeltas([1], 1);
-      net._adjustWeights();
+      net.adjustWeights();
 
       // weights are adjusted
       expect(model0Weights).not.toEqual(net._model[0].weights);
