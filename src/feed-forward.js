@@ -333,7 +333,7 @@ class FeedForward {
 
     // back propagate
     this._calculateDeltas(target);
-    this._adjustWeights();
+    this.adjustWeights();
 
     if (logErrorRate) {
       return mse2d(
@@ -354,7 +354,7 @@ class FeedForward {
   /**
    *
    */
-  _adjustWeights() {
+  adjustWeights() {
     for (let i = 0; i < this.layers.length; i++) {
       this.layers[i].learn(
         this.layers[i - 1],
