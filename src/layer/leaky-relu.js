@@ -25,31 +25,26 @@ function compare3D(weights, deltas) {
 }
 
 class LeakyRelu extends Activation {
-  constructor(inputLayer) {
-    super();
-    this.inputLayer = inputLayer;
-    const { width, height, depth } = inputLayer;
-    this.width = width;
-    this.height = height;
-    this.depth = depth;
-    this.validate();
-  }
-
   setupKernels() {
+    const { width, height, depth } = this.inputLayer;
     if (this.depth > 0) {
       this.predictKernel = makeKernel(predict3D, {
+        output: [width, height, depth],
         functions: [activate],
       });
 
       this.compareKernel = makeKernel(compare3D, {
+        output: [width, height, depth],
         functions: [measure],
       });
     } else {
       this.predictKernel = makeKernel(predict2D, {
+        output: [width, height],
         functions: [activate],
       });
 
       this.compareKernel = makeKernel(compare2D, {
+        output: [width, height],
         functions: [measure],
       });
     }
@@ -64,8 +59,8 @@ class LeakyRelu extends Activation {
   }
 }
 
-function leakyRelu(inputLayer) {
-  return new LeakyRelu(inputLayer);
+function leakyRelu(inputLayer, settings) {
+  return new LeakyRelu(inputLayer, settings);
 }
 
 module.exports = { LeakyRelu, leakyRelu, predict2D, predict3D, compare2D, compare3D };

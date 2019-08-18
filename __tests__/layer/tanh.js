@@ -1,7 +1,9 @@
+const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
 const { Tanh, tanh: tanhLayer, predict2D, predict3D, compare2D, compare3D } = require('../../src/layer/tanh');
 const tanhActivation = require('../../src/activation/tanh');
-const { shave } = require('../test-utils');
+const { expectFunction, shave } = require('../test-utils');
+const { setup, teardown } = require('../../src/utilities/kernel');
 
 describe('Tanh Layer', () => {
   describe('predict2D() (forward propagation)', () => {
@@ -137,6 +139,12 @@ describe('Tanh Layer', () => {
   });
 
   describe('.setupKernels()', () => {
+    beforeEach(() => {
+      setup(new GPU({ mode: 'cpu' } ));
+    });
+    afterEach(() => {
+      teardown();
+    });
     describe('2d', () => {
       it('sets up kernels correctly', () => {
         const width = 3;
@@ -147,15 +155,15 @@ describe('Tanh Layer', () => {
         expect(l.compareKernel).toBe(null);
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
-        expect(l.predictKernel.source).toBe(predict2D.toString());
+        expectFunction(l.predictKernel.source, predict2D);
         expect(l.predictKernel.output).toEqual([width, height]);
         expect(l.predictKernel.functions.length).toBe(1);
-        expect(l.predictKernel.functions[0].source).toBe(tanhActivation.activate.toString());
+        expectFunction(l.predictKernel.functions[0].source, tanhActivation.activate);
         expect(l.compareKernel).not.toBe(null);
-        expect(l.compareKernel.source).toBe(compare2D.toString());
+        expectFunction(l.compareKernel.source, compare2D);
         expect(l.compareKernel.output).toEqual([width, height]);
         expect(l.compareKernel.functions.length).toBe(1);
-        expect(l.compareKernel.functions[0].source).toBe(tanhActivation.measure.toString());
+        expectFunction(l.compareKernel.functions[0].source, tanhActivation.measure);
       });
     });
     describe('3d', () => {
@@ -169,15 +177,15 @@ describe('Tanh Layer', () => {
         expect(l.compareKernel).toBe(null);
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
-        expect(l.predictKernel.source).toBe(predict3D.toString());
+        expectFunction(l.predictKernel.source, predict3D);
         expect(l.predictKernel.output).toEqual([width, height, depth]);
         expect(l.predictKernel.functions.length).toBe(1);
-        expect(l.predictKernel.functions[0].source).toBe(tanhActivation.activate.toString());
+        expectFunction(l.predictKernel.functions[0].source, tanhActivation.activate);
         expect(l.compareKernel).not.toBe(null);
-        expect(l.compareKernel.source).toBe(compare3D.toString());
+        expectFunction(l.compareKernel.source, compare3D);
         expect(l.compareKernel.output).toEqual([width, height, depth]);
         expect(l.compareKernel.functions.length).toBe(1);
-        expect(l.compareKernel.functions[0].source).toBe(tanhActivation.measure.toString());
+        expectFunction(l.compareKernel.functions[0].source, tanhActivation.measure);
       });
     });
   });
