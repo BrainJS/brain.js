@@ -389,7 +389,7 @@ describe('FeedForward Class: Unit', () => {
     });
   });
 
-  describe('._adjustWeights()', () => {
+  describe('.adjustWeights()', () => {
     test('calls .learn() on all layers', () => {
       class TestLayer extends Base {
         // eslint-disable-next-line
@@ -417,7 +417,7 @@ describe('FeedForward Class: Unit', () => {
       });
 
       net.initialize();
-      net._adjustWeights();
+      net.adjustWeights();
 
       expect(net.layers.map(l => l.called)).toEqual([
         true,
@@ -696,15 +696,15 @@ describe('FeedForward Class: Unit', () => {
 
       // TODO: Fix this test
 
-      const runInput = jest.spyOn(net, 'runInput')
-      const _calculateDeltas = jest.spyOn(net, '_calculateDeltas')
-      const _adjustWeights = jest.spyOn(net, '_adjustWeights')
+      const runInput = jest.spyOn(net, 'runInput');
+      const _calculateDeltas = jest.spyOn(net, '_calculateDeltas');
+      const adjustWeights = jest.spyOn(net, 'adjustWeights');
 
-      net._trainPattern(1, 3, true)
+      net._trainPattern(1, 3, true);
 
-      expect(runInput).toHaveBeenCalled()
-      expect(_calculateDeltas).toHaveBeenCalled()
-      expect(_adjustWeights).toHaveBeenCalled()
+      expect(runInput).toHaveBeenCalled();
+      expect(_calculateDeltas).toHaveBeenCalled();
+      expect(adjustWeights).toHaveBeenCalled();
     });
   });
   describe('.trainOpts', () => {

@@ -104,8 +104,8 @@ describe('FeedForward Class: End to End', () => {
       test('it matches NeuralNetworks.deltas & NeuralNetworks.errors for 2 inputs, 3 hidden neurons, and 1 output', () => {
         const { standardNet, ffNet, sigmoidLayers, targetLayer } = setupTwinXORNetworks(true);
         // learning deviates, which we'll test elsewhere, for the time being, just don't learn
-        standardNet._adjustWeights = () => {};
-        ffNet._adjustWeights = () => {};
+        standardNet.adjustWeights = () => {};
+        ffNet.adjustWeights = () => {};
 
         // retrain with these new weights, only ffNet needs reinforce, otherwise, values are lost
         standardNet.train([{ input: new Float32Array([.9, .8]), output: new Float32Array([.5]) }], {
@@ -137,8 +137,8 @@ describe('FeedForward Class: End to End', () => {
       test('it matches NeuralNetwork.outputs for 2 inputs, 3 hidden neurons, and 1 output', () => {
         const { standardNet, ffNet, sigmoidLayers, targetLayer } = setupTwinXORNetworks(true);
         // learning deviates, which we'll test elsewhere, for the time being, just don't learn
-        standardNet._adjustWeights = function() {};
-        ffNet._adjustWeights = function() {};
+        standardNet.adjustWeights = function() {};
+        ffNet.adjustWeights = function() {};
 
         // retrain with these new weights, only ffNet needs reinforce, otherwise, values are lost
         standardNet.train([{ input: [.9, .8], output: [.3] }], {
