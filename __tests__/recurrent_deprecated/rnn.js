@@ -12,6 +12,28 @@ describe('rnn', () => {
       const net = new RNN();
       expect(net.model).toBe(null);
     });
+    describe('if has options.json', () => {
+      const json = (() => {
+        const net = new RNN({
+          hiddenLayers: [3],
+          inputSize: 3,
+          inputRange: 2,
+          outputSize: 2
+        });
+        net.initialize();
+        return net.toJSON();
+      })();
+      beforeEach(() => {
+        jest.spyOn(RNN.prototype, 'fromJSON');
+      });
+      afterEach(() => {
+        RNN.prototype.fromJSON.mockRestore();
+      });
+      it('calls this.fromJSON() with it', () => {
+        const net = new RNN({ json });
+        expect(net.fromJSON).toBeCalledWith(json);
+      });
+    });
   });
   describe('initialize', () => {
     it('initializes model', () => {
