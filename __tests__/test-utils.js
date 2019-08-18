@@ -142,4 +142,10 @@ function shave(array) {
   return result;
 }
 
-module.exports = { onePlusPlus3D, onePlusPlus2D, zero3D, zero2D, allMatrices, allWeights, allDeltas, shave };
+// it was found that coverage breaks when you compare leftFunction.toString() === rightString.toString()
+// this does a check on the first line of the function source, which is good enough for knowing the function signature
+function expectFunction(source, fn) {
+  expect(source.toString().split(/\n/g)[0]).toBe(fn.toString().split(/\n/g)[0]);
+}
+
+module.exports = { onePlusPlus3D, onePlusPlus2D, zero3D, zero2D, allMatrices, allWeights, allDeltas, shave, expectFunction };

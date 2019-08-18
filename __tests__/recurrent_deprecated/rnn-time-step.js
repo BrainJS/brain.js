@@ -318,71 +318,79 @@ describe('RNNTimeStep', () => {
     });
     describe('calling using arrays', () => {
       describe('training data with 1D arrays', () => {
-        beforeEach(() => {
-          jest.spyOn(LSTMTimeStep.prototype, 'trainArrays');
-          jest.spyOn(Equation.prototype, 'predictTarget');
-        });
-        afterEach(() => {
-          LSTMTimeStep.prototype.trainArrays.mockRestore();
-          Equation.prototype.predictTarget.mockRestore();
-        });
-        it('uses .runInputNumbers with correct arguments', () => {
-          const net = new LSTMTimeStep({
-            inputSize: 1,
-            hiddenLayers: [1],
-            outputSize: 1
+        describe('end to end', () => {
+          beforeEach(() => {
+            jest.spyOn(LSTMTimeStep.prototype, 'trainArrays');
+            jest.spyOn(Equation.prototype, 'predictTarget');
           });
-          const trainingData = [
-            [.1,.2,.3,.4,.5],
-            [.5,.4,.3,.2,.1]
-          ];
-          net.train(trainingData, { iterations: 1 });
-          expect(LSTMTimeStep.prototype.trainArrays.mock.calls.length).toBe(2);
-          expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0].length).toBe(1);
-          expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0][0]).toEqual(trainingData[0].map(value => Float32Array.from([value])));
-          expect(LSTMTimeStep.prototype.trainArrays.mock.calls[1][0]).toEqual(trainingData[1].map(value => Float32Array.from([value])));
-          expect(Equation.prototype.predictTarget.mock.calls.length).toBe(8);
-          expect(net.model.equations.length).toBe(5);
+          afterEach(() => {
+            LSTMTimeStep.prototype.trainArrays.mockRestore();
+            Equation.prototype.predictTarget.mockRestore();
+          });
+          it('uses .runInputNumbers with correct arguments', () => {
+            const net = new LSTMTimeStep({
+              inputSize: 1,
+              hiddenLayers: [1],
+              outputSize: 1
+            });
+            const trainingData = [
+              [.1,.2,.3,.4,.5],
+              [.5,.4,.3,.2,.1]
+            ];
+            net.train(trainingData, { iterations: 1 });
+            expect(LSTMTimeStep.prototype.trainArrays.mock.calls.length).toBe(2);
+            expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0].length).toBe(1);
+            expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0][0]).toEqual(trainingData[0].map(value => Float32Array.from([value])));
+            expect(LSTMTimeStep.prototype.trainArrays.mock.calls[1][0]).toEqual(trainingData[1].map(value => Float32Array.from([value])));
+            expect(Equation.prototype.predictTarget.mock.calls.length).toBe(8);
+            expect(net.model.equations.length).toBe(5);
 
-          // first array
-          expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(Float32Array.from([.1]));
-          expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(Float32Array.from([.2]));
+            // first array
+            expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(Float32Array.from([.1]));
+            expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(Float32Array.from([.2]));
 
-          expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(Float32Array.from([.2]));
-          expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(Float32Array.from([.3]));
+            expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(Float32Array.from([.2]));
+            expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(Float32Array.from([.3]));
 
-          expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(Float32Array.from([.3]));
-          expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(Float32Array.from([.4]));
+            expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(Float32Array.from([.3]));
+            expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(Float32Array.from([.4]));
 
-          expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(Float32Array.from([.4]));
-          expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(Float32Array.from([.5]));
+            expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(Float32Array.from([.4]));
+            expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(Float32Array.from([.5]));
 
-          // second array
-          expect(Equation.prototype.predictTarget.mock.calls[4][0]).toEqual(Float32Array.from([.5]));
-          expect(Equation.prototype.predictTarget.mock.calls[4][1]).toEqual(Float32Array.from([.4]));
+            // second array
+            expect(Equation.prototype.predictTarget.mock.calls[4][0]).toEqual(Float32Array.from([.5]));
+            expect(Equation.prototype.predictTarget.mock.calls[4][1]).toEqual(Float32Array.from([.4]));
 
-          expect(Equation.prototype.predictTarget.mock.calls[5][0]).toEqual(Float32Array.from([.4]));
-          expect(Equation.prototype.predictTarget.mock.calls[5][1]).toEqual(Float32Array.from([.3]));
+            expect(Equation.prototype.predictTarget.mock.calls[5][0]).toEqual(Float32Array.from([.4]));
+            expect(Equation.prototype.predictTarget.mock.calls[5][1]).toEqual(Float32Array.from([.3]));
 
-          expect(Equation.prototype.predictTarget.mock.calls[6][0]).toEqual(Float32Array.from([.3]));
-          expect(Equation.prototype.predictTarget.mock.calls[6][1]).toEqual(Float32Array.from([.2]));
+            expect(Equation.prototype.predictTarget.mock.calls[6][0]).toEqual(Float32Array.from([.3]));
+            expect(Equation.prototype.predictTarget.mock.calls[6][1]).toEqual(Float32Array.from([.2]));
 
-          expect(Equation.prototype.predictTarget.mock.calls[7][0]).toEqual(Float32Array.from([.2]));
-          expect(Equation.prototype.predictTarget.mock.calls[7][1]).toEqual(Float32Array.from([.1]));
+            expect(Equation.prototype.predictTarget.mock.calls[7][0]).toEqual(Float32Array.from([.2]));
+            expect(Equation.prototype.predictTarget.mock.calls[7][1]).toEqual(Float32Array.from([.1]));
+          });
         });
         it('can learn basic logic', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
-            hiddenLayers: [10],
+            hiddenLayers: [20],
             outputSize: 1
           });
           const trainingData = [
             [.1,.2,.3,.4,.5],
             [.5,.4,.3,.2,.1]
           ];
-          const result = net.train(trainingData, { errorThresh: 0.05 });
+          const result = net.train(trainingData, { errorThresh: 0.05, iterations: 1000, learningRate: 0.03 });
           expect(result.error).toBeLessThan(0.05);
           expect(result.iterations).toBeLessThan(1000);
+          const result1 = net.forecast([.1,.2,.3], 2);
+          expect(result1[0]).toBeCloseTo(.4, 1);
+          expect(result1[1]).toBeCloseTo(.5, 1);
+          const result2 = net.forecast([.5,.4,.3], 2);
+          expect(result2[0]).toBeCloseTo(.2, 1);
+          expect(result2[1]).toBeCloseTo(.1, 1);
         });
       });
 

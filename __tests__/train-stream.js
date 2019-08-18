@@ -221,7 +221,7 @@ describe('TrainStream', () => {
 
       return testTrainer(net, { data, iterations })
         .then((info) => {
-          expect(info.error < 0.05).toBeTruthy();
+          expect(info.error).toBeLessThan(0.05);
           expect(info.iterations).toBe(iterations);
 
           for (let i = 0; i < data.length; i++) {
