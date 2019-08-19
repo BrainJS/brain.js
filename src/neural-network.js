@@ -1007,8 +1007,8 @@ class NeuralNetwork {
     function nodeHandle(layers, layerNumber, nodeKey) {
       if (layerNumber === 0) {
         return typeof nodeKey === 'string'
-          ? `input['${nodeKey}']`
-          : `input[${nodeKey}]`;
+          ? `input['${nodeKey}']||0`
+          : `input[${nodeKey}]||0`;
       }
 
       const layer = layers[layerNumber];

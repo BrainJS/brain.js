@@ -38907,7 +38907,7 @@ function () {
 
       function nodeHandle(layers, layerNumber, nodeKey) {
         if (layerNumber === 0) {
-          return typeof nodeKey === 'string' ? "input['".concat(nodeKey, "']") : "input[".concat(nodeKey, "]");
+          return typeof nodeKey === 'string' ? "input['".concat(nodeKey, "']||0") : "input[".concat(nodeKey, "]||0");
         }
 
         var layer = layers[layerNumber];

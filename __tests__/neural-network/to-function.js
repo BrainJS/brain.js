@@ -65,4 +65,69 @@ describe('.toFunction()', () => {
       expect(xor([1, 1])[0].toFixed(6)).toEqual(originalNet.run([1, 1])[0].toFixed(6));
     });
   });
+
+  it('can work with partial input objects', () => {
+    const trainingData = [
+      { input: {'I am super happy!': 1}, output: {happy: 1}},
+      { input: {'What a pill!':1}, output: {sarcastic: 1} },
+      { input: {'I am super unhappy!':1}, output: {sad: 1} },
+      { input: {'Are we there yet?':1}, output: {excited: 1} }
+    ];
+
+    const net = new NeuralNetwork({ hiddenLayers: [3] });
+    net.train(trainingData, {
+      iterations: 1000,
+      errorThresh: 0.01,
+    });
+
+    const happyOutput = net.run({ 'I am super happy!': 1 });
+    expect(happyOutput.happy).toBeGreaterThan(0.5);
+    expect(happyOutput.sarcastic).toBeLessThan(0.5);
+    expect(happyOutput.sad).toBeLessThan(0.5);
+    expect(happyOutput.excited).toBeLessThan(0.5);
+
+    const sarcasticOutput = net.run({ 'What a pill!': 1 });
+    expect(sarcasticOutput.happy).toBeLessThan(0.5);
+    expect(sarcasticOutput.sarcastic).toBeGreaterThan(0.5);
+    expect(sarcasticOutput.sad).toBeLessThan(0.5);
+    expect(sarcasticOutput.excited).toBeLessThan(0.5);
+
+    const sadOutput = net.run({ 'I am super unhappy!': 1 });
+    expect(sadOutput.happy).toBeLessThan(0.5);
+    expect(sadOutput.sarcastic).toBeLessThan(0.5);
+    expect(sadOutput.sad).toBeGreaterThan(0.5);
+    expect(sadOutput.excited).toBeLessThan(0.5);
+
+    const excitedOutput = net.run({ 'Are we there yet?': 1 });
+    expect(excitedOutput.happy).toBeLessThan(0.5);
+    expect(excitedOutput.sarcastic).toBeLessThan(0.5);
+    expect(excitedOutput.sad).toBeLessThan(0.5);
+    expect(excitedOutput.excited).toBeGreaterThan(0.5);
+
+    const run = net.toFunction();
+
+    const runHappyOutput = run({ 'I am super happy!': 1 });
+    expect(runHappyOutput.happy).toBeGreaterThan(0.5);
+    expect(runHappyOutput.sarcastic).toBeLessThan(0.5);
+    expect(runHappyOutput.sad).toBeLessThan(0.5);
+    expect(runHappyOutput.excited).toBeLessThan(0.5);
+
+    const runSarcasticOutput = run({ 'What a pill!': 1 });
+    expect(runSarcasticOutput.happy).toBeLessThan(0.5);
+    expect(runSarcasticOutput.sarcastic).toBeGreaterThan(0.5);
+    expect(runSarcasticOutput.sad).toBeLessThan(0.5);
+    expect(runSarcasticOutput.excited).toBeLessThan(0.5);
+
+    const runSadOutput = run({ 'I am super unhappy!': 1 });
+    expect(runSadOutput.happy).toBeLessThan(0.5);
+    expect(runSadOutput.sarcastic).toBeLessThan(0.5);
+    expect(runSadOutput.sad).toBeGreaterThan(0.5);
+    expect(runSadOutput.excited).toBeLessThan(0.5);
+
+    const runExcitedOutput = run({ 'Are we there yet?': 1 });
+    expect(runExcitedOutput.happy).toBeLessThan(0.5);
+    expect(runExcitedOutput.sarcastic).toBeLessThan(0.5);
+    expect(runExcitedOutput.sad).toBeLessThan(0.5);
+    expect(runExcitedOutput.excited).toBeGreaterThan(0.5);
+  });
 });
