@@ -53,12 +53,12 @@ class RNN {
 
   createHiddenLayers() {
     //0 is end, so add 1 to offset
-    this.model.hiddenLayers.push(this.getModel(this.hiddenLayers[0], this.inputSize));
+    this.model.hiddenLayers.push(this.constructor.getModel(this.hiddenLayers[0], this.inputSize));
     let prevSize = this.hiddenLayers[0];
 
     for (let d = 1; d < this.hiddenLayers.length; d++) { // loop over depths
       let hiddenSize = this.hiddenLayers[d];
-      this.model.hiddenLayers.push(this.getModel(hiddenSize, prevSize));
+      this.model.hiddenLayers.push(this.constructor.getModel(hiddenSize, prevSize));
       prevSize = hiddenSize;
     }
   }
@@ -69,7 +69,7 @@ class RNN {
    * @param {Number} prevSize
    * @returns {object}
    */
-  getModel(hiddenSize, prevSize) {
+  static getModel(hiddenSize, prevSize) {
     return {
       //wxh
       weight: new RandomMatrix(hiddenSize, prevSize, 0.08),
@@ -88,7 +88,7 @@ class RNN {
    * @param {Object} hiddenLayer
    * @returns {Matrix}
    */
-  getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+  static getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
     const relu = equation.relu.bind(equation);
     const add = equation.add.bind(equation);
     const multiply = equation.multiply.bind(equation);
@@ -146,11 +146,11 @@ class RNN {
       ;
 
       // 0 index
-    let output = this.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], model.hiddenLayers[0]);
+    let output = this.constructor.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], model.hiddenLayers[0]);
     outputs.push(output);
     // 1+ indices
     for (let i = 1, max = this.hiddenLayers.length; i < max; i++) {
-      output = this.getEquation(equation, output, equationConnection[i], model.hiddenLayers[i]);
+      output = this.constructor.getEquation(equation, output, equationConnection[i], model.hiddenLayers[i]);
       outputs.push(output);
     }
 

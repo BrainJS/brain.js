@@ -3,8 +3,8 @@ const LSTM = require('./lstm');
 const RNNTimeStep = require('./rnn-time-step');
 
 class LSTMTimeStep extends RNNTimeStep {
-  getModel(hiddenSize, prevSize) {
-    return LSTM.prototype.getModel.call(this, hiddenSize, prevSize);
+  static getModel(hiddenSize, prevSize) {
+    return LSTM.getModel.call(this, hiddenSize, prevSize);
   }
 
   /**
@@ -15,8 +15,8 @@ class LSTMTimeStep extends RNNTimeStep {
    * @param {Object} hiddenLayer
    * @returns {Matrix}
    */
-  getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-    return LSTM.prototype.getEquation.call(
+  static getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+    return LSTM.getEquation.call(
       this,
       equation,
       inputMatrix,

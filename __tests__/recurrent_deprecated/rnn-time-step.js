@@ -1,8 +1,23 @@
 const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
+const RNN = require('../../src/recurrent/rnn');
 const LSTMTimeStep = require('../../src/recurrent/lstm-time-step');
 const Equation = require('../../src/recurrent/matrix/equation');
 
+// TODO: break out LSTMTimeStep into its own tests
+
 describe('RNNTimeStep', () => {
+  describe('getModel', () => {
+    test('does not override RNN', () => {
+      expect(typeof RNNTimeStep.getModel).toEqual('function');
+      expect(RNNTimeStep.getModel).toEqual(RNN.getModel);
+    });
+  });
+  describe('getEquation', () => {
+    test('does not override RNN', () => {
+      expect(typeof RNNTimeStep.getEquation).toEqual('function');
+      expect(RNNTimeStep.getEquation).toEqual(RNN.getEquation);
+    });
+  });
   describe('.createOutputMatrix()', () => {
     it('creates the outputConnector and output for model', () => {
       const net = new RNNTimeStep({
@@ -20,6 +35,18 @@ describe('RNNTimeStep', () => {
     });
   });
   describe('.bindEquation()', () => {
+    beforeEach(() => {
+      jest.spyOn(RNNTimeStep, 'getEquation');
+    });
+    afterEach(() => {
+      RNNTimeStep.getEquation.mockRestore();
+    });
+    it('calls static getEquation method', () => {
+      const net = new RNNTimeStep();
+      net.initialize();
+      net.bindEquation();
+      expect(RNNTimeStep.getEquation).toBeCalled();
+    });
     it('adds equations as expected', () => {
       const net = new RNNTimeStep({
         inputSize: 2,
@@ -375,15 +402,15 @@ describe('RNNTimeStep', () => {
         it('can learn basic logic', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
-            hiddenLayers: [20],
+            hiddenLayers: [10],
             outputSize: 1
           });
           const trainingData = [
             [.1,.2,.3,.4,.5],
             [.5,.4,.3,.2,.1]
           ];
-          const result = net.train(trainingData, { errorThresh: 0.05, iterations: 1000, learningRate: 0.03 });
-          expect(result.error).toBeLessThan(0.05);
+          const result = net.train(trainingData, { log: true, errorThresh: 0.005, iterations: 1000 });
+          expect(result.error).toBeLessThan(0.005);
           expect(result.iterations).toBeLessThan(1000);
           const result1 = net.forecast([.1,.2,.3], 2);
           expect(result1[0]).toBeCloseTo(.4, 1);

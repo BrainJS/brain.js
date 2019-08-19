@@ -1,5 +1,5 @@
 const Matrix = require('.');
-const randomN = require('../../utilities/random').randomN;
+const { randomN } = require('../../utilities/random');
 
 /**
  *

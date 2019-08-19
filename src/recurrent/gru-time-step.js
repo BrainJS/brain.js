@@ -4,7 +4,7 @@ const RNNTimeStep = require('./rnn-time-step');
 
 class GRUTimeStep extends RNNTimeStep {
   static getModel(hiddenSize, prevSize) {
-    return GRU.prototype.getModel(hiddenSize, prevSize);
+    return GRU.getModel(hiddenSize, prevSize);
   }
 
   /**
@@ -16,7 +16,7 @@ class GRUTimeStep extends RNNTimeStep {
    * @returns {Matrix}
    */
   static getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-    return GRU.prototype.getEquation(
+    return GRU.getEquation(
       equation,
       inputMatrix,
       previousResult,

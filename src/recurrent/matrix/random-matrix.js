@@ -1,5 +1,5 @@
 const Matrix = require('.');
-const randomFloat = require('../../utilities/random').randomFloat;
+const { randomFloat } = require('../../utilities/random');
 
 /** return Matrix but filled with random numbers from gaussian
  * @param {Number} [rows]

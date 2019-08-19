@@ -40466,7 +40466,8 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 var Matrix = require('.');
 
-var randomFloat = require('../../utilities/random').randomFloat;
+var _require = require('../../utilities/random'),
+    randomFloat = _require.randomFloat;
 /** return Matrix but filled with random numbers from gaussian
  * @param {Number} [rows]
  * @param {Number} [columns]
@@ -41669,13 +41670,13 @@ function () {
     key: "createHiddenLayers",
     value: function createHiddenLayers() {
       //0 is end, so add 1 to offset
-      this.model.hiddenLayers.push(this.getModel(this.hiddenLayers[0], this.inputSize));
+      this.model.hiddenLayers.push(this.constructor.getModel(this.hiddenLayers[0], this.inputSize));
       var prevSize = this.hiddenLayers[0];
 
       for (var d = 1; d < this.hiddenLayers.length; d++) {
         // loop over depths
         var hiddenSize = this.hiddenLayers[d];
-        this.model.hiddenLayers.push(this.getModel(hiddenSize, prevSize));
+        this.model.hiddenLayers.push(this.constructor.getModel(hiddenSize, prevSize));
         prevSize = hiddenSize;
       }
     }
@@ -41686,35 +41687,6 @@ function () {
      * @returns {object}
      */
 
-  }, {
-    key: "getModel",
-    value: function getModel(hiddenSize, prevSize) {
-      return {
-        //wxh
-        weight: new RandomMatrix(hiddenSize, prevSize, 0.08),
-        //whh
-        transition: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-        //bhh
-        bias: new Matrix(hiddenSize, 1)
-      };
-    }
-    /**
-     *
-     * @param {Equation} equation
-     * @param {Matrix} inputMatrix
-     * @param {Matrix} previousResult
-     * @param {Object} hiddenLayer
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "getEquation",
-    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-      var relu = equation.relu.bind(equation);
-      var add = equation.add.bind(equation);
-      var multiply = equation.multiply.bind(equation);
-      return relu(add(add(multiply(hiddenLayer.weight, inputMatrix), multiply(hiddenLayer.transition, previousResult)), hiddenLayer.bias));
-    }
   }, {
     key: "createInputMatrix",
     value: function createInputMatrix() {
@@ -41742,11 +41714,11 @@ function () {
       var outputs = [];
       var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs; // 0 index
 
-      var output = this.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], model.hiddenLayers[0]);
+      var output = this.constructor.getEquation(equation, equation.inputMatrixToRow(model.input), equationConnection[0], model.hiddenLayers[0]);
       outputs.push(output); // 1+ indices
 
       for (var i = 1, max = this.hiddenLayers.length; i < max; i++) {
-        output = this.getEquation(equation, output, equationConnection[i], model.hiddenLayers[i]);
+        output = this.constructor.getEquation(equation, output, equationConnection[i], model.hiddenLayers[i]);
         outputs.push(output);
       }
 
@@ -42351,6 +42323,35 @@ function () {
 
       return true;
     }
+  }], [{
+    key: "getModel",
+    value: function getModel(hiddenSize, prevSize) {
+      return {
+        //wxh
+        weight: new RandomMatrix(hiddenSize, prevSize, 0.08),
+        //whh
+        transition: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
+        //bhh
+        bias: new Matrix(hiddenSize, 1)
+      };
+    }
+    /**
+     *
+     * @param {Equation} equation
+     * @param {Matrix} inputMatrix
+     * @param {Matrix} previousResult
+     * @param {Object} hiddenLayer
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "getEquation",
+    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+      var relu = equation.relu.bind(equation);
+      var add = equation.add.bind(equation);
+      var multiply = equation.multiply.bind(equation);
+      return relu(add(add(multiply(hiddenLayer.weight, inputMatrix), multiply(hiddenLayer.transition, previousResult)), hiddenLayer.bias));
+    }
   }]);
 
   return RNN;
@@ -42565,11 +42566,11 @@ function (_RNN) {
       var outputs = [];
       var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs; // 0 index
 
-      var output = this.getEquation(equation, equation.input(new Matrix(this.inputSize, 1)), equationConnection[0], layers[0]);
+      var output = this.constructor.getEquation(equation, equation.input(new Matrix(this.inputSize, 1)), equationConnection[0], layers[0]);
       outputs.push(output); // 1+ indices
 
       for (var i = 1, max = hiddenLayers.length; i < max; i++) {
-        output = this.getEquation(equation, output, equationConnection[i], layers[i]);
+        output = this.constructor.getEquation(equation, output, equationConnection[i], layers[i]);
         outputs.push(output);
       }
 
@@ -43938,10 +43939,10 @@ function (_RNNTimeStep) {
     return _possibleConstructorReturn(this, _getPrototypeOf(LSTMTimeStep).apply(this, arguments));
   }
 
-  _createClass(LSTMTimeStep, [{
+  _createClass(LSTMTimeStep, null, [{
     key: "getModel",
     value: function getModel(hiddenSize, prevSize) {
-      return LSTM.prototype.getModel.call(this, hiddenSize, prevSize);
+      return LSTM.getModel.call(this, hiddenSize, prevSize);
     }
     /**
      *
@@ -43955,7 +43956,7 @@ function (_RNNTimeStep) {
   }, {
     key: "getEquation",
     value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-      return LSTM.prototype.getEquation.call(this, equation, inputMatrix, previousResult, hiddenLayer);
+      return LSTM.getEquation.call(this, equation, inputMatrix, previousResult, hiddenLayer);
     }
   }]);
 
@@ -44099,7 +44100,7 @@ function (_RNNTimeStep) {
   _createClass(GRUTimeStep, null, [{
     key: "getModel",
     value: function getModel(hiddenSize, prevSize) {
-      return GRU.prototype.getModel(hiddenSize, prevSize);
+      return GRU.getModel(hiddenSize, prevSize);
     }
     /**
      *
@@ -44113,7 +44114,7 @@ function (_RNNTimeStep) {
   }, {
     key: "getEquation",
     value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-      return GRU.prototype.getEquation(equation, inputMatrix, previousResult, hiddenLayer);
+      return GRU.getEquation(equation, inputMatrix, previousResult, hiddenLayer);
     }
   }]);
 

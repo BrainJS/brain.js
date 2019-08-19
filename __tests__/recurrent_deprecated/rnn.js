@@ -36,6 +36,26 @@ describe('RNN', () => {
     });
   });
   describe('initialize', () => {
+    describe('when creating hidden layers', () => {
+      beforeEach(() => {
+        jest.spyOn(RNN.prototype, 'createHiddenLayers');
+        jest.spyOn(RNN, 'getModel');
+      });
+      afterEach(() => {
+        RNN.prototype.createHiddenLayers.mockRestore();
+        RNN.getModel.mockRestore();
+      });
+      it('calls createHiddenLayers', () => {
+        const net = new RNN();
+        net.initialize();
+        expect(RNN.prototype.createHiddenLayers).toBeCalled();
+      });
+      it('calls static getModel method', () => {
+        const net = new RNN();
+        net.initialize();
+        expect(RNN.getModel).toBeCalled();
+      });
+    });
     it('initializes model', () => {
       const net = new RNN();
       net.initialize();
@@ -566,6 +586,21 @@ describe('RNN', () => {
       const expected = net.run('hi');
       const newNet = net.toFunction();
       expect(newNet('hi')).toBe(expected);
+    });
+  });
+
+  describe('bindEquation', () => {
+    beforeEach(() => {
+      jest.spyOn(RNN, 'getEquation');
+    });
+    afterEach(() => {
+      RNN.getEquation.mockRestore();
+    });
+    it('calls static getEquation method', () => {
+      const net = new RNN();
+      net.initialize();
+      net.bindEquation();
+      expect(RNN.getEquation).toBeCalled();
     });
   });
 });

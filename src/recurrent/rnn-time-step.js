@@ -50,11 +50,11 @@ class RNNTimeStep extends RNN {
       ;
 
       // 0 index
-    let output = this.getEquation(equation, equation.input(new Matrix(this.inputSize, 1)), equationConnection[0], layers[0]);
+    let output = this.constructor.getEquation(equation, equation.input(new Matrix(this.inputSize, 1)), equationConnection[0], layers[0]);
     outputs.push(output);
     // 1+ indices
     for (let i = 1, max = hiddenLayers.length; i < max; i++) {
-      output = this.getEquation(equation, output, equationConnection[i], layers[i]);
+      output = this.constructor.getEquation(equation, output, equationConnection[i], layers[i]);
       outputs.push(output);
     }
 

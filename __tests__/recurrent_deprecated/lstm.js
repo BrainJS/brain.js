@@ -1,7 +1,21 @@
 const LSTM = require('../../src/recurrent/lstm');
+const RNN = require('../../src/recurrent/rnn');
 const DataFormatter = require('../../src/utilities/data-formatter');
 
 describe('lstm', () => {
+  describe('getModel', () => {
+    test('overrides RNN', () => {
+      expect(typeof LSTM.getModel).toEqual('function');
+      expect(LSTM.getModel).not.toEqual(RNN.getModel);
+    });
+  });
+  describe('getEquation', () => {
+    test('overrides RNN', () => {
+      expect(typeof LSTM.getEquation).toEqual('function');
+      expect(LSTM.getEquation).not.toEqual(RNN.getEquation);
+    });
+  });
+
   describe('math', () => {
     it('can predict math', () => {
       const net = new LSTM();

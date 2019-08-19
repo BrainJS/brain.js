@@ -1,10 +1,23 @@
-const GruTest = require('../../src/recurrent/gru');
+const GRU = require('../../src/recurrent/gru');
+const RNN = require('../../src/recurrent/rnn');
 const DataFormatter = require('../../src/utilities/data-formatter');
 
-describe('gru', () => {
+describe('GRU', () => {
+  describe('getModel', () => {
+    test('overrides RNN', () => {
+      expect(typeof GRU.getModel).toEqual('function');
+      expect(GRU.getModel).not.toEqual(RNN.getModel);
+    });
+  });
+  describe('getEquation', () => {
+    test('overrides RNN', () => {
+      expect(typeof GRU.getEquation).toEqual('function');
+      expect(GRU.getEquation).not.toEqual(RNN.getEquation);
+    });
+  });
   describe('math', () => {
     it('can predict math', () => {
-      const net = new GruTest();
+      const net = new GRU();
       const items = new Set([]);
       for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
@@ -22,7 +35,7 @@ describe('gru', () => {
 
   describe('printable characters', () => {
     it('can learn a phrase', (done) => {
-      const net = new GruTest();
+      const net = new GRU();
       net.train([{
         input: 'hello world',
         output: 'comment'
@@ -34,7 +47,7 @@ describe('gru', () => {
     it('can predict a phrase when given the first letter', (done) => {
       const phrase = 'bob';
       const dataFormatter = new DataFormatter(['b', 'o']);
-      const net = new GruTest({
+      const net = new GRU({
         inputSize: 3,
         inputRange: dataFormatter.characters.length,
         outputSize: 3
@@ -54,7 +67,7 @@ describe('gru', () => {
       const phrase = 'hello world;|something I comment about';
       const dataFormatter = DataFormatter.fromString(phrase);
       const phraseAsIndices = dataFormatter.toIndexes(phrase);
-      const net = new GruTest({
+      const net = new GRU({
         inputSize: 40,
         inputRange: dataFormatter.characters.length,
         outputSize: 40
@@ -74,7 +87,7 @@ describe('gru', () => {
   describe('json', () => {
     describe('.toJSON', () => {
       it('can export model as json', () => {
-        const net = new GruTest({
+        const net = new GRU({
           inputSize: 6,
           inputRange: 12,
           outputSize: 6
@@ -103,13 +116,13 @@ describe('gru', () => {
     describe('.fromJSON', () => {
       it('can import model from json', () => {
         const dataFormatter = new DataFormatter('abcdef'.split(''));
-        const jsonString = JSON.stringify(new GruTest({
+        const jsonString = JSON.stringify(new GRU({
           inputSize: 6, //<- length
           inputRange: dataFormatter.characters.length,
           outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
-        const clone = new GruTest();
+        const clone = new GRU();
         clone.fromJSON(JSON.parse(jsonString));
         expect(jsonString).toEqual(JSON.stringify(clone.toJSON()));
         expect(clone.inputSize).toEqual(6);
@@ -119,13 +132,13 @@ describe('gru', () => {
 
       it('can import model from json and train again', () => {
         const dataFormatter = new DataFormatter('abcdef'.split(''));
-        const jsonString = JSON.stringify(new GruTest({
+        const jsonString = JSON.stringify(new GRU({
           inputSize: 6, //<- length
           inputRange: dataFormatter.characters.length,
           outputSize: dataFormatter.characters.length //<- length
         }).toJSON());
 
-        const clone = new GruTest();
+        const clone = new GRU();
         clone.fromJSON(JSON.parse(jsonString));
         clone.trainPattern([0, 1, 2, 3, 4, 5]);
 
@@ -140,7 +153,7 @@ describe('gru', () => {
   describe('.toFunction', () => {
     it('can output same as run method', () => {
       const dataFormatter = new DataFormatter(['h', 'i', ' ', 'm', 'o', '!']);
-      const net = new GruTest({
+      const net = new GRU({
         inputSize: 6,
         inputRange: dataFormatter.characters.length,
         outputSize: 6
@@ -158,7 +171,7 @@ describe('gru', () => {
     });
 
     it('can include the DataFormatter', () => {
-      const net = new GruTest();
+      const net = new GRU();
       net.train(['hi mom!']);
       const expected = net.run('hi ');
       const newNet = net.toFunction();
