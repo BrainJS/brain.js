@@ -6,10 +6,10 @@ const { zeros } = require('./zeros');
 
 function output(settings, inputLayer) {
   const { height } = settings;
-  const outputGate = random({ height, width: inputLayer.height });
-  const output = zeros({ height });
-  const outputGateConnector = multiply(outputGate, inputLayer);
-  return target(settings, add(outputGateConnector, output));
+  const outputGate = random({ height, width: inputLayer.height, name: 'outputGate' });
+  const output = zeros({ height, name: 'output' });
+  const outputGateConnector = multiply(outputGate, inputLayer, { name: 'outputGateConnected' });
+  return target({ name: 'target', ...settings }, add(outputGateConnector, output));
 }
 
 module.exports = {

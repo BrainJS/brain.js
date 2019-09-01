@@ -40,6 +40,9 @@ class Multiply extends Operator {
     this.weights = zeros2D(this.width, this.height);
     this.deltas = zeros2D(this.width, this.height);
 
+    if (settings && settings.name) {
+      this.name = settings.name;
+    }
     this.setupPraxis(settings);
   }
 

@@ -250,7 +250,7 @@ net.train(data, {
 
 The network will stop training whenever one of the two criteria is met: the training error has gone below the threshold (default `0.005`), or the max number of iterations (default `20000`) has been reached.
 
-By default training will not let you know how it's doing until the end, but set `log` to `true` to get periodic updates on the current training error of the network. The training error should decrease every time. The updates will be printed to console. If you set `log` to a function, this function will be called with the updates instead of printing to the console.  
+By default training will not let you know how it's doing until the end, but set `log` to `true` to get periodic updates on the current training error of the network. The training error should decrease every time. The updates will be printed to console. If you set `log` to a function, this function will be called with the updates instead of printing to the console.
 However, if you want to use the values of the updates in your own output, the `callback` can be set to a function to do so instead.
 
 The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0`, it will take longer to train. If the learning rate is closer to `1`, it will train faster, but training results may be constrained to a local minimum and perform badly on new data.(_Overfitting_) The default learning rate is `0.3`.
@@ -509,7 +509,7 @@ Likely example see: [simple letter detection](./examples/which-letter-simple.js)
 ### `toSVG`
 
 ```js
-<script src="../../src/utilities/svg.min.js"></script> 
+<script src="../../src/utilities/svg.js"></script>
 ```
 Renders the network topology of a feedforward network
 ```js

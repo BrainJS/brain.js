@@ -108,6 +108,7 @@ class FeedForward {
    * @constructor
    */
   constructor(options = {}) {
+    this.layers = null;
     this.inputLayer = null;
     this.hiddenLayers = null;
     this.outputLayer = null;
@@ -119,6 +120,9 @@ class FeedForward {
       Object.assign({}, this.constructor.trainDefaults, options)
     );
     Object.assign(this, this.constructor.structure);
+    this._inputLayer = null;
+    this._hiddenLayers = null;
+    this._outputLayer = null;
   }
 
   _connectLayers() {
@@ -136,10 +140,12 @@ class FeedForward {
   }
 
   _connectHiddenLayers(previousLayer) {
+    this._hiddenLayers = [];
     const hiddenLayers = [];
     for (let i = 0; i < this.hiddenLayers.length; i++) {
       const hiddenLayer = this.hiddenLayers[i](previousLayer, i);
       hiddenLayers.push(hiddenLayer);
+      this._hiddenLayers.push(hiddenLayer);
       previousLayer = hiddenLayer;
     }
     return hiddenLayers;
@@ -420,6 +426,9 @@ class FeedForward {
    *
    */
   toJSON() {
+    if (!this.layers) {
+      this.initialize();
+    }
     const jsonLayers = [];
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i];
@@ -435,7 +444,12 @@ class FeedForward {
       }
       jsonLayers.push(jsonLayer);
     }
+
     return {
+      type: this.constructor.name,
+      sizes: [this._inputLayer.height]
+        .concat(this._hiddenLayers.map(l => l.height))
+        .concat([this._outputLayer.height]),
       layers: jsonLayers,
     };
   }

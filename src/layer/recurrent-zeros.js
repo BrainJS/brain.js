@@ -44,6 +44,11 @@ class RecurrentZeros extends Internal {
   }
 }
 
+function recurrentZeros() {
+  return new RecurrentZeros();
+}
+
 module.exports = {
-  RecurrentZeros
+  RecurrentZeros,
+  recurrentZeros,
 };

@@ -16,6 +16,7 @@
         padding: 20px 0px 30px 50px;
         font-size: 20px;
       }
+
       .flex-container2 {
         display: flex;
         justify-content: space-between;
@@ -29,27 +30,30 @@
         font-size: 20px;
       }
 
-      .formWrapper{
+      .form-wrapper {
         margin: 0 auto;
         max-width: 200px;
         padding: 15px;
-        align-self: flex-start
+        align-self: flex-start;
+        flex-grow: 1;
+        width: 400px;
       }
 
-      .inputWrapper{
+      .input-wrapper {
         padding: 0 0 10px 0;
       }
 
-      .inputLabel{
+      .input-label {
         padding: 0 0 5px 0;
         color: #808080;
       }
-      .numeric{
+
+      .numeric {
         text-align: right;
         width: 50px;
       }
 
-      button{
+      button {
         background-color: rgb(0, 75, 0);
         color: #fff;
         border-radius: 10px;
@@ -61,114 +65,176 @@
         width: 150px;
         cursor: pointer;
       }
-      button:hover,button:active,button:visited{
+
+      button:hover, button:active, button:visited {
         background-color: green;
       }
+
+      #result {
+        padding-top: 100px;
+        padding-left: 100px;
+      }
     </style>
-    <script src="../../dist/brain-browser.min.js"></script>
+    <script src="../../dist/brain-browser.js"></script>
   </head>
   <body >
     <div class="flex-container">
-      <div class="formWrapper" style="flex-grow: 1;width:400px">
+      <div class="form-wrapper">
         <form id="network-settings" action="" method="POST">
-          <div class="inputWrapper">
-            <div class="inputLabel">Network size</div>
+          <div class="input-wrapper">
+            <div class="input-label">Network type</div>
+            <select name="network-type">
+              <option value="NeuralNetwork">FeedForward (brain.NeuralNetwork)</option>
+              <option value="RNN">Recurrent (brain.recurrent.RNN)</option>
+              <option value="RNNTimeStep">Recurrent Time Step (brain.recurrent.RNNTimeStep)</option>
+              <option value="FeedForward">FeedForward (brain.FeedForward)</option>
+              <option value="Recurrent">Recurrent (brain.Recurrent)</option>
+            </select>
+          </div>
+          <div class="input-wrapper">
+            <div class="input-label">Network size</div>
             <input type="text" name="size" placeholder="" value="10,8,6,2"/>
           </div>
           <div class="flex-container2">
-            <div class="inputWrapper">
-              <div class="inputLabel">Height</div>
+            <div class="input-wrapper">
+              <div class="input-label">Height</div>
               <input type="text" class="numeric" name="height" placeholder="Height" value="400"/>
             </div>
-            <div class="inputWrapper">
-              <div class="inputLabel">Width</div>
+            <div class="input-wrapper">
+              <div class="input-label">Width</div>
               <input type="text" class="numeric" name="width" placeholder="Width" value="600"/>
             </div>
           </div>
           <div class="flex-container2">
-            <div class="inputWrapper">
-              <div class="inputLabel">Neuron radius</div>
+            <div class="input-wrapper">
+              <div class="input-label">Neuron radius</div>
               <input type="text" name="radius" class="numeric" placeholder="in pixels" value="6"/>
             </div>
           </div>
-          <div class="inputWrapper">
-            <div class="inputLabel">Inputs color</div>
+          <div class="input-wrapper">
+            <div class="input-label">Inputs color</div>
             <input type="text" name="inp-color" placeholder="" value="rgba(0, 128, 0, 0.5)"/>
           </div>
-          <div class="inputWrapper">
-            <div class="inputLabel">Hidden color</div>
+          <div class="input-wrapper">
+            <div class="input-label">Hidden color</div>
             <input type="text" name="hid-color" placeholder="" value="rgba(255, 127, 80, 0.5)"/>
           </div>
-          <div class="inputWrapper">
-            <div class="inputLabel">Outputs color</div>
+          <div class="input-wrapper">
+            <div class="input-label">Outputs color</div>
             <input type="text" name="out-color" placeholder="" value="rgba(100, 149, 237, 0.5)"/>
           </div>
-          <div class="inputWrapper">
-            <div class="inputLabel">Line width</div>
-            <input type="text" class="numeric" name="lineWidth" placeholder="number" value="0.5"/>
+          <div class="input-wrapper">
+            <div class="input-label">Recurrent line color</div>
+            <input type="text" name="recurrent-line-color" placeholder="" value="red"/>
           </div>
-          <div class="inputWrapper">
-            <div class="inputLabel">Line color</div>
-            <input type="text" name="lineColor" placeholder="css color" value="black"/>
+          <div class="input-wrapper">
+            <div class="input-label">Line width</div>
+            <input type="text" class="numeric" name="line-width" placeholder="number" value="0.5"/>
           </div>
-          <div class="inputWrapper">
-            <div class="inputLabel">Font size</div>
-            <input type="text" name="fontSize" placeholder="size in px" value="14px"/>
+          <div class="input-wrapper">
+            <div class="input-label">Line color</div>
+            <input type="text" name="line-color" placeholder="css color" value="black"/>
           </div>
-          <div class="inputWrapper">
-            <div class="inputLabel">Inputs' labels</div>
-            <textarea rows="3" name="inp-labels" cols="23" placeholder="inputs' labels seperated by commas"></textarea>
+          <div class="input-wrapper">
+            <div class="input-label">Font size</div>
+            <input type="text" name="font-size" placeholder="size in px" value="14px"/>
           </div>
-          <div class="inputWrapper ctaWrapper">
+          <div class="input-wrapper">
+            <div class="input-label">Inputs' labels</div>
+            <textarea rows="3" name="inp-labels" cols="23" placeholder="inputs' labels separated by commas"></textarea>
+          </div>
+          <div class="input-wrapper">
+            <label class="input-label"><input type="checkbox" name="use-json" value="1" />Use JSON</label>
+          </div>
+          <div class="input-wrapper">
             <button id="submit" type="submit">Render</button>
           </div>
         </form>
       </div>
-      <div id="result" style="padding-top:100px;padding-left: 100px">
-      </div>
+      <div id="result"></div>
     </div>
 
-
     <script>
-      document.getElementById('network-settings').addEventListener("submit", function(e){
+      document.getElementById('network-settings').addEventListener('submit', function(e) {
         // Stop it from submitting
         e.preventDefault();
-        const size = this.elements.namedItem("size").value.split(",").map((item)=> {
-          return parseInt(item, 10);
-        });
+        const networkType = this.elements.namedItem('network-type').value;
+        const size = this.elements.namedItem('size').value
+          .split(',')
+          .map((item)=> {
+            return parseInt(item, 10);
+          });
+
         const config = {
           inputSize: size[0],
           inputRange: size[0],
-          hiddenLayers: size.slice(1,size.length-1),
-          outputSize: size[size.length-1]
+          hiddenLayers: size.slice(1, size.length - 1),
+          outputSize: size[size.length - 1],
         };
-        const network = new brain.NeuralNetwork(config);
-        const options = constructOptions(this);
 
-        document.getElementById('result').innerHTML=brain.utilities.toSVG(network,options);
+        const networkTypes = {
+          NeuralNetwork: () => {
+            return new brain.NeuralNetwork(config);
+          },
+          RNN: () => {
+            return new brain.recurrent.RNN(config);
+          },
+          RNNTimeStep: () => {
+            return new brain.recurrent.RNNTimeStep(config);
+          },
+          FeedForward: () => { // constructor shim
+            const { input, feedForward, target } = brain.layer;
+            return new brain.FeedForward({
+              inputLayer: () => input({ height: config.inputSize }),
+              hiddenLayers: config.hiddenLayers.map((l) => (inputLayer) => feedForward({ height: l }, inputLayer)),
+              outputLayer: inputLayer => target({ height: config.outputSize }, inputLayer),
+            });
+          },
+          Recurrent: function() { // constructor shim
+            const { input, recurrent, output } = brain.layer;
+            return new brain.Recurrent({
+              inputLayer: () => input({ height: config.inputSize }),
+              hiddenLayers: config.hiddenLayers.map((layerHeight) => {
+                return (inputLayer, recurrentInput) => {
+                  return recurrent({ height: layerHeight }, inputLayer, recurrentInput);
+                }
+              }),
+              outputLayer: inputLayer => output({ height: config.outputSize }, inputLayer),
+            });
+          }
+        };
+
+        const options = constructOptions(this);
+        const network = networkTypes[networkType](config);
+        document.getElementById('result').innerHTML = this.elements.namedItem('use-json').checked
+          ? brain.utilities.toSVG(network.toJSON(), options)
+          : brain.utilities.toSVG(network, options);
       });
 
-      function constructOptions(form){
-        const options={};
-        options.height = Number(form.elements.namedItem("height").value);
-        options.width = Number(form.elements.namedItem("width").value);
-        options.radius = Number(form.elements.namedItem("radius").value);
-        options.line = {};
-        options.inputs = {};
-        options.hidden = {};
-        options.outputs = {};
-        options.line.width = Number(form.elements.namedItem("lineWidth").value);
-        options.line.color = form.elements.namedItem("lineColor").value;
-        options.inputs.color = form.elements.namedItem("inp-color").value;
-        options.hidden.color = form.elements.namedItem("hid-color").value;
-        options.outputs.color = form.elements.namedItem("out-color").value;
-        options.fontSize = form.elements.namedItem("fontSize").value;
-
-        const tempInpLabels = form.elements.namedItem("inp-labels").value;
-        options.inputs.label = [];
-        tempInpLabels.split(',').forEach(element => options.inputs.label.push(element));
-
-        return options
+      function constructOptions(form) {
+        return {
+          height: Number(form.elements.namedItem('height').value),
+          width: Number(form.elements.namedItem('width').value),
+          radius: Number(form.elements.namedItem('radius').value),
+          line: {
+            width: Number(form.elements.namedItem('line-width').value),
+            color: form.elements.namedItem('line-color').value,
+          },
+          inputs: {
+            color: form.elements.namedItem('inp-color').value,
+            labels: (form.elements.namedItem('inp-labels').value || '').split(',')
+          },
+          hidden: {
+            color: form.elements.namedItem('hid-color').value,
+          },
+          outputs: {
+            color: form.elements.namedItem('out-color').value,
+          },
+          recurrentLine: {
+            color: form.elements.namedItem('recurrent-line-color').value,
+          },
+          fontSize: form.elements.namedItem('font-size').value,
+        };
       }
 
       // Click programmatically
