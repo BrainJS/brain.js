@@ -29,7 +29,7 @@ describe('Recurrent Class: Unit', () => {
       net.initialize();
 
       expect(net._inputLayers.map(l => l.constructor.name)).toEqual(['Input']);
-      expect(net._hiddenLayers[0].map(l => l.constructor.name)).toEqual([
+      expect(net._hiddenLayerSets[0].map(l => l.constructor.name)).toEqual([
         'Multiply',
         'RecurrentZeros',
         'Multiply',
@@ -68,8 +68,8 @@ describe('Recurrent Class: Unit', () => {
       net.runInput([0, 1]);
       expect(net._model.length).toEqual(1);
       expect(net._inputLayers.length).toEqual(1);
-      expect(net._hiddenLayers[0].length).toEqual(3);
-      expect(net._hiddenLayers[1].length).toEqual(3);
+      expect(net._hiddenLayerSets[0].length).toEqual(3);
+      expect(net._hiddenLayerSets[1].length).toEqual(3);
     });
   });
   describe('.calculateDeltas()', () => {
@@ -92,8 +92,8 @@ describe('Recurrent Class: Unit', () => {
       net.initializeDeep();
       net.runInput([1, 1]);
       expect(net._model.length).toEqual(1);
-      expect(net._hiddenLayers.length).toEqual(2);
-      expect(net._hiddenLayers[0].length).toEqual(3);
+      expect(net._hiddenLayerSets.length).toEqual(2);
+      expect(net._hiddenLayerSets[0].length).toEqual(3);
 
       expect(
         net._model[0].deltas.every(row => row.every(delta => delta === 0))
@@ -104,17 +104,17 @@ describe('Recurrent Class: Unit', () => {
       ).toBeTruthy();
 
       expect(
-        net._hiddenLayers[0][0].deltas.every(row =>
+        net._hiddenLayerSets[0][0].deltas.every(row =>
           row.every(delta => delta === 0)
         )
       ).toBeTruthy();
       expect(
-        net._hiddenLayers[0][1].deltas.every(row =>
+        net._hiddenLayerSets[0][1].deltas.every(row =>
           row.every(delta => delta === 0)
         )
       ).toBeTruthy();
       expect(
-        net._hiddenLayers[0][2].deltas.every(row =>
+        net._hiddenLayerSets[0][2].deltas.every(row =>
           row.every(delta => delta === 0)
         )
       ).toBeTruthy();
@@ -139,56 +139,56 @@ describe('Recurrent Class: Unit', () => {
       net._calculateDeltas([1], 0);
 
       expect(
-        net._model[0].deltas.every(row => row.some(delta => delta !== 0))
+        net._model[0].deltas.every(row => row.some(delta => delta !== 0 && !isNaN(delta)))
       ).toBeTruthy();
 
       // first layer
       expect(
-        net._inputLayers[0].deltas.every(row => row.some(delta => delta !== 0))
+        net._inputLayers[0].deltas.every(row => row.some(delta => delta !== 0 && !isNaN(delta)))
       ).toBeTruthy();
 
       expect(
-        net._hiddenLayers[0][0].deltas.every(row =>
-          row.some(delta => delta !== 0)
+        net._hiddenLayerSets[0][0].deltas.every(row =>
+          row.some(delta => delta !== 0 && !isNaN(delta))
         )
       ).toBeTruthy();
       expect(
-        net._hiddenLayers[0][1].deltas.every(row =>
-          row.some(delta => delta !== 0)
+        net._hiddenLayerSets[0][1].deltas.every(row =>
+          row.some(delta => delta !== 0 && !isNaN(delta))
         )
       ).toBeTruthy();
       expect(
-        net._hiddenLayers[0][2].deltas.every(row =>
-          row.some(delta => delta !== 0)
+        net._hiddenLayerSets[0][2].deltas.every(row =>
+          row.some(delta => delta !== 0 && !isNaN(delta))
         )
       ).toBeTruthy();
 
       // second layer
       expect(
-        net._hiddenLayers[1][0].deltas.every(row =>
-          row.some(delta => delta !== 0)
+        net._hiddenLayerSets[1][0].deltas.every(row =>
+          row.some(delta => delta !== 0 && !isNaN(delta))
         )
       ).toBeTruthy();
       expect(
-        net._hiddenLayers[1][1].deltas.every(row =>
-          row.some(delta => delta !== 0)
+        net._hiddenLayerSets[1][1].deltas.every(row =>
+          row.some(delta => delta !== 0 && !isNaN(delta))
         )
       ).toBeTruthy();
       expect(
-        net._hiddenLayers[1][2].deltas.every(row =>
-          row.some(delta => delta !== 0)
+        net._hiddenLayerSets[1][2].deltas.every(row =>
+          row.some(delta => delta !== 0 && !isNaN(delta))
         )
       ).toBeTruthy();
 
       // output layer
       expect(
-        net._outputLayers[0].deltas.every(row => row.some(delta => delta !== 0))
+        net._outputLayers[0].deltas.every(row => row.some(delta => delta !== 0 && !isNaN(delta)))
       ).toBeTruthy();
       expect(
-        net._outputLayers[1].deltas.every(row => row.some(delta => delta !== 0))
+        net._outputLayers[1].deltas.every(row => row.some(delta => delta !== 0 && !isNaN(delta)))
       ).toBeTruthy();
       expect(
-        net._outputLayers[2].deltas.every(row => row.some(delta => delta !== 0))
+        net._outputLayers[2].deltas.every(row => row.some(delta => delta !== 0 && !isNaN(delta)))
       ).toBeTruthy();
     });
   });
@@ -212,14 +212,14 @@ describe('Recurrent Class: Unit', () => {
       net.initializeDeep();
       net.runInput([1, 1]);
       expect(net._model.length).toEqual(1);
-      expect(net._hiddenLayers[0].length).toEqual(3);
+      expect(net._hiddenLayerSets[0].length).toEqual(3);
       const model0Weights = net._model[0].weights;
-      const hiddenLayers00Weights = net._hiddenLayers[0][0].weights;
-      const hiddenLayers01Weights = net._hiddenLayers[0][1].weights;
-      const hiddenLayers02Weights = net._hiddenLayers[0][2].weights;
-      const hiddenLayers10Weights = net._hiddenLayers[1][0].weights;
-      const hiddenLayers11Weights = net._hiddenLayers[1][1].weights;
-      const hiddenLayers12Weights = net._hiddenLayers[1][2].weights;
+      const hiddenLayers00Weights = net._hiddenLayerSets[0][0].weights;
+      const hiddenLayers01Weights = net._hiddenLayerSets[0][1].weights;
+      const hiddenLayers02Weights = net._hiddenLayerSets[0][2].weights;
+      const hiddenLayers10Weights = net._hiddenLayerSets[1][0].weights;
+      const hiddenLayers11Weights = net._hiddenLayerSets[1][1].weights;
+      const hiddenLayers12Weights = net._hiddenLayerSets[1][2].weights;
       const outputLayers0Weights = net._outputLayers[0].weights;
       const outputLayers1Weights = net._outputLayers[1].weights;
       const outputLayers2Weights = net._outputLayers[2].weights;
@@ -231,12 +231,12 @@ describe('Recurrent Class: Unit', () => {
 
       // weights are adjusted
       expect(model0Weights).not.toEqual(net._model[0].weights);
-      expect(hiddenLayers00Weights).not.toEqual(net._hiddenLayers[0][0].weights);
-      expect(hiddenLayers01Weights).not.toEqual(net._hiddenLayers[0][1].weights);
-      expect(hiddenLayers02Weights).not.toEqual(net._hiddenLayers[0][2].weights);
-      expect(hiddenLayers10Weights).not.toEqual(net._hiddenLayers[1][0].weights);
-      expect(hiddenLayers11Weights).not.toEqual(net._hiddenLayers[1][1].weights);
-      expect(hiddenLayers12Weights).not.toEqual(net._hiddenLayers[1][2].weights);
+      expect(hiddenLayers00Weights).not.toEqual(net._hiddenLayerSets[0][0].weights);
+      expect(hiddenLayers01Weights).not.toEqual(net._hiddenLayerSets[0][1].weights);
+      expect(hiddenLayers02Weights).not.toEqual(net._hiddenLayerSets[0][2].weights);
+      expect(hiddenLayers10Weights).not.toEqual(net._hiddenLayerSets[1][0].weights);
+      expect(hiddenLayers11Weights).not.toEqual(net._hiddenLayerSets[1][1].weights);
+      expect(hiddenLayers12Weights).not.toEqual(net._hiddenLayerSets[1][2].weights);
       expect(outputLayers0Weights).not.toEqual(net._outputLayers[0].weights);
       expect(outputLayers1Weights).not.toEqual(net._outputLayers[1].weights);
       expect(outputLayers2Weights).not.toEqual(net._outputLayers[2].weights);
@@ -271,15 +271,15 @@ describe('Recurrent Class: Unit', () => {
       net.initialize();
       net.initializeDeep();
       net._inputLayers[0].compare = jest.fn();
-      net._hiddenLayers[0][0].compare = jest.fn();
-      net._hiddenLayers[1][0].compare = jest.fn();
+      net._hiddenLayerSets[0][0].compare = jest.fn();
+      net._hiddenLayerSets[1][0].compare = jest.fn();
       net._outputLayers[0].compare = jest.fn();
       net.runInput([0, 1]);
       net._trainPattern([0, 1], [2]);
 
       // expect(net._outputLayers[0].compare).toHaveBeenCalledWith(2);
-      expect(net._outputLayers[0].compare).toHaveBeenCalledWith([2]);
-      expect(net._outputLayers[0].compare).toHaveBeenCalledWith([1]);
+      expect(net._outputLayers[0].compare).toHaveBeenCalledWith([[2]]);
+      expect(net._outputLayers[0].compare).toHaveBeenCalledWith([[1]]);
     });
     describe('when called more than once', () => {
       test('continuously updates output layer', () => {
@@ -295,7 +295,7 @@ describe('Recurrent Class: Unit', () => {
         net.initializeDeep();
 
         const lastOutputLayer = net._outputLayers[net._outputLayers.length - 1];
-        expect(Array.from(lastOutputLayer.weights)).toEqual([0]);
+        expect(lastOutputLayer.weights).toEqual(new Float32Array([0]));
         net._trainPattern([1, 2], [3]);
         const weights1 = lastOutputLayer.weights;
         expect(weights1).not.toEqual([[0]]);
