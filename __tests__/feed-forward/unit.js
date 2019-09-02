@@ -505,7 +505,7 @@ describe('FeedForward Class: Unit', () => {
         weights: [0, 1, 3, 4, 5, 6, 7, 8, 9],
         width: 10,
         height: 1,
-        depth: 1,
+        depth: null,
       });
       expect(json.layers[1]).toEqual({
         type: 'TestLayer1',
@@ -515,7 +515,7 @@ describe('FeedForward Class: Unit', () => {
         foo: true,
         width: 1,
         height: 1,
-        depth: 1,
+        depth: null,
       });
       expect(json.layers[2]).toEqual({
         type: 'TestLayer2',
@@ -524,7 +524,7 @@ describe('FeedForward Class: Unit', () => {
         inputLayerIndex: 0,
         width: 1,
         height: 1,
-        depth: 1,
+        depth: null,
       });
       expect(json.layers[3]).toEqual({
         type: 'TestOperatorLayer',
@@ -534,7 +534,7 @@ describe('FeedForward Class: Unit', () => {
         inputLayer2Index: 2,
         width: 1,
         height: 1,
-        depth: 1,
+        depth: null,
       });
       expect(json.layers[4]).toEqual({
         height: 5,
@@ -543,7 +543,7 @@ describe('FeedForward Class: Unit', () => {
         weights: null,
         praxisOpts: null,
         width: 10,
-        depth: 1,
+        depth: null,
       });
     });
   });
@@ -694,13 +694,11 @@ describe('FeedForward Class: Unit', () => {
       net.initialize();
       net._outputLayer = { errors: [0] };
 
-      // TODO: Fix this test
-
       const runInput = jest.spyOn(net, 'runInput');
       const _calculateDeltas = jest.spyOn(net, '_calculateDeltas');
       const adjustWeights = jest.spyOn(net, 'adjustWeights');
 
-      net._trainPattern(1, 3, true);
+      net._trainPattern([1], [3], true);
 
       expect(runInput).toHaveBeenCalled();
       expect(_calculateDeltas).toHaveBeenCalled();

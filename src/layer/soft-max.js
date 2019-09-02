@@ -159,14 +159,13 @@ class SoftMax extends Filter {
     this.getSumKernel = null;
     this.inputLayer = inputLayer;
     this.validate();
-    if (this.height > 1) {
-      if (this.depth > 1) {
-        this.weights = randos3D(this.width, this.height, this.depth);
-        this.deltas = zeros3D(this.width, this.height, this.depth);
-      } else {
-        this.weights = randos2D(this.width, this.height);
-        this.deltas = zeros2D(this.width, this.height);
-      }
+
+    if (this.depth > 0) {
+      this.weights = randos3D(this.width, this.height, this.depth);
+      this.deltas = zeros3D(this.width, this.height, this.depth);
+    } else if (this.height > 0) {
+      this.weights = randos2D(this.width, this.height);
+      this.deltas = zeros2D(this.width, this.height);
     } else {
       this.weights = randos(this.width);
       this.deltas = zeros(this.width);
@@ -175,7 +174,7 @@ class SoftMax extends Filter {
 
   setupKernels() {
     const { width, height, depth } = this;
-    if (depth > 1) {
+    if (depth > 0) {
       this.getExponentialsKernel = makeKernel(getExponentials3D, {
         output: [width, height, depth],
       });

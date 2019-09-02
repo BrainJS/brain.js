@@ -8,7 +8,7 @@ describe('Base Layer', () => {
 
         expect(base.width).toBe(1);
         expect(base.height).toBe(1);
-        expect(base.depth).toBe(1);
+        expect(base.depth).toBe(null);
       });
     });
   });

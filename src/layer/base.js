@@ -136,7 +136,7 @@ class Base {
     this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
 
     // TODO: put into a kernel
-    if (this.depth > 1) {
+    if (this.depth > 0) {
       this.deltas = zeros3D(this.width, this.height, this.depth);
     } else {
       this.deltas = zeros2D(this.width, this.height);

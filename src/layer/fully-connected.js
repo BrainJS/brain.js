@@ -89,10 +89,10 @@ class FullyConnected extends Filter {
     this.filters = randos2D(connectionCount, this.height);
     this.filterDeltas = zeros2D(connectionCount, this.height);
 
-    if (this.depth > 1) {
+    if (this.depth > 0) {
       this.weights = randos3D(this.width, this.height);
       this.deltas = zeros3D(this.width, this.height);
-    } else if (this.height > 1) {
+    } else if (this.height > 0) {
       this.weights = randos2D(this.width, this.height);
       this.deltas = zeros2D(this.width, this.height);
     }
@@ -100,13 +100,13 @@ class FullyConnected extends Filter {
 
   validate() {
     super.validate();
-    if (this.depth > 1) throw new Error('depth not supported');
+    if (this.depth > 0) throw new Error('depth not supported');
   }
 
   setupKernels() {
     const { inputLayer } = this;
     const connectionCount = inputLayer.width * inputLayer.height * inputLayer.depth;
-    if (inputLayer.depth > 1) {
+    if (inputLayer.depth > 0) {
       this.predictKernel = makeKernel(predict3D, {
         output: [this.width, this.height],
         constants: {
