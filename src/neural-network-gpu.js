@@ -476,6 +476,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
 
     // pseudo lo-fi decorator
     return NeuralNetwork.prototype.toJSON.call({
+      activation: this.activation,
       inputLookup: this.inputLookup,
       outputLookup: this.outputLookup,
       outputLayer: this.outputLayer,
