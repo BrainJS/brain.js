@@ -68,6 +68,12 @@ class NeuralNetwork {
     this.inputLookupLength = null;
     this.outputLookup = null;
     this.outputLookupLength = null;
+
+    if (options.inputSize && options.hiddenLayers && options.outputSize) {
+      this.sizes = [options.inputSize]
+        .concat(options.hiddenLayers)
+        .concat([options.outputSize]);
+    }
   }
 
   /**
@@ -918,6 +924,9 @@ class NeuralNetwork {
    *  }
    */
   toJSON() {
+    if (this.sizes === null) {
+      this.initialize();
+    }
     const layers = [];
     for (let layer = 0; layer <= this.outputLayer; layer++) {
       layers[layer] = {};
