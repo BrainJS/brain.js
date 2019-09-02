@@ -284,6 +284,7 @@ describe('FeedForward Class: End to End', () => {
       const result3 = net.run([1, 0]);
       const result4 = net.run([1, 1]);
 
+      //TODO: this should be easier than result[0][0] https://github.com/BrainJS/brain.js/issues/439
       expect(result1[0][0]).toBeLessThan(0.2);
       expect(result2[0][0]).toBeGreaterThan(0.8);
       expect(result3[0][0]).toBeGreaterThan(0.8);
