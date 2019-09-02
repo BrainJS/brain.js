@@ -26310,7 +26310,7 @@ function () {
     value: function learn(previousLayer, nextLayer, learningRate) {
       this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate); // TODO: put into a kernel
 
-      if (this.depth > 1) {
+      if (this.depth > 0) {
         this.deltas = zeros3D(this.width, this.height, this.depth);
       } else {
         this.deltas = zeros2D(this.width, this.height);
@@ -27044,6 +27044,10 @@ function (_Operator) {
 
     _this.weights = zeros2D(_this.width, _this.height);
     _this.deltas = zeros2D(_this.width, _this.height);
+
+    if (settings && settings.name) {
+      _this.name = settings.name;
+    }
 
     _this.setupPraxis(settings);
 
@@ -27885,10 +27889,10 @@ function (_Filter) {
     _this.filters = randos2D(connectionCount, _this.height);
     _this.filterDeltas = zeros2D(connectionCount, _this.height);
 
-    if (_this.depth > 1) {
+    if (_this.depth > 0) {
       _this.weights = randos3D(_this.width, _this.height);
       _this.deltas = zeros3D(_this.width, _this.height);
-    } else if (_this.height > 1) {
+    } else if (_this.height > 0) {
       _this.weights = randos2D(_this.width, _this.height);
       _this.deltas = zeros2D(_this.width, _this.height);
     }
@@ -27901,7 +27905,7 @@ function (_Filter) {
     value: function validate() {
       _get(_getPrototypeOf(FullyConnected.prototype), "validate", this).call(this);
 
-      if (this.depth > 1) throw new Error('depth not supported');
+      if (this.depth > 0) throw new Error('depth not supported');
     }
   }, {
     key: "setupKernels",
@@ -27909,7 +27913,7 @@ function (_Filter) {
       var inputLayer = this.inputLayer;
       var connectionCount = inputLayer.width * inputLayer.height * inputLayer.depth;
 
-      if (inputLayer.depth > 1) {
+      if (inputLayer.depth > 0) {
         this.predictKernel = makeKernel(predict3D, {
           output: [this.width, this.height],
           constants: {
@@ -28862,10 +28866,8 @@ function (_Filter) {
 
     _this.validate();
 
-    if (_this.depth > 1) {
-      _this.weights = zeros3D(_this.width, _this.height, _this.depth);
-      _this.deltas = zeros3D(_this.width, _this.height, _this.depth);
-      _this.errors = zeros3D(_this.width, _this.height, _this.depth);
+    if (_this.depth > 0) {
+      throw new Error('Target layer not implemented for depth');
     } else if (_this.height > 1) {
       _this.weights = zeros2D(_this.width, _this.height);
       _this.deltas = zeros2D(_this.width, _this.height);
@@ -28916,6 +28918,10 @@ module.exports = {
   target: target
 };
 },{"../utilities/kernel":"L30b","../utilities/zeros":"M4LY","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"0AN3","./types":"pX1U"}],"YS3q":[function(require,module,exports) {
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var _require = require('./add'),
     add = _require.add;
 
@@ -28935,13 +28941,19 @@ function output(settings, inputLayer) {
   var height = settings.height;
   var outputGate = random({
     height: height,
-    width: inputLayer.height
+    width: inputLayer.height,
+    name: 'outputGate'
   });
   var output = zeros({
-    height: height
+    height: height,
+    name: 'output'
   });
-  var outputGateConnector = multiply(outputGate, inputLayer);
-  return target(settings, add(outputGateConnector, output));
+  var outputGateConnector = multiply(outputGate, inputLayer, {
+    name: 'outputGateConnected'
+  });
+  return target(_objectSpread({
+    name: 'target'
+  }, settings), add(outputGateConnector, output));
 }
 
 module.exports = {
@@ -29603,14 +29615,12 @@ function (_Filter) {
 
     _this.validate();
 
-    if (_this.height > 1) {
-      if (_this.depth > 1) {
-        _this.weights = randos3D(_this.width, _this.height, _this.depth);
-        _this.deltas = zeros3D(_this.width, _this.height, _this.depth);
-      } else {
-        _this.weights = randos2D(_this.width, _this.height);
-        _this.deltas = zeros2D(_this.width, _this.height);
-      }
+    if (_this.depth > 0) {
+      _this.weights = randos3D(_this.width, _this.height, _this.depth);
+      _this.deltas = zeros3D(_this.width, _this.height, _this.depth);
+    } else if (_this.height > 0) {
+      _this.weights = randos2D(_this.width, _this.height);
+      _this.deltas = zeros2D(_this.width, _this.height);
     } else {
       _this.weights = randos(_this.width);
       _this.deltas = zeros(_this.width);
@@ -29626,7 +29636,7 @@ function (_Filter) {
           height = this.height,
           depth = this.depth;
 
-      if (depth > 1) {
+      if (depth > 0) {
         this.getExponentialsKernel = makeKernel(getExponentials3D, {
           output: [width, height, depth]
         });
@@ -30819,6 +30829,7 @@ function () {
 
     _classCallCheck(this, FeedForward);
 
+    this.layers = null;
     this.inputLayer = null;
     this.hiddenLayers = null;
     this.outputLayer = null;
@@ -30830,6 +30841,9 @@ function () {
     this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
 
     Object.assign(this, this.constructor.structure);
+    this._inputLayer = null;
+    this._hiddenLayers = null;
+    this._outputLayer = null;
   }
 
   _createClass(FeedForward, [{
@@ -30849,11 +30863,15 @@ function () {
   }, {
     key: "_connectHiddenLayers",
     value: function _connectHiddenLayers(previousLayer) {
+      this._hiddenLayers = [];
       var hiddenLayers = [];
 
       for (var i = 0; i < this.hiddenLayers.length; i++) {
         var hiddenLayer = this.hiddenLayers[i](previousLayer, i);
         hiddenLayers.push(hiddenLayer);
+
+        this._hiddenLayers.push(hiddenLayer);
+
         previousLayer = hiddenLayer;
       }
 
@@ -31176,6 +31194,10 @@ function () {
   }, {
     key: "toJSON",
     value: function toJSON() {
+      if (!this.layers) {
+        this.initialize();
+      }
+
       var jsonLayers = [];
 
       for (var i = 0; i < this.layers.length; i++) {
@@ -31193,6 +31215,10 @@ function () {
       }
 
       return {
+        type: this.constructor.name,
+        sizes: [this._inputLayer.height].concat(this._hiddenLayers.map(function (l) {
+          return l.height;
+        })).concat([this._outputLayer.height]),
         layers: jsonLayers
       };
     }
@@ -37829,6 +37855,10 @@ function () {
     this.inputLookupLength = null;
     this.outputLookup = null;
     this.outputLookupLength = null;
+
+    if (options.inputSize && options.hiddenLayers && options.outputSize) {
+      this.sizes = [options.inputSize].concat(options.hiddenLayers).concat([options.outputSize]);
+    }
   }
   /**
    *
@@ -38806,6 +38836,10 @@ function () {
   }, {
     key: "toJSON",
     value: function toJSON() {
+      if (this.sizes === null) {
+        this.initialize();
+      }
+
       var layers = [];
 
       for (var layer = 0; layer <= this.outputLayer; layer++) {
@@ -38907,7 +38941,7 @@ function () {
 
       function nodeHandle(layers, layerNumber, nodeKey) {
         if (layerNumber === 0) {
-          return typeof nodeKey === 'string' ? "input['".concat(nodeKey, "']||0") : "input[".concat(nodeKey, "]||0");
+          return typeof nodeKey === 'string' ? "(input['".concat(nodeKey, "']||0)") : "(input[".concat(nodeKey, "]||0)");
         }
 
         var layer = layers[layerNumber];
@@ -39534,6 +39568,7 @@ function (_NeuralNetwork) {
 
 
       return NeuralNetwork.prototype.toJSON.call({
+        activation: this.activation,
         inputLookup: this.inputLookup,
         outputLookup: this.outputLookup,
         outputLayer: this.outputLayer,
@@ -39850,8 +39885,13 @@ function (_Internal) {
   return RecurrentZeros;
 }(Internal);
 
+function recurrentZeros() {
+  return new RecurrentZeros();
+}
+
 module.exports = {
-  RecurrentZeros: RecurrentZeros
+  RecurrentZeros: RecurrentZeros,
+  recurrentZeros: recurrentZeros
 };
 },{"../utilities/zeros-2d":"C4Cz","./types":"pX1U"}],"JVtt":[function(require,module,exports) {
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -39917,18 +39957,24 @@ function (_FeedForward) {
     value: function _connectLayers() {
       var initialLayers = [];
       var inputLayer = this.inputLayer();
+      this._inputLayer = inputLayer;
+      this.layers.push(inputLayer);
 
       var hiddenLayers = this._connectHiddenLayers(inputLayer);
+
+      this._hiddenLayerSets = hiddenLayers;
 
       this._outputConnection.setLayer(hiddenLayers[hiddenLayers.length - 1]);
 
       var outputLayer = this.outputLayer(this._outputConnection, hiddenLayers.length);
+      this._outputLayer = outputLayer;
+      this.layers.push(outputLayer);
       initialLayers.push(inputLayer);
       initialLayers.push.apply(initialLayers, _toConsumableArray(hiddenLayers));
       initialLayers.push(outputLayer);
       var flattenedLayers = flattenLayers(initialLayers);
       this._inputLayers = flattenedLayers.slice(0, flattenedLayers.indexOf(inputLayer) + 1);
-      this._hiddenLayers = [flattenedLayers.slice(flattenedLayers.indexOf(inputLayer) + 1, flattenedLayers.indexOf(hiddenLayers[hiddenLayers.length - 1]) + 1)];
+      this._hiddenLayerSets = [flattenedLayers.slice(flattenedLayers.indexOf(inputLayer) + 1, flattenedLayers.indexOf(hiddenLayers[hiddenLayers.length - 1]) + 1)];
       this._outputLayers = flattenedLayers.slice(flattenedLayers.indexOf(hiddenLayers[hiddenLayers.length - 1]) + 1);
 
       this._outputLayers.unshift();
@@ -39936,28 +39982,33 @@ function (_FeedForward) {
       this._recurrentIndices = [];
       this._model = [];
 
-      for (var i = 0; i < this._hiddenLayers[0].length; i++) {
-        if (Object.getPrototypeOf(this._hiddenLayers[0][i].constructor).name === 'Model') {
-          this._model.push(this._hiddenLayers[0][i]);
+      for (var i = 0; i < this._hiddenLayerSets[0].length; i++) {
+        if (Object.getPrototypeOf(this._hiddenLayerSets[0][i].constructor).name === 'Model') {
+          this._model.push(this._hiddenLayerSets[0][i]);
 
-          this._hiddenLayers[0].splice(i, 1);
+          this._hiddenLayerSets[0].splice(i, 1);
         }
       }
 
       for (var _i = 0; _i < hiddenLayers.length; _i++) {
-        this._recurrentIndices.push(this._hiddenLayers[0].indexOf(hiddenLayers[_i]));
+        this._recurrentIndices.push(this._hiddenLayerSets[0].indexOf(hiddenLayers[_i]));
       }
     }
   }, {
     key: "_connectHiddenLayers",
     value: function _connectHiddenLayers(previousLayer) {
+      this._hiddenLayers = [];
       var hiddenLayers = [];
 
       for (var i = 0; i < this.hiddenLayers.length; i++) {
         var recurrentInput = new RecurrentZeros();
         var hiddenLayer = this.hiddenLayers[i](previousLayer, recurrentInput, i);
+
+        this._hiddenLayers.push(hiddenLayer);
+
         previousLayer = hiddenLayer;
         hiddenLayers.push(hiddenLayer);
+        this.layers.push(hiddenLayer);
       }
 
       return hiddenLayers;
@@ -39966,8 +40017,8 @@ function (_FeedForward) {
     key: "_connectHiddenLayersDeep",
     value: function _connectHiddenLayersDeep() {
       var hiddenLayers = [];
-      var previousHiddenLayers = this._hiddenLayers[this._hiddenLayers.length - 1];
-      var firstLayer = this._hiddenLayers[0];
+      var previousHiddenLayers = this._hiddenLayerSets[this._hiddenLayerSets.length - 1];
+      var firstLayer = this._hiddenLayerSets[0];
       var recurrentIndex = 0;
 
       for (var i = 0; i < previousHiddenLayers.length; i++) {
@@ -40040,13 +40091,14 @@ function (_FeedForward) {
         hiddenLayers[i] = layer;
       }
 
-      this._hiddenLayers.push(hiddenLayers);
+      this._hiddenLayerSets.push(hiddenLayers);
 
       return hiddenLayers;
     }
   }, {
     key: "initialize",
     value: function initialize() {
+      this.layers = [];
       this._previousInputs = [];
       this._outputConnection = new RecurrentConnection();
 
@@ -40054,7 +40106,7 @@ function (_FeedForward) {
 
       this.initializeLayers(this._model);
       this.initializeLayers(this._inputLayers);
-      this.initializeLayers(this._hiddenLayers[0]);
+      this.initializeLayers(this._hiddenLayerSets[0]);
       this.initializeLayers(this._outputLayers);
     }
   }, {
@@ -40064,7 +40116,7 @@ function (_FeedForward) {
 
       for (var i = 0; i < hiddenLayers.length; i++) {
         var hiddenLayer = hiddenLayers[i];
-        hiddenLayer.reuseKernels(this._hiddenLayers[0][i]);
+        hiddenLayer.reuseKernels(this._hiddenLayerSets[0][i]);
       }
     }
   }, {
@@ -40073,7 +40125,7 @@ function (_FeedForward) {
       var max = input.length - 1;
 
       for (var x = 0; x < max; x++) {
-        var hiddenLayers = this._hiddenLayers[x];
+        var hiddenLayers = this._hiddenLayerSets[x];
         var hiddenConnection = hiddenLayers[hiddenLayers.length - 1];
 
         this._outputConnection.setLayer(hiddenConnection);
@@ -40086,8 +40138,8 @@ function (_FeedForward) {
           this._inputLayers[i].predict();
         }
 
-        for (var _i2 = 0; _i2 < this._hiddenLayers[x].length; _i2++) {
-          this._hiddenLayers[x][_i2].predict();
+        for (var _i2 = 0; _i2 < this._hiddenLayerSets[x].length; _i2++) {
+          this._hiddenLayerSets[x][_i2].predict();
         }
 
         for (var _i3 = 0; _i3 < this._outputLayers.length; _i3++) {
@@ -40110,7 +40162,7 @@ function (_FeedForward) {
     value: function _calculateDeltas(target, offset) {
       for (var x = target.length - 1; x >= 0; x--) {
         var hiddenLayersIndex = offset + x;
-        var hiddenLayers = this._hiddenLayers[hiddenLayersIndex];
+        var hiddenLayers = this._hiddenLayerSets[hiddenLayersIndex];
         var hiddenConnection = hiddenLayers[hiddenLayers.length - 1];
 
         this._outputConnection.setLayer(hiddenConnection);
@@ -40119,7 +40171,7 @@ function (_FeedForward) {
           this._inputLayers[0].weights = this._previousInputs.pop();
         }
 
-        this._outputLayers[this._outputLayers.length - 1].compare([target[x]]);
+        this._outputLayers[this._outputLayers.length - 1].compare([[target[x]]]);
 
         for (var i = this._outputLayers.length - 2; i >= 0; i--) {
           this._outputLayers[i].compare();
@@ -40137,8 +40189,8 @@ function (_FeedForward) {
   }, {
     key: "adjustWeights",
     value: function adjustWeights() {
-      for (var hiddenLayersIndex = 0; hiddenLayersIndex < this._hiddenLayers.length; hiddenLayersIndex++) {
-        var hiddenLayers = this._hiddenLayers[hiddenLayersIndex];
+      for (var hiddenLayersIndex = 0; hiddenLayersIndex < this._hiddenLayerSets.length; hiddenLayersIndex++) {
+        var hiddenLayers = this._hiddenLayerSets[hiddenLayersIndex];
         var hiddenConnection = hiddenLayers[hiddenLayers.length - 1];
 
         this._outputConnection.setLayer(hiddenConnection);
@@ -40199,11 +40251,18 @@ function (_FeedForward) {
         _inputLayers: null,
 
         /**
-         * _hiddenLayers are a 2 dimensional array of hidden layers defined for each recursion
-         * @type Object[][]
+         * _hiddenLayers are a 1 dimensional array of hidden layers defined from results from settings.hiddenLayers
+         * @type Object[]
          * @private
          */
         _hiddenLayers: null,
+
+        /**
+         * _hiddenLayerSets are a 2 dimensional array of hidden layers defined for each recursion
+         * @type Object[][]
+         * @private
+         */
+        _hiddenLayerSets: null,
 
         /**
          * _outputLayers are a 1 dimensional array of output layers defined once
@@ -42542,9 +42601,7 @@ function (_RNN) {
 
   _createClass(RNNTimeStep, [{
     key: "createInputMatrix",
-    value: function createInputMatrix() {
-      this.model.input = new RandomMatrix(this.inputSize, 1, 0.08);
-    }
+    value: function createInputMatrix() {}
   }, {
     key: "createOutputMatrix",
     value: function createOutputMatrix() {
@@ -44123,82 +44180,320 @@ function (_RNNTimeStep) {
 
 module.exports = GRUTimeStep;
 },{"./gru":"wLPK","./rnn-time-step":"zri4"}],"UFo7":[function(require,module,exports) {
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+var NeuralNetwork = require('../neural-network');
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+var RNN = require('../recurrent/rnn');
 
-function toSVG(network, options) {
+var RNNTimeStep = require('../recurrent/rnn-time-step');
+
+var _require = require('../feed-forward'),
+    FeedForward = _require.FeedForward;
+
+var _require2 = require('../recurrent'),
+    Recurrent = _require2.Recurrent;
+
+var _require3 = require('../layer/recurrent-zeros'),
+    recurrentZeros = _require3.recurrentZeros;
+
+var recurrentJSONTypes = ['RNN', 'LSTM', 'GRU', 'RNNTimeStep', 'LSTMTimeStep', 'GRUTimeStep', 'Recurrent'];
+
+function drawInput(_ref) {
+  var pixelX = _ref.pixelX,
+      pixelY = _ref.pixelY,
+      radius = _ref.radius,
+      inputs = _ref.inputs,
+      row = _ref.row,
+      line = _ref.line,
+      fontSize = _ref.fontSize,
+      fontClassName = _ref.fontClassName;
+  var svg = "<rect\n              x=\"".concat(pixelX / 2 - radius, "\"\n              y=\"").concat(pixelY / 2 + row * pixelY - radius, "\"\n              width=\"").concat(2 * radius, "\"\n              height=\"").concat(2 * radius, "\"\n              stroke=\"black\"\n              stroke-width=\"1\"\n              fill=\"").concat(inputs.color, "\" \n              class=\"").concat(inputs.className, "\" />\n            <line\n              x1=\"").concat(pixelX / 4, "\"\n              y1=\"").concat(pixelY / 2 + row * pixelY, "\"\n              x2=\"").concat(pixelX / 2 - radius, "\"\n              y2=\"").concat(pixelY / 2 + row * pixelY, "\"\n              style=\"stroke:").concat(line.color, ";stroke-width:").concat(line.width, "\"\n              class=\"").concat(line.className, "\" />");
+
+  if (inputs.labels) {
+    svg += "<text\n              x=\"".concat(pixelX / 8, "\"\n              y=\"").concat(pixelY / 2 + row * pixelY - 5, "\"\n              fill=\"black\"\n              font-size=\"").concat(fontSize, "\"\n              class=\"").concat(fontClassName, "\">").concat(inputs.labels[row], "</text>");
+  }
+
+  return svg;
+}
+
+function drawNeuron(_ref2) {
+  var pixelX = _ref2.pixelX,
+      pixelY = _ref2.pixelY,
+      row = _ref2.row,
+      column = _ref2.column,
+      radius = _ref2.radius,
+      hidden = _ref2.hidden;
+  return "<circle\n            cx=\"".concat(pixelX / 2 + column * pixelX, "\"\n            cy=\"").concat(pixelY / 2 + row * pixelY, "\"\n            r=\"").concat(radius, "\"\n            stroke=\"black\"\n            stroke-width=\"1\"\n            fill=\"").concat(hidden.color, "\"\n            class=\"").concat(hidden.className, "\" />");
+}
+
+function drawOutput(_ref3) {
+  var pixelX = _ref3.pixelX,
+      pixelY = _ref3.pixelY,
+      row = _ref3.row,
+      column = _ref3.column,
+      line = _ref3.line,
+      outputs = _ref3.outputs,
+      radius = _ref3.radius;
+  return "<circle\n            cx=\"".concat(pixelX / 2 + column * pixelX, "\"\n            cy=\"").concat(pixelY / 2 + row * pixelY, "\"\n            r=\"").concat(radius, "\"\n            stroke=\"black\"\n            stroke-width=\"1\"\n            fill=\"").concat(outputs.color, "\"\n            class=\"").concat(outputs.className, "\" />\n          <line\n            x1=\"").concat(pixelX / 2 + column * pixelX + radius, "\"\n            y1=\"").concat(pixelY / 2 + row * pixelY, "\"\n            x2=\"").concat(pixelX / 2 + column * pixelX + pixelX / 4, "\"\n            y2=\"").concat(pixelY / 2 + row * pixelY, "\"\n            style=\"stroke:").concat(line.color, ";stroke-width:").concat(line.width, "\"\n            class=\"").concat(line.className, "\" />");
+}
+
+function drawBackwardConnections(_ref4) {
+  var pixelX = _ref4.pixelX,
+      pixelY = _ref4.pixelY,
+      row = _ref4.row,
+      column = _ref4.column,
+      radius = _ref4.radius,
+      lineY = _ref4.lineY,
+      line = _ref4.line,
+      previousConnectionIndex = _ref4.previousConnectionIndex;
+  return "<line\n            x1=\"".concat(pixelX / 2 + (column - 1) * pixelX + radius, "\"\n            y1=\"").concat(lineY / 2 + previousConnectionIndex * lineY, "\"\n            x2=\"").concat(pixelX / 2 + column * pixelX - radius, "\"\n            y2=\"").concat(pixelY / 2 + row * pixelY, "\"\n            style=\"stroke:").concat(line.color, ";stroke-width:").concat(line.width, "\"\n            class=\"").concat(line.className, "\" />");
+}
+
+function neuralNetworkToSVG(options) {
+  var sizes = options.sizes,
+      height = options.height,
+      width = options.width;
+  var svg = '';
+  var pixelX = width / sizes.length;
+
+  for (var column = 0; column < sizes.length; column++) {
+    var size = sizes[column];
+    var pixelY = height / size;
+
+    for (var row = 0; row < size; row++) {
+      if (column === 0) {
+        svg += drawInput(Object.assign({
+          pixelX: pixelX,
+          pixelY: pixelY,
+          row: row,
+          column: column
+        }, options));
+      } else {
+        if (column === sizes.length - 1) {
+          svg += drawOutput(Object.assign({
+            pixelX: pixelX,
+            pixelY: pixelY,
+            row: row,
+            column: column
+          }, options));
+        } else {
+          svg += drawNeuron(Object.assign({
+            pixelX: pixelX,
+            pixelY: pixelY,
+            row: row,
+            column: column
+          }, options));
+        }
+
+        var previousSize = sizes[column - 1];
+        var lineY = height / previousSize;
+
+        for (var previousConnectionIndex = 0; previousConnectionIndex < previousSize; previousConnectionIndex++) {
+          svg += drawBackwardConnections(Object.assign({
+            pixelX: pixelX,
+            pixelY: pixelY,
+            row: row,
+            column: column,
+            lineY: lineY,
+            previousConnectionIndex: previousConnectionIndex
+          }, options));
+        }
+      }
+    }
+  }
+
+  return svg;
+}
+
+function rnnToSVG(options) {
+  var width = options.width,
+      height = options.height,
+      recurrentLine = options.recurrentLine,
+      sizes = options.sizes,
+      radius = options.radius;
+  var pixelX = width / sizes.length;
+  var svg = "<defs>\n              <marker id=\"arrow\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\" markerUnits=\"strokeWidth\">\n                <path d=\"M0,0 L0,6 L9,3 z\" fill=\"".concat(recurrentLine.color, "\" />\n              </marker>\n            </defs>");
+  svg += neuralNetworkToSVG(options);
+
+  for (var column = 1; column < sizes.length; column++) {
+    var size = sizes[column];
+    var pixelY = height / size;
+
+    for (var row = 0; row < size; row++) {
+      svg += drawRecurrentConnections({
+        pixelX: pixelX,
+        pixelY: pixelY,
+        row: row,
+        column: column,
+        radius: radius,
+        recurrentLine: recurrentLine
+      });
+    }
+  }
+
+  return svg;
+
+  function drawRecurrentConnections(_ref5) {
+    var pixelX = _ref5.pixelX,
+        pixelY = _ref5.pixelY,
+        row = _ref5.row,
+        column = _ref5.column,
+        radius = _ref5.radius,
+        recurrentLine = _ref5.recurrentLine;
+    var moveX = pixelX / 2 + column * pixelX + radius + 1;
+    var moveY = pixelY / 2 + row * pixelY;
+    var x = moveX - radius * 2 - 2;
+    var y = moveY;
+    var x1 = x + 100;
+    var y1 = y + 50;
+    var x2 = moveX - 100;
+    var y2 = moveY + 50;
+    return "<path\n              d=\"M ".concat(moveX, " ").concat(moveY, " C ").concat(x1, " ").concat(y1, ", ").concat(x2, " ").concat(y2, ", ").concat(x, " ").concat(y, "\"\n              stroke=\"").concat(recurrentLine.color, "\"\n              stroke-width=\"").concat(recurrentLine.width, "\"\n              fill=\"transparent\"\n              stroke-linecap=\"round\"\n              marker-end=\"url(#arrow)\"\n              class=\"").concat(recurrentLine.className, "\" />");
+  }
+}
+
+function getFeedForwardLayers(network) {
+  var inputLayer = network.inputLayer();
+  var hiddenLayers = [];
+  hiddenLayers.push(network.hiddenLayers[0](inputLayer));
+
+  for (var i = 1; i < network.hiddenLayers.length; i++) {
+    hiddenLayers.push(network.hiddenLayers[i](hiddenLayers[i - 1]));
+  }
+
+  var outputLayer = network.outputLayer(hiddenLayers[hiddenLayers.length - 1]);
+  return {
+    inputLayer: inputLayer,
+    hiddenLayers: hiddenLayers,
+    outputLayer: outputLayer,
+    layerCount: 1 + hiddenLayers.length + 1
+  };
+}
+
+function getRecurrentLayers(network) {
+  var inputLayer = network.inputLayer();
+  var hiddenLayers = [];
+  hiddenLayers.push(network.hiddenLayers[0](inputLayer, recurrentZeros(), 0));
+
+  for (var i = 1; i < network.hiddenLayers.length; i++) {
+    hiddenLayers.push(network.hiddenLayers[i](hiddenLayers[i - 1], recurrentZeros(), i));
+  }
+
+  var outputLayer = network.outputLayer(hiddenLayers[hiddenLayers.length - 1]);
+  return {
+    inputLayer: inputLayer,
+    hiddenLayers: hiddenLayers,
+    outputLayer: outputLayer,
+    layerCount: 1 + hiddenLayers.length + 1
+  };
+}
+
+function wrapSVG(svgBody, width, height) {
+  return "<svg\n            xmlns=\"http://www.w3.org/2000/svg\"\n            xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n            version=\"1.1\"\n            width=\"".concat(width, "\"\n            height=\"").concat(height, "\">").concat(svgBody, "</svg>");
+}
+
+function getSizes(object) {
+  return typeof object.inputSize === 'number' && Array.isArray(object.hiddenLayers) && object.hiddenLayers.every(function (l) {
+    return typeof l === 'number';
+  }) && typeof object.outputSize === 'number' ? [object.inputSize].concat(object.hiddenLayers).concat([object.outputSize]) : null;
+}
+
+function toSVG(net, options) {
   //default values
   var defaultOptions = {
     line: {
-      width: '0.5',
-      color: 'black'
+      width: 0.5,
+      color: 'black',
+      className: 'connection'
+    },
+    recurrentLine: {
+      width: 1,
+      color: 'red',
+      className: 'recurrence'
     },
     inputs: {
       color: 'rgba(0, 128, 0, 0.5)',
-      label: false
+      labels: null,
+      className: 'input'
     },
     outputs: {
-      color: 'rgba(100, 149, 237, 0.5)'
+      color: 'rgba(100, 149, 237, 0.5)',
+      className: 'output'
     },
     hidden: {
-      color: 'rgba(255, 127, 80, 0.5)'
+      color: 'rgba(255, 127, 80, 0.5)',
+      className: 'hidden-neuron'
     },
     fontSize: '14px',
-    radius: '8',
-    width: '400',
-    height: '250'
-  }; // Get network size array if network is created from the constructor
+    fontClassName: 'label',
+    radius: 8,
+    width: 400,
+    height: 250
+  };
 
-  var size = typeof network.inputSize == 'number' && typeof network.outputSize == 'number' && network.inputSize > 0 && network.outputSize > 0 ? [network.inputSize].concat(_toConsumableArray(network.hiddenLayers), [network.outputSize]) : false; // Get network size array if network is formed from a json object with fromJSON(json) method
+  var mergedOptions = _objectSpread({}, defaultOptions, options);
 
-  if (!size) size = network.sizes;
-  options = Object.assign(defaultOptions, options);
-  options.inputs.label = options.inputs.label.length == network.inputSize ? options.inputs.label : false;
+  var width = mergedOptions.width,
+      height = mergedOptions.height,
+      inputs = mergedOptions.inputs;
+  var isRNN = net.hasOwnProperty('model') || net instanceof Recurrent || net.type && recurrentJSONTypes.indexOf(net.type) !== -1; // Get network size array for NeuralNetwork or NeuralNetworkGPU
 
-  if (size) {
-    var svg = '<svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="' + options.width + '" height="' + options.height + '">';
-    var sh = options.width / size.length;
-    size.forEach(function (neuronsNu, i) {
-      var sv = options.height / neuronsNu;
+  var sizes = null;
 
-      _toConsumableArray(Array(neuronsNu)).forEach(function (_, j) {
-        if (i == 0) {
-          svg += '<rect x="' + (sh / 2 - options.radius) + '" y="' + (sv / 2 + j * sv - options.radius) + '" width="' + 2 * options.radius + '" height="' + 2 * options.radius + '" stroke="black" stroke-width="1" fill="' + options.inputs.color + '" />';
-          svg += '<line x1="' + sh / 4 + '" y1="' + (sv / 2 + j * sv) + '" x2="' + (sh / 2 - options.radius) + '" y2="' + (sv / 2 + j * sv) + '" style="stroke:' + options.line.color + ';stroke-width:' + options.line.width + '" />';
+  if (net instanceof NeuralNetwork || net instanceof RNN || net instanceof RNNTimeStep) {
+    sizes = getSizes(net);
+  } // Get network size array for NeuralNetwork json
+  else if (net.sizes) {
+      sizes = net.sizes;
+    } // get network size for Recurrent
+    else if (net instanceof Recurrent) {
+        var _getRecurrentLayers = getRecurrentLayers(net),
+            inputLayer = _getRecurrentLayers.inputLayer,
+            hiddenLayers = _getRecurrentLayers.hiddenLayers,
+            outputLayer = _getRecurrentLayers.outputLayer;
 
-          if (options.inputs.label) {
-            svg += '<text x="' + sh / 8 + '" y="' + (sv / 2 + j * sv - 5) + '" fill="black" font-size= "' + options.fontSize + '">' + options.inputs.label[j] + '</text>';
-          }
-        } else {
-          var sv_1 = options.height / size[i - 1];
+        sizes = [inputLayer.height].concat(hiddenLayers.map(function (l) {
+          return l.height;
+        })).concat([outputLayer.height]);
+      } // get network size for FeedForward
+      else if (net instanceof FeedForward) {
+          var _getFeedForwardLayers = getFeedForwardLayers(net),
+              _inputLayer = _getFeedForwardLayers.inputLayer,
+              _hiddenLayers = _getFeedForwardLayers.hiddenLayers,
+              _outputLayer = _getFeedForwardLayers.outputLayer;
 
-          if (i == size.length - 1) {
-            svg += '<circle cx="' + (sh / 2 + i * sh) + '" cy="' + (sv / 2 + j * sv) + '" r="' + options.radius + '" stroke="black" stroke-width="1" fill="' + options.outputs.color + '" />';
-            svg += '<line x1="' + (sh / 2 + i * sh + options.radius) + '" y1="' + (sv / 2 + j * sv) + '" x2="' + (sh / 2 + i * sh + sh / 4) + '" y2="' + (sv / 2 + j * sv) + '" style="stroke:' + options.line.color + ';stroke-width:' + options.line.width + '" />';
-          } else {
-            svg += '<circle cx="' + (sh / 2 + i * sh) + '" cy="' + (sv / 2 + j * sv) + '" r="' + options.radius + '" stroke="black" stroke-width="1" fill="' + options.hidden.color + '" />';
-          }
+          sizes = [_inputLayer.height].concat(_hiddenLayers.map(function (l) {
+            return l.height;
+          })).concat([_outputLayer.height]);
+        } // handle json, recurrent first
+        else if (isRNN) {
+            if (net.options) {
+              sizes = getSizes(net.options);
+            }
+          } // handle json, NeuralNetwork
+          else {
+              sizes = getSizes(net);
+            }
 
-          for (var k = 0; k < size[i - 1]; k++) {
-            svg += '<line x1="' + (sh / 2 + (i - 1) * sh + options.radius) + '" y1="' + (sv_1 / 2 + k * sv_1) + '" x2="' + (sh / 2 + i * sh - options.radius) + '" y2="' + (sv / 2 + j * sv) + '" style="stroke:' + options.line.color + ';stroke-width:' + options.line.width + '" />';
-          }
-        }
-      });
-    });
-    svg += '</svg>';
-    return svg;
+  if (!sizes) throw new Error('sizes not set');
+  if (inputs.labels && inputs.labels.length !== sizes[0]) throw new Error('not enough labels for inputs');
+
+  if (isRNN) {
+    return wrapSVG(rnnToSVG(_objectSpread({}, mergedOptions, {
+      sizes: sizes
+    })), width, height);
   } else {
-    return false;
+    return wrapSVG(neuralNetworkToSVG(_objectSpread({}, mergedOptions, {
+      sizes: sizes
+    })), width, height);
   }
 }
 
 module.exports = toSVG;
-},{}],"Focm":[function(require,module,exports) {
+},{"../neural-network":"8epZ","../recurrent/rnn":"gJGF","../recurrent/rnn-time-step":"zri4","../feed-forward":"eqC7","../recurrent":"JVtt","../layer/recurrent-zeros":"7ZE4"}],"Focm":[function(require,module,exports) {
 var activation = require('./activation');
 
 var CrossValidate = require('./cross-validate');
