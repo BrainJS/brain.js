@@ -23,9 +23,7 @@ class RNNTimeStep extends RNN {
     super(options);
   }
 
-  createInputMatrix() {
-    this.model.input = new RandomMatrix(this.inputSize, 1, 0.08);
-  }
+  createInputMatrix() {}
 
   createOutputMatrix() {
     let model = this.model;
