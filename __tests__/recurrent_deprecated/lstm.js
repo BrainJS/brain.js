@@ -123,7 +123,7 @@ describe('lstm', () => {
     });
     it('can include the DataFormatter', () => {
       const net = new LSTM();
-      net.train(['hi mom!']);
+      net.train(['hi mom!'], { iterations: 100, log: true });
       const expected = net.run('hi ');
       const newNet = net.toFunction();
       const output = newNet('hi ');

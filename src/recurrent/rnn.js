@@ -593,21 +593,10 @@ class RNN {
 
         if (i === stateIndex) {
           let j = previousConnectionIndex(m);
-          switch (m) {
-            case state.left:
-              if (j > -1) {
-                return `typeof prevStates[${ j }] === 'object' ? prevStates[${ j }].product : new Matrix(${ m.rows }, ${ m.columns })`;
-              }
-              throw Error('unknown state');
-            case state.right:
-              if (j > -1) {
-                return `typeof prevStates[${ j }] === 'object' ? prevStates[${ j }].product : new Matrix(${ m.rows }, ${ m.columns })`;
-              }
-              throw Error('unknown state');
-            case state.product:
-              return `new Matrix(${ m.rows }, ${ m.columns })`;
-            default:
-              throw Error('unknown state');
+          if (j > -1 && (m === state.left || m === state.right)) {
+            return `typeof prevStates[${ j }] === 'object' ? prevStates[${ j }].product : new Matrix(${ m.rows }, ${ m.columns })`;
+          } else {
+            return `new Matrix(${m.rows}, ${m.columns})`;
           }
         }
 

@@ -583,7 +583,7 @@ describe('RNN', () => {
     });
     it('can include the DataFormatter', () => {
       const net = new RNN();
-      net.train(['hi mom!']);
+      net.train(['hi mom!'], { log: true });
       const expected = net.run('hi');
       const newNet = net.toFunction();
       expect(newNet('hi')).toBe(expected);
