@@ -41620,7 +41620,7 @@ function () {
     value: function fromArrayInputOutput(array, maxThreshold) {
       var dataFormatter = new DataFormatter(array.filter(function (v, i, a) {
         return a.indexOf(v) === i;
-      }).sort(), maxThreshold);
+      }), maxThreshold);
       dataFormatter.addInputOutput();
       return dataFormatter;
     }
@@ -42274,26 +42274,10 @@ function () {
           if (i === stateIndex) {
             var j = previousConnectionIndex(m);
 
-            switch (m) {
-              case state.left:
-                if (j > -1) {
-                  return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
-                }
-
-                throw Error('unknown state');
-
-              case state.right:
-                if (j > -1) {
-                  return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
-                }
-
-                throw Error('unknown state');
-
-              case state.product:
-                return "new Matrix(".concat(m.rows, ", ").concat(m.columns, ")");
-
-              default:
-                throw Error('unknown state');
+            if (j > -1 && (m === state.left || m === state.right)) {
+              return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
+            } else {
+              return "new Matrix(".concat(m.rows, ", ").concat(m.columns, ")");
             }
           }
 
@@ -42447,6 +42431,7 @@ RNN.defaults = {
         }
 
         this.dataFormatter = new DataFormatter(values);
+        this.dataFormatter.addUnrecognized();
       }
 
       for (var _i = 0, max = data.length; _i < max; _i++) {
