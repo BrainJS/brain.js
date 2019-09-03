@@ -165,7 +165,7 @@ class DataFormatter {
 
   static fromArrayInputOutput(array, maxThreshold) {
     const dataFormatter = new DataFormatter(
-      array.filter((v, i, a) => a.indexOf(v) === i).sort(),
+      array.filter((v, i, a) => a.indexOf(v) === i),
       maxThreshold
     );
     dataFormatter.addInputOutput();

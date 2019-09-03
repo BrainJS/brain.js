@@ -7,7 +7,7 @@ function notZero(v) {
 }
 
 describe('RNN', () => {
-  describe('constructor', () => {
+  describe('.constructor()', () => {
     it('does not initialize model', () => {
       const net = new RNN();
       expect(net.model).toBe(null);
@@ -35,7 +35,7 @@ describe('RNN', () => {
       });
     });
   });
-  describe('initialize', () => {
+  describe('.initialize()', () => {
     describe('when creating hidden layers', () => {
       beforeEach(() => {
         jest.spyOn(RNN.prototype, 'createHiddenLayers');
@@ -391,7 +391,7 @@ describe('RNN', () => {
   });
 
   describe('json', () => {
-    describe('.toJSON', () => {
+    describe('.toJSON()', () => {
       it('can export model as json', () => {
         let net = new RNN({
           inputSize: 6,
@@ -419,7 +419,7 @@ describe('RNN', () => {
       });
     });
 
-    describe('.fromJSON', () => {
+    describe('.fromJSON()', () => {
       it('can import model from json', () => {
         const inputSize = 6;
         const hiddenLayers = [10, 20];
@@ -517,7 +517,7 @@ describe('RNN', () => {
     });
   });
 
-  describe('rnn.trainPattern', () => {
+  describe('.trainPattern()', () => {
     it('changes the neural net when ran', () => {
       const net = new RNN({
         dataFormatter: new DataFormatter([0, 1]),
@@ -560,7 +560,8 @@ describe('RNN', () => {
       expect(output2.length).toBe(1);
     });
   });
-  describe('rnn.toFunction', () => {
+
+  describe('.toFunction()', () => {
     it('can output same as run method', () => {
       const dataFormatter = new DataFormatter(['h', 'i', ' ', 'm', 'o', '!']);
       let net = new RNN({
@@ -589,7 +590,7 @@ describe('RNN', () => {
     });
   });
 
-  describe('bindEquation', () => {
+  describe('.bindEquation()', () => {
     beforeEach(() => {
       jest.spyOn(RNN, 'getEquation');
     });
@@ -601,6 +602,69 @@ describe('RNN', () => {
       net.initialize();
       net.bindEquation();
       expect(RNN.getEquation).toBeCalled();
+    });
+  });
+
+  describe('.setupData()', () => {
+    describe('when working with array of strings', () => {
+      it('creates an appropraite DataFormatter', () => {
+        const net = new RNN();
+        const result = net.setupData([
+          'foo',
+          'bar',
+          'baz'
+        ]);
+        expect(result).toEqual([[0,1,1], [2,3,4], [2,3,5]]);
+        const { dataFormatter } = net;
+        expect(dataFormatter.characters).toEqual([
+          'f', 'o', 'b', 'a', 'r', 'z', 'unrecognized'
+        ]);
+      });
+    });
+    describe('when working with array of input & output strings', () => {
+      it('creates an appropraite DataFormatter', () => {
+        const net = new RNN();
+        const result = net.setupData([
+          { input: 'foo', output: 'bar' },
+          { input: 'bar', output: 'baz' },
+          { input: 'baz', output: 'foo' }
+        ]);
+        expect(result).toEqual([[0,1,1,6,7,2,3,4], [2,3,4,6,7,2,3,5], [2,3,5,6,7,0,1,1]]);
+        const { dataFormatter } = net;
+        expect(dataFormatter.characters).toEqual([
+          'f', 'o', 'b', 'a', 'r', 'z', 'stop-input', 'start-output', 'unrecognized'
+        ]);
+      });
+    });
+    describe('when working with array of tokens', () => {
+      it('creates an appropraite DataFormatter', () => {
+        const net = new RNN();
+        const result = net.setupData([
+          ['foo', 'bar', 'baz'],
+          ['bar', 'baz', 'foo'],
+          ['baz', 'foo', 'bar'],
+        ]);
+        expect(result).toEqual([[0,1,2], [1,2,0], [2,0,1]]);
+        const { dataFormatter } = net;
+        expect(dataFormatter.characters).toEqual([
+          'foo', 'bar', 'baz', 'unrecognized'
+        ]);
+      });
+    });
+    describe('when working with array of input & output tokens', () => {
+      it('creates an appropraite DataFormatter', () => {
+        const net = new RNN();
+        const result = net.setupData([
+          { input: ['foo', 'bar'], output: ['baz'] },
+          { input: ['bar', 'baz'], output: ['foo'] },
+          { input: ['baz', 'foo'], output: ['bar'] }
+        ]);
+        expect(result).toEqual([[0,1,3,4,2], [1,2,3,4,0], [2,0,3,4,1]]);
+        const { dataFormatter } = net;
+        expect(dataFormatter.characters).toEqual([
+          'foo', 'bar', 'baz', 'stop-input', 'start-output', 'unrecognized'
+        ]);
+      });
     });
   });
 });
