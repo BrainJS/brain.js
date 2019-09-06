@@ -446,7 +446,6 @@ class NeuralNetworkGPU extends NeuralNetwork {
 
     return {
       data: data.map(set => ({
-        size: set.size,
         input: this.texturizeInputData(set.input),
         output: texturizeOutputData(set.output),
       })),
