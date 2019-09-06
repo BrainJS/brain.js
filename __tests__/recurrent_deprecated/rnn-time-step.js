@@ -153,13 +153,26 @@ describe('RNNTimeStep', () => {
       });
     });
     describe('when this.inputSize > 1', () => {
-      it('calls this.runArrays and sets this.run as it for next use', () => {
-        const net = new RNNTimeStep({ inputSize: 2 });
-        net.model = {equations: [null]};
-        const stub = net.runArrays = jest.fn();
-        net.run();
-        expect(stub).toBeCalled();
-        expect(net.run).toBe(stub);
+      describe('when this.outputLookup is truthy', () => {
+        it('calls this.runArrays and sets this.run as it for next use', () => {
+          const net = new RNNTimeStep({ inputSize: 2 });
+          net.outputLookup = {};
+          net.model = {equations: [null]};
+          const stub = net.runObjects = jest.fn();
+          net.run();
+          expect(stub).toBeCalled();
+          expect(net.run).toBe(stub);
+        });
+      });
+      describe('when this.outputLookup is falsey', () => {
+        it('calls this.runArrays and sets this.run as it for next use', () => {
+          const net = new RNNTimeStep({ inputSize: 2 });
+          net.model = {equations: [null]};
+          const stub = net.runArrays = jest.fn();
+          net.run();
+          expect(stub).toBeCalled();
+          expect(net.run).toBe(stub);
+        });
       });
     });
   });
@@ -2063,6 +2076,22 @@ describe('RNNTimeStep', () => {
       expect(fn({ monday: .1, tuesday: .2, wednesday: .3, thursday: .4 }).friday).toBe(closeToFive.friday);
       expect(fn({ monday: .5, tuesday: .4, wednesday: .3, thursday: .2 }).friday).toBe(closeToOne.friday);
     });
+    it('handles array,object to array,object with lookup tables being same w/ inputSize of 1', () => {
+      const inputSize = 1;
+      const hiddenLayers = [10];
+      const outputSize = 1;
+      const net = new RNNTimeStep({
+        inputSize,
+        hiddenLayers,
+        outputSize
+      });
+      net.train([{ monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 }]);
+      const fn = net.toFunction();
+      const result = fn({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
+      expect(result).toEqual(net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 }));
+      expect(Object.keys(result).length).toBe(1);
+      expect(result.friday.toFixed(0)).toBe('5');
+    });
   });
   describe('.test()', () => {
     describe('using array,array', () => {
@@ -2866,19 +2895,31 @@ describe('RNNTimeStep', () => {
   describe('.toJSON()', () => {
     it('saves network dimensions to json', () => {
       const inputSize = 4;
-      const hiddenLayers = [1,2,3];
+      const hiddenLayers = [1, 2, 3];
       const outputSize = 5;
       const net = new RNNTimeStep({
         inputSize,
         hiddenLayers,
         outputSize
       });
+      const {
+        inputLookup,
+        inputLookupLength,
+        outputLookup,
+        outputLookupLength
+      } = net;
       net.initialize();
       const json = net.toJSON();
       expect(json.options.inputSize).toBe(inputSize);
       expect(json.options.hiddenLayers).toEqual(hiddenLayers);
       expect(json.options.outputSize).toBe(outputSize);
+      expect(json.inputLookup).toBe(inputLookup);
+      expect(json.inputLookupLength).toBe(inputLookupLength);
+      expect(json.outputLookup).toBe(outputLookup);
+      expect(json.outputLookupLength).toBe(outputLookupLength);
     });
+  });
+  describe('.fromJSON()', () => {
     it('restores network dimensions from json', () => {
       const inputSize = 45;
       const hiddenLayers = [1,2,3,4,5,6,7,8,9];
@@ -2890,27 +2931,21 @@ describe('RNNTimeStep', () => {
       });
       net.initialize();
       const json = net.toJSON();
+      const {
+        inputLookup,
+        inputLookupLength,
+        outputLookup,
+        outputLookupLength
+      } = json;
       const serializedNet = new RNNTimeStep();
       serializedNet.fromJSON(json);
       expect(serializedNet.inputSize).toBe(inputSize);
       expect(serializedNet.hiddenLayers).toEqual(hiddenLayers);
       expect(serializedNet.outputSize).toBe(outputSize);
-    });
-    it('handles array,object to array,object with lookup tables being same w/ inputSize of 1', () => {
-      const inputSize = 1;
-      const hiddenLayers = [10];
-      const outputSize = 1;
-      const net = new RNNTimeStep({
-        inputSize,
-        hiddenLayers,
-        outputSize
-      });
-      net.train([{ monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 }]);
-      const fn = net.toFunction();
-      const result = fn({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
-      expect(result).toEqual(net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 }));
-      expect(Object.keys(result).length).toBe(1);
-      expect(result.friday.toFixed(0)).toBe('5');
+      expect(serializedNet.inputLookup).toBe(inputLookup);
+      expect(serializedNet.inputLookupLength).toBe(inputLookupLength);
+      expect(serializedNet.outputLookup).toBe(outputLookup);
+      expect(serializedNet.outputLookupLength).toBe(outputLookupLength);
     });
     it('error rate stays same after serialization', () => {
       const inputSize = 1;

@@ -106,6 +106,10 @@ class RNNTimeStep extends RNN {
       this.run = this.runNumbers;
       return this.runNumbers(rawInput);
     }
+    if (this.outputLookup) {
+      this.run = this.runObjects;
+      return this.runObjects(rawInput);
+    }
     this.run = this.runArrays;
     return this.runArrays(rawInput);
   }
@@ -284,13 +288,27 @@ class RNNTimeStep extends RNN {
   runObject(input) {
     if (this.inputLookup === this.outputLookup) {
       const inputArray = lookup.toArrayShort(this.inputLookup, input);
-      return lookup.toObjectPartial(this.outputLookup, this.forecastNumbers(inputArray, this.outputLookupLength - inputArray.length), inputArray.length);
+      return lookup.toObjectPartial(
+        this.outputLookup,
+        this.forecastNumbers(inputArray, this.outputLookupLength - inputArray.length),
+        inputArray.length);
     }
-    return lookup.toObject(this.outputLookup, this.forecastNumbers(lookup.toArray(this.inputLookup, input, this.inputLookupLength), this.outputLookupLength));
+    return lookup.toObject(
+      this.outputLookup,
+      this.forecastNumbers(
+        lookup.toArray(this.inputLookup, input, this.inputLookupLength),
+        this.outputLookupLength
+      )
+    );
+  }
+
+  runObjects(input) {
+    input = input.map(value => lookup.toArray(this.inputLookup, value, this.inputLookupLength));
+    return this.forecastArrays(input, 1).map(value => lookup.toObject(this.outputLookup, value))[0];
   }
 
   forecastObjects(input, count) {
-    input = input.map(value => lookup.toArray(this.outputLookup, value, this.outputLookupLength));
+    input = input.map(value => lookup.toArray(this.inputLookup, value, this.inputLookupLength));
     return this.forecastArrays(input, count).map(value => lookup.toObject(this.outputLookup, value));
   }
 
@@ -833,7 +851,11 @@ class RNNTimeStep extends RNN {
         return layers;
       }),
       outputConnector: this.model.outputConnector.toJSON(),
-      output: this.model.output.toJSON()
+      output: this.model.output.toJSON(),
+      inputLookup: this.inputLookup,
+      inputLookupLength: this.inputLookupLength,
+      outputLookup: this.outputLookup,
+      outputLookupLength: this.outputLookupLength,
     };
   }
 
@@ -866,6 +888,11 @@ class RNNTimeStep extends RNN {
     if (options.hiddenSizes) {
       this.hiddenLayers = options.hiddenSizes;
     }
+
+    this.inputLookup = json.inputLookup;
+    this.inputLookupLength = json.inputLookupLength;
+    this.outputLookup = json.outputLookup;
+    this.outputLookupLength = json.outputLookupLength;
 
     this.model = {
       hiddenLayers,

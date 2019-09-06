@@ -37983,16 +37983,21 @@ function () {
       var output = null;
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var weights = this.weights[layer][node];
-          var sum = this.biases[layer][node];
+        var activeLayer = this.sizes[layer];
+        var activeWeights = this.weights[layer];
+        var activeBiases = this.biases[layer];
+        var activeOutputs = this.outputs[layer];
+
+        for (var node = 0; node < activeLayer; node++) {
+          var weights = activeWeights[node];
+          var sum = activeBiases[node];
 
           for (var k = 0; k < weights.length; k++) {
             sum += weights[k] * input[k];
           } //sigmoid
 
 
-          this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
+          activeOutputs[node] = 1 / (1 + Math.exp(-sum));
         }
 
         output = input = this.outputs[layer];
@@ -38008,19 +38013,24 @@ function () {
       var output = null;
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var weights = this.weights[layer][node];
-          var sum = this.biases[layer][node];
+        var currentSize = this.sizes[layer];
+        var currentWeights = this.weights[layer];
+        var currentBiases = this.biases[layer];
+        var currentOutputs = this.outputs[layer];
+
+        for (var node = 0; node < currentSize; node++) {
+          var weights = currentWeights[node];
+          var sum = currentBiases[node];
 
           for (var k = 0; k < weights.length; k++) {
             sum += weights[k] * input[k];
           } //relu
 
 
-          this.outputs[layer][node] = sum < 0 ? 0 : sum;
+          currentOutputs[node] = sum < 0 ? 0 : sum;
         }
 
-        output = input = this.outputs[layer];
+        output = input = currentOutputs;
       }
 
       return output;
@@ -38034,19 +38044,24 @@ function () {
       var output = null;
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var weights = this.weights[layer][node];
-          var sum = this.biases[layer][node];
+        var currentSize = this.sizes[layer];
+        var currentWeights = this.weights[layer];
+        var currentBiases = this.biases[layer];
+        var currentOutputs = this.outputs[layer];
+
+        for (var node = 0; node < currentSize; node++) {
+          var weights = currentWeights[node];
+          var sum = currentBiases[node];
 
           for (var k = 0; k < weights.length; k++) {
             sum += weights[k] * input[k];
           } //leaky relu
 
 
-          this.outputs[layer][node] = sum < 0 ? 0 : alpha * sum;
+          currentOutputs[node] = sum < 0 ? 0 : alpha * sum;
         }
 
-        output = input = this.outputs[layer];
+        output = input = currentOutputs;
       }
 
       return output;
@@ -38059,19 +38074,24 @@ function () {
       var output = null;
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var weights = this.weights[layer][node];
-          var sum = this.biases[layer][node];
+        var currentSize = this.sizes[layer];
+        var currentWeights = this.weights[layer];
+        var currentBiases = this.biases[layer];
+        var currentOutputs = this.outputs[layer];
+
+        for (var node = 0; node < currentSize; node++) {
+          var weights = currentWeights[node];
+          var sum = currentBiases[node];
 
           for (var k = 0; k < weights.length; k++) {
             sum += weights[k] * input[k];
           } //tanh
 
 
-          this.outputs[layer][node] = Math.tanh(sum);
+          currentOutputs[node] = Math.tanh(sum);
         }
 
-        output = input = this.outputs[layer];
+        output = input = currentOutputs;
       }
 
       return output;
@@ -38250,15 +38270,23 @@ function () {
   }, {
     key: "trainingTick",
     value: function trainingTick(data, status, endTime) {
-      if (status.iterations >= this.trainOpts.iterations || status.error <= this.trainOpts.errorThresh || Date.now() >= endTime) {
+      var _this$trainOpts = this.trainOpts,
+          callback = _this$trainOpts.callback,
+          callbackPeriod = _this$trainOpts.callbackPeriod,
+          errorThresh = _this$trainOpts.errorThresh,
+          iterations = _this$trainOpts.iterations,
+          log = _this$trainOpts.log,
+          logPeriod = _this$trainOpts.logPeriod;
+
+      if (status.iterations >= iterations || status.error <= errorThresh || Date.now() >= endTime) {
         return false;
       }
 
       status.iterations++;
 
-      if (this.trainOpts.log && status.iterations % this.trainOpts.logPeriod === 0) {
+      if (log && status.iterations % logPeriod === 0) {
         status.error = this.calculateTrainingError(data);
-        this.trainOpts.log("iterations: ".concat(status.iterations, ", training error: ").concat(status.error));
+        log("iterations: ".concat(status.iterations, ", training error: ").concat(status.error));
       } else {
         if (status.iterations % this.errorCheckInterval === 0) {
           status.error = this.calculateTrainingError(data);
@@ -38267,8 +38295,8 @@ function () {
         }
       }
 
-      if (this.trainOpts.callback && status.iterations % this.trainOpts.callbackPeriod === 0) {
-        this.trainOpts.callback({
+      if (callback && status.iterations % callbackPeriod === 0) {
+        callback({
           iterations: status.iterations,
           error: status.error
         });
@@ -38398,8 +38426,14 @@ function () {
     key: "_calculateDeltasSigmoid",
     value: function _calculateDeltasSigmoid(target) {
       for (var layer = this.outputLayer; layer >= 0; layer--) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var output = this.outputs[layer][node];
+        var activeSize = this.sizes[layer];
+        var activeOutput = this.outputs[layer];
+        var activeError = this.errors[layer];
+        var activeDeltas = this.deltas[layer];
+        var nextLayer = this.weights[layer + 1];
+
+        for (var node = 0; node < activeSize; node++) {
+          var output = activeOutput[node];
           var error = 0;
 
           if (layer === this.outputLayer) {
@@ -38408,12 +38442,12 @@ function () {
             var deltas = this.deltas[layer + 1];
 
             for (var k = 0; k < deltas.length; k++) {
-              error += deltas[k] * this.weights[layer + 1][k][node];
+              error += deltas[k] * nextLayer[k][node];
             }
           }
 
-          this.errors[layer][node] = error;
-          this.deltas[layer][node] = error * output * (1 - output);
+          activeError[node] = error;
+          activeDeltas[node] = error * output * (1 - output);
         }
       }
     }
@@ -38426,22 +38460,27 @@ function () {
     key: "_calculateDeltasRelu",
     value: function _calculateDeltasRelu(target) {
       for (var layer = this.outputLayer; layer >= 0; layer--) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var output = this.outputs[layer][node];
+        var currentSize = this.sizes[layer];
+        var currentOutputs = this.outputs[layer];
+        var nextWeights = this.weights[layer + 1];
+        var nextDeltas = this.deltas[layer + 1];
+        var currentErrors = this.errors[layer];
+        var currentDeltas = this.deltas[layer];
+
+        for (var node = 0; node < currentSize; node++) {
+          var output = currentOutputs[node];
           var error = 0;
 
           if (layer === this.outputLayer) {
             error = target[node] - output;
           } else {
-            var deltas = this.deltas[layer + 1];
-
-            for (var k = 0; k < deltas.length; k++) {
-              error += deltas[k] * this.weights[layer + 1][k][node];
+            for (var k = 0; k < nextDeltas.length; k++) {
+              error += nextDeltas[k] * nextWeights[k][node];
             }
           }
 
-          this.errors[layer][node] = error;
-          this.deltas[layer][node] = output > 0 ? error : 0;
+          currentErrors[node] = error;
+          currentDeltas[node] = output > 0 ? error : 0;
         }
       }
     }
@@ -38456,22 +38495,27 @@ function () {
       var alpha = this.leakyReluAlpha;
 
       for (var layer = this.outputLayer; layer >= 0; layer--) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var output = this.outputs[layer][node];
+        var currentSize = this.sizes[layer];
+        var currentOutputs = this.outputs[layer];
+        var nextDeltas = this.deltas[layer + 1];
+        var nextWeights = this.weights[layer + 1];
+        var currentErrors = this.errors[layer];
+        var currentDeltas = this.deltas[layer];
+
+        for (var node = 0; node < currentSize; node++) {
+          var output = currentOutputs[node];
           var error = 0;
 
           if (layer === this.outputLayer) {
             error = target[node] - output;
           } else {
-            var deltas = this.deltas[layer + 1];
-
-            for (var k = 0; k < deltas.length; k++) {
-              error += deltas[k] * this.weights[layer + 1][k][node];
+            for (var k = 0; k < nextDeltas.length; k++) {
+              error += nextDeltas[k] * nextWeights[k][node];
             }
           }
 
-          this.errors[layer][node] = error;
-          this.deltas[layer][node] = output > 0 ? error : alpha * error;
+          currentErrors[node] = error;
+          currentDeltas[node] = output > 0 ? error : alpha * error;
         }
       }
     }
@@ -38484,22 +38528,27 @@ function () {
     key: "_calculateDeltasTanh",
     value: function _calculateDeltasTanh(target) {
       for (var layer = this.outputLayer; layer >= 0; layer--) {
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var output = this.outputs[layer][node];
+        var currentSize = this.sizes[layer];
+        var currentOutputs = this.outputs[layer];
+        var nextDeltas = this.deltas[layer + 1];
+        var nextWeights = this.weights[layer + 1];
+        var currentErrors = this.errors[layer];
+        var currentDeltas = this.deltas[layer];
+
+        for (var node = 0; node < currentSize; node++) {
+          var output = currentOutputs[node];
           var error = 0;
 
           if (layer === this.outputLayer) {
             error = target[node] - output;
           } else {
-            var deltas = this.deltas[layer + 1];
-
-            for (var k = 0; k < deltas.length; k++) {
-              error += deltas[k] * this.weights[layer + 1][k][node];
+            for (var k = 0; k < nextDeltas.length; k++) {
+              error += nextDeltas[k] * nextWeights[k][node];
             }
           }
 
-          this.errors[layer][node] = error;
-          this.deltas[layer][node] = (1 - output * output) * error;
+          currentErrors[node] = error;
+          currentDeltas[node] = (1 - output * output) * error;
         }
       }
     }
@@ -38511,20 +38560,29 @@ function () {
   }, {
     key: "adjustWeights",
     value: function adjustWeights() {
+      var _this$trainOpts2 = this.trainOpts,
+          learningRate = _this$trainOpts2.learningRate,
+          momentum = _this$trainOpts2.momentum;
+
       for (var layer = 1; layer <= this.outputLayer; layer++) {
         var incoming = this.outputs[layer - 1];
+        var activeSize = this.sizes[layer];
+        var activeDelta = this.deltas[layer];
+        var activeChanges = this.changes[layer];
+        var activeWeights = this.weights[layer];
+        var activeBiases = this.biases[layer];
 
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var delta = this.deltas[layer][node];
+        for (var node = 0; node < activeSize; node++) {
+          var delta = activeDelta[node];
 
           for (var k = 0; k < incoming.length; k++) {
-            var change = this.changes[layer][node][k];
-            change = this.trainOpts.learningRate * delta * incoming[k] + this.trainOpts.momentum * change;
-            this.changes[layer][node][k] = change;
-            this.weights[layer][node][k] += change;
+            var change = activeChanges[node][k];
+            change = learningRate * delta * incoming[k] + momentum * change;
+            activeChanges[node][k] = change;
+            activeWeights[node][k] += change;
           }
 
-          this.biases[layer][node] += this.trainOpts.learningRate * delta;
+          activeBiases[node] += learningRate * delta;
         }
       }
     }
@@ -38559,34 +38617,47 @@ function () {
   }, {
     key: "_adjustWeightsAdam",
     value: function _adjustWeightsAdam() {
-      var trainOpts = this.trainOpts;
       this.iterations++;
+      var iterations = this.iterations;
+      var _this$trainOpts3 = this.trainOpts,
+          beta1 = _this$trainOpts3.beta1,
+          beta2 = _this$trainOpts3.beta2,
+          epsilon = _this$trainOpts3.epsilon,
+          learningRate = _this$trainOpts3.learningRate;
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
         var incoming = this.outputs[layer - 1];
+        var currentSize = this.sizes[layer];
+        var currentDeltas = this.deltas[layer];
+        var currentChangesLow = this.changesLow[layer];
+        var currentChangesHigh = this.changesHigh[layer];
+        var currentWeights = this.weights[layer];
+        var currentBiases = this.biases[layer];
+        var currentBiasChangesLow = this.biasChangesLow[layer];
+        var currentBiasChangesHigh = this.biasChangesHigh[layer];
 
-        for (var node = 0; node < this.sizes[layer]; node++) {
-          var delta = this.deltas[layer][node];
+        for (var node = 0; node < currentSize; node++) {
+          var delta = currentDeltas[node];
 
           for (var k = 0; k < incoming.length; k++) {
             var gradient = delta * incoming[k];
-            var changeLow = this.changesLow[layer][node][k] * trainOpts.beta1 + (1 - trainOpts.beta1) * gradient;
-            var changeHigh = this.changesHigh[layer][node][k] * trainOpts.beta2 + (1 - trainOpts.beta2) * gradient * gradient;
-            var momentumCorrection = changeLow / (1 - Math.pow(trainOpts.beta1, this.iterations));
-            var gradientCorrection = changeHigh / (1 - Math.pow(trainOpts.beta2, this.iterations));
-            this.changesLow[layer][node][k] = changeLow;
-            this.changesHigh[layer][node][k] = changeHigh;
-            this.weights[layer][node][k] += this.trainOpts.learningRate * momentumCorrection / (Math.sqrt(gradientCorrection) + trainOpts.epsilon);
+            var changeLow = currentChangesLow[node][k] * beta1 + (1 - beta1) * gradient;
+            var changeHigh = currentChangesHigh[node][k] * beta2 + (1 - beta2) * gradient * gradient;
+            var momentumCorrection = changeLow / (1 - Math.pow(beta1, iterations));
+            var gradientCorrection = changeHigh / (1 - Math.pow(beta2, iterations));
+            currentChangesLow[node][k] = changeLow;
+            currentChangesHigh[node][k] = changeHigh;
+            currentWeights[node][k] += learningRate * momentumCorrection / (Math.sqrt(gradientCorrection) + epsilon);
           }
 
-          var biasGradient = this.deltas[layer][node];
-          var biasChangeLow = this.biasChangesLow[layer][node] * trainOpts.beta1 + (1 - trainOpts.beta1) * biasGradient;
-          var biasChangeHigh = this.biasChangesHigh[layer][node] * trainOpts.beta2 + (1 - trainOpts.beta2) * biasGradient * biasGradient;
-          var biasMomentumCorrection = this.biasChangesLow[layer][node] / (1 - Math.pow(trainOpts.beta1, this.iterations));
-          var biasGradientCorrection = this.biasChangesHigh[layer][node] / (1 - Math.pow(trainOpts.beta2, this.iterations));
-          this.biasChangesLow[layer][node] = biasChangeLow;
-          this.biasChangesHigh[layer][node] = biasChangeHigh;
-          this.biases[layer][node] += trainOpts.learningRate * biasMomentumCorrection / (Math.sqrt(biasGradientCorrection) + trainOpts.epsilon);
+          var biasGradient = currentDeltas[node];
+          var biasChangeLow = currentBiasChangesLow[node] * beta1 + (1 - beta1) * biasGradient;
+          var biasChangeHigh = currentBiasChangesHigh[node] * beta2 + (1 - beta2) * biasGradient * biasGradient;
+          var biasMomentumCorrection = currentBiasChangesLow[node] / (1 - Math.pow(beta1, iterations));
+          var biasGradientCorrection = currentBiasChangesHigh[node] / (1 - Math.pow(beta2, iterations));
+          currentBiasChangesLow[node] = biasChangeLow;
+          currentBiasChangesHigh[node] = biasChangeHigh;
+          currentBiases[node] += learningRate * biasMomentumCorrection / (Math.sqrt(biasGradientCorrection) + epsilon);
         }
       }
     }
@@ -39533,7 +39604,6 @@ function (_NeuralNetwork) {
       return {
         data: data.map(function (set) {
           return {
-            size: set.size,
             input: _this2.texturizeInputData(set.input),
             output: texturizeOutputData(set.output)
           };
@@ -42673,6 +42743,11 @@ function (_RNN) {
         return this.runNumbers(rawInput);
       }
 
+      if (this.outputLookup) {
+        this.run = this.runObjects;
+        return this.runObjects(rawInput);
+      }
+
       this.run = this.runArrays;
       return this.runArrays(rawInput);
     }
@@ -42898,15 +42973,27 @@ function (_RNN) {
       return lookup.toObject(this.outputLookup, this.forecastNumbers(lookup.toArray(this.inputLookup, input, this.inputLookupLength), this.outputLookupLength));
     }
   }, {
-    key: "forecastObjects",
-    value: function forecastObjects(input, count) {
+    key: "runObjects",
+    value: function runObjects(input) {
       var _this = this;
 
       input = input.map(function (value) {
-        return lookup.toArray(_this.outputLookup, value, _this.outputLookupLength);
+        return lookup.toArray(_this.inputLookup, value, _this.inputLookupLength);
+      });
+      return this.forecastArrays(input, 1).map(function (value) {
+        return lookup.toObject(_this.outputLookup, value);
+      })[0];
+    }
+  }, {
+    key: "forecastObjects",
+    value: function forecastObjects(input, count) {
+      var _this2 = this;
+
+      input = input.map(function (value) {
+        return lookup.toArray(_this2.inputLookup, value, _this2.inputLookupLength);
       });
       return this.forecastArrays(input, count).map(function (value) {
-        return lookup.toObject(_this.outputLookup, value);
+        return lookup.toObject(_this2.outputLookup, value);
       });
     }
   }, {
@@ -43627,7 +43714,11 @@ function (_RNN) {
           return layers;
         }),
         outputConnector: this.model.outputConnector.toJSON(),
-        output: this.model.output.toJSON()
+        output: this.model.output.toJSON(),
+        inputLookup: this.inputLookup,
+        inputLookupLength: this.inputLookupLength,
+        outputLookup: this.outputLookup,
+        outputLookupLength: this.outputLookupLength
       };
     }
   }, {
@@ -43660,6 +43751,10 @@ function (_RNN) {
         this.hiddenLayers = options.hiddenSizes;
       }
 
+      this.inputLookup = json.inputLookup;
+      this.inputLookupLength = json.inputLookupLength;
+      this.outputLookup = json.outputLookup;
+      this.outputLookupLength = json.outputLookupLength;
       this.model = {
         hiddenLayers: hiddenLayers,
         output: output,
