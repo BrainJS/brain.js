@@ -203,15 +203,19 @@ class NeuralNetwork {
 
     let output = null;
     for (let layer = 1; layer <= this.outputLayer; layer++) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let weights = this.weights[layer][node];
+      const activeLayer = this.sizes[layer];
+      const activeWeights = this.weights[layer];
+      const activeBiases = this.biases[layer];
+      const activeOutputs = this.outputs[layer];
+      for (let node = 0; node < activeLayer; node++) {
+        let weights = activeWeights[node];
 
-        let sum = this.biases[layer][node];
+        let sum = activeBiases[node];
         for (let k = 0; k < weights.length; k++) {
           sum += weights[k] * input[k];
         }
         //sigmoid
-        this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
+        activeOutputs[node] = 1 / (1 + Math.exp(-sum));
       }
       output = input = this.outputs[layer];
     }
@@ -223,17 +227,21 @@ class NeuralNetwork {
 
     let output = null;
     for (let layer = 1; layer <= this.outputLayer; layer++) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let weights = this.weights[layer][node];
+      const currentSize = this.sizes[layer];
+      const currentWeights = this.weights[layer];
+      const currentBiases = this.biases[layer];
+      const currentOutputs = this.outputs[layer];
+      for (let node = 0; node < currentSize; node++) {
+        let weights = currentWeights[node];
 
-        let sum = this.biases[layer][node];
+        let sum = currentBiases[node];
         for (let k = 0; k < weights.length; k++) {
           sum += weights[k] * input[k];
         }
         //relu
-        this.outputs[layer][node] = (sum < 0 ? 0 : sum);
+        currentOutputs[node] = (sum < 0 ? 0 : sum);
       }
-      output = input = this.outputs[layer];
+      output = input = currentOutputs;
     }
     return output;
   }
@@ -243,17 +251,21 @@ class NeuralNetwork {
     let alpha = this.leakyReluAlpha;
     let output = null;
     for (let layer = 1; layer <= this.outputLayer; layer++) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let weights = this.weights[layer][node];
+      const currentSize = this.sizes[layer];
+      const currentWeights = this.weights[layer];
+      const currentBiases = this.biases[layer];
+      const currentOutputs = this.outputs[layer];
+      for (let node = 0; node < currentSize; node++) {
+        let weights = currentWeights[node];
 
-        let sum = this.biases[layer][node];
+        let sum = currentBiases[node];
         for (let k = 0; k < weights.length; k++) {
           sum += weights[k] * input[k];
         }
         //leaky relu
-        this.outputs[layer][node] = (sum < 0 ? 0 : alpha * sum);
+        currentOutputs[node] = (sum < 0 ? 0 : alpha * sum);
       }
-      output = input = this.outputs[layer];
+      output = input = currentOutputs;
     }
     return output;
   }
@@ -263,17 +275,21 @@ class NeuralNetwork {
 
     let output = null;
     for (let layer = 1; layer <= this.outputLayer; layer++) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let weights = this.weights[layer][node];
+      const currentSize = this.sizes[layer];
+      const currentWeights = this.weights[layer];
+      const currentBiases = this.biases[layer];
+      const currentOutputs = this.outputs[layer];
+      for (let node = 0; node < currentSize; node++) {
+        let weights = currentWeights[node];
 
-        let sum = this.biases[layer][node];
+        let sum = currentBiases[node];
         for (let k = 0; k < weights.length; k++) {
           sum += weights[k] * input[k];
         }
         //tanh
-        this.outputs[layer][node] = Math.tanh(sum);
+        currentOutputs[node] = Math.tanh(sum);
       }
-      output = input = this.outputs[layer];
+      output = input = currentOutputs;
     }
     return output;
   }
@@ -410,15 +426,24 @@ class NeuralNetwork {
    * @param endTime
    */
   trainingTick(data, status, endTime) {
-    if (status.iterations >= this.trainOpts.iterations || status.error <= this.trainOpts.errorThresh || Date.now() >= endTime) {
+    const {
+      callback,
+      callbackPeriod,
+      errorThresh,
+      iterations,
+      log,
+      logPeriod,
+    } = this.trainOpts;
+
+    if (status.iterations >= iterations || status.error <= errorThresh || Date.now() >= endTime) {
       return false;
     }
 
     status.iterations++;
 
-    if (this.trainOpts.log && (status.iterations % this.trainOpts.logPeriod === 0)) {
+    if (log && (status.iterations % logPeriod === 0)) {
       status.error = this.calculateTrainingError(data);
-      this.trainOpts.log(`iterations: ${status.iterations}, training error: ${status.error}`);
+      log(`iterations: ${status.iterations}, training error: ${status.error}`);
     } else {
       if (status.iterations % this.errorCheckInterval === 0) {
         status.error = this.calculateTrainingError(data);
@@ -427,8 +452,8 @@ class NeuralNetwork {
       }
     }
 
-    if (this.trainOpts.callback && (status.iterations % this.trainOpts.callbackPeriod === 0)) {
-      this.trainOpts.callback({
+    if (callback && (status.iterations % callbackPeriod === 0)) {
+      callback({
         iterations: status.iterations,
         error: status.error
       });
@@ -528,8 +553,14 @@ class NeuralNetwork {
    */
   _calculateDeltasSigmoid(target) {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let output = this.outputs[layer][node];
+      const activeSize = this.sizes[layer];
+      const activeOutput = this.outputs[layer];
+      const activeError = this.errors[layer];
+      const activeDeltas = this.deltas[layer];
+      const nextLayer = this.weights[layer + 1];
+
+      for (let node = 0; node < activeSize; node++) {
+        let output = activeOutput[node];
 
         let error = 0;
         if (layer === this.outputLayer) {
@@ -538,11 +569,11 @@ class NeuralNetwork {
         else {
           let deltas = this.deltas[layer + 1];
           for (let k = 0; k < deltas.length; k++) {
-            error += deltas[k] * this.weights[layer + 1][k][node];
+            error += deltas[k] * nextLayer[k][node];
           }
         }
-        this.errors[layer][node] = error;
-        this.deltas[layer][node] = error * output * (1 - output);
+        activeError[node] = error;
+        activeDeltas[node] = error * output * (1 - output);
       }
     }
   }
@@ -553,21 +584,27 @@ class NeuralNetwork {
    */
   _calculateDeltasRelu(target) {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let output = this.outputs[layer][node];
+      const currentSize = this.sizes[layer];
+      const currentOutputs = this.outputs[layer];
+      const nextWeights = this.weights[layer + 1];
+      const nextDeltas = this.deltas[layer + 1];
+      const currentErrors = this.errors[layer];
+      const currentDeltas = this.deltas[layer];
+
+      for (let node = 0; node < currentSize; node++) {
+        let output = currentOutputs[node];
 
         let error = 0;
         if (layer === this.outputLayer) {
           error = target[node] - output;
         }
         else {
-          let deltas = this.deltas[layer + 1];
-          for (let k = 0; k < deltas.length; k++) {
-            error += deltas[k] * this.weights[layer + 1][k][node];
+          for (let k = 0; k < nextDeltas.length; k++) {
+            error += nextDeltas[k] * nextWeights[k][node];
           }
         }
-        this.errors[layer][node] = error;
-        this.deltas[layer][node] = output > 0 ? error : 0;
+        currentErrors[node] = error;
+        currentDeltas[node] = output > 0 ? error : 0;
       }
     }
   }
@@ -579,21 +616,27 @@ class NeuralNetwork {
   _calculateDeltasLeakyRelu(target) {
     let alpha = this.leakyReluAlpha;
     for (let layer = this.outputLayer; layer >= 0; layer--) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let output = this.outputs[layer][node];
+      const currentSize = this.sizes[layer];
+      const currentOutputs = this.outputs[layer];
+      const nextDeltas = this.deltas[layer + 1];
+      const nextWeights = this.weights[layer + 1];
+      const currentErrors = this.errors[layer];
+      const currentDeltas = this.deltas[layer];
+
+      for (let node = 0; node < currentSize; node++) {
+        let output = currentOutputs[node];
 
         let error = 0;
         if (layer === this.outputLayer) {
           error = target[node] - output;
         }
         else {
-          let deltas = this.deltas[layer + 1];
-          for (let k = 0; k < deltas.length; k++) {
-            error += deltas[k] * this.weights[layer + 1][k][node];
+          for (let k = 0; k < nextDeltas.length; k++) {
+            error += nextDeltas[k] * nextWeights[k][node];
           }
         }
-        this.errors[layer][node] = error;
-        this.deltas[layer][node] = output > 0 ? error : alpha * error;
+        currentErrors[node] = error;
+        currentDeltas[node] = output > 0 ? error : alpha * error;
       }
     }
   }
@@ -604,21 +647,27 @@ class NeuralNetwork {
    */
   _calculateDeltasTanh(target) {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let output = this.outputs[layer][node];
+      const currentSize = this.sizes[layer];
+      const currentOutputs = this.outputs[layer];
+      const nextDeltas = this.deltas[layer + 1];
+      const nextWeights = this.weights[layer + 1];
+      const currentErrors = this.errors[layer];
+      const currentDeltas = this.deltas[layer];
+
+      for (let node = 0; node < currentSize; node++) {
+        let output = currentOutputs[node];
 
         let error = 0;
         if (layer === this.outputLayer) {
           error = target[node] - output;
         }
         else {
-          let deltas = this.deltas[layer + 1];
-          for (let k = 0; k < deltas.length; k++) {
-            error += deltas[k] * this.weights[layer + 1][k][node];
+          for (let k = 0; k < nextDeltas.length; k++) {
+            error += nextDeltas[k] * nextWeights[k][node];
           }
         }
-        this.errors[layer][node] = error;
-        this.deltas[layer][node] = (1 - output * output) * error;
+        currentErrors[node] = error;
+        currentDeltas[node] = (1 - output * output) * error;
       }
     }
   }
@@ -628,22 +677,28 @@ class NeuralNetwork {
    * Changes weights of networks
    */
   adjustWeights() {
+    const { learningRate, momentum } = this.trainOpts;
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       let incoming = this.outputs[layer - 1];
+      const activeSize = this.sizes[layer];
+      const activeDelta = this.deltas[layer];
+      const activeChanges = this.changes[layer];
+      const activeWeights = this.weights[layer];
+      const activeBiases = this.biases[layer];
 
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        let delta = this.deltas[layer][node];
+      for (let node = 0; node < activeSize; node++) {
+        let delta = activeDelta[node];
 
         for (let k = 0; k < incoming.length; k++) {
-          let change = this.changes[layer][node][k];
+          let change = activeChanges[node][k];
 
-          change = (this.trainOpts.learningRate * delta * incoming[k])
-            + (this.trainOpts.momentum * change);
+          change = (learningRate * delta * incoming[k])
+            + (momentum * change);
 
-          this.changes[layer][node][k] = change;
-          this.weights[layer][node][k] += change;
+          activeChanges[node][k] = change;
+          activeWeights[node][k] += change;
         }
-        this.biases[layer][node] += this.trainOpts.learningRate * delta;
+        activeBiases[node] += learningRate * delta;
       }
     }
   }
@@ -675,38 +730,53 @@ class NeuralNetwork {
   }
 
   _adjustWeightsAdam() {
-    const trainOpts = this.trainOpts;
     this.iterations++;
+
+    const { iterations } = this;
+    const {
+      beta1,
+      beta2,
+      epsilon,
+      learningRate
+    } = this.trainOpts;
 
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       const incoming = this.outputs[layer - 1];
+      const currentSize = this.sizes[layer];
+      const currentDeltas = this.deltas[layer];
+      const currentChangesLow = this.changesLow[layer];
+      const currentChangesHigh = this.changesHigh[layer];
+      const currentWeights = this.weights[layer];
+      const currentBiases = this.biases[layer];
+      const currentBiasChangesLow = this.biasChangesLow[layer];
+      const currentBiasChangesHigh = this.biasChangesHigh[layer];
 
-      for (let node = 0; node < this.sizes[layer]; node++) {
-        const delta = this.deltas[layer][node];
+      for (let node = 0; node < currentSize; node++) {
+        const delta = currentDeltas[node];
 
         for (let k = 0; k < incoming.length; k++) {
           const gradient = delta * incoming[k];
-          const changeLow = this.changesLow[layer][node][k] * trainOpts.beta1 + (1 - trainOpts.beta1) * gradient;
-          const changeHigh = this.changesHigh[layer][node][k] * trainOpts.beta2 + (1 - trainOpts.beta2) * gradient * gradient;
+          const changeLow = currentChangesLow[node][k] * beta1 + (1 - beta1) * gradient;
+          const changeHigh = currentChangesHigh[node][k] * beta2 + (1 - beta2) * gradient * gradient;
 
-          const momentumCorrection = changeLow / (1 - Math.pow(trainOpts.beta1, this.iterations));
-          const gradientCorrection = changeHigh / (1 - Math.pow(trainOpts.beta2, this.iterations));
+          const momentumCorrection = changeLow / (1 - Math.pow(beta1, iterations));
+          const gradientCorrection = changeHigh / (1 - Math.pow(beta2, iterations));
 
-          this.changesLow[layer][node][k] = changeLow;
-          this.changesHigh[layer][node][k] = changeHigh;
-          this.weights[layer][node][k] += this.trainOpts.learningRate * momentumCorrection / (Math.sqrt(gradientCorrection) + trainOpts.epsilon);
+          currentChangesLow[node][k] = changeLow;
+          currentChangesHigh[node][k] = changeHigh;
+          currentWeights[node][k] += learningRate * momentumCorrection / (Math.sqrt(gradientCorrection) + epsilon);
         }
 
-        const biasGradient = this.deltas[layer][node];
-        const biasChangeLow = this.biasChangesLow[layer][node] * trainOpts.beta1 + (1 - trainOpts.beta1) * biasGradient;
-        const biasChangeHigh = this.biasChangesHigh[layer][node] * trainOpts.beta2 + (1 - trainOpts.beta2) * biasGradient * biasGradient;
+        const biasGradient = currentDeltas[node];
+        const biasChangeLow = currentBiasChangesLow[node] * beta1 + (1 - beta1) * biasGradient;
+        const biasChangeHigh = currentBiasChangesHigh[node] * beta2 + (1 - beta2) * biasGradient * biasGradient;
 
-        const biasMomentumCorrection = this.biasChangesLow[layer][node] / (1 - Math.pow(trainOpts.beta1, this.iterations));
-        const biasGradientCorrection = this.biasChangesHigh[layer][node] / (1 - Math.pow(trainOpts.beta2, this.iterations));
+        const biasMomentumCorrection = currentBiasChangesLow[node] / (1 - Math.pow(beta1, iterations));
+        const biasGradientCorrection = currentBiasChangesHigh[node] / (1 - Math.pow(beta2, iterations));
 
-        this.biasChangesLow[layer][node] = biasChangeLow;
-        this.biasChangesHigh[layer][node] = biasChangeHigh;
-        this.biases[layer][node] += trainOpts.learningRate * biasMomentumCorrection / (Math.sqrt(biasGradientCorrection) + trainOpts.epsilon);
+        currentBiasChangesLow[node] = biasChangeLow;
+        currentBiasChangesHigh[node] = biasChangeHigh;
+        currentBiases[node] += learningRate * biasMomentumCorrection / (Math.sqrt(biasGradientCorrection) + epsilon);
       }
     }
   }
