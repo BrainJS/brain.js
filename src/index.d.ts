@@ -210,7 +210,10 @@ export interface IRNNTrainingData {
   output: RNNTrainingValue
 }
 export interface IRNNDefaultOptions extends INeuralNetworkOptions {
+  decayRate?: number;
+  inputRange?: number;
   inputSize?: number;
+  learningRate?: number;
   outputSize?: number;
 }
 
