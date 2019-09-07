@@ -301,7 +301,7 @@ describe('FeedForward Class: End to End', () => {
         testCanLearnXOR();
       });
     });
-    describe('on GPU', () => {
+    (GPU.isGPUSupported ? describe : describe.skip)('on GPU', () => {
       beforeEach(() => {
         setup(new GPU({ mode: 'gpu' }));
       });
