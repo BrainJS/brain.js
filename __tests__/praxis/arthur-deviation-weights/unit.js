@@ -5,6 +5,12 @@ const { shave } = require('../../test-utils');
 const { setup, teardown } = require('../../../src/utilities/kernel');
 
 describe('ArthurDeviationWeights Class: Unit', () => {
+  beforeEach(() => {
+    setup(new GPU({ mode: 'cpu' }));
+  });
+  afterEach(() => {
+    teardown();
+  });
   describe('update()', () => {
     it('performs math correctly', () => {
       const changes = [[1,2,3]];
@@ -102,12 +108,6 @@ describe('ArthurDeviationWeights Class: Unit', () => {
   });
 
   describe('arthurDeviationWeights lambda', () => {
-    beforeEach(() => {
-      setup(new GPU({ mode: 'cpu' } ));
-    });
-    afterEach(() => {
-      teardown();
-    });
     it('creates a new instance of ArthurDeviationWeights', () => {
       const mockLayer = {};
       const mockWeightsLayer = {};
