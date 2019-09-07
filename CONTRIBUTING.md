@@ -17,4 +17,4 @@ npm run test # run tests and generate coverage docs
 npm run test:watch # run jest in watch mode
 ```
 
-4.  Please donot run build/dist script and donot bump version number for the script. These things will be handled by the maintainers when necessary.
+4.  Please do not run build/dist script and do not bump version number for the script. These things will be handled by the maintainers when necessary.
