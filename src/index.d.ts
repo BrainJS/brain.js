@@ -255,10 +255,6 @@ export interface IRNNTimeStepTrainingObject2D {
   output: object[][]
 }
 
-export class NeuralNetworkGPU extends NeuralNetwork {
-
-}
-
 export declare namespace recurrent {
   class RNN extends NeuralNetwork {
     constructor(options?: IRNNDefaultOptions)
