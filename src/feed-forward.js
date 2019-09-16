@@ -234,7 +234,8 @@ class FeedForward {
     ) {
       status.error = this._calculateTrainingError(data);
       this.trainOpts.log(
-        `iterations: ${status.iterations}, training error: ${status.error}`
+        `iterations: ${status.iterations}, training error: ${status.error}`,
+        {iterations: status.iterations, error: status.error}
       );
     } else if (status.iterations % this.trainOpts.errorCheckInterval === 0) {
       status.error = this._calculateTrainingError(data);

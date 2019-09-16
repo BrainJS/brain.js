@@ -166,7 +166,7 @@ class RNNTimeStep extends RNN {
 
       if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
       if (log && (i % logPeriod === 0)) {
-        log(`iterations: ${ i }, training error: ${ error }`);
+        log(`iterations: ${ i }, training error: ${ error }`, {iterations: i, error});
       }
       if (callback && (i % callbackPeriod === 0)) {
         callback({ error: error, iterations: i });

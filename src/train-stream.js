@@ -100,7 +100,7 @@ class TrainStream extends Writable {
     const error = this.sum / this.size;
 
     if (this.log && (this.i % this.logPeriod === 0)) {
-      this.log(`iterations: ${ this.i}, training error: ${ error }`);
+      this.log(`iterations: ${ this.i}, training error: ${ error }`, {iterations: this.i, error});
     }
     if (this.callback && (this.i % this.callbackPeriod === 0)) {
       this.callback({

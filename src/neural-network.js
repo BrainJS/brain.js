@@ -443,7 +443,7 @@ class NeuralNetwork {
 
     if (log && (status.iterations % logPeriod === 0)) {
       status.error = this.calculateTrainingError(data);
-      log(`iterations: ${status.iterations}, training error: ${status.error}`);
+      log(`iterations: ${status.iterations}, training error: ${status.error}`, {iterations: status.iterations, error: status.error});
     } else {
       if (status.iterations % this.errorCheckInterval === 0) {
         status.error = this.calculateTrainingError(data);
