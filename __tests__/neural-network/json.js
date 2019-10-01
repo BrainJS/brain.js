@@ -439,7 +439,7 @@ describe('JSON', () => {
             .fromJSON(json);
           expect(newNet.trainOpts.log).toBe(NeuralNetwork.trainDefaults.log);
         });
-        it('uses console.log for `true`', () => {
+        it('uses net.logTrainingStatus for `true`', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
           const log = true;
           net.trainingTick = () => {};
@@ -447,9 +447,9 @@ describe('JSON', () => {
           const json = net.toJSON();
           const newNet = new NeuralNetwork()
             .fromJSON(json);
-          expect(newNet.trainOpts.log).toBe(console.log);
+          expect(newNet.trainOpts.log).toBe(net.logTrainingStatus);
         });
-        it('reverts to console.log when used with custom function', () => {
+        it('reverts to net.logTrainingStatus when used with custom function', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
           const log = () => {};
           net.trainingTick = () => {};
@@ -457,7 +457,7 @@ describe('JSON', () => {
           const json = net.toJSON();
           const newNet = new NeuralNetwork()
             .fromJSON(json);
-          expect(newNet.trainOpts.log).toBe(console.log);
+          expect(newNet.trainOpts.log).toBe(net.logTrainingStatus);
         });
       });
 
