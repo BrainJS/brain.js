@@ -391,10 +391,19 @@ class NeuralNetwork {
     if (typeof log === 'function'){
       this.trainOpts.log = log;
     } else if (log) {
-      this.trainOpts.log = console.log;
+      this.trainOpts.log = this.logTrainingStatus;
     } else {
       this.trainOpts.log = false;
     }
+  }
+
+  /**
+   *
+   * @param status
+   * log training status
+   */
+  logTrainingStatus(status) {
+    console.log(`iterations: ${status.iterations}, training error: ${status.error}`);
   }
 
   /**
@@ -443,7 +452,7 @@ class NeuralNetwork {
 
     if (log && (status.iterations % logPeriod === 0)) {
       status.error = this.calculateTrainingError(data);
-      log(`iterations: ${status.iterations}, training error: ${status.error}`);
+      log(status);
     } else {
       if (status.iterations % this.errorCheckInterval === 0) {
         status.error = this.calculateTrainingError(data);

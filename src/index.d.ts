@@ -46,7 +46,7 @@ export interface INeuralNetworkTrainingOptions {
    * true to use console.log, when a function is supplied it is used --> Either true or a function
    * @default false
    */
-  log?: boolean | INeuralNetworkTrainingLogCallback;
+  log?: boolean | INeuralNetworkTrainingCallback;
 
   /**
    * iterations between logging out --> number greater than 0
@@ -84,10 +84,6 @@ export interface INeuralNetworkTrainingOptions {
    */
   timeout?: number;
   praxis?: null | 'adam'
-}
-
-export interface INeuralNetworkTrainingLogCallback {
-  (message: string): void;
 }
 
 export interface INeuralNetworkTrainingCallback {
