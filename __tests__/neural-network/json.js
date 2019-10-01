@@ -457,7 +457,7 @@ describe('JSON', () => {
           const json = net.toJSON();
           const newNet = new NeuralNetwork()
             .fromJSON(json);
-          expect(newNet.trainOpts.log).toBe(console.log);
+          expect(newNet.trainOpts.log).toBe(net.logTrainingStatus);
         });
       });
 
