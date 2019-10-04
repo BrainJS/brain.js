@@ -16,20 +16,6 @@
 
 :bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
 
-## W3C machine learning standardization process
-
-If you are a developer or if you just care about how ML API should look like - please take a part and join W3C community and share your opinions or simply support opinions you like or agree with.
-
-Brain.js is widely adopted open source machine learning library in javascript world. There are several reasons for it, but most notable is **simplicity of usage while not sacrafizing performance**.
-We would like to keep it also simple to learn, simple to use and performant when it comes to W3C standard. We think that current brain.js API is quite close to what we could expect to become a standard.
-And since supporting doesn't require much effort and still can make a hudge difference feel free to join W3C community group and support us with brain.js like API.
-
-### Links
-
-Get involved into W3C machine learning ongoing standardization proces [here](https://www.w3.org/community/webmachinelearning/).
-
-You can also join our open discussion about standardization [here](https://github.com/BrainJS/brain.js/issues/337).
-
 ## Table of Contents
 
 - [Examples](#examples)
@@ -553,26 +539,37 @@ Different neural nets do different things well. For example:
 
 # Get Involved!
 
-### Issues
+### W3C machine learning standardization process
+
+If you are a developer or if you just care about how ML API should look like - please take a part and join W3C community and share your opinions or simply support opinions you like or agree with.
+
+Brain.js is a widely adopted open source machine learning library in the javascript world. There are several reasons for it, but most notable is **simplicity of usage while not sacrificing performance**.
+We would like to keep it also simple to learn, simple to use and performant when it comes to W3C standard. We think that current brain.js API is quite close to what we could expect to become a standard.
+And since supporting doesn't require much effort and still can make a hudge difference feel free to join W3C community group and support us with brain.js like API.
+
+Get involved into W3C machine learning ongoing standardization proces [here](https://www.w3.org/community/webmachinelearning/).
+You can also join our open discussion about standardization [here](https://github.com/BrainJS/brain.js/issues/337).
+
+## Issues
 
 If you have an issue, either a bug or a feature you think would benefit your project let us know and we will do our best.
 
 Create issues [here](https://github.com/BrainJS/brain.js/issues) and follow the template.
 
-### Contributors
+## Contributors
 
 This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
 <a href="https://github.com/BrainJS/brain.js/graphs/contributors"><img src="https://opencollective.com/brainjs/contributors.svg?width=890&button=false" /></a>
 
 
-### Backers
+## Backers
 
 Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/brainjs#backer)]
 
 <a href="https://opencollective.com/brainjs#backers" target="_blank"><img src="https://opencollective.com/brainjs/backers.svg?width=890"></a>
 
 
-### Sponsors
+## Sponsors
 
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/brainjs#sponsor)]
 
