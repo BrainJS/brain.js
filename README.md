@@ -11,7 +11,7 @@
 
 `brain.js` is a GPU accelerated library for [Neural Networks](http://en.wikipedia.org/wiki/Artificial_neural_network) written in JavaScript.
 
-:bulb: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
+:bulb: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain), which is not maintained anymore. [More info](https://github.com/harthur/brain/issues/72)
 
 ## Table of Contents
 
