@@ -16,6 +16,20 @@
 
 :bulb: **Note**: This is a continuation of the [**harthur/brain**](https://github.com/harthur/brain) repository (which is not maintained anymore). For more details, check out [this issue](https://github.com/harthur/brain/issues/72).
 
+## W3C machine learning standardization process
+
+If you are a developer or if you just care about how ML API should look like - please take a part and join W3C community and share your opinions or simply support opinions you like or agree with.
+
+Brain.js is widely adopted open source machine learning library in javascript world. There are several reasons for it, but most notable is **simplicity of usage while not sacrafizing performance**.
+We would like to keep it also simple to learn, simple to use and performant when it comes to W3C standard. We think that current brain.js API is quite close to what we could expect to become a standard.
+And since supporting doesn't require much effort and still can make a hudge difference feel free to join W3C community group and support us with brain.js like API.
+
+### Links
+
+Get involved into W3C machine learning ongoing standardization proces [here](https://www.w3.org/community/webmachinelearning/).
+
+You can also join our open discussion about standardization [here](https://github.com/BrainJS/brain.js/issues/337).
+
 ## Table of Contents
 
 - [Examples](#examples)
