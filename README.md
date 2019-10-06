@@ -14,9 +14,12 @@
 
 ## Table of Contents
 
-- [Installation & Usage](#usage)
-  - [Node](#node)
-  - [Browser](#browser)
+- [Installation & Usage](#Installation-&-Usage)
+  - [NPM](#NPM)
+  - [CDN](#CDN)
+  - [Download](#Download)
+  - [Installation note](#Installation-note)
+  - [Building from source](#Building-from-source)
 - [Examples](#examples)
   - [More Examples](#more-examples)
 - [Training](#training)
@@ -106,10 +109,6 @@ sudo apt-get install -y build-essential libxi-dev libglu1-mesa-dev libglew-dev p
 - [Microsoft Visual Studio](https://www.microsoft.com/en-us/download/details.aspx?id=5555)
 - d3dcompiler_47.dll should be in c:\windows\system32, but if isn't then you can find another copy in the deps/ folder
 
-## Note
-
-Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network into your website.
-
 ## Examples
 
 Here's an example showcasing how to approximate the XOR function using `brain.js`:
@@ -186,8 +185,11 @@ You can check out this fantastic screencast, which explains how to train a simpl
 
 ## Training
 
-Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. More training patterns will probably take longer to train, but will usually result in a network better
-at classifying new patterns.
+Use `train()` to train the network with an array of training data. The network has to be trained with all the data in bulk in one call to `train()`. More training patterns will probably take longer to train, but will usually result in a network better at classifying new patterns.
+
+### Note
+
+Training is computationally expensive, so you should try to train the network offline (or on a Worker) and use the `toFunction()` or `toJSON()` options to plug the pre-trained network into your website.
 
 ### Data format
 
