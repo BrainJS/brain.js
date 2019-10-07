@@ -591,7 +591,7 @@ const likely = require('brain/likely')
 const key = likely(input, net)
 ```
 
-Likely example see: [simple letter detection](./examples/which-letter-simple.js)
+Likely example see: [simple letter detection](./examples/javascript/which-letter-simple.js)
 
 ### `toSVG`
 
