@@ -1,9 +1,9 @@
 /* istanbul ignore file */
 const { GPU } = require('gpu.js');
-const { ArthurDeviationBiases } = require('../../src/praxis/arthur-deviation-biases');
-const { random } = require('../../src/layer/random');
-const NeuralNetwork = require('../../src/neural-network');
-const { setup, teardown } = require('../../src/utilities/kernel');
+const { ArthurDeviationBiases } = require('../../../src/praxis/arthur-deviation-biases');
+const { random } = require('../../../src/layer/random');
+const NeuralNetwork = require('../../../src/neural-network');
+const { setup, teardown } = require('../../../src/utilities/kernel');
 
 describe('ArthurDeviationBiases', () => {
   beforeEach(() => {
