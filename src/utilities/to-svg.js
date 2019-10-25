@@ -188,15 +188,15 @@ function wrapSVG(svgBody, width, height) {
             height="${ height }">${ svgBody }</svg>`;
 }
 
-function getSizes(object) {
-  return (typeof object.inputSize === 'number'
-    && Array.isArray(object.hiddenLayers)
-    && object.hiddenLayers.every(l => typeof l === 'number')
-    && typeof object.outputSize === 'number')
-  ? [object.inputSize]
-      .concat(object.hiddenLayers)
-      .concat([object.outputSize])
-  : null
+function getSizes({sizes, inputSize, outputSize, hiddenLayers }) {
+  return (typeof inputSize === 'number'
+    && Array.isArray(hiddenLayers)
+    && hiddenLayers.every(l => typeof l === 'number')
+    && typeof outputSize === 'number')
+  ? [inputSize]
+      .concat(hiddenLayers)
+      .concat([outputSize])
+  : sizes
 }
 
 function toSVG(net, options) {
