@@ -16,6 +16,7 @@ const { arthurDeviationBiases } = require('../../src/praxis/arthur-deviation-bia
 const { momentumRootMeanSquaredPropagation } = require('../../src/praxis/momentum-root-mean-squared-propagation');
 const zeros2D = require('../../src/utilities/zeros-2d');
 const { setup, teardown } = require('../../src/utilities/kernel');
+const { injectIstanbulCoverage } = require('../test-utils');
 
 const xorTrainingData = [
   { input: [0, 0], output: [0] },
@@ -28,7 +29,10 @@ const xorTrainingData = [
 
 describe('FeedForward Class: End to End', () => {
   beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
+    setup(new GPU({
+      mode: 'cpu',
+      onIstanbulCoverageVariable: injectIstanbulCoverage
+    }));
   });
   afterEach(() => {
     teardown();
@@ -303,7 +307,7 @@ describe('FeedForward Class: End to End', () => {
     });
     (GPU.isGPUSupported ? describe : describe.skip)('on GPU', () => {
       beforeEach(() => {
-        setup(new GPU({ mode: 'gpu' }));
+        setup(new GPU({ mode: 'gpu', removeIstanbulCoverage: true }));
       });
       afterEach(() => {
         teardown();

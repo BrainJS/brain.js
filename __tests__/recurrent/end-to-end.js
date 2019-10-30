@@ -1,5 +1,4 @@
 const { GPU } = require('gpu.js');
-
 const { add, input, multiply, output, random, recurrent } = require('../../src/layer');
 const { setup, teardown } = require('../../src/utilities/kernel');
 
@@ -7,9 +6,15 @@ const { Recurrent } = require('../../src/recurrent');
 const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
 const zeros2D = require('../../src/utilities/zeros-2d');
 
+const { injectIstanbulCoverage } = require('../test-utils');
+
 describe('Recurrent Class: End to End', () => {
   beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
+    const gpu = new GPU({
+      mode: 'cpu',
+      onIstanbulCoverageVariable: injectIstanbulCoverage
+    });
+    setup(gpu);
   });
   afterEach(() => {
     teardown();

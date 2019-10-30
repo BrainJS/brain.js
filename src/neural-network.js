@@ -1085,10 +1085,10 @@ class NeuralNetwork {
   }
 
   /**
-   *
+   * @param {Function} [cb]
    * @returns {Function}
    */
-  toFunction() {
+  toFunction(cb) {
     const activation = this.activation;
     const leakyReluAlpha = this.leakyReluAlpha;
     let needsVar = false;
@@ -1144,7 +1144,8 @@ class NeuralNetwork {
       result = `[${layersAsMath.join(',')}]`;
     }
 
-    return new Function('input', `${ needsVar ? 'var v;' : '' }return ${result};`);
+    const source = `${ needsVar ? 'var v;' : '' }return ${result};`;
+    return new Function('input', cb ? cb(source) : source);
   }
 }
 

@@ -1,3 +1,5 @@
+const { getFileCoverageDataByName } = require('istanbul-spy');
+
 function onePlusPlus3D(width, height, depth) {
   const grid = [];
   let i = 1;
@@ -148,4 +150,27 @@ function expectFunction(source, fn) {
   expect(source.toString().split(/\n/g)[0]).toBe(fn.toString().split(/\n/g)[0]);
 }
 
-module.exports = { onePlusPlus3D, onePlusPlus2D, zero3D, zero2D, allMatrices, allWeights, allDeltas, shave, expectFunction };
+function injectIstanbulCoverage(name, kernel) {
+  const data = getFileCoverageDataByName(name);
+  if (!data) {
+    throw new Error(`Could not find istanbul identifier ${name}`);
+  }
+  const { path } = data;
+  const variable = `const ${name} = __coverage__['${path}'];\n`;
+  if (!kernel.hasPrependString(variable)) {
+    kernel.prependString(variable);
+  }
+}
+
+module.exports = {
+  onePlusPlus3D,
+  onePlusPlus2D,
+  zero3D,
+  zero2D,
+  allMatrices,
+  allWeights,
+  allDeltas,
+  shave,
+  expectFunction,
+  injectIstanbulCoverage
+};

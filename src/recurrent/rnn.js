@@ -577,10 +577,10 @@ class RNN {
   }
 
   /**
-   *
+   * @param {Function} [cb]
    * @returns {Function}
    */
-  toFunction() {
+  toFunction(cb) {
     let model = this.model;
     let equations = this.model.equations;
     let equation = equations[1];
@@ -762,7 +762,7 @@ ${ innerFunctionsSwitch.join('\n') }
   ${ randomFloat.toString() }
   ${ sampleI.toString() }
   ${ maxI.toString() }`;
-    return new Function('rawInput', 'isSampleI', 'temperature', src);
+    return new Function('rawInput', 'isSampleI', 'temperature', cb ? cb(src) : src);
   }
 }
 

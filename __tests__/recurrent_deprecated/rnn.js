@@ -1,6 +1,7 @@
 const RNN = require('../../src/recurrent/rnn');
 const DataFormatter = require('../../src/utilities/data-formatter');
 const { allMatrices } = require('../test-utils');
+const istanbulLinkerUtil = require('../istanbul-linker-util');
 
 function notZero(v) {
   return v !== 0;
@@ -579,13 +580,13 @@ describe('RNN', () => {
       }
 
       let lastOutput = dataFormatter.toCharacters(net.run()).join('');
-      expect(dataFormatter.toCharacters(net.toFunction()()).join('')).toBe(lastOutput);
+      expect(dataFormatter.toCharacters(net.toFunction(istanbulLinkerUtil)()).join('')).toBe(lastOutput);
     });
     it('can include the DataFormatter', () => {
       const net = new RNN();
-      net.train(['hi mom!'], { log: true });
+      net.train(['hi mom!'], { log: true, errorThresh: 0.011 });
       const expected = net.run('hi');
-      const newNet = net.toFunction();
+      const newNet = net.toFunction(istanbulLinkerUtil);
       expect(newNet('hi')).toBe(expected);
     });
   });

@@ -23,10 +23,14 @@ const {
   Target,
   Zeros,
 } = layer;
+const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('FeedForward Class: Unit', () => {
   beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
+    setup(new GPU({
+      mode: 'cpu',
+      onIstanbulCoverageVariable: injectIstanbulCoverage
+    }));
   });
   afterEach(() => {
     teardown();

@@ -1,4 +1,5 @@
 const NeuralNetwork = require('../../src/neural-network');
+const istanbulLinkerUtil = require('../istanbul-linker-util');
 
 describe('.toFunction()', () => {
   describe('sigmoid activation', () => {
@@ -9,12 +10,12 @@ describe('.toFunction()', () => {
       {input: [1, 0], output: [1]},
       {input: [1, 1], output: [0]}];
     originalNet.train(xorTrainingData);
-    const xor = originalNet.toFunction();
+    const xor = originalNet.toFunction(istanbulLinkerUtil);
     it('runs same as original network', () => {
-      expect(xor([0, 0])[0].toFixed(6)).toEqual(originalNet.run([0, 0])[0].toFixed(6));
-      expect(xor([0, 1])[0].toFixed(6)).toEqual(originalNet.run([0, 1])[0].toFixed(6));
-      expect(xor([1, 0])[0].toFixed(6)).toEqual(originalNet.run([1, 0])[0].toFixed(6));
-      expect(xor([1, 1])[0].toFixed(6)).toEqual(originalNet.run([1, 1])[0].toFixed(6));
+      expect(xor([0, 0])[0].toFixed(5)).toEqual(originalNet.run([0, 0])[0].toFixed(5));
+      expect(xor([0, 1])[0].toFixed(5)).toEqual(originalNet.run([0, 1])[0].toFixed(5));
+      expect(xor([1, 0])[0].toFixed(5)).toEqual(originalNet.run([1, 0])[0].toFixed(5));
+      expect(xor([1, 1])[0].toFixed(5)).toEqual(originalNet.run([1, 1])[0].toFixed(5));
     });
   });
   describe('relu activation', () => {
@@ -25,12 +26,12 @@ describe('.toFunction()', () => {
       {input: [1, 0], output: [1]},
       {input: [1, 1], output: [0]}];
     originalNet.train(xorTrainingData);
-    const xor = originalNet.toFunction();
+    const xor = originalNet.toFunction(istanbulLinkerUtil);
     it('runs same as original network', () => {
-      expect(xor([0, 0])[0].toFixed(6)).toEqual(originalNet.run([0, 0])[0].toFixed(6));
-      expect(xor([0, 1])[0].toFixed(6)).toEqual(originalNet.run([0, 1])[0].toFixed(6));
-      expect(xor([1, 0])[0].toFixed(6)).toEqual(originalNet.run([1, 0])[0].toFixed(6));
-      expect(xor([1, 1])[0].toFixed(6)).toEqual(originalNet.run([1, 1])[0].toFixed(6));
+      expect(xor([0, 0])[0].toFixed(5)).toEqual(originalNet.run([0, 0])[0].toFixed(5));
+      expect(xor([0, 1])[0].toFixed(5)).toEqual(originalNet.run([0, 1])[0].toFixed(5));
+      expect(xor([1, 0])[0].toFixed(5)).toEqual(originalNet.run([1, 0])[0].toFixed(5));
+      expect(xor([1, 1])[0].toFixed(5)).toEqual(originalNet.run([1, 1])[0].toFixed(5));
     });
   });
   describe('leaky-relu activation', () => {
@@ -41,12 +42,12 @@ describe('.toFunction()', () => {
       {input: [1, 0], output: [1]},
       {input: [1, 1], output: [0]}];
     originalNet.train(xorTrainingData);
-    const xor = originalNet.toFunction();
+    const xor = originalNet.toFunction(istanbulLinkerUtil);
     it('runs same as original network', () => {
-      expect(xor([0, 0])[0].toFixed(6)).toEqual(originalNet.run([0, 0])[0].toFixed(6));
-      expect(xor([0, 1])[0].toFixed(6)).toEqual(originalNet.run([0, 1])[0].toFixed(6));
-      expect(xor([1, 0])[0].toFixed(6)).toEqual(originalNet.run([1, 0])[0].toFixed(6));
-      expect(xor([1, 1])[0].toFixed(6)).toEqual(originalNet.run([1, 1])[0].toFixed(6));
+      expect(xor([0, 0])[0].toFixed(5)).toEqual(originalNet.run([0, 0])[0].toFixed(5));
+      expect(xor([0, 1])[0].toFixed(5)).toEqual(originalNet.run([0, 1])[0].toFixed(5));
+      expect(xor([1, 0])[0].toFixed(5)).toEqual(originalNet.run([1, 0])[0].toFixed(5));
+      expect(xor([1, 1])[0].toFixed(5)).toEqual(originalNet.run([1, 1])[0].toFixed(5));
     });
   });
   describe('tanh activation', () => {
@@ -57,12 +58,12 @@ describe('.toFunction()', () => {
       {input: [1, 0], output: [1]},
       {input: [1, 1], output: [0]}];
     originalNet.train(xorTrainingData);
-    const xor = originalNet.toFunction();
+    const xor = originalNet.toFunction(istanbulLinkerUtil);
     it('runs same as original network', () => {
-      expect(xor([0, 0])[0].toFixed(6)).toEqual(originalNet.run([0, 0])[0].toFixed(6));
-      expect(xor([0, 1])[0].toFixed(6)).toEqual(originalNet.run([0, 1])[0].toFixed(6));
-      expect(xor([1, 0])[0].toFixed(6)).toEqual(originalNet.run([1, 0])[0].toFixed(6));
-      expect(xor([1, 1])[0].toFixed(6)).toEqual(originalNet.run([1, 1])[0].toFixed(6));
+      expect(xor([0, 0])[0].toFixed(5)).toEqual(originalNet.run([0, 0])[0].toFixed(5));
+      expect(xor([0, 1])[0].toFixed(5)).toEqual(originalNet.run([0, 1])[0].toFixed(5));
+      expect(xor([1, 0])[0].toFixed(5)).toEqual(originalNet.run([1, 0])[0].toFixed(5));
+      expect(xor([1, 1])[0].toFixed(5)).toEqual(originalNet.run([1, 1])[0].toFixed(5));
     });
   });
 
@@ -104,7 +105,7 @@ describe('.toFunction()', () => {
     expect(excitedOutput.sad).toBeLessThan(0.5);
     expect(excitedOutput.excited).toBeGreaterThan(0.5);
 
-    const run = net.toFunction();
+    const run = net.toFunction(istanbulLinkerUtil);
 
     const runHappyOutput = run({ 'I am super happy!': 1 });
     expect(runHappyOutput.happy).toBeGreaterThan(0.5);

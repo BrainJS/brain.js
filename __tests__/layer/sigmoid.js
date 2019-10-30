@@ -4,6 +4,7 @@ const { Sigmoid, sigmoid: sigmoidLayer, predict2D, predict3D, compare2D, compare
 const { expectFunction, shave } = require('../test-utils');
 const sigmoidActivation = require('../../src/activation/sigmoid');
 const { setup, teardown } = require('../../src/utilities/kernel');
+const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('Sigmoid Layer', () => {
   describe('predict2D() (forward propagation)', () => {
@@ -95,7 +96,10 @@ describe('Sigmoid Layer', () => {
 
   describe('.setupKernels()', () => {
     beforeEach(() => {
-      setup(new GPU({ mode: 'cpu' } ));
+      setup(new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage
+      }));
     });
     afterEach(() => {
       teardown();

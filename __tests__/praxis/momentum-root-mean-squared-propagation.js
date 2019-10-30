@@ -2,10 +2,14 @@ const { GPU } = require('gpu.js');
 
 const { MomentumRootMeanSquaredPropagation } = require('../../src/praxis/momentum-root-mean-squared-propagation');
 const { setup, teardown } = require('../../src/utilities/kernel');
+const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('MomentumRootMeanSquaredPropagation', () => {
   beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
+    setup(new GPU({
+      mode: 'cpu',
+      onIstanbulCoverageVariable: injectIstanbulCoverage
+    }));
   });
   afterEach(() => {
     teardown();

@@ -907,10 +907,10 @@ class RNNTimeStep extends RNN {
   }
 
   /**
-   *
+   * @param {Function} [cb]
    * @returns {Function}
    */
-  toFunction() {
+  toFunction(cb) {
     const model = this.model;
     const equations = this.model.equations;
     const inputSize = this.inputSize;
@@ -1156,7 +1156,7 @@ ${ innerFunctionsSwitch.join('\n') }
   ${ randomFloat.toString() }
   ${ sampleI.toString() }
   ${ maxI.toString() }`;
-    return new Function('rawInput', src);
+    return new Function('rawInput', cb ? cb(src) : src);
   }
 }
 

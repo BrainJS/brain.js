@@ -2,10 +2,14 @@ const { GPU } = require('gpu.js');
 
 const { Target } = require('../../src/layer/target');
 const { setup, teardown } = require('../../src/utilities/kernel');
+const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('Target Layer', () => {
   beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
+    setup(new GPU({
+      mode: 'cpu',
+      onIstanbulCoverageVariable: injectIstanbulCoverage
+    }));
   });
   afterEach(() => {
     teardown();

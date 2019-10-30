@@ -4,6 +4,7 @@ const { Relu, relu: reluLayer, predict2D, predict3D, compare2D, compare3D } = re
 const reluActivation = require('../../src/activation/relu');
 const { expectFunction } = require('../test-utils');
 const { setup, teardown } = require('../../src/utilities/kernel');
+const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('Relu Layer', () => {
   describe('predict2D() (forward propagation)', () => {
@@ -70,7 +71,10 @@ describe('Relu Layer', () => {
 
   describe('.setupKernels()', () => {
     beforeEach(() => {
-      setup(new GPU({ mode: 'cpu' } ));
+      setup(new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage
+      }));
     });
     afterEach(() => {
       teardown();

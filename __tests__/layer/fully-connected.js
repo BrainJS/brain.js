@@ -4,10 +4,14 @@ const { gpuMock } = require('gpu-mock.js');
 const { predict, predict3D, compareBiases, compareFilterDeltas, compareFilterDeltas3D, compareInputDeltas, compareInputDeltas3D } = require('../../src/layer/fully-connected');
 const { onePlusPlus2D, zero2D } = require('../test-utils');
 const { setup, teardown } = require('../../src/utilities/kernel');
+const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('FullyConnected Layer', () => {
   beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
+    setup(new GPU({
+      mode: 'cpu',
+      onIstanbulCoverageVariable: injectIstanbulCoverage
+    }));
   });
   afterEach(() => {
     teardown();

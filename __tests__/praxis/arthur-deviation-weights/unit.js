@@ -3,10 +3,14 @@ const { gpuMock } = require('gpu-mock.js');
 const { ArthurDeviationWeights, arthurDeviationWeights, update, updateChange } = require('../../../src/praxis/arthur-deviation-weights');
 const { shave } = require('../../test-utils');
 const { setup, teardown } = require('../../../src/utilities/kernel');
+const { injectIstanbulCoverage } = require('../../test-utils');
 
 describe('ArthurDeviationWeights Class: Unit', () => {
   beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
+    setup(new GPU({
+      mode: 'cpu',
+      onIstanbulCoverageVariable: injectIstanbulCoverage
+    }));
   });
   afterEach(() => {
     teardown();

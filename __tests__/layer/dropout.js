@@ -3,10 +3,14 @@ const { gpuMock } = require('gpu-mock.js');
 
 const { Dropout, trainingPredict, predict } = require('../../src/layer/dropout');
 const { setup, teardown } = require('../../src/utilities/kernel');
+const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('Dropout Layer', () => {
   beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
+    setup(new GPU({
+      mode: 'cpu',
+      onIstanbulCoverageVariable: injectIstanbulCoverage
+    }));
   });
   afterEach(() => {
     teardown();

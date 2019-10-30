@@ -4,6 +4,7 @@ const { Tanh, tanh: tanhLayer, predict2D, predict3D, compare2D, compare3D } = re
 const tanhActivation = require('../../src/activation/tanh');
 const { expectFunction, shave } = require('../test-utils');
 const { setup, teardown } = require('../../src/utilities/kernel');
+const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('Tanh Layer', () => {
   describe('predict2D() (forward propagation)', () => {
@@ -140,7 +141,10 @@ describe('Tanh Layer', () => {
 
   describe('.setupKernels()', () => {
     beforeEach(() => {
-      setup(new GPU({ mode: 'cpu' } ));
+      setup(new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage
+      }));
     });
     afterEach(() => {
       teardown();

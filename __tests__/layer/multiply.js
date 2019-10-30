@@ -4,10 +4,14 @@ const { Input } = require('../../src/layer/input');
 const { Multiply, predict, compareFromX, compareFromY } = require('../../src/layer/multiply');
 const { Random } = require('../../src/layer/random');
 const { setup, teardown } = require('../../src/utilities/kernel');
+const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('Multiply Layer', () => {
   beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
+    setup(new GPU({
+      mode: 'cpu',
+      onIstanbulCoverageVariable: injectIstanbulCoverage
+    }));
   });
   afterEach(() => {
     teardown();

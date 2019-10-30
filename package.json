@@ -6,19 +6,21 @@
     "url": "https://github.com/brainjs/brain.js/issues"
   },
   "dependencies": {
-    "gpu.js": "^2.1.0",
+    "gpu.js": "^2.2.1",
     "thaw.js": "^2.0.0"
   },
   "description": "Neural networks in JavaScript",
   "devDependencies": {
+    "acorn": "^7.1.0",
     "eslint": "^6.1.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-jest": "^22.14.1",
     "fast-xml-parser": "^3.12.19",
     "gpu-mock.js": "^1.1.0",
+    "istanbul-spy": "^1.0.1",
     "jest": "^24.9.0",
-    "parcel-bundler": "^1.12.3",
+    "parcel-bundler": "^1.12.4",
     "parcel-plugin-bundle-visualiser": "^1.2.0",
     "prettier": "^1.18.2"
   },
@@ -38,6 +40,7 @@
     "globals": {},
     "setupFiles": [],
     "testPathIgnorePatterns": [
+      "__tests__/istanbul-linker-util.js",
       "__tests__/test-utils.js",
       "__tests__/.eslintrc.js"
     ],

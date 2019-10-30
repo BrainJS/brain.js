@@ -1,6 +1,7 @@
 const GRU = require('../../src/recurrent/gru');
 const RNN = require('../../src/recurrent/rnn');
 const DataFormatter = require('../../src/utilities/data-formatter');
+const istanbulLinkerUtil = require('../istanbul-linker-util');
 
 describe('GRU', () => {
   describe('getModel', () => {
@@ -167,14 +168,14 @@ describe('GRU', () => {
       }
 
       const lastOutput = dataFormatter.toCharacters(net.run()).join('');
-      expect(dataFormatter.toCharacters(net.toFunction()()).join('')).toBe(lastOutput);
+      expect(dataFormatter.toCharacters(net.toFunction(istanbulLinkerUtil)()).join('')).toBe(lastOutput);
     });
 
     it('can include the DataFormatter', () => {
       const net = new GRU();
       net.train(['hi mom!'], { iterations: 100, log: true });
       const expected = net.run('hi ');
-      const newNet = net.toFunction();
+      const newNet = net.toFunction(istanbulLinkerUtil);
       const output = newNet('hi ');
       expect(output).toBe(expected);
     });

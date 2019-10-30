@@ -4,11 +4,13 @@ const { ArthurDeviationWeights } = require('../../../src/praxis/arthur-deviation
 const { random } = require('../../../src/layer/random');
 const NeuralNetwork = require('../../../src/neural-network');
 const { setup, teardown } = require('../../../src/utilities/kernel');
+const { injectIstanbulCoverage } = require('../../test-utils');
 
 describe('ArthurDeviationWeights Class: End to End', () => {
   beforeEach(() => {
     setup(new GPU({
-      mode: 'cpu'
+      mode: 'cpu',
+      onIstanbulCoverageVariable: injectIstanbulCoverage
     }));
   });
   afterEach(() => {

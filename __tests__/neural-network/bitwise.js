@@ -3,8 +3,12 @@ const NeuralNetwork = require('../../src/neural-network');
 const wiggle = 0.1;
 
 function isAround(actual, expected) {
-  if (actual > (expected + wiggle)) return false;
-  if (actual < (expected - wiggle)) return false;
+  if (actual > (expected + wiggle)) {
+    return false;
+  }
+  if (actual < (expected - wiggle)) {
+    return false;
+  }
   return true;
 }
 

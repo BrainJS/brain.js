@@ -21,10 +21,14 @@ const {
   predict2D,
   predict3D,
 } = require('../../src/layer/soft-max');
+const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('SoftMax', () => {
   beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
+    setup(new GPU({
+      mode: 'cpu',
+      onIstanbulCoverageVariable: injectIstanbulCoverage
+    }));
   });
   afterEach(() => {
     teardown();

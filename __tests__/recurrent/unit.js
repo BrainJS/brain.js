@@ -5,10 +5,14 @@ const { setup, teardown } = require('../../src/utilities/kernel');
 const { Filter } = require('../../src/layer/types');
 
 const { add, input, multiply, output, random, recurrent } = layer;
+const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('Recurrent Class: Unit', () => {
   beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
+    setup(new GPU({
+      mode: 'cpu',
+      onIstanbulCoverageVariable: injectIstanbulCoverage
+    }));
   });
   afterEach(() => {
     teardown();

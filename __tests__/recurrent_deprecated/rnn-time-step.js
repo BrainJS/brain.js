@@ -2,6 +2,7 @@ const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
 const RNN = require('../../src/recurrent/rnn');
 const LSTMTimeStep = require('../../src/recurrent/lstm-time-step');
 const Equation = require('../../src/recurrent/matrix/equation');
+const istanbulLinkerUtil = require('../istanbul-linker-util');
 
 // TODO: break out LSTMTimeStep into its own tests
 
@@ -1977,7 +1978,7 @@ describe('RNNTimeStep', () => {
         outputSize: 1
       });
       net.train(data, { iteration: 100, errorThresh: 0.05 });
-      const fn = net.toFunction();
+      const fn = net.toFunction(istanbulLinkerUtil);
       const expected = net.run(data[0].input);
       const result = fn(data[0].input);
       expect(typeof result).toBe('number');
@@ -1992,7 +1993,7 @@ describe('RNNTimeStep', () => {
         outputSize: 1
       });
       net.train(data, { iteration: 100, errorThresh: 0.05 });
-      const fn = net.toFunction();
+      const fn = net.toFunction(istanbulLinkerUtil);
       const expected = net.run(data[0].input);
       expect(fn(data[0].input)).toEqual(expected);
     });
@@ -2005,7 +2006,7 @@ describe('RNNTimeStep', () => {
         outputSize: 2
       });
       net.train(data, { iteration: 100, errorThresh: 0.05 });
-      const fn = net.toFunction();
+      const fn = net.toFunction(istanbulLinkerUtil);
       const expected = net.run(data[0].input);
       expect(fn(data[0].input)).toEqual(expected);
     });
@@ -2026,7 +2027,7 @@ describe('RNNTimeStep', () => {
       expect(trainResult.error).toBeLessThan(0.09);
       const closeToFive = net.run([.1,.2,.3,.4]);
       const closeToOne = net.run([.5,.4,.3,.2]);
-      const fn = net.toFunction();
+      const fn = net.toFunction(istanbulLinkerUtil);
       expect(closeToFive.toFixed(1)).toBe('0.5');
       expect(closeToOne.toFixed(1)).toBe('0.1');
       expect(fn([.1,.2,.3,.4])).toBe(closeToFive);
@@ -2047,7 +2048,7 @@ describe('RNNTimeStep', () => {
       const trainResult = net.train(trainingData);
       expect(trainResult.error).toBeLessThan(0.09);
       const closeToFiveAndOne = net.run([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
-      const fn = net.toFunction();
+      const fn = net.toFunction(istanbulLinkerUtil);
       const result = fn([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
       expect(closeToFiveAndOne[0].toFixed(1)).toBe('0.5');
       expect(closeToFiveAndOne[1].toFixed(1)).toBe('0.1');
@@ -2070,7 +2071,7 @@ describe('RNNTimeStep', () => {
       expect(trainResult.error).toBeLessThan(0.09);
       const closeToFive = net.run({ monday: .1, tuesday: .2, wednesday: .3, thursday: .4 });
       const closeToOne = net.run({ monday: .5, tuesday: .4, wednesday: .3, thursday: .2 });
-      const fn = net.toFunction();
+      const fn = net.toFunction(istanbulLinkerUtil);
       expect(closeToFive.friday.toFixed(1)).toBe('0.5');
       expect(closeToOne.friday.toFixed(1)).toBe('0.1');
       expect(fn({ monday: .1, tuesday: .2, wednesday: .3, thursday: .4 }).friday).toBe(closeToFive.friday);
@@ -2086,7 +2087,7 @@ describe('RNNTimeStep', () => {
         outputSize
       });
       net.train([{ monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 }]);
-      const fn = net.toFunction();
+      const fn = net.toFunction(istanbulLinkerUtil);
       const result = fn({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
       expect(result).toEqual(net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 }));
       expect(Object.keys(result).length).toBe(1);

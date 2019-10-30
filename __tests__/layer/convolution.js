@@ -3,10 +3,14 @@ const { gpuMock } = require('gpu-mock.js');
 const { predict, compareFilterDeltas, compareInputDeltas, compareBiases } = require('../../src/layer/convolution');
 const { setup, teardown } = require('../../src/utilities/kernel');
 const { onePlusPlus3D } = require('../test-utils');
+const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('Convolution Layer', () => {
   beforeEach(() => {
-    setup(new GPU({ mode: 'cpu' }));
+    setup(new GPU({
+      mode: 'cpu',
+      onIstanbulCoverageVariable: injectIstanbulCoverage
+    }));
   });
   afterEach(() => {
     teardown();

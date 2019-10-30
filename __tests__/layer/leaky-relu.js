@@ -4,6 +4,7 @@ const { LeakyRelu, leakyRelu: leakyReluLayer, predict2D, predict3D, compare2D, c
 const leakyReluActivation = require('../../src/activation/leaky-relu');
 const { expectFunction } = require('../test-utils');
 const { setup, teardown } = require('../../src/utilities/kernel');
+const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('Leaky Relu Layer', () => {
   describe('predict2D() (forward propagation)', () => {
@@ -82,7 +83,10 @@ describe('Leaky Relu Layer', () => {
 
   describe('.setupKernels()', () => {
     beforeEach(() => {
-      setup(new GPU({ mode: 'cpu' } ));
+      setup(new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage
+      }));
     });
     afterEach(() => {
       teardown();
