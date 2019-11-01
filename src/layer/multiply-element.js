@@ -1,6 +1,7 @@
 const { makeKernel } = require('../utilities/kernel');
 const { Operator } = require('./types');
 const zeros2D = require('../utilities/zeros-2d');
+const { checkSameSize } = require('../utilities/layer-size');
 
 function predict(weights, inputLayerWeights) {
   return (
@@ -30,21 +31,7 @@ class MultiplyElement extends Operator {
 
   validate() {
     super.validate();
-    if (this.inputLayer1.width !== this.inputLayer2.width) {
-      throw new Error(
-        `Layer width mismatch of ${this.inputLayer1.width} and ${
-          this.inputLayer2.width
-        }`
-      );
-    }
-
-    if (this.inputLayer1.height !== this.inputLayer2.height) {
-      throw new Error(
-        `Layer height mismatch of ${this.inputLayer1.height} and ${
-          this.inputLayer2.height
-        }`
-      );
-    }
+    checkSameSize(this.inputLayer1, this.inputLayer2);
   }
 
   setupKernels() {
