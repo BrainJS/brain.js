@@ -159,7 +159,8 @@ class FeedForward {
   initializeLayers(layers) {
     for (let i = 0; i < layers.length; i++) {
       const layer = layers[i];
-      layer.setupKernels();
+      // TODO: optimize for when training or just running
+      layer.setupKernels(true);
       if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
         layer.praxis = this.praxis(layer, this.praxisOpts);
       }

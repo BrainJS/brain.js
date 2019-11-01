@@ -1,9 +1,11 @@
 const { Filter } = require('./types');
 const { makeKernel } = require('../utilities/kernel');
 
-// TODO: implement random in glsl in gpu.js
+function setDropout(dropout) {
+  return dropout;
+}
 function trainingPredict(inputs) {
-  if (Math.random() < this.constants.probability) {
+  if (setDropout(Math.random()) < this.constants.probability) {
     return 0;
   }
   return inputs[this.thread.y][this.thread.x];
@@ -13,41 +15,51 @@ function predict(inputs) {
   return inputs[this.thread.y][this.thread.x] * this.constants.probability;
 }
 
+function compare(dropouts, deltas) {
+  if (dropouts[this.thread.y][this.thread.x] === 0) {
+    return 0;
+  }
+  return deltas[this.thread.y][this.thread.x];
+}
+
 class Dropout extends Filter {
   static get defaults() {
     return {
-      width: 0,
-      height: 0,
-      depth: 0,
-      probability: 0.5,
-      isTraining: false,
+      width: 1,
+      height: 1,
+      depth: null,
+      probability: 0.5
     };
   }
 
-  constructor(settings, inputLayer) {
+  constructor(inputLayer, settings) {
     super(settings);
     this.inputLayer = inputLayer;
+    this.height = inputLayer.height;
+    this.width = inputLayer.width;
+    this.dropouts = null;
     this.validate();
   }
 
-  setupKernels() {
-    if (this.isTraining) {
-      this.predictKernel = makeKernel(trainingPredict, {
-        output: [this.width, this.height, this.depth],
-      });
+  setupKernels(isTraining) {
+    const output = [this.width, this.height];
+
+    if (isTraining) {
+      this.predictKernel = makeKernel(trainingPredict, { output, map: { dropouts: setDropout } });
+      this.compareKernel = makeKernel(compare, { output });
     } else {
-      this.predictKernel = makeKernel(predict, {
-        output: [this.width, this.height, this.depth],
-      });
+      this.predictKernel = makeKernel(predict, { output });
     }
   }
 
   predict() {
-    this.weights = this.predictKernel(this.inputLayer.weights);
+    const { result, dropouts } = this.predictKernel(this.inputLayer.weights);
+    this.weights = result;
+    this.dropouts = dropouts;
   }
 
   compare() {
-    this.deltas = this.learnKernel(this.deltas);
+    this.deltas = this.compareKernel(this.dropouts, this.inputLayer.deltas);
   }
 }
 
@@ -55,4 +67,4 @@ function dropout(settings, inputLayer) {
   return new Dropout(settings, inputLayer);
 }
 
-module.exports = { Dropout, dropout, trainingPredict, predict };
+module.exports = { Dropout, dropout, setDropout, trainingPredict, predict, compare };
