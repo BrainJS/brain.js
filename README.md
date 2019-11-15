@@ -175,13 +175,13 @@ However, there is no reason to use a neural network to figure out XOR. (-: So, h
 
 You can check out this fantastic screencast, which explains how to train a simple neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
 
-- [writing a children's book using a recurrent neural network](./examples/childrens-book.js) and [typescript version](./examples-typescript/childrens-book.ts)
-- [using cross validation with a feed forward net](./examples/cross-validate.js) and [typescript version](./examples-typescript/cross-validate.ts)
-- experimental (NeuralNetwork only, but more to come!) [using the gpu in a browser](./examples/gpu.html) or [using node gpu fallback to cpu](./examples/gpu-fallback.js) and [typescript version](./examples-typescript/gpu-fallback.ts)
-- [learning math using a recurrent neural network](./examples/learn-math.js) and [typescript version](./examples-typescript/learn-math.ts)
-- [predict next number, and forecast numbers](./examples/predict-numbers.js) and [typescript version](./examples-typescript/predict-numbers.ts)
-- [using node streams](./examples/stream-example.js) and [typescript version](./examples-typescript/stream-example.ts)
-- [simple letter detection](./examples/which-letter-simple.js) and [typescript version](./examples-typescript/which-letter-simple.ts)
+- [writing a children's book using a recurrent neural network](./examples/javascript/childrens-book.js) and [typescript version](./examples/typescript/childrens-book.ts)
+- [using cross validation with a feed forward net](./examples/javascript/cross-validate.js) and [typescript version](./examples/typescript/cross-validate.ts)
+- experimental (NeuralNetwork only, but more to come!) [using the gpu in a browser](./examples/javascript/gpu.html) or [using node gpu fallback to cpu](./examples/gpu-fallback.js) and [typescript version](./examples/typescript/gpu-fallback.ts)
+- [learning math using a recurrent neural network](./examples/javascript/learn-math.js) and [typescript version](./examples/typescript/learn-math.ts)
+- [predict next number, and forecast numbers](./examples/javascript/predict-numbers.js) and [typescript version](./examples/typescript/predict-numbers.ts)
+- [using node streams](./examples/javascript/stream-example.js) and [typescript version](./examples/typescript/stream-example.ts)
+- [simple letter detection](./examples/javascript/which-letter-simple.js) and [typescript version](./examples/typescript/which-letter-simple.ts)
 
 ## Training
 
