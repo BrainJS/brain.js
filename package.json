@@ -1,6 +1,5 @@
 {
   "author": "Heather Arthur <fayearthur@gmail.com>",
-  "type": "module",
   "browser": "./dist/brain-browser.min.js",
   "bugs": {
     "url": "https://github.com/brainjs/brain.js/issues"
