@@ -473,9 +473,9 @@ class RNN {
         const err = this.trainPattern(data[j], true);
         sum += err;
       }
-      error = sum / data.length;
+      error = sum / Math.max(data.length, 1);
 
-      if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
+      if (Number.isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
       if (log && (i % logPeriod === 0)) {
         log(`iterations: ${ i }, training error: ${ error }`);
       }
