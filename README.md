@@ -382,7 +382,7 @@ Use `CrossValidate` with these classes:
 - `brain.LSTMTimeStep`
 - `brain.GRUTimeStep`
 
-An example of using cross validate can be found in [examples/cross-validate.js](examples/cross-validate.js)
+An example of using cross validate can be found in [examples/javascript/cross-validate.js](examples/javascript/cross-validate.js)
 
 ### Train Stream
 
@@ -412,7 +412,7 @@ function readInputs(stream, data) {
 }
 ```
 
-An example of using train stream can be found in [examples/stream-example.js](examples/stream-example.js)
+An example of using train stream can be found in [examples/javascript/stream-example.js](examples/javascript/stream-example.js)
 
 ## Methods
 
@@ -562,7 +562,7 @@ The network now has a [WriteStream](http://nodejs.org/api/stream.html#stream_cla
 
 ### Example
 
-Refer to [`stream-example.js`](examples/stream-example.js) for an example on how to train the network with a stream.
+Refer to [`stream-example.js`](examples/javascript/stream-example.js) for an example on how to train the network with a stream.
 
 ### Initialization
 
