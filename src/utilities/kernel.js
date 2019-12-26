@@ -39,4 +39,37 @@ function kernelInput(input, size) {
   return GPU.input(input, size);
 }
 
-module.exports = { setup, teardown, makeKernel, makeDevKernel, kernelInput };
+function release(texture) {
+  if (texture.delete) {
+    texture.delete();
+  }
+}
+
+function clone(texture) {
+  if (texture.clone) {
+    return texture.clone();
+  }
+  if (typeof texture[0] === 'number') {
+    return new Float32Array(texture);
+  } else if (typeof texture[0][0] === 'number') {
+    const result = [];
+    for (let y = 0; y < texture.length; y++) {
+      result.push(new Float32Array(texture[y]));
+    }
+    return result;
+  } else if (typeof texture[0][0][0] === 'number') {
+    const result = [];
+    for (let z = 0; z < texture.length; z++) {
+      const row = [];
+      result.push(row);
+      for (let y = 0; y < texture.length; y++) {
+        row.push(new Float32Array(texture[z][y]));
+      }
+    }
+    return result;
+  }
+
+  throw new Error('unrecognized argument');
+}
+
+module.exports = { setup, teardown, makeKernel, makeDevKernel, kernelInput, release, clone };

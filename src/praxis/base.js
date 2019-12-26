@@ -3,11 +3,11 @@ class Base {
     return {};
   }
 
-  constructor(layer, settings = {}) {
-    this.layer = layer;
-    this.width = layer.width || null;
-    this.height = layer.height || null;
-    this.depth = layer.depth || null;
+  constructor(layerTemplate, settings = {}) {
+    this.layerTemplate = layerTemplate;
+    this.width = layerTemplate.width || null;
+    this.height = layerTemplate.height || null;
+    this.depth = layerTemplate.depth || null;
     Object.assign(this, this.constructor.defaults, settings);
   }
 

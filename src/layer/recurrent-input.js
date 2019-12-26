@@ -1,5 +1,6 @@
 const { Internal } = require('./types');
 const { Base } = require('./base');
+const { release } = require('../utilities/kernel');
 
 class RecurrentInput extends Internal {
   setRecurrentInput(recurrentInput) {
@@ -12,7 +13,9 @@ class RecurrentInput extends Internal {
   }
 
   set deltas(deltas) {
+    const recurrentInputDeltas = this.recurrentInput.deltas;
     this.recurrentInput.deltas = deltas;
+    release(recurrentInputDeltas);
   }
 
   get weights() {
@@ -20,7 +23,9 @@ class RecurrentInput extends Internal {
   }
 
   set weights(weights) {
+    const recurrentInputWeights = this.recurrentInput.weights;
     this.recurrentInput.weights = weights;
+    release(recurrentInputWeights);
   }
 
   validate() {

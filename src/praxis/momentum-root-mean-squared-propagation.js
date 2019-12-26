@@ -1,4 +1,4 @@
-const { makeKernel, makeDevKernel } = require('../utilities/kernel');
+const { makeKernel, release } = require('../utilities/kernel');
 const zeros2D = require('../utilities/zeros-2d');
 
 const { Base } = require('./base');
@@ -24,7 +24,7 @@ function clipByValue(value, max, min) {
 function update(
   weights,
   deltas,
-  previousMomentums
+  previousMomenta
 ) {
   const delta = deltas[this.thread.y][this.thread.x];
   const clippedDelta = clipByValue(
@@ -33,7 +33,7 @@ function update(
     -this.constants.clipValue
   );
   const weight = weights[this.thread.y][this.thread.x];
-  const previousMomentum = previousMomentums[this.thread.y][this.thread.x];
+  const previousMomentum = previousMomenta[this.thread.y][this.thread.x];
   const momentum = getMomentum(
     delta,
     this.constants.decayRate,
@@ -68,16 +68,17 @@ class MomentumRootMeanSquaredPropagation extends Base {
     };
   }
 
-  constructor(layer, settings = {}) {
-    super(layer, settings);
-    this.momentums = zeros2D(layer.width, layer.height);
+  constructor(layerTemplate, settings = {}) {
+    super(layerTemplate, settings);
+    this.momenta = zeros2D(layerTemplate.width, layerTemplate.height);
     this.setupKernels();
   }
 
   run(layer, previousLayer, nextLayer, learningRate) {
-    const output = this.kernel(layer.weights, layer.deltas, this.momentums);
-    this.momentums = output.momentums;
-    return output.result;
+    const { momenta, result } = this.kernel(layer.weights, layer.deltas, this.momenta);
+    release(this.momenta);
+    this.momenta = momenta;
+    return result;
   }
 
   setupKernels() {
@@ -92,7 +93,7 @@ class MomentumRootMeanSquaredPropagation extends Base {
       },
       functions: [clipByValue],
       map: {
-        momentums: getMomentum,
+        momenta: getMomentum,
       },
     });
   }

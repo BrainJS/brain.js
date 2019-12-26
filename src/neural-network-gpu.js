@@ -1,6 +1,7 @@
 const { GPU, alias } = require('gpu.js');
 const NeuralNetwork = require('./neural-network');
 const lookup = require('./lookup');
+const { release } = require('./utilities/kernel');
 
 function weightedSumSigmoid(weights, biases, inputs) {
   let sum = biases[this.thread.x];
@@ -110,12 +111,6 @@ class NeuralNetworkGPU extends NeuralNetwork {
     this.backwardPropagate = [];
     this.changesPropagate = [];
     this.biasesPropagate = [];
-    this.biasCopies = [];
-    this.copyBias = [];
-    this.changesCopies = [];
-    this.copyChanges = [];
-    this.weightsCopies = [];
-    this.copyWeights = [];
     this.errorCheckInterval = 100;
     this.gpu = new GPU({ mode: options.mode });
   }
@@ -198,8 +193,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       return value[this.thread.x];
     }, {
       output: [this.sizes[1]],
-      pipeline: true,
-      immutable: true,
+      pipeline: true
     });
   }
 
@@ -212,6 +206,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
     let output;
     this.outputs[0] = input;
     for (let layer = 1; layer <= this.outputLayer; layer++) {
+      release(this.outputs[layer]);
       this.outputs[layer] = this.forwardPropagate[layer](
         this.weights[layer],
         this.biases[layer],
@@ -242,12 +237,12 @@ class NeuralNetworkGPU extends NeuralNetwork {
         throw new Error(`unknown activation ${this.activation}`);
     }
 
+    this.gpu.addFunction(alias( 'calcDeltas', calcDeltas));
     for (let layer = this.outputLayer; layer > 0; layer--) {
       if (layer === this.outputLayer) {
         this.backwardPropagate[layer] = this.gpu.createKernelMap(
           {
-            error: alias('calcErrorOutput', calcErrorOutput),
-            deltas: alias('calcDeltas', calcDeltas),
+            error: alias('calcErrorOutput', calcErrorOutput)
           },
           function (outputs, targets) {
             const output = outputs[this.thread.x];
@@ -261,8 +256,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       } else {
         this.backwardPropagate[layer] = this.gpu.createKernelMap(
           {
-            error: alias('calcError', calcError),
-            deltas: alias('calcDeltas', calcDeltas),
+            error: alias('calcError', calcError)
           },
           function (nextWeights, outputs, nextDeltas) {
             const output = outputs[this.thread.x];
@@ -283,6 +277,8 @@ class NeuralNetworkGPU extends NeuralNetwork {
   calculateDeltas(target) {
     for (let layer = this.outputLayer; layer > 0; layer--) {
       let output;
+      release(this.deltas[layer]);
+      release(this.errors[layer]);
 
       if (layer === this.outputLayer) {
         output = this.backwardPropagate[layer](
@@ -295,8 +291,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
           this.deltas[layer + 1],
         );
       }
-
-      this.deltas[layer] = output.deltas;
+      this.deltas[layer] = output.result;
       this.errors[layer] = output.error;
     }
   }
@@ -323,38 +318,24 @@ class NeuralNetworkGPU extends NeuralNetwork {
           },
         }
       );
-
-      this.copyChanges[layer] = this.gpu.createKernel(
-        function(value) { return value[this.thread.y][this.thread.x]; },
-        {
-          output: this.changesPropagate[layer].output,
-          pipeline: true,
-        }
-      );
-
-      this.copyWeights[layer] = this.gpu.createKernel(
-        function (value) { return value[this.thread.y][this.thread.x]; },
-        {
-          output: this.changesPropagate[layer].output,
-          pipeline: true,
-        }
-      );
     }
   }
 
   getChanges() {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
+      const weights = this.weights[layer];
+      const changes = this.changes[layer];
       const output = this.changesPropagate[layer](
         this.outputs[layer - 1],
         this.deltas[layer],
-        this.weightsCopies[layer] || this.weights[layer],
-        this.changesCopies[layer] || this.changes[layer]
+        weights,
+        changes
       );
-      this.changes[layer] = output.changes;
+      release(weights);
+      release(changes);
       this.weights[layer] = output.weights;
-
-      this.changesCopies[layer] = this.copyChanges[layer](output.changes);
-      this.weightsCopies[layer] = this.copyWeights[layer](output.weights);
+      this.changes[layer] = output.changes;
+      release(output.result);
     }
   }
 
@@ -367,23 +348,17 @@ class NeuralNetworkGPU extends NeuralNetwork {
           learningRate: this.trainOpts.learningRate,
         },
       });
-      this.copyBias[layer] = this.gpu.createKernel(
-        function(value) { return value[this.thread.x]; },
-        {
-          output: this.biasesPropagate[layer].output,
-          pipeline: true,
-        }
-      );
     }
   }
 
   changeBiases() {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
+      const biases = this.biases[layer];
       this.biases[layer] = this.biasesPropagate[layer](
-        this.biasCopies[layer] || this.biases[layer],
+        biases,
         this.deltas[layer]
       );
-      this.biasCopies[layer] = this.copyBias[layer](this.biases[layer]);
+      release(biases);
     }
   }
 
@@ -439,8 +414,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       function(value) { return value[this.thread.x]; },
       {
         output: [data[0].output.length],
-        pipeline: true,
-        immutable: true,
+        pipeline: true
       }
     );
 
@@ -469,8 +443,8 @@ class NeuralNetworkGPU extends NeuralNetwork {
     const weights = [];
     const biases = [];
     for (let layer = 1; layer <= this.outputLayer; layer++) {
-      weights[layer] = Array.from(this.weights[layer].toArray(this.gpu));
-      biases[layer] = Array.from(this.biases[layer].toArray(this.gpu));
+      weights[layer] = Array.from(this.weights[layer].toArray());
+      biases[layer] = Array.from(this.biases[layer].toArray());
     }
 
     // pseudo lo-fi decorator

@@ -1,3 +1,4 @@
+const { release } = require('../utilities/kernel');
 const zeros2D = require('../utilities/zeros-2d');
 const zeros3D = require('../utilities/zeros-3d');
 
@@ -133,8 +134,10 @@ class Base {
   }
 
   learn(previousLayer, nextLayer, learningRate) {
+    const { weights, deltas } = this;
     this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
-
+    release(weights);
+    release(deltas);
     // TODO: put into a kernel
     if (this.depth > 0) {
       this.deltas = zeros3D(this.width, this.height, this.depth);

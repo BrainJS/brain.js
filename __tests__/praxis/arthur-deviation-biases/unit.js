@@ -63,7 +63,7 @@ describe('ArthurDeviationBiases Class: Unit', () => {
     it('creates a new instance of ArthurDeviationBiases', () => {
       const mockLayer = {};
       const p = arthurDeviationBiases(mockLayer);
-      expect(p.layer).toBe(mockLayer);
+      expect(p.layerTemplate).toBe(mockLayer);
     });
   });
 });

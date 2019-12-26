@@ -28,7 +28,7 @@ class FeedForward {
       inputLayer: null,
       outputLayer: null,
       praxisOpts: null,
-      praxis: (layer, settings) => praxis.momentumRootMeanSquaredPropagation(layer, settings),
+      praxis: (layer, settings) => praxis.momentumRootMeanSquaredPropagation(layer, layer.praxisOpts || settings),
     };
   }
 
@@ -162,7 +162,7 @@ class FeedForward {
       // TODO: optimize for when training or just running
       layer.setupKernels(true);
       if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
-        layer.praxis = this.praxis(layer, this.praxisOpts);
+        layer.praxis = this.praxis(layer, layer.praxisOpts || this.praxisOpts);
       }
     }
   }

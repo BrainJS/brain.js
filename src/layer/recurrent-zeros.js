@@ -1,5 +1,6 @@
 const zeros2D = require('../utilities/zeros-2d');
 const { Internal } = require('./types');
+const { release } = require('../utilities/kernel');
 
 class RecurrentZeros extends Internal {
   setDimensions(width, height) {
@@ -31,7 +32,12 @@ class RecurrentZeros extends Internal {
   }
 
   learn(previousLayer, nextLayer, learningRate) {
+    const { weights } = this;
     this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
+    release(weights);
+
+    //TODO: put this on the GPU
+    release(this.deltas);
     this.deltas = zeros2D(this.width, this.height);
   }
 

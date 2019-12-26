@@ -1,5 +1,6 @@
 const { Internal } = require('./types');
 const zeros2D = require('../utilities/zeros-2d');
+const { release } = require('../utilities/kernel');
 
 class RecurrentConnection extends Internal {
   setLayer(layer) {
@@ -27,6 +28,7 @@ class RecurrentConnection extends Internal {
   }
 
   set deltas(deltas) {
+    release(this.layer.deltas);
     this.layer.deltas = deltas;
   }
 
@@ -35,6 +37,7 @@ class RecurrentConnection extends Internal {
   }
 
   set weights(weights) {
+    release(this.layer.weights);
     this.layer.weights = weights;
   }
 
@@ -47,7 +50,9 @@ class RecurrentConnection extends Internal {
   }
 
   learn() {
+    const layerDeltas = this.layer.deltas;
     this.layer.deltas = zeros2D(this.width, this.height);
+    release(layerDeltas);
   }
 
   setupKernels() {

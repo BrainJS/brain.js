@@ -1,4 +1,4 @@
-const { makeKernel } = require('../utilities/kernel');
+const { makeKernel, release, clone } = require('../utilities/kernel');
 const { setStride, setPadding } = require('../utilities/layer-setup');
 const { Filter } = require('./types');
 const randos = require('../utilities/randos');
@@ -193,19 +193,27 @@ class Convolution extends Filter {
   }
 
   compare() {
+    const { filterDeltas, biasDeltas } = this;
     this.filterDeltas = this.compareFilterDeltasKernel(
-      this.filterDeltas,
+      filterDeltas,
       this.inputLayer.weights,
       this.deltas
     );
-    this.biasDeltas = this.compareBiasesKernel(this.biasDeltas, this.deltas);
+    release(filterDeltas);
+    this.biasDeltas = this.compareBiasesKernel(biasDeltas, this.deltas);
+    release(biasDeltas);
+    release(this.deltas);
     this.deltas = this.compareInputDeltasKernel(this.filters, this.inputLayer.deltas);
-    this.inputLayer.deltas = this.deltas;
+
+    release(this.inputLayer.deltas);
+    this.inputLayer.deltas = clone(this.deltas);
   }
 
   learn(previousLayer, nextLayer, learningRate) {
     // TODO: handle filters
     this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
+    release(this.weights);
+    release(this.deltas);
     this.deltas = zeros3D(this.width, this.height, this.depth);
   }
 }

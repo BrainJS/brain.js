@@ -2,7 +2,7 @@ const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
 
 const { predict, Add, add } = require('../../src/layer/add');
-const { setup, teardown, makeKernel } = require('../../src/utilities/kernel');
+const { setup, teardown, makeKernel, release } = require('../../src/utilities/kernel');
 const { checkSameSize } = require('../../src/utilities/layer-size');
 const { injectIstanbulCoverage } = require('../test-utils');
 
@@ -46,6 +46,13 @@ describe('Add Layer', () => {
     });
   });
   describe('.predict (forward propagation)', () => {
+    test('releases this.weights', () => {
+      const add = new Add({ width: 1, height: 1 }, { width: 1, height: 1 });
+      add.predictKernel = () => {};
+      const mockWeights = add.weights = {};
+      add.predict();
+      expect(release).toHaveBeenCalledWith(mockWeights);
+    });
     test('can add a simple matrix', () => {
       const inputs1 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
       const inputs2 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];

@@ -146,6 +146,9 @@ describe('Relu Layer', () => {
         depth: 1
       };
       const l = new Relu(mockInputLayer);
+      l.inputLayer = {
+        deltas: {}
+      };
       l.weights = mockWeights;
       l.deltas = mockDeltas;
       l.compareKernel = jest.fn((weights, deltas) => deltas);

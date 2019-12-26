@@ -1,5 +1,5 @@
 const { Activation } = require('./types');
-const { makeKernel } = require('../utilities/kernel');
+const { makeKernel, release } = require('../utilities/kernel');
 const { activate, measure } = require('../activation/leaky-relu');
 
 function predict2D(inputs) {
@@ -51,11 +51,14 @@ class LeakyRelu extends Activation {
   }
 
   predict() {
+    release(this.weights);
     this.weights = this.predictKernel(this.inputLayer.weights);
   }
 
   compare() {
-    this.deltas = this.compareKernel(this.weights, this.deltas);
+    const { deltas } = this;
+    this.deltas = this.compareKernel(this.weights, deltas);
+    release(deltas);
   }
 }
 

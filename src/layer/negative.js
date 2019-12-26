@@ -1,4 +1,4 @@
-const { makeKernel } = require('../utilities/kernel');
+const { makeKernel, release } = require('../utilities/kernel');
 const { Modifier } = require('./types');
 
 function predict(weights) {
@@ -19,7 +19,9 @@ class Negative extends Modifier {
   }
 
   predict() {
+    const { weights } = this;
     this.weights = this.predictKernel(this.inputLayer.weights);
+    release(weights);
   }
 }
 

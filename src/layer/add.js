@@ -1,4 +1,4 @@
-const { makeKernel } = require('../utilities/kernel');
+const { makeKernel, release, clone } = require('../utilities/kernel');
 const zeros2D = require('../utilities/zeros-2d');
 const { checkSameSize } = require('../utilities/layer-size');
 const { Operator } = require('./types');
@@ -32,6 +32,7 @@ class Add extends Operator {
   }
 
   predict() {
+    release(this.weights);
     this.weights = this.predictKernel(
       this.inputLayer1.weights,
       this.inputLayer2.weights
@@ -39,8 +40,10 @@ class Add extends Operator {
   }
 
   compare() {
-    this.inputLayer1.deltas = this.deltas;
-    this.inputLayer2.deltas = this.deltas;
+    release(this.inputLayer1.deltas);
+    release(this.inputLayer2.deltas);
+    this.inputLayer1.deltas = clone(this.deltas);
+    this.inputLayer2.deltas = clone(this.deltas);
   }
 }
 

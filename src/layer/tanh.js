@@ -1,6 +1,7 @@
 const { Activation } = require('./activation');
 const { makeKernel } = require('../utilities/kernel');
 const { activate, measure } = require('../activation/tanh');
+const { release } = require('../utilities/kernel');
 
 function predict2D(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
@@ -50,11 +51,15 @@ class Tanh extends Activation {
   }
 
   predict() {
+    const { weights } = this;
     this.weights = this.predictKernel(this.inputLayer.weights);
+    release(weights);
   }
 
   compare() {
+    const { deltas } = this;
     this.deltas = this.compareKernel(this.weights, this.deltas);
+    release(deltas);
   }
 }
 

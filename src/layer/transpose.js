@@ -1,5 +1,5 @@
 const { Modifier } = require('./types');
-const { makeKernel } = require('../utilities/kernel');
+const { makeKernel, release } = require('../utilities/kernel');
 
 function predict(array) {
   return array[this.thread.x][this.thread.y];
@@ -26,10 +26,13 @@ class Transpose extends Modifier {
   }
 
   predict() {
+    const { weights } = this;
+    release(this.weights);
     this.weights = this.predictKernel(this.inputLayer.weights);
   }
 
   compare() {
+    release(this.inputLayer.deltas);
     // TODO: needs switched to this.compareKernel?
     this.inputLayer.deltas = this.predictKernel(this.deltas);
   }

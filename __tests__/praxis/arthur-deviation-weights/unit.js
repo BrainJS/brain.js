@@ -126,7 +126,7 @@ describe('ArthurDeviationWeights Class: Unit', () => {
       expect(p.weightsLayer).toBe(mockWeightsLayer);
       expect(p.deltasLayer).toBe(mockDeltasLayer);
       expect(p.incomingLayer).toBe(mockIncomingLayer);
-      expect(p.layer).toBe(mockLayer);
+      expect(p.layerTemplate).toBe(mockLayer);
     });
   });
 });

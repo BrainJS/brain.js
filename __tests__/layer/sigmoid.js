@@ -174,6 +174,9 @@ describe('Sigmoid Layer', () => {
       l.weights = mockWeights;
       l.deltas = mockDeltas;
       l.compareKernel = jest.fn((weights, deltas) => deltas);
+      l.inputLayer = {
+        deltas: {}
+      };
       l.compare();
       expect(l.compareKernel).toBeCalledWith(mockWeights, mockDeltas);
       expect(l.deltas).toBe(mockDeltas);

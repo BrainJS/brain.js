@@ -1,5 +1,5 @@
 const { Filter } = require('./types');
-const { makeKernel } = require('../utilities/kernel');
+const { makeKernel, release } = require('../utilities/kernel');
 const { setPadding, setStride } = require('../utilities/layer-setup');
 const zeros3D = require('../utilities/zeros-3d');
 const randos3D = require('../utilities/randos-3d');
@@ -179,10 +179,14 @@ class Pool extends Filter {
   }
 
   predict() {
+    const { switchX, switchY, weights: prevWeights } = this;
+    release(this.switchX);
+    release(this.switchY);
     const weights = this.predictKernel(this.inputLayer.weights);
     this.switchX = weights.switchX;
     this.switchY = weights.switchY;
     this.weights = weights.result;
+    release(prevWeights);
     return this.weights;
   }
 
@@ -192,11 +196,13 @@ class Pool extends Filter {
     const height = this.inputLayer.deltas[0].length;
     const width = this.inputLayer.deltas[0][0].length;
     const type = typeof this.inputLayer.deltas[0][0][0];
+    const inputLayerDeltas = this.inputLayer.deltas;
     this.inputLayer.deltas = this.compareKernel(
       this.deltas,
       this.switchX,
       this.switchY
     );
+    release(inputLayerDeltas);
     debugger;
     if (depth !== this.inputLayer.deltas.length) debugger;
     if (height !== this.inputLayer.deltas[0].length) debugger;

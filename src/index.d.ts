@@ -299,3 +299,29 @@ export interface IFeedForwardOptions {
   praxisOpts?: object;
   praxis?: any;
 }
+
+export class Layer {}
+
+export class Activation extends Layer {}
+
+export class Model extends Layer {}
+export class Input extends  Model {}
+
+export class Filter {}
+export class Target extends Filter {}
+
+export class Sigmoid extends Activation {}
+export class Relu extends Activation {}
+export class Tanh extends Activation {}
+export class LeakyRelu extends Activation {}
+
+export type layer = {
+  input: (settings) => Input;
+  feedForward: (settings, inputLayer) => Sigmoid;
+  arthurFeedForward: (settings, inputLayer) => Sigmoid;
+  target: (settings, inputLayer) => Target;
+  sigmoid: (settings, inputLayer) => Sigmoid;
+  relu: (settings, inputLayer) => Relu;
+  tanh: (settings, inputLayer) => Tanh;
+  leakyRely: (Settings, inputLayer) => LeakyRelu;
+};

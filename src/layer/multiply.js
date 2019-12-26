@@ -1,4 +1,4 @@
-const { makeKernel } = require('../utilities/kernel');
+const { makeKernel, release } = require('../utilities/kernel');
 const zeros2D = require('../utilities/zeros-2d');
 const { Operator } = require('./types');
 
@@ -85,13 +85,18 @@ class Multiply extends Operator {
   }
 
   predict() {
+    const { weights } = this;
     this.weights = this.predictKernel(
       this.inputLayer1.weights,
       this.inputLayer2.weights
     );
+    release(weights);
   }
 
   compare() {
+    const inputLayer1Deltas = this.inputLayer1.deltas;
+    const inputLayer2Deltas = this.inputLayer2.deltas;
+
     const newDeltas1 = this.compareKernel1(
       this.deltas,
       this.inputLayer1.deltas,
@@ -102,8 +107,12 @@ class Multiply extends Operator {
       this.inputLayer2.deltas,
       this.inputLayer1.weights
     );
+
     this.inputLayer2.deltas = newDeltas2;
     this.inputLayer1.deltas = newDeltas1;
+
+    release(inputLayer1Deltas);
+    release(inputLayer2Deltas);
   }
 }
 

@@ -1,4 +1,4 @@
-const { makeKernel } = require('../utilities/kernel');
+const { makeKernel, release, clone } = require('../utilities/kernel');
 const zeros = require('../utilities/zeros');
 const zeros2D = require('../utilities/zeros-2d');
 const zeros3D = require('../utilities/zeros-3d');
@@ -44,15 +44,19 @@ class Target extends Filter {
 
   predict() {
     // NOTE: this looks like it shouldn't be, but the weights are immutable, and this is where they are reused.
-    this.weights = this.inputLayer.weights;
+    release(this.weights);
+    this.weights = clone(this.inputLayer.weights);
   }
 
   compare(targetValues) {
     // this is where weights attach to deltas
     // deltas will be zero on learn, so save it in error for comparing to mse later
-    this.errors = this.compareKernel(this.weights, targetValues);
-    this.deltas = this.errors;
-    this.inputLayer.deltas = this.deltas;
+    release(this.deltas);
+    release(this.errors);
+    release(this.inputLayer.deltas);
+    this.deltas = this.compareKernel(this.weights, targetValues);
+    this.inputLayer.deltas = clone(this.deltas);
+    this.errors = clone(this.deltas);
   }
 }
 

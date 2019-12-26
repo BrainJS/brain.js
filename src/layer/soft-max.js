@@ -1,4 +1,4 @@
-const { makeKernel } = require('../utilities/kernel');
+const { makeKernel, release, clone } = require('../utilities/kernel');
 const { Filter } = require('./types');
 const randos = require('../utilities/randos');
 const randos2D = require('../utilities/randos-2d');
@@ -238,9 +238,15 @@ class SoftMax extends Filter {
   }
 
   compare(targetValues) {
-    this.errors = this.compareKernel(targetValues[0], this.deltas);
-    this.deltas = this.errors;
-    this.inputLayer.deltas = this.deltas;
+    const { deltas, errors } = this;
+    this.errors = this.compareKernel(targetValues[0], deltas);
+    this.deltas = clone(this.errors);
+    release(deltas);
+    release(errors);
+
+    const inputLayerDeltas = this.inputLayer.deltas;
+    this.inputLayer.deltas = clone(this.deltas);
+    release(inputLayerDeltas);
   }
 }
 

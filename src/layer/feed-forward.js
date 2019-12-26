@@ -4,10 +4,10 @@ const { multiply } = require('./multiply');
 const { sigmoid } = require('./sigmoid');
 
 function feedForward(settings, input) {
-  const { height } = settings;
-  const weights = random({ name: 'weights', height, width: input.height });
-  const biases = random({ name: 'biases', height });
-  return sigmoid(add(multiply(weights, input), biases));
+  const { height, praxisOpts } = settings;
+  const weights = random({ name: 'weights', height, width: input.height, praxisOpts });
+  const biases = random({ name: 'biases', height, praxisOpts });
+  return sigmoid(add(multiply(weights, input, { praxisOpts }), biases, { praxisOpts }), { praxisOpts });
 }
 
 module.exports = {

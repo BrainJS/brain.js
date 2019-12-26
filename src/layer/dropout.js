@@ -1,5 +1,5 @@
 const { Filter } = require('./types');
-const { makeKernel } = require('../utilities/kernel');
+const { makeKernel, release } = require('../utilities/kernel');
 
 function setDropout(dropout) {
   return dropout;
@@ -53,12 +53,15 @@ class Dropout extends Filter {
   }
 
   predict() {
+    release(this.weights);
+    release(this.dropouts);
     const { result, dropouts } = this.predictKernel(this.inputLayer.weights);
     this.weights = result;
     this.dropouts = dropouts;
   }
 
   compare() {
+    release(this.deltas);
     this.deltas = this.compareKernel(this.dropouts, this.inputLayer.deltas);
   }
 }

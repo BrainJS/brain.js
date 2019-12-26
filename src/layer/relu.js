@@ -1,5 +1,5 @@
 const { Activation } = require('./types');
-const { makeKernel } = require('../utilities/kernel');
+const { makeKernel, release } = require('../utilities/kernel');
 const { activate, measure } = require('../activation/relu');
 
 function predict2D(inputs) {
@@ -51,11 +51,15 @@ class Relu extends Activation {
   }
 
   predict() {
+    const { weights } = this;
     this.weights = this.predictKernel(this.inputLayer.weights);
+    release(weights);
   }
 
   compare() {
+    const inputLayerDeltas = this.inputLayer.deltas;
     this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
+    release(inputLayerDeltas);
   }
 }
 

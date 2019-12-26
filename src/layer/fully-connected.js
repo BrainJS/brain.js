@@ -1,5 +1,5 @@
 const { Filter } = require('./types');
-const { makeKernel } = require('../utilities/kernel');
+const { makeKernel, release } = require('../utilities/kernel');
 const values = require('../utilities/values');
 const randos2D = require('../utilities/randos-2d');
 const randos3D = require('../utilities/randos-3d');
@@ -168,21 +168,26 @@ class FullyConnected extends Filter {
   }
 
   compare() {
+    const inputLayerDeltas = this.inputLayer.deltas;
     this.inputLayer.deltas = this.compareInputDeltasKernel(
-      this.inputLayer.deltas,
+      inputLayerDeltas,
       this.deltas,
       this.filters
     );
+    release(inputLayerDeltas);
 
+    const { biasDeltas, filterDeltas } = this;
     // TODO: handle biasDeltas learn
     this.biasDeltas = this.compareBiasesKernel(this.biases, this.deltas);
 
     // TODO: handle filterDeltas learn
     this.filterDeltas = this.compareFilterDeltasKernel(
-      this.filterDeltas,
+      filterDeltas,
       this.inputLayer.weights,
       this.deltas
     );
+    release(biasDeltas);
+    release(filterDeltas);
   }
 }
 
