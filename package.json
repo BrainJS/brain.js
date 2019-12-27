@@ -11,6 +11,7 @@
   "description": "Neural networks in JavaScript",
   "devDependencies": {
     "acorn": "^7.1.0",
+    "codecov" : "^3.6.1",
     "eslint": "^6.1.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-config-prettier": "^6.0.0",
@@ -81,6 +82,7 @@
     "url": "git+ssh://git@github.com/brainjs/brain.js.git"
   },
   "scripts": {
+    "build": "npm run dist",
     "bundle-web": "parcel build ./src/index.js --out-dir ./dist --out-file brain-browser.js --no-minify",
     "bundle-web:minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain-browser.min.js",
     "dist": "npm run bundle-web && npm run bundle-web:minified",
@@ -88,7 +90,7 @@
     "lint:fix": "eslint --ext .js --fix ./src ./__tests__",
     "prettier": "prettier --write {src,__tests__}/**/*.js",
     "test": "jest --env=node",
-    "test:coverage": "jest --coverage --env=node",
+    "test:coverage": "jest --env=node --coverage && codecov",
     "test:watch": "jest --watch --env=node"
   },
   "typings": "./src/index.d.ts",
