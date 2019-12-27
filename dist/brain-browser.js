@@ -500,8 +500,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  *
  * GPU Accelerated JavaScript
  *
- * @version 2.4.1
- * @date Wed Dec 25 2019 08:11:18 GMT-0500 (Eastern Standard Time)
+ * @version 2.4.2
+ * @date Fri Dec 27 2019 08:17:30 GMT-0500 (Eastern Standard Time)
  *
  * @license MIT
  * The MIT License
@@ -12261,7 +12261,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               var prevArg = kernelValue.prevArg;
 
               if (prevArg) {
-                if (prevArg.texture.refs === 1) {
+                if (prevArg.texture._refs === 1) {
                   this.texture.delete();
                   this.texture = prevArg.clone();
                 }
@@ -12280,7 +12280,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                   var _prevArg = kernelValue.prevArg;
 
                   if (_prevArg) {
-                    if (_prevArg.texture.refs === 1) {
+                    if (_prevArg.texture._refs === 1) {
                       mappedTexture.delete();
                       mappedTextures[i] = _prevArg.clone();
                     }
@@ -12885,47 +12885,38 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "beforeMutate",
           value: function beforeMutate() {
-            if (this.texture.refs > 1) {
+            if (this.texture._refs > 1) {
               this.cloneTexture();
             }
           }
         }, {
           key: "cloneTexture",
           value: function cloneTexture() {
-            this.texture.refs--;
+            this.texture._refs--;
             var gl = this.context,
                 size = this.size,
                 texture = this.texture;
             var existingFramebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
-            var existingActiveTexture = gl.getParameter(gl.ACTIVE_TEXTURE);
-            var existingTexture2DBinding = gl.getParameter(gl.TEXTURE_BINDING_2D);
 
-            if (!this.framebuffer) {
-              this.framebuffer = gl.createFramebuffer();
+            if (!texture._framebuffer) {
+              texture._framebuffer = gl.createFramebuffer();
             }
 
-            this.framebuffer.width = size[0];
-            this.framebuffer.height = size[1];
-            gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
+            texture._framebuffer.width = size[0];
+            texture._framebuffer.width = size[1];
+            gl.bindFramebuffer(gl.FRAMEBUFFER, texture._framebuffer);
             selectTexture(gl, texture);
             gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
             var target = gl.createTexture();
             selectTexture(gl, target);
             gl.texImage2D(gl.TEXTURE_2D, 0, this.internalFormat, size[0], size[1], 0, this.textureFormat, this.textureType, null);
             gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, size[0], size[1]);
-            target.refs = 1;
+            target._refs = 1;
+            target._framebuffer = texture._framebuffer;
             this.texture = target;
 
             if (existingFramebuffer) {
               gl.bindFramebuffer(gl.FRAMEBUFFER, existingFramebuffer);
-            }
-
-            if (existingActiveTexture) {
-              gl.activeTexture(existingActiveTexture);
-            }
-
-            if (existingTexture2DBinding) {
-              gl.bindTexture(gl.TEXTURE_2D, existingTexture2DBinding);
             }
           }
         }, {
@@ -12933,8 +12924,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           value: function _delete() {
             _get(_getPrototypeOf(GLTexture.prototype), "delete", this).call(this);
 
-            if (this.framebuffer) {
-              this.context.deleteFramebuffer(this.framebuffer);
+            if (this.texture._refs === 0 && this.texture._framebuffer) {
+              this.context.deleteFramebuffer(this.texture._framebuffer);
             }
           }
         }, {
@@ -21410,7 +21401,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         GPU[p] = lib[p];
       }
 
-      module.exports = GPU;
+      Object.defineProperty(window, 'GPU', {
+        get: function get() {
+          return GPU;
+        }
+      });
+      module.exports = lib;
     }, {
       "./index": 108
     }],
@@ -21922,7 +21918,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                     }
                   }
                 } catch (e) {
-                  reject();
+                  reject(e);
                 }
 
                 resolve();
@@ -22312,10 +22308,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           if (!kernel) throw new Error('settings property "kernel" required.');
           this.texture = texture;
 
-          if (texture.refs) {
-            texture.refs++;
+          if (texture._refs) {
+            texture._refs++;
           } else {
-            texture.refs = 1;
+            texture._refs = 1;
           }
 
           this.size = size;
@@ -22345,9 +22341,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             if (this._deleted) return;
             this._deleted = true;
 
-            if (this.texture.refs) {
-              this.texture.refs--;
-              if (this.texture.refs) return;
+            if (this.texture._refs) {
+              this.texture._refs--;
+              if (this.texture._refs) return;
             }
 
             return this.context.deleteTexture(this.texture);

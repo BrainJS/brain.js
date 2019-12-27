@@ -1,5 +1,6 @@
 # Mac.
 .DS_STORE
+**.DS_STORE
 
 # Node.
 node_modules
@@ -13,3 +14,6 @@ yarn.lock
 
 # code coverage
 __coverage__
+
+test.js
+test.html

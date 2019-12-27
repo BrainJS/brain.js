@@ -5,7 +5,7 @@
     "url": "https://github.com/brainjs/brain.js/issues"
   },
   "dependencies": {
-    "gpu.js": "^2.4.1",
+    "gpu.js": "^2.4.2",
     "thaw.js": "^2.0.0"
   },
   "description": "Neural networks in JavaScript",
@@ -24,7 +24,10 @@
     "prettier": "^1.18.2"
   },
   "files": [
-    "dist/",
+    "dist/brain-browser.js",
+    "dist/brain-browser.js.map",
+    "dist/brain-browser.min.js",
+    "dist/brain-browser.min.js.map",
     "src/"
   ],
   "homepage": "https://github.com/brainjs/brain.js#readme",
@@ -89,5 +92,5 @@
     "test:watch": "jest --watch --env=node"
   },
   "typings": "./src/index.d.ts",
-  "version": "2.0.0-alpha.10"
+  "version": "2.0.0-alpha.11"
 }
