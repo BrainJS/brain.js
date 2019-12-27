@@ -106,7 +106,8 @@ sudo apt-get install -y build-essential libxi-dev libglu1-mesa-dev libglew-dev p
 ###### Windows
 
 - [Python 2.7](https://www.python.org/)
-- [Microsoft Visual Studio](https://www.microsoft.com/en-us/download/details.aspx?id=5555)
+- [Microsoft Visual Studio Build Tools 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48159)
+- run in cmd/bash: `npm config set msvs_version 2015`
 - d3dcompiler_47.dll should be in c:\windows\system32, but if isn't then you can find another copy in the deps/ folder
 
 ## Examples
