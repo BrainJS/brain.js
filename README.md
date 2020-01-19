@@ -5,6 +5,7 @@
 [![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js)
 [![Backers on Open Collective](https://opencollective.com/brainjs/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/brainjs/sponsors/badge.svg)](#sponsors)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brain-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Slack](https://slack.bri.im/badge.svg)](https://slack.bri.im)
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FBrainJS%2Fbrain.js%2Fbadge%3Fref%3Dmaster&style=flat)](https://actions-badge.atrox.dev/BrainJS/brain.js/goto?ref=master)
 
 ## About
 
@@ -106,7 +107,8 @@ sudo apt-get install -y build-essential libxi-dev libglu1-mesa-dev libglew-dev p
 ###### Windows
 
 - [Python 2.7](https://www.python.org/)
-- [Microsoft Visual Studio](https://www.microsoft.com/en-us/download/details.aspx?id=5555)
+- [Microsoft Visual Studio Build Tools 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48159)
+- run in cmd/bash: `npm config set msvs_version 2015`
 - d3dcompiler_47.dll should be in c:\windows\system32, but if isn't then you can find another copy in the deps/ folder
 
 ## Examples
