@@ -48,9 +48,8 @@ class Sigmoid extends Activation {
   }
 
   predict() {
-    const { weights } = this;
+    release(this.weights);
     this.weights = this.predictKernel(this.inputLayer.weights);
-    release(weights);
   }
 
   compare() {

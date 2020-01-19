@@ -51,15 +51,13 @@ class Relu extends Activation {
   }
 
   predict() {
-    const { weights } = this;
+    release(this.weights);
     this.weights = this.predictKernel(this.inputLayer.weights);
-    release(weights);
   }
 
   compare() {
-    const inputLayerDeltas = this.inputLayer.deltas;
+    release(this.inputLayer.deltas);
     this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
-    release(inputLayerDeltas);
   }
 }
 

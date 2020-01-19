@@ -61,7 +61,7 @@ class MomentumRootMeanSquaredPropagation extends Base {
   static get defaults() {
     return {
       decayRate: 0.999,
-      regularizationStrength: 0.000001,
+      regularizationStrength: 0.0001,
       learningRate: 0.01,
       smoothEps: 1e-8,
       clipValue: 5

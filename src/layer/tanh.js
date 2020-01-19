@@ -51,15 +51,13 @@ class Tanh extends Activation {
   }
 
   predict() {
-    const { weights } = this;
+    release(this.weights);
     this.weights = this.predictKernel(this.inputLayer.weights);
-    release(weights);
   }
 
   compare() {
-    const { deltas } = this;
-    this.deltas = this.compareKernel(this.weights, this.deltas);
-    release(deltas);
+    release(this.inputLayer.deltas);
+    this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
   }
 }
 

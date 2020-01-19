@@ -3,7 +3,7 @@ const mse2d = require('./utilities/mse-2d');
 const layerFromJSON = require('./utilities/layer-from-json');
 const praxis = require('./praxis');
 const flattenLayers = require('./utilities/flatten-layers');
-const { makeKernel } = require('./utilities/kernel');
+const { makeKernel, release } = require('./utilities/kernel');
 
 class FeedForward {
   static get trainDefaults() {
@@ -165,6 +165,29 @@ class FeedForward {
         layer.praxis = this.praxis(layer, layer.praxisOpts || this.praxisOpts);
       }
     }
+
+    this._getMSE = makeKernel(mse2d, {
+      output: [1],
+      constants: {
+        width: this._outputLayer.width,
+        height: this._outputLayer.height,
+        length: this._outputLayer.width * this._outputLayer.height,
+      }
+    });
+    this._addMSE = makeKernel(function(value1, value2) {
+      return value1[0] + value2[0];
+    }, {
+      output: [1]
+    });
+    this._divideMSESum = makeKernel(function(length, mseSum) {
+      const value = mseSum[0];
+      if (value > 0) {
+        return value / length;
+      }
+      return 0;
+    }, {
+      output: [1]
+    });
   }
 
   /**
@@ -280,13 +303,11 @@ class FeedForward {
     const transferInput = makeKernel(function(value) {
       return value[this.thread.x];
     }, {
-      immutable: true,
       output: [formattedData[0].input.length]
     });
     const transferOutput = makeKernel(function(value) {
       return value[this.thread.x];
     }, {
-      immutable: true,
       output: [formattedData[0].output.length]
     });
 
@@ -310,12 +331,30 @@ class FeedForward {
    * @param data
    * @returns {Number} error
    */
+  // _calculateTrainingError(data) {
+  //   let sum = 0;
+  //   for (let i = 0; i < data.length; ++i) {
+  //     sum += this._trainPattern(data[i].input, data[i].output, true);
+  //   }
+  //   return sum / data.length;
+  // }
   _calculateTrainingError(data) {
-    let sum = 0;
+    let sum = new Float32Array([0]);
     for (let i = 0; i < data.length; ++i) {
-      sum += this._trainPattern(data[i].input, data[i].output, true);
+      const prevSum = sum;
+      const error = this._trainPattern(data[i].input, data[i].output, true);
+      sum = this._addMSE(sum, error);
+      release(error);
+      release(prevSum);
     }
-    return sum / data.length;
+    const result = this._divideMSESum(data.length, sum);
+    release(sum);
+    if (result.toArray) {
+      const resultArray = result.toArray();
+      release(result);
+      return resultArray[0];
+    }
+    return result;
   }
 
   /**
@@ -343,11 +382,7 @@ class FeedForward {
     this.adjustWeights();
 
     if (logErrorRate) {
-      return mse2d(
-        this._outputLayer.errors.toArray
-          ? this._outputLayer.errors.toArray()
-          : this._outputLayer.errors
-      );
+      return this._getMSE(this._outputLayer.errors);
     }
     return null;
   }

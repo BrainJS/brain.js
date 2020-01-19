@@ -5,4 +5,4 @@ module.exports = function mse(errors) {
     sum += errors[i] ** 2;
   }
   return sum / errors.length;
-}
+};

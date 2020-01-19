@@ -47,11 +47,6 @@ class Input extends Model {
     // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 
-  learn() {
-    release(this.deltas);
-    this.deltas = zeros2D(this.width, this.height);
-  }
-
   toJSON() {
     const jsonLayer = {};
     const { defaults, name } = this.constructor;

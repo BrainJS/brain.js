@@ -1,4 +1,4 @@
-const { release } = require('../utilities/kernel');
+const { release, clone, makeKernel } = require('../utilities/kernel');
 const zeros2D = require('../utilities/zeros-2d');
 const zeros3D = require('../utilities/zeros-3d');
 
@@ -134,16 +134,10 @@ class Base {
   }
 
   learn(previousLayer, nextLayer, learningRate) {
-    const { weights, deltas } = this;
+    const { weights } = this;
     this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
     release(weights);
-    release(deltas);
-    // TODO: put into a kernel
-    if (this.depth > 0) {
-      this.deltas = zeros3D(this.width, this.height, this.depth);
-    } else {
-      this.deltas = zeros2D(this.width, this.height);
-    }
+    this.resetDeltas();
   }
 
   toArray() {
@@ -165,6 +159,24 @@ class Base {
     }
     jsonLayer.type = name;
     return jsonLayer;
+  }
+
+  resetDeltas() {
+    if (this.resetDeltasValue) {
+      release(this.deltas);
+      this.deltas = clone(this.resetDeltasValue);
+      return;
+    }
+    if (!this.resetDeltasKernel) {
+      const output = [this.width];
+      if (this.height) output.push(this.height);
+      if (this.depth) output.push(this.depth);
+      this.resetDeltasKernel = makeKernel(function() {
+        return 0;
+      }, { output });
+    }
+    release(this.deltas);
+    this.deltas = this.resetDeltasValue = this.resetDeltasKernel();
   }
 }
 

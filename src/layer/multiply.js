@@ -85,12 +85,11 @@ class Multiply extends Operator {
   }
 
   predict() {
-    const { weights } = this;
+    release(this.weights);
     this.weights = this.predictKernel(
       this.inputLayer1.weights,
       this.inputLayer2.weights
     );
-    release(weights);
   }
 
   compare() {

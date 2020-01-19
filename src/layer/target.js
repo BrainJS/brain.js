@@ -58,6 +58,14 @@ class Target extends Filter {
     this.inputLayer.deltas = clone(this.deltas);
     this.errors = clone(this.deltas);
   }
+
+  setupPraxis() {}
+
+  learn() {
+    release(this.weights);
+    this.weights = clone(this.inputLayer.weights);
+    this.resetDeltas();
+  }
 }
 
 function target(settings, inputLayer) {
