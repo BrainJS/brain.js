@@ -1,8 +1,8 @@
-const { Model } = require('./types');
+const { EntryPoint } = require('./types');
 const zeros2D = require('../utilities/zeros-2d');
 const { makeKernel, release, kernelInput } = require('../utilities/kernel');
 
-class Input extends Model {
+class Input extends EntryPoint {
   constructor(settings) {
     super(settings);
     this.validate();
@@ -24,8 +24,13 @@ class Input extends Model {
     }
   }
 
+  reuseKernels(layer) {
+    super.reuseKernels(layer);
+    this.reshapeInput = layer.reshapeInput;
+  }
+
   predict(inputs) {
-    if (inputs.length === this.height * this.width) {
+    if (typeof inputs[0] !== 'object' && inputs.length === this.height * this.width) {
       release(this.weights);
       this.weights = kernelInput(inputs, [this.width, this.height]);
     } else if (

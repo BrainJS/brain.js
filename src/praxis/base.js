@@ -13,6 +13,26 @@ class Base {
 
   setupKernels() {}
 
+  reuseKernels(praxis) {
+    if (praxis.width !== this.width) {
+      throw new Error(
+        `${this.constructor.name} kernel width mismatch ${praxis.width} is not ${
+          this.width
+        }`
+      );
+    }
+    if (praxis.height !== this.height) {
+      throw new Error(
+        `${this.constructor.name} kernel width mismatch ${
+          praxis.height
+        } is not ${this.height}`
+      );
+    }
+    if (praxis.hasOwnProperty('kernel')) {
+      this.kernel = praxis.kernel;
+    }
+  }
+
   run() {}
 }
 

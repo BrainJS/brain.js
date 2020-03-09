@@ -7,7 +7,7 @@ const { zeros } = require('./zeros');
 function recurrent(settings, input, recurrentInput) {
   const { height } = settings;
 
-  recurrentInput.setDimensions(1, height);
+  if (recurrentInput.setDimensions) recurrentInput.setDimensions(1, height);
 
   // wxh
   const weight = random({ name: 'weight', height, width: input.height });

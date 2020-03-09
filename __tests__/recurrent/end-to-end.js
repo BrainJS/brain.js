@@ -20,13 +20,17 @@ describe('Recurrent Class: End to End', () => {
     teardown();
   });
   describe('when configured like RNNTimeStep', () => {
-    test('forward propagates equivalent to baseline', () => {
+    function setupNets() {
       const timeStep = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [3],
         outputSize: 1,
       });
       const recurrentNet = new Recurrent({
+        praxisOpts: {
+          regularizationStrength: timeStep.regc,
+          learningRate: timeStep.trainOpts.learningRate,
+        },
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
           (inputLayer, recurrentInput) =>
@@ -37,262 +41,187 @@ describe('Recurrent Class: End to End', () => {
       timeStep.initialize();
       recurrentNet.initialize();
 
-      expect(
-        [
-          timeStep.model.hiddenLayers[0].bias,
-          timeStep.model.hiddenLayers[0].transition,
-          timeStep.model.hiddenLayers[0].weight,
-        ].length
-      ).toEqual(recurrentNet._model.length);
+      timeStep.bindEquation();
+      const timeStepModelLayers = timeStep.model.hiddenLayers[0];
       // set both nets exactly the same, then train them once, and compare
       // zero out
-      recurrentNet._inputLayers.forEach(l => {
-        l.deltas = zeros2D(l.width, l.height);
-        l.weights = zeros2D(l.width, l.height);
+      const recurrentLayers = recurrentNet._layerSets[0];
+      const recurrentModelWeight = recurrentLayers.find(l => l.name === 'weight');
+      recurrentModelWeight.weights[0] = new Float32Array([timeStepModelLayers.weight.weights[0]]);
+      recurrentModelWeight.weights[1] = new Float32Array([timeStepModelLayers.weight.weights[1]]);
+      recurrentModelWeight.weights[2] = new Float32Array([timeStepModelLayers.weight.weights[2]]);
+
+      const recurrentModelTransition = recurrentLayers.find(l => l.name === 'transition');
+      recurrentModelTransition.weights[0] = new Float32Array([timeStepModelLayers.transition.weights[0], timeStepModelLayers.transition.weights[1], timeStepModelLayers.transition.weights[2]]);
+      recurrentModelTransition.weights[1] = new Float32Array([timeStepModelLayers.transition.weights[3], timeStepModelLayers.transition.weights[4], timeStepModelLayers.transition.weights[5]]);
+      recurrentModelTransition.weights[2] = new Float32Array([timeStepModelLayers.transition.weights[6], timeStepModelLayers.transition.weights[7], timeStepModelLayers.transition.weights[8]]);
+
+      const recurrentModelBias = recurrentLayers.find(l => l.name === 'bias');
+      recurrentModelBias.weights[0] = [timeStepModelLayers.bias.weights[0]];
+      recurrentModelBias.weights[1] = [timeStepModelLayers.bias.weights[1]];
+      recurrentModelBias.weights[2] = [timeStepModelLayers.bias.weights[2]];
+
+      const recurrentModelOutputGate = recurrentLayers.find(l => l.name === 'outputGate');
+      recurrentModelOutputGate.weights = [new Float32Array(Array.from(timeStep.model.outputConnector.weights))];
+
+      const recurrentModelOutput = recurrentLayers.find(l => l.name === 'output');
+      recurrentModelOutput.weights = [new Float32Array(Array.from(timeStep.model.output.weights))];
+
+      return { timeStep, recurrentNet };
+    }
+    describe('forward propagation', () => {
+      function testRecurrentLayerSet(timeStep, recurrentNet, index) {
+        expect(recurrentNet._layerSets[index][0].weights[0][0]).toBe(timeStep.model.equations[index].inputValue[0]);
+        expect(recurrentNet._layerSets[index][1].weights[0][0]).toBe(timeStep.model.hiddenLayers[0].weight.weights[0]);
+        expect(recurrentNet._layerSets[index][1].weights[1][0]).toBe(timeStep.model.hiddenLayers[0].weight.weights[1]);
+        expect(recurrentNet._layerSets[index][1].weights[2][0]).toBe(timeStep.model.hiddenLayers[0].weight.weights[2]);
+        expect(recurrentNet._layerSets[index][2].weights[0][0]).toBe(timeStep.model.equations[index].states[1].product.weights[0]);
+        expect(recurrentNet._layerSets[index][2].weights[1][0]).toBe(timeStep.model.equations[index].states[1].product.weights[1]);
+        expect(recurrentNet._layerSets[index][2].weights[2][0]).toBe(timeStep.model.equations[index].states[1].product.weights[2]);
+        expect(recurrentNet._layerSets[index][3].weights[0][0]).toBe(timeStep.model.hiddenLayers[0].transition.weights[0]);
+        expect(recurrentNet._layerSets[index][3].weights[0][1]).toBe(timeStep.model.hiddenLayers[0].transition.weights[1]);
+        expect(recurrentNet._layerSets[index][3].weights[0][2]).toBe(timeStep.model.hiddenLayers[0].transition.weights[2]);
+        expect(recurrentNet._layerSets[index][3].weights[1][0]).toBe(timeStep.model.hiddenLayers[0].transition.weights[3]);
+        expect(recurrentNet._layerSets[index][3].weights[1][1]).toBe(timeStep.model.hiddenLayers[0].transition.weights[4]);
+        expect(recurrentNet._layerSets[index][3].weights[1][2]).toBe(timeStep.model.hiddenLayers[0].transition.weights[5]);
+        expect(recurrentNet._layerSets[index][3].weights[2][0]).toBe(timeStep.model.hiddenLayers[0].transition.weights[6]);
+        expect(recurrentNet._layerSets[index][3].weights[2][1]).toBe(timeStep.model.hiddenLayers[0].transition.weights[7]);
+        expect(recurrentNet._layerSets[index][3].weights[2][2]).toBe(timeStep.model.hiddenLayers[0].transition.weights[8]);
+        expect(recurrentNet._layerSets[index][4].weights[0][0]).toBe(timeStep.model.equations[index].states[2].right.weights[0]);
+        expect(recurrentNet._layerSets[index][4].weights[1][0]).toBe(timeStep.model.equations[index].states[2].right.weights[1]);
+        expect(recurrentNet._layerSets[index][4].weights[2][0]).toBe(timeStep.model.equations[index].states[2].right.weights[2]);
+        expect(recurrentNet._layerSets[index][5].weights[0][0]).toBe(timeStep.model.equations[index].states[2].product.weights[0]);
+        expect(recurrentNet._layerSets[index][5].weights[1][0]).toBe(timeStep.model.equations[index].states[2].product.weights[1]);
+        expect(recurrentNet._layerSets[index][5].weights[2][0]).toBe(timeStep.model.equations[index].states[2].product.weights[2]);
+        expect(recurrentNet._layerSets[index][6].weights[0][0]).toBe(timeStep.model.equations[index].states[3].product.weights[0]);
+        expect(recurrentNet._layerSets[index][6].weights[1][0]).toBe(timeStep.model.equations[index].states[3].product.weights[1]);
+        expect(recurrentNet._layerSets[index][6].weights[2][0]).toBe(timeStep.model.equations[index].states[3].product.weights[2]);
+        expect(recurrentNet._layerSets[index][8].weights[0][0]).toBe(timeStep.model.equations[index].states[4].product.weights[0]);
+        expect(recurrentNet._layerSets[index][8].weights[1][0]).toBe(timeStep.model.equations[index].states[4].product.weights[1]);
+        expect(recurrentNet._layerSets[index][8].weights[2][0]).toBe(timeStep.model.equations[index].states[4].product.weights[2]);
+        expect(recurrentNet._layerSets[index][9].weights[0][0]).toBe(timeStep.model.equations[index].states[5].product.weights[0]);
+        expect(recurrentNet._layerSets[index][9].weights[1][0]).toBe(timeStep.model.equations[index].states[5].product.weights[1]);
+        expect(recurrentNet._layerSets[index][9].weights[2][0]).toBe(timeStep.model.equations[index].states[5].product.weights[2]);
+        expect(recurrentNet._layerSets[index][10].weights[0][0]).toBe(timeStep.model.outputConnector.weights[0]);
+        expect(recurrentNet._layerSets[index][10].weights[0][1]).toBe(timeStep.model.outputConnector.weights[1]);
+        expect(recurrentNet._layerSets[index][10].weights[0][2]).toBe(timeStep.model.outputConnector.weights[2]);
+        expect(recurrentNet._layerSets[index][11].weights[0][0]).toBe(timeStep.model.equations[index].states[6].product.weights[0]);
+        expect(recurrentNet._layerSets[index][12].weights[0][0]).toBe(timeStep.model.output.weights[0]);
+        expect(recurrentNet._layerSets[index][13].weights[0][0]).toBe(timeStep.model.equations[index].states[7].product.weights[0]);
+        expect(recurrentNet._layerSets[index][14].weights[0][0]).toBe(timeStep.model.equations[index].states[7].product.weights[0]);
+      }
+      test('.run() is equivalent to baseline', () => {
+        const { timeStep, recurrentNet } = setupNets();
+        const timeStepResult = timeStep.run([2, 3]);
+        const recurrentResult = recurrentNet.run([2, 3]);
+
+        expect(recurrentNet._layerSets.length).toBe(timeStep.model.equations.length);
+        testRecurrentLayerSet(timeStep, recurrentNet, 0);
+        testRecurrentLayerSet(timeStep, recurrentNet, 1);
+        testRecurrentLayerSet(timeStep, recurrentNet, 2);
+
+        expect(recurrentResult[0][0]).toBe(timeStepResult);
       });
-      recurrentNet._hiddenLayerSets[0].forEach(l => {
-        l.deltas = zeros2D(l.width, l.height);
-        l.weights = zeros2D(l.width, l.height);
+
+      test('.train() is equivalent to baseline', () => {
+        const { timeStep, recurrentNet } = setupNets();
+        timeStep.adjustWeights = () => {};
+        recurrentNet.adjustWeights = () => {};
+        timeStep.train([[2, 3]], { iterations: 1 });
+        recurrentNet.train([[2, 3]], { iterations: 1, reinforce: true }); //TODO: remove reinforce
+
+        expect(recurrentNet._layerSets.length).toBe(timeStep.model.equations.length);
+        testRecurrentLayerSet(timeStep, recurrentNet, 0);
+        testRecurrentLayerSet(timeStep, recurrentNet, 1);
       });
-      recurrentNet._outputLayers.forEach(l => {
-        l.deltas = zeros2D(l.width, l.height);
-        l.weights = zeros2D(l.width, l.height);
+    });
+    describe('back propagation', () => {
+      test('.compare() via .train() is equivalent to baseline', () => {
+        const { timeStep, recurrentNet } = setupNets();
+
+        function testRecurrentLayerSet(index) {
+          expect(recurrentNet._layerSets[index][14].deltas[0][0]).toBe(timeStep.model.equations[index].states[7].product.deltas[0]);
+          expect(recurrentNet._layerSets[index][13].deltas[0][0]).toBe(timeStep.model.equations[index].states[7].product.deltas[0]);
+          expect(recurrentNet._layerSets[index][12].deltas[0][0]).toBe(timeStep.model.output.deltas[0]);
+          expect(recurrentNet._layerSets[index][11].deltas[0][0]).toBe(timeStep.model.equations[index].states[6].product.deltas[0]);
+          expect(recurrentNet._layerSets[index][10].deltas[0][0]).toBe(timeStep.model.outputConnector.deltas[0]);
+          expect(recurrentNet._layerSets[index][10].deltas[0][1]).toBe(timeStep.model.outputConnector.deltas[1]);
+          expect(recurrentNet._layerSets[index][10].deltas[0][2]).toBe(timeStep.model.outputConnector.deltas[2]);
+          expect(recurrentNet._layerSets[index][9].deltas[0][0]).toBe(timeStep.model.equations[index].states[5].product.deltas[0]);
+          expect(recurrentNet._layerSets[index][9].deltas[1][0]).toBe(timeStep.model.equations[index].states[5].product.deltas[1]);
+          expect(recurrentNet._layerSets[index][9].deltas[2][0]).toBe(timeStep.model.equations[index].states[5].product.deltas[2]);
+          expect(recurrentNet._layerSets[index][8].deltas[0][0]).toBe(timeStep.model.equations[index].states[4].product.deltas[0]);
+          expect(recurrentNet._layerSets[index][8].deltas[1][0]).toBe(timeStep.model.equations[index].states[4].product.deltas[1]);
+          expect(recurrentNet._layerSets[index][8].deltas[2][0]).toBe(timeStep.model.equations[index].states[4].product.deltas[2]);
+          expect(recurrentNet._layerSets[index][6].deltas[0][0]).toBe(timeStep.model.equations[index].states[3].product.deltas[0]);
+          expect(recurrentNet._layerSets[index][6].deltas[1][0]).toBe(timeStep.model.equations[index].states[3].product.deltas[1]);
+          expect(recurrentNet._layerSets[index][6].deltas[2][0]).toBe(timeStep.model.equations[index].states[3].product.deltas[2]);
+          expect(recurrentNet._layerSets[index][5].deltas[0][0]).toBe(timeStep.model.equations[index].states[2].product.deltas[0]);
+          expect(recurrentNet._layerSets[index][5].deltas[1][0]).toBe(timeStep.model.equations[index].states[2].product.deltas[1]);
+          expect(recurrentNet._layerSets[index][5].deltas[2][0]).toBe(timeStep.model.equations[index].states[2].product.deltas[2]);
+          expect(recurrentNet._layerSets[index][4].deltas[0][0]).toBe(timeStep.model.equations[index].states[2].right.deltas[0]);
+          expect(recurrentNet._layerSets[index][4].deltas[1][0]).toBe(timeStep.model.equations[index].states[2].right.deltas[1]);
+          expect(recurrentNet._layerSets[index][4].deltas[2][0]).toBe(timeStep.model.equations[index].states[2].right.deltas[2]);
+          expect(recurrentNet._layerSets[index][3].deltas[0][0]).toBe(timeStep.model.hiddenLayers[0].transition.deltas[0]);
+          expect(recurrentNet._layerSets[index][3].deltas[0][1]).toBe(timeStep.model.hiddenLayers[0].transition.deltas[1]);
+          expect(recurrentNet._layerSets[index][3].deltas[0][2]).toBe(timeStep.model.hiddenLayers[0].transition.deltas[2]);
+          expect(recurrentNet._layerSets[index][3].deltas[1][0]).toBe(timeStep.model.hiddenLayers[0].transition.deltas[3]);
+          expect(recurrentNet._layerSets[index][3].deltas[1][1]).toBe(timeStep.model.hiddenLayers[0].transition.deltas[4]);
+          expect(recurrentNet._layerSets[index][3].deltas[1][2]).toBe(timeStep.model.hiddenLayers[0].transition.deltas[5]);
+          expect(recurrentNet._layerSets[index][3].deltas[2][0]).toBe(timeStep.model.hiddenLayers[0].transition.deltas[6]);
+          expect(recurrentNet._layerSets[index][3].deltas[2][1]).toBe(timeStep.model.hiddenLayers[0].transition.deltas[7]);
+          expect(recurrentNet._layerSets[index][3].deltas[2][2]).toBe(timeStep.model.hiddenLayers[0].transition.deltas[8]);
+          expect(recurrentNet._layerSets[index][2].deltas[0][0]).toBe(timeStep.model.equations[index].states[1].product.deltas[0]);
+          expect(recurrentNet._layerSets[index][2].deltas[1][0]).toBe(timeStep.model.equations[index].states[1].product.deltas[1]);
+          expect(recurrentNet._layerSets[index][2].deltas[2][0]).toBe(timeStep.model.equations[index].states[1].product.deltas[2]);
+          expect(recurrentNet._layerSets[index][1].deltas[0][0]).toBe(timeStep.model.hiddenLayers[0].weight.deltas[0]);
+          expect(recurrentNet._layerSets[index][1].deltas[1][0]).toBe(timeStep.model.hiddenLayers[0].weight.deltas[1]);
+          expect(recurrentNet._layerSets[index][1].deltas[2][0]).toBe(timeStep.model.hiddenLayers[0].weight.deltas[2]);
+        }
+
+        timeStep.adjustWeights = () => {};
+        const timeStepResult = timeStep.train([[2, 3]], { iterations: 1 });
+        recurrentNet.adjustWeights = () => {};
+        const recurrentNetResult = recurrentNet.train([[2, 3]], { iterations: 1, reinforce: true, errorCheckInterval: 1 });
+
+        expect(recurrentNetResult.error.toFixed(6)).toBe(timeStepResult.error.toFixed(6));
+        expect(recurrentNet._layerSets.length).toBe(timeStep.model.equations.length);
+        testRecurrentLayerSet(1);
+        testRecurrentLayerSet(0);
       });
-      // timeStep.model.input.weights.forEach((weight, i) => {
-      //   timeStep.model.input.weights[i] = 0;
-      //   timeStep.model.input.deltas[i] = 0;
-      // });
-      timeStep.model.hiddenLayers.forEach(l => {
-        l.bias.weights.forEach((weight, i) => {
-          l.bias.weights[i] = 0;
-          l.bias.deltas[i] = 0;
-        });
-        l.transition.weights.forEach((weight, i) => {
-          l.transition.weights[i] = 0;
-          l.transition.deltas[i] = 0;
-        });
-        l.weight.weights.forEach((weight, i) => {
-          l.weight.weights[i] = 0;
-          l.weight.deltas[i] = 0;
-        });
+
+      test('.learn() via .train() is equivalent to baseline', () => {
+        const { timeStep, recurrentNet } = setupNets();
+
+        function testRecurrentModel() {
+          expect(recurrentNet._model[0].weights[0][0]).toBe(timeStep.model.allMatrices[0].weights[0]);
+          expect(recurrentNet._model[0].weights[1][0]).toBe(timeStep.model.allMatrices[0].weights[1]);
+          expect(recurrentNet._model[0].weights[2][0]).toBe(timeStep.model.allMatrices[0].weights[2]);
+          expect(recurrentNet._model[1].weights[0][0]).toBe(timeStep.model.allMatrices[1].weights[0]);
+          expect(recurrentNet._model[1].weights[0][1]).toBe(timeStep.model.allMatrices[1].weights[1]);
+          expect(recurrentNet._model[1].weights[0][2]).toBe(timeStep.model.allMatrices[1].weights[2]);
+          expect(recurrentNet._model[1].weights[1][0]).toBe(timeStep.model.allMatrices[1].weights[3]);
+          expect(recurrentNet._model[1].weights[1][1]).toBe(timeStep.model.allMatrices[1].weights[4]);
+          expect(recurrentNet._model[1].weights[1][2]).toBe(timeStep.model.allMatrices[1].weights[5]);
+          expect(recurrentNet._model[1].weights[2][0]).toBe(timeStep.model.allMatrices[1].weights[6]);
+          expect(recurrentNet._model[1].weights[2][1]).toBe(timeStep.model.allMatrices[1].weights[7]);
+          expect(recurrentNet._model[1].weights[2][2]).toBe(timeStep.model.allMatrices[1].weights[8]);
+          expect(recurrentNet._model[2].weights[0][0]).toBe(timeStep.model.allMatrices[2].weights[0]);
+          expect(recurrentNet._model[2].weights[1][0]).toBe(timeStep.model.allMatrices[2].weights[1]);
+          expect(recurrentNet._model[2].weights[2][0]).toBe(timeStep.model.allMatrices[2].weights[2]);
+          expect(recurrentNet._model[3].weights[0][0]).toBe(timeStep.model.allMatrices[3].weights[0]);
+          expect(recurrentNet._model[3].weights[0][1]).toBe(timeStep.model.allMatrices[3].weights[1]);
+          expect(recurrentNet._model[3].weights[0][2]).toBe(timeStep.model.allMatrices[3].weights[2]);
+          expect(recurrentNet._model[4].weights[0][0]).toBe(timeStep.model.allMatrices[4].weights[0]);
+        }
+
+        const timeStepResult = timeStep.train([[2, 3]], { iterations: 1 });
+        const recurrentNetResult = recurrentNet.train([[2, 3]], { iterations: 1, reinforce: true, errorCheckInterval: 1 });
+
+        // expect(recurrentNetResult.error.toFixed(5)).toBe(timeStepResult.error.toFixed(5));
+        expect(recurrentNet._layerSets.length).toBe(timeStep.model.equations.length);
+        testRecurrentModel();
       });
-      timeStep.model.output.weights.forEach((weight, i) => {
-        timeStep.model.output.weights[i] = 0;
-        timeStep.model.output.deltas[i] = 0;
-      });
-
-      // timeStep.model.allMatrices.forEach(l => l.weights.forEach((weight, i) => {
-      //   l.weights[i] = 0;
-      //   l.deltas[i] = 0;
-      // }));
-
-      const recurrentWeightLayers = recurrentNet._model.filter(
-        l => l.name === 'weight'
-      );
-      const recurrentTransitionLayers = recurrentNet._model.filter(
-        l => l.name === 'transition'
-      );
-      const recurrentBiasLayers = recurrentNet._model.filter(
-        l => l.name === 'bias'
-      );
-      const recurrentOutputLayer = recurrentNet._outputLayers.filter(
-        l => l.name === 'outputGate'
-      )[0];
-
-      const recurrentRecurrentLayer = recurrentNet._hiddenLayerSets[0][1];
-
-      timeStep.bindEquation();
-      const timeStepWeightLayers = timeStep.model.hiddenLayers.map(
-        hiddenLayers => hiddenLayers.weight
-      );
-      const timeStepTransitionLayers = timeStep.model.hiddenLayers.map(
-        hiddenLayers => hiddenLayers.transition
-      );
-      const timeStepBiasLayers = timeStep.model.hiddenLayers.map(
-        hiddenLayers => hiddenLayers.bias
-      );
-      const timeStepOutputLayer = timeStep.model.allMatrices[3];
-      const timeStepRecurrentLayer = timeStep.model.equations[0].states[2].right;
-
-      expect(recurrentWeightLayers.length).toEqual(timeStepWeightLayers.length);
-      expect(recurrentTransitionLayers.length).toEqual(
-        timeStepTransitionLayers.length
-      );
-      expect(recurrentBiasLayers.length).toEqual(timeStepBiasLayers.length);
-
-      // set weights
-      recurrentWeightLayers[0].weights[0][0] = timeStepWeightLayers[0].weights[0] = 19;
-      recurrentWeightLayers[0].weights[1][0] = timeStepWeightLayers[0].weights[1] = 16;
-      recurrentWeightLayers[0].weights[2][0] = timeStepWeightLayers[0].weights[2] = 5;
-
-      // set transition
-      recurrentTransitionLayers[0].weights[0][0] = timeStepTransitionLayers[0].weights[0] = 12;
-      recurrentTransitionLayers[0].weights[0][1] = timeStepTransitionLayers[0].weights[1] = 7;
-      recurrentTransitionLayers[0].weights[0][2] = timeStepTransitionLayers[0].weights[2] = 7;
-      recurrentTransitionLayers[0].weights[1][0] = timeStepTransitionLayers[0].weights[3] = 4;
-      recurrentTransitionLayers[0].weights[1][1] = timeStepTransitionLayers[0].weights[4] = 14;
-      recurrentTransitionLayers[0].weights[1][2] = timeStepTransitionLayers[0].weights[5] = 6;
-      recurrentTransitionLayers[0].weights[2][0] = timeStepTransitionLayers[0].weights[6] = 3;
-      recurrentTransitionLayers[0].weights[2][1] = timeStepTransitionLayers[0].weights[7] = 7;
-      recurrentTransitionLayers[0].weights[2][2] = timeStepTransitionLayers[0].weights[8] = 19;
-
-      recurrentOutputLayer.weights[0][0] = timeStepOutputLayer.weights[0] = 5;
-      recurrentOutputLayer.weights[0][1] = timeStepOutputLayer.weights[1] = 3;
-      recurrentOutputLayer.weights[0][2] = timeStepOutputLayer.weights[2] = 1;
-
-      recurrentRecurrentLayer.weights[0][0] = timeStepRecurrentLayer.weights[0] = 4;
-      recurrentRecurrentLayer.weights[1][0] = timeStepRecurrentLayer.weights[1] = 8;
-      recurrentRecurrentLayer.weights[2][0] = timeStepRecurrentLayer.weights[2] = 12;
-
-      timeStep.run([2, 3]);
-      recurrentNet.run([2, 3]);
-
-      // expect(recurrentNet._inputLayers[0].weights[0][0]).toEqual(
-      //   timeStep.model.input.weights[0]
-      // );
-
-      expect(recurrentNet._hiddenLayerSets[0][0].weights[0][0]).toEqual(
-        timeStep.model.equations[0].states[1].product.weights[0]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][0].weights[1][0]).toEqual(
-        timeStep.model.equations[0].states[1].product.weights[1]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][0].weights[2][0]).toEqual(
-        timeStep.model.equations[0].states[1].product.weights[2]
-      );
-
-      expect(recurrentNet._hiddenLayerSets[0][2].weights[0][0]).toEqual(
-        timeStep.model.equations[0].states[2].product.weights[0]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][2].weights[1][0]).toEqual(
-        timeStep.model.equations[0].states[2].product.weights[1]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][2].weights[2][0]).toEqual(
-        timeStep.model.equations[0].states[2].product.weights[2]
-      );
-
-      expect(recurrentNet._hiddenLayerSets[0][3].weights[0][0]).toEqual(
-        timeStep.model.equations[0].states[3].product.weights[0]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][3].weights[1][0]).toEqual(
-        timeStep.model.equations[0].states[3].product.weights[1]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][3].weights[2][0]).toEqual(
-        timeStep.model.equations[0].states[3].product.weights[2]
-      );
-
-      expect(recurrentNet._hiddenLayerSets[0][4].weights[0][0]).toEqual(
-        timeStep.model.equations[0].states[4].product.weights[0]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][4].weights[1][0]).toEqual(
-        timeStep.model.equations[0].states[4].product.weights[1]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][4].weights[2][0]).toEqual(
-        timeStep.model.equations[0].states[4].product.weights[2]
-      );
-
-      expect(recurrentNet._hiddenLayerSets[0][5].weights[0][0]).toEqual(
-        timeStep.model.equations[0].states[5].product.weights[0]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][5].weights[1][0]).toEqual(
-        timeStep.model.equations[0].states[5].product.weights[1]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][5].weights[2][0]).toEqual(
-        timeStep.model.equations[0].states[5].product.weights[2]
-      );
-
-      // assert.equal(recurrentNet._outputLayers[0].weights, timeStep.model.);
-      expect(recurrentNet._outputLayers[1].weights[0][0]).toEqual(
-        timeStep.model.equations[0].states[5].product.weights[0]
-      );
-      expect(recurrentNet._outputLayers[1].weights[1][0]).toEqual(
-        timeStep.model.equations[0].states[5].product.weights[1]
-      );
-      expect(recurrentNet._outputLayers[1].weights[2][0]).toEqual(
-        timeStep.model.equations[0].states[5].product.weights[2]
-      );
-      expect(recurrentNet._outputLayers[2].weights[0][0]).toEqual(
-        timeStep.model.equations[0].states[6].product.weights[0]
-      );
-      expect(recurrentNet._outputLayers[4].weights[0][0]).toEqual(
-        timeStep.model.equations[0].states[7].product.weights[0]
-      );
-
-      recurrentNet._calculateDeltas([3], 0);
-      // manually connect the product weights and deltas
-      timeStep.model.equations[0].states[7].product.deltas = timeStep.model.equations[0].states[7].product.weights.slice(0);
-      timeStep.model.equations[0].states[7].product.deltas[0] -= 3;
-      timeStep.backpropagate();
-
-      expect(recurrentNet._outputLayers[5].deltas[0][0]).toEqual(
-        timeStep.model.equations[0].states[7].product.deltas[0]
-      );
-      expect(recurrentNet._outputLayers[4].deltas[0][0]).toEqual(
-        timeStep.model.equations[0].states[6].product.deltas[0]
-      );
-      expect(recurrentNet._outputLayers[1].deltas[0][0]).toEqual(
-        timeStep.model.equations[0].states[5].product.deltas[0]
-      );
-      expect(recurrentNet._outputLayers[1].deltas[1][0]).toEqual(
-        timeStep.model.equations[0].states[5].product.deltas[1]
-      );
-      expect(recurrentNet._outputLayers[1].deltas[2][0]).toEqual(
-        timeStep.model.equations[0].states[5].product.deltas[2]
-      );
-
-      expect(recurrentNet._hiddenLayerSets[0][5].deltas[0][0]).toEqual(
-        timeStep.model.equations[0].states[5].product.deltas[0]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][5].deltas[1][0]).toEqual(
-        timeStep.model.equations[0].states[5].product.deltas[1]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][5].deltas[2][0]).toEqual(
-        timeStep.model.equations[0].states[5].product.deltas[2]
-      );
-
-      expect(recurrentNet._hiddenLayerSets[0][4].deltas[0][0]).toEqual(
-        timeStep.model.equations[0].states[4].product.deltas[0]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][4].deltas[1][0]).toEqual(
-        timeStep.model.equations[0].states[4].product.deltas[1]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][4].deltas[2][0]).toEqual(
-        timeStep.model.equations[0].states[4].product.deltas[2]
-      );
-
-      expect(recurrentNet._hiddenLayerSets[0][3].deltas[0][0]).toEqual(
-        timeStep.model.equations[0].states[3].product.deltas[0]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][3].deltas[1][0]).toEqual(
-        timeStep.model.equations[0].states[3].product.deltas[1]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][3].deltas[2][0]).toEqual(
-        timeStep.model.equations[0].states[3].product.deltas[2]
-      );
-
-      expect(recurrentNet._hiddenLayerSets[0][2].deltas[0][0]).toEqual(
-        timeStep.model.equations[0].states[2].product.deltas[0]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][2].deltas[1][0]).toEqual(
-        timeStep.model.equations[0].states[2].product.deltas[1]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][2].deltas[2][0]).toEqual(
-        timeStep.model.equations[0].states[2].product.deltas[2]
-      );
-
-      expect(recurrentNet._hiddenLayerSets[0][0].deltas[0][0]).toEqual(
-        timeStep.model.equations[0].states[1].product.deltas[0]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][0].deltas[1][0]).toEqual(
-        timeStep.model.equations[0].states[1].product.deltas[1]
-      );
-      expect(recurrentNet._hiddenLayerSets[0][0].deltas[2][0]).toEqual(
-        timeStep.model.equations[0].states[1].product.deltas[2]
-      );
-
-      expect(recurrentNet._inputLayers[0].deltas[0][0]).toEqual(
-        timeStep.model.equations[0].states[0].product.deltas[0]
-      );
     });
   });
   describe('training life-cycle', () => {
@@ -697,34 +626,34 @@ describe('Recurrent Class: End to End', () => {
     expect(error < 0.005).toBeTruthy();
   });
 
-  // it('can learn xor', () => {
-  //   const net = new Recurrent({
-  //     inputLayer: () => input({ height: 1 }),
-  //     hiddenLayers: [
-  //       (input, recurrentInput) => recurrent({ height: 3 }, input, recurrentInput)
-  //     ],
-  //     outputLayer: input => output({ height: 1 }, input)
-  //   });
-  //   net.initialize();
-  //   net.initializeDeep();
-  //   assert.equal(net._model.length, 3);
-  //   assert.equal(net._hiddenLayers.length, 2);
-  //   assert.equal(net._hiddenLayerSets[0].length, 6);
-  //   assert.equal(net._hiddenLayerSets[1].length, 6);
-  //   let error;
-  //   for (let i = 0; i < 100; i++) {
-  //     error = net._trainPattern([0, 0], [0], true);
-  //     error += net._trainPattern([0, 1], [1], true);
-  //     error += net._trainPattern([1, 0], [1], true);
-  //     error += net._trainPattern([1, 1], [0], true);
-  //     console.log(error / 4);
-  //   }
-  //   console.log(net.runInput([0, 0]));
-  //   console.log(net.runInput([0, 1]));
-  //   console.log(net.runInput([1, 0]));
-  //   console.log(net.runInput([1, 1]));
-  //   assert(error / 4 < 0.005);
-  // });
+  it('can learn xor', () => {
+    const net = new Recurrent({
+      inputLayer: () => input({ height: 1 }),
+      hiddenLayers: [
+        (input, recurrentInput) => recurrent({ height: 3 }, input, recurrentInput)
+      ],
+      outputLayer: input => output({ height: 1 }, input)
+    });
+    net.initialize();
+    net.initializeDeep();
+    expect(net._model.length).toBe(3);
+    expect(net._hiddenLayers.length).toBe(1);
+    expect(net._hiddenLayerSets[0].length).toBe(6);
+    expect(net._hiddenLayerSets[1].length).toBe(6);
+    let error;
+    for (let i = 0; i < 100; i++) {
+      error = net._trainPattern([0, 0], [0], true);
+      error += net._trainPattern([0, 1], [1], true);
+      error += net._trainPattern([1, 0], [1], true);
+      error += net._trainPattern([1, 1], [0], true);
+      console.log(error / 4);
+    }
+    console.log(net.runInput([0, 0]));
+    console.log(net.runInput([0, 1]));
+    console.log(net.runInput([1, 0]));
+    console.log(net.runInput([1, 1]));
+    expect(error / 4).toBe(0.005);
+  });
   test('can learn 1,2,3', () => {
     const net = new Recurrent({
       inputLayer: () => input({ height: 1 }),

@@ -1,4 +1,4 @@
-const { GPU } = require('gpu.js');
+const { GPU, input } = require('gpu.js');
 
 let gpuInstance = null;
 
@@ -35,12 +35,12 @@ function makeDevKernel(fn, settings) {
   return gpu.createKernel(fn, settings);
 }
 
-function kernelInput(input, size) {
-  return GPU.input(input, size);
+function kernelInput(value, size) {
+  return input(value, size);
 }
 
 function release(texture) {
-  if (texture.delete) {
+  if (texture && texture.delete) {
     texture.delete();
   }
 }
@@ -49,6 +49,7 @@ function clone(texture) {
   if (texture.clone) {
     return texture.clone();
   }
+  return texture;
   if (typeof texture[0] === 'number') {
     return new Float32Array(texture);
   } else if (typeof texture[0][0] === 'number') {

@@ -17,6 +17,10 @@ class Random extends Model {
   compare() {
     // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
+
+  learn(l1, l2, rate) {
+    super.learn(null, null, rate);
+  }
 }
 
 function random(settings) {

@@ -6,8 +6,11 @@ const { sigmoid } = require('./sigmoid');
 const { tanh } = require('./tanh');
 const { zeros } = require('./zeros');
 
-function lstm(settings, recurrentInput, input) {
+function lstm(settings, input, recurrentInput) {
   const { height } = settings;
+
+  if (recurrentInput.setDimensions) recurrentInput.setDimensions(1, height);
+
   const inputGateWeights = random({ height, width: input.height });
   const inputGatePeepholes = random({ width: height, height });
   const inputGateBias = zeros({ height });
@@ -61,7 +64,7 @@ function lstm(settings, recurrentInput, input) {
   );
 
   // compute new cell activation
-  const retainCell = multiplyElement(forgetGate, input); // what do we keep from cell
+  const retainCell = multiplyElement(forgetGate, recurrentInput); // what do we keep from cell
   const writeCell = multiplyElement(inputGate, memory); // what do we write to cell
   const cell = add(retainCell, writeCell); // new cell contents
 

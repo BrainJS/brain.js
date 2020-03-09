@@ -124,6 +124,10 @@ class Base {
     this.praxis = layer.praxis;
   }
 
+  setPraxis(praxis) {
+    this.praxis = praxis;
+  }
+
   predict() {
     // throw new Error(`${this.constructor.name}-predict is not yet implemented`)
   }

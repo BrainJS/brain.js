@@ -7,7 +7,7 @@ const softmax = require('./matrix/softmax');
 const copy = require('./matrix/copy');
 const { randomFloat } = require('../utilities/random');
 const zeros = require('../utilities/zeros');
-const DataFormatter = require('../utilities/data-formatter');
+const { DataFormatter, defaultRNNFormatter } = require('../utilities/data-formatter');
 const NeuralNetwork = require('../neural-network');
 
 class RNN {
@@ -700,7 +700,7 @@ class RNN {
       : ''}
   var input = ${
       (this.dataFormatter && typeof this.formatDataIn === 'function')
-        ? 'formatDataIn(rawInput)' 
+        ? 'formatDataIn(rawInput)'
         : 'rawInput'
     };
   var maxPredictionLength = input.length + ${ this.maxPredictionLength };
@@ -728,7 +728,7 @@ class RNN {
 ${ innerFunctionsSwitch.join('\n') }
       }
     }
-    
+
     var logProbabilities = state.product;
     if (temperature !== 1 && isSampleI) {
       for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {
@@ -738,7 +738,7 @@ ${ innerFunctionsSwitch.join('\n') }
 
     var probs = softmax(logProbabilities);
     var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);
-    
+
     _i++;
     if (nextIndex === 0) {
       break;
@@ -749,7 +749,7 @@ ${ innerFunctionsSwitch.join('\n') }
 
     output.push(nextIndex);
   }
-  ${ (this.dataFormatter && typeof this.formatDataOut === 'function') 
+  ${ (this.dataFormatter && typeof this.formatDataOut === 'function')
       ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))'
       : 'return output.slice(input.length).map(function(value) { return value - 1; })' };
   function Matrix(rows, columns) {
@@ -781,45 +781,7 @@ RNN.defaults = {
    * @param {*[]} data
    * @returns {Number[]}
    */
-  setupData: function(data) {
-    if (
-      typeof data[0] !== 'string'
-      && !Array.isArray(data[0])
-      && (
-        !data[0].hasOwnProperty('input')
-        || !data[0].hasOwnProperty('output')
-      )
-    ) {
-      return data;
-    }
-    let values = [];
-    const result = [];
-    if (typeof data[0] === 'string' || Array.isArray(data[0])) {
-      if (!this.dataFormatter) {
-        for (let i = 0; i < data.length; i++) {
-          values.push(data[i]);
-        }
-        this.dataFormatter = new DataFormatter(values);
-        this.dataFormatter.addUnrecognized();
-      }
-      for (let i = 0, max = data.length; i < max; i++) {
-        result.push(this.formatDataIn(data[i]));
-      }
-    } else {
-      if (!this.dataFormatter) {
-        for (let i = 0; i < data.length; i++) {
-          values.push(data[i].input);
-          values.push(data[i].output);
-        }
-        this.dataFormatter = DataFormatter.fromArrayInputOutput(values);
-        this.dataFormatter.addUnrecognized();
-      }
-      for (let i = 0, max = data.length; i < max; i++) {
-        result.push(this.formatDataIn(data[i].input, data[i].output));
-      }
-    }
-    return result;
-  },
+  setupData: defaultRNNFormatter,
   /**
    *
    * @param {*[]} input

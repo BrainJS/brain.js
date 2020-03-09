@@ -22,9 +22,9 @@ class Target extends Filter {
     this.height = inputLayer.height;
     this.depth = inputLayer.depth;
     this.validate();
-    if (this.depth > 0) {
+    if (this.depth) {
       throw new Error('Target layer not implemented for depth');
-    } else if (this.height > 1) {
+    } else if (this.height) {
       this.weights = zeros2D(this.width, this.height);
       this.deltas = zeros2D(this.width, this.height);
       this.errors = zeros2D(this.width, this.height);
@@ -62,8 +62,6 @@ class Target extends Filter {
   setupPraxis() {}
 
   learn() {
-    release(this.weights);
-    this.weights = clone(this.inputLayer.weights);
     this.resetDeltas();
   }
 }

@@ -15,7 +15,6 @@ class ArthurDeviationBiases extends Base {
   constructor(layer, settings) {
     super(layer, settings);
     this.kernel = null;
-    this.setupKernels();
   }
 
   run(layer, previousLayer, nextLayer, learningRate) {

@@ -3,10 +3,10 @@ const { Operator } = require('./types');
 const zeros2D = require('../utilities/zeros-2d');
 const { checkSameSize } = require('../utilities/layer-size');
 
-function predict(weights, inputLayerWeights) {
+function predict(inputLayerWeights1, inputLayerWeights2) {
   return (
-    weights[this.thread.y][this.thread.x] *
-    inputLayerWeights[this.thread.y][this.thread.x]
+    inputLayerWeights1[this.thread.y][this.thread.x] *
+    inputLayerWeights2[this.thread.y][this.thread.x]
   );
 }
 
@@ -46,7 +46,7 @@ class MultiplyElement extends Operator {
 
   predict() {
     const { weights } = this;
-    this.weights = this.predictKernel(weights, this.inputLayer.weights);
+    this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
     release(weights);
   }
 

@@ -1127,7 +1127,7 @@ class RNNTimeStep extends RNN {
       var product = state.product;
       var left = state.left;
       var right = state.right;
-      
+
       switch (state.name) {
 ${ innerFunctionsSwitch.join('\n') }
       }
@@ -1145,7 +1145,7 @@ ${ innerFunctionsSwitch.join('\n') }
   };
   ${ formatInputData() }
   ${ formatOutputData() }
-  
+
   function Matrix(rows, columns) {
     this.rows = rows;
     this.columns = columns;

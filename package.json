@@ -5,7 +5,7 @@
     "url": "https://github.com/brainjs/brain.js/issues"
   },
   "dependencies": {
-    "gpu.js": "^2.6.2",
+    "gpu.js": "^2.6.9",
     "thaw.js": "^2.0.0"
   },
   "description": "Neural networks in JavaScript",
@@ -23,10 +23,11 @@
     "fast-xml-parser": "^3.15.1",
     "gpu-mock.js": "^1.1.1",
     "istanbul-spy": "^1.0.1",
-    "jest": "^24.9.0",
+    "jest": "^25.1.0",
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-bundle-visualiser": "^1.2.0",
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "c8": "^7.0.1"
   },
   "files": [
     "dist/brain-browser.js",
@@ -94,7 +95,7 @@
     "lint:fix": "eslint --ext .js --fix ./src ./__tests__",
     "prettier": "prettier --write {src,__tests__}/**/*.js",
     "test": "jest --env=node",
-    "test:coverage": "jest --env=node --coverage && codecov",
+    "test:coverage": "jest --env=node --coverage --coverage-provider v8 && codecov",
     "test:watch": "jest --watch --env=node"
   },
   "typings": "./src/index.d.ts",

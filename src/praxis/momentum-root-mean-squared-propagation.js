@@ -71,7 +71,6 @@ class MomentumRootMeanSquaredPropagation extends Base {
   constructor(layerTemplate, settings = {}) {
     super(layerTemplate, settings);
     this.momenta = zeros2D(layerTemplate.width, layerTemplate.height);
-    this.setupKernels();
   }
 
   run(layer, previousLayer, nextLayer, learningRate) {

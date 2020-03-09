@@ -218,4 +218,49 @@ var dataFormatter = {
   }
 }
 
-module.exports = DataFormatter;
+/**
+ *
+ * @param {*[]} data
+ * @returns {Number[]}
+ */
+function defaultRNNFormatter(data) {
+  if (
+    typeof data[0] !== 'string'
+    && !Array.isArray(data[0])
+    && (
+      !data[0].hasOwnProperty('input')
+      || !data[0].hasOwnProperty('output')
+    )
+  ) {
+    return data;
+  }
+  let values = [];
+  const result = [];
+  if (typeof data[0] === 'string' || Array.isArray(data[0])) {
+    if (!this.dataFormatter) {
+      for (let i = 0; i < data.length; i++) {
+        values.push(data[i]);
+      }
+      this.dataFormatter = new DataFormatter(values);
+      this.dataFormatter.addUnrecognized();
+    }
+    for (let i = 0, max = data.length; i < max; i++) {
+      result.push(this.formatDataIn(data[i]));
+    }
+  } else {
+    if (!this.dataFormatter) {
+      for (let i = 0; i < data.length; i++) {
+        values.push(data[i].input);
+        values.push(data[i].output);
+      }
+      this.dataFormatter = DataFormatter.fromArrayInputOutput(values);
+      this.dataFormatter.addUnrecognized();
+    }
+    for (let i = 0, max = data.length; i < max; i++) {
+      result.push(this.formatDataIn(data[i].input, data[i].output));
+    }
+  }
+  return result;
+}
+
+module.exports = { DataFormatter, defaultRNNFormatter };

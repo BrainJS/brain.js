@@ -113,6 +113,8 @@ class Multiply extends Operator {
     release(inputLayer1Deltas);
     release(inputLayer2Deltas);
   }
+
+  learn() {}
 }
 
 function multiply(inputLayer1, inputLayer2, settings) {
