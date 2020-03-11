@@ -11,8 +11,8 @@ function lstm(settings, input, recurrentInput) {
 
   if (recurrentInput.setDimensions) recurrentInput.setDimensions(1, height);
 
-  const inputGateWeights = random({ height, width: input.height });
-  const inputGatePeepholes = random({ width: height, height });
+  const inputGateWeights = random({ height, width: input.height, std: 0.08 });
+  const inputGatePeepholes = random({ width: height, height, std: 0.08 });
   const inputGateBias = zeros({ height });
   const inputGate = sigmoid(
     add(
@@ -24,8 +24,8 @@ function lstm(settings, input, recurrentInput) {
     )
   );
 
-  const forgetGateWeights = random({ height, width: input.height });
-  const forgetGatePeepholes = random({ width: height, height });
+  const forgetGateWeights = random({ height, width: input.height, std: 0.08 });
+  const forgetGatePeepholes = random({ width: height, height, std: 0.08 });
   const forgetGateBias = zeros({ height });
   const forgetGate = sigmoid(
     add(
@@ -37,8 +37,8 @@ function lstm(settings, input, recurrentInput) {
     )
   );
 
-  const outputGateWeights = random({ height, width: input.height });
-  const outputGatePeepholes = random({ width: height, height });
+  const outputGateWeights = random({ height, width: input.height, std: 0.08 });
+  const outputGatePeepholes = random({ width: height, height, std: 0.08 });
   const outputGateBias = zeros({ height });
   const outputGate = sigmoid(
     add(
@@ -50,8 +50,8 @@ function lstm(settings, input, recurrentInput) {
     )
   );
 
-  const memoryWeights = random({ height, width: input.height });
-  const memoryPeepholes = random({ width: height, height });
+  const memoryWeights = random({ height, width: input.height, std: 0.08 });
+  const memoryPeepholes = random({ width: height, height, std: 0.08 });
   const memoryBias = zeros({ height });
   const memory = tanh(
     add(

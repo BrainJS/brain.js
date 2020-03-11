@@ -41,13 +41,12 @@ class MultiplyElement extends Operator {
 
     this.compareKernel = makeKernel(compare, {
       output: [this.width, this.height],
+      immutable: true,
     });
   }
 
   predict() {
-    const { weights } = this;
     this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
-    release(weights);
   }
 
   compare() {

@@ -10,9 +10,9 @@ function recurrent(settings, input, recurrentInput) {
   if (recurrentInput.setDimensions) recurrentInput.setDimensions(1, height);
 
   // wxh
-  const weight = random({ name: 'weight', height, width: input.height });
+  const weight = random({ name: 'weight', height, width: input.height, std: 0.08 });
   // whh
-  const transition = random({ name: 'transition', height, width: height });
+  const transition = random({ name: 'transition', height, width: height, std: 0.08 });
   // bhh
   const bias = zeros({ name: 'bias', height });
 

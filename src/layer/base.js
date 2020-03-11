@@ -1,6 +1,4 @@
-const { release, clone, makeKernel } = require('../utilities/kernel');
-const zeros2D = require('../utilities/zeros-2d');
-const zeros3D = require('../utilities/zeros-3d');
+const { release, clone, makeKernel, clear } = require('../utilities/kernel');
 
 class Base {
   static get defaults() {
@@ -116,16 +114,18 @@ class Base {
       );
     }
     if (layer.hasOwnProperty('predictKernel')) {
+      if (!layer.predictKernel.immutable) {
+        throw new Error(`${layer.constructor.name}.predictKernel is not reusable, set kernel.immutable = true`);
+      }
       this.predictKernel = layer.predictKernel;
     }
     if (layer.hasOwnProperty('compareKernel')) {
+      if (!layer.compareKernel.immutable) {
+        throw new Error(`${layer.constructor.name}.compareKernel is not reusable, set kernel.immutable = true`);
+      }
       this.compareKernel = layer.compareKernel;
     }
     this.praxis = layer.praxis;
-  }
-
-  setPraxis(praxis) {
-    this.praxis = praxis;
   }
 
   predict() {
@@ -138,10 +138,11 @@ class Base {
   }
 
   learn(previousLayer, nextLayer, learningRate) {
-    const { weights } = this;
+    //TODO: do we need to release here?
+    const { weights: oldWeights } = this;
     this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
-    release(weights);
-    this.resetDeltas();
+    release(oldWeights);
+    clear(this.deltas);
   }
 
   toArray() {
@@ -163,24 +164,6 @@ class Base {
     }
     jsonLayer.type = name;
     return jsonLayer;
-  }
-
-  resetDeltas() {
-    if (this.resetDeltasValue) {
-      release(this.deltas);
-      this.deltas = clone(this.resetDeltasValue);
-      return;
-    }
-    if (!this.resetDeltasKernel) {
-      const output = [this.width];
-      if (this.height) output.push(this.height);
-      if (this.depth) output.push(this.depth);
-      this.resetDeltasKernel = makeKernel(function() {
-        return 0;
-      }, { output });
-    }
-    release(this.deltas);
-    this.deltas = this.resetDeltasValue = this.resetDeltasKernel();
   }
 }
 

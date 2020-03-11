@@ -10,4 +10,4 @@ module.exports = function rowPluckB(product, left, rowIndex) {
   for (let column = 0; column < columns; column++) {
     left.deltas[rowBase + column] = product.deltas[column];
   }
-}
+};

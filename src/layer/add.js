@@ -1,4 +1,4 @@
-const { makeKernel, release, clone } = require('../utilities/kernel');
+const { makeKernel, release, clone, clear } = require('../utilities/kernel');
 const zeros2D = require('../utilities/zeros-2d');
 const { checkSameSize } = require('../utilities/layer-size');
 const { Operator } = require('./types');
@@ -28,6 +28,7 @@ class Add extends Operator {
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
       output: [this.width, this.height],
+      immutable: true,
     });
   }
 
@@ -37,9 +38,11 @@ class Add extends Operator {
       this.inputLayer1.weights,
       this.inputLayer2.weights
     );
+    clear(this.deltas);
   }
 
   compare() {
+    //TODO: Do we need release and clone here?
     release(this.inputLayer1.deltas);
     release(this.inputLayer2.deltas);
     this.inputLayer1.deltas = clone(this.deltas);

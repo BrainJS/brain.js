@@ -26,4 +26,4 @@ module.exports = function multiplyB(product, left, right) {
       }
     }
   }
-}
+};

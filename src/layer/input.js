@@ -1,6 +1,6 @@
 const { EntryPoint } = require('./types');
 const zeros2D = require('../utilities/zeros-2d');
-const { makeKernel, release, kernelInput } = require('../utilities/kernel');
+const { makeKernel, release, kernelInput, clear } = require('../utilities/kernel');
 
 class Input extends EntryPoint {
   constructor(settings) {
@@ -17,7 +17,8 @@ class Input extends EntryPoint {
       this.reshapeInput = makeKernel(function(value) {
         return value[this.thread.y];
       }, {
-        output: [1, this.height]
+        output: [1, this.height],
+        immutable: true,
       });
     } else {
       this.reshapeInput = (inputs) => inputs;
@@ -37,15 +38,17 @@ class Input extends EntryPoint {
       inputs.length === this.height &&
       inputs[0].length === this.width
     ) {
-      this.weights = inputs;
+      this.weights = clone(inputs);
     } else {
       throw new Error('Inputs are not of sized correctly');
     }
+    clear(this.deltas);
   }
 
   predict1D(inputs) {
     if (this.weights) release(this.weights);
     this.weights = this.reshapeInput(inputs);
+    clear(this.deltas);
   }
 
   compare() {

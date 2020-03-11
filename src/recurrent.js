@@ -1,12 +1,11 @@
 const { RecurrentConnection } = require('./layer/recurrent-connection');
 const { RecurrentInput } = require('./layer/recurrent-input');
 const { RecurrentZeros } = require('./layer/recurrent-zeros');
-const { Model } = require('./layer/types');
+const { Model, InternalModel } = require('./layer/types');
 const { Target } = require('./layer/target');
 const flattenLayers = require('./utilities/flatten-layers');
 const { FeedForward } = require('./feed-forward');
-const { release } = require('./utilities/kernel');
-// const Base from './layer/base'
+const { release, clone } = require('./utilities/kernel');
 
 class Recurrent extends FeedForward {
   static get structure() {
@@ -72,24 +71,18 @@ class Recurrent extends FeedForward {
       let layer = null;
       switch (Object.getPrototypeOf(previousLayer.constructor).name) {
         case 'Activation': {
-          const inputLayer =
-            layers[
-              previousLayers.indexOf(previousLayer.inputLayer)
-              ] || previousLayer.inputLayer;
-          layer = new previousLayer.constructor(inputLayer);
+          layer = new previousLayer.constructor(findInputLayer(previousLayer.inputLayer));
           break;
         }
         case 'EntryPoint': {
-          layer = new previousLayer.constructor(previousLayer);
+          layer = new previousLayer.constructor(layerSettings(previousLayer));
           break;
         }
         case 'Filter': {
-          const settings = previousLayer;
-          const inputLayer =
-            layers[
-              previousLayers.indexOf(previousLayer.inputLayer)
-              ] || previousLayer.inputLayer;
-          layer = new previousLayer.constructor(settings, inputLayer);
+          layer = new previousLayer.constructor(
+            layerSettings(previousLayer.inputLayer),
+            findInputLayer(previousLayer.inputLayer)
+          );
           break;
         }
         case 'Internal': {
@@ -107,28 +100,21 @@ class Recurrent extends FeedForward {
           }
           break;
         }
+        case 'InternalModel':
         case 'Model': {
           layer = previousLayer;
           break;
         }
         case 'Modifier': {
-          const inputLayer =
-            layers[
-              previousLayers.indexOf(previousLayer.inputLayer)
-              ] || previousLayer.inputLayer;
-          layer = new previousLayer.constructor(inputLayer);
+          layer = new previousLayer.constructor(findInputLayer(previousLayer.inputLayer));
           break;
         }
         case 'Operator': {
-          const inputLayer1 =
-            layers[
-              previousLayers.indexOf(previousLayer.inputLayer1)
-              ] || previousLayer.inputLayer1;
-          const inputLayer2 =
-            layers[
-              previousLayers.indexOf(previousLayer.inputLayer2)
-              ] || previousLayer.inputLayer2;
-          layer = new previousLayer.constructor(inputLayer1, inputLayer2);
+          layer = new previousLayer.constructor(
+            findInputLayer(previousLayer.inputLayer1),
+            findInputLayer(previousLayer.inputLayer2),
+            layerSettings(previousLayer)
+          );
           break;
         }
         default:
@@ -142,6 +128,17 @@ class Recurrent extends FeedForward {
       }
       layers.push(layer);
     }
+
+    function findInputLayer(inputLayer) {
+      const index = previousLayers.indexOf(inputLayer);
+      if (index < 0) throw new Error('unable to find layer');
+      return layers[index];
+    }
+
+    function layerSettings(layer) {
+      return { ...layer, weights: null, deltas: null, errors: null, praxis: null };
+    }
+
     return layers;
   }
 
@@ -163,7 +160,7 @@ class Recurrent extends FeedForward {
     const layerSet = flattenLayers([inputLayer, ... hiddenLayers, outputLayer]);
     this._hiddenLayerOutputIndices = hiddenLayers.map(l => layerSet.indexOf(l));
     this._layerSets = [layerSet];
-    this._model = layerSet.filter(l => l instanceof Model || l instanceof Target);
+    this._model = layerSet.filter(l => l instanceof Model || l instanceof InternalModel);
     this.initializeLayers(layerSet);
   }
 
@@ -225,7 +222,7 @@ class Recurrent extends FeedForward {
    * @returns {Number} error
    */
   _calculateTrainingError(data) {
-    let sum = new Float32Array([0]);
+    let sum = new Float32Array(1);
     for (let i = 0; i < data.length; ++i) {
       const prevSum = sum;
       const error = this._trainPattern(data[i], true);
@@ -237,7 +234,6 @@ class Recurrent extends FeedForward {
     release(sum);
     if (result.toArray) {
       const resultArray = result.toArray();
-      release(result);
       return resultArray[0];
     }
     return result[0];
@@ -249,13 +245,14 @@ class Recurrent extends FeedForward {
 
   _calculateDeltas(target) {
     const lastLayerSet = this._layerSets[this._layerSets.length - 1];
-    // Iterate from the last layer backwards, but don't compare on the output layer, so we back-propagate 0's
+    // Iterate from the second to last layer backwards, propagating 0's
     for (let i = lastLayerSet.length - 2; i >= 0; i--) {
       lastLayerSet[i].compare();
     }
+
     for (let x = target.length - 2; x >= 0; x--) {
       const layerSet = this._layerSets[x];
-      layerSet[layerSet.length - 1].compare([new Float32Array([target[x + 1]])]);
+      layerSet[layerSet.length - 1].compare(new Float32Array([target[x + 1]]));
       for (let i = layerSet.length - 2; i >= 0; i--) {
         layerSet[i].compare();
       }
@@ -292,15 +289,16 @@ class Recurrent extends FeedForward {
     this.adjustWeights();
 
     if (logErrorRate) {
-      // TODO: put on GPU
-      let error = 0;
+      const { meanSquaredError } = this;
+      let error = new Float32Array(1);
       for (let i = 0; i < this._layerSets.length; i++) {
         const layerSet = this._layerSets[i];
         const lastLayer = layerSet[layerSet.length - 1];
-        error += Math.abs(lastLayer.errors[0][0]);
+        const prevError = error;
+        error = meanSquaredError.addAbsolute(prevError, lastLayer.errors);
+        release(prevError);
       }
-      // return this.meanSquaredError.calculate([[error / input.length]]);
-      return new Float32Array([error / input.length]);
+      return clone(meanSquaredError.divide(input.length, error));
     }
     return null;
   }

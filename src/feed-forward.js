@@ -4,6 +4,7 @@ const praxis = require('./praxis');
 const flattenLayers = require('./utilities/flatten-layers');
 const { makeKernel, release } = require('./utilities/kernel');
 const { MeanSquaredError } = require('./estimator/mean-squared-error');
+const { Model } = require('./layer/types');
 
 class FeedForward {
   static get trainDefaults() {
@@ -28,7 +29,7 @@ class FeedForward {
       inputLayer: null,
       outputLayer: null,
       praxisOpts: null,
-      praxis: (layer, settings) => praxis.momentumRootMeanSquaredPropagation(layer, layer.praxisOpts || settings),
+      praxis: (layer, settings) => praxis.momentumRootMeanSquaredPropagation({ ...layer }, layer.praxisOpts || settings),
     };
   }
 
@@ -164,7 +165,7 @@ class FeedForward {
       const layer = layers[i];
       // TODO: optimize for when training or just running
       layer.setupKernels(true);
-      if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
+      if (layer instanceof Model && layer.hasOwnProperty('praxis') && layer.praxis === null) {
         const praxis = this.praxis(layer, layer.praxisOpts || this.praxisOpts);
         praxis.setupKernels();
         layer.praxis = praxis;
@@ -260,8 +261,6 @@ class FeedForward {
       return false;
     }
 
-    status.iterations++;
-
     if (
       this.trainOpts.log &&
       status.iterations % this.trainOpts.logPeriod === 0
@@ -282,6 +281,8 @@ class FeedForward {
     ) {
       this.trainOpts.callback(Object.assign(status));
     }
+
+    status.iterations++;
     return true;
   }
 

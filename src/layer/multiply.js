@@ -1,4 +1,4 @@
-const { makeKernel, release } = require('../utilities/kernel');
+const { makeKernel, release, clear } = require('../utilities/kernel');
 const zeros2D = require('../utilities/zeros-2d');
 const { Operator } = require('./types');
 
@@ -63,18 +63,21 @@ class Multiply extends Operator {
       constants: {
         size: this.inputLayer2.height,
       },
+      immutable: true,
     });
     this.compareKernel1 = makeKernel(compareFromX, {
       output: [this.inputLayer1.width, this.inputLayer1.height],
       constants: {
         size: this.inputLayer2.width,
       },
+      immutable: true,
     });
     this.compareKernel2 = makeKernel(compareFromY, {
       output: [this.inputLayer2.width, this.inputLayer2.height],
       constants: {
         size: this.inputLayer1.height,
       },
+      immutable: true,
     });
   }
 
@@ -90,6 +93,7 @@ class Multiply extends Operator {
       this.inputLayer1.weights,
       this.inputLayer2.weights
     );
+    clear(this.deltas);
   }
 
   compare() {

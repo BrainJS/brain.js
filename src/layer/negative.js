@@ -19,9 +19,7 @@ class Negative extends Modifier {
   }
 
   predict() {
-    const { weights } = this;
     this.weights = this.predictKernel(this.inputLayer.weights);
-    release(weights);
   }
 }
 

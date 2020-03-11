@@ -1,5 +1,5 @@
 const { Activation } = require('./types');
-const { makeKernel, release } = require('../utilities/kernel');
+const { makeKernel, release, clear } = require('../utilities/kernel');
 const { activate, measure } = require('../activation/leaky-relu');
 
 function predict2D(inputs) {
@@ -31,21 +31,25 @@ class LeakyRelu extends Activation {
       this.predictKernel = makeKernel(predict3D, {
         output: [width, height, depth],
         functions: [activate],
+        immutable: true,
       });
 
       this.compareKernel = makeKernel(compare3D, {
         output: [width, height, depth],
         functions: [measure],
+        immutable: true,
       });
     } else {
       this.predictKernel = makeKernel(predict2D, {
         output: [width, height],
         functions: [activate],
+        immutable: true,
       });
 
       this.compareKernel = makeKernel(compare2D, {
         output: [width, height],
         functions: [measure],
+        immutable: true,
       });
     }
   }
@@ -53,6 +57,7 @@ class LeakyRelu extends Activation {
   predict() {
     release(this.weights);
     this.weights = this.predictKernel(this.inputLayer.weights);
+    clear(this.deltas);
   }
 
   compare() {

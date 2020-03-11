@@ -1,5 +1,5 @@
 const { Activation } = require('./types');
-const { makeKernel, release } = require('../utilities/kernel');
+const { makeKernel, release, clear } = require('../utilities/kernel');
 const { activate, measure } = require('../activation/sigmoid');
 
 function predict2D(inputs) {
@@ -28,21 +28,25 @@ class Sigmoid extends Activation {
       this.predictKernel = makeKernel(predict3D, {
         output: [this.width, this.height, this.depth],
         functions: [activate],
+        immutable: true,
       });
 
       this.compareKernel = makeKernel(compare3D, {
         output: [this.width, this.height, this.depth],
         functions: [measure],
+        immutable: true,
       });
     } else {
       this.predictKernel = makeKernel(predict2D, {
         output: [this.width, this.height],
         functions: [activate],
+        immutable: true,
       });
 
       this.compareKernel = makeKernel(compare2D, {
         output: [this.width, this.height],
         functions: [measure],
+        immutable: true,
       });
     }
   }
@@ -50,6 +54,7 @@ class Sigmoid extends Activation {
   predict() {
     release(this.weights);
     this.weights = this.predictKernel(this.inputLayer.weights);
+    clear(this.deltas);
   }
 
   compare() {

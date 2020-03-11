@@ -21,10 +21,17 @@ class MeanSquaredError {
         length: width * height,
       }
     });
+    this.addAbsolute = makeKernel(function(value1, value2) {
+      return value1[0] + Math.abs(value2[0][0]);
+    }, {
+      output: [1],
+      immutable: true,
+    });
     this.add = makeKernel(function(value1, value2) {
       return value1[0] + value2[0];
     }, {
-      output: [1]
+      output: [1],
+      immutable: true,
     });
     this.divide = makeKernel(function(length, mseSum) {
       const value = mseSum[0];

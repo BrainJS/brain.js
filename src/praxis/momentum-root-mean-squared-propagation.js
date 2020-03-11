@@ -94,6 +94,7 @@ class MomentumRootMeanSquaredPropagation extends Base {
       map: {
         momenta: getMomentum,
       },
+      immutable: true,
     });
   }
 }

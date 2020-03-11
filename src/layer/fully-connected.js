@@ -122,6 +122,7 @@ class FullyConnected extends Filter {
           inputWidth: inputLayer.width,
           inputHeight: inputLayer.height,
         },
+        immutable: true,
       });
 
       this.compareInputDeltasKernel = makeKernel(compareInputDeltas3D, {
@@ -129,6 +130,7 @@ class FullyConnected extends Filter {
         constants: {
           filterCount: this.height,
         },
+        immutable: true,
       });
     } else {
       this.predictKernel = makeKernel(predict, {

@@ -1,4 +1,4 @@
-const { makeKernel, release, clone } = require('../utilities/kernel');
+const { makeKernel, release, clone, clear } = require('../utilities/kernel');
 const { setStride, setPadding } = require('../utilities/layer-setup');
 const { Filter } = require('./types');
 const randos = require('../utilities/randos');
@@ -144,6 +144,7 @@ class Convolution extends Filter {
         filterHeight: this.filterHeight,
       },
       output: [this.width, this.height, this.depth],
+      immutable: true,
     });
 
     this.compareFilterDeltasKernel = makeKernel(compareFilterDeltas, {
@@ -162,6 +163,7 @@ class Convolution extends Filter {
         filterHeight: this.filterHeight,
       },
       output: [this.width, this.height, this.depth],
+      immutable: true,
     });
 
     this.compareInputDeltasKernel = makeKernel(compareInputDeltas, {
@@ -173,6 +175,7 @@ class Convolution extends Filter {
         this.inputLayer.height,
         this.inputLayer.depth,
       ],
+      immutable: true,
     });
 
     this.compareBiasesKernel = makeKernel(compareBiases, {
@@ -181,6 +184,7 @@ class Convolution extends Filter {
         deltaWidth: this.width,
         deltaHeight: this.height,
       },
+      immutable: true,
     });
   }
 
@@ -206,15 +210,17 @@ class Convolution extends Filter {
     this.deltas = this.compareInputDeltasKernel(this.filters, this.inputLayer.deltas);
 
     release(this.inputLayer.deltas);
+    //TODO: do we need to clone here?
     this.inputLayer.deltas = clone(this.deltas);
   }
 
   learn(previousLayer, nextLayer, learningRate) {
     // TODO: handle filters
+    // TODO: do we need to release here?
+    const { weights: oldWeights } = this;
     this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
-    release(this.weights);
-    release(this.deltas);
-    this.deltas = zeros3D(this.width, this.height, this.depth);
+    release(oldWeights);
+    clear(this.deltas);
   }
 }
 

@@ -257,7 +257,7 @@ class RNNTimeStep extends RNN {
     }
     let lastOutput;
     for (let i = 0; i < input.length; i++) {
-      lastOutput = equations[i].runInput([input[i]]);
+      lastOutput = equations[i].runInput(new Float32Array([input[i]]));
     }
     this.end();
     return lastOutput.weights[0];
