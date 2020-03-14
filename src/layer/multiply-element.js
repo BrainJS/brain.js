@@ -1,4 +1,4 @@
-const { makeKernel, release } = require('../utilities/kernel');
+const { makeKernel, release, clear } = require('../utilities/kernel');
 const { Operator } = require('./types');
 const zeros2D = require('../utilities/zeros-2d');
 const { checkSameSize } = require('../utilities/layer-size');
@@ -37,6 +37,7 @@ class MultiplyElement extends Operator {
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
       output: [this.width, this.height],
+      immutable: true,
     });
 
     this.compareKernel = makeKernel(compare, {
@@ -46,7 +47,9 @@ class MultiplyElement extends Operator {
   }
 
   predict() {
+    release(this.weights);
     this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
+    clear(this.deltas);
   }
 
   compare() {

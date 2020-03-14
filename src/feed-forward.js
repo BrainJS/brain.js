@@ -103,6 +103,7 @@ class FeedForward {
       layers: null,
       _inputLayer: null,
       _outputLayer: null,
+      _model: null,
     };
   }
 
@@ -158,6 +159,7 @@ class FeedForward {
   initialize() {
     this._connectLayers();
     this.initializeLayers(this.layers);
+    this._model = this.layers.filter(l => l instanceof Model);
   }
 
   initializeLayers(layers) {
@@ -166,9 +168,8 @@ class FeedForward {
       // TODO: optimize for when training or just running
       layer.setupKernels(true);
       if (layer instanceof Model && layer.hasOwnProperty('praxis') && layer.praxis === null) {
-        const praxis = this.praxis(layer, layer.praxisOpts || this.praxisOpts);
-        praxis.setupKernels();
-        layer.praxis = praxis;
+        layer.praxis = this.praxis(layer, layer.praxisOpts || this.praxisOpts);
+        layer.praxis.setupKernels();
       }
     }
 
@@ -304,15 +305,19 @@ class FeedForward {
       iterations: 0,
     };
 
-    if (!options.reinforce) {
-      this.initialize();
-    }
+    this.verifyIsInitialized();
 
     return {
       data: this.transferData(formattedData),
       status,
       endTime,
     };
+  }
+
+  verifyIsInitialized() {
+    if (!this._model) {
+      this.initialize();
+    }
   }
 
   /**
@@ -336,7 +341,7 @@ class FeedForward {
       release(result);
       return resultArray[0];
     }
-    return result;
+    return result[0];
   }
 
   /**
@@ -379,10 +384,11 @@ class FeedForward {
    *
    */
   adjustWeights() {
-    for (let i = 0; i < this.layers.length; i++) {
-      this.layers[i].learn(
-        this.layers[i - 1],
-        this.layers[i + 1],
+    const { _model } = this;
+    for (let i = 0; i < _model.length; i++) {
+      _model[i].learn(
+        null,
+        null,
         this.trainOpts.learningRate
       );
     }
@@ -431,12 +437,14 @@ class FeedForward {
     const transferInput = makeKernel(function(value) {
       return value[this.thread.x];
     }, {
-      output: [formattedData[0].input.length]
+      output: [formattedData[0].input.length],
+      immutable: true,
     });
     const transferOutput = makeKernel(function(value) {
       return value[this.thread.x];
     }, {
-      output: [formattedData[0].output.length]
+      output: [formattedData[0].output.length],
+      immutable: true,
     });
 
     for (let i = 0; i < formattedData.length; i++) {

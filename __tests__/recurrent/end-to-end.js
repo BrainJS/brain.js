@@ -1,5 +1,5 @@
 const { GPU } = require('gpu.js');
-const { add, input, multiply, output, random, recurrent } = require('../../src/layer');
+const { add, input, multiply, output, random, recurrent, lstm } = require('../../src/layer');
 const { setup, teardown } = require('../../src/utilities/kernel');
 
 const { Recurrent } = require('../../src/recurrent');
@@ -144,7 +144,7 @@ describe('Recurrent Class: End to End', () => {
         timeStep.adjustWeights = () => {};
         recurrentNet.adjustWeights = () => {};
         timeStep.train([[100, 500, 1000]], { iterations: 1 });
-        recurrentNet.train([[100, 500, 1000]], { iterations: 1, reinforce: true, errorCheckInterval: 1 }); //TODO: remove reinforce
+        recurrentNet.train([[100, 500, 1000]], { iterations: 1, errorCheckInterval: 1 });
 
         expect(recurrentNet._layerSets.length).toBe(timeStep.model.equations.length);
         testRecurrentLayerSet(timeStep, recurrentNet, 0);
@@ -200,7 +200,7 @@ describe('Recurrent Class: End to End', () => {
         timeStep.adjustWeights = () => {};
         const timeStepResult = timeStep.train([new Float32Array([100, 500, 1000])], { iterations: 1 });
         recurrentNet.adjustWeights = () => {};
-        const recurrentNetResult = recurrentNet.train([new Float32Array([100, 500, 1000])], { iterations: 1, reinforce: true, errorCheckInterval: 1 });
+        const recurrentNetResult = recurrentNet.train([new Float32Array([100, 500, 1000])], { iterations: 1, errorCheckInterval: 1 });
 
         expect(recurrentNetResult.error.toFixed(2)).toBe(timeStepResult.error.toFixed(2));
         expect(recurrentNet._layerSets.length).toBe(timeStep.model.equations.length);
@@ -235,7 +235,7 @@ describe('Recurrent Class: End to End', () => {
         }
 
         const timeStepResult = timeStep.train([[100, 500, 1000]], { iterations: 1 });
-        const recurrentNetResult = recurrentNet.train([[100, 500, 1000]], { iterations: 1, reinforce: true, errorCheckInterval: 1 });
+        const recurrentNetResult = recurrentNet.train([[100, 500, 1000]], { iterations: 1, errorCheckInterval: 1 });
 
         expect(recurrentNetResult.iterations).toBe(timeStepResult.iterations);
         // expect(recurrentNetResult.error.toFixed(5)).toBe(timeStepResult.error.toFixed(5));
@@ -289,7 +289,7 @@ describe('Recurrent Class: End to End', () => {
         }
 
         timeStep.train([[100, 500, 1000], [1000, 500, 100]], {iterations: 100, log: true});
-        recurrentNet.train([[100, 500, 1000], [1000, 500, 100]], {iterations: 100, reinforce: true, errorCheckInterval: 1, log: true}); //TODO: remove reinforce
+        recurrentNet.train([[100, 500, 1000], [1000, 500, 100]], {iterations: 100, errorCheckInterval: 1, log: true});
 
         expect(recurrentNet._layerSets.length).toBe(timeStep.model.equations.length);
 
@@ -310,7 +310,10 @@ describe('Recurrent Class: End to End', () => {
           (inputLayer, recurrentInput) => {
             recurrentInput.setDimensions(1, 3);
             return add(
-              multiply(random({ height: 3 }), inputLayer),
+              multiply(
+                random({ height: 3 }),
+                inputLayer
+              ),
               recurrentInput
             );
           },
@@ -320,231 +323,81 @@ describe('Recurrent Class: End to End', () => {
 
       net.initialize();
       net.initializeDeep();
-      net.runInput([1, 1]);
+      const datum = [1, 1];
+      net.runInput(datum);
       expect(net._model.length).toEqual(3);
       expect(net._layerSets.length).toEqual(2);
       expect(net._layerSets[0].length).toEqual(10);
       expect(net._layerSets[1].length).toEqual(10);
-      const modelLayer0Weights = net._model[0].weights.slice(0);
-      const hiddenLayers00Weights = net._layerSets[0][0].weights.slice(0);
-      const hiddenLayers01Weights = net._layerSets[0][1].weights.slice(0);
-      const hiddenLayers02Weights = net._layerSets[0][2].weights.slice(0);
-      const hiddenLayers10Weights = net._layerSets[1][0].weights.slice(0);
-      const hiddenLayers11Weights = net._layerSets[1][1].weights.slice(0);
-      const hiddenLayers12Weights = net._layerSets[1][2].weights.slice(0);
-      const outputLayers0Weights = net._layerSets[0].weights.slice(0);
-      const outputLayers1Weights = net._layerSets[1].weights.slice(0);
-      const outputLayers2Weights = net._layerSets[2].weights.slice(0);
-      const outputLayers3Weights = net._layerSets[3].weights.slice(0);
 
-      expect(
-        net._model[0].deltas.every(row => row.every(delta => delta === 0))
-      ).toBeTruthy();
+      const clonedModelWeights = net._model
+        .map(l => l.weights
+          .map(row => row
+            .slice(0)));
 
-      expect(
-        net._inputLayers[0].deltas.every(row => row.every(delta => delta === 0))
-      ).toBeTruthy();
+      function deltasAreZero() {
+        expect(
+          net._layerSets[0]
+            .every(l => l.deltas
+              .every(row => row
+                .every(delta => delta === 0))))
+          .toBeTruthy();
+      }
 
-      expect(
-        net._hiddenLayerSets[0][0].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._hiddenLayerSets[0][1].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._hiddenLayerSets[0][2].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
+      function deltasAreSet() {
+        expect(
+          net._layerSets[0]
+            .every(l => l.deltas
+              .every(row => row
+                .every(delta => delta !== 0))))
+          .toBeTruthy();
+      }
 
-      expect(
-        net._hiddenLayerSets[1][0].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._hiddenLayerSets[1][1].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._hiddenLayerSets[1][2].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
+      function modelWeightsAreUpdated() {
+        expect(clonedModelWeights
+          .every((oldLayerWeights, layerIndex) => oldLayerWeights
+            .every((row, rowIndex) => row
+              .every((oldWeight, columnIndex) => {
+                const newLayerWeights = net._model[layerIndex].weights;
+                if (layerIndex === 0) return true;
+                return oldWeight !== newLayerWeights[rowIndex][columnIndex];
+              }))))
+          .toBeTruthy();
+      }
 
-      expect(
-        net._outputLayers[0].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._outputLayers[1].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._outputLayers[2].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
+      function modelDeltasAreZero() {
+        expect(net._model
+          .every(l => l.deltas
+            .every(row => row
+              .every(delta => delta === 0))))
+          .toBeTruthy();
+      }
 
+      deltasAreZero();
       // two arbitrary values that are not zero
-      net._calculateDeltas([0.01], 1);
-      net._calculateDeltas([1], 0);
+      net._calculateDeltas(datum);
 
-      // model
-      expect(
-        net._model[0].deltas.every(row => row.some(delta => delta !== 0))
-      ).toBeTruthy();
-
-      // input layer
-      expect(
-        net._inputLayers[0].deltas.every(row => row.some(delta => delta !== 0))
-      ).toBeTruthy();
-
-      // first hidden layer
-      expect(
-        net._hiddenLayerSets[0][0].deltas.every(row =>
-          row.some(delta => delta !== 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._hiddenLayerSets[0][1].deltas.every(row =>
-          row.some(delta => delta !== 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._hiddenLayerSets[0][2].deltas.every(row =>
-          row.some(delta => delta !== 0)
-        )
-      ).toBeTruthy();
-
-      // second hidden layer
-      expect(
-        net._hiddenLayerSets[1][0].deltas.every(row =>
-          row.some(delta => delta !== 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._hiddenLayerSets[1][1].deltas.every(row =>
-          row.some(delta => delta !== 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._hiddenLayerSets[1][2].deltas.every(row =>
-          row.some(delta => delta !== 0)
-        )
-      ).toBeTruthy();
-
-      // output layer
-      expect(
-        net._outputLayers[0].deltas.every(row => row.some(delta => delta !== 0))
-      ).toBeTruthy();
-      expect(
-        net._outputLayers[1].deltas.every(row => row.some(delta => delta !== 0))
-      ).toBeTruthy();
-      expect(
-        net._outputLayers[2].deltas.every(row => row.some(delta => delta !== 0))
-      ).toBeTruthy();
+      deltasAreSet();
 
       net.adjustWeights();
 
-      // weights are adjusted
-      expect(modelLayer0Weights).not.toEqual(net._model[0].weights);
-
-      expect(hiddenLayers00Weights).not.toEqual(net._hiddenLayerSets[0][0].weights);
-      expect(hiddenLayers01Weights).not.toEqual(net._hiddenLayerSets[0][1].weights);
-      expect(hiddenLayers02Weights).not.toEqual(net._hiddenLayerSets[0][2].weights);
-      expect(hiddenLayers10Weights).not.toEqual(net._hiddenLayerSets[1][0].weights);
-      expect(hiddenLayers11Weights).not.toEqual(net._hiddenLayerSets[1][1].weights);
-      expect(hiddenLayers12Weights).not.toEqual(net._hiddenLayerSets[1][2].weights);
-
-      expect(outputLayers0Weights).not.toEqual(net._outputLayers[0].weights);
-      expect(outputLayers1Weights).not.toEqual(net._outputLayers[1].weights);
-      expect(outputLayers2Weights).not.toEqual(net._outputLayers[2].weights);
-      expect(outputLayers3Weights).not.toEqual(net._outputLayers[3].weights);
-
-      // deltas reset
-      // model
-      expect(
-        net._model[0].deltas.every(row => row.every(delta => delta === 0))
-      ).toBeTruthy();
-
-      // input layer
-      expect(
-        net._inputLayers[0].deltas.every(row => row.every(delta => delta === 0))
-      ).toBeTruthy();
-
-      // first hidden layer
-      expect(
-        net._hiddenLayerSets[0][0].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._hiddenLayerSets[0][1].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._hiddenLayerSets[0][2].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-
-      // second hidden layer
-      expect(
-        net._hiddenLayerSets[1][0].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._hiddenLayerSets[1][1].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._hiddenLayerSets[1][2].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-
-      // output layer
-      expect(
-        net._outputLayers[0].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._outputLayers[1].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
-      expect(
-        net._outputLayers[2].deltas.every(row =>
-          row.every(delta => delta === 0)
-        )
-      ).toBeTruthy();
+      modelWeightsAreUpdated();
+      modelDeltasAreZero();
     });
   });
   describe('.initializeDeep()', () => {
     describe('structure', () => {
       test('can create new hidden layers in the correct structure', () => {
-        const model = {
-          inputLayer: input({ height: 1 }),
-          weights: random({ height: 3 }),
-        };
+        const inputLayer = input({ height: 1 });
+        const weights = random({ height: 3 });
+        let recurrentZeros = null;
         const net = new Recurrent({
-          inputLayer: () => model.inputLayer,
+          inputLayer: () => inputLayer,
           hiddenLayers: [
             (inputLayer, recurrentInput) => {
               recurrentInput.setDimensions(1, 3);
-              return add(multiply(model.weights, inputLayer), recurrentInput);
+              recurrentZeros = recurrentInput;
+              return add(multiply(weights, inputLayer), recurrentInput);
             },
           ],
           outputLayer: inputLayer => output({ height: 1 }, inputLayer),
@@ -552,94 +405,33 @@ describe('Recurrent Class: End to End', () => {
 
         // single
         net.initialize();
-        expect(net._inputLayers.length).toEqual(1);
-        expect(net._inputLayers[0]).toEqual(model.inputLayer);
-        expect(net._hiddenLayers.length).toEqual(1);
+        expect(net._layerSets.length).toEqual(1);
+        expect(net._layerSets[0].length).toEqual(10);
+        expect(net._layerSets[0][0]).toEqual(inputLayer);
+        expect(net._layerSets[0].indexOf(weights)).toBe(1);
+        expect(net._layerSets[0].indexOf(recurrentZeros)).toBe(3);
 
         // double
         net.initializeDeep();
-        expect(net._hiddenLayerSets.length).toEqual(2);
+        expect(net._layerSets.length).toEqual(2);
+        expect(net._layerSets[1].length).toEqual(10);
+        expect(net._layerSets[1][0]).not.toEqual(inputLayer);
+        expect(net._layerSets[1][0].constructor).toEqual(inputLayer.constructor); // new instance of same type NOT model
+        expect(net._layerSets[1].indexOf(weights)).toBe(1); // direct reference IMPORTANT because model
+        expect(net._layerSets[1].indexOf(recurrentZeros)).toBe(-1);
+        expect(net._layerSets[1][3].deltas).toBe(net._layerSets[0][4].deltas); //recurrence
+        expect(net._layerSets[1][3].weights).toBe(net._layerSets[0][4].weights); //recurrence
 
         // triple
         net.initializeDeep();
-        expect(net._hiddenLayerSets.length).toEqual(3);
-
-        expect(net._hiddenLayerSets[0].length).toEqual(3);
-        expect(net._hiddenLayerSets[0][0].constructor.name).toEqual('Multiply');
-        expect(net._hiddenLayerSets[0][1].constructor.name).toEqual(
-          'RecurrentZeros'
-        );
-        expect(net._hiddenLayerSets[0][2].constructor.name).toEqual('Add');
-
-        expect(net._hiddenLayerSets[1].length).toEqual(3);
-        expect(net._hiddenLayerSets[1][0].constructor.name).toEqual('Multiply');
-        expect(net._hiddenLayerSets[1][1].constructor.name).toEqual(
-          'RecurrentInput'
-        );
-        expect(net._hiddenLayerSets[1][2].constructor.name).toEqual('Add');
-
-        expect(net._hiddenLayerSets[1][1].recurrentInput).toEqual(
-          net._hiddenLayerSets[0][2]
-        );
-        expect(net._hiddenLayerSets[1][1].weights).toEqual(
-          net._hiddenLayerSets[0][2].weights
-        );
-        expect(net._hiddenLayerSets[1][1].deltas).toEqual(
-          net._hiddenLayerSets[0][2].deltas
-        );
-
-        expect(net._hiddenLayerSets[2].length).toEqual(3);
-        expect(net._hiddenLayerSets[2][0].constructor.name).toEqual('Multiply');
-        expect(net._hiddenLayerSets[2][1].constructor.name).toEqual(
-          'RecurrentInput'
-        );
-        expect(net._hiddenLayerSets[2][2].constructor.name).toEqual('Add');
-
-        expect(net._hiddenLayerSets[2][1].recurrentInput).toEqual(
-          net._hiddenLayerSets[1][2]
-        );
-        expect(net._hiddenLayerSets[2][1].recurrentInput).not.toEqual(
-          net._hiddenLayerSets[0][2]
-        );
-        expect(net._hiddenLayerSets[2][1].weights).toEqual(
-          net._hiddenLayerSets[1][2].weights
-        );
-        expect(net._hiddenLayerSets[2][1].deltas).toEqual(
-          net._hiddenLayerSets[1][2].deltas
-        );
-
-        expect(net._hiddenLayerSets[0][2]).not.toEqual(net._hiddenLayerSets[1][2]);
-        expect(net._hiddenLayerSets[1][2]).not.toEqual(net._hiddenLayerSets[2][2]);
-        expect(net._hiddenLayerSets[0][2]).not.toEqual(net._hiddenLayerSets[2][2]);
-
-        expect(net._outputLayers.length).toEqual(6);
-        expect(net._outputLayers[0].constructor.name).toEqual('Random');
-        expect(net._outputLayers[1].constructor.name).toEqual(
-          'RecurrentConnection'
-        );
-        expect(net._outputLayers[2].constructor.name).toEqual('Multiply');
-        expect(net._outputLayers[3].constructor.name).toEqual('Zeros');
-        expect(net._outputLayers[4].constructor.name).toEqual('Add');
-        expect(net._outputLayers[5].constructor.name).toEqual('Target');
-
-        net._outputConnection.setLayerOriginal = net._outputConnection.setLayer;
-        const actualConnectedLayers = [];
-        // last in first out
-        net._outputConnection.setLayer = l => {
-          actualConnectedLayers.unshift(l);
-          net._outputConnection.setLayerOriginal(l);
-        };
-
-        net._inputLayers[0].weights = [[0]];
-        net._calculateDeltas([0, 0, 0], 0);
-        const desiredConnectionLayers = [
-          net._hiddenLayerSets[0][2],
-          net._hiddenLayerSets[1][2],
-          net._hiddenLayerSets[2][2],
-        ];
-        expect(actualConnectedLayers[0]).toEqual(desiredConnectionLayers[0]);
-        expect(actualConnectedLayers[1]).toEqual(desiredConnectionLayers[1]);
-        expect(actualConnectedLayers[2]).toEqual(desiredConnectionLayers[2]);
+        expect(net._layerSets.length).toEqual(3);
+        expect(net._layerSets[2].length).toEqual(10);
+        expect(net._layerSets[2][0]).not.toEqual(inputLayer);
+        expect(net._layerSets[2][0].constructor).toEqual(inputLayer.constructor); // new instance of same type NOT model
+        expect(net._layerSets[2].indexOf(weights)).toBe(1); // direct reference IMPORTANT because model
+        expect(net._layerSets[2][3].constructor.name).toBe('RecurrentInput');
+        expect(net._layerSets[2][3].deltas).toBe(net._layerSets[1][4].deltas); //recurrence
+        expect(net._layerSets[2][3].weights).toBe(net._layerSets[1][4].weights); //recurrence
       });
     });
   });
@@ -654,9 +446,9 @@ describe('Recurrent Class: End to End', () => {
     });
     net.initialize();
     net.initializeDeep();
-    expect(net._hiddenLayerSets.length).toEqual(2);
-    expect(net._hiddenLayerSets[0].length).toEqual(6);
-    expect(net._hiddenLayerSets[1].length).toEqual(6);
+    expect(net._layerSets.length).toEqual(2);
+    expect(net._layerSets[0].length).toEqual(15);
+    expect(net._layerSets[1].length).toEqual(15);
     const errors = [];
     for (let i = 0; i < 20; i++) {
       errors.push(net._trainPattern([1, 2], [3], true));
@@ -695,10 +487,10 @@ describe('Recurrent Class: End to End', () => {
     });
     net.initialize();
     net.initializeDeep();
-    expect(net._model.length).toEqual(3);
-    expect(net._hiddenLayerSets.length).toEqual(2);
-    expect(net._hiddenLayerSets[0].length).toEqual(6);
-    expect(net._hiddenLayerSets[1].length).toEqual(6);
+    expect(net._model.length).toEqual(5);
+    expect(net._layerSets.length).toEqual(2);
+    expect(net._layerSets[0].length).toEqual(15);
+    expect(net._layerSets[1].length).toEqual(15);
     let error;
     for (let i = 0; i < 100; i++) {
       error = net._trainPattern([0, 1], [2], true);
@@ -716,17 +508,17 @@ describe('Recurrent Class: End to End', () => {
     });
     net.initialize();
     net.initializeDeep();
-    expect(net._model.length).toBe(3);
-    expect(net._hiddenLayers.length).toBe(1);
-    expect(net._hiddenLayerSets[0].length).toBe(6);
-    expect(net._hiddenLayerSets[1].length).toBe(6);
+    expect(net._model.length).toBe(5);
+    expect(net._layerSets[0].length).toBe(15);
+    expect(net._layerSets[1].length).toBe(15);
     let error;
     for (let i = 0; i < 100; i++) {
-      error = net._trainPattern([0, 0], [0], true);
-      error += net._trainPattern([0, 1], [1], true);
-      error += net._trainPattern([1, 0], [1], true);
-      error += net._trainPattern([1, 1], [0], true);
-      console.log(error / 4);
+      let sum = 0;
+      sum = net._trainPattern([0, 0, 0], true)[0];
+      sum += net._trainPattern([0, 1, 1], true)[0];
+      sum += net._trainPattern([1, 0, 1], true)[0];
+      sum += net._trainPattern([1, 1, 0], true)[0];
+      error = sum / 4;
     }
     console.log(net.runInput([0, 0]));
     console.log(net.runInput([0, 1]));
@@ -739,20 +531,22 @@ describe('Recurrent Class: End to End', () => {
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
         (inputLayer, recurrentInput) =>
-          recurrent({ height: 3 }, inputLayer, recurrentInput),
+          lstm({ height: 10 }, inputLayer, recurrentInput),
       ],
       outputLayer: inputLayer => output({ height: 1 }, inputLayer),
     });
     net.initialize();
     net.initializeDeep();
-    expect(net._model.length).toEqual(3);
-    expect(net._hiddenLayerSets.length).toEqual(2);
-    expect(net._hiddenLayerSets[0].length).toEqual(6);
-    expect(net._hiddenLayerSets[1].length).toEqual(6);
+    expect(net._model.length).toEqual(14);
+    expect(net._layerSets.length).toEqual(2);
+    expect(net._layerSets[0].length).toEqual(44);
+    expect(net._layerSets[1].length).toEqual(44);
     let error = Infinity;
     for (let i = 0; i < 101 && error > 0.005; i++) {
-      error = net._trainPattern([1, 2], [3], true);
+      error = net._trainPattern([1, 2, 3], true)[0];
+      console.log(error);
     }
+    console.log(net.run([1, 2]));
     expect(error).toBeLessThan(0.005);
   });
   test('can learn 1,2,3 using .train()', () => {
@@ -765,10 +559,7 @@ describe('Recurrent Class: End to End', () => {
       outputLayer: inputLayer => output({ height: 1 }, inputLayer),
     });
     const results = net.train([
-      {
-        input: [1, 2],
-        output: [3],
-      },
+      [1, 2, 3],
     ],{
       errorCheckInterval: 1,
     });

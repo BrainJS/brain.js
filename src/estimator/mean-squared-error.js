@@ -19,7 +19,8 @@ class MeanSquaredError {
         width,
         height,
         length: width * height,
-      }
+      },
+      immutable: true,
     });
     this.addAbsolute = makeKernel(function(value1, value2) {
       return value1[0] + Math.abs(value2[0][0]);
@@ -40,7 +41,8 @@ class MeanSquaredError {
       }
       return 0;
     }, {
-      output: [1]
+      output: [1],
+      immutable: true,
     });
   }
 }

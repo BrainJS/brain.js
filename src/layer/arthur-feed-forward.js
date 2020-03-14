@@ -5,17 +5,17 @@ const { random } = require('./random');
 const { multiply } = require('./multiply');
 const { sigmoid } = require('./sigmoid');
 
-function noopPraxis() {
-  return { run: (layer) => layer.weights };
-}
-
 function arthurFeedForward(settings, inputLayer) {
   const { height } = settings;
   function weightsPraxis(layer, settings) {
-    return arthurDeviationWeights(layer, settings);
+    const praxis = arthurDeviationWeights(layer, settings);
+    praxis.setupKernels();
+    return praxis;
   }
   function biasesPraxis(layer, settings) {
-    return arthurDeviationBiases(layer, settings);
+    const praxis = arthurDeviationBiases(layer, settings);
+    praxis.setupKernels();
+    return praxis;
   }
   const weightsLayer = random({
     name: 'weights',
@@ -30,9 +30,9 @@ function arthurFeedForward(settings, inputLayer) {
     praxis: biasesPraxis,
   });
 
-  const multiplyLayer = multiply(weightsLayer, inputLayer, { praxis: noopPraxis });
-  const addLayer = add(multiplyLayer, biasesLayer, { praxis: noopPraxis });
-  const sigmoidLayer = sigmoid(addLayer, { praxis: noopPraxis });
+  const multiplyLayer = multiply(weightsLayer, inputLayer);
+  const addLayer = add(multiplyLayer, biasesLayer);
+  const sigmoidLayer = sigmoid(addLayer);
 
   weightsLayer.praxis.weightsLayer = weightsLayer;
   weightsLayer.praxis.incomingLayer = inputLayer;

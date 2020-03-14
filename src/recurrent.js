@@ -213,6 +213,9 @@ class Recurrent extends FeedForward {
 
   _prepTraining(data, options) {
     const stats = super._prepTraining(data, options);
+
+    this.verifyIsInitialized(data);
+
     return stats;
   }
 
