@@ -53,9 +53,10 @@ class MultiplyElement extends Operator {
   }
 
   compare() {
-    const { deltas } = this;
-    this.deltas = this.compareKernel(this.weights, deltas);
-    release(deltas);
+    release(this.inputLayer1.deltas);
+    release(this.inputLayer2.deltas);
+    this.inputLayer1.deltas = this.compareKernel(this.inputLayer2.weights, this.deltas);
+    this.inputLayer2.deltas = this.compareKernel(this.inputLayer1.weights, this.deltas);
   }
 }
 
@@ -63,4 +64,4 @@ function multiplyElement(inputLayer1, inputLayer2) {
   return new MultiplyElement(inputLayer1, inputLayer2);
 }
 
-module.exports = { MultiplyElement, multiplyElement };
+module.exports = { MultiplyElement, multiplyElement, predict, compare };

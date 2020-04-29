@@ -53,11 +53,20 @@ class Base {
 
   set weights(value) {
     if (value) {
-      if (value[0].length !== this.width) {
-        throw new Error(`${this.constructor.name}.weights being set with improper value width`);
-      }
-      if (value.length !== this.height) {
-        throw new Error(`${this.constructor.name}.weights being set with improper value height`);
+      if (value.dimensions) {
+        if (value.dimensions[0] !== this.width) {
+          throw new Error(`${this.constructor.name}.weights being set with improper value width`);
+        }
+        if (value.dimensions[1] !== this.height) {
+          throw new Error(`${this.constructor.name}.weights being set with improper value height`);
+        }
+      } else {
+        if (value[0].length !== this.width) {
+          throw new Error(`${this.constructor.name}.weights being set with improper value width`);
+        }
+        if (value.length !== this.height) {
+          throw new Error(`${this.constructor.name}.weights being set with improper value height`);
+        }
       }
     }
     this._weights = value;
@@ -69,11 +78,20 @@ class Base {
 
   set deltas(value) {
     if (value) {
-      if (value[0].length !== this.width) {
-        throw new Error(`${this.constructor.name}.deltas being set with improper value width`);
-      }
-      if (value.length !== this.height) {
-        throw new Error(`${this.constructor.name}.deltas being set with improper value height`);
+      if (value.dimensions) {
+        if (value.dimensions[0] !== this.width) {
+          throw new Error(`${this.constructor.name}.deltas being set with improper value width`);
+        }
+        if (value.dimensions[1] !== this.height) {
+          throw new Error(`${this.constructor.name}.deltas being set with improper value height`);
+        }
+      } else {
+        if (value[0].length !== this.width) {
+          throw new Error(`${this.constructor.name}.deltas being set with improper value width`);
+        }
+        if (value.length !== this.height) {
+          throw new Error(`${this.constructor.name}.deltas being set with improper value height`);
+        }
       }
     }
     this._deltas = value;

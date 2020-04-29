@@ -294,7 +294,7 @@ class Recurrent extends FeedForward {
     if (logErrorRate) {
       const { meanSquaredError } = this;
       let error = new Float32Array(1);
-      for (let i = 0; i < this._layerSets.length; i++) {
+      for (let i = 0, max = input.length - 1; i < max; i++) {
         const layerSet = this._layerSets[i];
         const lastLayer = layerSet[layerSet.length - 1];
         const prevError = error;
