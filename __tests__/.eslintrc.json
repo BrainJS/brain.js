@@ -16,6 +16,7 @@
     "class-methods-use-this": "off",
     "global-require": "off",
     "linebreak-style": "off",
+    "max-classes-per-file": "off",
     "no-continue": "off",
     "no-multi-assign": "off",
     "no-param-reassign": "off",
