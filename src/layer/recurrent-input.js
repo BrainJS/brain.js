@@ -1,11 +1,21 @@
 const { Internal } = require('./types');
 const { Base } = require('./base');
 const { release } = require('../utilities/kernel');
+const zeros2D = require('../utilities/zeros-2d');
 
 class RecurrentInput extends Internal {
-  setRecurrentInput(recurrentInput) {
+  constructor(recurrentInput) {
+    super();
     this.recurrentInput = recurrentInput;
     this.validate();
+  }
+
+  get width() {
+    return this.recurrentInput.width;
+  }
+
+  get height() {
+    return this.recurrentInput.height;
   }
 
   get deltas() {
@@ -48,6 +58,7 @@ class RecurrentInput extends Internal {
   }
 
   setDimensions(width, height) {
+    throw new Error('should just listen');
     this.width = width;
     this.height = height;
   }

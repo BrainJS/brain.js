@@ -3,11 +3,24 @@ const randos2D = require('../utilities/randos-2d');
 const zeros2D = require('../utilities/zeros-2d');
 
 class Random extends Model {
+  static get defaults() {
+    return {
+      std: null, // standard deviation
+    };
+  }
+
   constructor(settings) {
     super(settings);
     this.validate();
-    this.weights = randos2D(this.width, this.height);
-    this.deltas = zeros2D(this.width, this.height);
+
+    if (!this.weights) {
+      this.weights = settings.std
+        ? randos2D(this.width, this.height, settings.std)
+        : randos2D(this.width, this.height);
+    }
+    if (!this.deltas) {
+      this.deltas = zeros2D(this.width, this.height);
+    }
   }
 
   predict() {

@@ -200,6 +200,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
         constants: {
           size: this.sizes[layer - 1],
         },
+        immutable: true,
       });
     }
 
@@ -207,7 +208,8 @@ class NeuralNetworkGPU extends NeuralNetwork {
       return value[this.thread.x];
     }, {
       output: [this.sizes[1]],
-      pipeline: true
+      pipeline: true,
+      immutable: true,
     });
   }
 
@@ -256,7 +258,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       if (layer === this.outputLayer) {
         this.backwardPropagate[this.outputLayer] = this.gpu.createKernelMap(
           {
-            error: calcErrorOutput
+            error: calcErrorOutput,
           },
           function (outputs, targets) {
             const output = outputs[this.thread.x];
@@ -265,12 +267,13 @@ class NeuralNetworkGPU extends NeuralNetwork {
           {
             output: [this.sizes[this.outputLayer]],
             pipeline: true,
+            immutable: true,
           }
         );
       } else {
         this.backwardPropagate[layer] = this.gpu.createKernelMap(
           {
-            error: calcError
+            error: calcError,
           },
           function (nextWeights, outputs, nextDeltas) {
             const output = outputs[this.thread.x];
@@ -282,6 +285,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
             constants: {
               size: this.deltas[layer + 1].length,
             },
+            immutable: true,
           }
         );
       }
@@ -331,6 +335,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
             learningRate: this.trainOpts.learningRate,
             momentum: this.trainOpts.momentum,
           },
+          immutable: true,
         }
       );
     }
@@ -362,6 +367,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
         constants: {
           learningRate: this.trainOpts.learningRate,
         },
+        immutable: true,
       });
     }
   }
@@ -384,12 +390,14 @@ class NeuralNetworkGPU extends NeuralNetwork {
         size: this.sizes[this.outputLayer],
       },
       pipeline: true,
+      immutable: true,
     });
     this._addMSE = this.gpu.createKernel(function(value1, value2) {
       return value1[0] + value2[0];
     }, {
       output: [1],
       pipeline: true,
+      immutable: true,
     });
     this._divideMSESum = this.gpu.createKernel(function(length, mseSum) {
       const value = mseSum[0];
@@ -398,7 +406,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       }
       return 0;
     }, {
-      output: [1]
+      output: [1],
     });
   }
 
@@ -412,8 +420,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
     if (this.inputLookup) {
       input = lookup.toArray(this.inputLookup, input, this.inputLookupLength);
     }
-    const inputTexture = this.texturizeInputData(input);
-    const outputTextures = this.runInput(inputTexture);
+    const outputTextures = this.runInput(input);
     let output = outputTextures.toArray ? outputTextures.toArray() : outputTextures;
 
     if (this.outputLookup) {
@@ -445,7 +452,8 @@ class NeuralNetworkGPU extends NeuralNetwork {
       function(value) { return value[this.thread.x]; },
       {
         output: [data[0].output.length],
-        pipeline: true
+        pipeline: true,
+        immutable: true,
       }
     );
 

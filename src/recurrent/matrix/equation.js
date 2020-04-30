@@ -286,7 +286,10 @@ class Equation {
       if (!state.hasOwnProperty('backpropagationFn')) {
         continue;
       }
+      // console.log('backfn', state.backpropagationFn.name);
+      // console.log('before', state.product.deltas);
       state.backpropagationFn(state.product, state.left, state.right);
+      // console.log('after', state.product.deltas);
     }
 
     return state.product;

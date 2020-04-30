@@ -45,10 +45,14 @@ class Dropout extends Filter {
     const output = [this.width, this.height];
 
     if (isTraining) {
-      this.predictKernel = makeKernel(trainingPredict, { output, map: { dropouts: setDropout } });
-      this.compareKernel = makeKernel(compare, { output });
+      this.predictKernel = makeKernel(trainingPredict, {
+        output,
+        map: { dropouts: setDropout },
+        immutable: true,
+      });
+      this.compareKernel = makeKernel(compare, { output, immutable: true, });
     } else {
-      this.predictKernel = makeKernel(predict, { output });
+      this.predictKernel = makeKernel(predict, { output, immutable: true, });
     }
   }
 

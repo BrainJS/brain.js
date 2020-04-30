@@ -10,4 +10,4 @@ module.exports = function traverseLayersFrom(layer, cb) {
     }
   }
   cb(layer);
-}
+};

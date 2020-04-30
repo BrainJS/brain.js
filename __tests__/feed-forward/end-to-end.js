@@ -46,16 +46,13 @@ describe('FeedForward Class: End to End', () => {
   describe('when configured like NeuralNetwork', () => {
     function setupTwinXORNetworks(useDecimals) {
       const standardNet = new NeuralNetwork();
-      function noopPraxis() {
-        return { run: (layer) => layer.weights };
-      }
       const ffNet = new FeedForward({
-        inputLayer: () => input({ height: 2, name: 'input', praxis: noopPraxis }),
+        inputLayer: () => input({ height: 2, name: 'input' }),
         hiddenLayers: [
           inputLayer => arthurFeedForward({ height: 3 }, inputLayer),
           inputLayer => arthurFeedForward({ height: 1 }, inputLayer),
         ],
-        outputLayer: inputLayer => target({ height: 1, name: 'output', praxis: noopPraxis }, inputLayer),
+        outputLayer: inputLayer => target({ height: 1, name: 'output' }, inputLayer),
       });
 
       ffNet.initialize();
@@ -234,7 +231,6 @@ describe('FeedForward Class: End to End', () => {
         outputLayer: inputLayer => target({ height: 1 }, inputLayer),
       });
       const errors = [];
-      net.errorCheckInterval = 1;
       net.train(xorTrainingData, {
         iterations: 10,
         threshold: 0.5,
@@ -247,7 +243,7 @@ describe('FeedForward Class: End to End', () => {
         errors.reduce((prev, cur) => prev && typeof cur === 'number', true)
       ).toBeTruthy();
 
-      expect(errors[0]).toBeGreaterThan(errors[9]);
+      expect(errors[0]).toBeGreaterThan(errors[errors.length - 1]);
     }
 
     function testCanLearnXOR() {
@@ -305,7 +301,8 @@ describe('FeedForward Class: End to End', () => {
         testCanLearnXOR();
       });
     });
-    (GPU.isGPUSupported ? describe : describe.skip)('on GPU', () => {
+    describe('on GPU', () => {
+      if (!GPU.isGPUSupported) return;
       beforeEach(() => {
         setup(new GPU({ mode: 'gpu', removeIstanbulCoverage: true }));
       });

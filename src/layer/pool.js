@@ -179,14 +179,10 @@ class Pool extends Filter {
   }
 
   predict() {
-    const { switchX, switchY, weights: prevWeights } = this;
-    release(this.switchX);
-    release(this.switchY);
-    const weights = this.predictKernel(this.inputLayer.weights);
-    this.switchX = weights.switchX;
-    this.switchY = weights.switchY;
-    this.weights = weights.result;
-    release(prevWeights);
+    const { result: weights, switchX, switchY } = this.predictKernel(this.inputLayer.weights);
+    this.switchX = switchX;
+    this.switchY = switchY;
+    this.weights = weights;
     return this.weights;
   }
 

@@ -15,5 +15,4 @@ yarn.lock
 # code coverage
 __coverage__
 
-test.js
-test.html
+test*.*

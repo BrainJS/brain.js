@@ -300,6 +300,10 @@ export interface IFeedForwardOptions {
   praxis?: any;
 }
 
+export class Recurrent extends FeedForward {
+
+}
+
 export class Layer {}
 
 export class Activation extends Layer {}

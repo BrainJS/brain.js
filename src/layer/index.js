@@ -26,6 +26,7 @@ const { Tanh, tanh } = require('./tanh');
 const { Target, target } = require('./target');
 const { Transpose, transpose } = require('./transpose');
 const { Zeros, zeros } = require('./zeros');
+const types = require('./types');
 
 /**
  * @description Layer API, to make it easier to use layers for the world
@@ -80,4 +81,6 @@ module.exports = {
   transpose,
   Zeros,
   zeros,
+
+  types,
 };

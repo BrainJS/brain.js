@@ -1,6 +1,6 @@
 const { GPU } = require('gpu.js');
 const { setup, teardown } = require('../../src/utilities/kernel');
-const { FeedForward, layer } = require('../../src');
+const { FeedForward } = require('../../src');
 const {
   Add,
   Base,
@@ -22,7 +22,8 @@ const {
   softMax,
   Target,
   Zeros,
-} = layer;
+  types,
+} = require('../../src/layer');
 const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('FeedForward Class: Unit', () => {
@@ -42,8 +43,15 @@ describe('FeedForward Class: Unit', () => {
   });
 
   describe('layer composition', () => {
+    const addValidate = Add.prototype.validate;
+    beforeEach(() => {
+      Add.prototype.validate = () => {};
+    });
+    afterEach(() => {
+      Add.prototype.validate = addValidate;
+    });
     describe('flat', () => {
-      test.skip('can setup and traverse entire network as needed', () => {
+      test('can setup and traverse entire network as needed', () => {
         const net = new FeedForward({
           inputLayer: () => input(),
           hiddenLayers: [
@@ -99,25 +107,22 @@ describe('FeedForward Class: Unit', () => {
         net.initialize();
 
         expect(net.layers.length).toBe(13);
-        expect(net.layers.map(l => l.constructor).sort()).toEqual(
+        expect(net.layers.map(l => l.constructor)).toEqual(
           [
-            Add,
-            Convolution,
-            Convolution,
             Input,
-            Multiply,
-            Pool,
-            Pool,
-            Random,
-            // Random,
-            // Random,
-            // Sigmoid,
+            Convolution,
             Relu,
+            Pool,
+            Convolution,
             Relu,
+            Pool,
             SoftMax,
+            Random,
+            Multiply,
+            Random,
+            Add,
             Target,
-            Zeros,
-          ].sort()
+          ]
         );
       });
 
@@ -131,26 +136,26 @@ describe('FeedForward Class: Unit', () => {
         net.initialize();
 
         expect(net.layers.length).toBe(11);
-        expect(net.layers.map(l => l.constructor).sort()).toEqual(
+        expect(net.layers.map(l => l.constructor)).toEqual(
           [
             Input,
             Random,
             Multiply,
             Random,
             Add,
-            Add,
             Sigmoid,
             Random,
             Multiply,
+            Random,
+            Add,
             Target,
-            Zeros,
-          ].sort()
+          ]
         );
       });
     });
 
     describe('functional', () => {
-      test.skip('can setup and traverse entire network as needed', () => {
+      test('can setup and traverse entire network as needed', () => {
         const net = new FeedForward({
           inputLayer: () => input(),
           hiddenLayers: [
@@ -202,9 +207,8 @@ describe('FeedForward Class: Unit', () => {
         net.initialize();
 
         expect(net.layers.length).toBe(13);
-        expect(net.layers.map(l => l.constructor).sort()).toEqual(
+        expect(net.layers.map(l => l.constructor)).toEqual(
           [
-            Add,
             Input,
             Convolution,
             Relu,
@@ -215,9 +219,10 @@ describe('FeedForward Class: Unit', () => {
             SoftMax,
             Random,
             Multiply,
+            Random,
+            Add,
             Target,
-            Zeros,
-          ].sort()
+          ]
         );
       });
     });
@@ -253,7 +258,7 @@ describe('FeedForward Class: Unit', () => {
     });
 
     test('populates praxis on all layers when it is null', () => {
-      class TestLayer extends Base {
+      class TestLayer extends types.Model {
         setupKernels() {
           this.called = true;
         }
@@ -395,7 +400,7 @@ describe('FeedForward Class: Unit', () => {
 
   describe('.adjustWeights()', () => {
     test('calls .learn() on all layers', () => {
-      class TestLayer extends Base {
+      class TestLayer extends types.Model {
         // eslint-disable-next-line
         setupKernels() {}
 

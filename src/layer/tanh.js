@@ -1,7 +1,7 @@
 const { Activation } = require('./activation');
 const { makeKernel } = require('../utilities/kernel');
 const { activate, measure } = require('../activation/tanh');
-const { release } = require('../utilities/kernel');
+const { release, clear } = require('../utilities/kernel');
 
 function predict2D(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
@@ -30,22 +30,26 @@ class Tanh extends Activation {
     if (this.depth > 0) {
       this.predictKernel = makeKernel(predict3D, {
         output: [this.width, this.height, this.depth],
-        functions: [activate]
+        functions: [activate],
+        immutable: true,
       });
 
       this.compareKernel = makeKernel(compare3D, {
         output: [this.width, this.height, this.depth],
         functions: [measure],
+        immutable: true,
       });
     } else {
       this.predictKernel = makeKernel(predict2D, {
         output: [this.width, this.height],
-        functions: [activate]
+        functions: [activate],
+        immutable: true,
       });
 
       this.compareKernel = makeKernel(compare2D, {
         output: [this.width, this.height],
         functions: [measure],
+        immutable: true,
       });
     }
   }
@@ -53,6 +57,7 @@ class Tanh extends Activation {
   predict() {
     release(this.weights);
     this.weights = this.predictKernel(this.inputLayer.weights);
+    clear(this.deltas);
   }
 
   compare() {

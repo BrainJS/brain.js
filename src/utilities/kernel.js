@@ -1,4 +1,4 @@
-const { GPU } = require('gpu.js');
+const { GPU, input } = require('gpu.js');
 
 let gpuInstance = null;
 
@@ -35,13 +35,34 @@ function makeDevKernel(fn, settings) {
   return gpu.createKernel(fn, settings);
 }
 
-function kernelInput(input, size) {
-  return GPU.input(input, size);
+function kernelInput(value, size) {
+  return input(value, size);
 }
 
 function release(texture) {
-  if (texture.delete) {
+  if (texture && texture.delete) {
     texture.delete();
+  }
+}
+
+function clear(texture) {
+  if (texture.clear) {
+    texture.clear();
+    return;
+  }
+  if (texture instanceof Float32Array) {
+    texture.fill(0);
+  } else if (texture[0] instanceof Float32Array) {
+    for (let x = 0; x < texture.length; x++) {
+      texture[x].fill(0);
+    }
+  } else if (texture[0][0] instanceof Float32Array) {
+    for (let y = 0; y < texture.length; y++) {
+      const row = texture[y];
+      for (let x = 0; x < row.length; x++) {
+        row[x].fill(0);
+      }
+    }
   }
 }
 
@@ -49,27 +70,25 @@ function clone(texture) {
   if (texture.clone) {
     return texture.clone();
   }
-  if (typeof texture[0] === 'number') {
-    return new Float32Array(texture);
-  } else if (typeof texture[0][0] === 'number') {
-    const result = [];
-    for (let y = 0; y < texture.length; y++) {
-      result.push(new Float32Array(texture[y]));
+  if (texture instanceof Float32Array) {
+    return texture.slice(0);
+  } else if (texture[0] instanceof Float32Array) {
+    const matrix = new Array(texture.length);
+    for (let x = 0; x < texture.length; x++) {
+      matrix[x] = texture[x].slice(0);
     }
-    return result;
-  } else if (typeof texture[0][0][0] === 'number') {
-    const result = [];
-    for (let z = 0; z < texture.length; z++) {
-      const row = [];
-      result.push(row);
-      for (let y = 0; y < texture.length; y++) {
-        row.push(new Float32Array(texture[z][y]));
+    return matrix;
+  } else if (texture[0][0] instanceof Float32Array) {
+    const cube = new Array(texture.length);
+    for (let y = 0; y < texture.length; y++) {
+      const row = texture[y];
+      const matrix = new Array(row.length);
+      for (let x = 0; x < row.length; x++) {
+        matrix[x] = row[x].slice(0);
       }
     }
-    return result;
+    return cube;
   }
-
-  throw new Error('unrecognized argument');
 }
 
-module.exports = { setup, teardown, makeKernel, makeDevKernel, kernelInput, release, clone };
+module.exports = { setup, teardown, makeKernel, makeDevKernel, kernelInput, release, clone, clear };

@@ -1,4 +1,4 @@
-const { makeKernel, release, clone } = require('../utilities/kernel');
+const { makeKernel, release, clone, clear } = require('../utilities/kernel');
 const zeros = require('../utilities/zeros');
 const zeros2D = require('../utilities/zeros-2d');
 const zeros3D = require('../utilities/zeros-3d');
@@ -22,9 +22,9 @@ class Target extends Filter {
     this.height = inputLayer.height;
     this.depth = inputLayer.depth;
     this.validate();
-    if (this.depth > 0) {
+    if (this.depth) {
       throw new Error('Target layer not implemented for depth');
-    } else if (this.height > 1) {
+    } else if (this.height) {
       this.weights = zeros2D(this.width, this.height);
       this.deltas = zeros2D(this.width, this.height);
       this.errors = zeros2D(this.width, this.height);
@@ -38,14 +38,17 @@ class Target extends Filter {
   setupKernels() {
     const compareFn = this.width === 1 ? compare1D : compare2D;
     this.compareKernel = makeKernel(compareFn, {
-      output: [this.width, this.height]
+      output: [this.width, this.height],
+      immutable: true,
     });
   }
 
   predict() {
+    //TODO: should we clone here?
     // NOTE: this looks like it shouldn't be, but the weights are immutable, and this is where they are reused.
     release(this.weights);
     this.weights = clone(this.inputLayer.weights);
+    clear(this.deltas);
   }
 
   compare(targetValues) {
@@ -60,12 +63,6 @@ class Target extends Filter {
   }
 
   setupPraxis() {}
-
-  learn() {
-    release(this.weights);
-    this.weights = clone(this.inputLayer.weights);
-    this.resetDeltas();
-  }
 }
 
 function target(settings, inputLayer) {

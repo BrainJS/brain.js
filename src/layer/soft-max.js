@@ -199,6 +199,7 @@ class SoftMax extends Filter {
       });
       this.compareKernel = makeKernel(compare3D, {
         output: [width, height, depth],
+        immutable: true,
       });
     } else {
       this.getExponentialsKernel = makeKernel(getExponentials, {
@@ -223,6 +224,7 @@ class SoftMax extends Filter {
       });
       this.compareKernel = makeKernel(compare2D, {
         output: [width, height],
+        immutable: true,
       });
     }
   }

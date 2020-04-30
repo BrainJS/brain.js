@@ -12,4 +12,4 @@ module.exports = function flattenLayers(layers) {
     });
   }
   return result;
-}
+};

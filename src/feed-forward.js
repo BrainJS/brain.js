@@ -1,9 +1,10 @@
 const lookup = require('./lookup');
-const mse2d = require('./utilities/mse-2d');
 const layerFromJSON = require('./utilities/layer-from-json');
 const praxis = require('./praxis');
 const flattenLayers = require('./utilities/flatten-layers');
 const { makeKernel, release } = require('./utilities/kernel');
+const { MeanSquaredError } = require('./estimator/mean-squared-error');
+const { Model } = require('./layer/types');
 
 class FeedForward {
   static get trainDefaults() {
@@ -28,7 +29,7 @@ class FeedForward {
       inputLayer: null,
       outputLayer: null,
       praxisOpts: null,
-      praxis: (layer, settings) => praxis.momentumRootMeanSquaredPropagation(layer, layer.praxisOpts || settings),
+      praxis: (layer, settings) => praxis.momentumRootMeanSquaredPropagation({ ...layer }, layer.praxisOpts || settings),
     };
   }
 
@@ -92,6 +93,9 @@ class FeedForward {
     });
     this.constructor._validateTrainingOptions(this.trainOpts);
     this._setLogMethod(opts.log || this.trainOpts.log);
+    if (this.trainOpts.callback && this.trainOpts.callbackPeriod !== this.trainOpts.errorCheckInterval) {
+      console.warn(`options.callbackPeriod with value of ${ this.trainOpts.callbackPeriod } does not match options.errorCheckInterval with value of ${ this.trainOpts.errorCheckInterval }, if logging error, it will repeat.  These values may need to match`);
+    }
   }
 
   static get structure() {
@@ -99,6 +103,7 @@ class FeedForward {
       layers: null,
       _inputLayer: null,
       _outputLayer: null,
+      _model: null,
     };
   }
 
@@ -154,6 +159,7 @@ class FeedForward {
   initialize() {
     this._connectLayers();
     this.initializeLayers(this.layers);
+    this._model = this.layers.filter(l => l instanceof Model);
   }
 
   initializeLayers(layers) {
@@ -161,33 +167,39 @@ class FeedForward {
       const layer = layers[i];
       // TODO: optimize for when training or just running
       layer.setupKernels(true);
-      if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
+      if (layer instanceof Model && layer.hasOwnProperty('praxis') && layer.praxis === null) {
         layer.praxis = this.praxis(layer, layer.praxisOpts || this.praxisOpts);
+        layer.praxis.setupKernels();
       }
     }
 
-    this._getMSE = makeKernel(mse2d, {
-      output: [1],
-      constants: {
-        width: this._outputLayer.width,
-        height: this._outputLayer.height,
-        length: this._outputLayer.width * this._outputLayer.height,
-      }
+    const lastLayer = layers[layers.length - 1];
+    this.meanSquaredError = new MeanSquaredError({
+      width: lastLayer.width,
+      height: lastLayer.height,
     });
-    this._addMSE = makeKernel(function(value1, value2) {
-      return value1[0] + value2[0];
-    }, {
-      output: [1]
-    });
-    this._divideMSESum = makeKernel(function(length, mseSum) {
-      const value = mseSum[0];
-      if (value > 0) {
-        return value / length;
-      }
-      return 0;
-    }, {
-      output: [1]
-    });
+    // this._getMSE = makeKernel(mse2d, {
+    //   output: [1],
+    //   constants: {
+    //     width: this._outputLayer.width,
+    //     height: this._outputLayer.height,
+    //     length: this._outputLayer.width * this._outputLayer.height,
+    //   }
+    // });
+    // this._addMSE = makeKernel(function(value1, value2) {
+    //   return value1[0] + value2[0];
+    // }, {
+    //   output: [1]
+    // });
+    // this._divideMSESum = makeKernel(function(length, mseSum) {
+    //   const value = mseSum[0];
+    //   if (value > 0) {
+    //     return value / length;
+    //   }
+    //   return 0;
+    // }, {
+    //   output: [1]
+    // });
   }
 
   /**
@@ -250,8 +262,6 @@ class FeedForward {
       return false;
     }
 
-    status.iterations++;
-
     if (
       this.trainOpts.log &&
       status.iterations % this.trainOpts.logPeriod === 0
@@ -272,6 +282,8 @@ class FeedForward {
     ) {
       this.trainOpts.callback(Object.assign(status));
     }
+
+    status.iterations++;
     return true;
   }
 
@@ -284,10 +296,8 @@ class FeedForward {
    */
   _prepTraining(data, options) {
     this._updateTrainingOptions(options);
-    if (this.trainOpts.callback && this.trainOpts.callbackPeriod !== this.trainOpts.errorCheckInterval) {
-      console.warn(`options.callbackPeriod with value of ${ this.trainOpts.callbackPeriod } does not match options.errorCheckInterval with value of ${ this.trainOpts.errorCheckInterval }, if logging error, it will repeat.  These values may need to match`);
-    }
-    const formattedData = this._formatData(data);
+
+    const formattedData = this.formatData(data);
     const endTime = Date.now() + this.trainOpts.timeout;
 
     const status = {
@@ -295,35 +305,19 @@ class FeedForward {
       iterations: 0,
     };
 
-    if (!options.reinforce) {
-      this.initialize();
-    }
-
-    const transferredData = new Array(formattedData.length);
-    const transferInput = makeKernel(function(value) {
-      return value[this.thread.x];
-    }, {
-      output: [formattedData[0].input.length]
-    });
-    const transferOutput = makeKernel(function(value) {
-      return value[this.thread.x];
-    }, {
-      output: [formattedData[0].output.length]
-    });
-
-    for (let i = 0; i < formattedData.length; i++) {
-      const formattedDatum = formattedData[i];
-      transferredData[i] = {
-        input: transferInput(formattedDatum.input),
-        output: transferOutput(formattedDatum.output),
-      };
-    }
+    this.verifyIsInitialized();
 
     return {
-      data: transferredData,
+      data: this.transferData(formattedData),
       status,
       endTime,
     };
+  }
+
+  verifyIsInitialized() {
+    if (!this._model) {
+      this.initialize();
+    }
   }
 
   /**
@@ -331,30 +325,23 @@ class FeedForward {
    * @param data
    * @returns {Number} error
    */
-  // _calculateTrainingError(data) {
-  //   let sum = 0;
-  //   for (let i = 0; i < data.length; ++i) {
-  //     sum += this._trainPattern(data[i].input, data[i].output, true);
-  //   }
-  //   return sum / data.length;
-  // }
   _calculateTrainingError(data) {
     let sum = new Float32Array([0]);
     for (let i = 0; i < data.length; ++i) {
       const prevSum = sum;
       const error = this._trainPattern(data[i].input, data[i].output, true);
-      sum = this._addMSE(sum, error);
+      sum = this.meanSquaredError.add(sum, error);
       release(error);
       release(prevSum);
     }
-    const result = this._divideMSESum(data.length, sum);
+    const result = this.meanSquaredError.divide(data.length, sum);
     release(sum);
     if (result.toArray) {
       const resultArray = result.toArray();
       release(result);
       return resultArray[0];
     }
-    return result;
+    return result[0];
   }
 
   /**
@@ -382,7 +369,7 @@ class FeedForward {
     this.adjustWeights();
 
     if (logErrorRate) {
-      return this._getMSE(this._outputLayer.errors);
+      return this.meanSquaredError.calculate(this._outputLayer.errors);
     }
     return null;
   }
@@ -397,10 +384,11 @@ class FeedForward {
    *
    */
   adjustWeights() {
-    for (let i = 0; i < this.layers.length; i++) {
-      this.layers[i].learn(
-        this.layers[i - 1],
-        this.layers[i + 1],
+    const { _model } = this;
+    for (let i = 0; i < _model.length; i++) {
+      _model[i].learn(
+        null,
+        null,
         this.trainOpts.learningRate
       );
     }
@@ -411,7 +399,7 @@ class FeedForward {
    * @param data
    * @returns {*}
    */
-  _formatData(data) {
+  formatData(data) {
     if (!Array.isArray(data)) {
       // turn stream datum into array
       const tmp = [];
@@ -442,6 +430,31 @@ class FeedForward {
       }, this);
     }
     return data;
+  }
+
+  transferData(formattedData) {
+    const transferredData = new Array(formattedData.length);
+    const transferInput = makeKernel(function(value) {
+      return value[this.thread.x];
+    }, {
+      output: [formattedData[0].input.length],
+      immutable: true,
+    });
+    const transferOutput = makeKernel(function(value) {
+      return value[this.thread.x];
+    }, {
+      output: [formattedData[0].output.length],
+      immutable: true,
+    });
+
+    for (let i = 0; i < formattedData.length; i++) {
+      const formattedDatum = formattedData[i];
+      transferredData[i] = {
+        input: transferInput(formattedDatum.input),
+        output: transferOutput(formattedDatum.output),
+      };
+    }
+    return transferredData;
   }
 
   /**

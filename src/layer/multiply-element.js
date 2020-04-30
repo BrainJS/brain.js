@@ -1,12 +1,12 @@
-const { makeKernel, release } = require('../utilities/kernel');
+const { makeKernel, release, clear } = require('../utilities/kernel');
 const { Operator } = require('./types');
 const zeros2D = require('../utilities/zeros-2d');
 const { checkSameSize } = require('../utilities/layer-size');
 
-function predict(weights, inputLayerWeights) {
+function predict(inputLayerWeights1, inputLayerWeights2) {
   return (
-    weights[this.thread.y][this.thread.x] *
-    inputLayerWeights[this.thread.y][this.thread.x]
+    inputLayerWeights1[this.thread.y][this.thread.x] *
+    inputLayerWeights2[this.thread.y][this.thread.x]
   );
 }
 
@@ -37,23 +37,26 @@ class MultiplyElement extends Operator {
   setupKernels() {
     this.predictKernel = makeKernel(predict, {
       output: [this.width, this.height],
+      immutable: true,
     });
 
     this.compareKernel = makeKernel(compare, {
       output: [this.width, this.height],
+      immutable: true,
     });
   }
 
   predict() {
-    const { weights } = this;
-    this.weights = this.predictKernel(weights, this.inputLayer.weights);
-    release(weights);
+    release(this.weights);
+    this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
+    clear(this.deltas);
   }
 
   compare() {
-    const { deltas } = this;
-    this.deltas = this.compareKernel(this.weights, deltas);
-    release(deltas);
+    release(this.inputLayer1.deltas);
+    release(this.inputLayer2.deltas);
+    this.inputLayer1.deltas = this.compareKernel(this.inputLayer2.weights, this.deltas);
+    this.inputLayer2.deltas = this.compareKernel(this.inputLayer1.weights, this.deltas);
   }
 }
 
@@ -61,4 +64,4 @@ function multiplyElement(inputLayer1, inputLayer2) {
   return new MultiplyElement(inputLayer1, inputLayer2);
 }
 
-module.exports = { MultiplyElement, multiplyElement };
+module.exports = { MultiplyElement, multiplyElement, predict, compare };

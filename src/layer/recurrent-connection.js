@@ -50,9 +50,7 @@ class RecurrentConnection extends Internal {
   }
 
   learn() {
-    const layerDeltas = this.layer.deltas;
-    this.layer.deltas = zeros2D(this.width, this.height);
-    release(layerDeltas);
+    throw new Error('no longer using');
   }
 
   setupKernels() {

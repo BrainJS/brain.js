@@ -44,7 +44,6 @@ class ArthurDeviationWeights extends Base {
     }
 
     this.changes = zeros2D(layer.width, layer.height);
-    this.setupKernels();
   }
 
   run(layer, previousLayer, nextLayer, learningRate) {
