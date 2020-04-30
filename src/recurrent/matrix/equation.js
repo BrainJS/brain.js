@@ -229,11 +229,9 @@ class Equation {
     let iBackpropagate = 0;
     this.states.push({
       forwardFn() {
-        console.log(m);
         iForward++;
       },
       backpropagationFn() {
-        console.log(m);
         iBackpropagate++;
       },
     });
