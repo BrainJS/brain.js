@@ -2,11 +2,15 @@ language: node_js
 node_js:
   - '8'
   - '10'
+  - '12'
+  - '14'
 cache:
   directories:
     - node_modules
 install:
-  - npm install
+  - npm ci
 script:
+  - npm run lint
+  - npm run build
   - npm run test
 sudo: false

@@ -1,9 +1,13 @@
 {
-  "env": {},
-  "extends": ["airbnb", "prettier"],
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": ["eslint:recommended", "airbnb", "prettier"],
   "globals": {},
   "parserOptions": {
-    "ecmaVersion": 8,
+    "ecmaVersion": 11,
     "sourceType": "module"
   },
   "root": true,

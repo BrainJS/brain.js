@@ -1,8 +1,26 @@
 {
   "env": {
-    "jest": true
+    "browser": true,
+    "es6": true,
+    "jest": true,
+    "node": true
   },
-  "extends": ["../.eslintrc.json"],
+  "extends": ["eslint:recommended", "airbnb", "prettier"],
+  "parserOptions": {
+    "ecmaVersion": 11,
+    "sourceType": "module"
+  },
   "plugins": ["jest"],
-  "root": true
+  "root": true,
+  "rules": {
+    "class-methods-use-this": "off",
+    "linebreak-style": 0,
+    "no-continue": 0,
+    "no-multi-assign": "off",
+    "no-param-reassign": 0,
+    "no-plusplus": 0,
+    "no-prototype-builtins": 0,
+    "no-underscore-dangle": 0,
+    "semi": 1
+  }
 }
