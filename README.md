@@ -74,7 +74,7 @@ npm install brain.js
 
 ### Installation note
 
-`Brain.js` depends on a native module `headless-gl` for gpu support. In most cases installing `brain.js` from npm should just work. However, if you run into problems, this mean prebuilt binaries are not able to download from github reporsitories and you might need to build it yourself.
+`Brain.js` depends on a native module `headless-gl` for gpu support. In most cases installing `brain.js` from npm should just work. However, if you run into problems, this mean prebuilt binaries are not able to download from github repositories and you might need to build it yourself.
 
 #### Building from source
 
@@ -108,8 +108,10 @@ sudo apt-get install -y build-essential libxi-dev libglu1-mesa-dev libglew-dev p
 
 - [Python 2.7](https://www.python.org/)
 - [Microsoft Visual Studio Build Tools 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48159)
-- run in cmd/bash: `npm config set msvs_version 2015`
-- d3dcompiler_47.dll should be in c:\windows\system32, but if isn't then you can find another copy in the deps/ folder
+- run in cmd: `npm config set msvs_version 2015`
+- run in cmd: `npm config set python python2.7`
+
+\* If you are using `Build Tools 2017` then run `npm config set msvs_version 2017`
 
 ## Examples
 
@@ -249,9 +251,16 @@ const net = new brain.recurrent.LSTMTimeStep({
   outputSize: 2,
 })
 
-net.train([[1, 3], [2, 2], [3, 1]])
+net.train([
+  [1, 3],
+  [2, 2],
+  [3, 1],
+])
 
-const output = net.run([[1, 3], [2, 2]]) // [3, 1]
+const output = net.run([
+  [1, 3],
+  [2, 2],
+]) // [3, 1]
 ```
 
 #### For training with `RNN`, `LSTM` and `GRU`
