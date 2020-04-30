@@ -13,13 +13,13 @@
   "root": true,
   "rules": {
     "class-methods-use-this": "off",
-    "linebreak-style": 0,
-    "no-continue": 0,
+    "linebreak-style": "off",
+    "no-continue": "off",
     "no-multi-assign": "off",
-    "no-param-reassign": 0,
-    "no-plusplus": 0,
-    "no-prototype-builtins": 0,
-    "no-underscore-dangle": 0,
-    "semi": 1
+    "no-param-reassign": "off",
+    "no-plusplus": "off",
+    "no-prototype-builtins": "off",
+    "no-underscore-dangle": "off",
+    "semi": "error"
   }
 }
