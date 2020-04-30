@@ -89,14 +89,14 @@
   "scripts": {
     "build": "npm run dist",
     "bundle-web": "parcel build ./src/index.js --out-dir ./dist --out-file brain-browser.js --no-minify",
-    "bundle-web:minified": "parcel build ./src/index.js --out-dir ./dist --out-file brain-browser.min.js",
-    "dist": "npm run bundle-web && npm run bundle-web:minified",
+    "minify": "parcel build ./src/index.js --out-dir ./dist --out-file brain-browser.min.js",
+    "dist": "npm run bundle-web && npm run minify",
     "lint": "eslint --ext .js ./src ./__tests__",
     "lint:fix": "eslint --ext .js --fix ./src ./__tests__",
     "prettier": "prettier --write {src,__tests__}/**/*.js",
     "test": "jest --env=node",
-    "test:coverage": "jest --env=node --coverage --coverage-provider v8 && codecov",
-    "test:watch": "jest --watch --env=node"
+    "coverage": "jest --env=node --coverage --coverage-provider v8 && codecov",
+    "watch": "jest --watch --env=node"
   },
   "typings": "./src/index.d.ts",
   "version": "2.0.0-alpha.12"
