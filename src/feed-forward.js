@@ -17,7 +17,7 @@ class FeedForward {
       callback: null,
       callbackPeriod: 10,
       errorCheckInterval: 100,
-      reinforce: false,
+      reinforce: false
     };
   }
 
@@ -29,7 +29,11 @@ class FeedForward {
       inputLayer: null,
       outputLayer: null,
       praxisOpts: null,
-      praxis: (layer, settings) => praxis.momentumRootMeanSquaredPropagation({ ...layer }, layer.praxisOpts || settings),
+      praxis: (layer, settings) =>
+        praxis.momentumRootMeanSquaredPropagation(
+          { ...layer },
+          layer.praxisOpts || settings
+        )
     };
   }
 
@@ -40,21 +44,19 @@ class FeedForward {
    */
   static _validateTrainingOptions(options) {
     const validations = {
-      iterations: val => typeof val === 'number' && val > 0,
-      errorThresh: val => typeof val === 'number' && val > 0 && val < 1,
-      log: val => typeof val === 'function' || typeof val === 'boolean',
-      logPeriod: val => typeof val === 'number' && val > 0,
-      learningRate: val => typeof val === 'number' && val > 0 && val < 1,
-      callback: val => typeof val === 'function' || val === null,
-      callbackPeriod: val => typeof val === 'number' && val > 0,
-      timeout: val => typeof val === 'number' && val > 0,
+      iterations: (val) => typeof val === 'number' && val > 0,
+      errorThresh: (val) => typeof val === 'number' && val > 0 && val < 1,
+      log: (val) => typeof val === 'function' || typeof val === 'boolean',
+      logPeriod: (val) => typeof val === 'number' && val > 0,
+      learningRate: (val) => typeof val === 'number' && val > 0 && val < 1,
+      callback: (val) => typeof val === 'function' || val === null,
+      callbackPeriod: (val) => typeof val === 'number' && val > 0,
+      timeout: (val) => typeof val === 'number' && val > 0
     };
-    Object.keys(FeedForward.trainDefaults).forEach(key => {
+    Object.keys(FeedForward.trainDefaults).forEach((key) => {
       if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
         throw new Error(
-          `[${key}, ${
-            options[key]
-          }] is out of normal training range, your network will probably not train.`
+          `[${key}, ${options[key]}] is out of normal training range, your network will probably not train.`
         );
       }
     });
@@ -72,7 +74,7 @@ class FeedForward {
       this.trainOpts.log = log;
     } else if (log) {
       // eslint-disable-next-line
-      this.trainOpts.log = console.log
+      this.trainOpts.log = console.log;
     } else {
       this.trainOpts.log = false;
     }
@@ -86,15 +88,20 @@ class FeedForward {
    *       learningRate: (number)
    */
   _updateTrainingOptions(opts) {
-    Object.keys(this.constructor.trainDefaults).forEach(opt => {
+    Object.keys(this.constructor.trainDefaults).forEach((opt) => {
       this.trainOpts[opt] = opts.hasOwnProperty(opt)
         ? opts[opt]
         : this.trainOpts[opt];
     });
     this.constructor._validateTrainingOptions(this.trainOpts);
     this._setLogMethod(opts.log || this.trainOpts.log);
-    if (this.trainOpts.callback && this.trainOpts.callbackPeriod !== this.trainOpts.errorCheckInterval) {
-      console.warn(`options.callbackPeriod with value of ${ this.trainOpts.callbackPeriod } does not match options.errorCheckInterval with value of ${ this.trainOpts.errorCheckInterval }, if logging error, it will repeat.  These values may need to match`);
+    if (
+      this.trainOpts.callback &&
+      this.trainOpts.callbackPeriod !== this.trainOpts.errorCheckInterval
+    ) {
+      console.warn(
+        `options.callbackPeriod with value of ${this.trainOpts.callbackPeriod} does not match options.errorCheckInterval with value of ${this.trainOpts.errorCheckInterval}, if logging error, it will repeat.  These values may need to match`
+      );
     }
   }
 
@@ -103,7 +110,7 @@ class FeedForward {
       layers: null,
       _inputLayer: null,
       _outputLayer: null,
-      _model: null,
+      _model: null
     };
   }
 
@@ -121,9 +128,10 @@ class FeedForward {
     this.praxis = null;
     Object.assign(this, this.constructor.defaults, options);
     this.trainOpts = {};
-    this._updateTrainingOptions(
-      Object.assign({}, this.constructor.trainDefaults, options)
-    );
+    this._updateTrainingOptions({
+      ...this.constructor.trainDefaults,
+      ...options
+    });
     Object.assign(this, this.constructor.structure);
     this._inputLayer = null;
     this._hiddenLayers = null;
@@ -159,7 +167,7 @@ class FeedForward {
   initialize() {
     this._connectLayers();
     this.initializeLayers(this.layers);
-    this._model = this.layers.filter(l => l instanceof Model);
+    this._model = this.layers.filter((l) => l instanceof Model);
   }
 
   initializeLayers(layers) {
@@ -167,7 +175,11 @@ class FeedForward {
       const layer = layers[i];
       // TODO: optimize for when training or just running
       layer.setupKernels(true);
-      if (layer instanceof Model && layer.hasOwnProperty('praxis') && layer.praxis === null) {
+      if (
+        layer instanceof Model &&
+        layer.hasOwnProperty('praxis') &&
+        layer.praxis === null
+      ) {
         layer.praxis = this.praxis(layer, layer.praxisOpts || this.praxisOpts);
         layer.praxis.setupKernels();
       }
@@ -176,7 +188,7 @@ class FeedForward {
     const lastLayer = layers[layers.length - 1];
     this.meanSquaredError = new MeanSquaredError({
       width: lastLayer.width,
-      height: lastLayer.height,
+      height: lastLayer.height
     });
     // this._getMSE = makeKernel(mse2d, {
     //   output: [1],
@@ -302,7 +314,7 @@ class FeedForward {
 
     const status = {
       error: 1,
-      iterations: 0,
+      iterations: 0
     };
 
     this.verifyIsInitialized();
@@ -310,7 +322,7 @@ class FeedForward {
     return {
       data: this.transferData(formattedData),
       status,
-      endTime,
+      endTime
     };
   }
 
@@ -386,11 +398,7 @@ class FeedForward {
   adjustWeights() {
     const { _model } = this;
     for (let i = 0; i < _model.length; i++) {
-      _model[i].learn(
-        null,
-        null,
-        this.trainOpts.learningRate
-      );
+      _model[i].learn(null, null, this.trainOpts.learningRate);
     }
   }
 
@@ -409,24 +417,32 @@ class FeedForward {
 
     // turn sparse hash input into arrays with 0s as filler
     const inputDatumCheck = data[0].input;
-    if (!Array.isArray(inputDatumCheck) && !(inputDatumCheck instanceof Float32Array)) {
+    if (
+      !Array.isArray(inputDatumCheck) &&
+      !(inputDatumCheck instanceof Float32Array)
+    ) {
       if (!this.inputLookup) {
-        this.inputLookup = lookup.buildLookup(data.map(value => value.input));
+        this.inputLookup = lookup.buildLookup(data.map((value) => value.input));
       }
-      data = data.map(datumParam => {
+      data = data.map((datumParam) => {
         const array = lookup.toArray(this.inputLookup, datumParam.input);
-        return Object.assign({}, datumParam, { input: array });
+        return { ...datumParam, input: array };
       }, this);
     }
 
     const outputDatumCheck = data[0].output;
-    if (!Array.isArray(outputDatumCheck) && !(outputDatumCheck instanceof Float32Array)) {
+    if (
+      !Array.isArray(outputDatumCheck) &&
+      !(outputDatumCheck instanceof Float32Array)
+    ) {
       if (!this.outputLookup) {
-        this.outputLookup = lookup.buildLookup(data.map(value => value.output));
+        this.outputLookup = lookup.buildLookup(
+          data.map((value) => value.output)
+        );
       }
-      data = data.map(datumParam => {
+      data = data.map((datumParam) => {
         const array = lookup.toArray(this.outputLookup, datumParam.output);
-        return Object.assign({}, datumParam, { output: array });
+        return { ...datumParam, output: array };
       }, this);
     }
     return data;
@@ -434,24 +450,30 @@ class FeedForward {
 
   transferData(formattedData) {
     const transferredData = new Array(formattedData.length);
-    const transferInput = makeKernel(function(value) {
-      return value[this.thread.x];
-    }, {
-      output: [formattedData[0].input.length],
-      immutable: true,
-    });
-    const transferOutput = makeKernel(function(value) {
-      return value[this.thread.x];
-    }, {
-      output: [formattedData[0].output.length],
-      immutable: true,
-    });
+    const transferInput = makeKernel(
+      function (value) {
+        return value[this.thread.x];
+      },
+      {
+        output: [formattedData[0].input.length],
+        immutable: true
+      }
+    );
+    const transferOutput = makeKernel(
+      function (value) {
+        return value[this.thread.x];
+      },
+      {
+        output: [formattedData[0].output.length],
+        immutable: true
+      }
+    );
 
     for (let i = 0; i < formattedData.length; i++) {
       const formattedDatum = formattedData[i];
       transferredData[i] = {
         input: transferInput(formattedDatum.input),
-        output: transferOutput(formattedDatum.output),
+        output: transferOutput(formattedDatum.output)
       };
     }
     return transferredData;
@@ -497,9 +519,9 @@ class FeedForward {
     return {
       type: this.constructor.name,
       sizes: [this._inputLayer.height]
-        .concat(this._hiddenLayers.map(l => l.height))
+        .concat(this._hiddenLayers.map((l) => l.height))
         .concat([this._outputLayer.height]),
-      layers: jsonLayers,
+      layers: jsonLayers
     };
   }
 
@@ -525,19 +547,23 @@ class FeedForward {
         );
       } else {
         if (!jsonLayer.hasOwnProperty('inputLayer1Index'))
-          throw new Error('inputLayer1Index not defined');
+          throw new Error(
+            'Cannot create network from provided JOSN. inputLayer1Index not defined.'
+          );
         if (!jsonLayer.hasOwnProperty('inputLayer2Index'))
-          throw new Error('inputLayer2Index not defined');
+          throw new Error(
+            'Cannot create network from provided JOSN. inputLayer2Index not defined.'
+          );
         const inputLayer1 = layers[jsonLayer.inputLayer1Index];
         const inputLayer2 = layers[jsonLayer.inputLayer2Index];
 
         if (inputLayer1 === undefined)
           throw new Error(
-            `layer of index ${jsonLayer.inputLayer1Index} not found`
+            `Cannot create network from provided JOSN. layer of index ${jsonLayer.inputLayer1Index} not found.`
           );
         if (inputLayer2 === undefined)
           throw new Error(
-            `layer of index ${jsonLayer.inputLayer2Index} not found`
+            `Cannot create network from provided JOSN. layer of index ${jsonLayer.inputLayer2Index} not found.`
           );
 
         layers.push(

@@ -4,10 +4,10 @@ const Equation = require('./matrix/equation');
 const RNN = require('./rnn');
 const zeros = require('../utilities/zeros');
 const softmax = require('./matrix/softmax');
-const {randomFloat} = require('../utilities/random');
+const { randomFloat } = require('../utilities/random');
 const sampleI = require('./matrix/sample-i');
 const maxI = require('./matrix/max-i');
-const lookup = require("../lookup");
+const lookup = require('../lookup');
 const LookupTable = require('../utilities/lookup-table');
 const ArrayLookupTable = require('../utilities/array-lookup-table');
 const {
@@ -15,7 +15,8 @@ const {
   arrayToFloat32Arrays,
   objectsToFloat32Arrays,
   objectToFloat32Arrays,
-  objectToFloat32Array } = require('../utilities/cast');
+  objectToFloat32Array
+} = require('../utilities/cast');
 
 class RNNTimeStep extends RNN {
   // eslint-disable-next-line
@@ -26,59 +27,74 @@ class RNNTimeStep extends RNN {
   createInputMatrix() {}
 
   createOutputMatrix() {
-    let model = this.model;
-    let outputSize = this.outputSize;
-    let lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1];
+    const { model } = this;
+    const { outputSize } = this;
+    const lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1];
 
-    //whd
+    // whd
     model.outputConnector = new RandomMatrix(outputSize, lastHiddenSize, 0.08);
-    //bd
+    // bd
     model.output = new RandomMatrix(outputSize, 1, 0.08);
   }
 
   bindEquation() {
-    let model = this.model;
-    let hiddenLayers = this.hiddenLayers;
-    let layers = model.hiddenLayers;
-    let equation = new Equation();
-    let outputs = [];
-    let equationConnection = model.equationConnections.length > 0
-      ? model.equationConnections[model.equationConnections.length - 1]
-      : this.initialLayerInputs
-      ;
-
-      // 0 index
-    let output = this.constructor.getEquation(equation, equation.input(new Matrix(this.inputSize, 1)), equationConnection[0], layers[0]);
+    const { model } = this;
+    const { hiddenLayers } = this;
+    const layers = model.hiddenLayers;
+    const equation = new Equation();
+    const outputs = [];
+    const equationConnection =
+      model.equationConnections.length > 0
+        ? model.equationConnections[model.equationConnections.length - 1]
+        : this.initialLayerInputs;
+    // 0 index
+    let output = this.constructor.getEquation(
+      equation,
+      equation.input(new Matrix(this.inputSize, 1)),
+      equationConnection[0],
+      layers[0]
+    );
     outputs.push(output);
     // 1+ indices
     for (let i = 1, max = hiddenLayers.length; i < max; i++) {
-      output = this.constructor.getEquation(equation, output, equationConnection[i], layers[i]);
+      output = this.constructor.getEquation(
+        equation,
+        output,
+        equationConnection[i],
+        layers[i]
+      );
       outputs.push(output);
     }
 
     model.equationConnections.push(outputs);
-    equation.add(equation.multiply(model.outputConnector, output), model.output);
+    equation.add(
+      equation.multiply(model.outputConnector, output),
+      model.output
+    );
     model.equations.push(equation);
   }
 
   mapModel() {
-    let model = this.model;
-    let hiddenLayers = model.hiddenLayers;
-    let allMatrices = model.allMatrices;
-    this.initialLayerInputs = this.hiddenLayers.map((size) => new Matrix(size, 1));
+    const { model } = this;
+    const { hiddenLayers } = model;
+    const { allMatrices } = model;
+    this.initialLayerInputs = this.hiddenLayers.map(
+      (size) => new Matrix(size, 1)
+    );
 
     this.createHiddenLayers();
     if (!model.hiddenLayers.length) throw new Error('net.hiddenLayers not set');
     for (let i = 0, max = hiddenLayers.length; i < max; i++) {
-      let hiddenMatrix = hiddenLayers[i];
-      for (let property in hiddenMatrix) {
+      const hiddenMatrix = hiddenLayers[i];
+      for (const property in hiddenMatrix) {
         if (!hiddenMatrix.hasOwnProperty(property)) continue;
         allMatrices.push(hiddenMatrix[property]);
       }
     }
 
     this.createOutputMatrix();
-    if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
+    if (!model.outputConnector)
+      throw new Error('net.model.outputConnector not set');
     if (!model.output) throw new Error('net.model.output not set');
 
     allMatrices.push(model.outputConnector);
@@ -90,7 +106,6 @@ class RNNTimeStep extends RNN {
       this.model.equations[i].backpropagate();
     }
   }
-
 
   /**
    *
@@ -138,13 +153,16 @@ class RNNTimeStep extends RNN {
    * @returns {{error: number, iterations: number}}
    */
   train(data, options = {}) {
-    this.trainOpts = options = Object.assign({}, this.constructor.trainDefaults, options);
-    const iterations = options.iterations;
-    const errorThresh = options.errorThresh;
+    this.trainOpts = options = {
+      ...this.constructor.trainDefaults,
+      ...options
+    };
+    const { iterations } = options;
+    const { errorThresh } = options;
     const log = options.log === true ? console.log : options.log;
-    const logPeriod = options.logPeriod;
-    const callback = options.callback;
-    const callbackPeriod = options.callbackPeriod;
+    const { logPeriod } = options;
+    const { callback } = options;
+    const { callbackPeriod } = options;
 
     if (this.inputSize === 1 || !this.inputSize) {
       this.setSize(data);
@@ -164,17 +182,20 @@ class RNNTimeStep extends RNN {
       }
       error = sum / data.length;
 
-      if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
-      if (log && (i % logPeriod === 0)) {
-        log(`iterations: ${ i }, training error: ${ error }`);
+      if (isNaN(error))
+        throw new Error(
+          'Network error rate is unexpected NaN, check network configurations and try again. Most probably input format is not correct or training data is not enough. '
+        );
+      if (log && i % logPeriod === 0) {
+        log(`iterations: ${i}, training error: ${error}`);
       }
-      if (callback && (i % callbackPeriod === 0)) {
-        callback({ error: error, iterations: i });
+      if (callback && i % callbackPeriod === 0) {
+        callback({ error, iterations: i });
       }
     }
 
     return {
-      error: error,
+      error,
       iterations: i
     };
   }
@@ -191,12 +212,10 @@ class RNNTimeStep extends RNN {
     } else if (data[0].length > 0) {
       if (data[0][0].length > 0) {
         this.trainInput = this.trainArrays;
+      } else if (this.inputSize > 1) {
+        this.trainInput = this.trainArrays;
       } else {
-        if (this.inputSize > 1) {
-          this.trainInput = this.trainArrays;
-        } else {
-          this.trainInput = this.trainNumbers;
-        }
+        this.trainInput = this.trainNumbers;
       }
     }
 
@@ -207,7 +226,7 @@ class RNNTimeStep extends RNN {
 
   setSize(data) {
     const dataShape = lookup.dataShape(data).join(',');
-    switch(dataShape) {
+    switch (dataShape) {
       case 'array,array,number':
       case 'array,object,number':
       case 'array,datum,array,number':
@@ -218,7 +237,9 @@ class RNNTimeStep extends RNN {
         this.inputSize = this.outputSize = data[0][0].length;
         break;
       case 'array,array,object,number':
-        this.inputSize = this.outputSize = Object.keys(lookup.toTable2D(data)).length;
+        this.inputSize = this.outputSize = Object.keys(
+          lookup.toTable2D(data)
+        ).length;
         break;
       case 'array,datum,array,array,number':
         this.inputSize = this.outputSize = data[0].input[0].length;
@@ -227,13 +248,14 @@ class RNNTimeStep extends RNN {
         this.inputSize = Object.keys(lookup.toInputTable2D(data)).length;
         this.outputSize = Object.keys(lookup.toOutputTable2D(data)).length;
         break;
-      default: throw new Error('unknown data shape or configuration');
+      default:
+        throw new Error('unknown data shape or configuration');
     }
   }
 
   trainNumbers(input) {
-    const model = this.model;
-    const equations = model.equations;
+    const { model } = this;
+    const { equations } = model;
     while (equations.length < input.length) {
       this.bindEquation();
     }
@@ -247,8 +269,8 @@ class RNNTimeStep extends RNN {
 
   runNumbers(input) {
     if (!this.isRunnable) return null;
-    const model = this.model;
-    const equations = model.equations;
+    const { model } = this;
+    const { equations } = model;
     if (this.inputLookup) {
       input = lookup.toArray(this.inputLookup, input, this.inputLookupLength);
     }
@@ -265,8 +287,8 @@ class RNNTimeStep extends RNN {
 
   forecastNumbers(input, count) {
     if (!this.isRunnable) return null;
-    const model = this.model;
-    const equations = model.equations;
+    const { model } = this;
+    const { equations } = model;
     const length = input.length + count;
     while (equations.length <= length) {
       this.bindEquation();
@@ -290,8 +312,12 @@ class RNNTimeStep extends RNN {
       const inputArray = lookup.toArrayShort(this.inputLookup, input);
       return lookup.toObjectPartial(
         this.outputLookup,
-        this.forecastNumbers(inputArray, this.outputLookupLength - inputArray.length),
-        inputArray.length);
+        this.forecastNumbers(
+          inputArray,
+          this.outputLookupLength - inputArray.length
+        ),
+        inputArray.length
+      );
     }
     return lookup.toObject(
       this.outputLookup,
@@ -303,40 +329,65 @@ class RNNTimeStep extends RNN {
   }
 
   runObjects(input) {
-    input = input.map(value => lookup.toArray(this.inputLookup, value, this.inputLookupLength));
-    return this.forecastArrays(input, 1).map(value => lookup.toObject(this.outputLookup, value))[0];
+    input = input.map((value) =>
+      lookup.toArray(this.inputLookup, value, this.inputLookupLength)
+    );
+    return this.forecastArrays(input, 1).map((value) =>
+      lookup.toObject(this.outputLookup, value)
+    )[0];
   }
 
   forecastObjects(input, count) {
-    input = input.map(value => lookup.toArray(this.inputLookup, value, this.inputLookupLength));
-    return this.forecastArrays(input, count).map(value => lookup.toObject(this.outputLookup, value));
+    input = input.map((value) =>
+      lookup.toArray(this.inputLookup, value, this.inputLookupLength)
+    );
+    return this.forecastArrays(input, count).map((value) =>
+      lookup.toObject(this.outputLookup, value)
+    );
   }
 
   trainInputOutput(object) {
-    const model = this.model;
-    const input = object.input;
-    const output = object.output;
+    const { model } = this;
+    const { input } = object;
+    const { output } = object;
     const totalSize = input.length + output.length;
-    const equations = model.equations;
+    const { equations } = model;
     while (equations.length < totalSize) {
       this.bindEquation();
     }
     let errorSum = 0;
     let equationIndex = 0;
-    for (let inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
-      errorSum += equations[equationIndex++].predictTarget(input[inputIndex], input[inputIndex + 1]);
+    for (
+      let inputIndex = 0, max = input.length - 1;
+      inputIndex < max;
+      inputIndex++
+    ) {
+      errorSum += equations[equationIndex++].predictTarget(
+        input[inputIndex],
+        input[inputIndex + 1]
+      );
     }
-    errorSum += equations[equationIndex++].predictTarget(input[input.length - 1], output[0]);
-    for (let outputIndex = 0, max = output.length - 1; outputIndex < max; outputIndex++) {
-      errorSum += equations[equationIndex++].predictTarget(output[outputIndex], output[outputIndex + 1]);
+    errorSum += equations[equationIndex++].predictTarget(
+      input[input.length - 1],
+      output[0]
+    );
+    for (
+      let outputIndex = 0, max = output.length - 1;
+      outputIndex < max;
+      outputIndex++
+    ) {
+      errorSum += equations[equationIndex++].predictTarget(
+        output[outputIndex],
+        output[outputIndex + 1]
+      );
     }
     this.end();
     return errorSum / totalSize;
   }
 
   trainArrays(input) {
-    const model = this.model;
-    const equations = model.equations;
+    const { model } = this;
+    const { equations } = model;
     while (equations.length < input.length) {
       this.bindEquation();
     }
@@ -350,8 +401,8 @@ class RNNTimeStep extends RNN {
 
   runArrays(input) {
     if (!this.isRunnable) return null;
-    const model = this.model;
-    const equations = model.equations;
+    const { model } = this;
+    const { equations } = model;
     while (equations.length <= input.length) {
       this.bindEquation();
     }
@@ -360,7 +411,7 @@ class RNNTimeStep extends RNN {
     }
     let lastOutput;
     for (let i = 0; i < input.length; i++) {
-      let outputMatrix = equations[i].runInput(input[i]);
+      const outputMatrix = equations[i].runInput(input[i]);
       lastOutput = outputMatrix.weights;
     }
     this.end();
@@ -372,8 +423,8 @@ class RNNTimeStep extends RNN {
 
   forecastArrays(input, count) {
     if (!this.isRunnable) return null;
-    const model = this.model;
-    const equations = model.equations;
+    const { model } = this;
+    const { equations } = model;
     const length = input.length + count;
     while (equations.length <= length) {
       this.bindEquation();
@@ -393,7 +444,9 @@ class RNNTimeStep extends RNN {
   }
 
   end() {
-    this.model.equations[this.model.equations.length - 1].runInput(new Float32Array(this.outputSize));
+    this.model.equations[this.model.equations.length - 1].runInput(
+      new Float32Array(this.outputSize)
+    );
   }
 
   /**
@@ -509,7 +562,13 @@ class RNNTimeStep extends RNN {
         for (let i = 0; i < data.length; i++) {
           const array = [];
           for (let j = 0; j < data[i].length; j++) {
-            array.push(objectToFloat32Array(data[i][j], this.inputLookup, this.inputLookupLength));
+            array.push(
+              objectToFloat32Array(
+                data[i][j],
+                this.inputLookup,
+                this.inputLookupLength
+              )
+            );
           }
           result.push(array);
         }
@@ -555,13 +614,22 @@ class RNNTimeStep extends RNN {
         for (let i = 0; i < data.length; i++) {
           const datum = data[i];
           result.push({
-            input: objectsToFloat32Arrays(datum.input, this.inputLookup, this.inputLookupLength),
-            output: objectsToFloat32Arrays(datum.output, this.outputLookup, this.outputLookupLength)
+            input: objectsToFloat32Arrays(
+              datum.input,
+              this.inputLookup,
+              this.inputLookupLength
+            ),
+            output: objectsToFloat32Arrays(
+              datum.output,
+              this.outputLookup,
+              this.outputLookupLength
+            )
           });
         }
         return result;
       }
-      default: throw new Error('unknown data shape or configuration');
+      default:
+        throw new Error('unknown data shape or configuration');
     }
   }
 
@@ -632,15 +700,22 @@ class RNNTimeStep extends RNN {
         }
         break;
       }
-      case 'array,object,number':
-      {
+      case 'array,object,number': {
         for (let i = 0; i < formattedData.length; i++) {
           const input = formattedData[i];
-          const output = this.run(lookup.toObjectPartial(this.outputLookup, input, 0, input.length - 1));
+          const output = this.run(
+            lookup.toObjectPartial(
+              this.outputLookup,
+              input,
+              0,
+              input.length - 1
+            )
+          );
           const target = input[input.length - 1];
           let errors = 0;
           let p;
-          for (p in output) {}
+          for (p in output) {
+          }
           const error = target[i] - output[p];
           // mse
           errors += error * error;
@@ -758,19 +833,20 @@ class RNNTimeStep extends RNN {
         }
         break;
       }
-      default: throw new Error('unknown data shape or configuration');
+      default:
+        throw new Error('unknown data shape or configuration');
     }
 
     return {
       error: errorSum / formattedData.length,
-      misclasses: misclasses,
+      misclasses,
       total: formattedData.length
     };
   }
 
   addFormat(value) {
     const dataShape = lookup.dataShape(value).join(',');
-    switch(dataShape) {
+    switch (dataShape) {
       case 'array,array,number':
       case 'datum,array,array,number':
       case 'array,number':
@@ -788,17 +864,27 @@ class RNNTimeStep extends RNN {
         break;
       }
       case 'object,number': {
-        this.inputLookup = this.outputLookup = lookup.addKeys(value, this.inputLookup);
+        this.inputLookup = this.outputLookup = lookup.addKeys(
+          value,
+          this.inputLookup
+        );
         if (this.inputLookup) {
-          this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
+          this.inputLookupLength = this.outputLookupLength = Object.keys(
+            this.inputLookup
+          ).length;
         }
         break;
       }
       case 'array,object,number': {
         for (let i = 0; i < value.length; i++) {
-          this.inputLookup = this.outputLookup = lookup.addKeys(value[i], this.inputLookup);
+          this.inputLookup = this.outputLookup = lookup.addKeys(
+            value[i],
+            this.inputLookup
+          );
           if (this.inputLookup) {
-            this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
+            this.inputLookupLength = this.outputLookupLength = Object.keys(
+              this.inputLookup
+            ).length;
           }
         }
         break;
@@ -811,7 +897,10 @@ class RNNTimeStep extends RNN {
           }
         }
         for (let i = 0; i < value.output.length; i++) {
-          this.outputLookup = lookup.addKeys(value.output[i], this.outputLookup);
+          this.outputLookup = lookup.addKeys(
+            value.output[i],
+            this.outputLookup
+          );
           if (this.outputLookup) {
             this.outputLookupLength = Object.keys(this.outputLookup).length;
           }
@@ -819,7 +908,8 @@ class RNNTimeStep extends RNN {
         break;
       }
 
-      default: throw new Error('unknown data shape or configuration');
+      default:
+        throw new Error('unknown data shape or configuration');
     }
   }
 
@@ -828,13 +918,13 @@ class RNNTimeStep extends RNN {
    * @returns {Object}
    */
   toJSON() {
-    const defaults = this.constructor.defaults;
+    const { defaults } = this.constructor;
     if (!this.model) {
       this.initialize();
     }
-    let model = this.model;
-    let options = {};
-    for (let p in defaults) {
+    const { model } = this;
+    const options = {};
+    for (const p in defaults) {
       if (defaults.hasOwnProperty(p)) {
         options[p] = this[p];
       }
@@ -842,10 +932,10 @@ class RNNTimeStep extends RNN {
 
     return {
       type: this.constructor.name,
-      options: options,
+      options,
       hiddenLayers: model.hiddenLayers.map((hiddenLayer) => {
-        let layers = {};
-        for (let p in hiddenLayer) {
+        const layers = {};
+        for (const p in hiddenLayer) {
           layers[p] = hiddenLayer[p].toJSON();
         }
         return layers;
@@ -855,13 +945,13 @@ class RNNTimeStep extends RNN {
       inputLookup: this.inputLookup,
       inputLookupLength: this.inputLookupLength,
       outputLookup: this.outputLookup,
-      outputLookupLength: this.outputLookupLength,
+      outputLookupLength: this.outputLookupLength
     };
   }
 
   fromJSON(json) {
-    const defaults = this.constructor.defaults;
-    const options = json.options;
+    const { defaults } = this.constructor;
+    const { options } = json;
     this.model = null;
     this.hiddenLayers = null;
     const allMatrices = [];
@@ -869,8 +959,8 @@ class RNNTimeStep extends RNN {
 
     // backward compatibility for hiddenSizes
     (json.hiddenLayers || json.hiddenSizes).forEach((hiddenLayer) => {
-      let layers = {};
-      for (let p in hiddenLayer) {
+      const layers = {};
+      for (const p in hiddenLayer) {
         layers[p] = Matrix.fromJSON(hiddenLayer[p]);
         allMatrices.push(layers[p]);
       }
@@ -900,9 +990,11 @@ class RNNTimeStep extends RNN {
       allMatrices,
       outputConnector,
       equations: [],
-      equationConnections: [],
+      equationConnections: []
     };
-    this.initialLayerInputs = this.hiddenLayers.map((size) => new Matrix(size, 1));
+    this.initialLayerInputs = this.hiddenLayers.map(
+      (size) => new Matrix(size, 1)
+    );
     this.bindEquation();
   }
 
@@ -911,48 +1003,48 @@ class RNNTimeStep extends RNN {
    * @returns {Function}
    */
   toFunction(cb) {
-    const model = this.model;
-    const equations = this.model.equations;
-    const inputSize = this.inputSize;
-    const inputLookup = this.inputLookup;
-    const inputLookupLength = this.inputLookupLength;
-    const outputLookup = this.outputLookup;
-    const outputLookupLength = this.outputLookupLength;
+    const { model } = this;
+    const { equations } = this.model;
+    const { inputSize } = this;
+    const { inputLookup } = this;
+    const { inputLookupLength } = this;
+    const { outputLookup } = this;
+    const { outputLookupLength } = this;
     const equation = equations[1];
-    const states = equation.states;
+    const { states } = equation;
     const jsonString = JSON.stringify(this.toJSON());
 
     function matrixOrigin(m, stateIndex) {
       for (let i = 0, max = states.length; i < max; i++) {
-        let state = states[i];
+        const state = states[i];
 
         if (i === stateIndex) {
-          let j = previousConnectionIndex(m);
+          const j = previousConnectionIndex(m);
           switch (m) {
             case state.left:
               if (j > -1) {
-                return `typeof prevStates[${ j }] === 'object' ? prevStates[${ j }].product : new Matrix(${ m.rows }, ${ m.columns })`;
+                return `typeof prevStates[${j}] === 'object' ? prevStates[${j}].product : new Matrix(${m.rows}, ${m.columns})`;
               }
             case state.right:
               if (j > -1) {
-                return `typeof prevStates[${ j }] === 'object' ? prevStates[${ j }].product : new Matrix(${ m.rows }, ${ m.columns })`;
+                return `typeof prevStates[${j}] === 'object' ? prevStates[${j}].product : new Matrix(${m.rows}, ${m.columns})`;
               }
             case state.product:
-              return `new Matrix(${ m.rows }, ${ m.columns })`;
+              return `new Matrix(${m.rows}, ${m.columns})`;
             default:
               throw Error('unknown state');
           }
         }
 
-        if (m === state.product) return `states[${ i }].product`;
-        if (m === state.right) return `states[${ i }].right`;
-        if (m === state.left) return `states[${ i }].left`;
+        if (m === state.product) return `states[${i}].product`;
+        if (m === state.right) return `states[${i}].right`;
+        if (m === state.left) return `states[${i}].left`;
       }
     }
 
     function previousConnectionIndex(m) {
       const connection = model.equationConnections[0];
-      const states = equations[0].states;
+      const { states } = equations[0];
       for (let i = 0, max = states.length; i < max; i++) {
         if (states[i].product === m) {
           return i;
@@ -967,11 +1059,11 @@ class RNNTimeStep extends RNN {
       if (m === model.output) return `json.output`;
 
       for (let i = 0, max = model.hiddenLayers.length; i < max; i++) {
-        let hiddenLayer = model.hiddenLayers[i];
-        for (let p in hiddenLayer) {
+        const hiddenLayer = model.hiddenLayers[i];
+        for (const p in hiddenLayer) {
           if (!hiddenLayer.hasOwnProperty(p)) continue;
           if (hiddenLayer[p] !== m) continue;
-          return `json.hiddenLayers[${ i }].${ p }`;
+          return `json.hiddenLayers[${i}].${p}`;
         }
       }
 
@@ -983,7 +1075,7 @@ class RNNTimeStep extends RNN {
       if (inputSize === 1) {
         if (inputLookup === outputLookup) {
           return `function lookupInput(input) {
-            var table = ${ JSON.stringify(inputLookup) };
+            var table = ${JSON.stringify(inputLookup)};
             var result = [];
             for (var p in table) {
               if (!input.hasOwnProperty(p)) break;
@@ -993,7 +1085,7 @@ class RNNTimeStep extends RNN {
           }`;
         }
         return `function lookupInput(input) {
-          var table = ${ JSON.stringify(inputLookup) };
+          var table = ${JSON.stringify(inputLookup)};
           var result = [];
           for (var p in table) {
             result.push(Float32Array.from([input[p]]));
@@ -1002,11 +1094,11 @@ class RNNTimeStep extends RNN {
         }`;
       }
       return `function lookupInput(rawInputs) {
-        var table = ${ JSON.stringify(inputLookup) };
+        var table = ${JSON.stringify(inputLookup)};
         var result = [];
         for (var i = 0; i < rawInputs.length; i++) {
           var rawInput = rawInputs[i];
-          var input = new Float32Array(${ inputLookupLength });
+          var input = new Float32Array(${inputLookupLength});
           for (var p in table) {
             input[table[p]] = rawInput.hasOwnProperty(p) ? rawInput[p] : 0;
           }
@@ -1021,7 +1113,7 @@ class RNNTimeStep extends RNN {
       if (inputSize === 1) {
         if (inputLookup === outputLookup) {
           return `function lookupOutputPartial(output, input) {
-            var table = ${ JSON.stringify(outputLookup) };
+            var table = ${JSON.stringify(outputLookup)};
             var offset = input.length;
             var result = {};
             var i = 0;
@@ -1033,7 +1125,7 @@ class RNNTimeStep extends RNN {
           }`;
         }
         return `function lookupOutput(output) {
-          var table = ${ JSON.stringify(outputLookup) };
+          var table = ${JSON.stringify(outputLookup)};
           var result = {};
           for (var p in table) {
             result[p] = output[table[p]][0];
@@ -1042,7 +1134,7 @@ class RNNTimeStep extends RNN {
         }`;
       }
       return `function lookupOutput(output) {
-        var table = ${ JSON.stringify(outputLookup) };
+        var table = ${JSON.stringify(outputLookup)};
         var result = {};
         for (var p in table) {
           result[p] = output[table[p]];
@@ -1062,14 +1154,18 @@ class RNNTimeStep extends RNN {
       fnString.pop();
       // body
 
-      return fnString.join('}').split('\n').join('\n        ')
+      return fnString
+        .join('}')
+        .split('\n')
+        .join('\n        ')
         .replace(
           'product.weights = input.weights = this.inputValue;',
           inputLookup && inputSize === 1
             ? 'product.weights = _i < input.length ? input[_i]: prevStates[prevStates.length - 1].product.weights;'
             : inputSize === 1
-              ? 'product.weights = [input[_i]];'
-              : 'product.weights = input[_i];')
+            ? 'product.weights = [input[_i]];'
+            : 'product.weights = input[_i];'
+        )
         .replace('product.deltas[i] = 0;', '')
         .replace('product.deltas[column] = 0;', '')
         .replace('left.deltas[leftIndex] = 0;', '')
@@ -1078,27 +1174,31 @@ class RNNTimeStep extends RNN {
     }
 
     function fileName(fnName) {
-      return `src/recurrent/matrix/${ fnName.replace(/[A-Z]/g, function(value) { return '-' + value.toLowerCase(); }) }.js`;
+      return `src/recurrent/matrix/${fnName.replace(/[A-Z]/g, function (value) {
+        return `-${value.toLowerCase()}`;
+      })}.js`;
     }
 
-    let statesRaw = [];
-    let usedFunctionNames = {};
-    let innerFunctionsSwitch = [];
+    const statesRaw = [];
+    const usedFunctionNames = {};
+    const innerFunctionsSwitch = [];
     for (let i = 0, max = states.length; i < max; i++) {
-      let state = states[i];
-      statesRaw.push(`states[${ i }] = {
-      name: '${ state.forwardFn.name }',
-      left: ${ matrixToString(state.left, i) },
-      right: ${ matrixToString(state.right, i) },
-      product: ${ matrixToString(state.product, i) }
+      const state = states[i];
+      statesRaw.push(`states[${i}] = {
+      name: '${state.forwardFn.name}',
+      left: ${matrixToString(state.left, i)},
+      right: ${matrixToString(state.right, i)},
+      product: ${matrixToString(state.product, i)}
     }`);
 
-      let fnName = state.forwardFn.name;
+      const fnName = state.forwardFn.name;
       if (!usedFunctionNames[fnName]) {
         usedFunctionNames[fnName] = true;
         innerFunctionsSwitch.push(
-          `        case '${ fnName }':${ fnName !== 'forwardFn' ? ` //compiled from ${ fileName(fnName) }` : '' }
-          ${ toInner(state.forwardFn.toString()) }
+          `        case '${fnName}':${
+            fnName !== 'forwardFn' ? ` //compiled from ${fileName(fnName)}` : ''
+          }
+          ${toInner(state.forwardFn.toString())}
           break;`
         );
       }
@@ -1106,33 +1206,40 @@ class RNNTimeStep extends RNN {
 
     const forceForecast = this.inputSize === 1 && this.outputLookup;
     const src = `
-  var input = ${ this.inputLookup ? 'lookupInput(rawInput)' : 'rawInput' };
-  var json = ${ jsonString };
+  var input = ${this.inputLookup ? 'lookupInput(rawInput)' : 'rawInput'};
+  var json = ${jsonString};
   var output = [];
   var states = [];
   var prevStates;
   var state;
   var max = ${
-      forceForecast
-        ? inputLookup === outputLookup
-          ? inputLookupLength
-          : `input.length + ${ outputLookupLength - 1 }`
-        : 'input.length' };
+    forceForecast
+      ? inputLookup === outputLookup
+        ? inputLookupLength
+        : `input.length + ${outputLookupLength - 1}`
+      : 'input.length'
+  };
   for (var _i = 0; _i < max; _i++) {
     prevStates = states;
     states = [];
-    ${ statesRaw.join(';\n    ') };
-    for (var stateIndex = 0, stateMax = ${ statesRaw.length }; stateIndex < stateMax; stateIndex++) {
+    ${statesRaw.join(';\n    ')};
+    for (var stateIndex = 0, stateMax = ${
+      statesRaw.length
+    }; stateIndex < stateMax; stateIndex++) {
       state = states[stateIndex];
       var product = state.product;
       var left = state.left;
       var right = state.right;
 
       switch (state.name) {
-${ innerFunctionsSwitch.join('\n') }
+${innerFunctionsSwitch.join('\n')}
       }
     }
-    ${ inputSize === 1 && inputLookup ? 'if (_i >= input.length - 1) { output.push(state.product.weights); }' : 'output = state.product.weights;' }
+    ${
+      inputSize === 1 && inputLookup
+        ? 'if (_i >= input.length - 1) { output.push(state.product.weights); }'
+        : 'output = state.product.weights;'
+    }
   }
   ${
     outputLookup
@@ -1140,22 +1247,22 @@ ${ innerFunctionsSwitch.join('\n') }
         ? 'return lookupOutputPartial(output, input)'
         : 'return lookupOutput(output)'
       : inputSize === 1
-        ? 'return output[0]'
-        : 'return output'
+      ? 'return output[0]'
+      : 'return output'
   };
-  ${ formatInputData() }
-  ${ formatOutputData() }
+  ${formatInputData()}
+  ${formatOutputData()}
 
   function Matrix(rows, columns) {
     this.rows = rows;
     this.columns = columns;
     this.weights = zeros(rows * columns);
   }
-  ${ zeros.toString() }
-  ${ softmax.toString().replace('_2.default', 'Matrix') }
-  ${ randomFloat.toString() }
-  ${ sampleI.toString() }
-  ${ maxI.toString() }`;
+  ${zeros.toString()}
+  ${softmax.toString().replace('_2.default', 'Matrix')}
+  ${randomFloat.toString()}
+  ${sampleI.toString()}
+  ${maxI.toString()}`;
     return new Function('rawInput', cb ? cb(src) : src);
   }
 }

@@ -16,7 +16,9 @@ class TrainStream extends Writable {
 
     // require the neuralNetwork
     if (!options.neuralNetwork) {
-      throw new Error('no neural network specified');
+      throw new Error(
+        'No neural network specified. PLease see lis of available networks types: https://github.com/BrainJS/brain.js#neural-network-types'
+      );
     }
 
     const { neuralNetwork } = options;
@@ -83,7 +85,7 @@ class TrainStream extends Writable {
    */
   finishStreamIteration() {
     if (this.dataFormatDetermined && this.size !== this.count) {
-      this.log('This iteration\'s data length was different from the first.');
+      this.log("This iteration's data length was different from the first.");
     }
 
     if (!this.dataFormatDetermined) {
@@ -99,12 +101,12 @@ class TrainStream extends Writable {
 
     const error = this.sum / this.size;
 
-    if (this.log && (this.i % this.logPeriod === 0)) {
-      this.log(`iterations: ${ this.i}, training error: ${ error }`);
+    if (this.log && this.i % this.logPeriod === 0) {
+      this.log(`iterations: ${this.i}, training error: ${error}`);
     }
-    if (this.callback && (this.i % this.callbackPeriod === 0)) {
+    if (this.callback && this.i % this.callbackPeriod === 0) {
       this.callback({
-        error: error,
+        error,
         iterations: this.i
       });
     }
@@ -123,7 +125,7 @@ class TrainStream extends Writable {
       // done training
       if (typeof this.doneTrainingCallback === 'function') {
         return this.doneTrainingCallback({
-          error: error,
+          error,
           iterations: this.i
         });
       }
