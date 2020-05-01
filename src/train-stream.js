@@ -9,7 +9,7 @@ const { Writable } = require('stream');
 class TrainStream extends Writable {
   constructor(options) {
     super({
-      objectMode: true
+      objectMode: true,
     });
 
     options = options || {};
@@ -107,7 +107,7 @@ class TrainStream extends Writable {
     if (this.callback && this.i % this.callbackPeriod === 0) {
       this.callback({
         error,
-        iterations: this.i
+        iterations: this.i,
       });
     }
 
@@ -126,7 +126,7 @@ class TrainStream extends Writable {
       if (typeof this.doneTrainingCallback === 'function') {
         return this.doneTrainingCallback({
           error,
-          iterations: this.i
+          iterations: this.i,
         });
       }
     }

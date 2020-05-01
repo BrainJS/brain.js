@@ -17,7 +17,7 @@ class FeedForward {
       callback: null,
       callbackPeriod: 10,
       errorCheckInterval: 100,
-      reinforce: false
+      reinforce: false,
     };
   }
 
@@ -33,7 +33,7 @@ class FeedForward {
         praxis.momentumRootMeanSquaredPropagation(
           { ...layer },
           layer.praxisOpts || settings
-        )
+        ),
     };
   }
 
@@ -51,7 +51,7 @@ class FeedForward {
       learningRate: (val) => typeof val === 'number' && val > 0 && val < 1,
       callback: (val) => typeof val === 'function' || val === null,
       callbackPeriod: (val) => typeof val === 'number' && val > 0,
-      timeout: (val) => typeof val === 'number' && val > 0
+      timeout: (val) => typeof val === 'number' && val > 0,
     };
     Object.keys(FeedForward.trainDefaults).forEach((key) => {
       if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
@@ -110,7 +110,7 @@ class FeedForward {
       layers: null,
       _inputLayer: null,
       _outputLayer: null,
-      _model: null
+      _model: null,
     };
   }
 
@@ -130,7 +130,7 @@ class FeedForward {
     this.trainOpts = {};
     this._updateTrainingOptions({
       ...this.constructor.trainDefaults,
-      ...options
+      ...options,
     });
     Object.assign(this, this.constructor.structure);
     this._inputLayer = null;
@@ -188,7 +188,7 @@ class FeedForward {
     const lastLayer = layers[layers.length - 1];
     this.meanSquaredError = new MeanSquaredError({
       width: lastLayer.width,
-      height: lastLayer.height
+      height: lastLayer.height,
     });
     // this._getMSE = makeKernel(mse2d, {
     //   output: [1],
@@ -314,7 +314,7 @@ class FeedForward {
 
     const status = {
       error: 1,
-      iterations: 0
+      iterations: 0,
     };
 
     this.verifyIsInitialized();
@@ -322,7 +322,7 @@ class FeedForward {
     return {
       data: this.transferData(formattedData),
       status,
-      endTime
+      endTime,
     };
   }
 
@@ -456,7 +456,7 @@ class FeedForward {
       },
       {
         output: [formattedData[0].input.length],
-        immutable: true
+        immutable: true,
       }
     );
     const transferOutput = makeKernel(
@@ -465,7 +465,7 @@ class FeedForward {
       },
       {
         output: [formattedData[0].output.length],
-        immutable: true
+        immutable: true,
       }
     );
 
@@ -473,7 +473,7 @@ class FeedForward {
       const formattedDatum = formattedData[i];
       transferredData[i] = {
         input: transferInput(formattedDatum.input),
-        output: transferOutput(formattedDatum.output)
+        output: transferOutput(formattedDatum.output),
       };
     }
     return transferredData;
@@ -521,7 +521,7 @@ class FeedForward {
       sizes: [this._inputLayer.height]
         .concat(this._hiddenLayers.map((l) => l.height))
         .concat([this._outputLayer.height]),
-      layers: jsonLayers
+      layers: jsonLayers,
     };
   }
 
@@ -601,5 +601,5 @@ class FeedForward {
 }
 
 module.exports = {
-  FeedForward
+  FeedForward,
 };

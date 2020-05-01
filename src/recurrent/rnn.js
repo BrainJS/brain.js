@@ -9,7 +9,7 @@ const { randomFloat } = require('../utilities/random');
 const zeros = require('../utilities/zeros');
 const {
   DataFormatter,
-  defaultRNNFormatter
+  defaultRNNFormatter,
 } = require('../utilities/data-formatter');
 const NeuralNetwork = require('../neural-network');
 
@@ -21,7 +21,7 @@ class RNN {
     this.trainOpts = {};
     this.updateTrainingOptions({
       ...this.constructor.trainDefaults,
-      ...options
+      ...options,
     });
 
     this.stepCache = {};
@@ -46,7 +46,7 @@ class RNN {
       equations: [],
       allMatrices: [],
       equationConnections: [],
-      outputConnector: null
+      outputConnector: null,
     };
 
     if (this.dataFormatter) {
@@ -85,7 +85,7 @@ class RNN {
       // whh
       transition: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
       // bhh
-      bias: new Matrix(hiddenSize, 1)
+      bias: new Matrix(hiddenSize, 1),
     };
   }
 
@@ -274,7 +274,7 @@ class RNN {
       decayRate,
       stepCache,
       smoothEps,
-      trainOpts
+      trainOpts,
     } = this;
     const { learningRate } = trainOpts;
     const { allMatrices } = model;
@@ -467,7 +467,7 @@ class RNN {
 
     const status = {
       error: 1,
-      iterations: 0
+      iterations: 0,
     };
 
     this.verifyIsInitialized(data);
@@ -475,7 +475,7 @@ class RNN {
     return {
       data,
       status,
-      endTime
+      endTime,
     };
   }
 
@@ -488,7 +488,7 @@ class RNN {
   train(data, options = {}) {
     this.trainOpts = options = {
       ...this.constructor.trainDefaults,
-      ...options
+      ...options,
     };
     const { iterations } = options;
     const { errorThresh } = options;
@@ -528,7 +528,7 @@ class RNN {
 
     return {
       error,
-      iterations: i
+      iterations: i,
     };
   }
 
@@ -565,7 +565,7 @@ class RNN {
         return layers;
       }),
       outputConnector: this.model.outputConnector.toJSON(),
-      output: this.model.output.toJSON()
+      output: this.model.output.toJSON(),
     };
   }
 
@@ -612,7 +612,7 @@ class RNN {
       allMatrices,
       outputConnector,
       equations: [],
-      equationConnections: []
+      equationConnections: [],
     };
     this.initialLayerInputs = this.hiddenLayers.map(
       (size) => new Matrix(size, 1)
@@ -874,7 +874,7 @@ RNN.defaults = {
     }
     return output;
   },
-  dataFormatter: null
+  dataFormatter: null,
 };
 
 RNN.trainDefaults = {
@@ -884,7 +884,7 @@ RNN.trainDefaults = {
   logPeriod: 10,
   learningRate: 0.01,
   callback: null,
-  callbackPeriod: 10
+  callbackPeriod: 10,
 };
 
 module.exports = RNN;

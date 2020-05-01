@@ -11,6 +11,7 @@
   },
   "root": true,
   "rules": {
+    "arrow-parens": "off",
     "class-methods-use-this": "off",
     "linebreak-style": "off",
     "max-classes-per-file": "off",

@@ -29,7 +29,7 @@ class NeuralNetwork {
       praxis: null,
       beta1: 0.9,
       beta2: 0.999,
-      epsilon: 1e-8
+      epsilon: 1e-8,
     };
   }
 
@@ -38,7 +38,7 @@ class NeuralNetwork {
       leakyReluAlpha: 0.01,
       binaryThresh: 0.5,
       hiddenLayers: null, // array of ints for the sizes of the hidden layers in the network
-      activation: 'sigmoid' // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
+      activation: 'sigmoid', // Supported activation types ['sigmoid', 'relu', 'leaky-relu', 'tanh']
     };
   }
 
@@ -47,7 +47,7 @@ class NeuralNetwork {
     this.trainOpts = {};
     this.updateTrainingOptions({
       ...this.constructor.trainDefaults,
-      ...options
+      ...options,
     });
 
     this.sizes = null;
@@ -175,7 +175,7 @@ class NeuralNetwork {
       'outputs',
       'deltas',
       'changes',
-      'errors'
+      'errors',
     ].filter((c) => this[c] === null);
 
     if (checkFns.length > 0) {
@@ -386,7 +386,7 @@ class NeuralNetwork {
       },
       timeout: (val) => {
         return typeof val === 'number' && val > 0;
-      }
+      },
     };
     for (const p in validations) {
       if (!validations.hasOwnProperty(p)) continue;
@@ -477,7 +477,7 @@ class NeuralNetwork {
       errorThresh,
       iterations,
       log,
-      logPeriod
+      logPeriod,
     } = this.trainOpts;
 
     if (
@@ -502,7 +502,7 @@ class NeuralNetwork {
     if (callback && status.iterations % callbackPeriod === 0) {
       callback({
         iterations: status.iterations,
-        error: status.error
+        error: status.error,
       });
     }
     return true;
@@ -522,7 +522,7 @@ class NeuralNetwork {
 
     const status = {
       error: 1,
-      iterations: 0
+      iterations: 0,
     };
 
     this.verifyIsInitialized(data);
@@ -530,7 +530,7 @@ class NeuralNetwork {
     return {
       data,
       status,
-      endTime
+      endTime,
     };
   }
 
@@ -568,7 +568,7 @@ class NeuralNetwork {
           delay: true,
           each: () =>
             this.trainingTick(data, status, endTime) || thawedTrain.stop(),
-          done: () => resolve(status)
+          done: () => resolve(status),
         });
         thawedTrain.tick();
       } catch (trainError) {
@@ -876,7 +876,7 @@ class NeuralNetwork {
       for (let i = 0; i < data.length; i++) {
         result.push({
           input: this._formatInput(data[i].input),
-          output: this._formatOutput(data[i].output)
+          output: this._formatOutput(data[i].output),
         });
       }
       return result;
@@ -886,7 +886,7 @@ class NeuralNetwork {
       for (let i = 0; i < data.length; i++) {
         result.push({
           input: this._formatInput(data[i].input),
-          output: data[i].output
+          output: data[i].output,
         });
       }
       return result;
@@ -896,7 +896,7 @@ class NeuralNetwork {
       for (let i = 0; i < data.length; i++) {
         result.push({
           input: data[i].input,
-          output: this._formatOutput(data[i].output)
+          output: this._formatOutput(data[i].output),
         });
       }
       return result;
@@ -953,7 +953,7 @@ class NeuralNetwork {
             input: misclass.input,
             output: misclass.output,
             actual,
-            expected
+            expected,
           });
         }
 
@@ -984,7 +984,7 @@ class NeuralNetwork {
         falsePos,
         precision: truePos > 0 ? truePos / (truePos + falsePos) : 0,
         recall: truePos > 0 ? truePos / (truePos + falseNeg) : 0,
-        accuracy: (trueNeg + truePos) / data.length
+        accuracy: (trueNeg + truePos) / data.length,
       };
     }
 
@@ -1000,7 +1000,7 @@ class NeuralNetwork {
           input: misclass.input,
           output: misclass.output,
           actual,
-          expected
+          expected,
         });
       }
 
@@ -1013,7 +1013,7 @@ class NeuralNetwork {
     return {
       error: errorSum / data.length,
       misclasses,
-      total: data.length
+      total: data.length,
     };
   }
 
@@ -1094,7 +1094,7 @@ class NeuralNetwork {
       outputLookup: this.outputLookup !== null,
       inputLookup: this.inputLookup !== null,
       activation: this.activation,
-      trainOpts: this.getTrainOptsJSON()
+      trainOpts: this.getTrainOptsJSON(),
     };
   }
 

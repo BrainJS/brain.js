@@ -15,7 +15,7 @@ const {
   arrayToFloat32Arrays,
   objectsToFloat32Arrays,
   objectToFloat32Arrays,
-  objectToFloat32Array
+  objectToFloat32Array,
 } = require('../utilities/cast');
 
 class RNNTimeStep extends RNN {
@@ -155,7 +155,7 @@ class RNNTimeStep extends RNN {
   train(data, options = {}) {
     this.trainOpts = options = {
       ...this.constructor.trainDefaults,
-      ...options
+      ...options,
     };
     const { iterations } = options;
     const { errorThresh } = options;
@@ -196,7 +196,7 @@ class RNNTimeStep extends RNN {
 
     return {
       error,
-      iterations: i
+      iterations: i,
     };
   }
 
@@ -516,7 +516,7 @@ class RNNTimeStep extends RNN {
           const datum = data[i];
           result.push({
             input: arrayToFloat32Arrays(datum.input),
-            output: arrayToFloat32Arrays(datum.output)
+            output: arrayToFloat32Arrays(datum.output),
           });
         }
         return result;
@@ -542,7 +542,7 @@ class RNNTimeStep extends RNN {
           const datum = data[i];
           result.push({
             input: objectToFloat32Arrays(datum.input),
-            output: objectToFloat32Arrays(datum.output)
+            output: objectToFloat32Arrays(datum.output),
           });
         }
         return result;
@@ -580,7 +580,7 @@ class RNNTimeStep extends RNN {
             const datum = data[i];
             result.push({
               input: Float32Array.from(datum.input),
-              output: Float32Array.from(datum.output)
+              output: Float32Array.from(datum.output),
             });
           }
         } else {
@@ -594,7 +594,7 @@ class RNNTimeStep extends RNN {
             const datum = data[i];
             result.push({
               input: arraysToFloat32Arrays(datum.input),
-              output: arraysToFloat32Arrays(datum.output)
+              output: arraysToFloat32Arrays(datum.output),
             });
           }
         }
@@ -623,7 +623,7 @@ class RNNTimeStep extends RNN {
               datum.output,
               this.outputLookup,
               this.outputLookupLength
-            )
+            ),
           });
         }
         return result;
@@ -666,7 +666,7 @@ class RNNTimeStep extends RNN {
               const misclass = data[i];
               Object.assign(misclass, {
                 value: input,
-                actual: output
+                actual: output,
               });
               misclasses.push(misclass);
             }
@@ -694,7 +694,7 @@ class RNNTimeStep extends RNN {
             const misclass = data[i];
             misclasses.push({
               value: misclass,
-              actual: output
+              actual: output,
             });
           }
         }
@@ -725,7 +725,7 @@ class RNNTimeStep extends RNN {
             const misclass = data[i];
             misclasses.push({
               value: misclass,
-              actual: output
+              actual: output,
             });
           }
         }
@@ -750,7 +750,7 @@ class RNNTimeStep extends RNN {
             const misclass = data[i];
             misclasses.push({
               value: misclass,
-              actual: output
+              actual: output,
             });
           }
         }
@@ -776,7 +776,7 @@ class RNNTimeStep extends RNN {
             Object.assign(misclass, {
               actual: this.outputLookup
                 ? lookup.toObject(this.outputLookup, output)
-                : output
+                : output,
             });
             misclasses.push(misclass);
           }
@@ -802,7 +802,7 @@ class RNNTimeStep extends RNN {
             misclasses.push({
               input: misclass.input,
               output: misclass.output,
-              actual: output
+              actual: output,
             });
           }
         }
@@ -827,7 +827,7 @@ class RNNTimeStep extends RNN {
             misclasses.push({
               input: misclass.input,
               output: misclass.output,
-              actual: output
+              actual: output,
             });
           }
         }
@@ -840,7 +840,7 @@ class RNNTimeStep extends RNN {
     return {
       error: errorSum / formattedData.length,
       misclasses,
-      total: formattedData.length
+      total: formattedData.length,
     };
   }
 
@@ -945,7 +945,7 @@ class RNNTimeStep extends RNN {
       inputLookup: this.inputLookup,
       inputLookupLength: this.inputLookupLength,
       outputLookup: this.outputLookup,
-      outputLookupLength: this.outputLookupLength
+      outputLookupLength: this.outputLookupLength,
     };
   }
 
@@ -990,7 +990,7 @@ class RNNTimeStep extends RNN {
       allMatrices,
       outputConnector,
       equations: [],
-      equationConnections: []
+      equationConnections: [],
     };
     this.initialLayerInputs = this.hiddenLayers.map(
       (size) => new Matrix(size, 1)
@@ -1275,7 +1275,7 @@ RNNTimeStep.defaults = {
   decayRate: RNN.defaults.decayRate,
   smoothEps: RNN.defaults.smoothEps,
   regc: RNN.defaults.regc,
-  clipval: RNN.defaults.clipval
+  clipval: RNN.defaults.clipval,
 };
 
 RNNTimeStep.trainDefaults = RNN.trainDefaults;
