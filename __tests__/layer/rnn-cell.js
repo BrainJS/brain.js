@@ -1,4 +1,4 @@
-const { recurrent } = require('../../src/layer/recurrent');
+const { rnnCell } = require('../../src/layer/rnn-cell');
 
 describe('Recurrent Layer', () => {
   test('properly sets width and height', () => {
@@ -12,7 +12,7 @@ describe('Recurrent Layer', () => {
       },
     };
 
-    const layer = recurrent(settings, input, recurrentInput);
+    const layer = rnnCell(settings, input, recurrentInput);
 
     expect(layer.width).toEqual(1);
     expect(layer.height).toEqual(settings.height);

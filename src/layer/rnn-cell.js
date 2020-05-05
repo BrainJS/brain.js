@@ -4,7 +4,7 @@ const { multiply } = require('./multiply');
 const { random } = require('./random');
 const { zeros } = require('./zeros');
 
-function recurrent(settings, input, recurrentInput) {
+function rnnCell(settings, input, recurrentInput) {
   const { height } = settings;
 
   if (recurrentInput.setDimensions) recurrentInput.setDimensions(1, height);
@@ -25,5 +25,5 @@ function recurrent(settings, input, recurrentInput) {
 }
 
 module.exports = {
-  recurrent
+  rnnCell
 };

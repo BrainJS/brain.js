@@ -15,7 +15,7 @@ A layer has three different operations for it to "learn"
 
 
 ### Layer Composition
-A layer can be very simple, like `Random` or `Add`, but layers can also be described as "layers of layers".
+A layer can be very simple, like `Random` or `Add`, but "compound layers" can also be described as "layers of layers".
 Layer Example:
 ```js
 import { FeedForward, layer } from 'brain.js';
@@ -37,5 +37,5 @@ const net = new FeedForward({
 });
 ```
 In this example both `add` and `random` are composed together, ie `layer composition`.  This simple means of composing
-layers and in turn networks works with both simple (feedforward) or complex (lstm) networks.
+layers and in turn networks works with both simple (feed forward) or more complex (recurrent) networks.
 

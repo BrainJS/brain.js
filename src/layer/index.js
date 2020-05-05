@@ -8,7 +8,7 @@ const { FullyConnected, fullyConnected } = require('./fully-connected');
 const { gru } = require('./gru');
 const { Input, input } = require('./input');
 const { LeakyRelu, leakyRelu } = require('./leaky-relu');
-const { lstm } = require('./lstm');
+const { lstmCell } = require('./lstm-cell');
 const { Multiply, multiply } = require('./multiply');
 const { MultiplyElement, multiplyElement } = require('./multiply-element');
 const { Negative, negative } = require('./negative');
@@ -16,7 +16,7 @@ const { Ones, ones } = require('./ones');
 const { output } = require('./output');
 const { Pool, pool } = require('./pool');
 const { Random, random } = require('./random');
-const { recurrent } = require('./recurrent');
+const { rnnCell } = require('./rnn-cell');
 const { Regression, regression } = require('./regression');
 const { Relu, relu } = require('./relu');
 const { Sigmoid, sigmoid } = require('./sigmoid');
@@ -48,7 +48,7 @@ module.exports = {
   input,
   LeakyRelu,
   leakyRelu,
-  lstm,
+  lstmCell,
   Multiply,
   multiply,
   MultiplyElement,
@@ -62,11 +62,11 @@ module.exports = {
   pool,
   Random,
   random,
-  recurrent,
   Regression,
   regression,
   Relu,
   relu,
+  rnnCell,
   Sigmoid,
   sigmoid,
   SoftMax,
