@@ -92,6 +92,11 @@ class DataFormatter {
         value1.split('').concat(['stop-input', 'start-output']),
         maxThreshold
       );
+    } else if (typeof value1 === 'number') {
+      result = this.toIndexes(
+        value1.toString().split('').concat(['stop-input', 'start-output']),
+        maxThreshold
+      );
     } else {
       result = this.toIndexes(
         value1.concat(['stop-input', 'start-output']),
@@ -236,10 +241,10 @@ function defaultRNNFormatter(data) {
   }
   let values = [];
   const result = [];
-  if (typeof data[0] === 'string' || Array.isArray(data[0])) {
+  if (typeof data[0] === 'string' || typeof data[0] === 'number' || Array.isArray(data[0])) {
     if (!this.dataFormatter) {
       for (let i = 0; i < data.length; i++) {
-        values.push(data[i]);
+        values.push(validateAndCast(data[i]));
       }
       this.dataFormatter = new DataFormatter(values);
       this.dataFormatter.addUnrecognized();
@@ -247,20 +252,32 @@ function defaultRNNFormatter(data) {
     for (let i = 0, max = data.length; i < max; i++) {
       result.push(this.formatDataIn(data[i]));
     }
-  } else {
+  } else if (data[0].input && data[0].output) {
     if (!this.dataFormatter) {
       for (let i = 0; i < data.length; i++) {
-        values.push(data[i].input);
-        values.push(data[i].output);
+        const datum = data[i];
+        values.push(validateAndCast(datum.input), validateAndCast(datum.output));
       }
       this.dataFormatter = DataFormatter.fromArrayInputOutput(values);
       this.dataFormatter.addUnrecognized();
     }
     for (let i = 0, max = data.length; i < max; i++) {
-      result.push(this.formatDataIn(data[i].input, data[i].output));
+      result.push(this.formatDataIn(validateAndCast(data[i].input), validateAndCast(data[i].output)));
     }
+  } else {
+    throw new Error('unrecognized data');
   }
   return result;
+
+  function validateAndCast(value) {
+    if (typeof value === 'string') return value;
+    if (typeof value === 'number') return value.toString();
+    if (typeof value[0] === 'string') return value;
+    if (typeof value[0] === 'number') {
+      return value.map(value => value.toString());
+    }
+    throw new Error('unrecognized value, expected string[], string, number[], or number');
+  }
 }
 
 module.exports = { DataFormatter, defaultRNNFormatter };
