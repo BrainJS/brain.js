@@ -5,14 +5,15 @@
     "jest": true,
     "node": true
   },
-  "extends": ["eslint:recommended", "airbnb", "prettier"],
+  "extends": ["eslint:recommended", "airbnb", "plugin:prettier/recommended"],
   "parserOptions": {
     "ecmaVersion": 11,
     "sourceType": "module"
   },
-  "plugins": ["jest"],
+  "plugins": ["prettier", "jest"],
   "root": true,
   "rules": {
+    "prettier/prettier": "error",
     "class-methods-use-this": "off",
     "global-require": "off",
     "linebreak-style": "off",

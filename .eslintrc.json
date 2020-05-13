@@ -4,13 +4,15 @@
     "es6": true,
     "node": true
   },
-  "extends": ["eslint:recommended", "airbnb", "prettier"],
+  "extends": ["eslint:recommended", "airbnb", "plugin:prettier/recommended"],
   "parserOptions": {
     "ecmaVersion": 11,
     "sourceType": "module"
   },
+  "plugins": ["prettier"],
   "root": true,
   "rules": {
+    "prettier/prettier": "error",
     "arrow-parens": "off",
     "class-methods-use-this": "off",
     "linebreak-style": "off",

@@ -24,6 +24,7 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jest": "^23.11.0",
     "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.3",
     "eslint-plugin-react": "^7.20.0",
     "fast-xml-parser": "^3.16.0",
     "gpu-mock.js": "^1.2.1",
@@ -101,7 +102,7 @@
     "bundle-web": "parcel build ./src/index.js --out-dir ./dist --out-file brain-browser.js --no-minify",
     "coverage": "jest --env=node --coverage --coverage-provider v8 && codecov",
     "dist": "npm run bundle-web && npm run minify",
-    "lint": "eslint --ext .js ./src ./__tests__ --fix && prettier --write {src,__tests__}/**/*.js",
+    "lint": "eslint --ext .js,.ts . --fix",
     "minify": "parcel build ./src/index.js --out-dir ./dist --out-file brain-browser.min.js",
     "test": "jest --env=node",
     "watch": "jest --watch --env=node"
