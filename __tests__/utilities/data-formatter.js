@@ -1,4 +1,4 @@
-const DataFormatter = require('../../src/utilities/data-formatter');
+const { DataFormatter, defaultRNNFormatter } = require('../../src/utilities/data-formatter');
 
 describe('DataFormatter', () => {
   test('does not have zeros', () => {
@@ -249,5 +249,36 @@ describe('DataFormatter', () => {
       4,
       5,
     ]);
+  });
+});
+
+describe('defaultRNNFormatter', () => {
+  test('handles data.input & data.output of string', () => {
+    const mockNet = {
+      formatDataIn: jest.fn(),
+    };
+    defaultRNNFormatter.call(mockNet, [{ input: '1', output: '2' }]);
+    expect(mockNet.formatDataIn).toBeCalledWith('1', '2');
+  });
+  test('handles data.input & data.output of number', () => {
+    const mockNet = {
+      formatDataIn: jest.fn(),
+    };
+    defaultRNNFormatter.call(mockNet, [{ input: 1, output: 2 }]);
+    expect(mockNet.formatDataIn).toBeCalledWith('1', '2');
+  });
+  test('handles data.input & data.output of string[]', () => {
+    const mockNet = {
+      formatDataIn: jest.fn(),
+    };
+    defaultRNNFormatter.call(mockNet, [{ input: ['1', '2'], output: ['3', '4'] }]);
+    expect(mockNet.formatDataIn).toBeCalledWith(['1', '2'], ['3', '4']);
+  });
+  test('handles data.input & data.output of number[]', () => {
+    const mockNet = {
+      formatDataIn: jest.fn(),
+    };
+    defaultRNNFormatter.call(mockNet, [{ input: [1, 2], output: [3, 4] }]);
+    expect(mockNet.formatDataIn).toBeCalledWith(['1', '2'], ['3', '4']);
   });
 });

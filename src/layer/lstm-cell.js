@@ -6,7 +6,7 @@ const { sigmoid } = require('./sigmoid');
 const { tanh } = require('./tanh');
 const { zeros } = require('./zeros');
 
-function lstm(settings, input, recurrentInput) {
+function lstmCell(settings, input, recurrentInput) {
   const { height } = settings;
 
   if (recurrentInput.setDimensions) recurrentInput.setDimensions(1, height);
@@ -73,5 +73,5 @@ function lstm(settings, input, recurrentInput) {
 }
 
 module.exports = {
-  lstm
+  lstmCell
 };

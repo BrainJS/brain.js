@@ -1,5 +1,5 @@
 const { GPU } = require('gpu.js');
-const { add, input, multiply, output, random, recurrent, lstm } = require('../../src/layer');
+const { add, input, multiply, output, random, rnnCell, lstmCell } = require('../../src/layer');
 const { setup, teardown } = require('../../src/utilities/kernel');
 
 const { Recurrent } = require('../../src/recurrent');
@@ -35,7 +35,7 @@ describe('Recurrent Class: End to End', () => {
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
           (inputLayer, recurrentInput) =>
-            recurrent({ width: 1, height: 3 }, inputLayer, recurrentInput),
+            rnnCell({ width: 1, height: 3 }, inputLayer, recurrentInput),
         ],
         outputLayer: inputLayer => output({ height: 1 }, inputLayer),
       });
@@ -440,7 +440,7 @@ describe('Recurrent Class: End to End', () => {
       inputLayer: () => input({ width: 1 }),
       hiddenLayers: [
         (inputLayer, recurrentInput) =>
-          recurrent({ width: 1, height: 1 }, inputLayer, recurrentInput),
+          rnnCell({ width: 1, height: 1 }, inputLayer, recurrentInput),
       ],
       outputLayer: inputLayer => output({ width: 1, height: 1 }, inputLayer),
     });
@@ -463,9 +463,9 @@ describe('Recurrent Class: End to End', () => {
           inputLayer: () => input({ width: 1 }),
           hiddenLayers: [
             (inputLayer, recurrentInput) =>
-              recurrent({ height: 3, width: 1 }, inputLayer, recurrentInput),
+              rnnCell({ height: 3, width: 1 }, inputLayer, recurrentInput),
             (inputLayer, recurrentInput) =>
-              recurrent({ height: 1, width: 1 }, inputLayer, recurrentInput),
+              rnnCell({ height: 1, width: 1 }, inputLayer, recurrentInput),
           ],
           outputLayer: inputLayer => output({ height: 1 }, inputLayer),
         });
@@ -481,7 +481,7 @@ describe('Recurrent Class: End to End', () => {
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
         (inputLayer, recurrentInput) =>
-          recurrent({ height: 3 }, inputLayer, recurrentInput),
+          rnnCell({ height: 3 }, inputLayer, recurrentInput),
       ],
       outputLayer: inputLayer => output({ height: 1 }, inputLayer),
     });
@@ -500,38 +500,34 @@ describe('Recurrent Class: End to End', () => {
 
   it('can learn xor', () => {
     const net = new Recurrent({
+      praxisOpts: {
+        regularizationStrength: 0.000001,
+        learningRate: 0.01,
+      },
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
-        (input, recurrentInput) => recurrent({ height: 3 }, input, recurrentInput)
+        (input, recurrentInput) => lstmCell({ height: 20 }, input, recurrentInput)
       ],
       outputLayer: input => output({ height: 1 }, input)
     });
-    net.initialize();
-    net.initializeDeep();
-    expect(net._model.length).toBe(5);
-    expect(net._layerSets[0].length).toBe(15);
-    expect(net._layerSets[1].length).toBe(15);
-    let error;
-    for (let i = 0; i < 100; i++) {
-      let sum = 0;
-      sum = net._trainPattern([0, 0, 0], true)[0];
-      sum += net._trainPattern([0, 1, 1], true)[0];
-      sum += net._trainPattern([1, 0, 1], true)[0];
-      sum += net._trainPattern([1, 1, 0], true)[0];
-      error = sum / 4;
-    }
-    console.log(net.runInput([0, 0]));
-    console.log(net.runInput([0, 1]));
-    console.log(net.runInput([1, 0]));
-    console.log(net.runInput([1, 1]));
-    expect(error / 4).toBe(0.005);
+    let xorNetValues = [
+      [0.001, 0.001, 0.001],
+      [0.001, 1, 1],
+      [1, 0.001, 1],
+      [1, 1, 0.001]
+    ];
+    net.train(xorNetValues, { iterations: 300 });
+    expect(net.run([0.001, 0.001])[0][0] < 0.1).toBeTruthy();
+    expect(net.run([0.001, 1])[0][0] > 0.9).toBeTruthy();
+    expect(net.run([1, 0.001])[0][0] > 0.9).toBeTruthy();
+    expect(net.run([1, 1])[0][0] < 0.1).toBeTruthy();
   });
   test('can learn 1,2,3', () => {
     const net = new Recurrent({
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
         (inputLayer, recurrentInput) =>
-          lstm({ height: 10 }, inputLayer, recurrentInput),
+          lstmCell({ height: 10 }, inputLayer, recurrentInput),
       ],
       outputLayer: inputLayer => output({ height: 1 }, inputLayer),
     });
@@ -554,7 +550,7 @@ describe('Recurrent Class: End to End', () => {
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
         (inputLayer, recurrentInput) =>
-          recurrent({ height: 3 }, inputLayer, recurrentInput),
+          rnnCell({ height: 3 }, inputLayer, recurrentInput),
       ],
       outputLayer: inputLayer => output({ height: 1 }, inputLayer),
     });
