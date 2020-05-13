@@ -5,7 +5,7 @@
     "url": "https://github.com/brainjs/brain.js/issues"
   },
   "dependencies": {
-    "gpu.js": "^2.9.3",
+    "gpu.js": "^2.9.4",
     "thaw.js": "^2.0.0"
   },
   "description": "Neural networks in JavaScript",
@@ -14,21 +14,22 @@
     "@types/eslint": "^6.8.0",
     "@types/parcel-bundler": "^1.12.1",
     "@types/prettier": "^2.0.0",
-    "acorn": "^7.1.1",
+    "acorn": "^7.2.0",
     "babel-eslint": "^10.1.0",
-    "c8": "^7.1.1",
+    "c8": "^7.1.2",
     "codecov": "^3.6.5",
-    "eslint": "^6.8.0",
+    "eslint": "^7.0.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-jest": "^23.8.2",
+    "eslint-plugin-jest": "^23.11.0",
     "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react": "^7.20.0",
     "fast-xml-parser": "^3.16.0",
     "gpu-mock.js": "^1.2.1",
+    "husky": "^4.2.5",
     "istanbul-spy": "^1.0.1",
-    "jest": "^25.5.2",
+    "jest": "^26.0.1",
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-bundle-visualiser": "^1.2.0",
     "prettier": "^2.0.5"
@@ -41,6 +42,11 @@
     "src/"
   ],
   "homepage": "https://github.com/brainjs/brain.js#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint"
+    }
+  },
   "jest": {
     "bail": true,
     "collectCoverage": false,
