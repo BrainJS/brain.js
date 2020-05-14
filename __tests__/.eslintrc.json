@@ -5,26 +5,40 @@
     "jest": true,
     "node": true
   },
-  "extends": ["eslint:recommended", "airbnb", "plugin:prettier/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "standard-with-typescript",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 11,
+    "project": "./tsconfig.json",
     "sourceType": "module"
   },
-  "plugins": ["prettier", "jest"],
+  "plugins": ["prettier", "@typescript-eslint", "jest"],
   "root": true,
   "rules": {
-    "prettier/prettier": "error",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/interface-name-prefix": "warn",
+    "@typescript-eslint/member-delimiter-style": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/semi": "off",
+    "arrow-parens": "off",
     "class-methods-use-this": "off",
-    "global-require": "off",
-    "linebreak-style": "off",
     "max-classes-per-file": "off",
     "no-continue": "off",
+    "no-empty-function": "off",
     "no-multi-assign": "off",
     "no-param-reassign": "off",
     "no-plusplus": "off",
     "no-prototype-builtins": "off",
     "no-restricted-globals": "off",
     "no-underscore-dangle": "off",
-    "semi": "error"
+    "prettier/prettier": "error",
+    "semi": "off"
   }
 }

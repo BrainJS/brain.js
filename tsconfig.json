@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "checkJs": false,
+    "esModuleInterop": true,
+    "lib": ["es6", "es2017"],
+    "noEmit": true,
+    "noEmitOnError": false,
+    "strict": true
+  },
+  "exclude": ["node_modules", "**/*.d.ts", "**/*.min.js"],
+  "include": ["src", "__tests__", "examples"]
+}
