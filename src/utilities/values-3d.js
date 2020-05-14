@@ -6,4 +6,4 @@ module.exports = function values3D(width, height, depth, value) {
     result[z] = values2D(width, height, value);
   }
   return result;
-}
+};

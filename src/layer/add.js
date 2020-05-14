@@ -4,7 +4,10 @@ const { checkSameSize } = require('../utilities/layer-size');
 const { Operator } = require('./types');
 
 function predict(inputWeights1, inputWeights2) {
-  return inputWeights1[this.thread.y][this.thread.x] + inputWeights2[this.thread.y][this.thread.x];
+  return (
+    inputWeights1[this.thread.y][this.thread.x] +
+    inputWeights2[this.thread.y][this.thread.x]
+  );
 }
 
 class Add extends Operator {
@@ -42,7 +45,7 @@ class Add extends Operator {
   }
 
   compare() {
-    //TODO: Do we need release and clone here?
+    // TODO: Do we need release and clone here?
     release(this.inputLayer1.deltas);
     release(this.inputLayer2.deltas);
     this.inputLayer1.deltas = clone(this.deltas);

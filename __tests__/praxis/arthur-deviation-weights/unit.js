@@ -1,39 +1,46 @@
 const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
-const { ArthurDeviationWeights, arthurDeviationWeights, update, updateChange } = require('../../../src/praxis/arthur-deviation-weights');
+const {
+  ArthurDeviationWeights,
+  arthurDeviationWeights,
+  update,
+  updateChange,
+} = require('../../../src/praxis/arthur-deviation-weights');
 const { shave } = require('../../test-utils');
 const { setup, teardown } = require('../../../src/utilities/kernel');
 const { injectIstanbulCoverage } = require('../../test-utils');
 
 describe('ArthurDeviationWeights Class: Unit', () => {
   beforeEach(() => {
-    setup(new GPU({
-      mode: 'cpu',
-      onIstanbulCoverageVariable: injectIstanbulCoverage
-    }));
+    setup(
+      new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage,
+      })
+    );
   });
   afterEach(() => {
     teardown();
   });
   describe('update()', () => {
     it('performs math correctly', () => {
-      const changes = [[1,2,3]];
-      const weights = [[1,2,3]];
-      const incomingWeights = [[1],[2],[3]];
+      const changes = [[1, 2, 3]];
+      const weights = [[1, 2, 3]];
+      const incomingWeights = [[1], [2], [3]];
       const inputDeltas = [[1]];
       const width = 3;
       const height = 1;
       const kernel = gpuMock(update, {
         output: [width, height],
         constants: {
-          learningRate: .5,
-          momentum: 0.2
-        }
+          learningRate: 0.5,
+          momentum: 0.2,
+        },
       });
       const result = kernel(changes, weights, incomingWeights, inputDeltas);
-      expect(shave(result)).toEqual(shave(
-        [[1.70000005, 3.40000010, 5.09999990]]
-      ));
+      expect(shave(result)).toEqual(
+        shave([[1.70000005, 3.4000001, 5.0999999]])
+      );
     });
   });
   describe('updateChange()', () => {
@@ -50,7 +57,7 @@ describe('ArthurDeviationWeights Class: Unit', () => {
         const height = 3;
         const mockLayer = {
           width,
-          height
+          height,
         };
         const p = new ArthurDeviationWeights(mockLayer);
         expect(p.changes.length).toBe(height);
@@ -60,19 +67,25 @@ describe('ArthurDeviationWeights Class: Unit', () => {
     describe('.weightsLayer', () => {
       const mockLayer = { width: 1, height: 1 };
       const weightsLayerMock = {};
-      const p = new ArthurDeviationWeights(mockLayer, { weightsLayer: weightsLayerMock });
+      const p = new ArthurDeviationWeights(mockLayer, {
+        weightsLayer: weightsLayerMock,
+      });
       expect(p.weightsLayer).toBe(weightsLayerMock);
     });
     describe('.incomingLayer', () => {
       const mockLayer = { width: 1, height: 1 };
       const incomingLayerMock = {};
-      const p = new ArthurDeviationWeights(mockLayer, { incomingLayer: incomingLayerMock });
+      const p = new ArthurDeviationWeights(mockLayer, {
+        incomingLayer: incomingLayerMock,
+      });
       expect(p.incomingLayer).toBe(incomingLayerMock);
     });
     describe('.deltaLayer', () => {
       const mockLayer = { width: 1, height: 1 };
       const deltaLayerMock = {};
-      const p = new ArthurDeviationWeights(mockLayer, { deltaLayer: deltaLayerMock });
+      const p = new ArthurDeviationWeights(mockLayer, {
+        deltaLayer: deltaLayerMock,
+      });
       expect(p.deltaLayer).toBe(deltaLayerMock);
     });
   });
@@ -93,12 +106,12 @@ describe('ArthurDeviationWeights Class: Unit', () => {
       });
       const mockResult = {};
       const mockChanges = {};
-      const mockInitialChanges = p.changes = {};
+      const mockInitialChanges = (p.changes = {});
       p.kernel = jest.fn(() => {
         return {
           result: mockResult,
           changes: mockChanges,
-        }
+        };
       });
       const result = p.run();
       expect(result).toBe(mockResult);
@@ -106,7 +119,7 @@ describe('ArthurDeviationWeights Class: Unit', () => {
         mockInitialChanges,
         weightsLayerWeightsMock,
         incomingLayerWeightsMock,
-        deltaLayerDeltasMock,
+        deltaLayerDeltasMock
       );
     });
   });

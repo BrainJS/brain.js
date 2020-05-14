@@ -1,6 +1,8 @@
 /* istanbul ignore file */
 const { GPU } = require('gpu.js');
-const { ArthurDeviationWeights } = require('../../../src/praxis/arthur-deviation-weights');
+const {
+  ArthurDeviationWeights,
+} = require('../../../src/praxis/arthur-deviation-weights');
 const { random } = require('../../../src/layer/random');
 const NeuralNetwork = require('../../../src/neural-network');
 const { setup, teardown } = require('../../../src/utilities/kernel');
@@ -8,10 +10,12 @@ const { injectIstanbulCoverage } = require('../../test-utils');
 
 describe('ArthurDeviationWeights Class: End to End', () => {
   beforeEach(() => {
-    setup(new GPU({
-      mode: 'cpu',
-      onIstanbulCoverageVariable: injectIstanbulCoverage
-    }));
+    setup(
+      new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage,
+      })
+    );
   });
   afterEach(() => {
     teardown();
@@ -42,7 +46,8 @@ describe('ArthurDeviationWeights Class: End to End', () => {
       { input: [0, 1], output: [1] },
       { input: [0, 0], output: [0] },
       { input: [1, 1], output: [0] },
-      { input: [1, 0], output: [1] }];
+      { input: [1, 0], output: [1] },
+    ];
     const net = new NeuralNetwork();
     net.train(xorTrainingData, {
       iterations: 1,
@@ -56,7 +61,7 @@ describe('ArthurDeviationWeights Class: End to End', () => {
       weightsLayer: weights,
       incomingLayer: inputs,
       deltaLayer: biases,
-      learningRate: net.trainOpts.learningRate
+      learningRate: net.trainOpts.learningRate,
     });
     expect(praxis.learningRate).toBe(net.trainOpts.learningRate);
     inputs.weights[0][0] = net.outputs[0][0] = 11;

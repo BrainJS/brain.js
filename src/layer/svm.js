@@ -28,5 +28,5 @@ function svm(settings, inputLayer) {
 
 module.exports = {
   SVM,
-  svm
+  svm,
 };

@@ -2,7 +2,12 @@ const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
 
 const { predict, Add, add } = require('../../src/layer/add');
-const { setup, teardown, makeKernel, release } = require('../../src/utilities/kernel');
+const {
+  setup,
+  teardown,
+  makeKernel,
+  release,
+} = require('../../src/utilities/kernel');
 const { checkSameSize } = require('../../src/utilities/layer-size');
 const { injectIstanbulCoverage } = require('../test-utils');
 
@@ -11,10 +16,12 @@ jest.mock('../../src/utilities/kernel');
 
 describe('Add Layer', () => {
   beforeEach(() => {
-    setup(new GPU({
-      mode: 'cpu',
-      onIstanbulCoverageVariable: injectIstanbulCoverage
-    }));
+    setup(
+      new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage,
+      })
+    );
   });
   afterEach(() => {
     teardown();
@@ -31,7 +38,7 @@ describe('Add Layer', () => {
     it('sets up the instance', () => {
       const mockInputLayer1 = {
         width: 1,
-        height: 1
+        height: 1,
       };
       const mockInputLayer2 = {
         width: 1,
@@ -49,13 +56,21 @@ describe('Add Layer', () => {
     test('releases this.weights', () => {
       const add = new Add({ width: 1, height: 1 }, { width: 1, height: 1 });
       add.predictKernel = () => {};
-      const mockWeights = add.weights = {};
+      const mockWeights = (add.weights = {});
       add.predict();
       expect(release).toHaveBeenCalledWith(mockWeights);
     });
     test('can add a simple matrix', () => {
-      const inputs1 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
-      const inputs2 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+      const inputs1 = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+      ];
+      const inputs2 = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+      ];
       const results = gpuMock(predict, {
         output: [3, 3],
       })(inputs1, inputs2);
@@ -63,7 +78,7 @@ describe('Add Layer', () => {
       expect(results).toEqual([
         new Float32Array([2, 4, 6]),
         new Float32Array([8, 10, 12]),
-        new Float32Array([14, 16, 18])
+        new Float32Array([14, 16, 18]),
       ]);
     });
   });
@@ -71,15 +86,15 @@ describe('Add Layer', () => {
     it('calls LayerSize.checkSameSize()', () => {
       const mockLayer1 = {
         height: 1,
-        width: 1
+        width: 1,
       };
       const mockLayer2 = {
         height: 1,
-        width: 1
+        width: 1,
       };
       Add.prototype.validate.apply({
         inputLayer1: mockLayer1,
-        inputLayer2: mockLayer2
+        inputLayer2: mockLayer2,
       });
       expect(checkSameSize).toHaveBeenCalledWith(mockLayer1, mockLayer2);
     });
@@ -89,7 +104,7 @@ describe('Add Layer', () => {
       const mockInstance = {
         width: 1,
         height: 1,
-        predictKernel: null
+        predictKernel: null,
       };
       Add.prototype.setupKernels.apply(mockInstance);
       expect(makeKernel).toHaveBeenCalledWith(predict, {
@@ -106,7 +121,7 @@ describe('Add Layer', () => {
       const mockInstance = {
         inputLayer1: { weights: mockWeights1 },
         inputLayer2: { weights: mockWeights2 },
-        predictKernel: mockPredictKernel
+        predictKernel: mockPredictKernel,
       };
       Add.prototype.predict.apply(mockInstance);
       expect(mockPredictKernel).toHaveBeenCalled();
@@ -132,11 +147,11 @@ describe('Add Layer', () => {
       const mockInstance = {
         deltas: mockDeltas,
         inputLayer1: {
-          deltas: null
+          deltas: null,
         },
         inputLayer2: {
-          deltas: null
-        }
+          deltas: null,
+        },
       };
       Add.prototype.compare.apply(mockInstance);
       expect(mockInstance.inputLayer1.deltas).toBe(mockDeltas);
@@ -153,11 +168,11 @@ describe('Add Layer', () => {
     it('instantiates Add with inputLayer1, inputLayer2, and settings', () => {
       const mockInputLayer1 = {
         width: 1,
-        height: 1
+        height: 1,
       };
       const mockInputLayer2 = {
         width: 1,
-        height: 1
+        height: 1,
       };
       const settings = {};
       const layer = add(mockInputLayer1, mockInputLayer2, settings);

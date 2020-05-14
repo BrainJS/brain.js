@@ -119,27 +119,27 @@ class Base {
   reuseKernels(layer) {
     if (layer.width !== this.width) {
       throw new Error(
-        `${this.constructor.name} kernel width mismatch ${layer.width} is not ${
-          this.width
-        }`
+        `${this.constructor.name} kernel width mismatch ${layer.width} is not ${this.width}`
       );
     }
     if (layer.height !== this.height) {
       throw new Error(
-        `${this.constructor.name} kernel width mismatch ${
-          layer.height
-        } is not ${this.height}`
+        `${this.constructor.name} kernel width mismatch ${layer.height} is not ${this.height}`
       );
     }
     if (layer.hasOwnProperty('predictKernel')) {
       if (!layer.predictKernel.immutable) {
-        throw new Error(`${layer.constructor.name}.predictKernel is not reusable, set kernel.immutable = true`);
+        throw new Error(
+          `${layer.constructor.name}.predictKernel is not reusable, set kernel.immutable = true`
+        );
       }
       this.predictKernel = layer.predictKernel;
     }
     if (layer.hasOwnProperty('compareKernel')) {
       if (!layer.compareKernel.immutable) {
-        throw new Error(`${layer.constructor.name}.compareKernel is not reusable, set kernel.immutable = true`);
+        throw new Error(
+          `${layer.constructor.name}.compareKernel is not reusable, set kernel.immutable = true`
+        );
       }
       this.compareKernel = layer.compareKernel;
     }
@@ -156,9 +156,14 @@ class Base {
   }
 
   learn(previousLayer, nextLayer, learningRate) {
-    //TODO: do we need to release here?
+    // TODO: do we need to release here?
     const { weights: oldWeights } = this;
-    this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
+    this.weights = this.praxis.run(
+      this,
+      previousLayer,
+      nextLayer,
+      learningRate
+    );
     release(oldWeights);
     clear(this.deltas);
   }
@@ -186,5 +191,5 @@ class Base {
 }
 
 module.exports = {
-  Base
+  Base,
 };

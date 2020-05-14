@@ -199,9 +199,9 @@ class NeuralNetworkGPU extends NeuralNetwork {
         output: [this.sizes[layer]],
         pipeline: true,
         constants: {
-          size: this.sizes[layer - 1]
+          size: this.sizes[layer - 1],
         },
-        immutable: true
+        immutable: true,
       });
     }
 
@@ -212,7 +212,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       {
         output: [this.sizes[1]],
         pipeline: true,
-        immutable: true
+        immutable: true,
       }
     );
   }
@@ -267,7 +267,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       if (layer === this.outputLayer) {
         this.backwardPropagate[this.outputLayer] = this.gpu.createKernelMap(
           {
-            error: calcErrorOutput
+            error: calcErrorOutput,
           },
           function (outputs, targets) {
             const output = outputs[this.thread.x];
@@ -276,13 +276,13 @@ class NeuralNetworkGPU extends NeuralNetwork {
           {
             output: [this.sizes[this.outputLayer]],
             pipeline: true,
-            immutable: true
+            immutable: true,
           }
         );
       } else {
         this.backwardPropagate[layer] = this.gpu.createKernelMap(
           {
-            error: calcError
+            error: calcError,
           },
           function (nextWeights, outputs, nextDeltas) {
             const output = outputs[this.thread.x];
@@ -292,9 +292,9 @@ class NeuralNetworkGPU extends NeuralNetwork {
             output: [this.sizes[layer]],
             pipeline: true,
             constants: {
-              size: this.deltas[layer + 1].length
+              size: this.deltas[layer + 1].length,
             },
-            immutable: true
+            immutable: true,
           }
         );
       }
@@ -326,7 +326,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       this.changesPropagate[layer] = this.gpu.createKernelMap(
         {
           weights: addWeights,
-          changes: calcChanges
+          changes: calcChanges,
         },
         function (previousOutputs, deltas, weights, changes) {
           const change = calcChanges(changes, deltas, previousOutputs);
@@ -339,9 +339,9 @@ class NeuralNetworkGPU extends NeuralNetwork {
           constants: {
             size: this.outputs[layer - 1].length,
             learningRate: this.trainOpts.learningRate,
-            momentum: this.trainOpts.momentum
+            momentum: this.trainOpts.momentum,
           },
-          immutable: true
+          immutable: true,
         }
       );
     }
@@ -371,9 +371,9 @@ class NeuralNetworkGPU extends NeuralNetwork {
         output: [this.sizes[layer]],
         pipeline: true,
         constants: {
-          learningRate: this.trainOpts.learningRate
+          learningRate: this.trainOpts.learningRate,
         },
-        immutable: true
+        immutable: true,
       });
     }
   }
@@ -393,10 +393,10 @@ class NeuralNetworkGPU extends NeuralNetwork {
     this.getMSE = this.gpu.createKernel(mse, {
       output: [1],
       constants: {
-        size: this.sizes[this.outputLayer]
+        size: this.sizes[this.outputLayer],
       },
       pipeline: true,
-      immutable: true
+      immutable: true,
     });
     this._addMSE = this.gpu.createKernel(
       function (value1, value2) {
@@ -405,7 +405,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       {
         output: [1],
         pipeline: true,
-        immutable: true
+        immutable: true,
       }
     );
     this._divideMSESum = this.gpu.createKernel(
@@ -417,7 +417,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
         return 0;
       },
       {
-        output: [1]
+        output: [1],
       }
     );
   }
@@ -457,7 +457,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
 
     const status = {
       error: 1,
-      iterations: 0
+      iterations: 0,
     };
 
     this.verifyIsInitialized(data);
@@ -469,17 +469,17 @@ class NeuralNetworkGPU extends NeuralNetwork {
       {
         output: [data[0].output.length],
         pipeline: true,
-        immutable: true
+        immutable: true,
       }
     );
 
     return {
       data: data.map((set) => ({
         input: this.texturizeInputData(set.input),
-        output: texturizeOutputData(set.output)
+        output: texturizeOutputData(set.output),
       })),
       status,
-      endTime
+      endTime,
     };
   }
 
@@ -512,7 +512,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       sizes: this.sizes,
       getTrainOptsJSON: () => this.getTrainOptsJSON(),
       weights,
-      biases
+      biases,
     });
   }
 }

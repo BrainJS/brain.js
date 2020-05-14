@@ -33,7 +33,12 @@ class RecurrentZeros extends Internal {
 
   learn(previousLayer, nextLayer, learningRate) {
     const { weights: oldWeights } = this;
-    this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
+    this.weights = this.praxis.run(
+      this,
+      previousLayer,
+      nextLayer,
+      learningRate
+    );
     this.deltas = deltas;
     release(oldWeights);
     clear(this.deltas);

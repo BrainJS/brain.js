@@ -162,7 +162,7 @@ class Equation {
       product: input,
       forwardFn: (product) => {
         product.weights = input.weights = this.inputValue;
-      }
+      },
     });
     return input;
   }
@@ -332,7 +332,7 @@ class Equation {
     const output = this.runIndex(input);
     // set gradients into log probabilities
     const logProbabilities = output; // interpret output as log probabilities
-    let probabilities = softmax(output); // compute the softmax probabilities
+    const probabilities = softmax(output); // compute the softmax probabilities
 
     // write gradients into log probabilities
     logProbabilities.deltas = probabilities.weights.slice(0);

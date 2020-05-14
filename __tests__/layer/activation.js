@@ -10,7 +10,7 @@ describe('Activation Abstract Layer', () => {
         Activation.prototype.validate.mockRestore();
       });
       test('.validate() call', () => {
-        const l = new Activation({ });
+        const l = new Activation({});
         expect(l.validate).toBeCalled();
       });
     });

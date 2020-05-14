@@ -28,10 +28,12 @@ const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('FeedForward Class: Unit', () => {
   beforeEach(() => {
-    setup(new GPU({
-      mode: 'cpu',
-      onIstanbulCoverageVariable: injectIstanbulCoverage
-    }));
+    setup(
+      new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage,
+      })
+    );
   });
   afterEach(() => {
     teardown();
@@ -55,7 +57,7 @@ describe('FeedForward Class: Unit', () => {
         const net = new FeedForward({
           inputLayer: () => input(),
           hiddenLayers: [
-            inputLayer =>
+            (inputLayer) =>
               convolution(
                 {
                   filterCount: 8,
@@ -66,8 +68,8 @@ describe('FeedForward Class: Unit', () => {
                 },
                 inputLayer
               ),
-            inputLayer => relu(inputLayer),
-            inputLayer =>
+            (inputLayer) => relu(inputLayer),
+            (inputLayer) =>
               pool(
                 {
                   filterHeight: 3,
@@ -77,7 +79,7 @@ describe('FeedForward Class: Unit', () => {
                 },
                 inputLayer
               ),
-            inputLayer =>
+            (inputLayer) =>
               convolution(
                 {
                   padding: 2,
@@ -88,8 +90,8 @@ describe('FeedForward Class: Unit', () => {
                 },
                 inputLayer
               ),
-            inputLayer => relu(inputLayer),
-            inputLayer =>
+            (inputLayer) => relu(inputLayer),
+            (inputLayer) =>
               pool(
                 {
                   padding: 2,
@@ -99,58 +101,56 @@ describe('FeedForward Class: Unit', () => {
                 },
                 inputLayer
               ),
-            inputLayer => softMax(inputLayer),
+            (inputLayer) => softMax(inputLayer),
           ],
-          outputLayer: inputLayer => output({ height: 10 }, inputLayer),
+          outputLayer: (inputLayer) => output({ height: 10 }, inputLayer),
         });
 
         net.initialize();
 
         expect(net.layers.length).toBe(13);
-        expect(net.layers.map(l => l.constructor)).toEqual(
-          [
-            Input,
-            Convolution,
-            Relu,
-            Pool,
-            Convolution,
-            Relu,
-            Pool,
-            SoftMax,
-            Random,
-            Multiply,
-            Random,
-            Add,
-            Target,
-          ]
-        );
+        expect(net.layers.map((l) => l.constructor)).toEqual([
+          Input,
+          Convolution,
+          Relu,
+          Pool,
+          Convolution,
+          Relu,
+          Pool,
+          SoftMax,
+          Random,
+          Multiply,
+          Random,
+          Add,
+          Target,
+        ]);
       });
 
       test('can setup and traverse entire network using layer composed of layers', () => {
         const net = new FeedForward({
           inputLayer: () => input({ height: 1 }),
-          hiddenLayers: [inputLayer => feedForward({ height: 1 }, inputLayer)],
-          outputLayer: inputLayer => output({ height: 1 }, inputLayer),
+          hiddenLayers: [
+            (inputLayer) => feedForward({ height: 1 }, inputLayer),
+          ],
+          outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
         });
 
         net.initialize();
 
         expect(net.layers.length).toBe(11);
-        expect(net.layers.map(l => l.constructor)).toEqual(
-          [
-            Input,
-            Random,
-            Multiply,
-            Random,
-            Add,
-            Sigmoid,
-            Random,
-            Multiply,
-            Random,
-            Add,
-            Target,
-          ]
-        );
+        expect(net.layers.map((l) => l.constructor)).toEqual([
+          Input,
+          Random,
+          Multiply,
+          Random,
+          Add,
+          Sigmoid,
+          Random,
+          Multiply,
+          Random,
+          Add,
+          Target,
+        ]);
       });
     });
 
@@ -159,7 +159,7 @@ describe('FeedForward Class: Unit', () => {
         const net = new FeedForward({
           inputLayer: () => input(),
           hiddenLayers: [
-            inputParam =>
+            (inputParam) =>
               softMax(
                 pool(
                   {
@@ -202,28 +202,26 @@ describe('FeedForward Class: Unit', () => {
                 )
               ),
           ],
-          outputLayer: inputParam => output({ height: 10 }, inputParam),
+          outputLayer: (inputParam) => output({ height: 10 }, inputParam),
         });
         net.initialize();
 
         expect(net.layers.length).toBe(13);
-        expect(net.layers.map(l => l.constructor)).toEqual(
-          [
-            Input,
-            Convolution,
-            Relu,
-            Pool,
-            Convolution,
-            Relu,
-            Pool,
-            SoftMax,
-            Random,
-            Multiply,
-            Random,
-            Add,
-            Target,
-          ]
-        );
+        expect(net.layers.map((l) => l.constructor)).toEqual([
+          Input,
+          Convolution,
+          Relu,
+          Pool,
+          Convolution,
+          Relu,
+          Pool,
+          SoftMax,
+          Random,
+          Multiply,
+          Random,
+          Add,
+          Target,
+        ]);
       });
     });
   });
@@ -248,7 +246,7 @@ describe('FeedForward Class: Unit', () => {
       net.initialize();
 
       expect(net.layers.length).toBe(5);
-      expect(net.layers.map(l => l.constructor !== undefined)).toEqual([
+      expect(net.layers.map((l) => l.constructor !== undefined)).toEqual([
         true,
         true,
         true,
@@ -276,14 +274,14 @@ describe('FeedForward Class: Unit', () => {
       net.initialize();
 
       expect(net.layers.length).toBe(5);
-      expect(net.layers.map(l => l.called)).toEqual([
+      expect(net.layers.map((l) => l.called)).toEqual([
         true,
         true,
         true,
         true,
         true,
       ]);
-      expect(net.layers.map(l => Boolean(l.praxis))).toEqual([
+      expect(net.layers.map((l) => Boolean(l.praxis))).toEqual([
         true,
         true,
         true,
@@ -310,14 +308,14 @@ describe('FeedForward Class: Unit', () => {
       net.initialize();
 
       expect(net.layers.length).toBe(5);
-      expect(net.layers.map(l => l.called)).toEqual([
+      expect(net.layers.map((l) => l.called)).toEqual([
         true,
         true,
         true,
         true,
         true,
       ]);
-      expect(net.layers.map(l => l.praxis === true)).toEqual([
+      expect(net.layers.map((l) => l.praxis === true)).toEqual([
         false,
         true,
         false,
@@ -351,7 +349,7 @@ describe('FeedForward Class: Unit', () => {
       net.initialize();
       net.runInput();
 
-      expect(net.layers.map(l => l.called)).toEqual([
+      expect(net.layers.map((l) => l.called)).toEqual([
         true,
         true,
         true,
@@ -388,7 +386,7 @@ describe('FeedForward Class: Unit', () => {
       net.initialize();
       net._calculateDeltas();
 
-      expect(net.layers.map(l => l.called)).toEqual([
+      expect(net.layers.map((l) => l.called)).toEqual([
         true,
         true,
         true,
@@ -428,7 +426,7 @@ describe('FeedForward Class: Unit', () => {
       net.initialize();
       net.adjustWeights();
 
-      expect(net.layers.map(l => l.called)).toEqual([
+      expect(net.layers.map((l) => l.called)).toEqual([
         true,
         true,
         true,
@@ -491,14 +489,14 @@ describe('FeedForward Class: Unit', () => {
       const net = new FeedForward({
         inputLayer: () => new TestInputLayer({ width: 10, height: 1 }),
         hiddenLayers: [
-          inputParam =>
+          (inputParam) =>
             new TestOperatorLayer(
               { foo: true },
               new TestLayer1({ foo: true }, inputParam),
               new TestLayer2({}, inputParam)
             ),
         ],
-        outputLayer: inputParam =>
+        outputLayer: (inputParam) =>
           new TestOutputLayer({ width: 10, height: 5 }, inputParam),
       });
       net.initialize();
@@ -506,7 +504,7 @@ describe('FeedForward Class: Unit', () => {
       const json = net.toJSON();
 
       expect(json.layers).toBeDefined();
-      expect(json.layers.every(l => !l.hasOwnProperty('deltas'))).toBe(true);
+      expect(json.layers.every((l) => !l.hasOwnProperty('deltas'))).toBe(true);
       expect(json.layers.length).toBe(5);
       expect(json.layers[0]).toEqual({
         type: 'TestInputLayer',
@@ -607,13 +605,13 @@ describe('FeedForward Class: Unit', () => {
         }
       );
 
-      expect(net.layers.map(l => l instanceof TestLayer)).toEqual([
+      expect(net.layers.map((l) => l instanceof TestLayer)).toEqual([
         true,
         true,
         true,
         true,
       ]);
-      expect(net.layers.map(l => l.inputLayer instanceof TestLayer)).toEqual([
+      expect(net.layers.map((l) => l.inputLayer instanceof TestLayer)).toEqual([
         false,
         true,
         true,
@@ -697,8 +695,8 @@ describe('FeedForward Class: Unit', () => {
     test('calls training methods and mse2d and returns value', () => {
       const net = new FeedForward({
         inputLayer: () => input({ height: 1 }),
-        hiddenLayers: [inputLayer => feedForward({ height: 1 }, inputLayer)],
-        outputLayer: inputLayer => output({ height: 1 }, inputLayer),
+        hiddenLayers: [(inputLayer) => feedForward({ height: 1 }, inputLayer)],
+        outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
       });
       net.initialize();
       net._outputLayer = { errors: [0] };
@@ -730,7 +728,11 @@ describe('FeedForward Class: Unit', () => {
         error: 5,
       };
       const mockEndTime = Date.now() + 1000000;
-      FeedForward.prototype._trainingTick.apply(mockInstance, [mockData, mockStatus, mockEndTime]);
+      FeedForward.prototype._trainingTick.apply(mockInstance, [
+        mockData,
+        mockStatus,
+        mockEndTime,
+      ]);
       expect(mockInstance._calculateTrainingError).toHaveBeenCalled();
     });
   });

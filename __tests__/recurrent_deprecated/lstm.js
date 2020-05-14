@@ -29,7 +29,7 @@ describe('lstm', () => {
       }
       net.train(Array.from(items), { iterations: 60, errorThresh: 0.03 });
       for (let i = 0; i < 10; i++) {
-        const output = net.run(`${ i }+`);
+        const output = net.run(`${i}+`);
         expect(/^[0-9]+[=][0-9]+$/.test(output)).toBe(true);
       }
     });
@@ -41,14 +41,14 @@ describe('lstm', () => {
         const net = new LSTM({
           inputSize: 6,
           inputRange: 12,
-          outputSize: 6
+          outputSize: 6,
         });
         const json = net.toJSON();
 
         compare(json.input, net.model.input);
         net.model.hiddenLayers.forEach((layer, i) => {
           for (const p in layer) {
-            compare(json.hiddenLayers[i][p], layer[p])
+            compare(json.hiddenLayers[i][p], layer[p]);
           }
         });
         compare(json.output, net.model.output);
@@ -67,11 +67,13 @@ describe('lstm', () => {
     describe('.fromJSON', () => {
       it('can import model from json', () => {
         const dataFormatter = new DataFormatter('abcdef'.split(''));
-        const jsonString = JSON.stringify(new LSTM({
-          inputSize: 6, //<- length
-          inputRange: dataFormatter.characters.length,
-          outputSize: dataFormatter.characters.length //<- length
-        }).toJSON());
+        const jsonString = JSON.stringify(
+          new LSTM({
+            inputSize: 6, // <- length
+            inputRange: dataFormatter.characters.length,
+            outputSize: dataFormatter.characters.length, // <- length
+          }).toJSON()
+        );
 
         const clone = new LSTM();
         clone.fromJSON(JSON.parse(jsonString));
@@ -84,11 +86,13 @@ describe('lstm', () => {
 
       it('can import model from json and train again', () => {
         const dataFormatter = new DataFormatter('abcdef'.split(''));
-        const jsonString = JSON.stringify(new LSTM({
-          inputSize: 6, //<- length
-          inputRange: dataFormatter.characters.length,
-          outputSize: dataFormatter.characters.length //<- length
-        }).toJSON());
+        const jsonString = JSON.stringify(
+          new LSTM({
+            inputSize: 6, // <- length
+            inputRange: dataFormatter.characters.length,
+            outputSize: dataFormatter.characters.length, // <- length
+          }).toJSON()
+        );
 
         const clone = new LSTM();
         clone.fromJSON(JSON.parse(jsonString));
@@ -108,7 +112,7 @@ describe('lstm', () => {
       const net = new LSTM({
         inputSize: 7,
         inputRange: dataFormatter.characters.length,
-        outputSize: 7
+        outputSize: 7,
       });
       net.initialize();
       for (let i = 0; i < 100; i++) {
@@ -120,7 +124,11 @@ describe('lstm', () => {
 
       const lastOutput = dataFormatter.toCharacters(net.run()).join('');
       expect(lastOutput).toBe('hi mom!');
-      expect(dataFormatter.toCharacters(net.toFunction(istanbulLinkerUtil)()).join('')).toBe(lastOutput);
+      expect(
+        dataFormatter
+          .toCharacters(net.toFunction(istanbulLinkerUtil)())
+          .join('')
+      ).toBe(lastOutput);
     });
     it('can include the DataFormatter', () => {
       const net = new LSTM();
@@ -135,19 +143,24 @@ describe('lstm', () => {
   describe('.run', () => {
     it('can predict greetings in 100 trainings', () => {
       const net = new LSTM();
-      const trainingData = [{
-        input: 'hi',
-        output: 'mom'
-      }, {
-        input: 'howdy',
-        output: 'dad'
-      }, {
-        input: 'hello',
-        output: 'sis'
-      }, {
-        input: 'yo',
-        output: 'bro'
-      }];
+      const trainingData = [
+        {
+          input: 'hi',
+          output: 'mom',
+        },
+        {
+          input: 'howdy',
+          output: 'dad',
+        },
+        {
+          input: 'hello',
+          output: 'sis',
+        },
+        {
+          input: 'yo',
+          output: 'bro',
+        },
+      ];
       net.train(trainingData, { iterations: 100, log: true });
       expect(net.run('hi')).toBe('mom');
       expect(net.run('howdy')).toBe('dad');
@@ -160,21 +173,26 @@ describe('lstm', () => {
         credit: 0,
         debit: 1,
         personalCard: 2,
-        other: 3
+        other: 3,
       };
-      const trainingData = [{
-        input: [transactionTypes.credit],
-        output: 'credit'
-      }, {
-        input: [transactionTypes.debit],
-        output: 'debit'
-      }, {
-        input: [transactionTypes.personalCard],
-        output: 'personal card'
-      }, {
-        input: [transactionTypes.other],
-        output: 'other'
-      }];
+      const trainingData = [
+        {
+          input: [transactionTypes.credit],
+          output: 'credit',
+        },
+        {
+          input: [transactionTypes.debit],
+          output: 'debit',
+        },
+        {
+          input: [transactionTypes.personalCard],
+          output: 'personal card',
+        },
+        {
+          input: [transactionTypes.other],
+          output: 'other',
+        },
+      ];
       net.train(trainingData, { iterations: 200, log: true });
       expect(net.run([transactionTypes.credit])).toBe('credit');
       expect(net.run([transactionTypes.debit])).toBe('debit');

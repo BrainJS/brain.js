@@ -28,7 +28,7 @@ describe('GRU', () => {
       }
       net.train(Array.from(items), { iterations: 60, errorThresh: 0.03 });
       for (let i = 0; i < 10; i++) {
-        const output = net.run(`${ i }+`);
+        const output = net.run(`${i}+`);
         expect(/^[0-9]+[=][0-9]+$/.test(output)).toBe(true);
       }
     });
@@ -37,10 +37,15 @@ describe('GRU', () => {
   describe('printable characters', () => {
     it('can learn a phrase', (done) => {
       const net = new GRU();
-      net.train([{
-        input: 'hello world',
-        output: 'comment'
-      }], { iterations: 100 });
+      net.train(
+        [
+          {
+            input: 'hello world',
+            output: 'comment',
+          },
+        ],
+        { iterations: 100 }
+      );
       expect(net.run('hello world')).toBe('comment');
       done();
     });
@@ -51,7 +56,7 @@ describe('GRU', () => {
       const net = new GRU({
         inputSize: 3,
         inputRange: dataFormatter.characters.length,
-        outputSize: 3
+        outputSize: 3,
       });
       net.initialize();
       for (let i = 0; i < 100; i++) {
@@ -60,7 +65,11 @@ describe('GRU', () => {
           console.log(dataFormatter.toCharacters(net.run()).join(''));
         }
       }
-      expect(dataFormatter.toCharacters(net.run(dataFormatter.toIndexes('b'))).join('')).toBe('ob');
+      expect(
+        dataFormatter
+          .toCharacters(net.run(dataFormatter.toIndexes('b')))
+          .join('')
+      ).toBe('ob');
       done();
     });
 
@@ -71,7 +80,7 @@ describe('GRU', () => {
       const net = new GRU({
         inputSize: 40,
         inputRange: dataFormatter.characters.length,
-        outputSize: 40
+        outputSize: 40,
       });
       net.initialize();
       for (let i = 0; i < 200; i++) {
@@ -91,14 +100,14 @@ describe('GRU', () => {
         const net = new GRU({
           inputSize: 6,
           inputRange: 12,
-          outputSize: 6
+          outputSize: 6,
         });
         const json = net.toJSON();
 
         compare(json.input, net.model.input);
         net.model.hiddenLayers.forEach((layer, i) => {
           for (const p in layer) {
-            compare(json.hiddenLayers[i][p], layer[p])
+            compare(json.hiddenLayers[i][p], layer[p]);
           }
         });
         compare(json.output, net.model.output);
@@ -117,11 +126,13 @@ describe('GRU', () => {
     describe('.fromJSON', () => {
       it('can import model from json', () => {
         const dataFormatter = new DataFormatter('abcdef'.split(''));
-        const jsonString = JSON.stringify(new GRU({
-          inputSize: 6, //<- length
-          inputRange: dataFormatter.characters.length,
-          outputSize: dataFormatter.characters.length //<- length
-        }).toJSON());
+        const jsonString = JSON.stringify(
+          new GRU({
+            inputSize: 6, // <- length
+            inputRange: dataFormatter.characters.length,
+            outputSize: dataFormatter.characters.length, // <- length
+          }).toJSON()
+        );
 
         const clone = new GRU();
         clone.fromJSON(JSON.parse(jsonString));
@@ -133,11 +144,13 @@ describe('GRU', () => {
 
       it('can import model from json and train again', () => {
         const dataFormatter = new DataFormatter('abcdef'.split(''));
-        const jsonString = JSON.stringify(new GRU({
-          inputSize: 6, //<- length
-          inputRange: dataFormatter.characters.length,
-          outputSize: dataFormatter.characters.length //<- length
-        }).toJSON());
+        const jsonString = JSON.stringify(
+          new GRU({
+            inputSize: 6, // <- length
+            inputRange: dataFormatter.characters.length,
+            outputSize: dataFormatter.characters.length, // <- length
+          }).toJSON()
+        );
 
         const clone = new GRU();
         clone.fromJSON(JSON.parse(jsonString));
@@ -157,7 +170,7 @@ describe('GRU', () => {
       const net = new GRU({
         inputSize: 6,
         inputRange: dataFormatter.characters.length,
-        outputSize: 6
+        outputSize: 6,
       });
       net.initialize();
       for (let i = 0; i < 100; i++) {
@@ -168,7 +181,11 @@ describe('GRU', () => {
       }
 
       const lastOutput = dataFormatter.toCharacters(net.run()).join('');
-      expect(dataFormatter.toCharacters(net.toFunction(istanbulLinkerUtil)()).join('')).toBe(lastOutput);
+      expect(
+        dataFormatter
+          .toCharacters(net.toFunction(istanbulLinkerUtil)())
+          .join('')
+      ).toBe(lastOutput);
     });
 
     it('can include the DataFormatter', () => {

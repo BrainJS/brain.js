@@ -12,7 +12,9 @@ function update(changes, weights, incomingWeights, inputDeltas) {
   const weight = weights[this.thread.y][this.thread.x];
   const incoming = incomingWeights[this.thread.x][0];
 
-  const change = this.constants.learningRate * inputDelta * incoming + this.constants.momentum * lastChange;
+  const change =
+    this.constants.learningRate * inputDelta * incoming +
+    this.constants.momentum * lastChange;
   updateChange(change);
   return weight + change;
 }
@@ -21,7 +23,7 @@ class ArthurDeviationWeights extends Base {
   static get defaults() {
     return {
       learningRate: 0.3,
-      momentum: 0.1
+      momentum: 0.1,
     };
   }
 
@@ -33,7 +35,7 @@ class ArthurDeviationWeights extends Base {
 
     if (settings) {
       if (settings.weightsLayer) {
-        this.weightsLayer = settings.weightsLayer
+        this.weightsLayer = settings.weightsLayer;
       }
       if (settings.incomingLayer) {
         this.incomingLayer = settings.incomingLayer;
@@ -60,13 +62,13 @@ class ArthurDeviationWeights extends Base {
   setupKernels() {
     this.kernel = makeKernel(update, {
       map: {
-        changes: updateChange
+        changes: updateChange,
       },
       output: [this.width, this.height],
       constants: {
         learningRate: this.learningRate,
-        momentum: this.momentum
-      }
+        momentum: this.momentum,
+      },
     });
   }
 }

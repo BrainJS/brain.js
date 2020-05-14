@@ -21,11 +21,7 @@ function clipByValue(value, max, min) {
  * @description Momentum Root Mean Square Propagation Function
  * @returns {number}
  */
-function update(
-  weights,
-  deltas,
-  previousMomenta
-) {
+function update(weights, deltas, previousMomenta) {
   const delta = deltas[this.thread.y][this.thread.x];
   const clippedDelta = clipByValue(
     delta,
@@ -64,7 +60,7 @@ class MomentumRootMeanSquaredPropagation extends Base {
       regularizationStrength: 0.0001,
       learningRate: 0.01,
       smoothEps: 1e-8,
-      clipValue: 5
+      clipValue: 5,
     };
   }
 
@@ -74,7 +70,11 @@ class MomentumRootMeanSquaredPropagation extends Base {
   }
 
   run(layer, previousLayer, nextLayer, learningRate) {
-    const { momenta, result } = this.kernel(layer.weights, layer.deltas, this.momenta);
+    const { momenta, result } = this.kernel(
+      layer.weights,
+      layer.deltas,
+      this.momenta
+    );
     release(this.momenta);
     this.momenta = momenta;
     return result;
@@ -111,7 +111,11 @@ const MRmsProp = MomentumRootMeanSquaredPropagation;
 const mRmsProp = momentumRootMeanSquaredPropagation;
 
 module.exports = {
-  MomentumRootMeanSquaredPropagation, momentumRootMeanSquaredPropagation,
-  MRmsProp, mRmsProp,
-  getMomentum, clipByValue, isClippedByValue
+  MomentumRootMeanSquaredPropagation,
+  momentumRootMeanSquaredPropagation,
+  MRmsProp,
+  mRmsProp,
+  getMomentum,
+  clipByValue,
+  isClippedByValue,
 };

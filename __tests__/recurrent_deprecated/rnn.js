@@ -19,7 +19,7 @@ describe('RNN', () => {
           hiddenLayers: [3],
           inputSize: 3,
           inputRange: 2,
-          outputSize: 2
+          outputSize: 2,
         });
         net.initialize();
         return net.toJSON();
@@ -64,13 +64,13 @@ describe('RNN', () => {
     });
     it('can setup different size hiddenLayers', () => {
       const inputSize = 2;
-      const hiddenLayers = [5,4,3];
+      const hiddenLayers = [5, 4, 3];
       const networkOptions = {
         learningRate: 0.001,
         decayRate: 0.75,
         inputSize: inputSize,
         hiddenLayers,
-        outputSize: inputSize
+        outputSize: inputSize,
       };
 
       const net = new RNN(networkOptions);
@@ -94,11 +94,11 @@ describe('RNN', () => {
       });
     });
     it('after initial run, does not have zeros in deltas', () => {
-      let net = new RNN({
+      const net = new RNN({
         hiddenLayers: [3],
         inputSize: 3,
         inputRange: 2,
-        outputSize: 2
+        outputSize: 2,
       });
       net.initialize();
       net.trainInput([1, 1, 0]);
@@ -129,51 +129,51 @@ describe('RNN', () => {
         hiddenLayers: [20, 20],
         inputSize: 3,
         inputRange: 3,
-        outputSize: 3
+        outputSize: 3,
       });
       net.initialize();
       return net;
     }
 
-    let xorNetValues = [
+    const xorNetValues = [
       [0, 0, 0],
       [0, 1, 1],
       [1, 0, 1],
-      [1, 1, 0]
+      [1, 1, 0],
     ];
 
     it('properly provides values to equations[].predictTargetIndex', () => {
-      let net = xorNet();
-      let called = [];
+      const net = xorNet();
+      const called = [];
       net.model.equations[0] = {
         predictTargetIndex: (v) => {
           called[0] = v;
-          return {rows: 1, columns: 0, weights: [], deltas: []};
-        }
+          return { rows: 1, columns: 0, weights: [], deltas: [] };
+        },
       };
       net.model.equations[1] = {
         predictTargetIndex: (v) => {
           called[1] = v;
-          return {rows: 0, columns: 0, weights: [], deltas: []};
-        }
+          return { rows: 0, columns: 0, weights: [], deltas: [] };
+        },
       };
       net.model.equations[2] = {
         predictTargetIndex: (v) => {
           called[2] = v;
-          return {rows: 0, columns: 0, weights: [], deltas: []};
-        }
+          return { rows: 0, columns: 0, weights: [], deltas: [] };
+        },
       };
       net.model.equations[3] = {
         predictTargetIndex: (v) => {
           called[3] = v;
-          return {rows: 0, columns: 0, weights: [], deltas: []};
-        }
+          return { rows: 0, columns: 0, weights: [], deltas: [] };
+        },
       };
       net.model.equations[4] = {
         predictTargetIndex: (v) => {
           called[4] = v;
-          return {rows: 0, columns: 0, weights: [], deltas: []};
-        }
+          return { rows: 0, columns: 0, weights: [], deltas: [] };
+        },
       };
       net.trainInput([0, 0, 0]);
       expect(called.length).toBe(4);
@@ -190,39 +190,39 @@ describe('RNN', () => {
     });
 
     it('properly provides values to equations[].runBackpropagate', () => {
-      let net = xorNet();
-      let backPropagateCalled = [];
+      const net = xorNet();
+      const backPropagateCalled = [];
       net.model.equations[0] = {
         predictTargetIndex: () => {
-          return {rows: 0, columns: 0, weights: [], deltas: []};
+          return { rows: 0, columns: 0, weights: [], deltas: [] };
         },
         backpropagateIndex: (v) => {
           backPropagateCalled[0] = v;
-        }
+        },
       };
       net.model.equations[1] = {
         predictTargetIndex: () => {
-          return {rows: 0, columns: 0, weights: [], deltas: []};
+          return { rows: 0, columns: 0, weights: [], deltas: [] };
         },
         backpropagateIndex: (v) => {
           backPropagateCalled[1] = v;
-        }
+        },
       };
       net.model.equations[2] = {
         predictTargetIndex: () => {
-          return {rows: 0, columns: 0, weights: [], deltas: []};
+          return { rows: 0, columns: 0, weights: [], deltas: [] };
         },
         backpropagateIndex: (v) => {
           backPropagateCalled[2] = v;
-        }
+        },
       };
       net.model.equations[3] = {
         predictTargetIndex: () => {
-          return {rows: 0, columns: 0, weights: [], deltas: []};
+          return { rows: 0, columns: 0, weights: [], deltas: [] };
         },
         backpropagateIndex: (v) => {
           backPropagateCalled[3] = v;
-        }
+        },
       };
       net.trainInput([0, 0, 0]);
       net.backpropagate([0, 0, 0]);
@@ -241,39 +241,39 @@ describe('RNN', () => {
     });
 
     it('properly provides values to equations[].runBackpropagate', () => {
-      let net = xorNet();
-      let backPropagateCalled = [];
+      const net = xorNet();
+      const backPropagateCalled = [];
       net.model.equations[0] = {
         predictTargetIndex: () => {
-          return {rows: 0, columns: 0, weights: [], deltas: []};
+          return { rows: 0, columns: 0, weights: [], deltas: [] };
         },
         backpropagateIndex: (v) => {
           backPropagateCalled[0] = v;
-        }
+        },
       };
       net.model.equations[1] = {
         predictTargetIndex: () => {
-          return {rows: 0, columns: 0, weights: [], deltas: []};
+          return { rows: 0, columns: 0, weights: [], deltas: [] };
         },
         backpropagateIndex: (v) => {
           backPropagateCalled[1] = v;
-        }
+        },
       };
       net.model.equations[2] = {
         predictTargetIndex: () => {
-          return {rows: 0, columns: 0, weights: [], deltas: []};
+          return { rows: 0, columns: 0, weights: [], deltas: [] };
         },
         backpropagateIndex: (v) => {
           backPropagateCalled[2] = v;
-        }
+        },
       };
       net.model.equations[3] = {
         predictTargetIndex: () => {
-          return {rows: 0, columns: 0, weights: [], deltas: []};
+          return { rows: 0, columns: 0, weights: [], deltas: [] };
         },
         backpropagateIndex: (v) => {
           backPropagateCalled[3] = v;
-        }
+        },
       };
       net.trainInput([0, 0, 0]);
       net.backpropagate([0, 0, 0]);
@@ -292,8 +292,8 @@ describe('RNN', () => {
     });
 
     it('is fully connected and gives values in deltas', () => {
-      let net = xorNet();
-      let input = xorNetValues[2];
+      const net = xorNet();
+      const input = xorNetValues[2];
       net.model.allMatrices.forEach((m) => {
         m.deltas.forEach((value) => {
           expect(value).toBe(0);
@@ -305,7 +305,7 @@ describe('RNN', () => {
         expect(v).toBe(0);
       });
       net.model.hiddenLayers.forEach((layer) => {
-        for (let p in layer) {
+        for (const p in layer) {
           if (!layer.hasOwnProperty(p)) continue;
           layer[p].deltas.forEach((v) => {
             expect(v).toBe(0);
@@ -320,10 +320,10 @@ describe('RNN', () => {
 
       expect(net.model.input.deltas.some(notZero)).toBeTruthy();
       net.model.hiddenLayers.forEach((layer) => {
-        for (let p in layer) {
+        for (const p in layer) {
           if (!layer.hasOwnProperty(p)) continue;
           if (!layer[p].deltas.some(notZero)) console.log(p);
-          //assert(layer[p].deltas.some(notZero));
+          // assert(layer[p].deltas.some(notZero));
         }
       });
       expect(net.model.output.deltas.some(notZero)).toBeTruthy();
@@ -331,8 +331,10 @@ describe('RNN', () => {
       net.model.equations.forEach((equation) => {
         equation.states.forEach((state) => {
           if (state.left && state.left.deltas) state.left.deltas.some(notZero);
-          if (state.right && state.right.deltas) state.right.deltas.some(notZero);
-          if (state.product && state.product.deltas) state.product.deltas.some(notZero);
+          if (state.right && state.right.deltas)
+            state.right.deltas.some(notZero);
+          if (state.product && state.product.deltas)
+            state.product.deltas.some(notZero);
         });
       });
     });
@@ -350,8 +352,7 @@ describe('RNN', () => {
       }
 
       expect(() => {
-        for (let i = 0; i < 100; i++)
-        {
+        for (let i = 0; i < 100; i++) {
           checkExploded();
           net.trainInput(input);
           checkExploded();
@@ -364,7 +365,7 @@ describe('RNN', () => {
     });
 
     it('can learn xor (error goes down)', () => {
-      let net = xorNet();
+      const net = xorNet();
       let initialError;
       let error;
 
@@ -381,9 +382,9 @@ describe('RNN', () => {
     });
 
     it('can predict xor', () => {
-      let net = xorNet();
+      const net = xorNet();
       for (let i = 0; i < 10; i++) {
-        xorNetValues.forEach(function(value) {
+        xorNetValues.forEach(function (value) {
           console.log(net.trainPattern(value, true));
         });
       }
@@ -394,12 +395,12 @@ describe('RNN', () => {
   describe('json', () => {
     describe('.toJSON()', () => {
       it('can export model as json', () => {
-        let net = new RNN({
+        const net = new RNN({
           inputSize: 6,
           inputRange: 12,
-          outputSize: 6
+          outputSize: 6,
         });
-        let json = net.toJSON();
+        const json = net.toJSON();
 
         compare(json.input, net.model.input);
         net.model.hiddenLayers.forEach((layer, i) => {
@@ -425,12 +426,16 @@ describe('RNN', () => {
         const inputSize = 6;
         const hiddenLayers = [10, 20];
         const dataFormatter = new DataFormatter('abcdef'.split(''));
-        const jsonString = JSON.stringify(new RNN({
-          inputSize, //<- length
-          hiddenLayers,
-          inputRange: dataFormatter.characters.length,
-          outputSize: dataFormatter.characters.length //<- length
-        }).toJSON(), null, 2);
+        const jsonString = JSON.stringify(
+          new RNN({
+            inputSize, // <- length
+            hiddenLayers,
+            inputRange: dataFormatter.characters.length,
+            outputSize: dataFormatter.characters.length, // <- length
+          }).toJSON(),
+          null,
+          2
+        );
 
         const clone = new RNN();
         clone.fromJSON(JSON.parse(jsonString));
@@ -443,17 +448,21 @@ describe('RNN', () => {
         expect(clone.model.hiddenLayers.length).toBe(2);
         expect(clone.model.hiddenLayers[0].weight.columns).toBe(inputSize);
         expect(clone.model.hiddenLayers[0].weight.rows).toBe(hiddenLayers[0]);
-        expect(clone.model.hiddenLayers[1].weight.columns).toBe(hiddenLayers[0]);
+        expect(clone.model.hiddenLayers[1].weight.columns).toBe(
+          hiddenLayers[0]
+        );
         expect(clone.model.hiddenLayers[1].weight.rows).toBe(hiddenLayers[1]);
       });
 
       it('can import model from json using .fromJSON()', () => {
-        let dataFormatter = new DataFormatter('abcdef'.split(''));
-        let jsonString = JSON.stringify(new RNN({
-          inputSize: 6, //<- length
-          inputRange: dataFormatter.characters.length,
-          outputSize: dataFormatter.characters.length //<- length
-        }).toJSON());
+        const dataFormatter = new DataFormatter('abcdef'.split(''));
+        const jsonString = JSON.stringify(
+          new RNN({
+            inputSize: 6, // <- length
+            inputRange: dataFormatter.characters.length,
+            outputSize: dataFormatter.characters.length, // <- length
+          }).toJSON()
+        );
 
         const clone = new RNN();
         clone.fromJSON(JSON.parse(jsonString));
@@ -467,10 +476,10 @@ describe('RNN', () => {
       it('will not initialize when importing json', () => {
         const dataFormatter = new DataFormatter('abcdef'.split(''));
         const original = new RNN({
-          inputSize: 6, //<- length
+          inputSize: 6, // <- length
           inputRange: dataFormatter.characters.length,
           hiddenLayers: [3, 3],
-          outputSize: dataFormatter.characters.length //<- length
+          outputSize: dataFormatter.characters.length, // <- length
         });
 
         original.initialize();
@@ -488,9 +497,9 @@ describe('RNN', () => {
       it('can import model from json and train again', () => {
         const dataFormatter = new DataFormatter('abcdef'.split(''));
         const net = new RNN({
-          inputSize: 6, //<- length
+          inputSize: 6, // <- length
           inputRange: dataFormatter.characters.length,
-          outputSize: dataFormatter.characters.length //<- length
+          outputSize: dataFormatter.characters.length, // <- length
         });
 
         net.initialize();
@@ -509,7 +518,7 @@ describe('RNN', () => {
         clone.fromJSON(JSON.parse(jsonString));
         expect(jsonString).toBe(JSON.stringify(clone.toJSON()));
         const newError = clone.trainPattern([0, 1, 1], true);
-        expect((error - newError) < 0.02).toBeTruthy();
+        expect(error - newError < 0.02).toBeTruthy();
         expect(jsonString).not.toBe(JSON.stringify(clone.toJSON()));
         expect(clone.inputSize).toBe(6);
         expect(clone.inputRange).toBe(dataFormatter.characters.length);
@@ -522,16 +531,19 @@ describe('RNN', () => {
     it('changes the neural net when ran', () => {
       const net = new RNN({
         dataFormatter: new DataFormatter([0, 1]),
-        hiddenLayers: [2]
+        hiddenLayers: [2],
       });
       const netBeforeTraining = JSON.stringify(net.toJSON());
 
-      net.train([
-        [0, 0, 0],
-        [0, 1, 1],
-        [1, 0, 1],
-        [1, 1, 0]
-      ], { iterations: 10, log: true });
+      net.train(
+        [
+          [0, 0, 0],
+          [0, 1, 1],
+          [1, 0, 1],
+          [1, 1, 0],
+        ],
+        { iterations: 10, log: true }
+      );
       const netAfterTraining = JSON.stringify(net.toJSON());
       expect(netBeforeTraining).not.toBe(netAfterTraining);
     });
@@ -539,11 +551,15 @@ describe('RNN', () => {
 
   describe('maxPredictionLength', () => {
     it('gets a default value', () => {
-      expect(new RNN().maxPredictionLength).toBe(RNN.defaults.maxPredictionLength);
+      expect(new RNN().maxPredictionLength).toBe(
+        RNN.defaults.maxPredictionLength
+      );
     });
     it('restores option', () => {
       const maxPredictionLength = Math.random();
-      expect(new RNN({ maxPredictionLength }).maxPredictionLength).toBe(maxPredictionLength);
+      expect(new RNN({ maxPredictionLength }).maxPredictionLength).toBe(
+        maxPredictionLength
+      );
     });
     it('can be set multiple times', () => {
       const net = new RNN({ maxPredictionLength: 5 });
@@ -565,10 +581,10 @@ describe('RNN', () => {
   describe('.toFunction()', () => {
     it('can output same as run method', () => {
       const dataFormatter = new DataFormatter(['h', 'i', ' ', 'm', 'o', '!']);
-      let net = new RNN({
+      const net = new RNN({
         inputSize: 7,
         inputRange: dataFormatter.characters.length,
-        outputSize: 7
+        outputSize: 7,
       });
       net.initialize();
 
@@ -579,8 +595,12 @@ describe('RNN', () => {
         }
       }
 
-      let lastOutput = dataFormatter.toCharacters(net.run()).join('');
-      expect(dataFormatter.toCharacters(net.toFunction(istanbulLinkerUtil)()).join('')).toBe(lastOutput);
+      const lastOutput = dataFormatter.toCharacters(net.run()).join('');
+      expect(
+        dataFormatter
+          .toCharacters(net.toFunction(istanbulLinkerUtil)())
+          .join('')
+      ).toBe(lastOutput);
     });
     it('can include the DataFormatter', () => {
       const net = new RNN();
@@ -610,15 +630,21 @@ describe('RNN', () => {
     describe('when working with array of strings', () => {
       it('creates an appropraite DataFormatter', () => {
         const net = new RNN();
-        const result = net.setupData([
-          'foo',
-          'bar',
-          'baz'
+        const result = net.setupData(['foo', 'bar', 'baz']);
+        expect(result).toEqual([
+          [0, 1, 1],
+          [2, 3, 4],
+          [2, 3, 5],
         ]);
-        expect(result).toEqual([[0,1,1], [2,3,4], [2,3,5]]);
         const { dataFormatter } = net;
         expect(dataFormatter.characters).toEqual([
-          'f', 'o', 'b', 'a', 'r', 'z', 'unrecognized'
+          'f',
+          'o',
+          'b',
+          'a',
+          'r',
+          'z',
+          'unrecognized',
         ]);
       });
     });
@@ -628,12 +654,24 @@ describe('RNN', () => {
         const result = net.setupData([
           { input: 'foo', output: 'bar' },
           { input: 'bar', output: 'baz' },
-          { input: 'baz', output: 'foo' }
+          { input: 'baz', output: 'foo' },
         ]);
-        expect(result).toEqual([[0,1,1,6,7,2,3,4], [2,3,4,6,7,2,3,5], [2,3,5,6,7,0,1,1]]);
+        expect(result).toEqual([
+          [0, 1, 1, 6, 7, 2, 3, 4],
+          [2, 3, 4, 6, 7, 2, 3, 5],
+          [2, 3, 5, 6, 7, 0, 1, 1],
+        ]);
         const { dataFormatter } = net;
         expect(dataFormatter.characters).toEqual([
-          'f', 'o', 'b', 'a', 'r', 'z', 'stop-input', 'start-output', 'unrecognized'
+          'f',
+          'o',
+          'b',
+          'a',
+          'r',
+          'z',
+          'stop-input',
+          'start-output',
+          'unrecognized',
         ]);
       });
     });
@@ -645,10 +683,17 @@ describe('RNN', () => {
           ['bar', 'baz', 'foo'],
           ['baz', 'foo', 'bar'],
         ]);
-        expect(result).toEqual([[0,1,2], [1,2,0], [2,0,1]]);
+        expect(result).toEqual([
+          [0, 1, 2],
+          [1, 2, 0],
+          [2, 0, 1],
+        ]);
         const { dataFormatter } = net;
         expect(dataFormatter.characters).toEqual([
-          'foo', 'bar', 'baz', 'unrecognized'
+          'foo',
+          'bar',
+          'baz',
+          'unrecognized',
         ]);
       });
     });
@@ -658,12 +703,21 @@ describe('RNN', () => {
         const result = net.setupData([
           { input: ['foo', 'bar'], output: ['baz'] },
           { input: ['bar', 'baz'], output: ['foo'] },
-          { input: ['baz', 'foo'], output: ['bar'] }
+          { input: ['baz', 'foo'], output: ['bar'] },
         ]);
-        expect(result).toEqual([[0,1,3,4,2], [1,2,3,4,0], [2,0,3,4,1]]);
+        expect(result).toEqual([
+          [0, 1, 3, 4, 2],
+          [1, 2, 3, 4, 0],
+          [2, 0, 3, 4, 1],
+        ]);
         const { dataFormatter } = net;
         expect(dataFormatter.characters).toEqual([
-          'foo', 'bar', 'baz', 'stop-input', 'start-output', 'unrecognized'
+          'foo',
+          'bar',
+          'baz',
+          'stop-input',
+          'start-output',
+          'unrecognized',
         ]);
       });
     });

@@ -61,7 +61,7 @@ function zero2D(width, height) {
 function allWeights(model, fn) {
   fn(model.input.weights);
   model.hiddenLayers.forEach((layer) => {
-    for (let p in layer) {
+    for (const p in layer) {
       if (!layer.hasOwnProperty(p)) continue;
       assert(fn(layer[p].weights));
     }
@@ -80,7 +80,7 @@ function allWeights(model, fn) {
 function allDeltas(model, fn) {
   fn(model.input.deltas);
   model.hiddenLayers.forEach((layer) => {
-    for (let p in layer) {
+    for (const p in layer) {
       if (!layer.hasOwnProperty(p)) continue;
       assert(fn(layer[p].deltas));
     }
@@ -172,5 +172,5 @@ module.exports = {
   allDeltas,
   shave,
   expectFunction,
-  injectIstanbulCoverage
+  injectIstanbulCoverage,
 };

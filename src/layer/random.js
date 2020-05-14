@@ -38,5 +38,5 @@ function random(settings) {
 
 module.exports = {
   Random,
-  random
+  random,
 };

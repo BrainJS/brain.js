@@ -4,30 +4,30 @@ const likely = require('../src/likely');
 describe('likely', () => {
   const a = character(
     '.#####.' +
-    '#.....#' +
-    '#.....#' +
-    '#######' +
-    '#.....#' +
-    '#.....#' +
-    '#.....#'
+      '#.....#' +
+      '#.....#' +
+      '#######' +
+      '#.....#' +
+      '#.....#' +
+      '#.....#'
   );
   const b = character(
     '######.' +
-    '#.....#' +
-    '#.....#' +
-    '######.' +
-    '#.....#' +
-    '#.....#' +
-    '######.'
+      '#.....#' +
+      '#.....#' +
+      '######.' +
+      '#.....#' +
+      '#.....#' +
+      '######.'
   );
   const c = character(
     '#######' +
-    '#......' +
-    '#......' +
-    '#......' +
-    '#......' +
-    '#......' +
-    '#######'
+      '#......' +
+      '#......' +
+      '#......' +
+      '#......' +
+      '#......' +
+      '#######'
   );
 
   /**
@@ -38,22 +38,25 @@ describe('likely', () => {
   net.train([
     { input: a, output: { a: 1 } },
     { input: b, output: { b: 1 } },
-    { input: c, output: { c: 1 } }
+    { input: c, output: { c: 1 } },
   ]);
 
   it('should be able to find a "a"', () => {
     /**
      * Predict the letter A, even with a pixel off.
      */
-    let result = likely(character(
-      '.#####.' +
-      '#.....#' +
-      '#.....#' +
-      '###.###' +
-      '#.....#' +
-      '#.....#' +
-      '#.....#'
-    ), net);
+    const result = likely(
+      character(
+        '.#####.' +
+          '#.....#' +
+          '#.....#' +
+          '###.###' +
+          '#.....#' +
+          '#.....#' +
+          '#.....#'
+      ),
+      net
+    );
 
     expect(result).toBe('a');
   });
@@ -62,15 +65,18 @@ describe('likely', () => {
     /**
      * Predict the letter B, even with a pixel off.
      */
-      let result = likely(character(
+    const result = likely(
+      character(
         '######.' +
-        '#.....#' +
-        '#.....#' +
-        '######.' +
-        '#..#..#' +
-        '#.....#' +
-        '###.##.'
-      ), net);
+          '#.....#' +
+          '#.....#' +
+          '######.' +
+          '#..#..#' +
+          '#.....#' +
+          '###.##.'
+      ),
+      net
+    );
 
     expect(result).toBe('b');
   });
@@ -80,15 +86,18 @@ describe('likely', () => {
      * Predict the letter C, even with a pixel off.
      */
 
-    let result = likely(character(
-      '#######' +
-      '#......' +
-      '#......' +
-      '#......' +
-      '#......' +
-      '##.....' +
-      '#######'
-    ), net);
+    const result = likely(
+      character(
+        '#######' +
+          '#......' +
+          '#......' +
+          '#......' +
+          '#......' +
+          '##.....' +
+          '#######'
+      ),
+      net
+    );
 
     expect(result).toBe('c');
   });
@@ -100,10 +109,7 @@ describe('likely', () => {
  * @returns {Array}
  */
 function character(string) {
-  return string
-    .trim()
-    .split('')
-    .map(integer);
+  return string.trim().split('').map(integer);
 }
 
 /**
@@ -112,6 +118,6 @@ function character(string) {
  * @returns {number}
  */
 function integer(character) {
-  if ('#' === character) return 1;
+  if (character === '#') return 1;
   return 0;
 }

@@ -67,5 +67,5 @@ class RecurrentConnection extends Internal {
 }
 
 module.exports = {
-  RecurrentConnection
+  RecurrentConnection,
 };

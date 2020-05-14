@@ -10,33 +10,33 @@ const { input, feedForward, target } = require('../../src/layer');
 describe('svg', () => {
   const options = {
     height: 200,
-    width : 300,
+    width: 300,
     r: 4,
     line: {
-      width: .5,
+      width: 0.5,
       color: 'black',
-      className: 'test-connection'
+      className: 'test-connection',
     },
     recurrentLine: {
       width: '1',
       color: 'red',
-      className: 'test-recurrence'
+      className: 'test-recurrence',
     },
     inputs: {
       color: 'rgba(0, 128, 0, 0.5)',
       labels: null,
-      className: 'test-input'
+      className: 'test-input',
     },
     hidden: {
       color: 'rgba(255, 127, 80, 0.5)',
-      className: 'test-hidden-neuron'
+      className: 'test-hidden-neuron',
     },
     outputs: {
       color: 'rgba(100, 149, 237, 0.5)',
-      className: 'test-output'
+      className: 'test-output',
     },
     fontSize: '11px',
-    fontClassName: 'test-label'
+    fontClassName: 'test-label',
   };
 
   describe('`NeuralNetwork` input', () => {
@@ -50,7 +50,7 @@ describe('svg', () => {
       const net = new NeuralNetwork({
         inputSize: 2,
         hiddenLayers: [3],
-        outputSize: 1
+        outputSize: 1,
       });
       expect(parser.validate(toSVG(net, options))).toBe(true);
     });
@@ -58,12 +58,12 @@ describe('svg', () => {
       const net = new NeuralNetwork({
         inputSize: 2,
         hiddenLayers: [3],
-        outputSize: 1
+        outputSize: 1,
       });
       const svg = toSVG(net, options);
       const json = parser.parse(svg, {
         ignoreAttributes: false,
-        attributeNamePrefix: ''
+        attributeNamePrefix: '',
       });
       expect(json.svg.rect.length).toBe(2);
       for (let i = 0; i < 2; i++) {
@@ -85,15 +85,15 @@ describe('svg', () => {
       const net = new NeuralNetwork({
         inputSize: 2,
         hiddenLayers: [3],
-        outputSize: 1
+        outputSize: 1,
       });
       expect(() => {
         toSVG(net, {
           ...options,
           inputs: {
             ...options.inputs,
-            labels: ['first']
-          }
+            labels: ['first'],
+          },
         });
       }).toThrow();
     });
@@ -101,18 +101,18 @@ describe('svg', () => {
       const net = new NeuralNetwork({
         inputSize: 2,
         hiddenLayers: [3],
-        outputSize: 1
+        outputSize: 1,
       });
       const svg = toSVG(net, {
         ...options,
         inputs: {
           ...options.inputs,
-          labels: ['first', 'second']
-        }
+          labels: ['first', 'second'],
+        },
       });
       const json = parser.parse(svg, {
         ignoreAttributes: false,
-        attributeNamePrefix: ''
+        attributeNamePrefix: '',
       });
       expect(json.svg.text.length).toBe(2);
       expect(json.svg.text[0].class).toBe('test-label');
@@ -133,7 +133,7 @@ describe('svg', () => {
       const net = {
         inputSize: 4,
         hiddenLayers: [3],
-        outputSize: 2
+        outputSize: 2,
       };
       expect(parser.validate(toSVG(net, options))).toBe(true);
     });
@@ -153,7 +153,7 @@ describe('svg', () => {
       const net = new RNN({
         inputSize: 2,
         hiddenLayers: [3],
-        outputSize: 1
+        outputSize: 1,
       });
       expect(parser.validate(toSVG(net, options))).toBe(true);
     });
@@ -164,7 +164,7 @@ describe('svg', () => {
       const net = new RNN({
         inputSize: 2,
         hiddenLayers: [3],
-        outputSize: 1
+        outputSize: 1,
       });
       net.initialize();
       expect(parser.validate(toSVG(net.toJSON(), options))).toBe(true);
@@ -185,7 +185,7 @@ describe('svg', () => {
       const net = new RNNTimeStep({
         inputSize: 2,
         hiddenLayers: [3],
-        outputSize: 1
+        outputSize: 1,
       });
       expect(parser.validate(toSVG(net, options))).toBe(true);
     });
@@ -196,7 +196,7 @@ describe('svg', () => {
       const net = new RNNTimeStep({
         inputSize: 2,
         hiddenLayers: [3],
-        outputSize: 1
+        outputSize: 1,
       });
       net.initialize();
       expect(parser.validate(toSVG(net.toJSON(), options))).toBe(true);
@@ -214,10 +214,10 @@ describe('svg', () => {
       const net = new FeedForward({
         inputLayer: () => input({ height: 2 }),
         hiddenLayers: [
-          inputLayer => feedForward({ height: 3 }, inputLayer),
-          inputLayer => feedForward({ height: 1 }, inputLayer),
+          (inputLayer) => feedForward({ height: 3 }, inputLayer),
+          (inputLayer) => feedForward({ height: 1 }, inputLayer),
         ],
-        outputLayer: inputLayer => target({ height: 1 }, inputLayer),
+        outputLayer: (inputLayer) => target({ height: 1 }, inputLayer),
       });
       expect(parser.validate(toSVG(net, options))).toBe(true);
     });
@@ -234,10 +234,10 @@ describe('svg', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 2 }),
         hiddenLayers: [
-          inputLayer => feedForward({ height: 3 }, inputLayer),
-          inputLayer => feedForward({ height: 1 }, inputLayer),
+          (inputLayer) => feedForward({ height: 3 }, inputLayer),
+          (inputLayer) => feedForward({ height: 1 }, inputLayer),
         ],
-        outputLayer: inputLayer => target({ height: 1 }, inputLayer),
+        outputLayer: (inputLayer) => target({ height: 1 }, inputLayer),
       });
       expect(parser.validate(toSVG(net, options))).toBe(true);
     });
@@ -251,7 +251,7 @@ describe('svg', () => {
       }).toThrow();
     });
     it('should return valid xml', () => {
-      const net = { sizes: [2,3,1] };
+      const net = { sizes: [2, 3, 1] };
       expect(parser.validate(toSVG(net, options))).toBe(true);
     });
   });

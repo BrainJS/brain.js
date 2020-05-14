@@ -10,9 +10,19 @@ function rnnCell(settings, input, recurrentInput) {
   if (recurrentInput.setDimensions) recurrentInput.setDimensions(1, height);
 
   // wxh
-  const weight = random({ name: 'weight', height, width: input.height, std: 0.08 });
+  const weight = random({
+    name: 'weight',
+    height,
+    width: input.height,
+    std: 0.08,
+  });
   // whh
-  const transition = random({ name: 'transition', height, width: height, std: 0.08 });
+  const transition = random({
+    name: 'transition',
+    height,
+    width: height,
+    std: 0.08,
+  });
   // bhh
   const bias = zeros({ name: 'bias', height });
 
@@ -25,5 +35,5 @@ function rnnCell(settings, input, recurrentInput) {
 }
 
 module.exports = {
-  rnnCell
+  rnnCell,
 };

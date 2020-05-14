@@ -140,8 +140,16 @@ class Pool extends Filter {
     this.weights = randos3D(this.width, this.height, this.depth);
     this.deltas = zeros3D(this.width, this.height, this.depth);
 
-    this.filters = randos3D(this.filterWidth, this.filterHeight, this.filterCount);
-    this.filterDeltas = zeros3D(this.filterWidth, this.filterHeight, this.filterCount);
+    this.filters = randos3D(
+      this.filterWidth,
+      this.filterHeight,
+      this.filterCount
+    );
+    this.filterDeltas = zeros3D(
+      this.filterWidth,
+      this.filterHeight,
+      this.filterCount
+    );
 
     this.learnFilters = null;
     this.learnInputs = null;
@@ -167,7 +175,11 @@ class Pool extends Filter {
     });
 
     this.compareKernel = makeKernel(compare, {
-      output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth],
+      output: [
+        this.inputLayer.width,
+        this.inputLayer.height,
+        this.inputLayer.depth,
+      ],
       constants: {
         outputWidth: this.width,
         outputHeight: this.height,
@@ -179,7 +191,9 @@ class Pool extends Filter {
   }
 
   predict() {
-    const { result: weights, switchX, switchY } = this.predictKernel(this.inputLayer.weights);
+    const { result: weights, switchX, switchY } = this.predictKernel(
+      this.inputLayer.weights
+    );
     this.switchX = switchX;
     this.switchY = switchY;
     this.weights = weights;

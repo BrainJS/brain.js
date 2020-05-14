@@ -3,10 +3,10 @@ const NeuralNetwork = require('../../src/neural-network');
 describe('test()', () => {
   describe('using binary data', () => {
     const trainingData = [
-      {input: [0, 0], output: [0]},
-      {input: [0, 1], output: [1]},
-      {input: [1, 0], output: [1]},
-      {input: [1, 1], output: [0]}
+      { input: [0, 0], output: [0] },
+      { input: [0, 1], output: [1] },
+      { input: [1, 0], output: [1] },
+      { input: [1, 1], output: [0] },
     ];
     const net = new NeuralNetwork();
     net.train(trainingData);
@@ -66,10 +66,10 @@ describe('test()', () => {
   });
   describe('using simple math float data', () => {
     const trainingData = [
-      {input: { one: 1, two: 1 }, output: { three: 1 } },
-      {input: { one: 1, three: 1 }, output: { four: 1 } },
-      {input: { two: 1, three: 1 }, output: { five: 1 } },
-      {input: { two: 1, four: 1 }, output: { six: 1 } }
+      { input: { one: 1, two: 1 }, output: { three: 1 } },
+      { input: { one: 1, three: 1 }, output: { four: 1 } },
+      { input: { two: 1, three: 1 }, output: { five: 1 } },
+      { input: { two: 1, four: 1 }, output: { six: 1 } },
     ];
     const net = new NeuralNetwork();
     net.train(trainingData);

@@ -27,7 +27,11 @@ export interface INeuralNetworkOptions {
   leakyReluAlpha?: number;
 }
 
-export type NeuralNetworkActivation = 'sigmoid' | 'relu' | 'leaky-relu' | 'tanh';
+export type NeuralNetworkActivation =
+  | 'sigmoid'
+  | 'relu'
+  | 'leaky-relu'
+  | 'tanh';
 
 export interface INeuralNetworkTrainingOptions {
   /**
@@ -83,12 +87,12 @@ export interface INeuralNetworkTrainingOptions {
    * @default Infinity
    */
   timeout?: number;
-  praxis?: null | 'adam'
+  praxis?: null | 'adam';
 }
 
-export interface INeuralNetworkTrainingCallback {
-  (state: INeuralNetworkState): void;
-}
+export type INeuralNetworkTrainingCallback = (
+  state: INeuralNetworkState
+) => void;
 
 export interface INeuralNetworkState {
   iterations: number;
@@ -100,9 +104,9 @@ export interface INeuralNetworkJSON {
   layers: object[];
   outputLookup: any;
   inputLookup: any;
-  activation: NeuralNetworkActivation,
-  trainOpts: INeuralNetworkTrainingOptions,
-  leakyReluAlpha?: number,
+  activation: NeuralNetworkActivation;
+  trainOpts: INeuralNetworkTrainingOptions;
+  leakyReluAlpha?: number;
 }
 
 export interface INeuralNetworkTrainingData {
@@ -120,7 +124,8 @@ export interface INeuralNetworkTestResult {
   total: number;
 }
 
-export interface INeuralNetworkBinaryTestResult extends INeuralNetworkTestResult {
+export interface INeuralNetworkBinaryTestResult
+  extends INeuralNetworkTestResult {
   trueNeg: number;
   truePos: number;
   falseNeg: number;
@@ -132,11 +137,30 @@ export interface INeuralNetworkBinaryTestResult extends INeuralNetworkTestResult
 
 export class NeuralNetwork {
   public constructor(options?: INeuralNetworkOptions);
-  public train(data: INeuralNetworkTrainingData[], options?: INeuralNetworkTrainingOptions): INeuralNetworkState;
-  public train<T>(data: T, options?: INeuralNetworkTrainingOptions): INeuralNetworkState;
-  public trainAsync(data: INeuralNetworkTrainingData, options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
-  public trainAsync<T>(data: T, options?: INeuralNetworkTrainingOptions): Promise<INeuralNetworkState>;
-  public test(data: INeuralNetworkTrainingData): INeuralNetworkTestResult | INeuralNetworkBinaryTestResult;
+  public train(
+    data: INeuralNetworkTrainingData[],
+    options?: INeuralNetworkTrainingOptions
+  ): INeuralNetworkState;
+
+  public train<T>(
+    data: T,
+    options?: INeuralNetworkTrainingOptions
+  ): INeuralNetworkState;
+
+  public trainAsync(
+    data: INeuralNetworkTrainingData,
+    options?: INeuralNetworkTrainingOptions
+  ): Promise<INeuralNetworkState>;
+
+  public trainAsync<T>(
+    data: T,
+    options?: INeuralNetworkTrainingOptions
+  ): Promise<INeuralNetworkState>;
+
+  public test(
+    data: INeuralNetworkTrainingData
+  ): INeuralNetworkTestResult | INeuralNetworkBinaryTestResult;
+
   public run(data: NeuralNetworkInput): NeuralNetworkInput;
   public run<T>(data: NeuralNetworkInput): T;
   public run<TInput, TOutput>(data: TInput): TOutput;
@@ -172,17 +196,25 @@ export interface ICrossValidationTestPartitionResults {
 }
 
 export class CrossValidate {
-  public constructor(Classifier: typeof NeuralNetwork, options?: INeuralNetworkOptions);
+  public constructor(
+    Classifier: typeof NeuralNetwork,
+    options?: INeuralNetworkOptions
+  );
+
   public fromJSON(json: ICrossValidateJSON): NeuralNetwork;
   public toJSON(): ICrossValidateJSON;
   public train(
     data: INeuralNetworkTrainingData[],
     trainingOptions: INeuralNetworkTrainingOptions,
-    k?: number): ICrossValidateStats;
+    k?: number
+  ): ICrossValidateStats;
+
   public train<T>(
     data: T,
     trainingOptions: INeuralNetworkTrainingOptions,
-    k?: number): ICrossValidateStats;
+    k?: number
+  ): ICrossValidateStats;
+
   public testPartition(): ICrossValidationTestPartitionResults;
   public toNeuralNetwork(): NeuralNetwork;
   public toNeuralNetwork<T>(): T;
@@ -190,14 +222,14 @@ export class CrossValidate {
 
 /* TrainStream section */
 export interface ITrainStreamOptions {
-  neuralNetwork: NeuralNetwork,
-  neuralNetworkGPU: NeuralNetworkGPU,
-  floodCallback: () => void,
-  doneTrainingCallback: (state: INeuralNetworkState) => void
+  neuralNetwork: NeuralNetwork;
+  neuralNetworkGPU: NeuralNetworkGPU;
+  floodCallback: () => void;
+  doneTrainingCallback: (state: INeuralNetworkState) => void;
 }
 
 export class TrainStream {
-  public constructor(options: ITrainStreamOptions)
+  public constructor(options: ITrainStreamOptions);
   write(data: INeuralNetworkTrainingData): void;
   write<T>(data: T): void;
   endInputs(): void;
@@ -206,8 +238,8 @@ export class TrainStream {
 /* recurrent section */
 export type RNNTrainingValue = string;
 export interface IRNNTrainingData {
-  input: RNNTrainingValue,
-  output: RNNTrainingValue
+  input: RNNTrainingValue;
+  output: RNNTrainingValue;
 }
 export interface IRNNDefaultOptions extends INeuralNetworkOptions {
   decayRate?: number;
@@ -218,9 +250,14 @@ export interface IRNNDefaultOptions extends INeuralNetworkOptions {
 }
 
 /* recurrent time step section */
-export type RNNTimeStepInput = number[] | number[][] | object | object[] | object[][];
+export type RNNTimeStepInput =
+  | number[]
+  | number[][]
+  | object
+  | object[]
+  | object[][];
 export type IRNNTimeStepTrainingDatum =
-  IRNNTimeStepTrainingNumbers
+  | IRNNTimeStepTrainingNumbers
   | IRNNTimeStepTrainingNumbers2D
   | IRNNTimeStepTrainingObject
   | IRNNTimeStepTrainingObjects
@@ -231,38 +268,45 @@ export type IRNNTimeStepTrainingDatum =
   | object[][];
 
 export interface IRNNTimeStepTrainingNumbers {
-  input: number[],
-  output: number[]
+  input: number[];
+  output: number[];
 }
 
 export interface IRNNTimeStepTrainingNumbers2D {
-  input: number[][],
-  output: number[][]
+  input: number[][];
+  output: number[][];
 }
 
 export interface IRNNTimeStepTrainingObject {
-  input: object,
-  output: object
+  input: object;
+  output: object;
 }
 
 export interface IRNNTimeStepTrainingObjects {
-  input: object[],
-  output: object[]
+  input: object[];
+  output: object[];
 }
 
 export interface IRNNTimeStepTrainingObject2D {
-  input: object[][],
-  output: object[][]
+  input: object[][];
+  output: object[][];
 }
 
 export declare namespace recurrent {
   class RNN extends NeuralNetwork {
-    constructor(options?: IRNNDefaultOptions)
+    constructor(options?: IRNNDefaultOptions);
     run(data: RNNTrainingValue): RNNTrainingValue;
     run<T>(data: RNNTrainingValue): T;
     run<TInput, TOutput>(data: TInput): TOutput;
-    train(data: IRNNTrainingData[], options: INeuralNetworkTrainingOptions): INeuralNetworkState;
-    train<T>(data: T, options: INeuralNetworkTrainingOptions): INeuralNetworkState;
+    train(
+      data: IRNNTrainingData[],
+      options: INeuralNetworkTrainingOptions
+    ): INeuralNetworkState;
+
+    train<T>(
+      data: T,
+      options: INeuralNetworkTrainingOptions
+    ): INeuralNetworkState;
   }
   class LSTM extends recurrent.RNN {}
   class GRU extends recurrent.RNN {}
@@ -276,8 +320,15 @@ export declare namespace recurrent {
     forecast<T>(input: RNNTimeStepInput, count: number): T;
     forecast<TInput, TOutput>(input: TInput, count: number): TOutput;
 
-    train(data: IRNNTimeStepTrainingDatum[], options: INeuralNetworkTrainingOptions): INeuralNetworkState;
-    train<T>(data: T, options: INeuralNetworkTrainingOptions): INeuralNetworkState;
+    train(
+      data: IRNNTimeStepTrainingDatum[],
+      options: INeuralNetworkTrainingOptions
+    ): INeuralNetworkState;
+
+    train<T>(
+      data: T,
+      options: INeuralNetworkTrainingOptions
+    ): INeuralNetworkState;
   }
   class LSTMTimeStep extends recurrent.RNNTimeStep {}
   class GRUTimeStep extends recurrent.RNNTimeStep {}
@@ -300,16 +351,14 @@ export interface IFeedForwardOptions {
   praxis?: any;
 }
 
-export class Recurrent extends FeedForward {
-
-}
+export class Recurrent extends FeedForward {}
 
 export class Layer {}
 
 export class Activation extends Layer {}
 
 export class Model extends Layer {}
-export class Input extends  Model {}
+export class Input extends Model {}
 
 export class Filter {}
 export class Target extends Filter {}
@@ -319,7 +368,7 @@ export class Relu extends Activation {}
 export class Tanh extends Activation {}
 export class LeakyRelu extends Activation {}
 
-export type layer = {
+export interface layer {
   input: (settings) => Input;
   feedForward: (settings, inputLayer) => Sigmoid;
   arthurFeedForward: (settings, inputLayer) => Sigmoid;
@@ -328,4 +377,4 @@ export type layer = {
   relu: (settings, inputLayer) => Relu;
   tanh: (settings, inputLayer) => Tanh;
   leakyRely: (Settings, inputLayer) => LeakyRelu;
-};
+}

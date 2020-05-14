@@ -42,17 +42,13 @@ class RecurrentInput extends Internal {
     Base.prototype.validate.call(this);
     if (this.width !== this.recurrentInput.width) {
       throw new Error(
-        `${this.constructor.name} layer width ${this.width} and ${
-          this.recurrentInput.constructor.name
-        } width (${this.recurrentInput.width}) are not same`
+        `${this.constructor.name} layer width ${this.width} and ${this.recurrentInput.constructor.name} width (${this.recurrentInput.width}) are not same`
       );
     }
 
     if (this.height !== this.recurrentInput.height) {
       throw new Error(
-        `${this.constructor.name} layer height ${this.height} and ${
-          this.recurrentInput.constructor.name
-        } width (${this.recurrentInput.height}) are not same`
+        `${this.constructor.name} layer height ${this.height} and ${this.recurrentInput.constructor.name} width (${this.recurrentInput.height}) are not same`
       );
     }
   }
@@ -89,5 +85,5 @@ class RecurrentInput extends Internal {
 }
 
 module.exports = {
-  RecurrentInput
+  RecurrentInput,
 };

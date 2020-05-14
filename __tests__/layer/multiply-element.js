@@ -1,16 +1,23 @@
 const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
 const { Input } = require('../../src/layer/input');
-const { MultiplyElement, multiplyElement, predict, compare } = require('../../src/layer/multiply-element');
+const {
+  MultiplyElement,
+  multiplyElement,
+  predict,
+  compare,
+} = require('../../src/layer/multiply-element');
 const { setup, teardown } = require('../../src/utilities/kernel');
 const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('MultiplyElement Layer', () => {
   beforeEach(() => {
-    setup(new GPU({
-      mode: 'cpu',
-      onIstanbulCoverageVariable: injectIstanbulCoverage
-    }));
+    setup(
+      new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage,
+      })
+    );
   });
   afterEach(() => {
     teardown();
@@ -51,13 +58,13 @@ describe('MultiplyElement Layer', () => {
       expect(layer.weights).toEqual([
         new Float32Array([0, 0, 0]),
         new Float32Array([0, 0, 0]),
-      ])
+      ]);
     });
     test('.deltas are set to same as inputLayer as zeros', () => {
       expect(layer.deltas).toEqual([
         new Float32Array([0, 0, 0]),
         new Float32Array([0, 0, 0]),
-      ])
+      ]);
     });
   });
 
@@ -69,18 +76,24 @@ describe('MultiplyElement Layer', () => {
       mockInputLayer1 = {
         width: 3,
         height: 2,
-        weights: [[1, 2, 3], [4, 5, 6]],
+        weights: [
+          [1, 2, 3],
+          [4, 5, 6],
+        ],
       };
       mockInputLayer2 = {
         width: 3,
         height: 2,
-        weights: [[7, 8, 9], [10, 11, 12]]
+        weights: [
+          [7, 8, 9],
+          [10, 11, 12],
+        ],
       };
       layer = new MultiplyElement(mockInputLayer1, mockInputLayer2);
       layer.setupKernels();
     });
     it('releases .weights', () => {
-      const deleteMock = jest.fn()
+      const deleteMock = jest.fn();
       layer.weights.delete = deleteMock;
       layer.predict();
       expect(deleteMock).toBeCalled();
@@ -89,7 +102,7 @@ describe('MultiplyElement Layer', () => {
       layer.predict();
       expect(layer.weights).toEqual([
         new Float32Array([7, 16, 27]),
-        new Float32Array([40, 55, 72])
+        new Float32Array([40, 55, 72]),
       ]);
     });
     it('clears deltas', () => {
@@ -108,13 +121,19 @@ describe('MultiplyElement Layer', () => {
       mockInputLayer1 = {
         width: 3,
         height: 2,
-        weights: [[1, 2, 3], [4, 5, 6]],
+        weights: [
+          [1, 2, 3],
+          [4, 5, 6],
+        ],
         deltas: null,
       };
       mockInputLayer2 = {
         width: 3,
         height: 2,
-        weights: [[7, 8, 9], [10, 11, 12]],
+        weights: [
+          [7, 8, 9],
+          [10, 11, 12],
+        ],
         deltas: null,
       };
       layer = new MultiplyElement(mockInputLayer1, mockInputLayer2);
@@ -128,11 +147,11 @@ describe('MultiplyElement Layer', () => {
       layer.compare();
       expect(mockInputLayer1.deltas).toEqual([
         new Float32Array([91, 112, 135]),
-        new Float32Array([160, 187, 216])
+        new Float32Array([160, 187, 216]),
       ]);
       expect(mockInputLayer2.deltas).toEqual([
         new Float32Array([13, 28, 45]),
-        new Float32Array([64, 85, 108])
+        new Float32Array([64, 85, 108]),
       ]);
     });
     test('releases inputLayer textures', () => {
@@ -148,15 +167,21 @@ describe('MultiplyElement Layer', () => {
 
   describe('predict (forward propagation)', () => {
     test('can multiply a simple matrix', () => {
-      const inputs1 = [[1, 2, 3], [4, 5, 6]];
-      const inputs2 = [[7, 8, 9], [10, 11, 12]];
+      const inputs1 = [
+        [1, 2, 3],
+        [4, 5, 6],
+      ];
+      const inputs2 = [
+        [7, 8, 9],
+        [10, 11, 12],
+      ];
       const results = gpuMock(predict, {
-        output: [3, 2]
+        output: [3, 2],
       })(inputs1, inputs2);
 
       expect(results).toEqual([
         new Float32Array([7, 16, 27]),
-        new Float32Array([40, 55, 72])
+        new Float32Array([40, 55, 72]),
       ]);
     });
   });
@@ -164,15 +189,21 @@ describe('MultiplyElement Layer', () => {
   // yea it is basically a clone of `predict`, but for naming conventions, we'll keep them separated
   describe('compare (back propagation)', () => {
     test('can multiply a simple matrix', () => {
-      const weights = [[1, 2, 3], [4, 5, 6]];
-      const deltas = [[7, 8, 9], [10, 11, 12]];
+      const weights = [
+        [1, 2, 3],
+        [4, 5, 6],
+      ];
+      const deltas = [
+        [7, 8, 9],
+        [10, 11, 12],
+      ];
       const results = gpuMock(compare, {
-        output: [3, 2]
+        output: [3, 2],
       })(weights, deltas);
 
       expect(results).toEqual([
         new Float32Array([7, 16, 27]),
-        new Float32Array([40, 55, 72])
+        new Float32Array([40, 55, 72]),
       ]);
     });
   });

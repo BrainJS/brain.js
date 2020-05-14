@@ -7,11 +7,11 @@ module.exports = function layerFromJSON(jsonLayer) {
   // eslint-disable-next-line
   const realLayer = Reflect.construct(Layer, arguments)
 
-  Object.keys(jsonLayer).forEach(p => {
+  Object.keys(jsonLayer).forEach((p) => {
     if (p !== 'type') {
       realLayer[p] = jsonLayer[p];
     }
   });
 
   return realLayer;
-}
+};

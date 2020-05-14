@@ -61,5 +61,5 @@ function gru(settings, recurrentInput, input) {
 }
 
 module.exports = {
-  gru
+  gru,
 };

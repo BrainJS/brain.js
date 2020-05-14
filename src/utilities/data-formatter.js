@@ -73,10 +73,10 @@ class DataFormatter {
       const character = value[i];
       let index = indexTable[character];
       if (index === undefined) {
-        if (indexTable['unrecognized']) {
-          index = indexTable['unrecognized'];
+        if (indexTable.unrecognized) {
+          index = indexTable.unrecognized;
         } else {
-          throw new Error(`unrecognized character "${ character }"`);
+          throw new Error(`unrecognized character "${character}"`);
         }
       }
       if (index < maxThreshold) continue;
@@ -118,14 +118,14 @@ class DataFormatter {
     const { indexTable, characterTable } = this;
 
     for (let i = 0, max = indices.length; i < max; i++) {
-      let index = indices[i];
+      const index = indices[i];
       if (index < maxThreshold) continue;
       let character = characterTable[index];
       if (character === undefined) {
-        if (indexTable['unrecognized']) {
-          character = characterTable[indexTable['unrecognized']];
+        if (indexTable.unrecognized) {
+          character = characterTable[indexTable.unrecognized];
         } else {
-          throw new Error(`unrecognized index "${ index }"`);
+          throw new Error(`unrecognized index "${index}"`);
         }
       } else if (character !== null) {
         result.push(character);
@@ -193,7 +193,7 @@ class DataFormatter {
   }
 
   addSpecial(special, character = null) {
-    let specialIndex = this.indexTable[special] = this.characters.length;
+    const specialIndex = (this.indexTable[special] = this.characters.length);
     this.characterTable[specialIndex] = character;
     this.specialIndexes.push(this.characters.length);
     this.characters.push(special);
@@ -203,7 +203,7 @@ class DataFormatter {
     let sum = 0;
     for (let i = 0; i < this.specialIndexes; i++) {
       let index = -1;
-      while (index = output.indexOf(this.specialIndexes[i], index) > -1) {
+      while ((index = output.indexOf(this.specialIndexes[i], index) > -1)) {
         sum++;
       }
     }
@@ -212,13 +212,13 @@ class DataFormatter {
 
   toFunctionString() {
     return `
-var characterTable = ${ JSON.stringify(this.characterTable) };
-var indexTable = ${ JSON.stringify(this.indexTable) };
-var characters = ${ JSON.stringify(this.characters) };
+var characterTable = ${JSON.stringify(this.characterTable)};
+var indexTable = ${JSON.stringify(this.indexTable)};
+var characters = ${JSON.stringify(this.characters)};
 var dataFormatter = {
-  ${ this.toIndexes.toString() },
-  ${ this.toIndexesInputOutput.toString() },
-  ${ this.toCharacters.toString() }
+  ${this.toIndexes.toString()},
+  ${this.toIndexesInputOutput.toString()},
+  ${this.toCharacters.toString()}
 };`;
   }
 }
@@ -230,18 +230,19 @@ var dataFormatter = {
  */
 function defaultRNNFormatter(data) {
   if (
-    typeof data[0] !== 'string'
-    && !Array.isArray(data[0])
-    && (
-      !data[0].hasOwnProperty('input')
-      || !data[0].hasOwnProperty('output')
-    )
+    typeof data[0] !== 'string' &&
+    !Array.isArray(data[0]) &&
+    (!data[0].hasOwnProperty('input') || !data[0].hasOwnProperty('output'))
   ) {
     return data;
   }
-  let values = [];
+  const values = [];
   const result = [];
-  if (typeof data[0] === 'string' || typeof data[0] === 'number' || Array.isArray(data[0])) {
+  if (
+    typeof data[0] === 'string' ||
+    typeof data[0] === 'number' ||
+    Array.isArray(data[0])
+  ) {
     if (!this.dataFormatter) {
       for (let i = 0; i < data.length; i++) {
         values.push(validateAndCast(data[i]));
@@ -256,13 +257,21 @@ function defaultRNNFormatter(data) {
     if (!this.dataFormatter) {
       for (let i = 0; i < data.length; i++) {
         const datum = data[i];
-        values.push(validateAndCast(datum.input), validateAndCast(datum.output));
+        values.push(
+          validateAndCast(datum.input),
+          validateAndCast(datum.output)
+        );
       }
       this.dataFormatter = DataFormatter.fromArrayInputOutput(values);
       this.dataFormatter.addUnrecognized();
     }
     for (let i = 0, max = data.length; i < max; i++) {
-      result.push(this.formatDataIn(validateAndCast(data[i].input), validateAndCast(data[i].output)));
+      result.push(
+        this.formatDataIn(
+          validateAndCast(data[i].input),
+          validateAndCast(data[i].output)
+        )
+      );
     }
   } else {
     throw new Error('unrecognized data');
@@ -274,9 +283,11 @@ function defaultRNNFormatter(data) {
     if (typeof value === 'number') return value.toString();
     if (typeof value[0] === 'string') return value;
     if (typeof value[0] === 'number') {
-      return value.map(value => value.toString());
+      return value.map((value) => value.toString());
     }
-    throw new Error('unrecognized value, expected string[], string, number[], or number');
+    throw new Error(
+      'unrecognized value, expected string[], string, number[], or number'
+    );
   }
 }
 

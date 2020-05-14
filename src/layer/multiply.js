@@ -50,9 +50,7 @@ class Multiply extends Operator {
     super.validate();
     if (this.inputLayer1.width !== this.inputLayer2.height) {
       throw new Error(
-        `Layer width mismatch of ${this.inputLayer1.width} and ${
-          this.inputLayer2.height
-        }`
+        `Layer width mismatch of ${this.inputLayer1.width} and ${this.inputLayer2.height}`
       );
     }
   }

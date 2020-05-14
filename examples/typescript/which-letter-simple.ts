@@ -3,30 +3,30 @@ import * as brain from '../../src';
 
 const a = character(
   '.#####.' +
-  '#.....#' +
-  '#.....#' +
-  '#######' +
-  '#.....#' +
-  '#.....#' +
-  '#.....#'
+    '#.....#' +
+    '#.....#' +
+    '#######' +
+    '#.....#' +
+    '#.....#' +
+    '#.....#'
 );
 const b = character(
   '######.' +
-  '#.....#' +
-  '#.....#' +
-  '######.' +
-  '#.....#' +
-  '#.....#' +
-  '######.'
+    '#.....#' +
+    '#.....#' +
+    '######.' +
+    '#.....#' +
+    '#.....#' +
+    '######.'
 );
 const c = character(
   '#######' +
-  '#......' +
-  '#......' +
-  '#......' +
-  '#......' +
-  '#......' +
-  '#######'
+    '#......' +
+    '#......' +
+    '#......' +
+    '#......' +
+    '#......' +
+    '#######'
 );
 
 /**
@@ -36,26 +36,27 @@ const net = new brain.NeuralNetwork();
 net.train([
   { input: a, output: { a: 1 } },
   { input: b, output: { b: 1 } },
-  { input: c, output: { c: 1 } }
+  { input: c, output: { c: 1 } },
 ]);
 
 /**
  * Predict the letter A, even with a pixel off.
  */
-const result = brain.likely(character(
-  '.#####.' +
-  '#.....#' +
-  '#.....#' +
-  '###.###' +
-  '#.....#' +
-  '#.....#' +
-  '#.....#'
-), net);
+const result = brain.likely(
+  character(
+    '.#####.' +
+      '#.....#' +
+      '#.....#' +
+      '###.###' +
+      '#.....#' +
+      '#.....#' +
+      '#.....#'
+  ),
+  net
+);
 
 assert(result === 'a');
 console.log(result); // 'a'
-
-
 
 /**
  * Turn the # into 1s and . into 0s. for whole string
@@ -63,10 +64,7 @@ console.log(result); // 'a'
  * @returns {Array}
  */
 function character(string: string): number[] {
-  return string
-    .trim()
-    .split('')
-    .map(integer);
+  return string.trim().split('').map(integer);
 }
 
 /**
@@ -75,6 +73,6 @@ function character(string: string): number[] {
  * @returns {number}
  */
 function integer(character: string): number {
-  if ('#' === character) return 1;
+  if (character === '#') return 1;
   return 0;
 }

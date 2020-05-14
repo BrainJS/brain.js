@@ -17,5 +17,5 @@ function ones(settings) {
 
 module.exports = {
   Ones,
-  ones
+  ones,
 };

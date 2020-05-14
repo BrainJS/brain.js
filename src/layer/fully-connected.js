@@ -35,7 +35,7 @@ function predict3D(inputs, filters, biases) {
 
 function compareInputDeltas(inputDeltas, deltas, filters) {
   let sum = 0;
-  const filterX = this.thread.x + (this.thread.y * this.output.x);
+  const filterX = this.thread.x + this.thread.y * this.output.x;
   for (let filterY = 0; filterY < this.constants.filterCount; filterY++) {
     sum += filters[filterY][filterX] * deltas[0][filterY];
   }
@@ -44,7 +44,7 @@ function compareInputDeltas(inputDeltas, deltas, filters) {
 
 function compareInputDeltas3D(inputDeltas, deltas, filters) {
   let sum = 0;
-  const filterX = this.thread.x + (this.thread.y * this.output.x);
+  const filterX = this.thread.x + this.thread.y * this.output.x;
   for (let filterY = 0; filterY < this.constants.filterCount; filterY++) {
     sum += filters[filterY][filterX] * deltas[0][filterY];
   }
@@ -56,14 +56,29 @@ function compareBiases(biases, deltas) {
 }
 
 function compareFilterDeltas(filterDeltas, inputWeights, deltas) {
-  return filterDeltas[this.thread.y][this.thread.x] + (inputWeights[this.thread.y][this.thread.x] * deltas[this.constants.deltaY][this.constants.deltaX]);
+  return (
+    filterDeltas[this.thread.y][this.thread.x] +
+    inputWeights[this.thread.y][this.thread.x] *
+      deltas[this.constants.deltaY][this.constants.deltaX]
+  );
 }
 
 function compareFilterDeltas3D(filterDeltas, inputWeights, deltas) {
-  const inputZ = Math.floor(this.thread.x / (this.constants.inputWidth * this.constants.inputHeight));
-  const inputY = Math.floor((this.thread.x - inputZ * this.constants.inputWidth * this.constants.inputHeight) / this.constants.inputWidth);
-  const inputX = this.thread.x - this.constants.inputWidth * (inputY + this.constants.inputHeight * inputZ);
-  return filterDeltas[this.thread.y][this.thread.x] + (inputWeights[inputZ][inputY][inputX] * deltas[0][this.thread.y]);
+  const inputZ = Math.floor(
+    this.thread.x / (this.constants.inputWidth * this.constants.inputHeight)
+  );
+  const inputY = Math.floor(
+    (this.thread.x -
+      inputZ * this.constants.inputWidth * this.constants.inputHeight) /
+      this.constants.inputWidth
+  );
+  const inputX =
+    this.thread.x -
+    this.constants.inputWidth * (inputY + this.constants.inputHeight * inputZ);
+  return (
+    filterDeltas[this.thread.y][this.thread.x] +
+    inputWeights[inputZ][inputY][inputX] * deltas[0][this.thread.y]
+  );
 }
 
 class FullyConnected extends Filter {
@@ -81,7 +96,8 @@ class FullyConnected extends Filter {
     this.compareInputDeltasKernel = null;
     this.compareBiasesKernel = null;
 
-    const connectionCount = inputLayer.width * inputLayer.height * inputLayer.depth;
+    const connectionCount =
+      inputLayer.width * inputLayer.height * inputLayer.depth;
 
     this.biases = values(this.height, this.bias);
     this.biasDeltas = zeros(this.height);
@@ -105,7 +121,8 @@ class FullyConnected extends Filter {
 
   setupKernels() {
     const { inputLayer } = this;
-    const connectionCount = inputLayer.width * inputLayer.height * inputLayer.depth;
+    const connectionCount =
+      inputLayer.width * inputLayer.height * inputLayer.depth;
     if (inputLayer.depth > 0) {
       this.predictKernel = makeKernel(predict3D, {
         output: [this.width, this.height],
@@ -197,4 +214,14 @@ function fullyConnected(settings, inputLayer) {
   return new FullyConnected(settings, inputLayer);
 }
 
-module.exports = { FullyConnected, fullyConnected, predict, predict3D, compareInputDeltas, compareInputDeltas3D, compareBiases, compareFilterDeltas, compareFilterDeltas3D };
+module.exports = {
+  FullyConnected,
+  fullyConnected,
+  predict,
+  predict3D,
+  compareInputDeltas,
+  compareInputDeltas3D,
+  compareBiases,
+  compareFilterDeltas,
+  compareFilterDeltas3D,
+};

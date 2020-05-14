@@ -2,13 +2,16 @@ const { makeKernel } = require('../utilities/kernel');
 const { Base } = require('./base');
 
 function update(weights, deltas) {
-  return weights[this.thread.y][this.thread.x] + this.constants.learningRate * deltas[this.thread.y][this.thread.x];
+  return (
+    weights[this.thread.y][this.thread.x] +
+    this.constants.learningRate * deltas[this.thread.y][this.thread.x]
+  );
 }
 
 class ArthurDeviationBiases extends Base {
   static get defaults() {
     return {
-      learningRate: 0.3
+      learningRate: 0.3,
     };
   }
 
@@ -26,8 +29,8 @@ class ArthurDeviationBiases extends Base {
     this.kernel = makeKernel(update, {
       output: [this.width, this.height],
       constants: {
-        learningRate: this.learningRate
-      }
+        learningRate: this.learningRate,
+      },
     });
   }
 }

@@ -71,7 +71,9 @@ class Recurrent extends FeedForward {
       let layer = null;
       switch (Object.getPrototypeOf(previousLayer.constructor).name) {
         case 'Activation': {
-          layer = new previousLayer.constructor(findInputLayer(previousLayer.inputLayer));
+          layer = new previousLayer.constructor(
+            findInputLayer(previousLayer.inputLayer)
+          );
           break;
         }
         case 'EntryPoint': {
@@ -86,7 +88,10 @@ class Recurrent extends FeedForward {
           break;
         }
         case 'Internal': {
-          const previousHiddenLayerOutput = previousLayers[this._hiddenLayerOutputIndices[usedHiddenLayerOutputIndex++]];
+          const previousHiddenLayerOutput =
+            previousLayers[
+              this._hiddenLayerOutputIndices[usedHiddenLayerOutputIndex++]
+            ];
           switch (previousLayer.constructor.name) {
             case 'RecurrentConnection':
               throw new Error('unfinished');
@@ -106,7 +111,9 @@ class Recurrent extends FeedForward {
           break;
         }
         case 'Modifier': {
-          layer = new previousLayer.constructor(findInputLayer(previousLayer.inputLayer));
+          layer = new previousLayer.constructor(
+            findInputLayer(previousLayer.inputLayer)
+          );
           break;
         }
         case 'Operator': {
@@ -136,7 +143,13 @@ class Recurrent extends FeedForward {
     }
 
     function layerSettings(layer) {
-      return { ...layer, weights: null, deltas: null, errors: null, praxis: null };
+      return {
+        ...layer,
+        weights: null,
+        deltas: null,
+        errors: null,
+        praxis: null,
+      };
     }
 
     return layers;
@@ -146,7 +159,11 @@ class Recurrent extends FeedForward {
     const hiddenLayers = [];
     for (let i = 0; i < this.hiddenLayers.length; i++) {
       const recurrentInput = new RecurrentZeros();
-      const hiddenLayer = this.hiddenLayers[i](previousLayer, recurrentInput, i);
+      const hiddenLayer = this.hiddenLayers[i](
+        previousLayer,
+        recurrentInput,
+        i
+      );
       previousLayer = hiddenLayer;
       hiddenLayers.push(hiddenLayer);
     }
@@ -157,10 +174,14 @@ class Recurrent extends FeedForward {
     this.layers = [];
     this._outputConnection = new RecurrentConnection();
     const { inputLayer, hiddenLayers, outputLayer } = this._connectLayers();
-    const layerSet = flattenLayers([inputLayer, ... hiddenLayers, outputLayer]);
-    this._hiddenLayerOutputIndices = hiddenLayers.map(l => layerSet.indexOf(l));
+    const layerSet = flattenLayers([inputLayer, ...hiddenLayers, outputLayer]);
+    this._hiddenLayerOutputIndices = hiddenLayers.map((l) =>
+      layerSet.indexOf(l)
+    );
     this._layerSets = [layerSet];
-    this._model = layerSet.filter(l => l instanceof Model || l instanceof InternalModel);
+    this._model = layerSet.filter(
+      (l) => l instanceof Model || l instanceof InternalModel
+    );
     this.initializeLayers(layerSet);
   }
 
@@ -278,6 +299,7 @@ class Recurrent extends FeedForward {
       this._trainPattern(data[i], false);
     }
   }
+
   /**
    *
    * @param {number[]} input
@@ -308,5 +330,5 @@ class Recurrent extends FeedForward {
 }
 
 module.exports = {
-  Recurrent
+  Recurrent,
 };
