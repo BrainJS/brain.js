@@ -11,15 +11,11 @@ describe('TrainStream', () => {
       const trainStream = new TrainStream(
         Object.assign({}, opts, {
           neuralNetwork: net,
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
           floodCallback: flood,
           doneTrainingCallback: resolve,
         })
       );
-
-      /**
-       * kick off the stream
-       */
-      flood();
 
       /**
        * Every time you finish an epoch of flood call `trainStream.endInputs()`
@@ -30,6 +26,10 @@ describe('TrainStream', () => {
         }
         trainStream.endInputs();
       }
+      /**
+       * kick off the stream
+       */
+      flood();
     });
   }
 

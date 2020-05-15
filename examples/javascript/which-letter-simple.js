@@ -1,6 +1,25 @@
 const assert = require('assert');
 const brain = require('../../src');
 
+/**
+ * Return 0 or 1 for '#'
+ * @param character
+ * @returns {number}
+ */
+function integer(character) {
+  if (character === '#') return 1;
+  return 0;
+}
+
+/**
+ * Turn the # into 1s and . into 0s. for whole string
+ * @param string
+ * @returns {Array}
+ */
+function character(string) {
+  return string.trim().split('').map(integer);
+}
+
 const a = character(
   '.#####.' +
     '#.....#' +
@@ -63,22 +82,3 @@ const result = brain.likely(
 assert(result === 'a');
 
 console.log(result); // 'a'
-
-/**
- * Turn the # into 1s and . into 0s. for whole string
- * @param string
- * @returns {Array}
- */
-function character(string) {
-  return string.trim().split('').map(integer);
-}
-
-/**
- * Return 0 or 1 for '#'
- * @param character
- * @returns {number}
- */
-function integer(character) {
-  if (character === '#') return 1;
-  return 0;
-}

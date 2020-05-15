@@ -1,4 +1,4 @@
-import * as assert from 'assert';
+import assert from 'assert';
 import * as brain from '../../src';
 
 const net = new brain.recurrent.LSTMTimeStep({
@@ -35,6 +35,7 @@ assert(
   Math.round(closeToFiveAndOne[1]) === 1,
   `${closeToFiveAndOne[1]} does not round to 1`
 );
+
 console.log(closeToFiveAndOne);
 
 // now we're cookin' with gas!
@@ -53,4 +54,5 @@ assert(
   Math.round(forecast[2][1]) === 1,
   `${forecast[2][1]} does not round to 1`
 );
+
 console.log('next 3 predictions', forecast);

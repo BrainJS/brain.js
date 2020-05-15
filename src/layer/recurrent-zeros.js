@@ -39,7 +39,7 @@ class RecurrentZeros extends Internal {
       nextLayer,
       learningRate
     );
-    this.deltas = deltas;
+    // this.deltas = deltas;
     release(oldWeights);
     clear(this.deltas);
   }

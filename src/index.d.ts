@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-extraneous-class */
 /* NeuralNetwork section */
 export interface INeuralNetworkOptions {
   /**
@@ -368,13 +369,13 @@ export class Relu extends Activation {}
 export class Tanh extends Activation {}
 export class LeakyRelu extends Activation {}
 
-export interface layer {
-  input: (settings) => Input;
-  feedForward: (settings, inputLayer) => Sigmoid;
-  arthurFeedForward: (settings, inputLayer) => Sigmoid;
-  target: (settings, inputLayer) => Target;
-  sigmoid: (settings, inputLayer) => Sigmoid;
-  relu: (settings, inputLayer) => Relu;
-  tanh: (settings, inputLayer) => Tanh;
-  leakyRely: (Settings, inputLayer) => LeakyRelu;
+export interface Layer {
+  input: (settings: any) => Input;
+  feedForward: (settings: any, inputLayer: any) => Sigmoid;
+  arthurFeedForward: (settings: any, inputLayer: any) => Sigmoid;
+  target: (settings: any, inputLayer: any) => Target;
+  sigmoid: (settings: any, inputLayer: any) => Sigmoid;
+  relu: (settings: any, inputLayer: any) => Relu;
+  tanh: (settings: any, inputLayer: any) => Tanh;
+  leakyRely: (Settings: any, inputLayer: any) => LeakyRelu;
 }

@@ -1,7 +1,7 @@
 const { Internal } = require('./types');
 const { Base } = require('./base');
 const { release } = require('../utilities/kernel');
-const zeros2D = require('../utilities/zeros-2d');
+// const zeros2D = require('../utilities/zeros-2d');
 
 class RecurrentInput extends Internal {
   constructor(recurrentInput) {
@@ -55,8 +55,6 @@ class RecurrentInput extends Internal {
 
   setDimensions(width, height) {
     throw new Error('should just listen');
-    this.width = width;
-    this.height = height;
   }
 
   predict() {

@@ -13,6 +13,8 @@ const result = lstm.train(trainingData, {
   log: (details) => console.log(details),
   errorThresh: 0.011,
 });
+console.log('Training result: ', result);
+
 const run1 = lstm.run('Jane');
 const run2 = lstm.run('Doug');
 const run3 = lstm.run('Spot');

@@ -4,3 +4,5 @@ test/e2e/*.js
 **.min.js
 dist/
 __coverage__/
+rollup.config.js
+rollup.config.browser.js

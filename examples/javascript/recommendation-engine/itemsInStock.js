@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 const color_black = 1;
 const color_blue = 2;
 const color_darkblue = 3;

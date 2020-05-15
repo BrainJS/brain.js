@@ -1,8 +1,10 @@
+import assert from 'assert';
 const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
 const { Pool, predict, compare, compare3D } = require('../../src/layer/pool');
 const { setup, teardown } = require('../../src/utilities/kernel');
 const { injectIstanbulCoverage } = require('../test-utils');
+
 describe('Pool Layer', () => {
   beforeEach(() => {
     setup(

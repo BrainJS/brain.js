@@ -32,7 +32,7 @@ function drawInput({
               height="${2 * radius}"
               stroke="black"
               stroke-width="1"
-              fill="${inputs.color}" 
+              fill="${inputs.color}"
               class="${inputs.className}" />
             <line
               x1="${pixelX / 4}"
@@ -142,6 +142,32 @@ function neuralNetworkToSVG(options) {
   return svg;
 }
 
+function drawRecurrentConnections({
+  pixelX,
+  pixelY,
+  row,
+  column,
+  radius,
+  recurrentLine,
+}) {
+  const moveX = pixelX / 2 + column * pixelX + radius + 1;
+  const moveY = pixelY / 2 + row * pixelY;
+  const x = moveX - radius * 2 - 2;
+  const y = moveY;
+  const x1 = x + 100;
+  const y1 = y + 50;
+  const x2 = moveX - 100;
+  const y2 = moveY + 50;
+  return `<path
+              d="M ${moveX} ${moveY} C ${x1} ${y1}, ${x2} ${y2}, ${x} ${y}"
+              stroke="${recurrentLine.color}"
+              stroke-width="${recurrentLine.width}"
+              fill="transparent"
+              stroke-linecap="round"
+              marker-end="url(#arrow)"
+              class="${recurrentLine.className}" />`;
+}
+
 function rnnToSVG(options) {
   const { width, height, recurrentLine, sizes, radius } = options;
   const pixelX = width / sizes.length;
@@ -166,32 +192,6 @@ function rnnToSVG(options) {
     }
   }
   return svg;
-
-  function drawRecurrentConnections({
-    pixelX,
-    pixelY,
-    row,
-    column,
-    radius,
-    recurrentLine,
-  }) {
-    const moveX = pixelX / 2 + column * pixelX + radius + 1;
-    const moveY = pixelY / 2 + row * pixelY;
-    const x = moveX - radius * 2 - 2;
-    const y = moveY;
-    const x1 = x + 100;
-    const y1 = y + 50;
-    const x2 = moveX - 100;
-    const y2 = moveY + 50;
-    return `<path
-              d="M ${moveX} ${moveY} C ${x1} ${y1}, ${x2} ${y2}, ${x} ${y}"
-              stroke="${recurrentLine.color}"
-              stroke-width="${recurrentLine.width}"
-              fill="transparent"
-              stroke-linecap="round"
-              marker-end="url(#arrow)"
-              class="${recurrentLine.className}" />`;
-  }
 }
 
 function getFeedForwardLayers(network) {

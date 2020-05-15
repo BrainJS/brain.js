@@ -1,4 +1,4 @@
-import * as assert from 'assert';
+import assert from 'assert';
 import * as brain from '../../src';
 
 const net = new brain.NeuralNetwork();
@@ -9,6 +9,7 @@ const xor = [
   { input: [1, 1], output: [0] },
 ] as brain.INeuralNetworkTrainingData[];
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const trainingStream = new brain.TrainStream({
   neuralNetwork: net,
   /**

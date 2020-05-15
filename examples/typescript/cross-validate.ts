@@ -1,4 +1,4 @@
-import * as assert from 'assert';
+import assert from 'assert';
 import * as brain from '../../src';
 
 const trainingData = [
@@ -15,10 +15,12 @@ const trainingData = [
   { input: [1, 0], output: [1] },
 ] as brain.INeuralNetworkTrainingData[];
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const netOptions = {
   hiddenLayers: [3],
 } as brain.INeuralNetworkOptions;
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const trainingOptions = {
   iterations: 20000,
   log: (details) => console.log(details),

@@ -127,12 +127,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
     this.buildGetMSE();
   }
 
-  setActivation() {
-    return;
-    throw new Error(
-      `${this.constructor.name}-setActivation is not yet implemented`
-    );
-  }
+  setActivation() {}
 
   /**
    *

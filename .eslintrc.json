@@ -1,8 +1,6 @@
 {
   "env": {
-    "browser": true,
-    "es6": true,
-    "node": true
+    "es6": true
   },
   "extends": [
     "eslint:recommended",
@@ -26,6 +24,7 @@
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-var-requires": "off",
     "@typescript-eslint/semi": "off",
+    "@typescript-eslint/space-before-function-paren": "off",
     "arrow-parens": "off",
     "class-methods-use-this": "off",
     "max-classes-per-file": "off",
@@ -38,6 +37,7 @@
     "no-restricted-globals": "off",
     "no-underscore-dangle": "off",
     "prettier/prettier": "error",
-    "semi": "off"
+    "semi": "off",
+    "standard/no-callback-literal": "off"
   }
 }

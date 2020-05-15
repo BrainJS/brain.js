@@ -32,7 +32,7 @@ describe('train() options', () => {
       iterations: iters,
       callbackPeriod: period,
       callback: (res) => {
-        expect(res.iterations % period == 0).toBeTruthy();
+        expect(res.iterations % period === 0).toBeTruthy();
         calls++;
       },
     });

@@ -4,12 +4,12 @@
     "allowSyntheticDefaultImports": true,
     "checkJs": false,
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "lib": ["es6"],
+    "module": "CommonJS",
     "noEmit": true,
     "noEmitOnError": true,
-    "strict": true,
-    "target": "ESNext"
+    "strict": true
   },
-  "exclude": ["node_modules", "dist", "**/*.json", "**/*.config.js"],
-  "include": ["src", "__tests__"]
+  "exclude": ["node_modules", "dist", "__tests__", "**/*.json", "examples"],
+  "include": ["src"]
 }

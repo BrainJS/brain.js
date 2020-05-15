@@ -5,6 +5,13 @@ const { setup, teardown } = require('../../src/utilities/kernel');
 const { Filter } = require('../../src/layer/types');
 const { injectIstanbulCoverage } = require('../test-utils');
 
+function copy2D(matrix) {
+  if (matrix.clone) {
+    return matrix.clone();
+  }
+  return matrix.map((row) => Float32Array.from(row));
+}
+
 describe('Recurrent Class: Unit', () => {
   beforeEach(() => {
     setup(
@@ -261,10 +268,3 @@ describe('Recurrent Class: Unit', () => {
     });
   });
 });
-
-function copy2D(matrix) {
-  if (matrix.clone) {
-    return matrix.clone();
-  }
-  return matrix.map((row) => Float32Array.from(row));
-}

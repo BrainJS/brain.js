@@ -223,6 +223,18 @@ var dataFormatter = {
   }
 }
 
+function validateAndCast(value) {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return value.toString();
+  if (typeof value[0] === 'string') return value;
+  if (typeof value[0] === 'number') {
+    return value.map((value) => value.toString());
+  }
+  throw new Error(
+    'unrecognized value, expected string[], string, number[], or number'
+  );
+}
+
 /**
  *
  * @param {*[]} data
@@ -277,18 +289,6 @@ function defaultRNNFormatter(data) {
     throw new Error('unrecognized data');
   }
   return result;
-
-  function validateAndCast(value) {
-    if (typeof value === 'string') return value;
-    if (typeof value === 'number') return value.toString();
-    if (typeof value[0] === 'string') return value;
-    if (typeof value[0] === 'number') {
-      return value.map((value) => value.toString());
-    }
-    throw new Error(
-      'unrecognized value, expected string[], string, number[], or number'
-    );
-  }
 }
 
 module.exports = { DataFormatter, defaultRNNFormatter };

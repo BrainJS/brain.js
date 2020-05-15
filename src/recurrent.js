@@ -2,7 +2,7 @@ const { RecurrentConnection } = require('./layer/recurrent-connection');
 const { RecurrentInput } = require('./layer/recurrent-input');
 const { RecurrentZeros } = require('./layer/recurrent-zeros');
 const { Model, InternalModel } = require('./layer/types');
-const { Target } = require('./layer/target');
+// const { Target } = require('./layer/target');
 const flattenLayers = require('./utilities/flatten-layers');
 const { FeedForward } = require('./feed-forward');
 const { release, clone } = require('./utilities/kernel');
@@ -66,6 +66,23 @@ class Recurrent extends FeedForward {
     const layers = [];
     const previousLayers = this._layerSets[this._layerSets.length - 1];
     let usedHiddenLayerOutputIndex = 0;
+
+    function findInputLayer(inputLayer) {
+      const index = previousLayers.indexOf(inputLayer);
+      if (index < 0) throw new Error('unable to find layer');
+      return layers[index];
+    }
+
+    function layerSettings(layer) {
+      return {
+        ...layer,
+        weights: null,
+        deltas: null,
+        errors: null,
+        praxis: null,
+      };
+    }
+
     for (let i = 0; i < previousLayers.length; i++) {
       const previousLayer = previousLayers[i];
       let layer = null;
@@ -134,22 +151,6 @@ class Recurrent extends FeedForward {
           );
       }
       layers.push(layer);
-    }
-
-    function findInputLayer(inputLayer) {
-      const index = previousLayers.indexOf(inputLayer);
-      if (index < 0) throw new Error('unable to find layer');
-      return layers[index];
-    }
-
-    function layerSettings(layer) {
-      return {
-        ...layer,
-        weights: null,
-        deltas: null,
-        errors: null,
-        praxis: null,
-      };
     }
 
     return layers;

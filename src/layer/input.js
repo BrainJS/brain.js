@@ -5,6 +5,7 @@ const {
   release,
   kernelInput,
   clear,
+  clone,
 } = require('../utilities/kernel');
 
 class Input extends EntryPoint {

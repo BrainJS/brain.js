@@ -1,3 +1,4 @@
+import assert from 'assert';
 const { getFileCoverageDataByName } = require('istanbul-spy');
 
 function onePlusPlus3D(width, height, depth) {

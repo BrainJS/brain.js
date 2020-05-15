@@ -38,7 +38,7 @@ function testBitwiseAdam(data, op) {
   });
 }
 
-function testBitwiseAsync(data, op, done) {
+function testBitwiseAsync(data, op, done, fail) {
   const net = new NeuralNetwork();
   net
     .trainAsync(data, { errorThresh: 0.003 })
@@ -51,7 +51,7 @@ function testBitwiseAsync(data, op, done) {
       done();
     })
     .catch((err) => {
-      expect(false).toBe(true);
+      fail(err);
     });
 }
 

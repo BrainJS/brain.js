@@ -45,6 +45,14 @@ describe('lstm', () => {
         });
         const json = net.toJSON();
 
+        function compare(left, right) {
+          left.weights.forEach((value, i) => {
+            expect(value).toBe(right.weights[i]);
+          });
+          expect(left.rows).toBe(right.rows);
+          expect(left.columns).toBe(right.columns);
+        }
+
         compare(json.input, net.model.input);
         net.model.hiddenLayers.forEach((layer, i) => {
           for (const p in layer) {
@@ -53,14 +61,6 @@ describe('lstm', () => {
         });
         compare(json.output, net.model.output);
         compare(json.outputConnector, net.model.outputConnector);
-
-        function compare(left, right) {
-          left.weights.forEach((value, i) => {
-            expect(value).toBe(right.weights[i]);
-          });
-          expect(left.rows).toBe(right.rows);
-          expect(left.columns).toBe(right.columns);
-        }
       });
     });
 

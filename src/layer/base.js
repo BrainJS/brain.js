@@ -1,4 +1,4 @@
-const { release, clone, makeKernel, clear } = require('../utilities/kernel');
+const { release, clear } = require('../utilities/kernel');
 
 class Base {
   static get defaults() {

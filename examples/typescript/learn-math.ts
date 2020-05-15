@@ -126,6 +126,7 @@ for (let i = 0; i < mathProblems.length; i++) {
   const predictedMathProblem = input + output;
   const error = !mathProblems.includes(predictedMathProblem) ? 1 : 0;
   errors += error;
-  console.log(input + output + (error ? ' - error' : ''));
+  console.log(input + output + (error === 1 ? ' - error' : ''));
 }
-console.log('Errors: ' + errors / mathProblems.length);
+
+console.log(`Errors: ${errors / mathProblems.length}`);

@@ -1,6 +1,6 @@
 const Matrix = require('./');
-const OnesMatrix = require('./ones-matrix');
-const copy = require('./copy');
+// const OnesMatrix = require('./ones-matrix');
+// const copy = require('./copy');
 const cloneNegative = require('./clone-negative');
 const add = require('./add');
 const addB = require('./add-b');
@@ -173,6 +173,7 @@ class Equation {
    * @returns {Matrix}
    */
   inputMatrixToRow(m) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     const product = new Matrix(m.columns, 1);
     this.states.push({

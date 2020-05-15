@@ -67,6 +67,7 @@ describe('Dropout Layer', () => {
       const settings = {
         probability: 123,
       };
+      // eslint-disable-next-line no-new
       new Dropout(mockInputLayer, settings);
       expect(Dropout.prototype.validate).toHaveBeenCalled();
     });

@@ -201,11 +201,11 @@ class Pool extends Filter {
   }
 
   compare() {
-    debugger;
-    const depth = this.inputLayer.deltas.length;
-    const height = this.inputLayer.deltas[0].length;
-    const width = this.inputLayer.deltas[0][0].length;
-    const type = typeof this.inputLayer.deltas[0][0][0];
+    // debugger;
+    // const depth = this.inputLayer.deltas.length;
+    // const height = this.inputLayer.deltas[0].length;
+    // const width = this.inputLayer.deltas[0][0].length;
+    // const type = typeof this.inputLayer.deltas[0][0][0];
     const inputLayerDeltas = this.inputLayer.deltas;
     this.inputLayer.deltas = this.compareKernel(
       this.deltas,
@@ -213,11 +213,11 @@ class Pool extends Filter {
       this.switchY
     );
     release(inputLayerDeltas);
-    debugger;
-    if (depth !== this.inputLayer.deltas.length) debugger;
-    if (height !== this.inputLayer.deltas[0].length) debugger;
-    if (width !== this.inputLayer.deltas[0][0].length) debugger;
-    if (type !== typeof this.inputLayer.deltas[0][0][0]) debugger;
+    // debugger;
+    // if (depth !== this.inputLayer.deltas.length) debugger;
+    // if (height !== this.inputLayer.deltas[0].length) debugger;
+    // if (width !== this.inputLayer.deltas[0][0].length) debugger;
+    // if (type !== typeof this.inputLayer.deltas[0][0][0]) debugger;
   }
 }
 

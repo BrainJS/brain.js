@@ -1,5 +1,5 @@
 /* Functions for turning sparse hashes into arrays and vice versa */
-class lookup {
+class Lookup {
   /**
    * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
    * @param {Object} hashes
@@ -10,7 +10,7 @@ class lookup {
       return Object.assign(memo, hash);
     }, {});
 
-    return lookup.toHash(hash);
+    return Lookup.toHash(hash);
   }
 
   /**
@@ -234,4 +234,4 @@ class lookup {
   }
 }
 
-module.exports = lookup;
+module.exports = Lookup;

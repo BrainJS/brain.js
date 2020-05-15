@@ -1,6 +1,5 @@
 {
   "env": {
-    "browser": true,
     "es6": true,
     "jest": true,
     "node": true
@@ -27,9 +26,11 @@
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-var-requires": "off",
     "@typescript-eslint/semi": "off",
+    "@typescript-eslint/space-before-function-paren": "off",
     "arrow-parens": "off",
     "class-methods-use-this": "off",
     "max-classes-per-file": "off",
+    "standard/no-callback-literal": "off",
     "no-continue": "off",
     "no-empty-function": "off",
     "no-multi-assign": "off",
