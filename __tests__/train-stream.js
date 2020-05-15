@@ -71,9 +71,7 @@ describe('TrainStream', () => {
       }
       const net = new NeuralNetwork();
       return testTrainer(net, { data: trainingData, errorThresh: 0.001 }).then(
-        (info) => {
-          console.log(info);
-
+        () => {
           for (const i in trainingData) {
             const output = net.run(trainingData[i].input);
             const target = trainingData[i].output;
@@ -104,9 +102,7 @@ describe('TrainStream', () => {
           },
         ];
         const net = new NeuralNetwork();
-        return testTrainer(net, { data: not, errorThresh }).then((info) => {
-          console.log(info);
-
+        return testTrainer(net, { data: not, errorThresh }).then(() => {
           for (const i in not) {
             const output = net.run(not[i].input)[0];
             const target = not[i].output[0];
@@ -137,9 +133,7 @@ describe('TrainStream', () => {
           },
         ];
         const net = new NeuralNetwork();
-        return testTrainer(net, { data: xor, errorThresh }).then((info) => {
-          console.log(info);
-
+        return testTrainer(net, { data: xor, errorThresh }).then(() => {
           for (const i in xor) {
             const output = net.run(xor[i].input)[0];
             const target = xor[i].output[0];
@@ -170,9 +164,7 @@ describe('TrainStream', () => {
           },
         ];
         const net = new NeuralNetwork();
-        return testTrainer(net, { data: or, errorThresh }).then((info) => {
-          console.log(info);
-
+        return testTrainer(net, { data: or, errorThresh }).then(() => {
           for (const i in or) {
             const output = net.run(or[i].input)[0];
             const target = or[i].output[0];
@@ -203,9 +195,7 @@ describe('TrainStream', () => {
           },
         ];
         const net = new NeuralNetwork();
-        return testTrainer(net, { data: and, errorThresh }).then((info) => {
-          console.log(info);
-
+        return testTrainer(net, { data: and, errorThresh }).then(() => {
           for (const i in and) {
             const output = net.run(and[i].input)[0];
             const target = and[i].output[0];
@@ -237,9 +227,7 @@ describe('TrainStream', () => {
           },
         ];
         const net = new NeuralNetwork();
-        return testTrainer(net, { data: and, errorThresh }).then((info) => {
-          console.log(info);
-
+        return testTrainer(net, { data: and, errorThresh }).then(() => {
           for (const i in and) {
             const output = net.run(and[i].input).product;
             const target = and[i].output.product;

@@ -61,9 +61,9 @@ describe('GRU', () => {
       net.initialize();
       for (let i = 0; i < 100; i++) {
         net.trainPattern(dataFormatter.toIndexes(phrase));
-        if (i % 10 === 0) {
-          console.log(dataFormatter.toCharacters(net.run()).join(''));
-        }
+        // if (i % 10 === 0) {
+        //   console.log(dataFormatter.toCharacters(net.run()).join(''));
+        // }
       }
       expect(
         dataFormatter
@@ -85,9 +85,9 @@ describe('GRU', () => {
       net.initialize();
       for (let i = 0; i < 200; i++) {
         net.trainPattern(phraseAsIndices);
-        if (i % 10 === 0) {
-          console.log(dataFormatter.toCharacters(net.run()).join(''));
-        }
+        // if (i % 10 === 0) {
+        //   console.log(dataFormatter.toCharacters(net.run()).join(''));
+        // }
       }
       expect(dataFormatter.toCharacters(net.run()).join('')).toBe(phrase);
       done();
@@ -175,9 +175,9 @@ describe('GRU', () => {
       net.initialize();
       for (let i = 0; i < 100; i++) {
         net.trainPattern(dataFormatter.toIndexes('hi mom!'));
-        if (i % 10) {
-          console.log(dataFormatter.toCharacters(net.run()).join(''));
-        }
+        // if (i % 10) {
+        //   console.log(dataFormatter.toCharacters(net.run()).join(''));
+        // }
       }
 
       const lastOutput = dataFormatter.toCharacters(net.run()).join('');

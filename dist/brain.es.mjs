@@ -22464,4 +22464,4 @@ var src = createCommonjsModule(function (module) {
 });
 
 export default src;
-//# sourceMappingURL=brain.esm.js.map
+//# sourceMappingURL=brain.es.mjs.map

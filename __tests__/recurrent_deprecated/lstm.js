@@ -117,9 +117,9 @@ describe('lstm', () => {
       net.initialize();
       for (let i = 0; i < 100; i++) {
         net.trainPattern(dataFormatter.toIndexes('hi mom!'));
-        if (i % 10) {
-          console.log(dataFormatter.toCharacters(net.run()).join(''));
-        }
+        // if (i % 10) {
+        //   console.log(dataFormatter.toCharacters(net.run()).join(''));
+        // }
       }
 
       const lastOutput = dataFormatter.toCharacters(net.run()).join('');

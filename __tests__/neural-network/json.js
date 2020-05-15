@@ -659,7 +659,6 @@ describe('default net json', () => {
     });
 
     it('training options log', () => {
-      // Should have inflated to console.log
       expect(originalNet.trainOpts.log).toBe(serializedNet.trainOpts.log);
     });
 

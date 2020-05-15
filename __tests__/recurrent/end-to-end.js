@@ -979,9 +979,7 @@ describe('Recurrent Class: End to End', () => {
     let error = Infinity;
     for (let i = 0; i < 101 && error > 0.005; i++) {
       error = net._trainPattern([1, 2, 3], true)[0];
-      console.log(error);
     }
-    console.log(net.run([1, 2]));
     expect(error).toBeLessThan(0.005);
   });
   test('can learn 1,2,3 using .train()', () => {

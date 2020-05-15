@@ -322,7 +322,7 @@ describe('RNN', () => {
       net.model.hiddenLayers.forEach((layer) => {
         for (const p in layer) {
           if (!layer.hasOwnProperty(p)) continue;
-          if (!layer[p].deltas.some(notZero)) console.log(p);
+          // if (!layer[p].deltas.some(notZero)) console.log(p);
           // assert(layer[p].deltas.some(notZero));
         }
       });
@@ -385,7 +385,7 @@ describe('RNN', () => {
       const net = xorNet();
       for (let i = 0; i < 10; i++) {
         xorNetValues.forEach(function (value) {
-          console.log(net.trainPattern(value, true));
+          net.trainPattern(value, true);
         });
       }
       expect(net.run().length).toBe(3);
@@ -590,9 +590,9 @@ describe('RNN', () => {
 
       for (let i = 0; i < 100; i++) {
         net.trainPattern(dataFormatter.toIndexes('hi mom!'));
-        if (i % 10) {
-          console.log(dataFormatter.toCharacters(net.run()).join(''));
-        }
+        // if (i % 10) {
+        //   console.log(dataFormatter.toCharacters(net.run()).join(''));
+        // }
       }
 
       const lastOutput = dataFormatter.toCharacters(net.run()).join('');

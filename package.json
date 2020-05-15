@@ -97,7 +97,7 @@
   ],
   "license": "MIT",
   "main": "dist/brain.cjs.js",
-  "module": "dist/brain.esm.js",
+  "module": "dist/brain.es.mjs",
   "name": "brain.js",
   "repository": {
     "type": "git",
