@@ -10,6 +10,12 @@
     "strict": true,
     "target": "ESNext"
   },
-  "exclude": ["node_modules", "dist", "**/*.json", "**/*.config.js"],
+  "exclude": [
+    "node_modules",
+    "examples",
+    "dist",
+    "**/*.json",
+    "**/*.config.js"
+  ],
   "include": ["src", "__tests__"]
 }

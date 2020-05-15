@@ -23,6 +23,7 @@
     "@types/core-js": "^2.5.3",
     "@types/eslint": "^6.8.1",
     "@types/eslint-plugin-prettier": "^3.1.0",
+    "@types/jest": "^25.2.2",
     "@types/prettier": "^2.0.0",
     "@types/rollup-plugin-node-builtins": "^2.1.1",
     "@types/rollup-plugin-node-globals": "^1.4.0",
@@ -53,6 +54,7 @@
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
     "rollup-plugin-terser": "^5.3.0",
+    "ts-jest": "^25.5.1",
     "typescript": "^3.9.2"
   },
   "engines": {
@@ -67,24 +69,6 @@
     "hooks": {
       "pre-commit": "npm run lint"
     }
-  },
-  "jest": {
-    "bail": true,
-    "collectCoverage": false,
-    "collectCoverageFrom": [
-      "src/**/*.js"
-    ],
-    "coverageDirectory": "__coverage__",
-    "globalSetup": "",
-    "globals": {},
-    "setupFiles": [],
-    "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      "__tests__/istanbul-linker-util.js",
-      "__tests__/test-utils.js",
-      "__tests__/.eslintrc.js"
-    ],
-    "verbose": false
   },
   "keywords": [
     "ai",
@@ -122,16 +106,16 @@
     "build": "run-s build:**",
     "build:browser": "rollup -c rollup.config.browser.js",
     "build:node": "rollup -c rollup.config.js",
-    "coverage": "jest --env=node --coverage --coverage-provider v8 && codecov",
+    "coverage": "jest --coverage --coverage-provider v8 && codecov",
     "dist": "npm run build",
     "lint": "run-s lint:typecheck lint:eslint",
     "lint:eslint": "eslint --fix --ext .js,.ts __tests__ src",
     "lint:typecheck": "tsc --noEmit",
-    "test": "jest --env=node",
+    "test": "jest",
     "watch": "run-p watch:**",
     "watch:browser": "rollup -c rollup.config.browser.js -w",
     "watch:node": "rollup -c rollup.config.js -w",
-    "watch:test": "jest --watch --env=node"
+    "watch:test": "jest --watch"
   },
   "typings": "./src/index.d.ts",
   "version": "2.0.0-alpha.12"
