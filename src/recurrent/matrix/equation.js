@@ -226,7 +226,9 @@ class Equation {
    * @returns {Matrix}
    */
   observe(m) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let iForward = 0;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let iBackpropagate = 0;
     this.states.push({
       forwardFn() {

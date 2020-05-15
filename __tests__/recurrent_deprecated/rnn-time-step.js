@@ -1366,7 +1366,7 @@ describe('RNNTimeStep', () => {
           if (net.model.equationConnections.indexOf(state.product) > -1) return;
           // don't use initialLayerInputs, zero there too
           if (state.right === net.initialLayerInputs[0]) return;
-          state.product.weights.forEach((weight, weightIndex) => {
+          state.product.weights.forEach((weight) => {
             expect(weight).toBe(0);
           });
         });
@@ -1379,7 +1379,7 @@ describe('RNNTimeStep', () => {
       net.model.equations.forEach((equation, equationIndex) => {
         // we back propagate zero, so don't check last equation, as it has zeros
         if (equationIndex > 1) return;
-        equation.states.forEach((state, stateIndex) => {
+        equation.states.forEach((state) => {
           for (
             let weightIndex = 0;
             weightIndex < state.product.weights.length;
@@ -1425,8 +1425,8 @@ describe('RNNTimeStep', () => {
       net.model.equations.forEach((equation, equationIndex) => {
         // we back propagate zero, so don't check last equation, as it has zeros
         if (equationIndex > 1) return;
-        equation.states.forEach((state, stateIndex) => {
-          state.product.deltas.forEach((delta, weightIndex) => {
+        equation.states.forEach((state) => {
+          state.product.deltas.forEach((delta) => {
             expect(delta).toBe(0);
           });
         });
@@ -1438,8 +1438,8 @@ describe('RNNTimeStep', () => {
       net.model.equations.forEach((equation, equationIndex) => {
         // we back propagate zero, so don't check last equation, as it has zeros
         if (equationIndex > 1) return;
-        equation.states.forEach((state, stateIndex) => {
-          state.product.deltas.forEach((delta, weightIndex) => {
+        equation.states.forEach((state) => {
+          state.product.deltas.forEach((delta) => {
             expect(delta).not.toBe(0);
           });
         });
@@ -1632,6 +1632,7 @@ describe('RNNTimeStep', () => {
         hiddenLayers,
         outputSize,
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let lastStatus;
       net.train(
         [{ monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 }],
@@ -2655,7 +2656,7 @@ describe('RNNTimeStep', () => {
             outputSize: 1,
           });
           jest.spyOn(net, 'formatData');
-          net.run = jest.fn((data) => {
+          net.run = jest.fn(() => {
             return [0.5];
           });
           net.trainOpts = {
@@ -2677,7 +2678,7 @@ describe('RNNTimeStep', () => {
             outputSize: 1,
           });
           jest.spyOn(net, 'formatData');
-          net.run = jest.fn((data) => {
+          net.run = jest.fn(() => {
             return [0.1];
           });
           net.trainOpts = {
@@ -2701,14 +2702,14 @@ describe('RNNTimeStep', () => {
             outputSize: 2,
           });
           jest.spyOn(net, 'formatData');
-          net.run = jest.fn((data) => {
+          net.run = jest.fn(() => {
             return [0.1];
           });
           net.trainOpts = {
             errorThresh: 0.001,
           };
           expect(() => {
-            const testResult = net.test([[0.1, 0.2, 0.3, 0.4, 0.5]]);
+            net.test([[0.1, 0.2, 0.3, 0.4, 0.5]]);
           }).toThrow();
           // expect(net.formatData).toBeCalled();
           // expect(net.run).toBeCalled();
@@ -2728,7 +2729,7 @@ describe('RNNTimeStep', () => {
               outputSize: 2,
             });
             jest.spyOn(net, 'formatData');
-            net.run = jest.fn((data) => {
+            net.run = jest.fn(() => {
               return Float32Array.from([0.5, 0.1]);
             });
             net.trainOpts = {
@@ -2760,7 +2761,7 @@ describe('RNNTimeStep', () => {
               errorThresh: 0.001,
             };
             jest.spyOn(net, 'formatData');
-            net.run = jest.fn((data) => {
+            net.run = jest.fn(() => {
               return Float32Array.from([0.1, 0.5]);
             });
             const testResult = net.test([
@@ -2905,7 +2906,7 @@ describe('RNNTimeStep', () => {
               outputSize: 2,
             });
             jest.spyOn(net, 'formatData');
-            net.run = jest.fn((data) => {
+            net.run = jest.fn(() => {
               return { low: 0.5, high: 0.1 };
             });
             net.trainOpts = {
@@ -2949,7 +2950,7 @@ describe('RNNTimeStep', () => {
               outputSize: 2,
             });
             jest.spyOn(net, 'formatData');
-            net.run = jest.fn((data) => {
+            net.run = jest.fn(() => {
               return { low: 0.9, high: 0.9 };
             });
             net.trainOpts = {

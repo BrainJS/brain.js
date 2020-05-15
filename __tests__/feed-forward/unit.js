@@ -21,7 +21,7 @@ const {
   SoftMax,
   softMax,
   Target,
-  Zeros,
+  // Zeros,
   types,
 } = require('../../src/layer');
 const { injectIstanbulCoverage } = require('../test-utils');

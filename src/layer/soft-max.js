@@ -136,7 +136,7 @@ function compare3D(target, exponentials) {
   );
 }
 
-function loss(exponentials) {
+function loss() {
   return -Math.log();
 }
 

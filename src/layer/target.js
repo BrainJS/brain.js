@@ -1,7 +1,7 @@
 const { makeKernel, release, clone, clear } = require('../utilities/kernel');
 const zeros = require('../utilities/zeros');
 const zeros2D = require('../utilities/zeros-2d');
-const zeros3D = require('../utilities/zeros-3d');
+// const zeros3D = require('../utilities/zeros-3d');
 const { Filter } = require('./types');
 
 function compare1D(weights, targetValues) {

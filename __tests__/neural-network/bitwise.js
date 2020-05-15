@@ -12,9 +12,9 @@ function isAround(actual, expected) {
   return true;
 }
 
-function testBitwise(data, op) {
+function testBitwise(data) {
   const net = new NeuralNetwork();
-  const res = net.train(data, { errorThresh: 0.003 });
+  // const res = net.train(data, { errorThresh: 0.003 });
 
   data.forEach((d) => {
     const actual = net.run(d.input);
@@ -23,13 +23,13 @@ function testBitwise(data, op) {
   });
 }
 
-function testBitwiseAdam(data, op) {
+function testBitwiseAdam(data) {
   const net = new NeuralNetwork();
-  const res = net.train(data, {
-    errorThresh: 0.003,
-    learningRate: 0.05,
-    praxis: 'adam',
-  });
+  // const res = net.train(data, {
+  //   errorThresh: 0.003,
+  //   learningRate: 0.05,
+  //   praxis: 'adam',
+  // });
 
   data.forEach((d) => {
     const actual = net.run(d.input);
@@ -38,22 +38,22 @@ function testBitwiseAdam(data, op) {
   });
 }
 
-function testBitwiseAsync(data, op, done, fail) {
-  const net = new NeuralNetwork();
-  net
-    .trainAsync(data, { errorThresh: 0.003 })
-    .then((res) => {
-      data.forEach((d) => {
-        const actual = net.run(d.input);
-        const expected = d.output;
-        expect(isAround(actual, expected)).toBe(true);
-      });
-      done();
-    })
-    .catch((err) => {
-      fail(err);
-    });
-}
+// function testBitwiseAsync(data, op, done, fail) {
+//   const net = new NeuralNetwork();
+//   net
+//     .trainAsync(data, { errorThresh: 0.003 })
+//     .then((res) => {
+//       data.forEach((d) => {
+//         const actual = net.run(d.input);
+//         const expected = d.output;
+//         expect(isAround(actual, expected)).toBe(true);
+//       });
+//       done();
+//     })
+//     .catch((err) => {
+//       fail(err);
+//     });
+// }
 
 describe('bitwise functions sync training', () => {
   it('NOT function', () => {

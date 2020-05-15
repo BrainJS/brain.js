@@ -69,7 +69,7 @@ class MomentumRootMeanSquaredPropagation extends Base {
     this.momenta = zeros2D(layerTemplate.width, layerTemplate.height);
   }
 
-  run(layer, previousLayer, nextLayer, learningRate) {
+  run(layer) {
     const { momenta, result } = this.kernel(
       layer.weights,
       layer.deltas,

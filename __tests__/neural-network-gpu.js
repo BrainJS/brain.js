@@ -64,6 +64,7 @@ describe('NeuralNetworkGPU', () => {
     });
 
     describe('mocked GPU mode', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let parentToJson;
       beforeEach(() => {
         parentToJson = jest.spyOn(NeuralNetwork.prototype, 'toJSON');

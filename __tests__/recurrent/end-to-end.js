@@ -12,7 +12,7 @@ const { setup, teardown } = require('../../src/utilities/kernel');
 
 const { Recurrent } = require('../../src/recurrent');
 const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
-const zeros2D = require('../../src/utilities/zeros-2d');
+// const zeros2D = require('../../src/utilities/zeros-2d');
 
 const { injectIstanbulCoverage } = require('../test-utils');
 
@@ -53,7 +53,7 @@ describe('Recurrent Class: End to End', () => {
       timeStep.bindEquation();
       const amplification = 1;
       let i = amplification;
-      function amplify(v) {
+      function amplify() {
         return (i += 1);
       }
       const { weight, transition, bias } = timeStep.model.hiddenLayers[0];

@@ -102,7 +102,7 @@ describe('train() and trainAsync() use the same private methods', () => {
         expect(net.prepTraining.mock.calls.length).toBe(2);
         done();
       })
-      .catch((e) => {
+      .catch(() => {
         expect(false).toBeTruthy();
         done();
       });
@@ -117,7 +117,7 @@ describe('train() and trainAsync() use the same private methods', () => {
         expect(net.updateTrainingOptions.mock.calls.length).toBe(2);
         done();
       })
-      .catch((e) => {
+      .catch(() => {
         expect(false).toBeTruthy();
         done();
       });
@@ -132,7 +132,7 @@ describe('train() and trainAsync() use the same private methods', () => {
         expect(net.formatData.mock.calls.length).toBe(2);
         done();
       })
-      .catch((e) => {
+      .catch(() => {
         expect(false).toBeTruthy();
         done();
       });
@@ -147,7 +147,7 @@ describe('train() and trainAsync() use the same private methods', () => {
         expect(net.verifyIsInitialized.mock.calls.length).toBe(2);
         done();
       })
-      .catch((e) => {
+      .catch(() => {
         expect(false).toBeTruthy();
         done();
       });
@@ -164,7 +164,7 @@ describe('train() and trainAsync() use the same private methods', () => {
         expect(net.trainingTick.mock.calls.length).toBe(3);
         done();
       })
-      .catch((e) => {
+      .catch(() => {
         expect(false).toBeTruthy();
         done();
       });

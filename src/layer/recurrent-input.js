@@ -53,7 +53,7 @@ class RecurrentInput extends Internal {
     }
   }
 
-  setDimensions(width, height) {
+  setDimensions() {
     throw new Error('should just listen');
   }
 

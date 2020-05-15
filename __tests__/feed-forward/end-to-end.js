@@ -1,24 +1,25 @@
 const { GPU } = require('gpu.js');
 const NeuralNetwork = require('../../src/neural-network');
 const { FeedForward } = require('../../src/feed-forward');
-const { add } = require('../../src/layer/add');
-const { random } = require('../../src/layer/random');
+// const { add } = require('../../src/layer/add');
+// const { random } = require('../../src/layer/random');
 const { input } = require('../../src/layer/input');
 const { output } = require('../../src/layer/output');
 const { Target, target } = require('../../src/layer/target');
-const { Sigmoid, sigmoid } = require('../../src/layer/sigmoid');
-const { Multiply, multiply } = require('../../src/layer/multiply');
+const { Sigmoid } = require('../../src/layer/sigmoid');
+// const { Multiply, multiply } = require('../../src/layer/multiply');
 const {
   feedForward: feedForwardLayer,
 } = require('../../src/layer/feed-forward');
 const { arthurFeedForward } = require('../../src/layer/arthur-feed-forward');
 
-const {
-  arthurDeviationWeights,
-} = require('../../src/praxis/arthur-deviation-weights');
-const {
-  arthurDeviationBiases,
-} = require('../../src/praxis/arthur-deviation-biases');
+// const {
+//   arthurDeviationWeights,
+// } = require('../../src/praxis/arthur-deviation-weights');
+// const {
+//   arthurDeviationBiases,
+// } = require('../../src/praxis/arthur-deviation-biases');
+
 const {
   momentumRootMeanSquaredPropagation,
 } = require('../../src/praxis/momentum-root-mean-squared-propagation');

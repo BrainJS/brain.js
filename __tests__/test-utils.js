@@ -107,8 +107,8 @@ function allMatrices(model, fn) {
   });
   fn(model.output.weights);
 
-  model.equations.forEach((equation, equationIndex) => {
-    equation.states.forEach((state, stateIndex) => {
+  model.equations.forEach((equation) => {
+    equation.states.forEach((state) => {
       if (state.left && state.left.weights) fn(state.left.weights);
       if (state.right && state.right.weights) fn(state.right.weights);
       if (state.product && state.product.weights) fn(state.product.weights);
@@ -124,8 +124,8 @@ function allMatrices(model, fn) {
   });
   fn(model.output.deltas);
 
-  model.equations.forEach((equation, equationIndex) => {
-    equation.states.forEach((state, stateIndex) => {
+  model.equations.forEach((equation) => {
+    equation.states.forEach((state) => {
       if (state.left && state.left.deltas) fn(state.left.deltas);
       if (state.right && state.right.deltas) fn(state.right.deltas);
       if (state.product && state.product.deltas) fn(state.product.deltas);

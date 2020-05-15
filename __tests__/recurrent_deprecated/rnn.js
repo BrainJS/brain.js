@@ -345,7 +345,7 @@ describe('RNN', () => {
 
       function checkExploded() {
         allMatrices(net.model, (values) => {
-          values.forEach((value, i) => {
+          values.forEach((value) => {
             if (isNaN(value)) throw new Error('exploded');
           });
         });

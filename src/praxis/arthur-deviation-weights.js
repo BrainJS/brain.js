@@ -48,7 +48,7 @@ class ArthurDeviationWeights extends Base {
     this.changes = zeros2D(layer.width, layer.height);
   }
 
-  run(layer, previousLayer, nextLayer, learningRate) {
+  run() {
     const output = this.kernel(
       this.changes,
       this.weightsLayer.weights,

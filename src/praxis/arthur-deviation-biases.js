@@ -20,7 +20,7 @@ class ArthurDeviationBiases extends Base {
     this.kernel = null;
   }
 
-  run(layer, previousLayer, nextLayer, learningRate) {
+  run(layer) {
     const output = this.kernel(layer.weights, layer.deltas);
     return output;
   }

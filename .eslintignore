@@ -1,3 +1,22 @@
+# Mac.
+.DS_STORE
+**.DS_STORE
+
+# Node.
+node_modules
+npm-debug.log
+
+# Yarn
+yarn.lock
+
+# parcel bundler cache
+.cache
+
+# code coverage
+__coverage__
+
+test*.*
+
 test/unit/coverage/**
 test/unit/*.js
 test/e2e/*.js
@@ -6,3 +25,5 @@ dist/
 __coverage__/
 rollup.config.js
 rollup.config.browser.js
+
+index.d.ts

@@ -45,7 +45,7 @@ describe('neural network constructor values', () => {
   });
 
   it('log should allow setting the training options to the constructor', () => {
-    const log = function (res) {};
+    const log = function () {};
     const opts = { log: log };
     const net = new NeuralNetwork(opts);
     expect(typeof net.trainOpts.log === 'function').toBeTruthy();
@@ -70,7 +70,7 @@ describe('neural network constructor values', () => {
   });
 
   it('callback should be settable in the constructor', () => {
-    const cb = function (res) {};
+    const cb = function () {};
     const opts = { callback: cb };
     const net = new NeuralNetwork(opts);
     expect(typeof net.trainOpts.callback === 'function').toBeTruthy();

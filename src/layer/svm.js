@@ -11,16 +11,18 @@ class SVM extends Base {
   }
 }
 
-function learn(target) {
-  // if(y === i) { continue; }
-  // var ydiff = -yscore + x.w[i] + margin;
-  // if(ydiff > 0) {
-  //   // violating dimension, apply loss
-  //   x.dw[i] += 1;
-  //   x.dw[y] -= 1;
-  //   loss += ydiff;
-  // }
-}
+// function learn(target) {
+//   if (y === i) {
+//     continue;
+//   }
+//   const ydiff = -yscore + x.w[i] + margin;
+//   if (ydiff > 0) {
+//     // violating dimension, apply loss
+//     x.dw[i] += 1;
+//     x.dw[y] -= 1;
+//     loss += ydiff;
+//   }
+// }
 
 function svm(settings, inputLayer) {
   return new SVM(settings, inputLayer);

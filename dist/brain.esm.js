@@ -4190,7 +4190,7 @@ var ArthurDeviationWeights = /*#__PURE__*/function (_Base) {
 
   _createClass(ArthurDeviationWeights, [{
     key: "run",
-    value: function run(layer, previousLayer, nextLayer, learningRate) {
+    value: function run() {
       var output = this.kernel(this.changes, this.weightsLayer.weights, this.incomingLayer.weights, this.deltaLayer.deltas);
       this.changes = output.changes;
       return output.result;
@@ -4258,7 +4258,7 @@ var ArthurDeviationBiases = /*#__PURE__*/function (_Base) {
 
   _createClass(ArthurDeviationBiases, [{
     key: "run",
-    value: function run(layer, previousLayer, nextLayer, learningRate) {
+    value: function run(layer) {
       var output = this.kernel(layer.weights, layer.deltas);
       return output;
     }
@@ -6051,7 +6051,8 @@ var lstmCell_1 = {
 var makeKernel$e = kernel.makeKernel,
     release$c = kernel.release,
     clone$4 = kernel.clone,
-    clear$a = kernel.clear;
+    clear$a = kernel.clear; // const zeros3D = require('../utilities/zeros-3d');
+
 var Filter$4 = types.Filter;
 
 function compare1D(weights, targetValues) {
@@ -6382,7 +6383,7 @@ var makeKernel$g = kernel.makeKernel,
     release$e = kernel.release,
     clear$b = kernel.clear;
 var activate$7 = relu.activate,
-    measure$7 = relu.measure;
+    measure$7 = relu.measure; // const zeros2D = require('../utilities/zeros-2d');
 
 function predict2D$3(inputs) {
   return activate$7(inputs[this.thread.y][this.thread.x]);
@@ -6702,7 +6703,7 @@ function compare3D$5(target, exponentials) {
   return -(indicator - exponentials[this.thread.z][this.thread.y][this.thread.x]);
 }
 
-function loss(exponentials) {
+function loss() {
   return -Math.log();
 } // TODO: handle: `return -Math.log(this.es[y]);` in learn
 
@@ -6880,7 +6881,19 @@ var SVM = /*#__PURE__*/function (_Base) {
   }]);
 
   return SVM;
-}(Base$7);
+}(Base$7); // function learn(target) {
+//   if (y === i) {
+//     continue;
+//   }
+//   const ydiff = -yscore + x.w[i] + margin;
+//   if (ydiff > 0) {
+//     // violating dimension, apply loss
+//     x.dw[i] += 1;
+//     x.dw[y] -= 1;
+//     loss += ydiff;
+//   }
+// }
+
 
 function svm(settings, inputLayer) {
   return new SVM(settings, inputLayer);
@@ -7521,7 +7534,7 @@ var MomentumRootMeanSquaredPropagation = /*#__PURE__*/function (_Base) {
 
   _createClass(MomentumRootMeanSquaredPropagation, [{
     key: "run",
-    value: function run(layer, previousLayer, nextLayer, learningRate) {
+    value: function run(layer) {
       var _this$kernel = this.kernel(layer.weights, layer.deltas, this.momenta),
           momenta = _this$kernel.momenta,
           result = _this$kernel.result;
@@ -17011,7 +17024,7 @@ var RecurrentInput = /*#__PURE__*/function (_Internal) {
     }
   }, {
     key: "setDimensions",
-    value: function setDimensions(width, height) {
+    value: function setDimensions() {
       throw new Error('should just listen');
     }
   }, {
@@ -20076,14 +20089,13 @@ var RNN = /*#__PURE__*/function () {
     }
     /**
      *
-     * @param data
      * Verifies network sizes are initilaized
-     * If they are not it will initialize them based off the data set.
+     * If they are not it will initialize them
      */
 
   }, {
     key: "verifyIsInitialized",
-    value: function verifyIsInitialized(data) {
+    value: function verifyIsInitialized() {
       if (!this.model) {
         this.initialize();
       }

@@ -1,6 +1,6 @@
 const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
-const { Input } = require('../../src/layer/input');
+// const { Input } = require('../../src/layer/input');
 const {
   MultiplyElement,
   multiplyElement,

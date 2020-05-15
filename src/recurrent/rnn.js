@@ -401,11 +401,10 @@ class RNN {
 
   /**
    *
-   * @param data
    * Verifies network sizes are initilaized
-   * If they are not it will initialize them based off the data set.
+   * If they are not it will initialize them
    */
-  verifyIsInitialized(data) {
+  verifyIsInitialized() {
     if (!this.model) {
       this.initialize();
     }
