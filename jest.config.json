@@ -13,5 +13,8 @@
     "__tests__/test-utils.js",
     "__tests__/.eslintrc.js"
   ],
+  "transform": {
+    "^.+\\.[jt]sx?$": "babel-jest"
+  },
   "verbose": false
 }

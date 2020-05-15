@@ -8,7 +8,7 @@
     "noEmit": true,
     "noEmitOnError": true,
     "strict": true,
-    "target": "ESNext"
+    "target": "ES6"
   },
   "exclude": [
     "node_modules",
