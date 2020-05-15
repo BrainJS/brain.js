@@ -46,7 +46,7 @@ export default {
 
   output: [
     {
-      file: pkg.browser.replace('.js', '.es.min.js'),
+      file: pkg.browser.replace('.js', '.esm.min.js'),
       format: 'es',
       sourcemap: true,
       plugins: [
