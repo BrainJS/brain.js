@@ -124,5 +124,5 @@
   },
   "typings": "./src/index.d.ts",
   "unpkg": "dist/brain-browser.min.js",
-  "version": "2.0.0-alpha.12"
+  "version": "2.0.0-beta.1"
 }
