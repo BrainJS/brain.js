@@ -245,9 +245,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var CrossValidate =
-/*#__PURE__*/
-function () {
+var CrossValidate = /*#__PURE__*/function () {
   /**
    *
    * @param {NeuralNetwork|constructor} Classifier
@@ -474,25 +472,33 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
-function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /**
  * gpu.js
@@ -500,8 +506,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  *
  * GPU Accelerated JavaScript
  *
- * @version 2.6.2
- * @date Sun Jan 19 2020 07:44:57 GMT-0500 (Eastern Standard Time)
+ * @version 2.9.4
+ * @date Sat May 02 2020 11:46:49 GMT-0400 (Eastern Daylight Time)
  *
  * @license MIT
  * The MIT License
@@ -2678,8 +2684,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           if (this.options.ecmaVersion >= 6) {
             if (name === "__proto__" && kind === "init") {
               if (propHash.proto) {
-                if (refDestructuringErrors && refDestructuringErrors.doubleProto < 0) {
-                  refDestructuringErrors.doubleProto = key.start;
+                if (refDestructuringErrors) {
+                  if (refDestructuringErrors.doubleProto < 0) {
+                    refDestructuringErrors.doubleProto = key.start;
+                  }
                 } else {
                   this.raiseRecoverable(key.start, "Redefinition of __proto__ property");
                 }
@@ -2747,14 +2755,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           var ownDestructuringErrors = false,
               oldParenAssign = -1,
-              oldTrailingComma = -1,
-              oldShorthandAssign = -1;
+              oldTrailingComma = -1;
 
           if (refDestructuringErrors) {
             oldParenAssign = refDestructuringErrors.parenthesizedAssign;
             oldTrailingComma = refDestructuringErrors.trailingComma;
-            oldShorthandAssign = refDestructuringErrors.shorthandAssign;
-            refDestructuringErrors.parenthesizedAssign = refDestructuringErrors.trailingComma = refDestructuringErrors.shorthandAssign = -1;
+            refDestructuringErrors.parenthesizedAssign = refDestructuringErrors.trailingComma = -1;
           } else {
             refDestructuringErrors = new DestructuringErrors();
             ownDestructuringErrors = true;
@@ -2779,10 +2785,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             node.left = this.type === types.eq ? this.toAssignable(left, false, refDestructuringErrors) : left;
 
             if (!ownDestructuringErrors) {
-              DestructuringErrors.call(refDestructuringErrors);
+              refDestructuringErrors.parenthesizedAssign = refDestructuringErrors.trailingComma = refDestructuringErrors.doubleProto = -1;
             }
 
-            refDestructuringErrors.shorthandAssign = -1;
+            if (refDestructuringErrors.shorthandAssign >= node.left.start) {
+              refDestructuringErrors.shorthandAssign = -1;
+            }
+
             this.checkLVal(left);
             this.next();
             node.right = this.parseMaybeAssign(noIn);
@@ -2799,10 +2808,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           if (oldTrailingComma > -1) {
             refDestructuringErrors.trailingComma = oldTrailingComma;
-          }
-
-          if (oldShorthandAssign > -1) {
-            refDestructuringErrors.shorthandAssign = oldShorthandAssign;
           }
 
           return left;
@@ -2923,9 +2928,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           var startPos = this.start,
               startLoc = this.startLoc;
           var expr = this.parseExprAtom(refDestructuringErrors);
-          var skipArrowSubscripts = expr.type === "ArrowFunctionExpression" && this.input.slice(this.lastTokStart, this.lastTokEnd) !== ")";
 
-          if (this.checkExpressionErrors(refDestructuringErrors) || skipArrowSubscripts) {
+          if (expr.type === "ArrowFunctionExpression" && this.input.slice(this.lastTokStart, this.lastTokEnd) !== ")") {
             return expr;
           }
 
@@ -3294,6 +3298,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         var empty$1 = [];
 
         pp$3.parseNew = function () {
+          if (this.containsEsc) {
+            this.raiseRecoverable(this.start, "Escape sequence in keyword new");
+          }
+
           var node = this.startNode();
           var meta = this.parseIdent(true);
 
@@ -3779,7 +3787,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             this.unexpected();
           }
 
-          this.next();
+          this.next(!!liberal);
           this.finishNode(node, "Identifier");
 
           if (!liberal) {
@@ -3819,7 +3827,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           var node = this.startNode();
           this.next();
-          node.argument = this.parseMaybeUnary(null, true);
+          node.argument = this.parseMaybeUnary(null, false);
           return this.finishNode(node, "AwaitExpression");
         };
 
@@ -4241,7 +4249,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             return c;
           }
 
-          return (c << 10) + s.charCodeAt(i + 1) - 0x35FDC00;
+          var next = s.charCodeAt(i + 1);
+          return next >= 0xDC00 && next <= 0xDFFF ? (c << 10) + next - 0x35FDC00 : c;
         };
 
         RegExpValidationState.prototype.nextIndex = function nextIndex(i) {
@@ -4252,9 +4261,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             return l;
           }
 
-          var c = s.charCodeAt(i);
+          var c = s.charCodeAt(i),
+              next;
 
-          if (!this.switchU || c <= 0xD7FF || c >= 0xE000 || i + 1 >= l) {
+          if (!this.switchU || c <= 0xD7FF || c >= 0xE000 || i + 1 >= l || (next = s.charCodeAt(i + 1)) < 0xDC00 || next > 0xDFFF) {
             return i + 1;
           }
 
@@ -5236,7 +5246,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
         var pp$9 = Parser.prototype;
 
-        pp$9.next = function () {
+        pp$9.next = function (ignoreEscapeSequenceInKeyword) {
+          if (!ignoreEscapeSequenceInKeyword && this.type.keyword && this.containsEsc) {
+            this.raiseRecoverable(this.start, "Escape sequence in keyword " + this.type.keyword);
+          }
+
           if (this.options.onToken) {
             this.options.onToken(new Token(this));
           }
@@ -5807,10 +5821,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             this.raise(start, "Invalid number");
           }
 
-          if (octal && /[89]/.test(this.input.slice(start, this.pos))) {
-            octal = false;
-          }
-
           var next = this.input.charCodeAt(this.pos);
 
           if (!octal && !startsWithDot && this.options.ecmaVersion >= 11 && next === 110) {
@@ -5823,6 +5833,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
 
             return this.finishToken(types.num, val$1);
+          }
+
+          if (octal && /[89]/.test(this.input.slice(start, this.pos))) {
+            octal = false;
           }
 
           if (next === 46 && !octal) {
@@ -6065,6 +6079,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
               return "";
 
+            case 56:
+            case 57:
+              if (inTemplate) {
+                var codePos = this.pos - 1;
+                this.invalidStringToken(codePos, "Invalid escape sequence in template string");
+                return null;
+              }
+
             default:
               if (ch >= 48 && ch <= 55) {
                 var octalStr = this.input.substr(this.pos - 1, 3).match(/^[0-7]+/)[0];
@@ -6149,10 +6171,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           var type = types.name;
 
           if (this.keywords.test(word)) {
-            if (this.containsEsc) {
-              this.raiseRecoverable(this.start, "Escape sequence in keyword " + word);
-            }
-
             type = keywords$1[word];
           }
 
@@ -7002,15 +7020,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require2 = require('../function-node'),
           FunctionNode = _require2.FunctionNode;
 
-      var CPUFunctionNode =
-      /*#__PURE__*/
-      function (_FunctionNode) {
+      var CPUFunctionNode = /*#__PURE__*/function (_FunctionNode) {
         _inherits(CPUFunctionNode, _FunctionNode);
+
+        var _super = _createSuper(CPUFunctionNode);
 
         function CPUFunctionNode() {
           _classCallCheck(this, CPUFunctionNode);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(CPUFunctionNode).apply(this, arguments));
+          return _super.apply(this, arguments);
         }
 
         _createClass(CPUFunctionNode, [{
@@ -7275,7 +7293,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 retArr.push(',');
               }
 
-              this.astGeneric(declarations[i], retArr);
+              var declaration = declarations[i];
+              var info = this.getDeclaration(declaration.id);
+
+              if (!info.valueType) {
+                info.valueType = this.getType(declaration.init);
+              }
+
+              this.astGeneric(declaration, retArr);
             }
 
             if (!this.isState('in-for-loop-init')) {
@@ -7780,10 +7805,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require8 = require('./kernel-string'),
           cpuKernelString = _require8.cpuKernelString;
 
-      var CPUKernel =
-      /*#__PURE__*/
-      function (_Kernel) {
+      var CPUKernel = /*#__PURE__*/function (_Kernel) {
         _inherits(CPUKernel, _Kernel);
+
+        var _super2 = _createSuper(CPUKernel);
 
         _createClass(CPUKernel, null, [{
           key: "getFeatures",
@@ -7840,7 +7865,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           _classCallCheck(this, CPUKernel);
 
-          _this = _possibleConstructorReturn(this, _getPrototypeOf(CPUKernel).call(this, source, settings));
+          _this = _super2.call(this, source, settings);
 
           _this.mergeSettings(source.settings || settings);
 
@@ -7930,6 +7955,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "build",
           value: function build() {
+            if (this.built) return;
             this.setupConstants();
             this.setupArguments(arguments);
             this.validateSettings(arguments);
@@ -8006,9 +8032,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               kernelThreadString = translatedSources.shift();
             }
 
-            return this._kernelString = "  const LOOP_MAX = ".concat(this._getLoopMaxString(), ";\n  ").concat(this.injectedNative || '', "\n  const _this = this;\n  ").concat(this._processConstants(), "\n  return (").concat(this.argumentNames.map(function (argumentName) {
+            return this._kernelString = "  const LOOP_MAX = ".concat(this._getLoopMaxString(), ";\n  ").concat(this.injectedNative || '', "\n  const _this = this;\n  ").concat(this._resultKernelHeader(), "\n  ").concat(this._processConstants(), "\n  return (").concat(this.argumentNames.map(function (argumentName) {
               return 'user_' + argumentName;
-            }).join(', '), ") => {\n    ").concat(this._prependedString.join(''), "\n    ").concat(this._processArguments(), "\n    ").concat(this.graphical ? this._graphicalKernelBody(kernelThreadString) : this._resultKernelBody(kernelThreadString), "\n    ").concat(translatedSources.length > 0 ? translatedSources.join('\n') : '', "\n  };");
+            }).join(', '), ") => {\n    ").concat(this._prependedString.join(''), "\n    ").concat(this._earlyThrows(), "\n    ").concat(this._processArguments(), "\n    ").concat(this.graphical ? this._graphicalKernelBody(kernelThreadString) : this._resultKernelBody(kernelThreadString), "\n    ").concat(translatedSources.length > 0 ? translatedSources.join('\n') : '', "\n  };");
           }
         }, {
           key: "toString",
@@ -8050,6 +8076,41 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
 
             return result.join('');
+          }
+        }, {
+          key: "_earlyThrows",
+          value: function _earlyThrows() {
+            var _this2 = this;
+
+            if (this.graphical) return '';
+            if (this.immutable) return '';
+            if (!this.pipeline) return '';
+            var arrayArguments = [];
+
+            for (var i = 0; i < this.argumentTypes.length; i++) {
+              if (this.argumentTypes[i] === 'Array') {
+                arrayArguments.push(this.argumentNames[i]);
+              }
+            }
+
+            if (arrayArguments.length === 0) return '';
+            var checks = [];
+
+            var _loop = function _loop(_i4) {
+              var argumentName = arrayArguments[_i4];
+
+              var checkSubKernels = _this2._mapSubKernels(function (subKernel) {
+                return "user_".concat(argumentName, " === result_").concat(subKernel.name);
+              }).join(' || ');
+
+              checks.push("user_".concat(argumentName, " === result").concat(checkSubKernels ? " || ".concat(checkSubKernels) : ''));
+            };
+
+            for (var _i4 = 0; _i4 < arrayArguments.length; _i4++) {
+              _loop(_i4);
+            }
+
+            return "if (".concat(checks.join(' || '), ") throw new Error('Source and destination arrays are the same.  Use immutable = true');");
           }
         }, {
           key: "_processArguments",
@@ -8144,17 +8205,35 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             return imagesArray;
           }
         }, {
+          key: "_resultKernelHeader",
+          value: function _resultKernelHeader() {
+            if (this.graphical) return '';
+            if (this.immutable) return '';
+            if (!this.pipeline) return '';
+
+            switch (this.output.length) {
+              case 1:
+                return this._mutableKernel1DResults();
+
+              case 2:
+                return this._mutableKernel2DResults();
+
+              case 3:
+                return this._mutableKernel3DResults();
+            }
+          }
+        }, {
           key: "_resultKernelBody",
           value: function _resultKernelBody(kernelString) {
             switch (this.output.length) {
               case 1:
-                return this._resultKernel1DLoop(kernelString) + this._kernelOutput();
+                return (!this.immutable && this.pipeline ? this._resultMutableKernel1DLoop(kernelString) : this._resultImmutableKernel1DLoop(kernelString)) + this._kernelOutput();
 
               case 2:
-                return this._resultKernel2DLoop(kernelString) + this._kernelOutput();
+                return (!this.immutable && this.pipeline ? this._resultMutableKernel2DLoop(kernelString) : this._resultImmutableKernel2DLoop(kernelString)) + this._kernelOutput();
 
               case 3:
-                return this._resultKernel3DLoop(kernelString) + this._kernelOutput();
+                return (!this.immutable && this.pipeline ? this._resultMutableKernel3DLoop(kernelString) : this._resultImmutableKernel3DLoop(kernelString)) + this._kernelOutput();
 
               default:
                 throw new Error('unsupported size kernel');
@@ -8200,8 +8279,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
           }
         }, {
-          key: "_resultKernel1DLoop",
-          value: function _resultKernel1DLoop(kernelString) {
+          key: "_resultImmutableKernel1DLoop",
+          value: function _resultImmutableKernel1DLoop(kernelString) {
             var constructorString = this._getKernelResultTypeConstructorString();
 
             return "  const outputX = _this.output[0];\n    const result = new ".concat(constructorString, "(outputX);\n    ").concat(this._mapSubKernels(function (subKernel) {
@@ -8211,8 +8290,24 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }).join('    '), "\n    for (let x = 0; x < outputX; x++) {\n      this.thread.x = x;\n      this.thread.y = 0;\n      this.thread.z = 0;\n      ").concat(kernelString, "\n    }");
           }
         }, {
-          key: "_resultKernel2DLoop",
-          value: function _resultKernel2DLoop(kernelString) {
+          key: "_mutableKernel1DResults",
+          value: function _mutableKernel1DResults() {
+            var constructorString = this._getKernelResultTypeConstructorString();
+
+            return "  const outputX = _this.output[0];\n    const result = new ".concat(constructorString, "(outputX);\n    ").concat(this._mapSubKernels(function (subKernel) {
+              return "const result_".concat(subKernel.name, " = new ").concat(constructorString, "(outputX);\n");
+            }).join('    '), "\n    ").concat(this._mapSubKernels(function (subKernel) {
+              return "let subKernelResult_".concat(subKernel.name, ";\n");
+            }).join('    '));
+          }
+        }, {
+          key: "_resultMutableKernel1DLoop",
+          value: function _resultMutableKernel1DLoop(kernelString) {
+            return "  const outputX = _this.output[0];\n    for (let x = 0; x < outputX; x++) {\n      this.thread.x = x;\n      this.thread.y = 0;\n      this.thread.z = 0;\n      ".concat(kernelString, "\n    }");
+          }
+        }, {
+          key: "_resultImmutableKernel2DLoop",
+          value: function _resultImmutableKernel2DLoop(kernelString) {
             var constructorString = this._getKernelResultTypeConstructorString();
 
             return "  const outputX = _this.output[0];\n    const outputY = _this.output[1];\n    const result = new Array(outputY);\n    ".concat(this._mapSubKernels(function (subKernel) {
@@ -8224,21 +8319,35 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }).join(''), "\n      for (let x = 0; x < outputX; x++) {\n        this.thread.x = x;\n        ").concat(kernelString, "\n      }\n    }");
           }
         }, {
-          key: "_graphicalKernel2DLoop",
-          value: function _graphicalKernel2DLoop(kernelString) {
+          key: "_mutableKernel2DResults",
+          value: function _mutableKernel2DResults() {
             var constructorString = this._getKernelResultTypeConstructorString();
 
-            return "  const outputX = _this.output[0];\n    const outputY = _this.output[1];\n    ".concat(this._mapSubKernels(function (subKernel) {
+            return "  const outputX = _this.output[0];\n    const outputY = _this.output[1];\n    const result = new Array(outputY);\n    ".concat(this._mapSubKernels(function (subKernel) {
               return "const result_".concat(subKernel.name, " = new Array(outputY);\n");
             }).join('    '), "\n    ").concat(this._mapSubKernels(function (subKernel) {
               return "let subKernelResult_".concat(subKernel.name, ";\n");
-            }).join('    '), "\n    for (let y = 0; y < outputY; y++) {\n      this.thread.z = 0;\n      this.thread.y = y;\n      ").concat(this._mapSubKernels(function (subKernel) {
+            }).join('    '), "\n    for (let y = 0; y < outputY; y++) {\n      const resultX = result[y] = new ").concat(constructorString, "(outputX);\n      ").concat(this._mapSubKernels(function (subKernel) {
+              return "const resultX_".concat(subKernel.name, " = result_").concat(subKernel.name, "[y] = new ").concat(constructorString, "(outputX);\n");
+            }).join(''), "\n    }");
+          }
+        }, {
+          key: "_resultMutableKernel2DLoop",
+          value: function _resultMutableKernel2DLoop(kernelString) {
+            var constructorString = this._getKernelResultTypeConstructorString();
+
+            return "  const outputX = _this.output[0];\n    const outputY = _this.output[1];\n    for (let y = 0; y < outputY; y++) {\n      this.thread.z = 0;\n      this.thread.y = y;\n      const resultX = result[y];\n      ".concat(this._mapSubKernels(function (subKernel) {
               return "const resultX_".concat(subKernel.name, " = result_").concat(subKernel.name, "[y] = new ").concat(constructorString, "(outputX);\n");
             }).join(''), "\n      for (let x = 0; x < outputX; x++) {\n        this.thread.x = x;\n        ").concat(kernelString, "\n      }\n    }");
           }
         }, {
-          key: "_resultKernel3DLoop",
-          value: function _resultKernel3DLoop(kernelString) {
+          key: "_graphicalKernel2DLoop",
+          value: function _graphicalKernel2DLoop(kernelString) {
+            return "  const outputX = _this.output[0];\n    const outputY = _this.output[1];\n    for (let y = 0; y < outputY; y++) {\n      this.thread.z = 0;\n      this.thread.y = y;\n      for (let x = 0; x < outputX; x++) {\n        this.thread.x = x;\n        ".concat(kernelString, "\n      }\n    }");
+          }
+        }, {
+          key: "_resultImmutableKernel3DLoop",
+          value: function _resultImmutableKernel3DLoop(kernelString) {
             var constructorString = this._getKernelResultTypeConstructorString();
 
             return "  const outputX = _this.output[0];\n    const outputY = _this.output[1];\n    const outputZ = _this.output[2];\n    const result = new Array(outputZ);\n    ".concat(this._mapSubKernels(function (subKernel) {
@@ -8250,6 +8359,26 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }).join('      '), "\n      for (let y = 0; y < outputY; y++) {\n        this.thread.y = y;\n        const resultX = resultY[y] = new ").concat(constructorString, "(outputX);\n        ").concat(this._mapSubKernels(function (subKernel) {
               return "const resultX_".concat(subKernel.name, " = resultY_").concat(subKernel.name, "[y] = new ").concat(constructorString, "(outputX);\n");
             }).join('        '), "\n        for (let x = 0; x < outputX; x++) {\n          this.thread.x = x;\n          ").concat(kernelString, "\n        }\n      }\n    }");
+          }
+        }, {
+          key: "_mutableKernel3DResults",
+          value: function _mutableKernel3DResults() {
+            var constructorString = this._getKernelResultTypeConstructorString();
+
+            return "  const outputX = _this.output[0];\n    const outputY = _this.output[1];\n    const outputZ = _this.output[2];\n    const result = new Array(outputZ);\n    ".concat(this._mapSubKernels(function (subKernel) {
+              return "const result_".concat(subKernel.name, " = new Array(outputZ);\n");
+            }).join('    '), "\n    ").concat(this._mapSubKernels(function (subKernel) {
+              return "let subKernelResult_".concat(subKernel.name, ";\n");
+            }).join('    '), "\n    for (let z = 0; z < outputZ; z++) {\n      const resultY = result[z] = new Array(outputY);\n      ").concat(this._mapSubKernels(function (subKernel) {
+              return "const resultY_".concat(subKernel.name, " = result_").concat(subKernel.name, "[z] = new Array(outputY);\n");
+            }).join('      '), "\n      for (let y = 0; y < outputY; y++) {\n        const resultX = resultY[y] = new ").concat(constructorString, "(outputX);\n        ").concat(this._mapSubKernels(function (subKernel) {
+              return "const resultX_".concat(subKernel.name, " = resultY_").concat(subKernel.name, "[y] = new ").concat(constructorString, "(outputX);\n");
+            }).join('        '), "\n      }\n    }");
+          }
+        }, {
+          key: "_resultMutableKernel3DLoop",
+          value: function _resultMutableKernel3DLoop(kernelString) {
+            return "  const outputX = _this.output[0];\n    const outputY = _this.output[1];\n    const outputZ = _this.output[2];\n    for (let z = 0; z < outputZ; z++) {\n      this.thread.z = z;\n      const resultY = result[z];\n      for (let y = 0; y < outputY; y++) {\n        this.thread.y = y;\n        const resultX = resultY[y];\n        for (let x = 0; x < outputX; x++) {\n          this.thread.x = x;\n          ".concat(kernelString, "\n        }\n      }\n    }");
           }
         }, {
           key: "_kernelOutput",
@@ -8327,9 +8456,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./kernel-string": 7
     }],
     9: [function (require, module, exports) {
-      var FunctionBuilder =
-      /*#__PURE__*/
-      function () {
+      var FunctionBuilder = /*#__PURE__*/function () {
         _createClass(FunctionBuilder, null, [{
           key: "fromKernel",
           value: function fromKernel(kernel, FunctionNode, extraNodeOptions) {
@@ -8363,8 +8490,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               argumentTypes[i] = kernelArguments[i].type;
             }
 
-            for (var _i4 = 0; _i4 < kernelConstants.length; _i4++) {
-              var kernelConstant = kernelConstants[_i4];
+            for (var _i5 = 0; _i5 < kernelConstants.length; _i5++) {
+              var kernelConstant = kernelConstants[_i5];
               constantTypes[kernelConstant.name] = kernelConstant.type;
             }
 
@@ -8407,8 +8534,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             var onNestedFunction = function onNestedFunction(ast, returnType) {
               var argumentNames = [];
 
-              for (var _i5 = 0; _i5 < ast.params.length; _i5++) {
-                argumentNames.push(ast.params[_i5].name);
+              for (var _i6 = 0; _i6 < ast.params.length; _i6++) {
+                argumentNames.push(ast.params[_i6].name);
               }
 
               var nestedFunction = new FunctionNode(null, Object.assign({}, nodeOptions, {
@@ -8557,14 +8684,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           }
 
           if (this.subKernelNodes) {
-            for (var _i6 = 0; _i6 < this.subKernelNodes.length; _i6++) {
-              this.functionMap[this.subKernelNodes[_i6].name] = this.subKernelNodes[_i6];
+            for (var _i7 = 0; _i7 < this.subKernelNodes.length; _i7++) {
+              this.functionMap[this.subKernelNodes[_i7].name] = this.subKernelNodes[_i7];
             }
           }
 
           if (this.nativeFunctions) {
-            for (var _i7 = 0; _i7 < this.nativeFunctions.length; _i7++) {
-              var nativeFunction = this.nativeFunctions[_i7];
+            for (var _i8 = 0; _i8 < this.nativeFunctions.length; _i8++) {
+              var nativeFunction = this.nativeFunctions[_i8];
               this.nativeFunctionNames.push(nativeFunction.name);
             }
           }
@@ -8673,18 +8800,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "toJSON",
           value: function toJSON() {
-            var _this2 = this;
+            var _this3 = this;
 
             return this.traceFunctionCalls(this.rootNode.name).reverse().map(function (name) {
-              var nativeIndex = _this2.nativeFunctions.indexOf(name);
+              var nativeIndex = _this3.nativeFunctions.indexOf(name);
 
               if (nativeIndex > -1) {
                 return {
                   name: name,
-                  source: _this2.nativeFunctions[nativeIndex].source
+                  source: _this3.nativeFunctions[nativeIndex].source
                 };
-              } else if (_this2.functionMap[name]) {
-                return _this2.functionMap[name].toJSON();
+              } else if (_this3.functionMap[name]) {
+                return _this3.functionMap[name].toJSON();
               } else {
                 throw new Error("function ".concat(name, " not found"));
               }
@@ -8824,10 +8951,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
 
             if (this.rootNode.name === functionName) {
-              var _i8 = this.rootNode.argumentNames.indexOf(argumentName);
+              var _i9 = this.rootNode.argumentNames.indexOf(argumentName);
 
-              if (_i8 !== -1) {
-                return this.rootNode.argumentBitRatios[_i8];
+              if (_i9 !== -1) {
+                return this.rootNode.argumentBitRatios[_i9];
               }
             }
 
@@ -8974,9 +9101,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require10 = require('./function-tracer'),
           FunctionTracer = _require10.FunctionTracer;
 
-      var FunctionNode =
-      /*#__PURE__*/
-      function () {
+      var FunctionNode = /*#__PURE__*/function () {
         function FunctionNode(source, settings) {
           _classCallCheck(this, FunctionNode);
 
@@ -9157,12 +9282,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "traceFunctionAST",
           value: function traceFunctionAST(ast) {
-            var _ref = new FunctionTracer(ast),
-                contexts = _ref.contexts,
-                declarations = _ref.declarations,
-                functions = _ref.functions,
-                identifiers = _ref.identifiers,
-                functionCalls = _ref.functionCalls;
+            var _FunctionTracer = new FunctionTracer(ast),
+                contexts = _FunctionTracer.contexts,
+                declarations = _FunctionTracer.declarations,
+                functions = _FunctionTracer.functions,
+                identifiers = _FunctionTracer.identifiers,
+                functionCalls = _FunctionTracer.functionCalls;
 
             this.contexts = contexts;
             this.identifiers = identifiers;
@@ -9211,8 +9336,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               declaration.isSafe = this.isSafeDependencies(dependencies);
             }
 
-            for (var _i9 = 0; _i9 < functions.length; _i9++) {
-              this.onNestedFunction(functions[_i9]);
+            for (var _i10 = 0; _i10 < functions.length; _i10++) {
+              this.onNestedFunction(functions[_i10]);
             }
           }
         }, {
@@ -9466,13 +9591,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                   var signature = this.getVariableSignature(ast);
 
                   if (signature === 'value') {
-                    var _type = this.getVariableType(ast);
-
-                    if (!_type) {
-                      throw this.astErrorOutput("Unable to find identifier valueType", ast);
-                    }
-
-                    return _type;
+                    return this.getCheckVariableType(ast);
                   }
                 }
 
@@ -9508,16 +9627,16 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
                   switch (variableSignature) {
                     case 'value[]':
-                      return this.getLookupType(this.getVariableType(ast.object));
+                      return this.getLookupType(this.getCheckVariableType(ast.object));
 
                     case 'value[][]':
-                      return this.getLookupType(this.getVariableType(ast.object.object));
+                      return this.getLookupType(this.getCheckVariableType(ast.object.object));
 
                     case 'value[][][]':
-                      return this.getLookupType(this.getVariableType(ast.object.object.object));
+                      return this.getLookupType(this.getCheckVariableType(ast.object.object.object));
 
                     case 'value[][][][]':
-                      return this.getLookupType(this.getVariableType(ast.object.object.object.object));
+                      return this.getLookupType(this.getCheckVariableType(ast.object.object.object.object));
 
                     case 'value.thread.value':
                     case 'this.thread.value':
@@ -9542,11 +9661,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                       return this.getLookupType(this.getConstantType(ast.object.object.object.object.property.name));
 
                     case 'fn()[]':
-                      return this.getLookupType(this.getType(ast.object));
-
                     case 'fn()[][]':
-                      return this.getLookupType(this.getType(ast.object));
-
                     case 'fn()[][][]':
                       return this.getLookupType(this.getType(ast.object));
 
@@ -9557,16 +9672,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
                       switch (ast.property.name) {
                         case 'r':
-                          return this.getLookupType(this.getVariableType(ast.object));
-
                         case 'g':
-                          return this.getLookupType(this.getVariableType(ast.object));
-
                         case 'b':
-                          return this.getLookupType(this.getVariableType(ast.object));
-
                         case 'a':
-                          return this.getLookupType(this.getVariableType(ast.object));
+                          return this.getLookupType(this.getCheckVariableType(ast.object));
                       }
 
                     case '[][]':
@@ -9602,6 +9711,17 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
           }
         }, {
+          key: "getCheckVariableType",
+          value: function getCheckVariableType(ast) {
+            var type = this.getVariableType(ast);
+
+            if (!type) {
+              throw this.astErrorOutput("".concat(ast.type, " is not defined"), ast);
+            }
+
+            return type;
+          }
+        }, {
           key: "inferArgumentTypesIfNeeded",
           value: function inferArgumentTypesIfNeeded(functionName, args) {
             for (var i = 0; i < args.length; i++) {
@@ -9624,7 +9744,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "isAstMathFunction",
           value: function isAstMathFunction(ast) {
-            var mathFunctions = ['abs', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'exp', 'floor', 'log', 'log2', 'max', 'min', 'pow', 'random', 'round', 'sign', 'sin', 'sqrt', 'tan'];
+            var mathFunctions = ['abs', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atan2', 'atanh', 'cbrt', 'ceil', 'clz32', 'cos', 'cosh', 'expm1', 'exp', 'floor', 'fround', 'imul', 'log', 'log2', 'log10', 'log1p', 'max', 'min', 'pow', 'random', 'round', 'sign', 'sin', 'sinh', 'sqrt', 'tan', 'tanh', 'trunc'];
             return ast.type === 'CallExpression' && ast.callee && ast.callee.type === 'MemberExpression' && ast.callee.object && ast.callee.object.type === 'Identifier' && ast.callee.object.name === 'Math' && ast.callee.property && ast.callee.property.type === 'Identifier' && mathFunctions.indexOf(ast.callee.property.name) > -1;
           }
         }, {
@@ -10621,9 +10741,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         inForLoopInit: 'inForLoopInit'
       };
 
-      var FunctionTracer =
-      /*#__PURE__*/
-      function () {
+      var FunctionTracer = /*#__PURE__*/function () {
         function FunctionTracer(ast) {
           _classCallCheck(this, FunctionTracer);
 
@@ -10715,13 +10833,24 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           key: "getDeclaration",
           value: function getDeclaration(name) {
             var currentContext = this.currentContext,
-                currentFunctionContext = this.currentFunctionContext;
-            return currentContext[name] || currentFunctionContext[name] || null;
+                currentFunctionContext = this.currentFunctionContext,
+                runningContexts = this.runningContexts;
+            var declaration = currentContext[name] || currentFunctionContext[name] || null;
+
+            if (!declaration && currentContext === currentFunctionContext && runningContexts.length > 0) {
+              var previousRunningContext = runningContexts[runningContexts.length - 2];
+
+              if (previousRunningContext[name]) {
+                return previousRunningContext[name];
+              }
+            }
+
+            return declaration;
           }
         }, {
           key: "scan",
           value: function scan(ast) {
-            var _this3 = this;
+            var _this4 = this;
 
             if (!ast) return;
 
@@ -10736,13 +10865,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             switch (ast.type) {
               case 'Program':
                 this.useFunctionContext(function () {
-                  _this3.scan(ast.body);
+                  _this4.scan(ast.body);
                 });
                 break;
 
               case 'BlockStatement':
                 this.newContext(function () {
-                  _this3.scan(ast.body);
+                  _this4.scan(ast.body);
                 });
                 break;
 
@@ -10778,7 +10907,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                   this.useFunctionContext(function () {
                     ast.declarations = utils.normalizeDeclarations(ast);
 
-                    _this3.scan(ast.declarations);
+                    _this4.scan(ast.declarations);
                   });
                 } else {
                   ast.declarations = utils.normalizeDeclarations(ast);
@@ -10835,20 +10964,20 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 {
                   var testIdentifiers;
                   var context = this.newContext(function () {
-                    _this3.pushState(states.inForLoopInit);
+                    _this4.pushState(states.inForLoopInit);
 
-                    _this3.scan(ast.init);
+                    _this4.scan(ast.init);
 
-                    _this3.popState(states.inForLoopInit);
+                    _this4.popState(states.inForLoopInit);
 
-                    testIdentifiers = _this3.getIdentifiers(function () {
-                      _this3.scan(ast.test);
+                    testIdentifiers = _this4.getIdentifiers(function () {
+                      _this4.scan(ast.test);
                     });
 
-                    _this3.scan(ast.update);
+                    _this4.scan(ast.update);
 
-                    _this3.newContext(function () {
-                      _this3.scan(ast.body);
+                    _this4.newContext(function () {
+                      _this4.scan(ast.body);
                     });
                   });
 
@@ -10868,9 +10997,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               case 'DoWhileStatement':
               case 'WhileStatement':
                 this.newContext(function () {
-                  _this3.scan(ast.body);
+                  _this4.scan(ast.body);
 
-                  _this3.scan(ast.test);
+                  _this4.scan(ast.test);
                 });
                 break;
 
@@ -11266,13 +11395,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               throw new Error('unhandled fromObject');
             }
           },
-          thisLookup: function thisLookup(property) {
+          thisLookup: function thisLookup(property, isDeclaration) {
             if (property === 'texture') {
               return textureName;
             }
 
             if (property === 'context') {
-              return null;
+              if (isDeclaration) return null;
+              return 'gl';
             }
 
             if (property === '_framebuffer') {
@@ -11312,8 +11442,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           }
         }
 
-        for (var _i10 = 0; _i10 < kernelValues.length; _i10++) {
-          var _kernelValue = kernelValues[_i10];
+        for (var _i11 = 0; _i11 < kernelValues.length; _i11++) {
+          var _kernelValue = kernelValues[_i11];
           if (argument !== _kernelValue.uploadValue) continue;
           var variable = "uploadValue_".concat(_kernelValue.name);
           context.insertVariable(variable, _kernelValue);
@@ -11394,10 +11524,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require34 = require('./texture/graphical'),
           GLTextureGraphical = _require34.GLTextureGraphical;
 
-      var GLKernel =
-      /*#__PURE__*/
-      function (_Kernel2) {
+      var GLKernel = /*#__PURE__*/function (_Kernel2) {
         _inherits(GLKernel, _Kernel2);
+
+        var _super3 = _createSuper(GLKernel);
 
         _createClass(GLKernel, [{
           key: "setFixIntegerDivisionAccuracy",
@@ -11461,6 +11591,29 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             return result[0] === 2 && result[1] === 1511;
           }
         }, {
+          key: "getIsSpeedTacticSupported",
+          value: function getIsSpeedTacticSupported() {
+            function kernelFunction(value) {
+              return value[this.thread.x];
+            }
+
+            var kernel = new this(kernelFunction.toString(), {
+              context: this.testContext,
+              canvas: this.testCanvas,
+              validate: false,
+              output: [4],
+              returnType: 'Number',
+              precision: 'unsigned',
+              tactic: 'speed'
+            });
+            var args = [[0, 1, 2, 3]];
+            kernel.build.apply(kernel, args);
+            kernel.run.apply(kernel, args);
+            var result = kernel.renderOutput();
+            kernel.destroy(true);
+            return Math.round(result[0]) === 0 && Math.round(result[1]) === 1 && Math.round(result[2]) === 2 && Math.round(result[3]) === 3;
+          }
+        }, {
           key: "getFeatures",
           value: function getFeatures() {
             var gl = this.testContext;
@@ -11468,6 +11621,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             return Object.freeze({
               isFloatRead: this.getIsFloatRead(),
               isIntegerDivisionAccurate: this.getIsIntegerDivisionAccurate(),
+              isSpeedTacticSupported: this.getIsSpeedTacticSupported(),
               isTextureFloat: this.getIsTextureFloat(),
               isDrawBuffers: isDrawBuffers,
               kernelMap: isDrawBuffers,
@@ -11655,22 +11809,24 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }]);
 
         function GLKernel(source, settings) {
-          var _this4;
+          var _this5;
 
           _classCallCheck(this, GLKernel);
 
-          _this4 = _possibleConstructorReturn(this, _getPrototypeOf(GLKernel).call(this, source, settings));
-          _this4.transferValues = null;
-          _this4.formatValues = null;
-          _this4.TextureConstructor = null;
-          _this4.renderOutput = null;
-          _this4.renderRawOutput = null;
-          _this4.texSize = null;
-          _this4.translatedSource = null;
-          _this4.compiledFragmentShader = null;
-          _this4.compiledVertexShader = null;
-          _this4.switchingKernels = null;
-          return _this4;
+          _this5 = _super3.call(this, source, settings);
+          _this5.transferValues = null;
+          _this5.formatValues = null;
+          _this5.TextureConstructor = null;
+          _this5.renderOutput = null;
+          _this5.renderRawOutput = null;
+          _this5.texSize = null;
+          _this5.translatedSource = null;
+          _this5.compiledFragmentShader = null;
+          _this5.compiledVertexShader = null;
+          _this5.switchingKernels = null;
+          _this5._textureSwitched = null;
+          _this5._mappedTextureSwitched = null;
+          return _this5;
         }
 
         _createClass(GLKernel, [{
@@ -12152,7 +12308,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "renderTexture",
           value: function renderTexture() {
-            return this.texture.clone();
+            return this.immutable ? this.texture.clone() : this.texture;
           }
         }, {
           key: "readPackedPixelsToUint8Array",
@@ -12215,8 +12371,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               result: this.renderOutput()
             };
 
-            for (var i = 0; i < this.subKernels.length; i++) {
-              result[this.subKernels[i].property] = this.mappedTextures[i].clone();
+            if (this.immutable) {
+              for (var i = 0; i < this.subKernels.length; i++) {
+                result[this.subKernels[i].property] = this.mappedTextures[i].clone();
+              }
+            } else {
+              for (var _i12 = 0; _i12 < this.subKernels.length; _i12++) {
+                result[this.subKernels[_i12].property] = this.mappedTextures[_i12];
+              }
             }
 
             return result;
@@ -12281,13 +12443,17 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
               this.texture = null;
 
-              if (this.mappedTextures) {
+              this._setupOutputTexture();
+
+              if (this.mappedTextures && this.mappedTextures.length > 0) {
                 for (var i = 0; i < this.mappedTextures.length; i++) {
                   this.mappedTextures[i].delete();
                 }
-              }
 
-              this.mappedTextures = null;
+                this.mappedTextures = null;
+
+                this._setupSubOutputTextures();
+              }
             } else {
               this.output = newOutput;
             }
@@ -12316,6 +12482,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             var isInt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
             if (!tactic) {
+              if (!this.constructor.features.isSpeedTacticSupported) return 'highp';
               var low = this.constructor.features[isInt ? 'lowIntPrecision' : 'lowFloatPrecision'];
               var medium = this.constructor.features[isInt ? 'mediumIntPrecision' : 'mediumFloatPrecision'];
               var high = this.constructor.features[isInt ? 'highIntPrecision' : 'highFloatPrecision'];
@@ -12349,6 +12516,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "updateTextureArgumentRefs",
           value: function updateTextureArgumentRefs(kernelValue, arg) {
+            if (!this.immutable) return;
+
             if (this.texture.texture === arg.texture) {
               var prevArg = kernelValue.prevArg;
 
@@ -12356,6 +12525,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 if (prevArg.texture._refs === 1) {
                   this.texture.delete();
                   this.texture = prevArg.clone();
+                  this._textureSwitched = true;
                 }
 
                 prevArg.delete();
@@ -12375,6 +12545,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                     if (_prevArg.texture._refs === 1) {
                       mappedTexture.delete();
                       mappedTextures[i] = _prevArg.clone();
+                      this._mappedTextureSwitched[i] = true;
                     }
 
                     _prevArg.delete();
@@ -12384,6 +12555,20 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                   return;
                 }
               }
+            }
+          }
+        }, {
+          key: "onActivate",
+          value: function onActivate(previousKernel) {
+            this._textureSwitched = true;
+            this.texture = previousKernel.texture;
+
+            if (this.mappedTextures) {
+              for (var i = 0; i < this.mappedTextures.length; i++) {
+                this._mappedTextureSwitched[i] = true;
+              }
+
+              this.mappedTextures = previousKernel.mappedTextures;
             }
           }
         }, {
@@ -12434,19 +12619,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require36 = require('./float'),
           GLTextureFloat = _require36.GLTextureFloat;
 
-      var GLTextureArray2Float2D =
-      /*#__PURE__*/
-      function (_GLTextureFloat) {
+      var GLTextureArray2Float2D = /*#__PURE__*/function (_GLTextureFloat) {
         _inherits(GLTextureArray2Float2D, _GLTextureFloat);
 
+        var _super4 = _createSuper(GLTextureArray2Float2D);
+
         function GLTextureArray2Float2D(settings) {
-          var _this5;
+          var _this6;
 
           _classCallCheck(this, GLTextureArray2Float2D);
 
-          _this5 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureArray2Float2D).call(this, settings));
-          _this5.type = 'ArrayTexture(2)';
-          return _this5;
+          _this6 = _super4.call(this, settings);
+          _this6.type = 'ArrayTexture(2)';
+          return _this6;
         }
 
         _createClass(GLTextureArray2Float2D, [{
@@ -12473,19 +12658,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require38 = require('./float'),
           GLTextureFloat = _require38.GLTextureFloat;
 
-      var GLTextureArray2Float3D =
-      /*#__PURE__*/
-      function (_GLTextureFloat2) {
+      var GLTextureArray2Float3D = /*#__PURE__*/function (_GLTextureFloat2) {
         _inherits(GLTextureArray2Float3D, _GLTextureFloat2);
 
+        var _super5 = _createSuper(GLTextureArray2Float3D);
+
         function GLTextureArray2Float3D(settings) {
-          var _this6;
+          var _this7;
 
           _classCallCheck(this, GLTextureArray2Float3D);
 
-          _this6 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureArray2Float3D).call(this, settings));
-          _this6.type = 'ArrayTexture(2)';
-          return _this6;
+          _this7 = _super5.call(this, settings);
+          _this7.type = 'ArrayTexture(2)';
+          return _this7;
         }
 
         _createClass(GLTextureArray2Float3D, [{
@@ -12512,19 +12697,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require40 = require('./float'),
           GLTextureFloat = _require40.GLTextureFloat;
 
-      var GLTextureArray2Float =
-      /*#__PURE__*/
-      function (_GLTextureFloat3) {
+      var GLTextureArray2Float = /*#__PURE__*/function (_GLTextureFloat3) {
         _inherits(GLTextureArray2Float, _GLTextureFloat3);
 
+        var _super6 = _createSuper(GLTextureArray2Float);
+
         function GLTextureArray2Float(settings) {
-          var _this7;
+          var _this8;
 
           _classCallCheck(this, GLTextureArray2Float);
 
-          _this7 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureArray2Float).call(this, settings));
-          _this7.type = 'ArrayTexture(2)';
-          return _this7;
+          _this8 = _super6.call(this, settings);
+          _this8.type = 'ArrayTexture(2)';
+          return _this8;
         }
 
         _createClass(GLTextureArray2Float, [{
@@ -12551,19 +12736,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require42 = require('./float'),
           GLTextureFloat = _require42.GLTextureFloat;
 
-      var GLTextureArray3Float2D =
-      /*#__PURE__*/
-      function (_GLTextureFloat4) {
+      var GLTextureArray3Float2D = /*#__PURE__*/function (_GLTextureFloat4) {
         _inherits(GLTextureArray3Float2D, _GLTextureFloat4);
 
+        var _super7 = _createSuper(GLTextureArray3Float2D);
+
         function GLTextureArray3Float2D(settings) {
-          var _this8;
+          var _this9;
 
           _classCallCheck(this, GLTextureArray3Float2D);
 
-          _this8 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureArray3Float2D).call(this, settings));
-          _this8.type = 'ArrayTexture(3)';
-          return _this8;
+          _this9 = _super7.call(this, settings);
+          _this9.type = 'ArrayTexture(3)';
+          return _this9;
         }
 
         _createClass(GLTextureArray3Float2D, [{
@@ -12590,19 +12775,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require44 = require('./float'),
           GLTextureFloat = _require44.GLTextureFloat;
 
-      var GLTextureArray3Float3D =
-      /*#__PURE__*/
-      function (_GLTextureFloat5) {
+      var GLTextureArray3Float3D = /*#__PURE__*/function (_GLTextureFloat5) {
         _inherits(GLTextureArray3Float3D, _GLTextureFloat5);
 
+        var _super8 = _createSuper(GLTextureArray3Float3D);
+
         function GLTextureArray3Float3D(settings) {
-          var _this9;
+          var _this10;
 
           _classCallCheck(this, GLTextureArray3Float3D);
 
-          _this9 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureArray3Float3D).call(this, settings));
-          _this9.type = 'ArrayTexture(3)';
-          return _this9;
+          _this10 = _super8.call(this, settings);
+          _this10.type = 'ArrayTexture(3)';
+          return _this10;
         }
 
         _createClass(GLTextureArray3Float3D, [{
@@ -12629,19 +12814,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require46 = require('./float'),
           GLTextureFloat = _require46.GLTextureFloat;
 
-      var GLTextureArray3Float =
-      /*#__PURE__*/
-      function (_GLTextureFloat6) {
+      var GLTextureArray3Float = /*#__PURE__*/function (_GLTextureFloat6) {
         _inherits(GLTextureArray3Float, _GLTextureFloat6);
 
+        var _super9 = _createSuper(GLTextureArray3Float);
+
         function GLTextureArray3Float(settings) {
-          var _this10;
+          var _this11;
 
           _classCallCheck(this, GLTextureArray3Float);
 
-          _this10 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureArray3Float).call(this, settings));
-          _this10.type = 'ArrayTexture(3)';
-          return _this10;
+          _this11 = _super9.call(this, settings);
+          _this11.type = 'ArrayTexture(3)';
+          return _this11;
         }
 
         _createClass(GLTextureArray3Float, [{
@@ -12668,19 +12853,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require48 = require('./float'),
           GLTextureFloat = _require48.GLTextureFloat;
 
-      var GLTextureArray4Float2D =
-      /*#__PURE__*/
-      function (_GLTextureFloat7) {
+      var GLTextureArray4Float2D = /*#__PURE__*/function (_GLTextureFloat7) {
         _inherits(GLTextureArray4Float2D, _GLTextureFloat7);
 
+        var _super10 = _createSuper(GLTextureArray4Float2D);
+
         function GLTextureArray4Float2D(settings) {
-          var _this11;
+          var _this12;
 
           _classCallCheck(this, GLTextureArray4Float2D);
 
-          _this11 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureArray4Float2D).call(this, settings));
-          _this11.type = 'ArrayTexture(4)';
-          return _this11;
+          _this12 = _super10.call(this, settings);
+          _this12.type = 'ArrayTexture(4)';
+          return _this12;
         }
 
         _createClass(GLTextureArray4Float2D, [{
@@ -12707,19 +12892,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require50 = require('./float'),
           GLTextureFloat = _require50.GLTextureFloat;
 
-      var GLTextureArray4Float3D =
-      /*#__PURE__*/
-      function (_GLTextureFloat8) {
+      var GLTextureArray4Float3D = /*#__PURE__*/function (_GLTextureFloat8) {
         _inherits(GLTextureArray4Float3D, _GLTextureFloat8);
 
+        var _super11 = _createSuper(GLTextureArray4Float3D);
+
         function GLTextureArray4Float3D(settings) {
-          var _this12;
+          var _this13;
 
           _classCallCheck(this, GLTextureArray4Float3D);
 
-          _this12 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureArray4Float3D).call(this, settings));
-          _this12.type = 'ArrayTexture(4)';
-          return _this12;
+          _this13 = _super11.call(this, settings);
+          _this13.type = 'ArrayTexture(4)';
+          return _this13;
         }
 
         _createClass(GLTextureArray4Float3D, [{
@@ -12746,19 +12931,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require52 = require('./float'),
           GLTextureFloat = _require52.GLTextureFloat;
 
-      var GLTextureArray4Float =
-      /*#__PURE__*/
-      function (_GLTextureFloat9) {
+      var GLTextureArray4Float = /*#__PURE__*/function (_GLTextureFloat9) {
         _inherits(GLTextureArray4Float, _GLTextureFloat9);
 
+        var _super12 = _createSuper(GLTextureArray4Float);
+
         function GLTextureArray4Float(settings) {
-          var _this13;
+          var _this14;
 
           _classCallCheck(this, GLTextureArray4Float);
 
-          _this13 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureArray4Float).call(this, settings));
-          _this13.type = 'ArrayTexture(4)';
-          return _this13;
+          _this14 = _super12.call(this, settings);
+          _this14.type = 'ArrayTexture(4)';
+          return _this14;
         }
 
         _createClass(GLTextureArray4Float, [{
@@ -12785,19 +12970,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require54 = require('./float'),
           GLTextureFloat = _require54.GLTextureFloat;
 
-      var GLTextureFloat2D =
-      /*#__PURE__*/
-      function (_GLTextureFloat10) {
+      var GLTextureFloat2D = /*#__PURE__*/function (_GLTextureFloat10) {
         _inherits(GLTextureFloat2D, _GLTextureFloat10);
 
+        var _super13 = _createSuper(GLTextureFloat2D);
+
         function GLTextureFloat2D(settings) {
-          var _this14;
+          var _this15;
 
           _classCallCheck(this, GLTextureFloat2D);
 
-          _this14 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureFloat2D).call(this, settings));
-          _this14.type = 'ArrayTexture(1)';
-          return _this14;
+          _this15 = _super13.call(this, settings);
+          _this15.type = 'ArrayTexture(1)';
+          return _this15;
         }
 
         _createClass(GLTextureFloat2D, [{
@@ -12824,19 +13009,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require56 = require('./float'),
           GLTextureFloat = _require56.GLTextureFloat;
 
-      var GLTextureFloat3D =
-      /*#__PURE__*/
-      function (_GLTextureFloat11) {
+      var GLTextureFloat3D = /*#__PURE__*/function (_GLTextureFloat11) {
         _inherits(GLTextureFloat3D, _GLTextureFloat11);
 
+        var _super14 = _createSuper(GLTextureFloat3D);
+
         function GLTextureFloat3D(settings) {
-          var _this15;
+          var _this16;
 
           _classCallCheck(this, GLTextureFloat3D);
 
-          _this15 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureFloat3D).call(this, settings));
-          _this15.type = 'ArrayTexture(1)';
-          return _this15;
+          _this16 = _super14.call(this, settings);
+          _this16.type = 'ArrayTexture(1)';
+          return _this16;
         }
 
         _createClass(GLTextureFloat3D, [{
@@ -12863,10 +13048,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require58 = require('./index'),
           GLTexture = _require58.GLTexture;
 
-      var GLTextureFloat =
-      /*#__PURE__*/
-      function (_GLTexture) {
+      var GLTextureFloat = /*#__PURE__*/function (_GLTexture) {
         _inherits(GLTextureFloat, _GLTexture);
+
+        var _super15 = _createSuper(GLTextureFloat);
 
         _createClass(GLTextureFloat, [{
           key: "textureType",
@@ -12876,26 +13061,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }]);
 
         function GLTextureFloat(settings) {
-          var _this16;
+          var _this17;
 
           _classCallCheck(this, GLTextureFloat);
 
-          _this16 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureFloat).call(this, settings));
-          _this16.type = 'ArrayTexture(1)';
-          return _this16;
+          _this17 = _super15.call(this, settings);
+          _this17.type = 'ArrayTexture(1)';
+          return _this17;
         }
 
         _createClass(GLTextureFloat, [{
           key: "renderRawOutput",
           value: function renderRawOutput() {
-            var gl = this.context,
-                size = this.size;
-
-            if (!this._framebuffer) {
-              this._framebuffer = gl.createFramebuffer();
-            }
-
-            gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
+            var gl = this.context;
+            var size = this.size;
+            gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer());
             gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
             var result = new Float32Array(size[0] * size[1] * 4);
             gl.readPixels(0, 0, size[0], size[1], gl.RGBA, gl.FLOAT, result);
@@ -12928,19 +13108,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require59 = require('./unsigned'),
           GLTextureUnsigned = _require59.GLTextureUnsigned;
 
-      var GLTextureGraphical =
-      /*#__PURE__*/
-      function (_GLTextureUnsigned) {
+      var GLTextureGraphical = /*#__PURE__*/function (_GLTextureUnsigned) {
         _inherits(GLTextureGraphical, _GLTextureUnsigned);
 
+        var _super16 = _createSuper(GLTextureGraphical);
+
         function GLTextureGraphical(settings) {
-          var _this17;
+          var _this18;
 
           _classCallCheck(this, GLTextureGraphical);
 
-          _this17 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureGraphical).call(this, settings));
-          _this17.type = 'ArrayTexture(4)';
-          return _this17;
+          _this18 = _super16.call(this, settings);
+          _this18.type = 'ArrayTexture(4)';
+          return _this18;
         }
 
         _createClass(GLTextureGraphical, [{
@@ -12963,15 +13143,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require60 = require('../../../texture'),
           Texture = _require60.Texture;
 
-      var GLTexture =
-      /*#__PURE__*/
-      function (_Texture) {
+      var GLTexture = /*#__PURE__*/function (_Texture) {
         _inherits(GLTexture, _Texture);
+
+        var _super17 = _createSuper(GLTexture);
 
         function GLTexture() {
           _classCallCheck(this, GLTexture);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(GLTexture).apply(this, arguments));
+          return _super17.apply(this, arguments);
         }
 
         _createClass(GLTexture, [{
@@ -12983,8 +13163,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           key: "beforeMutate",
           value: function beforeMutate() {
             if (this.texture._refs > 1) {
-              this.cloneTexture();
+              this.newTexture();
+              return true;
             }
+
+            return false;
           }
         }, {
           key: "cloneTexture",
@@ -12999,15 +13182,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               console.warn('cloning internal texture');
             }
 
-            var existingFramebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
-
-            if (!this._framebuffer) {
-              this._framebuffer = gl.createFramebuffer();
-            }
-
-            this._framebuffer.width = size[0];
-            this._framebuffer.height = size[1];
-            gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
+            gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer());
             selectTexture(gl, texture);
             gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
             var target = gl.createTexture();
@@ -13016,20 +13191,78 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, size[0], size[1]);
             target._refs = 1;
             this.texture = target;
+          }
+        }, {
+          key: "newTexture",
+          value: function newTexture() {
+            this.texture._refs--;
+            var gl = this.context;
+            var size = this.size;
+            var kernel = this.kernel;
 
-            if (existingFramebuffer) {
-              gl.bindFramebuffer(gl.FRAMEBUFFER, existingFramebuffer);
+            if (kernel.debug) {
+              console.warn('new internal texture');
             }
+
+            var target = gl.createTexture();
+            selectTexture(gl, target);
+            gl.texImage2D(gl.TEXTURE_2D, 0, this.internalFormat, size[0], size[1], 0, this.textureFormat, this.textureType, null);
+            target._refs = 1;
+            this.texture = target;
+          }
+        }, {
+          key: "clear",
+          value: function clear() {
+            if (this.texture._refs) {
+              this.texture._refs--;
+              var _gl = this.context;
+
+              var target = this.texture = _gl.createTexture();
+
+              selectTexture(_gl, target);
+              var size = this.size;
+              target._refs = 1;
+
+              _gl.texImage2D(_gl.TEXTURE_2D, 0, this.internalFormat, size[0], size[1], 0, this.textureFormat, this.textureType, null);
+            }
+
+            var gl = this.context,
+                texture = this.texture;
+            gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer());
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            selectTexture(gl, texture);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
           }
         }, {
           key: "delete",
           value: function _delete() {
-            _get(_getPrototypeOf(GLTexture.prototype), "delete", this).call(this);
+            if (this._deleted) return;
+            this._deleted = true;
+
+            if (this.texture._refs) {
+              this.texture._refs--;
+              if (this.texture._refs) return;
+            }
+
+            this.context.deleteTexture(this.texture);
 
             if (this.texture._refs === 0 && this._framebuffer) {
               this.context.deleteFramebuffer(this._framebuffer);
               this._framebuffer = null;
             }
+          }
+        }, {
+          key: "framebuffer",
+          value: function framebuffer() {
+            if (!this._framebuffer) {
+              this._framebuffer = this.context.createFramebuffer();
+            }
+
+            this._framebuffer.width = this.size[0];
+            this._framebuffer.height = this.size[1];
+            return this._framebuffer;
           }
         }, {
           key: "textureType",
@@ -13042,7 +13275,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       }(Texture);
 
       function selectTexture(gl, texture) {
-        gl.activeTexture(gl.TEXTURE31);
+        gl.activeTexture(gl.TEXTURE15);
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -13063,19 +13296,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require62 = require('./float'),
           GLTextureFloat = _require62.GLTextureFloat;
 
-      var GLTextureMemoryOptimized2D =
-      /*#__PURE__*/
-      function (_GLTextureFloat12) {
+      var GLTextureMemoryOptimized2D = /*#__PURE__*/function (_GLTextureFloat12) {
         _inherits(GLTextureMemoryOptimized2D, _GLTextureFloat12);
 
+        var _super18 = _createSuper(GLTextureMemoryOptimized2D);
+
         function GLTextureMemoryOptimized2D(settings) {
-          var _this18;
+          var _this19;
 
           _classCallCheck(this, GLTextureMemoryOptimized2D);
 
-          _this18 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureMemoryOptimized2D).call(this, settings));
-          _this18.type = 'MemoryOptimizedNumberTexture';
-          return _this18;
+          _this19 = _super18.call(this, settings);
+          _this19.type = 'MemoryOptimizedNumberTexture';
+          return _this19;
         }
 
         _createClass(GLTextureMemoryOptimized2D, [{
@@ -13102,19 +13335,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require64 = require('./float'),
           GLTextureFloat = _require64.GLTextureFloat;
 
-      var GLTextureMemoryOptimized3D =
-      /*#__PURE__*/
-      function (_GLTextureFloat13) {
+      var GLTextureMemoryOptimized3D = /*#__PURE__*/function (_GLTextureFloat13) {
         _inherits(GLTextureMemoryOptimized3D, _GLTextureFloat13);
 
+        var _super19 = _createSuper(GLTextureMemoryOptimized3D);
+
         function GLTextureMemoryOptimized3D(settings) {
-          var _this19;
+          var _this20;
 
           _classCallCheck(this, GLTextureMemoryOptimized3D);
 
-          _this19 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureMemoryOptimized3D).call(this, settings));
-          _this19.type = 'MemoryOptimizedNumberTexture';
-          return _this19;
+          _this20 = _super19.call(this, settings);
+          _this20.type = 'MemoryOptimizedNumberTexture';
+          return _this20;
         }
 
         _createClass(GLTextureMemoryOptimized3D, [{
@@ -13141,19 +13374,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require66 = require('./float'),
           GLTextureFloat = _require66.GLTextureFloat;
 
-      var GLTextureMemoryOptimized =
-      /*#__PURE__*/
-      function (_GLTextureFloat14) {
+      var GLTextureMemoryOptimized = /*#__PURE__*/function (_GLTextureFloat14) {
         _inherits(GLTextureMemoryOptimized, _GLTextureFloat14);
 
+        var _super20 = _createSuper(GLTextureMemoryOptimized);
+
         function GLTextureMemoryOptimized(settings) {
-          var _this20;
+          var _this21;
 
           _classCallCheck(this, GLTextureMemoryOptimized);
 
-          _this20 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureMemoryOptimized).call(this, settings));
-          _this20.type = 'MemoryOptimizedNumberTexture';
-          return _this20;
+          _this21 = _super20.call(this, settings);
+          _this21.type = 'MemoryOptimizedNumberTexture';
+          return _this21;
         }
 
         _createClass(GLTextureMemoryOptimized, [{
@@ -13180,19 +13413,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require68 = require('./unsigned'),
           GLTextureUnsigned = _require68.GLTextureUnsigned;
 
-      var GLTextureUnsigned2D =
-      /*#__PURE__*/
-      function (_GLTextureUnsigned2) {
+      var GLTextureUnsigned2D = /*#__PURE__*/function (_GLTextureUnsigned2) {
         _inherits(GLTextureUnsigned2D, _GLTextureUnsigned2);
 
+        var _super21 = _createSuper(GLTextureUnsigned2D);
+
         function GLTextureUnsigned2D(settings) {
-          var _this21;
+          var _this22;
 
           _classCallCheck(this, GLTextureUnsigned2D);
 
-          _this21 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureUnsigned2D).call(this, settings));
-          _this21.type = 'NumberTexture';
-          return _this21;
+          _this22 = _super21.call(this, settings);
+          _this22.type = 'NumberTexture';
+          return _this22;
         }
 
         _createClass(GLTextureUnsigned2D, [{
@@ -13219,19 +13452,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require70 = require('./unsigned'),
           GLTextureUnsigned = _require70.GLTextureUnsigned;
 
-      var GLTextureUnsigned3D =
-      /*#__PURE__*/
-      function (_GLTextureUnsigned3) {
+      var GLTextureUnsigned3D = /*#__PURE__*/function (_GLTextureUnsigned3) {
         _inherits(GLTextureUnsigned3D, _GLTextureUnsigned3);
 
+        var _super22 = _createSuper(GLTextureUnsigned3D);
+
         function GLTextureUnsigned3D(settings) {
-          var _this22;
+          var _this23;
 
           _classCallCheck(this, GLTextureUnsigned3D);
 
-          _this22 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureUnsigned3D).call(this, settings));
-          _this22.type = 'NumberTexture';
-          return _this22;
+          _this23 = _super22.call(this, settings);
+          _this23.type = 'NumberTexture';
+          return _this23;
         }
 
         _createClass(GLTextureUnsigned3D, [{
@@ -13258,10 +13491,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require72 = require('./index'),
           GLTexture = _require72.GLTexture;
 
-      var GLTextureUnsigned =
-      /*#__PURE__*/
-      function (_GLTexture2) {
+      var GLTextureUnsigned = /*#__PURE__*/function (_GLTexture2) {
         _inherits(GLTextureUnsigned, _GLTexture2);
+
+        var _super23 = _createSuper(GLTextureUnsigned);
 
         _createClass(GLTextureUnsigned, [{
           key: "textureType",
@@ -13271,13 +13504,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }]);
 
         function GLTextureUnsigned(settings) {
-          var _this23;
+          var _this24;
 
           _classCallCheck(this, GLTextureUnsigned);
 
-          _this23 = _possibleConstructorReturn(this, _getPrototypeOf(GLTextureUnsigned).call(this, settings));
-          _this23.type = 'NumberTexture';
-          return _this23;
+          _this24 = _super23.call(this, settings);
+          _this24.type = 'NumberTexture';
+          return _this24;
         }
 
         _createClass(GLTextureUnsigned, [{
@@ -13329,15 +13562,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var testExtensions = null;
       var features = null;
 
-      var HeadlessGLKernel =
-      /*#__PURE__*/
-      function (_WebGLKernel) {
+      var HeadlessGLKernel = /*#__PURE__*/function (_WebGLKernel) {
         _inherits(HeadlessGLKernel, _WebGLKernel);
+
+        var _super24 = _createSuper(HeadlessGLKernel);
 
         function HeadlessGLKernel() {
           _classCallCheck(this, HeadlessGLKernel);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(HeadlessGLKernel).apply(this, arguments));
+          return _super24.apply(this, arguments);
         }
 
         _createClass(HeadlessGLKernel, [{
@@ -13502,9 +13735,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "gl": 2
     }],
     35: [function (require, module, exports) {
-      var KernelValue =
-      /*#__PURE__*/
-      function () {
+      var KernelValue = /*#__PURE__*/function () {
         function KernelValue(value, settings) {
           _classCallCheck(this, KernelValue);
 
@@ -13542,7 +13773,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.name = name;
           this.origin = origin;
           this.tactic = tactic;
-          this.id = "".concat(this.origin, "_").concat(name);
           this.varName = origin === 'constants' ? "constants.".concat(name) : name;
           this.kernel = kernel;
           this.strictIntegers = strictIntegers;
@@ -13567,6 +13797,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           value: function updateValue(value) {
             throw new Error("\"updateValue\" not defined on ".concat(this.constructor.name));
           }
+        }, {
+          key: "id",
+          get: function get() {
+            return "".concat(this.origin, "_").concat(name);
+          }
         }]);
 
         return KernelValue;
@@ -13583,9 +13818,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var _require76 = require('../input'),
           Input = _require76.Input;
 
-      var Kernel =
-      /*#__PURE__*/
-      function () {
+      var Kernel = /*#__PURE__*/function () {
         _createClass(Kernel, null, [{
           key: "isContextMatch",
           value: function isContextMatch(context) {
@@ -13725,8 +13958,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                   if (!settings.nativeFunctions) continue;
                   this.nativeFunctions = [];
 
-                  for (var _i11 = 0; _i11 < settings.nativeFunctions.length; _i11++) {
-                    var s = settings.nativeFunctions[_i11];
+                  for (var _i13 = 0; _i13 < settings.nativeFunctions.length; _i13++) {
+                    var s = settings.nativeFunctions[_i13];
                     var _name5 = s.name,
                         source = s.source;
                     this.addNativeFunction(_name5, source, s);
@@ -13789,9 +14022,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           value: function addNativeFunction(name, source) {
             var settings = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-            var _ref2 = settings.argumentTypes ? splitArgumentTypes(settings.argumentTypes) : this.constructor.nativeFunctionArguments(source) || {},
-                argumentTypes = _ref2.argumentTypes,
-                argumentNames = _ref2.argumentNames;
+            var _ref = settings.argumentTypes ? splitArgumentTypes(settings.argumentTypes) : this.constructor.nativeFunctionArguments(source) || {},
+                argumentTypes = _ref.argumentTypes,
+                argumentNames = _ref.argumentNames;
 
             this.nativeFunctions.push({
               name: name,
@@ -13822,9 +14055,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 }
               }
             } else {
-              for (var _i12 = 0; _i12 < this.argumentTypes.length; _i12++) {
+              for (var _i14 = 0; _i14 < this.argumentTypes.length; _i14++) {
                 this.kernelArguments.push({
-                  type: this.argumentTypes[_i12]
+                  type: this.argumentTypes[_i14]
                 });
               }
             }
@@ -13832,10 +14065,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             this.argumentSizes = new Array(args.length);
             this.argumentBitRatios = new Int32Array(args.length);
 
-            for (var _i13 = 0; _i13 < args.length; _i13++) {
-              var arg = args[_i13];
-              this.argumentSizes[_i13] = arg.constructor === Input ? arg.size : null;
-              this.argumentBitRatios[_i13] = this.getBitRatio(arg);
+            for (var _i15 = 0; _i15 < args.length; _i15++) {
+              var arg = args[_i15];
+              this.argumentSizes[_i15] = arg.constructor === Input ? arg.size : null;
+              this.argumentBitRatios[_i15] = this.getBitRatio(arg);
             }
 
             if (this.argumentNames.length !== args.length) {
@@ -13974,6 +14207,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             return this;
           }
         }, {
+          key: "setDimensions",
+          value: function setDimensions(flag) {
+            utils.warnDeprecated('method', 'setDimensions', 'setOutput');
+            this.output = flag;
+            return this;
+          }
+        }, {
           key: "setOutputToTexture",
           value: function setOutputToTexture(flag) {
             utils.warnDeprecated('method', 'setOutputToTexture', 'setPipeline');
@@ -13983,7 +14223,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "setImmutable",
           value: function setImmutable(flag) {
-            utils.warnDeprecated('method', 'setImmutable');
+            this.immutable = flag;
             return this;
           }
         }, {
@@ -14207,6 +14447,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               returnType: settings.returnType || null
             };
           }
+        }, {
+          key: "onActivate",
+          value: function onActivate(previousKernel) {}
         }], [{
           key: "getArgumentTypes",
           value: function getArgumentTypes(kernel, args) {
@@ -14239,7 +14482,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           key: "getSignature",
           value: function getSignature(kernel, argumentTypes) {
             throw new Error("\"getSignature\" not implemented on ".concat(this.name));
-            return argumentTypes.length > 0 ? ':' + argumentTypes.join(',') : '';
           }
         }]);
 
@@ -14269,32 +14511,35 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../utils": 114
     }],
     37: [function (require, module, exports) {
-      var fragmentShader = "__HEADER__;\n__FLOAT_TACTIC_DECLARATION__;\n__INT_TACTIC_DECLARATION__;\n__SAMPLER_2D_TACTIC_DECLARATION__;\n\nconst int LOOP_MAX = __LOOP_MAX__;\n\n__PLUGINS__;\n__CONSTANTS__;\n\nvarying vec2 vTexCoord;\n\nvec4 round(vec4 x) {\n  return floor(x + 0.5);\n}\n\nfloat round(float x) {\n  return floor(x + 0.5);\n}\n\nconst int BIT_COUNT = 32;\nint modi(int x, int y) {\n  return x - y * (x / y);\n}\n\nint bitwiseOr(int a, int b) {\n  int result = 0;\n  int n = 1;\n  \n  for (int i = 0; i < BIT_COUNT; i++) {\n    if ((modi(a, 2) == 1) || (modi(b, 2) == 1)) {\n      result += n;\n    }\n    a = a / 2;\n    b = b / 2;\n    n = n * 2;\n    if(!(a > 0 || b > 0)) {\n      break;\n    }\n  }\n  return result;\n}\nint bitwiseXOR(int a, int b) {\n  int result = 0;\n  int n = 1;\n  \n  for (int i = 0; i < BIT_COUNT; i++) {\n    if ((modi(a, 2) == 1) != (modi(b, 2) == 1)) {\n      result += n;\n    }\n    a = a / 2;\n    b = b / 2;\n    n = n * 2;\n    if(!(a > 0 || b > 0)) {\n      break;\n    }\n  }\n  return result;\n}\nint bitwiseAnd(int a, int b) {\n  int result = 0;\n  int n = 1;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if ((modi(a, 2) == 1) && (modi(b, 2) == 1)) {\n      result += n;\n    }\n    a = a / 2;\n    b = b / 2;\n    n = n * 2;\n    if(!(a > 0 && b > 0)) {\n      break;\n    }\n  }\n  return result;\n}\nint bitwiseNot(int a) {\n  int result = 0;\n  int n = 1;\n  \n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (modi(a, 2) == 0) {\n      result += n;    \n    }\n    a = a / 2;\n    n = n * 2;\n  }\n  return result;\n}\nint bitwiseZeroFillLeftShift(int n, int shift) {\n  int maxBytes = BIT_COUNT;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (maxBytes >= n) {\n      break;\n    }\n    maxBytes *= 2;\n  }\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= shift) {\n      break;\n    }\n    n *= 2;\n  }\n\n  int result = 0;\n  int byteVal = 1;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= maxBytes) break;\n    if (modi(n, 2) > 0) { result += byteVal; }\n    n = int(n / 2);\n    byteVal *= 2;\n  }\n  return result;\n}\n\nint bitwiseSignedRightShift(int num, int shifts) {\n  return int(floor(float(num) / pow(2.0, float(shifts))));\n}\n\nint bitwiseZeroFillRightShift(int n, int shift) {\n  int maxBytes = BIT_COUNT;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (maxBytes >= n) {\n      break;\n    }\n    maxBytes *= 2;\n  }\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= shift) {\n      break;\n    }\n    n /= 2;\n  }\n  int result = 0;\n  int byteVal = 1;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= maxBytes) break;\n    if (modi(n, 2) > 0) { result += byteVal; }\n    n = int(n / 2);\n    byteVal *= 2;\n  }\n  return result;\n}\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x / y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 texel) {\n  __DECODE32_ENDIANNESS__;\n  texel *= 255.0;\n  vec2 gte128;\n  gte128.x = texel.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = texel.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * texel.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  texel.b = texel.b - 128.0 * gte128.x;\n  res = dot(texel, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nfloat decode16(vec4 texel, int index) {\n  int channel = integerMod(index, 2);\n  if (channel == 0) return texel.r * 255.0 + texel.g * 65280.0;\n  if (channel == 1) return texel.b * 255.0 + texel.a * 65280.0;\n  return 0.0;\n}\n\nfloat decode8(vec4 texel, int index) {\n  int channel = integerMod(index, 4);\n  if (channel == 0) return texel.r * 255.0;\n  if (channel == 1) return texel.g * 255.0;\n  if (channel == 2) return texel.b * 255.0;\n  if (channel == 3) return texel.a * 255.0;\n  return 0.0;\n}\n\nvec4 legacyEncode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 texel = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  texel.rg = integerMod(texel.rg, 256.0);\n  texel.b = integerMod(texel.b, 128.0);\n  texel.a = exponent*0.5 + 63.5;\n  texel.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  texel = floor(texel);\n  texel *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return texel;\n}\n\n// https://github.com/gpujs/gpu.js/wiki/Encoder-details\nvec4 encode32(float value) {\n  if (value == 0.0) return vec4(0, 0, 0, 0);\n\n  float exponent;\n  float mantissa;\n  vec4  result;\n  float sgn;\n\n  sgn = step(0.0, -value);\n  value = abs(value);\n\n  exponent = floor(log2(value));\n\n  mantissa = value*pow(2.0, -exponent)-1.0;\n  exponent = exponent+127.0;\n  result   = vec4(0,0,0,0);\n\n  result.a = floor(exponent/2.0);\n  exponent = exponent - result.a*2.0;\n  result.a = result.a + 128.0*sgn;\n\n  result.b = floor(mantissa * 128.0);\n  mantissa = mantissa - result.b / 128.0;\n  result.b = result.b + exponent*128.0;\n\n  result.g = floor(mantissa*32768.0);\n  mantissa = mantissa - result.g/32768.0;\n\n  result.r = floor(mantissa*8388608.0);\n  return result/255.0;\n}\n// Dragons end here\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  return decode32(texel);\n}\n\nfloat get16(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x * 2;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize.x * 2, texSize.y));\n  return decode16(texel, index);\n}\n\nfloat get8(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x * 4;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize.x * 4, texSize.y));\n  return decode8(texel, index);\n}\n\nfloat getMemoryOptimized32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int channel = integerMod(index, 4);\n  index = index / 4;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  if (channel == 0) return texel.r;\n  if (channel == 1) return texel.g;\n  if (channel == 2) return texel.b;\n  if (channel == 3) return texel.a;\n  return 0.0;\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  return texture2D(tex, st / vec2(texSize));\n}\n\nfloat getFloatFromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return result[0];\n}\n\nvec2 getVec2FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec2(result[0], result[1]);\n}\n\nvec2 getMemoryOptimizedVec2(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + (texDim.x * (y + (texDim.y * z)));\n  int channel = integerMod(index, 2);\n  index = index / 2;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  if (channel == 0) return vec2(texel.r, texel.g);\n  if (channel == 1) return vec2(texel.b, texel.a);\n  return vec2(0.0, 0.0);\n}\n\nvec3 getVec3FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec3(result[0], result[1], result[2]);\n}\n\nvec3 getMemoryOptimizedVec3(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int fieldIndex = 3 * (x + texDim.x * (y + texDim.y * z));\n  int vectorIndex = fieldIndex / 4;\n  int vectorOffset = fieldIndex - vectorIndex * 4;\n  int readY = vectorIndex / texSize.x;\n  int readX = vectorIndex - readY * texSize.x;\n  vec4 tex1 = texture2D(tex, (vec2(readX, readY) + 0.5) / vec2(texSize));\n  \n  if (vectorOffset == 0) {\n    return tex1.xyz;\n  } else if (vectorOffset == 1) {\n    return tex1.yzw;\n  } else {\n    readX++;\n    if (readX >= texSize.x) {\n      readX = 0;\n      readY++;\n    }\n    vec4 tex2 = texture2D(tex, vec2(readX, readY) / vec2(texSize));\n    if (vectorOffset == 2) {\n      return vec3(tex1.z, tex1.w, tex2.x);\n    } else {\n      return vec3(tex1.w, tex2.x, tex2.y);\n    }\n  }\n}\n\nvec4 getVec4FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  return getImage2D(tex, texSize, texDim, z, y, x);\n}\n\nvec4 getMemoryOptimizedVec4(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int channel = integerMod(index, 2);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  return vec4(texel.r, texel.g, texel.b, texel.a);\n}\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\nvoid color(sampler2D image) {\n  actualColor = texture2D(image, vTexCoord);\n}\n\nfloat modulo(float num1, float num2) {\n  if (num2 == 0.0) {\n    return 0.0;\n  }\n  bool isPositive = num1 >= 0.0;\n  num1 = abs(num1);\n  num2 = abs(num2);\n  for (int i = 0; i < LOOP_MAX; i++) {\n    if (num1 < num2) break;\n    num1 = num1 - num2;\n  }\n  return isPositive ? num1 : -num1;\n}\n\n__INJECTED_NATIVE__;\n__MAIN_CONSTANTS__;\n__MAIN_ARGUMENTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
+      var fragmentShader = "__HEADER__;\n__FLOAT_TACTIC_DECLARATION__;\n__INT_TACTIC_DECLARATION__;\n__SAMPLER_2D_TACTIC_DECLARATION__;\n\nconst int LOOP_MAX = __LOOP_MAX__;\n\n__PLUGINS__;\n__CONSTANTS__;\n\nvarying vec2 vTexCoord;\n\nfloat acosh(float x) {\n  return log(x + sqrt(x * x - 1.0));\n}\n\nfloat sinh(float x) {\n  return (pow(".concat(Math.E, ", x) - pow(").concat(Math.E, ", -x)) / 2.0;\n}\n\nfloat asinh(float x) {\n  return log(x + sqrt(x * x + 1.0));\n}\n\nfloat atan2(float v1, float v2) {\n  if (v1 == 0.0 || v2 == 0.0) return 0.0;\n  return atan(v1 / v2);\n}\n\nfloat atanh(float x) {\n  x = (x + 1.0) / (x - 1.0);\n  if (x < 0.0) {\n    return 0.5 * log(-x);\n  }\n  return 0.5 * log(x);\n}\n\nfloat cbrt(float x) {\n  if (x >= 0.0) {\n    return pow(x, 1.0 / 3.0);\n  } else {\n    return -pow(x, 1.0 / 3.0);\n  }\n}\n\nfloat cosh(float x) {\n  return (pow(").concat(Math.E, ", x) + pow(").concat(Math.E, ", -x)) / 2.0; \n}\n\nfloat expm1(float x) {\n  return pow(").concat(Math.E, ", x) - 1.0; \n}\n\nfloat fround(highp float x) {\n  return x;\n}\n\nfloat imul(float v1, float v2) {\n  return float(int(v1) * int(v2));\n}\n\nfloat log10(float x) {\n  return log2(x) * (1.0 / log2(10.0));\n}\n\nfloat log1p(float x) {\n  return log(1.0 + x);\n}\n\nfloat _pow(float v1, float v2) {\n  if (v2 == 0.0) return 1.0;\n  return pow(v1, v2);\n}\n\nfloat tanh(float x) {\n  float e = exp(2.0 * x);\n  return (e - 1.0) / (e + 1.0);\n}\n\nfloat trunc(float x) {\n  if (x >= 0.0) {\n    return floor(x); \n  } else {\n    return ceil(x);\n  }\n}\n\nvec4 _round(vec4 x) {\n  return floor(x + 0.5);\n}\n\nfloat _round(float x) {\n  return floor(x + 0.5);\n}\n\nconst int BIT_COUNT = 32;\nint modi(int x, int y) {\n  return x - y * (x / y);\n}\n\nint bitwiseOr(int a, int b) {\n  int result = 0;\n  int n = 1;\n  \n  for (int i = 0; i < BIT_COUNT; i++) {\n    if ((modi(a, 2) == 1) || (modi(b, 2) == 1)) {\n      result += n;\n    }\n    a = a / 2;\n    b = b / 2;\n    n = n * 2;\n    if(!(a > 0 || b > 0)) {\n      break;\n    }\n  }\n  return result;\n}\nint bitwiseXOR(int a, int b) {\n  int result = 0;\n  int n = 1;\n  \n  for (int i = 0; i < BIT_COUNT; i++) {\n    if ((modi(a, 2) == 1) != (modi(b, 2) == 1)) {\n      result += n;\n    }\n    a = a / 2;\n    b = b / 2;\n    n = n * 2;\n    if(!(a > 0 || b > 0)) {\n      break;\n    }\n  }\n  return result;\n}\nint bitwiseAnd(int a, int b) {\n  int result = 0;\n  int n = 1;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if ((modi(a, 2) == 1) && (modi(b, 2) == 1)) {\n      result += n;\n    }\n    a = a / 2;\n    b = b / 2;\n    n = n * 2;\n    if(!(a > 0 && b > 0)) {\n      break;\n    }\n  }\n  return result;\n}\nint bitwiseNot(int a) {\n  int result = 0;\n  int n = 1;\n  \n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (modi(a, 2) == 0) {\n      result += n;    \n    }\n    a = a / 2;\n    n = n * 2;\n  }\n  return result;\n}\nint bitwiseZeroFillLeftShift(int n, int shift) {\n  int maxBytes = BIT_COUNT;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (maxBytes >= n) {\n      break;\n    }\n    maxBytes *= 2;\n  }\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= shift) {\n      break;\n    }\n    n *= 2;\n  }\n\n  int result = 0;\n  int byteVal = 1;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= maxBytes) break;\n    if (modi(n, 2) > 0) { result += byteVal; }\n    n = int(n / 2);\n    byteVal *= 2;\n  }\n  return result;\n}\n\nint bitwiseSignedRightShift(int num, int shifts) {\n  return int(floor(float(num) / pow(2.0, float(shifts))));\n}\n\nint bitwiseZeroFillRightShift(int n, int shift) {\n  int maxBytes = BIT_COUNT;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (maxBytes >= n) {\n      break;\n    }\n    maxBytes *= 2;\n  }\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= shift) {\n      break;\n    }\n    n /= 2;\n  }\n  int result = 0;\n  int byteVal = 1;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= maxBytes) break;\n    if (modi(n, 2) > 0) { result += byteVal; }\n    n = int(n / 2);\n    byteVal *= 2;\n  }\n  return result;\n}\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x / y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 texel) {\n  __DECODE32_ENDIANNESS__;\n  texel *= 255.0;\n  vec2 gte128;\n  gte128.x = texel.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = texel.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * texel.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(_round(exponent));\n  texel.b = texel.b - 128.0 * gte128.x;\n  res = dot(texel, SCALE_FACTOR) * exp2(_round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nfloat decode16(vec4 texel, int index) {\n  int channel = integerMod(index, 2);\n  if (channel == 0) return texel.r * 255.0 + texel.g * 65280.0;\n  if (channel == 1) return texel.b * 255.0 + texel.a * 65280.0;\n  return 0.0;\n}\n\nfloat decode8(vec4 texel, int index) {\n  int channel = integerMod(index, 4);\n  if (channel == 0) return texel.r * 255.0;\n  if (channel == 1) return texel.g * 255.0;\n  if (channel == 2) return texel.b * 255.0;\n  if (channel == 3) return texel.a * 255.0;\n  return 0.0;\n}\n\nvec4 legacyEncode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 texel = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  texel.rg = integerMod(texel.rg, 256.0);\n  texel.b = integerMod(texel.b, 128.0);\n  texel.a = exponent*0.5 + 63.5;\n  texel.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  texel = floor(texel);\n  texel *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return texel;\n}\n\n// https://github.com/gpujs/gpu.js/wiki/Encoder-details\nvec4 encode32(float value) {\n  if (value == 0.0) return vec4(0, 0, 0, 0);\n\n  float exponent;\n  float mantissa;\n  vec4  result;\n  float sgn;\n\n  sgn = step(0.0, -value);\n  value = abs(value);\n\n  exponent = floor(log2(value));\n\n  mantissa = value*pow(2.0, -exponent)-1.0;\n  exponent = exponent+127.0;\n  result   = vec4(0,0,0,0);\n\n  result.a = floor(exponent/2.0);\n  exponent = exponent - result.a*2.0;\n  result.a = result.a + 128.0*sgn;\n\n  result.b = floor(mantissa * 128.0);\n  mantissa = mantissa - result.b / 128.0;\n  result.b = result.b + exponent*128.0;\n\n  result.g = floor(mantissa*32768.0);\n  mantissa = mantissa - result.g/32768.0;\n\n  result.r = floor(mantissa*8388608.0);\n  return result/255.0;\n}\n// Dragons end here\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  return decode32(texel);\n}\n\nfloat get16(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x * 2;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize.x * 2, texSize.y));\n  return decode16(texel, index);\n}\n\nfloat get8(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x * 4;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize.x * 4, texSize.y));\n  return decode8(texel, index);\n}\n\nfloat getMemoryOptimized32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int channel = integerMod(index, 4);\n  index = index / 4;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  if (channel == 0) return texel.r;\n  if (channel == 1) return texel.g;\n  if (channel == 2) return texel.b;\n  if (channel == 3) return texel.a;\n  return 0.0;\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  return texture2D(tex, st / vec2(texSize));\n}\n\nfloat getFloatFromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return result[0];\n}\n\nvec2 getVec2FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec2(result[0], result[1]);\n}\n\nvec2 getMemoryOptimizedVec2(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + (texDim.x * (y + (texDim.y * z)));\n  int channel = integerMod(index, 2);\n  index = index / 2;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  if (channel == 0) return vec2(texel.r, texel.g);\n  if (channel == 1) return vec2(texel.b, texel.a);\n  return vec2(0.0, 0.0);\n}\n\nvec3 getVec3FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec3(result[0], result[1], result[2]);\n}\n\nvec3 getMemoryOptimizedVec3(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int fieldIndex = 3 * (x + texDim.x * (y + texDim.y * z));\n  int vectorIndex = fieldIndex / 4;\n  int vectorOffset = fieldIndex - vectorIndex * 4;\n  int readY = vectorIndex / texSize.x;\n  int readX = vectorIndex - readY * texSize.x;\n  vec4 tex1 = texture2D(tex, (vec2(readX, readY) + 0.5) / vec2(texSize));\n  \n  if (vectorOffset == 0) {\n    return tex1.xyz;\n  } else if (vectorOffset == 1) {\n    return tex1.yzw;\n  } else {\n    readX++;\n    if (readX >= texSize.x) {\n      readX = 0;\n      readY++;\n    }\n    vec4 tex2 = texture2D(tex, vec2(readX, readY) / vec2(texSize));\n    if (vectorOffset == 2) {\n      return vec3(tex1.z, tex1.w, tex2.x);\n    } else {\n      return vec3(tex1.w, tex2.x, tex2.y);\n    }\n  }\n}\n\nvec4 getVec4FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  return getImage2D(tex, texSize, texDim, z, y, x);\n}\n\nvec4 getMemoryOptimizedVec4(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int channel = integerMod(index, 2);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture2D(tex, st / vec2(texSize));\n  return vec4(texel.r, texel.g, texel.b, texel.a);\n}\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\nvoid color(sampler2D image) {\n  actualColor = texture2D(image, vTexCoord);\n}\n\nfloat modulo(float number, float divisor) {\n  if (number < 0.0) {\n    number = abs(number);\n    if (divisor < 0.0) {\n      divisor = abs(divisor);\n    }\n    return -mod(number, divisor);\n  }\n  if (divisor < 0.0) {\n    divisor = abs(divisor);\n  }\n  return mod(number, divisor);\n}\n\n__INJECTED_NATIVE__;\n__MAIN_CONSTANTS__;\n__MAIN_ARGUMENTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}");
       module.exports = {
         fragmentShader: fragmentShader
       };
     }, {}],
     38: [function (require, module, exports) {
-      var _require77 = require('../function-node'),
-          FunctionNode = _require77.FunctionNode;
+      var _require77 = require('../../utils'),
+          utils = _require77.utils;
 
-      var WebGLFunctionNode =
-      /*#__PURE__*/
-      function (_FunctionNode2) {
+      var _require78 = require('../function-node'),
+          FunctionNode = _require78.FunctionNode;
+
+      var WebGLFunctionNode = /*#__PURE__*/function (_FunctionNode2) {
         _inherits(WebGLFunctionNode, _FunctionNode2);
 
+        var _super25 = _createSuper(WebGLFunctionNode);
+
         function WebGLFunctionNode(source, settings) {
-          var _this24;
+          var _this25;
 
           _classCallCheck(this, WebGLFunctionNode);
 
-          _this24 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLFunctionNode).call(this, source, settings));
+          _this25 = _super25.call(this, source, settings);
 
           if (settings && settings.hasOwnProperty('fixIntegerDivisionAccuracy')) {
-            _this24.fixIntegerDivisionAccuracy = settings.fixIntegerDivisionAccuracy;
+            _this25.fixIntegerDivisionAccuracy = settings.fixIntegerDivisionAccuracy;
           }
 
-          return _this24;
+          return _this25;
         }
 
         _createClass(WebGLFunctionNode, [{
@@ -14384,24 +14629,26 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                   this.argumentTypes[i] = argumentType = 'Number';
                 }
 
-                var _type2 = typeMap[argumentType];
+                var _type = typeMap[argumentType];
 
-                if (!_type2) {
+                if (!_type) {
                   throw this.astErrorOutput('Unexpected expression', ast);
                 }
 
-                if (_type2 === 'sampler2D' || _type2 === 'sampler2DArray') {
-                  retArr.push("".concat(_type2, " user_").concat(argumentName, ",ivec2 user_").concat(argumentName, "Size,ivec3 user_").concat(argumentName, "Dim"));
+                var _name8 = utils.sanitizeName(argumentName);
+
+                if (_type === 'sampler2D' || _type === 'sampler2DArray') {
+                  retArr.push("".concat(_type, " user_").concat(_name8, ",ivec2 user_").concat(_name8, "Size,ivec3 user_").concat(_name8, "Dim"));
                 } else {
-                  retArr.push("".concat(_type2, " user_").concat(argumentName));
+                  retArr.push("".concat(_type, " user_").concat(_name8));
                 }
               }
             }
 
             retArr.push(') {\n');
 
-            for (var _i14 = 0; _i14 < ast.body.body.length; ++_i14) {
-              this.astGeneric(ast.body.body[_i14], retArr);
+            for (var _i16 = 0; _i16 < ast.body.body.length; ++_i16) {
+              this.astGeneric(ast.body.body[_i16], retArr);
               retArr.push('\n');
             }
 
@@ -14530,7 +14777,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
 
             if (this.fixIntegerDivisionAccuracy && ast.operator === '/') {
-              retArr.push('div_with_int_check(');
+              retArr.push('divWithIntCheck(');
               this.pushState('building-float');
 
               switch (this.getType(ast.left)) {
@@ -14737,7 +14984,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
 
             var upconvertableOperators = {
-              '%': 'modulo',
+              '%': this.fixIntegerDivisionAccuracy ? 'integerCorrectionModulo' : 'modulo',
               '**': 'pow'
             };
             var foundOperator = upconvertableOperators[ast.operator];
@@ -14899,17 +15146,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
 
             var type = this.getType(idtNode);
+            var name = utils.sanitizeName(idtNode.name);
 
             if (idtNode.name === 'Infinity') {
               retArr.push('3.402823466e+38');
             } else if (type === 'Boolean') {
-              if (this.argumentNames.indexOf(idtNode.name) > -1) {
-                retArr.push("bool(user_".concat(idtNode.name, ")"));
+              if (this.argumentNames.indexOf(name) > -1) {
+                retArr.push("bool(user_".concat(name, ")"));
               } else {
-                retArr.push("user_".concat(idtNode.name));
+                retArr.push("user_".concat(name));
               }
             } else {
-              retArr.push("user_".concat(idtNode.name));
+              retArr.push("user_".concat(name));
             }
 
             return retArr;
@@ -15075,8 +15323,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             } else {
               retArr.push('{\n');
 
-              for (var _i15 = 0; _i15 < bNode.body.length; _i15++) {
-                this.astGeneric(bNode.body[_i15], retArr);
+              for (var _i17 = 0; _i17 < bNode.body.length; _i17++) {
+                this.astGeneric(bNode.body[_i17], retArr);
               }
 
               retArr.push('}\n');
@@ -15131,7 +15379,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 }
 
                 lastType = type;
-                declarationResult.push("user_".concat(declaration.id.name, "="));
+                declarationResult.push("user_".concat(utils.sanitizeName(declaration.id.name), "="));
                 declarationResult.push('float(');
                 this.astGeneric(init, declarationResult);
                 declarationResult.push(')');
@@ -15147,7 +15395,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 }
 
                 lastType = type;
-                declarationResult.push("user_".concat(declaration.id.name, "="));
+                declarationResult.push("user_".concat(utils.sanitizeName(declaration.id.name), "="));
 
                 if (actualType === 'Number' && type === 'Integer') {
                   if (init.left && init.left.type === 'Literal') {
@@ -15425,21 +15673,23 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                   return retArr;
                 }
 
+                var cleanName = utils.sanitizeName(name);
+
                 switch (property) {
                   case 'r':
-                    retArr.push("user_".concat(name, ".r"));
+                    retArr.push("user_".concat(cleanName, ".r"));
                     return retArr;
 
                   case 'g':
-                    retArr.push("user_".concat(name, ".g"));
+                    retArr.push("user_".concat(cleanName, ".g"));
                     return retArr;
 
                   case 'b':
-                    retArr.push("user_".concat(name, ".b"));
+                    retArr.push("user_".concat(cleanName, ".b"));
                     return retArr;
 
                   case 'a':
-                    retArr.push("user_".concat(name, ".a"));
+                    retArr.push("user_".concat(cleanName, ".a"));
                     return retArr;
                 }
 
@@ -15451,7 +15701,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                     case 'Array(2)':
                     case 'Array(3)':
                     case 'Array(4)':
-                      retArr.push("constants_".concat(name));
+                      retArr.push("constants_".concat(utils.sanitizeName(name)));
                       return retArr;
                   }
                 }
@@ -15492,12 +15742,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 case 'Integer':
                 case 'Float':
                 case 'Boolean':
-                  retArr.push("".concat(origin, "_").concat(name));
+                  retArr.push("".concat(origin, "_").concat(utils.sanitizeName(name)));
                   return retArr;
               }
             }
 
-            var markupName = "".concat(origin, "_").concat(name);
+            var markupName = "".concat(origin, "_").concat(utils.sanitizeName(name));
 
             switch (type) {
               case 'Array(2)':
@@ -15640,8 +15890,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               throw this.astErrorOutput("Unhandled function, couldn't find name", ast);
             }
 
-            if (functionName === 'atan2') {
-              functionName = 'atan';
+            switch (functionName) {
+              case 'pow':
+                functionName = '_pow';
+                break;
+
+              case 'round':
+                functionName = '_round';
+                break;
             }
 
             if (this.calledFunctions.indexOf(functionName) < 0) {
@@ -15667,11 +15923,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             retArr.push('(');
 
             if (isMathFunction) {
-              for (var _i16 = 0; _i16 < ast.arguments.length; ++_i16) {
-                var argument = ast.arguments[_i16];
+              for (var _i18 = 0; _i18 < ast.arguments.length; ++_i18) {
+                var argument = ast.arguments[_i18];
                 var argumentType = this.getType(argument);
 
-                if (_i16 > 0) {
+                if (_i18 > 0) {
                   retArr.push(', ');
                 }
 
@@ -15688,18 +15944,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             } else {
               var targetTypes = this.lookupFunctionArgumentTypes(functionName) || [];
 
-              for (var _i17 = 0; _i17 < ast.arguments.length; ++_i17) {
-                var _argument = ast.arguments[_i17];
-                var targetType = targetTypes[_i17];
+              for (var _i19 = 0; _i19 < ast.arguments.length; ++_i19) {
+                var _argument = ast.arguments[_i19];
+                var targetType = targetTypes[_i19];
 
-                if (_i17 > 0) {
+                if (_i19 > 0) {
                   retArr.push(', ');
                 }
 
                 var _argumentType = this.getType(_argument);
 
                 if (!targetType) {
-                  this.triggerImplyArgumentType(functionName, _i17, _argumentType, this);
+                  this.triggerImplyArgumentType(functionName, _i19, _argumentType, this);
                   targetType = _argumentType;
                 }
 
@@ -15757,8 +16013,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                   case 'Array(4)':
                     if (targetType === _argumentType) {
                       if (_argument.type === 'Identifier') {
-                        retArr.push("user_".concat(_argument.name));
-                      } else if (_argument.type === 'ArrayExpression') {
+                        retArr.push("user_".concat(utils.sanitizeName(_argument.name)));
+                      } else if (_argument.type === 'ArrayExpression' || _argument.type === 'MemberExpression' || _argument.type === 'CallExpression') {
                         this.astGeneric(_argument, retArr);
                       } else {
                         throw this.astErrorOutput("Unhandled argument type ".concat(_argument.type), ast);
@@ -15781,8 +16037,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                   case 'Input':
                     if (targetType === _argumentType) {
                       if (_argument.type !== 'Identifier') throw this.astErrorOutput("Unhandled argument type ".concat(_argument.type), ast);
-                      this.triggerImplyArgumentBitRatio(this.name, _argument.name, functionName, _i17);
-                      retArr.push("user_".concat(_argument.name, ",user_").concat(_argument.name, "Size,user_").concat(_argument.name, "Dim"));
+                      this.triggerImplyArgumentBitRatio(this.name, _argument.name, functionName, _i19);
+
+                      var _name9 = utils.sanitizeName(_argument.name);
+
+                      retArr.push("user_".concat(_name9, ",user_").concat(_name9, "Size,user_").concat(_name9, "Dim"));
                       continue;
                     }
 
@@ -15895,92 +16154,93 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         WebGLFunctionNode: WebGLFunctionNode
       };
     }, {
+      "../../utils": 114,
       "../function-node": 10
     }],
     39: [function (require, module, exports) {
-      var _require78 = require('./kernel-value/boolean'),
-          WebGLKernelValueBoolean = _require78.WebGLKernelValueBoolean;
+      var _require79 = require('./kernel-value/boolean'),
+          WebGLKernelValueBoolean = _require79.WebGLKernelValueBoolean;
 
-      var _require79 = require('./kernel-value/float'),
-          WebGLKernelValueFloat = _require79.WebGLKernelValueFloat;
+      var _require80 = require('./kernel-value/float'),
+          WebGLKernelValueFloat = _require80.WebGLKernelValueFloat;
 
-      var _require80 = require('./kernel-value/integer'),
-          WebGLKernelValueInteger = _require80.WebGLKernelValueInteger;
+      var _require81 = require('./kernel-value/integer'),
+          WebGLKernelValueInteger = _require81.WebGLKernelValueInteger;
 
-      var _require81 = require('./kernel-value/html-image'),
-          WebGLKernelValueHTMLImage = _require81.WebGLKernelValueHTMLImage;
+      var _require82 = require('./kernel-value/html-image'),
+          WebGLKernelValueHTMLImage = _require82.WebGLKernelValueHTMLImage;
 
-      var _require82 = require('./kernel-value/dynamic-html-image'),
-          WebGLKernelValueDynamicHTMLImage = _require82.WebGLKernelValueDynamicHTMLImage;
+      var _require83 = require('./kernel-value/dynamic-html-image'),
+          WebGLKernelValueDynamicHTMLImage = _require83.WebGLKernelValueDynamicHTMLImage;
 
-      var _require83 = require('./kernel-value/html-video'),
-          WebGLKernelValueHTMLVideo = _require83.WebGLKernelValueHTMLVideo;
+      var _require84 = require('./kernel-value/html-video'),
+          WebGLKernelValueHTMLVideo = _require84.WebGLKernelValueHTMLVideo;
 
-      var _require84 = require('./kernel-value/dynamic-html-video'),
-          WebGLKernelValueDynamicHTMLVideo = _require84.WebGLKernelValueDynamicHTMLVideo;
+      var _require85 = require('./kernel-value/dynamic-html-video'),
+          WebGLKernelValueDynamicHTMLVideo = _require85.WebGLKernelValueDynamicHTMLVideo;
 
-      var _require85 = require('./kernel-value/single-input'),
-          WebGLKernelValueSingleInput = _require85.WebGLKernelValueSingleInput;
+      var _require86 = require('./kernel-value/single-input'),
+          WebGLKernelValueSingleInput = _require86.WebGLKernelValueSingleInput;
 
-      var _require86 = require('./kernel-value/dynamic-single-input'),
-          WebGLKernelValueDynamicSingleInput = _require86.WebGLKernelValueDynamicSingleInput;
+      var _require87 = require('./kernel-value/dynamic-single-input'),
+          WebGLKernelValueDynamicSingleInput = _require87.WebGLKernelValueDynamicSingleInput;
 
-      var _require87 = require('./kernel-value/unsigned-input'),
-          WebGLKernelValueUnsignedInput = _require87.WebGLKernelValueUnsignedInput;
+      var _require88 = require('./kernel-value/unsigned-input'),
+          WebGLKernelValueUnsignedInput = _require88.WebGLKernelValueUnsignedInput;
 
-      var _require88 = require('./kernel-value/dynamic-unsigned-input'),
-          WebGLKernelValueDynamicUnsignedInput = _require88.WebGLKernelValueDynamicUnsignedInput;
+      var _require89 = require('./kernel-value/dynamic-unsigned-input'),
+          WebGLKernelValueDynamicUnsignedInput = _require89.WebGLKernelValueDynamicUnsignedInput;
 
-      var _require89 = require('./kernel-value/memory-optimized-number-texture'),
-          WebGLKernelValueMemoryOptimizedNumberTexture = _require89.WebGLKernelValueMemoryOptimizedNumberTexture;
+      var _require90 = require('./kernel-value/memory-optimized-number-texture'),
+          WebGLKernelValueMemoryOptimizedNumberTexture = _require90.WebGLKernelValueMemoryOptimizedNumberTexture;
 
-      var _require90 = require('./kernel-value/dynamic-memory-optimized-number-texture'),
-          WebGLKernelValueDynamicMemoryOptimizedNumberTexture = _require90.WebGLKernelValueDynamicMemoryOptimizedNumberTexture;
+      var _require91 = require('./kernel-value/dynamic-memory-optimized-number-texture'),
+          WebGLKernelValueDynamicMemoryOptimizedNumberTexture = _require91.WebGLKernelValueDynamicMemoryOptimizedNumberTexture;
 
-      var _require91 = require('./kernel-value/number-texture'),
-          WebGLKernelValueNumberTexture = _require91.WebGLKernelValueNumberTexture;
+      var _require92 = require('./kernel-value/number-texture'),
+          WebGLKernelValueNumberTexture = _require92.WebGLKernelValueNumberTexture;
 
-      var _require92 = require('./kernel-value/dynamic-number-texture'),
-          WebGLKernelValueDynamicNumberTexture = _require92.WebGLKernelValueDynamicNumberTexture;
+      var _require93 = require('./kernel-value/dynamic-number-texture'),
+          WebGLKernelValueDynamicNumberTexture = _require93.WebGLKernelValueDynamicNumberTexture;
 
-      var _require93 = require('./kernel-value/single-array'),
-          WebGLKernelValueSingleArray = _require93.WebGLKernelValueSingleArray;
+      var _require94 = require('./kernel-value/single-array'),
+          WebGLKernelValueSingleArray = _require94.WebGLKernelValueSingleArray;
 
-      var _require94 = require('./kernel-value/dynamic-single-array'),
-          WebGLKernelValueDynamicSingleArray = _require94.WebGLKernelValueDynamicSingleArray;
+      var _require95 = require('./kernel-value/dynamic-single-array'),
+          WebGLKernelValueDynamicSingleArray = _require95.WebGLKernelValueDynamicSingleArray;
 
-      var _require95 = require('./kernel-value/single-array1d-i'),
-          WebGLKernelValueSingleArray1DI = _require95.WebGLKernelValueSingleArray1DI;
+      var _require96 = require('./kernel-value/single-array1d-i'),
+          WebGLKernelValueSingleArray1DI = _require96.WebGLKernelValueSingleArray1DI;
 
-      var _require96 = require('./kernel-value/dynamic-single-array1d-i'),
-          WebGLKernelValueDynamicSingleArray1DI = _require96.WebGLKernelValueDynamicSingleArray1DI;
+      var _require97 = require('./kernel-value/dynamic-single-array1d-i'),
+          WebGLKernelValueDynamicSingleArray1DI = _require97.WebGLKernelValueDynamicSingleArray1DI;
 
-      var _require97 = require('./kernel-value/single-array2d-i'),
-          WebGLKernelValueSingleArray2DI = _require97.WebGLKernelValueSingleArray2DI;
+      var _require98 = require('./kernel-value/single-array2d-i'),
+          WebGLKernelValueSingleArray2DI = _require98.WebGLKernelValueSingleArray2DI;
 
-      var _require98 = require('./kernel-value/dynamic-single-array2d-i'),
-          WebGLKernelValueDynamicSingleArray2DI = _require98.WebGLKernelValueDynamicSingleArray2DI;
+      var _require99 = require('./kernel-value/dynamic-single-array2d-i'),
+          WebGLKernelValueDynamicSingleArray2DI = _require99.WebGLKernelValueDynamicSingleArray2DI;
 
-      var _require99 = require('./kernel-value/single-array3d-i'),
-          WebGLKernelValueSingleArray3DI = _require99.WebGLKernelValueSingleArray3DI;
+      var _require100 = require('./kernel-value/single-array3d-i'),
+          WebGLKernelValueSingleArray3DI = _require100.WebGLKernelValueSingleArray3DI;
 
-      var _require100 = require('./kernel-value/dynamic-single-array3d-i'),
-          WebGLKernelValueDynamicSingleArray3DI = _require100.WebGLKernelValueDynamicSingleArray3DI;
+      var _require101 = require('./kernel-value/dynamic-single-array3d-i'),
+          WebGLKernelValueDynamicSingleArray3DI = _require101.WebGLKernelValueDynamicSingleArray3DI;
 
-      var _require101 = require('./kernel-value/single-array2'),
-          WebGLKernelValueSingleArray2 = _require101.WebGLKernelValueSingleArray2;
+      var _require102 = require('./kernel-value/single-array2'),
+          WebGLKernelValueSingleArray2 = _require102.WebGLKernelValueSingleArray2;
 
-      var _require102 = require('./kernel-value/single-array3'),
-          WebGLKernelValueSingleArray3 = _require102.WebGLKernelValueSingleArray3;
+      var _require103 = require('./kernel-value/single-array3'),
+          WebGLKernelValueSingleArray3 = _require103.WebGLKernelValueSingleArray3;
 
-      var _require103 = require('./kernel-value/single-array4'),
-          WebGLKernelValueSingleArray4 = _require103.WebGLKernelValueSingleArray4;
+      var _require104 = require('./kernel-value/single-array4'),
+          WebGLKernelValueSingleArray4 = _require104.WebGLKernelValueSingleArray4;
 
-      var _require104 = require('./kernel-value/unsigned-array'),
-          WebGLKernelValueUnsignedArray = _require104.WebGLKernelValueUnsignedArray;
+      var _require105 = require('./kernel-value/unsigned-array'),
+          WebGLKernelValueUnsignedArray = _require105.WebGLKernelValueUnsignedArray;
 
-      var _require105 = require('./kernel-value/dynamic-unsigned-array'),
-          WebGLKernelValueDynamicUnsignedArray = _require105.WebGLKernelValueDynamicUnsignedArray;
+      var _require106 = require('./kernel-value/dynamic-unsigned-array'),
+          WebGLKernelValueDynamicUnsignedArray = _require106.WebGLKernelValueDynamicUnsignedArray;
 
       var kernelValueMaps = {
         unsigned: {
@@ -16168,21 +16428,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./kernel-value/unsigned-input": 69
     }],
     40: [function (require, module, exports) {
-      var _require106 = require('./index'),
-          WebGLKernelValue = _require106.WebGLKernelValue;
+      var _require107 = require('./index'),
+          WebGLKernelValue = _require107.WebGLKernelValue;
 
-      var _require107 = require('../../../input'),
-          Input = _require107.Input;
+      var _require108 = require('../../../input'),
+          Input = _require108.Input;
 
-      var WebGLKernelArray =
-      /*#__PURE__*/
-      function (_WebGLKernelValue) {
+      var WebGLKernelArray = /*#__PURE__*/function (_WebGLKernelValue) {
         _inherits(WebGLKernelArray, _WebGLKernelValue);
+
+        var _super26 = _createSuper(WebGLKernelArray);
 
         function WebGLKernelArray() {
           _classCallCheck(this, WebGLKernelArray);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelArray).apply(this, arguments));
+          return _super26.apply(this, arguments);
         }
 
         _createClass(WebGLKernelArray, [{
@@ -16279,25 +16539,25 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./index": 56
     }],
     41: [function (require, module, exports) {
-      var _require108 = require('../../../utils'),
-          utils = _require108.utils;
+      var _require109 = require('../../../utils'),
+          utils = _require109.utils;
 
-      var _require109 = require('./index'),
-          WebGLKernelValue = _require109.WebGLKernelValue;
+      var _require110 = require('./index'),
+          WebGLKernelValue = _require110.WebGLKernelValue;
 
-      var WebGLKernelValueBoolean =
-      /*#__PURE__*/
-      function (_WebGLKernelValue2) {
+      var WebGLKernelValueBoolean = /*#__PURE__*/function (_WebGLKernelValue2) {
         _inherits(WebGLKernelValueBoolean, _WebGLKernelValue2);
 
+        var _super27 = _createSuper(WebGLKernelValueBoolean);
+
         function WebGLKernelValueBoolean(value, settings) {
-          var _this25;
+          var _this26;
 
           _classCallCheck(this, WebGLKernelValueBoolean);
 
-          _this25 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueBoolean).call(this, value, settings));
-          _this25.uploadValue = value;
-          return _this25;
+          _this26 = _super27.call(this, value, settings);
+          _this26.uploadValue = value;
+          return _this26;
         }
 
         _createClass(WebGLKernelValueBoolean, [{
@@ -16333,21 +16593,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./index": 56
     }],
     42: [function (require, module, exports) {
-      var _require110 = require('../../../utils'),
-          utils = _require110.utils;
+      var _require111 = require('../../../utils'),
+          utils = _require111.utils;
 
-      var _require111 = require('./html-image'),
-          WebGLKernelValueHTMLImage = _require111.WebGLKernelValueHTMLImage;
+      var _require112 = require('./html-image'),
+          WebGLKernelValueHTMLImage = _require112.WebGLKernelValueHTMLImage;
 
-      var WebGLKernelValueDynamicHTMLImage =
-      /*#__PURE__*/
-      function (_WebGLKernelValueHTML) {
+      var WebGLKernelValueDynamicHTMLImage = /*#__PURE__*/function (_WebGLKernelValueHTML) {
         _inherits(WebGLKernelValueDynamicHTMLImage, _WebGLKernelValueHTML);
+
+        var _super28 = _createSuper(WebGLKernelValueDynamicHTMLImage);
 
         function WebGLKernelValueDynamicHTMLImage() {
           _classCallCheck(this, WebGLKernelValueDynamicHTMLImage);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueDynamicHTMLImage).apply(this, arguments));
+          return _super28.apply(this, arguments);
         }
 
         _createClass(WebGLKernelValueDynamicHTMLImage, [{
@@ -16381,18 +16641,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./html-image": 54
     }],
     43: [function (require, module, exports) {
-      var _require112 = require('./dynamic-html-image'),
-          WebGLKernelValueDynamicHTMLImage = _require112.WebGLKernelValueDynamicHTMLImage;
+      var _require113 = require('./dynamic-html-image'),
+          WebGLKernelValueDynamicHTMLImage = _require113.WebGLKernelValueDynamicHTMLImage;
 
-      var WebGLKernelValueDynamicHTMLVideo =
-      /*#__PURE__*/
-      function (_WebGLKernelValueDyna) {
+      var WebGLKernelValueDynamicHTMLVideo = /*#__PURE__*/function (_WebGLKernelValueDyna) {
         _inherits(WebGLKernelValueDynamicHTMLVideo, _WebGLKernelValueDyna);
+
+        var _super29 = _createSuper(WebGLKernelValueDynamicHTMLVideo);
 
         function WebGLKernelValueDynamicHTMLVideo() {
           _classCallCheck(this, WebGLKernelValueDynamicHTMLVideo);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueDynamicHTMLVideo).apply(this, arguments));
+          return _super29.apply(this, arguments);
         }
 
         return WebGLKernelValueDynamicHTMLVideo;
@@ -16405,21 +16665,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./dynamic-html-image": 42
     }],
     44: [function (require, module, exports) {
-      var _require113 = require('../../../utils'),
-          utils = _require113.utils;
+      var _require114 = require('../../../utils'),
+          utils = _require114.utils;
 
-      var _require114 = require('./memory-optimized-number-texture'),
-          WebGLKernelValueMemoryOptimizedNumberTexture = _require114.WebGLKernelValueMemoryOptimizedNumberTexture;
+      var _require115 = require('./memory-optimized-number-texture'),
+          WebGLKernelValueMemoryOptimizedNumberTexture = _require115.WebGLKernelValueMemoryOptimizedNumberTexture;
 
-      var WebGLKernelValueDynamicMemoryOptimizedNumberTexture =
-      /*#__PURE__*/
-      function (_WebGLKernelValueMemo) {
+      var WebGLKernelValueDynamicMemoryOptimizedNumberTexture = /*#__PURE__*/function (_WebGLKernelValueMemo) {
         _inherits(WebGLKernelValueDynamicMemoryOptimizedNumberTexture, _WebGLKernelValueMemo);
+
+        var _super30 = _createSuper(WebGLKernelValueDynamicMemoryOptimizedNumberTexture);
 
         function WebGLKernelValueDynamicMemoryOptimizedNumberTexture() {
           _classCallCheck(this, WebGLKernelValueDynamicMemoryOptimizedNumberTexture);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueDynamicMemoryOptimizedNumberTexture).apply(this, arguments));
+          return _super30.apply(this, arguments);
         }
 
         _createClass(WebGLKernelValueDynamicMemoryOptimizedNumberTexture, [{
@@ -16451,21 +16711,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./memory-optimized-number-texture": 58
     }],
     45: [function (require, module, exports) {
-      var _require115 = require('../../../utils'),
-          utils = _require115.utils;
+      var _require116 = require('../../../utils'),
+          utils = _require116.utils;
 
-      var _require116 = require('./number-texture'),
-          WebGLKernelValueNumberTexture = _require116.WebGLKernelValueNumberTexture;
+      var _require117 = require('./number-texture'),
+          WebGLKernelValueNumberTexture = _require117.WebGLKernelValueNumberTexture;
 
-      var WebGLKernelValueDynamicNumberTexture =
-      /*#__PURE__*/
-      function (_WebGLKernelValueNumb) {
+      var WebGLKernelValueDynamicNumberTexture = /*#__PURE__*/function (_WebGLKernelValueNumb) {
         _inherits(WebGLKernelValueDynamicNumberTexture, _WebGLKernelValueNumb);
+
+        var _super31 = _createSuper(WebGLKernelValueDynamicNumberTexture);
 
         function WebGLKernelValueDynamicNumberTexture() {
           _classCallCheck(this, WebGLKernelValueDynamicNumberTexture);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueDynamicNumberTexture).apply(this, arguments));
+          return _super31.apply(this, arguments);
         }
 
         _createClass(WebGLKernelValueDynamicNumberTexture, [{
@@ -16497,21 +16757,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./number-texture": 59
     }],
     46: [function (require, module, exports) {
-      var _require117 = require('../../../utils'),
-          utils = _require117.utils;
+      var _require118 = require('../../../utils'),
+          utils = _require118.utils;
 
-      var _require118 = require('./single-array'),
-          WebGLKernelValueSingleArray = _require118.WebGLKernelValueSingleArray;
+      var _require119 = require('./single-array'),
+          WebGLKernelValueSingleArray = _require119.WebGLKernelValueSingleArray;
 
-      var WebGLKernelValueDynamicSingleArray =
-      /*#__PURE__*/
-      function (_WebGLKernelValueSing) {
+      var WebGLKernelValueDynamicSingleArray = /*#__PURE__*/function (_WebGLKernelValueSing) {
         _inherits(WebGLKernelValueDynamicSingleArray, _WebGLKernelValueSing);
+
+        var _super32 = _createSuper(WebGLKernelValueDynamicSingleArray);
 
         function WebGLKernelValueDynamicSingleArray() {
           _classCallCheck(this, WebGLKernelValueDynamicSingleArray);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueDynamicSingleArray).apply(this, arguments));
+          return _super32.apply(this, arguments);
         }
 
         _createClass(WebGLKernelValueDynamicSingleArray, [{
@@ -16545,21 +16805,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./single-array": 60
     }],
     47: [function (require, module, exports) {
-      var _require119 = require('../../../utils'),
-          utils = _require119.utils;
+      var _require120 = require('../../../utils'),
+          utils = _require120.utils;
 
-      var _require120 = require('./single-array1d-i'),
-          WebGLKernelValueSingleArray1DI = _require120.WebGLKernelValueSingleArray1DI;
+      var _require121 = require('./single-array1d-i'),
+          WebGLKernelValueSingleArray1DI = _require121.WebGLKernelValueSingleArray1DI;
 
-      var WebGLKernelValueDynamicSingleArray1DI =
-      /*#__PURE__*/
-      function (_WebGLKernelValueSing2) {
+      var WebGLKernelValueDynamicSingleArray1DI = /*#__PURE__*/function (_WebGLKernelValueSing2) {
         _inherits(WebGLKernelValueDynamicSingleArray1DI, _WebGLKernelValueSing2);
+
+        var _super33 = _createSuper(WebGLKernelValueDynamicSingleArray1DI);
 
         function WebGLKernelValueDynamicSingleArray1DI() {
           _classCallCheck(this, WebGLKernelValueDynamicSingleArray1DI);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueDynamicSingleArray1DI).apply(this, arguments));
+          return _super33.apply(this, arguments);
         }
 
         _createClass(WebGLKernelValueDynamicSingleArray1DI, [{
@@ -16589,21 +16849,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./single-array1d-i": 61
     }],
     48: [function (require, module, exports) {
-      var _require121 = require('../../../utils'),
-          utils = _require121.utils;
+      var _require122 = require('../../../utils'),
+          utils = _require122.utils;
 
-      var _require122 = require('./single-array2d-i'),
-          WebGLKernelValueSingleArray2DI = _require122.WebGLKernelValueSingleArray2DI;
+      var _require123 = require('./single-array2d-i'),
+          WebGLKernelValueSingleArray2DI = _require123.WebGLKernelValueSingleArray2DI;
 
-      var WebGLKernelValueDynamicSingleArray2DI =
-      /*#__PURE__*/
-      function (_WebGLKernelValueSing3) {
+      var WebGLKernelValueDynamicSingleArray2DI = /*#__PURE__*/function (_WebGLKernelValueSing3) {
         _inherits(WebGLKernelValueDynamicSingleArray2DI, _WebGLKernelValueSing3);
+
+        var _super34 = _createSuper(WebGLKernelValueDynamicSingleArray2DI);
 
         function WebGLKernelValueDynamicSingleArray2DI() {
           _classCallCheck(this, WebGLKernelValueDynamicSingleArray2DI);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueDynamicSingleArray2DI).apply(this, arguments));
+          return _super34.apply(this, arguments);
         }
 
         _createClass(WebGLKernelValueDynamicSingleArray2DI, [{
@@ -16633,21 +16893,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./single-array2d-i": 63
     }],
     49: [function (require, module, exports) {
-      var _require123 = require('../../../utils'),
-          utils = _require123.utils;
+      var _require124 = require('../../../utils'),
+          utils = _require124.utils;
 
-      var _require124 = require('./single-array3d-i'),
-          WebGLKernelValueSingleArray3DI = _require124.WebGLKernelValueSingleArray3DI;
+      var _require125 = require('./single-array3d-i'),
+          WebGLKernelValueSingleArray3DI = _require125.WebGLKernelValueSingleArray3DI;
 
-      var WebGLKernelValueDynamicSingleArray3DI =
-      /*#__PURE__*/
-      function (_WebGLKernelValueSing4) {
+      var WebGLKernelValueDynamicSingleArray3DI = /*#__PURE__*/function (_WebGLKernelValueSing4) {
         _inherits(WebGLKernelValueDynamicSingleArray3DI, _WebGLKernelValueSing4);
+
+        var _super35 = _createSuper(WebGLKernelValueDynamicSingleArray3DI);
 
         function WebGLKernelValueDynamicSingleArray3DI() {
           _classCallCheck(this, WebGLKernelValueDynamicSingleArray3DI);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueDynamicSingleArray3DI).apply(this, arguments));
+          return _super35.apply(this, arguments);
         }
 
         _createClass(WebGLKernelValueDynamicSingleArray3DI, [{
@@ -16677,21 +16937,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./single-array3d-i": 65
     }],
     50: [function (require, module, exports) {
-      var _require125 = require('../../../utils'),
-          utils = _require125.utils;
+      var _require126 = require('../../../utils'),
+          utils = _require126.utils;
 
-      var _require126 = require('./single-input'),
-          WebGLKernelValueSingleInput = _require126.WebGLKernelValueSingleInput;
+      var _require127 = require('./single-input'),
+          WebGLKernelValueSingleInput = _require127.WebGLKernelValueSingleInput;
 
-      var WebGLKernelValueDynamicSingleInput =
-      /*#__PURE__*/
-      function (_WebGLKernelValueSing5) {
+      var WebGLKernelValueDynamicSingleInput = /*#__PURE__*/function (_WebGLKernelValueSing5) {
         _inherits(WebGLKernelValueDynamicSingleInput, _WebGLKernelValueSing5);
+
+        var _super36 = _createSuper(WebGLKernelValueDynamicSingleInput);
 
         function WebGLKernelValueDynamicSingleInput() {
           _classCallCheck(this, WebGLKernelValueDynamicSingleInput);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueDynamicSingleInput).apply(this, arguments));
+          return _super36.apply(this, arguments);
         }
 
         _createClass(WebGLKernelValueDynamicSingleInput, [{
@@ -16730,21 +16990,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./single-input": 67
     }],
     51: [function (require, module, exports) {
-      var _require127 = require('../../../utils'),
-          utils = _require127.utils;
+      var _require128 = require('../../../utils'),
+          utils = _require128.utils;
 
-      var _require128 = require('./unsigned-array'),
-          WebGLKernelValueUnsignedArray = _require128.WebGLKernelValueUnsignedArray;
+      var _require129 = require('./unsigned-array'),
+          WebGLKernelValueUnsignedArray = _require129.WebGLKernelValueUnsignedArray;
 
-      var WebGLKernelValueDynamicUnsignedArray =
-      /*#__PURE__*/
-      function (_WebGLKernelValueUnsi) {
+      var WebGLKernelValueDynamicUnsignedArray = /*#__PURE__*/function (_WebGLKernelValueUnsi) {
         _inherits(WebGLKernelValueDynamicUnsignedArray, _WebGLKernelValueUnsi);
+
+        var _super37 = _createSuper(WebGLKernelValueDynamicUnsignedArray);
 
         function WebGLKernelValueDynamicUnsignedArray() {
           _classCallCheck(this, WebGLKernelValueDynamicUnsignedArray);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueDynamicUnsignedArray).apply(this, arguments));
+          return _super37.apply(this, arguments);
         }
 
         _createClass(WebGLKernelValueDynamicUnsignedArray, [{
@@ -16780,21 +17040,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./unsigned-array": 68
     }],
     52: [function (require, module, exports) {
-      var _require129 = require('../../../utils'),
-          utils = _require129.utils;
+      var _require130 = require('../../../utils'),
+          utils = _require130.utils;
 
-      var _require130 = require('./unsigned-input'),
-          WebGLKernelValueUnsignedInput = _require130.WebGLKernelValueUnsignedInput;
+      var _require131 = require('./unsigned-input'),
+          WebGLKernelValueUnsignedInput = _require131.WebGLKernelValueUnsignedInput;
 
-      var WebGLKernelValueDynamicUnsignedInput =
-      /*#__PURE__*/
-      function (_WebGLKernelValueUnsi2) {
+      var WebGLKernelValueDynamicUnsignedInput = /*#__PURE__*/function (_WebGLKernelValueUnsi2) {
         _inherits(WebGLKernelValueDynamicUnsignedInput, _WebGLKernelValueUnsi2);
+
+        var _super38 = _createSuper(WebGLKernelValueDynamicUnsignedInput);
 
         function WebGLKernelValueDynamicUnsignedInput() {
           _classCallCheck(this, WebGLKernelValueDynamicUnsignedInput);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueDynamicUnsignedInput).apply(this, arguments));
+          return _super38.apply(this, arguments);
         }
 
         _createClass(WebGLKernelValueDynamicUnsignedInput, [{
@@ -16835,25 +17095,25 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./unsigned-input": 69
     }],
     53: [function (require, module, exports) {
-      var _require131 = require('../../../utils'),
-          utils = _require131.utils;
+      var _require132 = require('../../../utils'),
+          utils = _require132.utils;
 
-      var _require132 = require('./index'),
-          WebGLKernelValue = _require132.WebGLKernelValue;
+      var _require133 = require('./index'),
+          WebGLKernelValue = _require133.WebGLKernelValue;
 
-      var WebGLKernelValueFloat =
-      /*#__PURE__*/
-      function (_WebGLKernelValue3) {
+      var WebGLKernelValueFloat = /*#__PURE__*/function (_WebGLKernelValue3) {
         _inherits(WebGLKernelValueFloat, _WebGLKernelValue3);
 
+        var _super39 = _createSuper(WebGLKernelValueFloat);
+
         function WebGLKernelValueFloat(value, settings) {
-          var _this26;
+          var _this27;
 
           _classCallCheck(this, WebGLKernelValueFloat);
 
-          _this26 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueFloat).call(this, value, settings));
-          _this26.uploadValue = value;
-          return _this26;
+          _this27 = _super39.call(this, value, settings);
+          _this27.uploadValue = value;
+          return _this27;
         }
 
         _createClass(WebGLKernelValueFloat, [{
@@ -16893,32 +17153,32 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./index": 56
     }],
     54: [function (require, module, exports) {
-      var _require133 = require('../../../utils'),
-          utils = _require133.utils;
+      var _require134 = require('../../../utils'),
+          utils = _require134.utils;
 
-      var _require134 = require('./array'),
-          WebGLKernelArray = _require134.WebGLKernelArray;
+      var _require135 = require('./array'),
+          WebGLKernelArray = _require135.WebGLKernelArray;
 
-      var WebGLKernelValueHTMLImage =
-      /*#__PURE__*/
-      function (_WebGLKernelArray) {
+      var WebGLKernelValueHTMLImage = /*#__PURE__*/function (_WebGLKernelArray) {
         _inherits(WebGLKernelValueHTMLImage, _WebGLKernelArray);
 
+        var _super40 = _createSuper(WebGLKernelValueHTMLImage);
+
         function WebGLKernelValueHTMLImage(value, settings) {
-          var _this27;
+          var _this28;
 
           _classCallCheck(this, WebGLKernelValueHTMLImage);
 
-          _this27 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueHTMLImage).call(this, value, settings));
+          _this28 = _super40.call(this, value, settings);
           var width = value.width,
               height = value.height;
 
-          _this27.checkSize(width, height);
+          _this28.checkSize(width, height);
 
-          _this27.dimensions = [width, height, 1];
-          _this27.textureSize = [width, height];
-          _this27.uploadValue = value;
-          return _this27;
+          _this28.dimensions = [width, height, 1];
+          _this28.textureSize = [width, height];
+          _this28.uploadValue = value;
+          return _this28;
         }
 
         _createClass(WebGLKernelValueHTMLImage, [{
@@ -16959,18 +17219,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./array": 40
     }],
     55: [function (require, module, exports) {
-      var _require135 = require('./html-image'),
-          WebGLKernelValueHTMLImage = _require135.WebGLKernelValueHTMLImage;
+      var _require136 = require('./html-image'),
+          WebGLKernelValueHTMLImage = _require136.WebGLKernelValueHTMLImage;
 
-      var WebGLKernelValueHTMLVideo =
-      /*#__PURE__*/
-      function (_WebGLKernelValueHTML2) {
+      var WebGLKernelValueHTMLVideo = /*#__PURE__*/function (_WebGLKernelValueHTML2) {
         _inherits(WebGLKernelValueHTMLVideo, _WebGLKernelValueHTML2);
+
+        var _super41 = _createSuper(WebGLKernelValueHTMLVideo);
 
         function WebGLKernelValueHTMLVideo() {
           _classCallCheck(this, WebGLKernelValueHTMLVideo);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueHTMLVideo).apply(this, arguments));
+          return _super41.apply(this, arguments);
         }
 
         return WebGLKernelValueHTMLVideo;
@@ -16983,30 +17243,33 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./html-image": 54
     }],
     56: [function (require, module, exports) {
-      var _require136 = require('../../kernel-value'),
-          KernelValue = _require136.KernelValue;
+      var _require137 = require('../../../utils'),
+          utils = _require137.utils;
 
-      var WebGLKernelValue =
-      /*#__PURE__*/
-      function (_KernelValue) {
+      var _require138 = require('../../kernel-value'),
+          KernelValue = _require138.KernelValue;
+
+      var WebGLKernelValue = /*#__PURE__*/function (_KernelValue) {
         _inherits(WebGLKernelValue, _KernelValue);
 
+        var _super42 = _createSuper(WebGLKernelValue);
+
         function WebGLKernelValue(value, settings) {
-          var _this28;
+          var _this29;
 
           _classCallCheck(this, WebGLKernelValue);
 
-          _this28 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValue).call(this, value, settings));
-          _this28.dimensionsId = null;
-          _this28.sizeId = null;
-          _this28.initialValueConstructor = value.constructor;
-          _this28.onRequestTexture = settings.onRequestTexture;
-          _this28.onRequestIndex = settings.onRequestIndex;
-          _this28.uploadValue = null;
-          _this28.textureSize = null;
-          _this28.bitRatio = null;
-          _this28.prevArg = null;
-          return _this28;
+          _this29 = _super42.call(this, value, settings);
+          _this29.dimensionsId = null;
+          _this29.sizeId = null;
+          _this29.initialValueConstructor = value.constructor;
+          _this29.onRequestTexture = settings.onRequestTexture;
+          _this29.onRequestIndex = settings.onRequestIndex;
+          _this29.uploadValue = null;
+          _this29.textureSize = null;
+          _this29.bitRatio = null;
+          _this29.prevArg = null;
+          return _this29;
         }
 
         _createClass(WebGLKernelValue, [{
@@ -17051,6 +17314,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "destroy",
           value: function destroy() {}
+        }, {
+          key: "id",
+          get: function get() {
+            return "".concat(this.origin, "_").concat(utils.sanitizeName(this.name));
+          }
         }]);
 
         return WebGLKernelValue;
@@ -17060,28 +17328,29 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         WebGLKernelValue: WebGLKernelValue
       };
     }, {
+      "../../../utils": 114,
       "../../kernel-value": 35
     }],
     57: [function (require, module, exports) {
-      var _require137 = require('../../../utils'),
-          utils = _require137.utils;
+      var _require139 = require('../../../utils'),
+          utils = _require139.utils;
 
-      var _require138 = require('./index'),
-          WebGLKernelValue = _require138.WebGLKernelValue;
+      var _require140 = require('./index'),
+          WebGLKernelValue = _require140.WebGLKernelValue;
 
-      var WebGLKernelValueInteger =
-      /*#__PURE__*/
-      function (_WebGLKernelValue4) {
+      var WebGLKernelValueInteger = /*#__PURE__*/function (_WebGLKernelValue4) {
         _inherits(WebGLKernelValueInteger, _WebGLKernelValue4);
 
+        var _super43 = _createSuper(WebGLKernelValueInteger);
+
         function WebGLKernelValueInteger(value, settings) {
-          var _this29;
+          var _this30;
 
           _classCallCheck(this, WebGLKernelValueInteger);
 
-          _this29 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueInteger).call(this, value, settings));
-          _this29.uploadValue = value;
-          return _this29;
+          _this30 = _super43.call(this, value, settings);
+          _this30.uploadValue = value;
+          return _this30;
         }
 
         _createClass(WebGLKernelValueInteger, [{
@@ -17117,35 +17386,37 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./index": 56
     }],
     58: [function (require, module, exports) {
-      var _require139 = require('../../../utils'),
-          utils = _require139.utils;
+      var _require141 = require('../../../utils'),
+          utils = _require141.utils;
 
-      var _require140 = require('./array'),
-          WebGLKernelArray = _require140.WebGLKernelArray;
+      var _require142 = require('./array'),
+          WebGLKernelArray = _require142.WebGLKernelArray;
 
-      var WebGLKernelValueMemoryOptimizedNumberTexture =
-      /*#__PURE__*/
-      function (_WebGLKernelArray2) {
+      var sameError = "Source and destination textures are the same.  Use immutable = true and manually cleanup kernel output texture memory with texture.delete()";
+
+      var WebGLKernelValueMemoryOptimizedNumberTexture = /*#__PURE__*/function (_WebGLKernelArray2) {
         _inherits(WebGLKernelValueMemoryOptimizedNumberTexture, _WebGLKernelArray2);
 
+        var _super44 = _createSuper(WebGLKernelValueMemoryOptimizedNumberTexture);
+
         function WebGLKernelValueMemoryOptimizedNumberTexture(value, settings) {
-          var _this30;
+          var _this31;
 
           _classCallCheck(this, WebGLKernelValueMemoryOptimizedNumberTexture);
 
-          _this30 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueMemoryOptimizedNumberTexture).call(this, value, settings));
+          _this31 = _super44.call(this, value, settings);
 
           var _value$size3 = _slicedToArray(value.size, 2),
               width = _value$size3[0],
               height = _value$size3[1];
 
-          _this30.checkSize(width, height);
+          _this31.checkSize(width, height);
 
-          _this30.dimensions = value.dimensions;
-          _this30.textureSize = value.size;
-          _this30.uploadValue = value.texture;
-          _this30.forceUploadEachRun = true;
-          return _this30;
+          _this31.dimensions = value.dimensions;
+          _this31.textureSize = value.size;
+          _this31.uploadValue = value.texture;
+          _this31.forceUploadEachRun = true;
+          return _this31;
         }
 
         _createClass(WebGLKernelValueMemoryOptimizedNumberTexture, [{
@@ -17175,11 +17446,25 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               throw new Error("Value ".concat(this.name, " (").concat(this.type, ") must be from same context"));
             }
 
-            var gl = this.context,
-                kernel = this.kernel;
+            var kernel = this.kernel,
+                gl = this.context;
 
             if (kernel.pipeline) {
-              kernel.updateTextureArgumentRefs(this, inputTexture);
+              if (kernel.immutable) {
+                kernel.updateTextureArgumentRefs(this, inputTexture);
+              } else {
+                if (kernel.texture.texture === inputTexture.texture) {
+                  throw new Error(sameError);
+                } else if (kernel.mappedTextures) {
+                  var mappedTextures = kernel.mappedTextures;
+
+                  for (var i = 0; i < mappedTextures.length; i++) {
+                    if (mappedTextures[i].texture === inputTexture.texture) {
+                      throw new Error(sameError);
+                    }
+                  }
+                }
+              }
             }
 
             gl.activeTexture(this.contextHandle);
@@ -17192,45 +17477,49 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       }(WebGLKernelArray);
 
       module.exports = {
-        WebGLKernelValueMemoryOptimizedNumberTexture: WebGLKernelValueMemoryOptimizedNumberTexture
+        WebGLKernelValueMemoryOptimizedNumberTexture: WebGLKernelValueMemoryOptimizedNumberTexture,
+        sameError: sameError
       };
     }, {
       "../../../utils": 114,
       "./array": 40
     }],
     59: [function (require, module, exports) {
-      var _require141 = require('../../../utils'),
-          utils = _require141.utils;
+      var _require143 = require('../../../utils'),
+          utils = _require143.utils;
 
-      var _require142 = require('./array'),
-          WebGLKernelArray = _require142.WebGLKernelArray;
+      var _require144 = require('./array'),
+          WebGLKernelArray = _require144.WebGLKernelArray;
 
-      var WebGLKernelValueNumberTexture =
-      /*#__PURE__*/
-      function (_WebGLKernelArray3) {
+      var _require145 = require('./memory-optimized-number-texture'),
+          sameError = _require145.sameError;
+
+      var WebGLKernelValueNumberTexture = /*#__PURE__*/function (_WebGLKernelArray3) {
         _inherits(WebGLKernelValueNumberTexture, _WebGLKernelArray3);
 
+        var _super45 = _createSuper(WebGLKernelValueNumberTexture);
+
         function WebGLKernelValueNumberTexture(value, settings) {
-          var _this31;
+          var _this32;
 
           _classCallCheck(this, WebGLKernelValueNumberTexture);
 
-          _this31 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueNumberTexture).call(this, value, settings));
+          _this32 = _super45.call(this, value, settings);
 
           var _value$size4 = _slicedToArray(value.size, 2),
               width = _value$size4[0],
               height = _value$size4[1];
 
-          _this31.checkSize(width, height);
+          _this32.checkSize(width, height);
 
           var textureSize = value.size,
               dimensions = value.dimensions;
-          _this31.bitRatio = _this31.getBitRatio(value);
-          _this31.dimensions = dimensions;
-          _this31.textureSize = textureSize;
-          _this31.uploadValue = value.texture;
-          _this31.forceUploadEachRun = true;
-          return _this31;
+          _this32.bitRatio = _this32.getBitRatio(value);
+          _this32.dimensions = dimensions;
+          _this32.textureSize = textureSize;
+          _this32.uploadValue = value.texture;
+          _this32.forceUploadEachRun = true;
+          return _this32;
         }
 
         _createClass(WebGLKernelValueNumberTexture, [{
@@ -17264,7 +17553,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 gl = this.context;
 
             if (kernel.pipeline) {
-              kernel.updateTextureArgumentRefs(this, inputTexture);
+              if (kernel.immutable) {
+                kernel.updateTextureArgumentRefs(this, inputTexture);
+              } else {
+                if (kernel.texture.texture === inputTexture.texture) {
+                  throw new Error(sameError);
+                } else if (kernel.mappedTextures) {
+                  var mappedTextures = kernel.mappedTextures;
+
+                  for (var i = 0; i < mappedTextures.length; i++) {
+                    if (mappedTextures[i].texture === inputTexture.texture) {
+                      throw new Error(sameError);
+                    }
+                  }
+                }
+              }
             }
 
             gl.activeTexture(this.contextHandle);
@@ -17281,35 +17584,36 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       };
     }, {
       "../../../utils": 114,
-      "./array": 40
+      "./array": 40,
+      "./memory-optimized-number-texture": 58
     }],
     60: [function (require, module, exports) {
-      var _require143 = require('../../../utils'),
-          utils = _require143.utils;
+      var _require146 = require('../../../utils'),
+          utils = _require146.utils;
 
-      var _require144 = require('./array'),
-          WebGLKernelArray = _require144.WebGLKernelArray;
+      var _require147 = require('./array'),
+          WebGLKernelArray = _require147.WebGLKernelArray;
 
-      var WebGLKernelValueSingleArray =
-      /*#__PURE__*/
-      function (_WebGLKernelArray4) {
+      var WebGLKernelValueSingleArray = /*#__PURE__*/function (_WebGLKernelArray4) {
         _inherits(WebGLKernelValueSingleArray, _WebGLKernelArray4);
 
+        var _super46 = _createSuper(WebGLKernelValueSingleArray);
+
         function WebGLKernelValueSingleArray(value, settings) {
-          var _this32;
+          var _this33;
 
           _classCallCheck(this, WebGLKernelValueSingleArray);
 
-          _this32 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueSingleArray).call(this, value, settings));
-          _this32.bitRatio = 4;
-          _this32.dimensions = utils.getDimensions(value, true);
-          _this32.textureSize = utils.getMemoryOptimizedFloatTextureSize(_this32.dimensions, _this32.bitRatio);
-          _this32.uploadArrayLength = _this32.textureSize[0] * _this32.textureSize[1] * _this32.bitRatio;
+          _this33 = _super46.call(this, value, settings);
+          _this33.bitRatio = 4;
+          _this33.dimensions = utils.getDimensions(value, true);
+          _this33.textureSize = utils.getMemoryOptimizedFloatTextureSize(_this33.dimensions, _this33.bitRatio);
+          _this33.uploadArrayLength = _this33.textureSize[0] * _this33.textureSize[1] * _this33.bitRatio;
 
-          _this32.checkSize(_this32.textureSize[0], _this32.textureSize[1]);
+          _this33.checkSize(_this33.textureSize[0], _this33.textureSize[1]);
 
-          _this32.uploadValue = new Float32Array(_this32.uploadArrayLength);
-          return _this32;
+          _this33.uploadValue = new Float32Array(_this33.uploadArrayLength);
+          return _this33;
         }
 
         _createClass(WebGLKernelValueSingleArray, [{
@@ -17351,28 +17655,28 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./array": 40
     }],
     61: [function (require, module, exports) {
-      var _require145 = require('../../../utils'),
-          utils = _require145.utils;
+      var _require148 = require('../../../utils'),
+          utils = _require148.utils;
 
-      var _require146 = require('./array'),
-          WebGLKernelArray = _require146.WebGLKernelArray;
+      var _require149 = require('./array'),
+          WebGLKernelArray = _require149.WebGLKernelArray;
 
-      var WebGLKernelValueSingleArray1DI =
-      /*#__PURE__*/
-      function (_WebGLKernelArray5) {
+      var WebGLKernelValueSingleArray1DI = /*#__PURE__*/function (_WebGLKernelArray5) {
         _inherits(WebGLKernelValueSingleArray1DI, _WebGLKernelArray5);
 
+        var _super47 = _createSuper(WebGLKernelValueSingleArray1DI);
+
         function WebGLKernelValueSingleArray1DI(value, settings) {
-          var _this33;
+          var _this34;
 
           _classCallCheck(this, WebGLKernelValueSingleArray1DI);
 
-          _this33 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueSingleArray1DI).call(this, value, settings));
-          _this33.bitRatio = 4;
+          _this34 = _super47.call(this, value, settings);
+          _this34.bitRatio = 4;
 
-          _this33.setShape(value);
+          _this34.setShape(value);
 
-          return _this33;
+          return _this34;
         }
 
         _createClass(WebGLKernelValueSingleArray1DI, [{
@@ -17424,25 +17728,25 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./array": 40
     }],
     62: [function (require, module, exports) {
-      var _require147 = require('../../../utils'),
-          utils = _require147.utils;
+      var _require150 = require('../../../utils'),
+          utils = _require150.utils;
 
-      var _require148 = require('./index'),
-          WebGLKernelValue = _require148.WebGLKernelValue;
+      var _require151 = require('./index'),
+          WebGLKernelValue = _require151.WebGLKernelValue;
 
-      var WebGLKernelValueSingleArray2 =
-      /*#__PURE__*/
-      function (_WebGLKernelValue5) {
+      var WebGLKernelValueSingleArray2 = /*#__PURE__*/function (_WebGLKernelValue5) {
         _inherits(WebGLKernelValueSingleArray2, _WebGLKernelValue5);
 
+        var _super48 = _createSuper(WebGLKernelValueSingleArray2);
+
         function WebGLKernelValueSingleArray2(value, settings) {
-          var _this34;
+          var _this35;
 
           _classCallCheck(this, WebGLKernelValueSingleArray2);
 
-          _this34 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueSingleArray2).call(this, value, settings));
-          _this34.uploadValue = value;
-          return _this34;
+          _this35 = _super48.call(this, value, settings);
+          _this35.uploadValue = value;
+          return _this35;
         }
 
         _createClass(WebGLKernelValueSingleArray2, [{
@@ -17479,28 +17783,28 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./index": 56
     }],
     63: [function (require, module, exports) {
-      var _require149 = require('../../../utils'),
-          utils = _require149.utils;
+      var _require152 = require('../../../utils'),
+          utils = _require152.utils;
 
-      var _require150 = require('./array'),
-          WebGLKernelArray = _require150.WebGLKernelArray;
+      var _require153 = require('./array'),
+          WebGLKernelArray = _require153.WebGLKernelArray;
 
-      var WebGLKernelValueSingleArray2DI =
-      /*#__PURE__*/
-      function (_WebGLKernelArray6) {
+      var WebGLKernelValueSingleArray2DI = /*#__PURE__*/function (_WebGLKernelArray6) {
         _inherits(WebGLKernelValueSingleArray2DI, _WebGLKernelArray6);
 
+        var _super49 = _createSuper(WebGLKernelValueSingleArray2DI);
+
         function WebGLKernelValueSingleArray2DI(value, settings) {
-          var _this35;
+          var _this36;
 
           _classCallCheck(this, WebGLKernelValueSingleArray2DI);
 
-          _this35 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueSingleArray2DI).call(this, value, settings));
-          _this35.bitRatio = 4;
+          _this36 = _super49.call(this, value, settings);
+          _this36.bitRatio = 4;
 
-          _this35.setShape(value);
+          _this36.setShape(value);
 
-          return _this35;
+          return _this36;
         }
 
         _createClass(WebGLKernelValueSingleArray2DI, [{
@@ -17552,25 +17856,25 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./array": 40
     }],
     64: [function (require, module, exports) {
-      var _require151 = require('../../../utils'),
-          utils = _require151.utils;
+      var _require154 = require('../../../utils'),
+          utils = _require154.utils;
 
-      var _require152 = require('./index'),
-          WebGLKernelValue = _require152.WebGLKernelValue;
+      var _require155 = require('./index'),
+          WebGLKernelValue = _require155.WebGLKernelValue;
 
-      var WebGLKernelValueSingleArray3 =
-      /*#__PURE__*/
-      function (_WebGLKernelValue6) {
+      var WebGLKernelValueSingleArray3 = /*#__PURE__*/function (_WebGLKernelValue6) {
         _inherits(WebGLKernelValueSingleArray3, _WebGLKernelValue6);
 
+        var _super50 = _createSuper(WebGLKernelValueSingleArray3);
+
         function WebGLKernelValueSingleArray3(value, settings) {
-          var _this36;
+          var _this37;
 
           _classCallCheck(this, WebGLKernelValueSingleArray3);
 
-          _this36 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueSingleArray3).call(this, value, settings));
-          _this36.uploadValue = value;
-          return _this36;
+          _this37 = _super50.call(this, value, settings);
+          _this37.uploadValue = value;
+          return _this37;
         }
 
         _createClass(WebGLKernelValueSingleArray3, [{
@@ -17607,28 +17911,28 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./index": 56
     }],
     65: [function (require, module, exports) {
-      var _require153 = require('../../../utils'),
-          utils = _require153.utils;
+      var _require156 = require('../../../utils'),
+          utils = _require156.utils;
 
-      var _require154 = require('./array'),
-          WebGLKernelArray = _require154.WebGLKernelArray;
+      var _require157 = require('./array'),
+          WebGLKernelArray = _require157.WebGLKernelArray;
 
-      var WebGLKernelValueSingleArray3DI =
-      /*#__PURE__*/
-      function (_WebGLKernelArray7) {
+      var WebGLKernelValueSingleArray3DI = /*#__PURE__*/function (_WebGLKernelArray7) {
         _inherits(WebGLKernelValueSingleArray3DI, _WebGLKernelArray7);
 
+        var _super51 = _createSuper(WebGLKernelValueSingleArray3DI);
+
         function WebGLKernelValueSingleArray3DI(value, settings) {
-          var _this37;
+          var _this38;
 
           _classCallCheck(this, WebGLKernelValueSingleArray3DI);
 
-          _this37 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueSingleArray3DI).call(this, value, settings));
-          _this37.bitRatio = 4;
+          _this38 = _super51.call(this, value, settings);
+          _this38.bitRatio = 4;
 
-          _this37.setShape(value);
+          _this38.setShape(value);
 
-          return _this37;
+          return _this38;
         }
 
         _createClass(WebGLKernelValueSingleArray3DI, [{
@@ -17680,25 +17984,25 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./array": 40
     }],
     66: [function (require, module, exports) {
-      var _require155 = require('../../../utils'),
-          utils = _require155.utils;
+      var _require158 = require('../../../utils'),
+          utils = _require158.utils;
 
-      var _require156 = require('./index'),
-          WebGLKernelValue = _require156.WebGLKernelValue;
+      var _require159 = require('./index'),
+          WebGLKernelValue = _require159.WebGLKernelValue;
 
-      var WebGLKernelValueSingleArray4 =
-      /*#__PURE__*/
-      function (_WebGLKernelValue7) {
+      var WebGLKernelValueSingleArray4 = /*#__PURE__*/function (_WebGLKernelValue7) {
         _inherits(WebGLKernelValueSingleArray4, _WebGLKernelValue7);
 
+        var _super52 = _createSuper(WebGLKernelValueSingleArray4);
+
         function WebGLKernelValueSingleArray4(value, settings) {
-          var _this38;
+          var _this39;
 
           _classCallCheck(this, WebGLKernelValueSingleArray4);
 
-          _this38 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueSingleArray4).call(this, value, settings));
-          _this38.uploadValue = value;
-          return _this38;
+          _this39 = _super52.call(this, value, settings);
+          _this39.uploadValue = value;
+          return _this39;
         }
 
         _createClass(WebGLKernelValueSingleArray4, [{
@@ -17735,38 +18039,38 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./index": 56
     }],
     67: [function (require, module, exports) {
-      var _require157 = require('../../../utils'),
-          utils = _require157.utils;
+      var _require160 = require('../../../utils'),
+          utils = _require160.utils;
 
-      var _require158 = require('./array'),
-          WebGLKernelArray = _require158.WebGLKernelArray;
+      var _require161 = require('./array'),
+          WebGLKernelArray = _require161.WebGLKernelArray;
 
-      var WebGLKernelValueSingleInput =
-      /*#__PURE__*/
-      function (_WebGLKernelArray8) {
+      var WebGLKernelValueSingleInput = /*#__PURE__*/function (_WebGLKernelArray8) {
         _inherits(WebGLKernelValueSingleInput, _WebGLKernelArray8);
 
+        var _super53 = _createSuper(WebGLKernelValueSingleInput);
+
         function WebGLKernelValueSingleInput(value, settings) {
-          var _this39;
+          var _this40;
 
           _classCallCheck(this, WebGLKernelValueSingleInput);
 
-          _this39 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueSingleInput).call(this, value, settings));
-          _this39.bitRatio = 4;
+          _this40 = _super53.call(this, value, settings);
+          _this40.bitRatio = 4;
 
           var _value$size5 = _slicedToArray(value.size, 3),
               w = _value$size5[0],
               h = _value$size5[1],
               d = _value$size5[2];
 
-          _this39.dimensions = new Int32Array([w || 1, h || 1, d || 1]);
-          _this39.textureSize = utils.getMemoryOptimizedFloatTextureSize(_this39.dimensions, _this39.bitRatio);
-          _this39.uploadArrayLength = _this39.textureSize[0] * _this39.textureSize[1] * _this39.bitRatio;
+          _this40.dimensions = new Int32Array([w || 1, h || 1, d || 1]);
+          _this40.textureSize = utils.getMemoryOptimizedFloatTextureSize(_this40.dimensions, _this40.bitRatio);
+          _this40.uploadArrayLength = _this40.textureSize[0] * _this40.textureSize[1] * _this40.bitRatio;
 
-          _this39.checkSize(_this39.textureSize[0], _this39.textureSize[1]);
+          _this40.checkSize(_this40.textureSize[0], _this40.textureSize[1]);
 
-          _this39.uploadValue = new Float32Array(_this39.uploadArrayLength);
-          return _this39;
+          _this40.uploadValue = new Float32Array(_this40.uploadArrayLength);
+          return _this40;
         }
 
         _createClass(WebGLKernelValueSingleInput, [{
@@ -17808,34 +18112,34 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./array": 40
     }],
     68: [function (require, module, exports) {
-      var _require159 = require('../../../utils'),
-          utils = _require159.utils;
+      var _require162 = require('../../../utils'),
+          utils = _require162.utils;
 
-      var _require160 = require('./array'),
-          WebGLKernelArray = _require160.WebGLKernelArray;
+      var _require163 = require('./array'),
+          WebGLKernelArray = _require163.WebGLKernelArray;
 
-      var WebGLKernelValueUnsignedArray =
-      /*#__PURE__*/
-      function (_WebGLKernelArray9) {
+      var WebGLKernelValueUnsignedArray = /*#__PURE__*/function (_WebGLKernelArray9) {
         _inherits(WebGLKernelValueUnsignedArray, _WebGLKernelArray9);
 
+        var _super54 = _createSuper(WebGLKernelValueUnsignedArray);
+
         function WebGLKernelValueUnsignedArray(value, settings) {
-          var _this40;
+          var _this41;
 
           _classCallCheck(this, WebGLKernelValueUnsignedArray);
 
-          _this40 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueUnsignedArray).call(this, value, settings));
-          _this40.bitRatio = _this40.getBitRatio(value);
-          _this40.dimensions = utils.getDimensions(value, true);
-          _this40.textureSize = utils.getMemoryOptimizedPackedTextureSize(_this40.dimensions, _this40.bitRatio);
-          _this40.uploadArrayLength = _this40.textureSize[0] * _this40.textureSize[1] * (4 / _this40.bitRatio);
+          _this41 = _super54.call(this, value, settings);
+          _this41.bitRatio = _this41.getBitRatio(value);
+          _this41.dimensions = utils.getDimensions(value, true);
+          _this41.textureSize = utils.getMemoryOptimizedPackedTextureSize(_this41.dimensions, _this41.bitRatio);
+          _this41.uploadArrayLength = _this41.textureSize[0] * _this41.textureSize[1] * (4 / _this41.bitRatio);
 
-          _this40.checkSize(_this40.textureSize[0], _this40.textureSize[1]);
+          _this41.checkSize(_this41.textureSize[0], _this41.textureSize[1]);
 
-          _this40.TranserArrayType = _this40.getTransferArrayType(value);
-          _this40.preUploadValue = new _this40.TranserArrayType(_this40.uploadArrayLength);
-          _this40.uploadValue = new Uint8Array(_this40.preUploadValue.buffer);
-          return _this40;
+          _this41.TranserArrayType = _this41.getTransferArrayType(value);
+          _this41.preUploadValue = new _this41.TranserArrayType(_this41.uploadArrayLength);
+          _this41.uploadValue = new Uint8Array(_this41.preUploadValue.buffer);
+          return _this41;
         }
 
         _createClass(WebGLKernelValueUnsignedArray, [{
@@ -17877,40 +18181,40 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./array": 40
     }],
     69: [function (require, module, exports) {
-      var _require161 = require('../../../utils'),
-          utils = _require161.utils;
+      var _require164 = require('../../../utils'),
+          utils = _require164.utils;
 
-      var _require162 = require('./array'),
-          WebGLKernelArray = _require162.WebGLKernelArray;
+      var _require165 = require('./array'),
+          WebGLKernelArray = _require165.WebGLKernelArray;
 
-      var WebGLKernelValueUnsignedInput =
-      /*#__PURE__*/
-      function (_WebGLKernelArray10) {
+      var WebGLKernelValueUnsignedInput = /*#__PURE__*/function (_WebGLKernelArray10) {
         _inherits(WebGLKernelValueUnsignedInput, _WebGLKernelArray10);
 
+        var _super55 = _createSuper(WebGLKernelValueUnsignedInput);
+
         function WebGLKernelValueUnsignedInput(value, settings) {
-          var _this41;
+          var _this42;
 
           _classCallCheck(this, WebGLKernelValueUnsignedInput);
 
-          _this41 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernelValueUnsignedInput).call(this, value, settings));
-          _this41.bitRatio = _this41.getBitRatio(value);
+          _this42 = _super55.call(this, value, settings);
+          _this42.bitRatio = _this42.getBitRatio(value);
 
           var _value$size6 = _slicedToArray(value.size, 3),
               w = _value$size6[0],
               h = _value$size6[1],
               d = _value$size6[2];
 
-          _this41.dimensions = new Int32Array([w || 1, h || 1, d || 1]);
-          _this41.textureSize = utils.getMemoryOptimizedPackedTextureSize(_this41.dimensions, _this41.bitRatio);
-          _this41.uploadArrayLength = _this41.textureSize[0] * _this41.textureSize[1] * (4 / _this41.bitRatio);
+          _this42.dimensions = new Int32Array([w || 1, h || 1, d || 1]);
+          _this42.textureSize = utils.getMemoryOptimizedPackedTextureSize(_this42.dimensions, _this42.bitRatio);
+          _this42.uploadArrayLength = _this42.textureSize[0] * _this42.textureSize[1] * (4 / _this42.bitRatio);
 
-          _this41.checkSize(_this41.textureSize[0], _this41.textureSize[1]);
+          _this42.checkSize(_this42.textureSize[0], _this42.textureSize[1]);
 
-          _this41.TranserArrayType = _this41.getTransferArrayType(value.value);
-          _this41.preUploadValue = new _this41.TranserArrayType(_this41.uploadArrayLength);
-          _this41.uploadValue = new Uint8Array(_this41.preUploadValue.buffer);
-          return _this41;
+          _this42.TranserArrayType = _this42.getTransferArrayType(value.value);
+          _this42.preUploadValue = new _this42.TranserArrayType(_this42.uploadArrayLength);
+          _this42.uploadValue = new Uint8Array(_this42.preUploadValue.buffer);
+          return _this42;
         }
 
         _createClass(WebGLKernelValueUnsignedInput, [{
@@ -17952,31 +18256,31 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./array": 40
     }],
     70: [function (require, module, exports) {
-      var _require163 = require('../gl/kernel'),
-          GLKernel = _require163.GLKernel;
+      var _require166 = require('../gl/kernel'),
+          GLKernel = _require166.GLKernel;
 
-      var _require164 = require('../function-builder'),
-          FunctionBuilder = _require164.FunctionBuilder;
+      var _require167 = require('../function-builder'),
+          FunctionBuilder = _require167.FunctionBuilder;
 
-      var _require165 = require('./function-node'),
-          WebGLFunctionNode = _require165.WebGLFunctionNode;
+      var _require168 = require('./function-node'),
+          WebGLFunctionNode = _require168.WebGLFunctionNode;
 
-      var _require166 = require('../../utils'),
-          utils = _require166.utils;
+      var _require169 = require('../../utils'),
+          utils = _require169.utils;
 
       var mrud = require('../../plugins/math-random-uniformly-distributed');
 
-      var _require167 = require('./fragment-shader'),
-          fragmentShader = _require167.fragmentShader;
+      var _require170 = require('./fragment-shader'),
+          fragmentShader = _require170.fragmentShader;
 
-      var _require168 = require('./vertex-shader'),
-          vertexShader = _require168.vertexShader;
+      var _require171 = require('./vertex-shader'),
+          vertexShader = _require171.vertexShader;
 
-      var _require169 = require('../gl/kernel-string'),
-          glKernelString = _require169.glKernelString;
+      var _require172 = require('../gl/kernel-string'),
+          glKernelString = _require172.glKernelString;
 
-      var _require170 = require('./kernel-value-maps'),
-          _lookupKernelValueType = _require170.lookupKernelValueType;
+      var _require173 = require('./kernel-value-maps'),
+          _lookupKernelValueType = _require173.lookupKernelValueType;
 
       var isSupported = null;
       var testCanvas = null;
@@ -17987,10 +18291,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var canvases = [];
       var maxTexSizes = {};
 
-      var WebGLKernel =
-      /*#__PURE__*/
-      function (_GLKernel) {
+      var WebGLKernel = /*#__PURE__*/function (_GLKernel) {
         _inherits(WebGLKernel, _GLKernel);
+
+        var _super56 = _createSuper(WebGLKernel);
 
         _createClass(WebGLKernel, null, [{
           key: "setupFeatureChecks",
@@ -18085,43 +18389,43 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }]);
 
         function WebGLKernel(source, settings) {
-          var _this42;
+          var _this43;
 
           _classCallCheck(this, WebGLKernel);
 
-          _this42 = _possibleConstructorReturn(this, _getPrototypeOf(WebGLKernel).call(this, source, settings));
-          _this42.program = null;
-          _this42.pipeline = settings.pipeline;
-          _this42.endianness = utils.systemEndianness();
-          _this42.extensions = {};
-          _this42.argumentTextureCount = 0;
-          _this42.constantTextureCount = 0;
-          _this42.fragShader = null;
-          _this42.vertShader = null;
-          _this42.drawBuffersMap = null;
-          _this42.maxTexSize = null;
-          _this42.onRequestSwitchKernel = null;
-          _this42.removeIstanbulCoverage = true;
+          _this43 = _super56.call(this, source, settings);
+          _this43.program = null;
+          _this43.pipeline = settings.pipeline;
+          _this43.endianness = utils.systemEndianness();
+          _this43.extensions = {};
+          _this43.argumentTextureCount = 0;
+          _this43.constantTextureCount = 0;
+          _this43.fragShader = null;
+          _this43.vertShader = null;
+          _this43.drawBuffersMap = null;
+          _this43.maxTexSize = null;
+          _this43.onRequestSwitchKernel = null;
+          _this43.removeIstanbulCoverage = true;
+          _this43.texture = null;
+          _this43.mappedTextures = null;
 
-          _this42.mergeSettings(source.settings || settings);
+          _this43.mergeSettings(source.settings || settings);
 
-          _this42.threadDim = null;
-          _this42.framebuffer = null;
-          _this42.buffer = null;
-          _this42.texture = null;
-          _this42.mappedTextures = null;
-          _this42.textureCache = [];
-          _this42.programUniformLocationCache = {};
-          _this42.uniform1fCache = {};
-          _this42.uniform1iCache = {};
-          _this42.uniform2fCache = {};
-          _this42.uniform2fvCache = {};
-          _this42.uniform2ivCache = {};
-          _this42.uniform3fvCache = {};
-          _this42.uniform3ivCache = {};
-          _this42.uniform4fvCache = {};
-          _this42.uniform4ivCache = {};
-          return _this42;
+          _this43.threadDim = null;
+          _this43.framebuffer = null;
+          _this43.buffer = null;
+          _this43.textureCache = [];
+          _this43.programUniformLocationCache = {};
+          _this43.uniform1fCache = {};
+          _this43.uniform1iCache = {};
+          _this43.uniform2fCache = {};
+          _this43.uniform2fvCache = {};
+          _this43.uniform2ivCache = {};
+          _this43.uniform3fvCache = {};
+          _this43.uniform3ivCache = {};
+          _this43.uniform4fvCache = {};
+          _this43.uniform4ivCache = {};
+          return _this43;
         }
 
         _createClass(WebGLKernel, [{
@@ -18162,8 +18466,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               }
             } else if (_typeof(source) === 'object') {
               if (settings.pluginNames) {
-                var _loop = function _loop(_i18) {
-                  var plugin = plugins[_i18];
+                var _loop2 = function _loop2(_i20) {
+                  var plugin = plugins[_i20];
                   var usePlugin = settings.pluginNames.some(function (pluginName) {
                     return pluginName === plugin.name;
                   });
@@ -18173,8 +18477,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                   }
                 };
 
-                for (var _i18 = 0; _i18 < plugins.length; _i18++) {
-                  _loop(_i18);
+                for (var _i20 = 0; _i20 < plugins.length; _i20++) {
+                  _loop2(_i20);
                 }
               }
             }
@@ -18302,7 +18606,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "setupArguments",
           value: function setupArguments(args) {
-            var _this43 = this;
+            var _this44 = this;
 
             this.kernelArguments = [];
             this.argumentTextureCount = 0;
@@ -18325,7 +18629,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             var textureIndexes = 0;
 
             var onRequestTexture = function onRequestTexture() {
-              return _this43.createTexture();
+              return _this44.createTexture();
             };
 
             var onRequestIndex = function onRequestIndex() {
@@ -18333,19 +18637,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             };
 
             var onUpdateValueMismatch = function onUpdateValueMismatch(constructor) {
-              _this43.switchKernels({
+              _this44.switchKernels({
                 type: 'argumentMismatch',
                 needed: constructor
               });
             };
 
             var onRequestContextHandle = function onRequestContextHandle() {
-              return gl.TEXTURE0 + _this43.constantTextureCount + _this43.argumentTextureCount++;
+              return gl.TEXTURE0 + _this44.constantTextureCount + _this44.argumentTextureCount++;
             };
 
             for (var index = 0; index < args.length; index++) {
               var _value = args[index];
-              var _name8 = this.argumentNames[index];
+              var _name10 = this.argumentNames[index];
               var type = void 0;
 
               if (needsArgumentTypes) {
@@ -18362,7 +18666,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               }
 
               var kernelArgument = new KernelValue(_value, {
-                name: _name8,
+                name: _name10,
                 type: type,
                 tactic: this.tactic,
                 origin: 'user',
@@ -18391,7 +18695,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "setupConstants",
           value: function setupConstants(args) {
-            var _this44 = this;
+            var _this45 = this;
 
             var gl = this.context;
             this.kernelConstants = [];
@@ -18405,15 +18709,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             this.constantBitRatios = {};
             var textureIndexes = 0;
 
-            for (var _name9 in this.constants) {
-              var _value2 = this.constants[_name9];
+            for (var _name11 in this.constants) {
+              var _value2 = this.constants[_name11];
               var type = void 0;
 
               if (needsConstantTypes) {
                 type = utils.getVariableType(_value2, this.strictIntegers);
-                this.constantTypes[_name9] = type;
+                this.constantTypes[_name11] = type;
               } else {
-                type = this.constantTypes[_name9];
+                type = this.constantTypes[_name11];
               }
 
               var KernelValue = this.constructor.lookupKernelValueType(type, 'static', this.precision, _value2);
@@ -18423,7 +18727,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               }
 
               var kernelValue = new KernelValue(_value2, {
-                name: _name9,
+                name: _name11,
                 type: type,
                 tactic: this.tactic,
                 origin: 'constants',
@@ -18432,16 +18736,16 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 kernel: this,
                 strictIntegers: this.strictIntegers,
                 onRequestTexture: function onRequestTexture() {
-                  return _this44.createTexture();
+                  return _this45.createTexture();
                 },
                 onRequestIndex: function onRequestIndex() {
                   return textureIndexes++;
                 },
                 onRequestContextHandle: function onRequestContextHandle() {
-                  return gl.TEXTURE0 + _this44.constantTextureCount++;
+                  return gl.TEXTURE0 + _this45.constantTextureCount++;
                 }
               });
-              this.constantBitRatios[_name9] = kernelValue.bitRatio;
+              this.constantBitRatios[_name11] = kernelValue.bitRatio;
               this.kernelConstants.push(kernelValue);
               kernelValue.setup();
 
@@ -18453,6 +18757,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "build",
           value: function build() {
+            if (this.built) return;
             this.initExtensions();
             this.validateSettings(arguments);
             this.setupConstants(arguments);
@@ -18551,6 +18856,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             this._setupOutputTexture();
 
             if (this.subKernels !== null && this.subKernels.length > 0) {
+              this._mappedTextureSwitched = {};
+
               this._setupSubOutputTextures();
             }
 
@@ -18606,15 +18913,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               if (this.switchingKernels) return;
             }
 
-            for (var _i19 = 0; _i19 < kernelArguments.length; _i19++) {
-              kernelArguments[_i19].updateValue(arguments[_i19]);
+            for (var _i21 = 0; _i21 < kernelArguments.length; _i21++) {
+              kernelArguments[_i21].updateValue(arguments[_i21]);
 
               if (this.switchingKernels) return;
             }
 
             if (this.plugins) {
-              for (var _i20 = 0; _i20 < this.plugins.length; _i20++) {
-                var plugin = this.plugins[_i20];
+              for (var _i22 = 0; _i22 < this.plugins.length; _i22++) {
+                var plugin = this.plugins[_i22];
 
                 if (plugin.onBeforeRun) {
                   plugin.onBeforeRun(this);
@@ -18627,10 +18934,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 gl.bindRenderbuffer(gl.RENDERBUFFER, null);
                 gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
 
-                this._setupOutputTexture();
+                if (this.immutable) {
+                  this._replaceOutputTexture();
+                }
 
                 gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-                return this.texture.clone();
+                return this.immutable ? this.texture.clone() : this.texture;
               }
 
               gl.bindRenderbuffer(gl.RENDERBUFFER, null);
@@ -18641,10 +18950,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
             gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
 
-            this._setupOutputTexture();
+            if (this.immutable) {
+              this._replaceOutputTexture();
+            }
 
             if (this.subKernels !== null) {
-              this._setupSubOutputTextures();
+              if (this.immutable) {
+                this._replaceSubOutputTextures();
+              }
 
               this.drawBuffers();
             }
@@ -18675,13 +18988,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
           }
         }, {
+          key: "_replaceOutputTexture",
+          value: function _replaceOutputTexture() {
+            if (this.texture.beforeMutate() || this._textureSwitched) {
+              var gl = this.context;
+              gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture.texture, 0);
+              this._textureSwitched = false;
+            }
+          }
+        }, {
           key: "_setupOutputTexture",
           value: function _setupOutputTexture() {
-            var gl = this.context,
-                texSize = this.texSize;
+            var gl = this.context;
+            var texSize = this.texSize;
 
             if (this.texture) {
-              this.texture.beforeMutate();
               gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture.texture, 0);
               return;
             }
@@ -18714,15 +19035,27 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             });
           }
         }, {
+          key: "_replaceSubOutputTextures",
+          value: function _replaceSubOutputTextures() {
+            var gl = this.context;
+
+            for (var i = 0; i < this.mappedTextures.length; i++) {
+              var mappedTexture = this.mappedTextures[i];
+
+              if (mappedTexture.beforeMutate() || this._mappedTextureSwitched[i]) {
+                gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i + 1, gl.TEXTURE_2D, mappedTexture.texture, 0);
+                this._mappedTextureSwitched[i] = false;
+              }
+            }
+          }
+        }, {
           key: "_setupSubOutputTextures",
           value: function _setupSubOutputTextures() {
             var gl = this.context;
 
-            if (this.mappedTextures && this.mappedTextures.length > 0) {
-              for (var i = 0; i < this.mappedTextures.length; i++) {
-                var mappedTexture = this.mappedTextures[i];
-                mappedTexture.beforeMutate();
-                gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i + 1, gl.TEXTURE_2D, mappedTexture.texture, 0);
+            if (this.mappedTextures) {
+              for (var i = 0; i < this.subKernels.length; i++) {
+                gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i + 1, gl.TEXTURE_2D, this.mappedTextures[i].texture, 0);
               }
 
               return;
@@ -18732,10 +19065,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             this.drawBuffersMap = [gl.COLOR_ATTACHMENT0];
             this.mappedTextures = [];
 
-            for (var _i21 = 0; _i21 < this.subKernels.length; _i21++) {
+            for (var _i23 = 0; _i23 < this.subKernels.length; _i23++) {
               var texture = this.createTexture();
-              this.drawBuffersMap.push(gl.COLOR_ATTACHMENT0 + _i21 + 1);
-              gl.activeTexture(gl.TEXTURE0 + this.constantTextureCount + this.argumentTextureCount + _i21);
+              this.drawBuffersMap.push(gl.COLOR_ATTACHMENT0 + _i23 + 1);
+              gl.activeTexture(gl.TEXTURE0 + this.constantTextureCount + this.argumentTextureCount + _i23);
               gl.bindTexture(gl.TEXTURE_2D, texture);
               gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
               gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -18748,7 +19081,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
               }
 
-              gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + _i21 + 1, gl.TEXTURE_2D, texture, 0);
+              gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + _i23 + 1, gl.TEXTURE_2D, texture, 0);
               this.mappedTextures.push(new this.TextureConstructor({
                 texture: texture,
                 size: texSize,
@@ -18950,11 +19283,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "_getPluginsString",
           value: function _getPluginsString() {
-            var _this45 = this;
+            var _this46 = this;
 
             if (!this.plugins) return '\n';
             return this.plugins.map(function (plugin) {
-              return plugin.source && _this45.source.match(plugin.functionMatch) ? plugin.source : '';
+              return plugin.source && _this46.source.match(plugin.functionMatch) ? plugin.source : '';
             }).join('\n');
           }
         }, {
@@ -18996,7 +19329,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "_getDivideWithIntegerCheckString",
           value: function _getDivideWithIntegerCheckString() {
-            return this.fixIntegerDivisionAccuracy ? "float div_with_int_check(float x, float y) {\n  if (floor(x) == x && floor(y) == y && integerMod(x, y) == 0.0) {\n    return float(int(x)/int(y));\n  }\n  return x / y;\n}" : '';
+            return this.fixIntegerDivisionAccuracy ? "float divWithIntCheck(float x, float y) {\n  if (floor(x) == x && floor(y) == y && integerMod(x, y) == 0.0) {\n    return float(int(x) / int(y));\n  }\n  return x / y;\n}\n\nfloat integerCorrectionModulo(float number, float divisor) {\n  if (number < 0.0) {\n    number = abs(number);\n    if (divisor < 0.0) {\n      divisor = abs(divisor);\n    }\n    return -(number - (divisor * floor(divWithIntCheck(number, divisor))));\n  }\n  if (divisor < 0.0) {\n    divisor = abs(divisor);\n  }\n  return number - (divisor * floor(divWithIntCheck(number, divisor)));\n}" : '';
           }
         }, {
           key: "_getMainArgumentsString",
@@ -19024,9 +19357,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             if (constants) {
               var i = 0;
 
-              for (var _name10 in constants) {
-                if (!this.constants.hasOwnProperty(_name10)) continue;
-                result.push(this.kernelConstants[i++].getSource(this.constants[_name10]));
+              for (var _name12 in constants) {
+                if (!this.constants.hasOwnProperty(_name12)) continue;
+                result.push(this.kernelConstants[i++].getSource(this.constants[_name12]));
               }
             }
 
@@ -19079,22 +19412,22 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                   break;
 
                 case 'Array(2)':
-                  for (var _i22 = 0; _i22 < subKernels.length; _i22++) {
-                    result.push("vec2 subKernelResult_".concat(subKernels[_i22].name));
+                  for (var _i24 = 0; _i24 < subKernels.length; _i24++) {
+                    result.push("vec2 subKernelResult_".concat(subKernels[_i24].name));
                   }
 
                   break;
 
                 case 'Array(3)':
-                  for (var _i23 = 0; _i23 < subKernels.length; _i23++) {
-                    result.push("vec3 subKernelResult_".concat(subKernels[_i23].name));
+                  for (var _i25 = 0; _i25 < subKernels.length; _i25++) {
+                    result.push("vec3 subKernelResult_".concat(subKernels[_i25].name));
                   }
 
                   break;
 
                 case 'Array(4)':
-                  for (var _i24 = 0; _i24 < subKernels.length; _i24++) {
-                    result.push("vec4 subKernelResult_".concat(subKernels[_i24].name));
+                  for (var _i26 = 0; _i26 < subKernels.length; _i26++) {
+                    result.push("vec4 subKernelResult_".concat(subKernels[_i26].name));
                   }
 
                   break;
@@ -19279,22 +19612,22 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 break;
 
               case 'Array(2)':
-                for (var _i25 = 0; _i25 < this.subKernels.length; ++_i25) {
-                  result.push("  gl_FragData[".concat(_i25 + 1, "][0] = subKernelResult_").concat(this.subKernels[_i25].name, "[0]"), "  gl_FragData[".concat(_i25 + 1, "][1] = subKernelResult_").concat(this.subKernels[_i25].name, "[1]"));
+                for (var _i27 = 0; _i27 < this.subKernels.length; ++_i27) {
+                  result.push("  gl_FragData[".concat(_i27 + 1, "][0] = subKernelResult_").concat(this.subKernels[_i27].name, "[0]"), "  gl_FragData[".concat(_i27 + 1, "][1] = subKernelResult_").concat(this.subKernels[_i27].name, "[1]"));
                 }
 
                 break;
 
               case 'Array(3)':
-                for (var _i26 = 0; _i26 < this.subKernels.length; ++_i26) {
-                  result.push("  gl_FragData[".concat(_i26 + 1, "][0] = subKernelResult_").concat(this.subKernels[_i26].name, "[0]"), "  gl_FragData[".concat(_i26 + 1, "][1] = subKernelResult_").concat(this.subKernels[_i26].name, "[1]"), "  gl_FragData[".concat(_i26 + 1, "][2] = subKernelResult_").concat(this.subKernels[_i26].name, "[2]"));
+                for (var _i28 = 0; _i28 < this.subKernels.length; ++_i28) {
+                  result.push("  gl_FragData[".concat(_i28 + 1, "][0] = subKernelResult_").concat(this.subKernels[_i28].name, "[0]"), "  gl_FragData[".concat(_i28 + 1, "][1] = subKernelResult_").concat(this.subKernels[_i28].name, "[1]"), "  gl_FragData[".concat(_i28 + 1, "][2] = subKernelResult_").concat(this.subKernels[_i28].name, "[2]"));
                 }
 
                 break;
 
               case 'Array(4)':
-                for (var _i27 = 0; _i27 < this.subKernels.length; ++_i27) {
-                  result.push("  gl_FragData[".concat(_i27 + 1, "][0] = subKernelResult_").concat(this.subKernels[_i27].name, "[0]"), "  gl_FragData[".concat(_i27 + 1, "][1] = subKernelResult_").concat(this.subKernels[_i27].name, "[1]"), "  gl_FragData[".concat(_i27 + 1, "][2] = subKernelResult_").concat(this.subKernels[_i27].name, "[2]"), "  gl_FragData[".concat(_i27 + 1, "][3] = subKernelResult_").concat(this.subKernels[_i27].name, "[3]"));
+                for (var _i29 = 0; _i29 < this.subKernels.length; ++_i29) {
+                  result.push("  gl_FragData[".concat(_i29 + 1, "][0] = subKernelResult_").concat(this.subKernels[_i29].name, "[0]"), "  gl_FragData[".concat(_i29 + 1, "][1] = subKernelResult_").concat(this.subKernels[_i29].name, "[1]"), "  gl_FragData[".concat(_i29 + 1, "][2] = subKernelResult_").concat(this.subKernels[_i29].name, "[2]"), "  gl_FragData[".concat(_i29 + 1, "][3] = subKernelResult_").concat(this.subKernels[_i29].name, "[3]"));
                 }
 
                 break;
@@ -19340,6 +19673,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "destroy",
           value: function destroy(removeCanvasReferences) {
+            if (!this.context) return;
+
             if (this.buffer) {
               this.context.deleteBuffer(this.buffer);
             }
@@ -19372,8 +19707,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
 
             if (this.mappedTextures && this.mappedTextures.length) {
-              for (var i = 0; i < this.mappedTextures.length; i++) {
-                var mappedTexture = this.mappedTextures[i];
+              for (var _i30 = 0; _i30 < this.mappedTextures.length; _i30++) {
+                var mappedTexture = this.mappedTextures[_i30];
                 mappedTexture.delete();
 
                 var _textureCacheIndex = this.textureCache.indexOf(mappedTexture.texture);
@@ -19387,14 +19722,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
 
             if (this.kernelArguments) {
-              for (var _i28 = 0; _i28 < this.kernelArguments.length; _i28++) {
-                this.kernelArguments[_i28].destroy();
+              for (var _i31 = 0; _i31 < this.kernelArguments.length; _i31++) {
+                this.kernelArguments[_i31].destroy();
               }
             }
 
             if (this.kernelConstants) {
-              for (var _i29 = 0; _i29 < this.kernelConstants.length; _i29++) {
-                this.kernelConstants[_i29].destroy();
+              for (var _i32 = 0; _i32 < this.kernelConstants.length; _i32++) {
+                this.kernelConstants[_i32].destroy();
               }
             }
 
@@ -19415,6 +19750,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             this.destroyExtensions();
             delete this.context;
             delete this.canvas;
+            if (!this.gpu) return;
+            var i = this.gpu.kernels.indexOf(this);
+            if (i === -1) return;
+            this.gpu.kernels.splice(i, 1);
           }
         }, {
           key: "destroyExtensions",
@@ -19468,24 +19807,27 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       };
     }, {}],
     72: [function (require, module, exports) {
-      var fragmentShader = "#version 300 es\n__HEADER__;\n__FLOAT_TACTIC_DECLARATION__;\n__INT_TACTIC_DECLARATION__;\n__SAMPLER_2D_TACTIC_DECLARATION__;\n__SAMPLER_2D_ARRAY_TACTIC_DECLARATION__;\n\nconst int LOOP_MAX = __LOOP_MAX__;\n\n__PLUGINS__;\n__CONSTANTS__;\n\nin vec2 vTexCoord;\n\nconst int BIT_COUNT = 32;\nint modi(int x, int y) {\n  return x - y * (x / y);\n}\n\nint bitwiseOr(int a, int b) {\n  int result = 0;\n  int n = 1;\n  \n  for (int i = 0; i < BIT_COUNT; i++) {\n    if ((modi(a, 2) == 1) || (modi(b, 2) == 1)) {\n      result += n;\n    }\n    a = a / 2;\n    b = b / 2;\n    n = n * 2;\n    if(!(a > 0 || b > 0)) {\n      break;\n    }\n  }\n  return result;\n}\nint bitwiseXOR(int a, int b) {\n  int result = 0;\n  int n = 1;\n  \n  for (int i = 0; i < BIT_COUNT; i++) {\n    if ((modi(a, 2) == 1) != (modi(b, 2) == 1)) {\n      result += n;\n    }\n    a = a / 2;\n    b = b / 2;\n    n = n * 2;\n    if(!(a > 0 || b > 0)) {\n      break;\n    }\n  }\n  return result;\n}\nint bitwiseAnd(int a, int b) {\n  int result = 0;\n  int n = 1;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if ((modi(a, 2) == 1) && (modi(b, 2) == 1)) {\n      result += n;\n    }\n    a = a / 2;\n    b = b / 2;\n    n = n * 2;\n    if(!(a > 0 && b > 0)) {\n      break;\n    }\n  }\n  return result;\n}\nint bitwiseNot(int a) {\n  int result = 0;\n  int n = 1;\n  \n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (modi(a, 2) == 0) {\n      result += n;    \n    }\n    a = a / 2;\n    n = n * 2;\n  }\n  return result;\n}\nint bitwiseZeroFillLeftShift(int n, int shift) {\n  int maxBytes = BIT_COUNT;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (maxBytes >= n) {\n      break;\n    }\n    maxBytes *= 2;\n  }\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= shift) {\n      break;\n    }\n    n *= 2;\n  }\n\n  int result = 0;\n  int byteVal = 1;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= maxBytes) break;\n    if (modi(n, 2) > 0) { result += byteVal; }\n    n = int(n / 2);\n    byteVal *= 2;\n  }\n  return result;\n}\n\nint bitwiseSignedRightShift(int num, int shifts) {\n  return int(floor(float(num) / pow(2.0, float(shifts))));\n}\n\nint bitwiseZeroFillRightShift(int n, int shift) {\n  int maxBytes = BIT_COUNT;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (maxBytes >= n) {\n      break;\n    }\n    maxBytes *= 2;\n  }\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= shift) {\n      break;\n    }\n    n /= 2;\n  }\n  int result = 0;\n  int byteVal = 1;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= maxBytes) break;\n    if (modi(n, 2) > 0) { result += byteVal; }\n    n = int(n / 2);\n    byteVal *= 2;\n  }\n  return result;\n}\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x/y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 texel) {\n  __DECODE32_ENDIANNESS__;\n  texel *= 255.0;\n  vec2 gte128;\n  gte128.x = texel.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = texel.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * texel.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  texel.b = texel.b - 128.0 * gte128.x;\n  res = dot(texel, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nfloat decode16(vec4 texel, int index) {\n  int channel = integerMod(index, 2);\n  return texel[channel*2] * 255.0 + texel[channel*2 + 1] * 65280.0;\n}\n\nfloat decode8(vec4 texel, int index) {\n  int channel = integerMod(index, 4);\n  return texel[channel] * 255.0;\n}\n\nvec4 legacyEncode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 texel = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  texel.rg = integerMod(texel.rg, 256.0);\n  texel.b = integerMod(texel.b, 128.0);\n  texel.a = exponent*0.5 + 63.5;\n  texel.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  texel = floor(texel);\n  texel *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return texel;\n}\n\n// https://github.com/gpujs/gpu.js/wiki/Encoder-details\nvec4 encode32(float value) {\n  if (value == 0.0) return vec4(0, 0, 0, 0);\n\n  float exponent;\n  float mantissa;\n  vec4  result;\n  float sgn;\n\n  sgn = step(0.0, -value);\n  value = abs(value);\n\n  exponent = floor(log2(value));\n\n  mantissa = value*pow(2.0, -exponent)-1.0;\n  exponent = exponent+127.0;\n  result   = vec4(0,0,0,0);\n\n  result.a = floor(exponent/2.0);\n  exponent = exponent - result.a*2.0;\n  result.a = result.a + 128.0*sgn;\n\n  result.b = floor(mantissa * 128.0);\n  mantissa = mantissa - result.b / 128.0;\n  result.b = result.b + exponent*128.0;\n\n  result.g = floor(mantissa*32768.0);\n  mantissa = mantissa - result.g/32768.0;\n\n  result.r = floor(mantissa*8388608.0);\n  return result/255.0;\n}\n// Dragons end here\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  return decode32(texel);\n}\n\nfloat get16(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + (texDim.x * (y + (texDim.y * z)));\n  int w = texSize.x * 2;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize.x * 2, texSize.y));\n  return decode16(texel, index);\n}\n\nfloat get8(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + (texDim.x * (y + (texDim.y * z)));\n  int w = texSize.x * 4;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize.x * 4, texSize.y));\n  return decode8(texel, index);\n}\n\nfloat getMemoryOptimized32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + (texDim.x * (y + (texDim.y * z)));\n  int channel = integerMod(index, 4);\n  index = index / 4;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  index = index / 4;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  return texel[channel];\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  return texture(tex, st / vec2(texSize));\n}\n\nvec4 getImage3D(sampler2DArray tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  return texture(tex, vec3(st / vec2(texSize), z));\n}\n\nfloat getFloatFromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return result[0];\n}\n\nvec2 getVec2FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec2(result[0], result[1]);\n}\n\nvec2 getMemoryOptimizedVec2(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int channel = integerMod(index, 2);\n  index = index / 2;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  if (channel == 0) return vec2(texel.r, texel.g);\n  if (channel == 1) return vec2(texel.b, texel.a);\n  return vec2(0.0, 0.0);\n}\n\nvec3 getVec3FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec3(result[0], result[1], result[2]);\n}\n\nvec3 getMemoryOptimizedVec3(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int fieldIndex = 3 * (x + texDim.x * (y + texDim.y * z));\n  int vectorIndex = fieldIndex / 4;\n  int vectorOffset = fieldIndex - vectorIndex * 4;\n  int readY = vectorIndex / texSize.x;\n  int readX = vectorIndex - readY * texSize.x;\n  vec4 tex1 = texture(tex, (vec2(readX, readY) + 0.5) / vec2(texSize));\n\n  if (vectorOffset == 0) {\n    return tex1.xyz;\n  } else if (vectorOffset == 1) {\n    return tex1.yzw;\n  } else {\n    readX++;\n    if (readX >= texSize.x) {\n      readX = 0;\n      readY++;\n    }\n    vec4 tex2 = texture(tex, vec2(readX, readY) / vec2(texSize));\n    if (vectorOffset == 2) {\n      return vec3(tex1.z, tex1.w, tex2.x);\n    } else {\n      return vec3(tex1.w, tex2.x, tex2.y);\n    }\n  }\n}\n\nvec4 getVec4FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  return getImage2D(tex, texSize, texDim, z, y, x);\n}\n\nvec4 getMemoryOptimizedVec4(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int channel = integerMod(index, 2);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  return vec4(texel.r, texel.g, texel.b, texel.a);\n}\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\nfloat modulo(float num1, float num2) {\n  if (num2 == 0.0) {\n    return 0.0;\n  }\n  bool isPositive = num1 >= 0.0;\n  num1 = abs(num1);\n  num2 = abs(num2);\n  for (int i = 0; i < LOOP_MAX; i++) {\n    if (num1 < num2) break;\n    num1 = num1 - num2;\n  }\n  return isPositive ? num1 : -num1;\n}\n\n__INJECTED_NATIVE__;\n__MAIN_CONSTANTS__;\n__MAIN_ARGUMENTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}";
+      var fragmentShader = "#version 300 es\n__HEADER__;\n__FLOAT_TACTIC_DECLARATION__;\n__INT_TACTIC_DECLARATION__;\n__SAMPLER_2D_TACTIC_DECLARATION__;\n__SAMPLER_2D_ARRAY_TACTIC_DECLARATION__;\n\nconst int LOOP_MAX = __LOOP_MAX__;\n\n__PLUGINS__;\n__CONSTANTS__;\n\nin vec2 vTexCoord;\n\nfloat atan2(float v1, float v2) {\n  if (v1 == 0.0 || v2 == 0.0) return 0.0;\n  return atan(v1 / v2);\n}\n\nfloat cbrt(float x) {\n  if (x >= 0.0) {\n    return pow(x, 1.0 / 3.0);\n  } else {\n    return -pow(x, 1.0 / 3.0);\n  }\n}\n\nfloat expm1(float x) {\n  return pow(".concat(Math.E, ", x) - 1.0; \n}\n\nfloat fround(highp float x) {\n  return x;\n}\n\nfloat imul(float v1, float v2) {\n  return float(int(v1) * int(v2));\n}\n\nfloat log10(float x) {\n  return log2(x) * (1.0 / log2(10.0));\n}\n\nfloat log1p(float x) {\n  return log(1.0 + x);\n}\n\nfloat _pow(float v1, float v2) {\n  if (v2 == 0.0) return 1.0;\n  return pow(v1, v2);\n}\n\nfloat _round(float x) {\n  return floor(x + 0.5);\n}\n\n\nconst int BIT_COUNT = 32;\nint modi(int x, int y) {\n  return x - y * (x / y);\n}\n\nint bitwiseOr(int a, int b) {\n  int result = 0;\n  int n = 1;\n  \n  for (int i = 0; i < BIT_COUNT; i++) {\n    if ((modi(a, 2) == 1) || (modi(b, 2) == 1)) {\n      result += n;\n    }\n    a = a / 2;\n    b = b / 2;\n    n = n * 2;\n    if(!(a > 0 || b > 0)) {\n      break;\n    }\n  }\n  return result;\n}\nint bitwiseXOR(int a, int b) {\n  int result = 0;\n  int n = 1;\n  \n  for (int i = 0; i < BIT_COUNT; i++) {\n    if ((modi(a, 2) == 1) != (modi(b, 2) == 1)) {\n      result += n;\n    }\n    a = a / 2;\n    b = b / 2;\n    n = n * 2;\n    if(!(a > 0 || b > 0)) {\n      break;\n    }\n  }\n  return result;\n}\nint bitwiseAnd(int a, int b) {\n  int result = 0;\n  int n = 1;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if ((modi(a, 2) == 1) && (modi(b, 2) == 1)) {\n      result += n;\n    }\n    a = a / 2;\n    b = b / 2;\n    n = n * 2;\n    if(!(a > 0 && b > 0)) {\n      break;\n    }\n  }\n  return result;\n}\nint bitwiseNot(int a) {\n  int result = 0;\n  int n = 1;\n  \n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (modi(a, 2) == 0) {\n      result += n;    \n    }\n    a = a / 2;\n    n = n * 2;\n  }\n  return result;\n}\nint bitwiseZeroFillLeftShift(int n, int shift) {\n  int maxBytes = BIT_COUNT;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (maxBytes >= n) {\n      break;\n    }\n    maxBytes *= 2;\n  }\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= shift) {\n      break;\n    }\n    n *= 2;\n  }\n\n  int result = 0;\n  int byteVal = 1;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= maxBytes) break;\n    if (modi(n, 2) > 0) { result += byteVal; }\n    n = int(n / 2);\n    byteVal *= 2;\n  }\n  return result;\n}\n\nint bitwiseSignedRightShift(int num, int shifts) {\n  return int(floor(float(num) / pow(2.0, float(shifts))));\n}\n\nint bitwiseZeroFillRightShift(int n, int shift) {\n  int maxBytes = BIT_COUNT;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (maxBytes >= n) {\n      break;\n    }\n    maxBytes *= 2;\n  }\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= shift) {\n      break;\n    }\n    n /= 2;\n  }\n  int result = 0;\n  int byteVal = 1;\n  for (int i = 0; i < BIT_COUNT; i++) {\n    if (i >= maxBytes) break;\n    if (modi(n, 2) > 0) { result += byteVal; }\n    n = int(n / 2);\n    byteVal *= 2;\n  }\n  return result;\n}\n\nvec2 integerMod(vec2 x, float y) {\n  vec2 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec3 integerMod(vec3 x, float y) {\n  vec3 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nvec4 integerMod(vec4 x, vec4 y) {\n  vec4 res = floor(mod(x, y));\n  return res * step(1.0 - floor(y), -res);\n}\n\nfloat integerMod(float x, float y) {\n  float res = floor(mod(x, y));\n  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);\n}\n\nint integerMod(int x, int y) {\n  return x - (y * int(x/y));\n}\n\n__DIVIDE_WITH_INTEGER_CHECK__;\n\n// Here be dragons!\n// DO NOT OPTIMIZE THIS CODE\n// YOU WILL BREAK SOMETHING ON SOMEBODY'S MACHINE\n// LEAVE IT AS IT IS, LEST YOU WASTE YOUR OWN TIME\nconst vec2 MAGIC_VEC = vec2(1.0, -256.0);\nconst vec4 SCALE_FACTOR = vec4(1.0, 256.0, 65536.0, 0.0);\nconst vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536\nfloat decode32(vec4 texel) {\n  __DECODE32_ENDIANNESS__;\n  texel *= 255.0;\n  vec2 gte128;\n  gte128.x = texel.b >= 128.0 ? 1.0 : 0.0;\n  gte128.y = texel.a >= 128.0 ? 1.0 : 0.0;\n  float exponent = 2.0 * texel.a - 127.0 + dot(gte128, MAGIC_VEC);\n  float res = exp2(round(exponent));\n  texel.b = texel.b - 128.0 * gte128.x;\n  res = dot(texel, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;\n  res *= gte128.y * -2.0 + 1.0;\n  return res;\n}\n\nfloat decode16(vec4 texel, int index) {\n  int channel = integerMod(index, 2);\n  return texel[channel*2] * 255.0 + texel[channel*2 + 1] * 65280.0;\n}\n\nfloat decode8(vec4 texel, int index) {\n  int channel = integerMod(index, 4);\n  return texel[channel] * 255.0;\n}\n\nvec4 legacyEncode32(float f) {\n  float F = abs(f);\n  float sign = f < 0.0 ? 1.0 : 0.0;\n  float exponent = floor(log2(F));\n  float mantissa = (exp2(-exponent) * F);\n  // exponent += floor(log2(mantissa));\n  vec4 texel = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;\n  texel.rg = integerMod(texel.rg, 256.0);\n  texel.b = integerMod(texel.b, 128.0);\n  texel.a = exponent*0.5 + 63.5;\n  texel.ba += vec2(integerMod(exponent+127.0, 2.0), sign) * 128.0;\n  texel = floor(texel);\n  texel *= 0.003921569; // 1/255\n  __ENCODE32_ENDIANNESS__;\n  return texel;\n}\n\n// https://github.com/gpujs/gpu.js/wiki/Encoder-details\nvec4 encode32(float value) {\n  if (value == 0.0) return vec4(0, 0, 0, 0);\n\n  float exponent;\n  float mantissa;\n  vec4  result;\n  float sgn;\n\n  sgn = step(0.0, -value);\n  value = abs(value);\n\n  exponent = floor(log2(value));\n\n  mantissa = value*pow(2.0, -exponent)-1.0;\n  exponent = exponent+127.0;\n  result   = vec4(0,0,0,0);\n\n  result.a = floor(exponent/2.0);\n  exponent = exponent - result.a*2.0;\n  result.a = result.a + 128.0*sgn;\n\n  result.b = floor(mantissa * 128.0);\n  mantissa = mantissa - result.b / 128.0;\n  result.b = result.b + exponent*128.0;\n\n  result.g = floor(mantissa*32768.0);\n  mantissa = mantissa - result.g/32768.0;\n\n  result.r = floor(mantissa*8388608.0);\n  return result/255.0;\n}\n// Dragons end here\n\nint index;\nivec3 threadId;\n\nivec3 indexTo3D(int idx, ivec3 texDim) {\n  int z = int(idx / (texDim.x * texDim.y));\n  idx -= z * int(texDim.x * texDim.y);\n  int y = int(idx / texDim.x);\n  int x = int(integerMod(idx, texDim.x));\n  return ivec3(x, y, z);\n}\n\nfloat get32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  return decode32(texel);\n}\n\nfloat get16(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + (texDim.x * (y + (texDim.y * z)));\n  int w = texSize.x * 2;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize.x * 2, texSize.y));\n  return decode16(texel, index);\n}\n\nfloat get8(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + (texDim.x * (y + (texDim.y * z)));\n  int w = texSize.x * 4;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize.x * 4, texSize.y));\n  return decode8(texel, index);\n}\n\nfloat getMemoryOptimized32(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + (texDim.x * (y + (texDim.y * z)));\n  int channel = integerMod(index, 4);\n  index = index / 4;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  index = index / 4;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  return texel[channel];\n}\n\nvec4 getImage2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  return texture(tex, st / vec2(texSize));\n}\n\nvec4 getImage3D(sampler2DArray tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  return texture(tex, vec3(st / vec2(texSize), z));\n}\n\nfloat getFloatFromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return result[0];\n}\n\nvec2 getVec2FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec2(result[0], result[1]);\n}\n\nvec2 getMemoryOptimizedVec2(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int channel = integerMod(index, 2);\n  index = index / 2;\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  if (channel == 0) return vec2(texel.r, texel.g);\n  if (channel == 1) return vec2(texel.b, texel.a);\n  return vec2(0.0, 0.0);\n}\n\nvec3 getVec3FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  vec4 result = getImage2D(tex, texSize, texDim, z, y, x);\n  return vec3(result[0], result[1], result[2]);\n}\n\nvec3 getMemoryOptimizedVec3(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int fieldIndex = 3 * (x + texDim.x * (y + texDim.y * z));\n  int vectorIndex = fieldIndex / 4;\n  int vectorOffset = fieldIndex - vectorIndex * 4;\n  int readY = vectorIndex / texSize.x;\n  int readX = vectorIndex - readY * texSize.x;\n  vec4 tex1 = texture(tex, (vec2(readX, readY) + 0.5) / vec2(texSize));\n\n  if (vectorOffset == 0) {\n    return tex1.xyz;\n  } else if (vectorOffset == 1) {\n    return tex1.yzw;\n  } else {\n    readX++;\n    if (readX >= texSize.x) {\n      readX = 0;\n      readY++;\n    }\n    vec4 tex2 = texture(tex, vec2(readX, readY) / vec2(texSize));\n    if (vectorOffset == 2) {\n      return vec3(tex1.z, tex1.w, tex2.x);\n    } else {\n      return vec3(tex1.w, tex2.x, tex2.y);\n    }\n  }\n}\n\nvec4 getVec4FromSampler2D(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  return getImage2D(tex, texSize, texDim, z, y, x);\n}\n\nvec4 getMemoryOptimizedVec4(sampler2D tex, ivec2 texSize, ivec3 texDim, int z, int y, int x) {\n  int index = x + texDim.x * (y + texDim.y * z);\n  int channel = integerMod(index, 2);\n  int w = texSize.x;\n  vec2 st = vec2(float(integerMod(index, w)), float(index / w)) + 0.5;\n  vec4 texel = texture(tex, st / vec2(texSize));\n  return vec4(texel.r, texel.g, texel.b, texel.a);\n}\n\nvec4 actualColor;\nvoid color(float r, float g, float b, float a) {\n  actualColor = vec4(r,g,b,a);\n}\n\nvoid color(float r, float g, float b) {\n  color(r,g,b,1.0);\n}\n\nfloat modulo(float number, float divisor) {\n  if (number < 0.0) {\n    number = abs(number);\n    if (divisor < 0.0) {\n      divisor = abs(divisor);\n    }\n    return -mod(number, divisor);\n  }\n  if (divisor < 0.0) {\n    divisor = abs(divisor);\n  }\n  return mod(number, divisor);\n}\n\n__INJECTED_NATIVE__;\n__MAIN_CONSTANTS__;\n__MAIN_ARGUMENTS__;\n__KERNEL__;\n\nvoid main(void) {\n  index = int(vTexCoord.s * float(uTexSize.x)) + int(vTexCoord.t * float(uTexSize.y)) * uTexSize.x;\n  __MAIN_RESULT__;\n}");
       module.exports = {
         fragmentShader: fragmentShader
       };
     }, {}],
     73: [function (require, module, exports) {
-      var _require171 = require('../web-gl/function-node'),
-          WebGLFunctionNode = _require171.WebGLFunctionNode;
+      var _require174 = require('../../utils'),
+          utils = _require174.utils;
 
-      var WebGL2FunctionNode =
-      /*#__PURE__*/
-      function (_WebGLFunctionNode) {
+      var _require175 = require('../web-gl/function-node'),
+          WebGLFunctionNode = _require175.WebGLFunctionNode;
+
+      var WebGL2FunctionNode = /*#__PURE__*/function (_WebGLFunctionNode) {
         _inherits(WebGL2FunctionNode, _WebGLFunctionNode);
+
+        var _super57 = _createSuper(WebGL2FunctionNode);
 
         function WebGL2FunctionNode() {
           _classCallCheck(this, WebGL2FunctionNode);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2FunctionNode).apply(this, arguments));
+          return _super57.apply(this, arguments);
         }
 
         _createClass(WebGL2FunctionNode, [{
@@ -19496,17 +19838,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
 
             var type = this.getType(idtNode);
+            var name = utils.sanitizeName(idtNode.name);
 
             if (idtNode.name === 'Infinity') {
               retArr.push('intBitsToFloat(2139095039)');
             } else if (type === 'Boolean') {
-              if (this.argumentNames.indexOf(idtNode.name) > -1) {
-                retArr.push("bool(user_".concat(idtNode.name, ")"));
+              if (this.argumentNames.indexOf(name) > -1) {
+                retArr.push("bool(user_".concat(name, ")"));
               } else {
-                retArr.push("user_".concat(idtNode.name));
+                retArr.push("user_".concat(name));
               }
             } else {
-              retArr.push("user_".concat(idtNode.name));
+              retArr.push("user_".concat(name));
             }
 
             return retArr;
@@ -19520,98 +19863,99 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         WebGL2FunctionNode: WebGL2FunctionNode
       };
     }, {
+      "../../utils": 114,
       "../web-gl/function-node": 38
     }],
     74: [function (require, module, exports) {
-      var _require172 = require('./kernel-value/boolean'),
-          WebGL2KernelValueBoolean = _require172.WebGL2KernelValueBoolean;
+      var _require176 = require('./kernel-value/boolean'),
+          WebGL2KernelValueBoolean = _require176.WebGL2KernelValueBoolean;
 
-      var _require173 = require('./kernel-value/float'),
-          WebGL2KernelValueFloat = _require173.WebGL2KernelValueFloat;
+      var _require177 = require('./kernel-value/float'),
+          WebGL2KernelValueFloat = _require177.WebGL2KernelValueFloat;
 
-      var _require174 = require('./kernel-value/integer'),
-          WebGL2KernelValueInteger = _require174.WebGL2KernelValueInteger;
+      var _require178 = require('./kernel-value/integer'),
+          WebGL2KernelValueInteger = _require178.WebGL2KernelValueInteger;
 
-      var _require175 = require('./kernel-value/html-image'),
-          WebGL2KernelValueHTMLImage = _require175.WebGL2KernelValueHTMLImage;
+      var _require179 = require('./kernel-value/html-image'),
+          WebGL2KernelValueHTMLImage = _require179.WebGL2KernelValueHTMLImage;
 
-      var _require176 = require('./kernel-value/dynamic-html-image'),
-          WebGL2KernelValueDynamicHTMLImage = _require176.WebGL2KernelValueDynamicHTMLImage;
+      var _require180 = require('./kernel-value/dynamic-html-image'),
+          WebGL2KernelValueDynamicHTMLImage = _require180.WebGL2KernelValueDynamicHTMLImage;
 
-      var _require177 = require('./kernel-value/html-image-array'),
-          WebGL2KernelValueHTMLImageArray = _require177.WebGL2KernelValueHTMLImageArray;
+      var _require181 = require('./kernel-value/html-image-array'),
+          WebGL2KernelValueHTMLImageArray = _require181.WebGL2KernelValueHTMLImageArray;
 
-      var _require178 = require('./kernel-value/dynamic-html-image-array'),
-          WebGL2KernelValueDynamicHTMLImageArray = _require178.WebGL2KernelValueDynamicHTMLImageArray;
+      var _require182 = require('./kernel-value/dynamic-html-image-array'),
+          WebGL2KernelValueDynamicHTMLImageArray = _require182.WebGL2KernelValueDynamicHTMLImageArray;
 
-      var _require179 = require('./kernel-value/html-video'),
-          WebGL2KernelValueHTMLVideo = _require179.WebGL2KernelValueHTMLVideo;
+      var _require183 = require('./kernel-value/html-video'),
+          WebGL2KernelValueHTMLVideo = _require183.WebGL2KernelValueHTMLVideo;
 
-      var _require180 = require('./kernel-value/dynamic-html-video'),
-          WebGL2KernelValueDynamicHTMLVideo = _require180.WebGL2KernelValueDynamicHTMLVideo;
+      var _require184 = require('./kernel-value/dynamic-html-video'),
+          WebGL2KernelValueDynamicHTMLVideo = _require184.WebGL2KernelValueDynamicHTMLVideo;
 
-      var _require181 = require('./kernel-value/single-input'),
-          WebGL2KernelValueSingleInput = _require181.WebGL2KernelValueSingleInput;
+      var _require185 = require('./kernel-value/single-input'),
+          WebGL2KernelValueSingleInput = _require185.WebGL2KernelValueSingleInput;
 
-      var _require182 = require('./kernel-value/dynamic-single-input'),
-          WebGL2KernelValueDynamicSingleInput = _require182.WebGL2KernelValueDynamicSingleInput;
+      var _require186 = require('./kernel-value/dynamic-single-input'),
+          WebGL2KernelValueDynamicSingleInput = _require186.WebGL2KernelValueDynamicSingleInput;
 
-      var _require183 = require('./kernel-value/unsigned-input'),
-          WebGL2KernelValueUnsignedInput = _require183.WebGL2KernelValueUnsignedInput;
+      var _require187 = require('./kernel-value/unsigned-input'),
+          WebGL2KernelValueUnsignedInput = _require187.WebGL2KernelValueUnsignedInput;
 
-      var _require184 = require('./kernel-value/dynamic-unsigned-input'),
-          WebGL2KernelValueDynamicUnsignedInput = _require184.WebGL2KernelValueDynamicUnsignedInput;
+      var _require188 = require('./kernel-value/dynamic-unsigned-input'),
+          WebGL2KernelValueDynamicUnsignedInput = _require188.WebGL2KernelValueDynamicUnsignedInput;
 
-      var _require185 = require('./kernel-value/memory-optimized-number-texture'),
-          WebGL2KernelValueMemoryOptimizedNumberTexture = _require185.WebGL2KernelValueMemoryOptimizedNumberTexture;
+      var _require189 = require('./kernel-value/memory-optimized-number-texture'),
+          WebGL2KernelValueMemoryOptimizedNumberTexture = _require189.WebGL2KernelValueMemoryOptimizedNumberTexture;
 
-      var _require186 = require('./kernel-value/dynamic-memory-optimized-number-texture'),
-          WebGL2KernelValueDynamicMemoryOptimizedNumberTexture = _require186.WebGL2KernelValueDynamicMemoryOptimizedNumberTexture;
+      var _require190 = require('./kernel-value/dynamic-memory-optimized-number-texture'),
+          WebGL2KernelValueDynamicMemoryOptimizedNumberTexture = _require190.WebGL2KernelValueDynamicMemoryOptimizedNumberTexture;
 
-      var _require187 = require('./kernel-value/number-texture'),
-          WebGL2KernelValueNumberTexture = _require187.WebGL2KernelValueNumberTexture;
+      var _require191 = require('./kernel-value/number-texture'),
+          WebGL2KernelValueNumberTexture = _require191.WebGL2KernelValueNumberTexture;
 
-      var _require188 = require('./kernel-value/dynamic-number-texture'),
-          WebGL2KernelValueDynamicNumberTexture = _require188.WebGL2KernelValueDynamicNumberTexture;
+      var _require192 = require('./kernel-value/dynamic-number-texture'),
+          WebGL2KernelValueDynamicNumberTexture = _require192.WebGL2KernelValueDynamicNumberTexture;
 
-      var _require189 = require('./kernel-value/single-array'),
-          WebGL2KernelValueSingleArray = _require189.WebGL2KernelValueSingleArray;
+      var _require193 = require('./kernel-value/single-array'),
+          WebGL2KernelValueSingleArray = _require193.WebGL2KernelValueSingleArray;
 
-      var _require190 = require('./kernel-value/dynamic-single-array'),
-          WebGL2KernelValueDynamicSingleArray = _require190.WebGL2KernelValueDynamicSingleArray;
+      var _require194 = require('./kernel-value/dynamic-single-array'),
+          WebGL2KernelValueDynamicSingleArray = _require194.WebGL2KernelValueDynamicSingleArray;
 
-      var _require191 = require('./kernel-value/single-array1d-i'),
-          WebGL2KernelValueSingleArray1DI = _require191.WebGL2KernelValueSingleArray1DI;
+      var _require195 = require('./kernel-value/single-array1d-i'),
+          WebGL2KernelValueSingleArray1DI = _require195.WebGL2KernelValueSingleArray1DI;
 
-      var _require192 = require('./kernel-value/dynamic-single-array1d-i'),
-          WebGL2KernelValueDynamicSingleArray1DI = _require192.WebGL2KernelValueDynamicSingleArray1DI;
+      var _require196 = require('./kernel-value/dynamic-single-array1d-i'),
+          WebGL2KernelValueDynamicSingleArray1DI = _require196.WebGL2KernelValueDynamicSingleArray1DI;
 
-      var _require193 = require('./kernel-value/single-array2d-i'),
-          WebGL2KernelValueSingleArray2DI = _require193.WebGL2KernelValueSingleArray2DI;
+      var _require197 = require('./kernel-value/single-array2d-i'),
+          WebGL2KernelValueSingleArray2DI = _require197.WebGL2KernelValueSingleArray2DI;
 
-      var _require194 = require('./kernel-value/dynamic-single-array2d-i'),
-          WebGL2KernelValueDynamicSingleArray2DI = _require194.WebGL2KernelValueDynamicSingleArray2DI;
+      var _require198 = require('./kernel-value/dynamic-single-array2d-i'),
+          WebGL2KernelValueDynamicSingleArray2DI = _require198.WebGL2KernelValueDynamicSingleArray2DI;
 
-      var _require195 = require('./kernel-value/single-array3d-i'),
-          WebGL2KernelValueSingleArray3DI = _require195.WebGL2KernelValueSingleArray3DI;
+      var _require199 = require('./kernel-value/single-array3d-i'),
+          WebGL2KernelValueSingleArray3DI = _require199.WebGL2KernelValueSingleArray3DI;
 
-      var _require196 = require('./kernel-value/dynamic-single-array3d-i'),
-          WebGL2KernelValueDynamicSingleArray3DI = _require196.WebGL2KernelValueDynamicSingleArray3DI;
+      var _require200 = require('./kernel-value/dynamic-single-array3d-i'),
+          WebGL2KernelValueDynamicSingleArray3DI = _require200.WebGL2KernelValueDynamicSingleArray3DI;
 
-      var _require197 = require('./kernel-value/single-array2'),
-          WebGL2KernelValueSingleArray2 = _require197.WebGL2KernelValueSingleArray2;
+      var _require201 = require('./kernel-value/single-array2'),
+          WebGL2KernelValueSingleArray2 = _require201.WebGL2KernelValueSingleArray2;
 
-      var _require198 = require('./kernel-value/single-array3'),
-          WebGL2KernelValueSingleArray3 = _require198.WebGL2KernelValueSingleArray3;
+      var _require202 = require('./kernel-value/single-array3'),
+          WebGL2KernelValueSingleArray3 = _require202.WebGL2KernelValueSingleArray3;
 
-      var _require199 = require('./kernel-value/single-array4'),
-          WebGL2KernelValueSingleArray4 = _require199.WebGL2KernelValueSingleArray4;
+      var _require203 = require('./kernel-value/single-array4'),
+          WebGL2KernelValueSingleArray4 = _require203.WebGL2KernelValueSingleArray4;
 
-      var _require200 = require('./kernel-value/unsigned-array'),
-          WebGL2KernelValueUnsignedArray = _require200.WebGL2KernelValueUnsignedArray;
+      var _require204 = require('./kernel-value/unsigned-array'),
+          WebGL2KernelValueUnsignedArray = _require204.WebGL2KernelValueUnsignedArray;
 
-      var _require201 = require('./kernel-value/dynamic-unsigned-array'),
-          WebGL2KernelValueDynamicUnsignedArray = _require201.WebGL2KernelValueDynamicUnsignedArray;
+      var _require205 = require('./kernel-value/dynamic-unsigned-array'),
+          WebGL2KernelValueDynamicUnsignedArray = _require205.WebGL2KernelValueDynamicUnsignedArray;
 
       var kernelValueMaps = {
         unsigned: {
@@ -19801,18 +20145,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./kernel-value/unsigned-input": 104
     }],
     75: [function (require, module, exports) {
-      var _require202 = require('../../web-gl/kernel-value/boolean'),
-          WebGLKernelValueBoolean = _require202.WebGLKernelValueBoolean;
+      var _require206 = require('../../web-gl/kernel-value/boolean'),
+          WebGLKernelValueBoolean = _require206.WebGLKernelValueBoolean;
 
-      var WebGL2KernelValueBoolean =
-      /*#__PURE__*/
-      function (_WebGLKernelValueBool) {
+      var WebGL2KernelValueBoolean = /*#__PURE__*/function (_WebGLKernelValueBool) {
         _inherits(WebGL2KernelValueBoolean, _WebGLKernelValueBool);
+
+        var _super58 = _createSuper(WebGL2KernelValueBoolean);
 
         function WebGL2KernelValueBoolean() {
           _classCallCheck(this, WebGL2KernelValueBoolean);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueBoolean).apply(this, arguments));
+          return _super58.apply(this, arguments);
         }
 
         return WebGL2KernelValueBoolean;
@@ -19825,21 +20169,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/boolean": 41
     }],
     76: [function (require, module, exports) {
-      var _require203 = require('../../../utils'),
-          utils = _require203.utils;
+      var _require207 = require('../../../utils'),
+          utils = _require207.utils;
 
-      var _require204 = require('./html-image-array'),
-          WebGL2KernelValueHTMLImageArray = _require204.WebGL2KernelValueHTMLImageArray;
+      var _require208 = require('./html-image-array'),
+          WebGL2KernelValueHTMLImageArray = _require208.WebGL2KernelValueHTMLImageArray;
 
-      var WebGL2KernelValueDynamicHTMLImageArray =
-      /*#__PURE__*/
-      function (_WebGL2KernelValueHTM) {
+      var WebGL2KernelValueDynamicHTMLImageArray = /*#__PURE__*/function (_WebGL2KernelValueHTM) {
         _inherits(WebGL2KernelValueDynamicHTMLImageArray, _WebGL2KernelValueHTM);
+
+        var _super59 = _createSuper(WebGL2KernelValueDynamicHTMLImageArray);
 
         function WebGL2KernelValueDynamicHTMLImageArray() {
           _classCallCheck(this, WebGL2KernelValueDynamicHTMLImageArray);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueDynamicHTMLImageArray).apply(this, arguments));
+          return _super59.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueDynamicHTMLImageArray, [{
@@ -19875,21 +20219,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./html-image-array": 89
     }],
     77: [function (require, module, exports) {
-      var _require205 = require('../../../utils'),
-          utils = _require205.utils;
+      var _require209 = require('../../../utils'),
+          utils = _require209.utils;
 
-      var _require206 = require('../../web-gl/kernel-value/dynamic-html-image'),
-          WebGLKernelValueDynamicHTMLImage = _require206.WebGLKernelValueDynamicHTMLImage;
+      var _require210 = require('../../web-gl/kernel-value/dynamic-html-image'),
+          WebGLKernelValueDynamicHTMLImage = _require210.WebGLKernelValueDynamicHTMLImage;
 
-      var WebGL2KernelValueDynamicHTMLImage =
-      /*#__PURE__*/
-      function (_WebGLKernelValueDyna2) {
+      var WebGL2KernelValueDynamicHTMLImage = /*#__PURE__*/function (_WebGLKernelValueDyna2) {
         _inherits(WebGL2KernelValueDynamicHTMLImage, _WebGLKernelValueDyna2);
+
+        var _super60 = _createSuper(WebGL2KernelValueDynamicHTMLImage);
 
         function WebGL2KernelValueDynamicHTMLImage() {
           _classCallCheck(this, WebGL2KernelValueDynamicHTMLImage);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueDynamicHTMLImage).apply(this, arguments));
+          return _super60.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueDynamicHTMLImage, [{
@@ -19911,21 +20255,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/dynamic-html-image": 42
     }],
     78: [function (require, module, exports) {
-      var _require207 = require('../../../utils'),
-          utils = _require207.utils;
+      var _require211 = require('../../../utils'),
+          utils = _require211.utils;
 
-      var _require208 = require('./dynamic-html-image'),
-          WebGL2KernelValueDynamicHTMLImage = _require208.WebGL2KernelValueDynamicHTMLImage;
+      var _require212 = require('./dynamic-html-image'),
+          WebGL2KernelValueDynamicHTMLImage = _require212.WebGL2KernelValueDynamicHTMLImage;
 
-      var WebGL2KernelValueDynamicHTMLVideo =
-      /*#__PURE__*/
-      function (_WebGL2KernelValueDyn) {
+      var WebGL2KernelValueDynamicHTMLVideo = /*#__PURE__*/function (_WebGL2KernelValueDyn) {
         _inherits(WebGL2KernelValueDynamicHTMLVideo, _WebGL2KernelValueDyn);
+
+        var _super61 = _createSuper(WebGL2KernelValueDynamicHTMLVideo);
 
         function WebGL2KernelValueDynamicHTMLVideo() {
           _classCallCheck(this, WebGL2KernelValueDynamicHTMLVideo);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueDynamicHTMLVideo).apply(this, arguments));
+          return _super61.apply(this, arguments);
         }
 
         return WebGL2KernelValueDynamicHTMLVideo;
@@ -19939,21 +20283,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./dynamic-html-image": 77
     }],
     79: [function (require, module, exports) {
-      var _require209 = require('../../../utils'),
-          utils = _require209.utils;
+      var _require213 = require('../../../utils'),
+          utils = _require213.utils;
 
-      var _require210 = require('../../web-gl/kernel-value/dynamic-memory-optimized-number-texture'),
-          WebGLKernelValueDynamicMemoryOptimizedNumberTexture = _require210.WebGLKernelValueDynamicMemoryOptimizedNumberTexture;
+      var _require214 = require('../../web-gl/kernel-value/dynamic-memory-optimized-number-texture'),
+          WebGLKernelValueDynamicMemoryOptimizedNumberTexture = _require214.WebGLKernelValueDynamicMemoryOptimizedNumberTexture;
 
-      var WebGL2KernelValueDynamicMemoryOptimizedNumberTexture =
-      /*#__PURE__*/
-      function (_WebGLKernelValueDyna3) {
+      var WebGL2KernelValueDynamicMemoryOptimizedNumberTexture = /*#__PURE__*/function (_WebGLKernelValueDyna3) {
         _inherits(WebGL2KernelValueDynamicMemoryOptimizedNumberTexture, _WebGLKernelValueDyna3);
+
+        var _super62 = _createSuper(WebGL2KernelValueDynamicMemoryOptimizedNumberTexture);
 
         function WebGL2KernelValueDynamicMemoryOptimizedNumberTexture() {
           _classCallCheck(this, WebGL2KernelValueDynamicMemoryOptimizedNumberTexture);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueDynamicMemoryOptimizedNumberTexture).apply(this, arguments));
+          return _super62.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueDynamicMemoryOptimizedNumberTexture, [{
@@ -19974,21 +20318,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/dynamic-memory-optimized-number-texture": 44
     }],
     80: [function (require, module, exports) {
-      var _require211 = require('../../../utils'),
-          utils = _require211.utils;
+      var _require215 = require('../../../utils'),
+          utils = _require215.utils;
 
-      var _require212 = require('../../web-gl/kernel-value/dynamic-number-texture'),
-          WebGLKernelValueDynamicNumberTexture = _require212.WebGLKernelValueDynamicNumberTexture;
+      var _require216 = require('../../web-gl/kernel-value/dynamic-number-texture'),
+          WebGLKernelValueDynamicNumberTexture = _require216.WebGLKernelValueDynamicNumberTexture;
 
-      var WebGL2KernelValueDynamicNumberTexture =
-      /*#__PURE__*/
-      function (_WebGLKernelValueDyna4) {
+      var WebGL2KernelValueDynamicNumberTexture = /*#__PURE__*/function (_WebGLKernelValueDyna4) {
         _inherits(WebGL2KernelValueDynamicNumberTexture, _WebGLKernelValueDyna4);
+
+        var _super63 = _createSuper(WebGL2KernelValueDynamicNumberTexture);
 
         function WebGL2KernelValueDynamicNumberTexture() {
           _classCallCheck(this, WebGL2KernelValueDynamicNumberTexture);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueDynamicNumberTexture).apply(this, arguments));
+          return _super63.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueDynamicNumberTexture, [{
@@ -20010,21 +20354,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/dynamic-number-texture": 45
     }],
     81: [function (require, module, exports) {
-      var _require213 = require('../../../utils'),
-          utils = _require213.utils;
+      var _require217 = require('../../../utils'),
+          utils = _require217.utils;
 
-      var _require214 = require('../../web-gl2/kernel-value/single-array'),
-          WebGL2KernelValueSingleArray = _require214.WebGL2KernelValueSingleArray;
+      var _require218 = require('../../web-gl2/kernel-value/single-array'),
+          WebGL2KernelValueSingleArray = _require218.WebGL2KernelValueSingleArray;
 
-      var WebGL2KernelValueDynamicSingleArray =
-      /*#__PURE__*/
-      function (_WebGL2KernelValueSin) {
+      var WebGL2KernelValueDynamicSingleArray = /*#__PURE__*/function (_WebGL2KernelValueSin) {
         _inherits(WebGL2KernelValueDynamicSingleArray, _WebGL2KernelValueSin);
+
+        var _super64 = _createSuper(WebGL2KernelValueDynamicSingleArray);
 
         function WebGL2KernelValueDynamicSingleArray() {
           _classCallCheck(this, WebGL2KernelValueDynamicSingleArray);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueDynamicSingleArray).apply(this, arguments));
+          return _super64.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueDynamicSingleArray, [{
@@ -20059,21 +20403,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl2/kernel-value/single-array": 95
     }],
     82: [function (require, module, exports) {
-      var _require215 = require('../../../utils'),
-          utils = _require215.utils;
+      var _require219 = require('../../../utils'),
+          utils = _require219.utils;
 
-      var _require216 = require('../../web-gl2/kernel-value/single-array1d-i'),
-          WebGL2KernelValueSingleArray1DI = _require216.WebGL2KernelValueSingleArray1DI;
+      var _require220 = require('../../web-gl2/kernel-value/single-array1d-i'),
+          WebGL2KernelValueSingleArray1DI = _require220.WebGL2KernelValueSingleArray1DI;
 
-      var WebGL2KernelValueDynamicSingleArray1DI =
-      /*#__PURE__*/
-      function (_WebGL2KernelValueSin2) {
+      var WebGL2KernelValueDynamicSingleArray1DI = /*#__PURE__*/function (_WebGL2KernelValueSin2) {
         _inherits(WebGL2KernelValueDynamicSingleArray1DI, _WebGL2KernelValueSin2);
+
+        var _super65 = _createSuper(WebGL2KernelValueDynamicSingleArray1DI);
 
         function WebGL2KernelValueDynamicSingleArray1DI() {
           _classCallCheck(this, WebGL2KernelValueDynamicSingleArray1DI);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueDynamicSingleArray1DI).apply(this, arguments));
+          return _super65.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueDynamicSingleArray1DI, [{
@@ -20104,21 +20448,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl2/kernel-value/single-array1d-i": 96
     }],
     83: [function (require, module, exports) {
-      var _require217 = require('../../../utils'),
-          utils = _require217.utils;
+      var _require221 = require('../../../utils'),
+          utils = _require221.utils;
 
-      var _require218 = require('../../web-gl2/kernel-value/single-array2d-i'),
-          WebGL2KernelValueSingleArray2DI = _require218.WebGL2KernelValueSingleArray2DI;
+      var _require222 = require('../../web-gl2/kernel-value/single-array2d-i'),
+          WebGL2KernelValueSingleArray2DI = _require222.WebGL2KernelValueSingleArray2DI;
 
-      var WebGL2KernelValueDynamicSingleArray2DI =
-      /*#__PURE__*/
-      function (_WebGL2KernelValueSin3) {
+      var WebGL2KernelValueDynamicSingleArray2DI = /*#__PURE__*/function (_WebGL2KernelValueSin3) {
         _inherits(WebGL2KernelValueDynamicSingleArray2DI, _WebGL2KernelValueSin3);
+
+        var _super66 = _createSuper(WebGL2KernelValueDynamicSingleArray2DI);
 
         function WebGL2KernelValueDynamicSingleArray2DI() {
           _classCallCheck(this, WebGL2KernelValueDynamicSingleArray2DI);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueDynamicSingleArray2DI).apply(this, arguments));
+          return _super66.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueDynamicSingleArray2DI, [{
@@ -20149,21 +20493,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl2/kernel-value/single-array2d-i": 98
     }],
     84: [function (require, module, exports) {
-      var _require219 = require('../../../utils'),
-          utils = _require219.utils;
+      var _require223 = require('../../../utils'),
+          utils = _require223.utils;
 
-      var _require220 = require('../../web-gl2/kernel-value/single-array3d-i'),
-          WebGL2KernelValueSingleArray3DI = _require220.WebGL2KernelValueSingleArray3DI;
+      var _require224 = require('../../web-gl2/kernel-value/single-array3d-i'),
+          WebGL2KernelValueSingleArray3DI = _require224.WebGL2KernelValueSingleArray3DI;
 
-      var WebGL2KernelValueDynamicSingleArray3DI =
-      /*#__PURE__*/
-      function (_WebGL2KernelValueSin4) {
+      var WebGL2KernelValueDynamicSingleArray3DI = /*#__PURE__*/function (_WebGL2KernelValueSin4) {
         _inherits(WebGL2KernelValueDynamicSingleArray3DI, _WebGL2KernelValueSin4);
+
+        var _super67 = _createSuper(WebGL2KernelValueDynamicSingleArray3DI);
 
         function WebGL2KernelValueDynamicSingleArray3DI() {
           _classCallCheck(this, WebGL2KernelValueDynamicSingleArray3DI);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueDynamicSingleArray3DI).apply(this, arguments));
+          return _super67.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueDynamicSingleArray3DI, [{
@@ -20194,21 +20538,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl2/kernel-value/single-array3d-i": 100
     }],
     85: [function (require, module, exports) {
-      var _require221 = require('../../../utils'),
-          utils = _require221.utils;
+      var _require225 = require('../../../utils'),
+          utils = _require225.utils;
 
-      var _require222 = require('../../web-gl2/kernel-value/single-input'),
-          WebGL2KernelValueSingleInput = _require222.WebGL2KernelValueSingleInput;
+      var _require226 = require('../../web-gl2/kernel-value/single-input'),
+          WebGL2KernelValueSingleInput = _require226.WebGL2KernelValueSingleInput;
 
-      var WebGL2KernelValueDynamicSingleInput =
-      /*#__PURE__*/
-      function (_WebGL2KernelValueSin5) {
+      var WebGL2KernelValueDynamicSingleInput = /*#__PURE__*/function (_WebGL2KernelValueSin5) {
         _inherits(WebGL2KernelValueDynamicSingleInput, _WebGL2KernelValueSin5);
+
+        var _super68 = _createSuper(WebGL2KernelValueDynamicSingleInput);
 
         function WebGL2KernelValueDynamicSingleInput() {
           _classCallCheck(this, WebGL2KernelValueDynamicSingleInput);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueDynamicSingleInput).apply(this, arguments));
+          return _super68.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueDynamicSingleInput, [{
@@ -20248,21 +20592,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl2/kernel-value/single-input": 102
     }],
     86: [function (require, module, exports) {
-      var _require223 = require('../../../utils'),
-          utils = _require223.utils;
+      var _require227 = require('../../../utils'),
+          utils = _require227.utils;
 
-      var _require224 = require('../../web-gl/kernel-value/dynamic-unsigned-array'),
-          WebGLKernelValueDynamicUnsignedArray = _require224.WebGLKernelValueDynamicUnsignedArray;
+      var _require228 = require('../../web-gl/kernel-value/dynamic-unsigned-array'),
+          WebGLKernelValueDynamicUnsignedArray = _require228.WebGLKernelValueDynamicUnsignedArray;
 
-      var WebGL2KernelValueDynamicUnsignedArray =
-      /*#__PURE__*/
-      function (_WebGLKernelValueDyna5) {
+      var WebGL2KernelValueDynamicUnsignedArray = /*#__PURE__*/function (_WebGLKernelValueDyna5) {
         _inherits(WebGL2KernelValueDynamicUnsignedArray, _WebGLKernelValueDyna5);
+
+        var _super69 = _createSuper(WebGL2KernelValueDynamicUnsignedArray);
 
         function WebGL2KernelValueDynamicUnsignedArray() {
           _classCallCheck(this, WebGL2KernelValueDynamicUnsignedArray);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueDynamicUnsignedArray).apply(this, arguments));
+          return _super69.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueDynamicUnsignedArray, [{
@@ -20284,21 +20628,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/dynamic-unsigned-array": 51
     }],
     87: [function (require, module, exports) {
-      var _require225 = require('../../../utils'),
-          utils = _require225.utils;
+      var _require229 = require('../../../utils'),
+          utils = _require229.utils;
 
-      var _require226 = require('../../web-gl/kernel-value/dynamic-unsigned-input'),
-          WebGLKernelValueDynamicUnsignedInput = _require226.WebGLKernelValueDynamicUnsignedInput;
+      var _require230 = require('../../web-gl/kernel-value/dynamic-unsigned-input'),
+          WebGLKernelValueDynamicUnsignedInput = _require230.WebGLKernelValueDynamicUnsignedInput;
 
-      var WebGL2KernelValueDynamicUnsignedInput =
-      /*#__PURE__*/
-      function (_WebGLKernelValueDyna6) {
+      var WebGL2KernelValueDynamicUnsignedInput = /*#__PURE__*/function (_WebGLKernelValueDyna6) {
         _inherits(WebGL2KernelValueDynamicUnsignedInput, _WebGLKernelValueDyna6);
+
+        var _super70 = _createSuper(WebGL2KernelValueDynamicUnsignedInput);
 
         function WebGL2KernelValueDynamicUnsignedInput() {
           _classCallCheck(this, WebGL2KernelValueDynamicUnsignedInput);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueDynamicUnsignedInput).apply(this, arguments));
+          return _super70.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueDynamicUnsignedInput, [{
@@ -20320,21 +20664,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/dynamic-unsigned-input": 52
     }],
     88: [function (require, module, exports) {
-      var _require227 = require('../../../utils'),
-          utils = _require227.utils;
+      var _require231 = require('../../../utils'),
+          utils = _require231.utils;
 
-      var _require228 = require('../../web-gl/kernel-value/float'),
-          WebGLKernelValueFloat = _require228.WebGLKernelValueFloat;
+      var _require232 = require('../../web-gl/kernel-value/float'),
+          WebGLKernelValueFloat = _require232.WebGLKernelValueFloat;
 
-      var WebGL2KernelValueFloat =
-      /*#__PURE__*/
-      function (_WebGLKernelValueFloa) {
+      var WebGL2KernelValueFloat = /*#__PURE__*/function (_WebGLKernelValueFloa) {
         _inherits(WebGL2KernelValueFloat, _WebGLKernelValueFloa);
+
+        var _super71 = _createSuper(WebGL2KernelValueFloat);
 
         function WebGL2KernelValueFloat() {
           _classCallCheck(this, WebGL2KernelValueFloat);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueFloat).apply(this, arguments));
+          return _super71.apply(this, arguments);
         }
 
         return WebGL2KernelValueFloat;
@@ -20348,29 +20692,29 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/float": 53
     }],
     89: [function (require, module, exports) {
-      var _require229 = require('../../../utils'),
-          utils = _require229.utils;
+      var _require233 = require('../../../utils'),
+          utils = _require233.utils;
 
-      var _require230 = require('../../web-gl/kernel-value/array'),
-          WebGLKernelArray = _require230.WebGLKernelArray;
+      var _require234 = require('../../web-gl/kernel-value/array'),
+          WebGLKernelArray = _require234.WebGLKernelArray;
 
-      var WebGL2KernelValueHTMLImageArray =
-      /*#__PURE__*/
-      function (_WebGLKernelArray11) {
+      var WebGL2KernelValueHTMLImageArray = /*#__PURE__*/function (_WebGLKernelArray11) {
         _inherits(WebGL2KernelValueHTMLImageArray, _WebGLKernelArray11);
 
+        var _super72 = _createSuper(WebGL2KernelValueHTMLImageArray);
+
         function WebGL2KernelValueHTMLImageArray(value, settings) {
-          var _this46;
+          var _this47;
 
           _classCallCheck(this, WebGL2KernelValueHTMLImageArray);
 
-          _this46 = _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueHTMLImageArray).call(this, value, settings));
+          _this47 = _super72.call(this, value, settings);
 
-          _this46.checkSize(value[0].width, value[0].height);
+          _this47.checkSize(value[0].width, value[0].height);
 
-          _this46.dimensions = [value[0].width, value[0].height, value.length];
-          _this46.textureSize = [value[0].width, value[0].height];
-          return _this46;
+          _this47.dimensions = [value[0].width, value[0].height, value.length];
+          _this47.textureSize = [value[0].width, value[0].height];
+          return _this47;
         }
 
         _createClass(WebGL2KernelValueHTMLImageArray, [{
@@ -20424,21 +20768,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/array": 40
     }],
     90: [function (require, module, exports) {
-      var _require231 = require('../../../utils'),
-          utils = _require231.utils;
+      var _require235 = require('../../../utils'),
+          utils = _require235.utils;
 
-      var _require232 = require('../../web-gl/kernel-value/html-image'),
-          WebGLKernelValueHTMLImage = _require232.WebGLKernelValueHTMLImage;
+      var _require236 = require('../../web-gl/kernel-value/html-image'),
+          WebGLKernelValueHTMLImage = _require236.WebGLKernelValueHTMLImage;
 
-      var WebGL2KernelValueHTMLImage =
-      /*#__PURE__*/
-      function (_WebGLKernelValueHTML3) {
+      var WebGL2KernelValueHTMLImage = /*#__PURE__*/function (_WebGLKernelValueHTML3) {
         _inherits(WebGL2KernelValueHTMLImage, _WebGLKernelValueHTML3);
+
+        var _super73 = _createSuper(WebGL2KernelValueHTMLImage);
 
         function WebGL2KernelValueHTMLImage() {
           _classCallCheck(this, WebGL2KernelValueHTMLImage);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueHTMLImage).apply(this, arguments));
+          return _super73.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueHTMLImage, [{
@@ -20460,21 +20804,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/html-image": 54
     }],
     91: [function (require, module, exports) {
-      var _require233 = require('../../../utils'),
-          utils = _require233.utils;
+      var _require237 = require('../../../utils'),
+          utils = _require237.utils;
 
-      var _require234 = require('./html-image'),
-          WebGL2KernelValueHTMLImage = _require234.WebGL2KernelValueHTMLImage;
+      var _require238 = require('./html-image'),
+          WebGL2KernelValueHTMLImage = _require238.WebGL2KernelValueHTMLImage;
 
-      var WebGL2KernelValueHTMLVideo =
-      /*#__PURE__*/
-      function (_WebGL2KernelValueHTM2) {
+      var WebGL2KernelValueHTMLVideo = /*#__PURE__*/function (_WebGL2KernelValueHTM2) {
         _inherits(WebGL2KernelValueHTMLVideo, _WebGL2KernelValueHTM2);
+
+        var _super74 = _createSuper(WebGL2KernelValueHTMLVideo);
 
         function WebGL2KernelValueHTMLVideo() {
           _classCallCheck(this, WebGL2KernelValueHTMLVideo);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueHTMLVideo).apply(this, arguments));
+          return _super74.apply(this, arguments);
         }
 
         return WebGL2KernelValueHTMLVideo;
@@ -20488,18 +20832,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./html-image": 90
     }],
     92: [function (require, module, exports) {
-      var _require235 = require('../../web-gl/kernel-value/integer'),
-          WebGLKernelValueInteger = _require235.WebGLKernelValueInteger;
+      var _require239 = require('../../web-gl/kernel-value/integer'),
+          WebGLKernelValueInteger = _require239.WebGLKernelValueInteger;
 
-      var WebGL2KernelValueInteger =
-      /*#__PURE__*/
-      function (_WebGLKernelValueInte) {
+      var WebGL2KernelValueInteger = /*#__PURE__*/function (_WebGLKernelValueInte) {
         _inherits(WebGL2KernelValueInteger, _WebGLKernelValueInte);
+
+        var _super75 = _createSuper(WebGL2KernelValueInteger);
 
         function WebGL2KernelValueInteger() {
           _classCallCheck(this, WebGL2KernelValueInteger);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueInteger).apply(this, arguments));
+          return _super75.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueInteger, [{
@@ -20531,21 +20875,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/integer": 57
     }],
     93: [function (require, module, exports) {
-      var _require236 = require('../../../utils'),
-          utils = _require236.utils;
+      var _require240 = require('../../../utils'),
+          utils = _require240.utils;
 
-      var _require237 = require('../../web-gl/kernel-value/memory-optimized-number-texture'),
-          WebGLKernelValueMemoryOptimizedNumberTexture = _require237.WebGLKernelValueMemoryOptimizedNumberTexture;
+      var _require241 = require('../../web-gl/kernel-value/memory-optimized-number-texture'),
+          WebGLKernelValueMemoryOptimizedNumberTexture = _require241.WebGLKernelValueMemoryOptimizedNumberTexture;
 
-      var WebGL2KernelValueMemoryOptimizedNumberTexture =
-      /*#__PURE__*/
-      function (_WebGLKernelValueMemo2) {
+      var WebGL2KernelValueMemoryOptimizedNumberTexture = /*#__PURE__*/function (_WebGLKernelValueMemo2) {
         _inherits(WebGL2KernelValueMemoryOptimizedNumberTexture, _WebGLKernelValueMemo2);
+
+        var _super76 = _createSuper(WebGL2KernelValueMemoryOptimizedNumberTexture);
 
         function WebGL2KernelValueMemoryOptimizedNumberTexture() {
           _classCallCheck(this, WebGL2KernelValueMemoryOptimizedNumberTexture);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueMemoryOptimizedNumberTexture).apply(this, arguments));
+          return _super76.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueMemoryOptimizedNumberTexture, [{
@@ -20572,21 +20916,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/memory-optimized-number-texture": 58
     }],
     94: [function (require, module, exports) {
-      var _require238 = require('../../../utils'),
-          utils = _require238.utils;
+      var _require242 = require('../../../utils'),
+          utils = _require242.utils;
 
-      var _require239 = require('../../web-gl/kernel-value/number-texture'),
-          WebGLKernelValueNumberTexture = _require239.WebGLKernelValueNumberTexture;
+      var _require243 = require('../../web-gl/kernel-value/number-texture'),
+          WebGLKernelValueNumberTexture = _require243.WebGLKernelValueNumberTexture;
 
-      var WebGL2KernelValueNumberTexture =
-      /*#__PURE__*/
-      function (_WebGLKernelValueNumb2) {
+      var WebGL2KernelValueNumberTexture = /*#__PURE__*/function (_WebGLKernelValueNumb2) {
         _inherits(WebGL2KernelValueNumberTexture, _WebGLKernelValueNumb2);
+
+        var _super77 = _createSuper(WebGL2KernelValueNumberTexture);
 
         function WebGL2KernelValueNumberTexture() {
           _classCallCheck(this, WebGL2KernelValueNumberTexture);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueNumberTexture).apply(this, arguments));
+          return _super77.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueNumberTexture, [{
@@ -20613,21 +20957,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/number-texture": 59
     }],
     95: [function (require, module, exports) {
-      var _require240 = require('../../../utils'),
-          utils = _require240.utils;
+      var _require244 = require('../../../utils'),
+          utils = _require244.utils;
 
-      var _require241 = require('../../web-gl/kernel-value/single-array'),
-          WebGLKernelValueSingleArray = _require241.WebGLKernelValueSingleArray;
+      var _require245 = require('../../web-gl/kernel-value/single-array'),
+          WebGLKernelValueSingleArray = _require245.WebGLKernelValueSingleArray;
 
-      var WebGL2KernelValueSingleArray =
-      /*#__PURE__*/
-      function (_WebGLKernelValueSing6) {
+      var WebGL2KernelValueSingleArray = /*#__PURE__*/function (_WebGLKernelValueSing6) {
         _inherits(WebGL2KernelValueSingleArray, _WebGLKernelValueSing6);
+
+        var _super78 = _createSuper(WebGL2KernelValueSingleArray);
 
         function WebGL2KernelValueSingleArray() {
           _classCallCheck(this, WebGL2KernelValueSingleArray);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueSingleArray).apply(this, arguments));
+          return _super78.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueSingleArray, [{
@@ -20665,21 +21009,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/single-array": 60
     }],
     96: [function (require, module, exports) {
-      var _require242 = require('../../../utils'),
-          utils = _require242.utils;
+      var _require246 = require('../../../utils'),
+          utils = _require246.utils;
 
-      var _require243 = require('../../web-gl/kernel-value/single-array1d-i'),
-          WebGLKernelValueSingleArray1DI = _require243.WebGLKernelValueSingleArray1DI;
+      var _require247 = require('../../web-gl/kernel-value/single-array1d-i'),
+          WebGLKernelValueSingleArray1DI = _require247.WebGLKernelValueSingleArray1DI;
 
-      var WebGL2KernelValueSingleArray1DI =
-      /*#__PURE__*/
-      function (_WebGLKernelValueSing7) {
+      var WebGL2KernelValueSingleArray1DI = /*#__PURE__*/function (_WebGLKernelValueSing7) {
         _inherits(WebGL2KernelValueSingleArray1DI, _WebGLKernelValueSing7);
+
+        var _super79 = _createSuper(WebGL2KernelValueSingleArray1DI);
 
         function WebGL2KernelValueSingleArray1DI() {
           _classCallCheck(this, WebGL2KernelValueSingleArray1DI);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueSingleArray1DI).apply(this, arguments));
+          return _super79.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueSingleArray1DI, [{
@@ -20711,18 +21055,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/single-array1d-i": 61
     }],
     97: [function (require, module, exports) {
-      var _require244 = require('../../web-gl/kernel-value/single-array2'),
-          WebGLKernelValueSingleArray2 = _require244.WebGLKernelValueSingleArray2;
+      var _require248 = require('../../web-gl/kernel-value/single-array2'),
+          WebGLKernelValueSingleArray2 = _require248.WebGLKernelValueSingleArray2;
 
-      var WebGL2KernelValueSingleArray2 =
-      /*#__PURE__*/
-      function (_WebGLKernelValueSing8) {
+      var WebGL2KernelValueSingleArray2 = /*#__PURE__*/function (_WebGLKernelValueSing8) {
         _inherits(WebGL2KernelValueSingleArray2, _WebGLKernelValueSing8);
+
+        var _super80 = _createSuper(WebGL2KernelValueSingleArray2);
 
         function WebGL2KernelValueSingleArray2() {
           _classCallCheck(this, WebGL2KernelValueSingleArray2);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueSingleArray2).apply(this, arguments));
+          return _super80.apply(this, arguments);
         }
 
         return WebGL2KernelValueSingleArray2;
@@ -20735,21 +21079,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/single-array2": 62
     }],
     98: [function (require, module, exports) {
-      var _require245 = require('../../../utils'),
-          utils = _require245.utils;
+      var _require249 = require('../../../utils'),
+          utils = _require249.utils;
 
-      var _require246 = require('../../web-gl/kernel-value/single-array2d-i'),
-          WebGLKernelValueSingleArray2DI = _require246.WebGLKernelValueSingleArray2DI;
+      var _require250 = require('../../web-gl/kernel-value/single-array2d-i'),
+          WebGLKernelValueSingleArray2DI = _require250.WebGLKernelValueSingleArray2DI;
 
-      var WebGL2KernelValueSingleArray2DI =
-      /*#__PURE__*/
-      function (_WebGLKernelValueSing9) {
+      var WebGL2KernelValueSingleArray2DI = /*#__PURE__*/function (_WebGLKernelValueSing9) {
         _inherits(WebGL2KernelValueSingleArray2DI, _WebGLKernelValueSing9);
+
+        var _super81 = _createSuper(WebGL2KernelValueSingleArray2DI);
 
         function WebGL2KernelValueSingleArray2DI() {
           _classCallCheck(this, WebGL2KernelValueSingleArray2DI);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueSingleArray2DI).apply(this, arguments));
+          return _super81.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueSingleArray2DI, [{
@@ -20781,18 +21125,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/single-array2d-i": 63
     }],
     99: [function (require, module, exports) {
-      var _require247 = require('../../web-gl/kernel-value/single-array3'),
-          WebGLKernelValueSingleArray3 = _require247.WebGLKernelValueSingleArray3;
+      var _require251 = require('../../web-gl/kernel-value/single-array3'),
+          WebGLKernelValueSingleArray3 = _require251.WebGLKernelValueSingleArray3;
 
-      var WebGL2KernelValueSingleArray3 =
-      /*#__PURE__*/
-      function (_WebGLKernelValueSing10) {
+      var WebGL2KernelValueSingleArray3 = /*#__PURE__*/function (_WebGLKernelValueSing10) {
         _inherits(WebGL2KernelValueSingleArray3, _WebGLKernelValueSing10);
+
+        var _super82 = _createSuper(WebGL2KernelValueSingleArray3);
 
         function WebGL2KernelValueSingleArray3() {
           _classCallCheck(this, WebGL2KernelValueSingleArray3);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueSingleArray3).apply(this, arguments));
+          return _super82.apply(this, arguments);
         }
 
         return WebGL2KernelValueSingleArray3;
@@ -20805,21 +21149,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/single-array3": 64
     }],
     100: [function (require, module, exports) {
-      var _require248 = require('../../../utils'),
-          utils = _require248.utils;
+      var _require252 = require('../../../utils'),
+          utils = _require252.utils;
 
-      var _require249 = require('../../web-gl/kernel-value/single-array3d-i'),
-          WebGLKernelValueSingleArray3DI = _require249.WebGLKernelValueSingleArray3DI;
+      var _require253 = require('../../web-gl/kernel-value/single-array3d-i'),
+          WebGLKernelValueSingleArray3DI = _require253.WebGLKernelValueSingleArray3DI;
 
-      var WebGL2KernelValueSingleArray3DI =
-      /*#__PURE__*/
-      function (_WebGLKernelValueSing11) {
+      var WebGL2KernelValueSingleArray3DI = /*#__PURE__*/function (_WebGLKernelValueSing11) {
         _inherits(WebGL2KernelValueSingleArray3DI, _WebGLKernelValueSing11);
+
+        var _super83 = _createSuper(WebGL2KernelValueSingleArray3DI);
 
         function WebGL2KernelValueSingleArray3DI() {
           _classCallCheck(this, WebGL2KernelValueSingleArray3DI);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueSingleArray3DI).apply(this, arguments));
+          return _super83.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueSingleArray3DI, [{
@@ -20851,18 +21195,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/single-array3d-i": 65
     }],
     101: [function (require, module, exports) {
-      var _require250 = require('../../web-gl/kernel-value/single-array4'),
-          WebGLKernelValueSingleArray4 = _require250.WebGLKernelValueSingleArray4;
+      var _require254 = require('../../web-gl/kernel-value/single-array4'),
+          WebGLKernelValueSingleArray4 = _require254.WebGLKernelValueSingleArray4;
 
-      var WebGL2KernelValueSingleArray4 =
-      /*#__PURE__*/
-      function (_WebGLKernelValueSing12) {
+      var WebGL2KernelValueSingleArray4 = /*#__PURE__*/function (_WebGLKernelValueSing12) {
         _inherits(WebGL2KernelValueSingleArray4, _WebGLKernelValueSing12);
+
+        var _super84 = _createSuper(WebGL2KernelValueSingleArray4);
 
         function WebGL2KernelValueSingleArray4() {
           _classCallCheck(this, WebGL2KernelValueSingleArray4);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueSingleArray4).apply(this, arguments));
+          return _super84.apply(this, arguments);
         }
 
         return WebGL2KernelValueSingleArray4;
@@ -20875,21 +21219,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/single-array4": 66
     }],
     102: [function (require, module, exports) {
-      var _require251 = require('../../../utils'),
-          utils = _require251.utils;
+      var _require255 = require('../../../utils'),
+          utils = _require255.utils;
 
-      var _require252 = require('../../web-gl/kernel-value/single-input'),
-          WebGLKernelValueSingleInput = _require252.WebGLKernelValueSingleInput;
+      var _require256 = require('../../web-gl/kernel-value/single-input'),
+          WebGLKernelValueSingleInput = _require256.WebGLKernelValueSingleInput;
 
-      var WebGL2KernelValueSingleInput =
-      /*#__PURE__*/
-      function (_WebGLKernelValueSing13) {
+      var WebGL2KernelValueSingleInput = /*#__PURE__*/function (_WebGLKernelValueSing13) {
         _inherits(WebGL2KernelValueSingleInput, _WebGLKernelValueSing13);
+
+        var _super85 = _createSuper(WebGL2KernelValueSingleInput);
 
         function WebGL2KernelValueSingleInput() {
           _classCallCheck(this, WebGL2KernelValueSingleInput);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueSingleInput).apply(this, arguments));
+          return _super85.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueSingleInput, [{
@@ -20922,21 +21266,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/single-input": 67
     }],
     103: [function (require, module, exports) {
-      var _require253 = require('../../../utils'),
-          utils = _require253.utils;
+      var _require257 = require('../../../utils'),
+          utils = _require257.utils;
 
-      var _require254 = require('../../web-gl/kernel-value/unsigned-array'),
-          WebGLKernelValueUnsignedArray = _require254.WebGLKernelValueUnsignedArray;
+      var _require258 = require('../../web-gl/kernel-value/unsigned-array'),
+          WebGLKernelValueUnsignedArray = _require258.WebGLKernelValueUnsignedArray;
 
-      var WebGL2KernelValueUnsignedArray =
-      /*#__PURE__*/
-      function (_WebGLKernelValueUnsi3) {
+      var WebGL2KernelValueUnsignedArray = /*#__PURE__*/function (_WebGLKernelValueUnsi3) {
         _inherits(WebGL2KernelValueUnsignedArray, _WebGLKernelValueUnsi3);
+
+        var _super86 = _createSuper(WebGL2KernelValueUnsignedArray);
 
         function WebGL2KernelValueUnsignedArray() {
           _classCallCheck(this, WebGL2KernelValueUnsignedArray);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueUnsignedArray).apply(this, arguments));
+          return _super86.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueUnsignedArray, [{
@@ -20958,21 +21302,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/unsigned-array": 68
     }],
     104: [function (require, module, exports) {
-      var _require255 = require('../../../utils'),
-          utils = _require255.utils;
+      var _require259 = require('../../../utils'),
+          utils = _require259.utils;
 
-      var _require256 = require('../../web-gl/kernel-value/unsigned-input'),
-          WebGLKernelValueUnsignedInput = _require256.WebGLKernelValueUnsignedInput;
+      var _require260 = require('../../web-gl/kernel-value/unsigned-input'),
+          WebGLKernelValueUnsignedInput = _require260.WebGLKernelValueUnsignedInput;
 
-      var WebGL2KernelValueUnsignedInput =
-      /*#__PURE__*/
-      function (_WebGLKernelValueUnsi4) {
+      var WebGL2KernelValueUnsignedInput = /*#__PURE__*/function (_WebGLKernelValueUnsi4) {
         _inherits(WebGL2KernelValueUnsignedInput, _WebGLKernelValueUnsi4);
+
+        var _super87 = _createSuper(WebGL2KernelValueUnsignedInput);
 
         function WebGL2KernelValueUnsignedInput() {
           _classCallCheck(this, WebGL2KernelValueUnsignedInput);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2KernelValueUnsignedInput).apply(this, arguments));
+          return _super87.apply(this, arguments);
         }
 
         _createClass(WebGL2KernelValueUnsignedInput, [{
@@ -20994,26 +21338,26 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "../../web-gl/kernel-value/unsigned-input": 69
     }],
     105: [function (require, module, exports) {
-      var _require257 = require('../web-gl/kernel'),
-          WebGLKernel = _require257.WebGLKernel;
+      var _require261 = require('../web-gl/kernel'),
+          WebGLKernel = _require261.WebGLKernel;
 
-      var _require258 = require('./function-node'),
-          WebGL2FunctionNode = _require258.WebGL2FunctionNode;
+      var _require262 = require('./function-node'),
+          WebGL2FunctionNode = _require262.WebGL2FunctionNode;
 
-      var _require259 = require('../function-builder'),
-          FunctionBuilder = _require259.FunctionBuilder;
+      var _require263 = require('../function-builder'),
+          FunctionBuilder = _require263.FunctionBuilder;
 
-      var _require260 = require('../../utils'),
-          utils = _require260.utils;
+      var _require264 = require('../../utils'),
+          utils = _require264.utils;
 
-      var _require261 = require('./fragment-shader'),
-          fragmentShader = _require261.fragmentShader;
+      var _require265 = require('./fragment-shader'),
+          fragmentShader = _require265.fragmentShader;
 
-      var _require262 = require('./vertex-shader'),
-          vertexShader = _require262.vertexShader;
+      var _require266 = require('./vertex-shader'),
+          vertexShader = _require266.vertexShader;
 
-      var _require263 = require('./kernel-value-maps'),
-          _lookupKernelValueType2 = _require263.lookupKernelValueType;
+      var _require267 = require('./kernel-value-maps'),
+          _lookupKernelValueType2 = _require267.lookupKernelValueType;
 
       var isSupported = null;
       var testCanvas = null;
@@ -21021,15 +21365,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var testExtensions = null;
       var features = null;
 
-      var WebGL2Kernel =
-      /*#__PURE__*/
-      function (_WebGLKernel2) {
+      var WebGL2Kernel = /*#__PURE__*/function (_WebGLKernel2) {
         _inherits(WebGL2Kernel, _WebGLKernel2);
+
+        var _super88 = _createSuper(WebGL2Kernel);
 
         function WebGL2Kernel() {
           _classCallCheck(this, WebGL2Kernel);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(WebGL2Kernel).apply(this, arguments));
+          return _super88.apply(this, arguments);
         }
 
         _createClass(WebGL2Kernel, [{
@@ -21164,10 +21508,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "getInternalFormat",
           value: function getInternalFormat() {
-            var gl = this.context,
-                optimizeFloatMemory = this.optimizeFloatMemory,
-                pipeline = this.pipeline,
-                precision = this.precision;
+            var gl = this.context;
 
             if (this.precision === 'single') {
               if (this.pipeline) {
@@ -21204,11 +21545,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             var gl = this.context;
 
             if (this.texture) {
-              this.texture.beforeMutate();
               gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture.texture, 0);
               return;
             }
 
+            gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
             var texture = gl.createTexture();
             var texSize = this.texSize;
             gl.activeTexture(gl.TEXTURE0 + this.constantTextureCount + this.argumentTextureCount);
@@ -21242,11 +21583,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           value: function _setupSubOutputTextures() {
             var gl = this.context;
 
-            if (this.mappedTextures && this.mappedTextures.length > 0) {
-              for (var i = 0; i < this.mappedTextures.length; i++) {
-                var mappedTexture = this.mappedTextures[i];
-                mappedTexture.beforeMutate();
-                gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i + 1, gl.TEXTURE_2D, mappedTexture.texture, 0);
+            if (this.mappedTextures) {
+              for (var i = 0; i < this.subKernels.length; i++) {
+                gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i + 1, gl.TEXTURE_2D, this.mappedTextures[i].texture, 0);
               }
 
               return;
@@ -21256,10 +21595,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             this.drawBuffersMap = [gl.COLOR_ATTACHMENT0];
             this.mappedTextures = [];
 
-            for (var _i30 = 0; _i30 < this.subKernels.length; _i30++) {
+            for (var _i33 = 0; _i33 < this.subKernels.length; _i33++) {
               var texture = this.createTexture();
-              this.drawBuffersMap.push(gl.COLOR_ATTACHMENT0 + _i30 + 1);
-              gl.activeTexture(gl.TEXTURE0 + this.constantTextureCount + this.argumentTextureCount + _i30);
+              this.drawBuffersMap.push(gl.COLOR_ATTACHMENT0 + _i33 + 1);
+              gl.activeTexture(gl.TEXTURE0 + this.constantTextureCount + this.argumentTextureCount + _i33);
               gl.bindTexture(gl.TEXTURE_2D, texture);
               gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
               gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -21273,7 +21612,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize[0], texSize[1], 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
               }
 
-              gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + _i30 + 1, gl.TEXTURE_2D, texture, 0);
+              gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + _i33 + 1, gl.TEXTURE_2D, texture, 0);
               this.mappedTextures.push(new this.TextureConstructor({
                 texture: texture,
                 size: texSize,
@@ -21318,18 +21657,46 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "getKernelString",
           value: function getKernelString() {
-            var result = [];
+            var result = [this.getKernelResultDeclaration()];
             var subKernels = this.subKernels;
 
             if (subKernels !== null) {
-              result.push(this.getKernelResultDeclaration(), 'layout(location = 0) out vec4 data0');
+              result.push('layout(location = 0) out vec4 data0');
 
-              for (var i = 0; i < subKernels.length; i++) {
-                var subKernel = subKernels[i];
-                result.push(subKernel.returnType === 'Integer' ? "int subKernelResult_".concat(subKernel.name, " = 0") : "float subKernelResult_".concat(subKernel.name, " = 0.0"), "layout(location = ".concat(i + 1, ") out vec4 data").concat(i + 1));
+              switch (this.returnType) {
+                case 'Number':
+                case 'Float':
+                case 'Integer':
+                  for (var i = 0; i < subKernels.length; i++) {
+                    var subKernel = subKernels[i];
+                    result.push(subKernel.returnType === 'Integer' ? "int subKernelResult_".concat(subKernel.name, " = 0") : "float subKernelResult_".concat(subKernel.name, " = 0.0"), "layout(location = ".concat(i + 1, ") out vec4 data").concat(i + 1));
+                  }
+
+                  break;
+
+                case 'Array(2)':
+                  for (var _i34 = 0; _i34 < subKernels.length; _i34++) {
+                    result.push("vec2 subKernelResult_".concat(subKernels[_i34].name), "layout(location = ".concat(_i34 + 1, ") out vec4 data").concat(_i34 + 1));
+                  }
+
+                  break;
+
+                case 'Array(3)':
+                  for (var _i35 = 0; _i35 < subKernels.length; _i35++) {
+                    result.push("vec3 subKernelResult_".concat(subKernels[_i35].name), "layout(location = ".concat(_i35 + 1, ") out vec4 data").concat(_i35 + 1));
+                  }
+
+                  break;
+
+                case 'Array(4)':
+                  for (var _i36 = 0; _i36 < subKernels.length; _i36++) {
+                    result.push("vec4 subKernelResult_".concat(subKernels[_i36].name), "layout(location = ".concat(_i36 + 1, ") out vec4 data").concat(_i36 + 1));
+                  }
+
+                  break;
               }
             } else {
-              result.push('out vec4 data0', this.getKernelResultDeclaration());
+              result.push('out vec4 data0');
             }
 
             return utils.linesToString(result) + this.translatedSource;
@@ -21521,6 +21888,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             return Object.freeze({
               isFloatRead: this.getIsFloatRead(),
               isIntegerDivisionAccurate: this.getIsIntegerDivisionAccurate(),
+              isSpeedTacticSupported: this.getIsSpeedTacticSupported(),
               kernelMap: true,
               isTextureFloat: true,
               isDrawBuffers: true,
@@ -21538,11 +21906,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           key: "getIsTextureFloat",
           value: function getIsTextureFloat() {
             return true;
-          }
-        }, {
-          key: "getIsIntegerDivisionAccurate",
-          value: function getIsIntegerDivisionAccurate() {
-            return _get(_getPrototypeOf(WebGL2Kernel), "getIsIntegerDivisionAccurate", this).call(this);
           }
         }, {
           key: "getChannelCount",
@@ -21651,29 +22014,29 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./index": 109
     }],
     108: [function (require, module, exports) {
-      var _require264 = require('gpu-mock.js'),
-          gpuMock = _require264.gpuMock;
+      var _require268 = require('gpu-mock.js'),
+          gpuMock = _require268.gpuMock;
 
-      var _require265 = require('./utils'),
-          utils = _require265.utils;
+      var _require269 = require('./utils'),
+          utils = _require269.utils;
 
-      var _require266 = require('./backend/kernel'),
-          Kernel = _require266.Kernel;
+      var _require270 = require('./backend/kernel'),
+          Kernel = _require270.Kernel;
 
-      var _require267 = require('./backend/cpu/kernel'),
-          CPUKernel = _require267.CPUKernel;
+      var _require271 = require('./backend/cpu/kernel'),
+          CPUKernel = _require271.CPUKernel;
 
-      var _require268 = require('./backend/headless-gl/kernel'),
-          HeadlessGLKernel = _require268.HeadlessGLKernel;
+      var _require272 = require('./backend/headless-gl/kernel'),
+          HeadlessGLKernel = _require272.HeadlessGLKernel;
 
-      var _require269 = require('./backend/web-gl2/kernel'),
-          WebGL2Kernel = _require269.WebGL2Kernel;
+      var _require273 = require('./backend/web-gl2/kernel'),
+          WebGL2Kernel = _require273.WebGL2Kernel;
 
-      var _require270 = require('./backend/web-gl/kernel'),
-          WebGLKernel = _require270.WebGLKernel;
+      var _require274 = require('./backend/web-gl/kernel'),
+          WebGLKernel = _require274.WebGLKernel;
 
-      var _require271 = require('./kernel-run-shortcut'),
-          kernelRunShortcut = _require271.kernelRunShortcut;
+      var _require275 = require('./kernel-run-shortcut'),
+          kernelRunShortcut = _require275.kernelRunShortcut;
 
       var kernelOrder = [HeadlessGLKernel, WebGL2Kernel, WebGLKernel];
       var kernelTypes = ['gpu', 'cpu'];
@@ -21684,9 +22047,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       };
       var validate = true;
 
-      var GPU =
-      /*#__PURE__*/
-      function () {
+      var GPU = /*#__PURE__*/function () {
         _createClass(GPU, null, [{
           key: "disableValidation",
           value: function disableValidation() {
@@ -21777,9 +22138,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             for (var p in settings.nativeFunctions) {
               if (!settings.nativeFunctions.hasOwnProperty(p)) continue;
               var s = settings.nativeFunctions[p];
-              var _name11 = s.name,
+              var _name13 = s.name,
                   source = s.source;
-              this.addNativeFunction(_name11, source, s);
+              this.addNativeFunction(_name13, source, s);
             }
           }
         }
@@ -21813,9 +22174,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                   Kernel = internalKernels[this.mode];
                 }
               } else if (this.mode === 'gpu') {
-                for (var _i31 = 0; _i31 < kernelOrder.length; _i31++) {
-                  if (kernelOrder[_i31].isSupported) {
-                    Kernel = kernelOrder[_i31];
+                for (var _i37 = 0; _i37 < kernelOrder.length; _i37++) {
+                  if (kernelOrder[_i37].isSupported) {
+                    Kernel = kernelOrder[_i37];
                     break;
                   }
                 }
@@ -21827,9 +22188,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 throw new Error("A requested mode of \"".concat(this.mode, "\" and is not supported"));
               }
             } else {
-              for (var _i32 = 0; _i32 < kernelOrder.length; _i32++) {
-                if (kernelOrder[_i32].isSupported) {
-                  Kernel = kernelOrder[_i32];
+              for (var _i38 = 0; _i38 < kernelOrder.length; _i38++) {
+                if (kernelOrder[_i38].isSupported) {
+                  Kernel = kernelOrder[_i38];
                   break;
                 }
               }
@@ -21856,9 +22217,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               throw new Error('source parameter not a function');
             }
 
+            var kernels = this.kernels;
+
             if (this.mode === 'dev') {
               var devKernel = gpuMock(source, upgradeDeprecatedCreateKernelSettings(settings));
-              this.kernels.push(devKernel);
+              kernels.push(devKernel);
               return devKernel;
             }
 
@@ -21901,18 +22264,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               return result;
             }
 
-            function onRequestSwitchKernel(reasons, args, kernel) {
-              if (kernel.debug) {
+            function onRequestSwitchKernel(reasons, args, _kernel) {
+              if (_kernel.debug) {
                 console.warn('Switching kernels');
               }
 
               var newOutput = null;
 
-              if (kernel.signature && !switchableKernels[kernel.signature]) {
-                switchableKernels[kernel.signature] = kernel;
+              if (_kernel.signature && !switchableKernels[_kernel.signature]) {
+                switchableKernels[_kernel.signature] = _kernel;
               }
 
-              if (kernel.dynamicOutput) {
+              if (_kernel.dynamicOutput) {
                 for (var i = reasons.length - 1; i >= 0; i--) {
                   var reason = reasons[i];
 
@@ -21922,48 +22285,53 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                 }
               }
 
-              var Constructor = kernel.constructor;
-              var argumentTypes = Constructor.getArgumentTypes(kernel, args);
-              var signature = Constructor.getSignature(kernel, argumentTypes);
+              var Constructor = _kernel.constructor;
+              var argumentTypes = Constructor.getArgumentTypes(_kernel, args);
+              var signature = Constructor.getSignature(_kernel, argumentTypes);
               var existingKernel = switchableKernels[signature];
 
               if (existingKernel) {
+                existingKernel.onActivate(_kernel);
                 return existingKernel;
               }
 
               var newKernel = switchableKernels[signature] = new Constructor(source, {
                 argumentTypes: argumentTypes,
-                constantTypes: kernel.constantTypes,
-                graphical: kernel.graphical,
-                loopMaxIterations: kernel.loopMaxIterations,
-                constants: kernel.constants,
-                dynamicOutput: kernel.dynamicOutput,
-                dynamicArgument: kernel.dynamicArguments,
-                context: kernel.context,
-                canvas: kernel.canvas,
-                output: newOutput || kernel.output,
-                precision: kernel.precision,
-                pipeline: kernel.pipeline,
-                immutable: kernel.immutable,
-                optimizeFloatMemory: kernel.optimizeFloatMemory,
-                fixIntegerDivisionAccuracy: kernel.fixIntegerDivisionAccuracy,
-                functions: kernel.functions,
-                nativeFunctions: kernel.nativeFunctions,
-                injectedNative: kernel.injectedNative,
-                subKernels: kernel.subKernels,
-                strictIntegers: kernel.strictIntegers,
-                debug: kernel.debug,
-                gpu: kernel.gpu,
+                constantTypes: _kernel.constantTypes,
+                graphical: _kernel.graphical,
+                loopMaxIterations: _kernel.loopMaxIterations,
+                constants: _kernel.constants,
+                dynamicOutput: _kernel.dynamicOutput,
+                dynamicArgument: _kernel.dynamicArguments,
+                context: _kernel.context,
+                canvas: _kernel.canvas,
+                output: newOutput || _kernel.output,
+                precision: _kernel.precision,
+                pipeline: _kernel.pipeline,
+                immutable: _kernel.immutable,
+                optimizeFloatMemory: _kernel.optimizeFloatMemory,
+                fixIntegerDivisionAccuracy: _kernel.fixIntegerDivisionAccuracy,
+                functions: _kernel.functions,
+                nativeFunctions: _kernel.nativeFunctions,
+                injectedNative: _kernel.injectedNative,
+                subKernels: _kernel.subKernels,
+                strictIntegers: _kernel.strictIntegers,
+                debug: _kernel.debug,
+                gpu: _kernel.gpu,
                 validate: validate,
-                returnType: kernel.returnType,
-                onIstanbulCoverageVariable: kernel.onIstanbulCoverageVariable,
-                removeIstanbulCoverage: kernel.removeIstanbulCoverage,
-                tactic: kernel.tactic,
+                returnType: _kernel.returnType,
+                onIstanbulCoverageVariable: _kernel.onIstanbulCoverageVariable,
+                removeIstanbulCoverage: _kernel.removeIstanbulCoverage,
+                tactic: _kernel.tactic,
                 onRequestFallback: onRequestFallback,
-                onRequestSwitchKernel: onRequestSwitchKernel
+                onRequestSwitchKernel: onRequestSwitchKernel,
+                texture: _kernel.texture,
+                mappedTextures: _kernel.mappedTextures,
+                drawBuffersMap: _kernel.drawBuffersMap
               });
               newKernel.build.apply(newKernel, args);
               kernelRun.replaceKernel(newKernel);
+              kernels.push(newKernel);
               return newKernel;
             }
 
@@ -21980,17 +22348,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               onRequestFallback: onRequestFallback,
               onRequestSwitchKernel: onRequestSwitchKernel
             }, settingsCopy);
-            var kernelRun = kernelRunShortcut(new this.Kernel(source, mergedSettings));
+            var kernel = new this.Kernel(source, mergedSettings);
+            var kernelRun = kernelRunShortcut(kernel);
 
             if (!this.canvas) {
-              this.canvas = kernelRun.canvas;
+              this.canvas = kernel.canvas;
             }
 
             if (!this.context) {
-              this.context = kernelRun.context;
+              this.context = kernel.context;
             }
 
-            this.kernels.push(kernelRun);
+            kernels.push(kernel);
             return kernelRun;
           }
         }, {
@@ -22031,10 +22400,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               for (var i = 0; i < functions.length; i++) {
                 var source = functions[i].toString();
 
-                var _name12 = utils.getFunctionNameFromString(source);
+                var _name14 = utils.getFunctionNameFromString(source);
 
                 settingsCopy.subKernels.push({
-                  name: _name12,
+                  name: _name14,
                   source: source,
                   property: i
                 });
@@ -22048,10 +22417,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
                 var _source = _functions[p].toString();
 
-                var _name13 = utils.getFunctionNameFromString(_source);
+                var _name15 = utils.getFunctionNameFromString(_source);
 
                 settingsCopy.subKernels.push({
-                  name: _name13 || p,
+                  name: _name15 || p,
                   source: _source,
                   property: p
                 });
@@ -22127,20 +22496,20 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "destroy",
           value: function destroy() {
-            var _this47 = this;
+            var _this48 = this;
 
             return new Promise(function (resolve, reject) {
-              if (!_this47.kernels) {
+              if (!_this48.kernels) {
                 resolve();
               }
 
               setTimeout(function () {
                 try {
-                  for (var i = 0; i < _this47.kernels.length; i++) {
-                    _this47.kernels[i].destroy(true);
+                  for (var i = 0; i < _this48.kernels.length; i++) {
+                    _this48.kernels[i].destroy(true);
                   }
 
-                  var firstKernel = _this47.kernels[0];
+                  var firstKernel = _this48.kernels[0];
 
                   if (firstKernel) {
                     if (firstKernel.kernel) {
@@ -22148,7 +22517,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                     }
 
                     if (firstKernel.constructor.destroyContext) {
-                      firstKernel.constructor.destroyContext(_this47.context);
+                      firstKernel.constructor.destroyContext(_this48.context);
                     }
                   }
                 } catch (e) {
@@ -22210,63 +22579,63 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "gpu-mock.js": 4
     }],
     109: [function (require, module, exports) {
-      var _require272 = require('./gpu'),
-          GPU = _require272.GPU;
+      var _require276 = require('./gpu'),
+          GPU = _require276.GPU;
 
-      var _require273 = require('./alias'),
-          alias = _require273.alias;
+      var _require277 = require('./alias'),
+          alias = _require277.alias;
 
-      var _require274 = require('./utils'),
-          utils = _require274.utils;
+      var _require278 = require('./utils'),
+          utils = _require278.utils;
 
-      var _require275 = require('./input'),
-          Input = _require275.Input,
-          input = _require275.input;
+      var _require279 = require('./input'),
+          Input = _require279.Input,
+          input = _require279.input;
 
-      var _require276 = require('./texture'),
-          Texture = _require276.Texture;
+      var _require280 = require('./texture'),
+          Texture = _require280.Texture;
 
-      var _require277 = require('./backend/function-builder'),
-          FunctionBuilder = _require277.FunctionBuilder;
+      var _require281 = require('./backend/function-builder'),
+          FunctionBuilder = _require281.FunctionBuilder;
 
-      var _require278 = require('./backend/function-node'),
-          FunctionNode = _require278.FunctionNode;
+      var _require282 = require('./backend/function-node'),
+          FunctionNode = _require282.FunctionNode;
 
-      var _require279 = require('./backend/cpu/function-node'),
-          CPUFunctionNode = _require279.CPUFunctionNode;
+      var _require283 = require('./backend/cpu/function-node'),
+          CPUFunctionNode = _require283.CPUFunctionNode;
 
-      var _require280 = require('./backend/cpu/kernel'),
-          CPUKernel = _require280.CPUKernel;
+      var _require284 = require('./backend/cpu/kernel'),
+          CPUKernel = _require284.CPUKernel;
 
-      var _require281 = require('./backend/headless-gl/kernel'),
-          HeadlessGLKernel = _require281.HeadlessGLKernel;
+      var _require285 = require('./backend/headless-gl/kernel'),
+          HeadlessGLKernel = _require285.HeadlessGLKernel;
 
-      var _require282 = require('./backend/web-gl/function-node'),
-          WebGLFunctionNode = _require282.WebGLFunctionNode;
+      var _require286 = require('./backend/web-gl/function-node'),
+          WebGLFunctionNode = _require286.WebGLFunctionNode;
 
-      var _require283 = require('./backend/web-gl/kernel'),
-          WebGLKernel = _require283.WebGLKernel;
+      var _require287 = require('./backend/web-gl/kernel'),
+          WebGLKernel = _require287.WebGLKernel;
 
-      var _require284 = require('./backend/web-gl/kernel-value-maps'),
-          webGLKernelValueMaps = _require284.kernelValueMaps;
+      var _require288 = require('./backend/web-gl/kernel-value-maps'),
+          webGLKernelValueMaps = _require288.kernelValueMaps;
 
-      var _require285 = require('./backend/web-gl2/function-node'),
-          WebGL2FunctionNode = _require285.WebGL2FunctionNode;
+      var _require289 = require('./backend/web-gl2/function-node'),
+          WebGL2FunctionNode = _require289.WebGL2FunctionNode;
 
-      var _require286 = require('./backend/web-gl2/kernel'),
-          WebGL2Kernel = _require286.WebGL2Kernel;
+      var _require290 = require('./backend/web-gl2/kernel'),
+          WebGL2Kernel = _require290.WebGL2Kernel;
 
-      var _require287 = require('./backend/web-gl2/kernel-value-maps'),
-          webGL2KernelValueMaps = _require287.kernelValueMaps;
+      var _require291 = require('./backend/web-gl2/kernel-value-maps'),
+          webGL2KernelValueMaps = _require291.kernelValueMaps;
 
-      var _require288 = require('./backend/gl/kernel'),
-          GLKernel = _require288.GLKernel;
+      var _require292 = require('./backend/gl/kernel'),
+          GLKernel = _require292.GLKernel;
 
-      var _require289 = require('./backend/kernel'),
-          Kernel = _require289.Kernel;
+      var _require293 = require('./backend/kernel'),
+          Kernel = _require293.Kernel;
 
-      var _require290 = require('./backend/function-tracer'),
-          FunctionTracer = _require290.FunctionTracer;
+      var _require294 = require('./backend/function-tracer'),
+          FunctionTracer = _require294.FunctionTracer;
 
       var mathRandom = require('./plugins/math-random-uniformly-distributed');
 
@@ -22318,9 +22687,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./utils": 114
     }],
     110: [function (require, module, exports) {
-      var Input =
-      /*#__PURE__*/
-      function () {
+      var Input = /*#__PURE__*/function () {
         function Input(value, size) {
           _classCallCheck(this, Input);
 
@@ -22363,8 +22730,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         _createClass(Input, [{
           key: "toArray",
           value: function toArray() {
-            var _require291 = require('./utils'),
-                utils = _require291.utils;
+            var _require295 = require('./utils'),
+                utils = _require295.utils;
 
             var _this$size2 = _slicedToArray(this.size, 3),
                 w = _this$size2[0],
@@ -22396,8 +22763,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       "./utils": 114
     }],
     111: [function (require, module, exports) {
-      var _require292 = require('./utils'),
-          utils = _require292.utils;
+      var _require296 = require('./utils'),
+          utils = _require296.utils;
 
       function kernelRunShortcut(kernel) {
         var _run = function run() {
@@ -22430,12 +22797,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         };
 
         shortcut.exec = function () {
-          var _this48 = this,
-              _arguments2 = arguments;
+          var _arguments2 = arguments,
+              _this49 = this;
 
           return new Promise(function (accept, reject) {
             try {
-              accept(_run.apply(_this48, _arguments2));
+              accept(_run.apply(_this49, _arguments2));
             } catch (e) {
               reject(e);
             }
@@ -22459,7 +22826,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
         var properties = utils.allPropertiesOf(kernel);
 
-        var _loop2 = function _loop2(i) {
+        var _loop3 = function _loop3(i) {
           var property = properties[i];
           if (property[0] === '_' && property[1] === '_') return "continue";
 
@@ -22486,7 +22853,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         };
 
         for (var i = 0; i < properties.length; i++) {
-          var _ret = _loop2(i);
+          var _ret = _loop3(i);
 
           if (_ret === "continue") continue;
         }
@@ -22523,9 +22890,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       module.exports = plugin;
     }, {}],
     113: [function (require, module, exports) {
-      var Texture =
-      /*#__PURE__*/
-      function () {
+      var Texture = /*#__PURE__*/function () {
         function Texture(settings) {
           _classCallCheck(this, Texture);
 
@@ -22575,15 +22940,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }, {
           key: "delete",
           value: function _delete() {
-            if (this._deleted) return;
-            this._deleted = true;
-
-            if (this.texture._refs) {
-              this.texture._refs--;
-              if (this.texture._refs) return;
-            }
-
-            return this.context.deleteTexture(this.texture);
+            throw new Error("Not implemented on ".concat(this.constructor.name));
+          }
+        }, {
+          key: "clear",
+          value: function clear() {
+            throw new Error("Not implemented on ".concat(this.constructor.name));
           }
         }]);
 
@@ -22597,11 +22959,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     114: [function (require, module, exports) {
       var acorn = require('acorn');
 
-      var _require293 = require('./input'),
-          Input = _require293.Input;
+      var _require297 = require('./input'),
+          Input = _require297.Input;
 
-      var _require294 = require('./texture'),
-          Texture = _require294.Texture;
+      var _require298 = require('./texture'),
+          Texture = _require298.Texture;
 
       var FUNCTION_NAME = /function ([^(]*)/;
       var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
@@ -23207,8 +23569,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
                   var _result2 = [];
                   indent += 2;
 
-                  for (var _i33 = 0; _i33 < ast.body.length; _i33++) {
-                    var flat = flatten(ast.body[_i33]);
+                  for (var _i39 = 0; _i39 < ast.body.length; _i39++) {
+                    var flat = flatten(ast.body[_i39]);
 
                     if (flat) {
                       _result2.push(' '.repeat(indent) + flat, ';\n');
@@ -23232,7 +23594,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
               case 'VariableDeclarator':
                 if (ast.init.object && ast.init.object.type === 'ThisExpression') {
-                  var lookup = thisLookup(ast.init.property.name);
+                  var lookup = thisLookup(ast.init.property.name, true);
 
                   if (lookup) {
                     return "".concat(ast.id.name, " = ").concat(flatten(ast.init));
@@ -23596,8 +23958,24 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           } catch (e) {
             throw new Error('Unrecognized function type.  Please use `() => yourFunctionVariableHere` or function() { return yourFunctionVariableHere; }');
           }
+        },
+        sanitizeName: function sanitizeName(name) {
+          if (dollarSign.test(name)) {
+            name = name.replace(dollarSign, 'S_S');
+          }
+
+          if (doubleUnderscore.test(name)) {
+            name = name.replace(doubleUnderscore, 'U_U');
+          } else if (singleUnderscore.test(name)) {
+            name = name.replace(singleUnderscore, 'u_u');
+          }
+
+          return name;
         }
       };
+      var dollarSign = /\$/;
+      var doubleUnderscore = /__/;
+      var singleUnderscore = /_/;
 
       var _systemEndianness = utils.getSystemEndianness();
 
@@ -23613,7 +23991,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 });
 },{}],"L30b":[function(require,module,exports) {
 var _require = require('gpu.js'),
-    GPU = _require.GPU;
+    GPU = _require.GPU,
+    input = _require.input;
 
 var gpuInstance = null;
 
@@ -23654,13 +24033,36 @@ function makeDevKernel(fn, settings) {
   return gpu.createKernel(fn, settings);
 }
 
-function kernelInput(input, size) {
-  return GPU.input(input, size);
+function kernelInput(value, size) {
+  return input(value, size);
 }
 
 function release(texture) {
-  if (texture.delete) {
+  if (texture && texture.delete) {
     texture.delete();
+  }
+}
+
+function clear(texture) {
+  if (texture.clear) {
+    texture.clear();
+    return;
+  }
+
+  if (texture instanceof Float32Array) {
+    texture.fill(0);
+  } else if (texture[0] instanceof Float32Array) {
+    for (var x = 0; x < texture.length; x++) {
+      texture[x].fill(0);
+    }
+  } else if (texture[0][0] instanceof Float32Array) {
+    for (var y = 0; y < texture.length; y++) {
+      var row = texture[y];
+
+      for (var _x = 0; _x < row.length; _x++) {
+        row[_x].fill(0);
+      }
+    }
   }
 }
 
@@ -23669,33 +24071,31 @@ function clone(texture) {
     return texture.clone();
   }
 
-  if (typeof texture[0] === 'number') {
-    return new Float32Array(texture);
-  } else if (typeof texture[0][0] === 'number') {
-    var result = [];
+  if (texture instanceof Float32Array) {
+    return texture.slice(0);
+  } else if (texture[0] instanceof Float32Array) {
+    var matrix = new Array(texture.length);
 
-    for (var y = 0; y < texture.length; y++) {
-      result.push(new Float32Array(texture[y]));
+    for (var x = 0; x < texture.length; x++) {
+      matrix[x] = texture[x].slice(0);
     }
 
-    return result;
-  } else if (typeof texture[0][0][0] === 'number') {
-    var _result = [];
+    return matrix;
+  } else if (texture[0][0] instanceof Float32Array) {
+    var cube = new Array(texture.length);
 
-    for (var z = 0; z < texture.length; z++) {
-      var row = [];
+    for (var y = 0; y < texture.length; y++) {
+      var row = texture[y];
 
-      _result.push(row);
+      var _matrix = new Array(row.length);
 
-      for (var _y = 0; _y < texture.length; _y++) {
-        row.push(new Float32Array(texture[z][_y]));
+      for (var _x2 = 0; _x2 < row.length; _x2++) {
+        _matrix[_x2] = row[_x2].slice(0);
       }
     }
 
-    return _result;
+    return cube;
   }
-
-  throw new Error('unrecognized argument');
 }
 
 module.exports = {
@@ -23705,7 +24105,8 @@ module.exports = {
   makeDevKernel: makeDevKernel,
   kernelInput: kernelInput,
   release: release,
-  clone: clone
+  clone: clone,
+  clear: clear
 };
 },{"gpu.js":"GwyX"}],"M4LY":[function(require,module,exports) {
 module.exports = function zeros(size) {
@@ -23742,19 +24143,7 @@ function checkSameSize(layer1, layer2) {
 module.exports = {
   checkSameSize: checkSameSize
 };
-},{}],"AN3i":[function(require,module,exports) {
-var zeros2D = require('./zeros-2d');
-
-module.exports = function zeros3D(width, height, depth) {
-  var result = new Array(depth);
-
-  for (var z = 0; z < depth; z++) {
-    result[z] = zeros2D(width, height);
-  }
-
-  return result;
-};
-},{"./zeros-2d":"C4Cz"}],"kIeX":[function(require,module,exports) {
+},{}],"kIeX":[function(require,module,exports) {
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -23764,15 +24153,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var _require = require('../utilities/kernel'),
     release = _require.release,
     clone = _require.clone,
-    makeKernel = _require.makeKernel;
+    makeKernel = _require.makeKernel,
+    clear = _require.clear;
 
-var zeros2D = require('../utilities/zeros-2d');
-
-var zeros3D = require('../utilities/zeros-3d');
-
-var Base =
-/*#__PURE__*/
-function () {
+var Base = /*#__PURE__*/function () {
   _createClass(Base, null, [{
     key: "defaults",
     get: function get() {
@@ -23829,11 +24213,20 @@ function () {
     }
      set weights(value) {
       if (value) {
-        if (value[0].length !== this.width) {
-          throw new Error(`${this.constructor.name}.weights being set with improper value width`);
-        }
-        if (value.length !== this.height) {
-          throw new Error(`${this.constructor.name}.weights being set with improper value height`);
+        if (value.dimensions) {
+          if (value.dimensions[0] !== this.width) {
+            throw new Error(`${this.constructor.name}.weights being set with improper value width`);
+          }
+          if (value.dimensions[1] !== this.height) {
+            throw new Error(`${this.constructor.name}.weights being set with improper value height`);
+          }
+        } else {
+          if (value[0].length !== this.width) {
+            throw new Error(`${this.constructor.name}.weights being set with improper value width`);
+          }
+          if (value.length !== this.height) {
+            throw new Error(`${this.constructor.name}.weights being set with improper value height`);
+          }
         }
       }
       this._weights = value;
@@ -23843,11 +24236,20 @@ function () {
     }
      set deltas(value) {
       if (value) {
-        if (value[0].length !== this.width) {
-          throw new Error(`${this.constructor.name}.deltas being set with improper value width`);
-        }
-        if (value.length !== this.height) {
-          throw new Error(`${this.constructor.name}.deltas being set with improper value height`);
+        if (value.dimensions) {
+          if (value.dimensions[0] !== this.width) {
+            throw new Error(`${this.constructor.name}.deltas being set with improper value width`);
+          }
+          if (value.dimensions[1] !== this.height) {
+            throw new Error(`${this.constructor.name}.deltas being set with improper value height`);
+          }
+        } else {
+          if (value[0].length !== this.width) {
+            throw new Error(`${this.constructor.name}.deltas being set with improper value width`);
+          }
+          if (value.length !== this.height) {
+            throw new Error(`${this.constructor.name}.deltas being set with improper value height`);
+          }
         }
       }
       this._deltas = value;
@@ -23888,10 +24290,18 @@ function () {
       }
 
       if (layer.hasOwnProperty('predictKernel')) {
+        if (!layer.predictKernel.immutable) {
+          throw new Error("".concat(layer.constructor.name, ".predictKernel is not reusable, set kernel.immutable = true"));
+        }
+
         this.predictKernel = layer.predictKernel;
       }
 
       if (layer.hasOwnProperty('compareKernel')) {
+        if (!layer.compareKernel.immutable) {
+          throw new Error("".concat(layer.constructor.name, ".compareKernel is not reusable, set kernel.immutable = true"));
+        }
+
         this.compareKernel = layer.compareKernel;
       }
 
@@ -23909,10 +24319,11 @@ function () {
   }, {
     key: "learn",
     value: function learn(previousLayer, nextLayer, learningRate) {
-      var weights = this.weights;
+      //TODO: do we need to release here?
+      var oldWeights = this.weights;
       this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
-      release(weights);
-      this.resetDeltas();
+      release(oldWeights);
+      clear(this.deltas);
     }
   }, {
     key: "toArray",
@@ -23943,29 +24354,6 @@ function () {
       jsonLayer.type = name;
       return jsonLayer;
     }
-  }, {
-    key: "resetDeltas",
-    value: function resetDeltas() {
-      if (this.resetDeltasValue) {
-        release(this.deltas);
-        this.deltas = clone(this.resetDeltasValue);
-        return;
-      }
-
-      if (!this.resetDeltasKernel) {
-        var output = [this.width];
-        if (this.height) output.push(this.height);
-        if (this.depth) output.push(this.depth);
-        this.resetDeltasKernel = makeKernel(function () {
-          return 0;
-        }, {
-          output: output
-        });
-      }
-
-      release(this.deltas);
-      this.deltas = this.resetDeltasValue = this.resetDeltasKernel();
-    }
   }]);
 
   return Base;
@@ -23974,20 +24362,36 @@ function () {
 module.exports = {
   Base: Base
 };
-},{"../utilities/kernel":"L30b","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"AN3i"}],"HySO":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+},{"../utilities/kernel":"L30b"}],"AN3i":[function(require,module,exports) {
+var zeros2D = require('./zeros-2d');
+
+module.exports = function zeros3D(width, height, depth) {
+  var result = new Array(depth);
+
+  for (var z = 0; z < depth; z++) {
+    result[z] = zeros2D(width, height);
+  }
+
+  return result;
+};
+},{"./zeros-2d":"C4Cz"}],"HySO":[function(require,module,exports) {
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var _require = require('./base'),
     Base = _require.Base;
@@ -23996,17 +24400,17 @@ var zeros2D = require('../utilities/zeros-2d');
 
 var zeros3D = require('../utilities/zeros-3d');
 
-var Activation =
-/*#__PURE__*/
-function (_Base) {
+var Activation = /*#__PURE__*/function (_Base) {
   _inherits(Activation, _Base);
+
+  var _super = _createSuper(Activation);
 
   function Activation(inputLayer, settings) {
     var _this;
 
     _classCallCheck(this, Activation);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Activation).call(this));
+    _this = _super.call(this);
     _this.inputLayer = inputLayer;
     var width = inputLayer.width,
         height = inputLayer.height,
@@ -24039,17 +24443,21 @@ module.exports = {
   Activation: Activation
 };
 },{"./base":"kIeX","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"AN3i"}],"pX1U":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -24063,57 +24471,75 @@ var Internal = function Internal() {
   _classCallCheck(this, Internal);
 };
 
-var Filter =
-/*#__PURE__*/
-function (_Base) {
-  _inherits(Filter, _Base);
+var InternalModel = function InternalModel() {
+  _classCallCheck(this, InternalModel);
+};
+
+var EntryPoint = /*#__PURE__*/function (_Base) {
+  _inherits(EntryPoint, _Base);
+
+  var _super = _createSuper(EntryPoint);
+
+  function EntryPoint() {
+    _classCallCheck(this, EntryPoint);
+
+    return _super.apply(this, arguments);
+  }
+
+  return EntryPoint;
+}(Base);
+
+var Filter = /*#__PURE__*/function (_Base2) {
+  _inherits(Filter, _Base2);
+
+  var _super2 = _createSuper(Filter);
 
   function Filter() {
     _classCallCheck(this, Filter);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(Filter).apply(this, arguments));
+    return _super2.apply(this, arguments);
   }
 
   return Filter;
 }(Base);
 
-var Model =
-/*#__PURE__*/
-function (_Base2) {
-  _inherits(Model, _Base2);
+var Model = /*#__PURE__*/function (_Base3) {
+  _inherits(Model, _Base3);
+
+  var _super3 = _createSuper(Model);
 
   function Model() {
     _classCallCheck(this, Model);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(Model).apply(this, arguments));
+    return _super3.apply(this, arguments);
   }
 
   return Model;
 }(Base);
 
-var Modifier =
-/*#__PURE__*/
-function (_Base3) {
-  _inherits(Modifier, _Base3);
+var Modifier = /*#__PURE__*/function (_Base4) {
+  _inherits(Modifier, _Base4);
+
+  var _super4 = _createSuper(Modifier);
 
   function Modifier() {
     _classCallCheck(this, Modifier);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(Modifier).apply(this, arguments));
+    return _super4.apply(this, arguments);
   }
 
   return Modifier;
 }(Base);
 
-var Operator =
-/*#__PURE__*/
-function (_Base4) {
-  _inherits(Operator, _Base4);
+var Operator = /*#__PURE__*/function (_Base5) {
+  _inherits(Operator, _Base5);
+
+  var _super5 = _createSuper(Operator);
 
   function Operator() {
     _classCallCheck(this, Operator);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(Operator).apply(this, arguments));
+    return _super5.apply(this, arguments);
   }
 
   return Operator;
@@ -24122,13 +24548,15 @@ function (_Base4) {
 module.exports = {
   Activation: Activation,
   Internal: Internal,
+  InternalModel: InternalModel,
+  EntryPoint: EntryPoint,
   Filter: Filter,
   Model: Model,
   Modifier: Modifier,
   Operator: Operator
 };
 },{"./base":"kIeX","./activation":"HySO"}],"q7CK":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -24136,24 +24564,29 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
 
 function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 var _require = require('../utilities/kernel'),
     makeKernel = _require.makeKernel,
     release = _require.release,
-    clone = _require.clone;
+    clone = _require.clone,
+    clear = _require.clear;
 
 var zeros2D = require('../utilities/zeros-2d');
 
@@ -24167,17 +24600,17 @@ function predict(inputWeights1, inputWeights2) {
   return inputWeights1[this.thread.y][this.thread.x] + inputWeights2[this.thread.y][this.thread.x];
 }
 
-var Add =
-/*#__PURE__*/
-function (_Operator) {
+var Add = /*#__PURE__*/function (_Operator) {
   _inherits(Add, _Operator);
+
+  var _super = _createSuper(Add);
 
   function Add(inputLayer1, inputLayer2, settings) {
     var _this;
 
     _classCallCheck(this, Add);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Add).call(this));
+    _this = _super.call(this);
     _this.inputLayer1 = inputLayer1;
     _this.inputLayer2 = inputLayer2;
     _this.width = _this.inputLayer1.width;
@@ -24204,7 +24637,8 @@ function (_Operator) {
     key: "setupKernels",
     value: function setupKernels() {
       this.predictKernel = makeKernel(predict, {
-        output: [this.width, this.height]
+        output: [this.width, this.height],
+        immutable: true
       });
     }
   }, {
@@ -24212,15 +24646,24 @@ function (_Operator) {
     value: function predict() {
       release(this.weights);
       this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
+      clear(this.deltas);
     }
   }, {
     key: "compare",
     value: function compare() {
+      //TODO: Do we need release and clone here?
       release(this.inputLayer1.deltas);
       release(this.inputLayer2.deltas);
       this.inputLayer1.deltas = clone(this.deltas);
       this.inputLayer2.deltas = clone(this.deltas);
     }
+    /**
+     * @abstract
+     */
+
+  }, {
+    key: "learn",
+    value: function learn() {}
   }]);
 
   return Add;
@@ -24242,9 +24685,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var Base =
-/*#__PURE__*/
-function () {
+var Base = /*#__PURE__*/function () {
   _createClass(Base, null, [{
     key: "defaults",
     get: function get() {
@@ -24268,6 +24709,21 @@ function () {
     key: "setupKernels",
     value: function setupKernels() {}
   }, {
+    key: "reuseKernels",
+    value: function reuseKernels(praxis) {
+      if (praxis.width !== this.width) {
+        throw new Error("".concat(this.constructor.name, " kernel width mismatch ").concat(praxis.width, " is not ").concat(this.width));
+      }
+
+      if (praxis.height !== this.height) {
+        throw new Error("".concat(this.constructor.name, " kernel width mismatch ").concat(praxis.height, " is not ").concat(this.height));
+      }
+
+      if (praxis.hasOwnProperty('kernel')) {
+        this.kernel = praxis.kernel;
+      }
+    }
+  }, {
     key: "run",
     value: function run() {}
   }]);
@@ -24279,15 +24735,9 @@ module.exports = {
   Base: Base
 };
 },{}],"xg3N":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -24296,6 +24746,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 var _require = require('../utilities/kernel'),
     makeKernel = _require.makeKernel;
@@ -24319,10 +24779,10 @@ function update(changes, weights, incomingWeights, inputDeltas) {
   return weight + change;
 }
 
-var ArthurDeviationWeights =
-/*#__PURE__*/
-function (_Base) {
+var ArthurDeviationWeights = /*#__PURE__*/function (_Base) {
   _inherits(ArthurDeviationWeights, _Base);
+
+  var _super = _createSuper(ArthurDeviationWeights);
 
   _createClass(ArthurDeviationWeights, null, [{
     key: "defaults",
@@ -24339,7 +24799,7 @@ function (_Base) {
 
     _classCallCheck(this, ArthurDeviationWeights);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ArthurDeviationWeights).call(this, layer, settings));
+    _this = _super.call(this, layer, settings);
     _this.weightsLayer = null;
     _this.incomingLayer = null;
     _this.deltaLayer = null;
@@ -24359,9 +24819,6 @@ function (_Base) {
     }
 
     _this.changes = zeros2D(layer.width, layer.height);
-
-    _this.setupKernels();
-
     return _this;
   }
 
@@ -24402,15 +24859,9 @@ module.exports = {
   updateChange: updateChange
 };
 },{"../utilities/kernel":"L30b","../utilities/zeros-2d":"C4Cz","./base":"hKny"}],"GVwH":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -24419,6 +24870,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 var _require = require('../utilities/kernel'),
     makeKernel = _require.makeKernel;
@@ -24430,10 +24891,10 @@ function update(weights, deltas) {
   return weights[this.thread.y][this.thread.x] + this.constants.learningRate * deltas[this.thread.y][this.thread.x];
 }
 
-var ArthurDeviationBiases =
-/*#__PURE__*/
-function (_Base) {
+var ArthurDeviationBiases = /*#__PURE__*/function (_Base) {
   _inherits(ArthurDeviationBiases, _Base);
+
+  var _super = _createSuper(ArthurDeviationBiases);
 
   _createClass(ArthurDeviationBiases, null, [{
     key: "defaults",
@@ -24449,11 +24910,8 @@ function (_Base) {
 
     _classCallCheck(this, ArthurDeviationBiases);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ArthurDeviationBiases).call(this, layer, settings));
+    _this = _super.call(this, layer, settings);
     _this.kernel = null;
-
-    _this.setupKernels();
-
     return _this;
   }
 
@@ -24491,32 +24949,84 @@ module.exports = {
 module.exports = function randomWeight() {
   return Math.random() * 0.4 - 0.2;
 };
+},{}],"Sd27":[function(require,module,exports) {
+function randomFloat(a, b) {
+  return Math.random() * (b - a) + a;
+} // Random numbers utils
+
+
+function gaussRandom() {
+  if (gaussRandom.returnV) {
+    gaussRandom.returnV = false;
+    return gaussRandom.vVal;
+  }
+
+  var u = 2 * Math.random() - 1;
+  var v = 2 * Math.random() - 1;
+  var r = u * u + v * v;
+
+  if (r === 0 || r > 1) {
+    return gaussRandom();
+  }
+
+  var c = Math.sqrt(-2 * Math.log(r) / r);
+  gaussRandom.vVal = v * c; // cache this
+
+  gaussRandom.returnV = true;
+  return u * c;
+}
+
+function randomInteger(a, b) {
+  return Math.floor(Math.random() * (b - a) + a);
+}
+
+function randomN(mu, std) {
+  return mu + gaussRandom() * std;
+}
+
+gaussRandom.returnV = false;
+gaussRandom.vVal = 0;
+module.exports = {
+  randomFloat: randomFloat,
+  randomInteger: randomInteger,
+  randomN: randomN
+};
 },{}],"S8tM":[function(require,module,exports) {
 var randomWeight = require('./random-weight');
 
-module.exports = function randos(size) {
+var _require = require('./random'),
+    randomFloat = _require.randomFloat;
+
+module.exports = function randos(size, std) {
   var array = new Float32Array(size);
 
-  for (var i = 0; i < size; i++) {
-    array[i] = randomWeight();
+  if (std) {
+    for (var i = 0; i < size; i++) {
+      array[i] = randomFloat(-std, std);
+    }
+  } else {
+    for (var _i = 0; _i < size; _i++) {
+      array[_i] = randomWeight();
+    }
   }
 
   return array;
 };
-},{"./random-weight":"TX07"}],"pcuE":[function(require,module,exports) {
+},{"./random-weight":"TX07","./random":"Sd27"}],"pcuE":[function(require,module,exports) {
 var randos = require('./randos');
 
 module.exports = function randos2D(width, height) {
+  var std = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   var result = new Array(height);
 
   for (var y = 0; y < height; y++) {
-    result[y] = randos(width);
+    result[y] = randos(width, std);
   }
 
   return result;
 };
 },{"./randos":"S8tM"}],"yQCp":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -24524,15 +25034,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var _require = require('./types'),
     Model = _require.Model;
@@ -24541,22 +25055,38 @@ var randos2D = require('../utilities/randos-2d');
 
 var zeros2D = require('../utilities/zeros-2d');
 
-var Random =
-/*#__PURE__*/
-function (_Model) {
+var Random = /*#__PURE__*/function (_Model) {
   _inherits(Random, _Model);
+
+  var _super = _createSuper(Random);
+
+  _createClass(Random, null, [{
+    key: "defaults",
+    get: function get() {
+      return {
+        std: null // standard deviation
+
+      };
+    }
+  }]);
 
   function Random(settings) {
     var _this;
 
     _classCallCheck(this, Random);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Random).call(this, settings));
+    _this = _super.call(this, settings);
 
     _this.validate();
 
-    _this.weights = randos2D(_this.width, _this.height);
-    _this.deltas = zeros2D(_this.width, _this.height);
+    if (!_this.weights) {
+      _this.weights = settings.std ? randos2D(_this.width, _this.height, settings.std) : randos2D(_this.width, _this.height);
+    }
+
+    if (!_this.deltas) {
+      _this.deltas = zeros2D(_this.width, _this.height);
+    }
+
     return _this;
   }
 
@@ -24582,7 +25112,7 @@ module.exports = {
   random: random
 };
 },{"./types":"pX1U","../utilities/randos-2d":"pcuE","../utilities/zeros-2d":"C4Cz"}],"xJEq":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -24590,23 +25120,28 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
 
 function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 var _require = require('../utilities/kernel'),
     makeKernel = _require.makeKernel,
-    release = _require.release;
+    release = _require.release,
+    clear = _require.clear;
 
 var zeros2D = require('../utilities/zeros-2d');
 
@@ -24643,10 +25178,10 @@ function compareFromY(deltas, inputDeltas, inputWeights) {
   return sum;
 }
 
-var Multiply =
-/*#__PURE__*/
-function (_Operator) {
+var Multiply = /*#__PURE__*/function (_Operator) {
   _inherits(Multiply, _Operator);
+
+  var _super = _createSuper(Multiply);
 
   function Multiply(inputLayer1, inputLayer2) {
     var _this;
@@ -24655,7 +25190,7 @@ function (_Operator) {
 
     _classCallCheck(this, Multiply);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Multiply).call(this));
+    _this = _super.call(this);
     _this.inputLayer1 = inputLayer1;
     _this.inputLayer2 = inputLayer2;
     _this.compareKernel1 = null;
@@ -24693,19 +25228,22 @@ function (_Operator) {
         output: [this.width, this.height],
         constants: {
           size: this.inputLayer2.height
-        }
+        },
+        immutable: true
       });
       this.compareKernel1 = makeKernel(compareFromX, {
         output: [this.inputLayer1.width, this.inputLayer1.height],
         constants: {
           size: this.inputLayer2.width
-        }
+        },
+        immutable: true
       });
       this.compareKernel2 = makeKernel(compareFromY, {
         output: [this.inputLayer2.width, this.inputLayer2.height],
         constants: {
           size: this.inputLayer1.height
-        }
+        },
+        immutable: true
       });
     }
   }, {
@@ -24721,6 +25259,7 @@ function (_Operator) {
     value: function predict() {
       release(this.weights);
       this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
+      clear(this.deltas);
     }
   }, {
     key: "compare",
@@ -24734,6 +25273,9 @@ function (_Operator) {
       release(inputLayer1Deltas);
       release(inputLayer2Deltas);
     }
+  }, {
+    key: "learn",
+    value: function learn() {}
   }]);
 
   return Multiply;
@@ -24751,7 +25293,7 @@ module.exports = {
   compareFromY: compareFromY
 };
 },{"../utilities/kernel":"L30b","../utilities/zeros-2d":"C4Cz","./types":"pX1U"}],"ED1E":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -24759,22 +25301,27 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var _require = require('./types'),
     Activation = _require.Activation;
 
 var _require2 = require('../utilities/kernel'),
     makeKernel = _require2.makeKernel,
-    release = _require2.release;
+    release = _require2.release,
+    clear = _require2.clear;
 
 var _require3 = require('../activation/sigmoid'),
     activate = _require3.activate,
@@ -24800,15 +25347,15 @@ function compare3D(weights, deltas) {
   return weight * (1 - weight) * delta;
 }
 
-var Sigmoid =
-/*#__PURE__*/
-function (_Activation) {
+var Sigmoid = /*#__PURE__*/function (_Activation) {
   _inherits(Sigmoid, _Activation);
+
+  var _super = _createSuper(Sigmoid);
 
   function Sigmoid() {
     _classCallCheck(this, Sigmoid);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(Sigmoid).apply(this, arguments));
+    return _super.apply(this, arguments);
   }
 
   _createClass(Sigmoid, [{
@@ -24817,20 +25364,24 @@ function (_Activation) {
       if (this.depth > 0) {
         this.predictKernel = makeKernel(predict3D, {
           output: [this.width, this.height, this.depth],
-          functions: [activate]
+          functions: [activate],
+          immutable: true
         });
         this.compareKernel = makeKernel(compare3D, {
           output: [this.width, this.height, this.depth],
-          functions: [measure]
+          functions: [measure],
+          immutable: true
         });
       } else {
         this.predictKernel = makeKernel(predict2D, {
           output: [this.width, this.height],
-          functions: [activate]
+          functions: [activate],
+          immutable: true
         });
         this.compareKernel = makeKernel(compare2D, {
           output: [this.width, this.height],
-          functions: [measure]
+          functions: [measure],
+          immutable: true
         });
       }
     }
@@ -24839,6 +25390,7 @@ function (_Activation) {
     value: function predict() {
       release(this.weights);
       this.weights = this.predictKernel(this.inputLayer.weights);
+      clear(this.deltas);
     }
   }, {
     key: "compare",
@@ -24882,23 +25434,19 @@ var _require5 = require('./multiply'),
 var _require6 = require('./sigmoid'),
     sigmoid = _require6.sigmoid;
 
-function noopPraxis() {
-  return {
-    run: function run(layer) {
-      return layer.weights;
-    }
-  };
-}
-
 function arthurFeedForward(settings, inputLayer) {
   var height = settings.height;
 
   function weightsPraxis(layer, settings) {
-    return arthurDeviationWeights(layer, settings);
+    var praxis = arthurDeviationWeights(layer, settings);
+    praxis.setupKernels();
+    return praxis;
   }
 
   function biasesPraxis(layer, settings) {
-    return arthurDeviationBiases(layer, settings);
+    var praxis = arthurDeviationBiases(layer, settings);
+    praxis.setupKernels();
+    return praxis;
   }
 
   var weightsLayer = random({
@@ -24912,15 +25460,9 @@ function arthurFeedForward(settings, inputLayer) {
     height: height,
     praxis: biasesPraxis
   });
-  var multiplyLayer = multiply(weightsLayer, inputLayer, {
-    praxis: noopPraxis
-  });
-  var addLayer = add(multiplyLayer, biasesLayer, {
-    praxis: noopPraxis
-  });
-  var sigmoidLayer = sigmoid(addLayer, {
-    praxis: noopPraxis
-  });
+  var multiplyLayer = multiply(weightsLayer, inputLayer);
+  var addLayer = add(multiplyLayer, biasesLayer);
+  var sigmoidLayer = sigmoid(addLayer);
   weightsLayer.praxis.weightsLayer = weightsLayer;
   weightsLayer.praxis.incomingLayer = inputLayer;
   weightsLayer.praxis.deltaLayer = sigmoidLayer;
@@ -24994,15 +25536,9 @@ module.exports = function values(size, value) {
   return new Float32Array(size).fill(value);
 };
 },{}],"xL0H":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -25012,10 +25548,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 var _require = require('../utilities/kernel'),
     makeKernel = _require.makeKernel,
     release = _require.release,
-    clone = _require.clone;
+    clone = _require.clone,
+    clear = _require.clear;
 
 var _require2 = require('../utilities/layer-setup'),
     setStride = _require2.setStride,
@@ -25105,10 +25652,10 @@ function compareBiases(biasDeltas, deltas) {
   return biasDeltas[this.thread.z][this.thread.y][this.thread.x] + sum;
 }
 
-var Convolution =
-/*#__PURE__*/
-function (_Filter) {
+var Convolution = /*#__PURE__*/function (_Filter) {
   _inherits(Convolution, _Filter);
+
+  var _super = _createSuper(Convolution);
 
   _createClass(Convolution, null, [{
     key: "defaults",
@@ -25129,7 +25676,7 @@ function (_Filter) {
 
     _classCallCheck(this, Convolution);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Convolution).call(this, settings));
+    _this = _super.call(this, settings);
     _this.stride = null;
     _this.strideX = null;
     _this.strideY = null;
@@ -25174,7 +25721,8 @@ function (_Filter) {
           filterWidth: this.filterWidth,
           filterHeight: this.filterHeight
         },
-        output: [this.width, this.height, this.depth]
+        output: [this.width, this.height, this.depth],
+        immutable: true
       });
       this.compareFilterDeltasKernel = makeKernel(compareFilterDeltas, {
         constants: {
@@ -25191,20 +25739,23 @@ function (_Filter) {
           filterWidth: this.filterWidth,
           filterHeight: this.filterHeight
         },
-        output: [this.width, this.height, this.depth]
+        output: [this.width, this.height, this.depth],
+        immutable: true
       });
       this.compareInputDeltasKernel = makeKernel(compareInputDeltas, {
         constants: {
           filterCount: this.filterCount
         },
-        output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth]
+        output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth],
+        immutable: true
       });
       this.compareBiasesKernel = makeKernel(compareBiases, {
         output: [1, 1, this.depth],
         constants: {
           deltaWidth: this.width,
           deltaHeight: this.height
-        }
+        },
+        immutable: true
       });
     }
   }, {
@@ -25223,17 +25774,19 @@ function (_Filter) {
       release(biasDeltas);
       release(this.deltas);
       this.deltas = this.compareInputDeltasKernel(this.filters, this.inputLayer.deltas);
-      release(this.inputLayer.deltas);
+      release(this.inputLayer.deltas); //TODO: do we need to clone here?
+
       this.inputLayer.deltas = clone(this.deltas);
     }
   }, {
     key: "learn",
     value: function learn(previousLayer, nextLayer, learningRate) {
       // TODO: handle filters
+      // TODO: do we need to release here?
+      var oldWeights = this.weights;
       this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
-      release(this.weights);
-      release(this.deltas);
-      this.deltas = zeros3D(this.width, this.height, this.depth);
+      release(oldWeights);
+      clear(this.deltas);
     }
   }]);
 
@@ -25253,15 +25806,9 @@ module.exports = {
   compareBiases: compareBiases
 };
 },{"../utilities/kernel":"L30b","../utilities/layer-setup":"iz6h","./types":"pX1U","../utilities/randos":"S8tM","../utilities/randos-3d":"TSfJ","../utilities/zeros-3d":"AN3i","../utilities/values":"Whlg"}],"YwJF":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -25270,6 +25817,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 var _require = require('./types'),
     Filter = _require.Filter;
@@ -25302,10 +25859,10 @@ function compare(dropouts, deltas) {
   return deltas[this.thread.y][this.thread.x];
 }
 
-var Dropout =
-/*#__PURE__*/
-function (_Filter) {
+var Dropout = /*#__PURE__*/function (_Filter) {
   _inherits(Dropout, _Filter);
+
+  var _super = _createSuper(Dropout);
 
   _createClass(Dropout, null, [{
     key: "defaults",
@@ -25324,7 +25881,7 @@ function (_Filter) {
 
     _classCallCheck(this, Dropout);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Dropout).call(this, settings));
+    _this = _super.call(this, settings);
     _this.inputLayer = inputLayer;
     _this.height = inputLayer.height;
     _this.width = inputLayer.width;
@@ -25345,14 +25902,17 @@ function (_Filter) {
           output: output,
           map: {
             dropouts: setDropout
-          }
+          },
+          immutable: true
         });
         this.compareKernel = makeKernel(compare, {
-          output: output
+          output: output,
+          immutable: true
         });
       } else {
         this.predictKernel = makeKernel(predict, {
-          output: output
+          output: output,
+          immutable: true
         });
       }
     }
@@ -25432,19 +25992,13 @@ module.exports = {
   feedForward: feedForward
 };
 },{"./random":"yQCp","./add":"q7CK","./multiply":"xJEq","./sigmoid":"ED1E"}],"Aqg2":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
 
 function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -25453,6 +26007,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 var _require = require('./types'),
     Filter = _require.Filter;
@@ -25540,10 +26104,10 @@ function compareFilterDeltas3D(filterDeltas, inputWeights, deltas) {
   return filterDeltas[this.thread.y][this.thread.x] + inputWeights[inputZ][inputY][inputX] * deltas[0][this.thread.y];
 }
 
-var FullyConnected =
-/*#__PURE__*/
-function (_Filter) {
+var FullyConnected = /*#__PURE__*/function (_Filter) {
   _inherits(FullyConnected, _Filter);
+
+  var _super = _createSuper(FullyConnected);
 
   _createClass(FullyConnected, null, [{
     key: "defaults",
@@ -25559,7 +26123,7 @@ function (_Filter) {
 
     _classCallCheck(this, FullyConnected);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(FullyConnected).call(this, settings));
+    _this = _super.call(this, settings);
     _this.inputLayer = inputLayer;
 
     _this.validate();
@@ -25611,13 +26175,15 @@ function (_Filter) {
           constants: {
             inputWidth: inputLayer.width,
             inputHeight: inputLayer.height
-          }
+          },
+          immutable: true
         });
         this.compareInputDeltasKernel = makeKernel(compareInputDeltas3D, {
           output: [inputLayer.width, inputLayer.height, inputLayer.depth],
           constants: {
             filterCount: this.height
-          }
+          },
+          immutable: true
         });
       } else {
         this.predictKernel = makeKernel(predict, {
@@ -25686,7 +26252,7 @@ module.exports = {
   compareFilterDeltas3D: compareFilterDeltas3D
 };
 },{"./types":"pX1U","../utilities/kernel":"L30b","../utilities/values":"Whlg","../utilities/randos-2d":"pcuE","../utilities/randos-3d":"TSfJ","../utilities/zeros":"M4LY","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"AN3i"}],"kuoN":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -25694,15 +26260,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var _require = require('../utilities/kernel'),
     makeKernel = _require.makeKernel,
@@ -25715,17 +26285,17 @@ function predict(weights) {
   return -weights[this.thread.y][this.thread.x];
 }
 
-var Negative =
-/*#__PURE__*/
-function (_Modifier) {
+var Negative = /*#__PURE__*/function (_Modifier) {
   _inherits(Negative, _Modifier);
+
+  var _super = _createSuper(Negative);
 
   function Negative(settings, inputLayer) {
     var _this;
 
     _classCallCheck(this, Negative);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Negative).call(this, settings));
+    _this = _super.call(this, settings);
     _this.inputLayer = inputLayer;
 
     _this.validate();
@@ -25743,9 +26313,7 @@ function (_Modifier) {
   }, {
     key: "predict",
     value: function predict() {
-      var weights = this.weights;
       this.weights = this.predictKernel(this.inputLayer.weights);
-      release(weights);
     }
   }]);
 
@@ -25762,7 +26330,7 @@ module.exports = {
   predict: predict
 };
 },{"../utilities/kernel":"L30b","./types":"pX1U"}],"vjFV":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -25770,23 +26338,28 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
 
 function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 var _require = require('../utilities/kernel'),
     makeKernel = _require.makeKernel,
-    release = _require.release;
+    release = _require.release,
+    clear = _require.clear;
 
 var _require2 = require('./types'),
     Operator = _require2.Operator;
@@ -25796,25 +26369,25 @@ var zeros2D = require('../utilities/zeros-2d');
 var _require3 = require('../utilities/layer-size'),
     checkSameSize = _require3.checkSameSize;
 
-function predict(weights, inputLayerWeights) {
-  return weights[this.thread.y][this.thread.x] * inputLayerWeights[this.thread.y][this.thread.x];
+function predict(inputLayerWeights1, inputLayerWeights2) {
+  return inputLayerWeights1[this.thread.y][this.thread.x] * inputLayerWeights2[this.thread.y][this.thread.x];
 }
 
 function compare(weights, deltas) {
   return weights[this.thread.y][this.thread.x] * deltas[this.thread.y][this.thread.x];
 }
 
-var MultiplyElement =
-/*#__PURE__*/
-function (_Operator) {
+var MultiplyElement = /*#__PURE__*/function (_Operator) {
   _inherits(MultiplyElement, _Operator);
+
+  var _super = _createSuper(MultiplyElement);
 
   function MultiplyElement(inputLayer1, inputLayer2) {
     var _this;
 
     _classCallCheck(this, MultiplyElement);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(MultiplyElement).call(this));
+    _this = _super.call(this);
     _this.inputLayer1 = inputLayer1;
     _this.inputLayer2 = inputLayer2;
     _this.width = inputLayer1.width;
@@ -25838,25 +26411,28 @@ function (_Operator) {
     key: "setupKernels",
     value: function setupKernels() {
       this.predictKernel = makeKernel(predict, {
-        output: [this.width, this.height]
+        output: [this.width, this.height],
+        immutable: true
       });
       this.compareKernel = makeKernel(compare, {
-        output: [this.width, this.height]
+        output: [this.width, this.height],
+        immutable: true
       });
     }
   }, {
     key: "predict",
     value: function predict() {
-      var weights = this.weights;
-      this.weights = this.predictKernel(weights, this.inputLayer.weights);
-      release(weights);
+      release(this.weights);
+      this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
+      clear(this.deltas);
     }
   }, {
     key: "compare",
     value: function compare() {
-      var deltas = this.deltas;
-      this.deltas = this.compareKernel(this.weights, deltas);
-      release(deltas);
+      release(this.inputLayer1.deltas);
+      release(this.inputLayer2.deltas);
+      this.inputLayer1.deltas = this.compareKernel(this.inputLayer2.weights, this.deltas);
+      this.inputLayer2.deltas = this.compareKernel(this.inputLayer1.weights, this.deltas);
     }
   }]);
 
@@ -25869,7 +26445,9 @@ function multiplyElement(inputLayer1, inputLayer2) {
 
 module.exports = {
   MultiplyElement: MultiplyElement,
-  multiplyElement: multiplyElement
+  multiplyElement: multiplyElement,
+  predict: predict,
+  compare: compare
 };
 },{"../utilities/kernel":"L30b","./types":"pX1U","../utilities/zeros-2d":"C4Cz","../utilities/layer-size":"T4Kr"}],"f7P8":[function(require,module,exports) {
 module.exports = function ones(size) {
@@ -25888,19 +26466,23 @@ module.exports = function ones2D(width, height) {
   return result;
 };
 },{"./ones":"f7P8"}],"zJfH":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var ones2D = require('../utilities/ones-2d');
 
@@ -25909,17 +26491,17 @@ var zeros2D = require('../utilities/zeros-2d');
 var _require = require('./types'),
     Model = _require.Model;
 
-var Ones =
-/*#__PURE__*/
-function (_Model) {
+var Ones = /*#__PURE__*/function (_Model) {
   _inherits(Ones, _Model);
+
+  var _super = _createSuper(Ones);
 
   function Ones(settings) {
     var _this;
 
     _classCallCheck(this, Ones);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Ones).call(this, settings));
+    _this = _super.call(this, settings);
 
     _this.validate();
 
@@ -25940,7 +26522,7 @@ module.exports = {
   ones: ones
 };
 },{"../utilities/ones-2d":"jZTY","../utilities/zeros-2d":"C4Cz","./types":"pX1U"}],"YNtu":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -25948,15 +26530,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var _require = require('./activation'),
     Activation = _require.Activation;
@@ -25969,7 +26555,8 @@ var _require3 = require('../activation/tanh'),
     measure = _require3.measure;
 
 var _require4 = require('../utilities/kernel'),
-    release = _require4.release;
+    release = _require4.release,
+    clear = _require4.clear;
 
 function predict2D(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
@@ -25987,15 +26574,15 @@ function compare3D(weights, errors) {
   return measure(weights[this.thread.z][this.thread.y][this.thread.x], errors[this.thread.z][this.thread.y][this.thread.x]);
 }
 
-var Tanh =
-/*#__PURE__*/
-function (_Activation) {
+var Tanh = /*#__PURE__*/function (_Activation) {
   _inherits(Tanh, _Activation);
+
+  var _super = _createSuper(Tanh);
 
   function Tanh() {
     _classCallCheck(this, Tanh);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(Tanh).apply(this, arguments));
+    return _super.apply(this, arguments);
   }
 
   _createClass(Tanh, [{
@@ -26004,20 +26591,24 @@ function (_Activation) {
       if (this.depth > 0) {
         this.predictKernel = makeKernel(predict3D, {
           output: [this.width, this.height, this.depth],
-          functions: [activate]
+          functions: [activate],
+          immutable: true
         });
         this.compareKernel = makeKernel(compare3D, {
           output: [this.width, this.height, this.depth],
-          functions: [measure]
+          functions: [measure],
+          immutable: true
         });
       } else {
         this.predictKernel = makeKernel(predict2D, {
           output: [this.width, this.height],
-          functions: [activate]
+          functions: [activate],
+          immutable: true
         });
         this.compareKernel = makeKernel(compare2D, {
           output: [this.width, this.height],
-          functions: [measure]
+          functions: [measure],
+          immutable: true
         });
       }
     }
@@ -26026,6 +26617,7 @@ function (_Activation) {
     value: function predict() {
       release(this.weights);
       this.weights = this.predictKernel(this.inputLayer.weights);
+      clear(this.deltas);
     }
   }, {
     key: "compare",
@@ -26051,7 +26643,7 @@ module.exports = {
   compare3D: compare3D
 };
 },{"./activation":"HySO","../utilities/kernel":"L30b","../activation/tanh":"v3MV"}],"EOPb":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -26059,32 +26651,36 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var zeros2D = require('../utilities/zeros-2d');
 
 var _require = require('./types'),
     Model = _require.Model;
 
-var Zeros =
-/*#__PURE__*/
-function (_Model) {
+var Zeros = /*#__PURE__*/function (_Model) {
   _inherits(Zeros, _Model);
+
+  var _super = _createSuper(Zeros);
 
   function Zeros(settings) {
     var _this;
 
     _classCallCheck(this, Zeros);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Zeros).call(this, settings));
+    _this = _super.call(this, settings);
 
     _this.validate();
 
@@ -26189,7 +26785,7 @@ module.exports = {
   gru: gru
 };
 },{"./add":"q7CK","./negative":"kuoN","./multiply":"xJEq","./multiply-element":"vjFV","./ones":"zJfH","./sigmoid":"ED1E","./random":"yQCp","./tanh":"YNtu","./zeros":"EOPb"}],"qUrb":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -26197,37 +26793,46 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 var _require = require('./types'),
-    Model = _require.Model;
+    EntryPoint = _require.EntryPoint;
 
 var zeros2D = require('../utilities/zeros-2d');
 
 var _require2 = require('../utilities/kernel'),
     makeKernel = _require2.makeKernel,
     release = _require2.release,
-    kernelInput = _require2.kernelInput;
+    kernelInput = _require2.kernelInput,
+    clear = _require2.clear;
 
-var Input =
-/*#__PURE__*/
-function (_Model) {
-  _inherits(Input, _Model);
+var Input = /*#__PURE__*/function (_EntryPoint) {
+  _inherits(Input, _EntryPoint);
+
+  var _super = _createSuper(Input);
 
   function Input(settings) {
     var _this;
 
     _classCallCheck(this, Input);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Input).call(this, settings));
+    _this = _super.call(this, settings);
 
     _this.validate();
 
@@ -26245,7 +26850,8 @@ function (_Model) {
         this.reshapeInput = makeKernel(function (value) {
           return value[this.thread.y];
         }, {
-          output: [1, this.height]
+          output: [1, this.height],
+          immutable: true
         });
       } else {
         this.reshapeInput = function (inputs) {
@@ -26254,22 +26860,32 @@ function (_Model) {
       }
     }
   }, {
+    key: "reuseKernels",
+    value: function reuseKernels(layer) {
+      _get(_getPrototypeOf(Input.prototype), "reuseKernels", this).call(this, layer);
+
+      this.reshapeInput = layer.reshapeInput;
+    }
+  }, {
     key: "predict",
     value: function predict(inputs) {
-      if (inputs.length === this.height * this.width) {
+      if (_typeof(inputs[0]) !== 'object' && inputs.length === this.height * this.width) {
         release(this.weights);
         this.weights = kernelInput(inputs, [this.width, this.height]);
       } else if (inputs.length === this.height && inputs[0].length === this.width) {
-        this.weights = inputs;
+        this.weights = clone(inputs);
       } else {
         throw new Error('Inputs are not of sized correctly');
       }
+
+      clear(this.deltas);
     }
   }, {
     key: "predict1D",
     value: function predict1D(inputs) {
       if (this.weights) release(this.weights);
       this.weights = this.reshapeInput(inputs);
+      clear(this.deltas);
     }
   }, {
     key: "compare",
@@ -26296,7 +26912,7 @@ function (_Model) {
   }]);
 
   return Input;
-}(Model);
+}(EntryPoint);
 
 function input(settings) {
   return new Input(settings);
@@ -26307,7 +26923,7 @@ module.exports = {
   input: input
 };
 },{"./types":"pX1U","../utilities/zeros-2d":"C4Cz","../utilities/kernel":"L30b"}],"JZX2":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -26315,22 +26931,27 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var _require = require('./types'),
     Activation = _require.Activation;
 
 var _require2 = require('../utilities/kernel'),
     makeKernel = _require2.makeKernel,
-    release = _require2.release;
+    release = _require2.release,
+    clear = _require2.clear;
 
 var _require3 = require('../activation/leaky-relu'),
     activate = _require3.activate,
@@ -26352,15 +26973,15 @@ function compare3D(weights, deltas) {
   return measure(weights[this.thread.z][this.thread.y][this.thread.x], deltas[this.thread.z][this.thread.y][this.thread.x]);
 }
 
-var LeakyRelu =
-/*#__PURE__*/
-function (_Activation) {
+var LeakyRelu = /*#__PURE__*/function (_Activation) {
   _inherits(LeakyRelu, _Activation);
+
+  var _super = _createSuper(LeakyRelu);
 
   function LeakyRelu() {
     _classCallCheck(this, LeakyRelu);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(LeakyRelu).apply(this, arguments));
+    return _super.apply(this, arguments);
   }
 
   _createClass(LeakyRelu, [{
@@ -26374,20 +26995,24 @@ function (_Activation) {
       if (this.depth > 0) {
         this.predictKernel = makeKernel(predict3D, {
           output: [width, height, depth],
-          functions: [activate]
+          functions: [activate],
+          immutable: true
         });
         this.compareKernel = makeKernel(compare3D, {
           output: [width, height, depth],
-          functions: [measure]
+          functions: [measure],
+          immutable: true
         });
       } else {
         this.predictKernel = makeKernel(predict2D, {
           output: [width, height],
-          functions: [activate]
+          functions: [activate],
+          immutable: true
         });
         this.compareKernel = makeKernel(compare2D, {
           output: [width, height],
-          functions: [measure]
+          functions: [measure],
+          immutable: true
         });
       }
     }
@@ -26396,6 +27021,7 @@ function (_Activation) {
     value: function predict() {
       release(this.weights);
       this.weights = this.predictKernel(this.inputLayer.weights);
+      clear(this.deltas);
     }
   }, {
     key: "compare",
@@ -26421,7 +27047,7 @@ module.exports = {
   compare2D: compare2D,
   compare3D: compare3D
 };
-},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/leaky-relu":"I3OM"}],"Mqbi":[function(require,module,exports) {
+},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/leaky-relu":"I3OM"}],"dwcR":[function(require,module,exports) {
 var _require = require('./add'),
     add = _require.add;
 
@@ -26443,15 +27069,18 @@ var _require6 = require('./tanh'),
 var _require7 = require('./zeros'),
     zeros = _require7.zeros;
 
-function lstm(settings, recurrentInput, input) {
+function lstmCell(settings, input, recurrentInput) {
   var height = settings.height;
+  if (recurrentInput.setDimensions) recurrentInput.setDimensions(1, height);
   var inputGateWeights = random({
     height: height,
-    width: input.height
+    width: input.height,
+    std: 0.08
   });
   var inputGatePeepholes = random({
     width: height,
-    height: height
+    height: height,
+    std: 0.08
   });
   var inputGateBias = zeros({
     height: height
@@ -26459,11 +27088,13 @@ function lstm(settings, recurrentInput, input) {
   var inputGate = sigmoid(add(add(multiply(inputGateWeights, input), multiply(inputGatePeepholes, recurrentInput)), inputGateBias));
   var forgetGateWeights = random({
     height: height,
-    width: input.height
+    width: input.height,
+    std: 0.08
   });
   var forgetGatePeepholes = random({
     width: height,
-    height: height
+    height: height,
+    std: 0.08
   });
   var forgetGateBias = zeros({
     height: height
@@ -26471,11 +27102,13 @@ function lstm(settings, recurrentInput, input) {
   var forgetGate = sigmoid(add(add(multiply(forgetGateWeights, input), multiply(forgetGatePeepholes, recurrentInput)), forgetGateBias));
   var outputGateWeights = random({
     height: height,
-    width: input.height
+    width: input.height,
+    std: 0.08
   });
   var outputGatePeepholes = random({
     width: height,
-    height: height
+    height: height,
+    std: 0.08
   });
   var outputGateBias = zeros({
     height: height
@@ -26483,18 +27116,20 @@ function lstm(settings, recurrentInput, input) {
   var outputGate = sigmoid(add(add(multiply(outputGateWeights, input), multiply(outputGatePeepholes, recurrentInput)), outputGateBias));
   var memoryWeights = random({
     height: height,
-    width: input.height
+    width: input.height,
+    std: 0.08
   });
   var memoryPeepholes = random({
     width: height,
-    height: height
+    height: height,
+    std: 0.08
   });
   var memoryBias = zeros({
     height: height
   });
   var memory = tanh(add(add(multiply(memoryWeights, input), multiply(memoryPeepholes, recurrentInput)), memoryBias)); // compute new cell activation
 
-  var retainCell = multiplyElement(forgetGate, input); // what do we keep from cell
+  var retainCell = multiplyElement(forgetGate, recurrentInput); // what do we keep from cell
 
   var writeCell = multiplyElement(inputGate, memory); // what do we write to cell
 
@@ -26505,10 +27140,10 @@ function lstm(settings, recurrentInput, input) {
 }
 
 module.exports = {
-  lstm: lstm
+  lstmCell: lstmCell
 };
 },{"./add":"q7CK","./multiply":"xJEq","./multiply-element":"vjFV","./random":"yQCp","./sigmoid":"ED1E","./tanh":"YNtu","./zeros":"EOPb"}],"xXoy":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -26516,20 +27151,25 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 var _require = require('../utilities/kernel'),
     makeKernel = _require.makeKernel,
     release = _require.release,
-    clone = _require.clone;
+    clone = _require.clone,
+    clear = _require.clear;
 
 var zeros = require('../utilities/zeros');
 
@@ -26550,17 +27190,17 @@ function compare2D(weights, targetValues) {
   return weights[this.thread.y][this.thread.x] - targetValues[this.thread.y][this.thread.x];
 }
 
-var Target =
-/*#__PURE__*/
-function (_Filter) {
+var Target = /*#__PURE__*/function (_Filter) {
   _inherits(Target, _Filter);
+
+  var _super = _createSuper(Target);
 
   function Target(settings, inputLayer) {
     var _this;
 
     _classCallCheck(this, Target);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Target).call(this, settings));
+    _this = _super.call(this, settings);
     _this.inputLayer = inputLayer;
     _this.width = inputLayer.width;
     _this.height = inputLayer.height;
@@ -26568,9 +27208,9 @@ function (_Filter) {
 
     _this.validate();
 
-    if (_this.depth > 0) {
+    if (_this.depth) {
       throw new Error('Target layer not implemented for depth');
-    } else if (_this.height > 1) {
+    } else if (_this.height) {
       _this.weights = zeros2D(_this.width, _this.height);
       _this.deltas = zeros2D(_this.width, _this.height);
       _this.errors = zeros2D(_this.width, _this.height);
@@ -26588,15 +27228,18 @@ function (_Filter) {
     value: function setupKernels() {
       var compareFn = this.width === 1 ? compare1D : compare2D;
       this.compareKernel = makeKernel(compareFn, {
-        output: [this.width, this.height]
+        output: [this.width, this.height],
+        immutable: true
       });
     }
   }, {
     key: "predict",
     value: function predict() {
+      //TODO: should we clone here?
       // NOTE: this looks like it shouldn't be, but the weights are immutable, and this is where they are reused.
       release(this.weights);
       this.weights = clone(this.inputLayer.weights);
+      clear(this.deltas);
     }
   }, {
     key: "compare",
@@ -26613,13 +27256,6 @@ function (_Filter) {
   }, {
     key: "setupPraxis",
     value: function setupPraxis() {}
-  }, {
-    key: "learn",
-    value: function learn() {
-      release(this.weights);
-      this.weights = clone(this.inputLayer.weights);
-      this.resetDeltas();
-    }
   }]);
 
   return Target;
@@ -26636,7 +27272,7 @@ module.exports = {
 },{"../utilities/kernel":"L30b","../utilities/zeros":"M4LY","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"AN3i","./types":"pX1U"}],"YS3q":[function(require,module,exports) {
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -26652,19 +27288,18 @@ var _require3 = require('./random'),
 var _require4 = require('./target'),
     target = _require4.target;
 
-var _require5 = require('./zeros'),
-    zeros = _require5.zeros;
-
 function output(settings, inputLayer) {
   var height = settings.height;
   var outputGate = random({
     height: height,
     width: inputLayer.height,
-    name: 'outputGate'
+    name: 'outputGate',
+    std: 0.08
   });
-  var output = zeros({
+  var output = random({
     height: height,
-    name: 'output'
+    name: 'output',
+    std: 0.08
   });
   var outputGateConnector = multiply(outputGate, inputLayer, {
     name: 'outputGateConnected'
@@ -26677,16 +27312,10 @@ function output(settings, inputLayer) {
 module.exports = {
   output: output
 };
-},{"./add":"q7CK","./multiply":"xJEq","./random":"yQCp","./target":"xXoy","./zeros":"EOPb"}],"vNYh":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+},{"./add":"q7CK","./multiply":"xJEq","./random":"yQCp","./target":"xXoy"}],"vNYh":[function(require,module,exports) {
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -26695,6 +27324,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 var _require = require('./types'),
     Filter = _require.Filter;
@@ -26788,10 +27427,10 @@ function compare3D(deltas, switchY, switchX) {
   return value;
 }
 
-var Pool =
-/*#__PURE__*/
-function (_Filter) {
+var Pool = /*#__PURE__*/function (_Filter) {
   _inherits(Pool, _Filter);
+
+  var _super = _createSuper(Pool);
 
   _createClass(Pool, null, [{
     key: "defaults",
@@ -26811,7 +27450,7 @@ function (_Filter) {
 
     _classCallCheck(this, Pool);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Pool).call(this, settings));
+    _this = _super.call(this, settings);
     _this.stride = null;
     _this.strideX = null;
     _this.strideY = null;
@@ -26872,16 +27511,14 @@ function (_Filter) {
   }, {
     key: "predict",
     value: function predict() {
-      var switchX = this.switchX,
-          switchY = this.switchY,
-          prevWeights = this.weights;
-      release(this.switchX);
-      release(this.switchY);
-      var weights = this.predictKernel(this.inputLayer.weights);
-      this.switchX = weights.switchX;
-      this.switchY = weights.switchY;
-      this.weights = weights.result;
-      release(prevWeights);
+      var _this$predictKernel = this.predictKernel(this.inputLayer.weights),
+          weights = _this$predictKernel.result,
+          switchX = _this$predictKernel.switchX,
+          switchY = _this$predictKernel.switchY;
+
+      this.switchX = switchX;
+      this.switchY = switchY;
+      this.weights = weights;
       return this.weights;
     }
   }, {
@@ -26920,7 +27557,7 @@ module.exports = {
   compare3D: compare3D
 };
 },{"./types":"pX1U","../utilities/kernel":"L30b","../utilities/layer-setup":"iz6h","../utilities/zeros-3d":"AN3i","../utilities/randos-3d":"TSfJ"}],"BjPp":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -26928,26 +27565,33 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var _require = require('./types'),
     Activation = _require.Activation;
 
 var _require2 = require('../utilities/kernel'),
     makeKernel = _require2.makeKernel,
-    release = _require2.release;
+    release = _require2.release,
+    clear = _require2.clear;
 
 var _require3 = require('../activation/relu'),
     activate = _require3.activate,
     measure = _require3.measure;
+
+var zeros2D = require('../utilities/zeros-2d');
 
 function predict2D(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);
@@ -26965,15 +27609,15 @@ function compare3D(weights, deltas) {
   return measure(weights[this.thread.z][this.thread.y][this.thread.x], deltas[this.thread.z][this.thread.y][this.thread.x]);
 }
 
-var Relu =
-/*#__PURE__*/
-function (_Activation) {
+var Relu = /*#__PURE__*/function (_Activation) {
   _inherits(Relu, _Activation);
+
+  var _super = _createSuper(Relu);
 
   function Relu() {
     _classCallCheck(this, Relu);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(Relu).apply(this, arguments));
+    return _super.apply(this, arguments);
   }
 
   _createClass(Relu, [{
@@ -26987,20 +27631,24 @@ function (_Activation) {
       if (depth > 0) {
         this.predictKernel = makeKernel(predict3D, {
           output: [width, height, depth],
-          functions: [activate]
+          functions: [activate],
+          immutable: true
         });
         this.compareKernel = makeKernel(compare3D, {
           output: [width, height, depth],
-          functions: [measure]
+          functions: [measure],
+          immutable: true
         });
       } else {
         this.predictKernel = makeKernel(predict2D, {
           output: [width, height],
-          functions: [activate]
+          functions: [activate],
+          immutable: true
         });
         this.compareKernel = makeKernel(compare2D, {
           output: [width, height],
-          functions: [measure]
+          functions: [measure],
+          immutable: true
         });
       }
     }
@@ -27009,6 +27657,7 @@ function (_Activation) {
     value: function predict() {
       release(this.weights);
       this.weights = this.predictKernel(this.inputLayer.weights);
+      clear(this.deltas);
     }
   }, {
     key: "compare",
@@ -27033,7 +27682,7 @@ module.exports = {
   predict3D: predict3D,
   compare3D: compare3D
 };
-},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/relu":"kBuR"}],"ERye":[function(require,module,exports) {
+},{"./types":"pX1U","../utilities/kernel":"L30b","../activation/relu":"kBuR","../utilities/zeros-2d":"C4Cz"}],"Ujc1":[function(require,module,exports) {
 var _require = require('./relu'),
     relu = _require.relu;
 
@@ -27049,20 +27698,22 @@ var _require4 = require('./random'),
 var _require5 = require('./zeros'),
     zeros = _require5.zeros;
 
-function recurrent(settings, input, recurrentInput) {
+function rnnCell(settings, input, recurrentInput) {
   var height = settings.height;
-  recurrentInput.setDimensions(1, height); // wxh
+  if (recurrentInput.setDimensions) recurrentInput.setDimensions(1, height); // wxh
 
   var weight = random({
     name: 'weight',
     height: height,
-    width: input.height
+    width: input.height,
+    std: 0.08
   }); // whh
 
   var transition = random({
     name: 'transition',
     height: height,
-    width: height
+    width: height,
+    std: 0.08
   }); // bhh
 
   var bias = zeros({
@@ -27073,10 +27724,10 @@ function recurrent(settings, input, recurrentInput) {
 }
 
 module.exports = {
-  recurrent: recurrent
+  rnnCell: rnnCell
 };
 },{"./relu":"BjPp","./add":"q7CK","./multiply":"xJEq","./random":"yQCp","./zeros":"EOPb"}],"viPg":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -27084,30 +27735,34 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 var _require = require('./base'),
     Base = _require.Base;
 
-var Regression =
-/*#__PURE__*/
-function (_Base) {
+var Regression = /*#__PURE__*/function (_Base) {
   _inherits(Regression, _Base);
+
+  var _super = _createSuper(Regression);
 
   function Regression(settings) {
     var _this;
 
     _classCallCheck(this, Regression);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Regression).call(this, settings));
+    _this = _super.call(this, settings);
 
     _this.validate();
 
@@ -27143,7 +27798,7 @@ module.exports = {
   learn: learn
 };
 },{"./base":"kIeX"}],"nfIB":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -27151,15 +27806,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var _require = require('../utilities/kernel'),
     makeKernel = _require.makeKernel,
@@ -27326,17 +27985,17 @@ function loss(exponentials) {
 } // TODO: handle: `return -Math.log(this.es[y]);` in learn
 
 
-var SoftMax =
-/*#__PURE__*/
-function (_Filter) {
+var SoftMax = /*#__PURE__*/function (_Filter) {
   _inherits(SoftMax, _Filter);
+
+  var _super = _createSuper(SoftMax);
 
   function SoftMax(inputLayer) {
     var _this;
 
     _classCallCheck(this, SoftMax);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(SoftMax).call(this));
+    _this = _super.call(this);
     _this.width = inputLayer.width;
     _this.height = inputLayer.height;
     _this.depth = inputLayer.depth;
@@ -27392,7 +28051,8 @@ function (_Filter) {
           output: [width, height, depth]
         });
         this.compareKernel = makeKernel(compare3D, {
-          output: [width, height, depth]
+          output: [width, height, depth],
+          immutable: true
         });
       } else {
         this.getExponentialsKernel = makeKernel(getExponentials, {
@@ -27416,7 +28076,8 @@ function (_Filter) {
           output: [width, height]
         });
         this.compareKernel = makeKernel(compare2D, {
-          output: [width, height]
+          output: [width, height],
+          immutable: true
         });
       }
     }
@@ -27471,7 +28132,7 @@ module.exports = {
   loss: loss
 };
 },{"../utilities/kernel":"L30b","./types":"pX1U","../utilities/randos":"S8tM","../utilities/randos-2d":"pcuE","../utilities/randos-3d":"TSfJ","../utilities/zeros":"M4LY","../utilities/zeros-2d":"C4Cz","../utilities/zeros-3d":"AN3i"}],"qIAv":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -27479,28 +28140,32 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 var _require = require('./base'),
     Base = _require.Base;
 
-var SVM =
-/*#__PURE__*/
-function (_Base) {
+var SVM = /*#__PURE__*/function (_Base) {
   _inherits(SVM, _Base);
+
+  var _super = _createSuper(SVM);
 
   function SVM() {
     _classCallCheck(this, SVM);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(SVM).apply(this, arguments));
+    return _super.apply(this, arguments);
   }
 
   _createClass(SVM, [{
@@ -27537,7 +28202,7 @@ module.exports = {
   svm: svm
 };
 },{"./base":"kIeX"}],"NJz4":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -27545,22 +28210,27 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var _require = require('./types'),
     Modifier = _require.Modifier;
 
 var _require2 = require('../utilities/kernel'),
     makeKernel = _require2.makeKernel,
-    release = _require2.release;
+    release = _require2.release,
+    clear = _require2.clear;
 
 function predict(array) {
   return array[this.thread.x][this.thread.y];
@@ -27568,17 +28238,17 @@ function predict(array) {
 
 var compare = predict;
 
-var Transpose =
-/*#__PURE__*/
-function (_Modifier) {
+var Transpose = /*#__PURE__*/function (_Modifier) {
   _inherits(Transpose, _Modifier);
+
+  var _super = _createSuper(Transpose);
 
   function Transpose(inputLayer) {
     var _this;
 
     _classCallCheck(this, Transpose);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Transpose).call(this));
+    _this = _super.call(this);
     _this.inputLayer = inputLayer;
     _this.width = _this.inputLayer.height;
     _this.height = _this.inputLayer.width;
@@ -27601,15 +28271,13 @@ function (_Modifier) {
   }, {
     key: "predict",
     value: function predict() {
-      var weights = this.weights;
-      release(this.weights);
       this.weights = this.predictKernel(this.inputLayer.weights);
+      clear(this.deltas);
     }
   }, {
     key: "compare",
     value: function compare() {
-      release(this.inputLayer.deltas); // TODO: needs switched to this.compareKernel?
-
+      // TODO: needs switched to this.compareKernel?
       this.inputLayer.deltas = this.predictKernel(this.deltas);
     }
   }]);
@@ -27662,8 +28330,8 @@ var _require10 = require('./leaky-relu'),
     LeakyRelu = _require10.LeakyRelu,
     leakyRelu = _require10.leakyRelu;
 
-var _require11 = require('./lstm'),
-    lstm = _require11.lstm;
+var _require11 = require('./lstm-cell'),
+    lstmCell = _require11.lstmCell;
 
 var _require12 = require('./multiply'),
     Multiply = _require12.Multiply,
@@ -27692,8 +28360,8 @@ var _require18 = require('./random'),
     Random = _require18.Random,
     random = _require18.random;
 
-var _require19 = require('./recurrent'),
-    recurrent = _require19.recurrent;
+var _require19 = require('./rnn-cell'),
+    rnnCell = _require19.rnnCell;
 
 var _require20 = require('./regression'),
     Regression = _require20.Regression,
@@ -27730,6 +28398,8 @@ var _require27 = require('./transpose'),
 var _require28 = require('./zeros'),
     Zeros = _require28.Zeros,
     zeros = _require28.zeros;
+
+var types = require('./types');
 /**
  * @description Layer API, to make it easier to use layers for the world
  */
@@ -27752,7 +28422,7 @@ module.exports = {
   input: input,
   LeakyRelu: LeakyRelu,
   leakyRelu: leakyRelu,
-  lstm: lstm,
+  lstmCell: lstmCell,
   Multiply: Multiply,
   multiply: multiply,
   MultiplyElement: MultiplyElement,
@@ -27766,11 +28436,11 @@ module.exports = {
   pool: pool,
   Random: Random,
   random: random,
-  recurrent: recurrent,
   Regression: Regression,
   regression: regression,
   Relu: Relu,
   relu: relu,
+  rnnCell: rnnCell,
   Sigmoid: Sigmoid,
   sigmoid: sigmoid,
   SoftMax: SoftMax,
@@ -27784,9 +28454,12 @@ module.exports = {
   Transpose: Transpose,
   transpose: transpose,
   Zeros: Zeros,
-  zeros: zeros
+  zeros: zeros,
+  types: types
 };
-},{"./add":"q7CK","./arthur-feed-forward":"SVHJ","./base":"kIeX","./convolution":"xL0H","./dropout":"YwJF","./feed-forward":"nL1l","./fully-connected":"Aqg2","./gru":"vCsu","./input":"qUrb","./leaky-relu":"JZX2","./lstm":"Mqbi","./multiply":"xJEq","./multiply-element":"vjFV","./negative":"kuoN","./ones":"zJfH","./output":"YS3q","./pool":"vNYh","./random":"yQCp","./recurrent":"ERye","./regression":"viPg","./relu":"BjPp","./sigmoid":"ED1E","./soft-max":"nfIB","./svm":"qIAv","./tanh":"YNtu","./target":"xXoy","./transpose":"NJz4","./zeros":"EOPb"}],"dfGl":[function(require,module,exports) {
+},{"./add":"q7CK","./arthur-feed-forward":"SVHJ","./base":"kIeX","./convolution":"xL0H","./dropout":"YwJF","./feed-forward":"nL1l","./fully-connected":"Aqg2","./gru":"vCsu","./input":"qUrb","./leaky-relu":"JZX2","./lstm-cell":"dwcR","./multiply":"xJEq","./multiply-element":"vjFV","./negative":"kuoN","./ones":"zJfH","./output":"YS3q","./pool":"vNYh","./random":"yQCp","./rnn-cell":"Ujc1","./regression":"viPg","./relu":"BjPp","./sigmoid":"ED1E","./soft-max":"nfIB","./svm":"qIAv","./tanh":"YNtu","./target":"xXoy","./transpose":"NJz4","./zeros":"EOPb","./types":"pX1U"}],"dfGl":[function(require,module,exports) {
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 /**
  *
  * @param {*} input
@@ -27794,6 +28467,10 @@ module.exports = {
  * @returns {*}
  */
 module.exports = function likely(input, net) {
+  if (!net) {
+    throw new TypeError("Required parameter 'net' is of type ".concat(_typeof(net), ". Must be of type 'brain.NeuralNetwork'"));
+  }
+
   var output = net.run(input);
   var maxProp = null;
   var maxValue = -1;
@@ -27808,7 +28485,7 @@ module.exports = function likely(input, net) {
   return maxProp;
 };
 },{}],"Q1a6":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -27817,9 +28494,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /* Functions for turning sparse hashes into arrays and vice versa */
-var lookup =
-/*#__PURE__*/
-function () {
+var lookup = /*#__PURE__*/function () {
   function lookup() {
     _classCallCheck(this, lookup);
   }
@@ -28156,15 +28831,9 @@ module.exports = {
   adam: adam
 };
 },{}],"OMKX":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -28173,6 +28842,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 var _require = require('../utilities/kernel'),
     makeKernel = _require.makeKernel,
@@ -28225,10 +28904,10 @@ function isClippedByValue(value, max, min) {
   return 0;
 }
 
-var MomentumRootMeanSquaredPropagation =
-/*#__PURE__*/
-function (_Base) {
+var MomentumRootMeanSquaredPropagation = /*#__PURE__*/function (_Base) {
   _inherits(MomentumRootMeanSquaredPropagation, _Base);
+
+  var _super = _createSuper(MomentumRootMeanSquaredPropagation);
 
   _createClass(MomentumRootMeanSquaredPropagation, null, [{
     key: "defaults",
@@ -28250,11 +28929,8 @@ function (_Base) {
 
     _classCallCheck(this, MomentumRootMeanSquaredPropagation);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(MomentumRootMeanSquaredPropagation).call(this, layerTemplate, settings));
+    _this = _super.call(this, layerTemplate, settings);
     _this.momenta = zeros2D(layerTemplate.width, layerTemplate.height);
-
-    _this.setupKernels();
-
     return _this;
   }
 
@@ -28284,7 +28960,8 @@ function (_Base) {
         functions: [clipByValue],
         map: {
           momenta: getMomentum
-        }
+        },
+        immutable: true
       });
     }
   }]);
@@ -28343,20 +29020,7 @@ module.exports = {
   MRmsProp: MRmsProp,
   mRmsProp: mRmsProp
 };
-},{"./adam":"MDrY","./arthur-deviation-biases":"GVwH","./arthur-deviation-weights":"xg3N","./momentum-root-mean-squared-propagation":"OMKX"}],"uJqb":[function(require,module,exports) {
-module.exports = function mse2d(errors) {
-  // mean squared error 2d
-  var sum = 0;
-
-  for (var y = 0; y < this.constants.height; y++) {
-    for (var x = 0; x < this.constants.width; x++) {
-      sum += Math.pow(errors[y][x], 2);
-    }
-  }
-
-  return sum / this.constants.length;
-};
-},{}],"NEsT":[function(require,module,exports) {
+},{"./adam":"MDrY","./arthur-deviation-biases":"GVwH","./arthur-deviation-weights":"xg3N","./momentum-root-mean-squared-propagation":"OMKX"}],"NEsT":[function(require,module,exports) {
 var layer = require('../layer');
 
 module.exports = function layerFromJSON(jsonLayer) {
@@ -28409,14 +29073,87 @@ module.exports = function flattenLayers(layers) {
 
   return result;
 };
-},{"./traverse-layers-from":"WO5N"}],"eqC7":[function(require,module,exports) {
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+},{"./traverse-layers-from":"WO5N"}],"nj3x":[function(require,module,exports) {
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+var _require = require('../utilities/kernel'),
+    makeKernel = _require.makeKernel;
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function mse2d(errors) {
+  // mean squared error 2d
+  var sum = 0;
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+  for (var y = 0; y < this.constants.height; y++) {
+    for (var x = 0; x < this.constants.width; x++) {
+      sum += Math.pow(errors[y][x], 2);
+    }
+  }
+
+  return sum / this.constants.length;
+}
+
+var MeanSquaredError = function MeanSquaredError(_ref) {
+  var width = _ref.width,
+      height = _ref.height;
+
+  _classCallCheck(this, MeanSquaredError);
+
+  this.calculate = makeKernel(mse2d, {
+    output: [1],
+    constants: {
+      width: width,
+      height: height,
+      length: width * height
+    },
+    immutable: true
+  });
+  this.addAbsolute = makeKernel(function (value1, value2) {
+    return value1[0] + Math.abs(value2[0][0]);
+  }, {
+    output: [1],
+    immutable: true
+  });
+  this.add = makeKernel(function (value1, value2) {
+    return value1[0] + value2[0];
+  }, {
+    output: [1],
+    immutable: true
+  });
+  this.divide = makeKernel(function (length, mseSum) {
+    var value = mseSum[0];
+
+    if (value > 0) {
+      return value / length;
+    }
+
+    return 0;
+  }, {
+    output: [1],
+    immutable: true
+  });
+};
+
+module.exports = {
+  MeanSquaredError: MeanSquaredError
+};
+},{"../utilities/kernel":"L30b"}],"eqC7":[function(require,module,exports) {
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -28425,8 +29162,6 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var lookup = require('./lookup');
-
-var mse2d = require('./utilities/mse-2d');
 
 var layerFromJSON = require('./utilities/layer-from-json');
 
@@ -28438,9 +29173,13 @@ var _require = require('./utilities/kernel'),
     makeKernel = _require.makeKernel,
     release = _require.release;
 
-var FeedForward =
-/*#__PURE__*/
-function () {
+var _require2 = require('./estimator/mean-squared-error'),
+    MeanSquaredError = _require2.MeanSquaredError;
+
+var _require3 = require('./layer/types'),
+    Model = _require3.Model;
+
+var FeedForward = /*#__PURE__*/function () {
   _createClass(FeedForward, [{
     key: "_setLogMethod",
 
@@ -28481,6 +29220,10 @@ function () {
       this.constructor._validateTrainingOptions(this.trainOpts);
 
       this._setLogMethod(opts.log || this.trainOpts.log);
+
+      if (this.trainOpts.callback && this.trainOpts.callbackPeriod !== this.trainOpts.errorCheckInterval) {
+        console.warn("options.callbackPeriod with value of ".concat(this.trainOpts.callbackPeriod, " does not match options.errorCheckInterval with value of ").concat(this.trainOpts.errorCheckInterval, ", if logging error, it will repeat.  These values may need to match"));
+      }
     }
   }], [{
     key: "_validateTrainingOptions",
@@ -28549,7 +29292,7 @@ function () {
         outputLayer: null,
         praxisOpts: null,
         praxis: function praxis(layer, settings) {
-          return _praxis.momentumRootMeanSquaredPropagation(layer, layer.praxisOpts || settings);
+          return _praxis.momentumRootMeanSquaredPropagation(_objectSpread({}, layer), layer.praxisOpts || settings);
         }
       };
     }
@@ -28559,7 +29302,8 @@ function () {
       return {
         layers: null,
         _inputLayer: null,
-        _outputLayer: null
+        _outputLayer: null,
+        _model: null
       };
     }
     /**
@@ -28584,7 +29328,7 @@ function () {
     Object.assign(this, this.constructor.defaults, options);
     this.trainOpts = {};
 
-    this._updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
+    this._updateTrainingOptions(_objectSpread(_objectSpread({}, this.constructor.trainDefaults), options));
 
     Object.assign(this, this.constructor.structure);
     this._inputLayer = null;
@@ -28629,6 +29373,9 @@ function () {
       this._connectLayers();
 
       this.initializeLayers(this.layers);
+      this._model = this.layers.filter(function (l) {
+        return l instanceof Model;
+      });
     }
   }, {
     key: "initializeLayers",
@@ -28638,35 +29385,38 @@ function () {
 
         layer.setupKernels(true);
 
-        if (layer.hasOwnProperty('praxis') && layer.praxis === null) {
+        if (layer instanceof Model && layer.hasOwnProperty('praxis') && layer.praxis === null) {
           layer.praxis = this.praxis(layer, layer.praxisOpts || this.praxisOpts);
+          layer.praxis.setupKernels();
         }
       }
 
-      this._getMSE = makeKernel(mse2d, {
-        output: [1],
-        constants: {
-          width: this._outputLayer.width,
-          height: this._outputLayer.height,
-          length: this._outputLayer.width * this._outputLayer.height
-        }
-      });
-      this._addMSE = makeKernel(function (value1, value2) {
-        return value1[0] + value2[0];
-      }, {
-        output: [1]
-      });
-      this._divideMSESum = makeKernel(function (length, mseSum) {
-        var value = mseSum[0];
-
-        if (value > 0) {
-          return value / length;
-        }
-
-        return 0;
-      }, {
-        output: [1]
-      });
+      var lastLayer = layers[layers.length - 1];
+      this.meanSquaredError = new MeanSquaredError({
+        width: lastLayer.width,
+        height: lastLayer.height
+      }); // this._getMSE = makeKernel(mse2d, {
+      //   output: [1],
+      //   constants: {
+      //     width: this._outputLayer.width,
+      //     height: this._outputLayer.height,
+      //     length: this._outputLayer.width * this._outputLayer.height,
+      //   }
+      // });
+      // this._addMSE = makeKernel(function(value1, value2) {
+      //   return value1[0] + value2[0];
+      // }, {
+      //   output: [1]
+      // });
+      // this._divideMSESum = makeKernel(function(length, mseSum) {
+      //   const value = mseSum[0];
+      //   if (value > 0) {
+      //     return value / length;
+      //   }
+      //   return 0;
+      // }, {
+      //   output: [1]
+      // });
     }
     /**
      *
@@ -28744,8 +29494,6 @@ function () {
         return false;
       }
 
-      status.iterations++;
-
       if (this.trainOpts.log && status.iterations % this.trainOpts.logPeriod === 0) {
         status.error = this._calculateTrainingError(data);
         this.trainOpts.log("iterations: ".concat(status.iterations, ", training error: ").concat(status.error));
@@ -28759,6 +29507,7 @@ function () {
         this.trainOpts.callback(Object.assign(status));
       }
 
+      status.iterations++;
       return true;
     }
     /**
@@ -28774,60 +29523,31 @@ function () {
     value: function _prepTraining(data, options) {
       this._updateTrainingOptions(options);
 
-      if (this.trainOpts.callback && this.trainOpts.callbackPeriod !== this.trainOpts.errorCheckInterval) {
-        console.warn("options.callbackPeriod with value of ".concat(this.trainOpts.callbackPeriod, " does not match options.errorCheckInterval with value of ").concat(this.trainOpts.errorCheckInterval, ", if logging error, it will repeat.  These values may need to match"));
-      }
-
-      var formattedData = this._formatData(data);
-
+      var formattedData = this.formatData(data);
       var endTime = Date.now() + this.trainOpts.timeout;
       var status = {
         error: 1,
         iterations: 0
       };
-
-      if (!options.reinforce) {
-        this.initialize();
-      }
-
-      var transferredData = new Array(formattedData.length);
-      var transferInput = makeKernel(function (value) {
-        return value[this.thread.x];
-      }, {
-        output: [formattedData[0].input.length]
-      });
-      var transferOutput = makeKernel(function (value) {
-        return value[this.thread.x];
-      }, {
-        output: [formattedData[0].output.length]
-      });
-
-      for (var i = 0; i < formattedData.length; i++) {
-        var formattedDatum = formattedData[i];
-        transferredData[i] = {
-          input: transferInput(formattedDatum.input),
-          output: transferOutput(formattedDatum.output)
-        };
-      }
-
+      this.verifyIsInitialized();
       return {
-        data: transferredData,
+        data: this.transferData(formattedData),
         status: status,
         endTime: endTime
       };
+    }
+  }, {
+    key: "verifyIsInitialized",
+    value: function verifyIsInitialized() {
+      if (!this._model) {
+        this.initialize();
+      }
     }
     /**
      *
      * @param data
      * @returns {Number} error
      */
-    // _calculateTrainingError(data) {
-    //   let sum = 0;
-    //   for (let i = 0; i < data.length; ++i) {
-    //     sum += this._trainPattern(data[i].input, data[i].output, true);
-    //   }
-    //   return sum / data.length;
-    // }
 
   }, {
     key: "_calculateTrainingError",
@@ -28839,13 +29559,12 @@ function () {
 
         var error = this._trainPattern(data[i].input, data[i].output, true);
 
-        sum = this._addMSE(sum, error);
+        sum = this.meanSquaredError.add(sum, error);
         release(error);
         release(prevSum);
       }
 
-      var result = this._divideMSESum(data.length, sum);
-
+      var result = this.meanSquaredError.divide(data.length, sum);
       release(sum);
 
       if (result.toArray) {
@@ -28854,7 +29573,7 @@ function () {
         return resultArray[0];
       }
 
-      return result;
+      return result[0];
     }
     /**
      * @param data
@@ -28886,7 +29605,7 @@ function () {
       this.adjustWeights();
 
       if (logErrorRate) {
-        return this._getMSE(this._outputLayer.errors);
+        return this.meanSquaredError.calculate(this._outputLayer.errors);
       }
 
       return null;
@@ -28905,8 +29624,10 @@ function () {
   }, {
     key: "adjustWeights",
     value: function adjustWeights() {
-      for (var i = 0; i < this.layers.length; i++) {
-        this.layers[i].learn(this.layers[i - 1], this.layers[i + 1], this.trainOpts.learningRate);
+      var _model = this._model;
+
+      for (var i = 0; i < _model.length; i++) {
+        _model[i].learn(null, null, this.trainOpts.learningRate);
       }
     }
     /**
@@ -28916,8 +29637,8 @@ function () {
      */
 
   }, {
-    key: "_formatData",
-    value: function _formatData(data) {
+    key: "formatData",
+    value: function formatData(data) {
       var _this2 = this;
 
       if (!Array.isArray(data)) {
@@ -28939,7 +29660,7 @@ function () {
 
         data = data.map(function (datumParam) {
           var array = lookup.toArray(_this2.inputLookup, datumParam.input);
-          return Object.assign({}, datumParam, {
+          return _objectSpread(_objectSpread({}, datumParam), {}, {
             input: array
           });
         }, this);
@@ -28956,13 +29677,40 @@ function () {
 
         data = data.map(function (datumParam) {
           var array = lookup.toArray(_this2.outputLookup, datumParam.output);
-          return Object.assign({}, datumParam, {
+          return _objectSpread(_objectSpread({}, datumParam), {}, {
             output: array
           });
         }, this);
       }
 
       return data;
+    }
+  }, {
+    key: "transferData",
+    value: function transferData(formattedData) {
+      var transferredData = new Array(formattedData.length);
+      var transferInput = makeKernel(function (value) {
+        return value[this.thread.x];
+      }, {
+        output: [formattedData[0].input.length],
+        immutable: true
+      });
+      var transferOutput = makeKernel(function (value) {
+        return value[this.thread.x];
+      }, {
+        output: [formattedData[0].output.length],
+        immutable: true
+      });
+
+      for (var i = 0; i < formattedData.length; i++) {
+        var formattedDatum = formattedData[i];
+        transferredData[i] = {
+          input: transferInput(formattedDatum.input),
+          output: transferOutput(formattedDatum.output)
+        };
+      }
+
+      return transferredData;
     }
     /**
      *
@@ -29058,12 +29806,12 @@ function () {
           var inputLayer1 = layers[jsonLayer.inputLayerIndex];
           layers.push(layerFromJSON(jsonLayer, inputLayer1) || getLayer(jsonLayer, inputLayer1));
         } else {
-          if (!jsonLayer.hasOwnProperty('inputLayer1Index')) throw new Error('inputLayer1Index not defined');
-          if (!jsonLayer.hasOwnProperty('inputLayer2Index')) throw new Error('inputLayer2Index not defined');
+          if (!jsonLayer.hasOwnProperty('inputLayer1Index')) throw new Error('Cannot create network from provided JOSN. inputLayer1Index not defined.');
+          if (!jsonLayer.hasOwnProperty('inputLayer2Index')) throw new Error('Cannot create network from provided JOSN. inputLayer2Index not defined.');
           var _inputLayer = layers[jsonLayer.inputLayer1Index];
           var inputLayer2 = layers[jsonLayer.inputLayer2Index];
-          if (_inputLayer === undefined) throw new Error("layer of index ".concat(jsonLayer.inputLayer1Index, " not found"));
-          if (inputLayer2 === undefined) throw new Error("layer of index ".concat(jsonLayer.inputLayer2Index, " not found"));
+          if (_inputLayer === undefined) throw new Error("Cannot create network from provided JOSN. layer of index ".concat(jsonLayer.inputLayer1Index, " not found."));
+          if (inputLayer2 === undefined) throw new Error("Cannot create network from provided JOSN. layer of index ".concat(jsonLayer.inputLayer2Index, " not found."));
           layers.push(layerFromJSON(jsonLayer, inputLayer) || getLayer(jsonLayer, _inputLayer, inputLayer2));
         }
       }
@@ -29080,7 +29828,7 @@ function () {
 module.exports = {
   FeedForward: FeedForward
 };
-},{"./lookup":"Q1a6","./utilities/mse-2d":"uJqb","./utilities/layer-from-json":"NEsT","./praxis":"P9Li","./utilities/flatten-layers":"Z71k","./utilities/kernel":"L30b"}],"Mjd7":[function(require,module,exports) {
+},{"./lookup":"Q1a6","./utilities/layer-from-json":"NEsT","./praxis":"P9Li","./utilities/flatten-layers":"Z71k","./utilities/kernel":"L30b","./estimator/mean-squared-error":"nj3x","./layer/types":"pX1U"}],"Mjd7":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -29554,6 +30302,13 @@ EventEmitter.prototype._maxListeners = undefined; // By default EventEmitters wi
 // added to it. This is a useful default which helps finding memory leaks.
 
 var defaultMaxListeners = 10;
+
+function checkListener(listener) {
+  if (typeof listener !== 'function') {
+    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+  }
+}
+
 Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
   enumerable: true,
   get: function () {
@@ -29588,13 +30343,13 @@ EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
   return this;
 };
 
-function $getMaxListeners(that) {
+function _getMaxListeners(that) {
   if (that._maxListeners === undefined) return EventEmitter.defaultMaxListeners;
   return that._maxListeners;
 }
 
 EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
-  return $getMaxListeners(this);
+  return _getMaxListeners(this);
 };
 
 EventEmitter.prototype.emit = function emit(type) {
@@ -29641,11 +30396,7 @@ function _addListener(target, type, listener, prepend) {
   var m;
   var events;
   var existing;
-
-  if (typeof listener !== 'function') {
-    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-  }
-
+  checkListener(listener);
   events = target._events;
 
   if (events === undefined) {
@@ -29679,7 +30430,7 @@ function _addListener(target, type, listener, prepend) {
     } // Check for listener leak
 
 
-    m = $getMaxListeners(target);
+    m = _getMaxListeners(target);
 
     if (m > 0 && existing.length > m && !existing.warned) {
       existing.warned = true; // No error code for this since it is a Warning
@@ -29708,14 +30459,11 @@ EventEmitter.prototype.prependListener = function prependListener(type, listener
 };
 
 function onceWrapper() {
-  var args = [];
-
-  for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
-
   if (!this.fired) {
     this.target.removeListener(this.type, this.wrapFn);
     this.fired = true;
-    ReflectApply(this.listener, this.target, args);
+    if (arguments.length === 0) return this.listener.call(this.target);
+    return this.listener.apply(this.target, arguments);
   }
 }
 
@@ -29734,19 +30482,13 @@ function _onceWrap(target, type, listener) {
 }
 
 EventEmitter.prototype.once = function once(type, listener) {
-  if (typeof listener !== 'function') {
-    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-  }
-
+  checkListener(listener);
   this.on(type, _onceWrap(this, type, listener));
   return this;
 };
 
 EventEmitter.prototype.prependOnceListener = function prependOnceListener(type, listener) {
-  if (typeof listener !== 'function') {
-    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-  }
-
+  checkListener(listener);
   this.prependListener(type, _onceWrap(this, type, listener));
   return this;
 }; // Emits a 'removeListener' event if and only if the listener was removed.
@@ -29754,11 +30496,7 @@ EventEmitter.prototype.prependOnceListener = function prependOnceListener(type, 
 
 EventEmitter.prototype.removeListener = function removeListener(type, listener) {
   var list, events, position, i, originalListener;
-
-  if (typeof listener !== 'function') {
-    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-  }
-
+  checkListener(listener);
   events = this._events;
   if (events === undefined) return this;
   list = events[type];
@@ -29914,24 +30652,28 @@ function unwrapListeners(arr) {
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
+    if (superCtor) {
+      ctor.super_ = superCtor
+      ctor.prototype = Object.create(superCtor.prototype, {
+        constructor: {
+          value: ctor,
+          enumerable: false,
+          writable: true,
+          configurable: true
+        }
+      })
+    }
   };
 } else {
   // old school shim for old browsers
   module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
+    if (superCtor) {
+      ctor.super_ = superCtor
+      var TempCtor = function () {}
+      TempCtor.prototype = superCtor.prototype
+      ctor.prototype = new TempCtor()
+      ctor.prototype.constructor = ctor
+    }
   }
 }
 
@@ -30148,7 +30890,8 @@ process.umask = function () {
 var process = require("process");
 'use strict';
 
-if (!process.version ||
+if (typeof process === 'undefined' ||
+    !process.version ||
     process.version.indexOf('v0.') === 0 ||
     process.version.indexOf('v1.') === 0 && process.version.indexOf('v1.8.') !== 0) {
   module.exports = { nextTick: nextTick };
@@ -30191,14 +30934,14 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 
-},{"process":"pBGv"}],"upBv":[function(require,module,exports) {
+},{"process":"pBGv"}],"REa7":[function(require,module,exports) {
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],"Q8A6":[function(require,module,exports) {
+},{}],"ExO1":[function(require,module,exports) {
 module.exports = require('events').EventEmitter;
 
 },{"events":"FRpO"}],"yh9p":[function(require,module,exports) {
@@ -30447,7 +31190,7 @@ var global = arguments[3];
 /*!
  * The buffer module from node.js, for the browser.
  *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @author   Feross Aboukhadijeh <http://feross.org>
  * @license  MIT
  */
 /* eslint-disable no-proto */
@@ -32234,7 +32977,7 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":"yh9p","ieee754":"JgNJ","isarray":"upBv","buffer":"dskh"}],"Wugr":[function(require,module,exports) {
+},{"base64-js":"yh9p","ieee754":"JgNJ","isarray":"REa7","buffer":"dskh"}],"ZoTc":[function(require,module,exports) {
 
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
@@ -32411,7 +33154,7 @@ function objectToString(o) {
 
 },{"buffer":"dskh"}],"rDCW":[function(require,module,exports) {
 
-},{}],"Um5I":[function(require,module,exports) {
+},{}],"wlMe":[function(require,module,exports) {
 
 'use strict';
 
@@ -32492,7 +33235,7 @@ if (util && util.inspect && util.inspect.custom) {
     return this.constructor.name + ' ' + obj;
   };
 }
-},{"safe-buffer":"Wugr","util":"rDCW"}],"avqi":[function(require,module,exports) {
+},{"safe-buffer":"ZoTc","util":"rDCW"}],"GRUB":[function(require,module,exports) {
 'use strict';
 
 /*<replacement>*/
@@ -32637,7 +33380,7 @@ function config (name) {
   return String(val).toLowerCase() === 'true';
 }
 
-},{}],"I0x5":[function(require,module,exports) {
+},{}],"WSyY":[function(require,module,exports) {
 var process = require("process");
 
 var global = arguments[3];
@@ -32709,8 +33452,7 @@ var Duplex;
 Writable.WritableState = WritableState;
 /*<replacement>*/
 
-var util = require('core-util-is');
-
+var util = Object.create(require('core-util-is'));
 util.inherits = require('inherits');
 /*</replacement>*/
 
@@ -33317,7 +34059,7 @@ Writable.prototype._destroy = function (err, cb) {
   this.end();
   cb(err);
 };
-},{"process-nextick-args":"Yj0v","core-util-is":"Q14w","inherits":"Bm0n","util-deprecate":"yM1o","./internal/streams/stream":"Q8A6","safe-buffer":"Wugr","./internal/streams/destroy":"avqi","./_stream_duplex":"wldW","process":"pBGv"}],"wldW":[function(require,module,exports) {
+},{"process-nextick-args":"Yj0v","core-util-is":"Q14w","inherits":"Bm0n","util-deprecate":"yM1o","./internal/streams/stream":"ExO1","safe-buffer":"ZoTc","./internal/streams/destroy":"GRUB","./_stream_duplex":"Hba0","process":"pBGv"}],"Hba0":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -33363,7 +34105,7 @@ var objectKeys = Object.keys || function (obj) {
 module.exports = Duplex;
 
 /*<replacement>*/
-var util = require('core-util-is');
+var util = Object.create(require('core-util-is'));
 util.inherits = require('inherits');
 /*</replacement>*/
 
@@ -33449,7 +34191,7 @@ Duplex.prototype._destroy = function (err, cb) {
 
   pna.nextTick(cb, err);
 };
-},{"process-nextick-args":"Yj0v","core-util-is":"Q14w","inherits":"Bm0n","./_stream_readable":"Ogwm","./_stream_writable":"I0x5"}],"F7WD":[function(require,module,exports) {
+},{"process-nextick-args":"Yj0v","core-util-is":"Q14w","inherits":"Bm0n","./_stream_readable":"DHrQ","./_stream_writable":"WSyY"}],"BUbk":[function(require,module,exports) {
 
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -33747,7 +34489,7 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"safe-buffer":"Wugr"}],"Ogwm":[function(require,module,exports) {
+},{"safe-buffer":"ZoTc"}],"DHrQ":[function(require,module,exports) {
 
 var global = arguments[3];
 var process = require("process");
@@ -33817,7 +34559,7 @@ function _isUint8Array(obj) {
 /*</replacement>*/
 
 /*<replacement>*/
-var util = require('core-util-is');
+var util = Object.create(require('core-util-is'));
 util.inherits = require('inherits');
 /*</replacement>*/
 
@@ -34770,7 +35512,7 @@ function indexOf(xs, x) {
   }
   return -1;
 }
-},{"process-nextick-args":"Yj0v","isarray":"upBv","events":"FRpO","./internal/streams/stream":"Q8A6","safe-buffer":"Wugr","core-util-is":"Q14w","inherits":"Bm0n","util":"rDCW","./internal/streams/BufferList":"Um5I","./internal/streams/destroy":"avqi","./_stream_duplex":"wldW","string_decoder/":"F7WD","process":"pBGv"}],"I3bg":[function(require,module,exports) {
+},{"process-nextick-args":"Yj0v","isarray":"REa7","events":"FRpO","./internal/streams/stream":"ExO1","safe-buffer":"ZoTc","core-util-is":"Q14w","inherits":"Bm0n","util":"rDCW","./internal/streams/BufferList":"wlMe","./internal/streams/destroy":"GRUB","./_stream_duplex":"Hba0","string_decoder/":"BUbk","process":"pBGv"}],"tlBz":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -34841,7 +35583,7 @@ module.exports = Transform;
 var Duplex = require('./_stream_duplex');
 
 /*<replacement>*/
-var util = require('core-util-is');
+var util = Object.create(require('core-util-is'));
 util.inherits = require('inherits');
 /*</replacement>*/
 
@@ -34985,7 +35727,7 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":"wldW","core-util-is":"Q14w","inherits":"Bm0n"}],"kQBK":[function(require,module,exports) {
+},{"./_stream_duplex":"Hba0","core-util-is":"Q14w","inherits":"Bm0n"}],"nwyA":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -35018,7 +35760,7 @@ module.exports = PassThrough;
 var Transform = require('./_stream_transform');
 
 /*<replacement>*/
-var util = require('core-util-is');
+var util = Object.create(require('core-util-is'));
 util.inherits = require('inherits');
 /*</replacement>*/
 
@@ -35033,7 +35775,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":"I3bg","core-util-is":"Q14w","inherits":"Bm0n"}],"uwsL":[function(require,module,exports) {
+},{"./_stream_transform":"tlBz","core-util-is":"Q14w","inherits":"Bm0n"}],"tzeh":[function(require,module,exports) {
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = exports;
 exports.Readable = exports;
@@ -35042,19 +35784,19 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_readable.js":"Ogwm","./lib/_stream_writable.js":"I0x5","./lib/_stream_duplex.js":"wldW","./lib/_stream_transform.js":"I3bg","./lib/_stream_passthrough.js":"kQBK"}],"GAH2":[function(require,module,exports) {
+},{"./lib/_stream_readable.js":"DHrQ","./lib/_stream_writable.js":"WSyY","./lib/_stream_duplex.js":"Hba0","./lib/_stream_transform.js":"tlBz","./lib/_stream_passthrough.js":"nwyA"}],"LnjZ":[function(require,module,exports) {
 module.exports = require('./lib/_stream_writable.js');
 
-},{"./lib/_stream_writable.js":"I0x5"}],"dMbb":[function(require,module,exports) {
+},{"./lib/_stream_writable.js":"WSyY"}],"kT1X":[function(require,module,exports) {
 module.exports = require('./lib/_stream_duplex.js');
 
-},{"./lib/_stream_duplex.js":"wldW"}],"yG3q":[function(require,module,exports) {
+},{"./lib/_stream_duplex.js":"Hba0"}],"A9KG":[function(require,module,exports) {
 module.exports = require('./readable').Transform
 
-},{"./readable":"uwsL"}],"jlpe":[function(require,module,exports) {
+},{"./readable":"tzeh"}],"C6nS":[function(require,module,exports) {
 module.exports = require('./readable').PassThrough
 
-},{"./readable":"uwsL"}],"fnRj":[function(require,module,exports) {
+},{"./readable":"tzeh"}],"fnRj":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -35183,8 +35925,8 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":"FRpO","inherits":"Bm0n","readable-stream/readable.js":"uwsL","readable-stream/writable.js":"GAH2","readable-stream/duplex.js":"dMbb","readable-stream/transform.js":"yG3q","readable-stream/passthrough.js":"jlpe"}],"vEEq":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+},{"events":"FRpO","inherits":"Bm0n","readable-stream/readable.js":"tzeh","readable-stream/writable.js":"LnjZ","readable-stream/duplex.js":"kT1X","readable-stream/transform.js":"A9KG","readable-stream/passthrough.js":"C6nS"}],"vEEq":[function(require,module,exports) {
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -35192,15 +35934,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 var _require = require('stream'),
     Writable = _require.Writable;
@@ -35212,23 +35958,23 @@ var _require = require('stream'),
  */
 
 
-var TrainStream =
-/*#__PURE__*/
-function (_Writable) {
+var TrainStream = /*#__PURE__*/function (_Writable) {
   _inherits(TrainStream, _Writable);
+
+  var _super = _createSuper(TrainStream);
 
   function TrainStream(options) {
     var _this;
 
     _classCallCheck(this, TrainStream);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(TrainStream).call(this, {
+    _this = _super.call(this, {
       objectMode: true
-    }));
+    });
     options = options || {}; // require the neuralNetwork
 
     if (!options.neuralNetwork) {
-      throw new Error('no neural network specified');
+      throw new Error('No neural network specified. PLease see lis of available networks types: https://github.com/BrainJS/brain.js#neural-network-types');
     }
 
     var _options = options,
@@ -35302,7 +36048,7 @@ function (_Writable) {
     key: "finishStreamIteration",
     value: function finishStreamIteration() {
       if (this.dataFormatDetermined && this.size !== this.count) {
-        this.log('This iteration\'s data length was different from the first.');
+        this.log("This iteration's data length was different from the first.");
       }
 
       if (!this.dataFormatDetermined) {
@@ -35369,13 +36115,17 @@ module.exports = function toArray(values) {
   return new Float32Array(Object.values(values));
 };
 },{}],"UFcl":[function(require,module,exports) {
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var toArray = require('./to-array');
 /**
@@ -35537,6 +36287,12 @@ module.exports = {
   objectToFloat32Array: objectToFloat32Array
 };
 },{}],"epZU":[function(require,module,exports) {
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -35571,9 +36327,7 @@ var _require = require('./utilities/cast'),
  */
 
 
-var NeuralNetwork =
-/*#__PURE__*/
-function () {
+var NeuralNetwork = /*#__PURE__*/function () {
   _createClass(NeuralNetwork, null, [{
     key: "trainDefaults",
     get: function get() {
@@ -35623,7 +36377,7 @@ function () {
 
     Object.assign(this, this.constructor.defaults, options);
     this.trainOpts = {};
-    this.updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
+    this.updateTrainingOptions(_objectSpread(_objectSpread({}, this.constructor.trainDefaults), options));
     this.sizes = null;
     this.outputLayer = null;
     this.biases = null; // weights for bias nodes
@@ -35708,7 +36462,7 @@ function () {
   }, {
     key: "setActivation",
     value: function setActivation(activation) {
-      this.activation = activation ? activation : this.activation;
+      this.activation = activation || this.activation;
 
       switch (this.activation) {
         case 'sigmoid':
@@ -35732,7 +36486,7 @@ function () {
           break;
 
         default:
-          throw new Error('unknown activation ' + this.activation + ', The activation should be one of [\'sigmoid\', \'relu\', \'leaky-relu\', \'tanh\']');
+          throw new Error("Unknown activation ".concat(this.activation, ". Available activations are: 'sigmoid', 'relu', 'leaky-relu', 'tanh'"));
       }
     }
     /**
@@ -35788,7 +36542,7 @@ function () {
 
           for (var k = 0; k < weights.length; k++) {
             sum += weights[k] * input[k];
-          } //sigmoid
+          } // sigmoid
 
 
           activeOutputs[node] = 1 / (1 + Math.exp(-sum));
@@ -35818,7 +36572,7 @@ function () {
 
           for (var k = 0; k < weights.length; k++) {
             sum += weights[k] * input[k];
-          } //relu
+          } // relu
 
 
           currentOutputs[node] = sum < 0 ? 0 : sum;
@@ -35849,7 +36603,7 @@ function () {
 
           for (var k = 0; k < weights.length; k++) {
             sum += weights[k] * input[k];
-          } //leaky relu
+          } // leaky relu
 
 
           currentOutputs[node] = sum < 0 ? 0 : alpha * sum;
@@ -35879,7 +36633,7 @@ function () {
 
           for (var k = 0; k < weights.length; k++) {
             sum += weights[k] * input[k];
-          } //tanh
+          } // tanh
 
 
           currentOutputs[node] = Math.tanh(sum);
@@ -36092,12 +36846,10 @@ function () {
       if (log && status.iterations % logPeriod === 0) {
         status.error = this.calculateTrainingError(data);
         log(status);
+      } else if (status.iterations % this.errorCheckInterval === 0) {
+        status.error = this.calculateTrainingError(data);
       } else {
-        if (status.iterations % this.errorCheckInterval === 0) {
-          status.error = this.calculateTrainingError(data);
-        } else {
-          this.trainPatterns(data);
-        }
+        this.trainPatterns(data);
       }
 
       if (callback && status.iterations % callbackPeriod === 0) {
@@ -36145,7 +36897,8 @@ function () {
     key: "train",
     value: function train(data) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var status, endTime;
+      var status;
+      var endTime;
 
       var _this$prepTraining = this.prepTraining(data, options);
 
@@ -36174,7 +36927,8 @@ function () {
       var _this3 = this;
 
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var status, endTime;
+      var status;
+      var endTime;
 
       var _this$prepTraining2 = this.prepTraining(data, options);
 
@@ -36218,9 +36972,9 @@ function () {
 
       if (logErrorRate) {
         return mse(this.errors[this.outputLayer]);
-      } else {
-        return null;
       }
+
+      return null;
     }
     /**
      *
@@ -36518,7 +37272,9 @@ function () {
         }
 
         return result;
-      } else if (this._formatInput) {
+      }
+
+      if (this._formatInput) {
         var _result = [];
 
         for (var _i = 0; _i < data.length; _i++) {
@@ -36529,7 +37285,9 @@ function () {
         }
 
         return _result;
-      } else if (this._formatOutput) {
+      }
+
+      if (this._formatOutput) {
         var _result2 = [];
 
         for (var _i2 = 0; _i2 < data.length; _i2++) {
@@ -36854,11 +37612,13 @@ function () {
             return "Math.tanh(".concat(result.join(''), ")");
 
           default:
-            throw new Error("unknown activation type ".concat(activation));
+            throw new Error("Unknown activation ".concat(this.activation, ". Available activations are: 'sigmoid', 'relu', 'leaky-relu', 'tanh'"));
         }
       }
 
-      var layers = this.toJSON().layers;
+      var _this$toJSON = this.toJSON(),
+          layers = _this$toJSON.layers;
+
       var layersAsMath = [];
       var result;
 
@@ -36906,25 +37666,29 @@ function () {
 function getTypedArrayFn(value, table) {
   if (value.buffer instanceof ArrayBuffer) {
     return null;
-  } else if (Array.isArray(value)) {
-    return arrayToFloat32Array;
-  } else {
-    var length = Object.keys(table).length;
-    return function (v) {
-      var array = new Float32Array(length);
-
-      for (var p in table) {
-        array[table[p]] = v[p] || 0;
-      }
-
-      return array;
-    };
   }
+
+  if (Array.isArray(value)) {
+    return arrayToFloat32Array;
+  }
+
+  var _Object$keys = Object.keys(table),
+      length = _Object$keys.length;
+
+  return function (v) {
+    var array = new Float32Array(length);
+
+    for (var p in table) {
+      array[table[p]] = v[p] || 0;
+    }
+
+    return array;
+  };
 }
 
 module.exports = NeuralNetwork;
 },{"thaw.js":"AZLi","./lookup":"Q1a6","./train-stream":"vEEq","./utilities/max":"UFcl","./utilities/mse":"YGn7","./utilities/randos":"S8tM","./utilities/range":"YhH7","./utilities/to-array":"HBY8","./utilities/zeros":"M4LY","./utilities/lookup-table":"kAwF","./utilities/cast":"Z8Xv"}],"trgF":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -36932,19 +37696,23 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
 
 function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
 
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 var _require = require('gpu.js'),
     GPU = _require.GPU,
@@ -37065,10 +37833,10 @@ function mse(errors) {
  */
 
 
-var NeuralNetworkGPU =
-/*#__PURE__*/
-function (_NeuralNetwork) {
+var NeuralNetworkGPU = /*#__PURE__*/function (_NeuralNetwork) {
   _inherits(NeuralNetworkGPU, _NeuralNetwork);
+
+  var _super = _createSuper(NeuralNetworkGPU);
 
   function NeuralNetworkGPU() {
     var _this;
@@ -37077,7 +37845,7 @@ function (_NeuralNetwork) {
 
     _classCallCheck(this, NeuralNetworkGPU);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(NeuralNetworkGPU).call(this, options));
+    _this = _super.call(this, options);
     _this.forwardPropagate = [];
     _this.backwardPropagate = [];
     _this.changesPropagate = [];
@@ -37127,9 +37895,9 @@ function (_NeuralNetwork) {
 
       if (logErrorRate) {
         return this.getMSE(this.errors[this.outputLayer]);
-      } else {
-        return null;
       }
+
+      return null;
     }
   }, {
     key: "calculateTrainingError",
@@ -37178,7 +37946,7 @@ function (_NeuralNetwork) {
           break;
 
         default:
-          throw new Error("unknown activation ".concat(this.activation));
+          throw new Error("Unknown activation ".concat(this.activation, ". Available activations are: 'sigmoid', 'relu', 'leaky-relu', 'tanh'"));
       }
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
@@ -37187,7 +37955,8 @@ function (_NeuralNetwork) {
           pipeline: true,
           constants: {
             size: this.sizes[layer - 1]
-          }
+          },
+          immutable: true
         });
       }
 
@@ -37195,7 +37964,8 @@ function (_NeuralNetwork) {
         return value[this.thread.x];
       }, {
         output: [this.sizes[1]],
-        pipeline: true
+        pipeline: true,
+        immutable: true
       });
     }
     /**
@@ -37241,7 +38011,7 @@ function (_NeuralNetwork) {
           break;
 
         default:
-          throw new Error("unknown activation ".concat(this.activation));
+          throw new Error("Unknown activation ".concat(this.activation, ". Available activations are: 'sigmoid', 'relu', 'leaky-relu', 'tanh'"));
       }
 
       calcDeltas = alias(gpuUtils.getMinifySafeName(function () {
@@ -37258,7 +38028,8 @@ function (_NeuralNetwork) {
             return calcDeltas(calcErrorOutput(output, targets), output);
           }, {
             output: [this.sizes[this.outputLayer]],
-            pipeline: true
+            pipeline: true,
+            immutable: true
           });
         } else {
           this.backwardPropagate[layer] = this.gpu.createKernelMap({
@@ -37271,7 +38042,8 @@ function (_NeuralNetwork) {
             pipeline: true,
             constants: {
               size: this.deltas[layer + 1].length
-            }
+            },
+            immutable: true
           });
         }
       }
@@ -37311,7 +38083,8 @@ function (_NeuralNetwork) {
             size: this.outputs[layer - 1].length,
             learningRate: this.trainOpts.learningRate,
             momentum: this.trainOpts.momentum
-          }
+          },
+          immutable: true
         });
       }
     }
@@ -37338,7 +38111,8 @@ function (_NeuralNetwork) {
           pipeline: true,
           constants: {
             learningRate: this.trainOpts.learningRate
-          }
+          },
+          immutable: true
         });
       }
     }
@@ -37359,13 +38133,15 @@ function (_NeuralNetwork) {
         constants: {
           size: this.sizes[this.outputLayer]
         },
-        pipeline: true
+        pipeline: true,
+        immutable: true
       });
       this._addMSE = this.gpu.createKernel(function (value1, value2) {
         return value1[0] + value2[0];
       }, {
         output: [1],
-        pipeline: true
+        pipeline: true,
+        immutable: true
       });
       this._divideMSESum = this.gpu.createKernel(function (length, mseSum) {
         var value = mseSum[0];
@@ -37394,8 +38170,7 @@ function (_NeuralNetwork) {
         input = lookup.toArray(this.inputLookup, input, this.inputLookupLength);
       }
 
-      var inputTexture = this.texturizeInputData(input);
-      var outputTextures = this.runInput(inputTexture);
+      var outputTextures = this.runInput(input);
       var output = outputTextures.toArray ? outputTextures.toArray() : outputTextures;
 
       if (this.outputLookup) {
@@ -37429,7 +38204,8 @@ function (_NeuralNetwork) {
         return value[this.thread.x];
       }, {
         output: [data[0].output.length],
-        pipeline: true
+        pipeline: true,
+        immutable: true
       });
       return {
         data: data.map(function (set) {
@@ -37487,7 +38263,7 @@ function (_NeuralNetwork) {
 
 module.exports = NeuralNetworkGPU;
 },{"gpu.js":"GwyX","./neural-network":"epZU","./lookup":"Q1a6","./utilities/kernel":"L30b"}],"sLgS":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -37495,15 +38271,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var _require = require('./types'),
     Internal = _require.Internal;
@@ -37513,15 +38293,15 @@ var zeros2D = require('../utilities/zeros-2d');
 var _require2 = require('../utilities/kernel'),
     release = _require2.release;
 
-var RecurrentConnection =
-/*#__PURE__*/
-function (_Internal) {
+var RecurrentConnection = /*#__PURE__*/function (_Internal) {
   _inherits(RecurrentConnection, _Internal);
+
+  var _super = _createSuper(RecurrentConnection);
 
   function RecurrentConnection() {
     _classCallCheck(this, RecurrentConnection);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(RecurrentConnection).apply(this, arguments));
+    return _super.apply(this, arguments);
   }
 
   _createClass(RecurrentConnection, [{
@@ -37540,9 +38320,7 @@ function (_Internal) {
   }, {
     key: "learn",
     value: function learn() {
-      var layerDeltas = this.layer.deltas;
-      this.layer.deltas = zeros2D(this.width, this.height);
-      release(layerDeltas);
+      throw new Error('no longer using');
     }
   }, {
     key: "setupKernels",
@@ -37599,7 +38377,7 @@ module.exports = {
   RecurrentConnection: RecurrentConnection
 };
 },{"./types":"pX1U","../utilities/zeros-2d":"C4Cz","../utilities/kernel":"L30b"}],"kvWK":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -37607,15 +38385,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var _require = require('./types'),
     Internal = _require.Internal;
@@ -37626,24 +38408,27 @@ var _require2 = require('./base'),
 var _require3 = require('../utilities/kernel'),
     release = _require3.release;
 
-var RecurrentInput =
-/*#__PURE__*/
-function (_Internal) {
+var zeros2D = require('../utilities/zeros-2d');
+
+var RecurrentInput = /*#__PURE__*/function (_Internal) {
   _inherits(RecurrentInput, _Internal);
 
-  function RecurrentInput() {
+  var _super = _createSuper(RecurrentInput);
+
+  function RecurrentInput(recurrentInput) {
+    var _this;
+
     _classCallCheck(this, RecurrentInput);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(RecurrentInput).apply(this, arguments));
+    _this = _super.call(this);
+    _this.recurrentInput = recurrentInput;
+
+    _this.validate();
+
+    return _this;
   }
 
   _createClass(RecurrentInput, [{
-    key: "setRecurrentInput",
-    value: function setRecurrentInput(recurrentInput) {
-      this.recurrentInput = recurrentInput;
-      this.validate();
-    }
-  }, {
     key: "validate",
     value: function validate() {
       Base.prototype.validate.call(this);
@@ -37659,6 +38444,7 @@ function (_Internal) {
   }, {
     key: "setDimensions",
     value: function setDimensions(width, height) {
+      throw new Error('should just listen');
       this.width = width;
       this.height = height;
     }
@@ -37685,6 +38471,16 @@ function (_Internal) {
     value: function reuseKernels() {// throw new Error(
       //   `${this.constructor.name}-reuseKernels is not yet implemented`
       // )
+    }
+  }, {
+    key: "width",
+    get: function get() {
+      return this.recurrentInput.width;
+    }
+  }, {
+    key: "height",
+    get: function get() {
+      return this.recurrentInput.height;
     }
   }, {
     key: "deltas",
@@ -37714,8 +38510,8 @@ function (_Internal) {
 module.exports = {
   RecurrentInput: RecurrentInput
 };
-},{"./types":"pX1U","./base":"kIeX","../utilities/kernel":"L30b"}],"ZE4I":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+},{"./types":"pX1U","./base":"kIeX","../utilities/kernel":"L30b","../utilities/zeros-2d":"C4Cz"}],"ZE4I":[function(require,module,exports) {
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -37723,15 +38519,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var zeros2D = require('../utilities/zeros-2d');
 
@@ -37739,17 +38539,18 @@ var _require = require('./types'),
     Internal = _require.Internal;
 
 var _require2 = require('../utilities/kernel'),
-    release = _require2.release;
+    release = _require2.release,
+    clear = _require2.clear;
 
-var RecurrentZeros =
-/*#__PURE__*/
-function (_Internal) {
+var RecurrentZeros = /*#__PURE__*/function (_Internal) {
   _inherits(RecurrentZeros, _Internal);
+
+  var _super = _createSuper(RecurrentZeros);
 
   function RecurrentZeros() {
     _classCallCheck(this, RecurrentZeros);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(RecurrentZeros).apply(this, arguments));
+    return _super.apply(this, arguments);
   }
 
   _createClass(RecurrentZeros, [{
@@ -37784,12 +38585,11 @@ function (_Internal) {
   }, {
     key: "learn",
     value: function learn(previousLayer, nextLayer, learningRate) {
-      var weights = this.weights;
+      var oldWeights = this.weights;
       this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
-      release(weights); //TODO: put this on the GPU
-
-      release(this.deltas);
-      this.deltas = zeros2D(this.width, this.height);
+      this.deltas = deltas;
+      release(oldWeights);
+      clear(this.deltas);
     }
   }, {
     key: "validate",
@@ -37815,15 +38615,25 @@ module.exports = {
   recurrentZeros: recurrentZeros
 };
 },{"../utilities/zeros-2d":"C4Cz","./types":"pX1U","../utilities/kernel":"L30b"}],"JVtt":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -37831,19 +38641,23 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
 
 function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
 
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 var _require = require('./layer/recurrent-connection'),
     RecurrentConnection = _require.RecurrentConnection;
@@ -37854,165 +38668,152 @@ var _require2 = require('./layer/recurrent-input'),
 var _require3 = require('./layer/recurrent-zeros'),
     RecurrentZeros = _require3.RecurrentZeros;
 
+var _require4 = require('./layer/types'),
+    Model = _require4.Model,
+    InternalModel = _require4.InternalModel;
+
+var _require5 = require('./layer/target'),
+    Target = _require5.Target;
+
 var flattenLayers = require('./utilities/flatten-layers');
 
-var mse2d = require('./utilities/mse-2d');
+var _require6 = require('./feed-forward'),
+    FeedForward = _require6.FeedForward;
 
-var _require4 = require('./feed-forward'),
-    FeedForward = _require4.FeedForward; // const Base from './layer/base'
+var _require7 = require('./utilities/kernel'),
+    release = _require7.release,
+    clone = _require7.clone;
 
-
-var Recurrent =
-/*#__PURE__*/
-function (_FeedForward) {
+var Recurrent = /*#__PURE__*/function (_FeedForward) {
   _inherits(Recurrent, _FeedForward);
+
+  var _super = _createSuper(Recurrent);
 
   function Recurrent() {
     _classCallCheck(this, Recurrent);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(Recurrent).apply(this, arguments));
+    return _super.apply(this, arguments);
   }
 
   _createClass(Recurrent, [{
     key: "_connectLayers",
     value: function _connectLayers() {
-      var initialLayers = [];
       var inputLayer = this.inputLayer();
-      this._inputLayer = inputLayer;
-      this.layers.push(inputLayer);
 
       var hiddenLayers = this._connectHiddenLayers(inputLayer);
 
-      this._hiddenLayerSets = hiddenLayers;
-
-      this._outputConnection.setLayer(hiddenLayers[hiddenLayers.length - 1]);
-
-      var outputLayer = this.outputLayer(this._outputConnection, hiddenLayers.length);
-      this._outputLayer = outputLayer;
-      this.layers.push(outputLayer);
-      initialLayers.push(inputLayer);
-      initialLayers.push.apply(initialLayers, _toConsumableArray(hiddenLayers));
-      initialLayers.push(outputLayer);
-      var flattenedLayers = flattenLayers(initialLayers);
-      this._inputLayers = flattenedLayers.slice(0, flattenedLayers.indexOf(inputLayer) + 1);
-      this._hiddenLayerSets = [flattenedLayers.slice(flattenedLayers.indexOf(inputLayer) + 1, flattenedLayers.indexOf(hiddenLayers[hiddenLayers.length - 1]) + 1)];
-      this._outputLayers = flattenedLayers.slice(flattenedLayers.indexOf(hiddenLayers[hiddenLayers.length - 1]) + 1);
-
-      this._outputLayers.unshift();
-
-      this._recurrentIndices = [];
-      this._model = [];
-
-      for (var i = 0; i < this._hiddenLayerSets[0].length; i++) {
-        if (Object.getPrototypeOf(this._hiddenLayerSets[0][i].constructor).name === 'Model') {
-          this._model.push(this._hiddenLayerSets[0][i]);
-
-          this._hiddenLayerSets[0].splice(i, 1);
-        }
-      }
-
-      for (var _i = 0; _i < hiddenLayers.length; _i++) {
-        this._recurrentIndices.push(this._hiddenLayerSets[0].indexOf(hiddenLayers[_i]));
-      }
+      var outputLayer = this.outputLayer(hiddenLayers[hiddenLayers.length - 1]);
+      return {
+        inputLayer: inputLayer,
+        hiddenLayers: hiddenLayers,
+        outputLayer: outputLayer
+      };
     }
   }, {
-    key: "_connectHiddenLayers",
-    value: function _connectHiddenLayers(previousLayer) {
-      this._hiddenLayers = [];
-      var hiddenLayers = [];
+    key: "_connectLayersDeep",
+    value: function _connectLayersDeep() {
+      var layers = [];
+      var previousLayers = this._layerSets[this._layerSets.length - 1];
+      var usedHiddenLayerOutputIndex = 0;
 
-      for (var i = 0; i < this.hiddenLayers.length; i++) {
-        var recurrentInput = new RecurrentZeros();
-        var hiddenLayer = this.hiddenLayers[i](previousLayer, recurrentInput, i);
-
-        this._hiddenLayers.push(hiddenLayer);
-
-        previousLayer = hiddenLayer;
-        hiddenLayers.push(hiddenLayer);
-        this.layers.push(hiddenLayer);
-      }
-
-      return hiddenLayers;
-    }
-  }, {
-    key: "_connectHiddenLayersDeep",
-    value: function _connectHiddenLayersDeep() {
-      var hiddenLayers = [];
-      var previousHiddenLayers = this._hiddenLayerSets[this._hiddenLayerSets.length - 1];
-      var firstLayer = this._hiddenLayerSets[0];
-      var recurrentIndex = 0;
-
-      for (var i = 0; i < previousHiddenLayers.length; i++) {
-        var previousHiddenLayer = previousHiddenLayers[i];
+      for (var i = 0; i < previousLayers.length; i++) {
+        var previousLayer = previousLayers[i];
         var layer = null;
 
-        switch (Object.getPrototypeOf(firstLayer[i].constructor).name) {
+        switch (Object.getPrototypeOf(previousLayer.constructor).name) {
           case 'Activation':
             {
-              var inputLayer = hiddenLayers[previousHiddenLayers.indexOf(previousHiddenLayer.inputLayer)] || previousHiddenLayer.inputLayer;
-              layer = new previousHiddenLayer.constructor(inputLayer);
+              layer = new previousLayer.constructor(findInputLayer(previousLayer.inputLayer));
+              break;
+            }
+
+          case 'EntryPoint':
+            {
+              layer = new previousLayer.constructor(layerSettings(previousLayer));
               break;
             }
 
           case 'Filter':
             {
-              var settings = previousHiddenLayer;
-
-              var _inputLayer = hiddenLayers[previousHiddenLayers.indexOf(previousHiddenLayer.inputLayer)] || previousHiddenLayer.inputLayer;
-
-              layer = new previousHiddenLayer.constructor(settings, _inputLayer);
+              layer = new previousLayer.constructor(layerSettings(previousLayer.inputLayer), findInputLayer(previousLayer.inputLayer));
               break;
             }
 
           case 'Internal':
             {
-              switch (previousHiddenLayer.constructor.name) {
+              var previousHiddenLayerOutput = previousLayers[this._hiddenLayerOutputIndices[usedHiddenLayerOutputIndex++]];
+
+              switch (previousLayer.constructor.name) {
                 case 'RecurrentConnection':
-                  break;
+                  throw new Error('unfinished');
 
                 case 'RecurrentInput':
+                  layer = new RecurrentInput(previousHiddenLayerOutput);
+                  break;
+
                 case 'RecurrentZeros':
                 default:
-                  layer = new RecurrentInput();
-                  layer.setDimensions(previousHiddenLayer.width, previousHiddenLayer.height);
-                  layer.setRecurrentInput(previousHiddenLayers[this._recurrentIndices[recurrentIndex]]);
-                  recurrentIndex++;
+                  layer = new RecurrentInput(previousHiddenLayerOutput);
                   break;
               }
 
               break;
             }
 
+          case 'InternalModel':
           case 'Model':
             {
-              layer = previousHiddenLayer;
+              layer = previousLayer;
               break;
             }
 
           case 'Modifier':
             {
-              var _inputLayer2 = hiddenLayers[previousHiddenLayers.indexOf(previousHiddenLayer.inputLayer)] || previousHiddenLayer.inputLayer;
-
-              layer = new previousHiddenLayer.constructor(_inputLayer2);
+              layer = new previousLayer.constructor(findInputLayer(previousLayer.inputLayer));
               break;
             }
 
           case 'Operator':
             {
-              var inputLayer1 = hiddenLayers[previousHiddenLayers.indexOf(previousHiddenLayer.inputLayer1)] || previousHiddenLayer.inputLayer1;
-              var inputLayer2 = hiddenLayers[previousHiddenLayers.indexOf(previousHiddenLayer.inputLayer2)] || previousHiddenLayer.inputLayer2;
-              layer = new previousHiddenLayer.constructor(inputLayer1, inputLayer2);
+              layer = new previousLayer.constructor(findInputLayer(previousLayer.inputLayer1), findInputLayer(previousLayer.inputLayer2), layerSettings(previousLayer));
               break;
             }
 
           default:
-            throw new Error("hidden layer ".concat(previousHiddenLayer.constructor.name, " extends unknown hidden layer ").concat(Object.getPrototypeOf(previousHiddenLayer.constructor).name));
+            throw new Error("hidden layer ".concat(previousLayer.constructor.name, " extends unknown hidden layer ").concat(Object.getPrototypeOf(previousLayer.constructor).name));
         }
 
-        hiddenLayers[i] = layer;
+        layers.push(layer);
       }
 
-      this._hiddenLayerSets.push(hiddenLayers);
+      function findInputLayer(inputLayer) {
+        var index = previousLayers.indexOf(inputLayer);
+        if (index < 0) throw new Error('unable to find layer');
+        return layers[index];
+      }
+
+      function layerSettings(layer) {
+        return _objectSpread(_objectSpread({}, layer), {}, {
+          weights: null,
+          deltas: null,
+          errors: null,
+          praxis: null
+        });
+      }
+
+      return layers;
+    }
+  }, {
+    key: "_connectHiddenLayers",
+    value: function _connectHiddenLayers(previousLayer) {
+      var hiddenLayers = [];
+
+      for (var i = 0; i < this.hiddenLayers.length; i++) {
+        var recurrentInput = new RecurrentZeros();
+        var hiddenLayer = this.hiddenLayers[i](previousLayer, recurrentInput, i);
+        previousLayer = hiddenLayer;
+        hiddenLayers.push(hiddenLayer);
+      }
 
       return hiddenLayers;
     }
@@ -38020,141 +38821,195 @@ function (_FeedForward) {
     key: "initialize",
     value: function initialize() {
       this.layers = [];
-      this._previousInputs = [];
       this._outputConnection = new RecurrentConnection();
 
-      this._connectLayers();
+      var _this$_connectLayers = this._connectLayers(),
+          inputLayer = _this$_connectLayers.inputLayer,
+          hiddenLayers = _this$_connectLayers.hiddenLayers,
+          outputLayer = _this$_connectLayers.outputLayer;
 
-      this.initializeLayers(this._model);
-      this.initializeLayers(this._inputLayers);
-      this.initializeLayers(this._hiddenLayerSets[0]);
-      this.initializeLayers(this._outputLayers);
+      var layerSet = flattenLayers([inputLayer].concat(_toConsumableArray(hiddenLayers), [outputLayer]));
+      this._hiddenLayerOutputIndices = hiddenLayers.map(function (l) {
+        return layerSet.indexOf(l);
+      });
+      this._layerSets = [layerSet];
+      this._model = layerSet.filter(function (l) {
+        return l instanceof Model || l instanceof InternalModel;
+      });
+      this.initializeLayers(layerSet);
     }
   }, {
     key: "initializeDeep",
     value: function initializeDeep() {
-      var hiddenLayers = this._connectHiddenLayersDeep();
+      var layers = this._connectLayersDeep();
 
-      for (var i = 0; i < hiddenLayers.length; i++) {
-        var hiddenLayer = hiddenLayers[i];
-        hiddenLayer.reuseKernels(this._hiddenLayerSets[0][i]);
+      for (var i = 0; i < layers.length; i++) {
+        var layer = layers[i];
+        layer.reuseKernels(this._layerSets[0][i]);
       }
+
+      this._layerSets.push(layers);
+    }
+  }, {
+    key: "run",
+    value: function run(input) {
+      while (this._layerSets.length <= input.length) {
+        this.initializeDeep();
+      }
+
+      return _get(_getPrototypeOf(Recurrent.prototype), "run", this).call(this, input);
     }
   }, {
     key: "runInput",
     value: function runInput(input) {
-      var max = input.length - 1;
+      while (this._layerSets.length < input.length) {
+        this.initializeDeep();
+      }
 
-      for (var x = 0; x < max; x++) {
-        var hiddenLayers = this._hiddenLayerSets[x];
-        var hiddenConnection = hiddenLayers[hiddenLayers.length - 1];
+      var max = input.length - 1; // last output will be compared with last index
 
-        this._outputConnection.setLayer(hiddenConnection);
+      for (var x = 0; x <= max; x++) {
+        var layerSet = this._layerSets[x];
+        layerSet[0].predict([new Float32Array([input[x]])]);
 
-        this._inputLayers[0].predict([input[x]]);
-
-        this._previousInputs.push(this._inputLayers[0].weights);
-
-        for (var i = 1; i < this._inputLayers.length; i++) {
-          this._inputLayers[i].predict();
-        }
-
-        for (var _i2 = 0; _i2 < this._hiddenLayerSets[x].length; _i2++) {
-          this._hiddenLayerSets[x][_i2].predict();
-        }
-
-        for (var _i3 = 0; _i3 < this._outputLayers.length; _i3++) {
-          this._outputLayers[_i3].predict();
+        for (var i = 1; i < layerSet.length; i++) {
+          layerSet[i].predict();
         }
       }
 
-      return this._outputLayers[this._outputLayers.length - 1].weights;
+      var lastLayerUsed = this._layerSets[max];
+      var result = lastLayerUsed[lastLayerUsed.length - 1].weights;
+      this.end();
+      return result;
+    }
+  }, {
+    key: "end",
+    value: function end() {
+      var x = this._layerSets.length - 1;
+      var lastLayerSet = this._layerSets[x];
+      lastLayerSet[0].predict([new Float32Array([0])]);
+
+      for (var i = 1; i < lastLayerSet.length; i++) {
+        lastLayerSet[i].predict();
+      }
+    }
+  }, {
+    key: "transferData",
+    value: function transferData(formattedData) {
+      return formattedData;
     }
   }, {
     key: "_prepTraining",
     value: function _prepTraining(data, options) {
       var stats = _get(_getPrototypeOf(Recurrent.prototype), "_prepTraining", this).call(this, data, options);
 
-      this.initializeDeep();
+      this.verifyIsInitialized(data);
       return stats;
+    }
+    /**
+     *
+     * @param data
+     * @returns {Number} error
+     */
+
+  }, {
+    key: "_calculateTrainingError",
+    value: function _calculateTrainingError(data) {
+      var sum = new Float32Array(1);
+
+      for (var i = 0; i < data.length; ++i) {
+        var prevSum = sum;
+
+        var error = this._trainPattern(data[i], true);
+
+        sum = this.meanSquaredError.add(sum, error);
+        release(error);
+        release(prevSum);
+      }
+
+      var result = this.meanSquaredError.divide(data.length, sum);
+      release(sum);
+
+      if (result.toArray) {
+        var resultArray = result.toArray();
+        return resultArray[0];
+      }
+
+      return result[0];
+    }
+  }, {
+    key: "formatData",
+    value: function formatData(data) {
+      return data;
     }
   }, {
     key: "_calculateDeltas",
-    value: function _calculateDeltas(target, offset) {
-      for (var x = target.length - 1; x >= 0; x--) {
-        var hiddenLayersIndex = offset + x;
-        var hiddenLayers = this._hiddenLayerSets[hiddenLayersIndex];
-        var hiddenConnection = hiddenLayers[hiddenLayers.length - 1];
+    value: function _calculateDeltas(target) {
+      var lastLayerSet = this._layerSets[this._layerSets.length - 1]; // Iterate from the second to last layer backwards, propagating 0's
 
-        this._outputConnection.setLayer(hiddenConnection);
+      for (var i = lastLayerSet.length - 2; i >= 0; i--) {
+        lastLayerSet[i].compare();
+      }
 
-        if (this._previousInputs.length > 0) {
-          this._inputLayers[0].weights = this._previousInputs.pop();
-        }
+      for (var x = target.length - 2; x >= 0; x--) {
+        var layerSet = this._layerSets[x];
+        layerSet[layerSet.length - 1].compare(new Float32Array([target[x + 1]]));
 
-        this._outputLayers[this._outputLayers.length - 1].compare([[target[x]]]);
-
-        for (var i = this._outputLayers.length - 2; i >= 0; i--) {
-          this._outputLayers[i].compare();
-        }
-
-        for (var _i4 = hiddenLayers.length - 1; _i4 >= 0; _i4--) {
-          hiddenLayers[_i4].compare();
-        }
-
-        for (var _i5 = this._inputLayers.length - 1; _i5 >= 1; _i5--) {
-          this._inputLayers[_i5].compare();
+        for (var _i = layerSet.length - 2; _i >= 0; _i--) {
+          layerSet[_i].compare();
         }
       }
     }
   }, {
     key: "adjustWeights",
     value: function adjustWeights() {
-      for (var hiddenLayersIndex = 0; hiddenLayersIndex < this._hiddenLayerSets.length; hiddenLayersIndex++) {
-        var hiddenLayers = this._hiddenLayerSets[hiddenLayersIndex];
-        var hiddenConnection = hiddenLayers[hiddenLayers.length - 1];
+      var _model = this._model;
 
-        this._outputConnection.setLayer(hiddenConnection);
+      for (var i = 0; i < _model.length; i++) {
+        _model[i].learn();
+      }
+    }
+    /**
+     * @param data
+     * @private
+     */
 
-        for (var i = 0; i < this._inputLayers.length; i++) {
-          this._inputLayers[i].learn();
-        }
-
-        for (var _i6 = 0; _i6 < hiddenLayers.length; _i6++) {
-          hiddenLayers[_i6].learn();
-        }
-
-        for (var _i7 = 0; _i7 < this._outputLayers.length; _i7++) {
-          this._outputLayers[_i7].learn();
-        }
-
-        for (var _i8 = 0; _i8 < this._model.length; _i8++) {
-          this._model[_i8].learn();
-        }
+  }, {
+    key: "_trainPatterns",
+    value: function _trainPatterns(data) {
+      for (var i = 0; i < data.length; ++i) {
+        this._trainPattern(data[i], false);
       }
     }
     /**
      *
      * @param {number[]} input
-     * @param {number[]} target
      * @param {Boolean} [logErrorRate]
      */
 
   }, {
     key: "_trainPattern",
-    value: function _trainPattern(input, target, logErrorRate) {
+    value: function _trainPattern(input, logErrorRate) {
       // forward propagate
       this.runInput(input); // back propagate
 
-      this._calculateDeltas(target, input.length - 1);
-
-      this._calculateDeltas(input.slice(1), 0);
+      this._calculateDeltas(input);
 
       this.adjustWeights();
 
       if (logErrorRate) {
-        var outputLayer = this._outputLayers[this._outputLayers.length - 1];
-        return mse2d(outputLayer.errors.hasOwnProperty('toArray') ? outputLayer.errors.toArray() : outputLayer.errors);
+        var meanSquaredError = this.meanSquaredError;
+        var error = new Float32Array(1);
+
+        for (var i = 0, max = input.length - 1; i < max; i++) {
+          var layerSet = this._layerSets[i];
+          var lastLayer = layerSet[layerSet.length - 1];
+          var prevError = error;
+          error = meanSquaredError.addAbsolute(prevError, lastLayer.errors);
+          release(prevError);
+        }
+
+        return clone(meanSquaredError.divide(input.length, error));
       }
 
       return null;
@@ -38186,6 +39041,12 @@ function (_FeedForward) {
         _hiddenLayerSets: null,
 
         /**
+         * a 2 dimensional array of layers defined for each recursion
+         */
+        _layerSets: null,
+        _hiddenLayerOutputIndices: null,
+
+        /**
          * _outputLayers are a 1 dimensional array of output layers defined once
          * @type Object[]
          * @private
@@ -38205,7 +39066,7 @@ function (_FeedForward) {
 module.exports = {
   Recurrent: Recurrent
 };
-},{"./layer/recurrent-connection":"sLgS","./layer/recurrent-input":"kvWK","./layer/recurrent-zeros":"ZE4I","./utilities/flatten-layers":"Z71k","./utilities/mse-2d":"uJqb","./feed-forward":"eqC7"}],"v84l":[function(require,module,exports) {
+},{"./layer/recurrent-connection":"sLgS","./layer/recurrent-input":"kvWK","./layer/recurrent-zeros":"ZE4I","./layer/types":"pX1U","./layer/target":"xXoy","./utilities/flatten-layers":"Z71k","./feed-forward":"eqC7","./utilities/kernel":"L30b"}],"v84l":[function(require,module,exports) {
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -38221,9 +39082,7 @@ var zeros = require('../../utilities/zeros');
  */
 
 
-var Matrix =
-/*#__PURE__*/
-function () {
+var Matrix = /*#__PURE__*/function () {
   function Matrix(rows, columns) {
     _classCallCheck(this, Matrix);
 
@@ -38387,62 +39246,24 @@ function () {
 }();
 
 module.exports = Matrix;
-},{"../../utilities/zeros":"M4LY"}],"Sd27":[function(require,module,exports) {
-function randomFloat(a, b) {
-  return Math.random() * (b - a) + a;
-} // Random numbers utils
-
-
-function gaussRandom() {
-  if (gaussRandom.returnV) {
-    gaussRandom.returnV = false;
-    return gaussRandom.vVal;
-  }
-
-  var u = 2 * Math.random() - 1;
-  var v = 2 * Math.random() - 1;
-  var r = u * u + v * v;
-
-  if (r === 0 || r > 1) {
-    return gaussRandom();
-  }
-
-  var c = Math.sqrt(-2 * Math.log(r) / r);
-  gaussRandom.vVal = v * c; // cache this
-
-  gaussRandom.returnV = true;
-  return u * c;
-}
-
-function randomInteger(a, b) {
-  return Math.floor(Math.random() * (b - a) + a);
-}
-
-function randomN(mu, std) {
-  return mu + gaussRandom() * std;
-}
-
-gaussRandom.returnV = false;
-gaussRandom.vVal = 0;
-module.exports = {
-  randomFloat: randomFloat,
-  randomInteger: randomInteger,
-  randomN: randomN
-};
-},{}],"zGuK":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+},{"../../utilities/zeros":"M4LY"}],"zGuK":[function(require,module,exports) {
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var Matrix = require('.');
 
@@ -38456,17 +39277,17 @@ var _require = require('../../utilities/random'),
  */
 
 
-var RandomMatrix =
-/*#__PURE__*/
-function (_Matrix) {
+var RandomMatrix = /*#__PURE__*/function (_Matrix) {
   _inherits(RandomMatrix, _Matrix);
+
+  var _super = _createSuper(RandomMatrix);
 
   function RandomMatrix(rows, columns, std) {
     var _this;
 
     _classCallCheck(this, RandomMatrix);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(RandomMatrix).call(this, rows, columns));
+    _this = _super.call(this, rows, columns);
     _this.rows = rows;
     _this.columns = columns;
     _this.std = std;
@@ -38483,19 +39304,23 @@ function (_Matrix) {
 
 module.exports = RandomMatrix;
 },{".":"v84l","../../utilities/random":"Sd27"}],"yuFB":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var Matrix = require('.');
 
@@ -38507,17 +39332,17 @@ var ones = require('../../utilities/ones');
  */
 
 
-var OnesMatrix =
-/*#__PURE__*/
-function (_Matrix) {
+var OnesMatrix = /*#__PURE__*/function (_Matrix) {
   _inherits(OnesMatrix, _Matrix);
+
+  var _super = _createSuper(OnesMatrix);
 
   function OnesMatrix(rows, columns) {
     var _this;
 
     _classCallCheck(this, OnesMatrix);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(OnesMatrix).call(this, rows, columns));
+    _this = _super.call(this, rows, columns);
     _this.rows = rows;
     _this.columns = columns;
     _this.weights = ones(rows * columns);
@@ -38702,7 +39527,7 @@ module.exports = function relu(product, left) {
 /**
  * adds {from} deltas to {m} deltas when {m} weights are above other a threshold of 0
  * @param {Matrix} product
- * @param {Matrix} m
+ * @param {Matrix} left
  */
 module.exports = function reluB(product, left) {
   for (var i = 0; i < product.deltas.length; i++) {
@@ -38876,9 +39701,7 @@ var tanhB = require('./tanh-b');
 
 var softmax = require('./softmax');
 
-var Equation =
-/*#__PURE__*/
-function () {
+var Equation = /*#__PURE__*/function () {
   function Equation() {
     _classCallCheck(this, Equation);
 
@@ -39191,9 +40014,11 @@ function () {
 
         if (!state.hasOwnProperty('backpropagationFn')) {
           continue;
-        }
+        } // console.log('backfn', state.backpropagationFn.name);
+        // console.log('before', state.product.deltas);
 
-        state.backpropagationFn(state.product, state.left, state.right);
+
+        state.backpropagationFn(state.product, state.left, state.right); // console.log('after', state.product.deltas);
       }
 
       return state.product;
@@ -39310,13 +40135,17 @@ module.exports = function maxI(m) {
   return maxix;
 };
 },{}],"u3NV":[function(require,module,exports) {
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -39330,9 +40159,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * @param maxThreshold
  * @constructor
  */
-var DataFormatter =
-/*#__PURE__*/
-function () {
+var DataFormatter = /*#__PURE__*/function () {
   function DataFormatter(values) {
     var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
@@ -39423,6 +40250,8 @@ function () {
 
       if (typeof value1 === 'string') {
         result = this.toIndexes(value1.split('').concat(['stop-input', 'start-output']), maxThreshold);
+      } else if (typeof value1 === 'number') {
+        result = this.toIndexes(value1.toString().split('').concat(['stop-input', 'start-output']), maxThreshold);
       } else {
         result = this.toIndexes(value1.concat(['stop-input', 'start-output']), maxThreshold);
       }
@@ -39569,9 +40398,80 @@ function () {
 
   return DataFormatter;
 }();
+/**
+ *
+ * @param {*[]} data
+ * @returns {Number[]}
+ */
 
-module.exports = DataFormatter;
+
+function defaultRNNFormatter(data) {
+  if (typeof data[0] !== 'string' && !Array.isArray(data[0]) && (!data[0].hasOwnProperty('input') || !data[0].hasOwnProperty('output'))) {
+    return data;
+  }
+
+  var values = [];
+  var result = [];
+
+  if (typeof data[0] === 'string' || typeof data[0] === 'number' || Array.isArray(data[0])) {
+    if (!this.dataFormatter) {
+      for (var i = 0; i < data.length; i++) {
+        values.push(validateAndCast(data[i]));
+      }
+
+      this.dataFormatter = new DataFormatter(values);
+      this.dataFormatter.addUnrecognized();
+    }
+
+    for (var _i = 0, max = data.length; _i < max; _i++) {
+      result.push(this.formatDataIn(data[_i]));
+    }
+  } else if (data[0].input && data[0].output) {
+    if (!this.dataFormatter) {
+      for (var _i2 = 0; _i2 < data.length; _i2++) {
+        var datum = data[_i2];
+        values.push(validateAndCast(datum.input), validateAndCast(datum.output));
+      }
+
+      this.dataFormatter = DataFormatter.fromArrayInputOutput(values);
+      this.dataFormatter.addUnrecognized();
+    }
+
+    for (var _i3 = 0, _max = data.length; _i3 < _max; _i3++) {
+      result.push(this.formatDataIn(validateAndCast(data[_i3].input), validateAndCast(data[_i3].output)));
+    }
+  } else {
+    throw new Error('unrecognized data');
+  }
+
+  return result;
+
+  function validateAndCast(value) {
+    if (typeof value === 'string') return value;
+    if (typeof value === 'number') return value.toString();
+    if (typeof value[0] === 'string') return value;
+
+    if (typeof value[0] === 'number') {
+      return value.map(function (value) {
+        return value.toString();
+      });
+    }
+
+    throw new Error('unrecognized value, expected string[], string, number[], or number');
+  }
+}
+
+module.exports = {
+  DataFormatter: DataFormatter,
+  defaultRNNFormatter: defaultRNNFormatter
+};
 },{}],"gJGF":[function(require,module,exports) {
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -39597,13 +40497,13 @@ var _require = require('../utilities/random'),
 
 var zeros = require('../utilities/zeros');
 
-var DataFormatter = require('../utilities/data-formatter');
+var _require2 = require('../utilities/data-formatter'),
+    DataFormatter = _require2.DataFormatter,
+    defaultRNNFormatter = _require2.defaultRNNFormatter;
 
 var NeuralNetwork = require('../neural-network');
 
-var RNN =
-/*#__PURE__*/
-function () {
+var RNN = /*#__PURE__*/function () {
   function RNN() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -39612,7 +40512,7 @@ function () {
     var defaults = this.constructor.defaults;
     Object.assign(this, defaults, options);
     this.trainOpts = {};
-    this.updateTrainingOptions(Object.assign({}, this.constructor.trainDefaults, options));
+    this.updateTrainingOptions(_objectSpread(_objectSpread({}, this.constructor.trainDefaults), options));
     this.stepCache = {};
     this.runs = 0;
     this.ratioClipped = null;
@@ -39649,7 +40549,7 @@ function () {
   }, {
     key: "createHiddenLayers",
     value: function createHiddenLayers() {
-      //0 is end, so add 1 to offset
+      // 0 is end, so add 1 to offset
       this.model.hiddenLayers.push(this.constructor.getModel(this.hiddenLayers[0], this.inputSize));
       var prevSize = this.hiddenLayers[0];
 
@@ -39770,7 +40670,7 @@ function () {
       var equation;
 
       while (model.equations.length <= input.length + 1) {
-        //last is zero
+        // last is zero
         this.bindEquation();
       }
 
@@ -40035,13 +40935,18 @@ function () {
     key: "train",
     value: function train(data) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      this.trainOpts = options = Object.assign({}, this.constructor.trainDefaults, options);
-      var iterations = options.iterations;
-      var errorThresh = options.errorThresh;
+      this.trainOpts = options = _objectSpread(_objectSpread({}, this.constructor.trainDefaults), options);
+      var _options = options,
+          iterations = _options.iterations;
+      var _options2 = options,
+          errorThresh = _options2.errorThresh;
       var log = options.log === true ? console.log : options.log;
-      var logPeriod = options.logPeriod;
-      var callback = options.callback;
-      var callbackPeriod = options.callbackPeriod;
+      var _options3 = options,
+          logPeriod = _options3.logPeriod;
+      var _options4 = options,
+          callback = _options4.callback;
+      var _options5 = options,
+          callbackPeriod = _options5.callbackPeriod;
       var error = Infinity;
       var i;
 
@@ -40060,7 +40965,10 @@ function () {
         }
 
         error = sum / data.length;
-        if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
+
+        if (isNaN(error)) {
+          throw new Error('Network error rate is unexpected NaN, check network configurations and try again. Most probably input format is not correct or training data is not enough. ');
+        }
 
         if (log && i % logPeriod === 0) {
           log("iterations: ".concat(i, ", training error: ").concat(error));
@@ -40197,9 +41105,9 @@ function () {
 
             if (j > -1 && (m === state.left || m === state.right)) {
               return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
-            } else {
-              return "new Matrix(".concat(m.rows, ", ").concat(m.columns, ")");
             }
+
+            return "new Matrix(".concat(m.rows, ", ").concat(m.columns, ")");
           }
 
           if (m === state.product) return "states[".concat(i, "].product");
@@ -40255,7 +41163,7 @@ function () {
 
       function fileName(fnName) {
         return "src/recurrent/matrix/".concat(fnName.replace(/[A-Z]/g, function (value) {
-          return '-' + value.toLowerCase();
+          return "-".concat(value.toLowerCase());
         }), ".js");
       }
 
@@ -40274,7 +41182,7 @@ function () {
         }
       }
 
-      var src = "\n  if (typeof rawInput === 'undefined') rawInput = [];\n  if (typeof isSampleI === 'undefined') isSampleI = false;\n  if (typeof temperature === 'undefined') temperature = 1;\n  var json = ".concat(jsonString, ";\n  ").concat(this.dataFormatter ? "".concat(this.dataFormatter.toFunctionString(), ";\n  Object.assign(dataFormatter, json.options.dataFormatter);") : '', "\n  ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? "const formatDataIn = function (input, output) { ".concat(toInner(this.formatDataIn.toString()), " }.bind({ dataFormatter });") : '', "\n  ").concat(this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? "const formatDataOut = function formatDataOut(input, output) { ".concat(toInner(this.formatDataOut.toString()), " }.bind({ dataFormatter });") : '', "\n  var input = ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput', ";\n  var maxPredictionLength = input.length + ").concat(this.maxPredictionLength, ";\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n    \n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n    \n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ").concat(this.dataFormatter && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })', ";\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros.toString(), "\n  ").concat(softmax.toString(), "\n  ").concat(randomFloat.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString());
+      var src = "\n  if (typeof rawInput === 'undefined') rawInput = [];\n  if (typeof isSampleI === 'undefined') isSampleI = false;\n  if (typeof temperature === 'undefined') temperature = 1;\n  var json = ".concat(jsonString, ";\n  ").concat(this.dataFormatter ? "".concat(this.dataFormatter.toFunctionString(), ";\n  Object.assign(dataFormatter, json.options.dataFormatter);") : '', "\n  ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? "const formatDataIn = function (input, output) { ".concat(toInner(this.formatDataIn.toString()), " }.bind({ dataFormatter });") : '', "\n  ").concat(this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? "const formatDataOut = function formatDataOut(input, output) { ".concat(toInner(this.formatDataOut.toString()), " }.bind({ dataFormatter });") : '', "\n  var input = ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput', ";\n  var maxPredictionLength = input.length + ").concat(this.maxPredictionLength, ";\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n\n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n\n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ").concat(this.dataFormatter && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })', ";\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros.toString(), "\n  ").concat(softmax.toString(), "\n  ").concat(randomFloat.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString());
       return new Function('rawInput', 'isSampleI', 'temperature', cb ? cb(src) : src);
     }
   }, {
@@ -40291,11 +41199,11 @@ function () {
     key: "getModel",
     value: function getModel(hiddenSize, prevSize) {
       return {
-        //wxh
+        // wxh
         weight: new RandomMatrix(hiddenSize, prevSize, 0.08),
-        //whh
+        // whh
         transition: new RandomMatrix(hiddenSize, hiddenSize, 0.08),
-        //bhh
+        // bhh
         bias: new Matrix(hiddenSize, 1)
       };
     }
@@ -40337,45 +41245,7 @@ RNN.defaults = {
    * @param {*[]} data
    * @returns {Number[]}
    */
-  setupData: function setupData(data) {
-    if (typeof data[0] !== 'string' && !Array.isArray(data[0]) && (!data[0].hasOwnProperty('input') || !data[0].hasOwnProperty('output'))) {
-      return data;
-    }
-
-    var values = [];
-    var result = [];
-
-    if (typeof data[0] === 'string' || Array.isArray(data[0])) {
-      if (!this.dataFormatter) {
-        for (var i = 0; i < data.length; i++) {
-          values.push(data[i]);
-        }
-
-        this.dataFormatter = new DataFormatter(values);
-        this.dataFormatter.addUnrecognized();
-      }
-
-      for (var _i = 0, max = data.length; _i < max; _i++) {
-        result.push(this.formatDataIn(data[_i]));
-      }
-    } else {
-      if (!this.dataFormatter) {
-        for (var _i2 = 0; _i2 < data.length; _i2++) {
-          values.push(data[_i2].input);
-          values.push(data[_i2].output);
-        }
-
-        this.dataFormatter = DataFormatter.fromArrayInputOutput(values);
-        this.dataFormatter.addUnrecognized();
-      }
-
-      for (var _i3 = 0, _max = data.length; _i3 < _max; _i3++) {
-        result.push(this.formatDataIn(data[_i3].input, data[_i3].output));
-      }
-    }
-
-    return result;
-  },
+  setupData: defaultRNNFormatter,
 
   /**
    *
@@ -40389,9 +41259,9 @@ RNN.defaults = {
     if (this.dataFormatter) {
       if (this.dataFormatter.indexTable.hasOwnProperty('stop-input')) {
         return this.dataFormatter.toIndexesInputOutput(input, output);
-      } else {
-        return this.dataFormatter.toIndexes(input);
       }
+
+      return this.dataFormatter.toIndexes(input);
     }
 
     return input;
@@ -40443,7 +41313,13 @@ function ArrayLookupTable(data, prop) {
 
 module.exports = ArrayLookupTable;
 },{}],"zri4":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -40451,15 +41327,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var Matrix = require('./matrix');
 
@@ -40480,7 +41360,7 @@ var sampleI = require('./matrix/sample-i');
 
 var maxI = require('./matrix/max-i');
 
-var lookup = require("../lookup");
+var lookup = require('../lookup');
 
 var LookupTable = require('../utilities/lookup-table');
 
@@ -40493,16 +41373,16 @@ var _require2 = require('../utilities/cast'),
     objectToFloat32Arrays = _require2.objectToFloat32Arrays,
     objectToFloat32Array = _require2.objectToFloat32Array;
 
-var RNNTimeStep =
-/*#__PURE__*/
-function (_RNN) {
+var RNNTimeStep = /*#__PURE__*/function (_RNN) {
   _inherits(RNNTimeStep, _RNN);
+
+  var _super = _createSuper(RNNTimeStep);
 
   // eslint-disable-next-line
   function RNNTimeStep(options) {
     _classCallCheck(this, RNNTimeStep);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(RNNTimeStep).call(this, options));
+    return _super.call(this, options);
   }
 
   _createClass(RNNTimeStep, [{
@@ -40513,9 +41393,9 @@ function (_RNN) {
     value: function createOutputMatrix() {
       var model = this.model;
       var outputSize = this.outputSize;
-      var lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1]; //whd
+      var lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1]; // whd
 
-      model.outputConnector = new RandomMatrix(outputSize, lastHiddenSize, 0.08); //bd
+      model.outputConnector = new RandomMatrix(outputSize, lastHiddenSize, 0.08); // bd
 
       model.output = new RandomMatrix(outputSize, 1, 0.08);
     }
@@ -40634,13 +41514,18 @@ function (_RNN) {
     key: "train",
     value: function train(data) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      this.trainOpts = options = Object.assign({}, this.constructor.trainDefaults, options);
-      var iterations = options.iterations;
-      var errorThresh = options.errorThresh;
+      this.trainOpts = options = _objectSpread(_objectSpread({}, this.constructor.trainDefaults), options);
+      var _options = options,
+          iterations = _options.iterations;
+      var _options2 = options,
+          errorThresh = _options2.errorThresh;
       var log = options.log === true ? console.log : options.log;
-      var logPeriod = options.logPeriod;
-      var callback = options.callback;
-      var callbackPeriod = options.callbackPeriod;
+      var _options3 = options,
+          logPeriod = _options3.logPeriod;
+      var _options4 = options,
+          callback = _options4.callback;
+      var _options5 = options,
+          callbackPeriod = _options5.callbackPeriod;
 
       if (this.inputSize === 1 || !this.inputSize) {
         this.setSize(data);
@@ -40660,7 +41545,7 @@ function (_RNN) {
         }
 
         error = sum / data.length;
-        if (isNaN(error)) throw new Error('network error rate is unexpected NaN, check network configurations and try again');
+        if (isNaN(error)) throw new Error('Network error rate is unexpected NaN, check network configurations and try again. Most probably input format is not correct or training data is not enough. ');
 
         if (log && i % logPeriod === 0) {
           log("iterations: ".concat(i, ", training error: ").concat(error));
@@ -40694,12 +41579,10 @@ function (_RNN) {
       } else if (data[0].length > 0) {
         if (data[0][0].length > 0) {
           this.trainInput = this.trainArrays;
+        } else if (this.inputSize > 1) {
+          this.trainInput = this.trainArrays;
         } else {
-          if (this.inputSize > 1) {
-            this.trainInput = this.trainArrays;
-          } else {
-            this.trainInput = this.trainNumbers;
-          }
+          this.trainInput = this.trainNumbers;
         }
       }
 
@@ -40778,7 +41661,7 @@ function (_RNN) {
       var lastOutput;
 
       for (var i = 0; i < input.length; i++) {
-        lastOutput = equations[i].runInput([input[i]]);
+        lastOutput = equations[i].runInput(new Float32Array([input[i]]));
       }
 
       this.end();
@@ -41744,7 +42627,7 @@ function (_RNN) {
 
       function fileName(fnName) {
         return "src/recurrent/matrix/".concat(fnName.replace(/[A-Z]/g, function (value) {
-          return '-' + value.toLowerCase();
+          return "-".concat(value.toLowerCase());
         }), ".js");
       }
 
@@ -41764,7 +42647,7 @@ function (_RNN) {
       }
 
       var forceForecast = this.inputSize === 1 && this.outputLookup;
-      var src = "\n  var input = ".concat(this.inputLookup ? 'lookupInput(rawInput)' : 'rawInput', ";\n  var json = ").concat(jsonString, ";\n  var output = [];\n  var states = [];\n  var prevStates;\n  var state;\n  var max = ").concat(forceForecast ? inputLookup === outputLookup ? inputLookupLength : "input.length + ".concat(outputLookupLength - 1) : 'input.length', ";\n  for (var _i = 0; _i < max; _i++) {\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      \n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n    ").concat(inputSize === 1 && inputLookup ? 'if (_i >= input.length - 1) { output.push(state.product.weights); }' : 'output = state.product.weights;', "\n  }\n  ").concat(outputLookup ? outputLookup === inputLookup ? 'return lookupOutputPartial(output, input)' : 'return lookupOutput(output)' : inputSize === 1 ? 'return output[0]' : 'return output', ";\n  ").concat(formatInputData(), "\n  ").concat(formatOutputData(), "\n  \n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros.toString(), "\n  ").concat(softmax.toString().replace('_2.default', 'Matrix'), "\n  ").concat(randomFloat.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString());
+      var src = "\n  var input = ".concat(this.inputLookup ? 'lookupInput(rawInput)' : 'rawInput', ";\n  var json = ").concat(jsonString, ";\n  var output = [];\n  var states = [];\n  var prevStates;\n  var state;\n  var max = ").concat(forceForecast ? inputLookup === outputLookup ? inputLookupLength : "input.length + ".concat(outputLookupLength - 1) : 'input.length', ";\n  for (var _i = 0; _i < max; _i++) {\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n    ").concat(inputSize === 1 && inputLookup ? 'if (_i >= input.length - 1) { output.push(state.product.weights); }' : 'output = state.product.weights;', "\n  }\n  ").concat(outputLookup ? outputLookup === inputLookup ? 'return lookupOutputPartial(output, input)' : 'return lookupOutput(output)' : inputSize === 1 ? 'return output[0]' : 'return output', ";\n  ").concat(formatInputData(), "\n  ").concat(formatOutputData(), "\n\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros.toString(), "\n  ").concat(softmax.toString().replace('_2.default', 'Matrix'), "\n  ").concat(randomFloat.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString());
       return new Function('rawInput', cb ? cb(src) : src);
     }
   }]);
@@ -41785,7 +42668,7 @@ RNNTimeStep.defaults = {
 RNNTimeStep.trainDefaults = RNN.trainDefaults;
 module.exports = RNNTimeStep;
 },{"./matrix":"v84l","./matrix/random-matrix":"zGuK","./matrix/equation":"ytIu","./rnn":"gJGF","../utilities/zeros":"M4LY","./matrix/softmax":"Ens1","../utilities/random":"Sd27","./matrix/sample-i":"lOwB","./matrix/max-i":"wnUe","../lookup":"Q1a6","../utilities/lookup-table":"kAwF","../utilities/array-lookup-table":"V51U","../utilities/cast":"Z8Xv"}],"e2Ix":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -41793,15 +42676,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var Matrix = require('./matrix');
 
@@ -41809,15 +42696,15 @@ var RandomMatrix = require('./matrix/random-matrix');
 
 var RNN = require('./rnn');
 
-var LSTM =
-/*#__PURE__*/
-function (_RNN) {
+var LSTM = /*#__PURE__*/function (_RNN) {
   _inherits(LSTM, _RNN);
+
+  var _super = _createSuper(LSTM);
 
   function LSTM() {
     _classCallCheck(this, LSTM);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(LSTM).apply(this, arguments));
+    return _super.apply(this, arguments);
   }
 
   _createClass(LSTM, null, [{
@@ -41892,7 +42779,7 @@ function (_RNN) {
 
 module.exports = LSTM;
 },{"./matrix":"v84l","./matrix/random-matrix":"zGuK","./rnn":"gJGF"}],"hEPI":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -41900,15 +42787,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var Matrix = require('./matrix');
 
@@ -41916,15 +42807,15 @@ var LSTM = require('./lstm');
 
 var RNNTimeStep = require('./rnn-time-step');
 
-var LSTMTimeStep =
-/*#__PURE__*/
-function (_RNNTimeStep) {
+var LSTMTimeStep = /*#__PURE__*/function (_RNNTimeStep) {
   _inherits(LSTMTimeStep, _RNNTimeStep);
+
+  var _super = _createSuper(LSTMTimeStep);
 
   function LSTMTimeStep() {
     _classCallCheck(this, LSTMTimeStep);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(LSTMTimeStep).apply(this, arguments));
+    return _super.apply(this, arguments);
   }
 
   _createClass(LSTMTimeStep, null, [{
@@ -41953,7 +42844,7 @@ function (_RNNTimeStep) {
 
 module.exports = LSTMTimeStep;
 },{"./matrix":"v84l","./lstm":"e2Ix","./rnn-time-step":"zri4"}],"wLPK":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -41961,15 +42852,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var Matrix = require('./matrix');
 
@@ -41977,15 +42872,15 @@ var RandomMatrix = require('./matrix/random-matrix');
 
 var RNN = require('./rnn');
 
-var GRU =
-/*#__PURE__*/
-function (_RNN) {
+var GRU = /*#__PURE__*/function (_RNN) {
   _inherits(GRU, _RNN);
+
+  var _super = _createSuper(GRU);
 
   function GRU() {
     _classCallCheck(this, GRU);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(GRU).apply(this, arguments));
+    return _super.apply(this, arguments);
   }
 
   _createClass(GRU, null, [{
@@ -42051,7 +42946,7 @@ function (_RNN) {
 
 module.exports = GRU;
 },{"./matrix":"v84l","./matrix/random-matrix":"zGuK","./rnn":"gJGF"}],"gCoU":[function(require,module,exports) {
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -42059,30 +42954,34 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // import Matrix from './matrix'
 var GRU = require('./gru');
 
 var RNNTimeStep = require('./rnn-time-step');
 
-var GRUTimeStep =
-/*#__PURE__*/
-function (_RNNTimeStep) {
+var GRUTimeStep = /*#__PURE__*/function (_RNNTimeStep) {
   _inherits(GRUTimeStep, _RNNTimeStep);
+
+  var _super = _createSuper(GRUTimeStep);
 
   function GRUTimeStep() {
     _classCallCheck(this, GRUTimeStep);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(GRUTimeStep).apply(this, arguments));
+    return _super.apply(this, arguments);
   }
 
   _createClass(GRUTimeStep, null, [{
@@ -42113,7 +43012,7 @@ module.exports = GRUTimeStep;
 },{"./gru":"wLPK","./rnn-time-step":"zri4"}],"UFo7":[function(require,module,exports) {
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -42371,7 +43270,7 @@ function toSVG(net, options) {
     height: 250
   };
 
-  var mergedOptions = _objectSpread({}, defaultOptions, {}, options);
+  var mergedOptions = _objectSpread(_objectSpread({}, defaultOptions), options);
 
   var width = mergedOptions.width,
       height = mergedOptions.height,
@@ -42419,11 +43318,11 @@ function toSVG(net, options) {
   if (inputs.labels && inputs.labels.length !== sizes[0]) throw new Error('not enough labels for inputs');
 
   if (isRNN) {
-    return wrapSVG(rnnToSVG(_objectSpread({}, mergedOptions, {
+    return wrapSVG(rnnToSVG(_objectSpread(_objectSpread({}, mergedOptions), {}, {
       sizes: sizes
     })), width, height);
   } else {
-    return wrapSVG(neuralNetworkToSVG(_objectSpread({}, mergedOptions, {
+    return wrapSVG(neuralNetworkToSVG(_objectSpread(_objectSpread({}, mergedOptions), {}, {
       sizes: sizes
     })), width, height);
   }
