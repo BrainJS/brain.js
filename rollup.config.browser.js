@@ -6,7 +6,6 @@ import typescript from '@rollup/plugin-typescript';
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
 import { terser } from 'rollup-plugin-terser';
-import * as pkg from './package.json';
 
 const name = 'brain';
 
@@ -46,16 +45,18 @@ export default {
 
   output: [
     {
-      file: pkg.browser.replace('.js', '.min.mjs'),
+      file: 'dist/brain-browser.mjs',
       format: 'es',
       sourcemap: true,
-      plugins: [
-        // Minify bundles
-        terser(),
-      ],
     },
     {
-      file: pkg.browser.replace('.js', '.min.js'),
+      file: 'dist/brain-browser.js',
+      format: 'umd',
+      name,
+      sourcemap: true,
+    },
+    {
+      file: 'dist/brain-browser.min.js',
       format: 'umd',
       name,
       sourcemap: true,
@@ -63,12 +64,6 @@ export default {
         // Minify bundles
         terser(),
       ],
-    },
-    {
-      file: pkg.browser,
-      format: 'umd',
-      name,
-      sourcemap: true,
     },
   ],
 };

@@ -1,6 +1,9 @@
 {
   "author": "Heather Arthur <fayearthur@gmail.com>",
-  "browser": "dist/brain-browser.js",
+  "browser": {
+    "dist/brain.js": "dist/brain-browser.js",
+    "dist/brain.mjs": "dist/brain-browser.mjs"
+  },
   "bugs": {
     "url": "https://github.com/brainjs/brain.js/issues"
   },
@@ -96,8 +99,8 @@
     "gru"
   ],
   "license": "MIT",
-  "main": "dist/brain.cjs.js",
-  "module": "dist/brain.es.mjs",
+  "main": "dist/brain.js",
+  "module": "dist/brain.mjs",
   "name": "brain.js",
   "repository": {
     "type": "git",
@@ -120,5 +123,6 @@
     "watch:test": "jest --watch"
   },
   "typings": "./src/index.d.ts",
+  "unpkg": "dist/brain-browser.min.js",
   "version": "2.0.0-alpha.12"
 }
