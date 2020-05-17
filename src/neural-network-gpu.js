@@ -149,9 +149,8 @@ class NeuralNetworkGPU extends NeuralNetwork {
 
     if (logErrorRate) {
       return this.getMSE(this.errors[this.outputLayer]);
-    } else {
-      return null;
     }
+    return null;
   }
 
   calculateTrainingError(data) {
@@ -190,7 +189,9 @@ class NeuralNetworkGPU extends NeuralNetwork {
         weightedSum = weightedSumTanh;
         break;
       default:
-        throw new Error(`unknown activation ${this.activation}`);
+        throw new Error(
+          `Unknown activation ${this.activation}. Available activations are: 'sigmoid', 'relu', 'leaky-relu', 'tanh'`
+        );
     }
 
     for (let layer = 1; layer <= this.outputLayer; layer++) {
@@ -198,19 +199,22 @@ class NeuralNetworkGPU extends NeuralNetwork {
         output: [this.sizes[layer]],
         pipeline: true,
         constants: {
-          size: this.sizes[layer - 1],
+          size: this.sizes[layer - 1]
         },
-        immutable: true,
+        immutable: true
       });
     }
 
-    this.texturizeInputData = this.gpu.createKernel(function(value) {
-      return value[this.thread.x];
-    }, {
-      output: [this.sizes[1]],
-      pipeline: true,
-      immutable: true,
-    });
+    this.texturizeInputData = this.gpu.createKernel(
+      function (value) {
+        return value[this.thread.x];
+      },
+      {
+        output: [this.sizes[1]],
+        pipeline: true,
+        immutable: true
+      }
+    );
   }
 
   /**
@@ -249,16 +253,21 @@ class NeuralNetworkGPU extends NeuralNetwork {
         calcDeltas = calcDeltasTanh;
         break;
       default:
-        throw new Error(`unknown activation ${this.activation}`);
+        throw new Error(
+          `Unknown activation ${this.activation}. Available activations are: 'sigmoid', 'relu', 'leaky-relu', 'tanh'`
+        );
     }
 
-    calcDeltas = alias(gpuUtils.getMinifySafeName(() => calcDeltas), calcDeltas);
+    calcDeltas = alias(
+      gpuUtils.getMinifySafeName(() => calcDeltas),
+      calcDeltas
+    );
     this.gpu.addFunction(calcDeltas);
     for (let layer = this.outputLayer; layer > 0; layer--) {
       if (layer === this.outputLayer) {
         this.backwardPropagate[this.outputLayer] = this.gpu.createKernelMap(
           {
-            error: calcErrorOutput,
+            error: calcErrorOutput
           },
           function (outputs, targets) {
             const output = outputs[this.thread.x];
@@ -267,13 +276,13 @@ class NeuralNetworkGPU extends NeuralNetwork {
           {
             output: [this.sizes[this.outputLayer]],
             pipeline: true,
-            immutable: true,
+            immutable: true
           }
         );
       } else {
         this.backwardPropagate[layer] = this.gpu.createKernelMap(
           {
-            error: calcError,
+            error: calcError
           },
           function (nextWeights, outputs, nextDeltas) {
             const output = outputs[this.thread.x];
@@ -283,14 +292,13 @@ class NeuralNetworkGPU extends NeuralNetwork {
             output: [this.sizes[layer]],
             pipeline: true,
             constants: {
-              size: this.deltas[layer + 1].length,
+              size: this.deltas[layer + 1].length
             },
-            immutable: true,
+            immutable: true
           }
         );
       }
     }
-
   }
 
   calculateDeltas(target) {
@@ -300,14 +308,12 @@ class NeuralNetworkGPU extends NeuralNetwork {
       release(this.errors[layer]);
 
       if (layer === this.outputLayer) {
-        output = this.backwardPropagate[layer](
-          this.outputs[layer],
-          target);
+        output = this.backwardPropagate[layer](this.outputs[layer], target);
       } else {
         output = this.backwardPropagate[layer](
           this.weights[layer + 1],
           this.outputs[layer],
-          this.deltas[layer + 1],
+          this.deltas[layer + 1]
         );
       }
       this.deltas[layer] = output.result;
@@ -320,7 +326,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       this.changesPropagate[layer] = this.gpu.createKernelMap(
         {
           weights: addWeights,
-          changes: calcChanges,
+          changes: calcChanges
         },
         function (previousOutputs, deltas, weights, changes) {
           const change = calcChanges(changes, deltas, previousOutputs);
@@ -333,9 +339,9 @@ class NeuralNetworkGPU extends NeuralNetwork {
           constants: {
             size: this.outputs[layer - 1].length,
             learningRate: this.trainOpts.learningRate,
-            momentum: this.trainOpts.momentum,
+            momentum: this.trainOpts.momentum
           },
-          immutable: true,
+          immutable: true
         }
       );
     }
@@ -365,9 +371,9 @@ class NeuralNetworkGPU extends NeuralNetwork {
         output: [this.sizes[layer]],
         pipeline: true,
         constants: {
-          learningRate: this.trainOpts.learningRate,
+          learningRate: this.trainOpts.learningRate
         },
-        immutable: true,
+        immutable: true
       });
     }
   }
@@ -387,27 +393,33 @@ class NeuralNetworkGPU extends NeuralNetwork {
     this.getMSE = this.gpu.createKernel(mse, {
       output: [1],
       constants: {
-        size: this.sizes[this.outputLayer],
+        size: this.sizes[this.outputLayer]
       },
       pipeline: true,
-      immutable: true,
+      immutable: true
     });
-    this._addMSE = this.gpu.createKernel(function(value1, value2) {
-      return value1[0] + value2[0];
-    }, {
-      output: [1],
-      pipeline: true,
-      immutable: true,
-    });
-    this._divideMSESum = this.gpu.createKernel(function(length, mseSum) {
-      const value = mseSum[0];
-      if (value > 0) {
-        return value / length;
+    this._addMSE = this.gpu.createKernel(
+      function (value1, value2) {
+        return value1[0] + value2[0];
+      },
+      {
+        output: [1],
+        pipeline: true,
+        immutable: true
       }
-      return 0;
-    }, {
-      output: [1],
-    });
+    );
+    this._divideMSESum = this.gpu.createKernel(
+      function (length, mseSum) {
+        const value = mseSum[0];
+        if (value > 0) {
+          return value / length;
+        }
+        return 0;
+      },
+      {
+        output: [1]
+      }
+    );
   }
 
   /**
@@ -421,7 +433,9 @@ class NeuralNetworkGPU extends NeuralNetwork {
       input = lookup.toArray(this.inputLookup, input, this.inputLookupLength);
     }
     const outputTextures = this.runInput(input);
-    let output = outputTextures.toArray ? outputTextures.toArray() : outputTextures;
+    let output = outputTextures.toArray
+      ? outputTextures.toArray()
+      : outputTextures;
 
     if (this.outputLookup) {
       output = lookup.toObject(this.outputLookup, output);
@@ -443,27 +457,29 @@ class NeuralNetworkGPU extends NeuralNetwork {
 
     const status = {
       error: 1,
-      iterations: 0,
+      iterations: 0
     };
 
     this.verifyIsInitialized(data);
 
     const texturizeOutputData = this.gpu.createKernel(
-      function(value) { return value[this.thread.x]; },
+      function (value) {
+        return value[this.thread.x];
+      },
       {
         output: [data[0].output.length],
         pipeline: true,
-        immutable: true,
+        immutable: true
       }
     );
 
     return {
-      data: data.map(set => ({
+      data: data.map((set) => ({
         input: this.texturizeInputData(set.input),
-        output: texturizeOutputData(set.output),
+        output: texturizeOutputData(set.output)
       })),
       status,
-      endTime,
+      endTime
     };
   }
 
@@ -472,6 +488,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       `${this.constructor.name}-toFunction is not yet implemented`
     );
   }
+
   toJSON() {
     if (!this.weights[1].toArray) {
       // in fallback mode
@@ -495,7 +512,7 @@ class NeuralNetworkGPU extends NeuralNetwork {
       sizes: this.sizes,
       getTrainOptsJSON: () => this.getTrainOptsJSON(),
       weights,
-      biases,
+      biases
     });
   }
 }
