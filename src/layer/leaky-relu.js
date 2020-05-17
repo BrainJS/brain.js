@@ -71,4 +71,11 @@ function leakyRelu(inputLayer, settings) {
   return new LeakyRelu(inputLayer, settings);
 }
 
-module.exports = { LeakyRelu, leakyRelu, predict2D, predict3D, compare2D, compare3D };
+module.exports = {
+  LeakyRelu,
+  leakyRelu,
+  predict2D,
+  predict3D,
+  compare2D,
+  compare3D,
+};

@@ -16,16 +16,12 @@ class Base {
   reuseKernels(praxis) {
     if (praxis.width !== this.width) {
       throw new Error(
-        `${this.constructor.name} kernel width mismatch ${praxis.width} is not ${
-          this.width
-        }`
+        `${this.constructor.name} kernel width mismatch ${praxis.width} is not ${this.width}`
       );
     }
     if (praxis.height !== this.height) {
       throw new Error(
-        `${this.constructor.name} kernel width mismatch ${
-          praxis.height
-        } is not ${this.height}`
+        `${this.constructor.name} kernel width mismatch ${praxis.height} is not ${this.height}`
       );
     }
     if (praxis.hasOwnProperty('kernel')) {
@@ -37,5 +33,5 @@ class Base {
 }
 
 module.exports = {
-  Base
+  Base,
 };

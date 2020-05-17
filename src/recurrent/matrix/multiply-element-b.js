@@ -9,4 +9,4 @@ module.exports = function multiplyElementB(product, left, right) {
     left.deltas[i] = right.weights[i] * product.deltas[i];
     right.deltas[i] = left.weights[i] * product.deltas[i];
   }
-}
+};

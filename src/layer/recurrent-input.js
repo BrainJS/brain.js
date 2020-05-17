@@ -1,7 +1,7 @@
 const { Internal } = require('./types');
 const { Base } = require('./base');
 const { release } = require('../utilities/kernel');
-const zeros2D = require('../utilities/zeros-2d');
+// const zeros2D = require('../utilities/zeros-2d');
 
 class RecurrentInput extends Internal {
   constructor(recurrentInput) {
@@ -42,25 +42,19 @@ class RecurrentInput extends Internal {
     Base.prototype.validate.call(this);
     if (this.width !== this.recurrentInput.width) {
       throw new Error(
-        `${this.constructor.name} layer width ${this.width} and ${
-          this.recurrentInput.constructor.name
-        } width (${this.recurrentInput.width}) are not same`
+        `${this.constructor.name} layer width ${this.width} and ${this.recurrentInput.constructor.name} width (${this.recurrentInput.width}) are not same`
       );
     }
 
     if (this.height !== this.recurrentInput.height) {
       throw new Error(
-        `${this.constructor.name} layer height ${this.height} and ${
-          this.recurrentInput.constructor.name
-        } width (${this.recurrentInput.height}) are not same`
+        `${this.constructor.name} layer height ${this.height} and ${this.recurrentInput.constructor.name} width (${this.recurrentInput.height}) are not same`
       );
     }
   }
 
-  setDimensions(width, height) {
+  setDimensions() {
     throw new Error('should just listen');
-    this.width = width;
-    this.height = height;
   }
 
   predict() {
@@ -89,5 +83,5 @@ class RecurrentInput extends Internal {
 }
 
 module.exports = {
-  RecurrentInput
+  RecurrentInput,
 };

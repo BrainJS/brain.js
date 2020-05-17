@@ -1,3 +1,4 @@
+import assert from 'assert';
 const { getFileCoverageDataByName } = require('istanbul-spy');
 
 function onePlusPlus3D(width, height, depth) {
@@ -61,7 +62,7 @@ function zero2D(width, height) {
 function allWeights(model, fn) {
   fn(model.input.weights);
   model.hiddenLayers.forEach((layer) => {
-    for (let p in layer) {
+    for (const p in layer) {
       if (!layer.hasOwnProperty(p)) continue;
       assert(fn(layer[p].weights));
     }
@@ -80,7 +81,7 @@ function allWeights(model, fn) {
 function allDeltas(model, fn) {
   fn(model.input.deltas);
   model.hiddenLayers.forEach((layer) => {
-    for (let p in layer) {
+    for (const p in layer) {
       if (!layer.hasOwnProperty(p)) continue;
       assert(fn(layer[p].deltas));
     }
@@ -106,8 +107,8 @@ function allMatrices(model, fn) {
   });
   fn(model.output.weights);
 
-  model.equations.forEach((equation, equationIndex) => {
-    equation.states.forEach((state, stateIndex) => {
+  model.equations.forEach((equation) => {
+    equation.states.forEach((state) => {
       if (state.left && state.left.weights) fn(state.left.weights);
       if (state.right && state.right.weights) fn(state.right.weights);
       if (state.product && state.product.weights) fn(state.product.weights);
@@ -123,8 +124,8 @@ function allMatrices(model, fn) {
   });
   fn(model.output.deltas);
 
-  model.equations.forEach((equation, equationIndex) => {
-    equation.states.forEach((state, stateIndex) => {
+  model.equations.forEach((equation) => {
+    equation.states.forEach((state) => {
       if (state.left && state.left.deltas) fn(state.left.deltas);
       if (state.right && state.right.deltas) fn(state.right.deltas);
       if (state.product && state.product.deltas) fn(state.product.deltas);
@@ -172,5 +173,5 @@ module.exports = {
   allDeltas,
   shave,
   expectFunction,
-  injectIstanbulCoverage
+  injectIstanbulCoverage,
 };

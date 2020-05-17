@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "checkJs": false,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noEmitOnError": true,
+    "strict": true,
+    "target": "ES6"
+  },
+  "exclude": [
+    "node_modules",
+    "examples",
+    "dist",
+    "**/*.json",
+    "**/*.config.js"
+  ],
+  "include": ["src"]
+}

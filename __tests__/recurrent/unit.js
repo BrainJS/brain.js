@@ -5,12 +5,21 @@ const { setup, teardown } = require('../../src/utilities/kernel');
 const { Filter } = require('../../src/layer/types');
 const { injectIstanbulCoverage } = require('../test-utils');
 
+function copy2D(matrix) {
+  if (matrix.clone) {
+    return matrix.clone();
+  }
+  return matrix.map((row) => Float32Array.from(row));
+}
+
 describe('Recurrent Class: Unit', () => {
   beforeEach(() => {
-    setup(new GPU({
-      mode: 'cpu',
-      onIstanbulCoverageVariable: injectIstanbulCoverage
-    }));
+    setup(
+      new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage,
+      })
+    );
   });
   afterEach(() => {
     teardown();
@@ -25,30 +34,29 @@ describe('Recurrent Class: Unit', () => {
             return rnnCell({ height: 3 }, inputLayer, recurrentInput);
           },
         ],
-        outputLayer: inputLayer => output({ height: 1 }, inputLayer),
+        outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
       });
 
       net.initialize();
 
       const layers = net._layerSets[net._layerSets.length - 1];
-      expect(layers.map(l => l.constructor.name))
-        .toEqual([
-          'Input',
-          'Random',
-          'Multiply',
-          'Random',
-          'RecurrentZeros',
-          'Multiply',
-          'Add',
-          'Zeros',
-          'Add',
-          'Relu',
-          'Random',
-          'Multiply',
-          'Random',
-          'Add',
-          'Target',
-        ]);
+      expect(layers.map((l) => l.constructor.name)).toEqual([
+        'Input',
+        'Random',
+        'Multiply',
+        'Random',
+        'RecurrentZeros',
+        'Multiply',
+        'Add',
+        'Zeros',
+        'Add',
+        'Relu',
+        'Random',
+        'Multiply',
+        'Random',
+        'Add',
+        'Target',
+      ]);
     });
   });
   describe('.runInput()', () => {
@@ -64,13 +72,16 @@ describe('Recurrent Class: Unit', () => {
             );
           },
         ],
-        outputLayer: inputLayer => output({ width: 1, height: 1 }, inputLayer),
+        outputLayer: (inputLayer) =>
+          output({ width: 1, height: 1 }, inputLayer),
       });
 
       net.initialize();
       net.initializeDeep();
 
-      const spySets = net._layerSets.map(layerSet => layerSet.map(l => jest.spyOn(l, 'predict')));
+      const spySets = net._layerSets.map((layerSet) =>
+        layerSet.map((l) => jest.spyOn(l, 'predict'))
+      );
 
       net.runInput([0, 1]);
       expect(net._model.length).toEqual(3);
@@ -94,7 +105,7 @@ describe('Recurrent Class: Unit', () => {
             );
           },
         ],
-        outputLayer: inputLayer => output({ height: 1 }, inputLayer),
+        outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
       });
 
       net.initialize();
@@ -106,25 +117,31 @@ describe('Recurrent Class: Unit', () => {
       for (let i = 0; i < net._layerSets.length; i++) {
         for (let j = 0; j < net._layerSets[i].length; j++) {
           expect(
-            net._layerSets[i][j].deltas.every(row => row.every(delta => delta === 0))
+            net._layerSets[i][j].deltas.every((row) =>
+              row.every((delta) => delta === 0)
+            )
           ).toBeTruthy();
         }
       }
 
-      const spySets = net._layerSets.map(layerSet => layerSet.map(l => jest.spyOn(l, 'compare')));
+      const spySets = net._layerSets.map((layerSet) =>
+        layerSet.map((l) => jest.spyOn(l, 'compare'))
+      );
 
       net._calculateDeltas([1, 1]);
       // The last layer propagates delta from target, the last layer propagates zero
       for (let i = 0; i < net._layerSets[0].length; i++) {
         expect(
-          net._layerSets[0][i].deltas.every(row => row.every(delta => delta !== 0))
+          net._layerSets[0][i].deltas.every((row) =>
+            row.every((delta) => delta !== 0)
+          )
         ).toBeTruthy();
       }
 
       for (let i = 0; i < spySets.length; i++) {
         for (let j = 0; j < spySets[i].length; j++) {
           // reuse the last matrix
-          if ((i === (spySets.length - 1)) && (j = (spySets[i].length - 1))) {
+          if (i === spySets.length - 1 && (j = spySets[i].length - 1)) {
             expect(spySets[i][j]).not.toHaveBeenCalled();
           } else {
             expect(spySets[i][j]).toHaveBeenCalled();
@@ -146,7 +163,7 @@ describe('Recurrent Class: Unit', () => {
             );
           },
         ],
-        outputLayer: inputLayer => output({ height: 1 }, inputLayer),
+        outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
       });
 
       net.initialize();
@@ -154,8 +171,8 @@ describe('Recurrent Class: Unit', () => {
       net.runInput([1, 1]);
       expect(net._model.length).toEqual(3);
       expect(net._layerSets[0].length).toEqual(10);
-      const weightSets = net._model.map(l => copy2D(l.weights));
-      const spys = net._model.map(l => jest.spyOn(l, 'learn'));
+      const weightSets = net._model.map((l) => copy2D(l.weights));
+      const spys = net._model.map((l) => jest.spyOn(l, 'learn'));
 
       net._calculateDeltas([1, 1]);
       net.adjustWeights();
@@ -169,7 +186,9 @@ describe('Recurrent Class: Unit', () => {
         const weights = weightSets[i];
         for (let row = 0; row < weights.length; row++) {
           for (let col = 0; col < weights[row].length; col++) {
-            expect(weights[row][col]).not.toEqual(net._model[i].weights[row][col]);
+            expect(weights[row][col]).not.toEqual(
+              net._model[i].weights[row][col]
+            );
           }
         }
       }
@@ -199,8 +218,8 @@ describe('Recurrent Class: Unit', () => {
       }
       const net = new Recurrent({
         inputLayer: () => input({ width: 1 }),
-        hiddenLayers: [inputLayer => new SuperLayer(inputLayer)],
-        outputLayer: inputLayer => new SuperLayer(inputLayer),
+        hiddenLayers: [(inputLayer) => new SuperLayer(inputLayer)],
+        outputLayer: (inputLayer) => new SuperLayer(inputLayer),
       });
 
       net.initialize();
@@ -225,12 +244,12 @@ describe('Recurrent Class: Unit', () => {
             (inputLayer, recurrentInput) =>
               rnnCell({ height: 3 }, inputLayer, recurrentInput),
           ],
-          outputLayer: inputLayer => output({ height: 1 }, inputLayer),
+          outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
         });
         net.initialize();
         net.initializeDeep();
 
-        const lastLayerSet = net._layerSets[net._layerSets.length - 1]
+        const lastLayerSet = net._layerSets[net._layerSets.length - 1];
         const lastOutputLayer = lastLayerSet[lastLayerSet.length - 1];
         expect(lastOutputLayer.weights).toEqual([new Float32Array([0])]);
         net._trainPattern([1, 2], [3]);
@@ -249,11 +268,3 @@ describe('Recurrent Class: Unit', () => {
     });
   });
 });
-
-
-function copy2D(matrix) {
-  if (matrix.clone) {
-    return matrix.clone();
-  }
-  return matrix.map(row => Float32Array.from(row));
-}

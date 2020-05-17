@@ -1,5 +1,5 @@
 const { Modifier } = require('./types');
-const { makeKernel, release, clear } = require('../utilities/kernel');
+const { makeKernel, clear } = require('../utilities/kernel');
 
 function predict(array) {
   return array[this.thread.x][this.thread.y];

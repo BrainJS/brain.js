@@ -9,4 +9,4 @@ module.exports = function tanhB(product, left) {
     const mwi = product.weights[i];
     left.deltas[i] = (1 - mwi * mwi) * product.deltas[i];
   }
-}
+};

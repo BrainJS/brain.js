@@ -16,12 +16,7 @@ class GRUTimeStep extends RNNTimeStep {
    * @returns {Matrix}
    */
   static getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-    return GRU.getEquation(
-      equation,
-      inputMatrix,
-      previousResult,
-      hiddenLayer
-    );
+    return GRU.getEquation(equation, inputMatrix, previousResult, hiddenLayer);
   }
 }
 

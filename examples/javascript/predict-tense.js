@@ -5,7 +5,7 @@ const config = {
   iterations: 15000,
   log: true,
   logPeriod: 500,
-  layers: [10]
+  layers: [10],
 };
 
 // create data which will be used for training
@@ -41,7 +41,7 @@ const data = [
   { input: 'Obey the rules.', output: 'present' },
   { input: 'Call me a lawyer.', output: 'present' },
   { input: 'Am I wrong?', output: 'present' },
-  { input: 'Right this way.', output: 'present' }
+  { input: 'Right this way.', output: 'present' },
 ];
 
 // the thing we would test

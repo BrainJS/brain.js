@@ -7,7 +7,9 @@ function predict2D(inputs) {
 }
 
 function predict3D(inputs) {
-  return 1 / (1 + Math.exp(-inputs[this.thread.z][this.thread.y][this.thread.x]));
+  return (
+    1 / (1 + Math.exp(-inputs[this.thread.z][this.thread.y][this.thread.x]))
+  );
 }
 
 function compare2D(weights, deltas) {
@@ -67,4 +69,11 @@ function sigmoid(inputLayer, settings) {
   return new Sigmoid(inputLayer, settings);
 }
 
-module.exports = { Sigmoid, sigmoid, predict2D, predict3D, compare2D, compare3D };
+module.exports = {
+  Sigmoid,
+  sigmoid,
+  predict2D,
+  predict3D,
+  compare2D,
+  compare3D,
+};

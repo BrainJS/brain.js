@@ -12,4 +12,4 @@ module.exports = function cloneNegative(product, left) {
     product.weights[i] = -left.weights[i];
     product.deltas[i] = 0;
   }
-}
+};

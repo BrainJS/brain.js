@@ -83,7 +83,7 @@ describe('RNNTimeStep', () => {
         net.model = {
           hiddenLayers: [],
           outputConnector: null,
-          allMatrices: []
+          allMatrices: [],
         };
         expect(() => {
           net.mapModel();
@@ -97,7 +97,7 @@ describe('RNNTimeStep', () => {
         net.model = {
           hiddenLayers: [],
           outputConnector: [],
-          allMatrices: []
+          allMatrices: [],
         };
         expect(() => {
           net.mapModel();
@@ -108,7 +108,7 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep();
       net.model = {
         allMatrices: [],
-        hiddenLayers: []
+        hiddenLayers: [],
       };
       net.mapModel();
       expect(net.model.allMatrices.length).toBe(5);
@@ -120,10 +120,22 @@ describe('RNNTimeStep', () => {
       let i = 0;
       net.model = {
         equations: [
-          { backpropagate: () => { expect(i++).toBe(2); } },
-          { backpropagate: () => { expect(i++).toBe(1); } },
-          { backpropagate: () => { expect(i++).toBe(0); } },
-        ]
+          {
+            backpropagate: () => {
+              expect(i++).toBe(2);
+            },
+          },
+          {
+            backpropagate: () => {
+              expect(i++).toBe(1);
+            },
+          },
+          {
+            backpropagate: () => {
+              expect(i++).toBe(0);
+            },
+          },
+        ],
       };
       net.backpropagate();
       expect(i).toBe(3);
@@ -136,7 +148,7 @@ describe('RNNTimeStep', () => {
           const net = new RNNTimeStep({ inputSize: 1 });
           net.model = { equations: [null] };
           net.outputLookup = {};
-          const stub = net.runObject = jest.fn();
+          const stub = (net.runObject = jest.fn());
           net.run();
           expect(stub).toBeCalled();
           expect(net.run).toBe(stub);
@@ -145,8 +157,8 @@ describe('RNNTimeStep', () => {
       describe('when this.outputLookup is not truthy', () => {
         it('calls this.runNumbers and sets this.run as it for next use', () => {
           const net = new RNNTimeStep({ inputSize: 1 });
-          net.model = {equations: [null]};
-          const stub = net.runNumbers = jest.fn();
+          net.model = { equations: [null] };
+          const stub = (net.runNumbers = jest.fn());
           net.run();
           expect(stub).toBeCalled();
           expect(net.run).toBe(stub);
@@ -158,8 +170,8 @@ describe('RNNTimeStep', () => {
         it('calls this.runArrays and sets this.run as it for next use', () => {
           const net = new RNNTimeStep({ inputSize: 2 });
           net.outputLookup = {};
-          net.model = {equations: [null]};
-          const stub = net.runObjects = jest.fn();
+          net.model = { equations: [null] };
+          const stub = (net.runObjects = jest.fn());
           net.run();
           expect(stub).toBeCalled();
           expect(net.run).toBe(stub);
@@ -168,8 +180,8 @@ describe('RNNTimeStep', () => {
       describe('when this.outputLookup is falsey', () => {
         it('calls this.runArrays and sets this.run as it for next use', () => {
           const net = new RNNTimeStep({ inputSize: 2 });
-          net.model = {equations: [null]};
-          const stub = net.runArrays = jest.fn();
+          net.model = { equations: [null] };
+          const stub = (net.runArrays = jest.fn());
           net.run();
           expect(stub).toBeCalled();
           expect(net.run).toBe(stub);
@@ -179,22 +191,22 @@ describe('RNNTimeStep', () => {
   });
   describe('.train()', () => {
     it('throws on array,datum,array w/ inputSize of 2', () => {
-      const data = [{input: [1, 2], output: [3, 4]}];
+      const data = [{ input: [1, 2], output: [3, 4] }];
       const net = new LSTMTimeStep({
         inputSize: 2,
         hiddenLayers: [10],
-        outputSize: 1
+        outputSize: 1,
       });
       expect(() => {
         net.train(data);
       }).toThrow();
     });
     it('throws on array,datum,array w/ outputSize of 2', () => {
-      const data = [{input: [1, 2], output: [3, 4]}];
+      const data = [{ input: [1, 2], output: [3, 4] }];
       const net = new LSTMTimeStep({
         inputSize: 1,
         hiddenLayers: [10],
-        outputSize: 2
+        outputSize: 2,
       });
       expect(() => {
         net.train(data);
@@ -205,7 +217,7 @@ describe('RNNTimeStep', () => {
       const net = new LSTMTimeStep({
         inputSize: 2,
         hiddenLayers: [10],
-        outputSize: 2
+        outputSize: 2,
       });
       expect(() => {
         net.train(data);
@@ -215,11 +227,9 @@ describe('RNNTimeStep', () => {
     describe('automatically setting inputSize and outputSize', () => {
       describe('numbers', () => {
         it('will set inputSize & outputSize if from data', () => {
-          const data = [
-            [.1,.2,.3,.4,.5]
-          ];
+          const data = [[0.1, 0.2, 0.3, 0.4, 0.5]];
           const options = {
-            iterations: 0
+            iterations: 0,
           };
           const net = new RNNTimeStep();
           net.train(data, options);
@@ -230,10 +240,16 @@ describe('RNNTimeStep', () => {
       describe('arrays', () => {
         it('will set inputSize & outputSize if from data', () => {
           const data = [
-            [[.1,.5],[.2,.4],[.3,.3],[.4,.2],[.5,.1]],
+            [
+              [0.1, 0.5],
+              [0.2, 0.4],
+              [0.3, 0.3],
+              [0.4, 0.2],
+              [0.5, 0.1],
+            ],
           ];
           const options = {
-            iterations: 1
+            iterations: 1,
           };
           const net = new RNNTimeStep();
           net.train(data, options);
@@ -243,11 +259,9 @@ describe('RNNTimeStep', () => {
       });
       describe('object', () => {
         it('will set inputSize & outputSize if from data', () => {
-          const data = [
-            { low: .1, med: .25, high: .5 }
-          ];
+          const data = [{ low: 0.1, med: 0.25, high: 0.5 }];
           const options = {
-            iterations: 1
+            iterations: 1,
           };
           const net = new RNNTimeStep();
           net.train(data, options);
@@ -259,12 +273,12 @@ describe('RNNTimeStep', () => {
         it('will set inputSize & outputSize if from data', () => {
           const data = [
             [
-              { low: .1, med: .25, high: .5 },
-              { low: .5, med: .25, high: .1 }
-            ]
+              { low: 0.1, med: 0.25, high: 0.5 },
+              { low: 0.5, med: 0.25, high: 0.1 },
+            ],
           ];
           const options = {
-            iterations: 1
+            iterations: 1,
           };
           const net = new RNNTimeStep();
           net.train(data, options);
@@ -274,11 +288,9 @@ describe('RNNTimeStep', () => {
       });
       describe('input/output numbers', () => {
         it('will set inputSize & outputSize if from data', () => {
-          const data = [
-            { input: [.1, .2, .3, .4], output: [.5] }
-          ];
+          const data = [{ input: [0.1, 0.2, 0.3, 0.4], output: [0.5] }];
           const options = {
-            iterations: 1
+            iterations: 1,
           };
           const net = new RNNTimeStep();
           net.train(data, options);
@@ -290,16 +302,12 @@ describe('RNNTimeStep', () => {
         it('will set inputSize & outputSize if from data', () => {
           const data = [
             {
-              input: [
-                [.1, .5]
-              ],
-              output: [
-                [.5, .1]
-              ],
-            }
+              input: [[0.1, 0.5]],
+              output: [[0.5, 0.1]],
+            },
           ];
           const options = {
-            iterations: 1
+            iterations: 1,
           };
           const net = new RNNTimeStep();
           net.train(data, options);
@@ -311,12 +319,12 @@ describe('RNNTimeStep', () => {
         it('will set inputSize & outputSize if from data', () => {
           const data = [
             {
-              input: {low: .1, high: .5},
-              output: {low: .5, high: .1}
-            }
+              input: { low: 0.1, high: 0.5 },
+              output: { low: 0.5, high: 0.1 },
+            },
           ];
           const options = {
-            iterations: 1
+            iterations: 1,
           };
           const net = new RNNTimeStep();
           net.train(data, options);
@@ -328,16 +336,12 @@ describe('RNNTimeStep', () => {
         it('will set inputSize & outputSize if from data', () => {
           const data = [
             {
-              input: [
-                {low: .1, high: .5}
-              ],
-              output: [
-                {low: .5, high: .1}
-              ],
-            }
+              input: [{ low: 0.1, high: 0.5 }],
+              output: [{ low: 0.5, high: 0.1 }],
+            },
           ];
           const options = {
-            iterations: 1
+            iterations: 1,
           };
           const net = new RNNTimeStep();
           net.train(data, options);
@@ -351,7 +355,10 @@ describe('RNNTimeStep', () => {
           throw new Error('got passed size check');
         };
         expect(() => {
-          net.train([[0,1,2,3,4], [4,3,2,1,0]]);
+          net.train([
+            [0, 1, 2, 3, 4],
+            [4, 3, 2, 1, 0],
+          ]);
         }).toThrow();
         expect(net.inputSize).toBe(99);
         expect(net.outputSize).toBe(88);
@@ -372,66 +379,110 @@ describe('RNNTimeStep', () => {
             const net = new LSTMTimeStep({
               inputSize: 1,
               hiddenLayers: [1],
-              outputSize: 1
+              outputSize: 1,
             });
             const trainingData = [
-              [.1,.2,.3,.4,.5],
-              [.5,.4,.3,.2,.1]
+              [0.1, 0.2, 0.3, 0.4, 0.5],
+              [0.5, 0.4, 0.3, 0.2, 0.1],
             ];
             net.train(trainingData, { iterations: 1 });
-            expect(LSTMTimeStep.prototype.trainArrays.mock.calls.length).toBe(2);
-            expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0].length).toBe(1);
-            expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0][0]).toEqual(trainingData[0].map(value => Float32Array.from([value])));
-            expect(LSTMTimeStep.prototype.trainArrays.mock.calls[1][0]).toEqual(trainingData[1].map(value => Float32Array.from([value])));
+            expect(LSTMTimeStep.prototype.trainArrays.mock.calls.length).toBe(
+              2
+            );
+            expect(
+              LSTMTimeStep.prototype.trainArrays.mock.calls[0].length
+            ).toBe(1);
+            expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0][0]).toEqual(
+              trainingData[0].map((value) => Float32Array.from([value]))
+            );
+            expect(LSTMTimeStep.prototype.trainArrays.mock.calls[1][0]).toEqual(
+              trainingData[1].map((value) => Float32Array.from([value]))
+            );
             expect(Equation.prototype.predictTarget.mock.calls.length).toBe(8);
             expect(net.model.equations.length).toBe(5);
 
             // first array
-            expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(Float32Array.from([.1]));
-            expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(Float32Array.from([.2]));
+            expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(
+              Float32Array.from([0.1])
+            );
+            expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(
+              Float32Array.from([0.2])
+            );
 
-            expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(Float32Array.from([.2]));
-            expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(Float32Array.from([.3]));
+            expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(
+              Float32Array.from([0.2])
+            );
+            expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(
+              Float32Array.from([0.3])
+            );
 
-            expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(Float32Array.from([.3]));
-            expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(Float32Array.from([.4]));
+            expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(
+              Float32Array.from([0.3])
+            );
+            expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(
+              Float32Array.from([0.4])
+            );
 
-            expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(Float32Array.from([.4]));
-            expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(Float32Array.from([.5]));
+            expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(
+              Float32Array.from([0.4])
+            );
+            expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(
+              Float32Array.from([0.5])
+            );
 
             // second array
-            expect(Equation.prototype.predictTarget.mock.calls[4][0]).toEqual(Float32Array.from([.5]));
-            expect(Equation.prototype.predictTarget.mock.calls[4][1]).toEqual(Float32Array.from([.4]));
+            expect(Equation.prototype.predictTarget.mock.calls[4][0]).toEqual(
+              Float32Array.from([0.5])
+            );
+            expect(Equation.prototype.predictTarget.mock.calls[4][1]).toEqual(
+              Float32Array.from([0.4])
+            );
 
-            expect(Equation.prototype.predictTarget.mock.calls[5][0]).toEqual(Float32Array.from([.4]));
-            expect(Equation.prototype.predictTarget.mock.calls[5][1]).toEqual(Float32Array.from([.3]));
+            expect(Equation.prototype.predictTarget.mock.calls[5][0]).toEqual(
+              Float32Array.from([0.4])
+            );
+            expect(Equation.prototype.predictTarget.mock.calls[5][1]).toEqual(
+              Float32Array.from([0.3])
+            );
 
-            expect(Equation.prototype.predictTarget.mock.calls[6][0]).toEqual(Float32Array.from([.3]));
-            expect(Equation.prototype.predictTarget.mock.calls[6][1]).toEqual(Float32Array.from([.2]));
+            expect(Equation.prototype.predictTarget.mock.calls[6][0]).toEqual(
+              Float32Array.from([0.3])
+            );
+            expect(Equation.prototype.predictTarget.mock.calls[6][1]).toEqual(
+              Float32Array.from([0.2])
+            );
 
-            expect(Equation.prototype.predictTarget.mock.calls[7][0]).toEqual(Float32Array.from([.2]));
-            expect(Equation.prototype.predictTarget.mock.calls[7][1]).toEqual(Float32Array.from([.1]));
+            expect(Equation.prototype.predictTarget.mock.calls[7][0]).toEqual(
+              Float32Array.from([0.2])
+            );
+            expect(Equation.prototype.predictTarget.mock.calls[7][1]).toEqual(
+              Float32Array.from([0.1])
+            );
           });
         });
         it('can learn basic logic', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
             hiddenLayers: [10],
-            outputSize: 1
+            outputSize: 1,
           });
           const trainingData = [
-            [.1,.2,.3,.4,.5],
-            [.5,.4,.3,.2,.1]
+            [0.1, 0.2, 0.3, 0.4, 0.5],
+            [0.5, 0.4, 0.3, 0.2, 0.1],
           ];
-          const result = net.train(trainingData, { log: true, errorThresh: 0.005, iterations: 1000 });
+          const result = net.train(trainingData, {
+            log: true,
+            errorThresh: 0.005,
+            iterations: 1000,
+          });
           expect(result.error).toBeLessThan(0.005);
           expect(result.iterations).toBeLessThan(1000);
-          const result1 = net.forecast([.1,.2,.3], 2);
-          expect(result1[0]).toBeCloseTo(.4, 1);
-          expect(result1[1]).toBeCloseTo(.5, 1);
-          const result2 = net.forecast([.5,.4,.3], 2);
-          expect(result2[0]).toBeCloseTo(.2, 1);
-          expect(result2[1]).toBeCloseTo(.1, 1);
+          const result1 = net.forecast([0.1, 0.2, 0.3], 2);
+          expect(result1[0]).toBeCloseTo(0.4, 1);
+          expect(result1[1]).toBeCloseTo(0.5, 1);
+          const result2 = net.forecast([0.5, 0.4, 0.3], 2);
+          expect(result2[0]).toBeCloseTo(0.2, 1);
+          expect(result2[1]).toBeCloseTo(0.1, 1);
         });
       });
 
@@ -448,52 +499,74 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [1],
-            outputSize: 2
+            outputSize: 2,
           });
           const trainingData = [
-            [.1,.5],
-            [.2,.4],
-            [.3,.3],
-            [.4,.2],
-            [.5,.1],
+            [0.1, 0.5],
+            [0.2, 0.4],
+            [0.3, 0.3],
+            [0.4, 0.2],
+            [0.5, 0.1],
           ];
-          const trainingDataFormatted = trainingData.map(array => Float32Array.from(array));
+          const trainingDataFormatted = trainingData.map((array) =>
+            Float32Array.from(array)
+          );
           net.train(trainingData, { iterations: 1 });
           expect(LSTMTimeStep.prototype.trainArrays.mock.calls.length).toBe(1);
-          expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0].length).toBe(1);
-          expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0][0]).toEqual(trainingDataFormatted);
+          expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0].length).toBe(
+            1
+          );
+          expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0][0]).toEqual(
+            trainingDataFormatted
+          );
           expect(Equation.prototype.predictTarget.mock.calls.length).toBe(4);
           expect(net.model.equations.length).toBe(5);
 
           // first array
-          expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(Float32Array.from([.1,.5]));
-          expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(Float32Array.from([.2,.4]));
+          expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(
+            Float32Array.from([0.1, 0.5])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(
+            Float32Array.from([0.2, 0.4])
+          );
 
           // second array
-          expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(Float32Array.from([.2,.4]));
-          expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(Float32Array.from([.3,.3]));
+          expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(
+            Float32Array.from([0.2, 0.4])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(
+            Float32Array.from([0.3, 0.3])
+          );
 
           // third array
-          expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(Float32Array.from([.3,.3]));
-          expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(Float32Array.from([.4,.2]));
+          expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(
+            Float32Array.from([0.3, 0.3])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(
+            Float32Array.from([0.4, 0.2])
+          );
 
           // forth array
-          expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(Float32Array.from([.4,.2]));
-          expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(Float32Array.from([.5,.1]));
+          expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(
+            Float32Array.from([0.4, 0.2])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(
+            Float32Array.from([0.5, 0.1])
+          );
         });
 
         it('can learn basic logic', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [20],
-            outputSize: 2
+            outputSize: 2,
           });
           const trainingData = [
-            [.1,.5],
-            [.2,.4],
-            [.3,.3],
-            [.4,.2],
-            [.5,.1],
+            [0.1, 0.5],
+            [0.2, 0.4],
+            [0.3, 0.3],
+            [0.4, 0.2],
+            [0.5, 0.1],
           ];
           const result = net.train(trainingData, { errorThresh: 0.05 });
           expect(result.error).toBeLessThan(0.05);
@@ -514,88 +587,130 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [1],
-            outputSize: 2
+            outputSize: 2,
           });
           const trainingData = [
             [
-              [.1,.5],
-              [.2,.4],
-              [.3,.3],
-              [.4,.2],
-              [.5,.1],
+              [0.1, 0.5],
+              [0.2, 0.4],
+              [0.3, 0.3],
+              [0.4, 0.2],
+              [0.5, 0.1],
             ],
             [
-              [.5,.9],
-              [.6,.8],
-              [.7,.7],
-              [.8,.6],
-              [.9,.5],
+              [0.5, 0.9],
+              [0.6, 0.8],
+              [0.7, 0.7],
+              [0.8, 0.6],
+              [0.9, 0.5],
             ],
           ];
-          const trainingDataFormatted0 = trainingData[0].map(array => Float32Array.from(array));
-          const trainingDataFormatted1 = trainingData[1].map(array => Float32Array.from(array));
+          const trainingDataFormatted0 = trainingData[0].map((array) =>
+            Float32Array.from(array)
+          );
+          const trainingDataFormatted1 = trainingData[1].map((array) =>
+            Float32Array.from(array)
+          );
 
           net.train(trainingData, { iterations: 1 });
           expect(LSTMTimeStep.prototype.trainArrays.mock.calls.length).toBe(2);
-          expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0].length).toBe(1);
-          expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0][0]).toEqual(trainingDataFormatted0);
-          expect(LSTMTimeStep.prototype.trainArrays.mock.calls[1][0]).toEqual(trainingDataFormatted1);
+          expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0].length).toBe(
+            1
+          );
+          expect(LSTMTimeStep.prototype.trainArrays.mock.calls[0][0]).toEqual(
+            trainingDataFormatted0
+          );
+          expect(LSTMTimeStep.prototype.trainArrays.mock.calls[1][0]).toEqual(
+            trainingDataFormatted1
+          );
           expect(Equation.prototype.predictTarget.mock.calls.length).toBe(8);
           expect(net.model.equations.length).toBe(5);
 
           // first set, first array
-          expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(Float32Array.from([.1,.5]));
-          expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(Float32Array.from([.2,.4]));
+          expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(
+            Float32Array.from([0.1, 0.5])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(
+            Float32Array.from([0.2, 0.4])
+          );
 
           // first set, second array
-          expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(Float32Array.from([.2,.4]));
-          expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(Float32Array.from([.3,.3]));
+          expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(
+            Float32Array.from([0.2, 0.4])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(
+            Float32Array.from([0.3, 0.3])
+          );
 
           // first set, third array
-          expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(Float32Array.from([.3,.3]));
-          expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(Float32Array.from([.4,.2]));
+          expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(
+            Float32Array.from([0.3, 0.3])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(
+            Float32Array.from([0.4, 0.2])
+          );
 
           // first set, forth array
-          expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(Float32Array.from([.4,.2]));
-          expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(Float32Array.from([.5,.1]));
+          expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(
+            Float32Array.from([0.4, 0.2])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(
+            Float32Array.from([0.5, 0.1])
+          );
 
           // second set, first array
-          expect(Equation.prototype.predictTarget.mock.calls[4][0]).toEqual(Float32Array.from([.5,.9]));
-          expect(Equation.prototype.predictTarget.mock.calls[4][1]).toEqual(Float32Array.from([.6,.8]));
+          expect(Equation.prototype.predictTarget.mock.calls[4][0]).toEqual(
+            Float32Array.from([0.5, 0.9])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[4][1]).toEqual(
+            Float32Array.from([0.6, 0.8])
+          );
 
           // second set, second array
-          expect(Equation.prototype.predictTarget.mock.calls[5][0]).toEqual(Float32Array.from([.6,.8]));
-          expect(Equation.prototype.predictTarget.mock.calls[5][1]).toEqual(Float32Array.from([.7,.7]));
+          expect(Equation.prototype.predictTarget.mock.calls[5][0]).toEqual(
+            Float32Array.from([0.6, 0.8])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[5][1]).toEqual(
+            Float32Array.from([0.7, 0.7])
+          );
 
           // second set, third array
-          expect(Equation.prototype.predictTarget.mock.calls[6][0]).toEqual(Float32Array.from([.7,.7]));
-          expect(Equation.prototype.predictTarget.mock.calls[6][1]).toEqual(Float32Array.from([.8,.6]));
+          expect(Equation.prototype.predictTarget.mock.calls[6][0]).toEqual(
+            Float32Array.from([0.7, 0.7])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[6][1]).toEqual(
+            Float32Array.from([0.8, 0.6])
+          );
 
           // second set, forth array
-          expect(Equation.prototype.predictTarget.mock.calls[7][0]).toEqual(Float32Array.from([.8,.6]));
-          expect(Equation.prototype.predictTarget.mock.calls[7][1]).toEqual(Float32Array.from([.9,.5]));
+          expect(Equation.prototype.predictTarget.mock.calls[7][0]).toEqual(
+            Float32Array.from([0.8, 0.6])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[7][1]).toEqual(
+            Float32Array.from([0.9, 0.5])
+          );
         });
 
         it('can learn basic logic', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [30],
-            outputSize: 2
+            outputSize: 2,
           });
           const trainingData = [
             [
-              [.1,.5],
-              [.2,.4],
-              [.3,.3],
-              [.4,.2],
-              [.5,.1],
+              [0.1, 0.5],
+              [0.2, 0.4],
+              [0.3, 0.3],
+              [0.4, 0.2],
+              [0.5, 0.1],
             ],
             [
-              [.5,.9],
-              [.6,.8],
-              [.7,.7],
-              [.8,.6],
-              [.9,.5],
+              [0.5, 0.9],
+              [0.6, 0.8],
+              [0.7, 0.7],
+              [0.8, 0.6],
+              [0.9, 0.5],
             ],
           ];
           const result = net.train(trainingData, { errorThresh: 0.05 });
@@ -619,7 +734,7 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
             hiddenLayers: [1],
-            outputSize: 1
+            outputSize: 1,
           });
           // average temp
           const trainingData = [
@@ -629,12 +744,12 @@ describe('RNNTimeStep', () => {
                 jan: 42,
                 feb: 44,
                 mar: 53,
-                apr: 64
+                apr: 64,
               },
               output: {
                 may: 75,
-                jun: 83
-              }
+                jun: 83,
+              },
             },
 
             // Bluff Utah
@@ -643,53 +758,107 @@ describe('RNNTimeStep', () => {
                 jan: 44,
                 feb: 52,
                 mar: 63,
-                apr: 72
+                apr: 72,
               },
               output: {
                 may: 82,
-                jun: 92
-              }
+                jun: 92,
+              },
             },
           ];
           net.train(trainingData, { iterations: 1 });
-          expect(LSTMTimeStep.prototype.trainInputOutput.mock.calls.length).toBe(2);
-          expect(LSTMTimeStep.prototype.trainInputOutput.mock.calls[0].length).toBe(1);
-          expect(LSTMTimeStep.prototype.trainInputOutput.mock.calls[0][0]).toEqual({ input: [42, 44, 53, 64].map(value => Float32Array.from([value])), output: [75, 83].map(value => Float32Array.from([value])) });
-          expect(LSTMTimeStep.prototype.trainInputOutput.mock.calls[1][0]).toEqual({ input: [44, 52, 63, 72].map(value => Float32Array.from([value])), output: [82, 92].map(value => Float32Array.from([value])) });
+          expect(
+            LSTMTimeStep.prototype.trainInputOutput.mock.calls.length
+          ).toBe(2);
+          expect(
+            LSTMTimeStep.prototype.trainInputOutput.mock.calls[0].length
+          ).toBe(1);
+          expect(
+            LSTMTimeStep.prototype.trainInputOutput.mock.calls[0][0]
+          ).toEqual({
+            input: [42, 44, 53, 64].map((value) => Float32Array.from([value])),
+            output: [75, 83].map((value) => Float32Array.from([value])),
+          });
+          expect(
+            LSTMTimeStep.prototype.trainInputOutput.mock.calls[1][0]
+          ).toEqual({
+            input: [44, 52, 63, 72].map((value) => Float32Array.from([value])),
+            output: [82, 92].map((value) => Float32Array.from([value])),
+          });
           expect(Equation.prototype.predictTarget.mock.calls.length).toBe(10);
           expect(net.model.equations.length).toBe(6);
 
           // first array
-          expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(new Float32Array([42]));
-          expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(new Float32Array([44]));
+          expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(
+            new Float32Array([42])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(
+            new Float32Array([44])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(new Float32Array([44]));
-          expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(new Float32Array([53]));
+          expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(
+            new Float32Array([44])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(
+            new Float32Array([53])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(new Float32Array([53]));
-          expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(new Float32Array([64]));
+          expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(
+            new Float32Array([53])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(
+            new Float32Array([64])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(new Float32Array([64]));
-          expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(new Float32Array([75]));
+          expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(
+            new Float32Array([64])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(
+            new Float32Array([75])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[4][0]).toEqual(new Float32Array([75]));
-          expect(Equation.prototype.predictTarget.mock.calls[4][1]).toEqual(new Float32Array([83]));
+          expect(Equation.prototype.predictTarget.mock.calls[4][0]).toEqual(
+            new Float32Array([75])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[4][1]).toEqual(
+            new Float32Array([83])
+          );
 
           // second array
-          expect(Equation.prototype.predictTarget.mock.calls[5][0]).toEqual(new Float32Array([44]));
-          expect(Equation.prototype.predictTarget.mock.calls[5][1]).toEqual(new Float32Array([52]));
+          expect(Equation.prototype.predictTarget.mock.calls[5][0]).toEqual(
+            new Float32Array([44])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[5][1]).toEqual(
+            new Float32Array([52])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[6][0]).toEqual(new Float32Array([52]));
-          expect(Equation.prototype.predictTarget.mock.calls[6][1]).toEqual(new Float32Array([63]));
+          expect(Equation.prototype.predictTarget.mock.calls[6][0]).toEqual(
+            new Float32Array([52])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[6][1]).toEqual(
+            new Float32Array([63])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[7][0]).toEqual(new Float32Array([63]));
-          expect(Equation.prototype.predictTarget.mock.calls[7][1]).toEqual(new Float32Array([72]));
+          expect(Equation.prototype.predictTarget.mock.calls[7][0]).toEqual(
+            new Float32Array([63])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[7][1]).toEqual(
+            new Float32Array([72])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[8][0]).toEqual(new Float32Array([72]));
-          expect(Equation.prototype.predictTarget.mock.calls[8][1]).toEqual(new Float32Array([82]));
+          expect(Equation.prototype.predictTarget.mock.calls[8][0]).toEqual(
+            new Float32Array([72])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[8][1]).toEqual(
+            new Float32Array([82])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[9][0]).toEqual(new Float32Array([82]));
-          expect(Equation.prototype.predictTarget.mock.calls[9][1]).toEqual(new Float32Array([92]));
+          expect(Equation.prototype.predictTarget.mock.calls[9][0]).toEqual(
+            new Float32Array([82])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[9][1]).toEqual(
+            new Float32Array([92])
+          );
         });
       });
       describe('training data with 1D arrays', () => {
@@ -705,53 +874,101 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
             hiddenLayers: [1],
-            outputSize: 1
+            outputSize: 1,
           });
           const trainingData = [
-            { input: [1,2,3,4], output: [5] },
-            { input: [5,4,3,2], output: [1] },
+            { input: [1, 2, 3, 4], output: [5] },
+            { input: [5, 4, 3, 2], output: [1] },
           ];
           const trainingDataFormatted0 = {
-            input: trainingData[0].input.map(value => Float32Array.from([value])),
-            output: trainingData[0].output.map(value => Float32Array.from([value])),
+            input: trainingData[0].input.map((value) =>
+              Float32Array.from([value])
+            ),
+            output: trainingData[0].output.map((value) =>
+              Float32Array.from([value])
+            ),
           };
           const trainingDataFormatted1 = {
-            input: trainingData[1].input.map(value => Float32Array.from([value])),
-            output: trainingData[1].output.map(value => Float32Array.from([value])),
+            input: trainingData[1].input.map((value) =>
+              Float32Array.from([value])
+            ),
+            output: trainingData[1].output.map((value) =>
+              Float32Array.from([value])
+            ),
           };
           net.train(trainingData, { iterations: 1 });
-          expect(LSTMTimeStep.prototype.trainInputOutput.mock.calls.length).toBe(2);
-          expect(LSTMTimeStep.prototype.trainInputOutput.mock.calls[0].length).toBe(1);
-          expect(LSTMTimeStep.prototype.trainInputOutput.mock.calls[0][0]).toEqual(trainingDataFormatted0);
-          expect(LSTMTimeStep.prototype.trainInputOutput.mock.calls[1][0]).toEqual(trainingDataFormatted1);
+          expect(
+            LSTMTimeStep.prototype.trainInputOutput.mock.calls.length
+          ).toBe(2);
+          expect(
+            LSTMTimeStep.prototype.trainInputOutput.mock.calls[0].length
+          ).toBe(1);
+          expect(
+            LSTMTimeStep.prototype.trainInputOutput.mock.calls[0][0]
+          ).toEqual(trainingDataFormatted0);
+          expect(
+            LSTMTimeStep.prototype.trainInputOutput.mock.calls[1][0]
+          ).toEqual(trainingDataFormatted1);
           expect(Equation.prototype.predictTarget.mock.calls.length).toBe(8);
           expect(net.model.equations.length).toBe(5);
 
           // first array
-          expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(Float32Array.from([1]));
-          expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(Float32Array.from([2]));
+          expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(
+            Float32Array.from([1])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(
+            Float32Array.from([2])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(Float32Array.from([2]));
-          expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(Float32Array.from([3]));
+          expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(
+            Float32Array.from([2])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(
+            Float32Array.from([3])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(Float32Array.from([3]));
-          expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(Float32Array.from([4]));
+          expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(
+            Float32Array.from([3])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(
+            Float32Array.from([4])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(Float32Array.from([4]));
-          expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(Float32Array.from([5]));
+          expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(
+            Float32Array.from([4])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(
+            Float32Array.from([5])
+          );
 
           // second array
-          expect(Equation.prototype.predictTarget.mock.calls[4][0]).toEqual(Float32Array.from([5]));
-          expect(Equation.prototype.predictTarget.mock.calls[4][1]).toEqual(Float32Array.from([4]));
+          expect(Equation.prototype.predictTarget.mock.calls[4][0]).toEqual(
+            Float32Array.from([5])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[4][1]).toEqual(
+            Float32Array.from([4])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[5][0]).toEqual(Float32Array.from([4]));
-          expect(Equation.prototype.predictTarget.mock.calls[5][1]).toEqual(Float32Array.from([3]));
+          expect(Equation.prototype.predictTarget.mock.calls[5][0]).toEqual(
+            Float32Array.from([4])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[5][1]).toEqual(
+            Float32Array.from([3])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[6][0]).toEqual(Float32Array.from([3]));
-          expect(Equation.prototype.predictTarget.mock.calls[6][1]).toEqual(Float32Array.from([2]));
+          expect(Equation.prototype.predictTarget.mock.calls[6][0]).toEqual(
+            Float32Array.from([3])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[6][1]).toEqual(
+            Float32Array.from([2])
+          );
 
-          expect(Equation.prototype.predictTarget.mock.calls[7][0]).toEqual(Float32Array.from([2]));
-          expect(Equation.prototype.predictTarget.mock.calls[7][1]).toEqual(Float32Array.from([1]));
+          expect(Equation.prototype.predictTarget.mock.calls[7][0]).toEqual(
+            Float32Array.from([2])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[7][1]).toEqual(
+            Float32Array.from([1])
+          );
         });
       });
 
@@ -768,75 +985,123 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [1],
-            outputSize: 2
+            outputSize: 2,
           });
           const trainingData = [
             {
               input: [
-                [.1,.5],
-                [.2,.4],
-                [.3,.3],
-                [.4,.2],
+                [0.1, 0.5],
+                [0.2, 0.4],
+                [0.3, 0.3],
+                [0.4, 0.2],
               ],
-              output: [[.5,.1]]
+              output: [[0.5, 0.1]],
             },
             {
               input: [
-                [.5,.9],
-                [.6,.8],
-                [.7,.7],
-                [.8,.6],
+                [0.5, 0.9],
+                [0.6, 0.8],
+                [0.7, 0.7],
+                [0.8, 0.6],
               ],
-              output: [[.9,.5]]
-            }
+              output: [[0.9, 0.5]],
+            },
           ];
           const trainingDataFormatted0 = {
-            input: trainingData[0].input.map(value => Float32Array.from(value)),
-            output: trainingData[0].output.map(value => Float32Array.from(value)),
+            input: trainingData[0].input.map((value) =>
+              Float32Array.from(value)
+            ),
+            output: trainingData[0].output.map((value) =>
+              Float32Array.from(value)
+            ),
           };
           const trainingDataFormatted1 = {
-            input: trainingData[1].input.map(value => Float32Array.from(value)),
-            output: trainingData[1].output.map(value => Float32Array.from(value)),
+            input: trainingData[1].input.map((value) =>
+              Float32Array.from(value)
+            ),
+            output: trainingData[1].output.map((value) =>
+              Float32Array.from(value)
+            ),
           };
           net.train(trainingData, { iterations: 1 });
-          expect(LSTMTimeStep.prototype.trainInputOutput.mock.calls.length).toBe(2);
-          expect(LSTMTimeStep.prototype.trainInputOutput.mock.calls[0].length).toBe(1);
-          expect(LSTMTimeStep.prototype.trainInputOutput.mock.calls[0][0]).toEqual(trainingDataFormatted0);
-          expect(LSTMTimeStep.prototype.trainInputOutput.mock.calls[1][0]).toEqual(trainingDataFormatted1);
+          expect(
+            LSTMTimeStep.prototype.trainInputOutput.mock.calls.length
+          ).toBe(2);
+          expect(
+            LSTMTimeStep.prototype.trainInputOutput.mock.calls[0].length
+          ).toBe(1);
+          expect(
+            LSTMTimeStep.prototype.trainInputOutput.mock.calls[0][0]
+          ).toEqual(trainingDataFormatted0);
+          expect(
+            LSTMTimeStep.prototype.trainInputOutput.mock.calls[1][0]
+          ).toEqual(trainingDataFormatted1);
           expect(Equation.prototype.predictTarget.mock.calls.length).toBe(8);
           expect(net.model.equations.length).toBe(5);
 
           // first set, first array
-          expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(Float32Array.from([.1,.5]));
-          expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(Float32Array.from([.2,.4]));
+          expect(Equation.prototype.predictTarget.mock.calls[0][0]).toEqual(
+            Float32Array.from([0.1, 0.5])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[0][1]).toEqual(
+            Float32Array.from([0.2, 0.4])
+          );
 
           // first set, second array
-          expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(Float32Array.from([.2,.4]));
-          expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(Float32Array.from([.3,.3]));
+          expect(Equation.prototype.predictTarget.mock.calls[1][0]).toEqual(
+            Float32Array.from([0.2, 0.4])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[1][1]).toEqual(
+            Float32Array.from([0.3, 0.3])
+          );
 
           // first set, third array
-          expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(Float32Array.from([.3,.3]));
-          expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(Float32Array.from([.4,.2]));
+          expect(Equation.prototype.predictTarget.mock.calls[2][0]).toEqual(
+            Float32Array.from([0.3, 0.3])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[2][1]).toEqual(
+            Float32Array.from([0.4, 0.2])
+          );
 
           // first set, forth array
-          expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(Float32Array.from([.4,.2]));
-          expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(Float32Array.from([.5,.1]));
+          expect(Equation.prototype.predictTarget.mock.calls[3][0]).toEqual(
+            Float32Array.from([0.4, 0.2])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[3][1]).toEqual(
+            Float32Array.from([0.5, 0.1])
+          );
 
           // second set, first array
-          expect(Equation.prototype.predictTarget.mock.calls[4][0]).toEqual(Float32Array.from([.5,.9]));
-          expect(Equation.prototype.predictTarget.mock.calls[4][1]).toEqual(Float32Array.from([.6,.8]));
+          expect(Equation.prototype.predictTarget.mock.calls[4][0]).toEqual(
+            Float32Array.from([0.5, 0.9])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[4][1]).toEqual(
+            Float32Array.from([0.6, 0.8])
+          );
 
           // second set, second array
-          expect(Equation.prototype.predictTarget.mock.calls[5][0]).toEqual(Float32Array.from([.6,.8]));
-          expect(Equation.prototype.predictTarget.mock.calls[5][1]).toEqual(Float32Array.from([.7,.7]));
+          expect(Equation.prototype.predictTarget.mock.calls[5][0]).toEqual(
+            Float32Array.from([0.6, 0.8])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[5][1]).toEqual(
+            Float32Array.from([0.7, 0.7])
+          );
 
           // second set, third array
-          expect(Equation.prototype.predictTarget.mock.calls[6][0]).toEqual(Float32Array.from([.7,.7]));
-          expect(Equation.prototype.predictTarget.mock.calls[6][1]).toEqual(Float32Array.from([.8,.6]));
+          expect(Equation.prototype.predictTarget.mock.calls[6][0]).toEqual(
+            Float32Array.from([0.7, 0.7])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[6][1]).toEqual(
+            Float32Array.from([0.8, 0.6])
+          );
 
           // second set, forth array
-          expect(Equation.prototype.predictTarget.mock.calls[7][0]).toEqual(Float32Array.from([.8,.6]));
-          expect(Equation.prototype.predictTarget.mock.calls[7][1]).toEqual(Float32Array.from([.9,.5]));
+          expect(Equation.prototype.predictTarget.mock.calls[7][0]).toEqual(
+            Float32Array.from([0.8, 0.6])
+          );
+          expect(Equation.prototype.predictTarget.mock.calls[7][1]).toEqual(
+            Float32Array.from([0.9, 0.5])
+          );
         });
       });
     });
@@ -846,18 +1111,18 @@ describe('RNNTimeStep', () => {
         const net = new LSTMTimeStep({
           inputSize: 1,
           hiddenLayers: [20, 20],
-          outputSize: 1
+          outputSize: 1,
         });
 
         const trainingData = [
-          [.1,.2,.3,.4,.5],
-          [.5,.4,.3,.2,.1],
+          [0.1, 0.2, 0.3, 0.4, 0.5],
+          [0.5, 0.4, 0.3, 0.2, 0.1],
         ];
 
         const result = net.train(trainingData);
         expect(result.error).toBeLessThan(0.05);
-        const closeToFive = net.run([.1,.2,.3,.4]);
-        const closeToOne = net.run([.5,.4,.3,.2]);
+        const closeToFive = net.run([0.1, 0.2, 0.3, 0.4]);
+        const closeToOne = net.run([0.5, 0.4, 0.3, 0.2]);
         expect(closeToOne.toFixed(1)).toBe('0.1');
         expect(closeToFive.toFixed(1)).toBe('0.5');
       });
@@ -865,23 +1130,28 @@ describe('RNNTimeStep', () => {
         const net = new LSTMTimeStep({
           inputSize: 2,
           hiddenLayers: [20],
-          outputSize: 2
+          outputSize: 2,
         });
 
-        //Same test as previous, but combined on a single set
+        // Same test as previous, but combined on a single set
         const trainingData = [
-          [.1,.5],
-          [.2,.4],
-          [.3,.3],
-          [.4,.2],
-          [.5,.1]
+          [0.1, 0.5],
+          [0.2, 0.4],
+          [0.3, 0.3],
+          [0.4, 0.2],
+          [0.5, 0.1],
         ];
 
         const result = net.train(trainingData, {
-          errorThresh: 0.01
+          errorThresh: 0.01,
         });
         expect(result.error).toBeLessThan(0.01);
-        const closeToFiveAndOne = net.run([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
+        const closeToFiveAndOne = net.run([
+          [0.1, 0.5],
+          [0.2, 0.4],
+          [0.3, 0.3],
+          [0.4, 0.2],
+        ]);
         expect(closeToFiveAndOne[0].toFixed(1)).toBe('0.5');
         expect(closeToFiveAndOne[1].toFixed(1)).toBe('0.1');
       });
@@ -889,33 +1159,43 @@ describe('RNNTimeStep', () => {
         const net = new LSTMTimeStep({
           inputSize: 2,
           hiddenLayers: [40],
-          outputSize: 2
+          outputSize: 2,
         });
 
-        //Same test as previous, but combined on a single set
+        // Same test as previous, but combined on a single set
         const trainingData = [
           [
-            [.1,.5],
-            [.2,.4],
-            [.3,.3],
-            [.4,.2],
-            [.5,.1]
+            [0.1, 0.5],
+            [0.2, 0.4],
+            [0.3, 0.3],
+            [0.4, 0.2],
+            [0.5, 0.1],
           ],
           [
-            [.5,.9],
-            [.6,.8],
-            [.7,.7],
-            [.8,.6],
-            [.9,.5]
+            [0.5, 0.9],
+            [0.6, 0.8],
+            [0.7, 0.7],
+            [0.8, 0.6],
+            [0.9, 0.5],
           ],
         ];
 
         const result = net.train(trainingData);
         expect(result.error).toBeLessThan(0.05);
-        const closeToFiveAndOne = net.run([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
+        const closeToFiveAndOne = net.run([
+          [0.1, 0.5],
+          [0.2, 0.4],
+          [0.3, 0.3],
+          [0.4, 0.2],
+        ]);
         expect(closeToFiveAndOne[0].toFixed(1)).toBe('0.5');
         expect(closeToFiveAndOne[1].toFixed(1)).toBe('0.1');
-        const closeToNineAndFive = net.run([[.5,.9],[.6,.8],[.7,.7],[.8,.6]]);
+        const closeToNineAndFive = net.run([
+          [0.5, 0.9],
+          [0.6, 0.8],
+          [0.7, 0.7],
+          [0.8, 0.6],
+        ]);
         expect(closeToNineAndFive[0].toFixed(1)).toBe('0.9');
         expect(closeToNineAndFive[1].toFixed(1)).toBe('0.5');
       });
@@ -927,7 +1207,7 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
             hiddenLayers: [5],
-            outputSize: 1
+            outputSize: 1,
           });
 
           // average temp
@@ -935,36 +1215,41 @@ describe('RNNTimeStep', () => {
             // Washington DC
             {
               input: {
-                jan: .42,
-                feb: .44,
-                mar: .53,
-                apr: .64
+                jan: 0.42,
+                feb: 0.44,
+                mar: 0.53,
+                apr: 0.64,
               },
               output: {
-                may: .75,
-                jun: .83
-              }
+                may: 0.75,
+                jun: 0.83,
+              },
             },
 
             // Bluff Utah
             {
               input: {
-                jan: .44,
-                feb: .52,
-                mar: .63,
-                apr: .72
+                jan: 0.44,
+                feb: 0.52,
+                mar: 0.63,
+                apr: 0.72,
               },
               output: {
-                may: .82,
-                jun: .92
-              }
+                may: 0.82,
+                jun: 0.92,
+              },
             },
           ];
 
           const result = net.train(trainingData);
           expect(result.error).toBeLessThan(0.05);
-          const washington = net.run({ jan: .42, feb: .44, mar: .53, apr: .64 });
-          const bluff = net.run({ jan: .44, feb: .52, mar: .63, apr: .72 });
+          const washington = net.run({
+            jan: 0.42,
+            feb: 0.44,
+            mar: 0.53,
+            apr: 0.64,
+          });
+          const bluff = net.run({ jan: 0.44, feb: 0.52, mar: 0.63, apr: 0.72 });
           expect(washington.may.toFixed(2).indexOf('0.7')).toBeGreaterThan(-1);
           expect(washington.jun.toFixed(2).indexOf('0.8')).toBeGreaterThan(-1);
 
@@ -978,25 +1263,25 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
             hiddenLayers: [20, 20],
-            outputSize: 1
+            outputSize: 1,
           });
 
-          //Same test as previous, but combined on a single set
+          // Same test as previous, but combined on a single set
           const trainingData = [
             {
-              input: [.1,.2,.3,.4],
-              output: [.5]
+              input: [0.1, 0.2, 0.3, 0.4],
+              output: [0.5],
             },
             {
-              input: [.5,.4,.3,.2],
-              output: [.1]
-            }
+              input: [0.5, 0.4, 0.3, 0.2],
+              output: [0.1],
+            },
           ];
 
           const result = net.train(trainingData);
           expect(result.error).toBeLessThan(0.09);
-          const closeToFive = net.run([.1,.2,.3,.4]);
-          const closeToOne = net.run([.5,.4,.3,.2]);
+          const closeToFive = net.run([0.1, 0.2, 0.3, 0.4]);
+          const closeToOne = net.run([0.5, 0.4, 0.3, 0.2]);
           expect(closeToFive.toFixed(1)).toBe('0.5');
           expect(closeToOne.toFixed(1)).toBe('0.1');
         });
@@ -1004,20 +1289,30 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [20],
-            outputSize: 2
+            outputSize: 2,
           });
 
-          //Same test as previous, but combined on a single set
+          // Same test as previous, but combined on a single set
           const trainingData = [
             {
-              input: [[.1,.5],[.2,.4],[.3,.3],[.4,.2]],
-              output: [[.5,.1]]
-            }
+              input: [
+                [0.1, 0.5],
+                [0.2, 0.4],
+                [0.3, 0.3],
+                [0.4, 0.2],
+              ],
+              output: [[0.5, 0.1]],
+            },
           ];
 
           const result = net.train(trainingData, { errorThresh: 0.01 });
           expect(result.error).toBeLessThan(0.01);
-          const closeToFiveAndOne = net.run([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
+          const closeToFiveAndOne = net.run([
+            [0.1, 0.5],
+            [0.2, 0.4],
+            [0.3, 0.3],
+            [0.4, 0.2],
+          ]);
           expect(closeToFiveAndOne[0].toFixed(1)).toBe('0.5');
           expect(closeToFiveAndOne[1].toFixed(1)).toBe('0.1');
         });
@@ -1027,20 +1322,32 @@ describe('RNNTimeStep', () => {
   describe('.trainNumbers()', () => {
     function prepNet(net) {
       // put some weights into recurrent inputs
-      net.initialLayerInputs.forEach(matrix => matrix.weights = matrix.weights.map(() => 1));
-      net.model.equationConnections.forEach(matrix => matrix[0].weights = matrix[0].weights.map(() => 1));
+      net.initialLayerInputs.forEach(
+        (matrix) => (matrix.weights = matrix.weights.map(() => 1))
+      );
+      net.model.equationConnections.forEach(
+        (matrix) => (matrix[0].weights = matrix[0].weights.map(() => 1))
+      );
 
       // make any values that are less than zero, positive, so relu doesn't go into zero
-      net.model.equations.forEach(equation => equation.states.forEach((state => {
-        if (state.left) state.left.weights = state.left.weights.map(value => value < 0 ? Math.abs(value) : value);
-        if (state.right) state.right.weights = state.right.weights.map(value => value < 0 ? Math.abs(value) : value);
-      })));
+      net.model.equations.forEach((equation) =>
+        equation.states.forEach((state) => {
+          if (state.left)
+            state.left.weights = state.left.weights.map((value) =>
+              value < 0 ? Math.abs(value) : value
+            );
+          if (state.right)
+            state.right.weights = state.right.weights.map((value) =>
+              value < 0 ? Math.abs(value) : value
+            );
+        })
+      );
     }
     it('forward propagates weights', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
 
       net.initialize();
@@ -1059,7 +1366,7 @@ describe('RNNTimeStep', () => {
           if (net.model.equationConnections.indexOf(state.product) > -1) return;
           // don't use initialLayerInputs, zero there too
           if (state.right === net.initialLayerInputs[0]) return;
-          state.product.weights.forEach((weight, weightIndex) => {
+          state.product.weights.forEach((weight) => {
             expect(weight).toBe(0);
           });
         });
@@ -1072,8 +1379,12 @@ describe('RNNTimeStep', () => {
       net.model.equations.forEach((equation, equationIndex) => {
         // we back propagate zero, so don't check last equation, as it has zeros
         if (equationIndex > 1) return;
-        equation.states.forEach((state, stateIndex) => {
-          for (let weightIndex = 0; weightIndex < state.product.weights.length; weightIndex++) {
+        equation.states.forEach((state) => {
+          for (
+            let weightIndex = 0;
+            weightIndex < state.product.weights.length;
+            weightIndex++
+          ) {
             const weight = state.product.weights[weightIndex];
             expect(weight).not.toBe(0);
           }
@@ -1084,7 +1395,7 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
 
       net.initialize();
@@ -1114,8 +1425,8 @@ describe('RNNTimeStep', () => {
       net.model.equations.forEach((equation, equationIndex) => {
         // we back propagate zero, so don't check last equation, as it has zeros
         if (equationIndex > 1) return;
-        equation.states.forEach((state, stateIndex) => {
-          state.product.deltas.forEach((delta, weightIndex) => {
+        equation.states.forEach((state) => {
+          state.product.deltas.forEach((delta) => {
             expect(delta).toBe(0);
           });
         });
@@ -1127,8 +1438,8 @@ describe('RNNTimeStep', () => {
       net.model.equations.forEach((equation, equationIndex) => {
         // we back propagate zero, so don't check last equation, as it has zeros
         if (equationIndex > 1) return;
-        equation.states.forEach((state, stateIndex) => {
-          state.product.deltas.forEach((delta, weightIndex) => {
+        equation.states.forEach((state) => {
+          state.product.deltas.forEach((delta) => {
             expect(delta).not.toBe(0);
           });
         });
@@ -1138,7 +1449,7 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [20],
-        outputSize: 1
+        outputSize: 1,
       });
 
       net.initialize();
@@ -1150,29 +1461,33 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [20],
-        outputSize: 1
+        outputSize: 1,
       });
 
       net.initialize();
       net.bindEquation();
       net.bindEquation();
       expect(net.model.equations.length).toBe(2);
-      const equationOutput0 = net.model.equations[0].states[net.model.equations[0].states.length - 1];
-      const equationOutput1 = net.model.equations[1].states[net.model.equations[1].states.length - 1];
+      const equationOutput0 =
+        net.model.equations[0].states[net.model.equations[0].states.length - 1];
+      const equationOutput1 =
+        net.model.equations[1].states[net.model.equations[1].states.length - 1];
       const originalDeltas0 = equationOutput0.product.deltas.slice(0);
       const originalDeltas1 = equationOutput1.product.deltas.slice(0);
       net.trainNumbers([1, 2, 1]);
       expect(net.model.equations.length).toBe(3);
       expect(originalDeltas0).not.toEqual(equationOutput0.product.deltas);
       expect(originalDeltas1).not.toEqual(equationOutput1.product.deltas);
-      expect(equationOutput0.product.deltas).not.toEqual(equationOutput1.product.deltas);
+      expect(equationOutput0.product.deltas).not.toEqual(
+        equationOutput1.product.deltas
+      );
       done();
     });
   });
   describe('.runNumbers()', () => {
     it('returns null when this.isRunnable returns false', () => {
       const result = RNNTimeStep.prototype.runNumbers.apply({
-        isRunnable: false
+        isRunnable: false,
       });
       expect(result).toBe(null);
     });
@@ -1180,23 +1495,23 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
       net.initialize();
       net.bindEquation();
       expect(net.model.equations.length).toBe(1);
-      net.runNumbers([1,2,3]);
+      net.runNumbers([1, 2, 3]);
       expect(net.model.equations.length).toBe(4);
     });
     it('sets calls equation.runInput() with value in array for each input plus 1 for 0 (to end) output', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
       net.initialize();
       const runInputStubs = [];
-      net.bindEquation = function() {
+      net.bindEquation = function () {
         const stub = jest.fn(() => {
           return { weights: [] };
         });
@@ -1204,7 +1519,7 @@ describe('RNNTimeStep', () => {
         this.model.equations.push({ runInput: stub });
       };
       net.bindEquation();
-      net.runNumbers([1,2,3]);
+      net.runNumbers([1, 2, 3]);
       expect(runInputStubs.length).toBe(4);
       expect(runInputStubs[0]).toBeCalled();
       expect(runInputStubs[1]).toBeCalled();
@@ -1220,19 +1535,19 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
-      const stub = net.end = jest.fn();
+      const stub = (net.end = jest.fn());
       net.initialize();
       net.bindEquation();
-      net.runNumbers([1,2,3]);
+      net.runNumbers([1, 2, 3]);
       expect(stub).toBeCalled();
     });
   });
   describe('.forecastNumbers()', () => {
     it('returns null when this.isRunnable returns false', () => {
       const result = RNNTimeStep.prototype.forecastNumbers.apply({
-        isRunnable: false
+        isRunnable: false,
       });
       expect(result).toBe(null);
     });
@@ -1240,46 +1555,46 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
       net.initialize();
       net.bindEquation();
       expect(net.model.equations.length).toBe(1);
-      net.forecastNumbers([1,2,3], 2);
+      net.forecastNumbers([1, 2, 3], 2);
       expect(net.model.equations.length).toBe(6);
     });
     it('sets calls this.end() after calls equations.runInput', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
-      const stub = net.end = jest.fn();
+      const stub = (net.end = jest.fn());
       net.initialize();
       net.bindEquation();
-      net.forecastNumbers([1,2,3], 2);
+      net.forecastNumbers([1, 2, 3], 2);
       expect(stub).toBeCalled();
     });
     it('outputs the length of required forecast', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
       net.initialize();
       net.bindEquation();
-      const result = net.forecastNumbers([1,2,3], 2);
+      const result = net.forecastNumbers([1, 2, 3], 2);
       expect(result.length).toBe(2);
     });
     it('outputs a flat array of numbers', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
       net.initialize();
       net.bindEquation();
-      const result = net.forecastNumbers([1,2,3], 2);
+      const result = net.forecastNumbers([1, 2, 3], 2);
       expect(typeof result[0]).toBe('number');
       expect(typeof result[1]).toBe('number');
     });
@@ -1287,21 +1602,24 @@ describe('RNNTimeStep', () => {
   describe('.runObject()', () => {
     it('calls this.forecastNumbers()', () => {
       const forecastNumbersStub = jest.fn(() => [99, 88]);
-      const result = RNNTimeStep.prototype.runObject.apply({
-        inputLookup: {
-          input1: 0,
-          input2: 1
+      const result = RNNTimeStep.prototype.runObject.apply(
+        {
+          inputLookup: {
+            input1: 0,
+            input2: 1,
+          },
+          outputLookup: {
+            output1: 0,
+            output2: 1,
+          },
+          forecastNumbers: forecastNumbersStub,
         },
-        outputLookup: {
-          output1: 0,
-          output2: 1
-        },
-        forecastNumbers: forecastNumbersStub,
-      }, [1, 2]);
+        [1, 2]
+      );
 
       expect(result).toEqual({
         output1: 99,
-        output2: 88
+        output2: 88,
       });
       expect(forecastNumbersStub).toBeCalled();
     });
@@ -1312,15 +1630,24 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize,
         hiddenLayers,
-        outputSize
+        outputSize,
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let lastStatus;
-      net.train([{ monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 }], {
-        log: (status) => {
-          lastStatus = status;
+      net.train(
+        [{ monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 }],
+        {
+          log: (status) => {
+            lastStatus = status;
+          },
         }
+      );
+      const result = net.run({
+        monday: 1,
+        tuesday: 2,
+        wednesday: 3,
+        thursday: 4,
       });
-      const result = net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
       expect(Object.keys(result).length).toBe(1);
       expect(result.friday.toFixed(0)).toBe('5');
     });
@@ -1330,8 +1657,8 @@ describe('RNNTimeStep', () => {
       const forecastArrays = (input, count) => {
         expect(count).toBe(2);
         return [
-          [.8,.7],
-          [.6,.5]
+          [0.8, 0.7],
+          [0.6, 0.5],
         ];
       };
       const instance = {
@@ -1339,17 +1666,20 @@ describe('RNNTimeStep', () => {
         inputLookupLength: 2,
         outputLookup: { low: 0, high: 1 },
         outputLookupLength: 2,
-        forecastArrays
+        forecastArrays,
       };
       const input = [
         { low: 0.1, high: 0.9 },
         { low: 0.1, high: 0.9 },
         { low: 0.1, high: 0.9 },
       ];
-      const result = RNNTimeStep.prototype.forecastObjects.apply(instance, [input, 2]);
+      const result = RNNTimeStep.prototype.forecastObjects.apply(instance, [
+        input,
+        2,
+      ]);
       expect(result).toEqual([
-        { low: .8, high: .7 },
-        { low: .6, high: .5 },
+        { low: 0.8, high: 0.7 },
+        { low: 0.6, high: 0.5 },
       ]);
     });
   });
@@ -1358,47 +1688,47 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
       net.initialize();
       net.bindEquation();
       expect(net.model.equations.length).toBe(1);
-      net.trainInputOutput({ input: [1,2,3], output: [4] });
+      net.trainInputOutput({ input: [1, 2, 3], output: [4] });
       expect(net.model.equations.length).toBe(4);
     });
     it('sets up equations for length of input(3), output(2) plus count plus 1 for internal of 0', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
       net.initialize();
       net.bindEquation();
       expect(net.model.equations.length).toBe(1);
-      net.trainInputOutput({ input: [1,2,3], output: [4,5] });
+      net.trainInputOutput({ input: [1, 2, 3], output: [4, 5] });
       expect(net.model.equations.length).toBe(5);
     });
     it('calls equation.predictTarget for each input', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
       net.initialize();
       const predictTargetStubs = [];
       const runInputStubs = [];
-      net.bindEquation = function() {
+      net.bindEquation = function () {
         const predictTargetStub = jest.fn();
         const runInputStub = jest.fn();
         predictTargetStubs.push(predictTargetStub);
         runInputStubs.push(runInputStub);
         this.model.equations.push({
           predictTarget: predictTargetStub,
-          runInput: runInputStub
+          runInput: runInputStub,
         });
       };
       expect(net.model.equations.length).toBe(0);
-      const data = net.formatData([{ input: [1,2,3], output: [4,5] }]);
+      const data = net.formatData([{ input: [1, 2, 3], output: [4, 5] }]);
       net.trainInputOutput(data[0]);
       expect(net.model.equations.length).toBe(5);
 
@@ -1413,22 +1743,34 @@ describe('RNNTimeStep', () => {
       expect(predictTargetStubs[3]).toBeCalled();
       expect(runInputStubs[4]).toBeCalled();
 
-      expect(predictTargetStubs[0].mock.calls[0]).toEqual([new Float32Array([1]), new Float32Array([2])]);
-      expect(predictTargetStubs[1].mock.calls[0]).toEqual([new Float32Array([2]), new Float32Array([3])]);
-      expect(predictTargetStubs[2].mock.calls[0]).toEqual([new Float32Array([3]), new Float32Array([4])]);
-      expect(predictTargetStubs[3].mock.calls[0]).toEqual([new Float32Array([4]), new Float32Array([5])]);
+      expect(predictTargetStubs[0].mock.calls[0]).toEqual([
+        new Float32Array([1]),
+        new Float32Array([2]),
+      ]);
+      expect(predictTargetStubs[1].mock.calls[0]).toEqual([
+        new Float32Array([2]),
+        new Float32Array([3]),
+      ]);
+      expect(predictTargetStubs[2].mock.calls[0]).toEqual([
+        new Float32Array([3]),
+        new Float32Array([4]),
+      ]);
+      expect(predictTargetStubs[3].mock.calls[0]).toEqual([
+        new Float32Array([4]),
+        new Float32Array([5]),
+      ]);
       expect(runInputStubs[4].mock.calls[0]).toEqual([new Float32Array([0])]);
     });
     it('sets calls this.end() after calls equations.runInput', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
-      const stub = net.end = jest.fn();
+      const stub = (net.end = jest.fn());
       net.initialize();
       net.bindEquation();
-      net.trainInputOutput({ input: [1,2,3], output: [4,5] });
+      net.trainInputOutput({ input: [1, 2, 3], output: [4, 5] });
       expect(stub).toBeCalled();
     });
   });
@@ -1437,47 +1779,64 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize: 2,
         hiddenLayers: [2],
-        outputSize: 2
+        outputSize: 2,
       });
       net.initialize();
       net.bindEquation();
       expect(net.model.equations.length).toBe(1);
-      net.trainArrays([[1,4],[2,3],[3,2],[4,1]]);
+      net.trainArrays([
+        [1, 4],
+        [2, 3],
+        [3, 2],
+        [4, 1],
+      ]);
       expect(net.model.equations.length).toBe(4);
     });
     it('sets up equations for length of input(3), output(2) plus count plus 1 for internal of 0', () => {
       const net = new RNNTimeStep({
         inputSize: 2,
         hiddenLayers: [2],
-        outputSize: 2
+        outputSize: 2,
       });
       net.initialize();
       net.bindEquation();
       expect(net.model.equations.length).toBe(1);
-      net.trainArrays([[1,5],[2,4],[3,3],[4,2], [5,1]]);
+      net.trainArrays([
+        [1, 5],
+        [2, 4],
+        [3, 3],
+        [4, 2],
+        [5, 1],
+      ]);
       expect(net.model.equations.length).toBe(5);
     });
     it('calls equation.predictTarget for each input', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
       net.initialize();
       const predictTargetStubs = [];
       const runInputStubs = [];
-      net.bindEquation = function() {
+      net.bindEquation = function () {
         const predictTargetStub = jest.fn();
         const runInputStub = jest.fn();
         predictTargetStubs.push(predictTargetStub);
         runInputStubs.push(runInputStub);
         this.model.equations.push({
           predictTarget: predictTargetStub,
-          runInput: runInputStub
+          runInput: runInputStub,
         });
       };
       expect(net.model.equations.length).toBe(0);
-      net.trainArrays([[1,5],[2,4],[3,3],[4,2],[5,1]]);
+      net.trainArrays([
+        [1, 5],
+        [2, 4],
+        [3, 3],
+        [4, 2],
+        [5, 1],
+      ]);
       expect(net.model.equations.length).toBe(5);
 
       expect(runInputStubs[0]).not.toBeCalled();
@@ -1491,29 +1850,47 @@ describe('RNNTimeStep', () => {
       expect(predictTargetStubs[3]).toBeCalled();
       expect(runInputStubs[4]).toBeCalled();
 
-      expect(predictTargetStubs[0].mock.calls[0]).toEqual([[1, 5], [2, 4]]);
-      expect(predictTargetStubs[1].mock.calls[0]).toEqual([[2, 4], [3, 3]]);
-      expect(predictTargetStubs[2].mock.calls[0]).toEqual([[3, 3], [4, 2]]);
-      expect(predictTargetStubs[3].mock.calls[0]).toEqual([[4, 2], [5, 1]]);
+      expect(predictTargetStubs[0].mock.calls[0]).toEqual([
+        [1, 5],
+        [2, 4],
+      ]);
+      expect(predictTargetStubs[1].mock.calls[0]).toEqual([
+        [2, 4],
+        [3, 3],
+      ]);
+      expect(predictTargetStubs[2].mock.calls[0]).toEqual([
+        [3, 3],
+        [4, 2],
+      ]);
+      expect(predictTargetStubs[3].mock.calls[0]).toEqual([
+        [4, 2],
+        [5, 1],
+      ]);
       expect(runInputStubs[4].mock.calls[0]).toEqual([new Float32Array([0])]);
     });
     it('sets calls this.end() after calls equations.runInput', () => {
       const net = new RNNTimeStep({
         inputSize: 2,
         hiddenLayers: [2],
-        outputSize: 2
+        outputSize: 2,
       });
-      const stub = net.end = jest.fn();
+      const stub = (net.end = jest.fn());
       net.initialize();
       net.bindEquation();
-      net.trainArrays([[1,5],[2,4],[3,3],[4,2],[5,1]]);
+      net.trainArrays([
+        [1, 5],
+        [2, 4],
+        [3, 3],
+        [4, 2],
+        [5, 1],
+      ]);
       expect(stub).toBeCalled();
     });
   });
   describe('.runArrays()', () => {
     it('returns null when this.isRunnable returns false', () => {
       const result = RNNTimeStep.prototype.runArrays.apply({
-        isRunnable: false
+        isRunnable: false,
       });
       expect(result).toBe(null);
     });
@@ -1521,57 +1898,73 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize: 2,
         hiddenLayers: [2],
-        outputSize: 2
+        outputSize: 2,
       });
       net.initialize();
       net.bindEquation();
       expect(net.model.equations.length).toBe(1);
-      net.runArrays([[1,3],[2,2],[3,1]]);
+      net.runArrays([
+        [1, 3],
+        [2, 2],
+        [3, 1],
+      ]);
       expect(net.model.equations.length).toBe(4);
     });
     it('sets calls equation.runInput() with value in array for each input plus 1 for 0 (to end) output', () => {
       const net = new RNNTimeStep({
         inputSize: 2,
         hiddenLayers: [2],
-        outputSize: 2
+        outputSize: 2,
       });
       net.initialize();
       const runInputStubs = [];
-      net.bindEquation = function() {
-        const stub = jest.fn(() => { return { weights: [] }; });
+      net.bindEquation = function () {
+        const stub = jest.fn(() => {
+          return { weights: [] };
+        });
         runInputStubs.push(stub);
         this.model.equations.push({ runInput: stub });
       };
       net.bindEquation();
-      net.runArrays([[1,3],[2,2],[3,1]]);
+      net.runArrays([
+        [1, 3],
+        [2, 2],
+        [3, 1],
+      ]);
       expect(runInputStubs.length).toBe(4);
       expect(runInputStubs[0]).toBeCalled();
       expect(runInputStubs[1]).toBeCalled();
       expect(runInputStubs[2]).toBeCalled();
       expect(runInputStubs[3]).toBeCalled();
 
-      expect(runInputStubs[0].mock.calls[0][0]).toEqual([1,3]);
-      expect(runInputStubs[1].mock.calls[0][0]).toEqual([2,2]);
-      expect(runInputStubs[2].mock.calls[0][0]).toEqual([3,1]);
-      expect(runInputStubs[3].mock.calls[0][0]).toEqual(new Float32Array([0,0]));
+      expect(runInputStubs[0].mock.calls[0][0]).toEqual([1, 3]);
+      expect(runInputStubs[1].mock.calls[0][0]).toEqual([2, 2]);
+      expect(runInputStubs[2].mock.calls[0][0]).toEqual([3, 1]);
+      expect(runInputStubs[3].mock.calls[0][0]).toEqual(
+        new Float32Array([0, 0])
+      );
     });
     it('sets calls this.end() after calls equations.runInput', () => {
       const net = new RNNTimeStep({
         inputSize: 2,
         hiddenLayers: [2],
-        outputSize: 2
+        outputSize: 2,
       });
-      const stub = net.end = jest.fn();
+      const stub = (net.end = jest.fn());
       net.initialize();
       net.bindEquation();
-      net.runArrays([[1,3],[2,2],[3,1]]);
+      net.runArrays([
+        [1, 3],
+        [2, 2],
+        [3, 1],
+      ]);
       expect(stub).toBeCalled();
     });
   });
   describe('.forecastArrays()', () => {
     it('returns null when this.isRunnable returns false', () => {
       const result = RNNTimeStep.prototype.forecastArrays.apply({
-        isRunnable: false
+        isRunnable: false,
       });
       expect(result).toBe(null);
     });
@@ -1579,35 +1972,56 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize: 2,
         hiddenLayers: [2],
-        outputSize: 2
+        outputSize: 2,
       });
       net.initialize();
       net.bindEquation();
       expect(net.model.equations.length).toBe(1);
-      net.forecastArrays([[1,3],[2,2],[3,1]], 2);
+      net.forecastArrays(
+        [
+          [1, 3],
+          [2, 2],
+          [3, 1],
+        ],
+        2
+      );
       expect(net.model.equations.length).toBe(6);
     });
     it('sets calls this.end() after calls equations.runInput', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
-      const stub = net.end = jest.fn();
+      const stub = (net.end = jest.fn());
       net.initialize();
       net.bindEquation();
-      net.forecastArrays([[1,3],[2,2],[3,1]], 2);
+      net.forecastArrays(
+        [
+          [1, 3],
+          [2, 2],
+          [3, 1],
+        ],
+        2
+      );
       expect(stub).toBeCalled();
     });
     it('outputs the length of required forecast', () => {
       const net = new RNNTimeStep({
         inputSize: 1,
         hiddenLayers: [1],
-        outputSize: 1
+        outputSize: 1,
       });
       net.initialize();
       net.bindEquation();
-      const result = net.forecastArrays([[1,3],[2,2],[3,1]], 2);
+      const result = net.forecastArrays(
+        [
+          [1, 3],
+          [2, 2],
+          [3, 1],
+        ],
+        2
+      );
       expect(result.length).toBe(2);
     });
     it('outputs a nested array of numbers', () => {
@@ -1615,12 +2029,19 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize: 2,
         hiddenLayers: [2],
-        outputSize: outputWidth
+        outputSize: outputWidth,
       });
       net.initialize();
       net.bindEquation();
       const predictionsCount = 3;
-      const result = net.forecastArrays([[1,3],[2,2],[3,1]], predictionsCount);
+      const result = net.forecastArrays(
+        [
+          [1, 3],
+          [2, 2],
+          [3, 1],
+        ],
+        predictionsCount
+      );
       expect(result.length).toBe(predictionsCount);
       expect(result[0].length).toBe(outputWidth);
       expect(result[1].length).toBe(outputWidth);
@@ -1643,8 +2064,8 @@ describe('RNNTimeStep', () => {
     describe('when this.inputSize = 1', () => {
       it('calls this.forecastNumbers and sets this.forecast as it for next use', () => {
         const net = new RNNTimeStep({ inputSize: 1 });
-        net.model = {equations: [null]};
-        const stub = net.forecastNumbers = jest.fn();
+        net.model = { equations: [null] };
+        const stub = (net.forecastNumbers = jest.fn());
         net.forecast();
         expect(stub).toBeCalled();
         expect(net.forecast).toBe(stub);
@@ -1653,8 +2074,8 @@ describe('RNNTimeStep', () => {
     describe('when this.inputSize > 1', () => {
       it('calls this.forecastArrays and sets this.forecast as it for next use', () => {
         const net = new RNNTimeStep({ inputSize: 2 });
-        net.model = {equations: [null]};
-        const stub = net.forecastArrays = jest.fn();
+        net.model = { equations: [null] };
+        const stub = (net.forecastArrays = jest.fn());
         net.forecast();
         expect(stub).toBeCalled();
         expect(net.forecast).toEqual(stub);
@@ -1665,29 +2086,29 @@ describe('RNNTimeStep', () => {
         const net = new LSTMTimeStep({
           inputSize: 1,
           hiddenLayers: [10],
-          outputSize: 1
+          outputSize: 1,
         });
 
-        //Same test as previous, but combined on a single set
+        // Same test as previous, but combined on a single set
         const trainingData = [
           {
-            input: [.1,.2,.3],
-            output: [.4,.5]
+            input: [0.1, 0.2, 0.3],
+            output: [0.4, 0.5],
           },
           {
-            input: [.5,.4,.3],
-            output: [.2,.1]
-          }
+            input: [0.5, 0.4, 0.3],
+            output: [0.2, 0.1],
+          },
         ];
 
         const trainResult = net.train(trainingData, { errorThresh: 0.01 });
         expect(trainResult.error).toBeLessThan(0.01);
-        const result1 = net.forecast([.1,.2,.3], 2);
+        const result1 = net.forecast([0.1, 0.2, 0.3], 2);
         expect(result1.length).toBe(2);
         expect(result1[0].toFixed(1)).toBe('0.4');
         expect(result1[1].toFixed(1)).toBe('0.5');
 
-        const result2 = net.forecast([.5,.4,.3], 2);
+        const result2 = net.forecast([0.5, 0.4, 0.3], 2);
         expect(result2.length).toBe(2);
         expect(result2[0].toFixed(1)).toBe('0.2');
         expect(result2[1].toFixed(1)).toBe('0.1');
@@ -1698,20 +2119,34 @@ describe('RNNTimeStep', () => {
         const net = new LSTMTimeStep({
           inputSize: 2,
           hiddenLayers: [20],
-          outputSize: 2
+          outputSize: 2,
         });
 
-        //Same test as previous, but combined on a single set
+        // Same test as previous, but combined on a single set
         const trainingData = [
           {
-            input: [[.1,.5],[.2,.4],[.3,.3]],
-            output: [[.4,.2],[.5,.1]]
-          }
+            input: [
+              [0.1, 0.5],
+              [0.2, 0.4],
+              [0.3, 0.3],
+            ],
+            output: [
+              [0.4, 0.2],
+              [0.5, 0.1],
+            ],
+          },
         ];
 
         const trainResult = net.train(trainingData, { errorThresh: 0.01 });
         expect(trainResult.error).toBeLessThan(0.01);
-        const result = net.forecast([[.1,.5],[.2,.4],[.3,.3]], 2);
+        const result = net.forecast(
+          [
+            [0.1, 0.5],
+            [0.2, 0.4],
+            [0.3, 0.3],
+          ],
+          2
+        );
         expect(result.length).toBe(2);
         expect(result[0][0].toFixed(1)).toBe('0.4');
         expect(result[0][1].toFixed(1)).toBe('0.2');
@@ -1724,19 +2159,22 @@ describe('RNNTimeStep', () => {
         const net = new LSTMTimeStep({
           inputSize: 1,
           hiddenLayers: [20],
-          outputSize: 1
+          outputSize: 1,
         });
 
         const trainingData = [
           {
-            input: { monday: .1, tuesday: .2, wednesday: .3, thursday: .3 },
-            output: { friday: .4, saturday: .5 }
-          }
+            input: { monday: 0.1, tuesday: 0.2, wednesday: 0.3, thursday: 0.3 },
+            output: { friday: 0.4, saturday: 0.5 },
+          },
         ];
 
         const trainResult = net.train(trainingData, { errorThresh: 0.01 });
         expect(trainResult.error).toBeLessThan(0.01);
-        const result = net.forecast({ monday: .1, tuesday: .2, wednesday: .3, thursday: .3 }, 2);
+        const result = net.forecast(
+          { monday: 0.1, tuesday: 0.2, wednesday: 0.3, thursday: 0.3 },
+          2
+        );
         expect(Object.keys(result).length).toBe(2);
         expect(result.friday.toFixed(1)).toBe('0.4');
         expect(result.saturday.toFixed(1)).toBe('0.5');
@@ -1747,20 +2185,34 @@ describe('RNNTimeStep', () => {
         const net = new LSTMTimeStep({
           inputSize: 2,
           hiddenLayers: [20],
-          outputSize: 2
+          outputSize: 2,
         });
 
-        //Same test as previous, but combined on a single set
+        // Same test as previous, but combined on a single set
         const trainingData = [
           {
-            input: [{ low: .1, high: .5 }, { low:.2, high: .4}, { low: .3, high: .3 }],
-            output: [{ low: .4, high: .2 }, { low: .5, high: .1 }]
-          }
+            input: [
+              { low: 0.1, high: 0.5 },
+              { low: 0.2, high: 0.4 },
+              { low: 0.3, high: 0.3 },
+            ],
+            output: [
+              { low: 0.4, high: 0.2 },
+              { low: 0.5, high: 0.1 },
+            ],
+          },
         ];
 
         const trainResult = net.train(trainingData, { errorThresh: 0.01 });
         expect(trainResult.error).toBeLessThan(0.01);
-        const result = net.forecast([{ low: .1, high: .5 }, { low:.2, high: .4}, { low: .3, high: .3 }], 2);
+        const result = net.forecast(
+          [
+            { low: 0.1, high: 0.5 },
+            { low: 0.2, high: 0.4 },
+            { low: 0.3, high: 0.3 },
+          ],
+          2
+        );
         expect(result.length).toBe(2);
         expect(result[0].low.toFixed(1)).toBe('0.4');
         expect(result[0].high.toFixed(1)).toBe('0.2');
@@ -1772,27 +2224,38 @@ describe('RNNTimeStep', () => {
   describe('.formatData()', () => {
     describe('handles datum', () => {
       it('throws array,datum,object in inputSize > 1', () => {
-        const data = [{ input: { one: 1, two: 2 }, output: { three: 3, four: 4 } }];
+        const data = [
+          { input: { one: 1, two: 2 }, output: { three: 3, four: 4 } },
+        ];
         const instance = { inputSize: 2, outputSize: 1 };
         expect(() => {
           RNNTimeStep.prototype.formatData.apply(instance, [data]);
         }).toThrow();
       });
       it('throws array,datum,object in inputSize > 1', () => {
-        const data = [{ input: { one: 1, two: 2 }, output: { three: 3, four: 4 } }];
+        const data = [
+          { input: { one: 1, two: 2 }, output: { three: 3, four: 4 } },
+        ];
         const instance = { inputSize: 1, outputSize: 2 };
         expect(() => {
           RNNTimeStep.prototype.formatData.apply(instance, [data]);
         }).toThrow();
       });
       it('handles array,datum,object to array,datum,array,array w/ inputSize of 1', () => {
-        const data = [{ input: { one: 1, two: 2 }, output: { three: 3, four: 4 } }];
+        const data = [
+          { input: { one: 1, two: 2 }, output: { three: 3, four: 4 } },
+        ];
         const instance = { inputSize: 1, outputSize: 1 };
         const result = RNNTimeStep.prototype.formatData.apply(instance, [data]);
-        expect(result).toEqual([{ input: [Float32Array.from([1]), Float32Array.from([2])], output: [Float32Array.from([3]), Float32Array.from([4])] }]);
+        expect(result).toEqual([
+          {
+            input: [Float32Array.from([1]), Float32Array.from([2])],
+            output: [Float32Array.from([3]), Float32Array.from([4])],
+          },
+        ]);
       });
       it('throws with array,datum,array', () => {
-        const data = [{ input: [1,2], output: [3,4] }];
+        const data = [{ input: [1, 2], output: [3, 4] }];
         const instance = {};
         expect(() => {
           RNNTimeStep.prototype.formatData.apply(instance, [data]);
@@ -1806,43 +2269,65 @@ describe('RNNTimeStep', () => {
         }).toThrow();
       });
       it('throws if array,datum,array,array not sized to match inputSize', () => {
-        const data = [{ input: [[1,4,5]], output: [[3,2]] }];
+        const data = [{ input: [[1, 4, 5]], output: [[3, 2]] }];
         const instance = {
           inputSize: 2,
-          outputSize: 2
+          outputSize: 2,
         };
         expect(() => {
           RNNTimeStep.prototype.formatData.apply(instance, [data]);
         }).toThrow();
       });
       it('throws if array,datum,array,array not sized to match outputSize', () => {
-        const data = [{ input: [[1,4]], output: [[3,2,1]] }];
+        const data = [{ input: [[1, 4]], output: [[3, 2, 1]] }];
         const instance = {
           inputSize: 2,
-          outputSize: 2
+          outputSize: 2,
         };
         expect(() => {
           RNNTimeStep.prototype.formatData.apply(instance, [data]);
         }).toThrow();
       });
       it('formats array,datum,array,array to array,datum,array,floatArray', () => {
-        const data = [{ input: [[1,4],[2,3]], output: [[3,2],[4,1]] }];
+        const data = [
+          {
+            input: [
+              [1, 4],
+              [2, 3],
+            ],
+            output: [
+              [3, 2],
+              [4, 1],
+            ],
+          },
+        ];
         const instance = {
           inputSize: 2,
-          outputSize: 2
+          outputSize: 2,
         };
         const result = RNNTimeStep.prototype.formatData.apply(instance, [data]);
         expect(result).toEqual([
           {
-            input: [Float32Array.from([1,4]), Float32Array.from([2,3])],
-            output: [Float32Array.from([3,2]), Float32Array.from([4,1])]
-          }
+            input: [Float32Array.from([1, 4]), Float32Array.from([2, 3])],
+            output: [Float32Array.from([3, 2]), Float32Array.from([4, 1])],
+          },
         ]);
       });
       it('formats array,datum,array,object to array,datum,array,floatArray', () => {
-        const data = [{ input: [{ a: 1, b: 4 },{ a: 2, b: 3 }], output: [{ c: 3, d: 2 }, { c: 4, d: 1 }] }];
+        const data = [
+          {
+            input: [
+              { a: 1, b: 4 },
+              { a: 2, b: 3 },
+            ],
+            output: [
+              { c: 3, d: 2 },
+              { c: 4, d: 1 },
+            ],
+          },
+        ];
         const instance = {
-          inputSize: 2
+          inputSize: 2,
         };
         const result = RNNTimeStep.prototype.formatData.apply(instance, [data]);
         expect(JSON.stringify(instance.inputLookup)).toBe('{"a":0,"b":1}');
@@ -1851,29 +2336,29 @@ describe('RNNTimeStep', () => {
         expect(instance.outputLookupLength).toBe(2);
         expect(result).toEqual([
           {
-            input: [Float32Array.from([1,4]), Float32Array.from([2,3])],
-            output: [Float32Array.from([3,2]), Float32Array.from([4,1])]
-          }
+            input: [Float32Array.from([1, 4]), Float32Array.from([2, 3])],
+            output: [Float32Array.from([3, 2]), Float32Array.from([4, 1])],
+          },
         ]);
       });
     });
     describe('arrays', () => {
       it('throws is inputSize > 1', () => {
-        const data = [1,2,3,4];
+        const data = [1, 2, 3, 4];
         const instance = { inputSize: 2, outputSize: 1 };
         expect(() => {
           RNNTimeStep.prototype.formatData.apply(instance, [data]);
         }).toThrow();
       });
       it('throws is outputSize > 1', () => {
-        const data = [1,2,3,4];
+        const data = [1, 2, 3, 4];
         const instance = { inputSize: 1, outputSize: 2 };
         expect(() => {
           RNNTimeStep.prototype.formatData.apply(instance, [data]);
         }).toThrow();
       });
       it('formats array to array,floatArray', () => {
-        const data = [1,2,3,4];
+        const data = [1, 2, 3, 4];
         const instance = { inputSize: 1, outputSize: 1 };
         const result = RNNTimeStep.prototype.formatData.apply(instance, [data]);
         expect(result).toEqual([
@@ -1882,11 +2367,14 @@ describe('RNNTimeStep', () => {
             Float32Array.from([2]),
             Float32Array.from([3]),
             Float32Array.from([4]),
-          ]
+          ],
         ]);
       });
       it('formats array,array to array,floatArray w/ inputSize of 1', () => {
-        const data = [[1,2,3,4],[4,3,2,1]];
+        const data = [
+          [1, 2, 3, 4],
+          [4, 3, 2, 1],
+        ];
         const instance = { inputSize: 1, outputSize: 1 };
         const result = RNNTimeStep.prototype.formatData.apply(instance, [data]);
         expect(result).toEqual([
@@ -1901,69 +2389,84 @@ describe('RNNTimeStep', () => {
             Float32Array.from([3]),
             Float32Array.from([2]),
             Float32Array.from([1]),
-          ]
+          ],
         ]);
       });
       it('throws array,array to array,floatArray w/ inputSize greater than data', () => {
-        const data = [[1,4],[2,3],[3,2],[4,1]];
+        const data = [
+          [1, 4],
+          [2, 3],
+          [3, 2],
+          [4, 1],
+        ];
         const instance = { inputSize: 3, outputSize: 2 };
         expect(() => {
           RNNTimeStep.prototype.formatData.apply(instance, [data]);
         }).toThrow();
       });
       it('throws array,array to array,floatArray w/ outputSize greater than data', () => {
-        const data = [[1,4],[2,3],[3,2],[4,1]];
+        const data = [
+          [1, 4],
+          [2, 3],
+          [3, 2],
+          [4, 1],
+        ];
         const instance = { inputSize: 2, outputSize: 3 };
         expect(() => {
           RNNTimeStep.prototype.formatData.apply(instance, [data]);
         }).toThrow();
       });
       it('formats array,array to array,floatArray w/ inputSize greater than 1', () => {
-        const data = [[1,4],[2,3],[3,2],[4,1]];
+        const data = [
+          [1, 4],
+          [2, 3],
+          [3, 2],
+          [4, 1],
+        ];
         const instance = { inputSize: 2, outputSize: 2 };
         const result = RNNTimeStep.prototype.formatData.apply(instance, [data]);
         expect(result).toEqual([
           [
-            Float32Array.from([1,4]),
-            Float32Array.from([2,3]),
-            Float32Array.from([3,2]),
-            Float32Array.from([4,1]),
-          ]
+            Float32Array.from([1, 4]),
+            Float32Array.from([2, 3]),
+            Float32Array.from([3, 2]),
+            Float32Array.from([4, 1]),
+          ],
         ]);
       });
       it('formats array,array,array to array,array,floatArray w/ inputSize greater than 1', () => {
         const data = [
           [
-            [1,5],
-            [2,4],
-            [3,3],
-            [4,2],
-            [5,1]
+            [1, 5],
+            [2, 4],
+            [3, 3],
+            [4, 2],
+            [5, 1],
           ],
           [
-            [5,9],
-            [6,8],
-            [7,7],
-            [8,6],
-            [9,5]
+            [5, 9],
+            [6, 8],
+            [7, 7],
+            [8, 6],
+            [9, 5],
           ],
         ];
         const instance = { inputSize: 2 };
         const result = RNNTimeStep.prototype.formatData.apply(instance, [data]);
         expect(result).toEqual([
           [
-            Float32Array.from([1,5]),
-            Float32Array.from([2,4]),
-            Float32Array.from([3,3]),
-            Float32Array.from([4,2]),
-            Float32Array.from([5,1]),
+            Float32Array.from([1, 5]),
+            Float32Array.from([2, 4]),
+            Float32Array.from([3, 3]),
+            Float32Array.from([4, 2]),
+            Float32Array.from([5, 1]),
           ],
           [
-            Float32Array.from([5,9]),
-            Float32Array.from([6,8]),
-            Float32Array.from([7,7]),
-            Float32Array.from([8,6]),
-            Float32Array.from([9,5]),
+            Float32Array.from([5, 9]),
+            Float32Array.from([6, 8]),
+            Float32Array.from([7, 7]),
+            Float32Array.from([8, 6]),
+            Float32Array.from([9, 5]),
           ],
         ]);
       });
@@ -1971,11 +2474,11 @@ describe('RNNTimeStep', () => {
   });
   describe('.toFunction()', () => {
     it('processes array same as net w/ inputSize of 1', () => {
-      const data = [{input: [1, 2], output: [3, 4]}];
+      const data = [{ input: [1, 2], output: [3, 4] }];
       const net = new LSTMTimeStep({
         inputSize: 1,
         hiddenLayers: [10],
-        outputSize: 1
+        outputSize: 1,
       });
       net.train(data, { iteration: 100, errorThresh: 0.05 });
       const fn = net.toFunction(istanbulLinkerUtil);
@@ -1990,7 +2493,7 @@ describe('RNNTimeStep', () => {
       const net = new LSTMTimeStep({
         inputSize: 1,
         hiddenLayers: [10],
-        outputSize: 1
+        outputSize: 1,
       });
       net.train(data, { iteration: 100, errorThresh: 0.05 });
       const fn = net.toFunction(istanbulLinkerUtil);
@@ -1999,11 +2502,22 @@ describe('RNNTimeStep', () => {
     });
 
     it('processes array,object same as net', () => {
-      const data = [{ input: [{ a: 1, b: 4 },{ a: 2, b: 3 }], output: [{ c: 3, d: 2 }, { c: 4, d: 1 }] }];
+      const data = [
+        {
+          input: [
+            { a: 1, b: 4 },
+            { a: 2, b: 3 },
+          ],
+          output: [
+            { c: 3, d: 2 },
+            { c: 4, d: 1 },
+          ],
+        },
+      ];
       const net = new LSTMTimeStep({
         inputSize: 2,
         hiddenLayers: [10],
-        outputSize: 2
+        outputSize: 2,
       });
       net.train(data, { iteration: 100, errorThresh: 0.05 });
       const fn = net.toFunction(istanbulLinkerUtil);
@@ -2014,42 +2528,56 @@ describe('RNNTimeStep', () => {
       const net = new LSTMTimeStep({
         inputSize: 1,
         hiddenLayers: [10],
-        outputSize: 1
+        outputSize: 1,
       });
 
-      //Same test as previous, but combined on a single set
+      // Same test as previous, but combined on a single set
       const trainingData = [
-        [.1,.2,.3,.4,.5],
-        [.5,.4,.3,.2,.1]
+        [0.1, 0.2, 0.3, 0.4, 0.5],
+        [0.5, 0.4, 0.3, 0.2, 0.1],
       ];
 
       const trainResult = net.train(trainingData);
       expect(trainResult.error).toBeLessThan(0.09);
-      const closeToFive = net.run([.1,.2,.3,.4]);
-      const closeToOne = net.run([.5,.4,.3,.2]);
+      const closeToFive = net.run([0.1, 0.2, 0.3, 0.4]);
+      const closeToOne = net.run([0.5, 0.4, 0.3, 0.2]);
       const fn = net.toFunction(istanbulLinkerUtil);
       expect(closeToFive.toFixed(1)).toBe('0.5');
       expect(closeToOne.toFixed(1)).toBe('0.1');
-      expect(fn([.1,.2,.3,.4])).toBe(closeToFive);
-      expect(fn([.5,.4,.3,.2])).toBe(closeToOne);
+      expect(fn([0.1, 0.2, 0.3, 0.4])).toBe(closeToFive);
+      expect(fn([0.5, 0.4, 0.3, 0.2])).toBe(closeToOne);
     });
     it('processes array,array same as net', () => {
       const net = new LSTMTimeStep({
         inputSize: 2,
         hiddenLayers: [10],
-        outputSize: 2
+        outputSize: 2,
       });
 
-      //Same test as previous, but combined on a single set
+      // Same test as previous, but combined on a single set
       const trainingData = [
-        [.1,.5],[.2,.4],[.3,.3],[.4,.2],[.5,.1]
+        [0.1, 0.5],
+        [0.2, 0.4],
+        [0.3, 0.3],
+        [0.4, 0.2],
+        [0.5, 0.1],
       ];
 
       const trainResult = net.train(trainingData);
       expect(trainResult.error).toBeLessThan(0.09);
-      const closeToFiveAndOne = net.run([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
+      const closeToFiveAndOne = net.run([
+        [0.1, 0.5],
+        [0.2, 0.4],
+        [0.3, 0.3],
+        [0.4, 0.2],
+      ]);
       const fn = net.toFunction(istanbulLinkerUtil);
-      const result = fn([[.1,.5],[.2,.4],[.3,.3],[.4,.2]]);
+      const result = fn([
+        [0.1, 0.5],
+        [0.2, 0.4],
+        [0.3, 0.3],
+        [0.4, 0.2],
+      ]);
       expect(closeToFiveAndOne[0].toFixed(1)).toBe('0.5');
       expect(closeToFiveAndOne[1].toFixed(1)).toBe('0.1');
       expect(result[0]).toBe(closeToFiveAndOne[0]);
@@ -2059,23 +2587,43 @@ describe('RNNTimeStep', () => {
       const net = new LSTMTimeStep({
         inputSize: 1,
         hiddenLayers: [10],
-        outputSize: 1
+        outputSize: 1,
       });
 
-      //Same test as previous, but combined on a single set
+      // Same test as previous, but combined on a single set
       const trainingData = [
-        { input: { monday: .1, tuesday: .2, wednesday: .3, thursday: .4 }, output: { friday: .5 } },
-        { input: { monday: .5, tuesday: .4, wednesday: .3, thursday: .2 }, output: { friday: .1 } },
+        {
+          input: { monday: 0.1, tuesday: 0.2, wednesday: 0.3, thursday: 0.4 },
+          output: { friday: 0.5 },
+        },
+        {
+          input: { monday: 0.5, tuesday: 0.4, wednesday: 0.3, thursday: 0.2 },
+          output: { friday: 0.1 },
+        },
       ];
       const trainResult = net.train(trainingData);
       expect(trainResult.error).toBeLessThan(0.09);
-      const closeToFive = net.run({ monday: .1, tuesday: .2, wednesday: .3, thursday: .4 });
-      const closeToOne = net.run({ monday: .5, tuesday: .4, wednesday: .3, thursday: .2 });
+      const closeToFive = net.run({
+        monday: 0.1,
+        tuesday: 0.2,
+        wednesday: 0.3,
+        thursday: 0.4,
+      });
+      const closeToOne = net.run({
+        monday: 0.5,
+        tuesday: 0.4,
+        wednesday: 0.3,
+        thursday: 0.2,
+      });
       const fn = net.toFunction(istanbulLinkerUtil);
       expect(closeToFive.friday.toFixed(1)).toBe('0.5');
       expect(closeToOne.friday.toFixed(1)).toBe('0.1');
-      expect(fn({ monday: .1, tuesday: .2, wednesday: .3, thursday: .4 }).friday).toBe(closeToFive.friday);
-      expect(fn({ monday: .5, tuesday: .4, wednesday: .3, thursday: .2 }).friday).toBe(closeToOne.friday);
+      expect(
+        fn({ monday: 0.1, tuesday: 0.2, wednesday: 0.3, thursday: 0.4 }).friday
+      ).toBe(closeToFive.friday);
+      expect(
+        fn({ monday: 0.5, tuesday: 0.4, wednesday: 0.3, thursday: 0.2 }).friday
+      ).toBe(closeToOne.friday);
     });
     it('handles array,object to array,object with lookup tables being same w/ inputSize of 1', () => {
       const inputSize = 1;
@@ -2084,12 +2632,16 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize,
         hiddenLayers,
-        outputSize
+        outputSize,
       });
-      net.train([{ monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 }]);
+      net.train([
+        { monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 },
+      ]);
       const fn = net.toFunction(istanbulLinkerUtil);
       const result = fn({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
-      expect(result).toEqual(net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 }));
+      expect(result).toEqual(
+        net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 })
+      );
       expect(Object.keys(result).length).toBe(1);
       expect(result.friday.toFixed(0)).toBe('5');
     });
@@ -2101,21 +2653,21 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
             hiddenLayers: [10],
-            outputSize: 1
+            outputSize: 1,
           });
           jest.spyOn(net, 'formatData');
-          net.run = jest.fn((data) => {
-            return [.5];
+          net.run = jest.fn(() => {
+            return [0.5];
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
-          const testResult = net.test([
-            [.1,.2,.3,.4,.5]
-          ]);
+          const testResult = net.test([[0.1, 0.2, 0.3, 0.4, 0.5]]);
           expect(net.formatData).toBeCalled();
           expect(net.run).toBeCalled();
-          expect(net.run.mock.calls[0][0]).toEqual([[.1],[.2],[.3],[.4]].map(v => Float32Array.from(v)));
+          expect(net.run.mock.calls[0][0]).toEqual(
+            [[0.1], [0.2], [0.3], [0.4]].map((v) => Float32Array.from(v))
+          );
           expect(testResult.error).toBe(0);
           expect(testResult.misclasses.length).toBe(0);
         });
@@ -2123,22 +2675,22 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
             hiddenLayers: [10],
-            outputSize: 1
+            outputSize: 1,
           });
           jest.spyOn(net, 'formatData');
-          net.run = jest.fn((data) => {
-            return [.1];
+          net.run = jest.fn(() => {
+            return [0.1];
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
-          const testResult = net.test([
-            [.1,.2,.3,.4,.5]
-          ]);
+          const testResult = net.test([[0.1, 0.2, 0.3, 0.4, 0.5]]);
           expect(net.formatData).toBeCalled();
           expect(net.run).toBeCalled();
-          expect(net.run.mock.calls[0][0]).toEqual([[.1],[.2],[.3],[.4]].map(v => Float32Array.from(v)));
-          expect(testResult.error).toBeGreaterThan(.1);
+          expect(net.run.mock.calls[0][0]).toEqual(
+            [[0.1], [0.2], [0.3], [0.4]].map((v) => Float32Array.from(v))
+          );
+          expect(testResult.error).toBeGreaterThan(0.1);
           expect(testResult.misclasses.length).toBe(1);
         });
       });
@@ -2147,19 +2699,17 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [10],
-            outputSize: 2
+            outputSize: 2,
           });
           jest.spyOn(net, 'formatData');
-          net.run = jest.fn((data) => {
-            return [.1];
+          net.run = jest.fn(() => {
+            return [0.1];
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
           expect(() => {
-            const testResult = net.test([
-              [.1,.2,.3,.4,.5]
-            ]);
+            net.test([[0.1, 0.2, 0.3, 0.4, 0.5]]);
           }).toThrow();
           // expect(net.formatData).toBeCalled();
           // expect(net.run).toBeCalled();
@@ -2176,17 +2726,23 @@ describe('RNNTimeStep', () => {
             const net = new LSTMTimeStep({
               inputSize: 2,
               hiddenLayers: [10],
-              outputSize: 2
+              outputSize: 2,
             });
             jest.spyOn(net, 'formatData');
-            net.run = jest.fn((data) => {
-              return Float32Array.from([.5,.1]);
+            net.run = jest.fn(() => {
+              return Float32Array.from([0.5, 0.1]);
             });
             net.trainOpts = {
-              errorThresh: 0.001
+              errorThresh: 0.001,
             };
             const testResult = net.test([
-              [[.1,.5],[.2,.4],[.3,.3],[.4,.2],[.5,.1]]
+              [
+                [0.1, 0.5],
+                [0.2, 0.4],
+                [0.3, 0.3],
+                [0.4, 0.2],
+                [0.5, 0.1],
+              ],
             ]);
             expect(net.formatData).toBeCalled();
             expect(net.run).toBeCalled();
@@ -2199,26 +2755,40 @@ describe('RNNTimeStep', () => {
             const net = new LSTMTimeStep({
               inputSize: 2,
               hiddenLayers: [10],
-              outputSize: 2
+              outputSize: 2,
             });
             net.trainOpts = {
-              errorThresh: 0.001
+              errorThresh: 0.001,
             };
             jest.spyOn(net, 'formatData');
-            net.run = jest.fn((data) => {
-              return Float32Array.from([.1,.5]);
+            net.run = jest.fn(() => {
+              return Float32Array.from([0.1, 0.5]);
             });
             const testResult = net.test([
-              [[.1,.5],[.2,.4],[.3,.3],[.4,.2],[.5,.1]]
+              [
+                [0.1, 0.5],
+                [0.2, 0.4],
+                [0.3, 0.3],
+                [0.4, 0.2],
+                [0.5, 0.1],
+              ],
             ]);
             expect(net.formatData).toBeCalled();
             expect(net.run).toBeCalled();
             expect(testResult.error).toBeGreaterThanOrEqual(0.1);
             expect(testResult.misclasses.length).toBe(1);
-            expect(testResult.misclasses).toEqual([{
-              value: [[.1,.5],[.2,.4],[.3,.3],[.4,.2],[.5,.1]],
-              actual: Float32Array.from([.1,.5])
-            }]);
+            expect(testResult.misclasses).toEqual([
+              {
+                value: [
+                  [0.1, 0.5],
+                  [0.2, 0.4],
+                  [0.3, 0.3],
+                  [0.4, 0.2],
+                  [0.5, 0.1],
+                ],
+                actual: Float32Array.from([0.1, 0.5]),
+              },
+            ]);
           });
         });
       });
@@ -2230,30 +2800,40 @@ describe('RNNTimeStep', () => {
             const net = new LSTMTimeStep({
               inputSize: 1,
               hiddenLayers: [10],
-              outputSize: 1
+              outputSize: 1,
             });
             jest.spyOn(net, 'formatData');
             net.forecastNumbers = jest.fn((data, count) => {
               expect(count).toBe(1);
-              return [.5];
+              return [0.5];
             });
             net.trainOpts = {
-              errorThresh: 0.001
+              errorThresh: 0.001,
             };
             net.inputLookup = net.outputLookup = {
               monday: 0,
               tuesday: 1,
               wednesday: 2,
               thursday: 3,
-              friday: 4
+              friday: 4,
             };
-            net.inputLookupLength = net.outputLookupLength = Object.keys(net.inputLookup).length;
+            net.inputLookupLength = net.outputLookupLength = Object.keys(
+              net.inputLookup
+            ).length;
             const testResult = net.test([
-              { monday: .1, tuesday: .2, wednesday: .3, thursday: .4, friday: .5 }
+              {
+                monday: 0.1,
+                tuesday: 0.2,
+                wednesday: 0.3,
+                thursday: 0.4,
+                friday: 0.5,
+              },
             ]);
             expect(net.formatData).toBeCalled();
             expect(net.forecastNumbers).toBeCalled();
-            expect(net.forecastNumbers.mock.calls[0][0]).toEqual(Float32Array.from([.1,.2,.3,.4]));
+            expect(net.forecastNumbers.mock.calls[0][0]).toEqual(
+              Float32Array.from([0.1, 0.2, 0.3, 0.4])
+            );
             expect(net.forecastNumbers.mock.calls[0][1]).toEqual(1);
             expect(testResult.error).toBe(0);
             expect(testResult.misclasses.length).toBe(0);
@@ -2264,73 +2844,100 @@ describe('RNNTimeStep', () => {
             const net = new LSTMTimeStep({
               inputSize: 1,
               hiddenLayers: [10],
-              outputSize: 1
+              outputSize: 1,
             });
             net.trainOpts = {
-              errorThresh: 0.001
+              errorThresh: 0.001,
             };
             jest.spyOn(net, 'formatData');
             net.forecastNumbers = jest.fn((data, count) => {
               expect(count).toBeTruthy();
-              return [.1];
+              return [0.1];
             });
             net.inputLookup = net.outputLookup = {
               monday: 0,
               tuesday: 1,
               wednesday: 2,
               thursday: 3,
-              friday: 4
+              friday: 4,
             };
-            net.inputLookupLength = net.outputLookupLength = Object.keys(net.inputLookup).length;
+            net.inputLookupLength = net.outputLookupLength = Object.keys(
+              net.inputLookup
+            ).length;
             const testResult = net.test([
-              { monday: .1, tuesday: .2, wednesday: .3, thursday: .4, friday: .5 }
+              {
+                monday: 0.1,
+                tuesday: 0.2,
+                wednesday: 0.3,
+                thursday: 0.4,
+                friday: 0.5,
+              },
             ]);
             expect(net.formatData).toBeCalled();
             expect(net.forecastNumbers).toBeCalled();
-            expect(net.forecastNumbers.mock.calls[0][0]).toEqual(Float32Array.from([.1,.2,.3,.4]));
+            expect(net.forecastNumbers.mock.calls[0][0]).toEqual(
+              Float32Array.from([0.1, 0.2, 0.3, 0.4])
+            );
             expect(testResult.error).toBeGreaterThanOrEqual(0.08);
             expect(testResult.misclasses.length).toBe(1);
-            expect(testResult.misclasses).toEqual([{
-              value: { monday: .1, tuesday: .2, wednesday: .3, thursday: .4, friday: .5 },
-              actual: { friday: .1 }
-            }]);
+            expect(testResult.misclasses).toEqual([
+              {
+                value: {
+                  monday: 0.1,
+                  tuesday: 0.2,
+                  wednesday: 0.3,
+                  thursday: 0.4,
+                  friday: 0.5,
+                },
+                actual: { friday: 0.1 },
+              },
+            ]);
           });
         });
       });
     });
-    describe('using array,array,object',() => {
+    describe('using array,array,object', () => {
       describe('inputSize of 2', () => {
         describe('no error', () => {
           it('can test w/ run of 1', () => {
             const net = new LSTMTimeStep({
               inputSize: 2,
               hiddenLayers: [10],
-              outputSize: 2
+              outputSize: 2,
             });
             jest.spyOn(net, 'formatData');
-            net.run = jest.fn((data) => {
-              return { low: .5, high: .1 };
+            net.run = jest.fn(() => {
+              return { low: 0.5, high: 0.1 };
             });
             net.trainOpts = {
-              errorThresh: 0.001
+              errorThresh: 0.001,
             };
             net.inputLookup = net.outputLookup = {
               low: 0,
-              high: 1
+              high: 1,
             };
-            net.inputLookupLength = net.outputLookupLength = Object.keys(net.inputLookup).length;
+            net.inputLookupLength = net.outputLookupLength = Object.keys(
+              net.inputLookup
+            ).length;
             const testResult = net.test([
               [
-                { low: .1, high: .5 },
-                { low: .2, high: .4 },
-                { low: .3, high: .3 },
-                { low: .4, high: .2 },
-                { low: .5, high: .1 },
-              ]
+                { low: 0.1, high: 0.5 },
+                { low: 0.2, high: 0.4 },
+                { low: 0.3, high: 0.3 },
+                { low: 0.4, high: 0.2 },
+                { low: 0.5, high: 0.1 },
+              ],
             ]);
             expect(net.formatData).toBeCalled();
             expect(net.run).toBeCalled();
-            expect(net.run.mock.calls[0][0]).toEqual([[.1,.5],[.2,.4],[.3,.3],[.4,.2]].map(v => Float32Array.from(v)));
+            expect(net.run.mock.calls[0][0]).toEqual(
+              [
+                [0.1, 0.5],
+                [0.2, 0.4],
+                [0.3, 0.3],
+                [0.4, 0.2],
+              ].map((v) => Float32Array.from(v))
+            );
             expect(testResult.error).toBe(0);
             expect(testResult.misclasses.length).toBe(0);
           });
@@ -2340,44 +2947,55 @@ describe('RNNTimeStep', () => {
             const net = new LSTMTimeStep({
               inputSize: 2,
               hiddenLayers: [10],
-              outputSize: 2
+              outputSize: 2,
             });
             jest.spyOn(net, 'formatData');
-            net.run = jest.fn((data) => {
-              return { low: .9, high: .9 };
+            net.run = jest.fn(() => {
+              return { low: 0.9, high: 0.9 };
             });
             net.trainOpts = {
-              errorThresh: 0.001
+              errorThresh: 0.001,
             };
             net.inputLookup = net.outputLookup = {
               low: 0,
-              high: 1
+              high: 1,
             };
-            net.inputLookupLength = net.outputLookupLength = Object.keys(net.inputLookup).length;
+            net.inputLookupLength = net.outputLookupLength = Object.keys(
+              net.inputLookup
+            ).length;
             const testResult = net.test([
               [
-                { low: .1, high: .5 },
-                { low: .2, high: .4 },
-                { low: .3, high: .3 },
-                { low: .4, high: .2 },
-                { low: .5, high: .1 },
-              ]
+                { low: 0.1, high: 0.5 },
+                { low: 0.2, high: 0.4 },
+                { low: 0.3, high: 0.3 },
+                { low: 0.4, high: 0.2 },
+                { low: 0.5, high: 0.1 },
+              ],
             ]);
             expect(net.formatData).toBeCalled();
             expect(net.run).toBeCalled();
-            expect(net.run.mock.calls[0][0]).toEqual([[.1,.5],[.2,.4],[.3,.3],[.4,.2]].map(v => Float32Array.from(v)));
-            expect(testResult.error).toBeGreaterThan(.3);
+            expect(net.run.mock.calls[0][0]).toEqual(
+              [
+                [0.1, 0.5],
+                [0.2, 0.4],
+                [0.3, 0.3],
+                [0.4, 0.2],
+              ].map((v) => Float32Array.from(v))
+            );
+            expect(testResult.error).toBeGreaterThan(0.3);
             expect(testResult.misclasses.length).toBe(1);
-            expect(testResult.misclasses).toEqual([{
-              value: [
-                { low: .1, high: .5 },
-                { low: .2, high: .4 },
-                { low: .3, high: .3 },
-                { low: .4, high: .2 },
-                { low: .5, high: .1 },
-              ],
-              actual: { low: .9, high: .9 }
-            }]);
+            expect(testResult.misclasses).toEqual([
+              {
+                value: [
+                  { low: 0.1, high: 0.5 },
+                  { low: 0.2, high: 0.4 },
+                  { low: 0.3, high: 0.3 },
+                  { low: 0.4, high: 0.2 },
+                  { low: 0.5, high: 0.1 },
+                ],
+                actual: { low: 0.9, high: 0.9 },
+              },
+            ]);
           });
         });
       });
@@ -2388,22 +3006,24 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
             hiddenLayers: [10],
-            outputSize: 1
+            outputSize: 1,
           });
           jest.spyOn(net, 'formatData');
           net.forecast = jest.fn((data, count) => {
             expect(count).toBe(1);
-            return [.5];
+            return [0.5];
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
           const testResult = net.test([
-            { input: [.1,.2,.3,.4], output: [.5] }
+            { input: [0.1, 0.2, 0.3, 0.4], output: [0.5] },
           ]);
           expect(net.formatData).toBeCalled();
           expect(net.forecast).toBeCalled();
-          expect(net.forecast.mock.calls[0][0]).toEqual([[.1],[.2],[.3],[.4]].map(v => Float32Array.from(v)));
+          expect(net.forecast.mock.calls[0][0]).toEqual(
+            [[0.1], [0.2], [0.3], [0.4]].map((v) => Float32Array.from(v))
+          );
           expect(net.forecast.mock.calls[0][1]).toEqual(1);
           expect(testResult.error).toBe(0);
           expect(testResult.misclasses.length).toBe(0);
@@ -2412,22 +3032,24 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
             hiddenLayers: [10],
-            outputSize: 1
+            outputSize: 1,
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
           jest.spyOn(net, 'formatData');
           net.forecast = jest.fn((data, count) => {
             expect(count).toBe(2);
-            return Float32Array.from([.4,.5]);
+            return Float32Array.from([0.4, 0.5]);
           });
           const testResult = net.test([
-            { input: [.1,.2,.3], output: [.4,.5] }
+            { input: [0.1, 0.2, 0.3], output: [0.4, 0.5] },
           ]);
           expect(net.formatData).toBeCalled();
           expect(net.forecast).toBeCalled();
-          expect(net.forecast.mock.calls[0][0]).toEqual([[.1],[.2],[.3]].map(v => Float32Array.from(v)));
+          expect(net.forecast.mock.calls[0][0]).toEqual(
+            [[0.1], [0.2], [0.3]].map((v) => Float32Array.from(v))
+          );
           expect(net.forecast.mock.calls[0][1]).toBe(2);
           expect(testResult.error).toBe(0);
           expect(testResult.misclasses.length).toBe(0);
@@ -2438,56 +3060,62 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
             hiddenLayers: [10],
-            outputSize: 1
+            outputSize: 1,
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
           jest.spyOn(net, 'formatData');
           net.forecast = jest.fn((data, count) => {
             expect(count).toBeTruthy();
-            return [.1];
+            return [0.1];
           });
           const testResult = net.test([
-            { input: [.1,.2,.3,.4], output: [.5] }
+            { input: [0.1, 0.2, 0.3, 0.4], output: [0.5] },
           ]);
           expect(net.formatData).toBeCalled();
           expect(net.forecast).toBeCalled();
-          expect(net.forecast.mock.calls[0][0]).toEqual([[.1],[.2],[.3],[.4]].map(v => Float32Array.from(v)));
+          expect(net.forecast.mock.calls[0][0]).toEqual(
+            [[0.1], [0.2], [0.3], [0.4]].map((v) => Float32Array.from(v))
+          );
           expect(testResult.error).toBeGreaterThanOrEqual(0.08);
           expect(testResult.misclasses.length).toBe(1);
-          expect(testResult.misclasses).toEqual([{
-            input: [.1,.2,.3,.4],
-            output: [.5],
-            actual: [.1]
-          }]);
+          expect(testResult.misclasses).toEqual([
+            {
+              input: [0.1, 0.2, 0.3, 0.4],
+              output: [0.5],
+              actual: [0.1],
+            },
+          ]);
         });
         it('can test w/ forecast of 2', () => {
           const net = new LSTMTimeStep({
             inputSize: 1,
             hiddenLayers: [10],
-            outputSize: 1
+            outputSize: 1,
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
           jest.spyOn(net, 'formatData');
           net.forecast = jest.fn((data, count) => {
             expect(count).toBe(2);
-            return [.2,.1];
+            return [0.2, 0.1];
           });
           const testResult = net.test([
-            { input: [.1,.2,.3], output: [.4,.5] }
+            { input: [0.1, 0.2, 0.3], output: [0.4, 0.5] },
           ]);
           expect(net.formatData).toBeCalled();
           expect(net.forecast).toBeCalled();
           expect(testResult.error).toBeGreaterThanOrEqual(0.08);
           expect(testResult.misclasses.length).toBe(1);
-          expect(testResult.misclasses).toEqual([{
-            input: [.1,.2,.3,],
-            output: [.4,.5],
-            actual: [.2,.1]
-          }]);
+          expect(testResult.misclasses).toEqual([
+            {
+              input: [0.1, 0.2, 0.3],
+              output: [0.4, 0.5],
+              actual: [0.2, 0.1],
+            },
+          ]);
         });
       });
     });
@@ -2498,36 +3126,43 @@ describe('RNNTimeStep', () => {
             const net = new LSTMTimeStep({
               inputSize: 1,
               hiddenLayers: [10],
-              outputSize: 1
+              outputSize: 1,
             });
             jest.spyOn(net, 'formatData');
             net.forecast = jest.fn((data, count) => {
               expect(count).toBe(1);
-              return [.5];
+              return [0.5];
             });
             net.trainOpts = {
-              errorThresh: 0.001
+              errorThresh: 0.001,
             };
             net.inputLookup = {
               monday: 0,
               tuesday: 1,
               wednesday: 2,
-              thursday: 3
+              thursday: 3,
             };
             net.inputLookupLength = Object.keys(net.inputLookup).length;
             net.outputLookup = {
-              friday: 0
+              friday: 0,
             };
             net.outputLookupLength = Object.keys(net.outputLookup).length;
             const testResult = net.test([
               {
-                input: { monday: .1, tuesday: .2, wednesday: .3, thursday: .4 },
-                output: { friday: .5 }
-              }
+                input: {
+                  monday: 0.1,
+                  tuesday: 0.2,
+                  wednesday: 0.3,
+                  thursday: 0.4,
+                },
+                output: { friday: 0.5 },
+              },
             ]);
             expect(net.formatData).toBeCalled();
             expect(net.forecast).toBeCalled();
-            expect(net.forecast.mock.calls[0][0]).toEqual([[.1],[.2],[.3],[.4]].map(v => Float32Array.from(v)));
+            expect(net.forecast.mock.calls[0][0]).toEqual(
+              [[0.1], [0.2], [0.3], [0.4]].map((v) => Float32Array.from(v))
+            );
             expect(net.forecast.mock.calls[0][1]).toEqual(1);
             expect(testResult.error).toBe(0);
             expect(testResult.misclasses.length).toBe(0);
@@ -2538,43 +3173,57 @@ describe('RNNTimeStep', () => {
             const net = new LSTMTimeStep({
               inputSize: 1,
               hiddenLayers: [10],
-              outputSize: 1
+              outputSize: 1,
             });
             net.trainOpts = {
-              errorThresh: 0.001
+              errorThresh: 0.001,
             };
             jest.spyOn(net, 'formatData');
             net.forecast = jest.fn((data, count) => {
               expect(count).toBeTruthy();
-              return [.1];
+              return [0.1];
             });
             net.inputLookup = {
               monday: 0,
               tuesday: 1,
               wednesday: 2,
-              thursday: 3
+              thursday: 3,
             };
             net.inputLookupLength = Object.keys(net.inputLookup).length;
             net.outputLookup = {
-              friday: 0
+              friday: 0,
             };
             net.outputLookupLength = Object.keys(net.outputLookup).length;
             const testResult = net.test([
               {
-                input: { monday: .1, tuesday: .2, wednesday: .3, thursday: .4 },
-                output: { friday: .5 }
-              }
+                input: {
+                  monday: 0.1,
+                  tuesday: 0.2,
+                  wednesday: 0.3,
+                  thursday: 0.4,
+                },
+                output: { friday: 0.5 },
+              },
             ]);
             expect(net.formatData).toBeCalled();
             expect(net.forecast).toBeCalled();
-            expect(net.forecast.mock.calls[0][0]).toEqual([[.1],[.2],[.3],[.4]].map(v => Float32Array.from(v)));
+            expect(net.forecast.mock.calls[0][0]).toEqual(
+              [[0.1], [0.2], [0.3], [0.4]].map((v) => Float32Array.from(v))
+            );
             expect(testResult.error).toBeGreaterThanOrEqual(0.08);
             expect(testResult.misclasses.length).toBe(1);
-            expect(testResult.misclasses).toEqual([{
-              input: { monday: .1, tuesday: .2, wednesday: .3, thursday: .4 },
-              output: { friday: .5 },
-              actual: { friday: .1 }
-            }]);
+            expect(testResult.misclasses).toEqual([
+              {
+                input: {
+                  monday: 0.1,
+                  tuesday: 0.2,
+                  wednesday: 0.3,
+                  thursday: 0.4,
+                },
+                output: { friday: 0.5 },
+                actual: { friday: 0.1 },
+              },
+            ]);
           });
         });
       });
@@ -2585,18 +3234,26 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [10],
-            outputSize: 2
+            outputSize: 2,
           });
           jest.spyOn(net, 'formatData');
           net.forecast = jest.fn((data, count) => {
             expect(count).toBe(1);
-            return [[.5,.1]].map(v => Float32Array.from(v));
+            return [[0.5, 0.1]].map((v) => Float32Array.from(v));
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
           const testResult = net.test([
-            { input: [[.1,.5],[.2,.4],[.3,.3],[.4,.2]], output: [[.5,.1]] }
+            {
+              input: [
+                [0.1, 0.5],
+                [0.2, 0.4],
+                [0.3, 0.3],
+                [0.4, 0.2],
+              ],
+              output: [[0.5, 0.1]],
+            },
           ]);
           expect(net.formatData).toBeCalled();
           expect(net.forecast).toBeCalled();
@@ -2607,18 +3264,31 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [10],
-            outputSize: 2
+            outputSize: 2,
           });
           jest.spyOn(net, 'formatData');
           net.forecast = jest.fn((data, count) => {
             expect(count).toBe(2);
-            return [[.4,.2],[.5,.1]].map(v => Float32Array.from(v));
+            return [
+              [0.4, 0.2],
+              [0.5, 0.1],
+            ].map((v) => Float32Array.from(v));
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
           const testResult = net.test([
-            { input: [[.1,.5],[.2,.4],[.3,.3]], output: [[.4,.2],[.5,.1]] }
+            {
+              input: [
+                [0.1, 0.5],
+                [0.2, 0.4],
+                [0.3, 0.3],
+              ],
+              output: [
+                [0.4, 0.2],
+                [0.5, 0.1],
+              ],
+            },
           ]);
           expect(net.formatData).toBeCalled();
           expect(net.forecast).toBeCalled();
@@ -2631,55 +3301,95 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [10],
-            outputSize: 2
+            outputSize: 2,
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
           jest.spyOn(net, 'formatData');
           net.forecast = jest.fn((data, count) => {
             expect(count).toBeTruthy();
-            return [[.1,.5]].map(v => Float32Array.from(v));
+            return [[0.1, 0.5]].map((v) => Float32Array.from(v));
           });
           const testResult = net.test([
-            { input: [[.1,.5],[.2,.4],[.3,.3],[.4,.2]], output: [[.5,.1]] }
+            {
+              input: [
+                [0.1, 0.5],
+                [0.2, 0.4],
+                [0.3, 0.3],
+                [0.4, 0.2],
+              ],
+              output: [[0.5, 0.1]],
+            },
           ]);
           expect(net.formatData).toBeCalled();
           expect(net.forecast).toBeCalled();
           expect(testResult.error >= 0.1).toBeTruthy();
           expect(testResult.misclasses.length).toBe(1);
-          expect(testResult.misclasses).toEqual([{
-            input: [[.1,.5],[.2,.4],[.3,.3],[.4,.2]],
-            output: [[.5,.1]],
-            actual: [[.1,.5]].map(v => Float32Array.from(v))
-          }]);
+          expect(testResult.misclasses).toEqual([
+            {
+              input: [
+                [0.1, 0.5],
+                [0.2, 0.4],
+                [0.3, 0.3],
+                [0.4, 0.2],
+              ],
+              output: [[0.5, 0.1]],
+              actual: [[0.1, 0.5]].map((v) => Float32Array.from(v)),
+            },
+          ]);
         });
         it('can test w/ forecast of 2', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [10],
-            outputSize: 2
+            outputSize: 2,
           });
           jest.spyOn(net, 'formatData');
           net.forecast = jest.fn((data, count) => {
             expect(count).toBe(2);
-            return [[.9,.9], [.9,.9]].map(v => Float32Array.from(v));
+            return [
+              [0.9, 0.9],
+              [0.9, 0.9],
+            ].map((v) => Float32Array.from(v));
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
           const testResult = net.test([
-            { input: [[.1,.5],[.2,.4],[.3,.3]], output: [[.4,.2],[.5,.1]] }
+            {
+              input: [
+                [0.1, 0.5],
+                [0.2, 0.4],
+                [0.3, 0.3],
+              ],
+              output: [
+                [0.4, 0.2],
+                [0.5, 0.1],
+              ],
+            },
           ]);
           expect(net.formatData).toBeCalled();
           expect(net.forecast).toBeCalled();
           expect(testResult.error).toBeGreaterThanOrEqual(0.08);
           expect(testResult.misclasses.length).toBe(1);
-          expect(testResult.misclasses).toEqual([{
-            input: [[.1,.5],[.2,.4],[.3,.3],],
-            output: [[.4,.2], [.5,.1]],
-            actual: [[.9,.9], [.9,.9]].map(v => Float32Array.from(v))
-          }]);
+          expect(testResult.misclasses).toEqual([
+            {
+              input: [
+                [0.1, 0.5],
+                [0.2, 0.4],
+                [0.3, 0.3],
+              ],
+              output: [
+                [0.4, 0.2],
+                [0.5, 0.1],
+              ],
+              actual: [
+                [0.9, 0.9],
+                [0.9, 0.9],
+              ].map((v) => Float32Array.from(v)),
+            },
+          ]);
         });
       });
     });
@@ -2689,31 +3399,36 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [10],
-            outputSize: 2
+            outputSize: 2,
           });
           jest.spyOn(net, 'formatData');
           net.forecast = jest.fn((data, count) => {
             expect(count).toBe(1);
-            return [{ low: .5, high: .1 }];
+            return [{ low: 0.5, high: 0.1 }];
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
           net.inputLookup = {
             low: 0,
-            high: 1
+            high: 1,
           };
           net.inputLookupLength = Object.keys(net.inputLookup).length;
           net.outputLookup = {
             low: 0,
-            high: 1
+            high: 1,
           };
           net.outputLookupLength = Object.keys(net.outputLookup).length;
           const testResult = net.test([
             {
-              input: [{ low: .1, high: .5 }, { low: .2, high: .4 }, { low: .3, high: .3 }, { low: .4, high: .2 }],
-              output: [{ low:.5, high: .1 }]
-            }
+              input: [
+                { low: 0.1, high: 0.5 },
+                { low: 0.2, high: 0.4 },
+                { low: 0.3, high: 0.3 },
+                { low: 0.4, high: 0.2 },
+              ],
+              output: [{ low: 0.5, high: 0.1 }],
+            },
           ]);
           expect(net.formatData).toBeCalled();
           expect(net.forecast).toBeCalled();
@@ -2724,31 +3439,41 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [10],
-            outputSize: 2
+            outputSize: 2,
           });
           jest.spyOn(net, 'formatData');
           net.forecast = jest.fn((data, count) => {
             expect(count).toBe(2);
-            return [{ low: .4, high: .2 },{ low: .5, high: .1 }];
+            return [
+              { low: 0.4, high: 0.2 },
+              { low: 0.5, high: 0.1 },
+            ];
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
           net.inputLookup = {
             low: 0,
-            high: 1
+            high: 1,
           };
           net.inputLookupLength = Object.keys(net.inputLookup).length;
           net.outputLookup = {
             low: 0,
-            high: 1
+            high: 1,
           };
           net.outputLookupLength = Object.keys(net.outputLookup).length;
           const testResult = net.test([
             {
-              input: [{ low: .1, high: .5 }, { low: .2, high: .4 }, { low: .3, high: .3 }],
-              output: [{ low: .4, high: .2 }, { low:.5, high: .1 }]
-            }
+              input: [
+                { low: 0.1, high: 0.5 },
+                { low: 0.2, high: 0.4 },
+                { low: 0.3, high: 0.3 },
+              ],
+              output: [
+                { low: 0.4, high: 0.2 },
+                { low: 0.5, high: 0.1 },
+              ],
+            },
           ]);
           expect(net.formatData).toBeCalled();
           expect(net.forecast).toBeCalled();
@@ -2761,81 +3486,115 @@ describe('RNNTimeStep', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [10],
-            outputSize: 2
+            outputSize: 2,
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
           net.inputLookup = {
             low: 0,
-            high: 1
+            high: 1,
           };
           net.inputLookupLength = Object.keys(net.inputLookup).length;
           net.outputLookup = {
             low: 0,
-            high: 1
+            high: 1,
           };
           net.outputLookupLength = Object.keys(net.outputLookup).length;
           jest.spyOn(net, 'formatData');
           net.forecast = jest.fn((data, count) => {
             expect(count).toBeTruthy();
-            return [{ low: .1, high: .5 }]
+            return [{ low: 0.1, high: 0.5 }];
           });
           const testResult = net.test([
             {
-              input: [{ low: .1, high: .5 }, { low: .2, high: .4 }, { low: .3, high: .3 }, { low: .4, high: .2 }],
-              output: [{ low:.5, high: .1 }]
-            }
+              input: [
+                { low: 0.1, high: 0.5 },
+                { low: 0.2, high: 0.4 },
+                { low: 0.3, high: 0.3 },
+                { low: 0.4, high: 0.2 },
+              ],
+              output: [{ low: 0.5, high: 0.1 }],
+            },
           ]);
           expect(net.formatData).toBeCalled();
           expect(net.forecast).toBeCalled();
           expect(testResult.error >= 0.1).toBeTruthy();
           expect(testResult.misclasses.length).toBe(1);
-          expect(testResult.misclasses).toEqual([{
-            input: [{ low: .1, high: .5 }, { low: .2, high: .4 }, { low: .3, high: .3 }, { low: .4, high: .2 }],
-            output: [{ low:.5, high: .1 }],
-            actual: [{ low:.1, high: .5 }]
-          }]);
+          expect(testResult.misclasses).toEqual([
+            {
+              input: [
+                { low: 0.1, high: 0.5 },
+                { low: 0.2, high: 0.4 },
+                { low: 0.3, high: 0.3 },
+                { low: 0.4, high: 0.2 },
+              ],
+              output: [{ low: 0.5, high: 0.1 }],
+              actual: [{ low: 0.1, high: 0.5 }],
+            },
+          ]);
         });
         it('can test w/ forecast of 2', () => {
           const net = new LSTMTimeStep({
             inputSize: 2,
             hiddenLayers: [10],
-            outputSize: 2
+            outputSize: 2,
           });
           jest.spyOn(net, 'formatData');
           net.forecast = jest.fn((data, count) => {
             expect(count).toBe(2);
-            return [{ low: .9, high: .9 }, { low:.9, high: .9 }];
+            return [
+              { low: 0.9, high: 0.9 },
+              { low: 0.9, high: 0.9 },
+            ];
           });
           net.trainOpts = {
-            errorThresh: 0.001
+            errorThresh: 0.001,
           };
           net.inputLookup = {
             low: 0,
-            high: 1
+            high: 1,
           };
           net.inputLookupLength = Object.keys(net.inputLookup).length;
           net.outputLookup = {
             low: 0,
-            high: 1
+            high: 1,
           };
           net.outputLookupLength = Object.keys(net.outputLookup).length;
           const testResult = net.test([
             {
-              input: [{ low: .1, high: .5 }, { low: .2, high: .4 }, { low: .3, high: .3 }],
-              output: [{ low: .4, high: .2 }, { low:.5, high: .1 }]
-            }
+              input: [
+                { low: 0.1, high: 0.5 },
+                { low: 0.2, high: 0.4 },
+                { low: 0.3, high: 0.3 },
+              ],
+              output: [
+                { low: 0.4, high: 0.2 },
+                { low: 0.5, high: 0.1 },
+              ],
+            },
           ]);
           expect(net.formatData).toBeCalled();
           expect(net.forecast).toBeCalled();
           expect(testResult.error).toBeGreaterThanOrEqual(0.08);
           expect(testResult.misclasses.length).toBe(1);
-          expect(testResult.misclasses).toEqual([{
-            input: [{ low: .1, high: .5 }, { low: .2, high: .4 }, { low: .3, high: .3 }],
-            output: [{ low: .4, high: .2 }, { low:.5, high: .1 }],
-            actual: [{ low: .9, high: .9 }, { low:.9, high: .9 }]
-          }]);
+          expect(testResult.misclasses).toEqual([
+            {
+              input: [
+                { low: 0.1, high: 0.5 },
+                { low: 0.2, high: 0.4 },
+                { low: 0.3, high: 0.3 },
+              ],
+              output: [
+                { low: 0.4, high: 0.2 },
+                { low: 0.5, high: 0.1 },
+              ],
+              actual: [
+                { low: 0.9, high: 0.9 },
+                { low: 0.9, high: 0.9 },
+              ],
+            },
+          ]);
         });
       });
     });
@@ -2848,7 +3607,10 @@ describe('RNNTimeStep', () => {
     });
     it('datum,array,array,number', () => {
       const instance = {};
-      RNNTimeStep.prototype.addFormat.call(instance, { input: [[0]], output: [[0]] });
+      RNNTimeStep.prototype.addFormat.call(instance, {
+        input: [[0]],
+        output: [[0]],
+      });
       expect(instance).toEqual({});
     });
     it('array,number', () => {
@@ -2858,36 +3620,42 @@ describe('RNNTimeStep', () => {
     });
     it('datum,array,number', () => {
       const instance = {};
-      RNNTimeStep.prototype.addFormat.call(instance, { input: [0], output: [0] });
+      RNNTimeStep.prototype.addFormat.call(instance, {
+        input: [0],
+        output: [0],
+      });
       expect(instance).toEqual({});
     });
 
     it('datum,object,number', () => {
       const instance = {
-        inputLookup: { 'inputOne': 0, },
-        outputLookup: { 'outputOne': 0 }
+        inputLookup: { inputOne: 0 },
+        outputLookup: { outputOne: 0 },
       };
       RNNTimeStep.prototype.addFormat.call(instance, {
         input: { inputTwo: 1, inputThree: 2 },
-        output: { outputTwo: 1, outputThree: 2 }
+        output: { outputTwo: 1, outputThree: 2 },
       });
       expect(instance).toEqual({
         inputLookup: { inputOne: 0, inputTwo: 1, inputThree: 2 },
         inputLookupLength: 3,
         outputLookup: { outputOne: 0, outputTwo: 1, outputThree: 2 },
-        outputLookupLength: 3
+        outputLookupLength: 3,
       });
     });
     it('object,number', () => {
       const instance = {
-        inputLookup: { 'inputOne': 0, }
+        inputLookup: { inputOne: 0 },
       };
-      RNNTimeStep.prototype.addFormat.call(instance, { inputTwo: 1, inputThree: 2 });
+      RNNTimeStep.prototype.addFormat.call(instance, {
+        inputTwo: 1,
+        inputThree: 2,
+      });
       expect(instance).toEqual({
         inputLookup: { inputOne: 0, inputTwo: 1, inputThree: 2 },
         inputLookupLength: 3,
         outputLookup: { inputOne: 0, inputTwo: 1, inputThree: 2 },
-        outputLookupLength: 3
+        outputLookupLength: 3,
       });
     });
     it('array,object,number', () => {});
@@ -2901,13 +3669,13 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize,
         hiddenLayers,
-        outputSize
+        outputSize,
       });
       const {
         inputLookup,
         inputLookupLength,
         outputLookup,
-        outputLookupLength
+        outputLookupLength,
       } = net;
       net.initialize();
       const json = net.toJSON();
@@ -2923,12 +3691,12 @@ describe('RNNTimeStep', () => {
   describe('.fromJSON()', () => {
     it('restores network dimensions from json', () => {
       const inputSize = 45;
-      const hiddenLayers = [1,2,3,4,5,6,7,8,9];
+      const hiddenLayers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
       const outputSize = 20;
       const net = new RNNTimeStep({
         inputSize,
         hiddenLayers,
-        outputSize
+        outputSize,
       });
       net.initialize();
       const json = net.toJSON();
@@ -2936,7 +3704,7 @@ describe('RNNTimeStep', () => {
         inputLookup,
         inputLookupLength,
         outputLookup,
-        outputLookupLength
+        outputLookupLength,
       } = json;
       const serializedNet = new RNNTimeStep();
       serializedNet.fromJSON(json);
@@ -2955,25 +3723,33 @@ describe('RNNTimeStep', () => {
       const net = new RNNTimeStep({
         inputSize,
         hiddenLayers,
-        outputSize
+        outputSize,
       });
       let lastNetStatus;
-      const trainingData = [{ monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 }];
+      const trainingData = [
+        { monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 },
+      ];
       net.train(trainingData, {
         log: (status) => {
           lastNetStatus = status;
         },
-        iterations: 50
+        iterations: 50,
       });
       net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
       const json = net.toJSON();
       const serializedNet = new RNNTimeStep();
       serializedNet.fromJSON(json);
       let lastSerializedNetStatus;
-      serializedNet.train(trainingData, { iterations: 1, log: (status) => {
+      serializedNet.train(trainingData, {
+        iterations: 1,
+        log: (status) => {
           lastSerializedNetStatus = status;
-        }});
-      expect(lastSerializedNetStatus.split(' ').pop() < lastNetStatus.split(' ').pop()).toBeTruthy();
+        },
+      });
+      expect(
+        lastSerializedNetStatus.split(' ').pop() <
+          lastNetStatus.split(' ').pop()
+      ).toBeTruthy();
     });
   });
 });

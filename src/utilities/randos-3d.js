@@ -6,4 +6,4 @@ module.exports = function randos3D(width, height, depth) {
     result[z] = rondos2D(width, height);
   }
   return result;
-}
+};

@@ -7,4 +7,4 @@ module.exports = function allOnes(product) {
     product.weights[i] = 1;
     product.deltas[i] = 0;
   }
-}
+};

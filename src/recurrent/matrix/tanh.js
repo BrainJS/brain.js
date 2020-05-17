@@ -8,4 +8,4 @@ module.exports = function tanh(product, left) {
     product.weights[i] = Math.tanh(left.weights[i]);
     product.deltas[i] = 0;
   }
-}
+};

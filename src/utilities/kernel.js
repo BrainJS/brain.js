@@ -22,9 +22,7 @@ function makeKernel(fn, settings) {
       .createKernelMap(settings.map, fn, settings)
       .setPipeline(true);
   }
-  return gpuInstance
-    .createKernel(fn, settings)
-    .setPipeline(true);
+  return gpuInstance.createKernel(fn, settings).setPipeline(true);
 }
 
 function makeDevKernel(fn, settings) {
@@ -91,4 +89,13 @@ function clone(texture) {
   }
 }
 
-module.exports = { setup, teardown, makeKernel, makeDevKernel, kernelInput, release, clone, clear };
+module.exports = {
+  setup,
+  teardown,
+  makeKernel,
+  makeDevKernel,
+  kernelInput,
+  release,
+  clone,
+  clear,
+};

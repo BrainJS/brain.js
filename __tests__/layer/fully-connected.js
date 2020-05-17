@@ -1,24 +1,37 @@
 const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
 
-const { predict, predict3D, compareBiases, compareFilterDeltas, compareFilterDeltas3D, compareInputDeltas, compareInputDeltas3D } = require('../../src/layer/fully-connected');
+const {
+  predict,
+  predict3D,
+  compareBiases,
+  compareFilterDeltas,
+  compareFilterDeltas3D,
+  compareInputDeltas,
+  compareInputDeltas3D,
+} = require('../../src/layer/fully-connected');
 const { onePlusPlus2D, zero2D } = require('../test-utils');
 const { setup, teardown } = require('../../src/utilities/kernel');
 const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('FullyConnected Layer', () => {
   beforeEach(() => {
-    setup(new GPU({
-      mode: 'cpu',
-      onIstanbulCoverageVariable: injectIstanbulCoverage
-    }));
+    setup(
+      new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage,
+      })
+    );
   });
   afterEach(() => {
     teardown();
   });
   describe('.predict (forward propagation)', () => {
     test('can predict a simple matrix', () => {
-      const weights = [[1, 2], [3, 4]];
+      const weights = [
+        [1, 2],
+        [3, 4],
+      ];
       const filters = [
         [1, 2, 3, 4],
         [5, 6, 7, 8],
@@ -35,12 +48,9 @@ describe('FullyConnected Layer', () => {
         },
       });
 
-      expect(kernel(weights, filters, biases)).toEqual(new Float32Array([
-        30.2,
-        70.2,
-        110.2,
-        150.2,
-      ]));
+      expect(kernel(weights, filters, biases)).toEqual(
+        new Float32Array([30.2, 70.2, 110.2, 150.2])
+      );
     });
 
     test('can predict a matrix', () => {
@@ -67,13 +77,20 @@ describe('FullyConnected Layer', () => {
         [0, 1, 2, 3, 4, 5, 6, 7, 8]
       );
 
-      expect(results).toEqual(new Float32Array([204, 205, 206, 207, 208, 209, 210, 211, 212]));
+      expect(results).toEqual(
+        new Float32Array([204, 205, 206, 207, 208, 209, 210, 211, 212])
+      );
     });
   });
 
   describe('.predict3D (forward propagation)', () => {
     test('can predict a simple matrix', () => {
-      const weights = [[[1, 2], [3, 4]]];
+      const weights = [
+        [
+          [1, 2],
+          [3, 4],
+        ],
+      ];
       const filters = [
         [1, 2, 3, 4],
         [5, 6, 7, 8],
@@ -120,7 +137,7 @@ describe('FullyConnected Layer', () => {
       );
 
       expect(results).toEqual([
-        new Float32Array([204, 205, 206, 207, 208, 209, 210, 211, 212])
+        new Float32Array([204, 205, 206, 207, 208, 209, 210, 211, 212]),
       ]);
     });
   });
@@ -164,7 +181,7 @@ describe('FullyConnected Layer', () => {
           deltaX: 0,
           deltaY: 0,
           deltaWidth: 4,
-          deltaHeight: 4
+          deltaHeight: 4,
         },
       });
 
@@ -172,7 +189,7 @@ describe('FullyConnected Layer', () => {
         new Float32Array([1, 2, 3, 4]),
         new Float32Array([5, 6, 7, 8]),
         new Float32Array([9, 10, 11, 12]),
-        new Float32Array([13, 14, 15, 16])
+        new Float32Array([13, 14, 15, 16]),
       ]);
     });
 
@@ -186,7 +203,7 @@ describe('FullyConnected Layer', () => {
           deltaX: 0,
           deltaY: 0,
           deltaWidth: 4,
-          deltaHeight: 4
+          deltaHeight: 4,
         },
       });
 
@@ -194,14 +211,19 @@ describe('FullyConnected Layer', () => {
         new Float32Array([2, 4, 6, 8]),
         new Float32Array([10, 12, 14, 16]),
         new Float32Array([18, 20, 22, 24]),
-        new Float32Array([26, 28, 30, 32])
+        new Float32Array([26, 28, 30, 32]),
       ]);
     });
   });
 
   describe('.compareFilterDeltas3D (back propagation)', () => {
     test('can compare a simplge matrix', () => {
-      const inputWeights = [[[1, 2], [3, 4]]];
+      const inputWeights = [
+        [
+          [1, 2],
+          [3, 4],
+        ],
+      ];
       const deltas = [[1, 2, 3, 4]];
       const filterDeltas = [
         [0, 0, 0, 0],
@@ -226,7 +248,12 @@ describe('FullyConnected Layer', () => {
     });
 
     test('can add a simplge matrix', () => {
-      const inputWeights = [[[1, 2], [3, 4]]];
+      const inputWeights = [
+        [
+          [1, 2],
+          [3, 4],
+        ],
+      ];
       const deltas = [[1, 2, 3, 4]];
       const filterDeltas = [
         [1, 2, 3, 4],
@@ -252,7 +279,10 @@ describe('FullyConnected Layer', () => {
   });
   describe('.compareInputDeltas (back propagation)', () => {
     test('can compare a simple matrix', () => {
-      const inputDeltas = [[0, 0], [0, 0]];
+      const inputDeltas = [
+        [0, 0],
+        [0, 0],
+      ];
       const deltas = [[1, 2, 3, 4]];
       const filters = [
         [1, 2, 3, 4],
@@ -274,7 +304,10 @@ describe('FullyConnected Layer', () => {
     });
 
     test('can add a simple matrix', () => {
-      const inputDeltas = [[1, 2], [3, 4]];
+      const inputDeltas = [
+        [1, 2],
+        [3, 4],
+      ];
       const deltas = [[1, 2, 3, 4]];
       const filters = [
         [1, 2, 3, 4],
@@ -297,7 +330,12 @@ describe('FullyConnected Layer', () => {
   });
   describe('.compareInputDeltas3D (back propagation)', () => {
     test('can compare a simple matrix', () => {
-      const inputDeltas = [[[0, 0], [0, 0]]];
+      const inputDeltas = [
+        [
+          [0, 0],
+          [0, 0],
+        ],
+      ];
       const deltas = [[1, 2, 3, 4]];
       const filters = [
         [1, 2, 3, 4],
@@ -313,14 +351,16 @@ describe('FullyConnected Layer', () => {
       });
 
       expect(kernel(inputDeltas, deltas, filters)).toEqual([
-        [
-          new Float32Array([90, 100]),
-          new Float32Array([110, 120])
-        ],
+        [new Float32Array([90, 100]), new Float32Array([110, 120])],
       ]);
     });
     test('can add a simple matrix', () => {
-      const inputDeltas = [[[1, 2], [3, 4]]];
+      const inputDeltas = [
+        [
+          [1, 2],
+          [3, 4],
+        ],
+      ];
       const deltas = [[1, 2, 3, 4]];
       const filters = [
         [1, 2, 3, 4],
@@ -336,10 +376,7 @@ describe('FullyConnected Layer', () => {
       });
 
       expect(kernel(inputDeltas, deltas, filters)).toEqual([
-        [
-          new Float32Array([91, 102]),
-          new Float32Array([113, 124])
-        ],
+        [new Float32Array([91, 102]), new Float32Array([113, 124])],
       ]);
     });
   });

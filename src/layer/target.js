@@ -1,7 +1,7 @@
 const { makeKernel, release, clone, clear } = require('../utilities/kernel');
 const zeros = require('../utilities/zeros');
 const zeros2D = require('../utilities/zeros-2d');
-const zeros3D = require('../utilities/zeros-3d');
+// const zeros3D = require('../utilities/zeros-3d');
 const { Filter } = require('./types');
 
 function compare1D(weights, targetValues) {
@@ -11,7 +11,10 @@ function compare1D(weights, targetValues) {
 
 function compare2D(weights, targetValues) {
   // return targetValues[this.thread.y][this.thread.x] - weights[this.thread.y][this.thread.x];
-  return weights[this.thread.y][this.thread.x] - targetValues[this.thread.y][this.thread.x];
+  return (
+    weights[this.thread.y][this.thread.x] -
+    targetValues[this.thread.y][this.thread.x]
+  );
 }
 
 class Target extends Filter {
@@ -44,7 +47,7 @@ class Target extends Filter {
   }
 
   predict() {
-    //TODO: should we clone here?
+    // TODO: should we clone here?
     // NOTE: this looks like it shouldn't be, but the weights are immutable, and this is where they are reused.
     release(this.weights);
     this.weights = clone(this.inputLayer.weights);
@@ -71,5 +74,5 @@ function target(settings, inputLayer) {
 
 module.exports = {
   Target,
-  target
+  target,
 };
