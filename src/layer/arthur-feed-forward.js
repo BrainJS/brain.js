@@ -1,4 +1,6 @@
-const { arthurDeviationWeights } = require('../praxis/arthur-deviation-weights');
+const {
+  arthurDeviationWeights,
+} = require('../praxis/arthur-deviation-weights');
 const { arthurDeviationBiases } = require('../praxis/arthur-deviation-biases');
 const { add } = require('./add');
 const { random } = require('./random');
@@ -41,5 +43,5 @@ function arthurFeedForward(settings, inputLayer) {
 }
 
 module.exports = {
-  arthurFeedForward
+  arthurFeedForward,
 };

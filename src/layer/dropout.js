@@ -28,7 +28,7 @@ class Dropout extends Filter {
       width: 1,
       height: 1,
       depth: null,
-      probability: 0.5
+      probability: 0.5,
     };
   }
 
@@ -50,9 +50,9 @@ class Dropout extends Filter {
         map: { dropouts: setDropout },
         immutable: true,
       });
-      this.compareKernel = makeKernel(compare, { output, immutable: true, });
+      this.compareKernel = makeKernel(compare, { output, immutable: true });
     } else {
-      this.predictKernel = makeKernel(predict, { output, immutable: true, });
+      this.predictKernel = makeKernel(predict, { output, immutable: true });
     }
   }
 
@@ -74,4 +74,11 @@ function dropout(settings, inputLayer) {
   return new Dropout(settings, inputLayer);
 }
 
-module.exports = { Dropout, dropout, setDropout, trainingPredict, predict, compare };
+module.exports = {
+  Dropout,
+  dropout,
+  setDropout,
+  trainingPredict,
+  predict,
+  compare,
+};

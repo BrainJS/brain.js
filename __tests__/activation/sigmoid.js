@@ -8,7 +8,7 @@ describe('sigmoid', () => {
   });
   describe('.measure()', () => {
     it('matches for value .7', () => {
-      expect(sigmoid.measure(0.7, .5).toFixed(5)).toBe('0.10500');
+      expect(sigmoid.measure(0.7, 0.5).toFixed(5)).toBe('0.10500');
     });
   });
 });

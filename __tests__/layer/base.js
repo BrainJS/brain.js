@@ -19,11 +19,11 @@ describe('Base Layer', () => {
     test('are inherited to .praxis() call', () => {
       const praxis = jest.fn();
       const praxisOpts = {
-        value: 100
+        value: 100,
       };
       const base = new Base({
         praxis,
-        praxisOpts
+        praxisOpts,
       });
       expect(praxis).toHaveBeenCalledWith(base, praxisOpts);
     });
@@ -35,8 +35,8 @@ describe('Base Layer', () => {
       base.praxis = {
         run: () => {},
       };
-      const mockWeights = base.weights = {};
-      const mockDeltas = base.deltas = {};
+      const mockWeights = (base.weights = {});
+      const mockDeltas = (base.deltas = {});
       base.learn();
       expect(release).toHaveBeenCalledWith(mockWeights);
       expect(release).toHaveBeenCalledWith(mockDeltas);

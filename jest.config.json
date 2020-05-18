@@ -1,0 +1,20 @@
+{
+  "bail": true,
+  "collectCoverage": false,
+  "collectCoverageFrom": ["src/**/*"],
+  "coverageDirectory": "__coverage__",
+  "globalSetup": "",
+  "globals": {},
+  "preset": "ts-jest",
+  "setupFiles": [],
+  "testEnvironment": "node",
+  "testPathIgnorePatterns": [
+    "__tests__/istanbul-linker-util.js",
+    "__tests__/test-utils.js",
+    "__tests__/.eslintrc.js"
+  ],
+  "transform": {
+    "^.+\\.[jt]sx?$": "babel-jest"
+  },
+  "verbose": false
+}

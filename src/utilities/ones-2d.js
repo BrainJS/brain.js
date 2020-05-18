@@ -6,4 +6,4 @@ module.exports = function ones2D(width, height) {
     result[y] = ones(width);
   }
   return result;
-}
+};

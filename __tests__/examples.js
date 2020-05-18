@@ -1,5 +1,5 @@
 describe('tests', () => {
-  test('children\'s-book', () => {
+  test("children's-book", () => {
     expect(() => {
       require('../examples/javascript/childrens-book');
     }).not.toThrow();

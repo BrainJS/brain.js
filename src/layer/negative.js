@@ -1,4 +1,4 @@
-const { makeKernel, release } = require('../utilities/kernel');
+const { makeKernel } = require('../utilities/kernel');
 const { Modifier } = require('./types');
 
 function predict(weights) {

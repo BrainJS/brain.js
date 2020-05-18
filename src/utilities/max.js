@@ -6,4 +6,4 @@ const toArray = require('./to-array');
  */
 module.exports = function max(values) {
   return Math.max(...toArray(values));
-}
+};

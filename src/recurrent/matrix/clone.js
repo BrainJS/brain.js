@@ -11,4 +11,4 @@ module.exports = function clone(product) {
   cloned.weights = product.weights.slice(0);
   cloned.deltas = product.deltas.slice(0);
   return cloned;
-}
+};

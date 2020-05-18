@@ -8,4 +8,4 @@ module.exports = function sigmoidB(product, left) {
     const mwi = product.weights[i];
     left.deltas[i] = mwi * (1 - mwi) * product.deltas[i];
   }
-}
+};

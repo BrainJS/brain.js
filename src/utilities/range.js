@@ -10,4 +10,4 @@ module.exports = function range(start, end) {
     result.push(start);
   }
   return result;
-}
+};

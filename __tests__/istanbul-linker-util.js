@@ -5,29 +5,13 @@ const { getFileCoverageDataByName } = require('istanbul-spy');
 // This would have probably been a whole lot easier with regex, maybe, but probably not as clear.
 // Also, this is PURELY for testing
 
-module.exports = function(fn) {
-  const source = fn.toString();
-  const links = new Set();
-  const ast = parse(`function fakeFunction() {${source}}`);
-  const recurse = new Recurse({
-    onIstanbulCoverageVariable: (name) => {
-      const data = getFileCoverageDataByName(name);
-      if (!data) {
-        throw new Error(`Could not find istanbul identifier ${name}`);
-      }
-      const { path } = data;
-      const variable = `const ${name} = __coverage__['${path}'];\n`;
-      links.add(variable);
-    }
-  });
-  recurse.into(ast);
-  return Array.from(links).join('') + source;
-};
+// hah! damn...
 
 class Recurse {
   constructor(settings) {
     this.settings = settings;
   }
+
   into(ast) {
     if (!ast) return;
     if (Array.isArray(ast)) {
@@ -52,7 +36,7 @@ class Recurse {
         this.into(ast.left);
         this.into(ast.right);
         break;
-      case  'ForInStatement':
+      case 'ForInStatement':
         this.into(ast.left);
         this.into(ast.right);
         this.into(ast.body);
@@ -151,3 +135,22 @@ class Recurse {
     }
   }
 }
+
+module.exports = function (fn) {
+  const source = fn.toString();
+  const links = new Set();
+  const ast = parse(`function fakeFunction() {${source}}`);
+  const recurse = new Recurse({
+    onIstanbulCoverageVariable: (name) => {
+      const data = getFileCoverageDataByName(name);
+      if (!data) {
+        throw new Error(`Could not find istanbul identifier ${name}`);
+      }
+      const { path } = data;
+      const variable = `const ${name} = __coverage__['${path}'];\n`;
+      links.add(variable);
+    },
+  });
+  recurse.into(ast);
+  return Array.from(links).join('') + source;
+};

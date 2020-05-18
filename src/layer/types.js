@@ -9,4 +9,13 @@ class Model extends Base {}
 class Modifier extends Base {}
 class Operator extends Base {}
 
-module.exports = { Activation, Internal, InternalModel, EntryPoint, Filter, Model, Modifier, Operator };
+module.exports = {
+  Activation,
+  Internal,
+  InternalModel,
+  EntryPoint,
+  Filter,
+  Model,
+  Modifier,
+  Operator,
+};

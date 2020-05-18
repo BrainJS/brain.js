@@ -23,5 +23,6 @@ function adam() {
 }
 
 module.exports = {
-  Adam, adam
+  Adam,
+  adam,
 };

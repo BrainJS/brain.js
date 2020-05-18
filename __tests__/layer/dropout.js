@@ -1,7 +1,14 @@
 const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
 
-const { dropout, Dropout, trainingPredict, predict, compare, setDropout } = require('../../src/layer/dropout');
+const {
+  dropout,
+  Dropout,
+  trainingPredict,
+  predict,
+  compare,
+  setDropout,
+} = require('../../src/layer/dropout');
 const { setup, teardown, makeKernel } = require('../../src/utilities/kernel');
 const { injectIstanbulCoverage } = require('../test-utils');
 
@@ -9,10 +16,12 @@ jest.mock('../../src/utilities/kernel');
 
 describe('Dropout Layer', () => {
   beforeEach(() => {
-    setup(new GPU({
-      mode: 'cpu',
-      onIstanbulCoverageVariable: injectIstanbulCoverage
-    }));
+    setup(
+      new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage,
+      })
+    );
     jest.spyOn(Dropout.prototype, 'validate');
   });
   afterEach(() => {
@@ -23,7 +32,7 @@ describe('Dropout Layer', () => {
     it('sends inputLayer and settings through and instantiates a Dropout', () => {
       const mockInputLayer = {};
       const settings = {
-        probability: 100
+        probability: 100,
       };
       const layer = dropout(mockInputLayer, settings);
       expect(layer.constructor).toBe(Dropout);
@@ -48,7 +57,7 @@ describe('Dropout Layer', () => {
     it('sets probability from settings', () => {
       const mockInputLayer = {};
       const settings = {
-        probability: 123
+        probability: 123,
       };
       const layer = new Dropout(mockInputLayer, settings);
       expect(layer.probability).toBe(settings.probability);
@@ -56,8 +65,9 @@ describe('Dropout Layer', () => {
     it('calls this.validate', () => {
       const mockInputLayer = {};
       const settings = {
-        probability: 123
+        probability: 123,
       };
+      // eslint-disable-next-line no-new
       new Dropout(mockInputLayer, settings);
       expect(Dropout.prototype.validate).toHaveBeenCalled();
     });
@@ -69,7 +79,11 @@ describe('Dropout Layer', () => {
   });
   describe('trainingPredict (forward propagation)', () => {
     test('can dropout a simple matrix', () => {
-      const inputs = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+      const inputs = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+      ];
 
       const results = gpuMock(trainingPredict, {
         output: [3, 3],
@@ -99,7 +113,11 @@ describe('Dropout Layer', () => {
   });
   describe('.training (forward propagation)', () => {
     test('can dropout a simple matrix', () => {
-      const inputs = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+      const inputs = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+      ];
 
       const results = gpuMock(predict, {
         output: [3, 3],
@@ -111,7 +129,7 @@ describe('Dropout Layer', () => {
       expect(results).toEqual([
         new Float32Array([0.5, 1, 1.5]),
         new Float32Array([2, 2.5, 3]),
-        new Float32Array([3.5, 4, 4.5])
+        new Float32Array([3.5, 4, 4.5]),
       ]);
     });
   });
@@ -125,7 +143,10 @@ describe('Dropout Layer', () => {
           predictKernel: null,
         };
         Dropout.prototype.setupKernels.call(mockInstance, true);
-        expect(makeKernel).toHaveBeenCalledWith(trainingPredict, { output: [1, 2], map: { dropouts: setDropout } });
+        expect(makeKernel).toHaveBeenCalledWith(trainingPredict, {
+          output: [1, 2],
+          map: { dropouts: setDropout },
+        });
         expect(mockInstance.predictKernel).not.toBe(null);
       });
       it('this.compareKernel should be set', () => {
@@ -166,7 +187,7 @@ describe('Dropout Layer', () => {
         };
       });
       mockInputLayer = {
-        weights: {}
+        weights: {},
       };
       mockInstance = {
         predictKernel: mockPredictKernel,
@@ -217,11 +238,22 @@ describe('Dropout Layer', () => {
         constants: {
           probability: 0.5,
         },
-      })([[1,0,1],[0,1,0],[1,1,1]], [[1,2,3],[4,5,6],[7,8,9]]);
+      })(
+        [
+          [1, 0, 1],
+          [0, 1, 0],
+          [1, 1, 1],
+        ],
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9],
+        ]
+      );
       expect(results).toEqual([
-        new Float32Array([1,0,3]),
-        new Float32Array([0,5,0]),
-        new Float32Array([7,8,9])
+        new Float32Array([1, 0, 3]),
+        new Float32Array([0, 5, 0]),
+        new Float32Array([7, 8, 9]),
       ]);
     });
   });

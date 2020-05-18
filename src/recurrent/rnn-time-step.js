@@ -714,8 +714,8 @@ class RNNTimeStep extends RNN {
           const target = input[input.length - 1];
           let errors = 0;
           let p;
-          for (p in output) {
-          }
+          // for (p in output) {
+          // }
           const error = target[i] - output[p];
           // mse
           errors += error * error;
@@ -1014,6 +1014,17 @@ class RNNTimeStep extends RNN {
     const { states } = equation;
     const jsonString = JSON.stringify(this.toJSON());
 
+    function previousConnectionIndex(m) {
+      const connection = model.equationConnections[0];
+      const { states } = equations[0];
+      for (let i = 0, max = states.length; i < max; i++) {
+        if (states[i].product === m) {
+          return i;
+        }
+      }
+      return connection.indexOf(m);
+    }
+
     function matrixOrigin(m, stateIndex) {
       for (let i = 0, max = states.length; i < max; i++) {
         const state = states[i];
@@ -1025,10 +1036,12 @@ class RNNTimeStep extends RNN {
               if (j > -1) {
                 return `typeof prevStates[${j}] === 'object' ? prevStates[${j}].product : new Matrix(${m.rows}, ${m.columns})`;
               }
+            // eslint-disable-next-line no-fallthrough
             case state.right:
               if (j > -1) {
                 return `typeof prevStates[${j}] === 'object' ? prevStates[${j}].product : new Matrix(${m.rows}, ${m.columns})`;
               }
+            // eslint-disable-next-line no-fallthrough
             case state.product:
               return `new Matrix(${m.rows}, ${m.columns})`;
             default:
@@ -1040,17 +1053,6 @@ class RNNTimeStep extends RNN {
         if (m === state.right) return `states[${i}].right`;
         if (m === state.left) return `states[${i}].left`;
       }
-    }
-
-    function previousConnectionIndex(m) {
-      const connection = model.equationConnections[0];
-      const { states } = equations[0];
-      for (let i = 0, max = states.length; i < max; i++) {
-        if (states[i].product === m) {
-          return i;
-        }
-      }
-      return connection.indexOf(m);
     }
 
     function matrixToString(m, stateIndex) {
@@ -1263,6 +1265,7 @@ ${innerFunctionsSwitch.join('\n')}
   ${randomFloat.toString()}
   ${sampleI.toString()}
   ${maxI.toString()}`;
+    // eslint-disable-next-line no-new-func
     return new Function('rawInput', cb ? cb(src) : src);
   }
 }

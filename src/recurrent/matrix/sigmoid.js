@@ -8,9 +8,9 @@ module.exports = function sigmoid(product, left) {
     product.weights[i] = 1 / (1 + Math.exp(-left.weights[i]));
     product.deltas[i] = 0;
   }
-}
+};
 
-function sig(x) {
-  // helper function for computing sigmoid
-  return 1 / (1 + Math.exp(-x));
-}
+// function sig(x) {
+//   // helper function for computing sigmoid
+//   return 1 / (1 + Math.exp(-x));
+// }

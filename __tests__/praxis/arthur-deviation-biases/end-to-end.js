@@ -1,6 +1,8 @@
 /* istanbul ignore file */
 const { GPU } = require('gpu.js');
-const { ArthurDeviationBiases } = require('../../../src/praxis/arthur-deviation-biases');
+const {
+  ArthurDeviationBiases,
+} = require('../../../src/praxis/arthur-deviation-biases');
 const { random } = require('../../../src/layer/random');
 const NeuralNetwork = require('../../../src/neural-network');
 const { setup, teardown } = require('../../../src/utilities/kernel');
@@ -8,10 +10,12 @@ const { injectIstanbulCoverage } = require('../../test-utils');
 
 describe('ArthurDeviationBiases', () => {
   beforeEach(() => {
-    setup(new GPU({
-      mode: 'cpu',
-      onIstanbulCoverageVariable: injectIstanbulCoverage
-    }));
+    setup(
+      new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage,
+      })
+    );
   });
   afterEach(() => {
     teardown();
@@ -28,13 +32,16 @@ describe('ArthurDeviationBiases', () => {
         { input: [0, 1], output: [1] },
         { input: [0, 0], output: [0] },
         { input: [1, 1], output: [0] },
-        { input: [1, 0], output: [1] }];
+        { input: [1, 0], output: [1] },
+      ];
       const net = new NeuralNetwork();
       net.train(xorTrainingData, {
         iterations: 1,
       });
       const layer1 = random({ name: 'biases', height: 3 });
-      const praxis = new ArthurDeviationBiases(layer1, { learningRate: net.trainOpts.learningRate });
+      const praxis = new ArthurDeviationBiases(layer1, {
+        learningRate: net.trainOpts.learningRate,
+      });
       expect(praxis.learningRate).toBe(net.trainOpts.learningRate);
 
       net.deltas[0][0] = 1;

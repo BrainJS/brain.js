@@ -1,4 +1,4 @@
-const Matrix = require('./matrix');
+// const Matrix = require('./matrix');
 const LSTM = require('./lstm');
 const RNNTimeStep = require('./rnn-time-step');
 

@@ -48,15 +48,24 @@ class MultiplyElement extends Operator {
 
   predict() {
     release(this.weights);
-    this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
+    this.weights = this.predictKernel(
+      this.inputLayer1.weights,
+      this.inputLayer2.weights
+    );
     clear(this.deltas);
   }
 
   compare() {
     release(this.inputLayer1.deltas);
     release(this.inputLayer2.deltas);
-    this.inputLayer1.deltas = this.compareKernel(this.inputLayer2.weights, this.deltas);
-    this.inputLayer2.deltas = this.compareKernel(this.inputLayer1.weights, this.deltas);
+    this.inputLayer1.deltas = this.compareKernel(
+      this.inputLayer2.weights,
+      this.deltas
+    );
+    this.inputLayer2.deltas = this.compareKernel(
+      this.inputLayer1.weights,
+      this.deltas
+    );
   }
 }
 

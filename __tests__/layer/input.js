@@ -5,10 +5,12 @@ const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('Input Layer', () => {
   beforeEach(() => {
-    setup(new GPU({
-      mode: 'cpu',
-      onIstanbulCoverageVariable: injectIstanbulCoverage
-    }));
+    setup(
+      new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage,
+      })
+    );
   });
   afterEach(() => {
     teardown();

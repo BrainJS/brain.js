@@ -1,24 +1,43 @@
 const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
-const { predict, compareFilterDeltas, compareInputDeltas, compareBiases } = require('../../src/layer/convolution');
+const {
+  predict,
+  compareFilterDeltas,
+  compareInputDeltas,
+  compareBiases,
+} = require('../../src/layer/convolution');
 const { setup, teardown } = require('../../src/utilities/kernel');
 const { onePlusPlus3D } = require('../test-utils');
 const { injectIstanbulCoverage } = require('../test-utils');
 
 describe('Convolution Layer', () => {
   beforeEach(() => {
-    setup(new GPU({
-      mode: 'cpu',
-      onIstanbulCoverageVariable: injectIstanbulCoverage
-    }));
+    setup(
+      new GPU({
+        mode: 'cpu',
+        onIstanbulCoverageVariable: injectIstanbulCoverage,
+      })
+    );
   });
   afterEach(() => {
     teardown();
   });
   describe('.predict (forward propagation)', () => {
     test('can convolution a simple matrix', () => {
-      const inputs = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]];
-      const filters = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]];
+      const inputs = [
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9],
+        ],
+      ];
+      const filters = [
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9],
+        ],
+      ];
       const biases = [1, 2, 3];
 
       const results = gpuMock(predict, {
@@ -40,7 +59,7 @@ describe('Convolution Layer', () => {
       expect(results).toEqual([
         new Float32Array([286, 187, 91]),
         new Float32Array([155, 95, 43]),
-        new Float32Array([51, 27, 10])
+        new Float32Array([51, 27, 10]),
       ]);
     });
   });
@@ -78,18 +97,35 @@ describe('Convolution Layer', () => {
         },
       })(filterDeltas, inputs, deltas);
 
-      expect(results).toEqual([[
-        new Float32Array([45, 56]),
-        new Float32Array([87, 98])
-      ]]);
+      expect(results).toEqual([
+        [new Float32Array([45, 56]), new Float32Array([87, 98])],
+      ]);
     });
   });
 
   describe('.compareInputDeltas (back propagation)', () => {
     test('can convolution a simple matrix', () => {
-      const inputDeltas = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]];
-      const filters = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]];
-      const deltas = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]];
+      const inputDeltas = [
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9],
+        ],
+      ];
+      const filters = [
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9],
+        ],
+      ];
+      const deltas = [
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9],
+        ],
+      ];
       const results = gpuMock(compareInputDeltas, {
         output: [3, 3],
         constants: {
@@ -103,31 +139,64 @@ describe('Convolution Layer', () => {
           deltaWidth: 3,
           deltaHeight: 3,
           deltaDepth: 1,
-          deltaZ: 0
+          deltaZ: 0,
         },
       })(inputDeltas, filters, deltas);
 
       expect(results).toEqual([
         new Float32Array([2, 6, 13]),
         new Float32Array([12, 31, 62]),
-        new Float32Array([37, 92, 174])
+        new Float32Array([37, 92, 174]),
       ]);
     });
   });
 
   describe('.compareBiases (back propagation)', () => {
     const deltas = [
-      [[0, 16], [8, 24]],
-      [[1, 17], [9, 25]],
-      [[2, 18], [10, 26]],
-      [[3, 19], [11, 27]],
-      [[4, 20], [12, 28]],
-      [[5, 21], [13, 29]],
-      [[6, 22], [14, 30]],
-      [[7, 23], [15, 31]],
+      [
+        [0, 16],
+        [8, 24],
+      ],
+      [
+        [1, 17],
+        [9, 25],
+      ],
+      [
+        [2, 18],
+        [10, 26],
+      ],
+      [
+        [3, 19],
+        [11, 27],
+      ],
+      [
+        [4, 20],
+        [12, 28],
+      ],
+      [
+        [5, 21],
+        [13, 29],
+      ],
+      [
+        [6, 22],
+        [14, 30],
+      ],
+      [
+        [7, 23],
+        [15, 31],
+      ],
     ];
     test('accumulates values from deltas correctly from 0', () => {
-      const biasDeltas = [[[0]], [[0]], [[0]], [[0]], [[0]], [[0]], [[0]], [[0]]];
+      const biasDeltas = [
+        [[0]],
+        [[0]],
+        [[0]],
+        [[0]],
+        [[0]],
+        [[0]],
+        [[0]],
+        [[0]],
+      ];
       const kernel = gpuMock(compareBiases, {
         output: [1, 1, 8],
         constants: {
@@ -150,7 +219,16 @@ describe('Convolution Layer', () => {
       expect(result).toEqual(expectedBiasDeltas);
     });
     test('accumulates values from deltas correctly from greater than 0', () => {
-      const biasDeltas = [[[0]], [[1]], [[2]], [[3]], [[4]], [[5]], [[6]], [[7]]];
+      const biasDeltas = [
+        [[0]],
+        [[1]],
+        [[2]],
+        [[3]],
+        [[4]],
+        [[5]],
+        [[6]],
+        [[7]],
+      ];
       const kernel = gpuMock(compareBiases, {
         output: [1, 1, 8],
         constants: {
