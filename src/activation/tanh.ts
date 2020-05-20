@@ -3,7 +3,7 @@
  * @param weight
  * @returns {number}
  */
-function activate(weight) {
+function activate(weight: number): number {
   return Math.tanh(weight);
 }
 
@@ -13,8 +13,12 @@ function activate(weight) {
  * @param error
  * @returns {number}
  */
-function measure(weight, error) {
+function measure(weight: number, error: number): number {
   return (1 - weight * weight) * error;
 }
 
-module.exports = { activate, measure };
+export default {
+  activate,
+  measure
+}
+

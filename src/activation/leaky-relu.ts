@@ -4,7 +4,7 @@
  * @param weight
  * @returns {number}
  */
-function activate(weight) {
+function activate(weight: number): number {
   return weight > 0 ? weight : 0.01 * weight;
 }
 
@@ -14,8 +14,10 @@ function activate(weight) {
  * @param error
  * @returns {number}
  */
-function measure(weight, error) {
+function measure(weight: number, error: number): number {
   return weight > 0 ? error : 0.01 * error;
 }
-
-module.exports = { activate, measure };
+export default {
+  activate,
+  measure,
+}

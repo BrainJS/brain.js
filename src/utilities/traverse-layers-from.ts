@@ -1,4 +1,10 @@
-module.exports = function traverseLayersFrom(layer, cb) {
+export interface Layer {
+  inputLayer: any
+  inputLayer1: any
+  inputLayer2: any
+}
+
+export default function traverseLayersFrom(layer: Layer, cb: { (layer: Layer): void }){
   if (layer.hasOwnProperty('inputLayer')) {
     traverseLayersFrom(layer.inputLayer, cb);
   } else {

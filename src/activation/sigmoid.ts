@@ -3,7 +3,7 @@
  * @param value
  * @returns {number}
  */
-function activate(value) {
+function activate(value: number): number {
   return 1 / (1 + Math.exp(-value));
 }
 
@@ -13,8 +13,11 @@ function activate(value) {
  * @param error
  * @returns {number}
  */
-function measure(weight, error) {
+function measure(weight: number, error: number): number {
   return weight * (1 - weight) * error;
 }
+export default {
+  activate,
+  measure
+}
 
-module.exports = { activate, measure };
