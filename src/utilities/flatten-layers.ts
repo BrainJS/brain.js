@@ -1,10 +1,11 @@
-const traverseLayersFrom = require('./traverse-layers-from');
+import traverseLayersFrom from './traverse-layers-from';
 
-module.exports = function flattenLayers(layers) {
+
+export default function flattenLayers(layers: any[]) {
   const result = layers.slice(0);
   for (let i = 0; i < result.length; i++) {
     let offset = 0;
-    traverseLayersFrom(result[i], layer => {
+    traverseLayersFrom(result[i], (layer: any) => {
       if (result.indexOf(layer) === -1) {
         result.splice(i + offset, 0, layer);
         offset++;
