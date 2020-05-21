@@ -1,9 +1,10 @@
-const { Base } = require('./base');
-const zeros2D = require('../utilities/zeros-2d');
-const zeros3D = require('../utilities/zeros-3d');
+import { Base }  from './base';
+import zeros2D from '../utilities/zeros-2d';
+import zeros3D from '../utilities/zeros-3d';
 
-class Activation extends Base {
-  constructor(inputLayer, settings) {
+export class Activation extends Base {
+  public inputLayer: any
+  constructor(inputLayer: any, settings: any) {
     super();
     this.inputLayer = inputLayer;
 
@@ -24,5 +25,3 @@ class Activation extends Base {
     this.setupPraxis(settings);
   }
 }
-
-module.exports = { Activation };
