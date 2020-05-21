@@ -1,20 +1,20 @@
-const {
+import {
   arthurDeviationWeights,
-} = require('../praxis/arthur-deviation-weights');
-const { arthurDeviationBiases } = require('../praxis/arthur-deviation-biases');
-const { add } = require('./add');
-const { random } = require('./random');
-const { multiply } = require('./multiply');
-const { sigmoid } = require('./sigmoid');
+} from '../praxis/arthur-deviation-weights';
+import { arthurDeviationBiases } from '../praxis/arthur-deviation-biases';
+import { add } from './add';
+import { random } from './random';
+import { multiply } from './multiply';
+import { sigmoid } from './sigmoid';
 
-function arthurFeedForward(settings, inputLayer) {
+function arthurFeedForward(settings: { height: any; }, inputLayer: { height: any; }) {
   const { height } = settings;
-  function weightsPraxis(layer, settings) {
+  function weightsPraxis(layer: any, settings: any) {
     const praxis = arthurDeviationWeights(layer, settings);
     praxis.setupKernels();
     return praxis;
   }
-  function biasesPraxis(layer, settings) {
+  function biasesPraxis(layer: any, settings: any) {
     const praxis = arthurDeviationBiases(layer, settings);
     praxis.setupKernels();
     return praxis;
