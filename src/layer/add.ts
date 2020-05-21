@@ -1,17 +1,19 @@
-const { makeKernel, release, clone, clear } = require('../utilities/kernel');
-const zeros2D = require('../utilities/zeros-2d');
-const { checkSameSize } = require('../utilities/layer-size');
-const { Operator } = require('./types');
+import { makeKernel, release, clone, clear } from '../utilities/kernel';
+import zeros2D from '../utilities/zeros-2d';
+import { checkSameSize } from '../utilities/layer-size';
+import { Operator } from './types';
 
-function predict(inputWeights1, inputWeights2) {
+export function predict(this: any, inputWeights1: { [x: string]: { [x: string]: any; }; }, inputWeights2: { [x: string]: { [x: string]: any; }; }) {
   return (
     inputWeights1[this.thread.y][this.thread.x] +
     inputWeights2[this.thread.y][this.thread.x]
   );
 }
 
-class Add extends Operator {
-  constructor(inputLayer1, inputLayer2, settings) {
+export class Add extends Operator {
+  inputLayer1: any;
+  inputLayer2: any;
+  constructor(inputLayer1: any, inputLayer2: any, settings: any) {
     super();
     this.inputLayer1 = inputLayer1;
     this.inputLayer2 = inputLayer2;
@@ -58,8 +60,7 @@ class Add extends Operator {
   learn() {}
 }
 
-function add(inputLayer1, inputLayer2, settings) {
+export function add(inputLayer1: any, inputLayer2: any, settings?: any) {
   return new Add(inputLayer1, inputLayer2, settings);
 }
 
-module.exports = { Add, add, predict };
