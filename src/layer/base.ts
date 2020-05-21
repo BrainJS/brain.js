@@ -1,6 +1,19 @@
 const { release, clear } = require('../utilities/kernel');
 
 class Base {
+  width: any;
+  height: any;
+  depth: null;
+  deltas: null;
+  weights: any;
+  praxis: any;
+  praxisOpts: null;
+  predictKernel!: {
+    immutable: any;
+  };
+  compareKernel!: {
+    immutable: any;
+  };
   static get defaults() {
     return {
       width: 1,
@@ -13,7 +26,7 @@ class Base {
     };
   }
 
-  constructor(settings) {
+  constructor(settings: any) {
     // size
     this.width = null;
     this.height = null;
@@ -35,7 +48,7 @@ class Base {
     this.setupPraxis(settings);
   }
 
-  setupPraxis(settings) {
+  setupPraxis(settings: any) {
     if (!settings) return;
     if (settings.hasOwnProperty('praxis')) {
       if (typeof settings.praxis === 'function') {
@@ -116,7 +129,7 @@ class Base {
     // console.log(`${this.constructor.name}-setupKernels is not yet implemented`)
   }
 
-  reuseKernels(layer) {
+  reuseKernels(layer: { width: any; height: any; hasOwnProperty: (arg0: string) => any; predictKernel: { immutable: any; }; constructor: { name: any; }; compareKernel: { immutable: any; }; praxis: any; }) {
     if (layer.width !== this.width) {
       throw new Error(
         `${this.constructor.name} kernel width mismatch ${layer.width} is not ${this.width}`
@@ -155,7 +168,7 @@ class Base {
     // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 
-  learn(previousLayer, nextLayer, learningRate) {
+  learn(previousLayer: any, nextLayer: any, learningRate: any) {
     // TODO: do we need to release here?
     const { weights: oldWeights } = this;
     this.weights = this.praxis.run(
@@ -173,7 +186,7 @@ class Base {
   }
 
   toJSON() {
-    const jsonLayer = {};
+    const jsonLayer: { [k: string]: any } = {};
     const { defaults, name } = this.constructor;
     if (this.constructor !== Base) {
       Object.assign(defaults, Base.defaults, defaults);
@@ -189,7 +202,3 @@ class Base {
     return jsonLayer;
   }
 }
-
-module.exports = {
-  Base,
-};
