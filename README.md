@@ -1,4 +1,6 @@
-<img src="https://cdn.rawgit.com/harthur-org/brain.js/ff595242/logo.svg" alt="Logo" width=200px/>
+<p align="center">
+  <img src="https://cdn.rawgit.com/harthur-org/brain.js/ff595242/logo.svg" alt="Logo" width=200px/>
+</p>
 
 # brain.js
 
