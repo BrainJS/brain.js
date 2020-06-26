@@ -192,6 +192,7 @@ You can check out this fantastic screencast, which explains how to train a simpl
 - [predict next number, and forecast numbers](./examples/javascript/predict-numbers.js) and [typescript version](./examples/typescript/predict-numbers.ts)
 - [using node streams](./examples/javascript/stream-example.js) and [typescript version](./examples/typescript/stream-example.ts)
 - [simple letter detection](./examples/javascript/which-letter-simple.js) and [typescript version](./examples/typescript/which-letter-simple.ts)
+- [Cryotherapy Success Rate Prediction](https://cryotherapy.surge.sh)
 
 ## Training
 
@@ -667,6 +668,10 @@ You can also join our open discussion about standardization [here](https://githu
 If you have an issue, either a bug or a feature you think would benefit your project let us know and we will do our best.
 
 Create issues [here](https://github.com/BrainJS/brain.js/issues) and follow the template.
+
+### brain.js.org
+
+Source for `brain.js.org` is available at [Brain.js.org Repository](https://github.com/BrainJS/brain.js.org). Built using awesome `vue.js` & `bulma`. Contributions are always welcome. 
 
 ## Contributors
 
