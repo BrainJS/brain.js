@@ -193,6 +193,7 @@ You can check out this fantastic screencast, which explains how to train a simpl
 - [using node streams](./examples/javascript/stream-example.js) and [typescript version](./examples/typescript/stream-example.ts)
 - [simple letter detection](./examples/javascript/which-letter-simple.js) and [typescript version](./examples/typescript/which-letter-simple.ts)
 - [Cryotherapy Success Rate Prediction](https://cryotherapy.surge.sh)
+- [Rock Paper Scissors](https://github.com/arifikhsan/batu-gunting-kertas-nuxt)
 
 ## Training
 
