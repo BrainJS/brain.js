@@ -1632,14 +1632,10 @@ describe('RNNTimeStep', () => {
         hiddenLayers,
         outputSize,
       });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      let lastStatus;
       net.train(
         [{ monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 }],
         {
-          log: (status) => {
-            lastStatus = status;
-          },
+          log: () => {},
         }
       );
       const result = net.run({

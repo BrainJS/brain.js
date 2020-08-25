@@ -627,12 +627,12 @@ describe('default net json', () => {
   originalNet.train(
     [
       {
-        input: { '0': Math.random(), b: Math.random() },
-        output: { c: Math.random(), '0': Math.random() },
+        input: { 0: Math.random(), b: Math.random() },
+        output: { c: Math.random(), 0: Math.random() },
       },
       {
-        input: { '0': Math.random(), b: Math.random() },
-        output: { c: Math.random(), '0': Math.random() },
+        input: { 0: Math.random(), b: Math.random() },
+        output: { c: Math.random(), 0: Math.random() },
       },
     ],
     { timeout: 4 }
@@ -643,7 +643,7 @@ describe('default net json', () => {
     JSON.parse(JSON.stringify(serialized))
   );
 
-  const input = { '0': Math.random(), b: Math.random() };
+  const input = { 0: Math.random(), b: Math.random() };
 
   describe('.trainOpts', () => {
     it('training options iterations', () => {

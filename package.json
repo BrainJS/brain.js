@@ -8,7 +8,7 @@
     "url": "https://github.com/brainjs/brain.js/issues"
   },
   "dependencies": {
-    "gpu.js": "^2.9.5",
+    "gpu.js": "^2.10.0",
     "thaw.js": "^2.1.0"
   },
   "description": "Neural networks in JavaScript",
@@ -114,7 +114,7 @@
     "dist": "npm run build",
     "lint": "run-s lint:typecheck lint:eslint",
     "lint:eslint": "eslint --fix --ext .js,.ts __tests__ src",
-    "lint:typecheck": "tsc --noEmit",
+    "lint:typecheck": "tsc --noEmit --skipLibCheck",
     "postinstall": "npm rebuild gpu.js",
     "test": "jest __tests__",
     "watch": "run-p watch:**",

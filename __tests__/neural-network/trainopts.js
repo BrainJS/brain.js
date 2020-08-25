@@ -117,7 +117,7 @@ describe('train() and trainAsync() use the same private methods', () => {
   it('.verifyIsInitialized()', async () => {
     net.train(trainingData, opts);
     expect(net.verifyIsInitialized.mock.calls.length).toBe(1);
-    await net.trainAsync(trainingData, opts)
+    await net.trainAsync(trainingData, opts);
     expect(net.verifyIsInitialized.mock.calls.length).toBe(2);
   });
 

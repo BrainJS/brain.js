@@ -1,4 +1,3 @@
-import assert from 'assert';
 const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
 const { Pool, predict, compare, compare3D } = require('../../src/layer/pool');

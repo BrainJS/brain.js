@@ -89,84 +89,36 @@ describe('SoftMax', () => {
         output: [2, 2, 2],
       });
       expect(kernel(0, exponentials)).toEqual([
-        [
-          Float32Array.from([-0, 2]),
-          Float32Array.from([3, 4]),
-        ],
-        [
-          Float32Array.from([5, 6]),
-          Float32Array.from([7, 8]),
-        ],
+        [Float32Array.from([-0, 2]), Float32Array.from([3, 4])],
+        [Float32Array.from([5, 6]), Float32Array.from([7, 8])],
       ]);
       expect(kernel(1, exponentials)).toEqual([
-        [
-          Float32Array.from([1, 1]),
-          Float32Array.from([3, 4]),
-        ],
-        [
-          Float32Array.from([5, 6]),
-          Float32Array.from([7, 8]),
-        ],
+        [Float32Array.from([1, 1]), Float32Array.from([3, 4])],
+        [Float32Array.from([5, 6]), Float32Array.from([7, 8])],
       ]);
       expect(kernel(2, exponentials)).toEqual([
-        [
-          Float32Array.from([1, 2]),
-          Float32Array.from([2, 4]),
-        ],
-        [
-          Float32Array.from([5, 6]),
-          Float32Array.from([7, 8]),
-        ],
+        [Float32Array.from([1, 2]), Float32Array.from([2, 4])],
+        [Float32Array.from([5, 6]), Float32Array.from([7, 8])],
       ]);
       expect(kernel(3, exponentials)).toEqual([
-        [
-          Float32Array.from([1, 2]),
-          Float32Array.from([3, 3]),
-        ],
-        [
-          Float32Array.from([5, 6]),
-          Float32Array.from([7, 8]),
-        ],
+        [Float32Array.from([1, 2]), Float32Array.from([3, 3])],
+        [Float32Array.from([5, 6]), Float32Array.from([7, 8])],
       ]);
       expect(kernel(4, exponentials)).toEqual([
-        [
-          Float32Array.from([1, 2]),
-          Float32Array.from([3, 4]),
-        ],
-        [
-          Float32Array.from([4, 6]),
-          Float32Array.from([7, 8]),
-        ],
+        [Float32Array.from([1, 2]), Float32Array.from([3, 4])],
+        [Float32Array.from([4, 6]), Float32Array.from([7, 8])],
       ]);
       expect(kernel(5, exponentials)).toEqual([
-        [
-          Float32Array.from([1, 2]),
-          Float32Array.from([3, 4]),
-        ],
-        [
-          Float32Array.from([5, 5]),
-          Float32Array.from([7, 8]),
-        ],
+        [Float32Array.from([1, 2]), Float32Array.from([3, 4])],
+        [Float32Array.from([5, 5]), Float32Array.from([7, 8])],
       ]);
       expect(kernel(6, exponentials)).toEqual([
-        [
-          Float32Array.from([1, 2]),
-          Float32Array.from([3, 4]),
-        ],
-        [
-          Float32Array.from([5, 6]),
-          Float32Array.from([6, 8]),
-        ],
+        [Float32Array.from([1, 2]), Float32Array.from([3, 4])],
+        [Float32Array.from([5, 6]), Float32Array.from([6, 8])],
       ]);
       expect(kernel(7, exponentials)).toEqual([
-        [
-          Float32Array.from([1, 2]),
-          Float32Array.from([3, 4]),
-        ],
-        [
-          Float32Array.from([5, 6]),
-          Float32Array.from([7, 7]),
-        ],
+        [Float32Array.from([1, 2]), Float32Array.from([3, 4])],
+        [Float32Array.from([5, 6]), Float32Array.from([7, 7])],
       ]);
     });
   });
@@ -369,14 +321,8 @@ describe('SoftMax', () => {
       });
       const result = kernel(weights, [2]);
       expect(result).toEqual([
-        [
-          Float32Array.from([0.5, 1]),
-          Float32Array.from([1.5, 2]),
-        ],
-        [
-          Float32Array.from([2.5, 3]),
-          Float32Array.from([3.5, 4]),
-        ],
+        [Float32Array.from([0.5, 1]), Float32Array.from([1.5, 2])],
+        [Float32Array.from([2.5, 3]), Float32Array.from([3.5, 4])],
       ]);
     });
   });

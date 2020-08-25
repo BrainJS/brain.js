@@ -64,10 +64,8 @@ describe('NeuralNetworkGPU', () => {
     });
 
     describe('mocked GPU mode', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      let parentToJson;
       beforeEach(() => {
-        parentToJson = jest.spyOn(NeuralNetwork.prototype, 'toJSON');
+        jest.spyOn(NeuralNetwork.prototype, 'toJSON');
       });
       afterEach(() => {
         NeuralNetwork.prototype.toJSON.mockRestore();
@@ -98,11 +96,11 @@ describe('NeuralNetworkGPU', () => {
         expect(mockedWeight.toArray).toBeCalled();
         expect(mockedBias.toArray).toBeCalled();
         expect(json.layers).toEqual([
-          { '0': {} },
+          { 0: {} },
           {
-            '0': { bias: 3, weights: { '0': 4 } },
-            '1': { bias: 2, weights: { '0': 5 } },
-            '2': { bias: 1, weights: { '0': 6 } },
+            0: { bias: 3, weights: { 0: 4 } },
+            1: { bias: 2, weights: { 0: 5 } },
+            2: { bias: 1, weights: { 0: 6 } },
           },
         ]);
       });
@@ -154,7 +152,7 @@ describe('NeuralNetworkGPU', () => {
         net.adjustWeights = jest.fn();
         net.getMSE = jest.fn(() => [1]);
         net.outputLayer = 0;
-        net.errors = { '0': {} };
+        net.errors = { 0: {} };
 
         net.trainPattern({ input: 'input', output: 'output' }, true);
 
