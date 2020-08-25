@@ -3368,8 +3368,8 @@
 	 *
 	 * GPU Accelerated JavaScript
 	 *
-	 * @version 2.9.4
-	 * @date Sat May 02 2020 11:46:49 GMT-0400 (Eastern Daylight Time)
+	 * @version 2.9.5
+	 * @date Sun Jul 19 2020 07:41:33 GMT-0400 (Eastern Daylight Time)
 	 *
 	 * @license MIT
 	 * The MIT License
@@ -22895,9 +22895,9 @@ highp float nrand(highp vec2 n) {
 	    return texture.clone();
 	  }
 
-	  if (texture instanceof Float32Array) {
+	  if (typeof texture[0] === 'number') {
 	    return texture.slice(0);
-	  } else if (texture[0] instanceof Float32Array) {
+	  } else if (typeof texture[0][0] === 'number') {
 	    var matrix = new Array(texture.length);
 
 	    for (var x = 0; x < texture.length; x++) {
@@ -22905,7 +22905,7 @@ highp float nrand(highp vec2 n) {
 	    }
 
 	    return matrix;
-	  } else if (texture[0][0] instanceof Float32Array) {
+	  } else if (typeof texture[0][0][0] === 'number') {
 	    var cube = new Array(texture.length);
 
 	    for (var y = 0; y < texture.length; y++) {
@@ -22920,6 +22920,8 @@ highp float nrand(highp vec2 n) {
 
 	    return cube;
 	  }
+
+	  throw new Error('unknown state!');
 	}
 
 	var kernel = {
@@ -28592,427 +28594,11 @@ highp float nrand(highp vec2 n) {
 	  }
 	});
 
-	var thaw_1 = createCommonjsModule(function (module, exports) {
+	var __assign=undefined&&undefined.__assign||function(){return (__assign=Object.assign||function(t){for(var i,n=1,s=arguments.length;n<s;n++)for(var e in i=arguments[n])Object.prototype.hasOwnProperty.call(i,e)&&(t[e]=i[e]);return t}).apply(this,arguments)},Thaw=function(){function h(t,i){var n=this;void 0===i&&(i={});var s=__assign(__assign({},h.defaultSettings),i),e=s.each,o=s.done;this.i=0,this.isStopped=!1,this.items=t,this.options=i,this.tick=function(){if(!n.isStopped&&(n.timeout=setTimeout(n.tick,0),!h.thawing)){var t=n.items[n.i];if(n.i>=n.items.length)return null!==o&&(h.thawing=!0,o(),h.thawing=!1),n.isStopped=!0,void clearTimeout(n.timeout);null!==e?(h.thawing=!0,e(t,n.i),h.thawing=!1):void 0!==t&&t(),n.i++;}},h.thaws.push(this),i.delay||this.tick();}return Object.defineProperty(h,"isThawing",{get:function(){return h.thawing},enumerable:!1,configurable:!0}),h.stopAll=function(){for(var t=0;t<h.thaws.length;t++)h.thaws[t].stop();},h.prototype.makeReady=function(){return !!this.isStopped&&!(this.isStopped=!1)},h.prototype.add=function(t){return this.items.push(t),this.makeReady()&&this.tick(),this},h.prototype.insert=function(t){return this.items.splice(this.i,0,t),this.makeReady()&&this.tick(),this},h.prototype.addArray=function(t){return this.items=this.items.concat(t),this.makeReady()&&this.tick(),this},h.prototype.insertArray=function(t){var i=this.items.splice(0,this.i),n=this.items;return this.items=i.concat(t,n),this.makeReady()&&this.tick(),this},h.prototype.stop=function(){return this.isStopped=!0,clearTimeout(this.timeout),this.options.done&&this.options.done(),this},h.thawing=!1,h.thaws=[],h.defaultSettings={each:null,done:null},h}();function thaw(t,i){return new Thaw(t,i)}var Block=function(){function t(t,i){void 0===i&&(i=200),this.index=0,this.thaws=[],this.count=i,this.options=t;}return t.prototype.add=function(t){return this.next().add(t),this},t.prototype.addArray=function(t){return this.next().addArray(t),this},t.prototype.insert=function(t){return this.next().insert(t),this},t.prototype.insertArray=function(t){return this.next().insertArray(t),this},t.prototype.stop=function(){for(var t=0;t<this.thaws.length;t++)this.thaws[t].stop();return this},t.prototype.next=function(){var t,i=this.thaws;return i.length<this.count?(t=new Thaw([],this.options),i.push(t)):t=i[this.index]||null,this.index++,this.index>=this.count&&(this.index=0),t},t}();"undefined"!=typeof window&&(window.Thaw=Thaw,window.thaw=thaw,window.Thaw.Block=Block);
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	var browser_min = /*#__PURE__*/Object.freeze({
+		__proto__: null
 	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	exports.thaw = thaw;
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	//private variables
-	var thawing = false;
-	var thaws = [];
-
-	/**
-	 * thaw an array of items
-	 * @param {Array} items
-	 * @param {Object} [options]
-	 * @constructor
-	 */
-
-	var Thaw = function () {
-	  _createClass(Thaw, null, [{
-	    key: "stopAll",
-
-
-	    /**
-	     * Stops all Thaw instances
-	     */
-	    value: function stopAll() {
-	      for (var i = 0; i < thaws.length; i++) {
-	        thaws[i].stop();
-	      }
-	    }
-	  }, {
-	    key: "defaultSettings",
-
-	    /**
-	     *
-	     * @type {{each: null, done: null}}
-	     */
-	    get: function get() {
-	      return {
-	        each: null,
-	        done: null
-	      };
-	    }
-
-	    /**
-	     * returns if Thaw.js is thawing
-	     * @returns {boolean}
-	     */
-
-	  }, {
-	    key: "isThawing",
-	    get: function get() {
-	      return thawing;
-	    }
-	  }]);
-
-	  function Thaw(items) {
-	    var _this = this;
-
-	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-	    _classCallCheck(this, Thaw);
-
-	    var _constructor$defaultS = _extends({}, this.constructor.defaultSettings, options),
-	        each = _constructor$defaultS.each,
-	        done = _constructor$defaultS.done;
-
-	    this.items = items;
-	    this.i = 0;
-	    this.options = options;
-	    var tick = this.tick = function () {
-	      if (_this.i < 0) return;
-
-	      _this.timeout = setTimeout(tick, 0);
-
-	      if (thawing) return;
-	      var item = items[_this.i];
-	      if (_this.i >= items.length) {
-	        if (done !== null) {
-	          thawing = true;
-	          done(item, _this.i);
-	          thawing = false;
-	        }
-
-	        _this.i = -1;
-	        clearTimeout(_this.timeout);
-	        return;
-	      }
-	      if (each !== null) {
-	        thawing = true;
-	        each(item, _this.i);
-	        thawing = false;
-	      } else if (item !== undefined) {
-	        item();
-	      }
-	      _this.i++;
-	    };
-
-	    thaws.push(this);
-	    if (!options.delay) {
-	      tick();
-	    }
-	  }
-
-	  /**
-	   * readies thaw to continue
-	   * @returns {boolean} if had to get ready
-	   */
-
-
-	  _createClass(Thaw, [{
-	    key: "makeReady",
-	    value: function makeReady() {
-	      if (this.i < 0) {
-	        this.i = this.items.length;
-	        return true;
-	      }
-	      return false;
-	    }
-
-	    /**
-	     * Adds an item to the end of this instance of Thaw and readies Thaw to process it
-	     * @param item
-	     * @returns {Thaw}
-	     */
-
-	  }, {
-	    key: "add",
-	    value: function add(item) {
-	      var doTick = this.makeReady();
-
-	      this.items.push(item);
-
-	      if (doTick) {
-	        this.tick();
-	      }
-	      return this;
-	    }
-
-	    /**
-	     * Inserts an item just after the current item being processed in Thaw and readies Thaw to process it
-	     * @param item
-	     * @returns {Thaw}
-	     */
-
-	  }, {
-	    key: "insert",
-	    value: function insert(item) {
-	      var doTick = this.makeReady();
-
-	      this.items.splice(this.i, 0, item);
-
-	      if (doTick) {
-	        this.tick();
-	      }
-
-	      return this;
-	    }
-
-	    /**
-	     * Adds an Array to the end of this instance of Thaw and readies Thaw to process it
-	     * @param {Array} items
-	     * @returns {Thaw}
-	     */
-
-	  }, {
-	    key: "addArray",
-	    value: function addArray(items) {
-	      var doTick = this.makeReady();
-
-	      this.items = this.items.concat(items);
-
-	      if (doTick) {
-	        this.tick();
-	      }
-
-	      return this;
-	    }
-
-	    /**
-	     * Inserts an Array just after the current item being processed in Thaw and readies Thaw to process them
-	     * @param {Array} items
-	     * @returns {Thaw}
-	     */
-
-	  }, {
-	    key: "insertArray",
-	    value: function insertArray(items) {
-	      var doTick = this.makeReady();
-	      var left = this.items;
-	      var middle = items;
-	      var right = this.items.splice(this.i, this.items.length - this.i + 1);
-
-	      this.items = left.concat(middle, right);
-
-	      if (doTick) {
-	        this.tick();
-	      }
-	      return this;
-	    }
-
-	    /**
-	     * Stops this instance of Thaw
-	     * @returns {Thaw}
-	     */
-
-	  }, {
-	    key: "stop",
-	    value: function stop() {
-	      this.i = -1;
-	      clearTimeout(this.timeout);
-	      if (this.options.done) {
-	        this.options.done();
-	      }
-	      return this;
-	    }
-	  }]);
-
-	  return Thaw;
-	}();
-
-	/**
-	 * simple thaw
-	 * @param {Array} items
-	 * @param {Object} [options]
-	 * @returns Thaw
-	 */
-
-
-	exports.default = Thaw;
-	function thaw(items) {
-	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-	  return new Thaw(items, options);
-	}
-
-	});
-
-	unwrapExports(thaw_1);
-	var thaw_2 = thaw_1.thaw;
-
-	var block = createCommonjsModule(function (module, exports) {
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-
-
-	var _2 = _interopRequireDefault(dist);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	/**
-	 *
-	 * @param {Object} [options]
-	 * @param {Number} [count]
-	 * @constructor
-	 */
-	var Block = function () {
-	  function Block(options, count) {
-	    _classCallCheck(this, Block);
-
-	    this.index = 0;
-	    this.thaws = [];
-	    this.count = count || 200;
-	    this.options = options;
-	  }
-
-	  /**
-	   * add an item to the end of items
-	   * @param item
-	   * @returns {Block}
-	   */
-
-
-	  _createClass(Block, [{
-	    key: 'add',
-	    value: function add(item) {
-	      var next = this._next();
-	      next.add(item);
-
-	      return this;
-	    }
-
-	    /**
-	     * add an Array to the end of items
-	     * @param items
-	     * @returns {Block}
-	     */
-
-	  }, {
-	    key: 'addArray',
-	    value: function addArray(items) {
-	      var next = this._next();
-	      next.addArray(items);
-
-	      return this;
-	    }
-
-	    /**
-	     * insert an item into items @ current position
-	     * @param item
-	     * @returns {Block}
-	     */
-
-	  }, {
-	    key: 'insert',
-	    value: function insert(item) {
-	      var next = this._next();
-	      next.insert(item);
-
-	      return this;
-	    }
-
-	    /**
-	     * insert and array into items @ current position
-	     * @param items
-	     * @returns {Block}
-	     */
-
-	  }, {
-	    key: 'insertArray',
-	    value: function insertArray(items) {
-	      var next = this._next();
-	      next.insertArray(items);
-
-	      return this;
-	    }
-
-	    /**
-	     * Stops all thaws in this block
-	     * @returns {Block}
-	     */
-
-	  }, {
-	    key: 'stop',
-	    value: function stop() {
-	      for (var i = 0; i < this.thaws.length; i++) {
-	        this.thaws[i].stop();
-	      }
-	      return this;
-	    }
-
-	    /**
-	     * Get next available in block
-	     * @returns {*}
-	     * @private
-	     */
-
-	  }, {
-	    key: '_next',
-	    value: function _next() {
-	      var thaw = null;
-	      var thaws = this.thaws;
-
-	      if (thaws.length < this.count) {
-	        thaws.push(thaw = new _2.default([], this.options));
-	      } else {
-	        thaw = thaws[this.index];
-	      }
-	      this.index++;
-	      if (this.index >= this.count) {
-	        this.index = 0;
-	      }
-
-	      return thaw;
-	    }
-	  }]);
-
-	  return Block;
-	}();
-
-	exports.default = Block;
-
-	});
-
-	unwrapExports(block);
-
-	var dist = createCommonjsModule(function (module, exports) {
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.Block = undefined;
-
-
-
-	var _thaw2 = _interopRequireDefault(thaw_1);
-
-
-
-	var _block2 = _interopRequireDefault(block);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = _thaw2.default;
-	exports.Block = _block2.default;
-
-
-	if (typeof window !== 'undefined') {
-	  window.Thaw = _thaw2.default;
-	  window.Thaw.Block = _block2.default;
-	}
-
-	});
-
-	unwrapExports(dist);
-	var dist_1 = dist.Block;
 
 	var propertyIsEnumerable = objectPropertyIsEnumerable.f;
 
@@ -29225,7 +28811,7 @@ highp float nrand(highp vec2 n) {
 	  objectToFloat32Array: objectToFloat32Array
 	};
 
-	var Thaw = dist.default; // const TrainStream = require('./train-stream');
+	var Thaw$1 = browser_min.Thaw; // const TrainStream = require('./train-stream');
 
 	var arrayToFloat32Array$1 = cast.arrayToFloat32Array;
 
@@ -29830,7 +29416,7 @@ highp float nrand(highp vec2 n) {
 	      var status;
 	      var endTime;
 
-	      var _this$prepTraining = this.prepTraining(data, options);
+	      var _this$prepTraining = this.prepTraining(data, _objectSpread2(_objectSpread2({}, this.trainOpts), options));
 
 	      data = _this$prepTraining.data;
 	      status = _this$prepTraining.status;
@@ -29866,7 +29452,7 @@ highp float nrand(highp vec2 n) {
 	      endTime = _this$prepTraining2.endTime;
 	      return new Promise(function (resolve, reject) {
 	        try {
-	          var thawedTrain = new Thaw(new Array(_this3.trainOpts.iterations), {
+	          var thawedTrain = new Thaw$1(new Array(_this3.trainOpts.iterations), {
 	            delay: true,
 	            each: function each() {
 	              return _this3.trainingTick(data, status, endTime) || thawedTrain.stop();
@@ -29877,6 +29463,7 @@ highp float nrand(highp vec2 n) {
 	          });
 	          thawedTrain.tick();
 	        } catch (trainError) {
+	          console.log(JSON.stringify(trainError));
 	          reject(new Error({
 	            trainError: trainError,
 	            status: status

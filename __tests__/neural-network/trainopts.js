@@ -93,81 +93,40 @@ describe('train() and trainAsync() use the same private methods', () => {
     methodsChecked.forEach((m) => net[m].mockRestore());
   });
 
-  it('.prepTraining()', (done) => {
+  it('.prepTraining()', async () => {
     net.train(trainingData, opts);
     expect(net.prepTraining.mock.calls.length).toBe(1);
-    net
-      .trainAsync(trainingData, opts)
-      .then(() => {
-        expect(net.prepTraining.mock.calls.length).toBe(2);
-        done();
-      })
-      .catch(() => {
-        expect(false).toBeTruthy();
-        done();
-      });
+    await net.trainAsync(trainingData, opts);
+    expect(net.prepTraining.mock.calls.length).toBe(2);
   });
 
-  it('.updateTrainingOptions()', (done) => {
+  it('.updateTrainingOptions()', async () => {
     net.train(trainingData, opts);
     expect(net.updateTrainingOptions.mock.calls.length).toBe(1);
-    net
-      .trainAsync(trainingData, opts)
-      .then(() => {
-        expect(net.updateTrainingOptions.mock.calls.length).toBe(2);
-        done();
-      })
-      .catch(() => {
-        expect(false).toBeTruthy();
-        done();
-      });
+    await net.trainAsync(trainingData, opts);
+    expect(net.updateTrainingOptions.mock.calls.length).toBe(2);
   });
 
-  it('.formatData()', (done) => {
+  it('.formatData()', async () => {
     net.train(trainingData, opts);
     expect(net.formatData.mock.calls.length).toBe(1);
-    net
-      .trainAsync(trainingData, opts)
-      .then(() => {
-        expect(net.formatData.mock.calls.length).toBe(2);
-        done();
-      })
-      .catch(() => {
-        expect(false).toBeTruthy();
-        done();
-      });
+    await net.trainAsync(trainingData, opts);
+    expect(net.formatData.mock.calls.length).toBe(2);
   });
 
-  it('.verifyIsInitialized()', (done) => {
+  it('.verifyIsInitialized()', async () => {
     net.train(trainingData, opts);
     expect(net.verifyIsInitialized.mock.calls.length).toBe(1);
-    net
-      .trainAsync(trainingData, opts)
-      .then(() => {
-        expect(net.verifyIsInitialized.mock.calls.length).toBe(2);
-        done();
-      })
-      .catch(() => {
-        expect(false).toBeTruthy();
-        done();
-      });
+    await net.trainAsync(trainingData, opts)
+    expect(net.verifyIsInitialized.mock.calls.length).toBe(2);
   });
 
-  it('.trainingTick()', (done) => {
+  it('.trainingTick()', async () => {
     net.train(trainingData, opts);
     // The loop calls _trainingTick twice and returns immediately on second call
     expect(net.trainingTick.mock.calls.length).toBe(2);
-    net
-      .trainAsync(trainingData, opts)
-      .then(() => {
-        // trainAsync only calls _trainingTick once
-        expect(net.trainingTick.mock.calls.length).toBe(3);
-        done();
-      })
-      .catch(() => {
-        expect(false).toBeTruthy();
-        done();
-      });
+    await net.trainAsync(trainingData, opts);
+    expect(net.trainingTick.mock.calls.length).toBe(3);
   });
 });
 
@@ -354,5 +313,24 @@ describe('training options validation', () => {
     expect(() => {
       net.updateTrainingOptions({ fakeProperty: 'should be handled fine' });
     }).not.toThrow();
+  });
+
+  it('should retain the options from instantiation as defaults', () => {
+    const config = {
+      iterations: 1,
+      errorThresh: 0.0001,
+      binaryThresh: 0.05,
+      hiddenLayers: [1],
+      activation: 'sigmoid',
+    };
+    const net = new NeuralNetwork(config);
+    const trainData = [
+      { input: [0, 0], output: [0] },
+      { input: [0, 1], output: [1] },
+      { input: [1, 0], output: [1] },
+      { input: [1, 1], output: [0] },
+    ];
+    const trainResult = net.train(trainData, { log: true });
+    expect(trainResult.iterations).toBe(1);
   });
 });

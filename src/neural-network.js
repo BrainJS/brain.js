@@ -1,4 +1,4 @@
-const Thaw = require('thaw.js').default;
+const { Thaw } = require('thaw.js');
 const lookup = require('./lookup');
 // const TrainStream = require('./train-stream');
 const max = require('./utilities/max');
@@ -560,7 +560,11 @@ class NeuralNetwork {
   train(data, options = {}) {
     let status;
     let endTime;
-    ({ data, status, endTime } = this.prepTraining(data, options));
+
+    ({ data, status, endTime } = this.prepTraining(data, {
+      ...this.trainOpts,
+      ...options,
+    }));
 
     while (this.trainingTick(data, status, endTime));
     return status;
@@ -589,6 +593,7 @@ class NeuralNetwork {
         });
         thawedTrain.tick();
       } catch (trainError) {
+        console.log(JSON.stringify(trainError));
         reject(new Error({ trainError, status }));
       }
     });

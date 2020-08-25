@@ -14,7 +14,7 @@ function isAround(actual, expected) {
 
 function testBitwise(data) {
   const net = new NeuralNetwork();
-  // const res = net.train(data, { errorThresh: 0.003 });
+  net.train(data, { errorThresh: 0.003 });
 
   data.forEach((d) => {
     const actual = net.run(d.input);
@@ -25,11 +25,11 @@ function testBitwise(data) {
 
 function testBitwiseAdam(data) {
   const net = new NeuralNetwork();
-  // const res = net.train(data, {
-  //   errorThresh: 0.003,
-  //   learningRate: 0.05,
-  //   praxis: 'adam',
-  // });
+  net.train(data, {
+    errorThresh: 0.003,
+    learningRate: 0.05,
+    praxis: 'adam',
+  });
 
   data.forEach((d) => {
     const actual = net.run(d.input);

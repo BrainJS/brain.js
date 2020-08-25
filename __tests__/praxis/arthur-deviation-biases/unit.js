@@ -39,9 +39,10 @@ describe('ArthurDeviationBiases Class: Unit', () => {
     });
   });
 
-  describe('.constructor()', () => {
-    test('calls this.setupKernels()', () => {
+  describe('.setupKernels()', () => {
+    test('instantiates .kernel', () => {
       const p = new ArthurDeviationBiases({ width: 2, height: 2 });
+      p.setupKernels();
       expect(p.kernel).not.toBe(null);
     });
   });

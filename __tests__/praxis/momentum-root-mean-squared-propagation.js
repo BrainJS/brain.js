@@ -28,6 +28,7 @@ describe('MomentumRootMeanSquaredPropagation', () => {
         regularizationStrength: 0.000001,
         smoothEps: 1e-8,
       });
+      praxis.setupKernels();
       const result = praxis.run(layer);
       expect(result[0][0].toFixed(5)).toEqual((0.68377).toString());
     });
@@ -40,6 +41,7 @@ describe('MomentumRootMeanSquaredPropagation', () => {
         regularizationStrength: 0.000001,
         smoothEps: 1e-8,
       });
+      praxis.setupKernels();
       const result = praxis.run(layer);
       expect(result[0][0].toFixed(5)).toEqual((0.98806).toString());
     });

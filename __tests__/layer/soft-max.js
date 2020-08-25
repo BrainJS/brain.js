@@ -1,4 +1,3 @@
-const assert = require('assert');
 const { GPU } = require('gpu.js');
 const { gpuMock } = require('gpu-mock.js');
 
@@ -41,10 +40,10 @@ describe('SoftMax', () => {
       const kernel = gpuMock(compare, {
         output: [4],
       });
-      assert.deepEqual(kernel(0, exponentials), [-0, 2, 3, 4]);
-      assert.deepEqual(kernel(1, exponentials), [1, 1, 3, 4]);
-      assert.deepEqual(kernel(2, exponentials), [1, 2, 2, 4]);
-      assert.deepEqual(kernel(3, exponentials), [1, 2, 3, 3]);
+      expect(kernel(0, exponentials)).toEqual(Float32Array.from([-0, 2, 3, 4]));
+      expect(kernel(1, exponentials)).toEqual(Float32Array.from([1, 1, 3, 4]));
+      expect(kernel(2, exponentials)).toEqual(Float32Array.from([1, 2, 2, 4]));
+      expect(kernel(3, exponentials)).toEqual(Float32Array.from([1, 2, 3, 3]));
     });
   });
   describe('.compare2D', () => {
@@ -56,21 +55,21 @@ describe('SoftMax', () => {
       const kernel = gpuMock(compare2D, {
         output: [2, 2],
       });
-      assert.deepEqual(kernel(0, exponentials), [
-        [-0, 2],
-        [3, 4],
+      expect(kernel(0, exponentials)).toEqual([
+        Float32Array.from([-0, 2]),
+        Float32Array.from([3, 4]),
       ]);
-      assert.deepEqual(kernel(1, exponentials), [
-        [1, 1],
-        [3, 4],
+      expect(kernel(1, exponentials)).toEqual([
+        Float32Array.from([1, 1]),
+        Float32Array.from([3, 4]),
       ]);
-      assert.deepEqual(kernel(2, exponentials), [
-        [1, 2],
-        [2, 4],
+      expect(kernel(2, exponentials)).toEqual([
+        Float32Array.from([1, 2]),
+        Float32Array.from([2, 4]),
       ]);
-      assert.deepEqual(kernel(3, exponentials), [
-        [1, 2],
-        [3, 3],
+      expect(kernel(3, exponentials)).toEqual([
+        Float32Array.from([1, 2]),
+        Float32Array.from([3, 3]),
       ]);
     });
   });
@@ -89,84 +88,84 @@ describe('SoftMax', () => {
       const kernel = gpuMock(compare3D, {
         output: [2, 2, 2],
       });
-      assert.deepEqual(kernel(0, exponentials), [
+      expect(kernel(0, exponentials)).toEqual([
         [
-          [-0, 2],
-          [3, 4],
+          Float32Array.from([-0, 2]),
+          Float32Array.from([3, 4]),
         ],
         [
-          [5, 6],
-          [7, 8],
-        ],
-      ]);
-      assert.deepEqual(kernel(1, exponentials), [
-        [
-          [1, 1],
-          [3, 4],
-        ],
-        [
-          [5, 6],
-          [7, 8],
+          Float32Array.from([5, 6]),
+          Float32Array.from([7, 8]),
         ],
       ]);
-      assert.deepEqual(kernel(2, exponentials), [
+      expect(kernel(1, exponentials)).toEqual([
         [
-          [1, 2],
-          [2, 4],
+          Float32Array.from([1, 1]),
+          Float32Array.from([3, 4]),
         ],
         [
-          [5, 6],
-          [7, 8],
-        ],
-      ]);
-      assert.deepEqual(kernel(3, exponentials), [
-        [
-          [1, 2],
-          [3, 3],
-        ],
-        [
-          [5, 6],
-          [7, 8],
+          Float32Array.from([5, 6]),
+          Float32Array.from([7, 8]),
         ],
       ]);
-      assert.deepEqual(kernel(4, exponentials), [
+      expect(kernel(2, exponentials)).toEqual([
         [
-          [1, 2],
-          [3, 4],
+          Float32Array.from([1, 2]),
+          Float32Array.from([2, 4]),
         ],
         [
-          [4, 6],
-          [7, 8],
-        ],
-      ]);
-      assert.deepEqual(kernel(5, exponentials), [
-        [
-          [1, 2],
-          [3, 4],
-        ],
-        [
-          [5, 5],
-          [7, 8],
+          Float32Array.from([5, 6]),
+          Float32Array.from([7, 8]),
         ],
       ]);
-      assert.deepEqual(kernel(6, exponentials), [
+      expect(kernel(3, exponentials)).toEqual([
         [
-          [1, 2],
-          [3, 4],
+          Float32Array.from([1, 2]),
+          Float32Array.from([3, 3]),
         ],
         [
-          [5, 6],
-          [6, 8],
+          Float32Array.from([5, 6]),
+          Float32Array.from([7, 8]),
         ],
       ]);
-      assert.deepEqual(kernel(7, exponentials), [
+      expect(kernel(4, exponentials)).toEqual([
         [
-          [1, 2],
-          [3, 4],
+          Float32Array.from([1, 2]),
+          Float32Array.from([3, 4]),
         ],
         [
-          [5, 6],
-          [7, 7],
+          Float32Array.from([4, 6]),
+          Float32Array.from([7, 8]),
+        ],
+      ]);
+      expect(kernel(5, exponentials)).toEqual([
+        [
+          Float32Array.from([1, 2]),
+          Float32Array.from([3, 4]),
+        ],
+        [
+          Float32Array.from([5, 5]),
+          Float32Array.from([7, 8]),
+        ],
+      ]);
+      expect(kernel(6, exponentials)).toEqual([
+        [
+          Float32Array.from([1, 2]),
+          Float32Array.from([3, 4]),
+        ],
+        [
+          Float32Array.from([5, 6]),
+          Float32Array.from([6, 8]),
+        ],
+      ]);
+      expect(kernel(7, exponentials)).toEqual([
+        [
+          Float32Array.from([1, 2]),
+          Float32Array.from([3, 4]),
+        ],
+        [
+          Float32Array.from([5, 6]),
+          Float32Array.from([7, 7]),
         ],
       ]);
     });
@@ -181,7 +180,7 @@ describe('SoftMax', () => {
         output: [2, 2],
       });
       const result = kernel(weights, [0]);
-      assert.deepEqual(result, [
+      expect(result).toEqual([
         new Float32Array([Math.exp(1), Math.exp(2)]),
         new Float32Array([Math.exp(3), Math.exp(4)]),
       ]);
@@ -195,7 +194,7 @@ describe('SoftMax', () => {
         output: [2, 2],
       });
       const result = kernel(weights, [4]);
-      assert.deepEqual(result, [
+      expect(result).toEqual([
         new Float32Array([Math.exp(1 - 4), Math.exp(2 - 4)]),
         new Float32Array([Math.exp(3 - 4), Math.exp(4 - 4)]),
       ]);
@@ -217,7 +216,7 @@ describe('SoftMax', () => {
         output: [2, 2, 2],
       });
       const result = kernel(weights, [0]);
-      assert.deepEqual(result, [
+      expect(result).toEqual([
         [
           new Float32Array([Math.exp(1), Math.exp(2)]),
           new Float32Array([Math.exp(3), Math.exp(4)]),
@@ -243,7 +242,7 @@ describe('SoftMax', () => {
         output: [2, 2, 2],
       });
       const result = kernel(weights, [4]);
-      assert.deepEqual(result, [
+      expect(result).toEqual([
         [
           new Float32Array([Math.exp(1 - 4), Math.exp(2 - 4)]),
           new Float32Array([Math.exp(3 - 4), Math.exp(4 - 4)]),
@@ -269,7 +268,7 @@ describe('SoftMax', () => {
         },
       });
       const result = kernel(weights);
-      assert.deepEqual(result, [4]);
+      expect(result).toEqual(Float32Array.from([4]));
     });
   });
   describe('.getMaxValue3D', () => {
@@ -293,7 +292,7 @@ describe('SoftMax', () => {
         },
       });
       const result = kernel(weights);
-      assert.deepEqual(result, [8]);
+      expect(result).toEqual(Float32Array.from([8]));
     });
   });
   describe('.getSum2D', () => {
@@ -310,7 +309,7 @@ describe('SoftMax', () => {
         },
       });
       const result = kernel(weights);
-      assert.deepEqual(result, [10]);
+      expect(result).toEqual(Float32Array.from([10]));
     });
   });
   describe('.getSum3D', () => {
@@ -334,7 +333,7 @@ describe('SoftMax', () => {
         },
       });
       const result = kernel(weights);
-      assert.deepEqual(result, [36]);
+      expect(result).toEqual(Float32Array.from([36]));
     });
   });
   describe('.predict2D', () => {
@@ -347,9 +346,9 @@ describe('SoftMax', () => {
         output: [2, 2],
       });
       const result = kernel(weights, [2]);
-      assert.deepEqual(result, [
-        [0.5, 1],
-        [1.5, 2],
+      expect(result).toEqual([
+        Float32Array.from([0.5, 1]),
+        Float32Array.from([1.5, 2]),
       ]);
     });
   });
@@ -369,14 +368,14 @@ describe('SoftMax', () => {
         output: [2, 2, 2],
       });
       const result = kernel(weights, [2]);
-      assert.deepEqual(result, [
+      expect(result).toEqual([
         [
-          [0.5, 1],
-          [1.5, 2],
+          Float32Array.from([0.5, 1]),
+          Float32Array.from([1.5, 2]),
         ],
         [
-          [2.5, 3],
-          [3.5, 4],
+          Float32Array.from([2.5, 3]),
+          Float32Array.from([3.5, 4]),
         ],
       ]);
     });

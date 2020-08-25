@@ -218,7 +218,7 @@ describe('Pool Layer', () => {
         },
       })(inputs);
 
-      assert.deepEqual(results, [[9]]);
+      expect(results).toEqual([Float32Array.from([9])]);
     });
   });
 
@@ -245,10 +245,10 @@ describe('Pool Layer', () => {
         },
       })(deltas, switchX, switchY);
 
-      assert.deepEqual(results, [
-        [9, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
+      expect(results).toEqual([
+        Float32Array.from([9, 0, 0]),
+        Float32Array.from([0, 0, 0]),
+        Float32Array.from([0, 0, 0]),
       ]);
     });
   });

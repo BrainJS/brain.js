@@ -37,6 +37,7 @@ describe('ArthurDeviationWeights Class: End to End', () => {
           deltas: [[1]],
         },
       });
+      praxis.setupKernels();
       const result = praxis.run(layer);
       expect(result[0][0].toFixed(5)).toEqual((1.3).toFixed(5).toString());
     });
@@ -103,6 +104,7 @@ describe('ArthurDeviationWeights Class: End to End', () => {
     net.deltas[2][0] = 6;
 
     net.adjustWeights();
+    praxis.setupKernels();
     const result = praxis.run();
     expect(praxis.changes[0][0]).toBe(net.changes[1][0][0]);
     expect(praxis.changes[0][1]).toBe(net.changes[1][0][1]);

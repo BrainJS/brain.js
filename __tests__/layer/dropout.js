@@ -146,6 +146,7 @@ describe('Dropout Layer', () => {
         expect(makeKernel).toHaveBeenCalledWith(trainingPredict, {
           output: [1, 2],
           map: { dropouts: setDropout },
+          immutable: true,
         });
         expect(mockInstance.predictKernel).not.toBe(null);
       });
@@ -156,7 +157,7 @@ describe('Dropout Layer', () => {
           compareKernel: null,
         };
         Dropout.prototype.setupKernels.call(mockInstance, true);
-        expect(makeKernel).toHaveBeenCalledWith(compare, { output: [1, 2] });
+        expect(makeKernel).toHaveBeenCalledWith(compare, { output: [1, 2], immutable: true });
         expect(mockInstance.compareKernel).not.toBe(null);
       });
     });
@@ -168,7 +169,7 @@ describe('Dropout Layer', () => {
           predictKernel: null,
         };
         Dropout.prototype.setupKernels.call(mockInstance, false);
-        expect(makeKernel).toHaveBeenCalledWith(predict, { output: [1, 2] });
+        expect(makeKernel).toHaveBeenCalledWith(predict, { output: [1, 2], immutable: true });
         expect(mockInstance.predictKernel).not.toBe(null);
       });
     });

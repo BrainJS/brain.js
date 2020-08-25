@@ -143,7 +143,7 @@ describe('Add Layer', () => {
   });
   describe('.compare', () => {
     it('sets this.inputLayer1.deltas & this.inputLayer2.deltas from this.deltas', () => {
-      const mockDeltas = {};
+      const mockDeltas = [new Float32Array([1])];
       const mockInstance = {
         deltas: mockDeltas,
         inputLayer1: {

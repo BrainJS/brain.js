@@ -8,8 +8,8 @@
     "url": "https://github.com/brainjs/brain.js/issues"
   },
   "dependencies": {
-    "gpu.js": "^2.9.4",
-    "thaw.js": "^2.0.0"
+    "gpu.js": "^2.9.5",
+    "thaw.js": "^2.1.0"
   },
   "description": "Neural networks in JavaScript",
   "devDependencies": {
@@ -116,7 +116,7 @@
     "lint:eslint": "eslint --fix --ext .js,.ts __tests__ src",
     "lint:typecheck": "tsc --noEmit",
     "postinstall": "npm rebuild gpu.js",
-    "test": "jest",
+    "test": "jest __tests__",
     "watch": "run-p watch:**",
     "watch:browser": "rollup -c rollup.config.browser.js -w",
     "watch:node": "rollup -c rollup.config.js -w",
@@ -124,5 +124,5 @@
   },
   "typings": "./src/index.d.ts",
   "unpkg": "dist/brain-browser.min.js",
-  "version": "2.0.0-beta.1"
+  "version": "2.0.0-beta.2"
 }
