@@ -5,7 +5,7 @@
   "coverageDirectory": "__coverage__",
   "globalSetup": "",
   "globals": {},
-  "preset": "ts-jest",
+  "preset": "ts-jest/presets/js-with-babel",
   "setupFiles": [],
   "testEnvironment": "node",
   "testPathIgnorePatterns": [
@@ -14,7 +14,7 @@
     "__tests__/.eslintrc.js"
   ],
   "transform": {
-    "^.+\\.[jt]sx?$": "babel-jest"
+    "^.+\\.[jt]sx?$": "ts-jest"
   },
   "verbose": false
 }
