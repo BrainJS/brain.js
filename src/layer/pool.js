@@ -13,24 +13,40 @@ function setSwitchX(value) {
 }
 
 function predict(inputs) {
-  const x = Math.floor(
-    (this.thread.x / this.output.x) * this.constants.inputWidth -
-      this.constants.paddingX
+  const startFilterX =
+    this.constants.paddingX - this.thread.x * this.constants.strideX;
+  const startInputX =
+    this.thread.x * this.constants.strideX - this.constants.paddingX;
+  const endFilterX = Math.min(
+    this.constants.filterWidth,
+    startFilterX + this.constants.inputWidth
   );
-  const y = Math.floor(
-    (this.thread.y / this.output.y) * this.constants.inputHeight -
-      this.constants.paddingY
+
+  const startFilterY =
+    this.constants.paddingY - this.thread.y * this.constants.strideY;
+  const startInputY =
+    this.thread.y * this.constants.strideY - this.constants.paddingY;
+  const endFilterY = Math.min(
+    this.constants.filterHeight,
+    startFilterY + this.constants.inputHeight
   );
-  let largestValue = -Infinity;
+
+  let largestValue = -99999;
   let largestX = -1;
   let largestY = -1;
 
   // convolve centered at this particular location
-  for (let filterY = 0; filterY < this.constants.filterHeight; filterY++) {
-    // coordinates in the original input array coordinates
-    const inputY = filterY + y;
-    for (let filterX = 0; filterX < this.constants.filterWidth; filterX++) {
-      const inputX = filterX + x;
+  for (
+    let filterY = Math.max(0, startFilterY), inputY = Math.max(0, startInputY);
+    filterY < endFilterY;
+    filterY++, inputY++
+  ) {
+    for (
+      let filterX = Math.max(0, startFilterX),
+        inputX = Math.max(0, startInputX);
+      filterX < endFilterX;
+      filterX++, inputX++
+    ) {
       if (
         inputY >= 0 &&
         inputY < this.constants.inputHeight &&
@@ -101,7 +117,7 @@ class Pool extends Filter {
   static get defaults() {
     return {
       padding: 0,
-      bias: 0,
+      stride: 0,
       filterWidth: 0,
       filterHeight: 0,
       filterCount: 0,
