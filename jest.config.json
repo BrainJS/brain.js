@@ -13,8 +13,5 @@
     "__tests__/test-utils.js",
     "__tests__/.eslintrc.js"
   ],
-  "transform": {
-    "^.+\\.[jt]sx?$": "ts-jest"
-  },
   "verbose": false
 }
