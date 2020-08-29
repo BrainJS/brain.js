@@ -139,7 +139,9 @@ class Recurse {
 module.exports = function (fn) {
   const source = fn.toString();
   const links = new Set();
-  const ast = parse(`function fakeFunction() {${source}}`);
+  const ast = parse(`function fakeFunction() {${source}}`, {
+    ecmaVersion: 2020,
+  });
   const recurse = new Recurse({
     onIstanbulCoverageVariable: (name) => {
       const data = getFileCoverageDataByName(name);
