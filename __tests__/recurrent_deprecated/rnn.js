@@ -1,5 +1,5 @@
 const RNN = require('../../src/recurrent/rnn');
-const DataFormatter = require('../../src/utilities/data-formatter');
+const { DataFormatter } = require('../../src/utilities/data-formatter');
 const { allMatrices } = require('../test-utils');
 const istanbulLinkerUtil = require('../istanbul-linker-util');
 
