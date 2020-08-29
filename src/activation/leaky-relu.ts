@@ -9,6 +9,6 @@ export function activate(weight: number): number {
 /**
  * Leaky Relu derivative
  */
-export function measure(weight: number, error: number) {
+export function measure(weight: number, error: number): number {
   return weight > 0 ? error : 0.01 * error;
 }
