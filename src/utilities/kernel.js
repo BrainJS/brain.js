@@ -22,9 +22,7 @@ function makeKernel(fn, settings) {
       .createKernelMap(settings.map, fn, settings)
       .setPipeline(true);
   }
-  return gpuInstance
-    .createKernel(fn, settings)
-    .setPipeline(true);
+  return gpuInstance.createKernel(fn, settings).setPipeline(true);
 }
 
 function makeDevKernel(fn, settings) {
@@ -70,15 +68,15 @@ function clone(texture) {
   if (texture.clone) {
     return texture.clone();
   }
-  if (texture instanceof Float32Array) {
+  if (typeof texture[0] === 'number') {
     return texture.slice(0);
-  } else if (texture[0] instanceof Float32Array) {
+  } else if (typeof texture[0][0] === 'number') {
     const matrix = new Array(texture.length);
     for (let x = 0; x < texture.length; x++) {
       matrix[x] = texture[x].slice(0);
     }
     return matrix;
-  } else if (texture[0][0] instanceof Float32Array) {
+  } else if (typeof texture[0][0][0] === 'number') {
     const cube = new Array(texture.length);
     for (let y = 0; y < texture.length; y++) {
       const row = texture[y];
@@ -89,6 +87,16 @@ function clone(texture) {
     }
     return cube;
   }
+  throw new Error('unknown state!');
 }
 
-module.exports = { setup, teardown, makeKernel, makeDevKernel, kernelInput, release, clone, clear };
+module.exports = {
+  setup,
+  teardown,
+  makeKernel,
+  makeDevKernel,
+  kernelInput,
+  release,
+  clone,
+  clear,
+};

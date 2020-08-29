@@ -8,7 +8,7 @@ describe('tanh', () => {
   });
   describe('.measure()', () => {
     it('matches for value .7', () => {
-      expect(tanh.measure(0.7, .5).toFixed(5)).toBe('0.25500');
+      expect(tanh.measure(0.7, 0.5).toFixed(5)).toBe('0.25500');
     });
   });
 });

@@ -27,5 +27,5 @@ function regression(settings, inputLayer) {
 module.exports = {
   Regression,
   regression,
-  learn
+  learn,
 };

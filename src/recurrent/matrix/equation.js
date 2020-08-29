@@ -1,6 +1,6 @@
 const Matrix = require('./');
-const OnesMatrix = require('./ones-matrix');
-const copy = require('./copy');
+// const OnesMatrix = require('./ones-matrix');
+// const copy = require('./copy');
 const cloneNegative = require('./clone-negative');
 const add = require('./add');
 const addB = require('./add-b');
@@ -162,7 +162,7 @@ class Equation {
       product: input,
       forwardFn: (product) => {
         product.weights = input.weights = this.inputValue;
-      }
+      },
     });
     return input;
   }
@@ -173,6 +173,7 @@ class Equation {
    * @returns {Matrix}
    */
   inputMatrixToRow(m) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     const product = new Matrix(m.columns, 1);
     this.states.push({
@@ -225,15 +226,9 @@ class Equation {
    * @returns {Matrix}
    */
   observe(m) {
-    let iForward = 0;
-    let iBackpropagate = 0;
     this.states.push({
-      forwardFn() {
-        iForward++;
-      },
-      backpropagationFn() {
-        iBackpropagate++;
-      },
+      forwardFn() {},
+      backpropagationFn() {},
     });
     return m;
   }
@@ -332,7 +327,7 @@ class Equation {
     const output = this.runIndex(input);
     // set gradients into log probabilities
     const logProbabilities = output; // interpret output as log probabilities
-    let probabilities = softmax(output); // compute the softmax probabilities
+    const probabilities = softmax(output); // compute the softmax probabilities
 
     // write gradients into log probabilities
     logProbabilities.deltas = probabilities.weights.slice(0);

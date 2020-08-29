@@ -1,5 +1,4 @@
 class CrossValidate {
-
   /**
    *
    * @param {NeuralNetwork|constructor} Classifier
@@ -33,7 +32,7 @@ class CrossValidate {
       total: testStats.total,
       learningRate: classifier.trainOpts.learningRate,
       hiddenLayers: classifier.hiddenLayers,
-      network: classifier.toJSON()
+      network: classifier.toJSON(),
     });
 
     return stats;
@@ -46,8 +45,8 @@ class CrossValidate {
    */
   shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
-      let j = Math.floor(Math.random() * (i + 1));
-      let temp = array[i];
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = array[i];
       array[i] = array[j];
       array[j] = temp;
     }
@@ -81,7 +80,9 @@ class CrossValidate {
    */
   train(data, trainOpts = {}, k = 4) {
     if (data.length < k) {
-      throw new Error(`Training set size is too small for ${ data.length } k folds of ${ k }`);
+      throw new Error(
+        `Training set size is too small for ${data.length} k folds of ${k}`
+      );
     }
 
     const size = data.length / k;
@@ -100,11 +101,11 @@ class CrossValidate {
       trainTime: 0,
       testTime: 0,
       iterations: 0,
-      error: 0
+      error: 0,
     };
 
     const stats = {
-      total: 0
+      total: 0,
     };
 
     const binaryStats = {
@@ -112,7 +113,7 @@ class CrossValidate {
       truePos: 0,
       trueNeg: 0,
       falsePos: 0,
-      falseNeg: 0
+      falseNeg: 0,
     };
 
     const results = [];
@@ -127,10 +128,10 @@ class CrossValidate {
 
       if (isBinary === null) {
         isBinary =
-          result.hasOwnProperty('falseNeg')
-          && result.hasOwnProperty('falsePos')
-          && result.hasOwnProperty('trueNeg')
-          && result.hasOwnProperty('truePos');
+          result.hasOwnProperty('falseNeg') &&
+          result.hasOwnProperty('falsePos') &&
+          result.hasOwnProperty('trueNeg') &&
+          result.hasOwnProperty('truePos');
         if (isBinary) {
           Object.assign(stats, binaryStats);
         }
@@ -166,12 +167,11 @@ class CrossValidate {
     stats.testSize = size;
     stats.trainSize = data.length - size;
 
-
-    return this.json = {
+    return (this.json = {
       avgs: avgs,
       stats: stats,
-      sets: results
-    };
+      sets: results,
+    });
   }
 
   toNeuralNetwork() {
@@ -184,7 +184,10 @@ class CrossValidate {
 
   fromJSON(crossValidateJson) {
     const Classifier = this.Classifier;
-    const json = crossValidateJson.sets.reduce((prev, cur) => prev.error < cur.error ? prev : cur, {error: Infinity}).network;
+    const json = crossValidateJson.sets.reduce(
+      (prev, cur) => (prev.error < cur.error ? prev : cur),
+      { error: Infinity }
+    ).network;
     if (Classifier.fromJSON) {
       return Classifier.fromJSON(json);
     }

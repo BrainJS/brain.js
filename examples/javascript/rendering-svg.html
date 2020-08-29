@@ -1,8 +1,8 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>brain.js network rendering example</title>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <style>
       .flex-container {
         display: flex;
@@ -66,7 +66,9 @@
         cursor: pointer;
       }
 
-      button:hover, button:active, button:visited {
+      button:hover,
+      button:active,
+      button:visited {
         background-color: green;
       }
 
@@ -77,74 +79,142 @@
     </style>
     <script src="../../dist/brain-browser.js"></script>
   </head>
-  <body >
+  <body>
     <div class="flex-container">
       <div class="form-wrapper">
         <form id="network-settings" action="" method="POST">
           <div class="input-wrapper">
             <div class="input-label">Network type</div>
             <select name="network-type">
-              <option value="NeuralNetwork">FeedForward (brain.NeuralNetwork)</option>
+              <option value="NeuralNetwork"
+                >FeedForward (brain.NeuralNetwork)</option
+              >
               <option value="RNN">Recurrent (brain.recurrent.RNN)</option>
-              <option value="RNNTimeStep">Recurrent Time Step (brain.recurrent.RNNTimeStep)</option>
-              <option value="FeedForward">FeedForward (brain.FeedForward)</option>
+              <option value="RNNTimeStep"
+                >Recurrent Time Step (brain.recurrent.RNNTimeStep)</option
+              >
+              <option value="FeedForward"
+                >FeedForward (brain.FeedForward)</option
+              >
               <option value="Recurrent">Recurrent (brain.Recurrent)</option>
             </select>
           </div>
           <div class="input-wrapper">
             <div class="input-label">Network size</div>
-            <input type="text" name="size" placeholder="" value="10,8,6,2"/>
+            <input type="text" name="size" placeholder="" value="10,8,6,2" />
           </div>
           <div class="flex-container2">
             <div class="input-wrapper">
               <div class="input-label">Height</div>
-              <input type="text" class="numeric" name="height" placeholder="Height" value="400"/>
+              <input
+                type="text"
+                class="numeric"
+                name="height"
+                placeholder="Height"
+                value="400"
+              />
             </div>
             <div class="input-wrapper">
               <div class="input-label">Width</div>
-              <input type="text" class="numeric" name="width" placeholder="Width" value="600"/>
+              <input
+                type="text"
+                class="numeric"
+                name="width"
+                placeholder="Width"
+                value="600"
+              />
             </div>
           </div>
           <div class="flex-container2">
             <div class="input-wrapper">
               <div class="input-label">Neuron radius</div>
-              <input type="text" name="radius" class="numeric" placeholder="in pixels" value="6"/>
+              <input
+                type="text"
+                name="radius"
+                class="numeric"
+                placeholder="in pixels"
+                value="6"
+              />
             </div>
           </div>
           <div class="input-wrapper">
             <div class="input-label">Inputs color</div>
-            <input type="text" name="inp-color" placeholder="" value="rgba(0, 128, 0, 0.5)"/>
+            <input
+              type="text"
+              name="inp-color"
+              placeholder=""
+              value="rgba(0, 128, 0, 0.5)"
+            />
           </div>
           <div class="input-wrapper">
             <div class="input-label">Hidden color</div>
-            <input type="text" name="hid-color" placeholder="" value="rgba(255, 127, 80, 0.5)"/>
+            <input
+              type="text"
+              name="hid-color"
+              placeholder=""
+              value="rgba(255, 127, 80, 0.5)"
+            />
           </div>
           <div class="input-wrapper">
             <div class="input-label">Outputs color</div>
-            <input type="text" name="out-color" placeholder="" value="rgba(100, 149, 237, 0.5)"/>
+            <input
+              type="text"
+              name="out-color"
+              placeholder=""
+              value="rgba(100, 149, 237, 0.5)"
+            />
           </div>
           <div class="input-wrapper">
             <div class="input-label">Recurrent line color</div>
-            <input type="text" name="recurrent-line-color" placeholder="" value="red"/>
+            <input
+              type="text"
+              name="recurrent-line-color"
+              placeholder=""
+              value="red"
+            />
           </div>
           <div class="input-wrapper">
             <div class="input-label">Line width</div>
-            <input type="text" class="numeric" name="line-width" placeholder="number" value="0.5"/>
+            <input
+              type="text"
+              class="numeric"
+              name="line-width"
+              placeholder="number"
+              value="0.5"
+            />
           </div>
           <div class="input-wrapper">
             <div class="input-label">Line color</div>
-            <input type="text" name="line-color" placeholder="css color" value="black"/>
+            <input
+              type="text"
+              name="line-color"
+              placeholder="css color"
+              value="black"
+            />
           </div>
           <div class="input-wrapper">
             <div class="input-label">Font size</div>
-            <input type="text" name="font-size" placeholder="size in px" value="14px"/>
+            <input
+              type="text"
+              name="font-size"
+              placeholder="size in px"
+              value="14px"
+            />
           </div>
           <div class="input-wrapper">
             <div class="input-label">Inputs' labels</div>
-            <textarea rows="3" name="inp-labels" cols="23" placeholder="inputs' labels separated by commas"></textarea>
+            <textarea
+              rows="3"
+              name="inp-labels"
+              cols="23"
+              placeholder="inputs' labels separated by commas"
+            >a,b,c,d,e,f,g,h,i,j</textarea>
           </div>
           <div class="input-wrapper">
-            <label class="input-label"><input type="checkbox" name="use-json" value="1" />Use JSON</label>
+            <label class="input-label"
+              ><input type="checkbox" name="use-json" value="1" />Use
+              JSON</label
+            >
           </div>
           <div class="input-wrapper">
             <button id="submit" type="submit">Render</button>
@@ -155,61 +225,76 @@
     </div>
 
     <script>
-      document.getElementById('network-settings').addEventListener('submit', function(e) {
-        // Stop it from submitting
-        e.preventDefault();
-        const networkType = this.elements.namedItem('network-type').value;
-        const size = this.elements.namedItem('size').value
-          .split(',')
-          .map((item)=> {
-            return parseInt(item, 10);
-          });
-
-        const config = {
-          inputSize: size[0],
-          inputRange: size[0],
-          hiddenLayers: size.slice(1, size.length - 1),
-          outputSize: size[size.length - 1],
-        };
-
-        const networkTypes = {
-          NeuralNetwork: () => {
-            return new brain.NeuralNetwork(config);
-          },
-          RNN: () => {
-            return new brain.recurrent.RNN(config);
-          },
-          RNNTimeStep: () => {
-            return new brain.recurrent.RNNTimeStep(config);
-          },
-          FeedForward: () => { // constructor shim
-            const { input, feedForward, target } = brain.layer;
-            return new brain.FeedForward({
-              inputLayer: () => input({ height: config.inputSize }),
-              hiddenLayers: config.hiddenLayers.map((l) => (inputLayer) => feedForward({ height: l }, inputLayer)),
-              outputLayer: inputLayer => target({ height: config.outputSize }, inputLayer),
+      document
+        .getElementById('network-settings')
+        .addEventListener('submit', function (e) {
+          // Stop it from submitting
+          e.preventDefault();
+          const networkType = this.elements.namedItem('network-type').value;
+          const size = this.elements
+            .namedItem('size')
+            .value.split(',')
+            .map((item) => {
+              return parseInt(item, 10);
             });
-          },
-          Recurrent: function() { // constructor shim
-            const { input, recurrent, output } = brain.layer;
-            return new brain.Recurrent({
-              inputLayer: () => input({ height: config.inputSize }),
-              hiddenLayers: config.hiddenLayers.map((layerHeight) => {
-                return (inputLayer, recurrentInput) => {
-                  return recurrent({ height: layerHeight }, inputLayer, recurrentInput);
-                }
-              }),
-              outputLayer: inputLayer => output({ height: config.outputSize }, inputLayer),
-            });
-          }
-        };
 
-        const options = constructOptions(this);
-        const network = networkTypes[networkType](config);
-        document.getElementById('result').innerHTML = this.elements.namedItem('use-json').checked
-          ? brain.utilities.toSVG(network.toJSON(), options)
-          : brain.utilities.toSVG(network, options);
-      });
+          const config = {
+            inputSize: size[0],
+            inputRange: size[0],
+            hiddenLayers: size.slice(1, size.length - 1),
+            outputSize: size[size.length - 1],
+          };
+
+          const networkTypes = {
+            NeuralNetwork: () => {
+              return new brain.NeuralNetwork(config);
+            },
+            RNN: () => {
+              return new brain.recurrent.RNN(config);
+            },
+            RNNTimeStep: () => {
+              return new brain.recurrent.RNNTimeStep(config);
+            },
+            FeedForward: () => {
+              // constructor shim
+              const { input, feedForward, target } = brain.layer;
+              return new brain.FeedForward({
+                inputLayer: () => input({ height: config.inputSize }),
+                hiddenLayers: config.hiddenLayers.map((l) => (inputLayer) =>
+                  feedForward({ height: l }, inputLayer)
+                ),
+                outputLayer: (inputLayer) =>
+                  target({ height: config.outputSize }, inputLayer),
+              });
+            },
+            Recurrent: function () {
+              // constructor shim
+              const { input, recurrent, output } = brain.layer;
+              return new brain.Recurrent({
+                inputLayer: () => input({ height: config.inputSize }),
+                hiddenLayers: config.hiddenLayers.map((layerHeight) => {
+                  return (inputLayer, recurrentInput) => {
+                    return recurrent(
+                      { height: layerHeight },
+                      inputLayer,
+                      recurrentInput
+                    );
+                  };
+                }),
+                outputLayer: (inputLayer) =>
+                  output({ height: config.outputSize }, inputLayer),
+              });
+            },
+          };
+
+          const options = constructOptions(this);
+          const network = networkTypes[networkType](config);
+          document.getElementById('result').innerHTML = this.elements.namedItem(
+            'use-json'
+          ).checked
+            ? brain.utilities.toSVG(network.toJSON(), options)
+            : brain.utilities.toSVG(network, options);
+        });
 
       function constructOptions(form) {
         return {
@@ -222,7 +307,9 @@
           },
           inputs: {
             color: form.elements.namedItem('inp-color').value,
-            labels: (form.elements.namedItem('inp-labels').value || '').split(',')
+            labels: (form.elements.namedItem('inp-labels').value || '').split(
+              ','
+            ),
           },
           hidden: {
             color: form.elements.namedItem('hid-color').value,

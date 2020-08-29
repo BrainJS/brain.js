@@ -1,6 +1,6 @@
-const Thaw = require('thaw.js').default;
+const { Thaw } = require('thaw.js');
 const lookup = require('./lookup');
-const TrainStream = require('./train-stream');
+// const TrainStream = require('./train-stream');
 const max = require('./utilities/max');
 const mse = require('./utilities/mse');
 const randos = require('./utilities/randos');
@@ -9,6 +9,23 @@ const toArray = require('./utilities/to-array');
 const zeros = require('./utilities/zeros');
 const LookupTable = require('./utilities/lookup-table');
 const { arrayToFloat32Array } = require('./utilities/cast');
+
+function getTypedArrayFn(value, table) {
+  if (value.buffer instanceof ArrayBuffer) {
+    return null;
+  }
+  if (Array.isArray(value)) {
+    return arrayToFloat32Array;
+  }
+  const { length } = Object.keys(table);
+  return (v) => {
+    const array = new Float32Array(length);
+    for (const p in table) {
+      array[table[p]] = v[p] || 0;
+    }
+    return array;
+  };
+}
 
 /**
  * @param {object} options
@@ -543,7 +560,11 @@ class NeuralNetwork {
   train(data, options = {}) {
     let status;
     let endTime;
-    ({ data, status, endTime } = this.prepTraining(data, options));
+
+    ({ data, status, endTime } = this.prepTraining(data, {
+      ...this.trainOpts,
+      ...options,
+    }));
 
     while (this.trainingTick(data, status, endTime));
     return status;
@@ -572,7 +593,8 @@ class NeuralNetwork {
         });
         thawedTrain.tick();
       } catch (trainError) {
-        reject({ trainError, status });
+        console.log(JSON.stringify(trainError));
+        reject(new Error({ trainError, status }));
       }
     });
   }
@@ -1200,25 +1222,9 @@ class NeuralNetwork {
     }
 
     const source = `${needsVar ? 'var v;' : ''}return ${result};`;
+    // eslint-disable-next-line no-new-func
     return new Function('input', cb ? cb(source) : source);
   }
-}
-
-function getTypedArrayFn(value, table) {
-  if (value.buffer instanceof ArrayBuffer) {
-    return null;
-  }
-  if (Array.isArray(value)) {
-    return arrayToFloat32Array;
-  }
-  const { length } = Object.keys(table);
-  return (v) => {
-    const array = new Float32Array(length);
-    for (const p in table) {
-      array[table[p]] = v[p] || 0;
-    }
-    return array;
-  };
 }
 
 module.exports = NeuralNetwork;

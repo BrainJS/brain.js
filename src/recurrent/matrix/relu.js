@@ -9,4 +9,4 @@ module.exports = function relu(product, left) {
     product.weights[i] = Math.max(0, left.weights[i]); // relu
     product.deltas[i] = 0;
   }
-}
+};

@@ -24,5 +24,5 @@ function zeros(settings) {
 
 module.exports = {
   Zeros,
-  zeros
+  zeros,
 };

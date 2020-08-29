@@ -16,8 +16,8 @@ describe('equation', () => {
       const equation = new Equation();
       for (let i = 0; i < 10; i++) {
         equation.states.push({
-          forwardFn: jest.fn()
-        })
+          forwardFn: jest.fn(),
+        });
       }
       equation.runIndex();
       equation.states.forEach((state) => {
@@ -30,8 +30,8 @@ describe('equation', () => {
       const equation = new Equation();
       for (let i = 0; i < 10; i++) {
         equation.states.push({
-          backpropagationFn: jest.fn()
-        })
+          backpropagationFn: jest.fn(),
+        });
       }
       equation.backpropagate();
       equation.states.forEach((state) => {
@@ -69,7 +69,7 @@ describe('equation', () => {
       expect(equation.states.length).toBe(1);
       jest.spyOn(equation.states[0], 'forwardFn');
       equation.runIndex();
-      expect(equation.states[0].forwardFn).toBeCalled()
+      expect(equation.states[0].forwardFn).toBeCalled();
     });
   });
   describe('relu', () => {
@@ -120,7 +120,13 @@ describe('equation', () => {
     it('can nest 3 deep and run forward', () => {
       const equation = new Equation();
       const input = fourSquareMatrix(2);
-      equation.multiply(equation.multiply(equation.multiply(input, fourSquareMatrix(2)), fourSquareMatrix(2)), fourSquareMatrix(2));
+      equation.multiply(
+        equation.multiply(
+          equation.multiply(input, fourSquareMatrix(2)),
+          fourSquareMatrix(2)
+        ),
+        fourSquareMatrix(2)
+      );
       expect(equation.states.length).toBe(3);
       jest.spyOn(equation.states[0], 'forwardFn');
       jest.spyOn(equation.states[1], 'forwardFn');
@@ -133,7 +139,13 @@ describe('equation', () => {
     it('can nest 3 deep and run backward', () => {
       const equation = new Equation();
       const input = fourSquareMatrix(2);
-      equation.tanh(equation.multiply(equation.add(input, fourSquareMatrix(2)), fourSquareMatrix(2)), fourSquareMatrix(2));
+      equation.tanh(
+        equation.multiply(
+          equation.add(input, fourSquareMatrix(2)),
+          fourSquareMatrix(2)
+        ),
+        fourSquareMatrix(2)
+      );
       expect(equation.states.length).toBe(3);
       jest.spyOn(equation.states[0], 'backpropagationFn');
       jest.spyOn(equation.states[1], 'backpropagationFn');

@@ -1,63 +1,78 @@
 {
   "author": "Heather Arthur <fayearthur@gmail.com>",
-  "browser": "./dist/brain-browser.min.js",
+  "browser": {
+    "dist/brain.js": "dist/brain-browser.js",
+    "dist/brain.mjs": "dist/brain-browser.mjs"
+  },
   "bugs": {
     "url": "https://github.com/brainjs/brain.js/issues"
   },
   "dependencies": {
-    "gpu.js": "^2.9.3",
-    "thaw.js": "^2.0.0"
+    "gpu.js": "^2.10.0",
+    "thaw.js": "^2.1.0"
   },
   "description": "Neural networks in JavaScript",
   "devDependencies": {
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "@rollup/plugin-babel": "^5.0.0",
+    "@rollup/plugin-commonjs": "^11.1.0",
+    "@rollup/plugin-json": "^4.0.3",
+    "@rollup/plugin-node-resolve": "^7.1.3",
+    "@rollup/plugin-typescript": "^4.1.1",
     "@types/acorn": "^4.0.5",
-    "@types/eslint": "^6.8.0",
-    "@types/parcel-bundler": "^1.12.1",
+    "@types/babel__core": "^7.1.7",
+    "@types/babel__preset-env": "^7.9.0",
+    "@types/core-js": "^2.5.3",
+    "@types/eslint": "^6.8.1",
+    "@types/eslint-plugin-prettier": "^3.1.0",
+    "@types/jest": "^25.2.2",
     "@types/prettier": "^2.0.0",
-    "acorn": "^7.1.1",
-    "babel-eslint": "^10.1.0",
-    "c8": "^7.1.1",
+    "@types/rollup-plugin-node-builtins": "^2.1.1",
+    "@types/rollup-plugin-node-globals": "^1.4.0",
+    "@typescript-eslint/eslint-plugin": "^2.33.0",
+    "@typescript-eslint/parser": "^2.33.0",
+    "acorn": "^7.2.0",
+    "babel-jest": "^26.0.1",
+    "c8": "^7.1.2",
     "codecov": "^3.6.5",
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb": "^18.1.0",
+    "core-js": "^3.6.5",
+    "eslint": "^7.0.0",
     "eslint-config-prettier": "^6.11.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-config-standard-with-typescript": "^16.0.0",
     "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-jest": "^23.8.2",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-jest": "^23.13.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
     "fast-xml-parser": "^3.16.0",
     "gpu-mock.js": "^1.2.1",
+    "husky": "^4.2.5",
     "istanbul-spy": "^1.0.1",
-    "jest": "^25.5.2",
-    "parcel-bundler": "^1.12.4",
-    "parcel-plugin-bundle-visualiser": "^1.2.0",
-    "prettier": "^2.0.5"
+    "jest": "^26.0.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.0.5",
+    "rollup": "^2.10.2",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0",
+    "rollup-plugin-terser": "^5.3.0",
+    "ts-jest": "^26.0.0",
+    "typescript": "^3.9.2"
+  },
+  "engines": {
+    "node": ">=8.6.x"
   },
   "files": [
-    "dist/brain-browser.js",
-    "dist/brain-browser.js.map",
-    "dist/brain-browser.min.js",
-    "dist/brain-browser.min.js.map",
+    "dist/",
     "src/"
   ],
   "homepage": "https://github.com/brainjs/brain.js#readme",
-  "jest": {
-    "bail": true,
-    "collectCoverage": false,
-    "collectCoverageFrom": [
-      "src/**/*.js"
-    ],
-    "coverageDirectory": "__coverage__",
-    "globalSetup": "",
-    "globals": {},
-    "setupFiles": [],
-    "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      "__tests__/istanbul-linker-util.js",
-      "__tests__/test-utils.js",
-      "__tests__/.eslintrc.js"
-    ],
-    "verbose": false
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   },
   "keywords": [
     "ai",
@@ -84,22 +99,30 @@
     "gru"
   ],
   "license": "MIT",
-  "main": "./src/index.js",
+  "main": "dist/brain.js",
+  "module": "dist/brain.mjs",
   "name": "brain.js",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/brainjs/brain.js.git"
   },
   "scripts": {
-    "build": "npm run dist",
-    "bundle-web": "parcel build ./src/index.js --out-dir ./dist --out-file brain-browser.js --no-minify",
-    "coverage": "jest --env=node --coverage --coverage-provider v8 && codecov",
-    "dist": "npm run bundle-web && npm run minify",
-    "lint": "eslint --ext .js ./src ./__tests__ --fix && prettier --write {src,__tests__}/**/*.js",
-    "minify": "parcel build ./src/index.js --out-dir ./dist --out-file brain-browser.min.js",
-    "test": "jest --env=node",
-    "watch": "jest --watch --env=node"
+    "build": "run-s build:**",
+    "build:browser": "rollup -c rollup.config.browser.js",
+    "build:node": "rollup -c rollup.config.js",
+    "coverage": "jest --coverage --coverage-provider v8 && codecov",
+    "dist": "npm run build",
+    "lint": "run-s lint:typecheck lint:eslint",
+    "lint:eslint": "eslint --fix --ext .js,.ts __tests__ src",
+    "lint:typecheck": "tsc --noEmit --skipLibCheck",
+    "postinstall": "npm rebuild gpu.js",
+    "test": "jest __tests__",
+    "watch": "run-p watch:**",
+    "watch:browser": "rollup -c rollup.config.browser.js -w",
+    "watch:node": "rollup -c rollup.config.js -w",
+    "watch:test": "jest --watch"
   },
   "typings": "./src/index.d.ts",
-  "version": "2.0.0-alpha.12"
+  "unpkg": "dist/brain-browser.min.js",
+  "version": "2.0.0-beta.2"
 }

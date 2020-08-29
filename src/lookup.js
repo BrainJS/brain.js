@@ -1,5 +1,5 @@
 /* Functions for turning sparse hashes into arrays and vice versa */
-class lookup {
+class Lookup {
   /**
    * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
    * @param {Object} hashes
@@ -10,7 +10,7 @@ class lookup {
       return Object.assign(memo, hash);
     }, {});
 
-    return lookup.toHash(hash);
+    return Lookup.toHash(hash);
   }
 
   /**
@@ -39,7 +39,7 @@ class lookup {
     const table = {};
     let tableIndex = 0;
     for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
-      for (let p in data[dataIndex].input) {
+      for (const p in data[dataIndex].input) {
         if (!table.hasOwnProperty(p)) {
           table[p] = tableIndex++;
         }
@@ -55,7 +55,7 @@ class lookup {
       const input = data[dataIndex].input;
       for (let i = 0; i < input.length; i++) {
         const object = input[i];
-        for (let p in object) {
+        for (const p in object) {
           if (!table.hasOwnProperty(p)) {
             table[p] = tableIndex++;
           }
@@ -69,7 +69,7 @@ class lookup {
     const table = {};
     let tableIndex = 0;
     for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
-      for (let p in data[dataIndex].output) {
+      for (const p in data[dataIndex].output) {
         if (!table.hasOwnProperty(p)) {
           table[p] = tableIndex++;
         }
@@ -85,7 +85,7 @@ class lookup {
       const output = data[dataIndex].output;
       for (let i = 0; i < output.length; i++) {
         const object = output[i];
-        for (let p in object) {
+        for (const p in object) {
           if (!table.hasOwnProperty(p)) {
             table[p] = tableIndex++;
           }
@@ -101,9 +101,9 @@ class lookup {
    * @returns {Object}
    */
   static toHash(hash) {
-    let lookup = {};
+    const lookup = {};
     let index = 0;
-    for (let i in hash) {
+    for (const i in hash) {
       lookup[i] = index++;
     }
     return lookup;
@@ -118,7 +118,7 @@ class lookup {
    */
   static toArray(lookup, object, arrayLength) {
     const result = new Float32Array(arrayLength);
-    for (let p in lookup) {
+    for (const p in lookup) {
       result[lookup[p]] = object.hasOwnProperty(p) ? object[p] : 0;
     }
     return result;
@@ -126,7 +126,7 @@ class lookup {
 
   static toArrayShort(lookup, object) {
     const result = [];
-    for (let p in lookup) {
+    for (const p in lookup) {
       if (!object.hasOwnProperty(p)) break;
       result[lookup[p]] = object[p];
     }
@@ -149,7 +149,7 @@ class lookup {
    */
   static toObject(lookup, array) {
     const object = {};
-    for (let p in lookup) {
+    for (const p in lookup) {
       object[p] = array[lookup[p]];
     }
     return object;
@@ -158,7 +158,7 @@ class lookup {
   static toObjectPartial(lookup, array, offset = 0, limit = 0) {
     const object = {};
     let i = 0;
-    for (let p in lookup) {
+    for (const p in lookup) {
       if (offset > 0) {
         if (i++ < offset) continue;
       }
@@ -176,7 +176,7 @@ class lookup {
    * @returns {*}
    */
   static lookupFromArray(array) {
-    let lookup = {};
+    const lookup = {};
     let z = 0;
     let i = array.length;
     while (i-- > 0) {
@@ -203,7 +203,9 @@ class lookup {
 
     let p;
     while (data) {
-      for (p in data) { break; }
+      for (p in data) {
+        break;
+      }
       if (!data.hasOwnProperty(p)) break;
       if (Array.isArray(data) || data.buffer instanceof ArrayBuffer) {
         shape.push('array');
@@ -232,4 +234,4 @@ class lookup {
   }
 }
 
-module.exports = lookup;
+module.exports = Lookup;

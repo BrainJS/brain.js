@@ -1,6 +1,12 @@
 const { EntryPoint } = require('./types');
 const zeros2D = require('../utilities/zeros-2d');
-const { makeKernel, release, kernelInput, clear } = require('../utilities/kernel');
+const {
+  makeKernel,
+  release,
+  kernelInput,
+  clear,
+  clone,
+} = require('../utilities/kernel');
 
 class Input extends EntryPoint {
   constructor(settings) {
@@ -14,12 +20,15 @@ class Input extends EntryPoint {
   setupKernels() {
     if (this.width === 1) {
       this.predict = this.predict1D;
-      this.reshapeInput = makeKernel(function(value) {
-        return value[this.thread.y];
-      }, {
-        output: [1, this.height],
-        immutable: true,
-      });
+      this.reshapeInput = makeKernel(
+        function (value) {
+          return value[this.thread.y];
+        },
+        {
+          output: [1, this.height],
+          immutable: true,
+        }
+      );
     } else {
       this.reshapeInput = (inputs) => inputs;
     }
@@ -31,7 +40,10 @@ class Input extends EntryPoint {
   }
 
   predict(inputs) {
-    if (typeof inputs[0] !== 'object' && inputs.length === this.height * this.width) {
+    if (
+      typeof inputs[0] !== 'object' &&
+      inputs.length === this.height * this.width
+    ) {
       release(this.weights);
       this.weights = kernelInput(inputs, [this.width, this.height]);
     } else if (
@@ -76,5 +88,5 @@ function input(settings) {
 
 module.exports = {
   Input,
-  input
+  input,
 };

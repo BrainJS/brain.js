@@ -77,15 +77,11 @@ function getSum3D(inputs) {
 }
 
 function getExponentials(inputs, maxInput) {
-  return Math.exp(
-    inputs[this.thread.x] - maxInput[0]
-  );
+  return Math.exp(inputs[this.thread.x] - maxInput[0]);
 }
 
 function getExponentials2D(inputs, maxInput) {
-  return Math.exp(
-    inputs[this.thread.y][this.thread.x] - maxInput[0]
-  );
+  return Math.exp(inputs[this.thread.y][this.thread.x] - maxInput[0]);
 }
 
 function getExponentials3D(inputs, maxInput) {
@@ -95,16 +91,11 @@ function getExponentials3D(inputs, maxInput) {
 }
 
 function predict(exponentials, exponentialsSum) {
-  return (
-    exponentials[this.thread.x] / exponentialsSum[0]
-  );
+  return exponentials[this.thread.x] / exponentialsSum[0];
 }
 
 function predict2D(exponentials, exponentialsSum) {
-  return (
-    exponentials[this.thread.y][this.thread.x] /
-    exponentialsSum[0]
-  );
+  return exponentials[this.thread.y][this.thread.x] / exponentialsSum[0];
 }
 
 function predict3D(exponentials, exponentialsSum) {
@@ -124,7 +115,7 @@ function compare(target, exponentials) {
 
 function compare2D(target, exponentials) {
   let indicator = 0;
-  const index = this.thread.x + (this.thread.y * this.output.x);
+  const index = this.thread.x + this.thread.y * this.output.x;
   if (index === target) {
     indicator = 1;
   }
@@ -133,16 +124,19 @@ function compare2D(target, exponentials) {
 
 function compare3D(target, exponentials) {
   let indicator = 0;
-  const index = this.thread.x
-    + (this.thread.y * this.output.x)
-    + (this.thread.z * this.output.x * this.output.y);
+  const index =
+    this.thread.x +
+    this.thread.y * this.output.x +
+    this.thread.z * this.output.x * this.output.y;
   if (index === target) {
     indicator = 1;
   }
-  return -(indicator - exponentials[this.thread.z][this.thread.y][this.thread.x]);
+  return -(
+    indicator - exponentials[this.thread.z][this.thread.y][this.thread.x]
+  );
 }
 
-function loss(exponentials) {
+function loss() {
   return -Math.log();
 }
 
@@ -257,11 +251,22 @@ function softMax(settings, inputLayer) {
 }
 
 module.exports = {
-  SoftMax, softMax,
-  getMaxValue, getMaxValue2D, getMaxValue3D,
-  getSum, getSum2D, getSum3D,
-  getExponentials, getExponentials2D, getExponentials3D,
-  predict, predict2D, predict3D,
-  compare, compare2D, compare3D,
-  loss
+  SoftMax,
+  softMax,
+  getMaxValue,
+  getMaxValue2D,
+  getMaxValue3D,
+  getSum,
+  getSum2D,
+  getSum3D,
+  getExponentials,
+  getExponentials2D,
+  getExponentials3D,
+  predict,
+  predict2D,
+  predict3D,
+  compare,
+  compare2D,
+  compare3D,
+  loss,
 };

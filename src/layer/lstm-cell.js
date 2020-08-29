@@ -73,5 +73,5 @@ function lstmCell(settings, input, recurrentInput) {
 }
 
 module.exports = {
-  lstmCell
+  lstmCell,
 };

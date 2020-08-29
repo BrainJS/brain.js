@@ -1,4 +1,7 @@
-const { DataFormatter, defaultRNNFormatter } = require('../../src/utilities/data-formatter');
+const {
+  DataFormatter,
+  defaultRNNFormatter,
+} = require('../../src/utilities/data-formatter');
 
 describe('DataFormatter', () => {
   test('does not have zeros', () => {
@@ -142,7 +145,7 @@ describe('DataFormatter', () => {
   test('can handle strings', () => {
     const dataFormatter = new DataFormatter('a big string');
     const indices = dataFormatter.toIndexes('a big string');
-    indices.forEach(value => expect(value >= 0));
+    indices.forEach((value) => expect(value >= 0));
 
     expect(dataFormatter.toCharacters(indices).join('')).toBe('a big string');
   });
@@ -150,7 +153,7 @@ describe('DataFormatter', () => {
   test('can handle array of strings', () => {
     const dataFormatter = new DataFormatter('a big string'.split(''));
     const indices = dataFormatter.toIndexes('a big string'.split(''));
-    indices.forEach(value => expect(value >= 0));
+    indices.forEach((value) => expect(value >= 0));
 
     expect(dataFormatter.toCharacters(indices)).toEqual(
       'a big string'.split('')
@@ -163,14 +166,14 @@ describe('DataFormatter', () => {
       'batman was here'.split(''),
     ]);
     let indices = dataFormatter.toIndexes('a big string'.split(''));
-    indices.forEach(value => expect(value >= 0));
+    indices.forEach((value) => expect(value >= 0));
 
     expect(dataFormatter.toCharacters(indices)).toEqual(
       'a big string'.split('')
     );
 
     indices = dataFormatter.toIndexes('batman was here'.split(''));
-    indices.forEach(value => expect(value >= 0));
+    indices.forEach((value) => expect(value >= 0));
 
     expect(dataFormatter.toCharacters(indices)).toEqual(
       'batman was here'.split('')
@@ -180,20 +183,23 @@ describe('DataFormatter', () => {
   test('can handle array of numbers', () => {
     const dataFormatter = new DataFormatter([1, 2, 3]);
     const indices = dataFormatter.toIndexes([1, 2, 3]);
-    indices.forEach(value => expect(value >= 0));
+    indices.forEach((value) => expect(value >= 0));
 
     expect(dataFormatter.toCharacters(indices)).toEqual([1, 2, 3]);
   });
 
   test('can handle array of array of numbers', () => {
-    const dataFormatter = new DataFormatter([[1, 2, 3], [4, 5, 6]]);
+    const dataFormatter = new DataFormatter([
+      [1, 2, 3],
+      [4, 5, 6],
+    ]);
     let indices = dataFormatter.toIndexes([1, 2, 3]);
-    indices.forEach(value => expect(value >= 0));
+    indices.forEach((value) => expect(value >= 0));
 
     expect(dataFormatter.toCharacters(indices)).toEqual([1, 2, 3]);
 
     indices = dataFormatter.toIndexes([4, 5, 6]);
-    indices.forEach(value => expect(value >= 3));
+    indices.forEach((value) => expect(value >= 3));
 
     expect(dataFormatter.toCharacters(indices)).toEqual([4, 5, 6]);
   });
@@ -201,7 +207,7 @@ describe('DataFormatter', () => {
   test('can handle array of booleans', () => {
     const dataFormatter = new DataFormatter([true, false]);
     const indices = dataFormatter.toIndexes([true, false, true, false]);
-    indices.forEach(value => expect(value >= 0));
+    indices.forEach((value) => expect(value >= 0));
 
     expect(dataFormatter.toCharacters(indices)).toEqual([
       true,
@@ -214,7 +220,7 @@ describe('DataFormatter', () => {
   test('can handle array of array of booleans', () => {
     const dataFormatter = new DataFormatter([[true], [false]]);
     const indices = dataFormatter.toIndexes([true, false]);
-    indices.forEach(value => expect(value >= 0));
+    indices.forEach((value) => expect(value >= 0));
 
     expect(dataFormatter.toCharacters(indices)).toEqual([true, false]);
   });
@@ -271,7 +277,9 @@ describe('defaultRNNFormatter', () => {
     const mockNet = {
       formatDataIn: jest.fn(),
     };
-    defaultRNNFormatter.call(mockNet, [{ input: ['1', '2'], output: ['3', '4'] }]);
+    defaultRNNFormatter.call(mockNet, [
+      { input: ['1', '2'], output: ['3', '4'] },
+    ]);
     expect(mockNet.formatDataIn).toBeCalledWith(['1', '2'], ['3', '4']);
   });
   test('handles data.input & data.output of number[]', () => {

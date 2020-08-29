@@ -9,15 +9,15 @@ describe('JSON', () => {
     describe('json.sizes', () => {
       it('copies json.sizes correctly [1,2,3]', () => {
         const net = new NeuralNetwork();
-        net.sizes = [1,2,3];
+        net.sizes = [1, 2, 3];
         const json = net.toJSON();
-        expect(json.sizes).toEqual([1,2,3]);
+        expect(json.sizes).toEqual([1, 2, 3]);
       });
       it('copies json.sizes correctly [3,2,1]', () => {
         const net = new NeuralNetwork();
-        net.sizes = [3,2,1];
+        net.sizes = [3, 2, 1];
         const json = net.toJSON();
-        expect(json.sizes).toEqual([3,2,1]);
+        expect(json.sizes).toEqual([3, 2, 1]);
       });
     });
 
@@ -45,7 +45,7 @@ describe('JSON', () => {
     describe('hidden layers', () => {
       it('copies biases correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
         const json = net.toJSON();
         expect(Object.keys(json.layers[1]).length).toBe(net.biases[1].length);
         expect(json.layers[1][0].bias).toBe(net.biases[1][0]);
@@ -54,19 +54,25 @@ describe('JSON', () => {
       });
       it('copies weights correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
         const json = net.toJSON();
         expect(Object.keys(json.layers[1]).length).toBe(net.weights[1].length);
-        expect(json.layers[1][0].weights).toEqual(typedArrayToObject(net.weights[1][0]));
-        expect(json.layers[1][1].weights).toEqual(typedArrayToObject(net.weights[1][1]));
-        expect(json.layers[1][2].weights).toEqual(typedArrayToObject(net.weights[1][2]));
+        expect(json.layers[1][0].weights).toEqual(
+          typedArrayToObject(net.weights[1][0])
+        );
+        expect(json.layers[1][1].weights).toEqual(
+          typedArrayToObject(net.weights[1][1])
+        );
+        expect(json.layers[1][2].weights).toEqual(
+          typedArrayToObject(net.weights[1][2])
+        );
       });
     });
 
     describe('output layer', () => {
       it('copies biases correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
         const json = net.toJSON();
         expect(Object.keys(json.layers[2]).length).toBe(net.biases[2].length);
         expect(json.layers[2][0].bias).toBe(net.biases[2][0]);
@@ -75,12 +81,18 @@ describe('JSON', () => {
       });
       it('copies weights correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
         const json = net.toJSON();
         expect(Object.keys(json.layers[2]).length).toBe(net.weights[2].length);
-        expect(json.layers[2][0].weights).toEqual(typedArrayToObject(net.weights[2][0]));
-        expect(json.layers[2][1].weights).toEqual(typedArrayToObject(net.weights[2][1]));
-        expect(json.layers[2][2].weights).toEqual(typedArrayToObject(net.weights[2][2]));
+        expect(json.layers[2][0].weights).toEqual(
+          typedArrayToObject(net.weights[2][0])
+        );
+        expect(json.layers[2][1].weights).toEqual(
+          typedArrayToObject(net.weights[2][1])
+        );
+        expect(json.layers[2][2].weights).toEqual(
+          typedArrayToObject(net.weights[2][2])
+        );
       });
     });
 
@@ -108,7 +120,9 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          expect(json.trainOpts.iterations).toBe(NeuralNetwork.trainDefaults.iterations);
+          expect(json.trainOpts.iterations).toBe(
+            NeuralNetwork.trainDefaults.iterations
+          );
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -125,7 +139,9 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          expect(json.trainOpts.errorThresh).toBe(NeuralNetwork.trainDefaults.errorThresh);
+          expect(json.trainOpts.errorThresh).toBe(
+            NeuralNetwork.trainDefaults.errorThresh
+          );
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -168,7 +184,9 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          expect(json.trainOpts.logPeriod).toBe(NeuralNetwork.trainDefaults.logPeriod);
+          expect(json.trainOpts.logPeriod).toBe(
+            NeuralNetwork.trainDefaults.logPeriod
+          );
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -185,7 +203,9 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          expect(json.trainOpts.learningRate).toBe(NeuralNetwork.trainDefaults.learningRate);
+          expect(json.trainOpts.learningRate).toBe(
+            NeuralNetwork.trainDefaults.learningRate
+          );
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -202,7 +222,9 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          expect(json.trainOpts.momentum).toBe(NeuralNetwork.trainDefaults.momentum);
+          expect(json.trainOpts.momentum).toBe(
+            NeuralNetwork.trainDefaults.momentum
+          );
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -237,7 +259,9 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          expect(json.trainOpts.callbackPeriod).toBe(NeuralNetwork.trainDefaults.callbackPeriod);
+          expect(json.trainOpts.callbackPeriod).toBe(
+            NeuralNetwork.trainDefaults.callbackPeriod
+          );
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -272,21 +296,19 @@ describe('JSON', () => {
     describe('json.sizes', () => {
       it('copies json.sizes correctly [1,2,3]', () => {
         const net = new NeuralNetwork();
-        net.sizes = [1,2,3];
+        net.sizes = [1, 2, 3];
         net.initialize();
         const json = net.toJSON();
-        const newNet = new NeuralNetwork()
-          .fromJSON(json);
-        expect(newNet.sizes).toEqual([1,2,3]);
+        const newNet = new NeuralNetwork().fromJSON(json);
+        expect(newNet.sizes).toEqual([1, 2, 3]);
       });
       it('copies json.sizes correctly [3,2,1]', () => {
         const net = new NeuralNetwork();
-        net.sizes = [3,2,1];
+        net.sizes = [3, 2, 1];
         net.initialize();
         const json = net.toJSON();
-        const newNet = new NeuralNetwork()
-          .fromJSON(json);
-        expect(newNet.sizes).toEqual([3,2,1]);
+        const newNet = new NeuralNetwork().fromJSON(json);
+        expect(newNet.sizes).toEqual([3, 2, 1]);
       });
     });
 
@@ -296,8 +318,7 @@ describe('JSON', () => {
           const net = new NeuralNetwork();
           net.sizes = [3];
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.layers[0]).toEqual({ 0: {}, 1: {}, 2: {} });
         });
       });
@@ -308,8 +329,7 @@ describe('JSON', () => {
           net.inputLookupLength = 3;
           net.sizes = [];
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.layers[0]).toEqual({ zero: {}, one: {}, two: {} });
         });
       });
@@ -318,10 +338,9 @@ describe('JSON', () => {
     describe('hidden layers', () => {
       it('copies biases correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
         const json = net.toJSON();
-        const newNet = new NeuralNetwork()
-          .fromJSON(json);
+        const newNet = new NeuralNetwork().fromJSON(json);
         expect(newNet.biases[1].length).toBe(net.biases[1].length);
         expect(newNet.biases[1][0]).toBe(net.biases[1][0]);
         expect(newNet.biases[1][1]).toBe(net.biases[1][1]);
@@ -329,10 +348,9 @@ describe('JSON', () => {
       });
       it('copies weights correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
         const json = net.toJSON();
-        const newNet = new NeuralNetwork()
-          .fromJSON(json);
+        const newNet = new NeuralNetwork().fromJSON(json);
         expect(newNet.weights[1].length).toBe(net.weights[1].length);
         expect(newNet.weights[1][0]).toEqual(net.weights[1][0]);
         expect(newNet.weights[1][1]).toEqual(net.weights[1][1]);
@@ -343,10 +361,9 @@ describe('JSON', () => {
     describe('output layer', () => {
       it('copies biases correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
         const json = net.toJSON();
-        const newNet = new NeuralNetwork()
-          .fromJSON(json);
+        const newNet = new NeuralNetwork().fromJSON(json);
         expect(newNet.biases[2].length).toBe(net.biases[2].length);
         expect(newNet.biases[2][0]).toBe(net.biases[2][0]);
         expect(newNet.biases[2][1]).toBe(net.biases[2][1]);
@@ -354,10 +371,9 @@ describe('JSON', () => {
       });
       it('copies weights correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1,2], output: [1,2,3] }]);
+        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
         const json = net.toJSON();
-        const newNet = new NeuralNetwork()
-          .fromJSON(json);
+        const newNet = new NeuralNetwork().fromJSON(json);
         expect(newNet.weights[2].length).toBe(net.weights[2].length);
         expect(newNet.weights[2][0]).toEqual(net.weights[2][0]);
         expect(newNet.weights[2][1]).toEqual(net.weights[2][1]);
@@ -371,8 +387,7 @@ describe('JSON', () => {
         net.sizes = [];
         expect(net.activation).toBe(NeuralNetwork.defaults.activation);
         const json = net.toJSON();
-        const newNet = new NeuralNetwork()
-          .fromJSON(json);
+        const newNet = new NeuralNetwork().fromJSON(json);
         expect(newNet.activation).toBe(NeuralNetwork.defaults.activation);
       });
       it('exports non-default correctly', () => {
@@ -380,8 +395,7 @@ describe('JSON', () => {
         net.sizes = [];
         expect(net.activation).toBe('leaky-relu');
         const json = net.toJSON();
-        const newNet = new NeuralNetwork()
-          .fromJSON(json);
+        const newNet = new NeuralNetwork().fromJSON(json);
         expect(newNet.activation).toBe('leaky-relu');
       });
     });
@@ -393,17 +407,17 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
-          expect(newNet.trainOpts.iterations).toBe(NeuralNetwork.trainDefaults.iterations);
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.trainOpts.iterations).toBe(
+            NeuralNetwork.trainDefaults.iterations
+          );
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }], { iterations: 3 });
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.trainOpts.iterations).toBe(3);
         });
       });
@@ -414,17 +428,17 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
-          expect(newNet.trainOpts.errorThresh).toBe(NeuralNetwork.trainDefaults.errorThresh);
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.trainOpts.errorThresh).toBe(
+            NeuralNetwork.trainDefaults.errorThresh
+          );
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }], { errorThresh: 0.05 });
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.trainOpts.errorThresh).toBe(0.05);
         });
       });
@@ -435,8 +449,7 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.trainOpts.log).toBe(NeuralNetwork.trainDefaults.log);
         });
         it('uses net.logTrainingStatus for `true`', () => {
@@ -445,8 +458,7 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }], { log });
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.trainOpts.log).toBe(net.logTrainingStatus);
         });
         it('reverts to net.logTrainingStatus when used with custom function', () => {
@@ -455,8 +467,7 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }], { log });
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.trainOpts.log).toBe(net.logTrainingStatus);
         });
       });
@@ -467,17 +478,17 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
-          expect(newNet.trainOpts.logPeriod).toBe(NeuralNetwork.trainDefaults.logPeriod);
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.trainOpts.logPeriod).toBe(
+            NeuralNetwork.trainDefaults.logPeriod
+          );
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }], { logPeriod: 4 });
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.trainOpts.logPeriod).toBe(4);
         });
       });
@@ -488,17 +499,17 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
-          expect(newNet.trainOpts.learningRate).toBe(NeuralNetwork.trainDefaults.learningRate);
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.trainOpts.learningRate).toBe(
+            NeuralNetwork.trainDefaults.learningRate
+          );
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }], { learningRate: 0.72 });
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.trainOpts.learningRate).toBe(0.72);
         });
       });
@@ -509,17 +520,17 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
-          expect(newNet.trainOpts.momentum).toBe(NeuralNetwork.trainDefaults.momentum);
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.trainOpts.momentum).toBe(
+            NeuralNetwork.trainDefaults.momentum
+          );
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }], { momentum: 0.313 });
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.trainOpts.momentum).toBe(0.313);
         });
       });
@@ -530,8 +541,7 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.trainOpts.callback).toBe(null);
         });
         it('does not copy when used with custom value', () => {
@@ -540,8 +550,7 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }], { callback });
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.trainOpts.callback).toBe(null);
         });
       });
@@ -552,17 +561,17 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
-          expect(newNet.trainOpts.callbackPeriod).toBe(NeuralNetwork.trainDefaults.callbackPeriod);
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.trainOpts.callbackPeriod).toBe(
+            NeuralNetwork.trainDefaults.callbackPeriod
+          );
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }], { callbackPeriod: 50 });
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.trainOpts.callbackPeriod).toBe(50);
         });
       });
@@ -573,8 +582,7 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(NeuralNetwork.trainDefaults.timeout).toBe(Infinity);
           expect(newNet.trainOpts.timeout).toBe(Infinity);
         });
@@ -583,8 +591,7 @@ describe('JSON', () => {
           net.trainingTick = () => {};
           net.train([{ input: [], output: [] }], { timeout: 50 });
           const json = net.toJSON();
-          const newNet = new NeuralNetwork()
-            .fromJSON(json);
+          const newNet = new NeuralNetwork().fromJSON(json);
           expect(newNet.trainOpts.timeout).toBe(50);
         });
       });
@@ -592,12 +599,10 @@ describe('JSON', () => {
 
     it('can run originalNet, and serializedNet, with same output', () => {
       const net = new NeuralNetwork({ hiddenLayers: [3] });
-      net.train([
-        { input: [1,1,1], output: [1,1,1] }
-      ], {
-        iterations: 3
+      net.train([{ input: [1, 1, 1], output: [1, 1, 1] }], {
+        iterations: 3,
       });
-      const input = [1,1,1];
+      const input = [1, 1, 1];
       const json = net.toJSON();
       const newNet = new NeuralNetwork().fromJSON(json);
       const output1 = net.run(input);
@@ -612,70 +617,85 @@ describe('JSON', () => {
       };
       net.fromJSON({ sizes: [], layers: [] });
       expect(net.activation === 'sigmoid').toBeTruthy();
-    })
+    });
   });
 });
-
 
 describe('default net json', () => {
   const originalNet = new NeuralNetwork({ activation: 'leaky-relu' });
 
-  originalNet.train([
-    {
-      input: {'0': Math.random(), b: Math.random()},
-      output: {c: Math.random(), '0': Math.random()}
-    }, {
-      input: {'0': Math.random(), b: Math.random()},
-      output: {c: Math.random(), '0': Math.random()}
-    }
-  ], { timeout: 4 });
+  originalNet.train(
+    [
+      {
+        input: { 0: Math.random(), b: Math.random() },
+        output: { c: Math.random(), 0: Math.random() },
+      },
+      {
+        input: { 0: Math.random(), b: Math.random() },
+        output: { c: Math.random(), 0: Math.random() },
+      },
+    ],
+    { timeout: 4 }
+  );
 
   const serialized = originalNet.toJSON();
-  const serializedNet = new NeuralNetwork()
-    .fromJSON(
-      JSON.parse(
-        JSON.stringify(serialized)
-      )
-    );
+  const serializedNet = new NeuralNetwork().fromJSON(
+    JSON.parse(JSON.stringify(serialized))
+  );
 
-  const input = {'0' : Math.random(), b: Math.random()};
+  const input = { 0: Math.random(), b: Math.random() };
 
   describe('.trainOpts', () => {
     it('training options iterations', () => {
-      expect(originalNet.trainOpts.iterations).toBe(serializedNet.trainOpts.iterations);
+      expect(originalNet.trainOpts.iterations).toBe(
+        serializedNet.trainOpts.iterations
+      );
     });
 
     it('training options errorThresh', () => {
-      expect(originalNet.trainOpts.errorThresh).toBe(serializedNet.trainOpts.errorThresh);
+      expect(originalNet.trainOpts.errorThresh).toBe(
+        serializedNet.trainOpts.errorThresh
+      );
     });
 
     it('training options log', () => {
-      // Should have inflated to console.log
       expect(originalNet.trainOpts.log).toBe(serializedNet.trainOpts.log);
     });
 
     it('training options logPeriod', () => {
-      expect(originalNet.trainOpts.logPeriod).toBe(serializedNet.trainOpts.logPeriod);
+      expect(originalNet.trainOpts.logPeriod).toBe(
+        serializedNet.trainOpts.logPeriod
+      );
     });
 
     it('training options learningRate', () => {
-      expect(originalNet.trainOpts.learningRate).toBe(serializedNet.trainOpts.learningRate);
+      expect(originalNet.trainOpts.learningRate).toBe(
+        serializedNet.trainOpts.learningRate
+      );
     });
 
     it('training options momentum', () => {
-      expect(originalNet.trainOpts.momentum).toBe(serializedNet.trainOpts.momentum);
+      expect(originalNet.trainOpts.momentum).toBe(
+        serializedNet.trainOpts.momentum
+      );
     });
 
     it('training options callback', () => {
-      expect(originalNet.trainOpts.callback).toBe(serializedNet.trainOpts.callback);
+      expect(originalNet.trainOpts.callback).toBe(
+        serializedNet.trainOpts.callback
+      );
     });
 
     it('training options callbackPeriod', () => {
-      expect(originalNet.trainOpts.callbackPeriod).toBe(serializedNet.trainOpts.callbackPeriod);
+      expect(originalNet.trainOpts.callbackPeriod).toBe(
+        serializedNet.trainOpts.callbackPeriod
+      );
     });
 
     it('training options timeout', () => {
-      expect(originalNet.trainOpts.timeout).toBe(serializedNet.trainOpts.timeout);
+      expect(originalNet.trainOpts.timeout).toBe(
+        serializedNet.trainOpts.timeout
+      );
     });
   });
 

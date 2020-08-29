@@ -1,11 +1,17 @@
+<p align="center">
+  <img src="https://cdn.rawgit.com/harthur-org/brain.js/ff595242/logo.svg" alt="Logo" width=200px/>
+</p>
+
 # brain.js
 
-<img src="https://cdn.rawgit.com/harthur-org/brain.js/ff595242/logo.svg" alt="Logo" width=200px/>
+GPU accelerated Neural networks in JavaScript for Browsers and Node.js
 
-[![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js)
+[![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com)
 [![Backers on Open Collective](https://opencollective.com/brainjs/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/brainjs/sponsors/badge.svg)](#sponsors)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brain-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Slack](https://slack.bri.im/badge.svg)](https://slack.bri.im)
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FBrainJS%2Fbrain.js%2Fbadge%3Fref%3Dmaster&style=flat)](https://actions-badge.atrox.dev/BrainJS/brain.js/goto?ref=master)
+
+[![NPM](https://nodei.co/npm/brain.js.png?compact=true)](https://nodei.co/npm/brain.js/)
 
 ## About
 
@@ -127,19 +133,19 @@ const config = {
   hiddenLayers: [3], // array of ints for the sizes of the hidden layers in the network
   activation: 'sigmoid', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
   leakyReluAlpha: 0.01, // supported for activation type 'leaky-relu'
-}
+};
 
 // create a simple feed forward neural network with backpropagation
-const net = new brain.NeuralNetwork(config)
+const net = new brain.NeuralNetwork(config);
 
 net.train([
   { input: [0, 0], output: [0] },
   { input: [0, 1], output: [1] },
   { input: [1, 0], output: [1] },
   { input: [1, 1], output: [0] },
-])
+]);
 
-const output = net.run([1, 0]) // [0.987]
+const output = net.run([1, 0]); // [0.987]
 ```
 
 or
@@ -154,22 +160,22 @@ const config = {
   outputSize: 20,
   learningRate: 0.01,
   decayRate: 0.999,
-}
+};
 
 // create a simple recurrent neural network
-const net = new brain.recurrent.RNN(config)
+const net = new brain.recurrent.RNN(config);
 
 net.train([
   { input: [0, 0], output: [0] },
   { input: [0, 1], output: [1] },
   { input: [1, 0], output: [1] },
   { input: [1, 1], output: [0] },
-])
+]);
 
-const output = net.run([0, 0]) // [0]
-output = net.run([0, 1]) // [1]
-output = net.run([1, 0]) // [1]
-output = net.run([1, 1]) // [0]
+const output = net.run([0, 0]); // [0]
+output = net.run([0, 1]); // [1]
+output = net.run([1, 0]); // [1]
+output = net.run([1, 1]); // [0]
 ```
 
 However, there is no reason to use a neural network to figure out XOR. (-: So, here is a more involved, realistic example:
@@ -186,6 +192,8 @@ You can check out this fantastic screencast, which explains how to train a simpl
 - [predict next number, and forecast numbers](./examples/javascript/predict-numbers.js) and [typescript version](./examples/typescript/predict-numbers.ts)
 - [using node streams](./examples/javascript/stream-example.js) and [typescript version](./examples/typescript/stream-example.ts)
 - [simple letter detection](./examples/javascript/which-letter-simple.js) and [typescript version](./examples/typescript/which-letter-simple.ts)
+- [Cryotherapy Success Rate Prediction](https://cryotherapy.surge.sh)
+- [Rock Paper Scissors](https://github.com/arifikhsan/batu-gunting-kertas-nuxt)
 
 ## Training
 
@@ -202,15 +210,15 @@ Training is computationally expensive, so you should try to train the network of
 Each training pattern should have an `input` and an `output`, both of which can be either an array of numbers from `0` to `1` or a hash of numbers from `0` to `1`. For the [color contrast demo](https://brain.js.org/) it looks something like this:
 
 ```javascript
-const net = new brain.NeuralNetwork()
+const net = new brain.NeuralNetwork();
 
 net.train([
   { input: { r: 0.03, g: 0.7, b: 0.5 }, output: { black: 1 } },
   { input: { r: 0.16, g: 0.09, b: 0.2 }, output: { white: 1 } },
   { input: { r: 0.5, g: 0.5, b: 1.0 }, output: { white: 1 } },
-])
+]);
 
-const output = net.run({ r: 1, g: 0.4, b: 0 }) // { white: 0.99, black: 0.002 }
+const output = net.run({ r: 1, g: 0.4, b: 0 }); // { white: 0.99, black: 0.002 }
 ```
 
 Here's another variation of the above example. (_Note_ that input objects do not need to be similar.)
@@ -220,9 +228,9 @@ net.train([
   { input: { r: 0.03, g: 0.7 }, output: { black: 1 } },
   { input: { r: 0.16, b: 0.2 }, output: { white: 1 } },
   { input: { r: 0.5, g: 0.5, b: 1.0 }, output: { white: 1 } },
-])
+]);
 
-const output = net.run({ r: 1, g: 0.4, b: 0 }) // { white: 0.81, black: 0.18 }
+const output = net.run({ r: 1, g: 0.4, b: 0 }); // { white: 0.81, black: 0.18 }
 ```
 
 #### For training with `RNNTimeStep`, `LSTMTimeStep` and `GRUTimeStep`
@@ -235,11 +243,11 @@ Each training pattern can either:
 Example using an array of numbers:
 
 ```javascript
-const net = new brain.recurrent.LSTMTimeStep()
+const net = new brain.recurrent.LSTMTimeStep();
 
-net.train([[1, 2, 3]])
+net.train([[1, 2, 3]]);
 
-const output = net.run([1, 2]) // 3
+const output = net.run([1, 2]); // 3
 ```
 
 Example using an array of arrays of numbers:
@@ -249,18 +257,18 @@ const net = new brain.recurrent.LSTMTimeStep({
   inputSize: 2,
   hiddenLayers: [10],
   outputSize: 2,
-})
+});
 
 net.train([
   [1, 3],
   [2, 2],
   [3, 1],
-])
+]);
 
 const output = net.run([
   [1, 3],
   [2, 2],
-]) // [3, 1]
+]); // [3, 1]
 ```
 
 #### For training with `RNN`, `LSTM` and `GRU`
@@ -277,28 +285,28 @@ CAUTION: When using an array of values, you can use ANY value, however, the valu
 Example using direct strings:
 
 ```javascript
-const net = new brain.recurrent.LSTM()
+const net = new brain.recurrent.LSTM();
 
 net.train([
   'doe, a deer, a female deer',
   'ray, a drop of golden sun',
   'me, a name I call myself',
-])
+]);
 
-const output = net.run('doe') // ', a deer, a female deer'
+const output = net.run('doe'); // ', a deer, a female deer'
 ```
 
 Example using strings with inputs and outputs:
 
 ```javascript
-const net = new brain.recurrent.LSTM()
+const net = new brain.recurrent.LSTM();
 
 net.train([
   { input: 'I feel great about the world!', output: 'happy' },
   { input: 'The world is a terrible place!', output: 'sad' },
-])
+]);
 
-const output = net.run('I feel great about the world!') // 'happy'
+const output = net.run('I feel great about the world!'); // 'happy'
 ```
 
 ### Training Options
@@ -317,7 +325,7 @@ net.train(data, {
   callback: null, // a periodic call back that can be triggered while training --> null or function
   callbackPeriod: 10, // the number of iterations through the training data between callback calls --> number greater than 0
   timeout: Infinity, // the max number of milliseconds to train for --> number greater than 0
-})
+});
 ```
 
 The network will stop training whenever one of the two criteria is met: the training error has gone below the threshold (default `0.005`), or the max number of iterations (default `20000`) has been reached.
@@ -338,34 +346,34 @@ A boolean property called `invalidTrainOptsShouldThrow` is set to `true` by defa
 `trainAsync()` takes the same arguments as train (data and options). Instead of returning the results object from training, it returns a promise that when resolved will return the training results object.
 
 ```javascript
-const net = new brain.NeuralNetwork()
+const net = new brain.NeuralNetwork();
 net
   .trainAsync(data, options)
-  .then(res => {
+  .then((res) => {
     // do something with my trained network
   })
-  .catch(handleError)
+  .catch(handleError);
 ```
 
 With multiple networks you can train in parallel like this:
 
 ```javascript
-const net = new brain.NeuralNetwork()
-const net2 = new brain.NeuralNetwork()
+const net = new brain.NeuralNetwork();
+const net2 = new brain.NeuralNetwork();
 
-const p1 = net.trainAsync(data, options)
-const p2 = net2.trainAsync(data, options)
+const p1 = net.trainAsync(data, options);
+const p2 = net2.trainAsync(data, options);
 
 Promise.all([p1, p2])
-  .then(values => {
-    const res = values[0]
-    const res2 = values[1]
+  .then((values) => {
+    const res = values[0];
+    const res2 = values[1];
     console.log(
       `net trained in ${res.iterations} and net2 trained in ${res2.iterations}`
-    )
+    );
     // do something super cool with my 2 trained networks
   })
-  .catch(handleError)
+  .catch(handleError);
 ```
 
 ### Cross Validation
@@ -376,14 +384,14 @@ Promise.all([p1, p2])
 const crossValidate = new brain.CrossValidate(
   brain.NeuralNetwork,
   networkOptions
-)
-crossValidate.train(data, trainingOptions, k) //note k (or KFolds) is optional
-const json = crossValidate.toJSON() // all stats in json as well as neural networks
-const net = crossValidate.toNeuralNetwork() // get top performing net out of `crossValidate`
+);
+crossValidate.train(data, trainingOptions, k); //note k (or KFolds) is optional
+const json = crossValidate.toJSON(); // all stats in json as well as neural networks
+const net = crossValidate.toNeuralNetwork(); // get top performing net out of `crossValidate`
 
 // optionally later
-const json = crossValidate.toJSON()
-const net = crossValidate.fromJSON(json)
+const json = crossValidate.toJSON();
+const net = crossValidate.fromJSON(json);
 ```
 
 Use `CrossValidate` with these classes:
@@ -400,26 +408,26 @@ An example of using cross validate can be found in [examples/javascript/cross-va
 Streams are a very powerful tool in node for massive data spread across processes and are provided via the brain.js api in the following way:
 
 ```js
-const net = new brain.NeuralNetwork()
+const net = new brain.NeuralNetwork();
 const trainStream = new brain.TrainStream({
   neuralNetwork: net,
-  floodCallback: function() {
-    flood(trainStream, data)
+  floodCallback: function () {
+    flood(trainStream, data);
   },
-  doneTrainingCallback: function(stats) {
+  doneTrainingCallback: function (stats) {
     // network is done training!  What next?
   },
-})
+});
 
 // kick it off
-readInputs(trainStream, data)
+readInputs(trainStream, data);
 
 function readInputs(stream, data) {
   for (let i = 0; i < data.length; i++) {
-    stream.write(data[i])
+    stream.write(data[i]);
   }
   // let it know we've reached the end of the inputs
-  stream.endInputs()
+  stream.endInputs();
 }
 ```
 
@@ -455,19 +463,19 @@ Example:
 
 ```js
 // feed forward
-const net = new brain.NeuralNetwork()
-net.fromJSON(json)
-net.run(input)
+const net = new brain.NeuralNetwork();
+net.fromJSON(json);
+net.run(input);
 
 // time step
-const net = new brain.LSTMTimeStep()
-net.fromJSON(json)
-net.run(input)
+const net = new brain.LSTMTimeStep();
+net.fromJSON(json);
+net.run(input);
 
 // recurrent
-const net = new brain.LSTMTimeStep()
-net.fromJSON(json)
-net.run(input)
+const net = new brain.LSTMTimeStep();
+net.fromJSON(json);
+net.run(input);
 ```
 
 ### `forecast(input, count)` -> predictions
@@ -481,9 +489,9 @@ Available with the following classes. Outputs a array of predictions. Prediction
 Example:
 
 ```js
-const net = new brain.LSTMTimeStep()
-net.fromJSON(json)
-net.forecast(input, 3)
+const net = new brain.LSTMTimeStep();
+net.fromJSON(json);
+net.forecast(input, 3);
 ```
 
 ### `toJSON() -> json`
@@ -507,11 +515,11 @@ The instance of the net's property `maxPredictionLength` (default 100) can be se
 Example:
 
 ```js
-const net = new brain.recurrent.LSTM()
+const net = new brain.recurrent.LSTM();
 
 // later in code, after training on a few novels, write me a new one!
-net.maxPredictionLength = 1000000000 // Be careful!
-net.run('Once upon a time')
+net.maxPredictionLength = 1000000000; // Be careful!
+net.run('Once upon a time');
 ```
 
 ## JSON
@@ -519,8 +527,8 @@ net.run('Once upon a time')
 Serialize or load in the state of a trained network with JSON:
 
 ```javascript
-const json = net.toJSON()
-net.fromJSON(json)
+const json = net.toJSON();
+net.fromJSON(json);
 ```
 
 ## Standalone Function
@@ -528,9 +536,9 @@ net.fromJSON(json)
 You can also get a custom standalone function from a trained network that acts just like `run()`:
 
 ```javascript
-const run = net.toFunction()
-const output = run({ r: 1, g: 0.4, b: 0 })
-console.log(run.toString()) // copy and paste! no need to import brain.js
+const run = net.toFunction();
+const output = run({ r: 1, g: 0.4, b: 0 });
+console.log(run.toString()); // copy and paste! no need to import brain.js
 ```
 
 ## Options
@@ -542,7 +550,7 @@ const net = new brain.NeuralNetwork({
   activation: 'sigmoid', // activation function
   hiddenLayers: [4],
   learningRate: 0.6, // global learning rate, useful when training using streams
-})
+});
 ```
 
 ### activation
@@ -562,7 +570,7 @@ Here's a table (thanks, Wikipedia!) summarizing a plethora of activation functio
 You can use this to specify the number of hidden layers in the network and the size of each layer. For example, if you want two hidden layers - the first with 3 nodes and the second with 4 nodes, you'd give:
 
 ```js
-hiddenLayers: [3, 4]
+hiddenLayers: [3, 4];
 ```
 
 By default `brain.js` uses one hidden layer with size proportionate to the size of the input array.
@@ -598,8 +606,8 @@ Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transfor
 ### `likely`
 
 ```js
-const likely = require('brain/likely')
-const key = likely(input, net)
+const likely = require('brain/likely');
+const key = likely(input, net);
 ```
 
 Likely example see: [simple letter detection](./examples/javascript/which-letter-simple.js)
@@ -616,7 +624,7 @@ Renders the network topology of a feedforward network
 document.getElementById('result').innerHTML = brain.utilities.toSVG(
   network,
   options
-)
+);
 ```
 
 toSVG example see: [network rendering](./examples/javascript/rendering-svg.html)
@@ -661,6 +669,10 @@ You can also join our open discussion about standardization [here](https://githu
 If you have an issue, either a bug or a feature you think would benefit your project let us know and we will do our best.
 
 Create issues [here](https://github.com/BrainJS/brain.js/issues) and follow the template.
+
+### brain.js.org
+
+Source for `brain.js.org` is available at [Brain.js.org Repository](https://github.com/BrainJS/brain.js.org). Built using awesome `vue.js` & `bulma`. Contributions are always welcome. 
 
 ## Contributors
 
