@@ -1,6 +1,6 @@
 const { makeKernel, release, clear } = require('../utilities/kernel');
 const { Operator } = require('./types');
-const zeros2D = require('../utilities/zeros-2d');
+const { zeros2D } = require('../utilities/zeros-2d');
 const { checkSameSize } = require('../utilities/layer-size');
 
 function predict(inputLayerWeights1, inputLayerWeights2) {

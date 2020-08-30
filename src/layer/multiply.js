@@ -1,5 +1,5 @@
 const { makeKernel, release, clear } = require('../utilities/kernel');
-const zeros2D = require('../utilities/zeros-2d');
+const { zeros2D } = require('../utilities/zeros-2d');
 const { Operator } = require('./types');
 
 function predict(weights1, weights2) {

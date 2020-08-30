@@ -6,7 +6,7 @@ const maxI = require('./matrix/max-i');
 const softmax = require('./matrix/softmax');
 const copy = require('./matrix/copy');
 const { randomFloat } = require('../utilities/random');
-const zeros = require('../utilities/zeros');
+const { zeros } = require('../utilities/zeros');
 const {
   DataFormatter,
   defaultRNNFormatter,

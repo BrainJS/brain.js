@@ -1,6 +1,6 @@
 const { Base } = require('./base');
-const zeros2D = require('../utilities/zeros-2d');
-const zeros3D = require('../utilities/zeros-3d');
+const { zeros2D } = require('../utilities/zeros-2d');
+const { zeros3D } = require('../utilities/zeros-3d');
 
 class Activation extends Base {
   constructor(inputLayer, settings) {

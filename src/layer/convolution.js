@@ -3,7 +3,7 @@ const { setStride, setPadding } = require('../utilities/layer-setup');
 const { Filter } = require('./types');
 const randos = require('../utilities/randos');
 const randos3D = require('../utilities/randos-3d');
-const zeros3D = require('../utilities/zeros-3d');
+const { zeros3D } = require('../utilities/zeros-3d');
 const values = require('../utilities/values');
 
 function predict(inputs, filters, biases) {

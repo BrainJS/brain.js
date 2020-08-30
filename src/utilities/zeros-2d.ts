@@ -9,4 +9,4 @@ export function zeros2D(width: number, height: number): Float32Array[][] {
     result[y] = zeros(width);
   }
   return result;
-};
+}

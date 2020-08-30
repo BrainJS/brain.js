@@ -23,7 +23,7 @@ const { arthurFeedForward } = require('../../src/layer/arthur-feed-forward');
 const {
   momentumRootMeanSquaredPropagation,
 } = require('../../src/praxis/momentum-root-mean-squared-propagation');
-const zeros2D = require('../../src/utilities/zeros-2d');
+const { zeros2D } = require('../../src/utilities/zeros-2d');
 const { setup, teardown } = require('../../src/utilities/kernel');
 const { injectIstanbulCoverage } = require('../test-utils');
 

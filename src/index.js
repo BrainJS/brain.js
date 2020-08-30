@@ -25,7 +25,7 @@ const randos = require('./utilities/randos');
 const range = require('./utilities/range');
 const toArray = require('./utilities/to-array');
 const DataFormatter = require('./utilities/data-formatter');
-const zeros = require('./utilities/zeros');
+const { zeros } = require('./utilities/zeros');
 const toSVG = require('./utilities/to-svg');
 
 const brain = {
