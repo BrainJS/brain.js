@@ -20,9 +20,13 @@ export function mse2d(
 }
 
 export class MeanSquaredError {
+  /** Calculate the mean squared error given an array of errors */
   calculate: IKernelRunShortcut;
+  /** Returns the sum of absolute values of previuous error and previous layer errors */
   addAbsolute: IKernelRunShortcut;
+  /** Adds two erros */
   add: IKernelRunShortcut;
+  /** Returns the ratio of sum of errors and length (ie the average)*/
   divide: IKernelRunShortcut;
 
   constructor({width, height}: {width: number, height: number}) {
@@ -36,10 +40,9 @@ export class MeanSquaredError {
       immutable: true,
     });
 
-    // Need more info about what value1 and value2 is.
     this.addAbsolute = makeKernel(
-      function (value1: any, value2: any) {
-        return value1[0] + Math.abs(value2[0][0]);
+      function (prevError: number[], prevLayerErrors: number[][]) {
+        return prevError[0] + Math.abs(prevLayerErrors[0][0]);
       },
       {
         output: [1],
