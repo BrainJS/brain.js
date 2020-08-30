@@ -1,6 +1,6 @@
 const GRU = require('../../src/recurrent/gru');
 const RNN = require('../../src/recurrent/rnn');
-const DataFormatter = require('../../src/utilities/data-formatter');
+const { DataFormatter } = require('../../src/utilities/data-formatter');
 const istanbulLinkerUtil = require('../istanbul-linker-util');
 
 describe('GRU', () => {
