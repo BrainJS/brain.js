@@ -1,7 +1,7 @@
 const { Activation } = require('./types');
 const { makeKernel, release, clear } = require('../utilities/kernel');
 const { activate, measure } = require('../activation/relu');
-// const zeros2D = require('../utilities/zeros-2d');
+// const { zeros2D } = require('../utilities/zeros-2d');
 
 function predict2D(inputs) {
   return activate(inputs[this.thread.y][this.thread.x]);

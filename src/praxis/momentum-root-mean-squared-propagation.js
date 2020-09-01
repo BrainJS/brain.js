@@ -1,5 +1,5 @@
 const { makeKernel, release } = require('../utilities/kernel');
-const zeros2D = require('../utilities/zeros-2d');
+const { zeros2D } = require('../utilities/zeros-2d');
 
 const { Base } = require('./base');
 

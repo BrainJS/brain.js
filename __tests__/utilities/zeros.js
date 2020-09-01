@@ -1,4 +1,4 @@
-const zeros = require('../../src/utilities/zeros');
+const { zeros } = require('../../src/utilities/zeros');
 
 describe('zeros', () => {
   test('should return an array with all zeros', () => {

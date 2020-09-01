@@ -6,9 +6,9 @@ import { IKernelRunShortcut } from 'gpu.js';
  */
 export function mse2d(
   this: {
-    constants: {height: number, width: number, length: number}
+    constants: { height: number; width: number; length: number };
   },
-  errors: [number, number][]
+  errors: Array<[number, number]>
 ) {
   let sum = 0;
   for (let y = 0; y < this.constants.height; y++) {
@@ -26,10 +26,10 @@ export class MeanSquaredError {
   addAbsolute: IKernelRunShortcut;
   /** Adds two erros */
   add: IKernelRunShortcut;
-  /** Returns the ratio of sum of errors and length (ie the average)*/
+  /** Returns the ratio of sum of errors and length (ie the average) */
   divide: IKernelRunShortcut;
 
-  constructor({width, height}: {width: number, height: number}) {
+  constructor({ width, height }: { width: number; height: number }) {
     this.calculate = makeKernel(mse2d, {
       output: [1],
       constants: {

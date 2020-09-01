@@ -1,4 +1,4 @@
-const zeros2D = require('../utilities/zeros-2d');
+const { zeros2D } = require('../utilities/zeros-2d');
 const { Internal } = require('./types');
 const { release, clear } = require('../utilities/kernel');
 

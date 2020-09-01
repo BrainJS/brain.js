@@ -1,4 +1,4 @@
-const zeros = require('../../utilities/zeros');
+const { zeros } = require('../../utilities/zeros');
 
 /**
  * A matrix
