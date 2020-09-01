@@ -71,7 +71,7 @@
   "homepage": "https://github.com/brainjs/brain.js#readme",
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint"
+      "pre-commit": "npm run lint && git add ."
     }
   },
   "keywords": [
