@@ -1,5 +1,5 @@
-import { makeKernel } from '../utilities/kernel';
 import { IKernelRunShortcut } from 'gpu.js';
+import { makeKernel } from '../utilities/kernel';
 
 /**
  * 2D Mean Squared Error
@@ -9,7 +9,7 @@ export function mse2d(
     constants: { height: number; width: number; length: number };
   },
   errors: Array<[number, number]>
-) {
+): number {
   let sum = 0;
   for (let y = 0; y < this.constants.height; y++) {
     for (let x = 0; x < this.constants.width; x++) {
