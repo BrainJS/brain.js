@@ -16,3 +16,6 @@ yarn.lock
 __coverage__
 
 test*.*
+
+# webstorm
+.idea

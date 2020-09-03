@@ -753,12 +753,15 @@ class RNN {
         )} }.bind({ dataFormatter });`
       : ''
   }
+  var maxPredictionLength =
+    ${this.maxPredictionLength} +
+    rawInput.length +
+    ${this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0};
   var input = ${
     this.dataFormatter && typeof this.formatDataIn === 'function'
       ? 'formatDataIn(rawInput)'
       : 'rawInput'
   };
-  var maxPredictionLength = input.length + ${this.maxPredictionLength};
   var _i = 0;
   var output = [];
   var states = [];

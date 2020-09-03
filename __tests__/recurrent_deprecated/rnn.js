@@ -579,6 +579,50 @@ describe('RNN', () => {
   });
 
   describe('.toFunction()', () => {
+    describe('without callback argument', () => {
+      it('returns function that works still produces stable output', () => {
+        const net = new RNN({
+          hiddenLayers: [3],
+        });
+        net.train([
+          { input: '1', output: '2' },
+          { input: '2', output: '3' },
+        ]);
+        const expected1 = net.run('1');
+        const expected2 = net.run('2');
+        const fn = net.toFunction();
+
+        expect(fn('1')).toBe(expected1);
+        expect(fn('2')).toBe(expected2);
+      });
+    });
+    describe('with callback argument', () => {
+      it('returns string, which expects a result that makes a function that works still produces stable output', async () => {
+        const net = new RNN({
+          hiddenLayers: [3],
+        });
+        net.train([
+          { input: '1', output: '2' },
+          { input: '2', output: '3' },
+        ]);
+        const expected1 = net.run('1');
+        const expected2 = net.run('2');
+        const fn = await new Promise((resolve, reject) => {
+          try {
+            resolve(
+              net.toFunction((_fnBody) => {
+                expect(typeof _fnBody).toBe('string');
+                return _fnBody;
+              })
+            );
+          } catch (e) {
+            reject(e);
+          }
+        });
+        expect(fn('1')).toBe(expected1);
+        expect(fn('2')).toBe(expected2);
+      });
+    });
     it('can output same as run method', () => {
       const dataFormatter = new DataFormatter(['h', 'i', ' ', 'm', 'o', '!']);
       const net = new RNN({

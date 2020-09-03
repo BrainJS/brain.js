@@ -216,9 +216,9 @@ var characterTable = ${JSON.stringify(this.characterTable)};
 var indexTable = ${JSON.stringify(this.indexTable)};
 var characters = ${JSON.stringify(this.characters)};
 var dataFormatter = {
-  ${this.toIndexes.toString()},
-  ${this.toIndexesInputOutput.toString()},
-  ${this.toCharacters.toString()}
+  toIndexes: ${this.toIndexes.toString()},
+  toIndexesInputOutput: ${this.toIndexesInputOutput.toString()},
+  toCharacters: ${this.toCharacters.toString()},
 };`;
   }
 }
