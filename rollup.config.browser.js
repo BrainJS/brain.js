@@ -10,7 +10,7 @@ import { terser } from 'rollup-plugin-terser';
 const name = 'brain';
 
 export default {
-  input: './src/index.js',
+  input: './src/index.ts',
 
   // Specify here external modules which you don't want to include in your bundle (for instance: 'lodash', 'moment' etc.)
   // https://rollupjs.org/guide/en#external-e-external
@@ -18,7 +18,7 @@ export default {
 
   plugins: [
     // Allows node_modules resolution
-    resolve({ preferBuiltins: true, browser: true }),
+    resolve({ preferBuiltins: false, browser: true }),
 
     // allow json importing
     json(),

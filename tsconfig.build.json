@@ -1,21 +1,12 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "checkJs": false,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "noEmit": true,
-    "noEmitOnError": true,
-    "strict": true,
-    "target": "ES6"
+    // "emitDeclarationOnly": true,
+    // "declaration": true,
+    // "declarationDir": "./dist/types",
+    // "declarationMap": true,
+    // "noEmit": false,
+    // "outDir": "./dist/",
+    "rootDir": "./src/"
   },
-  "exclude": [
-    "node_modules",
-    "examples",
-    "dist",
-    "**/*.json",
-    "**/*.config.js"
-  ],
-  "include": ["src"]
+  "extends": "./tsconfig.json"
 }
