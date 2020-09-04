@@ -23,7 +23,7 @@ export function objectsToFloat32Arrays(
   table: Record<string, number>,
   length: number
 ): Float32Array[] {
-  const results = [];
+  const results: Float32Array[] = [];
   for (let i = 0; i < objects.length; i++) {
     const object = objects[i];
     const result = new Float32Array(length);
