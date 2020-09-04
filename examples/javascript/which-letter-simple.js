@@ -1,5 +1,5 @@
 const assert = require('assert');
-const brain = require('../../src');
+const brain = require('../../dist/brain');
 
 /**
  * Return 0 or 1 for '#'

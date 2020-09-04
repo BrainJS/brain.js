@@ -1,4 +1,4 @@
-const brain = require('../../src');
+const brain = require('../../dist/brain');
 
 const LSTM = brain.recurrent.LSTM;
 const net = new LSTM();

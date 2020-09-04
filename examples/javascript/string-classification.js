@@ -1,4 +1,4 @@
-const brain = require('../../src');
+const brain = require('../../dist/brain');
 
 // create configuration for training
 const config = {

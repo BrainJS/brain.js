@@ -1,5 +1,5 @@
 const assert = require('assert');
-const brain = require('../../src');
+const brain = require('../../dist/brain');
 
 const net = new brain.recurrent.LSTMTimeStep({
   inputSize: 2,

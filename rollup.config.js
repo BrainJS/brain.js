@@ -22,12 +22,12 @@ export default {
       extensions,
     }),
 
+    // Allow bundling cjs modules. Rollup doesn't understand cjs
+    commonjs(),
+
     // Allows the node builtins to be required/imported.
     globals(),
     builtins(),
-
-    // Allow bundling cjs modules. Rollup doesn't understand cjs
-    commonjs(),
 
     // Compile TypeScript/JavaScript files
     babel({

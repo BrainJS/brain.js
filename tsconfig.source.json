@@ -14,5 +14,6 @@
     "strict": true,
     "target": "esnext"
   },
-  "exclude": ["node_modules", "**/*.json", "**/*.d.ts", "./dist"]
+  "exclude": ["node_modules", "**/*.json", "**/*.d.ts", "./dist"],
+  "include": ["./src"]
 }

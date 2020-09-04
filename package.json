@@ -112,7 +112,7 @@
     "dist": "npm run build",
     "lint": "run-p lint:**",
     "lint:eslint": "eslint --fix --ext .js,.ts __tests__ src",
-    "lint:typecheck": "tsc",
+    "lint:typecheck": "tsc --project tsconfig.source.json",
     "postinstall": "npm rebuild gpu.js",
     "test": "jest",
     "watch": "run-p watch:**",

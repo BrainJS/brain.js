@@ -13,7 +13,7 @@ export default {
 
   // Specify here external modules which you don't want to include in your bundle (for instance: 'lodash', 'moment' etc.)
   // https://rollupjs.org/guide/en#external-e-external
-  // external: ['gpu.js'],
+  external: [],
 
   plugins: [
     // Allows node_modules resolution
@@ -23,12 +23,12 @@ export default {
       extensions,
     }),
 
+    // Allow bundling cjs modules. Rollup doesn't understand cjs
+    commonjs(),
+
     // Allows the node builtins to be required/imported.
     globals(),
     builtins(),
-
-    // Allow bundling cjs modules. Rollup doesn't understand cjs
-    commonjs(),
 
     // Compile TypeScript/JavaScript files
     babel({

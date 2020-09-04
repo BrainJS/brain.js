@@ -1,4 +1,4 @@
-const brain = require('../../src');
+const brain = require('../../dist/brain');
 const net = new brain.NeuralNetworkGPU();
 
 const xorTrainingData = [
