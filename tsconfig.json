@@ -5,13 +5,16 @@
     "checkJs": false,
     "esModuleInterop": true,
     "incremental": true,
+    "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
     "noEmitOnError": true,
+    "outDir": "./dist",
     "rootDir": "./",
     "skipLibCheck": true,
     "strict": true,
-    "target": "ES6"
+    "target": "esnext"
   },
-  "exclude": ["node_modules", "examples", "dist", "**/*.json", "**/*.config.js"]
+  "exclude": ["node_modules", "**/*.json", "**/*.config.js", "**/*.d.ts"],
+  "include": ["./src", "./__tests__"]
 }

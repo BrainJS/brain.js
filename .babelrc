@@ -1,15 +1,19 @@
 {
+  "plugins": [
+    "@babel/proposal-class-properties",
+    "@babel/proposal-object-rest-spread"
+  ],
   "presets": [
     [
       "@babel/preset-env",
       {
-        "useBuiltIns": "usage",
-        "corejs": 3,
-        "targets": {
-          "browsers": "> 0.25%, not dead",
-          "node": "8.6.0"
-        }
+        "corejs": {
+          "version": 2
+        },
+        "targets": "defaults",
+        "useBuiltIns": "usage"
       }
-    ]
+    ],
+    "@babel/preset-typescript"
   ]
 }
