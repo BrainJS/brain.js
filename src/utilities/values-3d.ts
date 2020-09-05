@@ -9,7 +9,7 @@ export function values3D(
   depth: number,
   value: number
 ): Float32Array[][] {
-  const result = new Array(depth);
+  const result: Float32Array[][] = new Array(depth);
   for (let z = 0; z < depth; z++) {
     result[z] = values2D(width, height, value);
   }

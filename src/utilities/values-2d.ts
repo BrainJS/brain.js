@@ -8,7 +8,7 @@ export function values2D(
   height: number,
   value: number
 ): Float32Array[] {
-  const result = new Array(height);
+  const result: Float32Array[] = new Array(height);
   for (let y = 0; y < height; y++) {
     result[y] = values(width, value);
   }
