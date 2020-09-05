@@ -1,13 +1,19 @@
-import { IKernelRunShortcut } from 'gpu.js';
+import {
+  IKernelRunShortcut,
+  KernelFunction,
+  IKernelFunctionThis,
+} from 'gpu.js';
 import { makeKernel } from '../utilities/kernel';
+
+interface mse2dThis extends IKernelFunctionThis {
+  constants: { height: number; width: number; length: number };
+}
 
 /**
  * 2D Mean Squared Error
  */
 export function mse2d(
-  this: {
-    constants: { height: number; width: number; length: number };
-  },
+  this: mse2dThis,
   errors: Array<[number, number]>
 ): number {
   let sum = 0;
@@ -30,7 +36,7 @@ export class MeanSquaredError {
   divide: IKernelRunShortcut;
 
   constructor({ width, height }: { width: number; height: number }) {
-    this.calculate = makeKernel(mse2d, {
+    this.calculate = makeKernel(mse2d as KernelFunction, {
       output: [1],
       constants: {
         width,
@@ -43,7 +49,7 @@ export class MeanSquaredError {
     this.addAbsolute = makeKernel(
       function (prevError: number[], prevLayerErrors: number[][]) {
         return prevError[0] + Math.abs(prevLayerErrors[0][0]);
-      },
+      } as KernelFunction,
       {
         output: [1],
         immutable: true,
@@ -53,7 +59,7 @@ export class MeanSquaredError {
     this.add = makeKernel(
       function (value1: number[], value2: number[]) {
         return value1[0] + value2[0];
-      },
+      } as KernelFunction,
       {
         output: [1],
         immutable: true,
@@ -67,7 +73,7 @@ export class MeanSquaredError {
           return value / length;
         }
         return 0;
-      },
+      } as KernelFunction,
       {
         output: [1],
         immutable: true,
