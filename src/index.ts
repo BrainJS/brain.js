@@ -64,6 +64,11 @@ export const brain = {
   },
 };
 
+if (typeof window !== 'undefined') {
+  // @ts-expect-error window.brain
+  window.brain = brain;
+}
+
 if (typeof module !== 'undefined') {
   module.exports = brain;
 }
