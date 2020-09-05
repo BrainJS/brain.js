@@ -4,21 +4,15 @@
     "allowSyntheticDefaultImports": true,
     "checkJs": false,
     "esModuleInterop": true,
+    "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
     "noEmitOnError": true,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "skipLibCheck": true,
     "strict": true,
-    "target": "ES6"
-    // "declaration": true,
-    // "emitDeclarationOnly": true,
-    // "outDir": "dist",
+    "target": "esnext"
   },
-  "exclude": [
-    "node_modules",
-    "examples",
-    "dist",
-    "**/*.json",
-    "**/*.config.js"
-  ],
-  "include": ["src", "__tests__"]
+  "exclude": ["node_modules", "**/*.json", "**/*.d.ts", "./dist"]
 }

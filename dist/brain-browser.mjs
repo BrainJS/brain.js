@@ -1,61 +1,15 @@
-var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-function unwrapExports (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
-
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
-function commonjsRequire () {
-	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
-}
-
-/**
- * Leaky Relu Activation, aka Leaky Rectified Linear Unit Activation
- * @description https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
- * @param weight
- * @returns {number}
- */
-function activate(weight) {
-  return weight > 0 ? weight : 0.01 * weight;
-}
-/**
- * Leaky Relu derivative
- * @param weight
- * @param error
- * @returns {number}
- */
-
-
-function measure(weight, error) {
-  return weight > 0 ? error : 0.01 * error;
-}
-
-var leakyRelu = {
-  activate: activate,
-  measure: measure
-};
-
 /**
  * Relu Activation, aka Rectified Linear Unit Activation
  * @description https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
- * @param weight
- * @returns {number}
  */
-function activate$1(weight) {
+function activate(weight) {
   return Math.max(0, weight);
 }
 /**
  * Relu derivative
- * @param weight
- * @param delta
- * @returns {number}
  */
 
-
-function measure$1(weight, delta) {
+function measure(weight, delta) {
   if (weight <= 0) {
     return 0;
   }
@@ -63,81 +17,125 @@ function measure$1(weight, delta) {
   return delta;
 }
 
-var relu = {
-  activate: activate$1,
-  measure: measure$1
-};
+var relu = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  activate: activate,
+  measure: measure
+});
 
 /**
  * sigmoid activation
- * @param value
- * @returns {number}
  */
-function activate$2(value) {
+function activate$1(value) {
   return 1 / (1 + Math.exp(-value));
 }
 /**
  * sigmoid derivative
- * @param weight
- * @param error
- * @returns {number}
  */
 
-
-function measure$2(weight, error) {
+function measure$1(weight, error) {
   return weight * (1 - weight) * error;
 }
 
-var sigmoid = {
-  activate: activate$2,
-  measure: measure$2
-};
+var sigmoid = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  activate: activate$1,
+  measure: measure$1
+});
 
-var check = function (it) {
-  return it && it.Math == Math && it;
-};
+function createCommonjsModule(fn, basedir, module) {
+	return module = {
+	  path: basedir,
+	  exports: {},
+	  require: function (path, base) {
+      return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
+    }
+	}, fn(module, module.exports), module.exports;
+}
 
+function commonjsRequire () {
+	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
+}
+
+var _global = createCommonjsModule(function (module) {
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-var global_1 =
-  // eslint-disable-next-line no-undef
-  check(typeof globalThis == 'object' && globalThis) ||
-  check(typeof window == 'object' && window) ||
-  check(typeof self == 'object' && self) ||
-  check(typeof commonjsGlobal == 'object' && commonjsGlobal) ||
+var global = module.exports = typeof window != 'undefined' && window.Math == Math
+  ? window : typeof self != 'undefined' && self.Math == Math ? self
   // eslint-disable-next-line no-new-func
-  Function('return this')();
+  : Function('return this')();
+if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
+});
 
-var fails = function (exec) {
+var _core = createCommonjsModule(function (module) {
+var core = module.exports = { version: '2.6.11' };
+if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
+});
+
+var _isObject = function (it) {
+  return typeof it === 'object' ? it !== null : typeof it === 'function';
+};
+
+var _anObject = function (it) {
+  if (!_isObject(it)) throw TypeError(it + ' is not an object!');
+  return it;
+};
+
+var _fails = function (exec) {
   try {
     return !!exec();
-  } catch (error) {
+  } catch (e) {
     return true;
   }
 };
 
 // Thank's IE8 for his funny defineProperty
-var descriptors = !fails(function () {
-  return Object.defineProperty({}, 1, { get: function () { return 7; } })[1] != 7;
+var _descriptors = !_fails(function () {
+  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
 });
 
-var nativePropertyIsEnumerable = {}.propertyIsEnumerable;
-var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+var document$1 = _global.document;
+// typeof document.createElement is 'object' in old IE
+var is = _isObject(document$1) && _isObject(document$1.createElement);
+var _domCreate = function (it) {
+  return is ? document$1.createElement(it) : {};
+};
 
-// Nashorn ~ JDK8 bug
-var NASHORN_BUG = getOwnPropertyDescriptor && !nativePropertyIsEnumerable.call({ 1: 2 }, 1);
+var _ie8DomDefine = !_descriptors && !_fails(function () {
+  return Object.defineProperty(_domCreate('div'), 'a', { get: function () { return 7; } }).a != 7;
+});
 
-// `Object.prototype.propertyIsEnumerable` method implementation
-// https://tc39.github.io/ecma262/#sec-object.prototype.propertyisenumerable
-var f = NASHORN_BUG ? function propertyIsEnumerable(V) {
-  var descriptor = getOwnPropertyDescriptor(this, V);
-  return !!descriptor && descriptor.enumerable;
-} : nativePropertyIsEnumerable;
+// 7.1.1 ToPrimitive(input [, PreferredType])
 
-var objectPropertyIsEnumerable = {
+// instead of the ES6 spec version, we didn't implement @@toPrimitive case
+// and the second argument - flag - preferred type is a string
+var _toPrimitive = function (it, S) {
+  if (!_isObject(it)) return it;
+  var fn, val;
+  if (S && typeof (fn = it.toString) == 'function' && !_isObject(val = fn.call(it))) return val;
+  if (typeof (fn = it.valueOf) == 'function' && !_isObject(val = fn.call(it))) return val;
+  if (!S && typeof (fn = it.toString) == 'function' && !_isObject(val = fn.call(it))) return val;
+  throw TypeError("Can't convert object to primitive value");
+};
+
+var dP = Object.defineProperty;
+
+var f = _descriptors ? Object.defineProperty : function defineProperty(O, P, Attributes) {
+  _anObject(O);
+  P = _toPrimitive(P, true);
+  _anObject(Attributes);
+  if (_ie8DomDefine) try {
+    return dP(O, P, Attributes);
+  } catch (e) { /* empty */ }
+  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
+  if ('value' in Attributes) O[P] = Attributes.value;
+  return O;
+};
+
+var _objectDp = {
 	f: f
 };
 
-var createPropertyDescriptor = function (bitmap, value) {
+var _propertyDesc = function (bitmap, value) {
   return {
     enumerable: !(bitmap & 1),
     configurable: !(bitmap & 2),
@@ -146,681 +144,83 @@ var createPropertyDescriptor = function (bitmap, value) {
   };
 };
 
-var toString = {}.toString;
-
-var classofRaw = function (it) {
-  return toString.call(it).slice(8, -1);
-};
-
-var split = ''.split;
-
-// fallback for non-array-like ES3 and non-enumerable old V8 strings
-var indexedObject = fails(function () {
-  // throws an error in rhino, see https://github.com/mozilla/rhino/issues/346
-  // eslint-disable-next-line no-prototype-builtins
-  return !Object('z').propertyIsEnumerable(0);
-}) ? function (it) {
-  return classofRaw(it) == 'String' ? split.call(it, '') : Object(it);
-} : Object;
-
-// `RequireObjectCoercible` abstract operation
-// https://tc39.github.io/ecma262/#sec-requireobjectcoercible
-var requireObjectCoercible = function (it) {
-  if (it == undefined) throw TypeError("Can't call method on " + it);
-  return it;
-};
-
-// toObject with fallback for non-array-like ES3 strings
-
-
-
-var toIndexedObject = function (it) {
-  return indexedObject(requireObjectCoercible(it));
-};
-
-var isObject = function (it) {
-  return typeof it === 'object' ? it !== null : typeof it === 'function';
-};
-
-// `ToPrimitive` abstract operation
-// https://tc39.github.io/ecma262/#sec-toprimitive
-// instead of the ES6 spec version, we didn't implement @@toPrimitive case
-// and the second argument - flag - preferred type is a string
-var toPrimitive = function (input, PREFERRED_STRING) {
-  if (!isObject(input)) return input;
-  var fn, val;
-  if (PREFERRED_STRING && typeof (fn = input.toString) == 'function' && !isObject(val = fn.call(input))) return val;
-  if (typeof (fn = input.valueOf) == 'function' && !isObject(val = fn.call(input))) return val;
-  if (!PREFERRED_STRING && typeof (fn = input.toString) == 'function' && !isObject(val = fn.call(input))) return val;
-  throw TypeError("Can't convert object to primitive value");
-};
-
-var hasOwnProperty = {}.hasOwnProperty;
-
-var has = function (it, key) {
-  return hasOwnProperty.call(it, key);
-};
-
-var document$1 = global_1.document;
-// typeof document.createElement is 'object' in old IE
-var EXISTS = isObject(document$1) && isObject(document$1.createElement);
-
-var documentCreateElement = function (it) {
-  return EXISTS ? document$1.createElement(it) : {};
-};
-
-// Thank's IE8 for his funny defineProperty
-var ie8DomDefine = !descriptors && !fails(function () {
-  return Object.defineProperty(documentCreateElement('div'), 'a', {
-    get: function () { return 7; }
-  }).a != 7;
-});
-
-var nativeGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-
-// `Object.getOwnPropertyDescriptor` method
-// https://tc39.github.io/ecma262/#sec-object.getownpropertydescriptor
-var f$1 = descriptors ? nativeGetOwnPropertyDescriptor : function getOwnPropertyDescriptor(O, P) {
-  O = toIndexedObject(O);
-  P = toPrimitive(P, true);
-  if (ie8DomDefine) try {
-    return nativeGetOwnPropertyDescriptor(O, P);
-  } catch (error) { /* empty */ }
-  if (has(O, P)) return createPropertyDescriptor(!objectPropertyIsEnumerable.f.call(O, P), O[P]);
-};
-
-var objectGetOwnPropertyDescriptor = {
-	f: f$1
-};
-
-var anObject = function (it) {
-  if (!isObject(it)) {
-    throw TypeError(String(it) + ' is not an object');
-  } return it;
-};
-
-var nativeDefineProperty = Object.defineProperty;
-
-// `Object.defineProperty` method
-// https://tc39.github.io/ecma262/#sec-object.defineproperty
-var f$2 = descriptors ? nativeDefineProperty : function defineProperty(O, P, Attributes) {
-  anObject(O);
-  P = toPrimitive(P, true);
-  anObject(Attributes);
-  if (ie8DomDefine) try {
-    return nativeDefineProperty(O, P, Attributes);
-  } catch (error) { /* empty */ }
-  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported');
-  if ('value' in Attributes) O[P] = Attributes.value;
-  return O;
-};
-
-var objectDefineProperty = {
-	f: f$2
-};
-
-var createNonEnumerableProperty = descriptors ? function (object, key, value) {
-  return objectDefineProperty.f(object, key, createPropertyDescriptor(1, value));
+var _hide = _descriptors ? function (object, key, value) {
+  return _objectDp.f(object, key, _propertyDesc(1, value));
 } : function (object, key, value) {
   object[key] = value;
   return object;
 };
 
-var setGlobal = function (key, value) {
-  try {
-    createNonEnumerableProperty(global_1, key, value);
-  } catch (error) {
-    global_1[key] = value;
-  } return value;
+var hasOwnProperty = {}.hasOwnProperty;
+var _has = function (it, key) {
+  return hasOwnProperty.call(it, key);
 };
-
-var SHARED = '__core-js_shared__';
-var store = global_1[SHARED] || setGlobal(SHARED, {});
-
-var sharedStore = store;
-
-var functionToString = Function.toString;
-
-// this helper broken in `3.4.1-3.4.4`, so we can't use `shared` helper
-if (typeof sharedStore.inspectSource != 'function') {
-  sharedStore.inspectSource = function (it) {
-    return functionToString.call(it);
-  };
-}
-
-var inspectSource = sharedStore.inspectSource;
-
-var WeakMap = global_1.WeakMap;
-
-var nativeWeakMap = typeof WeakMap === 'function' && /native code/.test(inspectSource(WeakMap));
-
-var shared = createCommonjsModule(function (module) {
-(module.exports = function (key, value) {
-  return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
-})('versions', []).push({
-  version: '3.6.5',
-  mode:  'global',
-  copyright: '© 2020 Denis Pushkarev (zloirock.ru)'
-});
-});
 
 var id = 0;
-var postfix = Math.random();
-
-var uid = function (key) {
-  return 'Symbol(' + String(key === undefined ? '' : key) + ')_' + (++id + postfix).toString(36);
+var px = Math.random();
+var _uid = function (key) {
+  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
 };
 
-var keys = shared('keys');
+var _library = false;
 
-var sharedKey = function (key) {
-  return keys[key] || (keys[key] = uid(key));
+var _shared = createCommonjsModule(function (module) {
+var SHARED = '__core-js_shared__';
+var store = _global[SHARED] || (_global[SHARED] = {});
+
+(module.exports = function (key, value) {
+  return store[key] || (store[key] = value !== undefined ? value : {});
+})('versions', []).push({
+  version: _core.version,
+  mode:  'global',
+  copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
+});
+});
+
+var _functionToString = _shared('native-function-to-string', Function.toString);
+
+var _redefine = createCommonjsModule(function (module) {
+var SRC = _uid('src');
+
+var TO_STRING = 'toString';
+var TPL = ('' + _functionToString).split(TO_STRING);
+
+_core.inspectSource = function (it) {
+  return _functionToString.call(it);
 };
 
-var hiddenKeys = {};
-
-var WeakMap$1 = global_1.WeakMap;
-var set, get, has$1;
-
-var enforce = function (it) {
-  return has$1(it) ? get(it) : set(it, {});
-};
-
-var getterFor = function (TYPE) {
-  return function (it) {
-    var state;
-    if (!isObject(it) || (state = get(it)).type !== TYPE) {
-      throw TypeError('Incompatible receiver, ' + TYPE + ' required');
-    } return state;
-  };
-};
-
-if (nativeWeakMap) {
-  var store$1 = new WeakMap$1();
-  var wmget = store$1.get;
-  var wmhas = store$1.has;
-  var wmset = store$1.set;
-  set = function (it, metadata) {
-    wmset.call(store$1, it, metadata);
-    return metadata;
-  };
-  get = function (it) {
-    return wmget.call(store$1, it) || {};
-  };
-  has$1 = function (it) {
-    return wmhas.call(store$1, it);
-  };
-} else {
-  var STATE = sharedKey('state');
-  hiddenKeys[STATE] = true;
-  set = function (it, metadata) {
-    createNonEnumerableProperty(it, STATE, metadata);
-    return metadata;
-  };
-  get = function (it) {
-    return has(it, STATE) ? it[STATE] : {};
-  };
-  has$1 = function (it) {
-    return has(it, STATE);
-  };
-}
-
-var internalState = {
-  set: set,
-  get: get,
-  has: has$1,
-  enforce: enforce,
-  getterFor: getterFor
-};
-
-var redefine = createCommonjsModule(function (module) {
-var getInternalState = internalState.get;
-var enforceInternalState = internalState.enforce;
-var TEMPLATE = String(String).split('String');
-
-(module.exports = function (O, key, value, options) {
-  var unsafe = options ? !!options.unsafe : false;
-  var simple = options ? !!options.enumerable : false;
-  var noTargetGet = options ? !!options.noTargetGet : false;
-  if (typeof value == 'function') {
-    if (typeof key == 'string' && !has(value, 'name')) createNonEnumerableProperty(value, 'name', key);
-    enforceInternalState(value).source = TEMPLATE.join(typeof key == 'string' ? key : '');
-  }
-  if (O === global_1) {
-    if (simple) O[key] = value;
-    else setGlobal(key, value);
-    return;
-  } else if (!unsafe) {
+(module.exports = function (O, key, val, safe) {
+  var isFunction = typeof val == 'function';
+  if (isFunction) _has(val, 'name') || _hide(val, 'name', key);
+  if (O[key] === val) return;
+  if (isFunction) _has(val, SRC) || _hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
+  if (O === _global) {
+    O[key] = val;
+  } else if (!safe) {
     delete O[key];
-  } else if (!noTargetGet && O[key]) {
-    simple = true;
-  }
-  if (simple) O[key] = value;
-  else createNonEnumerableProperty(O, key, value);
-// add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
-})(Function.prototype, 'toString', function toString() {
-  return typeof this == 'function' && getInternalState(this).source || inspectSource(this);
-});
-});
-
-var path = global_1;
-
-var aFunction = function (variable) {
-  return typeof variable == 'function' ? variable : undefined;
-};
-
-var getBuiltIn = function (namespace, method) {
-  return arguments.length < 2 ? aFunction(path[namespace]) || aFunction(global_1[namespace])
-    : path[namespace] && path[namespace][method] || global_1[namespace] && global_1[namespace][method];
-};
-
-var ceil = Math.ceil;
-var floor = Math.floor;
-
-// `ToInteger` abstract operation
-// https://tc39.github.io/ecma262/#sec-tointeger
-var toInteger = function (argument) {
-  return isNaN(argument = +argument) ? 0 : (argument > 0 ? floor : ceil)(argument);
-};
-
-var min = Math.min;
-
-// `ToLength` abstract operation
-// https://tc39.github.io/ecma262/#sec-tolength
-var toLength = function (argument) {
-  return argument > 0 ? min(toInteger(argument), 0x1FFFFFFFFFFFFF) : 0; // 2 ** 53 - 1 == 9007199254740991
-};
-
-var max = Math.max;
-var min$1 = Math.min;
-
-// Helper for a popular repeating case of the spec:
-// Let integer be ? ToInteger(index).
-// If integer < 0, let result be max((length + integer), 0); else let result be min(integer, length).
-var toAbsoluteIndex = function (index, length) {
-  var integer = toInteger(index);
-  return integer < 0 ? max(integer + length, 0) : min$1(integer, length);
-};
-
-// `Array.prototype.{ indexOf, includes }` methods implementation
-var createMethod = function (IS_INCLUDES) {
-  return function ($this, el, fromIndex) {
-    var O = toIndexedObject($this);
-    var length = toLength(O.length);
-    var index = toAbsoluteIndex(fromIndex, length);
-    var value;
-    // Array#includes uses SameValueZero equality algorithm
-    // eslint-disable-next-line no-self-compare
-    if (IS_INCLUDES && el != el) while (length > index) {
-      value = O[index++];
-      // eslint-disable-next-line no-self-compare
-      if (value != value) return true;
-    // Array#indexOf ignores holes, Array#includes - not
-    } else for (;length > index; index++) {
-      if ((IS_INCLUDES || index in O) && O[index] === el) return IS_INCLUDES || index || 0;
-    } return !IS_INCLUDES && -1;
-  };
-};
-
-var arrayIncludes = {
-  // `Array.prototype.includes` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.includes
-  includes: createMethod(true),
-  // `Array.prototype.indexOf` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.indexof
-  indexOf: createMethod(false)
-};
-
-var indexOf = arrayIncludes.indexOf;
-
-
-var objectKeysInternal = function (object, names) {
-  var O = toIndexedObject(object);
-  var i = 0;
-  var result = [];
-  var key;
-  for (key in O) !has(hiddenKeys, key) && has(O, key) && result.push(key);
-  // Don't enum bug & hidden keys
-  while (names.length > i) if (has(O, key = names[i++])) {
-    ~indexOf(result, key) || result.push(key);
-  }
-  return result;
-};
-
-// IE8- don't enum bug keys
-var enumBugKeys = [
-  'constructor',
-  'hasOwnProperty',
-  'isPrototypeOf',
-  'propertyIsEnumerable',
-  'toLocaleString',
-  'toString',
-  'valueOf'
-];
-
-var hiddenKeys$1 = enumBugKeys.concat('length', 'prototype');
-
-// `Object.getOwnPropertyNames` method
-// https://tc39.github.io/ecma262/#sec-object.getownpropertynames
-var f$3 = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
-  return objectKeysInternal(O, hiddenKeys$1);
-};
-
-var objectGetOwnPropertyNames = {
-	f: f$3
-};
-
-var f$4 = Object.getOwnPropertySymbols;
-
-var objectGetOwnPropertySymbols = {
-	f: f$4
-};
-
-// all object keys, includes non-enumerable and symbols
-var ownKeys = getBuiltIn('Reflect', 'ownKeys') || function ownKeys(it) {
-  var keys = objectGetOwnPropertyNames.f(anObject(it));
-  var getOwnPropertySymbols = objectGetOwnPropertySymbols.f;
-  return getOwnPropertySymbols ? keys.concat(getOwnPropertySymbols(it)) : keys;
-};
-
-var copyConstructorProperties = function (target, source) {
-  var keys = ownKeys(source);
-  var defineProperty = objectDefineProperty.f;
-  var getOwnPropertyDescriptor = objectGetOwnPropertyDescriptor.f;
-  for (var i = 0; i < keys.length; i++) {
-    var key = keys[i];
-    if (!has(target, key)) defineProperty(target, key, getOwnPropertyDescriptor(source, key));
-  }
-};
-
-var replacement = /#|\.prototype\./;
-
-var isForced = function (feature, detection) {
-  var value = data[normalize(feature)];
-  return value == POLYFILL ? true
-    : value == NATIVE ? false
-    : typeof detection == 'function' ? fails(detection)
-    : !!detection;
-};
-
-var normalize = isForced.normalize = function (string) {
-  return String(string).replace(replacement, '.').toLowerCase();
-};
-
-var data = isForced.data = {};
-var NATIVE = isForced.NATIVE = 'N';
-var POLYFILL = isForced.POLYFILL = 'P';
-
-var isForced_1 = isForced;
-
-var getOwnPropertyDescriptor$1 = objectGetOwnPropertyDescriptor.f;
-
-
-
-
-
-
-/*
-  options.target      - name of the target object
-  options.global      - target is the global object
-  options.stat        - export as static methods of target
-  options.proto       - export as prototype methods of target
-  options.real        - real prototype method for the `pure` version
-  options.forced      - export even if the native feature is available
-  options.bind        - bind methods to the target, required for the `pure` version
-  options.wrap        - wrap constructors to preventing global pollution, required for the `pure` version
-  options.unsafe      - use the simple assignment of property instead of delete + defineProperty
-  options.sham        - add a flag to not completely full polyfills
-  options.enumerable  - export as enumerable property
-  options.noTargetGet - prevent calling a getter on target
-*/
-var _export = function (options, source) {
-  var TARGET = options.target;
-  var GLOBAL = options.global;
-  var STATIC = options.stat;
-  var FORCED, target, key, targetProperty, sourceProperty, descriptor;
-  if (GLOBAL) {
-    target = global_1;
-  } else if (STATIC) {
-    target = global_1[TARGET] || setGlobal(TARGET, {});
+    _hide(O, key, val);
+  } else if (O[key]) {
+    O[key] = val;
   } else {
-    target = (global_1[TARGET] || {}).prototype;
+    _hide(O, key, val);
   }
-  if (target) for (key in source) {
-    sourceProperty = source[key];
-    if (options.noTargetGet) {
-      descriptor = getOwnPropertyDescriptor$1(target, key);
-      targetProperty = descriptor && descriptor.value;
-    } else targetProperty = target[key];
-    FORCED = isForced_1(GLOBAL ? key : TARGET + (STATIC ? '.' : '#') + key, options.forced);
-    // contained in target
-    if (!FORCED && targetProperty !== undefined) {
-      if (typeof sourceProperty === typeof targetProperty) continue;
-      copyConstructorProperties(sourceProperty, targetProperty);
-    }
-    // add a flag to not completely full polyfills
-    if (options.sham || (targetProperty && targetProperty.sham)) {
-      createNonEnumerableProperty(sourceProperty, 'sham', true);
-    }
-    // extend global
-    redefine(target, key, sourceProperty, options);
-  }
-};
-
-var nativeExpm1 = Math.expm1;
-var exp = Math.exp;
-
-// `Math.expm1` method implementation
-// https://tc39.github.io/ecma262/#sec-math.expm1
-var mathExpm1 = (!nativeExpm1
-  // Old FF bug
-  || nativeExpm1(10) > 22025.465794806719 || nativeExpm1(10) < 22025.4657948067165168
-  // Tor Browser bug
-  || nativeExpm1(-2e-17) != -2e-17
-) ? function expm1(x) {
-  return (x = +x) == 0 ? x : x > -1e-6 && x < 1e-6 ? x + x * x / 2 : exp(x) - 1;
-} : nativeExpm1;
-
-var exp$1 = Math.exp;
-
-// `Math.tanh` method
-// https://tc39.github.io/ecma262/#sec-math.tanh
-_export({ target: 'Math', stat: true }, {
-  tanh: function tanh(x) {
-    var a = mathExpm1(x = +x);
-    var b = mathExpm1(-x);
-    return a == Infinity ? 1 : b == Infinity ? -1 : (a - b) / (exp$1(x) + exp$1(-x));
-  }
+// add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
+})(Function.prototype, TO_STRING, function toString() {
+  return typeof this == 'function' && this[SRC] || _functionToString.call(this);
+});
 });
 
-/**
- *
- * @param weight
- * @returns {number}
- */
-function activate$3(weight) {
-  return Math.tanh(weight);
-}
-/**
- * @description grad for z = tanh(x) is (1 - z^2)
- * @param weight
- * @param error
- * @returns {number}
- */
-
-
-function measure$3(weight, error) {
-  return (1 - weight * weight) * error;
-}
-
-var tanh = {
-  activate: activate$3,
-  measure: measure$3
-};
-
-var activation = {
-  leakyRelu: leakyRelu,
-  relu: relu,
-  sigmoid: sigmoid,
-  tanh: tanh
-};
-
-// `IsArray` abstract operation
-// https://tc39.github.io/ecma262/#sec-isarray
-var isArray = Array.isArray || function isArray(arg) {
-  return classofRaw(arg) == 'Array';
-};
-
-// `ToObject` abstract operation
-// https://tc39.github.io/ecma262/#sec-toobject
-var toObject = function (argument) {
-  return Object(requireObjectCoercible(argument));
-};
-
-var createProperty = function (object, key, value) {
-  var propertyKey = toPrimitive(key);
-  if (propertyKey in object) objectDefineProperty.f(object, propertyKey, createPropertyDescriptor(0, value));
-  else object[propertyKey] = value;
-};
-
-var nativeSymbol = !!Object.getOwnPropertySymbols && !fails(function () {
-  // Chrome 38 Symbol has incorrect toString conversion
-  // eslint-disable-next-line no-undef
-  return !String(Symbol());
-});
-
-var useSymbolAsUid = nativeSymbol
-  // eslint-disable-next-line no-undef
-  && !Symbol.sham
-  // eslint-disable-next-line no-undef
-  && typeof Symbol.iterator == 'symbol';
-
-var WellKnownSymbolsStore = shared('wks');
-var Symbol$1 = global_1.Symbol;
-var createWellKnownSymbol = useSymbolAsUid ? Symbol$1 : Symbol$1 && Symbol$1.withoutSetter || uid;
-
-var wellKnownSymbol = function (name) {
-  if (!has(WellKnownSymbolsStore, name)) {
-    if (nativeSymbol && has(Symbol$1, name)) WellKnownSymbolsStore[name] = Symbol$1[name];
-    else WellKnownSymbolsStore[name] = createWellKnownSymbol('Symbol.' + name);
-  } return WellKnownSymbolsStore[name];
-};
-
-var SPECIES = wellKnownSymbol('species');
-
-// `ArraySpeciesCreate` abstract operation
-// https://tc39.github.io/ecma262/#sec-arrayspeciescreate
-var arraySpeciesCreate = function (originalArray, length) {
-  var C;
-  if (isArray(originalArray)) {
-    C = originalArray.constructor;
-    // cross-realm fallback
-    if (typeof C == 'function' && (C === Array || isArray(C.prototype))) C = undefined;
-    else if (isObject(C)) {
-      C = C[SPECIES];
-      if (C === null) C = undefined;
-    }
-  } return new (C === undefined ? Array : C)(length === 0 ? 0 : length);
-};
-
-var engineUserAgent = getBuiltIn('navigator', 'userAgent') || '';
-
-var process = global_1.process;
-var versions = process && process.versions;
-var v8 = versions && versions.v8;
-var match, version;
-
-if (v8) {
-  match = v8.split('.');
-  version = match[0] + match[1];
-} else if (engineUserAgent) {
-  match = engineUserAgent.match(/Edge\/(\d+)/);
-  if (!match || match[1] >= 74) {
-    match = engineUserAgent.match(/Chrome\/(\d+)/);
-    if (match) version = match[1];
-  }
-}
-
-var engineV8Version = version && +version;
-
-var SPECIES$1 = wellKnownSymbol('species');
-
-var arrayMethodHasSpeciesSupport = function (METHOD_NAME) {
-  // We can't use this feature detection in V8 since it causes
-  // deoptimization and serious performance degradation
-  // https://github.com/zloirock/core-js/issues/677
-  return engineV8Version >= 51 || !fails(function () {
-    var array = [];
-    var constructor = array.constructor = {};
-    constructor[SPECIES$1] = function () {
-      return { foo: 1 };
-    };
-    return array[METHOD_NAME](Boolean).foo !== 1;
-  });
-};
-
-var IS_CONCAT_SPREADABLE = wellKnownSymbol('isConcatSpreadable');
-var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF;
-var MAXIMUM_ALLOWED_INDEX_EXCEEDED = 'Maximum allowed index exceeded';
-
-// We can't use this feature detection in V8 since it causes
-// deoptimization and serious performance degradation
-// https://github.com/zloirock/core-js/issues/679
-var IS_CONCAT_SPREADABLE_SUPPORT = engineV8Version >= 51 || !fails(function () {
-  var array = [];
-  array[IS_CONCAT_SPREADABLE] = false;
-  return array.concat()[0] !== array;
-});
-
-var SPECIES_SUPPORT = arrayMethodHasSpeciesSupport('concat');
-
-var isConcatSpreadable = function (O) {
-  if (!isObject(O)) return false;
-  var spreadable = O[IS_CONCAT_SPREADABLE];
-  return spreadable !== undefined ? !!spreadable : isArray(O);
-};
-
-var FORCED = !IS_CONCAT_SPREADABLE_SUPPORT || !SPECIES_SUPPORT;
-
-// `Array.prototype.concat` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.concat
-// with adding support of @@isConcatSpreadable and @@species
-_export({ target: 'Array', proto: true, forced: FORCED }, {
-  concat: function concat(arg) { // eslint-disable-line no-unused-vars
-    var O = toObject(this);
-    var A = arraySpeciesCreate(O, 0);
-    var n = 0;
-    var i, k, length, len, E;
-    for (i = -1, length = arguments.length; i < length; i++) {
-      E = i === -1 ? O : arguments[i];
-      if (isConcatSpreadable(E)) {
-        len = toLength(E.length);
-        if (n + len > MAX_SAFE_INTEGER) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);
-        for (k = 0; k < len; k++, n++) if (k in E) createProperty(A, n, E[k]);
-      } else {
-        if (n >= MAX_SAFE_INTEGER) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);
-        createProperty(A, n++, E);
-      }
-    }
-    A.length = n;
-    return A;
-  }
-});
-
-var aFunction$1 = function (it) {
-  if (typeof it != 'function') {
-    throw TypeError(String(it) + ' is not a function');
-  } return it;
+var _aFunction = function (it) {
+  if (typeof it != 'function') throw TypeError(it + ' is not a function!');
+  return it;
 };
 
 // optional / simple context binding
-var functionBindContext = function (fn, that, length) {
-  aFunction$1(fn);
+
+var _ctx = function (fn, that, length) {
+  _aFunction(fn);
   if (that === undefined) return fn;
   switch (length) {
-    case 0: return function () {
-      return fn.call(that);
-    };
     case 1: return function (a) {
       return fn.call(that, a);
     };
@@ -836,386 +236,596 @@ var functionBindContext = function (fn, that, length) {
   };
 };
 
-var push = [].push;
+var PROTOTYPE = 'prototype';
 
-// `Array.prototype.{ forEach, map, filter, some, every, find, findIndex }` methods implementation
-var createMethod$1 = function (TYPE) {
-  var IS_MAP = TYPE == 1;
-  var IS_FILTER = TYPE == 2;
-  var IS_SOME = TYPE == 3;
-  var IS_EVERY = TYPE == 4;
-  var IS_FIND_INDEX = TYPE == 6;
-  var NO_HOLES = TYPE == 5 || IS_FIND_INDEX;
-  return function ($this, callbackfn, that, specificCreate) {
-    var O = toObject($this);
-    var self = indexedObject(O);
-    var boundFunction = functionBindContext(callbackfn, that, 3);
-    var length = toLength(self.length);
-    var index = 0;
-    var create = specificCreate || arraySpeciesCreate;
-    var target = IS_MAP ? create($this, length) : IS_FILTER ? create($this, 0) : undefined;
-    var value, result;
-    for (;length > index; index++) if (NO_HOLES || index in self) {
-      value = self[index];
-      result = boundFunction(value, index, O);
-      if (TYPE) {
-        if (IS_MAP) target[index] = result; // map
-        else if (result) switch (TYPE) {
-          case 3: return true;              // some
-          case 5: return value;             // find
-          case 6: return index;             // findIndex
-          case 2: push.call(target, value); // filter
-        } else if (IS_EVERY) return false;  // every
-      }
-    }
-    return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : target;
+var $export = function (type, name, source) {
+  var IS_FORCED = type & $export.F;
+  var IS_GLOBAL = type & $export.G;
+  var IS_STATIC = type & $export.S;
+  var IS_PROTO = type & $export.P;
+  var IS_BIND = type & $export.B;
+  var target = IS_GLOBAL ? _global : IS_STATIC ? _global[name] || (_global[name] = {}) : (_global[name] || {})[PROTOTYPE];
+  var exports = IS_GLOBAL ? _core : _core[name] || (_core[name] = {});
+  var expProto = exports[PROTOTYPE] || (exports[PROTOTYPE] = {});
+  var key, own, out, exp;
+  if (IS_GLOBAL) source = name;
+  for (key in source) {
+    // contains in native
+    own = !IS_FORCED && target && target[key] !== undefined;
+    // export native or passed
+    out = (own ? target : source)[key];
+    // bind timers to global for call from export context
+    exp = IS_BIND && own ? _ctx(out, _global) : IS_PROTO && typeof out == 'function' ? _ctx(Function.call, out) : out;
+    // extend global
+    if (target) _redefine(target, key, out, type & $export.U);
+    // export
+    if (exports[key] != out) _hide(exports, key, exp);
+    if (IS_PROTO && expProto[key] != out) expProto[key] = out;
+  }
+};
+_global.core = _core;
+// type bitmap
+$export.F = 1;   // forced
+$export.G = 2;   // global
+$export.S = 4;   // static
+$export.P = 8;   // proto
+$export.B = 16;  // bind
+$export.W = 32;  // wrap
+$export.U = 64;  // safe
+$export.R = 128; // real proto method for `library`
+var _export = $export;
+
+// 20.2.2.14 Math.expm1(x)
+var $expm1 = Math.expm1;
+var _mathExpm1 = (!$expm1
+  // Old FF bug
+  || $expm1(10) > 22025.465794806719 || $expm1(10) < 22025.4657948067165168
+  // Tor Browser bug
+  || $expm1(-2e-17) != -2e-17
+) ? function expm1(x) {
+  return (x = +x) == 0 ? x : x > -1e-6 && x < 1e-6 ? x + x * x / 2 : Math.exp(x) - 1;
+} : $expm1;
+
+// 20.2.2.33 Math.tanh(x)
+
+
+var exp = Math.exp;
+
+_export(_export.S, 'Math', {
+  tanh: function tanh(x) {
+    var a = _mathExpm1(x = +x);
+    var b = _mathExpm1(-x);
+    return a == Infinity ? 1 : b == Infinity ? -1 : (a - b) / (exp(x) + exp(-x));
+  }
+});
+
+/**
+ * Hyperbolic tan
+ */
+function activate$2(weight) {
+  return Math.tanh(weight);
+}
+/**
+ * @description grad for z = tanh(x) is (1 - z^2)
+ */
+
+function measure$2(weight, error) {
+  return (1 - weight * weight) * error;
+}
+
+var tanh = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  activate: activate$2,
+  measure: measure$2
+});
+
+/**
+ * Leaky Relu Activation, aka Leaky Rectified Linear Unit Activation
+ * @description https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
+ */
+function activate$3(weight) {
+  return weight > 0 ? weight : 0.01 * weight;
+}
+/**
+ * Leaky Relu derivative
+ */
+
+function measure$3(weight, error) {
+  return weight > 0 ? error : 0.01 * error;
+}
+
+var leakyRelu = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  activate: activate$3,
+  measure: measure$3
+});
+
+var activation = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  relu: relu,
+  sigmoid: sigmoid,
+  tanh: tanh,
+  leakyRelu: leakyRelu
+});
+
+var _wks = createCommonjsModule(function (module) {
+var store = _shared('wks');
+
+var Symbol = _global.Symbol;
+var USE_SYMBOL = typeof Symbol == 'function';
+
+var $exports = module.exports = function (name) {
+  return store[name] || (store[name] =
+    USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : _uid)('Symbol.' + name));
+};
+
+$exports.store = store;
+});
+
+// 22.1.3.31 Array.prototype[@@unscopables]
+var UNSCOPABLES = _wks('unscopables');
+var ArrayProto = Array.prototype;
+if (ArrayProto[UNSCOPABLES] == undefined) _hide(ArrayProto, UNSCOPABLES, {});
+var _addToUnscopables = function (key) {
+  ArrayProto[UNSCOPABLES][key] = true;
+};
+
+var _iterStep = function (done, value) {
+  return { value: value, done: !!done };
+};
+
+var _iterators = {};
+
+var toString = {}.toString;
+
+var _cof = function (it) {
+  return toString.call(it).slice(8, -1);
+};
+
+// fallback for non-array-like ES3 and non-enumerable old V8 strings
+
+// eslint-disable-next-line no-prototype-builtins
+var _iobject = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
+  return _cof(it) == 'String' ? it.split('') : Object(it);
+};
+
+// 7.2.1 RequireObjectCoercible(argument)
+var _defined = function (it) {
+  if (it == undefined) throw TypeError("Can't call method on  " + it);
+  return it;
+};
+
+// to indexed object, toObject with fallback for non-array-like ES3 strings
+
+
+var _toIobject = function (it) {
+  return _iobject(_defined(it));
+};
+
+// 7.1.4 ToInteger
+var ceil = Math.ceil;
+var floor = Math.floor;
+var _toInteger = function (it) {
+  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
+};
+
+// 7.1.15 ToLength
+
+var min = Math.min;
+var _toLength = function (it) {
+  return it > 0 ? min(_toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
+};
+
+var max = Math.max;
+var min$1 = Math.min;
+var _toAbsoluteIndex = function (index, length) {
+  index = _toInteger(index);
+  return index < 0 ? max(index + length, 0) : min$1(index, length);
+};
+
+// false -> Array#indexOf
+// true  -> Array#includes
+
+
+
+var _arrayIncludes = function (IS_INCLUDES) {
+  return function ($this, el, fromIndex) {
+    var O = _toIobject($this);
+    var length = _toLength(O.length);
+    var index = _toAbsoluteIndex(fromIndex, length);
+    var value;
+    // Array#includes uses SameValueZero equality algorithm
+    // eslint-disable-next-line no-self-compare
+    if (IS_INCLUDES && el != el) while (length > index) {
+      value = O[index++];
+      // eslint-disable-next-line no-self-compare
+      if (value != value) return true;
+    // Array#indexOf ignores holes, Array#includes - not
+    } else for (;length > index; index++) if (IS_INCLUDES || index in O) {
+      if (O[index] === el) return IS_INCLUDES || index || 0;
+    } return !IS_INCLUDES && -1;
   };
 };
 
-var arrayIteration = {
-  // `Array.prototype.forEach` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.foreach
-  forEach: createMethod$1(0),
-  // `Array.prototype.map` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.map
-  map: createMethod$1(1),
-  // `Array.prototype.filter` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.filter
-  filter: createMethod$1(2),
-  // `Array.prototype.some` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.some
-  some: createMethod$1(3),
-  // `Array.prototype.every` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.every
-  every: createMethod$1(4),
-  // `Array.prototype.find` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.find
-  find: createMethod$1(5),
-  // `Array.prototype.findIndex` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.findIndex
-  findIndex: createMethod$1(6)
+var shared = _shared('keys');
+
+var _sharedKey = function (key) {
+  return shared[key] || (shared[key] = _uid(key));
 };
 
-var arrayMethodIsStrict = function (METHOD_NAME, argument) {
-  var method = [][METHOD_NAME];
-  return !!method && fails(function () {
-    // eslint-disable-next-line no-useless-call,no-throw-literal
-    method.call(null, argument || function () { throw 1; }, 1);
-  });
+var arrayIndexOf = _arrayIncludes(false);
+var IE_PROTO = _sharedKey('IE_PROTO');
+
+var _objectKeysInternal = function (object, names) {
+  var O = _toIobject(object);
+  var i = 0;
+  var result = [];
+  var key;
+  for (key in O) if (key != IE_PROTO) _has(O, key) && result.push(key);
+  // Don't enum bug & hidden keys
+  while (names.length > i) if (_has(O, key = names[i++])) {
+    ~arrayIndexOf(result, key) || result.push(key);
+  }
+  return result;
 };
 
-var defineProperty = Object.defineProperty;
-var cache = {};
+// IE 8- don't enum bug keys
+var _enumBugKeys = (
+  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
+).split(',');
 
-var thrower = function (it) { throw it; };
+// 19.1.2.14 / 15.2.3.14 Object.keys(O)
 
-var arrayMethodUsesToLength = function (METHOD_NAME, options) {
-  if (has(cache, METHOD_NAME)) return cache[METHOD_NAME];
-  if (!options) options = {};
-  var method = [][METHOD_NAME];
-  var ACCESSORS = has(options, 'ACCESSORS') ? options.ACCESSORS : false;
-  var argument0 = has(options, 0) ? options[0] : thrower;
-  var argument1 = has(options, 1) ? options[1] : undefined;
 
-  return cache[METHOD_NAME] = !!method && !fails(function () {
-    if (ACCESSORS && !descriptors) return true;
-    var O = { length: -1 };
 
-    if (ACCESSORS) defineProperty(O, 1, { enumerable: true, get: thrower });
-    else O[1] = 1;
-
-    method.call(O, argument0, argument1);
-  });
+var _objectKeys = Object.keys || function keys(O) {
+  return _objectKeysInternal(O, _enumBugKeys);
 };
 
-var $forEach = arrayIteration.forEach;
+var _objectDps = _descriptors ? Object.defineProperties : function defineProperties(O, Properties) {
+  _anObject(O);
+  var keys = _objectKeys(Properties);
+  var length = keys.length;
+  var i = 0;
+  var P;
+  while (length > i) _objectDp.f(O, P = keys[i++], Properties[P]);
+  return O;
+};
+
+var document$2 = _global.document;
+var _html = document$2 && document$2.documentElement;
+
+// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 
 
 
-var STRICT_METHOD = arrayMethodIsStrict('forEach');
-var USES_TO_LENGTH = arrayMethodUsesToLength('forEach');
+var IE_PROTO$1 = _sharedKey('IE_PROTO');
+var Empty = function () { /* empty */ };
+var PROTOTYPE$1 = 'prototype';
 
-// `Array.prototype.forEach` method implementation
-// https://tc39.github.io/ecma262/#sec-array.prototype.foreach
-var arrayForEach = (!STRICT_METHOD || !USES_TO_LENGTH) ? function forEach(callbackfn /* , thisArg */) {
-  return $forEach(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-} : [].forEach;
+// Create object with fake `null` prototype: use iframe Object with cleared prototype
+var createDict = function () {
+  // Thrash, waste and sodomy: IE GC bug
+  var iframe = _domCreate('iframe');
+  var i = _enumBugKeys.length;
+  var lt = '<';
+  var gt = '>';
+  var iframeDocument;
+  iframe.style.display = 'none';
+  _html.appendChild(iframe);
+  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
+  // createDict = iframe.contentWindow.Object;
+  // html.removeChild(iframe);
+  iframeDocument = iframe.contentWindow.document;
+  iframeDocument.open();
+  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
+  iframeDocument.close();
+  createDict = iframeDocument.F;
+  while (i--) delete createDict[PROTOTYPE$1][_enumBugKeys[i]];
+  return createDict();
+};
 
-// `Array.prototype.forEach` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.foreach
-_export({ target: 'Array', proto: true, forced: [].forEach != arrayForEach }, {
-  forEach: arrayForEach
-});
+var _objectCreate = Object.create || function create(O, Properties) {
+  var result;
+  if (O !== null) {
+    Empty[PROTOTYPE$1] = _anObject(O);
+    result = new Empty();
+    Empty[PROTOTYPE$1] = null;
+    // add "__proto__" for Object.getPrototypeOf polyfill
+    result[IE_PROTO$1] = O;
+  } else result = createDict();
+  return Properties === undefined ? result : _objectDps(result, Properties);
+};
 
-// `Array.prototype.{ reduce, reduceRight }` methods implementation
-var createMethod$2 = function (IS_RIGHT) {
-  return function (that, callbackfn, argumentsLength, memo) {
-    aFunction$1(callbackfn);
-    var O = toObject(that);
-    var self = indexedObject(O);
-    var length = toLength(O.length);
-    var index = IS_RIGHT ? length - 1 : 0;
-    var i = IS_RIGHT ? -1 : 1;
-    if (argumentsLength < 2) while (true) {
-      if (index in self) {
-        memo = self[index];
-        index += i;
-        break;
-      }
-      index += i;
-      if (IS_RIGHT ? index < 0 : length <= index) {
-        throw TypeError('Reduce of empty array with no initial value');
-      }
-    }
-    for (;IS_RIGHT ? index >= 0 : length > index; index += i) if (index in self) {
-      memo = callbackfn(memo, self[index], index, O);
-    }
-    return memo;
+var def = _objectDp.f;
+
+var TAG = _wks('toStringTag');
+
+var _setToStringTag = function (it, tag, stat) {
+  if (it && !_has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });
+};
+
+var IteratorPrototype = {};
+
+// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
+_hide(IteratorPrototype, _wks('iterator'), function () { return this; });
+
+var _iterCreate = function (Constructor, NAME, next) {
+  Constructor.prototype = _objectCreate(IteratorPrototype, { next: _propertyDesc(1, next) });
+  _setToStringTag(Constructor, NAME + ' Iterator');
+};
+
+// 7.1.13 ToObject(argument)
+
+var _toObject = function (it) {
+  return Object(_defined(it));
+};
+
+// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
+
+
+var IE_PROTO$2 = _sharedKey('IE_PROTO');
+var ObjectProto = Object.prototype;
+
+var _objectGpo = Object.getPrototypeOf || function (O) {
+  O = _toObject(O);
+  if (_has(O, IE_PROTO$2)) return O[IE_PROTO$2];
+  if (typeof O.constructor == 'function' && O instanceof O.constructor) {
+    return O.constructor.prototype;
+  } return O instanceof Object ? ObjectProto : null;
+};
+
+var ITERATOR = _wks('iterator');
+var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
+var FF_ITERATOR = '@@iterator';
+var KEYS = 'keys';
+var VALUES = 'values';
+
+var returnThis = function () { return this; };
+
+var _iterDefine = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED) {
+  _iterCreate(Constructor, NAME, next);
+  var getMethod = function (kind) {
+    if (!BUGGY && kind in proto) return proto[kind];
+    switch (kind) {
+      case KEYS: return function keys() { return new Constructor(this, kind); };
+      case VALUES: return function values() { return new Constructor(this, kind); };
+    } return function entries() { return new Constructor(this, kind); };
   };
+  var TAG = NAME + ' Iterator';
+  var DEF_VALUES = DEFAULT == VALUES;
+  var VALUES_BUG = false;
+  var proto = Base.prototype;
+  var $native = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT];
+  var $default = $native || getMethod(DEFAULT);
+  var $entries = DEFAULT ? !DEF_VALUES ? $default : getMethod('entries') : undefined;
+  var $anyNative = NAME == 'Array' ? proto.entries || $native : $native;
+  var methods, key, IteratorPrototype;
+  // Fix native
+  if ($anyNative) {
+    IteratorPrototype = _objectGpo($anyNative.call(new Base()));
+    if (IteratorPrototype !== Object.prototype && IteratorPrototype.next) {
+      // Set @@toStringTag to native iterators
+      _setToStringTag(IteratorPrototype, TAG, true);
+      // fix for some old engines
+      if ( typeof IteratorPrototype[ITERATOR] != 'function') _hide(IteratorPrototype, ITERATOR, returnThis);
+    }
+  }
+  // fix Array#{values, @@iterator}.name in V8 / FF
+  if (DEF_VALUES && $native && $native.name !== VALUES) {
+    VALUES_BUG = true;
+    $default = function values() { return $native.call(this); };
+  }
+  // Define iterator
+  if ( (BUGGY || VALUES_BUG || !proto[ITERATOR])) {
+    _hide(proto, ITERATOR, $default);
+  }
+  // Plug for library
+  _iterators[NAME] = $default;
+  _iterators[TAG] = returnThis;
+  if (DEFAULT) {
+    methods = {
+      values: DEF_VALUES ? $default : getMethod(VALUES),
+      keys: IS_SET ? $default : getMethod(KEYS),
+      entries: $entries
+    };
+    if (FORCED) for (key in methods) {
+      if (!(key in proto)) _redefine(proto, key, methods[key]);
+    } else _export(_export.P + _export.F * (BUGGY || VALUES_BUG), NAME, methods);
+  }
+  return methods;
 };
 
-var arrayReduce = {
-  // `Array.prototype.reduce` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.reduce
-  left: createMethod$2(false),
-  // `Array.prototype.reduceRight` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.reduceright
-  right: createMethod$2(true)
+// 22.1.3.4 Array.prototype.entries()
+// 22.1.3.13 Array.prototype.keys()
+// 22.1.3.29 Array.prototype.values()
+// 22.1.3.30 Array.prototype[@@iterator]()
+var es6_array_iterator = _iterDefine(Array, 'Array', function (iterated, kind) {
+  this._t = _toIobject(iterated); // target
+  this._i = 0;                   // next index
+  this._k = kind;                // kind
+// 22.1.5.2.1 %ArrayIteratorPrototype%.next()
+}, function () {
+  var O = this._t;
+  var kind = this._k;
+  var index = this._i++;
+  if (!O || index >= O.length) {
+    this._t = undefined;
+    return _iterStep(1);
+  }
+  if (kind == 'keys') return _iterStep(0, index);
+  if (kind == 'values') return _iterStep(0, O[index]);
+  return _iterStep(0, [index, O[index]]);
+}, 'values');
+
+// argumentsList[@@iterator] is %ArrayProto_values% (9.4.4.6, 9.4.4.7)
+_iterators.Arguments = _iterators.Array;
+
+_addToUnscopables('keys');
+_addToUnscopables('values');
+_addToUnscopables('entries');
+
+var ITERATOR$1 = _wks('iterator');
+var TO_STRING_TAG = _wks('toStringTag');
+var ArrayValues = _iterators.Array;
+
+var DOMIterables = {
+  CSSRuleList: true, // TODO: Not spec compliant, should be false.
+  CSSStyleDeclaration: false,
+  CSSValueList: false,
+  ClientRectList: false,
+  DOMRectList: false,
+  DOMStringList: false,
+  DOMTokenList: true,
+  DataTransferItemList: false,
+  FileList: false,
+  HTMLAllCollection: false,
+  HTMLCollection: false,
+  HTMLFormElement: false,
+  HTMLSelectElement: false,
+  MediaList: true, // TODO: Not spec compliant, should be false.
+  MimeTypeArray: false,
+  NamedNodeMap: false,
+  NodeList: true,
+  PaintRequestList: false,
+  Plugin: false,
+  PluginArray: false,
+  SVGLengthList: false,
+  SVGNumberList: false,
+  SVGPathSegList: false,
+  SVGPointList: false,
+  SVGStringList: false,
+  SVGTransformList: false,
+  SourceBufferList: false,
+  StyleSheetList: true, // TODO: Not spec compliant, should be false.
+  TextTrackCueList: false,
+  TextTrackList: false,
+  TouchList: false
 };
 
-var $reduce = arrayReduce.left;
-
-
-
-var STRICT_METHOD$1 = arrayMethodIsStrict('reduce');
-var USES_TO_LENGTH$1 = arrayMethodUsesToLength('reduce', { 1: 0 });
-
-// `Array.prototype.reduce` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.reduce
-_export({ target: 'Array', proto: true, forced: !STRICT_METHOD$1 || !USES_TO_LENGTH$1 }, {
-  reduce: function reduce(callbackfn /* , initialValue */) {
-    return $reduce(this, callbackfn, arguments.length, arguments.length > 1 ? arguments[1] : undefined);
+for (var collections = _objectKeys(DOMIterables), i = 0; i < collections.length; i++) {
+  var NAME = collections[i];
+  var explicit = DOMIterables[NAME];
+  var Collection = _global[NAME];
+  var proto = Collection && Collection.prototype;
+  var key;
+  if (proto) {
+    if (!proto[ITERATOR$1]) _hide(proto, ITERATOR$1, ArrayValues);
+    if (!proto[TO_STRING_TAG]) _hide(proto, TO_STRING_TAG, NAME);
+    _iterators[NAME] = ArrayValues;
+    if (explicit) for (key in es6_array_iterator) if (!proto[key]) _redefine(proto, key, es6_array_iterator[key], true);
   }
-});
+}
 
-var HAS_SPECIES_SUPPORT = arrayMethodHasSpeciesSupport('slice');
-var USES_TO_LENGTH$2 = arrayMethodUsesToLength('slice', { ACCESSORS: true, 0: 0, 1: 2 });
+// getting tag from 19.1.3.6 Object.prototype.toString()
 
-var SPECIES$2 = wellKnownSymbol('species');
-var nativeSlice = [].slice;
-var max$1 = Math.max;
+var TAG$1 = _wks('toStringTag');
+// ES3 wrong here
+var ARG = _cof(function () { return arguments; }()) == 'Arguments';
 
-// `Array.prototype.slice` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.slice
-// fallback for not array-like ES3 strings and DOM objects
-_export({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT || !USES_TO_LENGTH$2 }, {
-  slice: function slice(start, end) {
-    var O = toIndexedObject(this);
-    var length = toLength(O.length);
-    var k = toAbsoluteIndex(start, length);
-    var fin = toAbsoluteIndex(end === undefined ? length : end, length);
-    // inline `ArraySpeciesCreate` for usage native `Array#slice` where it's possible
-    var Constructor, result, n;
-    if (isArray(O)) {
-      Constructor = O.constructor;
-      // cross-realm fallback
-      if (typeof Constructor == 'function' && (Constructor === Array || isArray(Constructor.prototype))) {
-        Constructor = undefined;
-      } else if (isObject(Constructor)) {
-        Constructor = Constructor[SPECIES$2];
-        if (Constructor === null) Constructor = undefined;
-      }
-      if (Constructor === Array || Constructor === undefined) {
-        return nativeSlice.call(O, k, fin);
-      }
-    }
-    result = new (Constructor === undefined ? Array : Constructor)(max$1(fin - k, 0));
-    for (n = 0; k < fin; k++, n++) if (k in O) createProperty(result, n, O[k]);
-    result.length = n;
-    return result;
-  }
-});
-
-var HAS_SPECIES_SUPPORT$1 = arrayMethodHasSpeciesSupport('splice');
-var USES_TO_LENGTH$3 = arrayMethodUsesToLength('splice', { ACCESSORS: true, 0: 0, 1: 2 });
-
-var max$2 = Math.max;
-var min$2 = Math.min;
-var MAX_SAFE_INTEGER$1 = 0x1FFFFFFFFFFFFF;
-var MAXIMUM_ALLOWED_LENGTH_EXCEEDED = 'Maximum allowed length exceeded';
-
-// `Array.prototype.splice` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.splice
-// with adding support of @@species
-_export({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT$1 || !USES_TO_LENGTH$3 }, {
-  splice: function splice(start, deleteCount /* , ...items */) {
-    var O = toObject(this);
-    var len = toLength(O.length);
-    var actualStart = toAbsoluteIndex(start, len);
-    var argumentsLength = arguments.length;
-    var insertCount, actualDeleteCount, A, k, from, to;
-    if (argumentsLength === 0) {
-      insertCount = actualDeleteCount = 0;
-    } else if (argumentsLength === 1) {
-      insertCount = 0;
-      actualDeleteCount = len - actualStart;
-    } else {
-      insertCount = argumentsLength - 2;
-      actualDeleteCount = min$2(max$2(toInteger(deleteCount), 0), len - actualStart);
-    }
-    if (len + insertCount - actualDeleteCount > MAX_SAFE_INTEGER$1) {
-      throw TypeError(MAXIMUM_ALLOWED_LENGTH_EXCEEDED);
-    }
-    A = arraySpeciesCreate(O, actualDeleteCount);
-    for (k = 0; k < actualDeleteCount; k++) {
-      from = actualStart + k;
-      if (from in O) createProperty(A, k, O[from]);
-    }
-    A.length = actualDeleteCount;
-    if (insertCount < actualDeleteCount) {
-      for (k = actualStart; k < len - actualDeleteCount; k++) {
-        from = k + actualDeleteCount;
-        to = k + insertCount;
-        if (from in O) O[to] = O[from];
-        else delete O[to];
-      }
-      for (k = len; k > len - actualDeleteCount + insertCount; k--) delete O[k - 1];
-    } else if (insertCount > actualDeleteCount) {
-      for (k = len - actualDeleteCount; k > actualStart; k--) {
-        from = k + actualDeleteCount - 1;
-        to = k + insertCount - 1;
-        if (from in O) O[to] = O[from];
-        else delete O[to];
-      }
-    }
-    for (k = 0; k < insertCount; k++) {
-      O[k + actualStart] = arguments[k + 2];
-    }
-    O.length = len - actualDeleteCount + insertCount;
-    return A;
-  }
-});
-
-// `Object.keys` method
-// https://tc39.github.io/ecma262/#sec-object.keys
-var objectKeys = Object.keys || function keys(O) {
-  return objectKeysInternal(O, enumBugKeys);
+// fallback for IE11 Script Access Denied error
+var tryGet = function (it, key) {
+  try {
+    return it[key];
+  } catch (e) { /* empty */ }
 };
 
-var nativeAssign = Object.assign;
-var defineProperty$1 = Object.defineProperty;
+var _classof = function (it) {
+  var O, T, B;
+  return it === undefined ? 'Undefined' : it === null ? 'Null'
+    // @@toStringTag case
+    : typeof (T = tryGet(O = Object(it), TAG$1)) == 'string' ? T
+    // builtinTag case
+    : ARG ? _cof(O)
+    // ES3 arguments fallback
+    : (B = _cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
+};
 
-// `Object.assign` method
-// https://tc39.github.io/ecma262/#sec-object.assign
-var objectAssign = !nativeAssign || fails(function () {
-  // should have correct order of operations (Edge bug)
-  if (descriptors && nativeAssign({ b: 1 }, nativeAssign(defineProperty$1({}, 'a', {
-    enumerable: true,
-    get: function () {
-      defineProperty$1(this, 'b', {
-        value: 3,
-        enumerable: false
-      });
-    }
-  }), { b: 2 })).b !== 1) return true;
-  // should work with symbols and should have deterministic property order (V8 bug)
+// 19.1.3.6 Object.prototype.toString()
+
+var test = {};
+test[_wks('toStringTag')] = 'z';
+if (test + '' != '[object z]') {
+  _redefine(Object.prototype, 'toString', function toString() {
+    return '[object ' + _classof(this) + ']';
+  }, true);
+}
+
+// most Object methods by ES6 should accept primitives
+
+
+
+var _objectSap = function (KEY, exec) {
+  var fn = (_core.Object || {})[KEY] || Object[KEY];
+  var exp = {};
+  exp[KEY] = exec(fn);
+  _export(_export.S + _export.F * _fails(function () { fn(1); }), 'Object', exp);
+};
+
+// 19.1.2.14 Object.keys(O)
+
+
+
+_objectSap('keys', function () {
+  return function keys(it) {
+    return _objectKeys(_toObject(it));
+  };
+});
+
+var f$1 = Object.getOwnPropertySymbols;
+
+var _objectGops = {
+	f: f$1
+};
+
+var f$2 = {}.propertyIsEnumerable;
+
+var _objectPie = {
+	f: f$2
+};
+
+// 19.1.2.1 Object.assign(target, source, ...)
+
+
+
+
+
+
+var $assign = Object.assign;
+
+// should work with symbols and should have deterministic property order (V8 bug)
+var _objectAssign = !$assign || _fails(function () {
   var A = {};
   var B = {};
   // eslint-disable-next-line no-undef
-  var symbol = Symbol();
-  var alphabet = 'abcdefghijklmnopqrst';
-  A[symbol] = 7;
-  alphabet.split('').forEach(function (chr) { B[chr] = chr; });
-  return nativeAssign({}, A)[symbol] != 7 || objectKeys(nativeAssign({}, B)).join('') != alphabet;
+  var S = Symbol();
+  var K = 'abcdefghijklmnopqrst';
+  A[S] = 7;
+  K.split('').forEach(function (k) { B[k] = k; });
+  return $assign({}, A)[S] != 7 || Object.keys($assign({}, B)).join('') != K;
 }) ? function assign(target, source) { // eslint-disable-line no-unused-vars
-  var T = toObject(target);
-  var argumentsLength = arguments.length;
+  var T = _toObject(target);
+  var aLen = arguments.length;
   var index = 1;
-  var getOwnPropertySymbols = objectGetOwnPropertySymbols.f;
-  var propertyIsEnumerable = objectPropertyIsEnumerable.f;
-  while (argumentsLength > index) {
-    var S = indexedObject(arguments[index++]);
-    var keys = getOwnPropertySymbols ? objectKeys(S).concat(getOwnPropertySymbols(S)) : objectKeys(S);
+  var getSymbols = _objectGops.f;
+  var isEnum = _objectPie.f;
+  while (aLen > index) {
+    var S = _iobject(arguments[index++]);
+    var keys = getSymbols ? _objectKeys(S).concat(getSymbols(S)) : _objectKeys(S);
     var length = keys.length;
     var j = 0;
     var key;
     while (length > j) {
       key = keys[j++];
-      if (!descriptors || propertyIsEnumerable.call(S, key)) T[key] = S[key];
+      if (!_descriptors || isEnum.call(S, key)) T[key] = S[key];
     }
   } return T;
-} : nativeAssign;
+} : $assign;
 
-// `Object.assign` method
-// https://tc39.github.io/ecma262/#sec-object.assign
-_export({ target: 'Object', stat: true, forced: Object.assign !== objectAssign }, {
-  assign: objectAssign
-});
+// 19.1.3.1 Object.assign(target, source)
 
-var FAILS_ON_PRIMITIVES = fails(function () { objectKeys(1); });
 
-// `Object.keys` method
-// https://tc39.github.io/ecma262/#sec-object.keys
-_export({ target: 'Object', stat: true, forced: FAILS_ON_PRIMITIVES }, {
-  keys: function keys(it) {
-    return objectKeys(toObject(it));
-  }
-});
-
-// iterable DOM collections
-// flag - `iterable` interface - 'entries', 'keys', 'values', 'forEach' methods
-var domIterables = {
-  CSSRuleList: 0,
-  CSSStyleDeclaration: 0,
-  CSSValueList: 0,
-  ClientRectList: 0,
-  DOMRectList: 0,
-  DOMStringList: 0,
-  DOMTokenList: 1,
-  DataTransferItemList: 0,
-  FileList: 0,
-  HTMLAllCollection: 0,
-  HTMLCollection: 0,
-  HTMLFormElement: 0,
-  HTMLSelectElement: 0,
-  MediaList: 0,
-  MimeTypeArray: 0,
-  NamedNodeMap: 0,
-  NodeList: 1,
-  PaintRequestList: 0,
-  Plugin: 0,
-  PluginArray: 0,
-  SVGLengthList: 0,
-  SVGNumberList: 0,
-  SVGPathSegList: 0,
-  SVGPointList: 0,
-  SVGStringList: 0,
-  SVGTransformList: 0,
-  SourceBufferList: 0,
-  StyleSheetList: 0,
-  TextTrackCueList: 0,
-  TextTrackList: 0,
-  TouchList: 0
-};
-
-for (var COLLECTION_NAME in domIterables) {
-  var Collection = global_1[COLLECTION_NAME];
-  var CollectionPrototype = Collection && Collection.prototype;
-  // some Chrome versions have non-configurable methods on DOMTokenList
-  if (CollectionPrototype && CollectionPrototype.forEach !== arrayForEach) try {
-    createNonEnumerableProperty(CollectionPrototype, 'forEach', arrayForEach);
-  } catch (error) {
-    CollectionPrototype.forEach = arrayForEach;
-  }
-}
-
-// `URL.prototype.toJSON` method
-// https://url.spec.whatwg.org/#dom-url-tojson
-_export({ target: 'URL', proto: true, enumerable: true }, {
-  toJSON: function toJSON() {
-    return URL.prototype.toString.call(this);
-  }
-});
+_export(_export.S + _export.F, 'Object', { assign: _objectAssign });
 
 function _typeof(obj) {
   "@babel/helpers - typeof";
@@ -1270,7 +880,7 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 
-function ownKeys$1(object, enumerableOnly) {
+function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
 
   if (Object.getOwnPropertySymbols) {
@@ -1289,13 +899,13 @@ function _objectSpread2(target) {
     var source = arguments[i] != null ? arguments[i] : {};
 
     if (i % 2) {
-      ownKeys$1(Object(source), true).forEach(function (key) {
+      ownKeys(Object(source), true).forEach(function (key) {
         _defineProperty(target, key, source[key]);
       });
     } else if (Object.getOwnPropertyDescriptors) {
       Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
     } else {
-      ownKeys$1(Object(source)).forEach(function (key) {
+      ownKeys(Object(source)).forEach(function (key) {
         Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
       });
     }
@@ -1367,7 +977,7 @@ function _possibleConstructorReturn(self, call) {
 function _createSuper(Derived) {
   var hasNativeReflectConstruct = _isNativeReflectConstruct();
 
-  return function () {
+  return function _createSuperInternal() {
     var Super = _getPrototypeOf(Derived),
         result;
 
@@ -1659,1328 +1269,512 @@ var CrossValidate = /*#__PURE__*/function () {
 
 var crossValidate = CrossValidate;
 
-// `Array.prototype.fill` method implementation
-// https://tc39.github.io/ecma262/#sec-array.prototype.fill
-var arrayFill = function fill(value /* , start = 0, end = @length */) {
-  var O = toObject(this);
-  var length = toLength(O.length);
-  var argumentsLength = arguments.length;
-  var index = toAbsoluteIndex(argumentsLength > 1 ? arguments[1] : undefined, length);
-  var end = argumentsLength > 2 ? arguments[2] : undefined;
-  var endPos = end === undefined ? length : toAbsoluteIndex(end, length);
+var dP$1 = _objectDp.f;
+var FProto = Function.prototype;
+var nameRE = /^\s*function ([^ (]*)/;
+var NAME$1 = 'name';
+
+// 19.2.4.2 name
+NAME$1 in FProto || _descriptors && dP$1(FProto, NAME$1, {
+  configurable: true,
+  get: function () {
+    try {
+      return ('' + this).match(nameRE)[1];
+    } catch (e) {
+      return '';
+    }
+  }
+});
+
+var TYPED = _uid('typed_array');
+var VIEW = _uid('view');
+var ABV = !!(_global.ArrayBuffer && _global.DataView);
+var CONSTR = ABV;
+var i$1 = 0;
+var l = 9;
+var Typed;
+
+var TypedArrayConstructors = (
+  'Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,Float32Array,Float64Array'
+).split(',');
+
+while (i$1 < l) {
+  if (Typed = _global[TypedArrayConstructors[i$1++]]) {
+    _hide(Typed.prototype, TYPED, true);
+    _hide(Typed.prototype, VIEW, true);
+  } else CONSTR = false;
+}
+
+var _typed = {
+  ABV: ABV,
+  CONSTR: CONSTR,
+  TYPED: TYPED,
+  VIEW: VIEW
+};
+
+var _redefineAll = function (target, src, safe) {
+  for (var key in src) _redefine(target, key, src[key], safe);
+  return target;
+};
+
+var _anInstance = function (it, Constructor, name, forbiddenField) {
+  if (!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)) {
+    throw TypeError(name + ': incorrect invocation!');
+  } return it;
+};
+
+// https://tc39.github.io/ecma262/#sec-toindex
+
+
+var _toIndex = function (it) {
+  if (it === undefined) return 0;
+  var number = _toInteger(it);
+  var length = _toLength(number);
+  if (number !== length) throw RangeError('Wrong length!');
+  return length;
+};
+
+// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
+
+var hiddenKeys = _enumBugKeys.concat('length', 'prototype');
+
+var f$3 = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
+  return _objectKeysInternal(O, hiddenKeys);
+};
+
+var _objectGopn = {
+	f: f$3
+};
+
+var _arrayFill = function fill(value /* , start = 0, end = @length */) {
+  var O = _toObject(this);
+  var length = _toLength(O.length);
+  var aLen = arguments.length;
+  var index = _toAbsoluteIndex(aLen > 1 ? arguments[1] : undefined, length);
+  var end = aLen > 2 ? arguments[2] : undefined;
+  var endPos = end === undefined ? length : _toAbsoluteIndex(end, length);
   while (endPos > index) O[index++] = value;
   return O;
 };
 
-// `Object.defineProperties` method
-// https://tc39.github.io/ecma262/#sec-object.defineproperties
-var objectDefineProperties = descriptors ? Object.defineProperties : function defineProperties(O, Properties) {
-  anObject(O);
-  var keys = objectKeys(Properties);
-  var length = keys.length;
-  var index = 0;
-  var key;
-  while (length > index) objectDefineProperty.f(O, key = keys[index++], Properties[key]);
-  return O;
-};
+var _typedBuffer = createCommonjsModule(function (module, exports) {
 
-var html = getBuiltIn('document', 'documentElement');
 
-var GT = '>';
-var LT = '<';
-var PROTOTYPE = 'prototype';
-var SCRIPT = 'script';
-var IE_PROTO = sharedKey('IE_PROTO');
 
-var EmptyConstructor = function () { /* empty */ };
 
-var scriptTag = function (content) {
-  return LT + SCRIPT + GT + content + LT + '/' + SCRIPT + GT;
-};
 
-// Create object with fake `null` prototype: use ActiveX Object with cleared prototype
-var NullProtoObjectViaActiveX = function (activeXDocument) {
-  activeXDocument.write(scriptTag(''));
-  activeXDocument.close();
-  var temp = activeXDocument.parentWindow.Object;
-  activeXDocument = null; // avoid memory leak
-  return temp;
-};
 
-// Create object with fake `null` prototype: use iframe Object with cleared prototype
-var NullProtoObjectViaIFrame = function () {
-  // Thrash, waste and sodomy: IE GC bug
-  var iframe = documentCreateElement('iframe');
-  var JS = 'java' + SCRIPT + ':';
-  var iframeDocument;
-  iframe.style.display = 'none';
-  html.appendChild(iframe);
-  // https://github.com/zloirock/core-js/issues/475
-  iframe.src = String(JS);
-  iframeDocument = iframe.contentWindow.document;
-  iframeDocument.open();
-  iframeDocument.write(scriptTag('document.F=Object'));
-  iframeDocument.close();
-  return iframeDocument.F;
-};
 
-// Check for document.domain and active x support
-// No need to use active x approach when document.domain is not set
-// see https://github.com/es-shims/es5-shim/issues/150
-// variation of https://github.com/kitcambridge/es5-shim/commit/4f738ac066346
-// avoid IE GC bug
-var activeXDocument;
-var NullProtoObject = function () {
-  try {
-    /* global ActiveXObject */
-    activeXDocument = document.domain && new ActiveXObject('htmlfile');
-  } catch (error) { /* ignore */ }
-  NullProtoObject = activeXDocument ? NullProtoObjectViaActiveX(activeXDocument) : NullProtoObjectViaIFrame();
-  var length = enumBugKeys.length;
-  while (length--) delete NullProtoObject[PROTOTYPE][enumBugKeys[length]];
-  return NullProtoObject();
-};
 
-hiddenKeys[IE_PROTO] = true;
 
-// `Object.create` method
-// https://tc39.github.io/ecma262/#sec-object.create
-var objectCreate = Object.create || function create(O, Properties) {
-  var result;
-  if (O !== null) {
-    EmptyConstructor[PROTOTYPE] = anObject(O);
-    result = new EmptyConstructor();
-    EmptyConstructor[PROTOTYPE] = null;
-    // add "__proto__" for Object.getPrototypeOf polyfill
-    result[IE_PROTO] = O;
-  } else result = NullProtoObject();
-  return Properties === undefined ? result : objectDefineProperties(result, Properties);
-};
 
-var UNSCOPABLES = wellKnownSymbol('unscopables');
-var ArrayPrototype = Array.prototype;
 
-// Array.prototype[@@unscopables]
-// https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
-if (ArrayPrototype[UNSCOPABLES] == undefined) {
-  objectDefineProperty.f(ArrayPrototype, UNSCOPABLES, {
-    configurable: true,
-    value: objectCreate(null)
-  });
-}
+var gOPN = _objectGopn.f;
+var dP = _objectDp.f;
 
-// add a key to Array.prototype[@@unscopables]
-var addToUnscopables = function (key) {
-  ArrayPrototype[UNSCOPABLES][key] = true;
-};
 
-// `Array.prototype.fill` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.fill
-_export({ target: 'Array', proto: true }, {
-  fill: arrayFill
-});
-
-// https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
-addToUnscopables('fill');
-
-var iterators = {};
-
-var correctPrototypeGetter = !fails(function () {
-  function F() { /* empty */ }
-  F.prototype.constructor = null;
-  return Object.getPrototypeOf(new F()) !== F.prototype;
-});
-
-var IE_PROTO$1 = sharedKey('IE_PROTO');
-var ObjectPrototype = Object.prototype;
-
-// `Object.getPrototypeOf` method
-// https://tc39.github.io/ecma262/#sec-object.getprototypeof
-var objectGetPrototypeOf = correctPrototypeGetter ? Object.getPrototypeOf : function (O) {
-  O = toObject(O);
-  if (has(O, IE_PROTO$1)) return O[IE_PROTO$1];
-  if (typeof O.constructor == 'function' && O instanceof O.constructor) {
-    return O.constructor.prototype;
-  } return O instanceof Object ? ObjectPrototype : null;
-};
-
-var ITERATOR = wellKnownSymbol('iterator');
-var BUGGY_SAFARI_ITERATORS = false;
-
-var returnThis = function () { return this; };
-
-// `%IteratorPrototype%` object
-// https://tc39.github.io/ecma262/#sec-%iteratorprototype%-object
-var IteratorPrototype, PrototypeOfArrayIteratorPrototype, arrayIterator;
-
-if ([].keys) {
-  arrayIterator = [].keys();
-  // Safari 8 has buggy iterators w/o `next`
-  if (!('next' in arrayIterator)) BUGGY_SAFARI_ITERATORS = true;
-  else {
-    PrototypeOfArrayIteratorPrototype = objectGetPrototypeOf(objectGetPrototypeOf(arrayIterator));
-    if (PrototypeOfArrayIteratorPrototype !== Object.prototype) IteratorPrototype = PrototypeOfArrayIteratorPrototype;
-  }
-}
-
-if (IteratorPrototype == undefined) IteratorPrototype = {};
-
-// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-if ( !has(IteratorPrototype, ITERATOR)) {
-  createNonEnumerableProperty(IteratorPrototype, ITERATOR, returnThis);
-}
-
-var iteratorsCore = {
-  IteratorPrototype: IteratorPrototype,
-  BUGGY_SAFARI_ITERATORS: BUGGY_SAFARI_ITERATORS
-};
-
-var defineProperty$2 = objectDefineProperty.f;
-
-
-
-var TO_STRING_TAG = wellKnownSymbol('toStringTag');
-
-var setToStringTag = function (it, TAG, STATIC) {
-  if (it && !has(it = STATIC ? it : it.prototype, TO_STRING_TAG)) {
-    defineProperty$2(it, TO_STRING_TAG, { configurable: true, value: TAG });
-  }
-};
-
-var IteratorPrototype$1 = iteratorsCore.IteratorPrototype;
-
-
-
-
-
-var returnThis$1 = function () { return this; };
-
-var createIteratorConstructor = function (IteratorConstructor, NAME, next) {
-  var TO_STRING_TAG = NAME + ' Iterator';
-  IteratorConstructor.prototype = objectCreate(IteratorPrototype$1, { next: createPropertyDescriptor(1, next) });
-  setToStringTag(IteratorConstructor, TO_STRING_TAG, false);
-  iterators[TO_STRING_TAG] = returnThis$1;
-  return IteratorConstructor;
-};
-
-var aPossiblePrototype = function (it) {
-  if (!isObject(it) && it !== null) {
-    throw TypeError("Can't set " + String(it) + ' as a prototype');
-  } return it;
-};
-
-// `Object.setPrototypeOf` method
-// https://tc39.github.io/ecma262/#sec-object.setprototypeof
-// Works with __proto__ only. Old v8 can't work with null proto objects.
-/* eslint-disable no-proto */
-var objectSetPrototypeOf = Object.setPrototypeOf || ('__proto__' in {} ? function () {
-  var CORRECT_SETTER = false;
-  var test = {};
-  var setter;
-  try {
-    setter = Object.getOwnPropertyDescriptor(Object.prototype, '__proto__').set;
-    setter.call(test, []);
-    CORRECT_SETTER = test instanceof Array;
-  } catch (error) { /* empty */ }
-  return function setPrototypeOf(O, proto) {
-    anObject(O);
-    aPossiblePrototype(proto);
-    if (CORRECT_SETTER) setter.call(O, proto);
-    else O.__proto__ = proto;
-    return O;
-  };
-}() : undefined);
-
-var IteratorPrototype$2 = iteratorsCore.IteratorPrototype;
-var BUGGY_SAFARI_ITERATORS$1 = iteratorsCore.BUGGY_SAFARI_ITERATORS;
-var ITERATOR$1 = wellKnownSymbol('iterator');
-var KEYS = 'keys';
-var VALUES = 'values';
-var ENTRIES = 'entries';
-
-var returnThis$2 = function () { return this; };
-
-var defineIterator = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, IS_SET, FORCED) {
-  createIteratorConstructor(IteratorConstructor, NAME, next);
-
-  var getIterationMethod = function (KIND) {
-    if (KIND === DEFAULT && defaultIterator) return defaultIterator;
-    if (!BUGGY_SAFARI_ITERATORS$1 && KIND in IterablePrototype) return IterablePrototype[KIND];
-    switch (KIND) {
-      case KEYS: return function keys() { return new IteratorConstructor(this, KIND); };
-      case VALUES: return function values() { return new IteratorConstructor(this, KIND); };
-      case ENTRIES: return function entries() { return new IteratorConstructor(this, KIND); };
-    } return function () { return new IteratorConstructor(this); };
-  };
-
-  var TO_STRING_TAG = NAME + ' Iterator';
-  var INCORRECT_VALUES_NAME = false;
-  var IterablePrototype = Iterable.prototype;
-  var nativeIterator = IterablePrototype[ITERATOR$1]
-    || IterablePrototype['@@iterator']
-    || DEFAULT && IterablePrototype[DEFAULT];
-  var defaultIterator = !BUGGY_SAFARI_ITERATORS$1 && nativeIterator || getIterationMethod(DEFAULT);
-  var anyNativeIterator = NAME == 'Array' ? IterablePrototype.entries || nativeIterator : nativeIterator;
-  var CurrentIteratorPrototype, methods, KEY;
-
-  // fix native
-  if (anyNativeIterator) {
-    CurrentIteratorPrototype = objectGetPrototypeOf(anyNativeIterator.call(new Iterable()));
-    if (IteratorPrototype$2 !== Object.prototype && CurrentIteratorPrototype.next) {
-      if ( objectGetPrototypeOf(CurrentIteratorPrototype) !== IteratorPrototype$2) {
-        if (objectSetPrototypeOf) {
-          objectSetPrototypeOf(CurrentIteratorPrototype, IteratorPrototype$2);
-        } else if (typeof CurrentIteratorPrototype[ITERATOR$1] != 'function') {
-          createNonEnumerableProperty(CurrentIteratorPrototype, ITERATOR$1, returnThis$2);
-        }
-      }
-      // Set @@toStringTag to native iterators
-      setToStringTag(CurrentIteratorPrototype, TO_STRING_TAG, true);
-    }
-  }
-
-  // fix Array#{values, @@iterator}.name in V8 / FF
-  if (DEFAULT == VALUES && nativeIterator && nativeIterator.name !== VALUES) {
-    INCORRECT_VALUES_NAME = true;
-    defaultIterator = function values() { return nativeIterator.call(this); };
-  }
-
-  // define iterator
-  if ( IterablePrototype[ITERATOR$1] !== defaultIterator) {
-    createNonEnumerableProperty(IterablePrototype, ITERATOR$1, defaultIterator);
-  }
-  iterators[NAME] = defaultIterator;
-
-  // export additional methods
-  if (DEFAULT) {
-    methods = {
-      values: getIterationMethod(VALUES),
-      keys: IS_SET ? defaultIterator : getIterationMethod(KEYS),
-      entries: getIterationMethod(ENTRIES)
-    };
-    if (FORCED) for (KEY in methods) {
-      if (BUGGY_SAFARI_ITERATORS$1 || INCORRECT_VALUES_NAME || !(KEY in IterablePrototype)) {
-        redefine(IterablePrototype, KEY, methods[KEY]);
-      }
-    } else _export({ target: NAME, proto: true, forced: BUGGY_SAFARI_ITERATORS$1 || INCORRECT_VALUES_NAME }, methods);
-  }
-
-  return methods;
-};
-
-var ARRAY_ITERATOR = 'Array Iterator';
-var setInternalState = internalState.set;
-var getInternalState = internalState.getterFor(ARRAY_ITERATOR);
-
-// `Array.prototype.entries` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.entries
-// `Array.prototype.keys` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.keys
-// `Array.prototype.values` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.values
-// `Array.prototype[@@iterator]` method
-// https://tc39.github.io/ecma262/#sec-array.prototype-@@iterator
-// `CreateArrayIterator` internal method
-// https://tc39.github.io/ecma262/#sec-createarrayiterator
-var es_array_iterator = defineIterator(Array, 'Array', function (iterated, kind) {
-  setInternalState(this, {
-    type: ARRAY_ITERATOR,
-    target: toIndexedObject(iterated), // target
-    index: 0,                          // next index
-    kind: kind                         // kind
-  });
-// `%ArrayIteratorPrototype%.next` method
-// https://tc39.github.io/ecma262/#sec-%arrayiteratorprototype%.next
-}, function () {
-  var state = getInternalState(this);
-  var target = state.target;
-  var kind = state.kind;
-  var index = state.index++;
-  if (!target || index >= target.length) {
-    state.target = undefined;
-    return { value: undefined, done: true };
-  }
-  if (kind == 'keys') return { value: index, done: false };
-  if (kind == 'values') return { value: target[index], done: false };
-  return { value: [index, target[index]], done: false };
-}, 'values');
-
-// argumentsList[@@iterator] is %ArrayProto_values%
-// https://tc39.github.io/ecma262/#sec-createunmappedargumentsobject
-// https://tc39.github.io/ecma262/#sec-createmappedargumentsobject
-iterators.Arguments = iterators.Array;
-
-// https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
-addToUnscopables('keys');
-addToUnscopables('values');
-addToUnscopables('entries');
-
-var $map = arrayIteration.map;
-
-
-
-var HAS_SPECIES_SUPPORT$2 = arrayMethodHasSpeciesSupport('map');
-// FF49- issue
-var USES_TO_LENGTH$4 = arrayMethodUsesToLength('map');
-
-// `Array.prototype.map` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.map
-// with adding support of @@species
-_export({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT$2 || !USES_TO_LENGTH$4 }, {
-  map: function map(callbackfn /* , thisArg */) {
-    return $map(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-  }
-});
-
-var arrayBufferNative = typeof ArrayBuffer !== 'undefined' && typeof DataView !== 'undefined';
-
-var redefineAll = function (target, src, options) {
-  for (var key in src) redefine(target, key, src[key], options);
-  return target;
-};
-
-var anInstance = function (it, Constructor, name) {
-  if (!(it instanceof Constructor)) {
-    throw TypeError('Incorrect ' + (name ? name + ' ' : '') + 'invocation');
-  } return it;
-};
-
-// `ToIndex` abstract operation
-// https://tc39.github.io/ecma262/#sec-toindex
-var toIndex = function (it) {
-  if (it === undefined) return 0;
-  var number = toInteger(it);
-  var length = toLength(number);
-  if (number !== length) throw RangeError('Wrong length or index');
-  return length;
-};
-
-// IEEE754 conversions based on https://github.com/feross/ieee754
-// eslint-disable-next-line no-shadow-restricted-names
-var Infinity$1 = 1 / 0;
-var abs = Math.abs;
-var pow = Math.pow;
-var floor$1 = Math.floor;
-var log = Math.log;
-var LN2 = Math.LN2;
-
-var pack = function (number, mantissaLength, bytes) {
-  var buffer = new Array(bytes);
-  var exponentLength = bytes * 8 - mantissaLength - 1;
-  var eMax = (1 << exponentLength) - 1;
-  var eBias = eMax >> 1;
-  var rt = mantissaLength === 23 ? pow(2, -24) - pow(2, -77) : 0;
-  var sign = number < 0 || number === 0 && 1 / number < 0 ? 1 : 0;
-  var index = 0;
-  var exponent, mantissa, c;
-  number = abs(number);
-  // eslint-disable-next-line no-self-compare
-  if (number != number || number === Infinity$1) {
-    // eslint-disable-next-line no-self-compare
-    mantissa = number != number ? 1 : 0;
-    exponent = eMax;
-  } else {
-    exponent = floor$1(log(number) / LN2);
-    if (number * (c = pow(2, -exponent)) < 1) {
-      exponent--;
-      c *= 2;
-    }
-    if (exponent + eBias >= 1) {
-      number += rt / c;
-    } else {
-      number += rt * pow(2, 1 - eBias);
-    }
-    if (number * c >= 2) {
-      exponent++;
-      c /= 2;
-    }
-    if (exponent + eBias >= eMax) {
-      mantissa = 0;
-      exponent = eMax;
-    } else if (exponent + eBias >= 1) {
-      mantissa = (number * c - 1) * pow(2, mantissaLength);
-      exponent = exponent + eBias;
-    } else {
-      mantissa = number * pow(2, eBias - 1) * pow(2, mantissaLength);
-      exponent = 0;
-    }
-  }
-  for (; mantissaLength >= 8; buffer[index++] = mantissa & 255, mantissa /= 256, mantissaLength -= 8);
-  exponent = exponent << mantissaLength | mantissa;
-  exponentLength += mantissaLength;
-  for (; exponentLength > 0; buffer[index++] = exponent & 255, exponent /= 256, exponentLength -= 8);
-  buffer[--index] |= sign * 128;
-  return buffer;
-};
-
-var unpack = function (buffer, mantissaLength) {
-  var bytes = buffer.length;
-  var exponentLength = bytes * 8 - mantissaLength - 1;
-  var eMax = (1 << exponentLength) - 1;
-  var eBias = eMax >> 1;
-  var nBits = exponentLength - 7;
-  var index = bytes - 1;
-  var sign = buffer[index--];
-  var exponent = sign & 127;
-  var mantissa;
-  sign >>= 7;
-  for (; nBits > 0; exponent = exponent * 256 + buffer[index], index--, nBits -= 8);
-  mantissa = exponent & (1 << -nBits) - 1;
-  exponent >>= -nBits;
-  nBits += mantissaLength;
-  for (; nBits > 0; mantissa = mantissa * 256 + buffer[index], index--, nBits -= 8);
-  if (exponent === 0) {
-    exponent = 1 - eBias;
-  } else if (exponent === eMax) {
-    return mantissa ? NaN : sign ? -Infinity$1 : Infinity$1;
-  } else {
-    mantissa = mantissa + pow(2, mantissaLength);
-    exponent = exponent - eBias;
-  } return (sign ? -1 : 1) * mantissa * pow(2, exponent - mantissaLength);
-};
-
-var ieee754 = {
-  pack: pack,
-  unpack: unpack
-};
-
-var getOwnPropertyNames = objectGetOwnPropertyNames.f;
-var defineProperty$3 = objectDefineProperty.f;
-
-
-
-
-var getInternalState$1 = internalState.get;
-var setInternalState$1 = internalState.set;
 var ARRAY_BUFFER = 'ArrayBuffer';
 var DATA_VIEW = 'DataView';
-var PROTOTYPE$1 = 'prototype';
-var WRONG_LENGTH = 'Wrong length';
-var WRONG_INDEX = 'Wrong index';
-var NativeArrayBuffer = global_1[ARRAY_BUFFER];
-var $ArrayBuffer = NativeArrayBuffer;
-var $DataView = global_1[DATA_VIEW];
-var $DataViewPrototype = $DataView && $DataView[PROTOTYPE$1];
-var ObjectPrototype$1 = Object.prototype;
-var RangeError$1 = global_1.RangeError;
+var PROTOTYPE = 'prototype';
+var WRONG_LENGTH = 'Wrong length!';
+var WRONG_INDEX = 'Wrong index!';
+var $ArrayBuffer = _global[ARRAY_BUFFER];
+var $DataView = _global[DATA_VIEW];
+var Math = _global.Math;
+var RangeError = _global.RangeError;
+// eslint-disable-next-line no-shadow-restricted-names
+var Infinity = _global.Infinity;
+var BaseBuffer = $ArrayBuffer;
+var abs = Math.abs;
+var pow = Math.pow;
+var floor = Math.floor;
+var log = Math.log;
+var LN2 = Math.LN2;
+var BUFFER = 'buffer';
+var BYTE_LENGTH = 'byteLength';
+var BYTE_OFFSET = 'byteOffset';
+var $BUFFER = _descriptors ? '_b' : BUFFER;
+var $LENGTH = _descriptors ? '_l' : BYTE_LENGTH;
+var $OFFSET = _descriptors ? '_o' : BYTE_OFFSET;
 
-var packIEEE754 = ieee754.pack;
-var unpackIEEE754 = ieee754.unpack;
+// IEEE754 conversions based on https://github.com/feross/ieee754
+function packIEEE754(value, mLen, nBytes) {
+  var buffer = new Array(nBytes);
+  var eLen = nBytes * 8 - mLen - 1;
+  var eMax = (1 << eLen) - 1;
+  var eBias = eMax >> 1;
+  var rt = mLen === 23 ? pow(2, -24) - pow(2, -77) : 0;
+  var i = 0;
+  var s = value < 0 || value === 0 && 1 / value < 0 ? 1 : 0;
+  var e, m, c;
+  value = abs(value);
+  // eslint-disable-next-line no-self-compare
+  if (value != value || value === Infinity) {
+    // eslint-disable-next-line no-self-compare
+    m = value != value ? 1 : 0;
+    e = eMax;
+  } else {
+    e = floor(log(value) / LN2);
+    if (value * (c = pow(2, -e)) < 1) {
+      e--;
+      c *= 2;
+    }
+    if (e + eBias >= 1) {
+      value += rt / c;
+    } else {
+      value += rt * pow(2, 1 - eBias);
+    }
+    if (value * c >= 2) {
+      e++;
+      c /= 2;
+    }
+    if (e + eBias >= eMax) {
+      m = 0;
+      e = eMax;
+    } else if (e + eBias >= 1) {
+      m = (value * c - 1) * pow(2, mLen);
+      e = e + eBias;
+    } else {
+      m = value * pow(2, eBias - 1) * pow(2, mLen);
+      e = 0;
+    }
+  }
+  for (; mLen >= 8; buffer[i++] = m & 255, m /= 256, mLen -= 8);
+  e = e << mLen | m;
+  eLen += mLen;
+  for (; eLen > 0; buffer[i++] = e & 255, e /= 256, eLen -= 8);
+  buffer[--i] |= s * 128;
+  return buffer;
+}
+function unpackIEEE754(buffer, mLen, nBytes) {
+  var eLen = nBytes * 8 - mLen - 1;
+  var eMax = (1 << eLen) - 1;
+  var eBias = eMax >> 1;
+  var nBits = eLen - 7;
+  var i = nBytes - 1;
+  var s = buffer[i--];
+  var e = s & 127;
+  var m;
+  s >>= 7;
+  for (; nBits > 0; e = e * 256 + buffer[i], i--, nBits -= 8);
+  m = e & (1 << -nBits) - 1;
+  e >>= -nBits;
+  nBits += mLen;
+  for (; nBits > 0; m = m * 256 + buffer[i], i--, nBits -= 8);
+  if (e === 0) {
+    e = 1 - eBias;
+  } else if (e === eMax) {
+    return m ? NaN : s ? -Infinity : Infinity;
+  } else {
+    m = m + pow(2, mLen);
+    e = e - eBias;
+  } return (s ? -1 : 1) * m * pow(2, e - mLen);
+}
 
-var packInt8 = function (number) {
-  return [number & 0xFF];
-};
+function unpackI32(bytes) {
+  return bytes[3] << 24 | bytes[2] << 16 | bytes[1] << 8 | bytes[0];
+}
+function packI8(it) {
+  return [it & 0xff];
+}
+function packI16(it) {
+  return [it & 0xff, it >> 8 & 0xff];
+}
+function packI32(it) {
+  return [it & 0xff, it >> 8 & 0xff, it >> 16 & 0xff, it >> 24 & 0xff];
+}
+function packF64(it) {
+  return packIEEE754(it, 52, 8);
+}
+function packF32(it) {
+  return packIEEE754(it, 23, 4);
+}
 
-var packInt16 = function (number) {
-  return [number & 0xFF, number >> 8 & 0xFF];
-};
+function addGetter(C, key, internal) {
+  dP(C[PROTOTYPE], key, { get: function () { return this[internal]; } });
+}
 
-var packInt32 = function (number) {
-  return [number & 0xFF, number >> 8 & 0xFF, number >> 16 & 0xFF, number >> 24 & 0xFF];
-};
-
-var unpackInt32 = function (buffer) {
-  return buffer[3] << 24 | buffer[2] << 16 | buffer[1] << 8 | buffer[0];
-};
-
-var packFloat32 = function (number) {
-  return packIEEE754(number, 23, 4);
-};
-
-var packFloat64 = function (number) {
-  return packIEEE754(number, 52, 8);
-};
-
-var addGetter = function (Constructor, key) {
-  defineProperty$3(Constructor[PROTOTYPE$1], key, { get: function () { return getInternalState$1(this)[key]; } });
-};
-
-var get$1 = function (view, count, index, isLittleEndian) {
-  var intIndex = toIndex(index);
-  var store = getInternalState$1(view);
-  if (intIndex + count > store.byteLength) throw RangeError$1(WRONG_INDEX);
-  var bytes = getInternalState$1(store.buffer).bytes;
-  var start = intIndex + store.byteOffset;
-  var pack = bytes.slice(start, start + count);
+function get(view, bytes, index, isLittleEndian) {
+  var numIndex = +index;
+  var intIndex = _toIndex(numIndex);
+  if (intIndex + bytes > view[$LENGTH]) throw RangeError(WRONG_INDEX);
+  var store = view[$BUFFER]._b;
+  var start = intIndex + view[$OFFSET];
+  var pack = store.slice(start, start + bytes);
   return isLittleEndian ? pack : pack.reverse();
-};
-
-var set$1 = function (view, count, index, conversion, value, isLittleEndian) {
-  var intIndex = toIndex(index);
-  var store = getInternalState$1(view);
-  if (intIndex + count > store.byteLength) throw RangeError$1(WRONG_INDEX);
-  var bytes = getInternalState$1(store.buffer).bytes;
-  var start = intIndex + store.byteOffset;
+}
+function set(view, bytes, index, conversion, value, isLittleEndian) {
+  var numIndex = +index;
+  var intIndex = _toIndex(numIndex);
+  if (intIndex + bytes > view[$LENGTH]) throw RangeError(WRONG_INDEX);
+  var store = view[$BUFFER]._b;
+  var start = intIndex + view[$OFFSET];
   var pack = conversion(+value);
-  for (var i = 0; i < count; i++) bytes[start + i] = pack[isLittleEndian ? i : count - i - 1];
-};
+  for (var i = 0; i < bytes; i++) store[start + i] = pack[isLittleEndian ? i : bytes - i - 1];
+}
 
-if (!arrayBufferNative) {
+if (!_typed.ABV) {
   $ArrayBuffer = function ArrayBuffer(length) {
-    anInstance(this, $ArrayBuffer, ARRAY_BUFFER);
-    var byteLength = toIndex(length);
-    setInternalState$1(this, {
-      bytes: arrayFill.call(new Array(byteLength), 0),
-      byteLength: byteLength
-    });
-    if (!descriptors) this.byteLength = byteLength;
+    _anInstance(this, $ArrayBuffer, ARRAY_BUFFER);
+    var byteLength = _toIndex(length);
+    this._b = _arrayFill.call(new Array(byteLength), 0);
+    this[$LENGTH] = byteLength;
   };
 
   $DataView = function DataView(buffer, byteOffset, byteLength) {
-    anInstance(this, $DataView, DATA_VIEW);
-    anInstance(buffer, $ArrayBuffer, DATA_VIEW);
-    var bufferLength = getInternalState$1(buffer).byteLength;
-    var offset = toInteger(byteOffset);
-    if (offset < 0 || offset > bufferLength) throw RangeError$1('Wrong offset');
-    byteLength = byteLength === undefined ? bufferLength - offset : toLength(byteLength);
-    if (offset + byteLength > bufferLength) throw RangeError$1(WRONG_LENGTH);
-    setInternalState$1(this, {
-      buffer: buffer,
-      byteLength: byteLength,
-      byteOffset: offset
-    });
-    if (!descriptors) {
-      this.buffer = buffer;
-      this.byteLength = byteLength;
-      this.byteOffset = offset;
-    }
+    _anInstance(this, $DataView, DATA_VIEW);
+    _anInstance(buffer, $ArrayBuffer, DATA_VIEW);
+    var bufferLength = buffer[$LENGTH];
+    var offset = _toInteger(byteOffset);
+    if (offset < 0 || offset > bufferLength) throw RangeError('Wrong offset!');
+    byteLength = byteLength === undefined ? bufferLength - offset : _toLength(byteLength);
+    if (offset + byteLength > bufferLength) throw RangeError(WRONG_LENGTH);
+    this[$BUFFER] = buffer;
+    this[$OFFSET] = offset;
+    this[$LENGTH] = byteLength;
   };
 
-  if (descriptors) {
-    addGetter($ArrayBuffer, 'byteLength');
-    addGetter($DataView, 'buffer');
-    addGetter($DataView, 'byteLength');
-    addGetter($DataView, 'byteOffset');
+  if (_descriptors) {
+    addGetter($ArrayBuffer, BYTE_LENGTH, '_l');
+    addGetter($DataView, BUFFER, '_b');
+    addGetter($DataView, BYTE_LENGTH, '_l');
+    addGetter($DataView, BYTE_OFFSET, '_o');
   }
 
-  redefineAll($DataView[PROTOTYPE$1], {
+  _redefineAll($DataView[PROTOTYPE], {
     getInt8: function getInt8(byteOffset) {
-      return get$1(this, 1, byteOffset)[0] << 24 >> 24;
+      return get(this, 1, byteOffset)[0] << 24 >> 24;
     },
     getUint8: function getUint8(byteOffset) {
-      return get$1(this, 1, byteOffset)[0];
+      return get(this, 1, byteOffset)[0];
     },
     getInt16: function getInt16(byteOffset /* , littleEndian */) {
-      var bytes = get$1(this, 2, byteOffset, arguments.length > 1 ? arguments[1] : undefined);
+      var bytes = get(this, 2, byteOffset, arguments[1]);
       return (bytes[1] << 8 | bytes[0]) << 16 >> 16;
     },
     getUint16: function getUint16(byteOffset /* , littleEndian */) {
-      var bytes = get$1(this, 2, byteOffset, arguments.length > 1 ? arguments[1] : undefined);
+      var bytes = get(this, 2, byteOffset, arguments[1]);
       return bytes[1] << 8 | bytes[0];
     },
     getInt32: function getInt32(byteOffset /* , littleEndian */) {
-      return unpackInt32(get$1(this, 4, byteOffset, arguments.length > 1 ? arguments[1] : undefined));
+      return unpackI32(get(this, 4, byteOffset, arguments[1]));
     },
     getUint32: function getUint32(byteOffset /* , littleEndian */) {
-      return unpackInt32(get$1(this, 4, byteOffset, arguments.length > 1 ? arguments[1] : undefined)) >>> 0;
+      return unpackI32(get(this, 4, byteOffset, arguments[1])) >>> 0;
     },
     getFloat32: function getFloat32(byteOffset /* , littleEndian */) {
-      return unpackIEEE754(get$1(this, 4, byteOffset, arguments.length > 1 ? arguments[1] : undefined), 23);
+      return unpackIEEE754(get(this, 4, byteOffset, arguments[1]), 23, 4);
     },
     getFloat64: function getFloat64(byteOffset /* , littleEndian */) {
-      return unpackIEEE754(get$1(this, 8, byteOffset, arguments.length > 1 ? arguments[1] : undefined), 52);
+      return unpackIEEE754(get(this, 8, byteOffset, arguments[1]), 52, 8);
     },
     setInt8: function setInt8(byteOffset, value) {
-      set$1(this, 1, byteOffset, packInt8, value);
+      set(this, 1, byteOffset, packI8, value);
     },
     setUint8: function setUint8(byteOffset, value) {
-      set$1(this, 1, byteOffset, packInt8, value);
+      set(this, 1, byteOffset, packI8, value);
     },
     setInt16: function setInt16(byteOffset, value /* , littleEndian */) {
-      set$1(this, 2, byteOffset, packInt16, value, arguments.length > 2 ? arguments[2] : undefined);
+      set(this, 2, byteOffset, packI16, value, arguments[2]);
     },
     setUint16: function setUint16(byteOffset, value /* , littleEndian */) {
-      set$1(this, 2, byteOffset, packInt16, value, arguments.length > 2 ? arguments[2] : undefined);
+      set(this, 2, byteOffset, packI16, value, arguments[2]);
     },
     setInt32: function setInt32(byteOffset, value /* , littleEndian */) {
-      set$1(this, 4, byteOffset, packInt32, value, arguments.length > 2 ? arguments[2] : undefined);
+      set(this, 4, byteOffset, packI32, value, arguments[2]);
     },
     setUint32: function setUint32(byteOffset, value /* , littleEndian */) {
-      set$1(this, 4, byteOffset, packInt32, value, arguments.length > 2 ? arguments[2] : undefined);
+      set(this, 4, byteOffset, packI32, value, arguments[2]);
     },
     setFloat32: function setFloat32(byteOffset, value /* , littleEndian */) {
-      set$1(this, 4, byteOffset, packFloat32, value, arguments.length > 2 ? arguments[2] : undefined);
+      set(this, 4, byteOffset, packF32, value, arguments[2]);
     },
     setFloat64: function setFloat64(byteOffset, value /* , littleEndian */) {
-      set$1(this, 8, byteOffset, packFloat64, value, arguments.length > 2 ? arguments[2] : undefined);
+      set(this, 8, byteOffset, packF64, value, arguments[2]);
     }
   });
 } else {
-  if (!fails(function () {
-    NativeArrayBuffer(1);
-  }) || !fails(function () {
-    new NativeArrayBuffer(-1); // eslint-disable-line no-new
-  }) || fails(function () {
-    new NativeArrayBuffer(); // eslint-disable-line no-new
-    new NativeArrayBuffer(1.5); // eslint-disable-line no-new
-    new NativeArrayBuffer(NaN); // eslint-disable-line no-new
-    return NativeArrayBuffer.name != ARRAY_BUFFER;
+  if (!_fails(function () {
+    $ArrayBuffer(1);
+  }) || !_fails(function () {
+    new $ArrayBuffer(-1); // eslint-disable-line no-new
+  }) || _fails(function () {
+    new $ArrayBuffer(); // eslint-disable-line no-new
+    new $ArrayBuffer(1.5); // eslint-disable-line no-new
+    new $ArrayBuffer(NaN); // eslint-disable-line no-new
+    return $ArrayBuffer.name != ARRAY_BUFFER;
   })) {
     $ArrayBuffer = function ArrayBuffer(length) {
-      anInstance(this, $ArrayBuffer);
-      return new NativeArrayBuffer(toIndex(length));
+      _anInstance(this, $ArrayBuffer);
+      return new BaseBuffer(_toIndex(length));
     };
-    var ArrayBufferPrototype = $ArrayBuffer[PROTOTYPE$1] = NativeArrayBuffer[PROTOTYPE$1];
-    for (var keys$1 = getOwnPropertyNames(NativeArrayBuffer), j = 0, key; keys$1.length > j;) {
-      if (!((key = keys$1[j++]) in $ArrayBuffer)) {
-        createNonEnumerableProperty($ArrayBuffer, key, NativeArrayBuffer[key]);
-      }
+    var ArrayBufferProto = $ArrayBuffer[PROTOTYPE] = BaseBuffer[PROTOTYPE];
+    for (var keys = gOPN(BaseBuffer), j = 0, key; keys.length > j;) {
+      if (!((key = keys[j++]) in $ArrayBuffer)) _hide($ArrayBuffer, key, BaseBuffer[key]);
     }
-    ArrayBufferPrototype.constructor = $ArrayBuffer;
+    ArrayBufferProto.constructor = $ArrayBuffer;
   }
-
-  // WebKit bug - the same parent prototype for typed arrays and data view
-  if (objectSetPrototypeOf && objectGetPrototypeOf($DataViewPrototype) !== ObjectPrototype$1) {
-    objectSetPrototypeOf($DataViewPrototype, ObjectPrototype$1);
-  }
-
   // iOS Safari 7.x bug
-  var testView = new $DataView(new $ArrayBuffer(2));
-  var nativeSetInt8 = $DataViewPrototype.setInt8;
-  testView.setInt8(0, 2147483648);
-  testView.setInt8(1, 2147483649);
-  if (testView.getInt8(0) || !testView.getInt8(1)) redefineAll($DataViewPrototype, {
+  var view = new $DataView(new $ArrayBuffer(2));
+  var $setInt8 = $DataView[PROTOTYPE].setInt8;
+  view.setInt8(0, 2147483648);
+  view.setInt8(1, 2147483649);
+  if (view.getInt8(0) || !view.getInt8(1)) _redefineAll($DataView[PROTOTYPE], {
     setInt8: function setInt8(byteOffset, value) {
-      nativeSetInt8.call(this, byteOffset, value << 24 >> 24);
+      $setInt8.call(this, byteOffset, value << 24 >> 24);
     },
     setUint8: function setUint8(byteOffset, value) {
-      nativeSetInt8.call(this, byteOffset, value << 24 >> 24);
+      $setInt8.call(this, byteOffset, value << 24 >> 24);
     }
-  }, { unsafe: true });
+  }, true);
 }
-
-setToStringTag($ArrayBuffer, ARRAY_BUFFER);
-setToStringTag($DataView, DATA_VIEW);
-
-var arrayBuffer = {
-  ArrayBuffer: $ArrayBuffer,
-  DataView: $DataView
-};
-
-var SPECIES$3 = wellKnownSymbol('species');
-
-// `SpeciesConstructor` abstract operation
-// https://tc39.github.io/ecma262/#sec-speciesconstructor
-var speciesConstructor = function (O, defaultConstructor) {
-  var C = anObject(O).constructor;
-  var S;
-  return C === undefined || (S = anObject(C)[SPECIES$3]) == undefined ? defaultConstructor : aFunction$1(S);
-};
-
-var ArrayBuffer$1 = arrayBuffer.ArrayBuffer;
-var DataView$1 = arrayBuffer.DataView;
-var nativeArrayBufferSlice = ArrayBuffer$1.prototype.slice;
-
-var INCORRECT_SLICE = fails(function () {
-  return !new ArrayBuffer$1(2).slice(1, undefined).byteLength;
+_setToStringTag($ArrayBuffer, ARRAY_BUFFER);
+_setToStringTag($DataView, DATA_VIEW);
+_hide($DataView[PROTOTYPE], _typed.VIEW, true);
+exports[ARRAY_BUFFER] = $ArrayBuffer;
+exports[DATA_VIEW] = $DataView;
 });
 
-// `ArrayBuffer.prototype.slice` method
-// https://tc39.github.io/ecma262/#sec-arraybuffer.prototype.slice
-_export({ target: 'ArrayBuffer', proto: true, unsafe: true, forced: INCORRECT_SLICE }, {
-  slice: function slice(start, end) {
-    if (nativeArrayBufferSlice !== undefined && end === undefined) {
-      return nativeArrayBufferSlice.call(anObject(this), start); // FF fix
+// check on default Array iterator
+
+var ITERATOR$2 = _wks('iterator');
+var ArrayProto$1 = Array.prototype;
+
+var _isArrayIter = function (it) {
+  return it !== undefined && (_iterators.Array === it || ArrayProto$1[ITERATOR$2] === it);
+};
+
+var ITERATOR$3 = _wks('iterator');
+
+var core_getIteratorMethod = _core.getIteratorMethod = function (it) {
+  if (it != undefined) return it[ITERATOR$3]
+    || it['@@iterator']
+    || _iterators[_classof(it)];
+};
+
+// 7.2.2 IsArray(argument)
+
+var _isArray = Array.isArray || function isArray(arg) {
+  return _cof(arg) == 'Array';
+};
+
+var SPECIES = _wks('species');
+
+var _arraySpeciesConstructor = function (original) {
+  var C;
+  if (_isArray(original)) {
+    C = original.constructor;
+    // cross-realm fallback
+    if (typeof C == 'function' && (C === Array || _isArray(C.prototype))) C = undefined;
+    if (_isObject(C)) {
+      C = C[SPECIES];
+      if (C === null) C = undefined;
     }
-    var length = anObject(this).byteLength;
-    var first = toAbsoluteIndex(start, length);
-    var fin = toAbsoluteIndex(end === undefined ? length : end, length);
-    var result = new (speciesConstructor(this, ArrayBuffer$1))(toLength(fin - first));
-    var viewSource = new DataView$1(this);
-    var viewTarget = new DataView$1(result);
+  } return C === undefined ? Array : C;
+};
+
+// 9.4.2.3 ArraySpeciesCreate(originalArray, length)
+
+
+var _arraySpeciesCreate = function (original, length) {
+  return new (_arraySpeciesConstructor(original))(length);
+};
+
+// 0 -> Array#forEach
+// 1 -> Array#map
+// 2 -> Array#filter
+// 3 -> Array#some
+// 4 -> Array#every
+// 5 -> Array#find
+// 6 -> Array#findIndex
+
+
+
+
+
+var _arrayMethods = function (TYPE, $create) {
+  var IS_MAP = TYPE == 1;
+  var IS_FILTER = TYPE == 2;
+  var IS_SOME = TYPE == 3;
+  var IS_EVERY = TYPE == 4;
+  var IS_FIND_INDEX = TYPE == 6;
+  var NO_HOLES = TYPE == 5 || IS_FIND_INDEX;
+  var create = $create || _arraySpeciesCreate;
+  return function ($this, callbackfn, that) {
+    var O = _toObject($this);
+    var self = _iobject(O);
+    var f = _ctx(callbackfn, that, 3);
+    var length = _toLength(self.length);
     var index = 0;
-    while (first < fin) {
-      viewTarget.setUint8(index++, viewSource.getUint8(first++));
-    } return result;
-  }
-});
-
-var TO_STRING_TAG$1 = wellKnownSymbol('toStringTag');
-var test = {};
-
-test[TO_STRING_TAG$1] = 'z';
-
-var toStringTagSupport = String(test) === '[object z]';
-
-var TO_STRING_TAG$2 = wellKnownSymbol('toStringTag');
-// ES3 wrong here
-var CORRECT_ARGUMENTS = classofRaw(function () { return arguments; }()) == 'Arguments';
-
-// fallback for IE11 Script Access Denied error
-var tryGet = function (it, key) {
-  try {
-    return it[key];
-  } catch (error) { /* empty */ }
+    var result = IS_MAP ? create($this, length) : IS_FILTER ? create($this, 0) : undefined;
+    var val, res;
+    for (;length > index; index++) if (NO_HOLES || index in self) {
+      val = self[index];
+      res = f(val, index, O);
+      if (TYPE) {
+        if (IS_MAP) result[index] = res;   // map
+        else if (res) switch (TYPE) {
+          case 3: return true;             // some
+          case 5: return val;              // find
+          case 6: return index;            // findIndex
+          case 2: result.push(val);        // filter
+        } else if (IS_EVERY) return false; // every
+      }
+    }
+    return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : result;
+  };
 };
 
-// getting tag from ES6+ `Object.prototype.toString`
-var classof = toStringTagSupport ? classofRaw : function (it) {
-  var O, tag, result;
-  return it === undefined ? 'Undefined' : it === null ? 'Null'
-    // @@toStringTag case
-    : typeof (tag = tryGet(O = Object(it), TO_STRING_TAG$2)) == 'string' ? tag
-    // builtinTag case
-    : CORRECT_ARGUMENTS ? classofRaw(O)
-    // ES3 arguments fallback
-    : (result = classofRaw(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : result;
+// 7.3.20 SpeciesConstructor(O, defaultConstructor)
+
+
+var SPECIES$1 = _wks('species');
+var _speciesConstructor = function (O, D) {
+  var C = _anObject(O).constructor;
+  var S;
+  return C === undefined || (S = _anObject(C)[SPECIES$1]) == undefined ? D : _aFunction(S);
 };
 
-// `Object.prototype.toString` method implementation
-// https://tc39.github.io/ecma262/#sec-object.prototype.tostring
-var objectToString = toStringTagSupport ? {}.toString : function toString() {
-  return '[object ' + classof(this) + ']';
-};
-
-// `Object.prototype.toString` method
-// https://tc39.github.io/ecma262/#sec-object.prototype.tostring
-if (!toStringTagSupport) {
-  redefine(Object.prototype, 'toString', objectToString, { unsafe: true });
-}
-
-var ITERATOR$2 = wellKnownSymbol('iterator');
+var ITERATOR$4 = _wks('iterator');
 var SAFE_CLOSING = false;
 
 try {
-  var called = 0;
-  var iteratorWithReturn = {
-    next: function () {
-      return { done: !!called++ };
-    },
-    'return': function () {
-      SAFE_CLOSING = true;
-    }
-  };
-  iteratorWithReturn[ITERATOR$2] = function () {
-    return this;
-  };
+  var riter = [7][ITERATOR$4]();
+  riter['return'] = function () { SAFE_CLOSING = true; };
   // eslint-disable-next-line no-throw-literal
-  Array.from(iteratorWithReturn, function () { throw 2; });
-} catch (error) { /* empty */ }
+  Array.from(riter, function () { throw 2; });
+} catch (e) { /* empty */ }
 
-var checkCorrectnessOfIteration = function (exec, SKIP_CLOSING) {
-  if (!SKIP_CLOSING && !SAFE_CLOSING) return false;
-  var ITERATION_SUPPORT = false;
+var _iterDetect = function (exec, skipClosing) {
+  if (!skipClosing && !SAFE_CLOSING) return false;
+  var safe = false;
   try {
-    var object = {};
-    object[ITERATOR$2] = function () {
-      return {
-        next: function () {
-          return { done: ITERATION_SUPPORT = true };
-        }
-      };
-    };
-    exec(object);
-  } catch (error) { /* empty */ }
-  return ITERATION_SUPPORT;
+    var arr = [7];
+    var iter = arr[ITERATOR$4]();
+    iter.next = function () { return { done: safe = true }; };
+    arr[ITERATOR$4] = function () { return iter; };
+    exec(arr);
+  } catch (e) { /* empty */ }
+  return safe;
 };
 
-var defineProperty$4 = objectDefineProperty.f;
-
-
-
-
-
-var Int8Array$1 = global_1.Int8Array;
-var Int8ArrayPrototype = Int8Array$1 && Int8Array$1.prototype;
-var Uint8ClampedArray$1 = global_1.Uint8ClampedArray;
-var Uint8ClampedArrayPrototype = Uint8ClampedArray$1 && Uint8ClampedArray$1.prototype;
-var TypedArray = Int8Array$1 && objectGetPrototypeOf(Int8Array$1);
-var TypedArrayPrototype = Int8ArrayPrototype && objectGetPrototypeOf(Int8ArrayPrototype);
-var ObjectPrototype$2 = Object.prototype;
-var isPrototypeOf = ObjectPrototype$2.isPrototypeOf;
-
-var TO_STRING_TAG$3 = wellKnownSymbol('toStringTag');
-var TYPED_ARRAY_TAG = uid('TYPED_ARRAY_TAG');
-// Fixing native typed arrays in Opera Presto crashes the browser, see #595
-var NATIVE_ARRAY_BUFFER_VIEWS = arrayBufferNative && !!objectSetPrototypeOf && classof(global_1.opera) !== 'Opera';
-var TYPED_ARRAY_TAG_REQIRED = false;
-var NAME;
-
-var TypedArrayConstructorsList = {
-  Int8Array: 1,
-  Uint8Array: 1,
-  Uint8ClampedArray: 1,
-  Int16Array: 2,
-  Uint16Array: 2,
-  Int32Array: 4,
-  Uint32Array: 4,
-  Float32Array: 4,
-  Float64Array: 8
-};
-
-var isView = function isView(it) {
-  var klass = classof(it);
-  return klass === 'DataView' || has(TypedArrayConstructorsList, klass);
-};
-
-var isTypedArray = function (it) {
-  return isObject(it) && has(TypedArrayConstructorsList, classof(it));
-};
-
-var aTypedArray = function (it) {
-  if (isTypedArray(it)) return it;
-  throw TypeError('Target is not a typed array');
-};
-
-var aTypedArrayConstructor = function (C) {
-  if (objectSetPrototypeOf) {
-    if (isPrototypeOf.call(TypedArray, C)) return C;
-  } else for (var ARRAY in TypedArrayConstructorsList) if (has(TypedArrayConstructorsList, NAME)) {
-    var TypedArrayConstructor = global_1[ARRAY];
-    if (TypedArrayConstructor && (C === TypedArrayConstructor || isPrototypeOf.call(TypedArrayConstructor, C))) {
-      return C;
-    }
-  } throw TypeError('Target is not a typed array constructor');
-};
-
-var exportTypedArrayMethod = function (KEY, property, forced) {
-  if (!descriptors) return;
-  if (forced) for (var ARRAY in TypedArrayConstructorsList) {
-    var TypedArrayConstructor = global_1[ARRAY];
-    if (TypedArrayConstructor && has(TypedArrayConstructor.prototype, KEY)) {
-      delete TypedArrayConstructor.prototype[KEY];
-    }
-  }
-  if (!TypedArrayPrototype[KEY] || forced) {
-    redefine(TypedArrayPrototype, KEY, forced ? property
-      : NATIVE_ARRAY_BUFFER_VIEWS && Int8ArrayPrototype[KEY] || property);
-  }
-};
-
-var exportTypedArrayStaticMethod = function (KEY, property, forced) {
-  var ARRAY, TypedArrayConstructor;
-  if (!descriptors) return;
-  if (objectSetPrototypeOf) {
-    if (forced) for (ARRAY in TypedArrayConstructorsList) {
-      TypedArrayConstructor = global_1[ARRAY];
-      if (TypedArrayConstructor && has(TypedArrayConstructor, KEY)) {
-        delete TypedArrayConstructor[KEY];
-      }
-    }
-    if (!TypedArray[KEY] || forced) {
-      // V8 ~ Chrome 49-50 `%TypedArray%` methods are non-writable non-configurable
-      try {
-        return redefine(TypedArray, KEY, forced ? property : NATIVE_ARRAY_BUFFER_VIEWS && Int8Array$1[KEY] || property);
-      } catch (error) { /* empty */ }
-    } else return;
-  }
-  for (ARRAY in TypedArrayConstructorsList) {
-    TypedArrayConstructor = global_1[ARRAY];
-    if (TypedArrayConstructor && (!TypedArrayConstructor[KEY] || forced)) {
-      redefine(TypedArrayConstructor, KEY, property);
-    }
-  }
-};
-
-for (NAME in TypedArrayConstructorsList) {
-  if (!global_1[NAME]) NATIVE_ARRAY_BUFFER_VIEWS = false;
-}
-
-// WebKit bug - typed arrays constructors prototype is Object.prototype
-if (!NATIVE_ARRAY_BUFFER_VIEWS || typeof TypedArray != 'function' || TypedArray === Function.prototype) {
-  // eslint-disable-next-line no-shadow
-  TypedArray = function TypedArray() {
-    throw TypeError('Incorrect invocation');
-  };
-  if (NATIVE_ARRAY_BUFFER_VIEWS) for (NAME in TypedArrayConstructorsList) {
-    if (global_1[NAME]) objectSetPrototypeOf(global_1[NAME], TypedArray);
-  }
-}
-
-if (!NATIVE_ARRAY_BUFFER_VIEWS || !TypedArrayPrototype || TypedArrayPrototype === ObjectPrototype$2) {
-  TypedArrayPrototype = TypedArray.prototype;
-  if (NATIVE_ARRAY_BUFFER_VIEWS) for (NAME in TypedArrayConstructorsList) {
-    if (global_1[NAME]) objectSetPrototypeOf(global_1[NAME].prototype, TypedArrayPrototype);
-  }
-}
-
-// WebKit bug - one more object in Uint8ClampedArray prototype chain
-if (NATIVE_ARRAY_BUFFER_VIEWS && objectGetPrototypeOf(Uint8ClampedArrayPrototype) !== TypedArrayPrototype) {
-  objectSetPrototypeOf(Uint8ClampedArrayPrototype, TypedArrayPrototype);
-}
-
-if (descriptors && !has(TypedArrayPrototype, TO_STRING_TAG$3)) {
-  TYPED_ARRAY_TAG_REQIRED = true;
-  defineProperty$4(TypedArrayPrototype, TO_STRING_TAG$3, { get: function () {
-    return isObject(this) ? this[TYPED_ARRAY_TAG] : undefined;
-  } });
-  for (NAME in TypedArrayConstructorsList) if (global_1[NAME]) {
-    createNonEnumerableProperty(global_1[NAME], TYPED_ARRAY_TAG, NAME);
-  }
-}
-
-var arrayBufferViewCore = {
-  NATIVE_ARRAY_BUFFER_VIEWS: NATIVE_ARRAY_BUFFER_VIEWS,
-  TYPED_ARRAY_TAG: TYPED_ARRAY_TAG_REQIRED && TYPED_ARRAY_TAG,
-  aTypedArray: aTypedArray,
-  aTypedArrayConstructor: aTypedArrayConstructor,
-  exportTypedArrayMethod: exportTypedArrayMethod,
-  exportTypedArrayStaticMethod: exportTypedArrayStaticMethod,
-  isView: isView,
-  isTypedArray: isTypedArray,
-  TypedArray: TypedArray,
-  TypedArrayPrototype: TypedArrayPrototype
-};
-
-/* eslint-disable no-new */
-
-
-
-var NATIVE_ARRAY_BUFFER_VIEWS$1 = arrayBufferViewCore.NATIVE_ARRAY_BUFFER_VIEWS;
-
-var ArrayBuffer$2 = global_1.ArrayBuffer;
-var Int8Array$2 = global_1.Int8Array;
-
-var typedArrayConstructorsRequireWrappers = !NATIVE_ARRAY_BUFFER_VIEWS$1 || !fails(function () {
-  Int8Array$2(1);
-}) || !fails(function () {
-  new Int8Array$2(-1);
-}) || !checkCorrectnessOfIteration(function (iterable) {
-  new Int8Array$2();
-  new Int8Array$2(null);
-  new Int8Array$2(1.5);
-  new Int8Array$2(iterable);
-}, true) || fails(function () {
-  // Safari (11+) bug - a reason why even Safari 13 should load a typed array polyfill
-  return new Int8Array$2(new ArrayBuffer$2(2), 1, undefined).length !== 1;
-});
-
-var toPositiveInteger = function (it) {
-  var result = toInteger(it);
-  if (result < 0) throw RangeError("The argument can't be less than 0");
-  return result;
-};
-
-var toOffset = function (it, BYTES) {
-  var offset = toPositiveInteger(it);
-  if (offset % BYTES) throw RangeError('Wrong offset');
-  return offset;
-};
-
-var ITERATOR$3 = wellKnownSymbol('iterator');
-
-var getIteratorMethod = function (it) {
-  if (it != undefined) return it[ITERATOR$3]
-    || it['@@iterator']
-    || iterators[classof(it)];
-};
-
-var ITERATOR$4 = wellKnownSymbol('iterator');
-var ArrayPrototype$1 = Array.prototype;
-
-// check on default Array iterator
-var isArrayIteratorMethod = function (it) {
-  return it !== undefined && (iterators.Array === it || ArrayPrototype$1[ITERATOR$4] === it);
-};
-
-var aTypedArrayConstructor$1 = arrayBufferViewCore.aTypedArrayConstructor;
-
-var typedArrayFrom = function from(source /* , mapfn, thisArg */) {
-  var O = toObject(source);
-  var argumentsLength = arguments.length;
-  var mapfn = argumentsLength > 1 ? arguments[1] : undefined;
-  var mapping = mapfn !== undefined;
-  var iteratorMethod = getIteratorMethod(O);
-  var i, length, result, step, iterator, next;
-  if (iteratorMethod != undefined && !isArrayIteratorMethod(iteratorMethod)) {
-    iterator = iteratorMethod.call(O);
-    next = iterator.next;
-    O = [];
-    while (!(step = next.call(iterator)).done) {
-      O.push(step.value);
-    }
-  }
-  if (mapping && argumentsLength > 2) {
-    mapfn = functionBindContext(mapfn, arguments[2], 2);
-  }
-  length = toLength(O.length);
-  result = new (aTypedArrayConstructor$1(this))(length);
-  for (i = 0; length > i; i++) {
-    result[i] = mapping ? mapfn(O[i], i) : O[i];
-  }
-  return result;
-};
-
-var SPECIES$4 = wellKnownSymbol('species');
-
-var setSpecies = function (CONSTRUCTOR_NAME) {
-  var Constructor = getBuiltIn(CONSTRUCTOR_NAME);
-  var defineProperty = objectDefineProperty.f;
-
-  if (descriptors && Constructor && !Constructor[SPECIES$4]) {
-    defineProperty(Constructor, SPECIES$4, {
-      configurable: true,
-      get: function () { return this; }
-    });
-  }
-};
-
-// makes subclassing work correct for wrapped built-ins
-var inheritIfRequired = function ($this, dummy, Wrapper) {
-  var NewTarget, NewTargetPrototype;
-  if (
-    // it can work only with native `setPrototypeOf`
-    objectSetPrototypeOf &&
-    // we haven't completely correct pre-ES6 way for getting `new.target`, so use this
-    typeof (NewTarget = dummy.constructor) == 'function' &&
-    NewTarget !== Wrapper &&
-    isObject(NewTargetPrototype = NewTarget.prototype) &&
-    NewTargetPrototype !== Wrapper.prototype
-  ) objectSetPrototypeOf($this, NewTargetPrototype);
-  return $this;
-};
-
-var typedArrayConstructor = createCommonjsModule(function (module) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var getOwnPropertyNames = objectGetOwnPropertyNames.f;
-
-var forEach = arrayIteration.forEach;
-
-
-
-
-
-
-var getInternalState = internalState.get;
-var setInternalState = internalState.set;
-var nativeDefineProperty = objectDefineProperty.f;
-var nativeGetOwnPropertyDescriptor = objectGetOwnPropertyDescriptor.f;
-var round = Math.round;
-var RangeError = global_1.RangeError;
-var ArrayBuffer = arrayBuffer.ArrayBuffer;
-var DataView = arrayBuffer.DataView;
-var NATIVE_ARRAY_BUFFER_VIEWS = arrayBufferViewCore.NATIVE_ARRAY_BUFFER_VIEWS;
-var TYPED_ARRAY_TAG = arrayBufferViewCore.TYPED_ARRAY_TAG;
-var TypedArray = arrayBufferViewCore.TypedArray;
-var TypedArrayPrototype = arrayBufferViewCore.TypedArrayPrototype;
-var aTypedArrayConstructor = arrayBufferViewCore.aTypedArrayConstructor;
-var isTypedArray = arrayBufferViewCore.isTypedArray;
-var BYTES_PER_ELEMENT = 'BYTES_PER_ELEMENT';
-var WRONG_LENGTH = 'Wrong length';
-
-var fromList = function (C, list) {
-  var index = 0;
-  var length = list.length;
-  var result = new (aTypedArrayConstructor(C))(length);
-  while (length > index) result[index] = list[index++];
-  return result;
-};
-
-var addGetter = function (it, key) {
-  nativeDefineProperty(it, key, { get: function () {
-    return getInternalState(this)[key];
-  } });
-};
-
-var isArrayBuffer = function (it) {
-  var klass;
-  return it instanceof ArrayBuffer || (klass = classof(it)) == 'ArrayBuffer' || klass == 'SharedArrayBuffer';
-};
-
-var isTypedArrayIndex = function (target, key) {
-  return isTypedArray(target)
-    && typeof key != 'symbol'
-    && key in target
-    && String(+key) == String(key);
-};
-
-var wrappedGetOwnPropertyDescriptor = function getOwnPropertyDescriptor(target, key) {
-  return isTypedArrayIndex(target, key = toPrimitive(key, true))
-    ? createPropertyDescriptor(2, target[key])
-    : nativeGetOwnPropertyDescriptor(target, key);
-};
-
-var wrappedDefineProperty = function defineProperty(target, key, descriptor) {
-  if (isTypedArrayIndex(target, key = toPrimitive(key, true))
-    && isObject(descriptor)
-    && has(descriptor, 'value')
-    && !has(descriptor, 'get')
-    && !has(descriptor, 'set')
-    // TODO: add validation descriptor w/o calling accessors
-    && !descriptor.configurable
-    && (!has(descriptor, 'writable') || descriptor.writable)
-    && (!has(descriptor, 'enumerable') || descriptor.enumerable)
-  ) {
-    target[key] = descriptor.value;
-    return target;
-  } return nativeDefineProperty(target, key, descriptor);
-};
-
-if (descriptors) {
-  if (!NATIVE_ARRAY_BUFFER_VIEWS) {
-    objectGetOwnPropertyDescriptor.f = wrappedGetOwnPropertyDescriptor;
-    objectDefineProperty.f = wrappedDefineProperty;
-    addGetter(TypedArrayPrototype, 'buffer');
-    addGetter(TypedArrayPrototype, 'byteOffset');
-    addGetter(TypedArrayPrototype, 'byteLength');
-    addGetter(TypedArrayPrototype, 'length');
-  }
-
-  _export({ target: 'Object', stat: true, forced: !NATIVE_ARRAY_BUFFER_VIEWS }, {
-    getOwnPropertyDescriptor: wrappedGetOwnPropertyDescriptor,
-    defineProperty: wrappedDefineProperty
+var SPECIES$2 = _wks('species');
+
+var _setSpecies = function (KEY) {
+  var C = _global[KEY];
+  if (_descriptors && C && !C[SPECIES$2]) _objectDp.f(C, SPECIES$2, {
+    configurable: true,
+    get: function () { return this; }
   });
+};
 
-  module.exports = function (TYPE, wrapper, CLAMPED) {
-    var BYTES = TYPE.match(/\d+$/)[0] / 8;
-    var CONSTRUCTOR_NAME = TYPE + (CLAMPED ? 'Clamped' : '') + 'Array';
-    var GETTER = 'get' + TYPE;
-    var SETTER = 'set' + TYPE;
-    var NativeTypedArrayConstructor = global_1[CONSTRUCTOR_NAME];
-    var TypedArrayConstructor = NativeTypedArrayConstructor;
-    var TypedArrayConstructorPrototype = TypedArrayConstructor && TypedArrayConstructor.prototype;
-    var exported = {};
-
-    var getter = function (that, index) {
-      var data = getInternalState(that);
-      return data.view[GETTER](index * BYTES + data.byteOffset, true);
-    };
-
-    var setter = function (that, index, value) {
-      var data = getInternalState(that);
-      if (CLAMPED) value = (value = round(value)) < 0 ? 0 : value > 0xFF ? 0xFF : value & 0xFF;
-      data.view[SETTER](index * BYTES + data.byteOffset, value, true);
-    };
-
-    var addElement = function (that, index) {
-      nativeDefineProperty(that, index, {
-        get: function () {
-          return getter(this, index);
-        },
-        set: function (value) {
-          return setter(this, index, value);
-        },
-        enumerable: true
-      });
-    };
-
-    if (!NATIVE_ARRAY_BUFFER_VIEWS) {
-      TypedArrayConstructor = wrapper(function (that, data, offset, $length) {
-        anInstance(that, TypedArrayConstructor, CONSTRUCTOR_NAME);
-        var index = 0;
-        var byteOffset = 0;
-        var buffer, byteLength, length;
-        if (!isObject(data)) {
-          length = toIndex(data);
-          byteLength = length * BYTES;
-          buffer = new ArrayBuffer(byteLength);
-        } else if (isArrayBuffer(data)) {
-          buffer = data;
-          byteOffset = toOffset(offset, BYTES);
-          var $len = data.byteLength;
-          if ($length === undefined) {
-            if ($len % BYTES) throw RangeError(WRONG_LENGTH);
-            byteLength = $len - byteOffset;
-            if (byteLength < 0) throw RangeError(WRONG_LENGTH);
-          } else {
-            byteLength = toLength($length) * BYTES;
-            if (byteLength + byteOffset > $len) throw RangeError(WRONG_LENGTH);
-          }
-          length = byteLength / BYTES;
-        } else if (isTypedArray(data)) {
-          return fromList(TypedArrayConstructor, data);
-        } else {
-          return typedArrayFrom.call(TypedArrayConstructor, data);
-        }
-        setInternalState(that, {
-          buffer: buffer,
-          byteOffset: byteOffset,
-          byteLength: byteLength,
-          length: length,
-          view: new DataView(buffer)
-        });
-        while (index < length) addElement(that, index++);
-      });
-
-      if (objectSetPrototypeOf) objectSetPrototypeOf(TypedArrayConstructor, TypedArray);
-      TypedArrayConstructorPrototype = TypedArrayConstructor.prototype = objectCreate(TypedArrayPrototype);
-    } else if (typedArrayConstructorsRequireWrappers) {
-      TypedArrayConstructor = wrapper(function (dummy, data, typedArrayOffset, $length) {
-        anInstance(dummy, TypedArrayConstructor, CONSTRUCTOR_NAME);
-        return inheritIfRequired(function () {
-          if (!isObject(data)) return new NativeTypedArrayConstructor(toIndex(data));
-          if (isArrayBuffer(data)) return $length !== undefined
-            ? new NativeTypedArrayConstructor(data, toOffset(typedArrayOffset, BYTES), $length)
-            : typedArrayOffset !== undefined
-              ? new NativeTypedArrayConstructor(data, toOffset(typedArrayOffset, BYTES))
-              : new NativeTypedArrayConstructor(data);
-          if (isTypedArray(data)) return fromList(TypedArrayConstructor, data);
-          return typedArrayFrom.call(TypedArrayConstructor, data);
-        }(), dummy, TypedArrayConstructor);
-      });
-
-      if (objectSetPrototypeOf) objectSetPrototypeOf(TypedArrayConstructor, TypedArray);
-      forEach(getOwnPropertyNames(NativeTypedArrayConstructor), function (key) {
-        if (!(key in TypedArrayConstructor)) {
-          createNonEnumerableProperty(TypedArrayConstructor, key, NativeTypedArrayConstructor[key]);
-        }
-      });
-      TypedArrayConstructor.prototype = TypedArrayConstructorPrototype;
-    }
-
-    if (TypedArrayConstructorPrototype.constructor !== TypedArrayConstructor) {
-      createNonEnumerableProperty(TypedArrayConstructorPrototype, 'constructor', TypedArrayConstructor);
-    }
-
-    if (TYPED_ARRAY_TAG) {
-      createNonEnumerableProperty(TypedArrayConstructorPrototype, TYPED_ARRAY_TAG, CONSTRUCTOR_NAME);
-    }
-
-    exported[CONSTRUCTOR_NAME] = TypedArrayConstructor;
-
-    _export({
-      global: true, forced: TypedArrayConstructor != NativeTypedArrayConstructor, sham: !NATIVE_ARRAY_BUFFER_VIEWS
-    }, exported);
-
-    if (!(BYTES_PER_ELEMENT in TypedArrayConstructor)) {
-      createNonEnumerableProperty(TypedArrayConstructor, BYTES_PER_ELEMENT, BYTES);
-    }
-
-    if (!(BYTES_PER_ELEMENT in TypedArrayConstructorPrototype)) {
-      createNonEnumerableProperty(TypedArrayConstructorPrototype, BYTES_PER_ELEMENT, BYTES);
-    }
-
-    setSpecies(CONSTRUCTOR_NAME);
-  };
-} else module.exports = function () { /* empty */ };
-});
-
-// `Float32Array` constructor
-// https://tc39.github.io/ecma262/#sec-typedarray-objects
-typedArrayConstructor('Float32', function (init) {
-  return function Float32Array(data, byteOffset, length) {
-    return init(this, data, byteOffset, length);
-  };
-});
-
-var min$3 = Math.min;
-
-// `Array.prototype.copyWithin` method implementation
-// https://tc39.github.io/ecma262/#sec-array.prototype.copywithin
-var arrayCopyWithin = [].copyWithin || function copyWithin(target /* = 0 */, start /* = 0, end = @length */) {
-  var O = toObject(this);
-  var len = toLength(O.length);
-  var to = toAbsoluteIndex(target, len);
-  var from = toAbsoluteIndex(start, len);
+var _arrayCopyWithin = [].copyWithin || function copyWithin(target /* = 0 */, start /* = 0, end = @length */) {
+  var O = _toObject(this);
+  var len = _toLength(O.length);
+  var to = _toAbsoluteIndex(target, len);
+  var from = _toAbsoluteIndex(start, len);
   var end = arguments.length > 2 ? arguments[2] : undefined;
-  var count = min$3((end === undefined ? len : toAbsoluteIndex(end, len)) - from, len - to);
+  var count = Math.min((end === undefined ? len : _toAbsoluteIndex(end, len)) - from, len - to);
   var inc = 1;
   if (from < to && to < from + count) {
     inc = -1;
@@ -2995,365 +1789,908 @@ var arrayCopyWithin = [].copyWithin || function copyWithin(target /* = 0 */, sta
   } return O;
 };
 
-var aTypedArray$1 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$1 = arrayBufferViewCore.exportTypedArrayMethod;
+var gOPD = Object.getOwnPropertyDescriptor;
 
-// `%TypedArray%.prototype.copyWithin` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.copywithin
-exportTypedArrayMethod$1('copyWithin', function copyWithin(target, start /* , end */) {
-  return arrayCopyWithin.call(aTypedArray$1(this), target, start, arguments.length > 2 ? arguments[2] : undefined);
-});
-
-var $every = arrayIteration.every;
-
-var aTypedArray$2 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$2 = arrayBufferViewCore.exportTypedArrayMethod;
-
-// `%TypedArray%.prototype.every` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.every
-exportTypedArrayMethod$2('every', function every(callbackfn /* , thisArg */) {
-  return $every(aTypedArray$2(this), callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-});
-
-var aTypedArray$3 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$3 = arrayBufferViewCore.exportTypedArrayMethod;
-
-// `%TypedArray%.prototype.fill` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.fill
-// eslint-disable-next-line no-unused-vars
-exportTypedArrayMethod$3('fill', function fill(value /* , start, end */) {
-  return arrayFill.apply(aTypedArray$3(this), arguments);
-});
-
-var $filter = arrayIteration.filter;
-
-
-var aTypedArray$4 = arrayBufferViewCore.aTypedArray;
-var aTypedArrayConstructor$2 = arrayBufferViewCore.aTypedArrayConstructor;
-var exportTypedArrayMethod$4 = arrayBufferViewCore.exportTypedArrayMethod;
-
-// `%TypedArray%.prototype.filter` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.filter
-exportTypedArrayMethod$4('filter', function filter(callbackfn /* , thisArg */) {
-  var list = $filter(aTypedArray$4(this), callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-  var C = speciesConstructor(this, this.constructor);
-  var index = 0;
-  var length = list.length;
-  var result = new (aTypedArrayConstructor$2(C))(length);
-  while (length > index) result[index] = list[index++];
-  return result;
-});
-
-var $find = arrayIteration.find;
-
-var aTypedArray$5 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$5 = arrayBufferViewCore.exportTypedArrayMethod;
-
-// `%TypedArray%.prototype.find` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.find
-exportTypedArrayMethod$5('find', function find(predicate /* , thisArg */) {
-  return $find(aTypedArray$5(this), predicate, arguments.length > 1 ? arguments[1] : undefined);
-});
-
-var $findIndex = arrayIteration.findIndex;
-
-var aTypedArray$6 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$6 = arrayBufferViewCore.exportTypedArrayMethod;
-
-// `%TypedArray%.prototype.findIndex` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.findindex
-exportTypedArrayMethod$6('findIndex', function findIndex(predicate /* , thisArg */) {
-  return $findIndex(aTypedArray$6(this), predicate, arguments.length > 1 ? arguments[1] : undefined);
-});
-
-var $forEach$1 = arrayIteration.forEach;
-
-var aTypedArray$7 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$7 = arrayBufferViewCore.exportTypedArrayMethod;
-
-// `%TypedArray%.prototype.forEach` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.foreach
-exportTypedArrayMethod$7('forEach', function forEach(callbackfn /* , thisArg */) {
-  $forEach$1(aTypedArray$7(this), callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-});
-
-var $includes = arrayIncludes.includes;
-
-var aTypedArray$8 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$8 = arrayBufferViewCore.exportTypedArrayMethod;
-
-// `%TypedArray%.prototype.includes` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.includes
-exportTypedArrayMethod$8('includes', function includes(searchElement /* , fromIndex */) {
-  return $includes(aTypedArray$8(this), searchElement, arguments.length > 1 ? arguments[1] : undefined);
-});
-
-var $indexOf = arrayIncludes.indexOf;
-
-var aTypedArray$9 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$9 = arrayBufferViewCore.exportTypedArrayMethod;
-
-// `%TypedArray%.prototype.indexOf` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.indexof
-exportTypedArrayMethod$9('indexOf', function indexOf(searchElement /* , fromIndex */) {
-  return $indexOf(aTypedArray$9(this), searchElement, arguments.length > 1 ? arguments[1] : undefined);
-});
-
-var ITERATOR$5 = wellKnownSymbol('iterator');
-var Uint8Array$1 = global_1.Uint8Array;
-var arrayValues = es_array_iterator.values;
-var arrayKeys = es_array_iterator.keys;
-var arrayEntries = es_array_iterator.entries;
-var aTypedArray$a = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$a = arrayBufferViewCore.exportTypedArrayMethod;
-var nativeTypedArrayIterator = Uint8Array$1 && Uint8Array$1.prototype[ITERATOR$5];
-
-var CORRECT_ITER_NAME = !!nativeTypedArrayIterator
-  && (nativeTypedArrayIterator.name == 'values' || nativeTypedArrayIterator.name == undefined);
-
-var typedArrayValues = function values() {
-  return arrayValues.call(aTypedArray$a(this));
+var f$4 = _descriptors ? gOPD : function getOwnPropertyDescriptor(O, P) {
+  O = _toIobject(O);
+  P = _toPrimitive(P, true);
+  if (_ie8DomDefine) try {
+    return gOPD(O, P);
+  } catch (e) { /* empty */ }
+  if (_has(O, P)) return _propertyDesc(!_objectPie.f.call(O, P), O[P]);
 };
 
-// `%TypedArray%.prototype.entries` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.entries
-exportTypedArrayMethod$a('entries', function entries() {
-  return arrayEntries.call(aTypedArray$a(this));
-});
-// `%TypedArray%.prototype.keys` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.keys
-exportTypedArrayMethod$a('keys', function keys() {
-  return arrayKeys.call(aTypedArray$a(this));
-});
-// `%TypedArray%.prototype.values` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.values
-exportTypedArrayMethod$a('values', typedArrayValues, !CORRECT_ITER_NAME);
-// `%TypedArray%.prototype[@@iterator]` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype-@@iterator
-exportTypedArrayMethod$a(ITERATOR$5, typedArrayValues, !CORRECT_ITER_NAME);
+var _objectGopd = {
+	f: f$4
+};
 
-var aTypedArray$b = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$b = arrayBufferViewCore.exportTypedArrayMethod;
-var $join = [].join;
+var _typedArray = createCommonjsModule(function (module) {
+if (_descriptors) {
+  var LIBRARY = _library;
+  var global = _global;
+  var fails = _fails;
+  var $export = _export;
+  var $typed = _typed;
+  var $buffer = _typedBuffer;
+  var ctx = _ctx;
+  var anInstance = _anInstance;
+  var propertyDesc = _propertyDesc;
+  var hide = _hide;
+  var redefineAll = _redefineAll;
+  var toInteger = _toInteger;
+  var toLength = _toLength;
+  var toIndex = _toIndex;
+  var toAbsoluteIndex = _toAbsoluteIndex;
+  var toPrimitive = _toPrimitive;
+  var has = _has;
+  var classof = _classof;
+  var isObject = _isObject;
+  var toObject = _toObject;
+  var isArrayIter = _isArrayIter;
+  var create = _objectCreate;
+  var getPrototypeOf = _objectGpo;
+  var gOPN = _objectGopn.f;
+  var getIterFn = core_getIteratorMethod;
+  var uid = _uid;
+  var wks = _wks;
+  var createArrayMethod = _arrayMethods;
+  var createArrayIncludes = _arrayIncludes;
+  var speciesConstructor = _speciesConstructor;
+  var ArrayIterators = es6_array_iterator;
+  var Iterators = _iterators;
+  var $iterDetect = _iterDetect;
+  var setSpecies = _setSpecies;
+  var arrayFill = _arrayFill;
+  var arrayCopyWithin = _arrayCopyWithin;
+  var $DP = _objectDp;
+  var $GOPD = _objectGopd;
+  var dP = $DP.f;
+  var gOPD = $GOPD.f;
+  var RangeError = global.RangeError;
+  var TypeError = global.TypeError;
+  var Uint8Array = global.Uint8Array;
+  var ARRAY_BUFFER = 'ArrayBuffer';
+  var SHARED_BUFFER = 'Shared' + ARRAY_BUFFER;
+  var BYTES_PER_ELEMENT = 'BYTES_PER_ELEMENT';
+  var PROTOTYPE = 'prototype';
+  var ArrayProto = Array[PROTOTYPE];
+  var $ArrayBuffer = $buffer.ArrayBuffer;
+  var $DataView = $buffer.DataView;
+  var arrayForEach = createArrayMethod(0);
+  var arrayFilter = createArrayMethod(2);
+  var arraySome = createArrayMethod(3);
+  var arrayEvery = createArrayMethod(4);
+  var arrayFind = createArrayMethod(5);
+  var arrayFindIndex = createArrayMethod(6);
+  var arrayIncludes = createArrayIncludes(true);
+  var arrayIndexOf = createArrayIncludes(false);
+  var arrayValues = ArrayIterators.values;
+  var arrayKeys = ArrayIterators.keys;
+  var arrayEntries = ArrayIterators.entries;
+  var arrayLastIndexOf = ArrayProto.lastIndexOf;
+  var arrayReduce = ArrayProto.reduce;
+  var arrayReduceRight = ArrayProto.reduceRight;
+  var arrayJoin = ArrayProto.join;
+  var arraySort = ArrayProto.sort;
+  var arraySlice = ArrayProto.slice;
+  var arrayToString = ArrayProto.toString;
+  var arrayToLocaleString = ArrayProto.toLocaleString;
+  var ITERATOR = wks('iterator');
+  var TAG = wks('toStringTag');
+  var TYPED_CONSTRUCTOR = uid('typed_constructor');
+  var DEF_CONSTRUCTOR = uid('def_constructor');
+  var ALL_CONSTRUCTORS = $typed.CONSTR;
+  var TYPED_ARRAY = $typed.TYPED;
+  var VIEW = $typed.VIEW;
+  var WRONG_LENGTH = 'Wrong length!';
 
-// `%TypedArray%.prototype.join` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.join
-// eslint-disable-next-line no-unused-vars
-exportTypedArrayMethod$b('join', function join(separator) {
-  return $join.apply(aTypedArray$b(this), arguments);
-});
-
-var min$4 = Math.min;
-var nativeLastIndexOf = [].lastIndexOf;
-var NEGATIVE_ZERO = !!nativeLastIndexOf && 1 / [1].lastIndexOf(1, -0) < 0;
-var STRICT_METHOD$2 = arrayMethodIsStrict('lastIndexOf');
-// For preventing possible almost infinite loop in non-standard implementations, test the forward version of the method
-var USES_TO_LENGTH$5 = arrayMethodUsesToLength('indexOf', { ACCESSORS: true, 1: 0 });
-var FORCED$1 = NEGATIVE_ZERO || !STRICT_METHOD$2 || !USES_TO_LENGTH$5;
-
-// `Array.prototype.lastIndexOf` method implementation
-// https://tc39.github.io/ecma262/#sec-array.prototype.lastindexof
-var arrayLastIndexOf = FORCED$1 ? function lastIndexOf(searchElement /* , fromIndex = @[*-1] */) {
-  // convert -0 to +0
-  if (NEGATIVE_ZERO) return nativeLastIndexOf.apply(this, arguments) || 0;
-  var O = toIndexedObject(this);
-  var length = toLength(O.length);
-  var index = length - 1;
-  if (arguments.length > 1) index = min$4(index, toInteger(arguments[1]));
-  if (index < 0) index = length + index;
-  for (;index >= 0; index--) if (index in O && O[index] === searchElement) return index || 0;
-  return -1;
-} : nativeLastIndexOf;
-
-var aTypedArray$c = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$c = arrayBufferViewCore.exportTypedArrayMethod;
-
-// `%TypedArray%.prototype.lastIndexOf` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.lastindexof
-// eslint-disable-next-line no-unused-vars
-exportTypedArrayMethod$c('lastIndexOf', function lastIndexOf(searchElement /* , fromIndex */) {
-  return arrayLastIndexOf.apply(aTypedArray$c(this), arguments);
-});
-
-var $map$1 = arrayIteration.map;
-
-
-var aTypedArray$d = arrayBufferViewCore.aTypedArray;
-var aTypedArrayConstructor$3 = arrayBufferViewCore.aTypedArrayConstructor;
-var exportTypedArrayMethod$d = arrayBufferViewCore.exportTypedArrayMethod;
-
-// `%TypedArray%.prototype.map` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.map
-exportTypedArrayMethod$d('map', function map(mapfn /* , thisArg */) {
-  return $map$1(aTypedArray$d(this), mapfn, arguments.length > 1 ? arguments[1] : undefined, function (O, length) {
-    return new (aTypedArrayConstructor$3(speciesConstructor(O, O.constructor)))(length);
+  var $map = createArrayMethod(1, function (O, length) {
+    return allocate(speciesConstructor(O, O[DEF_CONSTRUCTOR]), length);
   });
-});
 
-var $reduce$1 = arrayReduce.left;
+  var LITTLE_ENDIAN = fails(function () {
+    // eslint-disable-next-line no-undef
+    return new Uint8Array(new Uint16Array([1]).buffer)[0] === 1;
+  });
 
-var aTypedArray$e = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$e = arrayBufferViewCore.exportTypedArrayMethod;
+  var FORCED_SET = !!Uint8Array && !!Uint8Array[PROTOTYPE].set && fails(function () {
+    new Uint8Array(1).set({});
+  });
 
-// `%TypedArray%.prototype.reduce` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.reduce
-exportTypedArrayMethod$e('reduce', function reduce(callbackfn /* , initialValue */) {
-  return $reduce$1(aTypedArray$e(this), callbackfn, arguments.length, arguments.length > 1 ? arguments[1] : undefined);
-});
-
-var $reduceRight = arrayReduce.right;
-
-var aTypedArray$f = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$f = arrayBufferViewCore.exportTypedArrayMethod;
-
-// `%TypedArray%.prototype.reduceRicht` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.reduceright
-exportTypedArrayMethod$f('reduceRight', function reduceRight(callbackfn /* , initialValue */) {
-  return $reduceRight(aTypedArray$f(this), callbackfn, arguments.length, arguments.length > 1 ? arguments[1] : undefined);
-});
-
-var aTypedArray$g = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$g = arrayBufferViewCore.exportTypedArrayMethod;
-var floor$2 = Math.floor;
-
-// `%TypedArray%.prototype.reverse` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.reverse
-exportTypedArrayMethod$g('reverse', function reverse() {
-  var that = this;
-  var length = aTypedArray$g(that).length;
-  var middle = floor$2(length / 2);
-  var index = 0;
-  var value;
-  while (index < middle) {
-    value = that[index];
-    that[index++] = that[--length];
-    that[length] = value;
-  } return that;
-});
-
-var aTypedArray$h = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$h = arrayBufferViewCore.exportTypedArrayMethod;
-
-var FORCED$2 = fails(function () {
-  // eslint-disable-next-line no-undef
-  new Int8Array(1).set({});
-});
-
-// `%TypedArray%.prototype.set` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.set
-exportTypedArrayMethod$h('set', function set(arrayLike /* , offset */) {
-  aTypedArray$h(this);
-  var offset = toOffset(arguments.length > 1 ? arguments[1] : undefined, 1);
-  var length = this.length;
-  var src = toObject(arrayLike);
-  var len = toLength(src.length);
-  var index = 0;
-  if (len + offset > length) throw RangeError('Wrong length');
-  while (index < len) this[offset + index] = src[index++];
-}, FORCED$2);
-
-var aTypedArray$i = arrayBufferViewCore.aTypedArray;
-var aTypedArrayConstructor$4 = arrayBufferViewCore.aTypedArrayConstructor;
-var exportTypedArrayMethod$i = arrayBufferViewCore.exportTypedArrayMethod;
-var $slice = [].slice;
-
-var FORCED$3 = fails(function () {
-  // eslint-disable-next-line no-undef
-  new Int8Array(1).slice();
-});
-
-// `%TypedArray%.prototype.slice` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.slice
-exportTypedArrayMethod$i('slice', function slice(start, end) {
-  var list = $slice.call(aTypedArray$i(this), start, end);
-  var C = speciesConstructor(this, this.constructor);
-  var index = 0;
-  var length = list.length;
-  var result = new (aTypedArrayConstructor$4(C))(length);
-  while (length > index) result[index] = list[index++];
-  return result;
-}, FORCED$3);
-
-var $some = arrayIteration.some;
-
-var aTypedArray$j = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$j = arrayBufferViewCore.exportTypedArrayMethod;
-
-// `%TypedArray%.prototype.some` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.some
-exportTypedArrayMethod$j('some', function some(callbackfn /* , thisArg */) {
-  return $some(aTypedArray$j(this), callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-});
-
-var aTypedArray$k = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$k = arrayBufferViewCore.exportTypedArrayMethod;
-var $sort = [].sort;
-
-// `%TypedArray%.prototype.sort` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.sort
-exportTypedArrayMethod$k('sort', function sort(comparefn) {
-  return $sort.call(aTypedArray$k(this), comparefn);
-});
-
-var aTypedArray$l = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$l = arrayBufferViewCore.exportTypedArrayMethod;
-
-// `%TypedArray%.prototype.subarray` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.subarray
-exportTypedArrayMethod$l('subarray', function subarray(begin, end) {
-  var O = aTypedArray$l(this);
-  var length = O.length;
-  var beginIndex = toAbsoluteIndex(begin, length);
-  return new (speciesConstructor(O, O.constructor))(
-    O.buffer,
-    O.byteOffset + beginIndex * O.BYTES_PER_ELEMENT,
-    toLength((end === undefined ? length : toAbsoluteIndex(end, length)) - beginIndex)
-  );
-});
-
-var Int8Array$3 = global_1.Int8Array;
-var aTypedArray$m = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$m = arrayBufferViewCore.exportTypedArrayMethod;
-var $toLocaleString = [].toLocaleString;
-var $slice$1 = [].slice;
-
-// iOS Safari 6.x fails here
-var TO_LOCALE_STRING_BUG = !!Int8Array$3 && fails(function () {
-  $toLocaleString.call(new Int8Array$3(1));
-});
-
-var FORCED$4 = fails(function () {
-  return [1, 2].toLocaleString() != new Int8Array$3([1, 2]).toLocaleString();
-}) || !fails(function () {
-  Int8Array$3.prototype.toLocaleString.call([1, 2]);
-});
-
-// `%TypedArray%.prototype.toLocaleString` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.tolocalestring
-exportTypedArrayMethod$m('toLocaleString', function toLocaleString() {
-  return $toLocaleString.apply(TO_LOCALE_STRING_BUG ? $slice$1.call(aTypedArray$m(this)) : aTypedArray$m(this), arguments);
-}, FORCED$4);
-
-var exportTypedArrayMethod$n = arrayBufferViewCore.exportTypedArrayMethod;
-
-
-
-var Uint8Array$2 = global_1.Uint8Array;
-var Uint8ArrayPrototype = Uint8Array$2 && Uint8Array$2.prototype || {};
-var arrayToString = [].toString;
-var arrayJoin = [].join;
-
-if (fails(function () { arrayToString.call({}); })) {
-  arrayToString = function toString() {
-    return arrayJoin.call(this);
+  var toOffset = function (it, BYTES) {
+    var offset = toInteger(it);
+    if (offset < 0 || offset % BYTES) throw RangeError('Wrong offset!');
+    return offset;
   };
-}
 
-var IS_NOT_ARRAY_METHOD = Uint8ArrayPrototype.toString != arrayToString;
+  var validate = function (it) {
+    if (isObject(it) && TYPED_ARRAY in it) return it;
+    throw TypeError(it + ' is not a typed array!');
+  };
 
-// `%TypedArray%.prototype.toString` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.prototype.tostring
-exportTypedArrayMethod$n('toString', arrayToString, IS_NOT_ARRAY_METHOD);
+  var allocate = function (C, length) {
+    if (!(isObject(C) && TYPED_CONSTRUCTOR in C)) {
+      throw TypeError('It is not a typed array constructor!');
+    } return new C(length);
+  };
+
+  var speciesFromList = function (O, list) {
+    return fromList(speciesConstructor(O, O[DEF_CONSTRUCTOR]), list);
+  };
+
+  var fromList = function (C, list) {
+    var index = 0;
+    var length = list.length;
+    var result = allocate(C, length);
+    while (length > index) result[index] = list[index++];
+    return result;
+  };
+
+  var addGetter = function (it, key, internal) {
+    dP(it, key, { get: function () { return this._d[internal]; } });
+  };
+
+  var $from = function from(source /* , mapfn, thisArg */) {
+    var O = toObject(source);
+    var aLen = arguments.length;
+    var mapfn = aLen > 1 ? arguments[1] : undefined;
+    var mapping = mapfn !== undefined;
+    var iterFn = getIterFn(O);
+    var i, length, values, result, step, iterator;
+    if (iterFn != undefined && !isArrayIter(iterFn)) {
+      for (iterator = iterFn.call(O), values = [], i = 0; !(step = iterator.next()).done; i++) {
+        values.push(step.value);
+      } O = values;
+    }
+    if (mapping && aLen > 2) mapfn = ctx(mapfn, arguments[2], 2);
+    for (i = 0, length = toLength(O.length), result = allocate(this, length); length > i; i++) {
+      result[i] = mapping ? mapfn(O[i], i) : O[i];
+    }
+    return result;
+  };
+
+  var $of = function of(/* ...items */) {
+    var index = 0;
+    var length = arguments.length;
+    var result = allocate(this, length);
+    while (length > index) result[index] = arguments[index++];
+    return result;
+  };
+
+  // iOS Safari 6.x fails here
+  var TO_LOCALE_BUG = !!Uint8Array && fails(function () { arrayToLocaleString.call(new Uint8Array(1)); });
+
+  var $toLocaleString = function toLocaleString() {
+    return arrayToLocaleString.apply(TO_LOCALE_BUG ? arraySlice.call(validate(this)) : validate(this), arguments);
+  };
+
+  var proto = {
+    copyWithin: function copyWithin(target, start /* , end */) {
+      return arrayCopyWithin.call(validate(this), target, start, arguments.length > 2 ? arguments[2] : undefined);
+    },
+    every: function every(callbackfn /* , thisArg */) {
+      return arrayEvery(validate(this), callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    },
+    fill: function fill(value /* , start, end */) { // eslint-disable-line no-unused-vars
+      return arrayFill.apply(validate(this), arguments);
+    },
+    filter: function filter(callbackfn /* , thisArg */) {
+      return speciesFromList(this, arrayFilter(validate(this), callbackfn,
+        arguments.length > 1 ? arguments[1] : undefined));
+    },
+    find: function find(predicate /* , thisArg */) {
+      return arrayFind(validate(this), predicate, arguments.length > 1 ? arguments[1] : undefined);
+    },
+    findIndex: function findIndex(predicate /* , thisArg */) {
+      return arrayFindIndex(validate(this), predicate, arguments.length > 1 ? arguments[1] : undefined);
+    },
+    forEach: function forEach(callbackfn /* , thisArg */) {
+      arrayForEach(validate(this), callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    },
+    indexOf: function indexOf(searchElement /* , fromIndex */) {
+      return arrayIndexOf(validate(this), searchElement, arguments.length > 1 ? arguments[1] : undefined);
+    },
+    includes: function includes(searchElement /* , fromIndex */) {
+      return arrayIncludes(validate(this), searchElement, arguments.length > 1 ? arguments[1] : undefined);
+    },
+    join: function join(separator) { // eslint-disable-line no-unused-vars
+      return arrayJoin.apply(validate(this), arguments);
+    },
+    lastIndexOf: function lastIndexOf(searchElement /* , fromIndex */) { // eslint-disable-line no-unused-vars
+      return arrayLastIndexOf.apply(validate(this), arguments);
+    },
+    map: function map(mapfn /* , thisArg */) {
+      return $map(validate(this), mapfn, arguments.length > 1 ? arguments[1] : undefined);
+    },
+    reduce: function reduce(callbackfn /* , initialValue */) { // eslint-disable-line no-unused-vars
+      return arrayReduce.apply(validate(this), arguments);
+    },
+    reduceRight: function reduceRight(callbackfn /* , initialValue */) { // eslint-disable-line no-unused-vars
+      return arrayReduceRight.apply(validate(this), arguments);
+    },
+    reverse: function reverse() {
+      var that = this;
+      var length = validate(that).length;
+      var middle = Math.floor(length / 2);
+      var index = 0;
+      var value;
+      while (index < middle) {
+        value = that[index];
+        that[index++] = that[--length];
+        that[length] = value;
+      } return that;
+    },
+    some: function some(callbackfn /* , thisArg */) {
+      return arraySome(validate(this), callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    },
+    sort: function sort(comparefn) {
+      return arraySort.call(validate(this), comparefn);
+    },
+    subarray: function subarray(begin, end) {
+      var O = validate(this);
+      var length = O.length;
+      var $begin = toAbsoluteIndex(begin, length);
+      return new (speciesConstructor(O, O[DEF_CONSTRUCTOR]))(
+        O.buffer,
+        O.byteOffset + $begin * O.BYTES_PER_ELEMENT,
+        toLength((end === undefined ? length : toAbsoluteIndex(end, length)) - $begin)
+      );
+    }
+  };
+
+  var $slice = function slice(start, end) {
+    return speciesFromList(this, arraySlice.call(validate(this), start, end));
+  };
+
+  var $set = function set(arrayLike /* , offset */) {
+    validate(this);
+    var offset = toOffset(arguments[1], 1);
+    var length = this.length;
+    var src = toObject(arrayLike);
+    var len = toLength(src.length);
+    var index = 0;
+    if (len + offset > length) throw RangeError(WRONG_LENGTH);
+    while (index < len) this[offset + index] = src[index++];
+  };
+
+  var $iterators = {
+    entries: function entries() {
+      return arrayEntries.call(validate(this));
+    },
+    keys: function keys() {
+      return arrayKeys.call(validate(this));
+    },
+    values: function values() {
+      return arrayValues.call(validate(this));
+    }
+  };
+
+  var isTAIndex = function (target, key) {
+    return isObject(target)
+      && target[TYPED_ARRAY]
+      && typeof key != 'symbol'
+      && key in target
+      && String(+key) == String(key);
+  };
+  var $getDesc = function getOwnPropertyDescriptor(target, key) {
+    return isTAIndex(target, key = toPrimitive(key, true))
+      ? propertyDesc(2, target[key])
+      : gOPD(target, key);
+  };
+  var $setDesc = function defineProperty(target, key, desc) {
+    if (isTAIndex(target, key = toPrimitive(key, true))
+      && isObject(desc)
+      && has(desc, 'value')
+      && !has(desc, 'get')
+      && !has(desc, 'set')
+      // TODO: add validation descriptor w/o calling accessors
+      && !desc.configurable
+      && (!has(desc, 'writable') || desc.writable)
+      && (!has(desc, 'enumerable') || desc.enumerable)
+    ) {
+      target[key] = desc.value;
+      return target;
+    } return dP(target, key, desc);
+  };
+
+  if (!ALL_CONSTRUCTORS) {
+    $GOPD.f = $getDesc;
+    $DP.f = $setDesc;
+  }
+
+  $export($export.S + $export.F * !ALL_CONSTRUCTORS, 'Object', {
+    getOwnPropertyDescriptor: $getDesc,
+    defineProperty: $setDesc
+  });
+
+  if (fails(function () { arrayToString.call({}); })) {
+    arrayToString = arrayToLocaleString = function toString() {
+      return arrayJoin.call(this);
+    };
+  }
+
+  var $TypedArrayPrototype$ = redefineAll({}, proto);
+  redefineAll($TypedArrayPrototype$, $iterators);
+  hide($TypedArrayPrototype$, ITERATOR, $iterators.values);
+  redefineAll($TypedArrayPrototype$, {
+    slice: $slice,
+    set: $set,
+    constructor: function () { /* noop */ },
+    toString: arrayToString,
+    toLocaleString: $toLocaleString
+  });
+  addGetter($TypedArrayPrototype$, 'buffer', 'b');
+  addGetter($TypedArrayPrototype$, 'byteOffset', 'o');
+  addGetter($TypedArrayPrototype$, 'byteLength', 'l');
+  addGetter($TypedArrayPrototype$, 'length', 'e');
+  dP($TypedArrayPrototype$, TAG, {
+    get: function () { return this[TYPED_ARRAY]; }
+  });
+
+  // eslint-disable-next-line max-statements
+  module.exports = function (KEY, BYTES, wrapper, CLAMPED) {
+    CLAMPED = !!CLAMPED;
+    var NAME = KEY + (CLAMPED ? 'Clamped' : '') + 'Array';
+    var GETTER = 'get' + KEY;
+    var SETTER = 'set' + KEY;
+    var TypedArray = global[NAME];
+    var Base = TypedArray || {};
+    var TAC = TypedArray && getPrototypeOf(TypedArray);
+    var FORCED = !TypedArray || !$typed.ABV;
+    var O = {};
+    var TypedArrayPrototype = TypedArray && TypedArray[PROTOTYPE];
+    var getter = function (that, index) {
+      var data = that._d;
+      return data.v[GETTER](index * BYTES + data.o, LITTLE_ENDIAN);
+    };
+    var setter = function (that, index, value) {
+      var data = that._d;
+      if (CLAMPED) value = (value = Math.round(value)) < 0 ? 0 : value > 0xff ? 0xff : value & 0xff;
+      data.v[SETTER](index * BYTES + data.o, value, LITTLE_ENDIAN);
+    };
+    var addElement = function (that, index) {
+      dP(that, index, {
+        get: function () {
+          return getter(this, index);
+        },
+        set: function (value) {
+          return setter(this, index, value);
+        },
+        enumerable: true
+      });
+    };
+    if (FORCED) {
+      TypedArray = wrapper(function (that, data, $offset, $length) {
+        anInstance(that, TypedArray, NAME, '_d');
+        var index = 0;
+        var offset = 0;
+        var buffer, byteLength, length, klass;
+        if (!isObject(data)) {
+          length = toIndex(data);
+          byteLength = length * BYTES;
+          buffer = new $ArrayBuffer(byteLength);
+        } else if (data instanceof $ArrayBuffer || (klass = classof(data)) == ARRAY_BUFFER || klass == SHARED_BUFFER) {
+          buffer = data;
+          offset = toOffset($offset, BYTES);
+          var $len = data.byteLength;
+          if ($length === undefined) {
+            if ($len % BYTES) throw RangeError(WRONG_LENGTH);
+            byteLength = $len - offset;
+            if (byteLength < 0) throw RangeError(WRONG_LENGTH);
+          } else {
+            byteLength = toLength($length) * BYTES;
+            if (byteLength + offset > $len) throw RangeError(WRONG_LENGTH);
+          }
+          length = byteLength / BYTES;
+        } else if (TYPED_ARRAY in data) {
+          return fromList(TypedArray, data);
+        } else {
+          return $from.call(TypedArray, data);
+        }
+        hide(that, '_d', {
+          b: buffer,
+          o: offset,
+          l: byteLength,
+          e: length,
+          v: new $DataView(buffer)
+        });
+        while (index < length) addElement(that, index++);
+      });
+      TypedArrayPrototype = TypedArray[PROTOTYPE] = create($TypedArrayPrototype$);
+      hide(TypedArrayPrototype, 'constructor', TypedArray);
+    } else if (!fails(function () {
+      TypedArray(1);
+    }) || !fails(function () {
+      new TypedArray(-1); // eslint-disable-line no-new
+    }) || !$iterDetect(function (iter) {
+      new TypedArray(); // eslint-disable-line no-new
+      new TypedArray(null); // eslint-disable-line no-new
+      new TypedArray(1.5); // eslint-disable-line no-new
+      new TypedArray(iter); // eslint-disable-line no-new
+    }, true)) {
+      TypedArray = wrapper(function (that, data, $offset, $length) {
+        anInstance(that, TypedArray, NAME);
+        var klass;
+        // `ws` module bug, temporarily remove validation length for Uint8Array
+        // https://github.com/websockets/ws/pull/645
+        if (!isObject(data)) return new Base(toIndex(data));
+        if (data instanceof $ArrayBuffer || (klass = classof(data)) == ARRAY_BUFFER || klass == SHARED_BUFFER) {
+          return $length !== undefined
+            ? new Base(data, toOffset($offset, BYTES), $length)
+            : $offset !== undefined
+              ? new Base(data, toOffset($offset, BYTES))
+              : new Base(data);
+        }
+        if (TYPED_ARRAY in data) return fromList(TypedArray, data);
+        return $from.call(TypedArray, data);
+      });
+      arrayForEach(TAC !== Function.prototype ? gOPN(Base).concat(gOPN(TAC)) : gOPN(Base), function (key) {
+        if (!(key in TypedArray)) hide(TypedArray, key, Base[key]);
+      });
+      TypedArray[PROTOTYPE] = TypedArrayPrototype;
+      if (!LIBRARY) TypedArrayPrototype.constructor = TypedArray;
+    }
+    var $nativeIterator = TypedArrayPrototype[ITERATOR];
+    var CORRECT_ITER_NAME = !!$nativeIterator
+      && ($nativeIterator.name == 'values' || $nativeIterator.name == undefined);
+    var $iterator = $iterators.values;
+    hide(TypedArray, TYPED_CONSTRUCTOR, true);
+    hide(TypedArrayPrototype, TYPED_ARRAY, NAME);
+    hide(TypedArrayPrototype, VIEW, true);
+    hide(TypedArrayPrototype, DEF_CONSTRUCTOR, TypedArray);
+
+    if (CLAMPED ? new TypedArray(1)[TAG] != NAME : !(TAG in TypedArrayPrototype)) {
+      dP(TypedArrayPrototype, TAG, {
+        get: function () { return NAME; }
+      });
+    }
+
+    O[NAME] = TypedArray;
+
+    $export($export.G + $export.W + $export.F * (TypedArray != Base), O);
+
+    $export($export.S, NAME, {
+      BYTES_PER_ELEMENT: BYTES
+    });
+
+    $export($export.S + $export.F * fails(function () { Base.of.call(TypedArray, 1); }), NAME, {
+      from: $from,
+      of: $of
+    });
+
+    if (!(BYTES_PER_ELEMENT in TypedArrayPrototype)) hide(TypedArrayPrototype, BYTES_PER_ELEMENT, BYTES);
+
+    $export($export.P, NAME, proto);
+
+    setSpecies(NAME);
+
+    $export($export.P + $export.F * FORCED_SET, NAME, { set: $set });
+
+    $export($export.P + $export.F * !CORRECT_ITER_NAME, NAME, $iterators);
+
+    if (!LIBRARY && TypedArrayPrototype.toString != arrayToString) TypedArrayPrototype.toString = arrayToString;
+
+    $export($export.P + $export.F * fails(function () {
+      new TypedArray(1).slice();
+    }), NAME, { slice: $slice });
+
+    $export($export.P + $export.F * (fails(function () {
+      return [1, 2].toLocaleString() != new TypedArray([1, 2]).toLocaleString();
+    }) || !fails(function () {
+      TypedArrayPrototype.toLocaleString.call([1, 2]);
+    })), NAME, { toLocaleString: $toLocaleString });
+
+    Iterators[NAME] = CORRECT_ITER_NAME ? $nativeIterator : $iterator;
+    if (!LIBRARY && !CORRECT_ITER_NAME) hide(TypedArrayPrototype, ITERATOR, $iterator);
+  };
+} else module.exports = function () { /* empty */ };
+});
+
+_typedArray('Float32', 4, function (init) {
+  return function Float32Array(data, byteOffset, length) {
+    return init(this, data, byteOffset, length);
+  };
+});
+
+/* Functions for turning sparse hashes into arrays and vice versa */
+var Lookup = /*#__PURE__*/function () {
+  function Lookup() {
+    _classCallCheck(this, Lookup);
+  }
+
+  _createClass(Lookup, null, [{
+    key: "toTable",
+
+    /**
+     * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
+     * @param {Object} hashes
+     * @returns {Object}
+     */
+    value: function toTable(hashes) {
+      var hash = hashes.reduce(function (memo, hash) {
+        return Object.assign(memo, hash);
+      }, {});
+      return Lookup.toHash(hash);
+    }
+    /**
+     * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
+     * @param {Object} objects2D
+     * @returns {Object}
+     */
+
+  }, {
+    key: "toTable2D",
+    value: function toTable2D(objects2D) {
+      var table = {};
+      var valueIndex = 0;
+
+      for (var i = 0; i < objects2D.length; i++) {
+        var objects = objects2D[i];
+
+        for (var j = 0; j < objects.length; j++) {
+          var object = objects[j];
+
+          for (var p in object) {
+            if (object.hasOwnProperty(p) && !table.hasOwnProperty(p)) {
+              table[p] = valueIndex++;
+            }
+          }
+        }
+      }
+
+      return table;
+    }
+  }, {
+    key: "toInputTable",
+    value: function toInputTable(data) {
+      var table = {};
+      var tableIndex = 0;
+
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        for (var p in data[dataIndex].input) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
+        }
+      }
+
+      return table;
+    }
+  }, {
+    key: "toInputTable2D",
+    value: function toInputTable2D(data) {
+      var table = {};
+      var tableIndex = 0;
+
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        var input = data[dataIndex].input;
+
+        for (var i = 0; i < input.length; i++) {
+          var object = input[i];
+
+          for (var p in object) {
+            if (!table.hasOwnProperty(p)) {
+              table[p] = tableIndex++;
+            }
+          }
+        }
+      }
+
+      return table;
+    }
+  }, {
+    key: "toOutputTable",
+    value: function toOutputTable(data) {
+      var table = {};
+      var tableIndex = 0;
+
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        for (var p in data[dataIndex].output) {
+          if (!table.hasOwnProperty(p)) {
+            table[p] = tableIndex++;
+          }
+        }
+      }
+
+      return table;
+    }
+  }, {
+    key: "toOutputTable2D",
+    value: function toOutputTable2D(data) {
+      var table = {};
+      var tableIndex = 0;
+
+      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+        var output = data[dataIndex].output;
+
+        for (var i = 0; i < output.length; i++) {
+          var object = output[i];
+
+          for (var p in object) {
+            if (!table.hasOwnProperty(p)) {
+              table[p] = tableIndex++;
+            }
+          }
+        }
+      }
+
+      return table;
+    }
+    /**
+     * performs `{a: 6, b: 7} -> {a: 0, b: 1}`
+     * @param {Object} hash
+     * @returns {Object}
+     */
+
+  }, {
+    key: "toHash",
+    value: function toHash(hash) {
+      var lookup = {};
+      var index = 0;
+
+      for (var i in hash) {
+        lookup[i] = index++;
+      }
+
+      return lookup;
+    }
+    /**
+     * performs `{a: 0, b: 1}, {a: 6} -> [6, 0]`
+     * @param {*} lookup
+     * @param {*} object
+     * @param {*} arrayLength
+     * @returns {Float32Array}
+     */
+
+  }, {
+    key: "toArray",
+    value: function toArray(lookup, object, arrayLength) {
+      var result = new Float32Array(arrayLength);
+
+      for (var p in lookup) {
+        result[lookup[p]] = object.hasOwnProperty(p) ? object[p] : 0;
+      }
+
+      return result;
+    }
+  }, {
+    key: "toArrayShort",
+    value: function toArrayShort(lookup, object) {
+      var result = [];
+
+      for (var p in lookup) {
+        if (!object.hasOwnProperty(p)) break;
+        result[lookup[p]] = object[p];
+      }
+
+      return Float32Array.from(result);
+    }
+  }, {
+    key: "toArrays",
+    value: function toArrays(lookup, objects, arrayLength) {
+      var result = [];
+
+      for (var i = 0; i < objects.length; i++) {
+        result.push(this.toArray(lookup, objects[i], arrayLength));
+      }
+
+      return result;
+    }
+    /**
+     * performs `{a: 0, b: 1}, [6, 7] -> {a: 6, b: 7}`
+     * @param {Object} lookup
+     * @param {Array} array
+     * @returns {Object}
+     */
+
+  }, {
+    key: "toObject",
+    value: function toObject(lookup, array) {
+      var object = {};
+
+      for (var p in lookup) {
+        object[p] = array[lookup[p]];
+      }
+
+      return object;
+    }
+  }, {
+    key: "toObjectPartial",
+    value: function toObjectPartial(lookup, array) {
+      var offset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+      var limit = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+      var object = {};
+      var i = 0;
+
+      for (var p in lookup) {
+        if (offset > 0) {
+          if (i++ < offset) continue;
+        }
+
+        if (limit > 0) {
+          if (i++ >= limit) continue;
+        }
+
+        object[p] = array[lookup[p] - offset];
+      }
+
+      return object;
+    }
+    /**
+     *
+     * @param {Array} array
+     * @returns {*}
+     */
+
+  }, {
+    key: "lookupFromArray",
+    value: function lookupFromArray(array) {
+      var lookup = {};
+      var z = 0;
+      var i = array.length;
+
+      while (i-- > 0) {
+        lookup[array[i]] = z++;
+      }
+
+      return lookup;
+    }
+  }, {
+    key: "dataShape",
+    value: function dataShape(data) {
+      var shape = [];
+
+      if (data.input) {
+        shape.push('datum');
+        data = data.input;
+      } else if (Array.isArray(data)) {
+        if (data[0].input) {
+          shape.push('array', 'datum');
+          data = data[0].input;
+        } else {
+          shape.push('array');
+          data = data[0];
+        }
+      }
+
+      var p;
+
+      while (data) {
+        for (p in data) {
+          break;
+        }
+
+        if (!data.hasOwnProperty(p)) break;
+
+        if (Array.isArray(data) || data.buffer instanceof ArrayBuffer) {
+          shape.push('array');
+          data = data[p];
+        } else if (_typeof(data) === 'object') {
+          shape.push('object');
+          data = data[p];
+        } else {
+          throw new Error('unhandled signature');
+        }
+      }
+
+      shape.push(_typeof(data));
+      return shape;
+    }
+  }, {
+    key: "addKeys",
+    value: function addKeys(value, table) {
+      if (Array.isArray(value)) return;
+      table = table || {};
+      var i = Object.keys(table).length;
+
+      for (var p in value) {
+        if (!value.hasOwnProperty(p)) continue;
+        if (table.hasOwnProperty(p)) continue;
+        table[p] = i++;
+      }
+
+      return table;
+    }
+  }]);
+
+  return Lookup;
+}();
+
+var lookup = Lookup;
+
+// fast apply, http://jsperf.lnkit.com/fast-apply/5
+var _invoke = function (fn, args, that) {
+  var un = that === undefined;
+  switch (args.length) {
+    case 0: return un ? fn()
+                      : fn.call(that);
+    case 1: return un ? fn(args[0])
+                      : fn.call(that, args[0]);
+    case 2: return un ? fn(args[0], args[1])
+                      : fn.call(that, args[0], args[1]);
+    case 3: return un ? fn(args[0], args[1], args[2])
+                      : fn.call(that, args[0], args[1], args[2]);
+    case 4: return un ? fn(args[0], args[1], args[2], args[3])
+                      : fn.call(that, args[0], args[1], args[2], args[3]);
+  } return fn.apply(that, args);
+};
+
+var arraySlice = [].slice;
+var factories = {};
+
+var construct = function (F, len, args) {
+  if (!(len in factories)) {
+    for (var n = [], i = 0; i < len; i++) n[i] = 'a[' + i + ']';
+    // eslint-disable-next-line no-new-func
+    factories[len] = Function('F,a', 'return new F(' + n.join(',') + ')');
+  } return factories[len](F, args);
+};
+
+var _bind = Function.bind || function bind(that /* , ...args */) {
+  var fn = _aFunction(this);
+  var partArgs = arraySlice.call(arguments, 1);
+  var bound = function (/* args... */) {
+    var args = partArgs.concat(arraySlice.call(arguments));
+    return this instanceof bound ? construct(fn, args.length, args) : _invoke(fn, args, that);
+  };
+  if (_isObject(fn.prototype)) bound.prototype = fn.prototype;
+  return bound;
+};
+
+// 26.1.2 Reflect.construct(target, argumentsList [, newTarget])
+
+
+
+
+
+
+
+var rConstruct = (_global.Reflect || {}).construct;
+
+// MS Edge supports only 2 arguments and argumentsList argument is optional
+// FF Nightly sets third argument as `new.target`, but does not create `this` from it
+var NEW_TARGET_BUG = _fails(function () {
+  function F() { /* empty */ }
+  return !(rConstruct(function () { /* empty */ }, [], F) instanceof F);
+});
+var ARGS_BUG = !_fails(function () {
+  rConstruct(function () { /* empty */ });
+});
+
+_export(_export.S + _export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
+  construct: function construct(Target, args /* , newTarget */) {
+    _aFunction(Target);
+    _anObject(args);
+    var newTarget = arguments.length < 3 ? Target : _aFunction(arguments[2]);
+    if (ARGS_BUG && !NEW_TARGET_BUG) return rConstruct(Target, args, newTarget);
+    if (Target == newTarget) {
+      // w/o altered newTarget, optimization for 0-4 arguments
+      switch (args.length) {
+        case 0: return new Target();
+        case 1: return new Target(args[0]);
+        case 2: return new Target(args[0], args[1]);
+        case 3: return new Target(args[0], args[1], args[2]);
+        case 4: return new Target(args[0], args[1], args[2], args[3]);
+      }
+      // w/o altered newTarget, lot of arguments case
+      var $args = [null];
+      $args.push.apply($args, args);
+      return new (_bind.apply(Target, $args))();
+    }
+    // with altered newTarget, not support built-in constructors
+    var proto = newTarget.prototype;
+    var instance = _objectCreate(_isObject(proto) ? proto : Object.prototype);
+    var result = Function.apply.call(Target, instance, args);
+    return _isObject(result) ? result : instance;
+  }
+});
+
+// 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
+
+
+_export(_export.P, 'Array', { fill: _arrayFill });
+
+_addToUnscopables('fill');
 
 var gpuBrowser = createCommonjsModule(function (module, exports) {
 /**
@@ -3362,19 +2699,19 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
  *
  * GPU Accelerated JavaScript
  *
- * @version 2.9.5
- * @date Sun Jul 19 2020 07:41:33 GMT-0400 (Eastern Daylight Time)
+ * @version 2.10.0
+ * @date Tue Aug 25 2020 14:05:30 GMT-0400 (Eastern Daylight Time)
  *
  * @license MIT
  * The MIT License
  *
  * Copyright (c) 2020 gpu.js Team
- */(function(f){{module.exports=f();}})(function(){return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof commonjsRequire&&commonjsRequire;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t);}return n[i].exports}for(var u="function"==typeof commonjsRequire&&commonjsRequire,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+ */(function(f){var g; {module.exports=f();}})(function(){return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof commonjsRequire&&commonjsRequire;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t);}return n[i].exports}for(var u="function"==typeof commonjsRequire&&commonjsRequire,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   
   (global = global || self, factory(global.acorn = {}));
-}(this, function (exports) {
+}(this, (function (exports) {
 
   var reservedWords = {
     3: "abstract boolean byte char class double enum export extends final float goto implements import int interface long native package private protected public short static super synchronized throws transient volatile",
@@ -3396,8 +2733,8 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
   var keywordRelationalOperator = /^in(stanceof)?$/;
 
 
-  var nonASCIIidentifierStartChars = "\xaa\xb5\xba\xc0-\xd6\xd8-\xf6\xf8-\u02c1\u02c6-\u02d1\u02e0-\u02e4\u02ec\u02ee\u0370-\u0374\u0376\u0377\u037a-\u037d\u037f\u0386\u0388-\u038a\u038c\u038e-\u03a1\u03a3-\u03f5\u03f7-\u0481\u048a-\u052f\u0531-\u0556\u0559\u0560-\u0588\u05d0-\u05ea\u05ef-\u05f2\u0620-\u064a\u066e\u066f\u0671-\u06d3\u06d5\u06e5\u06e6\u06ee\u06ef\u06fa-\u06fc\u06ff\u0710\u0712-\u072f\u074d-\u07a5\u07b1\u07ca-\u07ea\u07f4\u07f5\u07fa\u0800-\u0815\u081a\u0824\u0828\u0840-\u0858\u0860-\u086a\u08a0-\u08b4\u08b6-\u08bd\u0904-\u0939\u093d\u0950\u0958-\u0961\u0971-\u0980\u0985-\u098c\u098f\u0990\u0993-\u09a8\u09aa-\u09b0\u09b2\u09b6-\u09b9\u09bd\u09ce\u09dc\u09dd\u09df-\u09e1\u09f0\u09f1\u09fc\u0a05-\u0a0a\u0a0f\u0a10\u0a13-\u0a28\u0a2a-\u0a30\u0a32\u0a33\u0a35\u0a36\u0a38\u0a39\u0a59-\u0a5c\u0a5e\u0a72-\u0a74\u0a85-\u0a8d\u0a8f-\u0a91\u0a93-\u0aa8\u0aaa-\u0ab0\u0ab2\u0ab3\u0ab5-\u0ab9\u0abd\u0ad0\u0ae0\u0ae1\u0af9\u0b05-\u0b0c\u0b0f\u0b10\u0b13-\u0b28\u0b2a-\u0b30\u0b32\u0b33\u0b35-\u0b39\u0b3d\u0b5c\u0b5d\u0b5f-\u0b61\u0b71\u0b83\u0b85-\u0b8a\u0b8e-\u0b90\u0b92-\u0b95\u0b99\u0b9a\u0b9c\u0b9e\u0b9f\u0ba3\u0ba4\u0ba8-\u0baa\u0bae-\u0bb9\u0bd0\u0c05-\u0c0c\u0c0e-\u0c10\u0c12-\u0c28\u0c2a-\u0c39\u0c3d\u0c58-\u0c5a\u0c60\u0c61\u0c80\u0c85-\u0c8c\u0c8e-\u0c90\u0c92-\u0ca8\u0caa-\u0cb3\u0cb5-\u0cb9\u0cbd\u0cde\u0ce0\u0ce1\u0cf1\u0cf2\u0d05-\u0d0c\u0d0e-\u0d10\u0d12-\u0d3a\u0d3d\u0d4e\u0d54-\u0d56\u0d5f-\u0d61\u0d7a-\u0d7f\u0d85-\u0d96\u0d9a-\u0db1\u0db3-\u0dbb\u0dbd\u0dc0-\u0dc6\u0e01-\u0e30\u0e32\u0e33\u0e40-\u0e46\u0e81\u0e82\u0e84\u0e86-\u0e8a\u0e8c-\u0ea3\u0ea5\u0ea7-\u0eb0\u0eb2\u0eb3\u0ebd\u0ec0-\u0ec4\u0ec6\u0edc-\u0edf\u0f00\u0f40-\u0f47\u0f49-\u0f6c\u0f88-\u0f8c\u1000-\u102a\u103f\u1050-\u1055\u105a-\u105d\u1061\u1065\u1066\u106e-\u1070\u1075-\u1081\u108e\u10a0-\u10c5\u10c7\u10cd\u10d0-\u10fa\u10fc-\u1248\u124a-\u124d\u1250-\u1256\u1258\u125a-\u125d\u1260-\u1288\u128a-\u128d\u1290-\u12b0\u12b2-\u12b5\u12b8-\u12be\u12c0\u12c2-\u12c5\u12c8-\u12d6\u12d8-\u1310\u1312-\u1315\u1318-\u135a\u1380-\u138f\u13a0-\u13f5\u13f8-\u13fd\u1401-\u166c\u166f-\u167f\u1681-\u169a\u16a0-\u16ea\u16ee-\u16f8\u1700-\u170c\u170e-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176c\u176e-\u1770\u1780-\u17b3\u17d7\u17dc\u1820-\u1878\u1880-\u18a8\u18aa\u18b0-\u18f5\u1900-\u191e\u1950-\u196d\u1970-\u1974\u1980-\u19ab\u19b0-\u19c9\u1a00-\u1a16\u1a20-\u1a54\u1aa7\u1b05-\u1b33\u1b45-\u1b4b\u1b83-\u1ba0\u1bae\u1baf\u1bba-\u1be5\u1c00-\u1c23\u1c4d-\u1c4f\u1c5a-\u1c7d\u1c80-\u1c88\u1c90-\u1cba\u1cbd-\u1cbf\u1ce9-\u1cec\u1cee-\u1cf3\u1cf5\u1cf6\u1cfa\u1d00-\u1dbf\u1e00-\u1f15\u1f18-\u1f1d\u1f20-\u1f45\u1f48-\u1f4d\u1f50-\u1f57\u1f59\u1f5b\u1f5d\u1f5f-\u1f7d\u1f80-\u1fb4\u1fb6-\u1fbc\u1fbe\u1fc2-\u1fc4\u1fc6-\u1fcc\u1fd0-\u1fd3\u1fd6-\u1fdb\u1fe0-\u1fec\u1ff2-\u1ff4\u1ff6-\u1ffc\u2071\u207f\u2090-\u209c\u2102\u2107\u210a-\u2113\u2115\u2118-\u211d\u2124\u2126\u2128\u212a-\u2139\u213c-\u213f\u2145-\u2149\u214e\u2160-\u2188\u2c00-\u2c2e\u2c30-\u2c5e\u2c60-\u2ce4\u2ceb-\u2cee\u2cf2\u2cf3\u2d00-\u2d25\u2d27\u2d2d\u2d30-\u2d67\u2d6f\u2d80-\u2d96\u2da0-\u2da6\u2da8-\u2dae\u2db0-\u2db6\u2db8-\u2dbe\u2dc0-\u2dc6\u2dc8-\u2dce\u2dd0-\u2dd6\u2dd8-\u2dde\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303c\u3041-\u3096\u309b-\u309f\u30a1-\u30fa\u30fc-\u30ff\u3105-\u312f\u3131-\u318e\u31a0-\u31ba\u31f0-\u31ff\u3400-\u4db5\u4e00-\u9fef\ua000-\ua48c\ua4d0-\ua4fd\ua500-\ua60c\ua610-\ua61f\ua62a\ua62b\ua640-\ua66e\ua67f-\ua69d\ua6a0-\ua6ef\ua717-\ua71f\ua722-\ua788\ua78b-\ua7bf\ua7c2-\ua7c6\ua7f7-\ua801\ua803-\ua805\ua807-\ua80a\ua80c-\ua822\ua840-\ua873\ua882-\ua8b3\ua8f2-\ua8f7\ua8fb\ua8fd\ua8fe\ua90a-\ua925\ua930-\ua946\ua960-\ua97c\ua984-\ua9b2\ua9cf\ua9e0-\ua9e4\ua9e6-\ua9ef\ua9fa-\ua9fe\uaa00-\uaa28\uaa40-\uaa42\uaa44-\uaa4b\uaa60-\uaa76\uaa7a\uaa7e-\uaaaf\uaab1\uaab5\uaab6\uaab9-\uaabd\uaac0\uaac2\uaadb-\uaadd\uaae0-\uaaea\uaaf2-\uaaf4\uab01-\uab06\uab09-\uab0e\uab11-\uab16\uab20-\uab26\uab28-\uab2e\uab30-\uab5a\uab5c-\uab67\uab70-\uabe2\uac00-\ud7a3\ud7b0-\ud7c6\ud7cb-\ud7fb\uf900-\ufa6d\ufa70-\ufad9\ufb00-\ufb06\ufb13-\ufb17\ufb1d\ufb1f-\ufb28\ufb2a-\ufb36\ufb38-\ufb3c\ufb3e\ufb40\ufb41\ufb43\ufb44\ufb46-\ufbb1\ufbd3-\ufd3d\ufd50-\ufd8f\ufd92-\ufdc7\ufdf0-\ufdfb\ufe70-\ufe74\ufe76-\ufefc\uff21-\uff3a\uff41-\uff5a\uff66-\uffbe\uffc2-\uffc7\uffca-\uffcf\uffd2-\uffd7\uffda-\uffdc";
-  var nonASCIIidentifierChars = "\u200c\u200d\xb7\u0300-\u036f\u0387\u0483-\u0487\u0591-\u05bd\u05bf\u05c1\u05c2\u05c4\u05c5\u05c7\u0610-\u061a\u064b-\u0669\u0670\u06d6-\u06dc\u06df-\u06e4\u06e7\u06e8\u06ea-\u06ed\u06f0-\u06f9\u0711\u0730-\u074a\u07a6-\u07b0\u07c0-\u07c9\u07eb-\u07f3\u07fd\u0816-\u0819\u081b-\u0823\u0825-\u0827\u0829-\u082d\u0859-\u085b\u08d3-\u08e1\u08e3-\u0903\u093a-\u093c\u093e-\u094f\u0951-\u0957\u0962\u0963\u0966-\u096f\u0981-\u0983\u09bc\u09be-\u09c4\u09c7\u09c8\u09cb-\u09cd\u09d7\u09e2\u09e3\u09e6-\u09ef\u09fe\u0a01-\u0a03\u0a3c\u0a3e-\u0a42\u0a47\u0a48\u0a4b-\u0a4d\u0a51\u0a66-\u0a71\u0a75\u0a81-\u0a83\u0abc\u0abe-\u0ac5\u0ac7-\u0ac9\u0acb-\u0acd\u0ae2\u0ae3\u0ae6-\u0aef\u0afa-\u0aff\u0b01-\u0b03\u0b3c\u0b3e-\u0b44\u0b47\u0b48\u0b4b-\u0b4d\u0b56\u0b57\u0b62\u0b63\u0b66-\u0b6f\u0b82\u0bbe-\u0bc2\u0bc6-\u0bc8\u0bca-\u0bcd\u0bd7\u0be6-\u0bef\u0c00-\u0c04\u0c3e-\u0c44\u0c46-\u0c48\u0c4a-\u0c4d\u0c55\u0c56\u0c62\u0c63\u0c66-\u0c6f\u0c81-\u0c83\u0cbc\u0cbe-\u0cc4\u0cc6-\u0cc8\u0cca-\u0ccd\u0cd5\u0cd6\u0ce2\u0ce3\u0ce6-\u0cef\u0d00-\u0d03\u0d3b\u0d3c\u0d3e-\u0d44\u0d46-\u0d48\u0d4a-\u0d4d\u0d57\u0d62\u0d63\u0d66-\u0d6f\u0d82\u0d83\u0dca\u0dcf-\u0dd4\u0dd6\u0dd8-\u0ddf\u0de6-\u0def\u0df2\u0df3\u0e31\u0e34-\u0e3a\u0e47-\u0e4e\u0e50-\u0e59\u0eb1\u0eb4-\u0ebc\u0ec8-\u0ecd\u0ed0-\u0ed9\u0f18\u0f19\u0f20-\u0f29\u0f35\u0f37\u0f39\u0f3e\u0f3f\u0f71-\u0f84\u0f86\u0f87\u0f8d-\u0f97\u0f99-\u0fbc\u0fc6\u102b-\u103e\u1040-\u1049\u1056-\u1059\u105e-\u1060\u1062-\u1064\u1067-\u106d\u1071-\u1074\u1082-\u108d\u108f-\u109d\u135d-\u135f\u1369-\u1371\u1712-\u1714\u1732-\u1734\u1752\u1753\u1772\u1773\u17b4-\u17d3\u17dd\u17e0-\u17e9\u180b-\u180d\u1810-\u1819\u18a9\u1920-\u192b\u1930-\u193b\u1946-\u194f\u19d0-\u19da\u1a17-\u1a1b\u1a55-\u1a5e\u1a60-\u1a7c\u1a7f-\u1a89\u1a90-\u1a99\u1ab0-\u1abd\u1b00-\u1b04\u1b34-\u1b44\u1b50-\u1b59\u1b6b-\u1b73\u1b80-\u1b82\u1ba1-\u1bad\u1bb0-\u1bb9\u1be6-\u1bf3\u1c24-\u1c37\u1c40-\u1c49\u1c50-\u1c59\u1cd0-\u1cd2\u1cd4-\u1ce8\u1ced\u1cf4\u1cf7-\u1cf9\u1dc0-\u1df9\u1dfb-\u1dff\u203f\u2040\u2054\u20d0-\u20dc\u20e1\u20e5-\u20f0\u2cef-\u2cf1\u2d7f\u2de0-\u2dff\u302a-\u302f\u3099\u309a\ua620-\ua629\ua66f\ua674-\ua67d\ua69e\ua69f\ua6f0\ua6f1\ua802\ua806\ua80b\ua823-\ua827\ua880\ua881\ua8b4-\ua8c5\ua8d0-\ua8d9\ua8e0-\ua8f1\ua8ff-\ua909\ua926-\ua92d\ua947-\ua953\ua980-\ua983\ua9b3-\ua9c0\ua9d0-\ua9d9\ua9e5\ua9f0-\ua9f9\uaa29-\uaa36\uaa43\uaa4c\uaa4d\uaa50-\uaa59\uaa7b-\uaa7d\uaab0\uaab2-\uaab4\uaab7\uaab8\uaabe\uaabf\uaac1\uaaeb-\uaaef\uaaf5\uaaf6\uabe3-\uabea\uabec\uabed\uabf0-\uabf9\ufb1e\ufe00-\ufe0f\ufe20-\ufe2f\ufe33\ufe34\ufe4d-\ufe4f\uff10-\uff19\uff3f";
+  var nonASCIIidentifierStartChars = "\xaa\xb5\xba\xc0-\xd6\xd8-\xf6\xf8-\u02c1\u02c6-\u02d1\u02e0-\u02e4\u02ec\u02ee\u0370-\u0374\u0376\u0377\u037a-\u037d\u037f\u0386\u0388-\u038a\u038c\u038e-\u03a1\u03a3-\u03f5\u03f7-\u0481\u048a-\u052f\u0531-\u0556\u0559\u0560-\u0588\u05d0-\u05ea\u05ef-\u05f2\u0620-\u064a\u066e\u066f\u0671-\u06d3\u06d5\u06e5\u06e6\u06ee\u06ef\u06fa-\u06fc\u06ff\u0710\u0712-\u072f\u074d-\u07a5\u07b1\u07ca-\u07ea\u07f4\u07f5\u07fa\u0800-\u0815\u081a\u0824\u0828\u0840-\u0858\u0860-\u086a\u08a0-\u08b4\u08b6-\u08c7\u0904-\u0939\u093d\u0950\u0958-\u0961\u0971-\u0980\u0985-\u098c\u098f\u0990\u0993-\u09a8\u09aa-\u09b0\u09b2\u09b6-\u09b9\u09bd\u09ce\u09dc\u09dd\u09df-\u09e1\u09f0\u09f1\u09fc\u0a05-\u0a0a\u0a0f\u0a10\u0a13-\u0a28\u0a2a-\u0a30\u0a32\u0a33\u0a35\u0a36\u0a38\u0a39\u0a59-\u0a5c\u0a5e\u0a72-\u0a74\u0a85-\u0a8d\u0a8f-\u0a91\u0a93-\u0aa8\u0aaa-\u0ab0\u0ab2\u0ab3\u0ab5-\u0ab9\u0abd\u0ad0\u0ae0\u0ae1\u0af9\u0b05-\u0b0c\u0b0f\u0b10\u0b13-\u0b28\u0b2a-\u0b30\u0b32\u0b33\u0b35-\u0b39\u0b3d\u0b5c\u0b5d\u0b5f-\u0b61\u0b71\u0b83\u0b85-\u0b8a\u0b8e-\u0b90\u0b92-\u0b95\u0b99\u0b9a\u0b9c\u0b9e\u0b9f\u0ba3\u0ba4\u0ba8-\u0baa\u0bae-\u0bb9\u0bd0\u0c05-\u0c0c\u0c0e-\u0c10\u0c12-\u0c28\u0c2a-\u0c39\u0c3d\u0c58-\u0c5a\u0c60\u0c61\u0c80\u0c85-\u0c8c\u0c8e-\u0c90\u0c92-\u0ca8\u0caa-\u0cb3\u0cb5-\u0cb9\u0cbd\u0cde\u0ce0\u0ce1\u0cf1\u0cf2\u0d04-\u0d0c\u0d0e-\u0d10\u0d12-\u0d3a\u0d3d\u0d4e\u0d54-\u0d56\u0d5f-\u0d61\u0d7a-\u0d7f\u0d85-\u0d96\u0d9a-\u0db1\u0db3-\u0dbb\u0dbd\u0dc0-\u0dc6\u0e01-\u0e30\u0e32\u0e33\u0e40-\u0e46\u0e81\u0e82\u0e84\u0e86-\u0e8a\u0e8c-\u0ea3\u0ea5\u0ea7-\u0eb0\u0eb2\u0eb3\u0ebd\u0ec0-\u0ec4\u0ec6\u0edc-\u0edf\u0f00\u0f40-\u0f47\u0f49-\u0f6c\u0f88-\u0f8c\u1000-\u102a\u103f\u1050-\u1055\u105a-\u105d\u1061\u1065\u1066\u106e-\u1070\u1075-\u1081\u108e\u10a0-\u10c5\u10c7\u10cd\u10d0-\u10fa\u10fc-\u1248\u124a-\u124d\u1250-\u1256\u1258\u125a-\u125d\u1260-\u1288\u128a-\u128d\u1290-\u12b0\u12b2-\u12b5\u12b8-\u12be\u12c0\u12c2-\u12c5\u12c8-\u12d6\u12d8-\u1310\u1312-\u1315\u1318-\u135a\u1380-\u138f\u13a0-\u13f5\u13f8-\u13fd\u1401-\u166c\u166f-\u167f\u1681-\u169a\u16a0-\u16ea\u16ee-\u16f8\u1700-\u170c\u170e-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176c\u176e-\u1770\u1780-\u17b3\u17d7\u17dc\u1820-\u1878\u1880-\u18a8\u18aa\u18b0-\u18f5\u1900-\u191e\u1950-\u196d\u1970-\u1974\u1980-\u19ab\u19b0-\u19c9\u1a00-\u1a16\u1a20-\u1a54\u1aa7\u1b05-\u1b33\u1b45-\u1b4b\u1b83-\u1ba0\u1bae\u1baf\u1bba-\u1be5\u1c00-\u1c23\u1c4d-\u1c4f\u1c5a-\u1c7d\u1c80-\u1c88\u1c90-\u1cba\u1cbd-\u1cbf\u1ce9-\u1cec\u1cee-\u1cf3\u1cf5\u1cf6\u1cfa\u1d00-\u1dbf\u1e00-\u1f15\u1f18-\u1f1d\u1f20-\u1f45\u1f48-\u1f4d\u1f50-\u1f57\u1f59\u1f5b\u1f5d\u1f5f-\u1f7d\u1f80-\u1fb4\u1fb6-\u1fbc\u1fbe\u1fc2-\u1fc4\u1fc6-\u1fcc\u1fd0-\u1fd3\u1fd6-\u1fdb\u1fe0-\u1fec\u1ff2-\u1ff4\u1ff6-\u1ffc\u2071\u207f\u2090-\u209c\u2102\u2107\u210a-\u2113\u2115\u2118-\u211d\u2124\u2126\u2128\u212a-\u2139\u213c-\u213f\u2145-\u2149\u214e\u2160-\u2188\u2c00-\u2c2e\u2c30-\u2c5e\u2c60-\u2ce4\u2ceb-\u2cee\u2cf2\u2cf3\u2d00-\u2d25\u2d27\u2d2d\u2d30-\u2d67\u2d6f\u2d80-\u2d96\u2da0-\u2da6\u2da8-\u2dae\u2db0-\u2db6\u2db8-\u2dbe\u2dc0-\u2dc6\u2dc8-\u2dce\u2dd0-\u2dd6\u2dd8-\u2dde\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303c\u3041-\u3096\u309b-\u309f\u30a1-\u30fa\u30fc-\u30ff\u3105-\u312f\u3131-\u318e\u31a0-\u31bf\u31f0-\u31ff\u3400-\u4dbf\u4e00-\u9ffc\ua000-\ua48c\ua4d0-\ua4fd\ua500-\ua60c\ua610-\ua61f\ua62a\ua62b\ua640-\ua66e\ua67f-\ua69d\ua6a0-\ua6ef\ua717-\ua71f\ua722-\ua788\ua78b-\ua7bf\ua7c2-\ua7ca\ua7f5-\ua801\ua803-\ua805\ua807-\ua80a\ua80c-\ua822\ua840-\ua873\ua882-\ua8b3\ua8f2-\ua8f7\ua8fb\ua8fd\ua8fe\ua90a-\ua925\ua930-\ua946\ua960-\ua97c\ua984-\ua9b2\ua9cf\ua9e0-\ua9e4\ua9e6-\ua9ef\ua9fa-\ua9fe\uaa00-\uaa28\uaa40-\uaa42\uaa44-\uaa4b\uaa60-\uaa76\uaa7a\uaa7e-\uaaaf\uaab1\uaab5\uaab6\uaab9-\uaabd\uaac0\uaac2\uaadb-\uaadd\uaae0-\uaaea\uaaf2-\uaaf4\uab01-\uab06\uab09-\uab0e\uab11-\uab16\uab20-\uab26\uab28-\uab2e\uab30-\uab5a\uab5c-\uab69\uab70-\uabe2\uac00-\ud7a3\ud7b0-\ud7c6\ud7cb-\ud7fb\uf900-\ufa6d\ufa70-\ufad9\ufb00-\ufb06\ufb13-\ufb17\ufb1d\ufb1f-\ufb28\ufb2a-\ufb36\ufb38-\ufb3c\ufb3e\ufb40\ufb41\ufb43\ufb44\ufb46-\ufbb1\ufbd3-\ufd3d\ufd50-\ufd8f\ufd92-\ufdc7\ufdf0-\ufdfb\ufe70-\ufe74\ufe76-\ufefc\uff21-\uff3a\uff41-\uff5a\uff66-\uffbe\uffc2-\uffc7\uffca-\uffcf\uffd2-\uffd7\uffda-\uffdc";
+  var nonASCIIidentifierChars = "\u200c\u200d\xb7\u0300-\u036f\u0387\u0483-\u0487\u0591-\u05bd\u05bf\u05c1\u05c2\u05c4\u05c5\u05c7\u0610-\u061a\u064b-\u0669\u0670\u06d6-\u06dc\u06df-\u06e4\u06e7\u06e8\u06ea-\u06ed\u06f0-\u06f9\u0711\u0730-\u074a\u07a6-\u07b0\u07c0-\u07c9\u07eb-\u07f3\u07fd\u0816-\u0819\u081b-\u0823\u0825-\u0827\u0829-\u082d\u0859-\u085b\u08d3-\u08e1\u08e3-\u0903\u093a-\u093c\u093e-\u094f\u0951-\u0957\u0962\u0963\u0966-\u096f\u0981-\u0983\u09bc\u09be-\u09c4\u09c7\u09c8\u09cb-\u09cd\u09d7\u09e2\u09e3\u09e6-\u09ef\u09fe\u0a01-\u0a03\u0a3c\u0a3e-\u0a42\u0a47\u0a48\u0a4b-\u0a4d\u0a51\u0a66-\u0a71\u0a75\u0a81-\u0a83\u0abc\u0abe-\u0ac5\u0ac7-\u0ac9\u0acb-\u0acd\u0ae2\u0ae3\u0ae6-\u0aef\u0afa-\u0aff\u0b01-\u0b03\u0b3c\u0b3e-\u0b44\u0b47\u0b48\u0b4b-\u0b4d\u0b55-\u0b57\u0b62\u0b63\u0b66-\u0b6f\u0b82\u0bbe-\u0bc2\u0bc6-\u0bc8\u0bca-\u0bcd\u0bd7\u0be6-\u0bef\u0c00-\u0c04\u0c3e-\u0c44\u0c46-\u0c48\u0c4a-\u0c4d\u0c55\u0c56\u0c62\u0c63\u0c66-\u0c6f\u0c81-\u0c83\u0cbc\u0cbe-\u0cc4\u0cc6-\u0cc8\u0cca-\u0ccd\u0cd5\u0cd6\u0ce2\u0ce3\u0ce6-\u0cef\u0d00-\u0d03\u0d3b\u0d3c\u0d3e-\u0d44\u0d46-\u0d48\u0d4a-\u0d4d\u0d57\u0d62\u0d63\u0d66-\u0d6f\u0d81-\u0d83\u0dca\u0dcf-\u0dd4\u0dd6\u0dd8-\u0ddf\u0de6-\u0def\u0df2\u0df3\u0e31\u0e34-\u0e3a\u0e47-\u0e4e\u0e50-\u0e59\u0eb1\u0eb4-\u0ebc\u0ec8-\u0ecd\u0ed0-\u0ed9\u0f18\u0f19\u0f20-\u0f29\u0f35\u0f37\u0f39\u0f3e\u0f3f\u0f71-\u0f84\u0f86\u0f87\u0f8d-\u0f97\u0f99-\u0fbc\u0fc6\u102b-\u103e\u1040-\u1049\u1056-\u1059\u105e-\u1060\u1062-\u1064\u1067-\u106d\u1071-\u1074\u1082-\u108d\u108f-\u109d\u135d-\u135f\u1369-\u1371\u1712-\u1714\u1732-\u1734\u1752\u1753\u1772\u1773\u17b4-\u17d3\u17dd\u17e0-\u17e9\u180b-\u180d\u1810-\u1819\u18a9\u1920-\u192b\u1930-\u193b\u1946-\u194f\u19d0-\u19da\u1a17-\u1a1b\u1a55-\u1a5e\u1a60-\u1a7c\u1a7f-\u1a89\u1a90-\u1a99\u1ab0-\u1abd\u1abf\u1ac0\u1b00-\u1b04\u1b34-\u1b44\u1b50-\u1b59\u1b6b-\u1b73\u1b80-\u1b82\u1ba1-\u1bad\u1bb0-\u1bb9\u1be6-\u1bf3\u1c24-\u1c37\u1c40-\u1c49\u1c50-\u1c59\u1cd0-\u1cd2\u1cd4-\u1ce8\u1ced\u1cf4\u1cf7-\u1cf9\u1dc0-\u1df9\u1dfb-\u1dff\u203f\u2040\u2054\u20d0-\u20dc\u20e1\u20e5-\u20f0\u2cef-\u2cf1\u2d7f\u2de0-\u2dff\u302a-\u302f\u3099\u309a\ua620-\ua629\ua66f\ua674-\ua67d\ua69e\ua69f\ua6f0\ua6f1\ua802\ua806\ua80b\ua823-\ua827\ua82c\ua880\ua881\ua8b4-\ua8c5\ua8d0-\ua8d9\ua8e0-\ua8f1\ua8ff-\ua909\ua926-\ua92d\ua947-\ua953\ua980-\ua983\ua9b3-\ua9c0\ua9d0-\ua9d9\ua9e5\ua9f0-\ua9f9\uaa29-\uaa36\uaa43\uaa4c\uaa4d\uaa50-\uaa59\uaa7b-\uaa7d\uaab0\uaab2-\uaab4\uaab7\uaab8\uaabe\uaabf\uaac1\uaaeb-\uaaef\uaaf5\uaaf6\uabe3-\uabea\uabec\uabed\uabf0-\uabf9\ufb1e\ufe00-\ufe0f\ufe20-\ufe2f\ufe33\ufe34\ufe4d-\ufe4f\uff10-\uff19\uff3f";
 
   var nonASCIIidentifierStart = new RegExp("[" + nonASCIIidentifierStartChars + "]");
   var nonASCIIidentifier = new RegExp("[" + nonASCIIidentifierStartChars + nonASCIIidentifierChars + "]");
@@ -3405,9 +2742,9 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
   nonASCIIidentifierStartChars = nonASCIIidentifierChars = null;
 
 
-  var astralIdentifierStartCodes = [0,11,2,25,2,18,2,1,2,14,3,13,35,122,70,52,268,28,4,48,48,31,14,29,6,37,11,29,3,35,5,7,2,4,43,157,19,35,5,35,5,39,9,51,157,310,10,21,11,7,153,5,3,0,2,43,2,1,4,0,3,22,11,22,10,30,66,18,2,1,11,21,11,25,71,55,7,1,65,0,16,3,2,2,2,28,43,28,4,28,36,7,2,27,28,53,11,21,11,18,14,17,111,72,56,50,14,50,14,35,477,28,11,0,9,21,155,22,13,52,76,44,33,24,27,35,30,0,12,34,4,0,13,47,15,3,22,0,2,0,36,17,2,24,85,6,2,0,2,3,2,14,2,9,8,46,39,7,3,1,3,21,2,6,2,1,2,4,4,0,19,0,13,4,159,52,19,3,21,0,33,47,21,1,2,0,185,46,42,3,37,47,21,0,60,42,14,0,72,26,230,43,117,63,32,0,161,7,3,38,17,0,2,0,29,0,11,39,8,0,22,0,12,45,20,0,35,56,264,8,2,36,18,0,50,29,113,6,2,1,2,37,22,0,26,5,2,1,2,31,15,0,328,18,270,921,103,110,18,195,2749,1070,4050,582,8634,568,8,30,114,29,19,47,17,3,32,20,6,18,689,63,129,74,6,0,67,12,65,1,2,0,29,6135,9,754,9486,286,50,2,18,3,9,395,2309,106,6,12,4,8,8,9,5991,84,2,70,2,1,3,0,3,1,3,3,2,11,2,0,2,6,2,64,2,3,3,7,2,6,2,27,2,3,2,4,2,0,4,6,2,339,3,24,2,24,2,30,2,24,2,30,2,24,2,30,2,24,2,30,2,24,2,7,2357,44,11,6,17,0,370,43,1301,196,60,67,8,0,1205,3,2,26,2,1,2,0,3,0,2,9,2,3,2,0,2,0,7,0,5,0,2,0,2,0,2,2,2,1,2,0,3,0,2,0,2,0,2,0,2,0,2,1,2,0,3,3,2,6,2,3,2,3,2,0,2,9,2,16,6,2,2,4,2,16,4421,42710,42,4148,12,221,3,5761,15,7472,3104,541];
+  var astralIdentifierStartCodes = [0,11,2,25,2,18,2,1,2,14,3,13,35,122,70,52,268,28,4,48,48,31,14,29,6,37,11,29,3,35,5,7,2,4,43,157,19,35,5,35,5,39,9,51,157,310,10,21,11,7,153,5,3,0,2,43,2,1,4,0,3,22,11,22,10,30,66,18,2,1,11,21,11,25,71,55,7,1,65,0,16,3,2,2,2,28,43,28,4,28,36,7,2,27,28,53,11,21,11,18,14,17,111,72,56,50,14,50,14,35,349,41,7,1,79,28,11,0,9,21,107,20,28,22,13,52,76,44,33,24,27,35,30,0,3,0,9,34,4,0,13,47,15,3,22,0,2,0,36,17,2,24,85,6,2,0,2,3,2,14,2,9,8,46,39,7,3,1,3,21,2,6,2,1,2,4,4,0,19,0,13,4,159,52,19,3,21,2,31,47,21,1,2,0,185,46,42,3,37,47,21,0,60,42,14,0,72,26,230,43,117,63,32,7,3,0,3,7,2,1,2,23,16,0,2,0,95,7,3,38,17,0,2,0,29,0,11,39,8,0,22,0,12,45,20,0,35,56,264,8,2,36,18,0,50,29,113,6,2,1,2,37,22,0,26,5,2,1,2,31,15,0,328,18,190,0,80,921,103,110,18,195,2749,1070,4050,582,8634,568,8,30,114,29,19,47,17,3,32,20,6,18,689,63,129,74,6,0,67,12,65,1,2,0,29,6135,9,1237,43,8,8952,286,50,2,18,3,9,395,2309,106,6,12,4,8,8,9,5991,84,2,70,2,1,3,0,3,1,3,3,2,11,2,0,2,6,2,64,2,3,3,7,2,6,2,27,2,3,2,4,2,0,4,6,2,339,3,24,2,24,2,30,2,24,2,30,2,24,2,30,2,24,2,30,2,24,2,7,2357,44,11,6,17,0,370,43,1301,196,60,67,8,0,1205,3,2,26,2,1,2,0,3,0,2,9,2,3,2,0,2,0,7,0,5,0,2,0,2,0,2,2,2,1,2,0,3,0,2,0,2,0,2,0,2,0,2,1,2,0,3,3,2,6,2,3,2,3,2,0,2,9,2,16,6,2,2,4,2,16,4421,42717,35,4148,12,221,3,5761,15,7472,3104,541,1507,4938];
 
-  var astralIdentifierCodes = [509,0,227,0,150,4,294,9,1368,2,2,1,6,3,41,2,5,0,166,1,574,3,9,9,525,10,176,2,54,14,32,9,16,3,46,10,54,9,7,2,37,13,2,9,6,1,45,0,13,2,49,13,9,3,4,9,83,11,7,0,161,11,6,9,7,3,56,1,2,6,3,1,3,2,10,0,11,1,3,6,4,4,193,17,10,9,5,0,82,19,13,9,214,6,3,8,28,1,83,16,16,9,82,12,9,9,84,14,5,9,243,14,166,9,232,6,3,6,4,0,29,9,41,6,2,3,9,0,10,10,47,15,406,7,2,7,17,9,57,21,2,13,123,5,4,0,2,1,2,6,2,0,9,9,49,4,2,1,2,4,9,9,330,3,19306,9,135,4,60,6,26,9,1014,0,2,54,8,3,19723,1,5319,4,4,5,9,7,3,6,31,3,149,2,1418,49,513,54,5,49,9,0,15,0,23,4,2,14,1361,6,2,16,3,6,2,1,2,4,262,6,10,9,419,13,1495,6,110,6,6,9,792487,239];
+  var astralIdentifierCodes = [509,0,227,0,150,4,294,9,1368,2,2,1,6,3,41,2,5,0,166,1,574,3,9,9,370,1,154,10,176,2,54,14,32,9,16,3,46,10,54,9,7,2,37,13,2,9,6,1,45,0,13,2,49,13,9,3,2,11,83,11,7,0,161,11,6,9,7,3,56,1,2,6,3,1,3,2,10,0,11,1,3,6,4,4,193,17,10,9,5,0,82,19,13,9,214,6,3,8,28,1,83,16,16,9,82,12,9,9,84,14,5,9,243,14,166,9,71,5,2,1,3,3,2,0,2,1,13,9,120,6,3,6,4,0,29,9,41,6,2,3,9,0,10,10,47,15,406,7,2,7,17,9,57,21,2,13,123,5,4,0,2,1,2,6,2,0,9,9,49,4,2,1,2,4,9,9,330,3,19306,9,135,4,60,6,26,9,1014,0,2,54,8,3,82,0,12,1,19628,1,5319,4,4,5,9,7,3,6,31,3,149,2,1418,49,513,54,5,49,9,0,15,0,23,4,2,14,1361,6,2,16,3,6,2,1,2,4,262,6,10,9,419,13,1495,6,110,6,6,9,4759,9,787719,239];
 
   function isInAstralSet(code, set) {
     var pos = 0x10000;
@@ -3495,6 +2832,7 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
     colon: new TokenType(":", beforeExpr),
     dot: new TokenType("."),
     question: new TokenType("?", beforeExpr),
+    questionDot: new TokenType("?."),
     arrow: new TokenType("=>", beforeExpr),
     template: new TokenType("template"),
     invalidTemplate: new TokenType("invalidTemplate"),
@@ -3520,6 +2858,7 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
     star: binop("*", 10),
     slash: binop("/", 10),
     starstar: new TokenType("**", {beforeExpr: true}),
+    coalesce: binop("??", 1),
 
     _break: kw("break"),
     _case: kw("case", beforeExpr),
@@ -3809,7 +3148,14 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
       start += skipWhiteSpace.exec(this.input)[0].length;
       var match = literal.exec(this.input.slice(start));
       if (!match) { return false }
-      if ((match[1] || match[2]) === "use strict") { return true }
+      if ((match[1] || match[2]) === "use strict") {
+        skipWhiteSpace.lastIndex = start + match[0].length;
+        var spaceAfter = skipWhiteSpace.exec(this.input), end = spaceAfter.index + spaceAfter[0].length;
+        var next = this.input.charAt(end);
+        return next === ";" || next === "}" ||
+          (lineBreak.test(spaceAfter[0]) &&
+           !(/[(`.[+\-/*%<>=,?^&]/.test(next) || next === "!" && this.input.charAt(end + 1) === "="))
+      }
       start += match[0].length;
 
       skipWhiteSpace.lastIndex = start;
@@ -4023,7 +3369,7 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
         skipWhiteSpace.lastIndex = this.pos;
         var skip = skipWhiteSpace.exec(this.input);
         var next = this.pos + skip[0].length, nextCh = this.input.charCodeAt(next);
-        if (nextCh === 40) 
+        if (nextCh === 40 || nextCh === 46) 
           { return this.parseExpressionStatement(node, this.parseExpression()) }
       }
 
@@ -4297,17 +3643,19 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
   };
 
 
-  pp$1.parseBlock = function(createNewLexicalScope, node) {
+  pp$1.parseBlock = function(createNewLexicalScope, node, exitStrict) {
     if ( createNewLexicalScope === void 0 ) createNewLexicalScope = true;
     if ( node === void 0 ) node = this.startNode();
 
     node.body = [];
     this.expect(types.braceL);
     if (createNewLexicalScope) { this.enterScope(0); }
-    while (!this.eat(types.braceR)) {
+    while (this.type !== types.braceR) {
       var stmt = this.parseStatement(null);
       node.body.push(stmt);
     }
+    if (exitStrict) { this.strict = false; }
+    this.next();
     if (createNewLexicalScope) { this.exitScope(); }
     return this.finishNode(node, "BlockStatement")
   };
@@ -4441,7 +3789,7 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
     var hadConstructor = false;
     classBody.body = [];
     this.expect(types.braceL);
-    while (!this.eat(types.braceR)) {
+    while (this.type !== types.braceR) {
       var element = this.parseClassElement(node.superClass !== null);
       if (element) {
         classBody.body.push(element);
@@ -4451,8 +3799,9 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
         }
       }
     }
-    node.body = this.finishNode(classBody, "ClassBody");
     this.strict = oldStrict;
+    this.next();
+    node.body = this.finishNode(classBody, "ClassBody");
     return this.finishNode(node, isStatement ? "ClassDeclaration" : "ClassExpression")
   };
 
@@ -4538,6 +3887,14 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
   pp$1.parseExport = function(node, exports) {
     this.next();
     if (this.eat(types.star)) {
+      if (this.options.ecmaVersion >= 11) {
+        if (this.eatContextual("as")) {
+          node.exported = this.parseIdent(true);
+          this.checkExport(exports, node.exported.name, this.lastTokStart);
+        } else {
+          node.exported = null;
+        }
+      }
       this.expectContextual("from");
       if (this.type !== types.string) { this.unexpected(); }
       node.source = this.parseExprAtom();
@@ -4794,6 +4151,10 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
         this.toAssignable(node.expression, isBinding, refDestructuringErrors);
         break
 
+      case "ChainExpression":
+        this.raiseRecoverable(node.start, "Optional chaining cannot appear in left-hand side");
+        break
+
       case "MemberExpression":
         if (!isBinding) { break }
 
@@ -4911,6 +4272,10 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
         checkClashes[expr.name] = true;
       }
       if (bindingType !== BIND_NONE && bindingType !== BIND_OUTSIDE) { this.declareName(expr.name, bindingType, expr.start); }
+      break
+
+    case "ChainExpression":
+      this.raiseRecoverable(expr.start, "Optional chaining cannot appear in left-hand side");
       break
 
     case "MemberExpression":
@@ -5093,11 +4458,18 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
     if (prec != null && (!noIn || this.type !== types._in)) {
       if (prec > minPrec) {
         var logical = this.type === types.logicalOR || this.type === types.logicalAND;
+        var coalesce = this.type === types.coalesce;
+        if (coalesce) {
+          prec = types.logicalAND.binop;
+        }
         var op = this.value;
         this.next();
         var startPos = this.start, startLoc = this.startLoc;
         var right = this.parseExprOp(this.parseMaybeUnary(null, false), startPos, startLoc, prec, noIn);
-        var node = this.buildBinary(leftStartPos, leftStartLoc, left, right, op, logical);
+        var node = this.buildBinary(leftStartPos, leftStartLoc, left, right, op, logical || coalesce);
+        if ((logical && this.type === types.coalesce) || (coalesce && (this.type === types.logicalOR || this.type === types.logicalAND))) {
+          this.raiseRecoverable(this.start, "Logical expressions and coalesce expressions cannot be mixed. Wrap either by parentheses");
+        }
         return this.parseExprOp(node, leftStartPos, leftStartLoc, minPrec, noIn)
       }
     }
@@ -5167,22 +4539,42 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
 
   pp$3.parseSubscripts = function(base, startPos, startLoc, noCalls) {
     var maybeAsyncArrow = this.options.ecmaVersion >= 8 && base.type === "Identifier" && base.name === "async" &&
-        this.lastTokEnd === base.end && !this.canInsertSemicolon() && this.input.slice(base.start, base.end) === "async";
+        this.lastTokEnd === base.end && !this.canInsertSemicolon() && base.end - base.start === 5 &&
+        this.potentialArrowAt === base.start;
+    var optionalChained = false;
+
     while (true) {
-      var element = this.parseSubscript(base, startPos, startLoc, noCalls, maybeAsyncArrow);
-      if (element === base || element.type === "ArrowFunctionExpression") { return element }
+      var element = this.parseSubscript(base, startPos, startLoc, noCalls, maybeAsyncArrow, optionalChained);
+
+      if (element.optional) { optionalChained = true; }
+      if (element === base || element.type === "ArrowFunctionExpression") {
+        if (optionalChained) {
+          var chainNode = this.startNodeAt(startPos, startLoc);
+          chainNode.expression = element;
+          element = this.finishNode(chainNode, "ChainExpression");
+        }
+        return element
+      }
+
       base = element;
     }
   };
 
-  pp$3.parseSubscript = function(base, startPos, startLoc, noCalls, maybeAsyncArrow) {
+  pp$3.parseSubscript = function(base, startPos, startLoc, noCalls, maybeAsyncArrow, optionalChained) {
+    var optionalSupported = this.options.ecmaVersion >= 11;
+    var optional = optionalSupported && this.eat(types.questionDot);
+    if (noCalls && optional) { this.raise(this.lastTokStart, "Optional chaining cannot appear in the callee of new expressions"); }
+
     var computed = this.eat(types.bracketL);
-    if (computed || this.eat(types.dot)) {
+    if (computed || (optional && this.type !== types.parenL && this.type !== types.backQuote) || this.eat(types.dot)) {
       var node = this.startNodeAt(startPos, startLoc);
       node.object = base;
       node.property = computed ? this.parseExpression() : this.parseIdent(this.options.allowReserved !== "never");
       node.computed = !!computed;
       if (computed) { this.expect(types.bracketR); }
+      if (optionalSupported) {
+        node.optional = optional;
+      }
       base = this.finishNode(node, "MemberExpression");
     } else if (!noCalls && this.eat(types.parenL)) {
       var refDestructuringErrors = new DestructuringErrors, oldYieldPos = this.yieldPos, oldAwaitPos = this.awaitPos, oldAwaitIdentPos = this.awaitIdentPos;
@@ -5190,7 +4582,7 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
       this.awaitPos = 0;
       this.awaitIdentPos = 0;
       var exprList = this.parseExprList(types.parenR, this.options.ecmaVersion >= 8, false, refDestructuringErrors);
-      if (maybeAsyncArrow && !this.canInsertSemicolon() && this.eat(types.arrow)) {
+      if (maybeAsyncArrow && !optional && !this.canInsertSemicolon() && this.eat(types.arrow)) {
         this.checkPatternErrors(refDestructuringErrors, false);
         this.checkYieldAwaitInDefaultParams();
         if (this.awaitIdentPos > 0)
@@ -5207,8 +4599,14 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
       var node$1 = this.startNodeAt(startPos, startLoc);
       node$1.callee = base;
       node$1.arguments = exprList;
+      if (optionalSupported) {
+        node$1.optional = optional;
+      }
       base = this.finishNode(node$1, "CallExpression");
     } else if (this.type === types.backQuote) {
+      if (optional || optionalChained) {
+        this.raise(this.start, "Optional chaining cannot appear in the tag of tagged template expressions");
+      }
       var node$2 = this.startNodeAt(startPos, startLoc);
       node$2.tag = base;
       node$2.quasi = this.parseTemplate({isTagged: true});
@@ -5319,10 +4717,16 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
 
   pp$3.parseExprImport = function() {
     var node = this.startNode();
-    this.next(); 
+
+    if (this.containsEsc) { this.raiseRecoverable(this.start, "Escape sequence in keyword import"); }
+    var meta = this.parseIdent(true);
+
     switch (this.type) {
     case types.parenL:
       return this.parseDynamicImport(node)
+    case types.dot:
+      node.meta = meta;
+      return this.parseImportMeta(node)
     default:
       this.unexpected();
     }
@@ -5345,11 +4749,27 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
     return this.finishNode(node, "ImportExpression")
   };
 
+  pp$3.parseImportMeta = function(node) {
+    this.next(); 
+
+    var containsEsc = this.containsEsc;
+    node.property = this.parseIdent(true);
+
+    if (node.property.name !== "meta")
+      { this.raiseRecoverable(node.property.start, "The only valid meta property for import is 'import.meta'"); }
+    if (containsEsc)
+      { this.raiseRecoverable(node.start, "'import.meta' must not contain escaped characters"); }
+    if (this.options.sourceType !== "module")
+      { this.raiseRecoverable(node.start, "Cannot use 'import.meta' outside a module"); }
+
+    return this.finishNode(node, "MetaProperty")
+  };
+
   pp$3.parseLiteral = function(value) {
     var node = this.startNode();
     node.value = value;
     node.raw = this.input.slice(this.start, this.end);
-    if (node.raw.charCodeAt(node.raw.length - 1) === 110) { node.bigint = node.raw.slice(0, -1); }
+    if (node.raw.charCodeAt(node.raw.length - 1) === 110) { node.bigint = node.raw.slice(0, -1).replace(/_/g, ""); }
     this.next();
     return this.finishNode(node, "Literal")
   };
@@ -5441,10 +4861,12 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
       node.meta = meta;
       var containsEsc = this.containsEsc;
       node.property = this.parseIdent(true);
-      if (node.property.name !== "target" || containsEsc)
-        { this.raiseRecoverable(node.property.start, "The only valid meta property for new is new.target"); }
+      if (node.property.name !== "target")
+        { this.raiseRecoverable(node.property.start, "The only valid meta property for new is 'new.target'"); }
+      if (containsEsc)
+        { this.raiseRecoverable(node.start, "'new.target' must not contain escaped characters"); }
       if (!this.inNonArrowFunction())
-        { this.raiseRecoverable(node.start, "new.target can only be used in functions"); }
+        { this.raiseRecoverable(node.start, "'new.target' can only be used in functions"); }
       return this.finishNode(node, "MetaProperty")
     }
     var startPos = this.start, startLoc = this.startLoc, isImport = this.type === types._import;
@@ -5587,7 +5009,7 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
     } else if (!isPattern && !containsEsc &&
                this.options.ecmaVersion >= 5 && !prop.computed && prop.key.type === "Identifier" &&
                (prop.key.name === "get" || prop.key.name === "set") &&
-               (this.type !== types.comma && this.type !== types.braceR)) {
+               (this.type !== types.comma && this.type !== types.braceR && this.type !== types.eq)) {
       if (isGenerator || isAsync) { this.unexpected(); }
       prop.kind = prop.key.name;
       this.parsePropertyName(prop);
@@ -5711,15 +5133,13 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
       if (useStrict) { this.strict = true; }
 
       this.checkParams(node, !oldStrict && !useStrict && !isArrowFunction && !isMethod && this.isSimpleParamList(node.params));
-      node.body = this.parseBlock(false);
+      if (this.strict && node.id) { this.checkLVal(node.id, BIND_OUTSIDE); }
+      node.body = this.parseBlock(false, undefined, useStrict && !oldStrict);
       node.expression = false;
       this.adaptDirectivePrologue(node.body.body);
       this.labels = oldLabels;
     }
     this.exitScope();
-
-    if (this.strict && node.id) { this.checkLVal(node.id, BIND_OUTSIDE); }
-    this.strict = oldStrict;
   };
 
   pp$3.isSimpleParamList = function(params) {
@@ -6192,49 +5612,61 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
     this.parser.raiseRecoverable(this.start, ("Invalid regular expression: /" + (this.source) + "/: " + message));
   };
 
-  RegExpValidationState.prototype.at = function at (i) {
+  RegExpValidationState.prototype.at = function at (i, forceU) {
+      if ( forceU === void 0 ) forceU = false;
+
     var s = this.source;
     var l = s.length;
     if (i >= l) {
       return -1
     }
     var c = s.charCodeAt(i);
-    if (!this.switchU || c <= 0xD7FF || c >= 0xE000 || i + 1 >= l) {
+    if (!(forceU || this.switchU) || c <= 0xD7FF || c >= 0xE000 || i + 1 >= l) {
       return c
     }
     var next = s.charCodeAt(i + 1);
     return next >= 0xDC00 && next <= 0xDFFF ? (c << 10) + next - 0x35FDC00 : c
   };
 
-  RegExpValidationState.prototype.nextIndex = function nextIndex (i) {
+  RegExpValidationState.prototype.nextIndex = function nextIndex (i, forceU) {
+      if ( forceU === void 0 ) forceU = false;
+
     var s = this.source;
     var l = s.length;
     if (i >= l) {
       return l
     }
     var c = s.charCodeAt(i), next;
-    if (!this.switchU || c <= 0xD7FF || c >= 0xE000 || i + 1 >= l ||
+    if (!(forceU || this.switchU) || c <= 0xD7FF || c >= 0xE000 || i + 1 >= l ||
         (next = s.charCodeAt(i + 1)) < 0xDC00 || next > 0xDFFF) {
       return i + 1
     }
     return i + 2
   };
 
-  RegExpValidationState.prototype.current = function current () {
-    return this.at(this.pos)
+  RegExpValidationState.prototype.current = function current (forceU) {
+      if ( forceU === void 0 ) forceU = false;
+
+    return this.at(this.pos, forceU)
   };
 
-  RegExpValidationState.prototype.lookahead = function lookahead () {
-    return this.at(this.nextIndex(this.pos))
+  RegExpValidationState.prototype.lookahead = function lookahead (forceU) {
+      if ( forceU === void 0 ) forceU = false;
+
+    return this.at(this.nextIndex(this.pos, forceU), forceU)
   };
 
-  RegExpValidationState.prototype.advance = function advance () {
-    this.pos = this.nextIndex(this.pos);
+  RegExpValidationState.prototype.advance = function advance (forceU) {
+      if ( forceU === void 0 ) forceU = false;
+
+    this.pos = this.nextIndex(this.pos, forceU);
   };
 
-  RegExpValidationState.prototype.eat = function eat (ch) {
-    if (this.current() === ch) {
-      this.advance();
+  RegExpValidationState.prototype.eat = function eat (ch, forceU) {
+      if ( forceU === void 0 ) forceU = false;
+
+    if (this.current(forceU) === ch) {
+      this.advance(forceU);
       return true
     }
     return false
@@ -6570,10 +6002,11 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
 
   pp$8.regexp_eatRegExpIdentifierStart = function(state) {
     var start = state.pos;
-    var ch = state.current();
-    state.advance();
+    var forceU = this.options.ecmaVersion >= 11;
+    var ch = state.current(forceU);
+    state.advance(forceU);
 
-    if (ch === 0x5C  && this.regexp_eatRegExpUnicodeEscapeSequence(state)) {
+    if (ch === 0x5C  && this.regexp_eatRegExpUnicodeEscapeSequence(state, forceU)) {
       ch = state.lastIntValue;
     }
     if (isRegExpIdentifierStart(ch)) {
@@ -6590,10 +6023,11 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
 
   pp$8.regexp_eatRegExpIdentifierPart = function(state) {
     var start = state.pos;
-    var ch = state.current();
-    state.advance();
+    var forceU = this.options.ecmaVersion >= 11;
+    var ch = state.current(forceU);
+    state.advance(forceU);
 
-    if (ch === 0x5C  && this.regexp_eatRegExpUnicodeEscapeSequence(state)) {
+    if (ch === 0x5C  && this.regexp_eatRegExpUnicodeEscapeSequence(state, forceU)) {
       ch = state.lastIntValue;
     }
     if (isRegExpIdentifierPart(ch)) {
@@ -6659,7 +6093,7 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
       this.regexp_eatCControlLetter(state) ||
       this.regexp_eatZero(state) ||
       this.regexp_eatHexEscapeSequence(state) ||
-      this.regexp_eatRegExpUnicodeEscapeSequence(state) ||
+      this.regexp_eatRegExpUnicodeEscapeSequence(state, false) ||
       (!state.switchU && this.regexp_eatLegacyOctalEscapeSequence(state)) ||
       this.regexp_eatIdentityEscape(state)
     )
@@ -6729,13 +6163,16 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
     )
   }
 
-  pp$8.regexp_eatRegExpUnicodeEscapeSequence = function(state) {
+  pp$8.regexp_eatRegExpUnicodeEscapeSequence = function(state, forceU) {
+    if ( forceU === void 0 ) forceU = false;
+
     var start = state.pos;
+    var switchU = forceU || state.switchU;
 
     if (state.eat(0x75 )) {
       if (this.regexp_eatFixedHexDigits(state, 4)) {
         var lead = state.lastIntValue;
-        if (state.switchU && lead >= 0xD800 && lead <= 0xDBFF) {
+        if (switchU && lead >= 0xD800 && lead <= 0xDBFF) {
           var leadSurrogateEnd = state.pos;
           if (state.eat(0x5C ) && state.eat(0x75 ) && this.regexp_eatFixedHexDigits(state, 4)) {
             var trail = state.lastIntValue;
@@ -6750,7 +6187,7 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
         return true
       }
       if (
-        state.switchU &&
+        switchU &&
         state.eat(0x7B ) &&
         this.regexp_eatHexDigits(state) &&
         state.eat(0x7D ) &&
@@ -6758,7 +6195,7 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
       ) {
         return true
       }
-      if (state.switchU) {
+      if (switchU) {
         state.raise("Invalid unicode escape");
       }
       state.pos = start;
@@ -7298,7 +6735,13 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
 
   pp$9.readToken_pipe_amp = function(code) { 
     var next = this.input.charCodeAt(this.pos + 1);
-    if (next === code) { return this.finishOp(code === 124 ? types.logicalOR : types.logicalAND, 2) }
+    if (next === code) {
+      if (this.options.ecmaVersion >= 12) {
+        var next2 = this.input.charCodeAt(this.pos + 2);
+        if (next2 === 61) { return this.finishOp(types.assign, 3) }
+      }
+      return this.finishOp(code === 124 ? types.logicalOR : types.logicalAND, 2)
+    }
     if (next === 61) { return this.finishOp(types.assign, 2) }
     return this.finishOp(code === 124 ? types.bitwiseOR : types.bitwiseAND, 1)
   };
@@ -7352,6 +6795,25 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
     return this.finishOp(code === 61 ? types.eq : types.prefix, 1)
   };
 
+  pp$9.readToken_question = function() { 
+    var ecmaVersion = this.options.ecmaVersion;
+    if (ecmaVersion >= 11) {
+      var next = this.input.charCodeAt(this.pos + 1);
+      if (next === 46) {
+        var next2 = this.input.charCodeAt(this.pos + 2);
+        if (next2 < 48 || next2 > 57) { return this.finishOp(types.questionDot, 2) }
+      }
+      if (next === 63) {
+        if (ecmaVersion >= 12) {
+          var next2$1 = this.input.charCodeAt(this.pos + 2);
+          if (next2$1 === 61) { return this.finishOp(types.assign, 3) }
+        }
+        return this.finishOp(types.coalesce, 2)
+      }
+    }
+    return this.finishOp(types.question, 1)
+  };
+
   pp$9.getTokenFromCode = function(code) {
     switch (code) {
     case 46: 
@@ -7366,7 +6828,6 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
     case 123: ++this.pos; return this.finishToken(types.braceL)
     case 125: ++this.pos; return this.finishToken(types.braceR)
     case 58: ++this.pos; return this.finishToken(types.colon)
-    case 63: ++this.pos; return this.finishToken(types.question)
 
     case 96: 
       if (this.options.ecmaVersion < 6) { break }
@@ -7408,6 +6869,9 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
 
     case 61: case 33: 
       return this.readToken_eq_excl(code)
+
+    case 63: 
+      return this.readToken_question()
 
     case 126: 
       return this.finishOp(types.prefix, 1)
@@ -7457,22 +6921,53 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
   };
 
 
-  pp$9.readInt = function(radix, len) {
-    var start = this.pos, total = 0;
-    for (var i = 0, e = len == null ? Infinity : len; i < e; ++i) {
+  pp$9.readInt = function(radix, len, maybeLegacyOctalNumericLiteral) {
+    var allowSeparators = this.options.ecmaVersion >= 12 && len === undefined;
+
+    var isLegacyOctalNumericLiteral = maybeLegacyOctalNumericLiteral && this.input.charCodeAt(this.pos) === 48;
+
+    var start = this.pos, total = 0, lastCode = 0;
+    for (var i = 0, e = len == null ? Infinity : len; i < e; ++i, ++this.pos) {
       var code = this.input.charCodeAt(this.pos), val = (void 0);
+
+      if (allowSeparators && code === 95) {
+        if (isLegacyOctalNumericLiteral) { this.raiseRecoverable(this.pos, "Numeric separator is not allowed in legacy octal numeric literals"); }
+        if (lastCode === 95) { this.raiseRecoverable(this.pos, "Numeric separator must be exactly one underscore"); }
+        if (i === 0) { this.raiseRecoverable(this.pos, "Numeric separator is not allowed at the first of digits"); }
+        lastCode = code;
+        continue
+      }
+
       if (code >= 97) { val = code - 97 + 10; } 
       else if (code >= 65) { val = code - 65 + 10; } 
       else if (code >= 48 && code <= 57) { val = code - 48; } 
       else { val = Infinity; }
       if (val >= radix) { break }
-      ++this.pos;
+      lastCode = code;
       total = total * radix + val;
     }
+
+    if (allowSeparators && lastCode === 95) { this.raiseRecoverable(this.pos - 1, "Numeric separator is not allowed at the last of digits"); }
     if (this.pos === start || len != null && this.pos - start !== len) { return null }
 
     return total
   };
+
+  function stringToNumber(str, isLegacyOctalNumericLiteral) {
+    if (isLegacyOctalNumericLiteral) {
+      return parseInt(str, 8)
+    }
+
+    return parseFloat(str.replace(/_/g, ""))
+  }
+
+  function stringToBigInt(str) {
+    if (typeof BigInt !== "function") {
+      return null
+    }
+
+    return BigInt(str.replace(/_/g, ""))
+  }
 
   pp$9.readRadixNumber = function(radix) {
     var start = this.pos;
@@ -7480,7 +6975,7 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
     var val = this.readInt(radix);
     if (val == null) { this.raise(this.start + 2, "Expected number in radix " + radix); }
     if (this.options.ecmaVersion >= 11 && this.input.charCodeAt(this.pos) === 110) {
-      val = typeof BigInt !== "undefined" ? BigInt(this.input.slice(start, this.pos)) : null;
+      val = stringToBigInt(this.input.slice(start, this.pos));
       ++this.pos;
     } else if (isIdentifierStart(this.fullCharCodeAtPos())) { this.raise(this.pos, "Identifier directly after number"); }
     return this.finishToken(types.num, val)
@@ -7489,13 +6984,12 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
 
   pp$9.readNumber = function(startsWithDot) {
     var start = this.pos;
-    if (!startsWithDot && this.readInt(10) === null) { this.raise(start, "Invalid number"); }
+    if (!startsWithDot && this.readInt(10, undefined, true) === null) { this.raise(start, "Invalid number"); }
     var octal = this.pos - start >= 2 && this.input.charCodeAt(start) === 48;
     if (octal && this.strict) { this.raise(start, "Invalid number"); }
     var next = this.input.charCodeAt(this.pos);
     if (!octal && !startsWithDot && this.options.ecmaVersion >= 11 && next === 110) {
-      var str$1 = this.input.slice(start, this.pos);
-      var val$1 = typeof BigInt !== "undefined" ? BigInt(str$1) : null;
+      var val$1 = stringToBigInt(this.input.slice(start, this.pos));
       ++this.pos;
       if (isIdentifierStart(this.fullCharCodeAtPos())) { this.raise(this.pos, "Identifier directly after number"); }
       return this.finishToken(types.num, val$1)
@@ -7513,8 +7007,7 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
     }
     if (isIdentifierStart(this.fullCharCodeAtPos())) { this.raise(this.pos, "Identifier directly after number"); }
 
-    var str = this.input.slice(start, this.pos);
-    var val = octal ? parseInt(str, 8) : parseFloat(str);
+    var val = stringToNumber(this.input.slice(start, this.pos), octal);
     return this.finishToken(types.num, val)
   };
 
@@ -7755,7 +7248,7 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
   };
 
 
-  var version = "7.1.0";
+  var version = "7.4.0";
 
   Parser.acorn = {
     Parser: Parser,
@@ -7819,7 +7312,7 @@ var gpuBrowser = createCommonjsModule(function (module, exports) {
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
 
 },{}],2:[function(require,module,exports){
 
@@ -8853,6 +8346,15 @@ class CPUFunctionNode extends FunctionNode {
         this.astGeneric(mNode.property, retArr);
         retArr.push(']');
         return retArr;
+      case 'fn()[][]':
+        this.astGeneric(mNode.object.object, retArr);
+        retArr.push('[');
+        this.astGeneric(mNode.object.property, retArr);
+        retArr.push(']');
+        retArr.push('[');
+        this.astGeneric(mNode.property, retArr);
+        retArr.push(']');
+        return retArr;
       default:
         throw this.astErrorOutput('Unexpected expression', mNode);
     }
@@ -8874,6 +8376,9 @@ class CPUFunctionNode extends FunctionNode {
       case 'Array(2)':
       case 'Array(3)':
       case 'Array(4)':
+      case 'Matrix(2)':
+      case 'Matrix(3)':
+      case 'Matrix(4)':
       case 'HTMLImageArray':
       case 'ArrayTexture(1)':
       case 'ArrayTexture(2)':
@@ -8975,18 +8480,23 @@ class CPUFunctionNode extends FunctionNode {
   }
 
   astArrayExpression(arrNode, retArr) {
+    const returnType = this.getType(arrNode);
     const arrLen = arrNode.elements.length;
-
-    retArr.push('new Float32Array([');
+    const elements = [];
     for (let i = 0; i < arrLen; ++i) {
-      if (i > 0) {
-        retArr.push(', ');
-      }
-      const subNode = arrNode.elements[i];
-      this.astGeneric(subNode, retArr);
+      const element = [];
+      this.astGeneric(arrNode.elements[i], element);
+      elements.push(element.join(''));
     }
-    retArr.push('])');
-
+    switch (returnType) {
+      case 'Matrix(2)':
+      case 'Matrix(3)':
+      case 'Matrix(4)':
+        retArr.push(`[${elements.join(', ')}]`);
+        break;
+      default:
+        retArr.push(`new Float32Array([${elements.join(', ')}])`);
+    }
     return retArr;
   }
 
@@ -9018,6 +8528,9 @@ function constantsToString(constants, types) {
       case 'Array(2)':
       case 'Array(3)':
       case 'Array(4)':
+      case 'Matrix(2)':
+      case 'Matrix(3)':
+      case 'Matrix(4)':
         results.push(`${name}:new ${constant.constructor.name}(${JSON.stringify(Array.from(constant))})`);
         break;
     }
@@ -9157,6 +8670,9 @@ ${ header.join('\n') }
       case 'Array(2)':
       case 'Array(3)':
       case 'Array(4)':
+      case 'Matrix(2)':
+      case 'Matrix(3)':
+      case 'Matrix(4)':
         if (incomingConstants.hasOwnProperty(p)) {
           console.warn('constant ' + p + ' of type ' + type + ' cannot be resigned');
         }
@@ -10651,6 +10167,13 @@ class FunctionNode {
       case 'BlockStatement':
         return this.getType(ast.body);
       case 'ArrayExpression':
+        const childType = this.getType(ast.elements[0]);
+        switch (childType) {
+          case 'Array(2)':
+          case 'Array(3)':
+          case 'Array(4)':
+            return `Matrix(${ast.elements.length})`;
+        }
         return `Array(${ ast.elements.length })`;
       case 'Literal':
         const literalKey = this.astKey(ast);
@@ -11582,6 +11105,7 @@ class FunctionNode {
           };
         }
         case 'fn()[]':
+        case 'fn()[][]':
         case '[][]':
           return {
             signature: variableSignature,
@@ -11691,6 +11215,9 @@ const typeLookupMap = {
   'Array(2)': 'Number',
   'Array(3)': 'Number',
   'Array(4)': 'Number',
+  'Matrix(2)': 'Number',
+  'Matrix(3)': 'Number',
+  'Matrix(4)': 'Number',
   'Array2D': 'Number',
   'Array3D': 'Number',
   'Input': 'Number',
@@ -12200,6 +11727,7 @@ function glKernelString(Kernel, args, originKernel, setupContextString, destroyC
   result.push(context.toString());
   if (kernel.renderOutput === kernel.renderTexture) {
     context.reset();
+    const framebufferName = context.getContextVariableName(kernel.framebuffer);
     if (kernel.renderKernels) {
       const results = kernel.renderKernels();
       const textureName = context.getContextVariableName(kernel.texture.texture);
@@ -12207,7 +11735,7 @@ function glKernelString(Kernel, args, originKernel, setupContextString, destroyC
       result: {
         texture: ${ textureName },
         type: '${ results.result.type }',
-        toArray: ${ getToArrayString(results.result, textureName) }
+        toArray: ${ getToArrayString(results.result, textureName, framebufferName) }
       },`);
       const { subKernels, mappedTextures } = kernel;
       for (let i = 0; i < subKernels.length; i++) {
@@ -12219,7 +11747,7 @@ function glKernelString(Kernel, args, originKernel, setupContextString, destroyC
       ${subKernel.property}: {
         texture: ${ subKernelTextureName },
         type: '${ subKernelResult.type }',
-        toArray: ${ getToArrayString(subKernelResult, subKernelTextureName) }
+        toArray: ${ getToArrayString(subKernelResult, subKernelTextureName, framebufferName) }
       },`);
       }
       result.push(`    };`);
@@ -12229,7 +11757,7 @@ function glKernelString(Kernel, args, originKernel, setupContextString, destroyC
       result.push(`    return {
         texture: ${ textureName },
         type: '${ rendered.type }',
-        toArray: ${ getToArrayString(rendered, textureName) }
+        toArray: ${ getToArrayString(rendered, textureName, framebufferName) }
       };`);
     }
   }
@@ -12244,7 +11772,7 @@ function glKernelString(Kernel, args, originKernel, setupContextString, destroyC
 
   let constantsUpload = [];
   kernelConstants.forEach((kernelConstant) => {
-    constantsUpload.push(`${  kernelConstant.getStringValueHandler()}`);
+    constantsUpload.push(`${kernelConstant.getStringValueHandler()}`);
   });
   return `function kernel(settings) {
   const { context, constants } = settings;
@@ -12288,7 +11816,7 @@ function getGetPixelsString(kernel) {
   });
 }
 
-function getToArrayString(kernelResult, textureName) {
+function getToArrayString(kernelResult, textureName, framebufferName) {
   const toArray = kernelResult.toArray.toString();
   const useFunctionKeyword = !/^function/.test(toArray);
   const flattenedFunctions = utils.flattenFunctionToString(`${useFunctionKeyword ? 'function ' : ''}${ toArray }`, {
@@ -12296,6 +11824,9 @@ function getToArrayString(kernelResult, textureName) {
       if (object === 'utils') {
         return `const ${name} = ${utils[name].toString()};`;
       } else if (object === 'this') {
+        if (name === 'framebuffer') {
+          return '';
+        }
         return `${useFunctionKeyword ? 'function ' : ''}${kernelResult[name].toString()}`;
       } else {
         throw new Error('unhandled fromObject');
@@ -12309,9 +11840,6 @@ function getToArrayString(kernelResult, textureName) {
         if (isDeclaration) return null;
         return 'gl';
       }
-      if (property === '_framebuffer') {
-        return '_framebuffer';
-      }
       if (kernelResult.hasOwnProperty(property)) {
         return JSON.stringify(kernelResult[property]);
       }
@@ -12319,7 +11847,7 @@ function getToArrayString(kernelResult, textureName) {
     }
   });
   return `() => {
-  let _framebuffer;
+  function framebuffer() { return ${framebufferName}; };
   ${flattenedFunctions}
   return toArray();
   }`;
@@ -13621,18 +13149,12 @@ class GLTexture extends Texture {
       if (this.texture._refs) return;
     }
     this.context.deleteTexture(this.texture);
-    if (this.texture._refs === 0 && this._framebuffer) {
-      this.context.deleteFramebuffer(this._framebuffer);
-      this._framebuffer = null;
-    }
   }
 
   framebuffer() {
     if (!this._framebuffer) {
-      this._framebuffer = this.context.createFramebuffer();
+      this._framebuffer = this.kernel.getRawValueFramebuffer(this.size[0], this.size[1]);
     }
-    this._framebuffer.width = this.size[0];
-    this._framebuffer.height = this.size[1];
     return this._framebuffer;
   }
 }
@@ -13746,8 +13268,7 @@ class GLTextureUnsigned extends GLTexture {
   }
   renderRawOutput() {
     const { context: gl } = this;
-    const framebuffer = gl.createFramebuffer();
-    gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer());
     gl.framebufferTexture2D(
       gl.FRAMEBUFFER,
       gl.COLOR_ATTACHMENT0,
@@ -15232,6 +14753,9 @@ class WebGLFunctionNode extends FunctionNode {
       case 'Array(4)':
       case 'Array(3)':
       case 'Array(2)':
+      case 'Matrix(2)':
+      case 'Matrix(3)':
+      case 'Matrix(4)':
       case 'Input':
         this.astGeneric(ast.argument, result);
         break;
@@ -15797,7 +15321,7 @@ class WebGLFunctionNode extends FunctionNode {
       }
       const markupType = typeMap[type];
       if (!markupType) {
-        throw this.astErrorOutput(`Markup type ${ markupType } not handled`, varDecNode);
+        throw this.astErrorOutput(`Markup type ${ type } not handled`, varDecNode);
       }
       const declarationResult = [];
       if (actualType === 'Integer' && type === 'Integer') {
@@ -16095,6 +15619,15 @@ class WebGLFunctionNode extends FunctionNode {
           retArr.push(this.memberExpressionPropertyMarkup(property));
           retArr.push(']');
           return retArr;
+        case 'fn()[][]':
+          this.astCallExpression(mNode.object.object, retArr);
+          retArr.push('[');
+          retArr.push(this.memberExpressionPropertyMarkup(mNode.object.property));
+          retArr.push(']');
+          retArr.push('[');
+          retArr.push(this.memberExpressionPropertyMarkup(mNode.property));
+          retArr.push(']');
+          return retArr;
         case '[][]':
           this.astArrayExpression(mNode.object, retArr);
           retArr.push('[');
@@ -16221,6 +15754,14 @@ class WebGLFunctionNode extends FunctionNode {
         retArr.push(`getMemoryOptimized32(${ markupName }, ${ markupName }Size, ${ markupName }Dim, `);
         this.memberExpressionXYZ(xProperty, yProperty, zProperty, retArr);
         retArr.push(')');
+        break;
+      case 'Matrix(2)':
+      case 'Matrix(3)':
+      case 'Matrix(4)':
+        retArr.push(`${markupName}[${this.memberExpressionPropertyMarkup(yProperty)}]`);
+        if (yProperty) {
+          retArr.push(`[${this.memberExpressionPropertyMarkup(xProperty)}]`);
+        }
         break;
       default:
         throw new Error(`unhandled member expression "${ type }"`);
@@ -16394,9 +15935,19 @@ class WebGLFunctionNode extends FunctionNode {
   }
 
   astArrayExpression(arrNode, retArr) {
+    const returnType = this.getType(arrNode);
+
     const arrLen = arrNode.elements.length;
 
-    retArr.push('vec' + arrLen + '(');
+    switch (returnType) {
+      case 'Matrix(2)':
+      case 'Matrix(3)':
+      case 'Matrix(4)':
+        retArr.push(`mat${arrLen}(`);
+        break;
+      default:
+        retArr.push(`vec${arrLen}(`);
+    }
     for (let i = 0; i < arrLen; ++i) {
       if (i > 0) {
         retArr.push(', ');
@@ -16450,6 +16001,9 @@ const typeMap = {
   'Array(2)': 'vec2',
   'Array(3)': 'vec3',
   'Array(4)': 'vec4',
+  'Matrix(2)': 'mat2',
+  'Matrix(3)': 'mat3',
+  'Matrix(4)': 'mat4',
   'Array2D': 'sampler2D',
   'Array3D': 'sampler2D',
   'Boolean': 'bool',
@@ -18287,6 +17841,7 @@ class WebGLKernel extends GLKernel {
     this.framebuffer = gl.createFramebuffer();
     this.framebuffer.width = texSize[0];
     this.framebuffer.height = texSize[1];
+    this.rawValueFramebuffers = {};
 
     const vertices = new Float32Array([-1, -1,
       1, -1, -1, 1,
@@ -18819,6 +18374,19 @@ float integerCorrectionModulo(float number, float divisor) {
     return result.join('');
   }
 
+  getRawValueFramebuffer(width, height) {
+    if (!this.rawValueFramebuffers[width]) {
+      this.rawValueFramebuffers[width] = {};
+    }
+    if (!this.rawValueFramebuffers[width][height]) {
+      const framebuffer = this.context.createFramebuffer();
+      framebuffer.width = width;
+      framebuffer.height = height;
+      this.rawValueFramebuffers[width][height] = framebuffer;
+    }
+    return this.rawValueFramebuffers[width][height];
+  }
+
   getKernelResultDeclaration() {
     switch (this.returnType) {
       case 'Array(2)':
@@ -19148,6 +18716,13 @@ float integerCorrectionModulo(float number, float divisor) {
     }
     if (this.framebuffer) {
       this.context.deleteFramebuffer(this.framebuffer);
+    }
+    for (const width in this.rawValueFramebuffers) {
+      for (const height in this.rawValueFramebuffers[width]) {
+        this.context.deleteFramebuffer(this.rawValueFramebuffers[width][height]);
+        delete this.rawValueFramebuffers[width][height];
+      }
+      delete this.rawValueFramebuffers[width];
     }
     if (this.vertShader) {
       this.context.deleteShader(this.vertShader);
@@ -22574,7 +22149,7 @@ const utils = {
         if (!flattened[functionDependency]) {
           flattened[functionDependency] = true;
         }
-        flattenedFunctionDependencies.push(utils.flattenFunctionToString(functionDependency, settings) + '\n');
+        functionDependency ? flattenedFunctionDependencies.push(utils.flattenFunctionToString(functionDependency, settings) + '\n') : '';
       }
       return flattenedFunctionDependencies.join('') + result;
     }
@@ -22808,8 +22383,6 @@ module.exports = {
 });
 });
 
-unwrapExports(gpuBrowser);
-
 var GPU = gpuBrowser.GPU,
     input = gpuBrowser.input;
 var gpuInstance = null;
@@ -22929,11 +22502,23 @@ var kernel = {
   clear: clear
 };
 
-var zeros = function zeros(size) {
+/**
+ * Returns an array of zeros
+ */
+function zeros(size) {
   return new Float32Array(size);
-};
+}
 
-var zeros2d = function zeros2D(width, height) {
+var zeros$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  zeros: zeros
+});
+
+/**
+ * Returns a 2D tensor(matrix) of zeros
+ */
+
+function zeros2D(width, height) {
   var result = new Array(height);
 
   for (var y = 0; y < height; y++) {
@@ -22941,7 +22526,12 @@ var zeros2d = function zeros2D(width, height) {
   }
 
   return result;
-};
+}
+
+var zeros2d = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  zeros2D: zeros2D
+});
 
 /**
  *
@@ -22962,91 +22552,101 @@ var layerSize = {
   checkSameSize: checkSameSize
 };
 
-var defineProperty$5 = objectDefineProperty.f;
+// Works with __proto__ only. Old v8 can't work with null proto objects.
+/* eslint-disable no-proto */
 
-var FunctionPrototype = Function.prototype;
-var FunctionPrototypeToString = FunctionPrototype.toString;
-var nameRE = /^\s*function ([^ (]*)/;
-var NAME$1 = 'name';
 
-// Function instances `.name` property
-// https://tc39.github.io/ecma262/#sec-function-instances-name
-if (descriptors && !(NAME$1 in FunctionPrototype)) {
-  defineProperty$5(FunctionPrototype, NAME$1, {
-    configurable: true,
-    get: function () {
+var check = function (O, proto) {
+  _anObject(O);
+  if (!_isObject(proto) && proto !== null) throw TypeError(proto + ": can't set as prototype!");
+};
+var _setProto = {
+  set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
+    function (test, buggy, set) {
       try {
-        return FunctionPrototypeToString.call(this).match(nameRE)[1];
-      } catch (error) {
-        return '';
-      }
-    }
+        set = _ctx(Function.call, _objectGopd.f(Object.prototype, '__proto__').set, 2);
+        set(test, []);
+        buggy = !(test instanceof Array);
+      } catch (e) { buggy = true; }
+      return function setPrototypeOf(O, proto) {
+        check(O, proto);
+        if (buggy) O.__proto__ = proto;
+        else set(O, proto);
+        return O;
+      };
+    }({}, false) : undefined),
+  check: check
+};
+
+var setPrototypeOf = _setProto.set;
+var _inheritIfRequired = function (that, target, C) {
+  var S = target.constructor;
+  var P;
+  if (S !== C && typeof S == 'function' && (P = S.prototype) !== C.prototype && _isObject(P) && setPrototypeOf) {
+    setPrototypeOf(that, P);
+  } return that;
+};
+
+var _stringWs = '\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003' +
+  '\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
+
+var space = '[' + _stringWs + ']';
+var non = '\u200b\u0085';
+var ltrim = RegExp('^' + space + space + '*');
+var rtrim = RegExp(space + space + '*$');
+
+var exporter = function (KEY, exec, ALIAS) {
+  var exp = {};
+  var FORCE = _fails(function () {
+    return !!_stringWs[KEY]() || non[KEY]() != non;
   });
-}
-
-// a string of all valid unicode whitespaces
-// eslint-disable-next-line max-len
-var whitespaces = '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
-
-var whitespace = '[' + whitespaces + ']';
-var ltrim = RegExp('^' + whitespace + whitespace + '*');
-var rtrim = RegExp(whitespace + whitespace + '*$');
-
-// `String.prototype.{ trim, trimStart, trimEnd, trimLeft, trimRight }` methods implementation
-var createMethod$3 = function (TYPE) {
-  return function ($this) {
-    var string = String(requireObjectCoercible($this));
-    if (TYPE & 1) string = string.replace(ltrim, '');
-    if (TYPE & 2) string = string.replace(rtrim, '');
-    return string;
-  };
+  var fn = exp[KEY] = FORCE ? exec(trim) : _stringWs[KEY];
+  if (ALIAS) exp[ALIAS] = fn;
+  _export(_export.P + _export.F * FORCE, 'String', exp);
 };
 
-var stringTrim = {
-  // `String.prototype.{ trimLeft, trimStart }` methods
-  // https://tc39.github.io/ecma262/#sec-string.prototype.trimstart
-  start: createMethod$3(1),
-  // `String.prototype.{ trimRight, trimEnd }` methods
-  // https://tc39.github.io/ecma262/#sec-string.prototype.trimend
-  end: createMethod$3(2),
-  // `String.prototype.trim` method
-  // https://tc39.github.io/ecma262/#sec-string.prototype.trim
-  trim: createMethod$3(3)
+// 1 -> String#trimLeft
+// 2 -> String#trimRight
+// 3 -> String#trim
+var trim = exporter.trim = function (string, TYPE) {
+  string = String(_defined(string));
+  if (TYPE & 1) string = string.replace(ltrim, '');
+  if (TYPE & 2) string = string.replace(rtrim, '');
+  return string;
 };
 
-var getOwnPropertyNames$1 = objectGetOwnPropertyNames.f;
-var getOwnPropertyDescriptor$2 = objectGetOwnPropertyDescriptor.f;
-var defineProperty$6 = objectDefineProperty.f;
-var trim = stringTrim.trim;
+var _stringTrim = exporter;
 
+var gOPN = _objectGopn.f;
+var gOPD$1 = _objectGopd.f;
+var dP$2 = _objectDp.f;
+var $trim = _stringTrim.trim;
 var NUMBER = 'Number';
-var NativeNumber = global_1[NUMBER];
-var NumberPrototype = NativeNumber.prototype;
-
+var $Number = _global[NUMBER];
+var Base = $Number;
+var proto$1 = $Number.prototype;
 // Opera ~12 has broken Object#toString
-var BROKEN_CLASSOF = classofRaw(objectCreate(NumberPrototype)) == NUMBER;
+var BROKEN_COF = _cof(_objectCreate(proto$1)) == NUMBER;
+var TRIM = 'trim' in String.prototype;
 
-// `ToNumber` abstract operation
-// https://tc39.github.io/ecma262/#sec-tonumber
+// 7.1.3 ToNumber(argument)
 var toNumber = function (argument) {
-  var it = toPrimitive(argument, false);
-  var first, third, radix, maxCode, digits, length, index, code;
+  var it = _toPrimitive(argument, false);
   if (typeof it == 'string' && it.length > 2) {
-    it = trim(it);
-    first = it.charCodeAt(0);
+    it = TRIM ? it.trim() : $trim(it, 3);
+    var first = it.charCodeAt(0);
+    var third, radix, maxCode;
     if (first === 43 || first === 45) {
       third = it.charCodeAt(2);
       if (third === 88 || third === 120) return NaN; // Number('+0x1') should be NaN, old V8 fix
     } else if (first === 48) {
       switch (it.charCodeAt(1)) {
-        case 66: case 98: radix = 2; maxCode = 49; break; // fast equal of /^0b[01]+$/i
-        case 79: case 111: radix = 8; maxCode = 55; break; // fast equal of /^0o[0-7]+$/i
+        case 66: case 98: radix = 2; maxCode = 49; break; // fast equal /^0b[01]+$/i
+        case 79: case 111: radix = 8; maxCode = 55; break; // fast equal /^0o[0-7]+$/i
         default: return +it;
       }
-      digits = it.slice(2);
-      length = digits.length;
-      for (index = 0; index < length; index++) {
-        code = digits.charCodeAt(index);
+      for (var digits = it.slice(2), i = 0, l = digits.length, code; i < l; i++) {
+        code = digits.charCodeAt(i);
         // parseInt parses a string to a first unavailable symbol
         // but ToNumber should return NaN if a string contains unavailable symbols
         if (code < 48 || code > maxCode) return NaN;
@@ -23055,36 +22655,35 @@ var toNumber = function (argument) {
   } return +it;
 };
 
-// `Number` constructor
-// https://tc39.github.io/ecma262/#sec-number-constructor
-if (isForced_1(NUMBER, !NativeNumber(' 0o1') || !NativeNumber('0b1') || NativeNumber('+0x1'))) {
-  var NumberWrapper = function Number(value) {
+if (!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')) {
+  $Number = function Number(value) {
     var it = arguments.length < 1 ? 0 : value;
-    var dummy = this;
-    return dummy instanceof NumberWrapper
+    var that = this;
+    return that instanceof $Number
       // check on 1..constructor(foo) case
-      && (BROKEN_CLASSOF ? fails(function () { NumberPrototype.valueOf.call(dummy); }) : classofRaw(dummy) != NUMBER)
-        ? inheritIfRequired(new NativeNumber(toNumber(it)), dummy, NumberWrapper) : toNumber(it);
+      && (BROKEN_COF ? _fails(function () { proto$1.valueOf.call(that); }) : _cof(that) != NUMBER)
+        ? _inheritIfRequired(new Base(toNumber(it)), that, $Number) : toNumber(it);
   };
-  for (var keys$2 = descriptors ? getOwnPropertyNames$1(NativeNumber) : (
+  for (var keys = _descriptors ? gOPN(Base) : (
     // ES3:
     'MAX_VALUE,MIN_VALUE,NaN,NEGATIVE_INFINITY,POSITIVE_INFINITY,' +
-    // ES2015 (in case, if modules with ES2015 Number statics required before):
+    // ES6 (in case, if modules with ES6 Number statics required before):
     'EPSILON,isFinite,isInteger,isNaN,isSafeInteger,MAX_SAFE_INTEGER,' +
     'MIN_SAFE_INTEGER,parseFloat,parseInt,isInteger'
-  ).split(','), j$1 = 0, key$1; keys$2.length > j$1; j$1++) {
-    if (has(NativeNumber, key$1 = keys$2[j$1]) && !has(NumberWrapper, key$1)) {
-      defineProperty$6(NumberWrapper, key$1, getOwnPropertyDescriptor$2(NativeNumber, key$1));
+  ).split(','), j = 0, key$1; keys.length > j; j++) {
+    if (_has(Base, key$1 = keys[j]) && !_has($Number, key$1)) {
+      dP$2($Number, key$1, gOPD$1(Base, key$1));
     }
   }
-  NumberWrapper.prototype = NumberPrototype;
-  NumberPrototype.constructor = NumberWrapper;
-  redefine(global_1, NUMBER, NumberWrapper);
+  $Number.prototype = proto$1;
+  proto$1.constructor = $Number;
+  _redefine(_global, NUMBER, $Number);
 }
 
-// `Number.isNaN` method
-// https://tc39.github.io/ecma262/#sec-number.isnan
-_export({ target: 'Number', stat: true }, {
+// 20.1.2.4 Number.isNaN(number)
+
+
+_export(_export.S, 'Number', {
   isNaN: function isNaN(number) {
     // eslint-disable-next-line no-self-compare
     return number != number;
@@ -23094,7 +22693,7 @@ _export({ target: 'Number', stat: true }, {
 var release$1 = kernel.release,
     clear$1 = kernel.clear;
 
-var Base = /*#__PURE__*/function () {
+var Base$1 = /*#__PURE__*/function () {
   _createClass(Base, null, [{
     key: "defaults",
     get: function get() {
@@ -23247,8 +22846,8 @@ var Base = /*#__PURE__*/function () {
     }
   }, {
     key: "predict",
-    value: function predict() {} // throw new Error(`${this.constructor.name}-predict is not yet implemented`)
-    // eslint-disable-next-line
+    value: function predict() {// throw new Error(`${this.constructor.name}-predict is not yet implemented`)
+    } // eslint-disable-next-line
 
   }, {
     key: "compare",
@@ -23298,20 +22897,31 @@ var Base = /*#__PURE__*/function () {
 }();
 
 var base = {
-  Base: Base
+  Base: Base$1
 };
 
-var zeros3d = function zeros3D(width, height, depth) {
+/**
+ * Returns a 3D tensor of arrays
+ */
+
+function zeros3D(width, height, depth) {
   var result = new Array(depth);
 
   for (var z = 0; z < depth; z++) {
-    result[z] = zeros2d(width, height);
+    result[z] = zeros2D(width, height);
   }
 
   return result;
-};
+}
 
-var Base$1 = base.Base;
+var zeros3d = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  zeros3D: zeros3D
+});
+
+var Base$2 = base.Base;
+var zeros2D$1 = zeros2d.zeros2D;
+var zeros3D$1 = zeros3d.zeros3D;
 
 var Activation = /*#__PURE__*/function (_Base) {
   _inherits(Activation, _Base);
@@ -23337,11 +22947,11 @@ var Activation = /*#__PURE__*/function (_Base) {
 
     if (depth > 0) {
       _this.depth = depth;
-      _this.weights = zeros3d(width, height, depth);
-      _this.deltas = zeros3d(width, height, depth);
+      _this.weights = zeros3D$1(width, height, depth);
+      _this.deltas = zeros3D$1(width, height, depth);
     } else {
-      _this.weights = zeros2d(width, height);
-      _this.deltas = zeros2d(width, height);
+      _this.weights = zeros2D$1(width, height);
+      _this.deltas = zeros2D$1(width, height);
     }
 
     _this.setupPraxis(settings);
@@ -23350,13 +22960,13 @@ var Activation = /*#__PURE__*/function (_Base) {
   }
 
   return Activation;
-}(Base$1);
+}(Base$2);
 
 var activation$1 = {
   Activation: Activation
 };
 
-var Base$2 = base.Base;
+var Base$3 = base.Base;
 var Activation$1 = activation$1.Activation;
 
 var Internal = function Internal() {
@@ -23379,7 +22989,7 @@ var EntryPoint = /*#__PURE__*/function (_Base) {
   }
 
   return EntryPoint;
-}(Base$2);
+}(Base$3);
 
 var Filter = /*#__PURE__*/function (_Base2) {
   _inherits(Filter, _Base2);
@@ -23393,7 +23003,7 @@ var Filter = /*#__PURE__*/function (_Base2) {
   }
 
   return Filter;
-}(Base$2);
+}(Base$3);
 
 var Model = /*#__PURE__*/function (_Base3) {
   _inherits(Model, _Base3);
@@ -23407,7 +23017,7 @@ var Model = /*#__PURE__*/function (_Base3) {
   }
 
   return Model;
-}(Base$2);
+}(Base$3);
 
 var Modifier = /*#__PURE__*/function (_Base4) {
   _inherits(Modifier, _Base4);
@@ -23421,7 +23031,7 @@ var Modifier = /*#__PURE__*/function (_Base4) {
   }
 
   return Modifier;
-}(Base$2);
+}(Base$3);
 
 var Operator = /*#__PURE__*/function (_Base5) {
   _inherits(Operator, _Base5);
@@ -23435,7 +23045,7 @@ var Operator = /*#__PURE__*/function (_Base5) {
   }
 
   return Operator;
-}(Base$2);
+}(Base$3);
 
 var types = {
   Activation: Activation$1,
@@ -23452,6 +23062,7 @@ var makeKernel$1 = kernel.makeKernel,
     release$2 = kernel.release,
     clone$1 = kernel.clone,
     clear$2 = kernel.clear;
+var zeros2D$2 = zeros2d.zeros2D;
 var checkSameSize$1 = layerSize.checkSameSize;
 var Operator$1 = types.Operator;
 
@@ -23477,8 +23088,8 @@ var Add = /*#__PURE__*/function (_Operator) {
 
     _this.validate();
 
-    _this.weights = zeros2d(_this.width, _this.height);
-    _this.deltas = zeros2d(_this.width, _this.height);
+    _this.weights = zeros2D$2(_this.width, _this.height);
+    _this.deltas = zeros2D$2(_this.width, _this.height);
 
     _this.setupPraxis(settings);
 
@@ -23538,7 +23149,7 @@ var add_1 = {
   predict: predict
 };
 
-var Base$3 = /*#__PURE__*/function () {
+var Base$4 = /*#__PURE__*/function () {
   _createClass(Base, null, [{
     key: "defaults",
     get: function get() {
@@ -23585,11 +23196,12 @@ var Base$3 = /*#__PURE__*/function () {
 }();
 
 var base$1 = {
-  Base: Base$3
+  Base: Base$4
 };
 
 var makeKernel$2 = kernel.makeKernel;
-var Base$4 = base$1.Base;
+var zeros2D$3 = zeros2d.zeros2D;
+var Base$5 = base$1.Base;
 
 function updateChange(value) {
   return value;
@@ -23643,7 +23255,7 @@ var ArthurDeviationWeights = /*#__PURE__*/function (_Base) {
       }
     }
 
-    _this.changes = zeros2d(layer.width, layer.height);
+    _this.changes = zeros2D$3(layer.width, layer.height);
     return _this;
   }
 
@@ -23671,7 +23283,7 @@ var ArthurDeviationWeights = /*#__PURE__*/function (_Base) {
   }]);
 
   return ArthurDeviationWeights;
-}(Base$4);
+}(Base$5);
 
 function arthurDeviationWeights(layer, settings) {
   return new ArthurDeviationWeights(layer, settings);
@@ -23685,7 +23297,7 @@ var arthurDeviationWeights_1 = {
 };
 
 var makeKernel$3 = kernel.makeKernel;
-var Base$5 = base$1.Base;
+var Base$6 = base$1.Base;
 
 function update$1(weights, deltas) {
   return weights[this.thread.y][this.thread.x] + this.constants.learningRate * deltas[this.thread.y][this.thread.x];
@@ -23734,7 +23346,7 @@ var ArthurDeviationBiases = /*#__PURE__*/function (_Base) {
   }]);
 
   return ArthurDeviationBiases;
-}(Base$5);
+}(Base$6);
 
 function arthurDeviationBiases(layer, settings) {
   return new ArthurDeviationBiases(layer, settings);
@@ -23822,6 +23434,7 @@ var randos2d = function randos2D(width, height) {
 };
 
 var Model$1 = types.Model;
+var zeros2D$4 = zeros2d.zeros2D;
 
 var Random = /*#__PURE__*/function (_Model) {
   _inherits(Random, _Model);
@@ -23852,7 +23465,7 @@ var Random = /*#__PURE__*/function (_Model) {
     }
 
     if (!_this.deltas) {
-      _this.deltas = zeros2d(_this.width, _this.height);
+      _this.deltas = zeros2D$4(_this.width, _this.height);
     }
 
     return _this;
@@ -23883,6 +23496,7 @@ var random_1 = {
 var makeKernel$4 = kernel.makeKernel,
     release$3 = kernel.release,
     clear$3 = kernel.clear;
+var zeros2D$5 = zeros2d.zeros2D;
 var Operator$2 = types.Operator;
 
 function predict$1(weights1, weights2) {
@@ -23937,8 +23551,8 @@ var Multiply = /*#__PURE__*/function (_Operator) {
 
     _this.validate();
 
-    _this.weights = zeros2d(_this.width, _this.height);
-    _this.deltas = zeros2d(_this.width, _this.height);
+    _this.weights = zeros2D$5(_this.width, _this.height);
+    _this.deltas = zeros2D$5(_this.width, _this.height);
 
     if (settings && settings.name) {
       _this.name = settings.name;
@@ -24240,6 +23854,7 @@ var makeKernel$6 = kernel.makeKernel,
 var setStride$1 = layerSetup.setStride,
     setPadding$1 = layerSetup.setPadding;
 var Filter$1 = types.Filter;
+var zeros3D$2 = zeros3d.zeros3D;
 
 function predict$2(inputs, filters, biases) {
   var startFilterX = this.constants.paddingX - this.thread.x * this.constants.strideX;
@@ -24354,11 +23969,11 @@ var Convolution = /*#__PURE__*/function (_Filter) {
     _this.height = Math.floor((inputLayer.height + _this.paddingY * 2 - _this.filterHeight) / _this.strideY + 1);
     _this.depth = _this.filterCount;
     _this.weights = randos3d(_this.width, _this.height, _this.depth);
-    _this.deltas = zeros3d(_this.width, _this.height, _this.depth);
+    _this.deltas = zeros3D$2(_this.width, _this.height, _this.depth);
     _this.biases = values(_this.depth, _this.bias);
     _this.biasDeltas = randos(_this.depth);
     _this.filters = randos3d(_this.filterWidth, _this.filterHeight, _this.filterCount);
-    _this.filterDeltas = zeros3d(_this.filterWidth, _this.filterHeight, _this.filterCount);
+    _this.filterDeltas = zeros3D$2(_this.filterWidth, _this.filterHeight, _this.filterCount);
     _this.learnFilters = null;
     _this.learnInputs = null;
     _this.inputLayer = inputLayer;
@@ -24625,6 +24240,9 @@ var feedForward_1 = {
 var Filter$3 = types.Filter;
 var makeKernel$8 = kernel.makeKernel,
     release$7 = kernel.release;
+var zeros$2 = zeros$1.zeros;
+var zeros2D$6 = zeros2d.zeros2D;
+var zeros3D$3 = zeros3d.zeros3D;
 
 function predict$4(inputs, filters, biases) {
   var output = 0;
@@ -24722,16 +24340,16 @@ var FullyConnected = /*#__PURE__*/function (_Filter) {
     _this.compareBiasesKernel = null;
     var connectionCount = inputLayer.width * inputLayer.height * inputLayer.depth;
     _this.biases = values(_this.height, _this.bias);
-    _this.biasDeltas = zeros(_this.height);
+    _this.biasDeltas = zeros$2(_this.height);
     _this.filters = randos2d(connectionCount, _this.height);
-    _this.filterDeltas = zeros2d(connectionCount, _this.height);
+    _this.filterDeltas = zeros2D$6(connectionCount, _this.height);
 
     if (_this.depth > 0) {
       _this.weights = randos3d(_this.width, _this.height);
-      _this.deltas = zeros3d(_this.width, _this.height);
+      _this.deltas = zeros3D$3(_this.width, _this.height);
     } else if (_this.height > 0) {
       _this.weights = randos2d(_this.width, _this.height);
-      _this.deltas = zeros2d(_this.width, _this.height);
+      _this.deltas = zeros2D$6(_this.width, _this.height);
     }
 
     return _this;
@@ -24897,6 +24515,7 @@ var makeKernel$a = kernel.makeKernel,
     release$8 = kernel.release,
     clear$6 = kernel.clear;
 var Operator$3 = types.Operator;
+var zeros2D$7 = zeros2d.zeros2D;
 var checkSameSize$2 = layerSize.checkSameSize;
 
 function predict$6(inputLayerWeights1, inputLayerWeights2) {
@@ -24925,8 +24544,8 @@ var MultiplyElement = /*#__PURE__*/function (_Operator) {
 
     _this.validate();
 
-    _this.weights = zeros2d(_this.width, _this.height);
-    _this.deltas = zeros2d(_this.width, _this.height);
+    _this.weights = zeros2D$7(_this.width, _this.height);
+    _this.deltas = zeros2D$7(_this.width, _this.height);
     return _this;
   }
 
@@ -24994,6 +24613,7 @@ var ones2d = function ones2D(width, height) {
   return result;
 };
 
+var zeros2D$8 = zeros2d.zeros2D;
 var Model$2 = types.Model;
 
 var Ones = /*#__PURE__*/function (_Model) {
@@ -25011,7 +24631,7 @@ var Ones = /*#__PURE__*/function (_Model) {
     _this.validate();
 
     _this.weights = ones2d(_this.width, _this.height);
-    _this.deltas = zeros2d(_this.width, _this.height);
+    _this.deltas = zeros2D$8(_this.width, _this.height);
     return _this;
   }
 
@@ -25119,6 +24739,7 @@ var tanh_1 = {
   compare3D: compare3D$1
 };
 
+var zeros2D$9 = zeros2d.zeros2D;
 var Model$3 = types.Model;
 
 var Zeros = /*#__PURE__*/function (_Model) {
@@ -25135,8 +24756,8 @@ var Zeros = /*#__PURE__*/function (_Model) {
 
     _this.validate();
 
-    _this.weights = zeros2d(_this.width, _this.height);
-    _this.deltas = zeros2d(_this.width, _this.height);
+    _this.weights = zeros2D$9(_this.width, _this.height);
+    _this.deltas = zeros2D$9(_this.width, _this.height);
     return _this;
   }
 
@@ -25153,13 +24774,13 @@ var Zeros = /*#__PURE__*/function (_Model) {
   return Zeros;
 }(Model$3);
 
-function zeros$1(settings) {
+function zeros$3(settings) {
   return new Zeros(settings);
 }
 
 var zeros_1 = {
   Zeros: Zeros,
-  zeros: zeros$1
+  zeros: zeros$3
 };
 
 var add$3 = add_1.add;
@@ -25170,7 +24791,7 @@ var ones$2 = ones_1.ones;
 var sigmoid$4 = sigmoid_1.sigmoid;
 var random$4 = random_1.random;
 var tanh$2 = tanh_1.tanh;
-var zeros$2 = zeros_1.zeros;
+var zeros$4 = zeros_1.zeros;
 
 function gru(settings, recurrentInput, input) {
   var height = settings.height;
@@ -25182,7 +24803,7 @@ function gru(settings, recurrentInput, input) {
     width: height,
     height: height
   });
-  var updateGateBias = zeros$2({
+  var updateGateBias = zeros$4({
     height: height
   });
   var updateGate = sigmoid$4(add$3(add$3(multiply$3(updateGateWeights, input), multiply$3(updateGatePeepholes, recurrentInput)), updateGateBias));
@@ -25194,7 +24815,7 @@ function gru(settings, recurrentInput, input) {
     width: height,
     height: height
   });
-  var resetGateBias = zeros$2({
+  var resetGateBias = zeros$4({
     height: height
   });
   var resetGate = sigmoid$4(add$3(add$3(multiply$3(resetGateWeights, input), multiply$3(resetGatePeepholes, recurrentInput)), resetGateBias));
@@ -25206,7 +24827,7 @@ function gru(settings, recurrentInput, input) {
     width: height,
     height: height
   });
-  var cellBias = zeros$2({
+  var cellBias = zeros$4({
     height: height
   });
   var cell = tanh$2(add$3(add$3(multiply$3(cellWeights, input), multiply$3(cellPeepholes, multiplyElement$1(resetGate, recurrentInput))), cellBias)); // compute hidden state as gated, saturated cell activations
@@ -25220,6 +24841,7 @@ var gru_1 = {
 };
 
 var EntryPoint$1 = types.EntryPoint;
+var zeros2D$a = zeros2d.zeros2D;
 var makeKernel$c = kernel.makeKernel,
     release$a = kernel.release,
     kernelInput$1 = kernel.kernelInput,
@@ -25242,7 +24864,7 @@ var Input = /*#__PURE__*/function (_EntryPoint) {
 
     _this.weights = null;
     _this.reshapeInput = null;
-    _this.deltas = zeros2d(_this.width, _this.height);
+    _this.deltas = zeros2D$a(_this.width, _this.height);
     return _this;
   }
 
@@ -25431,7 +25053,7 @@ var multiplyElement$2 = multiplyElement_1.multiplyElement;
 var random$5 = random_1.random;
 var sigmoid$5 = sigmoid_1.sigmoid;
 var tanh$3 = tanh_1.tanh;
-var zeros$3 = zeros_1.zeros;
+var zeros$5 = zeros_1.zeros;
 
 function lstmCell(settings, input, recurrentInput) {
   var height = settings.height;
@@ -25446,7 +25068,7 @@ function lstmCell(settings, input, recurrentInput) {
     height: height,
     std: 0.08
   });
-  var inputGateBias = zeros$3({
+  var inputGateBias = zeros$5({
     height: height
   });
   var inputGate = sigmoid$5(add$4(add$4(multiply$4(inputGateWeights, input), multiply$4(inputGatePeepholes, recurrentInput)), inputGateBias));
@@ -25460,7 +25082,7 @@ function lstmCell(settings, input, recurrentInput) {
     height: height,
     std: 0.08
   });
-  var forgetGateBias = zeros$3({
+  var forgetGateBias = zeros$5({
     height: height
   });
   var forgetGate = sigmoid$5(add$4(add$4(multiply$4(forgetGateWeights, input), multiply$4(forgetGatePeepholes, recurrentInput)), forgetGateBias));
@@ -25474,7 +25096,7 @@ function lstmCell(settings, input, recurrentInput) {
     height: height,
     std: 0.08
   });
-  var outputGateBias = zeros$3({
+  var outputGateBias = zeros$5({
     height: height
   });
   var outputGate = sigmoid$5(add$4(add$4(multiply$4(outputGateWeights, input), multiply$4(outputGatePeepholes, recurrentInput)), outputGateBias));
@@ -25488,7 +25110,7 @@ function lstmCell(settings, input, recurrentInput) {
     height: height,
     std: 0.08
   });
-  var memoryBias = zeros$3({
+  var memoryBias = zeros$5({
     height: height
   });
   var memory = tanh$3(add$4(add$4(multiply$4(memoryWeights, input), multiply$4(memoryPeepholes, recurrentInput)), memoryBias)); // compute new cell activation
@@ -25510,7 +25132,9 @@ var lstmCell_1 = {
 var makeKernel$e = kernel.makeKernel,
     release$c = kernel.release,
     clone$4 = kernel.clone,
-    clear$a = kernel.clear; // const zeros3D = require('../utilities/zeros-3d');
+    clear$a = kernel.clear;
+var zeros$6 = zeros$1.zeros;
+var zeros2D$b = zeros2d.zeros2D; // const { zeros3D } = require('../utilities/zeros-3d');
 
 var Filter$4 = types.Filter;
 
@@ -25545,13 +25169,13 @@ var Target = /*#__PURE__*/function (_Filter) {
     if (_this.depth) {
       throw new Error('Target layer not implemented for depth');
     } else if (_this.height) {
-      _this.weights = zeros2d(_this.width, _this.height);
-      _this.deltas = zeros2d(_this.width, _this.height);
-      _this.errors = zeros2d(_this.width, _this.height);
+      _this.weights = zeros2D$b(_this.width, _this.height);
+      _this.deltas = zeros2D$b(_this.width, _this.height);
+      _this.errors = zeros2D$b(_this.width, _this.height);
     } else {
-      _this.weights = zeros(_this.width);
-      _this.deltas = zeros(_this.width);
-      _this.errors = zeros(_this.width);
+      _this.weights = zeros$6(_this.width);
+      _this.deltas = zeros$6(_this.width);
+      _this.errors = zeros$6(_this.width);
     }
 
     return _this;
@@ -25639,6 +25263,7 @@ var makeKernel$f = kernel.makeKernel,
     release$d = kernel.release;
 var setPadding$2 = layerSetup.setPadding,
     setStride$2 = layerSetup.setStride;
+var zeros3D$4 = zeros3d.zeros3D;
 
 function setSwitchY(value) {
   return value;
@@ -25750,9 +25375,9 @@ var Pool = /*#__PURE__*/function (_Filter) {
 
     _this.depth = _this.filterCount;
     _this.weights = randos3d(_this.width, _this.height, _this.depth);
-    _this.deltas = zeros3d(_this.width, _this.height, _this.depth);
+    _this.deltas = zeros3D$4(_this.width, _this.height, _this.depth);
     _this.filters = randos3d(_this.filterWidth, _this.filterHeight, _this.filterCount);
-    _this.filterDeltas = zeros3d(_this.filterWidth, _this.filterHeight, _this.filterCount);
+    _this.filterDeltas = zeros3D$4(_this.filterWidth, _this.filterHeight, _this.filterCount);
     _this.learnFilters = null;
     _this.learnInputs = null;
     _this.inputLayer = inputLayer;
@@ -25842,7 +25467,7 @@ var makeKernel$g = kernel.makeKernel,
     release$e = kernel.release,
     clear$b = kernel.clear;
 var activate$7 = relu.activate,
-    measure$7 = relu.measure; // const zeros2D = require('../utilities/zeros-2d');
+    measure$7 = relu.measure; // const { zeros2D } = require('../utilities/zeros-2d');
 
 function predict2D$3(inputs) {
   return activate$7(inputs[this.thread.y][this.thread.x]);
@@ -25938,7 +25563,7 @@ var relu$2 = relu_1.relu;
 var add$6 = add_1.add;
 var multiply$6 = multiply_1.multiply;
 var random$7 = random_1.random;
-var zeros$4 = zeros_1.zeros;
+var zeros$7 = zeros_1.zeros;
 
 function rnnCell(settings, input, recurrentInput) {
   var height = settings.height;
@@ -25958,7 +25583,7 @@ function rnnCell(settings, input, recurrentInput) {
     std: 0.08
   }); // bhh
 
-  var bias = zeros$4({
+  var bias = zeros$7({
     name: 'bias',
     height: height
   });
@@ -25969,7 +25594,7 @@ var rnnCell_1 = {
   rnnCell: rnnCell
 };
 
-var Base$6 = base.Base;
+var Base$7 = base.Base;
 
 var Regression = /*#__PURE__*/function (_Base) {
   _inherits(Regression, _Base);
@@ -26000,7 +25625,7 @@ var Regression = /*#__PURE__*/function (_Base) {
   }]);
 
   return Regression;
-}(Base$6);
+}(Base$7);
 
 function learn(inputs, targets) {
   return inputs[this.thread.x] - targets[this.thread.x];
@@ -26021,6 +25646,9 @@ var makeKernel$h = kernel.makeKernel,
     release$f = kernel.release,
     clone$5 = kernel.clone;
 var Filter$6 = types.Filter;
+var zeros$8 = zeros$1.zeros;
+var zeros2D$c = zeros2d.zeros2D;
+var zeros3D$5 = zeros3d.zeros3D;
 
 function getMaxValue(inputs) {
   var maxInput = -Infinity;
@@ -26190,13 +25818,13 @@ var SoftMax = /*#__PURE__*/function (_Filter) {
 
     if (_this.depth > 0) {
       _this.weights = randos3d(_this.width, _this.height, _this.depth);
-      _this.deltas = zeros3d(_this.width, _this.height, _this.depth);
+      _this.deltas = zeros3D$5(_this.width, _this.height, _this.depth);
     } else if (_this.height > 0) {
       _this.weights = randos2d(_this.width, _this.height);
-      _this.deltas = zeros2d(_this.width, _this.height);
+      _this.deltas = zeros2D$c(_this.width, _this.height);
     } else {
       _this.weights = randos(_this.width);
-      _this.deltas = zeros(_this.width);
+      _this.deltas = zeros$8(_this.width);
     }
 
     return _this;
@@ -26314,7 +25942,7 @@ var softMax_1 = {
   loss: loss
 };
 
-var Base$7 = base.Base;
+var Base$8 = base.Base;
 
 var SVM = /*#__PURE__*/function (_Base) {
   _inherits(SVM, _Base);
@@ -26340,7 +25968,7 @@ var SVM = /*#__PURE__*/function (_Base) {
   }]);
 
   return SVM;
-}(Base$7); // function learn(target) {
+}(Base$8); // function learn(target) {
 //   if (y === i) {
 //     continue;
 //   }
@@ -26432,7 +26060,7 @@ var transpose_1 = {
 var Add$1 = add_1.Add,
     add$7 = add_1.add;
 var arthurFeedForward$1 = arthurFeedForward_1.arthurFeedForward;
-var Base$8 = base.Base;
+var Base$9 = base.Base;
 var Convolution$1 = convolution_1.Convolution,
     convolution$1 = convolution_1.convolution;
 var Dropout$1 = dropout_1.Dropout,
@@ -26477,7 +26105,7 @@ var Target$1 = target_1.Target,
 var Transpose$1 = transpose_1.Transpose,
     transpose$1 = transpose_1.transpose;
 var Zeros$1 = zeros_1.Zeros,
-    zeros$5 = zeros_1.zeros;
+    zeros$9 = zeros_1.zeros;
 /**
  * @description Layer API, to make it easier to use layers for the world
  */
@@ -26486,7 +26114,7 @@ var layer = {
   Add: Add$1,
   add: add$7,
   arthurFeedForward: arthurFeedForward$1,
-  Base: Base$8,
+  Base: Base$9,
   Convolution: Convolution$1,
   convolution: convolution$1,
   Dropout: Dropout$1,
@@ -26531,359 +26159,22 @@ var layer = {
   Transpose: Transpose$1,
   transpose: transpose$1,
   Zeros: Zeros$1,
-  zeros: zeros$5,
+  zeros: zeros$9,
   types: types
 };
 
-/**
- *
- * @param {*} input
- * @param {brain.NeuralNetwork} net
- * @returns {*}
- */
-var likely = function likely(input, net) {
-  if (!net) {
-    throw new TypeError("Required parameter 'net' is of type ".concat(_typeof(net), ". Must be of type 'brain.NeuralNetwork'"));
-  }
+var layerFromJson = function layerFromJSON(jsonLayer) {
+  if (!layer.hasOwnProperty(jsonLayer.type)) return null;
+  var Layer = layer[jsonLayer.type]; // eslint-disable-next-line
 
-  var output = net.run(input);
-  var maxProp = null;
-  var maxValue = -1;
-  Object.keys(output).forEach(function (key) {
-    var value = output[key];
-
-    if (value > maxValue) {
-      maxProp = key;
-      maxValue = value;
+  var realLayer = Reflect.construct(Layer, arguments);
+  Object.keys(jsonLayer).forEach(function (p) {
+    if (p !== 'type') {
+      realLayer[p] = jsonLayer[p];
     }
   });
-  return maxProp;
+  return realLayer;
 };
-
-var ARRAY_BUFFER$1 = 'ArrayBuffer';
-var ArrayBuffer$3 = arrayBuffer[ARRAY_BUFFER$1];
-var NativeArrayBuffer$1 = global_1[ARRAY_BUFFER$1];
-
-// `ArrayBuffer` constructor
-// https://tc39.github.io/ecma262/#sec-arraybuffer-constructor
-_export({ global: true, forced: NativeArrayBuffer$1 !== ArrayBuffer$3 }, {
-  ArrayBuffer: ArrayBuffer$3
-});
-
-setSpecies(ARRAY_BUFFER$1);
-
-var exportTypedArrayStaticMethod$1 = arrayBufferViewCore.exportTypedArrayStaticMethod;
-
-
-// `%TypedArray%.from` method
-// https://tc39.github.io/ecma262/#sec-%typedarray%.from
-exportTypedArrayStaticMethod$1('from', typedArrayFrom, typedArrayConstructorsRequireWrappers);
-
-/* Functions for turning sparse hashes into arrays and vice versa */
-var Lookup = /*#__PURE__*/function () {
-  function Lookup() {
-    _classCallCheck(this, Lookup);
-  }
-
-  _createClass(Lookup, null, [{
-    key: "toTable",
-
-    /**
-     * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
-     * @param {Object} hashes
-     * @returns {Object}
-     */
-    value: function toTable(hashes) {
-      var hash = hashes.reduce(function (memo, hash) {
-        return Object.assign(memo, hash);
-      }, {});
-      return Lookup.toHash(hash);
-    }
-    /**
-     * Performs `[{a: 1}, {b: 6, c: 7}] -> {a: 0, b: 1, c: 2}`
-     * @param {Object} objects2D
-     * @returns {Object}
-     */
-
-  }, {
-    key: "toTable2D",
-    value: function toTable2D(objects2D) {
-      var table = {};
-      var valueIndex = 0;
-
-      for (var i = 0; i < objects2D.length; i++) {
-        var objects = objects2D[i];
-
-        for (var j = 0; j < objects.length; j++) {
-          var object = objects[j];
-
-          for (var p in object) {
-            if (object.hasOwnProperty(p) && !table.hasOwnProperty(p)) {
-              table[p] = valueIndex++;
-            }
-          }
-        }
-      }
-
-      return table;
-    }
-  }, {
-    key: "toInputTable",
-    value: function toInputTable(data) {
-      var table = {};
-      var tableIndex = 0;
-
-      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
-        for (var p in data[dataIndex].input) {
-          if (!table.hasOwnProperty(p)) {
-            table[p] = tableIndex++;
-          }
-        }
-      }
-
-      return table;
-    }
-  }, {
-    key: "toInputTable2D",
-    value: function toInputTable2D(data) {
-      var table = {};
-      var tableIndex = 0;
-
-      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
-        var input = data[dataIndex].input;
-
-        for (var i = 0; i < input.length; i++) {
-          var object = input[i];
-
-          for (var p in object) {
-            if (!table.hasOwnProperty(p)) {
-              table[p] = tableIndex++;
-            }
-          }
-        }
-      }
-
-      return table;
-    }
-  }, {
-    key: "toOutputTable",
-    value: function toOutputTable(data) {
-      var table = {};
-      var tableIndex = 0;
-
-      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
-        for (var p in data[dataIndex].output) {
-          if (!table.hasOwnProperty(p)) {
-            table[p] = tableIndex++;
-          }
-        }
-      }
-
-      return table;
-    }
-  }, {
-    key: "toOutputTable2D",
-    value: function toOutputTable2D(data) {
-      var table = {};
-      var tableIndex = 0;
-
-      for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
-        var output = data[dataIndex].output;
-
-        for (var i = 0; i < output.length; i++) {
-          var object = output[i];
-
-          for (var p in object) {
-            if (!table.hasOwnProperty(p)) {
-              table[p] = tableIndex++;
-            }
-          }
-        }
-      }
-
-      return table;
-    }
-    /**
-     * performs `{a: 6, b: 7} -> {a: 0, b: 1}`
-     * @param {Object} hash
-     * @returns {Object}
-     */
-
-  }, {
-    key: "toHash",
-    value: function toHash(hash) {
-      var lookup = {};
-      var index = 0;
-
-      for (var i in hash) {
-        lookup[i] = index++;
-      }
-
-      return lookup;
-    }
-    /**
-     * performs `{a: 0, b: 1}, {a: 6} -> [6, 0]`
-     * @param {*} lookup
-     * @param {*} object
-     * @param {*} arrayLength
-     * @returns {Float32Array}
-     */
-
-  }, {
-    key: "toArray",
-    value: function toArray(lookup, object, arrayLength) {
-      var result = new Float32Array(arrayLength);
-
-      for (var p in lookup) {
-        result[lookup[p]] = object.hasOwnProperty(p) ? object[p] : 0;
-      }
-
-      return result;
-    }
-  }, {
-    key: "toArrayShort",
-    value: function toArrayShort(lookup, object) {
-      var result = [];
-
-      for (var p in lookup) {
-        if (!object.hasOwnProperty(p)) break;
-        result[lookup[p]] = object[p];
-      }
-
-      return Float32Array.from(result);
-    }
-  }, {
-    key: "toArrays",
-    value: function toArrays(lookup, objects, arrayLength) {
-      var result = [];
-
-      for (var i = 0; i < objects.length; i++) {
-        result.push(this.toArray(lookup, objects[i], arrayLength));
-      }
-
-      return result;
-    }
-    /**
-     * performs `{a: 0, b: 1}, [6, 7] -> {a: 6, b: 7}`
-     * @param {Object} lookup
-     * @param {Array} array
-     * @returns {Object}
-     */
-
-  }, {
-    key: "toObject",
-    value: function toObject(lookup, array) {
-      var object = {};
-
-      for (var p in lookup) {
-        object[p] = array[lookup[p]];
-      }
-
-      return object;
-    }
-  }, {
-    key: "toObjectPartial",
-    value: function toObjectPartial(lookup, array) {
-      var offset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-      var limit = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-      var object = {};
-      var i = 0;
-
-      for (var p in lookup) {
-        if (offset > 0) {
-          if (i++ < offset) continue;
-        }
-
-        if (limit > 0) {
-          if (i++ >= limit) continue;
-        }
-
-        object[p] = array[lookup[p] - offset];
-      }
-
-      return object;
-    }
-    /**
-     *
-     * @param {Array} array
-     * @returns {*}
-     */
-
-  }, {
-    key: "lookupFromArray",
-    value: function lookupFromArray(array) {
-      var lookup = {};
-      var z = 0;
-      var i = array.length;
-
-      while (i-- > 0) {
-        lookup[array[i]] = z++;
-      }
-
-      return lookup;
-    }
-  }, {
-    key: "dataShape",
-    value: function dataShape(data) {
-      var shape = [];
-
-      if (data.input) {
-        shape.push('datum');
-        data = data.input;
-      } else if (Array.isArray(data)) {
-        if (data[0].input) {
-          shape.push('array', 'datum');
-          data = data[0].input;
-        } else {
-          shape.push('array');
-          data = data[0];
-        }
-      }
-
-      var p;
-
-      while (data) {
-        for (p in data) {
-          break;
-        }
-
-        if (!data.hasOwnProperty(p)) break;
-
-        if (Array.isArray(data) || data.buffer instanceof ArrayBuffer) {
-          shape.push('array');
-          data = data[p];
-        } else if (_typeof(data) === 'object') {
-          shape.push('object');
-          data = data[p];
-        } else {
-          throw new Error('unhandled signature');
-        }
-      }
-
-      shape.push(_typeof(data));
-      return shape;
-    }
-  }, {
-    key: "addKeys",
-    value: function addKeys(value, table) {
-      if (Array.isArray(value)) return;
-      table = table || {};
-      var i = Object.keys(table).length;
-
-      for (var p in value) {
-        if (!value.hasOwnProperty(p)) continue;
-        if (table.hasOwnProperty(p)) continue;
-        table[p] = i++;
-      }
-
-      return table;
-    }
-  }]);
-
-  return Lookup;
-}();
-
-var lookup = Lookup;
 
 // TODO: implement and test
 var Adam = function Adam() {
@@ -26917,7 +26208,8 @@ var adam_1 = {
 
 var makeKernel$j = kernel.makeKernel,
     release$g = kernel.release;
-var Base$9 = base$1.Base;
+var zeros2D$d = zeros2d.zeros2D;
+var Base$a = base$1.Base;
 
 function getMomentum(delta, decay, previousMomentum) {
   return previousMomentum * decay + (1 - decay) * delta * delta;
@@ -26987,7 +26279,7 @@ var MomentumRootMeanSquaredPropagation = /*#__PURE__*/function (_Base) {
     _classCallCheck(this, MomentumRootMeanSquaredPropagation);
 
     _this = _super.call(this, layerTemplate, settings);
-    _this.momenta = zeros2d(layerTemplate.width, layerTemplate.height);
+    _this.momenta = zeros2D$d(layerTemplate.width, layerTemplate.height);
     return _this;
   }
 
@@ -27024,7 +26316,7 @@ var MomentumRootMeanSquaredPropagation = /*#__PURE__*/function (_Base) {
   }]);
 
   return MomentumRootMeanSquaredPropagation;
-}(Base$9);
+}(Base$a);
 
 function momentumRootMeanSquaredPropagation(layer, settings) {
   return new MomentumRootMeanSquaredPropagation(layer, settings);
@@ -27070,124 +26362,6 @@ var praxis = {
   mRmsProp: mRmsProp$1
 };
 
-var $filter$1 = arrayIteration.filter;
-
-
-
-var HAS_SPECIES_SUPPORT$3 = arrayMethodHasSpeciesSupport('filter');
-// Edge 14- issue
-var USES_TO_LENGTH$6 = arrayMethodUsesToLength('filter');
-
-// `Array.prototype.filter` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.filter
-// with adding support of @@species
-_export({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT$3 || !USES_TO_LENGTH$6 }, {
-  filter: function filter(callbackfn /* , thisArg */) {
-    return $filter$1(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-  }
-});
-
-var $indexOf$1 = arrayIncludes.indexOf;
-
-
-
-var nativeIndexOf = [].indexOf;
-
-var NEGATIVE_ZERO$1 = !!nativeIndexOf && 1 / [1].indexOf(1, -0) < 0;
-var STRICT_METHOD$3 = arrayMethodIsStrict('indexOf');
-var USES_TO_LENGTH$7 = arrayMethodUsesToLength('indexOf', { ACCESSORS: true, 1: 0 });
-
-// `Array.prototype.indexOf` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.indexof
-_export({ target: 'Array', proto: true, forced: NEGATIVE_ZERO$1 || !STRICT_METHOD$3 || !USES_TO_LENGTH$7 }, {
-  indexOf: function indexOf(searchElement /* , fromIndex = 0 */) {
-    return NEGATIVE_ZERO$1
-      // convert -0 to +0
-      ? nativeIndexOf.apply(this, arguments) || 0
-      : $indexOf$1(this, searchElement, arguments.length > 1 ? arguments[1] : undefined);
-  }
-});
-
-var slice = [].slice;
-var factories = {};
-
-var construct = function (C, argsLength, args) {
-  if (!(argsLength in factories)) {
-    for (var list = [], i = 0; i < argsLength; i++) list[i] = 'a[' + i + ']';
-    // eslint-disable-next-line no-new-func
-    factories[argsLength] = Function('C,a', 'return new C(' + list.join(',') + ')');
-  } return factories[argsLength](C, args);
-};
-
-// `Function.prototype.bind` method implementation
-// https://tc39.github.io/ecma262/#sec-function.prototype.bind
-var functionBind = Function.bind || function bind(that /* , ...args */) {
-  var fn = aFunction$1(this);
-  var partArgs = slice.call(arguments, 1);
-  var boundFunction = function bound(/* args... */) {
-    var args = partArgs.concat(slice.call(arguments));
-    return this instanceof boundFunction ? construct(fn, args.length, args) : fn.apply(that, args);
-  };
-  if (isObject(fn.prototype)) boundFunction.prototype = fn.prototype;
-  return boundFunction;
-};
-
-var nativeConstruct = getBuiltIn('Reflect', 'construct');
-
-// `Reflect.construct` method
-// https://tc39.github.io/ecma262/#sec-reflect.construct
-// MS Edge supports only 2 arguments and argumentsList argument is optional
-// FF Nightly sets third argument as `new.target`, but does not create `this` from it
-var NEW_TARGET_BUG = fails(function () {
-  function F() { /* empty */ }
-  return !(nativeConstruct(function () { /* empty */ }, [], F) instanceof F);
-});
-var ARGS_BUG = !fails(function () {
-  nativeConstruct(function () { /* empty */ });
-});
-var FORCED$5 = NEW_TARGET_BUG || ARGS_BUG;
-
-_export({ target: 'Reflect', stat: true, forced: FORCED$5, sham: FORCED$5 }, {
-  construct: function construct(Target, args /* , newTarget */) {
-    aFunction$1(Target);
-    anObject(args);
-    var newTarget = arguments.length < 3 ? Target : aFunction$1(arguments[2]);
-    if (ARGS_BUG && !NEW_TARGET_BUG) return nativeConstruct(Target, args, newTarget);
-    if (Target == newTarget) {
-      // w/o altered newTarget, optimization for 0-4 arguments
-      switch (args.length) {
-        case 0: return new Target();
-        case 1: return new Target(args[0]);
-        case 2: return new Target(args[0], args[1]);
-        case 3: return new Target(args[0], args[1], args[2]);
-        case 4: return new Target(args[0], args[1], args[2], args[3]);
-      }
-      // w/o altered newTarget, lot of arguments case
-      var $args = [null];
-      $args.push.apply($args, args);
-      return new (functionBind.apply(Target, $args))();
-    }
-    // with altered newTarget, not support built-in constructors
-    var proto = newTarget.prototype;
-    var instance = objectCreate(isObject(proto) ? proto : Object.prototype);
-    var result = Function.apply.call(Target, instance, args);
-    return isObject(result) ? result : instance;
-  }
-});
-
-var layerFromJson = function layerFromJSON(jsonLayer) {
-  if (!layer.hasOwnProperty(jsonLayer.type)) return null;
-  var Layer = layer[jsonLayer.type]; // eslint-disable-next-line
-
-  var realLayer = Reflect.construct(Layer, arguments);
-  Object.keys(jsonLayer).forEach(function (p) {
-    if (p !== 'type') {
-      realLayer[p] = jsonLayer[p];
-    }
-  });
-  return realLayer;
-};
-
 var traverseLayersFrom = function traverseLayersFrom(layer, cb) {
   if (layer.hasOwnProperty('inputLayer')) {
     traverseLayersFrom(layer.inputLayer, cb);
@@ -27224,10 +26398,11 @@ var flattenLayers = function flattenLayers(layers) {
   return result;
 };
 
-var makeKernel$k = kernel.makeKernel;
+/**
+ * 2D Mean Squared Error
+ */
 
 function mse2d(errors) {
-  // mean squared error 2d
   var sum = 0;
 
   for (var y = 0; y < this.constants.height; y++) {
@@ -27238,14 +26413,29 @@ function mse2d(errors) {
 
   return sum / this.constants.length;
 }
+var MeanSquaredError =
+/** Calculate the mean squared error given an array of errors */
 
-var MeanSquaredError = function MeanSquaredError(_ref) {
+/** Returns the sum of absolute values of previuous error and previous layer errors */
+
+/** Adds two erros */
+
+/** Returns the ratio of sum of errors and length (ie the average) */
+function MeanSquaredError(_ref) {
   var width = _ref.width,
       height = _ref.height;
 
   _classCallCheck(this, MeanSquaredError);
 
-  this.calculate = makeKernel$k(mse2d, {
+  _defineProperty(this, "calculate", void 0);
+
+  _defineProperty(this, "addAbsolute", void 0);
+
+  _defineProperty(this, "add", void 0);
+
+  _defineProperty(this, "divide", void 0);
+
+  this.calculate = kernel.makeKernel(mse2d, {
     output: [1],
     constants: {
       width: width,
@@ -27254,19 +26444,19 @@ var MeanSquaredError = function MeanSquaredError(_ref) {
     },
     immutable: true
   });
-  this.addAbsolute = makeKernel$k(function (value1, value2) {
-    return value1[0] + Math.abs(value2[0][0]);
+  this.addAbsolute = kernel.makeKernel(function (prevError, prevLayerErrors) {
+    return prevError[0] + Math.abs(prevLayerErrors[0][0]);
   }, {
     output: [1],
     immutable: true
   });
-  this.add = makeKernel$k(function (value1, value2) {
+  this.add = kernel.makeKernel(function (value1, value2) {
     return value1[0] + value2[0];
   }, {
     output: [1],
     immutable: true
   });
-  this.divide = makeKernel$k(function (length, mseSum) {
+  this.divide = kernel.makeKernel(function (length, mseSum) {
     var value = mseSum[0];
 
     if (value > 0) {
@@ -27280,11 +26470,13 @@ var MeanSquaredError = function MeanSquaredError(_ref) {
   });
 };
 
-var meanSquaredError = {
+var meanSquaredError = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  mse2d: mse2d,
   MeanSquaredError: MeanSquaredError
-};
+});
 
-var makeKernel$l = kernel.makeKernel,
+var makeKernel$k = kernel.makeKernel,
     release$h = kernel.release;
 var MeanSquaredError$1 = meanSquaredError.MeanSquaredError;
 var Model$4 = types.Model;
@@ -27798,13 +26990,13 @@ var FeedForward = /*#__PURE__*/function () {
     key: "transferData",
     value: function transferData(formattedData) {
       var transferredData = new Array(formattedData.length);
-      var transferInput = makeKernel$l(function (value) {
+      var transferInput = makeKernel$k(function (value) {
         return value[this.thread.x];
       }, {
         output: [formattedData[0].input.length],
         immutable: true
       });
-      var transferOutput = makeKernel$l(function (value) {
+      var transferOutput = makeKernel$k(function (value) {
         return value[this.thread.x];
       }, {
         output: [formattedData[0].output.length],
@@ -27938,86 +27130,77 @@ var feedForward$2 = {
   FeedForward: FeedForward
 };
 
-var nativeJoin = [].join;
-
-var ES3_STRINGS = indexedObject != Object;
-var STRICT_METHOD$4 = arrayMethodIsStrict('join', ',');
-
-// `Array.prototype.join` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.join
-_export({ target: 'Array', proto: true, forced: ES3_STRINGS || !STRICT_METHOD$4 }, {
-  join: function join(separator) {
-    return nativeJoin.call(toIndexedObject(this), separator === undefined ? ',' : separator);
+/**
+ *
+ * @param {*} input
+ * @param {brain.NeuralNetwork} net
+ * @returns {*}
+ */
+var likely = function likely(input, net) {
+  if (!net) {
+    throw new TypeError("Required parameter 'net' is of type ".concat(_typeof(net), ". Must be of type 'brain.NeuralNetwork'"));
   }
-});
 
-var nativePromiseConstructor = global_1.Promise;
+  var output = net.run(input);
+  var maxProp = null;
+  var maxValue = -1;
+  Object.keys(output).forEach(function (key) {
+    var value = output[key];
+
+    if (value > maxValue) {
+      maxProp = key;
+      maxValue = value;
+    }
+  });
+  return maxProp;
+};
 
 // call something on iterator step with safe closing on error
-var callWithSafeIterationClosing = function (iterator, fn, value, ENTRIES) {
+
+var _iterCall = function (iterator, fn, value, entries) {
   try {
-    return ENTRIES ? fn(anObject(value)[0], value[1]) : fn(value);
+    return entries ? fn(_anObject(value)[0], value[1]) : fn(value);
   // 7.4.6 IteratorClose(iterator, completion)
-  } catch (error) {
-    var returnMethod = iterator['return'];
-    if (returnMethod !== undefined) anObject(returnMethod.call(iterator));
-    throw error;
+  } catch (e) {
+    var ret = iterator['return'];
+    if (ret !== undefined) _anObject(ret.call(iterator));
+    throw e;
   }
 };
 
-var iterate_1 = createCommonjsModule(function (module) {
-var Result = function (stopped, result) {
-  this.stopped = stopped;
-  this.result = result;
-};
-
-var iterate = module.exports = function (iterable, fn, that, AS_ENTRIES, IS_ITERATOR) {
-  var boundFunction = functionBindContext(fn, that, AS_ENTRIES ? 2 : 1);
-  var iterator, iterFn, index, length, result, next, step;
-
-  if (IS_ITERATOR) {
-    iterator = iterable;
-  } else {
-    iterFn = getIteratorMethod(iterable);
-    if (typeof iterFn != 'function') throw TypeError('Target is not iterable');
-    // optimisation for array iterators
-    if (isArrayIteratorMethod(iterFn)) {
-      for (index = 0, length = toLength(iterable.length); length > index; index++) {
-        result = AS_ENTRIES
-          ? boundFunction(anObject(step = iterable[index])[0], step[1])
-          : boundFunction(iterable[index]);
-        if (result && result instanceof Result) return result;
-      } return new Result(false);
-    }
-    iterator = iterFn.call(iterable);
+var _forOf = createCommonjsModule(function (module) {
+var BREAK = {};
+var RETURN = {};
+var exports = module.exports = function (iterable, entries, fn, that, ITERATOR) {
+  var iterFn = ITERATOR ? function () { return iterable; } : core_getIteratorMethod(iterable);
+  var f = _ctx(fn, that, entries ? 2 : 1);
+  var index = 0;
+  var length, step, iterator, result;
+  if (typeof iterFn != 'function') throw TypeError(iterable + ' is not iterable!');
+  // fast case for arrays with default iterator
+  if (_isArrayIter(iterFn)) for (length = _toLength(iterable.length); length > index; index++) {
+    result = entries ? f(_anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);
+    if (result === BREAK || result === RETURN) return result;
+  } else for (iterator = iterFn.call(iterable); !(step = iterator.next()).done;) {
+    result = _iterCall(iterator, f, step.value, entries);
+    if (result === BREAK || result === RETURN) return result;
   }
-
-  next = iterator.next;
-  while (!(step = next.call(iterator)).done) {
-    result = callWithSafeIterationClosing(iterator, boundFunction, step.value, AS_ENTRIES);
-    if (typeof result == 'object' && result && result instanceof Result) return result;
-  } return new Result(false);
 };
-
-iterate.stop = function (result) {
-  return new Result(true, result);
-};
+exports.BREAK = BREAK;
+exports.RETURN = RETURN;
 });
 
-var engineIsIos = /(iphone|ipod|ipad).*applewebkit/i.test(engineUserAgent);
-
-var location = global_1.location;
-var set$2 = global_1.setImmediate;
-var clear$d = global_1.clearImmediate;
-var process$1 = global_1.process;
-var MessageChannel = global_1.MessageChannel;
-var Dispatch = global_1.Dispatch;
+var process = _global.process;
+var setTask = _global.setImmediate;
+var clearTask = _global.clearImmediate;
+var MessageChannel = _global.MessageChannel;
+var Dispatch = _global.Dispatch;
 var counter = 0;
 var queue = {};
 var ONREADYSTATECHANGE = 'onreadystatechange';
 var defer, channel, port;
-
-var run = function (id) {
+var run = function () {
+  var id = +this;
   // eslint-disable-next-line no-prototype-builtins
   if (queue.hasOwnProperty(id)) {
     var fn = queue[id];
@@ -28025,141 +27208,113 @@ var run = function (id) {
     fn();
   }
 };
-
-var runner = function (id) {
-  return function () {
-    run(id);
-  };
-};
-
 var listener = function (event) {
-  run(event.data);
+  run.call(event.data);
 };
-
-var post = function (id) {
-  // old engines have not location.origin
-  global_1.postMessage(id + '', location.protocol + '//' + location.host);
-};
-
 // Node.js 0.9+ & IE10+ has setImmediate, otherwise:
-if (!set$2 || !clear$d) {
-  set$2 = function setImmediate(fn) {
+if (!setTask || !clearTask) {
+  setTask = function setImmediate(fn) {
     var args = [];
     var i = 1;
     while (arguments.length > i) args.push(arguments[i++]);
     queue[++counter] = function () {
       // eslint-disable-next-line no-new-func
-      (typeof fn == 'function' ? fn : Function(fn)).apply(undefined, args);
+      _invoke(typeof fn == 'function' ? fn : Function(fn), args);
     };
     defer(counter);
     return counter;
   };
-  clear$d = function clearImmediate(id) {
+  clearTask = function clearImmediate(id) {
     delete queue[id];
   };
   // Node.js 0.8-
-  if (classofRaw(process$1) == 'process') {
+  if (_cof(process) == 'process') {
     defer = function (id) {
-      process$1.nextTick(runner(id));
+      process.nextTick(_ctx(run, id, 1));
     };
   // Sphere (JS game engine) Dispatch API
   } else if (Dispatch && Dispatch.now) {
     defer = function (id) {
-      Dispatch.now(runner(id));
+      Dispatch.now(_ctx(run, id, 1));
     };
   // Browsers with MessageChannel, includes WebWorkers
-  // except iOS - https://github.com/zloirock/core-js/issues/624
-  } else if (MessageChannel && !engineIsIos) {
+  } else if (MessageChannel) {
     channel = new MessageChannel();
     port = channel.port2;
     channel.port1.onmessage = listener;
-    defer = functionBindContext(port.postMessage, port, 1);
+    defer = _ctx(port.postMessage, port, 1);
   // Browsers with postMessage, skip WebWorkers
   // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
-  } else if (
-    global_1.addEventListener &&
-    typeof postMessage == 'function' &&
-    !global_1.importScripts &&
-    !fails(post) &&
-    location.protocol !== 'file:'
-  ) {
-    defer = post;
-    global_1.addEventListener('message', listener, false);
-  // IE8-
-  } else if (ONREADYSTATECHANGE in documentCreateElement('script')) {
+  } else if (_global.addEventListener && typeof postMessage == 'function' && !_global.importScripts) {
     defer = function (id) {
-      html.appendChild(documentCreateElement('script'))[ONREADYSTATECHANGE] = function () {
-        html.removeChild(this);
-        run(id);
+      _global.postMessage(id + '', '*');
+    };
+    _global.addEventListener('message', listener, false);
+  // IE8-
+  } else if (ONREADYSTATECHANGE in _domCreate('script')) {
+    defer = function (id) {
+      _html.appendChild(_domCreate('script'))[ONREADYSTATECHANGE] = function () {
+        _html.removeChild(this);
+        run.call(id);
       };
     };
   // Rest old browsers
   } else {
     defer = function (id) {
-      setTimeout(runner(id), 0);
+      setTimeout(_ctx(run, id, 1), 0);
     };
   }
 }
-
-var task = {
-  set: set$2,
-  clear: clear$d
+var _task = {
+  set: setTask,
+  clear: clearTask
 };
 
-var getOwnPropertyDescriptor$3 = objectGetOwnPropertyDescriptor.f;
+var macrotask = _task.set;
+var Observer = _global.MutationObserver || _global.WebKitMutationObserver;
+var process$1 = _global.process;
+var Promise$1 = _global.Promise;
+var isNode = _cof(process$1) == 'process';
 
-var macrotask = task.set;
+var _microtask = function () {
+  var head, last, notify;
 
-
-var MutationObserver = global_1.MutationObserver || global_1.WebKitMutationObserver;
-var process$2 = global_1.process;
-var Promise$1 = global_1.Promise;
-var IS_NODE = classofRaw(process$2) == 'process';
-// Node.js 11 shows ExperimentalWarning on getting `queueMicrotask`
-var queueMicrotaskDescriptor = getOwnPropertyDescriptor$3(global_1, 'queueMicrotask');
-var queueMicrotask = queueMicrotaskDescriptor && queueMicrotaskDescriptor.value;
-
-var flush, head, last, notify, toggle, node, promise, then;
-
-// modern engines have queueMicrotask method
-if (!queueMicrotask) {
-  flush = function () {
+  var flush = function () {
     var parent, fn;
-    if (IS_NODE && (parent = process$2.domain)) parent.exit();
+    if (isNode && (parent = process$1.domain)) parent.exit();
     while (head) {
       fn = head.fn;
       head = head.next;
       try {
         fn();
-      } catch (error) {
+      } catch (e) {
         if (head) notify();
         else last = undefined;
-        throw error;
+        throw e;
       }
     } last = undefined;
     if (parent) parent.enter();
   };
 
   // Node.js
-  if (IS_NODE) {
+  if (isNode) {
     notify = function () {
-      process$2.nextTick(flush);
+      process$1.nextTick(flush);
     };
-  // browsers with MutationObserver, except iOS - https://github.com/zloirock/core-js/issues/339
-  } else if (MutationObserver && !engineIsIos) {
-    toggle = true;
-    node = document.createTextNode('');
-    new MutationObserver(flush).observe(node, { characterData: true });
+  // browsers with MutationObserver, except iOS Safari - https://github.com/zloirock/core-js/issues/339
+  } else if (Observer && !(_global.navigator && _global.navigator.standalone)) {
+    var toggle = true;
+    var node = document.createTextNode('');
+    new Observer(flush).observe(node, { characterData: true }); // eslint-disable-line no-new
     notify = function () {
       node.data = toggle = !toggle;
     };
   // environments with maybe non-completely correct, but existent Promise
   } else if (Promise$1 && Promise$1.resolve) {
     // Promise.resolve without an argument throws an error in LG WebOS 2
-    promise = Promise$1.resolve(undefined);
-    then = promise.then;
+    var promise = Promise$1.resolve(undefined);
     notify = function () {
-      then.call(promise, flush);
+      promise.then(flush);
     };
   // for other environments - macrotask based on:
   // - setImmediate
@@ -28170,143 +27325,112 @@ if (!queueMicrotask) {
   } else {
     notify = function () {
       // strange IE + webpack dev server bug - use .call(global)
-      macrotask.call(global_1, flush);
+      macrotask.call(_global, flush);
     };
   }
-}
 
-var microtask = queueMicrotask || function (fn) {
-  var task = { fn: fn, next: undefined };
-  if (last) last.next = task;
-  if (!head) {
-    head = task;
-    notify();
-  } last = task;
+  return function (fn) {
+    var task = { fn: fn, next: undefined };
+    if (last) last.next = task;
+    if (!head) {
+      head = task;
+      notify();
+    } last = task;
+  };
 };
 
-var PromiseCapability = function (C) {
+// 25.4.1.5 NewPromiseCapability(C)
+
+
+function PromiseCapability(C) {
   var resolve, reject;
   this.promise = new C(function ($$resolve, $$reject) {
     if (resolve !== undefined || reject !== undefined) throw TypeError('Bad Promise constructor');
     resolve = $$resolve;
     reject = $$reject;
   });
-  this.resolve = aFunction$1(resolve);
-  this.reject = aFunction$1(reject);
-};
+  this.resolve = _aFunction(resolve);
+  this.reject = _aFunction(reject);
+}
 
-// 25.4.1.5 NewPromiseCapability(C)
 var f$5 = function (C) {
   return new PromiseCapability(C);
 };
 
-var newPromiseCapability = {
+var _newPromiseCapability = {
 	f: f$5
 };
 
-var promiseResolve = function (C, x) {
-  anObject(C);
-  if (isObject(x) && x.constructor === C) return x;
-  var promiseCapability = newPromiseCapability.f(C);
+var _perform = function (exec) {
+  try {
+    return { e: false, v: exec() };
+  } catch (e) {
+    return { e: true, v: e };
+  }
+};
+
+var navigator = _global.navigator;
+
+var _userAgent = navigator && navigator.userAgent || '';
+
+var _promiseResolve = function (C, x) {
+  _anObject(C);
+  if (_isObject(x) && x.constructor === C) return x;
+  var promiseCapability = _newPromiseCapability.f(C);
   var resolve = promiseCapability.resolve;
   resolve(x);
   return promiseCapability.promise;
 };
 
-var hostReportErrors = function (a, b) {
-  var console = global_1.console;
-  if (console && console.error) {
-    arguments.length === 1 ? console.error(a) : console.error(a, b);
-  }
-};
-
-var perform = function (exec) {
-  try {
-    return { error: false, value: exec() };
-  } catch (error) {
-    return { error: true, value: error };
-  }
-};
-
-var task$1 = task.set;
+var task = _task.set;
+var microtask = _microtask();
 
 
 
 
-
-
-
-
-
-
-var SPECIES$5 = wellKnownSymbol('species');
 var PROMISE = 'Promise';
-var getInternalState$2 = internalState.get;
-var setInternalState$2 = internalState.set;
-var getInternalPromiseState = internalState.getterFor(PROMISE);
-var PromiseConstructor = nativePromiseConstructor;
-var TypeError$1 = global_1.TypeError;
-var document$2 = global_1.document;
-var process$3 = global_1.process;
-var $fetch = getBuiltIn('fetch');
-var newPromiseCapability$1 = newPromiseCapability.f;
-var newGenericPromiseCapability = newPromiseCapability$1;
-var IS_NODE$1 = classofRaw(process$3) == 'process';
-var DISPATCH_EVENT = !!(document$2 && document$2.createEvent && global_1.dispatchEvent);
-var UNHANDLED_REJECTION = 'unhandledrejection';
-var REJECTION_HANDLED = 'rejectionhandled';
-var PENDING = 0;
-var FULFILLED = 1;
-var REJECTED = 2;
-var HANDLED = 1;
-var UNHANDLED = 2;
-var Internal$1, OwnPromiseCapability, PromiseWrapper, nativeThen;
+var TypeError$1 = _global.TypeError;
+var process$2 = _global.process;
+var versions = process$2 && process$2.versions;
+var v8 = versions && versions.v8 || '';
+var $Promise = _global[PROMISE];
+var isNode$1 = _classof(process$2) == 'process';
+var empty = function () { /* empty */ };
+var Internal$1, newGenericPromiseCapability, OwnPromiseCapability, Wrapper;
+var newPromiseCapability = newGenericPromiseCapability = _newPromiseCapability.f;
 
-var FORCED$6 = isForced_1(PROMISE, function () {
-  var GLOBAL_CORE_JS_PROMISE = inspectSource(PromiseConstructor) !== String(PromiseConstructor);
-  if (!GLOBAL_CORE_JS_PROMISE) {
-    // V8 6.6 (Node 10 and Chrome 66) have a bug with resolving custom thenables
-    // https://bugs.chromium.org/p/chromium/issues/detail?id=830565
-    // We can't detect it synchronously, so just check versions
-    if (engineV8Version === 66) return true;
-    // Unhandled rejections tracking support, NodeJS Promise without it fails @@species test
-    if (!IS_NODE$1 && typeof PromiseRejectionEvent != 'function') return true;
-  }
-  // We can't use @@species feature detection in V8 since it causes
-  // deoptimization and performance degradation
-  // https://github.com/zloirock/core-js/issues/679
-  if (engineV8Version >= 51 && /native code/.test(PromiseConstructor)) return false;
-  // Detect correctness of subclassing with @@species support
-  var promise = PromiseConstructor.resolve(1);
-  var FakePromise = function (exec) {
-    exec(function () { /* empty */ }, function () { /* empty */ });
-  };
-  var constructor = promise.constructor = {};
-  constructor[SPECIES$5] = FakePromise;
-  return !(promise.then(function () { /* empty */ }) instanceof FakePromise);
-});
-
-var INCORRECT_ITERATION = FORCED$6 || !checkCorrectnessOfIteration(function (iterable) {
-  PromiseConstructor.all(iterable)['catch'](function () { /* empty */ });
-});
+var USE_NATIVE = !!function () {
+  try {
+    // correct subclassing with @@species support
+    var promise = $Promise.resolve(1);
+    var FakePromise = (promise.constructor = {})[_wks('species')] = function (exec) {
+      exec(empty, empty);
+    };
+    // unhandled rejections tracking support, NodeJS Promise without it fails @@species test
+    return (isNode$1 || typeof PromiseRejectionEvent == 'function')
+      && promise.then(empty) instanceof FakePromise
+      // v8 6.6 (Node 10 and Chrome 66) have a bug with resolving custom thenables
+      // https://bugs.chromium.org/p/chromium/issues/detail?id=830565
+      // we can't detect it synchronously, so just check versions
+      && v8.indexOf('6.6') !== 0
+      && _userAgent.indexOf('Chrome/66') === -1;
+  } catch (e) { /* empty */ }
+}();
 
 // helpers
 var isThenable = function (it) {
   var then;
-  return isObject(it) && typeof (then = it.then) == 'function' ? then : false;
+  return _isObject(it) && typeof (then = it.then) == 'function' ? then : false;
 };
-
-var notify$1 = function (promise, state, isReject) {
-  if (state.notified) return;
-  state.notified = true;
-  var chain = state.reactions;
+var notify = function (promise, isReject) {
+  if (promise._n) return;
+  promise._n = true;
+  var chain = promise._c;
   microtask(function () {
-    var value = state.value;
-    var ok = state.state == FULFILLED;
-    var index = 0;
-    // variable length - can't use forEach
-    while (chain.length > index) {
-      var reaction = chain[index++];
+    var value = promise._v;
+    var ok = promise._s == 1;
+    var i = 0;
+    var run = function (reaction) {
       var handler = ok ? reaction.ok : reaction.fail;
       var resolve = reaction.resolve;
       var reject = reaction.reject;
@@ -28315,13 +27439,13 @@ var notify$1 = function (promise, state, isReject) {
       try {
         if (handler) {
           if (!ok) {
-            if (state.rejection === UNHANDLED) onHandleUnhandled(promise, state);
-            state.rejection = HANDLED;
+            if (promise._h == 2) onHandleUnhandled(promise);
+            promise._h = 1;
           }
           if (handler === true) result = value;
           else {
             if (domain) domain.enter();
-            result = handler(value); // can throw
+            result = handler(value); // may throw
             if (domain) {
               domain.exit();
               exited = true;
@@ -28333,257 +27457,203 @@ var notify$1 = function (promise, state, isReject) {
             then.call(result, resolve, reject);
           } else resolve(result);
         } else reject(value);
-      } catch (error) {
+      } catch (e) {
         if (domain && !exited) domain.exit();
-        reject(error);
+        reject(e);
       }
-    }
-    state.reactions = [];
-    state.notified = false;
-    if (isReject && !state.rejection) onUnhandled(promise, state);
+    };
+    while (chain.length > i) run(chain[i++]); // variable length - can't use forEach
+    promise._c = [];
+    promise._n = false;
+    if (isReject && !promise._h) onUnhandled(promise);
   });
 };
-
-var dispatchEvent = function (name, promise, reason) {
-  var event, handler;
-  if (DISPATCH_EVENT) {
-    event = document$2.createEvent('Event');
-    event.promise = promise;
-    event.reason = reason;
-    event.initEvent(name, false, true);
-    global_1.dispatchEvent(event);
-  } else event = { promise: promise, reason: reason };
-  if (handler = global_1['on' + name]) handler(event);
-  else if (name === UNHANDLED_REJECTION) hostReportErrors('Unhandled promise rejection', reason);
-};
-
-var onUnhandled = function (promise, state) {
-  task$1.call(global_1, function () {
-    var value = state.value;
-    var IS_UNHANDLED = isUnhandled(state);
-    var result;
-    if (IS_UNHANDLED) {
-      result = perform(function () {
-        if (IS_NODE$1) {
-          process$3.emit('unhandledRejection', value, promise);
-        } else dispatchEvent(UNHANDLED_REJECTION, promise, value);
+var onUnhandled = function (promise) {
+  task.call(_global, function () {
+    var value = promise._v;
+    var unhandled = isUnhandled(promise);
+    var result, handler, console;
+    if (unhandled) {
+      result = _perform(function () {
+        if (isNode$1) {
+          process$2.emit('unhandledRejection', value, promise);
+        } else if (handler = _global.onunhandledrejection) {
+          handler({ promise: promise, reason: value });
+        } else if ((console = _global.console) && console.error) {
+          console.error('Unhandled promise rejection', value);
+        }
       });
       // Browsers should not trigger `rejectionHandled` event if it was handled here, NodeJS - should
-      state.rejection = IS_NODE$1 || isUnhandled(state) ? UNHANDLED : HANDLED;
-      if (result.error) throw result.value;
+      promise._h = isNode$1 || isUnhandled(promise) ? 2 : 1;
+    } promise._a = undefined;
+    if (unhandled && result.e) throw result.v;
+  });
+};
+var isUnhandled = function (promise) {
+  return promise._h !== 1 && (promise._a || promise._c).length === 0;
+};
+var onHandleUnhandled = function (promise) {
+  task.call(_global, function () {
+    var handler;
+    if (isNode$1) {
+      process$2.emit('rejectionHandled', promise);
+    } else if (handler = _global.onrejectionhandled) {
+      handler({ promise: promise, reason: promise._v });
     }
   });
 };
-
-var isUnhandled = function (state) {
-  return state.rejection !== HANDLED && !state.parent;
+var $reject = function (value) {
+  var promise = this;
+  if (promise._d) return;
+  promise._d = true;
+  promise = promise._w || promise; // unwrap
+  promise._v = value;
+  promise._s = 2;
+  if (!promise._a) promise._a = promise._c.slice();
+  notify(promise, true);
 };
-
-var onHandleUnhandled = function (promise, state) {
-  task$1.call(global_1, function () {
-    if (IS_NODE$1) {
-      process$3.emit('rejectionHandled', promise);
-    } else dispatchEvent(REJECTION_HANDLED, promise, state.value);
-  });
-};
-
-var bind = function (fn, promise, state, unwrap) {
-  return function (value) {
-    fn(promise, state, value, unwrap);
-  };
-};
-
-var internalReject = function (promise, state, value, unwrap) {
-  if (state.done) return;
-  state.done = true;
-  if (unwrap) state = unwrap;
-  state.value = value;
-  state.state = REJECTED;
-  notify$1(promise, state, true);
-};
-
-var internalResolve = function (promise, state, value, unwrap) {
-  if (state.done) return;
-  state.done = true;
-  if (unwrap) state = unwrap;
+var $resolve = function (value) {
+  var promise = this;
+  var then;
+  if (promise._d) return;
+  promise._d = true;
+  promise = promise._w || promise; // unwrap
   try {
     if (promise === value) throw TypeError$1("Promise can't be resolved itself");
-    var then = isThenable(value);
-    if (then) {
+    if (then = isThenable(value)) {
       microtask(function () {
-        var wrapper = { done: false };
+        var wrapper = { _w: promise, _d: false }; // wrap
         try {
-          then.call(value,
-            bind(internalResolve, promise, wrapper, state),
-            bind(internalReject, promise, wrapper, state)
-          );
-        } catch (error) {
-          internalReject(promise, wrapper, error, state);
+          then.call(value, _ctx($resolve, wrapper, 1), _ctx($reject, wrapper, 1));
+        } catch (e) {
+          $reject.call(wrapper, e);
         }
       });
     } else {
-      state.value = value;
-      state.state = FULFILLED;
-      notify$1(promise, state, false);
+      promise._v = value;
+      promise._s = 1;
+      notify(promise, false);
     }
-  } catch (error) {
-    internalReject(promise, { done: false }, error, state);
+  } catch (e) {
+    $reject.call({ _w: promise, _d: false }, e); // wrap
   }
 };
 
 // constructor polyfill
-if (FORCED$6) {
+if (!USE_NATIVE) {
   // 25.4.3.1 Promise(executor)
-  PromiseConstructor = function Promise(executor) {
-    anInstance(this, PromiseConstructor, PROMISE);
-    aFunction$1(executor);
+  $Promise = function Promise(executor) {
+    _anInstance(this, $Promise, PROMISE, '_h');
+    _aFunction(executor);
     Internal$1.call(this);
-    var state = getInternalState$2(this);
     try {
-      executor(bind(internalResolve, this, state), bind(internalReject, this, state));
-    } catch (error) {
-      internalReject(this, state, error);
+      executor(_ctx($resolve, this, 1), _ctx($reject, this, 1));
+    } catch (err) {
+      $reject.call(this, err);
     }
   };
   // eslint-disable-next-line no-unused-vars
   Internal$1 = function Promise(executor) {
-    setInternalState$2(this, {
-      type: PROMISE,
-      done: false,
-      notified: false,
-      parent: false,
-      reactions: [],
-      rejection: false,
-      state: PENDING,
-      value: undefined
-    });
+    this._c = [];             // <- awaiting reactions
+    this._a = undefined;      // <- checked in isUnhandled reactions
+    this._s = 0;              // <- state
+    this._d = false;          // <- done
+    this._v = undefined;      // <- value
+    this._h = 0;              // <- rejection state, 0 - default, 1 - handled, 2 - unhandled
+    this._n = false;          // <- notify
   };
-  Internal$1.prototype = redefineAll(PromiseConstructor.prototype, {
-    // `Promise.prototype.then` method
-    // https://tc39.github.io/ecma262/#sec-promise.prototype.then
+  Internal$1.prototype = _redefineAll($Promise.prototype, {
+    // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)
     then: function then(onFulfilled, onRejected) {
-      var state = getInternalPromiseState(this);
-      var reaction = newPromiseCapability$1(speciesConstructor(this, PromiseConstructor));
+      var reaction = newPromiseCapability(_speciesConstructor(this, $Promise));
       reaction.ok = typeof onFulfilled == 'function' ? onFulfilled : true;
       reaction.fail = typeof onRejected == 'function' && onRejected;
-      reaction.domain = IS_NODE$1 ? process$3.domain : undefined;
-      state.parent = true;
-      state.reactions.push(reaction);
-      if (state.state != PENDING) notify$1(this, state, false);
+      reaction.domain = isNode$1 ? process$2.domain : undefined;
+      this._c.push(reaction);
+      if (this._a) this._a.push(reaction);
+      if (this._s) notify(this, false);
       return reaction.promise;
     },
-    // `Promise.prototype.catch` method
-    // https://tc39.github.io/ecma262/#sec-promise.prototype.catch
+    // 25.4.5.1 Promise.prototype.catch(onRejected)
     'catch': function (onRejected) {
       return this.then(undefined, onRejected);
     }
   });
   OwnPromiseCapability = function () {
     var promise = new Internal$1();
-    var state = getInternalState$2(promise);
     this.promise = promise;
-    this.resolve = bind(internalResolve, promise, state);
-    this.reject = bind(internalReject, promise, state);
+    this.resolve = _ctx($resolve, promise, 1);
+    this.reject = _ctx($reject, promise, 1);
   };
-  newPromiseCapability.f = newPromiseCapability$1 = function (C) {
-    return C === PromiseConstructor || C === PromiseWrapper
+  _newPromiseCapability.f = newPromiseCapability = function (C) {
+    return C === $Promise || C === Wrapper
       ? new OwnPromiseCapability(C)
       : newGenericPromiseCapability(C);
   };
-
-  if ( typeof nativePromiseConstructor == 'function') {
-    nativeThen = nativePromiseConstructor.prototype.then;
-
-    // wrap native Promise#then for native async functions
-    redefine(nativePromiseConstructor.prototype, 'then', function then(onFulfilled, onRejected) {
-      var that = this;
-      return new PromiseConstructor(function (resolve, reject) {
-        nativeThen.call(that, resolve, reject);
-      }).then(onFulfilled, onRejected);
-    // https://github.com/zloirock/core-js/issues/640
-    }, { unsafe: true });
-
-    // wrap fetch result
-    if (typeof $fetch == 'function') _export({ global: true, enumerable: true, forced: true }, {
-      // eslint-disable-next-line no-unused-vars
-      fetch: function fetch(input /* , init */) {
-        return promiseResolve(PromiseConstructor, $fetch.apply(global_1, arguments));
-      }
-    });
-  }
 }
 
-_export({ global: true, wrap: true, forced: FORCED$6 }, {
-  Promise: PromiseConstructor
-});
-
-setToStringTag(PromiseConstructor, PROMISE, false);
-setSpecies(PROMISE);
-
-PromiseWrapper = getBuiltIn(PROMISE);
+_export(_export.G + _export.W + _export.F * !USE_NATIVE, { Promise: $Promise });
+_setToStringTag($Promise, PROMISE);
+_setSpecies(PROMISE);
+Wrapper = _core[PROMISE];
 
 // statics
-_export({ target: PROMISE, stat: true, forced: FORCED$6 }, {
-  // `Promise.reject` method
-  // https://tc39.github.io/ecma262/#sec-promise.reject
+_export(_export.S + _export.F * !USE_NATIVE, PROMISE, {
+  // 25.4.4.5 Promise.reject(r)
   reject: function reject(r) {
-    var capability = newPromiseCapability$1(this);
-    capability.reject.call(undefined, r);
+    var capability = newPromiseCapability(this);
+    var $$reject = capability.reject;
+    $$reject(r);
     return capability.promise;
   }
 });
-
-_export({ target: PROMISE, stat: true, forced:  FORCED$6 }, {
-  // `Promise.resolve` method
-  // https://tc39.github.io/ecma262/#sec-promise.resolve
+_export(_export.S + _export.F * ( !USE_NATIVE), PROMISE, {
+  // 25.4.4.6 Promise.resolve(x)
   resolve: function resolve(x) {
-    return promiseResolve( this, x);
+    return _promiseResolve( this, x);
   }
 });
-
-_export({ target: PROMISE, stat: true, forced: INCORRECT_ITERATION }, {
-  // `Promise.all` method
-  // https://tc39.github.io/ecma262/#sec-promise.all
+_export(_export.S + _export.F * !(USE_NATIVE && _iterDetect(function (iter) {
+  $Promise.all(iter)['catch'](empty);
+})), PROMISE, {
+  // 25.4.4.1 Promise.all(iterable)
   all: function all(iterable) {
     var C = this;
-    var capability = newPromiseCapability$1(C);
+    var capability = newPromiseCapability(C);
     var resolve = capability.resolve;
     var reject = capability.reject;
-    var result = perform(function () {
-      var $promiseResolve = aFunction$1(C.resolve);
+    var result = _perform(function () {
       var values = [];
-      var counter = 0;
+      var index = 0;
       var remaining = 1;
-      iterate_1(iterable, function (promise) {
-        var index = counter++;
+      _forOf(iterable, false, function (promise) {
+        var $index = index++;
         var alreadyCalled = false;
         values.push(undefined);
         remaining++;
-        $promiseResolve.call(C, promise).then(function (value) {
+        C.resolve(promise).then(function (value) {
           if (alreadyCalled) return;
           alreadyCalled = true;
-          values[index] = value;
+          values[$index] = value;
           --remaining || resolve(values);
         }, reject);
       });
       --remaining || resolve(values);
     });
-    if (result.error) reject(result.value);
+    if (result.e) reject(result.v);
     return capability.promise;
   },
-  // `Promise.race` method
-  // https://tc39.github.io/ecma262/#sec-promise.race
+  // 25.4.4.4 Promise.race(iterable)
   race: function race(iterable) {
     var C = this;
-    var capability = newPromiseCapability$1(C);
+    var capability = newPromiseCapability(C);
     var reject = capability.reject;
-    var result = perform(function () {
-      var $promiseResolve = aFunction$1(C.resolve);
-      iterate_1(iterable, function (promise) {
-        $promiseResolve.call(C, promise).then(capability.resolve, reject);
+    var result = _perform(function () {
+      _forOf(iterable, false, function (promise) {
+        C.resolve(promise).then(capability.resolve, reject);
       });
     });
-    if (result.error) reject(result.value);
+    if (result.e) reject(result.v);
     return capability.promise;
   }
 });
@@ -28591,46 +27661,35 @@ _export({ target: PROMISE, stat: true, forced: INCORRECT_ITERATION }, {
 var __assign=undefined&&undefined.__assign||function(){return (__assign=Object.assign||function(t){for(var i,n=1,s=arguments.length;n<s;n++)for(var e in i=arguments[n])Object.prototype.hasOwnProperty.call(i,e)&&(t[e]=i[e]);return t}).apply(this,arguments)},Thaw=function(){function h(t,i){var n=this;void 0===i&&(i={});var s=__assign(__assign({},h.defaultSettings),i),e=s.each,o=s.done;this.i=0,this.isStopped=!1,this.items=t,this.options=i,this.tick=function(){if(!n.isStopped&&(n.timeout=setTimeout(n.tick,0),!h.thawing)){var t=n.items[n.i];if(n.i>=n.items.length)return null!==o&&(h.thawing=!0,o(),h.thawing=!1),n.isStopped=!0,void clearTimeout(n.timeout);null!==e?(h.thawing=!0,e(t,n.i),h.thawing=!1):void 0!==t&&t(),n.i++;}},h.thaws.push(this),i.delay||this.tick();}return Object.defineProperty(h,"isThawing",{get:function(){return h.thawing},enumerable:!1,configurable:!0}),h.stopAll=function(){for(var t=0;t<h.thaws.length;t++)h.thaws[t].stop();},h.prototype.makeReady=function(){return !!this.isStopped&&!(this.isStopped=!1)},h.prototype.add=function(t){return this.items.push(t),this.makeReady()&&this.tick(),this},h.prototype.insert=function(t){return this.items.splice(this.i,0,t),this.makeReady()&&this.tick(),this},h.prototype.addArray=function(t){return this.items=this.items.concat(t),this.makeReady()&&this.tick(),this},h.prototype.insertArray=function(t){var i=this.items.splice(0,this.i),n=this.items;return this.items=i.concat(t,n),this.makeReady()&&this.tick(),this},h.prototype.stop=function(){return this.isStopped=!0,clearTimeout(this.timeout),this.options.done&&this.options.done(),this},h.thawing=!1,h.thaws=[],h.defaultSettings={each:null,done:null},h}();function thaw(t,i){return new Thaw(t,i)}var Block=function(){function t(t,i){void 0===i&&(i=200),this.index=0,this.thaws=[],this.count=i,this.options=t;}return t.prototype.add=function(t){return this.next().add(t),this},t.prototype.addArray=function(t){return this.next().addArray(t),this},t.prototype.insert=function(t){return this.next().insert(t),this},t.prototype.insertArray=function(t){return this.next().insertArray(t),this},t.prototype.stop=function(){for(var t=0;t<this.thaws.length;t++)this.thaws[t].stop();return this},t.prototype.next=function(){var t,i=this.thaws;return i.length<this.count?(t=new Thaw([],this.options),i.push(t)):t=i[this.index]||null,this.index++,this.index>=this.count&&(this.index=0),t},t}();"undefined"!=typeof window&&(window.Thaw=Thaw,window.thaw=thaw,window.Thaw.Block=Block);
 
 var browser_min = /*#__PURE__*/Object.freeze({
-	__proto__: null
+  __proto__: null
 });
 
-var propertyIsEnumerable = objectPropertyIsEnumerable.f;
-
-// `Object.{ entries, values }` methods implementation
-var createMethod$4 = function (TO_ENTRIES) {
+var isEnum = _objectPie.f;
+var _objectToArray = function (isEntries) {
   return function (it) {
-    var O = toIndexedObject(it);
-    var keys = objectKeys(O);
+    var O = _toIobject(it);
+    var keys = _objectKeys(O);
     var length = keys.length;
     var i = 0;
     var result = [];
     var key;
     while (length > i) {
       key = keys[i++];
-      if (!descriptors || propertyIsEnumerable.call(O, key)) {
-        result.push(TO_ENTRIES ? [key, O[key]] : O[key]);
+      if (!_descriptors || isEnum.call(O, key)) {
+        result.push(isEntries ? [key, O[key]] : O[key]);
       }
     }
     return result;
   };
 };
 
-var objectToArray = {
-  // `Object.entries` method
-  // https://tc39.github.io/ecma262/#sec-object.entries
-  entries: createMethod$4(true),
-  // `Object.values` method
-  // https://tc39.github.io/ecma262/#sec-object.values
-  values: createMethod$4(false)
-};
+// https://github.com/tc39/proposal-object-values-entries
 
-var $values = objectToArray.values;
+var $values = _objectToArray(false);
 
-// `Object.values` method
-// https://tc39.github.io/ecma262/#sec-object.values
-_export({ target: 'Object', stat: true }, {
-  values: function values(O) {
-    return $values(O);
+_export(_export.S, 'Object', {
+  values: function values(it) {
+    return $values(it);
   }
 });
 
@@ -28653,7 +27712,7 @@ var toArray = function toArray(values) {
  * @returns {number}
  */
 
-var max$3 = function max(values) {
+var max$1 = function max(values) {
   return Math.max.apply(Math, _toConsumableArray(toArray(values)));
 };
 
@@ -28807,6 +27866,7 @@ var cast = {
 
 var Thaw$1 = browser_min.Thaw; // const TrainStream = require('./train-stream');
 
+var zeros$a = zeros$1.zeros;
 var arrayToFloat32Array$1 = cast.arrayToFloat32Array;
 
 function getTypedArrayFn(value, table) {
@@ -28941,9 +28001,9 @@ var NeuralNetwork = /*#__PURE__*/function () {
 
       for (var layer = 0; layer <= this.outputLayer; layer++) {
         var size = this.sizes[layer];
-        this.deltas[layer] = zeros(size);
-        this.errors[layer] = zeros(size);
-        this.outputs[layer] = zeros(size);
+        this.deltas[layer] = zeros$a(size);
+        this.errors[layer] = zeros$a(size);
+        this.outputs[layer] = zeros$a(size);
 
         if (layer > 0) {
           this.biases[layer] = randos(size);
@@ -28953,7 +28013,7 @@ var NeuralNetwork = /*#__PURE__*/function () {
           for (var node = 0; node < size; node++) {
             var prevSize = this.sizes[layer - 1];
             this.weights[layer][node] = randos(prevSize);
-            this.changes[layer][node] = zeros(prevSize);
+            this.changes[layer][node] = zeros$a(prevSize);
           }
         }
       }
@@ -29668,15 +28728,15 @@ var NeuralNetwork = /*#__PURE__*/function () {
         var size = this.sizes[layer];
 
         if (layer > 0) {
-          this.biasChangesLow[layer] = zeros(size);
-          this.biasChangesHigh[layer] = zeros(size);
+          this.biasChangesLow[layer] = zeros$a(size);
+          this.biasChangesHigh[layer] = zeros$a(size);
           this.changesLow[layer] = new Array(size);
           this.changesHigh[layer] = new Array(size);
 
           for (var node = 0; node < size; node++) {
             var prevSize = this.sizes[layer - 1];
-            this.changesLow[layer][node] = zeros(prevSize);
-            this.changesHigh[layer][node] = zeros(prevSize);
+            this.changesLow[layer][node] = zeros$a(prevSize);
+            this.changesHigh[layer][node] = zeros$a(prevSize);
           }
         }
       }
@@ -29912,8 +28972,8 @@ var NeuralNetwork = /*#__PURE__*/function () {
         var output = _this4.runInput(data[_i3].input);
 
         var target = data[_i3].output;
-        var actual = output.indexOf(max$3(output));
-        var expected = target.indexOf(max$3(target));
+        var actual = output.indexOf(max$1(output));
+        var expected = target.indexOf(max$1(target));
 
         if (actual !== expected) {
           var misclass = data[_i3];
@@ -30176,101 +29236,70 @@ var NeuralNetwork = /*#__PURE__*/function () {
 
 var neuralNetwork = NeuralNetwork;
 
-// `Array.from` method implementation
-// https://tc39.github.io/ecma262/#sec-array.from
-var arrayFrom = function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
-  var O = toObject(arrayLike);
-  var C = typeof this == 'function' ? this : Array;
-  var argumentsLength = arguments.length;
-  var mapfn = argumentsLength > 1 ? arguments[1] : undefined;
-  var mapping = mapfn !== undefined;
-  var iteratorMethod = getIteratorMethod(O);
-  var index = 0;
-  var length, result, step, iterator, next, value;
-  if (mapping) mapfn = functionBindContext(mapfn, argumentsLength > 2 ? arguments[2] : undefined, 2);
-  // if the target is not iterable or it's an array with the default iterator - use a simple case
-  if (iteratorMethod != undefined && !(C == Array && isArrayIteratorMethod(iteratorMethod))) {
-    iterator = iteratorMethod.call(O);
-    next = iterator.next;
-    result = new C();
-    for (;!(step = next.call(iterator)).done; index++) {
-      value = mapping ? callWithSafeIterationClosing(iterator, mapfn, [step.value, index], true) : step.value;
-      createProperty(result, index, value);
-    }
-  } else {
-    length = toLength(O.length);
-    result = new C(length);
-    for (;length > index; index++) {
-      value = mapping ? mapfn(O[index], index) : O[index];
-      createProperty(result, index, value);
-    }
-  }
-  result.length = index;
-  return result;
-};
-
-var INCORRECT_ITERATION$1 = !checkCorrectnessOfIteration(function (iterable) {
-  Array.from(iterable);
-});
-
-// `Array.from` method
-// https://tc39.github.io/ecma262/#sec-array.from
-_export({ target: 'Array', stat: true, forced: INCORRECT_ITERATION$1 }, {
-  from: arrayFrom
-});
-
-// `String.prototype.{ codePointAt, at }` methods implementation
-var createMethod$5 = function (CONVERT_TO_STRING) {
-  return function ($this, pos) {
-    var S = String(requireObjectCoercible($this));
-    var position = toInteger(pos);
-    var size = S.length;
-    var first, second;
-    if (position < 0 || position >= size) return CONVERT_TO_STRING ? '' : undefined;
-    first = S.charCodeAt(position);
-    return first < 0xD800 || first > 0xDBFF || position + 1 === size
-      || (second = S.charCodeAt(position + 1)) < 0xDC00 || second > 0xDFFF
-        ? CONVERT_TO_STRING ? S.charAt(position) : first
-        : CONVERT_TO_STRING ? S.slice(position, position + 2) : (first - 0xD800 << 10) + (second - 0xDC00) + 0x10000;
+// true  -> String#at
+// false -> String#codePointAt
+var _stringAt = function (TO_STRING) {
+  return function (that, pos) {
+    var s = String(_defined(that));
+    var i = _toInteger(pos);
+    var l = s.length;
+    var a, b;
+    if (i < 0 || i >= l) return TO_STRING ? '' : undefined;
+    a = s.charCodeAt(i);
+    return a < 0xd800 || a > 0xdbff || i + 1 === l || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff
+      ? TO_STRING ? s.charAt(i) : a
+      : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
   };
 };
 
-var stringMultibyte = {
-  // `String.prototype.codePointAt` method
-  // https://tc39.github.io/ecma262/#sec-string.prototype.codepointat
-  codeAt: createMethod$5(false),
-  // `String.prototype.at` method
-  // https://github.com/mathiasbynens/String.prototype.at
-  charAt: createMethod$5(true)
+var $at = _stringAt(true);
+
+// 21.1.3.27 String.prototype[@@iterator]()
+_iterDefine(String, 'String', function (iterated) {
+  this._t = String(iterated); // target
+  this._i = 0;                // next index
+// 21.1.5.2.1 %StringIteratorPrototype%.next()
+}, function () {
+  var O = this._t;
+  var index = this._i;
+  var point;
+  if (index >= O.length) return { value: undefined, done: true };
+  point = $at(O, index);
+  this._i += point.length;
+  return { value: point, done: false };
+});
+
+var _createProperty = function (object, index, value) {
+  if (index in object) _objectDp.f(object, index, _propertyDesc(0, value));
+  else object[index] = value;
 };
 
-var charAt = stringMultibyte.charAt;
-
-
-
-var STRING_ITERATOR = 'String Iterator';
-var setInternalState$3 = internalState.set;
-var getInternalState$3 = internalState.getterFor(STRING_ITERATOR);
-
-// `String.prototype[@@iterator]` method
-// https://tc39.github.io/ecma262/#sec-string.prototype-@@iterator
-defineIterator(String, 'String', function (iterated) {
-  setInternalState$3(this, {
-    type: STRING_ITERATOR,
-    string: String(iterated),
-    index: 0
-  });
-// `%StringIteratorPrototype%.next` method
-// https://tc39.github.io/ecma262/#sec-%stringiteratorprototype%.next
-}, function next() {
-  var state = getInternalState$3(this);
-  var string = state.string;
-  var index = state.index;
-  var point;
-  if (index >= string.length) return { value: undefined, done: true };
-  point = charAt(string, index);
-  state.index += point.length;
-  return { value: point, done: false };
+_export(_export.S + _export.F * !_iterDetect(function (iter) { Array.from(iter); }), 'Array', {
+  // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
+  from: function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
+    var O = _toObject(arrayLike);
+    var C = typeof this == 'function' ? this : Array;
+    var aLen = arguments.length;
+    var mapfn = aLen > 1 ? arguments[1] : undefined;
+    var mapping = mapfn !== undefined;
+    var index = 0;
+    var iterFn = core_getIteratorMethod(O);
+    var length, result, step, iterator;
+    if (mapping) mapfn = _ctx(mapfn, aLen > 2 ? arguments[2] : undefined, 2);
+    // if object isn't iterable or it's array with default iterator - use simple case
+    if (iterFn != undefined && !(C == Array && _isArrayIter(iterFn))) {
+      for (iterator = iterFn.call(O), result = new C(); !(step = iterator.next()).done; index++) {
+        _createProperty(result, index, mapping ? _iterCall(iterator, mapfn, [step.value, index], true) : step.value);
+      }
+    } else {
+      length = _toLength(O.length);
+      for (result = new C(length); length > index; index++) {
+        _createProperty(result, index, mapping ? mapfn(O[index], index) : O[index]);
+      }
+    }
+    result.length = index;
+    return result;
+  }
 });
 
 var GPU$1 = gpuBrowser.GPU,
@@ -30811,6 +29840,5025 @@ var NeuralNetworkGPU = /*#__PURE__*/function (_NeuralNetwork) {
 }(neuralNetwork);
 
 var neuralNetworkGpu = NeuralNetworkGPU;
+
+var Internal$2 = types.Internal; // const zeros2D = require('../utilities/zeros-2d');
+
+var release$j = kernel.release;
+
+var RecurrentConnection = /*#__PURE__*/function (_Internal) {
+  _inherits(RecurrentConnection, _Internal);
+
+  var _super = _createSuper(RecurrentConnection);
+
+  function RecurrentConnection() {
+    _classCallCheck(this, RecurrentConnection);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(RecurrentConnection, [{
+    key: "setLayer",
+    value: function setLayer(layer) {
+      this.layer = layer;
+    }
+  }, {
+    key: "predict",
+    value: function predict() {// throw new Error(`${this.constructor.name}-predict is not yet implemented`)
+    }
+  }, {
+    key: "compare",
+    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+    }
+  }, {
+    key: "learn",
+    value: function learn() {
+      throw new Error('no longer using');
+    }
+  }, {
+    key: "setupKernels",
+    value: function setupKernels() {// throw new Error(
+      //   `${this.constructor.name}-setupKernels is not yet implemented`
+      // )
+    }
+  }, {
+    key: "reuseKernels",
+    value: function reuseKernels() {// throw new Error(
+      //   `${this.constructor.name}-reuseKernels is not yet implemented`
+      // )
+    }
+  }, {
+    key: "width",
+    get: function get() {
+      return this.layer.width;
+    },
+    set: function set(value) {
+      throw new Error("".concat(this.constructor.name, "-width is not yet implemented"));
+    }
+  }, {
+    key: "height",
+    get: function get() {
+      return this.layer.height;
+    },
+    set: function set(value) {
+      throw new Error("".concat(this.constructor.name, "-height is not yet implemented"));
+    }
+  }, {
+    key: "deltas",
+    get: function get() {
+      return this.layer.deltas;
+    },
+    set: function set(deltas) {
+      release$j(this.layer.deltas);
+      this.layer.deltas = deltas;
+    }
+  }, {
+    key: "weights",
+    get: function get() {
+      return this.layer.weights;
+    },
+    set: function set(weights) {
+      release$j(this.layer.weights);
+      this.layer.weights = weights;
+    }
+  }]);
+
+  return RecurrentConnection;
+}(Internal$2);
+
+var recurrentConnection = {
+  RecurrentConnection: RecurrentConnection
+};
+
+var Internal$3 = types.Internal;
+var Base$b = base.Base;
+var release$k = kernel.release; // const { zeros2D } = require('../utilities/zeros-2d');
+
+var RecurrentInput = /*#__PURE__*/function (_Internal) {
+  _inherits(RecurrentInput, _Internal);
+
+  var _super = _createSuper(RecurrentInput);
+
+  function RecurrentInput(recurrentInput) {
+    var _this;
+
+    _classCallCheck(this, RecurrentInput);
+
+    _this = _super.call(this);
+    _this.recurrentInput = recurrentInput;
+
+    _this.validate();
+
+    return _this;
+  }
+
+  _createClass(RecurrentInput, [{
+    key: "validate",
+    value: function validate() {
+      Base$b.prototype.validate.call(this);
+
+      if (this.width !== this.recurrentInput.width) {
+        throw new Error("".concat(this.constructor.name, " layer width ").concat(this.width, " and ").concat(this.recurrentInput.constructor.name, " width (").concat(this.recurrentInput.width, ") are not same"));
+      }
+
+      if (this.height !== this.recurrentInput.height) {
+        throw new Error("".concat(this.constructor.name, " layer height ").concat(this.height, " and ").concat(this.recurrentInput.constructor.name, " width (").concat(this.recurrentInput.height, ") are not same"));
+      }
+    }
+  }, {
+    key: "setDimensions",
+    value: function setDimensions() {
+      throw new Error('should just listen');
+    }
+  }, {
+    key: "predict",
+    value: function predict() {// throw new Error(`${this.constructor.name}-predict is not yet implemented`)
+    }
+  }, {
+    key: "compare",
+    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+    }
+  }, {
+    key: "learn",
+    value: function learn() {// throw new Error(`${this.constructor.name}-learn is not yet implemented`)
+    }
+  }, {
+    key: "setupKernels",
+    value: function setupKernels() {// throw new Error(
+      //   `${this.constructor.name}-setupKernels is not yet implemented`
+      // )
+    }
+  }, {
+    key: "reuseKernels",
+    value: function reuseKernels() {// throw new Error(
+      //   `${this.constructor.name}-reuseKernels is not yet implemented`
+      // )
+    }
+  }, {
+    key: "width",
+    get: function get() {
+      return this.recurrentInput.width;
+    }
+  }, {
+    key: "height",
+    get: function get() {
+      return this.recurrentInput.height;
+    }
+  }, {
+    key: "deltas",
+    get: function get() {
+      return this.recurrentInput.deltas;
+    },
+    set: function set(deltas) {
+      var recurrentInputDeltas = this.recurrentInput.deltas;
+      this.recurrentInput.deltas = deltas;
+      release$k(recurrentInputDeltas);
+    }
+  }, {
+    key: "weights",
+    get: function get() {
+      return this.recurrentInput.weights;
+    },
+    set: function set(weights) {
+      var recurrentInputWeights = this.recurrentInput.weights;
+      this.recurrentInput.weights = weights;
+      release$k(recurrentInputWeights);
+    }
+  }]);
+
+  return RecurrentInput;
+}(Internal$3);
+
+var recurrentInput = {
+  RecurrentInput: RecurrentInput
+};
+
+var zeros2D$e = zeros2d.zeros2D;
+var Internal$4 = types.Internal;
+var release$l = kernel.release,
+    clear$d = kernel.clear;
+
+var RecurrentZeros = /*#__PURE__*/function (_Internal) {
+  _inherits(RecurrentZeros, _Internal);
+
+  var _super = _createSuper(RecurrentZeros);
+
+  function RecurrentZeros() {
+    _classCallCheck(this, RecurrentZeros);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(RecurrentZeros, [{
+    key: "setDimensions",
+    value: function setDimensions(width, height) {
+      this.praxis = null;
+      this.width = width;
+      this.height = height;
+      this.weights = zeros2D$e(width, height);
+      this.deltas = zeros2D$e(width, height);
+    }
+  }, {
+    key: "setupKernels",
+    value: function setupKernels() {// throw new Error(
+      //   `${this.constructor.name}-setupKernels is not yet implemented`
+      // )
+    }
+  }, {
+    key: "reuseKernels",
+    value: function reuseKernels() {// throw new Error(
+      //   `${this.constructor.name}-reuseKernels is not yet implemented`
+      // )
+    }
+  }, {
+    key: "predict",
+    value: function predict() {// throw new Error(`${this.constructor.name}-predict is not yet implemented`)
+    }
+  }, {
+    key: "compare",
+    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+    }
+  }, {
+    key: "learn",
+    value: function learn(previousLayer, nextLayer, learningRate) {
+      var oldWeights = this.weights;
+      this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate); // this.deltas = deltas;
+
+      release$l(oldWeights);
+      clear$d(this.deltas);
+    }
+  }, {
+    key: "validate",
+    value: function validate() {
+      throw new Error("".concat(this.constructor.name, "-validate is not yet implemented"));
+    }
+  }, {
+    key: "reset",
+    value: function reset() {
+      throw new Error("".concat(this.constructor.name, "-reset is not yet implemented"));
+    }
+  }]);
+
+  return RecurrentZeros;
+}(Internal$4);
+
+function recurrentZeros() {
+  return new RecurrentZeros();
+}
+
+var recurrentZeros_1 = {
+  RecurrentZeros: RecurrentZeros,
+  recurrentZeros: recurrentZeros
+};
+
+var RecurrentConnection$1 = recurrentConnection.RecurrentConnection;
+var RecurrentInput$1 = recurrentInput.RecurrentInput;
+var RecurrentZeros$1 = recurrentZeros_1.RecurrentZeros;
+var Model$5 = types.Model,
+    InternalModel$1 = types.InternalModel; // const { Target } = require('./layer/target');
+
+var FeedForward$1 = feedForward$2.FeedForward;
+var release$m = kernel.release,
+    clone$6 = kernel.clone;
+
+var Recurrent = /*#__PURE__*/function (_FeedForward) {
+  _inherits(Recurrent, _FeedForward);
+
+  var _super = _createSuper(Recurrent);
+
+  function Recurrent() {
+    _classCallCheck(this, Recurrent);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(Recurrent, [{
+    key: "_connectLayers",
+    value: function _connectLayers() {
+      var inputLayer = this.inputLayer();
+
+      var hiddenLayers = this._connectHiddenLayers(inputLayer);
+
+      var outputLayer = this.outputLayer(hiddenLayers[hiddenLayers.length - 1]);
+      return {
+        inputLayer: inputLayer,
+        hiddenLayers: hiddenLayers,
+        outputLayer: outputLayer
+      };
+    }
+  }, {
+    key: "_connectLayersDeep",
+    value: function _connectLayersDeep() {
+      var layers = [];
+      var previousLayers = this._layerSets[this._layerSets.length - 1];
+      var usedHiddenLayerOutputIndex = 0;
+
+      function findInputLayer(inputLayer) {
+        var index = previousLayers.indexOf(inputLayer);
+        if (index < 0) throw new Error('unable to find layer');
+        return layers[index];
+      }
+
+      function layerSettings(layer) {
+        return _objectSpread2(_objectSpread2({}, layer), {}, {
+          weights: null,
+          deltas: null,
+          errors: null,
+          praxis: null
+        });
+      }
+
+      for (var i = 0; i < previousLayers.length; i++) {
+        var previousLayer = previousLayers[i];
+        var layer = null;
+
+        switch (Object.getPrototypeOf(previousLayer.constructor).name) {
+          case 'Activation':
+            {
+              layer = new previousLayer.constructor(findInputLayer(previousLayer.inputLayer));
+              break;
+            }
+
+          case 'EntryPoint':
+            {
+              layer = new previousLayer.constructor(layerSettings(previousLayer));
+              break;
+            }
+
+          case 'Filter':
+            {
+              layer = new previousLayer.constructor(layerSettings(previousLayer.inputLayer), findInputLayer(previousLayer.inputLayer));
+              break;
+            }
+
+          case 'Internal':
+            {
+              var previousHiddenLayerOutput = previousLayers[this._hiddenLayerOutputIndices[usedHiddenLayerOutputIndex++]];
+
+              switch (previousLayer.constructor.name) {
+                case 'RecurrentConnection':
+                  throw new Error('unfinished');
+
+                case 'RecurrentInput':
+                  layer = new RecurrentInput$1(previousHiddenLayerOutput);
+                  break;
+
+                case 'RecurrentZeros':
+                default:
+                  layer = new RecurrentInput$1(previousHiddenLayerOutput);
+                  break;
+              }
+
+              break;
+            }
+
+          case 'InternalModel':
+          case 'Model':
+            {
+              layer = previousLayer;
+              break;
+            }
+
+          case 'Modifier':
+            {
+              layer = new previousLayer.constructor(findInputLayer(previousLayer.inputLayer));
+              break;
+            }
+
+          case 'Operator':
+            {
+              layer = new previousLayer.constructor(findInputLayer(previousLayer.inputLayer1), findInputLayer(previousLayer.inputLayer2), layerSettings(previousLayer));
+              break;
+            }
+
+          default:
+            throw new Error("hidden layer ".concat(previousLayer.constructor.name, " extends unknown hidden layer ").concat(Object.getPrototypeOf(previousLayer.constructor).name));
+        }
+
+        layers.push(layer);
+      }
+
+      return layers;
+    }
+  }, {
+    key: "_connectHiddenLayers",
+    value: function _connectHiddenLayers(previousLayer) {
+      var hiddenLayers = [];
+
+      for (var i = 0; i < this.hiddenLayers.length; i++) {
+        var recurrentInput = new RecurrentZeros$1();
+        var hiddenLayer = this.hiddenLayers[i](previousLayer, recurrentInput, i);
+        previousLayer = hiddenLayer;
+        hiddenLayers.push(hiddenLayer);
+      }
+
+      return hiddenLayers;
+    }
+  }, {
+    key: "initialize",
+    value: function initialize() {
+      this.layers = [];
+      this._outputConnection = new RecurrentConnection$1();
+
+      var _this$_connectLayers = this._connectLayers(),
+          inputLayer = _this$_connectLayers.inputLayer,
+          hiddenLayers = _this$_connectLayers.hiddenLayers,
+          outputLayer = _this$_connectLayers.outputLayer;
+
+      var layerSet = flattenLayers([inputLayer].concat(_toConsumableArray(hiddenLayers), [outputLayer]));
+      this._hiddenLayerOutputIndices = hiddenLayers.map(function (l) {
+        return layerSet.indexOf(l);
+      });
+      this._layerSets = [layerSet];
+      this._model = layerSet.filter(function (l) {
+        return l instanceof Model$5 || l instanceof InternalModel$1;
+      });
+      this.initializeLayers(layerSet);
+    }
+  }, {
+    key: "initializeDeep",
+    value: function initializeDeep() {
+      var layers = this._connectLayersDeep();
+
+      for (var i = 0; i < layers.length; i++) {
+        var layer = layers[i];
+        layer.reuseKernels(this._layerSets[0][i]);
+      }
+
+      this._layerSets.push(layers);
+    }
+  }, {
+    key: "run",
+    value: function run(input) {
+      while (this._layerSets.length <= input.length) {
+        this.initializeDeep();
+      }
+
+      return _get(_getPrototypeOf(Recurrent.prototype), "run", this).call(this, input);
+    }
+  }, {
+    key: "runInput",
+    value: function runInput(input) {
+      while (this._layerSets.length < input.length) {
+        this.initializeDeep();
+      }
+
+      var max = input.length - 1; // last output will be compared with last index
+
+      for (var x = 0; x <= max; x++) {
+        var layerSet = this._layerSets[x];
+        layerSet[0].predict([new Float32Array([input[x]])]);
+
+        for (var i = 1; i < layerSet.length; i++) {
+          layerSet[i].predict();
+        }
+      }
+
+      var lastLayerUsed = this._layerSets[max];
+      var result = lastLayerUsed[lastLayerUsed.length - 1].weights;
+      this.end();
+      return result;
+    }
+  }, {
+    key: "end",
+    value: function end() {
+      var x = this._layerSets.length - 1;
+      var lastLayerSet = this._layerSets[x];
+      lastLayerSet[0].predict([new Float32Array([0])]);
+
+      for (var i = 1; i < lastLayerSet.length; i++) {
+        lastLayerSet[i].predict();
+      }
+    }
+  }, {
+    key: "transferData",
+    value: function transferData(formattedData) {
+      return formattedData;
+    }
+  }, {
+    key: "_prepTraining",
+    value: function _prepTraining(data, options) {
+      var stats = _get(_getPrototypeOf(Recurrent.prototype), "_prepTraining", this).call(this, data, options);
+
+      this.verifyIsInitialized(data);
+      return stats;
+    }
+    /**
+     *
+     * @param data
+     * @returns {Number} error
+     */
+
+  }, {
+    key: "_calculateTrainingError",
+    value: function _calculateTrainingError(data) {
+      var sum = new Float32Array(1);
+
+      for (var i = 0; i < data.length; ++i) {
+        var prevSum = sum;
+
+        var error = this._trainPattern(data[i], true);
+
+        sum = this.meanSquaredError.add(sum, error);
+        release$m(error);
+        release$m(prevSum);
+      }
+
+      var result = this.meanSquaredError.divide(data.length, sum);
+      release$m(sum);
+
+      if (result.toArray) {
+        var resultArray = result.toArray();
+        return resultArray[0];
+      }
+
+      return result[0];
+    }
+  }, {
+    key: "formatData",
+    value: function formatData(data) {
+      return data;
+    }
+  }, {
+    key: "_calculateDeltas",
+    value: function _calculateDeltas(target) {
+      var lastLayerSet = this._layerSets[this._layerSets.length - 1]; // Iterate from the second to last layer backwards, propagating 0's
+
+      for (var i = lastLayerSet.length - 2; i >= 0; i--) {
+        lastLayerSet[i].compare();
+      }
+
+      for (var x = target.length - 2; x >= 0; x--) {
+        var layerSet = this._layerSets[x];
+        layerSet[layerSet.length - 1].compare(new Float32Array([target[x + 1]]));
+
+        for (var _i = layerSet.length - 2; _i >= 0; _i--) {
+          layerSet[_i].compare();
+        }
+      }
+    }
+  }, {
+    key: "adjustWeights",
+    value: function adjustWeights() {
+      var _model = this._model;
+
+      for (var i = 0; i < _model.length; i++) {
+        _model[i].learn();
+      }
+    }
+    /**
+     * @param data
+     * @private
+     */
+
+  }, {
+    key: "_trainPatterns",
+    value: function _trainPatterns(data) {
+      for (var i = 0; i < data.length; ++i) {
+        this._trainPattern(data[i], false);
+      }
+    }
+    /**
+     *
+     * @param {number[]} input
+     * @param {Boolean} [logErrorRate]
+     */
+
+  }, {
+    key: "_trainPattern",
+    value: function _trainPattern(input, logErrorRate) {
+      // forward propagate
+      this.runInput(input); // back propagate
+
+      this._calculateDeltas(input);
+
+      this.adjustWeights();
+
+      if (logErrorRate) {
+        var meanSquaredError = this.meanSquaredError;
+        var error = new Float32Array(1);
+
+        for (var i = 0, max = input.length - 1; i < max; i++) {
+          var layerSet = this._layerSets[i];
+          var lastLayer = layerSet[layerSet.length - 1];
+          var prevError = error;
+          error = meanSquaredError.addAbsolute(prevError, lastLayer.errors);
+          release$m(prevError);
+        }
+
+        return clone$6(meanSquaredError.divide(input.length, error));
+      }
+
+      return null;
+    }
+  }], [{
+    key: "structure",
+    get: function get() {
+      return {
+        /**
+         *
+         * _inputLayers are a 1 dimensional array of input layers defined once
+         * @type Object[]
+         * @private
+         */
+        _inputLayers: null,
+
+        /**
+         * _hiddenLayers are a 1 dimensional array of hidden layers defined from results from settings.hiddenLayers
+         * @type Object[]
+         * @private
+         */
+        _hiddenLayers: null,
+
+        /**
+         * _hiddenLayerSets are a 2 dimensional array of hidden layers defined for each recursion
+         * @type Object[][]
+         * @private
+         */
+        _hiddenLayerSets: null,
+
+        /**
+         * a 2 dimensional array of layers defined for each recursion
+         */
+        _layerSets: null,
+        _hiddenLayerOutputIndices: null,
+
+        /**
+         * _outputLayers are a 1 dimensional array of output layers defined once
+         * @type Object[]
+         * @private
+         */
+        _outputLayers: null,
+        _outputConnection: null,
+        _previousInputs: null,
+        _model: null,
+        _recurrentIndices: null
+      };
+    }
+  }]);
+
+  return Recurrent;
+}(FeedForward$1);
+
+var recurrent = {
+  Recurrent: Recurrent
+};
+
+var zeros$b = zeros$1.zeros;
+/**
+ * A matrix
+ * @param {Number} [rows]
+ * @param {Number} [columns]
+ * @constructor
+ */
+
+var Matrix = /*#__PURE__*/function () {
+  function Matrix(rows, columns) {
+    _classCallCheck(this, Matrix);
+
+    if (rows === undefined) return;
+    if (columns === undefined) return;
+    this.rows = rows;
+    this.columns = columns;
+    this.weights = zeros$b(rows * columns);
+    this.deltas = zeros$b(rows * columns);
+  }
+  /**
+   *
+   * @param {Number} row
+   * @param {Number} col
+   * @returns {Float32Array|Array}
+   */
+
+
+  _createClass(Matrix, [{
+    key: "getWeights",
+    value: function getWeights(row, col) {
+      // slow but careful accessor function
+      // we want row-major order
+      var ix = this.columns * row + col;
+      if (ix < 0 && ix >= this.weights.length) throw new Error('get accessor is skewed');
+      return this.weights[ix];
+    }
+    /**
+     *
+     * @param {Number} row
+     * @param {Number} col
+     * @param v
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "setWeight",
+    value: function setWeight(row, col, v) {
+      // slow but careful accessor function
+      var ix = this.columns * row + col;
+      if (ix < 0 && ix >= this.weights.length) throw new Error('set accessor is skewed');
+      this.weights[ix] = v;
+    }
+    /**
+     *
+     * @param {Number} row
+     * @param {Number} col
+     * @param v
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "setDeltas",
+    value: function setDeltas(row, col, v) {
+      // slow but careful accessor function
+      var ix = this.columns * row + col;
+      if (ix < 0 && ix >= this.weights.length) throw new Error('set accessor is skewed');
+      this.deltas[ix] = v;
+    }
+    /**
+     *
+     * @returns {{rows: *, columns: *, weights: Array}}
+     */
+
+  }, {
+    key: "toJSON",
+    value: function toJSON() {
+      return {
+        rows: this.rows,
+        columns: this.columns,
+        weights: this.weights.slice(0)
+      };
+    }
+  }, {
+    key: "weightsToArray",
+    value: function weightsToArray() {
+      var deltas = [];
+      var row = 0;
+      var column = 0;
+
+      for (var i = 0; i < this.weights.length; i++) {
+        if (column === 0) {
+          deltas.push([]);
+        }
+
+        deltas[row].push(this.weights[i]);
+        column++;
+
+        if (column >= this.columns) {
+          column = 0;
+          row++;
+        }
+      }
+
+      return deltas;
+    }
+  }, {
+    key: "deltasToArray",
+    value: function deltasToArray() {
+      var deltas = [];
+      var row = 0;
+      var column = 0;
+
+      for (var i = 0; i < this.deltas.length; i++) {
+        if (column === 0) {
+          deltas.push([]);
+        }
+
+        deltas[row].push(this.deltas[i]);
+        column++;
+
+        if (column >= this.columns) {
+          column = 0;
+          row++;
+        }
+      }
+
+      return deltas;
+    }
+  }], [{
+    key: "fromJSON",
+    value: function fromJSON(json) {
+      var matrix = new Matrix(json.rows, json.columns);
+
+      for (var i = 0, max = json.rows * json.columns; i < max; i++) {
+        matrix.weights[i] = json.weights[i]; // copy over weights
+      }
+
+      return matrix;
+    }
+    /**
+     *
+     * @param weightRows
+     * @param [deltasRows]
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "fromArray",
+    value: function fromArray(weightRows, deltasRows) {
+      var rows = weightRows.length;
+      var columns = weightRows[0].length;
+      var m = new Matrix(rows, columns);
+      deltasRows = deltasRows || weightRows;
+
+      for (var rowIndex = 0; rowIndex < rows; rowIndex++) {
+        var weightValues = weightRows[rowIndex];
+        var deltasValues = deltasRows[rowIndex];
+
+        for (var columnIndex = 0; columnIndex < columns; columnIndex++) {
+          m.setWeight(rowIndex, columnIndex, weightValues[columnIndex]);
+          m.setDeltas(rowIndex, columnIndex, deltasValues[columnIndex]);
+        }
+      }
+
+      return m;
+    }
+  }]);
+
+  return Matrix;
+}();
+
+var matrix = Matrix;
+
+var randomFloat$2 = random.randomFloat;
+/** return Matrix but filled with random numbers from gaussian
+ * @param {Number} [rows]
+ * @param {Number} [columns]
+ * @param std
+ * @constructor
+ */
+
+var RandomMatrix = /*#__PURE__*/function (_Matrix) {
+  _inherits(RandomMatrix, _Matrix);
+
+  var _super = _createSuper(RandomMatrix);
+
+  function RandomMatrix(rows, columns, std) {
+    var _this;
+
+    _classCallCheck(this, RandomMatrix);
+
+    _this = _super.call(this, rows, columns);
+    _this.rows = rows;
+    _this.columns = columns;
+    _this.std = std;
+
+    for (var i = 0, max = _this.weights.length; i < max; i++) {
+      _this.weights[i] = randomFloat$2(-std, std);
+    }
+
+    return _this;
+  }
+
+  return RandomMatrix;
+}(matrix);
+
+var randomMatrix = RandomMatrix;
+
+var at = _stringAt(true);
+
+ // `AdvanceStringIndex` abstract operation
+// https://tc39.github.io/ecma262/#sec-advancestringindex
+var _advanceStringIndex = function (S, index, unicode) {
+  return index + (unicode ? at(S, index).length : 1);
+};
+
+var builtinExec = RegExp.prototype.exec;
+
+ // `RegExpExec` abstract operation
+// https://tc39.github.io/ecma262/#sec-regexpexec
+var _regexpExecAbstract = function (R, S) {
+  var exec = R.exec;
+  if (typeof exec === 'function') {
+    var result = exec.call(R, S);
+    if (typeof result !== 'object') {
+      throw new TypeError('RegExp exec method returned something other than an Object or null');
+    }
+    return result;
+  }
+  if (_classof(R) !== 'RegExp') {
+    throw new TypeError('RegExp#exec called on incompatible receiver');
+  }
+  return builtinExec.call(R, S);
+};
+
+// 21.2.5.3 get RegExp.prototype.flags
+
+var _flags = function () {
+  var that = _anObject(this);
+  var result = '';
+  if (that.global) result += 'g';
+  if (that.ignoreCase) result += 'i';
+  if (that.multiline) result += 'm';
+  if (that.unicode) result += 'u';
+  if (that.sticky) result += 'y';
+  return result;
+};
+
+var nativeExec = RegExp.prototype.exec;
+// This always refers to the native implementation, because the
+// String#replace polyfill uses ./fix-regexp-well-known-symbol-logic.js,
+// which loads this file before patching the method.
+var nativeReplace = String.prototype.replace;
+
+var patchedExec = nativeExec;
+
+var LAST_INDEX = 'lastIndex';
+
+var UPDATES_LAST_INDEX_WRONG = (function () {
+  var re1 = /a/,
+      re2 = /b*/g;
+  nativeExec.call(re1, 'a');
+  nativeExec.call(re2, 'a');
+  return re1[LAST_INDEX] !== 0 || re2[LAST_INDEX] !== 0;
+})();
+
+// nonparticipating capturing group, copied from es5-shim's String#split patch.
+var NPCG_INCLUDED = /()??/.exec('')[1] !== undefined;
+
+var PATCH = UPDATES_LAST_INDEX_WRONG || NPCG_INCLUDED;
+
+if (PATCH) {
+  patchedExec = function exec(str) {
+    var re = this;
+    var lastIndex, reCopy, match, i;
+
+    if (NPCG_INCLUDED) {
+      reCopy = new RegExp('^' + re.source + '$(?!\\s)', _flags.call(re));
+    }
+    if (UPDATES_LAST_INDEX_WRONG) lastIndex = re[LAST_INDEX];
+
+    match = nativeExec.call(re, str);
+
+    if (UPDATES_LAST_INDEX_WRONG && match) {
+      re[LAST_INDEX] = re.global ? match.index + match[0].length : lastIndex;
+    }
+    if (NPCG_INCLUDED && match && match.length > 1) {
+      // Fix browsers whose `exec` methods don't consistently return `undefined`
+      // for NPCG, like IE8. NOTE: This doesn' work for /(.?)?/
+      // eslint-disable-next-line no-loop-func
+      nativeReplace.call(match[0], reCopy, function () {
+        for (i = 1; i < arguments.length - 2; i++) {
+          if (arguments[i] === undefined) match[i] = undefined;
+        }
+      });
+    }
+
+    return match;
+  };
+}
+
+var _regexpExec = patchedExec;
+
+_export({
+  target: 'RegExp',
+  proto: true,
+  forced: _regexpExec !== /./.exec
+}, {
+  exec: _regexpExec
+});
+
+var SPECIES$3 = _wks('species');
+
+var REPLACE_SUPPORTS_NAMED_GROUPS = !_fails(function () {
+  // #replace needs built-in support for named groups.
+  // #match works fine because it just return the exec results, even if it has
+  // a "grops" property.
+  var re = /./;
+  re.exec = function () {
+    var result = [];
+    result.groups = { a: '7' };
+    return result;
+  };
+  return ''.replace(re, '$<a>') !== '7';
+});
+
+var SPLIT_WORKS_WITH_OVERWRITTEN_EXEC = (function () {
+  // Chrome 51 has a buggy "split" implementation when RegExp#exec !== nativeExec
+  var re = /(?:)/;
+  var originalExec = re.exec;
+  re.exec = function () { return originalExec.apply(this, arguments); };
+  var result = 'ab'.split(re);
+  return result.length === 2 && result[0] === 'a' && result[1] === 'b';
+})();
+
+var _fixReWks = function (KEY, length, exec) {
+  var SYMBOL = _wks(KEY);
+
+  var DELEGATES_TO_SYMBOL = !_fails(function () {
+    // String methods call symbol-named RegEp methods
+    var O = {};
+    O[SYMBOL] = function () { return 7; };
+    return ''[KEY](O) != 7;
+  });
+
+  var DELEGATES_TO_EXEC = DELEGATES_TO_SYMBOL ? !_fails(function () {
+    // Symbol-named RegExp methods call .exec
+    var execCalled = false;
+    var re = /a/;
+    re.exec = function () { execCalled = true; return null; };
+    if (KEY === 'split') {
+      // RegExp[@@split] doesn't call the regex's exec method, but first creates
+      // a new one. We need to return the patched regex when creating the new one.
+      re.constructor = {};
+      re.constructor[SPECIES$3] = function () { return re; };
+    }
+    re[SYMBOL]('');
+    return !execCalled;
+  }) : undefined;
+
+  if (
+    !DELEGATES_TO_SYMBOL ||
+    !DELEGATES_TO_EXEC ||
+    (KEY === 'replace' && !REPLACE_SUPPORTS_NAMED_GROUPS) ||
+    (KEY === 'split' && !SPLIT_WORKS_WITH_OVERWRITTEN_EXEC)
+  ) {
+    var nativeRegExpMethod = /./[SYMBOL];
+    var fns = exec(
+      _defined,
+      SYMBOL,
+      ''[KEY],
+      function maybeCallNative(nativeMethod, regexp, str, arg2, forceStringMethod) {
+        if (regexp.exec === _regexpExec) {
+          if (DELEGATES_TO_SYMBOL && !forceStringMethod) {
+            // The native String method already delegates to @@method (this
+            // polyfilled function), leasing to infinite recursion.
+            // We avoid it by directly calling the native @@method method.
+            return { done: true, value: nativeRegExpMethod.call(regexp, str, arg2) };
+          }
+          return { done: true, value: nativeMethod.call(str, regexp, arg2) };
+        }
+        return { done: false };
+      }
+    );
+    var strfn = fns[0];
+    var rxfn = fns[1];
+
+    _redefine(String.prototype, KEY, strfn);
+    _hide(RegExp.prototype, SYMBOL, length == 2
+      // 21.2.5.8 RegExp.prototype[@@replace](string, replaceValue)
+      // 21.2.5.11 RegExp.prototype[@@split](string, limit)
+      ? function (string, arg) { return rxfn.call(string, this, arg); }
+      // 21.2.5.6 RegExp.prototype[@@match](string)
+      // 21.2.5.9 RegExp.prototype[@@search](string)
+      : function (string) { return rxfn.call(string, this); }
+    );
+  }
+};
+
+var max$2 = Math.max;
+var min$2 = Math.min;
+var floor$1 = Math.floor;
+var SUBSTITUTION_SYMBOLS = /\$([$&`']|\d\d?|<[^>]*>)/g;
+var SUBSTITUTION_SYMBOLS_NO_NAMED = /\$([$&`']|\d\d?)/g;
+
+var maybeToString = function (it) {
+  return it === undefined ? it : String(it);
+};
+
+// @@replace logic
+_fixReWks('replace', 2, function (defined, REPLACE, $replace, maybeCallNative) {
+  return [
+    // `String.prototype.replace` method
+    // https://tc39.github.io/ecma262/#sec-string.prototype.replace
+    function replace(searchValue, replaceValue) {
+      var O = defined(this);
+      var fn = searchValue == undefined ? undefined : searchValue[REPLACE];
+      return fn !== undefined
+        ? fn.call(searchValue, O, replaceValue)
+        : $replace.call(String(O), searchValue, replaceValue);
+    },
+    // `RegExp.prototype[@@replace]` method
+    // https://tc39.github.io/ecma262/#sec-regexp.prototype-@@replace
+    function (regexp, replaceValue) {
+      var res = maybeCallNative($replace, regexp, this, replaceValue);
+      if (res.done) return res.value;
+
+      var rx = _anObject(regexp);
+      var S = String(this);
+      var functionalReplace = typeof replaceValue === 'function';
+      if (!functionalReplace) replaceValue = String(replaceValue);
+      var global = rx.global;
+      if (global) {
+        var fullUnicode = rx.unicode;
+        rx.lastIndex = 0;
+      }
+      var results = [];
+      while (true) {
+        var result = _regexpExecAbstract(rx, S);
+        if (result === null) break;
+        results.push(result);
+        if (!global) break;
+        var matchStr = String(result[0]);
+        if (matchStr === '') rx.lastIndex = _advanceStringIndex(S, _toLength(rx.lastIndex), fullUnicode);
+      }
+      var accumulatedResult = '';
+      var nextSourcePosition = 0;
+      for (var i = 0; i < results.length; i++) {
+        result = results[i];
+        var matched = String(result[0]);
+        var position = max$2(min$2(_toInteger(result.index), S.length), 0);
+        var captures = [];
+        // NOTE: This is equivalent to
+        //   captures = result.slice(1).map(maybeToString)
+        // but for some reason `nativeSlice.call(result, 1, result.length)` (called in
+        // the slice polyfill when slicing native arrays) "doesn't work" in safari 9 and
+        // causes a crash (https://pastebin.com/N21QzeQA) when trying to debug it.
+        for (var j = 1; j < result.length; j++) captures.push(maybeToString(result[j]));
+        var namedCaptures = result.groups;
+        if (functionalReplace) {
+          var replacerArgs = [matched].concat(captures, position, S);
+          if (namedCaptures !== undefined) replacerArgs.push(namedCaptures);
+          var replacement = String(replaceValue.apply(undefined, replacerArgs));
+        } else {
+          replacement = getSubstitution(matched, S, position, captures, namedCaptures, replaceValue);
+        }
+        if (position >= nextSourcePosition) {
+          accumulatedResult += S.slice(nextSourcePosition, position) + replacement;
+          nextSourcePosition = position + matched.length;
+        }
+      }
+      return accumulatedResult + S.slice(nextSourcePosition);
+    }
+  ];
+
+    // https://tc39.github.io/ecma262/#sec-getsubstitution
+  function getSubstitution(matched, str, position, captures, namedCaptures, replacement) {
+    var tailPos = position + matched.length;
+    var m = captures.length;
+    var symbols = SUBSTITUTION_SYMBOLS_NO_NAMED;
+    if (namedCaptures !== undefined) {
+      namedCaptures = _toObject(namedCaptures);
+      symbols = SUBSTITUTION_SYMBOLS;
+    }
+    return $replace.call(replacement, symbols, function (match, ch) {
+      var capture;
+      switch (ch.charAt(0)) {
+        case '$': return '$';
+        case '&': return matched;
+        case '`': return str.slice(0, position);
+        case "'": return str.slice(tailPos);
+        case '<':
+          capture = namedCaptures[ch.slice(1, -1)];
+          break;
+        default: // \d\d?
+          var n = +ch;
+          if (n === 0) return match;
+          if (n > m) {
+            var f = floor$1(n / 10);
+            if (f === 0) return match;
+            if (f <= m) return captures[f - 1] === undefined ? ch.charAt(1) : captures[f - 1] + ch.charAt(1);
+            return match;
+          }
+          capture = captures[n - 1];
+      }
+      return capture === undefined ? '' : capture;
+    });
+  }
+});
+
+// 21.2.5.3 get RegExp.prototype.flags()
+if (_descriptors && /./g.flags != 'g') _objectDp.f(RegExp.prototype, 'flags', {
+  configurable: true,
+  get: _flags
+});
+
+var TO_STRING = 'toString';
+var $toString = /./[TO_STRING];
+
+var define = function (fn) {
+  _redefine(RegExp.prototype, TO_STRING, fn, true);
+};
+
+// 21.2.5.14 RegExp.prototype.toString()
+if (_fails(function () { return $toString.call({ source: 'a', flags: 'b' }) != '/a/b'; })) {
+  define(function toString() {
+    var R = _anObject(this);
+    return '/'.concat(R.source, '/',
+      'flags' in R ? R.flags : !_descriptors && R instanceof RegExp ? _flags.call(R) : undefined);
+  });
+// FF44- RegExp#toString has a wrong name
+} else if ($toString.name != TO_STRING) {
+  define(function toString() {
+    return $toString.call(this);
+  });
+}
+
+// 7.2.8 IsRegExp(argument)
+
+
+var MATCH = _wks('match');
+var _isRegexp = function (it) {
+  var isRegExp;
+  return _isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : _cof(it) == 'RegExp');
+};
+
+var $min = Math.min;
+var $push = [].push;
+var $SPLIT = 'split';
+var LENGTH = 'length';
+var LAST_INDEX$1 = 'lastIndex';
+var MAX_UINT32 = 0xffffffff;
+
+// babel-minify transpiles RegExp('x', 'y') -> /x/y and it causes SyntaxError
+var SUPPORTS_Y = !_fails(function () { RegExp(MAX_UINT32, 'y'); });
+
+// @@split logic
+_fixReWks('split', 2, function (defined, SPLIT, $split, maybeCallNative) {
+  var internalSplit;
+  if (
+    'abbc'[$SPLIT](/(b)*/)[1] == 'c' ||
+    'test'[$SPLIT](/(?:)/, -1)[LENGTH] != 4 ||
+    'ab'[$SPLIT](/(?:ab)*/)[LENGTH] != 2 ||
+    '.'[$SPLIT](/(.?)(.?)/)[LENGTH] != 4 ||
+    '.'[$SPLIT](/()()/)[LENGTH] > 1 ||
+    ''[$SPLIT](/.?/)[LENGTH]
+  ) {
+    // based on es5-shim implementation, need to rework it
+    internalSplit = function (separator, limit) {
+      var string = String(this);
+      if (separator === undefined && limit === 0) return [];
+      // If `separator` is not a regex, use native split
+      if (!_isRegexp(separator)) return $split.call(string, separator, limit);
+      var output = [];
+      var flags = (separator.ignoreCase ? 'i' : '') +
+                  (separator.multiline ? 'm' : '') +
+                  (separator.unicode ? 'u' : '') +
+                  (separator.sticky ? 'y' : '');
+      var lastLastIndex = 0;
+      var splitLimit = limit === undefined ? MAX_UINT32 : limit >>> 0;
+      // Make `global` and avoid `lastIndex` issues by working with a copy
+      var separatorCopy = new RegExp(separator.source, flags + 'g');
+      var match, lastIndex, lastLength;
+      while (match = _regexpExec.call(separatorCopy, string)) {
+        lastIndex = separatorCopy[LAST_INDEX$1];
+        if (lastIndex > lastLastIndex) {
+          output.push(string.slice(lastLastIndex, match.index));
+          if (match[LENGTH] > 1 && match.index < string[LENGTH]) $push.apply(output, match.slice(1));
+          lastLength = match[0][LENGTH];
+          lastLastIndex = lastIndex;
+          if (output[LENGTH] >= splitLimit) break;
+        }
+        if (separatorCopy[LAST_INDEX$1] === match.index) separatorCopy[LAST_INDEX$1]++; // Avoid an infinite loop
+      }
+      if (lastLastIndex === string[LENGTH]) {
+        if (lastLength || !separatorCopy.test('')) output.push('');
+      } else output.push(string.slice(lastLastIndex));
+      return output[LENGTH] > splitLimit ? output.slice(0, splitLimit) : output;
+    };
+  // Chakra, V8
+  } else if ('0'[$SPLIT](undefined, 0)[LENGTH]) {
+    internalSplit = function (separator, limit) {
+      return separator === undefined && limit === 0 ? [] : $split.call(this, separator, limit);
+    };
+  } else {
+    internalSplit = $split;
+  }
+
+  return [
+    // `String.prototype.split` method
+    // https://tc39.github.io/ecma262/#sec-string.prototype.split
+    function split(separator, limit) {
+      var O = defined(this);
+      var splitter = separator == undefined ? undefined : separator[SPLIT];
+      return splitter !== undefined
+        ? splitter.call(separator, O, limit)
+        : internalSplit.call(String(O), separator, limit);
+    },
+    // `RegExp.prototype[@@split]` method
+    // https://tc39.github.io/ecma262/#sec-regexp.prototype-@@split
+    //
+    // NOTE: This cannot be properly polyfilled in engines that don't support
+    // the 'y' flag.
+    function (regexp, limit) {
+      var res = maybeCallNative(internalSplit, regexp, this, limit, internalSplit !== $split);
+      if (res.done) return res.value;
+
+      var rx = _anObject(regexp);
+      var S = String(this);
+      var C = _speciesConstructor(rx, RegExp);
+
+      var unicodeMatching = rx.unicode;
+      var flags = (rx.ignoreCase ? 'i' : '') +
+                  (rx.multiline ? 'm' : '') +
+                  (rx.unicode ? 'u' : '') +
+                  (SUPPORTS_Y ? 'y' : 'g');
+
+      // ^(? + rx + ) is needed, in combination with some S slicing, to
+      // simulate the 'y' flag.
+      var splitter = new C(SUPPORTS_Y ? rx : '^(?:' + rx.source + ')', flags);
+      var lim = limit === undefined ? MAX_UINT32 : limit >>> 0;
+      if (lim === 0) return [];
+      if (S.length === 0) return _regexpExecAbstract(splitter, S) === null ? [S] : [];
+      var p = 0;
+      var q = 0;
+      var A = [];
+      while (q < S.length) {
+        splitter.lastIndex = SUPPORTS_Y ? q : 0;
+        var z = _regexpExecAbstract(splitter, SUPPORTS_Y ? S : S.slice(q));
+        var e;
+        if (
+          z === null ||
+          (e = $min(_toLength(splitter.lastIndex + (SUPPORTS_Y ? 0 : q)), S.length)) === p
+        ) {
+          q = _advanceStringIndex(S, q, unicodeMatching);
+        } else {
+          A.push(S.slice(p, q));
+          if (A.length === lim) return A;
+          for (var i = 1; i <= z.length - 1; i++) {
+            A.push(z[i]);
+            if (A.length === lim) return A;
+          }
+          q = p = e;
+        }
+      }
+      A.push(S.slice(p));
+      return A;
+    }
+  ];
+});
+
+// 20.2.2.22 Math.log2(x)
+
+
+_export(_export.S, 'Math', {
+  log2: function log2(x) {
+    return Math.log(x) / Math.LN2;
+  }
+});
+
+/**
+ *
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+var cloneNegative = function cloneNegative(product, left) {
+  product.rows = parseInt(left.rows, 10);
+  product.columns = parseInt(left.columns, 10);
+  product.weights = left.weights.slice(0);
+  product.deltas = left.deltas.slice(0);
+
+  for (var i = 0; i < left.weights.length; i++) {
+    product.weights[i] = -left.weights[i];
+    product.deltas[i] = 0;
+  }
+};
+
+/**
+ * add {left} and {right} matrix weights into {into}
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Matrix} right
+ */
+var add$8 = function add(product, left, right) {
+  for (var i = 0; i < left.weights.length; i++) {
+    product.weights[i] = left.weights[i] + right.weights[i];
+    product.deltas[i] = 0;
+  }
+};
+
+/**
+ * adds {from} deltas to {left} and {right} deltas
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Matrix} right
+ */
+var addB = function addB(product, left, right) {
+  for (var i = 0; i < product.deltas.length; i++) {
+    left.deltas[i] = product.deltas[i];
+    right.deltas[i] = product.deltas[i];
+  }
+};
+
+/**
+ * makes matrix weights and deltas all ones
+ * @param {Matrix} product
+ */
+var allOnes = function allOnes(product) {
+  for (var i = 0; i < product.weights.length; i++) {
+    product.weights[i] = 1;
+    product.deltas[i] = 0;
+  }
+};
+
+/**
+ * multiply {left} and {right} matrix weights to {into}
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Matrix} right
+ */
+var multiply$8 = function multiply(product, left, right) {
+  var leftRows = left.rows;
+  var leftColumns = left.columns;
+  var rightColumns = right.columns; // loop over rows of left
+
+  for (var leftRow = 0; leftRow < leftRows; leftRow++) {
+    var leftRowBase = leftColumns * leftRow;
+    var rightRowBase = rightColumns * leftRow; // loop over cols of right
+
+    for (var rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
+      // dot product loop
+      var dot = 0; // loop over columns of left
+
+      for (var leftColumn = 0; leftColumn < leftColumns; leftColumn++) {
+        var rightColumnBase = rightColumns * leftColumn;
+        var leftIndex = leftRowBase + leftColumn;
+        var rightIndex = rightColumnBase + rightColumn;
+        dot += left.weights[leftIndex] * right.weights[rightIndex];
+        left.deltas[leftIndex] = 0;
+        right.deltas[rightIndex] = 0;
+      }
+
+      product.weights[rightRowBase + rightColumn] = dot;
+    }
+  }
+};
+
+/**
+ * multiplies {from} deltas to {left} and {right}
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Matrix} right
+ */
+var multiplyB = function multiplyB(product, left, right) {
+  var leftRows = left.rows;
+  var leftColumns = left.columns;
+  var rightColumns = right.columns; // loop over rows of left
+
+  for (var leftRowRoot = 0; leftRowRoot < leftRows; leftRowRoot++) {
+    var leftRowBase = leftColumns * leftRowRoot;
+    var rightRowBase = rightColumns * leftRowRoot; // loop over cols of right
+
+    for (var rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
+      // loop over columns of left
+      for (var leftColumn = 0; leftColumn < leftColumns; leftColumn++) {
+        var rightColumnBase = rightColumns * leftColumn;
+        var leftRow = leftRowBase + leftColumn;
+        var rightRow = rightColumnBase + rightColumn;
+        var backPropagateValue = product.deltas[rightRowBase + rightColumn];
+        left.deltas[leftRow] += right.weights[rightRow] * backPropagateValue;
+        right.deltas[rightRow] += left.weights[leftRow] * backPropagateValue;
+      }
+    }
+  }
+};
+
+/**
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Matrix} right
+ */
+var multiplyElement$4 = function multiplyElement(product, left, right) {
+  var weights = left.weights;
+
+  for (var i = 0; i < weights.length; i++) {
+    product.weights[i] = left.weights[i] * right.weights[i];
+    product.deltas[i] = 0;
+  }
+};
+
+/**
+ * multiplies {left} and {right} weight by {from} deltas into {left} and {right} deltas
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Matrix} right
+ */
+var multiplyElementB = function multiplyElementB(product, left, right) {
+  for (var i = 0; i < left.weights.length; i++) {
+    left.deltas[i] = right.weights[i] * product.deltas[i];
+    right.deltas[i] = left.weights[i] * product.deltas[i];
+  }
+};
+
+/**
+ *
+ * relu {m} weights to {into} weights
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+var relu$4 = function relu(product, left) {
+  for (var i = 0; i < left.weights.length; i++) {
+    product.weights[i] = Math.max(0, left.weights[i]); // relu
+
+    product.deltas[i] = 0;
+  }
+};
+
+/**
+ * adds {from} deltas to {m} deltas when {m} weights are above other a threshold of 0
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+var reluB = function reluB(product, left) {
+  for (var i = 0; i < product.deltas.length; i++) {
+    left.deltas[i] = left.weights[i] > 0 ? product.deltas[i] : 0;
+  }
+};
+
+/**
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Number} rowPluckIndex
+ */
+var rowPluck = function rowPluck(product, left, rowPluckIndex) {
+  var columns = left.columns;
+  var rowBase = columns * rowPluckIndex;
+
+  for (var column = 0; column < columns; column++) {
+    product.weights[column] = left.weights[rowBase + column];
+    product.deltas[column] = 0;
+  }
+};
+
+/**
+ * adds {from} deltas into {m} deltas
+ * @param {Matrix} product
+ * @param {Matrix} left
+ * @param {Number} rowIndex
+ */
+var rowPluckB = function rowPluckB(product, left, rowIndex) {
+  var columns = left.columns;
+  var rowBase = columns * rowIndex;
+
+  for (var column = 0; column < columns; column++) {
+    left.deltas[rowBase + column] = product.deltas[column];
+  }
+};
+
+/**
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+var sigmoid$7 = function sigmoid(product, left) {
+  // sigmoid nonlinearity
+  for (var i = 0; i < left.weights.length; i++) {
+    product.weights[i] = 1 / (1 + Math.exp(-left.weights[i]));
+    product.deltas[i] = 0;
+  }
+}; // function sig(x) {
+
+/**
+ *
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+var sigmoidB = function sigmoidB(product, left) {
+  for (var i = 0; i < product.deltas.length; i++) {
+    var mwi = product.weights[i];
+    left.deltas[i] = mwi * (1 - mwi) * product.deltas[i];
+  }
+};
+
+/**
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+var tanh$5 = function tanh(product, left) {
+  // tanh nonlinearity
+  for (var i = 0; i < left.weights.length; i++) {
+    product.weights[i] = Math.tanh(left.weights[i]);
+    product.deltas[i] = 0;
+  }
+};
+
+/**
+ *
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+var tanhB = function tanhB(product, left) {
+  for (var i = 0; i < product.deltas.length; i++) {
+    // grad for z = tanh(x) is (1 - z^2)
+    var mwi = product.weights[i];
+    left.deltas[i] = (1 - mwi * mwi) * product.deltas[i];
+  }
+};
+
+/**
+ *
+ * @param {Matrix} m
+ * @returns {Matrix}
+ */
+
+var softmax = function softmax(m) {
+  var result = new matrix(m.rows, m.columns); // probability volume
+
+  var maxVal = -999999;
+
+  for (var i = 0; i < m.weights.length; i++) {
+    if (m.weights[i] > maxVal) {
+      maxVal = m.weights[i];
+    }
+  }
+
+  var s = 0;
+
+  for (var _i = 0; _i < m.weights.length; _i++) {
+    result.weights[_i] = Math.exp(m.weights[_i] - maxVal);
+    s += result.weights[_i];
+  }
+
+  for (var _i2 = 0; _i2 < m.weights.length; _i2++) {
+    result.weights[_i2] /= s;
+  } // no backward pass here needed
+  // since we will use the computed probabilities outside
+  // to set gradients directly on m
+
+
+  return result;
+};
+
+// const copy = require('./copy');
+
+var Equation = /*#__PURE__*/function () {
+  function Equation() {
+    _classCallCheck(this, Equation);
+
+    this.inputRow = 0;
+    this.inputValue = null;
+    this.states = [];
+  }
+  /**
+   * connects two matrices together by add
+   * @param {Matrix} left
+   * @param {Matrix} right
+   * @returns {Matrix}
+   */
+
+
+  _createClass(Equation, [{
+    key: "add",
+    value: function add(left, right) {
+      if (left.weights.length !== right.weights.length) {
+        throw new Error('misaligned matrices');
+      }
+
+      var product = new matrix(left.rows, left.columns);
+      this.states.push({
+        left: left,
+        right: right,
+        product: product,
+        forwardFn: add$8,
+        backpropagationFn: addB
+      });
+      return product;
+    }
+    /**
+     *
+     * @param {Number} rows
+     * @param {Number} columns
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "allOnes",
+    value: function allOnes$1(rows, columns) {
+      var product = new matrix(rows, columns);
+      this.states.push({
+        left: product,
+        product: product,
+        forwardFn: allOnes
+      });
+      return product;
+    }
+    /**
+     *
+     * @param {Matrix} m
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "cloneNegative",
+    value: function cloneNegative$1(m) {
+      var product = new matrix(m.rows, m.columns);
+      this.states.push({
+        left: m,
+        product: product,
+        forwardFn: cloneNegative
+      });
+      return product;
+    }
+    /**
+     * connects two matrices together by subtract
+     * @param {Matrix} left
+     * @param {Matrix} right
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "subtract",
+    value: function subtract(left, right) {
+      if (left.weights.length !== right.weights.length) {
+        throw new Error('misaligned matrices');
+      }
+
+      return this.add(this.add(this.allOnes(left.rows, left.columns), this.cloneNegative(left)), right);
+    }
+    /**
+     * connects two matrices together by multiply
+     * @param {Matrix} left
+     * @param {Matrix} right
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "multiply",
+    value: function multiply(left, right) {
+      if (left.columns !== right.rows) {
+        throw new Error('misaligned matrices');
+      }
+
+      var product = new matrix(left.rows, right.columns);
+      this.states.push({
+        left: left,
+        right: right,
+        product: product,
+        forwardFn: multiply$8,
+        backpropagationFn: multiplyB
+      });
+      return product;
+    }
+    /**
+     * connects two matrices together by multiplyElement
+     * @param {Matrix} left
+     * @param {Matrix} right
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "multiplyElement",
+    value: function multiplyElement(left, right) {
+      if (left.weights.length !== right.weights.length) {
+        throw new Error('misaligned matrices');
+      }
+
+      var product = new matrix(left.rows, left.columns);
+      this.states.push({
+        left: left,
+        right: right,
+        product: product,
+        forwardFn: multiplyElement$4,
+        backpropagationFn: multiplyElementB
+      });
+      return product;
+    }
+    /**
+     * connects a matrix to relu
+     * @param {Matrix} m
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "relu",
+    value: function relu(m) {
+      var product = new matrix(m.rows, m.columns);
+      this.states.push({
+        left: m,
+        product: product,
+        forwardFn: relu$4,
+        backpropagationFn: reluB
+      });
+      return product;
+    }
+    /**
+     * copy a matrix
+     * @param {Matrix} input
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "input",
+    value: function input(_input) {
+      var _this = this;
+
+      this.states.push({
+        product: _input,
+        forwardFn: function forwardFn(product) {
+          product.weights = _input.weights = _this.inputValue;
+        }
+      });
+      return _input;
+    }
+    /**
+     * connects a matrix via a row
+     * @param {Matrix} m
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "inputMatrixToRow",
+    value: function inputMatrixToRow(m) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      var self = this;
+      var product = new matrix(m.columns, 1);
+      this.states.push({
+        left: m,
+
+        get right() {
+          return self.inputRow;
+        },
+
+        product: product,
+        forwardFn: rowPluck,
+        backpropagationFn: rowPluckB
+      });
+      return product;
+    }
+    /**
+     * connects a matrix to sigmoid
+     * @param {Matrix} m
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "sigmoid",
+    value: function sigmoid(m) {
+      var product = new matrix(m.rows, m.columns);
+      this.states.push({
+        left: m,
+        product: product,
+        forwardFn: sigmoid$7,
+        backpropagationFn: sigmoidB
+      });
+      return product;
+    }
+    /**
+     * connects a matrix to tanh
+     * @param {Matrix} m
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "tanh",
+    value: function tanh(m) {
+      var product = new matrix(m.rows, m.columns);
+      this.states.push({
+        left: m,
+        product: product,
+        forwardFn: tanh$5,
+        backpropagationFn: tanhB
+      });
+      return product;
+    }
+    /**
+     *
+     * @param m
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "observe",
+    value: function observe(m) {
+      this.states.push({
+        forwardFn: function forwardFn() {},
+        backpropagationFn: function backpropagationFn() {}
+      });
+      return m;
+    }
+    /**
+     * @patam {Number} [rowIndex]
+     * @output {Matrix}
+     */
+
+  }, {
+    key: "runIndex",
+    value: function runIndex() {
+      var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      this.inputRow = rowIndex;
+      var state;
+
+      for (var i = 0, max = this.states.length; i < max; i++) {
+        state = this.states[i];
+
+        if (!state.hasOwnProperty('forwardFn')) {
+          continue;
+        }
+
+        state.forwardFn(state.product, state.left, state.right);
+      }
+
+      return state.product;
+    }
+    /**
+     * @patam {Number} [rowIndex]
+     * @output {Matrix}
+     */
+
+  }, {
+    key: "runInput",
+    value: function runInput(inputValue) {
+      this.inputValue = inputValue;
+      var state;
+
+      for (var i = 0, max = this.states.length; i < max; i++) {
+        state = this.states[i];
+
+        if (!state.hasOwnProperty('forwardFn')) {
+          continue;
+        }
+
+        state.forwardFn(state.product, state.left, state.right);
+      }
+
+      return state.product;
+    }
+    /**
+     * @patam {Number} [rowIndex]
+     * @output {Matrix}
+     */
+
+  }, {
+    key: "backpropagate",
+    value: function backpropagate() {
+      var i = this.states.length;
+      var state;
+
+      while (i-- > 0) {
+        state = this.states[i];
+
+        if (!state.hasOwnProperty('backpropagationFn')) {
+          continue;
+        } // console.log('backfn', state.backpropagationFn.name);
+        // console.log('before', state.product.deltas);
+
+
+        state.backpropagationFn(state.product, state.left, state.right); // console.log('after', state.product.deltas);
+      }
+
+      return state.product;
+    }
+    /**
+     * @patam {Number} [rowIndex]
+     * @output {Matrix}
+     */
+
+  }, {
+    key: "backpropagateIndex",
+    value: function backpropagateIndex() {
+      var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      this.inputRow = rowIndex;
+      var i = this.states.length;
+      var state;
+
+      while (i-- > 0) {
+        state = this.states[i];
+
+        if (!state.hasOwnProperty('backpropagationFn')) {
+          continue;
+        }
+
+        state.backpropagationFn(state.product, state.left, state.right);
+      }
+
+      return state.product;
+    }
+  }, {
+    key: "predictTarget",
+    value: function predictTarget(input, target) {
+      var output = this.runInput(input);
+      var errorSum = 0;
+
+      for (var i = 0; i < output.weights.length; i++) {
+        var error = output.weights[i] - target[i]; // set gradients into log probabilities
+
+        errorSum += Math.abs(error); // write gradients into log probabilities
+
+        output.deltas[i] = error;
+      }
+
+      return errorSum;
+    }
+  }, {
+    key: "predictTargetIndex",
+    value: function predictTargetIndex(input, target) {
+      var output = this.runIndex(input); // set gradients into log probabilities
+
+      var logProbabilities = output; // interpret output as log probabilities
+
+      var probabilities = softmax(output); // compute the softmax probabilities
+      // write gradients into log probabilities
+
+      logProbabilities.deltas = probabilities.weights.slice(0);
+      logProbabilities.deltas[target] -= 1; // accumulate base 2 log prob and do smoothing
+
+      return -Math.log2(probabilities.weights[target]);
+    }
+  }]);
+
+  return Equation;
+}();
+
+var equation = Equation;
+
+var randomFloat$3 = random.randomFloat;
+/**
+ *
+ * @param {Matrix} m
+ * @returns {number}
+ */
+
+var sampleI = function sampleI(m) {
+  // sample argmax from w, assuming w are
+  // probabilities that sum to one
+  var r = randomFloat$3(0, 1);
+  var x = 0;
+  var i = 0;
+  var w = m.weights;
+
+  while (true) {
+    x += w[i];
+
+    if (x > r) {
+      return i;
+    }
+
+    i++;
+  }
+};
+
+/**
+ *
+ * @param {Matrix} m
+ * @returns {number}
+ */
+var maxI = function maxI(m) {
+  // argmax of array w
+  var weights = m.weights;
+  var maxv = weights[0];
+  var maxix = 0;
+
+  for (var i = 1; i < weights.length; i++) {
+    var v = weights[i];
+    if (v < maxv) continue;
+    maxix = i;
+    maxv = v;
+  }
+
+  return maxix;
+};
+
+/*
+ *
+ * @param {Matrix} product
+ * @param {Matrix} left
+ */
+var copy = function copy(product, left) {
+  product.rows = parseInt(left.rows, 10);
+  product.columns = parseInt(left.columns, 10);
+  product.weights = left.weights.slice(0);
+  product.deltas = left.deltas.slice(0);
+};
+
+var _meta = createCommonjsModule(function (module) {
+var META = _uid('meta');
+
+
+var setDesc = _objectDp.f;
+var id = 0;
+var isExtensible = Object.isExtensible || function () {
+  return true;
+};
+var FREEZE = !_fails(function () {
+  return isExtensible(Object.preventExtensions({}));
+});
+var setMeta = function (it) {
+  setDesc(it, META, { value: {
+    i: 'O' + ++id, // object ID
+    w: {}          // weak collections IDs
+  } });
+};
+var fastKey = function (it, create) {
+  // return primitive with prefix
+  if (!_isObject(it)) return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
+  if (!_has(it, META)) {
+    // can't set metadata to uncaught frozen object
+    if (!isExtensible(it)) return 'F';
+    // not necessary to add metadata
+    if (!create) return 'E';
+    // add missing metadata
+    setMeta(it);
+  // return object ID
+  } return it[META].i;
+};
+var getWeak = function (it, create) {
+  if (!_has(it, META)) {
+    // can't set metadata to uncaught frozen object
+    if (!isExtensible(it)) return true;
+    // not necessary to add metadata
+    if (!create) return false;
+    // add missing metadata
+    setMeta(it);
+  // return hash weak collections IDs
+  } return it[META].w;
+};
+// add metadata on freeze-family methods calling
+var onFreeze = function (it) {
+  if (FREEZE && meta.NEED && isExtensible(it) && !_has(it, META)) setMeta(it);
+  return it;
+};
+var meta = module.exports = {
+  KEY: META,
+  NEED: false,
+  fastKey: fastKey,
+  getWeak: getWeak,
+  onFreeze: onFreeze
+};
+});
+
+var _validateCollection = function (it, TYPE) {
+  if (!_isObject(it) || it._t !== TYPE) throw TypeError('Incompatible receiver, ' + TYPE + ' required!');
+  return it;
+};
+
+var dP$3 = _objectDp.f;
+
+
+
+
+
+
+
+
+
+var fastKey = _meta.fastKey;
+
+var SIZE = _descriptors ? '_s' : 'size';
+
+var getEntry = function (that, key) {
+  // fast case
+  var index = fastKey(key);
+  var entry;
+  if (index !== 'F') return that._i[index];
+  // frozen object case
+  for (entry = that._f; entry; entry = entry.n) {
+    if (entry.k == key) return entry;
+  }
+};
+
+var _collectionStrong = {
+  getConstructor: function (wrapper, NAME, IS_MAP, ADDER) {
+    var C = wrapper(function (that, iterable) {
+      _anInstance(that, C, NAME, '_i');
+      that._t = NAME;         // collection type
+      that._i = _objectCreate(null); // index
+      that._f = undefined;    // first entry
+      that._l = undefined;    // last entry
+      that[SIZE] = 0;         // size
+      if (iterable != undefined) _forOf(iterable, IS_MAP, that[ADDER], that);
+    });
+    _redefineAll(C.prototype, {
+      // 23.1.3.1 Map.prototype.clear()
+      // 23.2.3.2 Set.prototype.clear()
+      clear: function clear() {
+        for (var that = _validateCollection(this, NAME), data = that._i, entry = that._f; entry; entry = entry.n) {
+          entry.r = true;
+          if (entry.p) entry.p = entry.p.n = undefined;
+          delete data[entry.i];
+        }
+        that._f = that._l = undefined;
+        that[SIZE] = 0;
+      },
+      // 23.1.3.3 Map.prototype.delete(key)
+      // 23.2.3.4 Set.prototype.delete(value)
+      'delete': function (key) {
+        var that = _validateCollection(this, NAME);
+        var entry = getEntry(that, key);
+        if (entry) {
+          var next = entry.n;
+          var prev = entry.p;
+          delete that._i[entry.i];
+          entry.r = true;
+          if (prev) prev.n = next;
+          if (next) next.p = prev;
+          if (that._f == entry) that._f = next;
+          if (that._l == entry) that._l = prev;
+          that[SIZE]--;
+        } return !!entry;
+      },
+      // 23.2.3.6 Set.prototype.forEach(callbackfn, thisArg = undefined)
+      // 23.1.3.5 Map.prototype.forEach(callbackfn, thisArg = undefined)
+      forEach: function forEach(callbackfn /* , that = undefined */) {
+        _validateCollection(this, NAME);
+        var f = _ctx(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
+        var entry;
+        while (entry = entry ? entry.n : this._f) {
+          f(entry.v, entry.k, this);
+          // revert to the last existing entry
+          while (entry && entry.r) entry = entry.p;
+        }
+      },
+      // 23.1.3.7 Map.prototype.has(key)
+      // 23.2.3.7 Set.prototype.has(value)
+      has: function has(key) {
+        return !!getEntry(_validateCollection(this, NAME), key);
+      }
+    });
+    if (_descriptors) dP$3(C.prototype, 'size', {
+      get: function () {
+        return _validateCollection(this, NAME)[SIZE];
+      }
+    });
+    return C;
+  },
+  def: function (that, key, value) {
+    var entry = getEntry(that, key);
+    var prev, index;
+    // change existing entry
+    if (entry) {
+      entry.v = value;
+    // create new entry
+    } else {
+      that._l = entry = {
+        i: index = fastKey(key, true), // <- index
+        k: key,                        // <- key
+        v: value,                      // <- value
+        p: prev = that._l,             // <- previous entry
+        n: undefined,                  // <- next entry
+        r: false                       // <- removed
+      };
+      if (!that._f) that._f = entry;
+      if (prev) prev.n = entry;
+      that[SIZE]++;
+      // add to index
+      if (index !== 'F') that._i[index] = entry;
+    } return that;
+  },
+  getEntry: getEntry,
+  setStrong: function (C, NAME, IS_MAP) {
+    // add .keys, .values, .entries, [@@iterator]
+    // 23.1.3.4, 23.1.3.8, 23.1.3.11, 23.1.3.12, 23.2.3.5, 23.2.3.8, 23.2.3.10, 23.2.3.11
+    _iterDefine(C, NAME, function (iterated, kind) {
+      this._t = _validateCollection(iterated, NAME); // target
+      this._k = kind;                     // kind
+      this._l = undefined;                // previous
+    }, function () {
+      var that = this;
+      var kind = that._k;
+      var entry = that._l;
+      // revert to the last existing entry
+      while (entry && entry.r) entry = entry.p;
+      // get next entry
+      if (!that._t || !(that._l = entry = entry ? entry.n : that._t._f)) {
+        // or finish the iteration
+        that._t = undefined;
+        return _iterStep(1);
+      }
+      // return step by kind
+      if (kind == 'keys') return _iterStep(0, entry.k);
+      if (kind == 'values') return _iterStep(0, entry.v);
+      return _iterStep(0, [entry.k, entry.v]);
+    }, IS_MAP ? 'entries' : 'values', !IS_MAP, true);
+
+    // add [@@species], 23.1.2.2, 23.2.2.2
+    _setSpecies(NAME);
+  }
+};
+
+var _collection = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
+  var Base = _global[NAME];
+  var C = Base;
+  var ADDER = IS_MAP ? 'set' : 'add';
+  var proto = C && C.prototype;
+  var O = {};
+  var fixMethod = function (KEY) {
+    var fn = proto[KEY];
+    _redefine(proto, KEY,
+      KEY == 'delete' ? function (a) {
+        return IS_WEAK && !_isObject(a) ? false : fn.call(this, a === 0 ? 0 : a);
+      } : KEY == 'has' ? function has(a) {
+        return IS_WEAK && !_isObject(a) ? false : fn.call(this, a === 0 ? 0 : a);
+      } : KEY == 'get' ? function get(a) {
+        return IS_WEAK && !_isObject(a) ? undefined : fn.call(this, a === 0 ? 0 : a);
+      } : KEY == 'add' ? function add(a) { fn.call(this, a === 0 ? 0 : a); return this; }
+        : function set(a, b) { fn.call(this, a === 0 ? 0 : a, b); return this; }
+    );
+  };
+  if (typeof C != 'function' || !(IS_WEAK || proto.forEach && !_fails(function () {
+    new C().entries().next();
+  }))) {
+    // create collection constructor
+    C = common.getConstructor(wrapper, NAME, IS_MAP, ADDER);
+    _redefineAll(C.prototype, methods);
+    _meta.NEED = true;
+  } else {
+    var instance = new C();
+    // early implementations not supports chaining
+    var HASNT_CHAINING = instance[ADDER](IS_WEAK ? {} : -0, 1) != instance;
+    // V8 ~  Chromium 40- weak-collections throws on primitives, but should return false
+    var THROWS_ON_PRIMITIVES = _fails(function () { instance.has(1); });
+    // most early implementations doesn't supports iterables, most modern - not close it correctly
+    var ACCEPT_ITERABLES = _iterDetect(function (iter) { new C(iter); }); // eslint-disable-line no-new
+    // for early implementations -0 and +0 not the same
+    var BUGGY_ZERO = !IS_WEAK && _fails(function () {
+      // V8 ~ Chromium 42- fails only with 5+ elements
+      var $instance = new C();
+      var index = 5;
+      while (index--) $instance[ADDER](index, index);
+      return !$instance.has(-0);
+    });
+    if (!ACCEPT_ITERABLES) {
+      C = wrapper(function (target, iterable) {
+        _anInstance(target, C, NAME);
+        var that = _inheritIfRequired(new Base(), target, C);
+        if (iterable != undefined) _forOf(iterable, IS_MAP, that[ADDER], that);
+        return that;
+      });
+      C.prototype = proto;
+      proto.constructor = C;
+    }
+    if (THROWS_ON_PRIMITIVES || BUGGY_ZERO) {
+      fixMethod('delete');
+      fixMethod('has');
+      IS_MAP && fixMethod('get');
+    }
+    if (BUGGY_ZERO || HASNT_CHAINING) fixMethod(ADDER);
+    // weak collections should not contains .clear method
+    if (IS_WEAK && proto.clear) delete proto.clear;
+  }
+
+  _setToStringTag(C, NAME);
+
+  O[NAME] = C;
+  _export(_export.G + _export.W + _export.F * (C != Base), O);
+
+  if (!IS_WEAK) common.setStrong(C, NAME, IS_MAP);
+
+  return C;
+};
+
+var SET = 'Set';
+
+// 23.2 Set Objects
+var es6_set = _collection(SET, function (get) {
+  return function Set() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
+}, {
+  // 23.2.3.1 Set.prototype.add(value)
+  add: function add(value) {
+    return _collectionStrong.def(_validateCollection(this, SET), value = value === 0 ? 0 : value, value);
+  }
+}, _collectionStrong);
+
+/**
+ *
+ * @param {String[]|Number[]} values
+ * @param maxThreshold
+ * @constructor
+ */
+var DataFormatter = /*#__PURE__*/function () {
+  function DataFormatter(values) {
+    var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+    _classCallCheck(this, DataFormatter);
+
+    if (values === undefined) return;
+    this.values = values; // go over all characters and keep track of all unique ones seen
+    // count up all characters
+
+    this.indexTable = {};
+    this.characterTable = {};
+    this.characters = [];
+    this.specialIndexes = [];
+    this.buildCharactersFromIterable(values);
+    this.buildTables(maxThreshold);
+  }
+
+  _createClass(DataFormatter, [{
+    key: "buildCharactersFromIterable",
+    value: function buildCharactersFromIterable(values) {
+      var tempCharactersTable = {};
+
+      for (var dataFormatterIndex = 0, dataFormatterLength = values.length; dataFormatterIndex < dataFormatterLength; dataFormatterIndex++) {
+        var characters = values[dataFormatterIndex];
+
+        if (characters.hasOwnProperty('length')) {
+          for (var characterIndex = 0, charactersLength = characters.length; characterIndex < charactersLength; characterIndex++) {
+            var character = characters[characterIndex];
+            if (tempCharactersTable.hasOwnProperty(character)) continue;
+            tempCharactersTable[character] = true;
+            this.characters.push(character);
+          }
+        } else {
+          var _character = values[dataFormatterIndex];
+          if (tempCharactersTable.hasOwnProperty(_character)) continue;
+          tempCharactersTable[dataFormatterIndex] = true;
+          this.characters.push(_character);
+        }
+      }
+    }
+  }, {
+    key: "buildTables",
+    value: function buildTables(maxThreshold) {
+      // filter by count threshold and create pointers
+      var charactersLength = this.characters.length;
+
+      for (var characterIndex = 0; characterIndex < charactersLength; characterIndex++) {
+        var character = this.characters[characterIndex];
+
+        if (characterIndex >= maxThreshold) {
+          // add character to dataFormatter
+          this.indexTable[character] = characterIndex;
+          this.characterTable[characterIndex] = character;
+        }
+      }
+    }
+  }, {
+    key: "toIndexes",
+    value: function toIndexes(value) {
+      var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+      var result = [];
+      var indexTable = this.indexTable;
+
+      for (var i = 0, max = value.length; i < max; i++) {
+        var character = value[i];
+        var index = indexTable[character];
+
+        if (index === undefined) {
+          if (indexTable.unrecognized) {
+            index = indexTable.unrecognized;
+          } else {
+            throw new Error("unrecognized character \"".concat(character, "\""));
+          }
+        }
+
+        if (index < maxThreshold) continue;
+        result.push(index);
+      }
+
+      return result;
+    }
+  }, {
+    key: "toIndexesInputOutput",
+    value: function toIndexesInputOutput(value1) {
+      var value2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+      var maxThreshold = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+      var result = null;
+
+      if (typeof value1 === 'string') {
+        result = this.toIndexes(value1.split('').concat(['stop-input', 'start-output']), maxThreshold);
+      } else if (typeof value1 === 'number') {
+        result = this.toIndexes(value1.toString().split('').concat(['stop-input', 'start-output']), maxThreshold);
+      } else {
+        result = this.toIndexes(value1.concat(['stop-input', 'start-output']), maxThreshold);
+      }
+
+      if (value2 === null) return result;
+
+      if (typeof value2 === 'string') {
+        return result.concat(this.toIndexes(value2.split(''), maxThreshold));
+      } else {
+        return result.concat(this.toIndexes(value2, maxThreshold));
+      }
+    }
+  }, {
+    key: "toCharacters",
+    value: function toCharacters(indices) {
+      var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+      var result = [];
+      var indexTable = this.indexTable,
+          characterTable = this.characterTable;
+
+      for (var i = 0, max = indices.length; i < max; i++) {
+        var index = indices[i];
+        if (index < maxThreshold) continue;
+        var character = characterTable[index];
+
+        if (character === undefined) {
+          if (indexTable.unrecognized) {
+            character = characterTable[indexTable.unrecognized];
+          } else {
+            throw new Error("unrecognized index \"".concat(index, "\""));
+          }
+        } else if (character !== null) {
+          result.push(character);
+        }
+      }
+
+      return result;
+    }
+  }, {
+    key: "toString",
+    value: function toString(indices, maxThreshold) {
+      return this.toCharacters(indices, maxThreshold).join('');
+    }
+  }, {
+    key: "addInputOutput",
+    value: function addInputOutput() {
+      this.addSpecial('stop-input');
+      this.addSpecial('start-output');
+    }
+  }, {
+    key: "addUnrecognized",
+    value: function addUnrecognized() {
+      this.addSpecial('unrecognized');
+    }
+  }, {
+    key: "addSpecial",
+    value: function addSpecial(special) {
+      var character = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+      var specialIndex = this.indexTable[special] = this.characters.length;
+      this.characterTable[specialIndex] = character;
+      this.specialIndexes.push(this.characters.length);
+      this.characters.push(special);
+    }
+  }, {
+    key: "countSpecial",
+    value: function countSpecial(output) {
+      var sum = 0;
+
+      for (var i = 0; i < this.specialIndexes; i++) {
+        var index = -1;
+
+        while (index = output.indexOf(this.specialIndexes[i], index) > -1) {
+          sum++;
+        }
+      }
+
+      return sum;
+    }
+  }, {
+    key: "toFunctionString",
+    value: function toFunctionString() {
+      return "\nvar characterTable = ".concat(JSON.stringify(this.characterTable), ";\nvar indexTable = ").concat(JSON.stringify(this.indexTable), ";\nvar characters = ").concat(JSON.stringify(this.characters), ";\nvar dataFormatter = {\n  toIndexes: ").concat(this.toIndexes.toString(), ",\n  toIndexesInputOutput: ").concat(this.toIndexesInputOutput.toString(), ",\n  toCharacters: ").concat(this.toCharacters.toString(), ",\n};");
+    }
+  }], [{
+    key: "fromAllPrintable",
+    value: function fromAllPrintable(maxThreshold) {
+      var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['\n'];
+
+      for (var i = 32; i <= 126; i++) {
+        values.push(String.fromCharCode(i));
+      }
+
+      return new DataFormatter(values, maxThreshold);
+    }
+  }, {
+    key: "fromAllPrintableInputOutput",
+    value: function fromAllPrintableInputOutput(maxThreshold) {
+      var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['\n'];
+      var dataFormatter = DataFormatter.fromAllPrintable(maxThreshold, values);
+      dataFormatter.addInputOutput();
+      return dataFormatter;
+    }
+  }, {
+    key: "fromStringInputOutput",
+    value: function fromStringInputOutput(string, maxThreshold) {
+      var _String$prototype;
+
+      var values = (_String$prototype = String.prototype).concat.apply(_String$prototype, _toConsumableArray(new Set(string)));
+
+      var dataFormatter = new DataFormatter(values, maxThreshold);
+      dataFormatter.addInputOutput();
+      return dataFormatter;
+    }
+  }, {
+    key: "fromArrayInputOutput",
+    value: function fromArrayInputOutput(array, maxThreshold) {
+      var dataFormatter = new DataFormatter(array.filter(function (v, i, a) {
+        return a.indexOf(v) === i;
+      }), maxThreshold);
+      dataFormatter.addInputOutput();
+      return dataFormatter;
+    }
+  }, {
+    key: "fromString",
+    value: function fromString(string, maxThreshold) {
+      var _String$prototype2;
+
+      var values = (_String$prototype2 = String.prototype).concat.apply(_String$prototype2, _toConsumableArray(new Set(string)));
+
+      return new DataFormatter(values, maxThreshold);
+    }
+  }, {
+    key: "fromJSON",
+    value: function fromJSON(json) {
+      var dataFormatter = new DataFormatter();
+      dataFormatter.indexTable = json.indexTable;
+      dataFormatter.characterTable = json.characterTable;
+      dataFormatter.values = json.values;
+      dataFormatter.characters = json.characters;
+      dataFormatter.specialIndexes = json.specialIndexes;
+      return dataFormatter;
+    }
+  }]);
+
+  return DataFormatter;
+}();
+
+function validateAndCast(value) {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return value.toString();
+  if (typeof value[0] === 'string') return value;
+
+  if (typeof value[0] === 'number') {
+    return value.map(function (value) {
+      return value.toString();
+    });
+  }
+
+  throw new Error('unrecognized value, expected string[], string, number[], or number');
+}
+/**
+ *
+ * @param {*[]} data
+ * @returns {Number[]}
+ */
+
+
+function defaultRNNFormatter(data) {
+  if (typeof data[0] !== 'string' && !Array.isArray(data[0]) && (!data[0].hasOwnProperty('input') || !data[0].hasOwnProperty('output'))) {
+    return data;
+  }
+
+  var values = [];
+  var result = [];
+
+  if (typeof data[0] === 'string' || typeof data[0] === 'number' || Array.isArray(data[0])) {
+    if (!this.dataFormatter) {
+      for (var i = 0; i < data.length; i++) {
+        values.push(validateAndCast(data[i]));
+      }
+
+      this.dataFormatter = new DataFormatter(values);
+      this.dataFormatter.addUnrecognized();
+    }
+
+    for (var _i = 0, max = data.length; _i < max; _i++) {
+      result.push(this.formatDataIn(data[_i]));
+    }
+  } else if (data[0].input && data[0].output) {
+    if (!this.dataFormatter) {
+      for (var _i2 = 0; _i2 < data.length; _i2++) {
+        var datum = data[_i2];
+        values.push(validateAndCast(datum.input), validateAndCast(datum.output));
+      }
+
+      this.dataFormatter = DataFormatter.fromArrayInputOutput(values);
+      this.dataFormatter.addUnrecognized();
+    }
+
+    for (var _i3 = 0, _max = data.length; _i3 < _max; _i3++) {
+      result.push(this.formatDataIn(validateAndCast(data[_i3].input), validateAndCast(data[_i3].output)));
+    }
+  } else {
+    throw new Error('unrecognized data');
+  }
+
+  return result;
+}
+
+var dataFormatter = {
+  DataFormatter: DataFormatter,
+  defaultRNNFormatter: defaultRNNFormatter
+};
+
+var randomFloat$4 = random.randomFloat;
+var zeros$c = zeros$1.zeros;
+var DataFormatter$1 = dataFormatter.DataFormatter,
+    defaultRNNFormatter$1 = dataFormatter.defaultRNNFormatter;
+
+var RNN = /*#__PURE__*/function () {
+  function RNN() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, RNN);
+
+    var defaults = this.constructor.defaults;
+    Object.assign(this, defaults, options);
+    this.trainOpts = {};
+    this.updateTrainingOptions(_objectSpread2(_objectSpread2({}, this.constructor.trainDefaults), options));
+    this.stepCache = {};
+    this.runs = 0;
+    this.ratioClipped = null;
+    this.model = null;
+    this.inputLookup = null;
+    this.inputLookupLength = null;
+    this.outputLookup = null;
+    this.outputLookupLength = null;
+
+    if (options.json) {
+      this.fromJSON(options.json);
+    }
+  }
+
+  _createClass(RNN, [{
+    key: "initialize",
+    value: function initialize() {
+      this.model = {
+        input: null,
+        hiddenLayers: [],
+        output: null,
+        equations: [],
+        allMatrices: [],
+        equationConnections: [],
+        outputConnector: null
+      };
+
+      if (this.dataFormatter) {
+        this.inputSize = this.inputRange = this.outputSize = this.dataFormatter.characters.length;
+      }
+
+      this.mapModel();
+    }
+  }, {
+    key: "createHiddenLayers",
+    value: function createHiddenLayers() {
+      // 0 is end, so add 1 to offset
+      this.model.hiddenLayers.push(this.constructor.getModel(this.hiddenLayers[0], this.inputSize));
+      var prevSize = this.hiddenLayers[0];
+
+      for (var d = 1; d < this.hiddenLayers.length; d++) {
+        // loop over depths
+        var hiddenSize = this.hiddenLayers[d];
+        this.model.hiddenLayers.push(this.constructor.getModel(hiddenSize, prevSize));
+        prevSize = hiddenSize;
+      }
+    }
+    /**
+     *
+     * @param {Number} hiddenSize
+     * @param {Number} prevSize
+     * @returns {object}
+     */
+
+  }, {
+    key: "createInputMatrix",
+    value: function createInputMatrix() {
+      // 0 is end, so add 1 to offset
+      this.model.input = new randomMatrix(this.inputRange + 1, this.inputSize, 0.08);
+    }
+  }, {
+    key: "createOutputMatrix",
+    value: function createOutputMatrix() {
+      var model = this.model;
+      var outputSize = this.outputSize;
+      var lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1]; // 0 is end, so add 1 to offset
+      // whd
+
+      model.outputConnector = new randomMatrix(outputSize + 1, lastHiddenSize, 0.08); // 0 is end, so add 1 to offset
+      // bd
+
+      model.output = new matrix(outputSize + 1, 1);
+    }
+  }, {
+    key: "bindEquation",
+    value: function bindEquation() {
+      var model = this.model;
+      var equation$1 = new equation();
+      var outputs = [];
+      var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs; // 0 index
+
+      var output = this.constructor.getEquation(equation$1, equation$1.inputMatrixToRow(model.input), equationConnection[0], model.hiddenLayers[0]);
+      outputs.push(output); // 1+ indices
+
+      for (var i = 1, max = this.hiddenLayers.length; i < max; i++) {
+        output = this.constructor.getEquation(equation$1, output, equationConnection[i], model.hiddenLayers[i]);
+        outputs.push(output);
+      }
+
+      model.equationConnections.push(outputs);
+      equation$1.add(equation$1.multiply(model.outputConnector, output), model.output);
+      model.equations.push(equation$1);
+    }
+  }, {
+    key: "mapModel",
+    value: function mapModel() {
+      var model = this.model;
+      var hiddenLayers = model.hiddenLayers;
+      var allMatrices = model.allMatrices;
+      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
+        return new matrix(size, 1);
+      });
+      this.createInputMatrix();
+      if (!model.input) throw new Error('net.model.input not set');
+      allMatrices.push(model.input);
+      this.createHiddenLayers();
+      if (!model.hiddenLayers.length) throw new Error('net.hiddenLayers not set');
+
+      for (var i = 0, max = hiddenLayers.length; i < max; i++) {
+        var hiddenMatrix = hiddenLayers[i];
+
+        for (var property in hiddenMatrix) {
+          if (!hiddenMatrix.hasOwnProperty(property)) continue;
+          allMatrices.push(hiddenMatrix[property]);
+        }
+      }
+
+      this.createOutputMatrix();
+      if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
+      if (!model.output) throw new Error('net.model.output not set');
+      allMatrices.push(model.outputConnector);
+      allMatrices.push(model.output);
+    }
+    /**
+     *
+     * @param {Number[]|string[]|string} input
+     * @param {boolean} [logErrorRate]
+     * @returns {number}
+     */
+
+  }, {
+    key: "trainPattern",
+    value: function trainPattern(input, logErrorRate) {
+      var error = this.trainInput(input);
+      this.backpropagate(input);
+      this.adjustWeights();
+
+      if (logErrorRate) {
+        return error;
+      }
+    }
+    /**
+     *
+     * @param {Number[]} input
+     * @returns {number}
+     */
+
+  }, {
+    key: "trainInput",
+    value: function trainInput(input) {
+      this.runs++;
+      var model = this.model;
+      var max = input.length;
+      var log2ppl = 0;
+      var equation;
+
+      while (model.equations.length <= input.length + 1) {
+        // last is zero
+        this.bindEquation();
+      }
+
+      for (var inputIndex = -1, inputMax = input.length; inputIndex < inputMax; inputIndex++) {
+        // start and end tokens are zeros
+        var equationIndex = inputIndex + 1;
+        equation = model.equations[equationIndex];
+        var source = inputIndex === -1 ? 0 : input[inputIndex] + 1; // first step: start with START token
+
+        var target = inputIndex === max - 1 ? 0 : input[inputIndex + 1] + 1; // last step: end with END token
+
+        log2ppl += equation.predictTargetIndex(source, target);
+      }
+
+      return Math.pow(2, log2ppl / (max - 1)) / 100;
+    }
+    /**
+     * @param {Number[]} input
+     */
+
+  }, {
+    key: "backpropagate",
+    value: function backpropagate(input) {
+      var i = input.length;
+      var model = this.model;
+      var equations = model.equations;
+
+      while (i > 0) {
+        equations[i].backpropagateIndex(input[i - 1] + 1);
+        i--;
+      }
+
+      equations[0].backpropagateIndex(0);
+    }
+  }, {
+    key: "adjustWeights",
+    value: function adjustWeights() {
+      var regc = this.regc,
+          clipval = this.clipval,
+          model = this.model,
+          decayRate = this.decayRate,
+          stepCache = this.stepCache,
+          smoothEps = this.smoothEps,
+          trainOpts = this.trainOpts;
+      var learningRate = trainOpts.learningRate;
+      var allMatrices = model.allMatrices;
+      var numClipped = 0;
+      var numTot = 0;
+
+      for (var matrixIndex = 0; matrixIndex < allMatrices.length; matrixIndex++) {
+        var matrix = allMatrices[matrixIndex];
+        var weights = matrix.weights,
+            deltas = matrix.deltas;
+
+        if (!(matrixIndex in stepCache)) {
+          stepCache[matrixIndex] = zeros$c(matrix.rows * matrix.columns);
+        }
+
+        var cache = stepCache[matrixIndex];
+
+        for (var i = 0; i < weights.length; i++) {
+          var r = deltas[i];
+          var w = weights[i]; // rmsprop adaptive learning rate
+
+          cache[i] = cache[i] * decayRate + (1 - decayRate) * r * r; // gradient clip
+
+          if (r > clipval) {
+            r = clipval;
+            numClipped++;
+          }
+
+          if (r < -clipval) {
+            r = -clipval;
+            numClipped++;
+          }
+
+          numTot++; // update (and regularize)
+
+          weights[i] = w + -learningRate * r / Math.sqrt(cache[i] + smoothEps) - regc * w;
+        }
+      }
+
+      this.ratioClipped = numClipped / numTot;
+    }
+    /**
+     *
+     * @returns boolean
+     */
+
+  }, {
+    key: "run",
+
+    /**
+     *
+     * @param {Number[]|*} [rawInput]
+     * @param {Boolean} [isSampleI]
+     * @param {Number} temperature
+     * @returns {*}
+     */
+    value: function run() {
+      var rawInput = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      var isSampleI = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      var temperature = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+      var maxPredictionLength = this.maxPredictionLength + rawInput.length + (this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0);
+      if (!this.isRunnable) return null;
+      var input = this.formatDataIn(rawInput);
+      var model = this.model;
+      var output = [];
+      var i = 0;
+
+      while (true) {
+        var previousIndex = i === 0 ? 0 : i < input.length ? input[i - 1] + 1 : output[i - 1];
+
+        while (model.equations.length <= i) {
+          this.bindEquation();
+        }
+
+        var equation = model.equations[i]; // sample predicted letter
+
+        var outputMatrix = equation.runIndex(previousIndex);
+        var logProbabilities = new matrix(model.output.rows, model.output.columns);
+        copy(logProbabilities, outputMatrix);
+
+        if (temperature !== 1 && isSampleI) {
+          /**
+           * scale log probabilities by temperature and re-normalize
+           * if temperature is high, logProbabilities will go towards zero
+           * and the softmax outputs will be more diffuse. if temperature is
+           * very low, the softmax outputs will be more peaky
+           */
+          for (var j = 0, max = logProbabilities.weights.length; j < max; j++) {
+            logProbabilities.weights[j] /= temperature;
+          }
+        }
+
+        var probs = softmax(logProbabilities);
+        var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);
+        i++;
+
+        if (nextIndex === 0) {
+          // END token predicted, break out
+          break;
+        }
+
+        if (i >= maxPredictionLength) {
+          // something is wrong
+          break;
+        }
+
+        output.push(nextIndex);
+      }
+      /**
+       * we slice the input length here, not because output contains it, but it will be erroneous as we are sending the
+       * network what is contained in input, so the data is essentially guessed by the network what could be next, till it
+       * locks in on a value.
+       * Kind of like this, values are from input:
+       * 0 -> 4 (or in English: "beginning on input" -> "I have no idea? I'll guess what they want next!")
+       * 2 -> 2 (oh how interesting, I've narrowed down values...)
+       * 1 -> 9 (oh how interesting, I've now know what the values are...)
+       * then the output looks like: [4, 2, 9,...]
+       * so we then remove the erroneous data to get our true output
+       */
+
+
+      return this.formatDataOut(input, output.slice(input.length).map(function (value) {
+        return value - 1;
+      }));
+    }
+    /**
+     *
+     * Verifies network sizes are initilaized
+     * If they are not it will initialize them
+     */
+
+  }, {
+    key: "verifyIsInitialized",
+    value: function verifyIsInitialized() {
+      if (!this.model) {
+        this.initialize();
+      }
+    }
+    /**
+     *
+     * @param options
+     *    Supports all `trainDefaults` properties
+     *    also supports:
+     *       learningRate: (number),
+     *       momentum: (number),
+     *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
+     */
+
+  }, {
+    key: "updateTrainingOptions",
+    value: function updateTrainingOptions(options) {
+      var _this = this;
+
+      Object.keys(this.constructor.trainDefaults).forEach(function (p) {
+        return _this.trainOpts[p] = options.hasOwnProperty(p) ? options[p] : _this.trainOpts[p];
+      });
+      this.validateTrainingOptions(this.trainOpts);
+      this.setLogMethod(options.log || this.trainOpts.log);
+      this.activation = options.activation || this.activation;
+    }
+  }, {
+    key: "validateTrainingOptions",
+    value: function validateTrainingOptions(options) {
+      neuralNetwork.prototype.validateTrainingOptions.call(this, options);
+    }
+    /**
+     *
+     * @param log
+     * if a method is passed in method is used
+     * if false passed in nothing is logged
+     * @returns error
+     */
+
+  }, {
+    key: "setLogMethod",
+    value: function setLogMethod(log) {
+      if (typeof log === 'function') {
+        this.trainOpts.log = log;
+      } else if (log) {
+        this.trainOpts.log = console.log;
+      } else {
+        this.trainOpts.log = false;
+      }
+    }
+    /**
+     *
+     * @param data
+     * @param options
+     * @protected
+     * @return {object} { data, status, endTime }
+     */
+
+  }, {
+    key: "prepTraining",
+    value: function prepTraining(data, options) {
+      this.updateTrainingOptions(options);
+      data = this.formatData(data);
+      var endTime = Date.now() + this.trainOpts.timeout;
+      var status = {
+        error: 1,
+        iterations: 0
+      };
+      this.verifyIsInitialized(data);
+      return {
+        data: data,
+        status: status,
+        endTime: endTime
+      };
+    }
+    /**
+     *
+     * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
+     * @param {Object} [options]
+     * @returns {{error: number, iterations: number}}
+     */
+
+  }, {
+    key: "train",
+    value: function train(data) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      this.trainOpts = options = _objectSpread2(_objectSpread2({}, this.constructor.trainDefaults), options);
+      var _options = options,
+          iterations = _options.iterations;
+      var _options2 = options,
+          errorThresh = _options2.errorThresh;
+      var log = options.log === true ? console.log : options.log;
+      var _options3 = options,
+          logPeriod = _options3.logPeriod;
+      var _options4 = options,
+          callback = _options4.callback;
+      var _options5 = options,
+          callbackPeriod = _options5.callbackPeriod;
+      var error = Infinity;
+      var i;
+
+      if (this.hasOwnProperty('setupData')) {
+        data = this.setupData(data);
+      }
+
+      this.verifyIsInitialized();
+
+      for (i = 0; i < iterations && error > errorThresh; i++) {
+        var sum = 0;
+
+        for (var j = 0; j < data.length; j++) {
+          var err = this.trainPattern(data[j], true);
+          sum += err;
+        }
+
+        error = sum / data.length;
+
+        if (isNaN(error)) {
+          throw new Error('Network error rate is unexpected NaN, check network configurations and try again. Most probably input format is not correct or training data is not enough. ');
+        }
+
+        if (log && i % logPeriod === 0) {
+          log("iterations: ".concat(i, ", training error: ").concat(error));
+        }
+
+        if (callback && i % callbackPeriod === 0) {
+          callback({
+            error: error,
+            iterations: i
+          });
+        }
+      }
+
+      return {
+        error: error,
+        iterations: i
+      };
+    }
+  }, {
+    key: "addFormat",
+    value: function addFormat() {
+      throw new Error('not yet implemented');
+    }
+    /**
+     *
+     * @returns {Object}
+     */
+
+  }, {
+    key: "toJSON",
+    value: function toJSON() {
+      var defaults = this.constructor.defaults;
+
+      if (!this.model) {
+        this.initialize();
+      }
+
+      var model = this.model;
+      var options = {};
+
+      for (var p in defaults) {
+        if (defaults.hasOwnProperty(p)) {
+          options[p] = this[p];
+        }
+      }
+
+      return {
+        type: this.constructor.name,
+        options: options,
+        input: model.input.toJSON(),
+        hiddenLayers: model.hiddenLayers.map(function (hiddenLayer) {
+          var layers = {};
+
+          for (var _p in hiddenLayer) {
+            layers[_p] = hiddenLayer[_p].toJSON();
+          }
+
+          return layers;
+        }),
+        outputConnector: this.model.outputConnector.toJSON(),
+        output: this.model.output.toJSON()
+      };
+    }
+  }, {
+    key: "fromJSON",
+    value: function fromJSON(json) {
+      var defaults = this.constructor.defaults;
+      var options = json.options;
+      this.model = null;
+      this.hiddenLayers = null;
+      var allMatrices = [];
+      var input = matrix.fromJSON(json.input);
+      allMatrices.push(input);
+      var hiddenLayers = []; // backward compatibility for hiddenSizes
+
+      (json.hiddenLayers || json.hiddenSizes).forEach(function (hiddenLayer) {
+        var layers = {};
+
+        for (var p in hiddenLayer) {
+          layers[p] = matrix.fromJSON(hiddenLayer[p]);
+          allMatrices.push(layers[p]);
+        }
+
+        hiddenLayers.push(layers);
+      });
+      var outputConnector = matrix.fromJSON(json.outputConnector);
+      allMatrices.push(outputConnector);
+      var output = matrix.fromJSON(json.output);
+      allMatrices.push(output);
+      Object.assign(this, defaults, options); // backward compatibility
+
+      if (options.hiddenSizes) {
+        this.hiddenLayers = options.hiddenSizes;
+      }
+
+      if (options.dataFormatter) {
+        this.dataFormatter = DataFormatter$1.fromJSON(options.dataFormatter);
+      }
+
+      this.model = {
+        input: input,
+        hiddenLayers: hiddenLayers,
+        output: output,
+        allMatrices: allMatrices,
+        outputConnector: outputConnector,
+        equations: [],
+        equationConnections: []
+      };
+      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
+        return new matrix(size, 1);
+      });
+      this.bindEquation();
+    }
+    /**
+     * @param {Function} [cb]
+     * @returns {Function}
+     */
+
+  }, {
+    key: "toFunction",
+    value: function toFunction(cb) {
+      var model = this.model;
+      var equations = this.model.equations;
+      var equation = equations[1];
+      var states = equation.states;
+      var jsonString = JSON.stringify(this.toJSON());
+
+      function previousConnectionIndex(m) {
+        var connection = model.equationConnections[0];
+        var states = equations[0].states;
+
+        for (var i = 0, max = states.length; i < max; i++) {
+          if (states[i].product === m) {
+            return i;
+          }
+        }
+
+        return connection.indexOf(m);
+      }
+
+      function matrixOrigin(m, stateIndex) {
+        for (var i = 0, max = states.length; i < max; i++) {
+          var state = states[i];
+
+          if (i === stateIndex) {
+            var j = previousConnectionIndex(m);
+
+            if (j > -1 && (m === state.left || m === state.right)) {
+              return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
+            }
+
+            return "new Matrix(".concat(m.rows, ", ").concat(m.columns, ")");
+          }
+
+          if (m === state.product) return "states[".concat(i, "].product");
+          if (m === state.right) return "states[".concat(i, "].right");
+          if (m === state.left) return "states[".concat(i, "].left");
+        }
+      }
+
+      function matrixToString(m, stateIndex) {
+        if (!m || !m.rows || !m.columns) return 'null';
+        if (m === model.input) return "json.input";
+        if (m === model.outputConnector) return "json.outputConnector";
+        if (m === model.output) return "json.output";
+
+        for (var i = 0, max = model.hiddenLayers.length; i < max; i++) {
+          var hiddenLayer = model.hiddenLayers[i];
+
+          for (var p in hiddenLayer) {
+            if (!hiddenLayer.hasOwnProperty(p)) continue;
+            if (hiddenLayer[p] !== m) continue;
+            return "json.hiddenLayers[".concat(i, "].").concat(p);
+          }
+        }
+
+        return matrixOrigin(m, stateIndex);
+      }
+
+      function toInner(fnString) {
+        // crude, but should be sufficient for now
+        // function() { body }
+        fnString = fnString.toString().split('{');
+        fnString.shift(); // body }
+
+        fnString = fnString.join('{');
+        fnString = fnString.split('}');
+        fnString.pop(); // body
+
+        return fnString.join('}').split('\n').join('\n        ').replace('product.deltas[i] = 0;', '').replace('product.deltas[column] = 0;', '').replace('left.deltas[leftIndex] = 0;', '').replace('right.deltas[rightIndex] = 0;', '').replace('product.deltas = left.deltas.slice(0);', '');
+      }
+
+      function fileName(fnName) {
+        return "src/recurrent/matrix/".concat(fnName.replace(/[A-Z]/g, function (value) {
+          return "-".concat(value.toLowerCase());
+        }), ".js");
+      }
+
+      var statesRaw = [];
+      var usedFunctionNames = {};
+      var innerFunctionsSwitch = [];
+
+      for (var i = 0, max = states.length; i < max; i++) {
+        var state = states[i];
+        statesRaw.push("states[".concat(i, "] = {\n      name: '").concat(state.forwardFn.name, "',\n      left: ").concat(matrixToString(state.left, i), ",\n      right: ").concat(matrixToString(state.right, i), ",\n      product: ").concat(matrixToString(state.product, i), "\n    }"));
+        var fnName = state.forwardFn.name;
+
+        if (!usedFunctionNames[fnName]) {
+          usedFunctionNames[fnName] = true;
+          innerFunctionsSwitch.push("        case '".concat(fnName, "': //compiled from ").concat(fileName(fnName), "\n          ").concat(toInner(state.forwardFn.toString()), "\n          break;"));
+        }
+      }
+
+      var src = "\n  if (typeof rawInput === 'undefined') rawInput = [];\n  if (typeof isSampleI === 'undefined') isSampleI = false;\n  if (typeof temperature === 'undefined') temperature = 1;\n  var json = ".concat(jsonString, ";\n  ").concat(this.dataFormatter ? "".concat(this.dataFormatter.toFunctionString(), ";\n  Object.assign(dataFormatter, json.options.dataFormatter);") : '', "\n  ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? "const formatDataIn = function (input, output) { ".concat(toInner(this.formatDataIn.toString()), " }.bind({ dataFormatter });") : '', "\n  ").concat(this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? "const formatDataOut = function formatDataOut(input, output) { ".concat(toInner(this.formatDataOut.toString()), " }.bind({ dataFormatter });") : '', "\n  var maxPredictionLength =\n    ").concat(this.maxPredictionLength, " +\n    rawInput.length +\n    ").concat(this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0, ";\n  var input = ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput', ";\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n\n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n\n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ").concat(this.dataFormatter && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })', ";\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros$c.toString(), "\n  ").concat(softmax.toString(), "\n  ").concat(randomFloat$4.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString()); // eslint-disable-next-line no-new-func
+
+      return new Function('rawInput', 'isSampleI', 'temperature', cb ? cb(src) : src);
+    }
+  }, {
+    key: "isRunnable",
+    get: function get() {
+      if (this.model.equations.length === 0) {
+        console.error("No equations bound, did you run train()?");
+        return false;
+      }
+
+      return true;
+    }
+  }], [{
+    key: "getModel",
+    value: function getModel(hiddenSize, prevSize) {
+      return {
+        // wxh
+        weight: new randomMatrix(hiddenSize, prevSize, 0.08),
+        // whh
+        transition: new randomMatrix(hiddenSize, hiddenSize, 0.08),
+        // bhh
+        bias: new matrix(hiddenSize, 1)
+      };
+    }
+    /**
+     *
+     * @param {Equation} equation
+     * @param {Matrix} inputMatrix
+     * @param {Matrix} previousResult
+     * @param {Object} hiddenLayer
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "getEquation",
+    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+      var relu = equation.relu.bind(equation);
+      var add = equation.add.bind(equation);
+      var multiply = equation.multiply.bind(equation);
+      return relu(add(add(multiply(hiddenLayer.weight, inputMatrix), multiply(hiddenLayer.transition, previousResult)), hiddenLayer.bias));
+    }
+  }]);
+
+  return RNN;
+}();
+
+RNN.defaults = {
+  inputSize: 20,
+  inputRange: 20,
+  hiddenLayers: [20, 20],
+  outputSize: 20,
+  decayRate: 0.999,
+  smoothEps: 1e-8,
+  regc: 0.000001,
+  clipval: 5,
+  maxPredictionLength: 100,
+
+  /**
+   *
+   * @param {*[]} data
+   * @returns {Number[]}
+   */
+  setupData: defaultRNNFormatter$1,
+
+  /**
+   *
+   * @param {*[]} input
+   * @param {*[]} output
+   * @returns {Number[]}
+   */
+  formatDataIn: function formatDataIn(input) {
+    var output = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+    if (this.dataFormatter) {
+      if (this.dataFormatter.indexTable.hasOwnProperty('stop-input')) {
+        return this.dataFormatter.toIndexesInputOutput(input, output);
+      }
+
+      return this.dataFormatter.toIndexes(input);
+    }
+
+    return input;
+  },
+
+  /**
+   *
+   * @param {Number[]} input
+   * @param {Number[]} output
+   * @returns {*}
+   */
+  formatDataOut: function formatDataOut(input, output) {
+    if (this.dataFormatter) {
+      return this.dataFormatter.toCharacters(output).join('');
+    }
+
+    return output;
+  },
+  dataFormatter: null
+};
+RNN.trainDefaults = {
+  iterations: 20000,
+  errorThresh: 0.005,
+  log: false,
+  logPeriod: 10,
+  learningRate: 0.01,
+  callback: null,
+  callbackPeriod: 10
+};
+var rnn = RNN;
+
+var GRU = /*#__PURE__*/function (_RNN) {
+  _inherits(GRU, _RNN);
+
+  var _super = _createSuper(GRU);
+
+  function GRU() {
+    _classCallCheck(this, GRU);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(GRU, null, [{
+    key: "getModel",
+    value: function getModel(hiddenSize, prevSize) {
+      return {
+        // update Gate
+        // wzxh
+        updateGateInputMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
+        // wzhh
+        updateGateHiddenMatrix: new randomMatrix(hiddenSize, hiddenSize, 0.08),
+        // bz
+        updateGateBias: new matrix(hiddenSize, 1),
+        // reset Gate
+        // wrxh
+        resetGateInputMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
+        // wrhh
+        resetGateHiddenMatrix: new randomMatrix(hiddenSize, hiddenSize, 0.08),
+        // br
+        resetGateBias: new matrix(hiddenSize, 1),
+        // cell write parameters
+        // wcxh
+        cellWriteInputMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
+        // wchh
+        cellWriteHiddenMatrix: new randomMatrix(hiddenSize, hiddenSize, 0.08),
+        // bc
+        cellWriteBias: new matrix(hiddenSize, 1)
+      };
+    }
+    /**
+     *
+     * @param {Equation} equation
+     * @param {Matrix} inputMatrix
+     * @param {Matrix} previousResult
+     * @param {Object} hiddenLayer
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "getEquation",
+    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+      var sigmoid = equation.sigmoid.bind(equation);
+      var add = equation.add.bind(equation);
+      var multiply = equation.multiply.bind(equation);
+      var multiplyElement = equation.multiplyElement.bind(equation);
+      var tanh = equation.tanh.bind(equation);
+      var allOnes = equation.allOnes.bind(equation);
+      var cloneNegative = equation.cloneNegative.bind(equation); // update gate
+
+      var updateGate = sigmoid(add(add(multiply(hiddenLayer.updateGateInputMatrix, inputMatrix), multiply(hiddenLayer.updateGateHiddenMatrix, previousResult)), hiddenLayer.updateGateBias)); // reset gate
+
+      var resetGate = sigmoid(add(add(multiply(hiddenLayer.resetGateInputMatrix, inputMatrix), multiply(hiddenLayer.resetGateHiddenMatrix, previousResult)), hiddenLayer.resetGateBias)); // cell
+
+      var cell = tanh(add(add(multiply(hiddenLayer.cellWriteInputMatrix, inputMatrix), multiply(hiddenLayer.cellWriteHiddenMatrix, multiplyElement(resetGate, previousResult))), hiddenLayer.cellWriteBias)); // compute hidden state as gated, saturated cell activations
+      // negate updateGate
+
+      return add(multiplyElement(add(allOnes(updateGate.rows, updateGate.columns), cloneNegative(updateGate)), cell), multiplyElement(previousResult, updateGate));
+    }
+  }]);
+
+  return GRU;
+}(rnn);
+
+var gru$2 = GRU;
+
+function ArrayLookupTable(data, prop) {
+  this.length = 0;
+  this.prop = prop;
+  var table = this.table = {};
+
+  for (var i = 0; i < data.length; i++) {
+    var datum = data[i];
+    var input = datum[prop];
+
+    for (var j = 0; j < input.length; j++) {
+      for (var p in input[j]) {
+        if (table.hasOwnProperty(p)) continue;
+        table[p] = this.length++;
+      }
+    }
+  }
+}
+
+var arrayLookupTable = ArrayLookupTable;
+
+var zeros$d = zeros$1.zeros;
+var randomFloat$5 = random.randomFloat;
+var arraysToFloat32Arrays$1 = cast.arraysToFloat32Arrays,
+    arrayToFloat32Arrays$1 = cast.arrayToFloat32Arrays,
+    objectsToFloat32Arrays$1 = cast.objectsToFloat32Arrays,
+    objectToFloat32Arrays$1 = cast.objectToFloat32Arrays,
+    objectToFloat32Array$1 = cast.objectToFloat32Array;
+
+var RNNTimeStep = /*#__PURE__*/function (_RNN) {
+  _inherits(RNNTimeStep, _RNN);
+
+  var _super = _createSuper(RNNTimeStep);
+
+  // eslint-disable-next-line
+  function RNNTimeStep(options) {
+    _classCallCheck(this, RNNTimeStep);
+
+    return _super.call(this, options);
+  }
+
+  _createClass(RNNTimeStep, [{
+    key: "createInputMatrix",
+    value: function createInputMatrix() {}
+  }, {
+    key: "createOutputMatrix",
+    value: function createOutputMatrix() {
+      var model = this.model;
+      var outputSize = this.outputSize;
+      var lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1]; // whd
+
+      model.outputConnector = new randomMatrix(outputSize, lastHiddenSize, 0.08); // bd
+
+      model.output = new randomMatrix(outputSize, 1, 0.08);
+    }
+  }, {
+    key: "bindEquation",
+    value: function bindEquation() {
+      var model = this.model;
+      var hiddenLayers = this.hiddenLayers;
+      var layers = model.hiddenLayers;
+      var equation$1 = new equation();
+      var outputs = [];
+      var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs; // 0 index
+
+      var output = this.constructor.getEquation(equation$1, equation$1.input(new matrix(this.inputSize, 1)), equationConnection[0], layers[0]);
+      outputs.push(output); // 1+ indices
+
+      for (var i = 1, max = hiddenLayers.length; i < max; i++) {
+        output = this.constructor.getEquation(equation$1, output, equationConnection[i], layers[i]);
+        outputs.push(output);
+      }
+
+      model.equationConnections.push(outputs);
+      equation$1.add(equation$1.multiply(model.outputConnector, output), model.output);
+      model.equations.push(equation$1);
+    }
+  }, {
+    key: "mapModel",
+    value: function mapModel() {
+      var model = this.model;
+      var hiddenLayers = model.hiddenLayers;
+      var allMatrices = model.allMatrices;
+      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
+        return new matrix(size, 1);
+      });
+      this.createHiddenLayers();
+      if (!model.hiddenLayers.length) throw new Error('net.hiddenLayers not set');
+
+      for (var i = 0, max = hiddenLayers.length; i < max; i++) {
+        var hiddenMatrix = hiddenLayers[i];
+
+        for (var property in hiddenMatrix) {
+          if (!hiddenMatrix.hasOwnProperty(property)) continue;
+          allMatrices.push(hiddenMatrix[property]);
+        }
+      }
+
+      this.createOutputMatrix();
+      if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
+      if (!model.output) throw new Error('net.model.output not set');
+      allMatrices.push(model.outputConnector);
+      allMatrices.push(model.output);
+    }
+  }, {
+    key: "backpropagate",
+    value: function backpropagate() {
+      for (var i = this.model.equations.length - 1; i > -1; i--) {
+        this.model.equations[i].backpropagate();
+      }
+    }
+    /**
+     *
+     * @param {number[]|number[][]|object|object[][]} [rawInput]
+     * @returns {number[]|number|object|object[]|object[][]}
+     */
+
+  }, {
+    key: "run",
+    value: function run(rawInput) {
+      if (this.inputSize === 1) {
+        if (this.outputLookup) {
+          this.run = this.runObject;
+          return this.runObject(rawInput);
+        }
+
+        this.run = this.runNumbers;
+        return this.runNumbers(rawInput);
+      }
+
+      if (this.outputLookup) {
+        this.run = this.runObjects;
+        return this.runObjects(rawInput);
+      }
+
+      this.run = this.runArrays;
+      return this.runArrays(rawInput);
+    }
+  }, {
+    key: "forecast",
+    value: function forecast(input, count) {
+      if (this.inputSize === 1) {
+        if (this.outputLookup) {
+          this.forecast = this.runObject;
+          return this.runObject(input);
+        }
+
+        this.forecast = this.forecastNumbers;
+        return this.forecastNumbers(input, count);
+      }
+
+      if (this.outputLookup) {
+        this.forecast = this.forecastObjects;
+        return this.forecastObjects(input, count);
+      }
+
+      this.forecast = this.forecastArrays;
+      return this.forecastArrays(input, count);
+    }
+    /**
+     *
+     * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
+     * @param {Object} [options]
+     * @returns {{error: number, iterations: number}}
+     */
+
+  }, {
+    key: "train",
+    value: function train(data) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      this.trainOpts = options = _objectSpread2(_objectSpread2({}, this.constructor.trainDefaults), options);
+      var _options = options,
+          iterations = _options.iterations;
+      var _options2 = options,
+          errorThresh = _options2.errorThresh;
+      var log = options.log === true ? console.log : options.log;
+      var _options3 = options,
+          logPeriod = _options3.logPeriod;
+      var _options4 = options,
+          callback = _options4.callback;
+      var _options5 = options,
+          callbackPeriod = _options5.callbackPeriod;
+
+      if (this.inputSize === 1 || !this.inputSize) {
+        this.setSize(data);
+      }
+
+      data = this.formatData(data);
+      var error = Infinity;
+      var i;
+      this.verifyIsInitialized(data);
+
+      for (i = 0; i < iterations && error > errorThresh; i++) {
+        var sum = 0;
+
+        for (var j = 0; j < data.length; j++) {
+          var err = this.trainPattern(data[j], true);
+          sum += err;
+        }
+
+        error = sum / data.length;
+        if (isNaN(error)) throw new Error('Network error rate is unexpected NaN, check network configurations and try again. Most probably input format is not correct or training data is not enough. ');
+
+        if (log && i % logPeriod === 0) {
+          log("iterations: ".concat(i, ", training error: ").concat(error));
+        }
+
+        if (callback && i % callbackPeriod === 0) {
+          callback({
+            error: error,
+            iterations: i
+          });
+        }
+      }
+
+      return {
+        error: error,
+        iterations: i
+      };
+    }
+    /**
+     *
+     * @param data
+     * Verifies network sizes are initialized
+     * If they are not it will initialize them based off the data set.
+     */
+
+  }, {
+    key: "verifyIsInitialized",
+    value: function verifyIsInitialized(data) {
+      if (data[0].input) {
+        this.trainInput = this.trainInputOutput;
+      } else if (data[0].length > 0) {
+        if (data[0][0].length > 0) {
+          this.trainInput = this.trainArrays;
+        } else if (this.inputSize > 1) {
+          this.trainInput = this.trainArrays;
+        } else {
+          this.trainInput = this.trainNumbers;
+        }
+      }
+
+      if (!this.model) {
+        this.initialize();
+      }
+    }
+  }, {
+    key: "setSize",
+    value: function setSize(data) {
+      var dataShape = lookup.dataShape(data).join(',');
+
+      switch (dataShape) {
+        case 'array,array,number':
+        case 'array,object,number':
+        case 'array,datum,array,number':
+        case 'array,datum,object,number':
+          // probably 1
+          break;
+
+        case 'array,array,array,number':
+          this.inputSize = this.outputSize = data[0][0].length;
+          break;
+
+        case 'array,array,object,number':
+          this.inputSize = this.outputSize = Object.keys(lookup.toTable2D(data)).length;
+          break;
+
+        case 'array,datum,array,array,number':
+          this.inputSize = this.outputSize = data[0].input[0].length;
+          break;
+
+        case 'array,datum,array,object,number':
+          this.inputSize = Object.keys(lookup.toInputTable2D(data)).length;
+          this.outputSize = Object.keys(lookup.toOutputTable2D(data)).length;
+          break;
+
+        default:
+          throw new Error('unknown data shape or configuration');
+      }
+    }
+  }, {
+    key: "trainNumbers",
+    value: function trainNumbers(input) {
+      var model = this.model;
+      var equations = model.equations;
+
+      while (equations.length < input.length) {
+        this.bindEquation();
+      }
+
+      var errorSum = 0;
+
+      for (var i = 0, max = input.length - 1; i < max; i++) {
+        errorSum += equations[i].predictTarget([input[i]], [input[i + 1]]);
+      }
+
+      this.end();
+      return errorSum / input.length;
+    }
+  }, {
+    key: "runNumbers",
+    value: function runNumbers(input) {
+      if (!this.isRunnable) return null;
+      var model = this.model;
+      var equations = model.equations;
+
+      if (this.inputLookup) {
+        input = lookup.toArray(this.inputLookup, input, this.inputLookupLength);
+      }
+
+      while (equations.length <= input.length) {
+        this.bindEquation();
+      }
+
+      var lastOutput;
+
+      for (var i = 0; i < input.length; i++) {
+        lastOutput = equations[i].runInput(new Float32Array([input[i]]));
+      }
+
+      this.end();
+      return lastOutput.weights[0];
+    }
+  }, {
+    key: "forecastNumbers",
+    value: function forecastNumbers(input, count) {
+      if (!this.isRunnable) return null;
+      var model = this.model;
+      var equations = model.equations;
+      var length = input.length + count;
+
+      while (equations.length <= length) {
+        this.bindEquation();
+      }
+
+      var lastOutput;
+      var equationIndex = 0;
+
+      for (var i = 0; i < input.length; i++) {
+        lastOutput = equations[equationIndex++].runInput([input[i]]);
+      }
+
+      var result = [lastOutput.weights[0]];
+
+      for (var _i = 0, max = count - 1; _i < max; _i++) {
+        lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
+        result.push(lastOutput.weights[0]);
+      }
+
+      this.end();
+      return result;
+    }
+  }, {
+    key: "runObject",
+    value: function runObject(input) {
+      if (this.inputLookup === this.outputLookup) {
+        var inputArray = lookup.toArrayShort(this.inputLookup, input);
+        return lookup.toObjectPartial(this.outputLookup, this.forecastNumbers(inputArray, this.outputLookupLength - inputArray.length), inputArray.length);
+      }
+
+      return lookup.toObject(this.outputLookup, this.forecastNumbers(lookup.toArray(this.inputLookup, input, this.inputLookupLength), this.outputLookupLength));
+    }
+  }, {
+    key: "runObjects",
+    value: function runObjects(input) {
+      var _this = this;
+
+      input = input.map(function (value) {
+        return lookup.toArray(_this.inputLookup, value, _this.inputLookupLength);
+      });
+      return this.forecastArrays(input, 1).map(function (value) {
+        return lookup.toObject(_this.outputLookup, value);
+      })[0];
+    }
+  }, {
+    key: "forecastObjects",
+    value: function forecastObjects(input, count) {
+      var _this2 = this;
+
+      input = input.map(function (value) {
+        return lookup.toArray(_this2.inputLookup, value, _this2.inputLookupLength);
+      });
+      return this.forecastArrays(input, count).map(function (value) {
+        return lookup.toObject(_this2.outputLookup, value);
+      });
+    }
+  }, {
+    key: "trainInputOutput",
+    value: function trainInputOutput(object) {
+      var model = this.model;
+      var input = object.input;
+      var output = object.output;
+      var totalSize = input.length + output.length;
+      var equations = model.equations;
+
+      while (equations.length < totalSize) {
+        this.bindEquation();
+      }
+
+      var errorSum = 0;
+      var equationIndex = 0;
+
+      for (var inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
+        errorSum += equations[equationIndex++].predictTarget(input[inputIndex], input[inputIndex + 1]);
+      }
+
+      errorSum += equations[equationIndex++].predictTarget(input[input.length - 1], output[0]);
+
+      for (var outputIndex = 0, _max = output.length - 1; outputIndex < _max; outputIndex++) {
+        errorSum += equations[equationIndex++].predictTarget(output[outputIndex], output[outputIndex + 1]);
+      }
+
+      this.end();
+      return errorSum / totalSize;
+    }
+  }, {
+    key: "trainArrays",
+    value: function trainArrays(input) {
+      var model = this.model;
+      var equations = model.equations;
+
+      while (equations.length < input.length) {
+        this.bindEquation();
+      }
+
+      var errorSum = 0;
+
+      for (var i = 0, max = input.length - 1; i < max; i++) {
+        errorSum += equations[i].predictTarget(input[i], input[i + 1]);
+      }
+
+      this.end();
+      return errorSum / input.length;
+    }
+  }, {
+    key: "runArrays",
+    value: function runArrays(input) {
+      if (!this.isRunnable) return null;
+      var model = this.model;
+      var equations = model.equations;
+
+      while (equations.length <= input.length) {
+        this.bindEquation();
+      }
+
+      if (this.inputLookup) {
+        input = lookup.toArrays(this.inputLookup, input, this.inputLookupLength);
+      }
+
+      var lastOutput;
+
+      for (var i = 0; i < input.length; i++) {
+        var outputMatrix = equations[i].runInput(input[i]);
+        lastOutput = outputMatrix.weights;
+      }
+
+      this.end();
+
+      if (this.outputLookup) {
+        return lookup.toObject(this.outputLookup, lastOutput);
+      }
+
+      return lastOutput;
+    }
+  }, {
+    key: "forecastArrays",
+    value: function forecastArrays(input, count) {
+      if (!this.isRunnable) return null;
+      var model = this.model;
+      var equations = model.equations;
+      var length = input.length + count;
+
+      while (equations.length <= length) {
+        this.bindEquation();
+      }
+
+      var lastOutput;
+      var equationIndex = 0;
+
+      for (var i = 0; i < input.length; i++) {
+        lastOutput = equations[equationIndex++].runInput(input[i]);
+      }
+
+      var result = [lastOutput.weights];
+
+      for (var _i2 = 0, max = count - 1; _i2 < max; _i2++) {
+        lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
+        result.push(lastOutput.weights.slice(0));
+      }
+
+      this.end();
+      return result;
+    }
+  }, {
+    key: "end",
+    value: function end() {
+      this.model.equations[this.model.equations.length - 1].runInput(new Float32Array(this.outputSize));
+    }
+    /**
+     *
+     * @param data
+     * @returns {*}
+     */
+
+  }, {
+    key: "formatData",
+    value: function formatData(data) {
+      var dataShape = lookup.dataShape(data).join(',');
+      var result = [];
+
+      switch (dataShape) {
+        case 'array,number':
+          {
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
+            }
+
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
+
+            for (var i = 0; i < data.length; i++) {
+              result.push(Float32Array.from([data[i]]));
+            }
+
+            return [result];
+          }
+
+        case 'array,array,number':
+          {
+            if (this.inputSize === 1 && this.outputSize === 1) {
+              for (var _i3 = 0; _i3 < data.length; _i3++) {
+                result.push(arrayToFloat32Arrays$1(data[_i3]));
+              }
+
+              return result;
+            }
+
+            if (this.inputSize !== data[0].length) {
+              throw new Error('inputSize must match data input size');
+            }
+
+            if (this.outputSize !== data[0].length) {
+              throw new Error('outputSize must match data input size');
+            }
+
+            for (var _i4 = 0; _i4 < data.length; _i4++) {
+              result.push(Float32Array.from(data[_i4]));
+            }
+
+            return [result];
+          }
+
+        case 'array,object,number':
+          {
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
+            }
+
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
+
+            if (!this.inputLookup) {
+              var lookupTable$1 = new lookupTable(data);
+              this.inputLookup = this.outputLookup = lookupTable$1.table;
+              this.inputLookupLength = this.outputLookupLength = lookupTable$1.length;
+            }
+
+            for (var _i5 = 0; _i5 < data.length; _i5++) {
+              result.push(objectToFloat32Arrays$1(data[_i5]));
+            }
+
+            return result;
+          }
+
+        case 'array,datum,array,number':
+          {
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
+            }
+
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
+
+            for (var _i6 = 0; _i6 < data.length; _i6++) {
+              var datum = data[_i6];
+              result.push({
+                input: arrayToFloat32Arrays$1(datum.input),
+                output: arrayToFloat32Arrays$1(datum.output)
+              });
+            }
+
+            return result;
+          }
+
+        case 'array,datum,object,number':
+          {
+            if (this.inputSize !== 1) {
+              throw new Error('inputSize must be 1 for this data size');
+            }
+
+            if (this.outputSize !== 1) {
+              throw new Error('outputSize must be 1 for this data size');
+            }
+
+            if (!this.inputLookup) {
+              var inputLookup = new lookupTable(data, 'input');
+              this.inputLookup = inputLookup.table;
+              this.inputLookupLength = inputLookup.length;
+            }
+
+            if (!this.outputLookup) {
+              var outputLookup = new lookupTable(data, 'output');
+              this.outputLookup = outputLookup.table;
+              this.outputLookupLength = outputLookup.length;
+            }
+
+            for (var _i7 = 0; _i7 < data.length; _i7++) {
+              var _datum = data[_i7];
+              result.push({
+                input: objectToFloat32Arrays$1(_datum.input),
+                output: objectToFloat32Arrays$1(_datum.output)
+              });
+            }
+
+            return result;
+          }
+
+        case 'array,array,array,number':
+          {
+            for (var _i8 = 0; _i8 < data.length; _i8++) {
+              result.push(arraysToFloat32Arrays$1(data[_i8]));
+            }
+
+            return result;
+          }
+
+        case 'array,array,object,number':
+          {
+            if (!this.inputLookup) {
+              var _lookupTable = new lookupTable(data);
+
+              this.inputLookup = this.outputLookup = _lookupTable.table;
+              this.inputLookupLength = this.outputLookupLength = _lookupTable.length;
+            }
+
+            for (var _i9 = 0; _i9 < data.length; _i9++) {
+              var array = [];
+
+              for (var j = 0; j < data[_i9].length; j++) {
+                array.push(objectToFloat32Array$1(data[_i9][j], this.inputLookup, this.inputLookupLength));
+              }
+
+              result.push(array);
+            }
+
+            return result;
+          }
+
+        case 'array,datum,array,array,number':
+          {
+            if (this.inputSize === 1 && this.outputSize === 1) {
+              for (var _i10 = 0; _i10 < data.length; _i10++) {
+                var _datum2 = data[_i10];
+                result.push({
+                  input: Float32Array.from(_datum2.input),
+                  output: Float32Array.from(_datum2.output)
+                });
+              }
+            } else {
+              if (this.inputSize !== data[0].input[0].length) {
+                throw new Error('inputSize must match data input size');
+              }
+
+              if (this.outputSize !== data[0].output[0].length) {
+                throw new Error('outputSize must match data output size');
+              }
+
+              for (var _i11 = 0; _i11 < data.length; _i11++) {
+                var _datum3 = data[_i11];
+                result.push({
+                  input: arraysToFloat32Arrays$1(_datum3.input),
+                  output: arraysToFloat32Arrays$1(_datum3.output)
+                });
+              }
+            }
+
+            return result;
+          }
+
+        case 'array,datum,array,object,number':
+          {
+            if (!this.inputLookup) {
+              var _inputLookup = new arrayLookupTable(data, 'input');
+
+              this.inputLookup = _inputLookup.table;
+              this.inputLookupLength = _inputLookup.length;
+            }
+
+            if (!this.outputLookup) {
+              var _outputLookup = new arrayLookupTable(data, 'output');
+
+              this.outputLookup = _outputLookup.table;
+              this.outputLookupLength = _outputLookup.length;
+            }
+
+            for (var _i12 = 0; _i12 < data.length; _i12++) {
+              var _datum4 = data[_i12];
+              result.push({
+                input: objectsToFloat32Arrays$1(_datum4.input, this.inputLookup, this.inputLookupLength),
+                output: objectsToFloat32Arrays$1(_datum4.output, this.outputLookup, this.outputLookupLength)
+              });
+            }
+
+            return result;
+          }
+
+        default:
+          throw new Error('unknown data shape or configuration');
+      }
+    }
+    /**
+     *
+     * @param data
+     * @returns {
+     *  {
+     *    error: number,
+     *    misclasses: Array
+     *  }
+     * }
+     */
+
+  }, {
+    key: "test",
+    value: function test(data) {
+      var formattedData = this.formatData(data); // for classification problems
+
+      var misclasses = []; // run each pattern through the trained network and collect
+      // error and misclassification statistics
+
+      var errorSum = 0;
+      var dataShape = lookup.dataShape(data).join(',');
+
+      switch (dataShape) {
+        case 'array,array,number':
+          {
+            if (this.inputSize === 1) {
+              for (var i = 0; i < formattedData.length; i++) {
+                var input = formattedData[i];
+                var output = this.run(input.splice(0, input.length - 1));
+                var target = input[input.length - 1][0];
+                var error = target - output;
+                var errorMSE = error * error;
+                errorSum += errorMSE;
+                var errorsAbs = Math.abs(errorMSE);
+
+                if (errorsAbs > this.trainOpts.errorThresh) {
+                  var misclass = data[i];
+                  Object.assign(misclass, {
+                    value: input,
+                    actual: output
+                  });
+                  misclasses.push(misclass);
+                }
+              }
+
+              break;
+            }
+
+            throw new Error('unknown data shape or configuration');
+          }
+
+        case 'array,array,array,number':
+          {
+            for (var _i13 = 0; _i13 < formattedData.length; _i13++) {
+              var _input = formattedData[_i13];
+
+              var _output = this.run(_input.splice(0, _input.length - 1));
+
+              var _target = _input[_input.length - 1];
+              var errors = 0;
+              var errorCount = 0;
+
+              for (var j = 0; j < _output.length; j++) {
+                errorCount++;
+
+                var _error = _target[j] - _output[j]; // mse
+
+
+                errors += _error * _error;
+              }
+
+              errorSum += errors / errorCount;
+
+              var _errorsAbs = Math.abs(errors);
+
+              if (_errorsAbs > this.trainOpts.errorThresh) {
+                var _misclass = data[_i13];
+                misclasses.push({
+                  value: _misclass,
+                  actual: _output
+                });
+              }
+            }
+
+            break;
+          }
+
+        case 'array,object,number':
+          {
+            for (var _i14 = 0; _i14 < formattedData.length; _i14++) {
+              var _input2 = formattedData[_i14];
+
+              var _output2 = this.run(lookup.toObjectPartial(this.outputLookup, _input2, 0, _input2.length - 1));
+
+              var _target2 = _input2[_input2.length - 1];
+              var _errors = 0;
+              var p = void 0; // for (p in output) {
+              // }
+
+              var _error2 = _target2[_i14] - _output2[p]; // mse
+
+
+              _errors += _error2 * _error2;
+              errorSum += _errors;
+
+              var _errorsAbs2 = Math.abs(_errors);
+
+              if (_errorsAbs2 > this.trainOpts.errorThresh) {
+                var _misclass2 = data[_i14];
+                misclasses.push({
+                  value: _misclass2,
+                  actual: _output2
+                });
+              }
+            }
+
+            break;
+          }
+
+        case 'array,array,object,number':
+          {
+            for (var _i15 = 0; _i15 < formattedData.length; _i15++) {
+              var _input3 = formattedData[_i15];
+
+              var _output3 = this.run(_input3.slice(0, _input3.length - 1));
+
+              var _target3 = data[_i15][_input3.length - 1];
+              var _errors2 = 0;
+              var _errorCount = 0;
+
+              for (var _p in _output3) {
+                var _error3 = _target3[_p] - _output3[_p]; // mse
+
+
+                _errors2 += _error3 * _error3;
+                _errorCount++;
+              }
+
+              errorSum += _errors2 / _errorCount;
+
+              var _errorsAbs3 = Math.abs(_errors2);
+
+              if (_errorsAbs3 > this.trainOpts.errorThresh) {
+                var _misclass3 = data[_i15];
+                misclasses.push({
+                  value: _misclass3,
+                  actual: _output3
+                });
+              }
+            }
+
+            break;
+          }
+
+        case 'array,datum,array,number':
+        case 'array,datum,object,number':
+          {
+            for (var _i16 = 0; _i16 < formattedData.length; _i16++) {
+              var datum = formattedData[_i16];
+
+              var _output4 = this.forecast(datum.input, datum.output.length);
+
+              var _errors3 = 0;
+              var _errorCount2 = 0;
+
+              for (var _j = 0; _j < _output4.length; _j++) {
+                var _error4 = datum.output[_j][0] - _output4[_j];
+
+                _errors3 += _error4 * _error4;
+                _errorCount2++;
+              }
+
+              errorSum += _errors3 / _errorCount2;
+
+              var _errorsAbs4 = Math.abs(_errors3);
+
+              if (_errorsAbs4 > this.trainOpts.errorThresh) {
+                var _misclass4 = data[_i16];
+                Object.assign(_misclass4, {
+                  actual: this.outputLookup ? lookup.toObject(this.outputLookup, _output4) : _output4
+                });
+                misclasses.push(_misclass4);
+              }
+            }
+
+            break;
+          }
+
+        case 'array,datum,array,array,number':
+          {
+            for (var _i17 = 0; _i17 < formattedData.length; _i17++) {
+              var _datum5 = formattedData[_i17];
+
+              var _output5 = this.forecast(_datum5.input, _datum5.output.length);
+
+              var _errors4 = 0;
+
+              for (var _j2 = 0; _j2 < _output5.length; _j2++) {
+                for (var k = 0; k < _output5[_j2].length; k++) {
+                  var _error5 = _datum5.output[_j2][k] - _output5[_j2][k];
+
+                  _errors4 += _error5 * _error5;
+                }
+              }
+
+              errorSum += _errors4;
+
+              var _errorsAbs5 = Math.abs(_errors4);
+
+              if (_errorsAbs5 > this.trainOpts.errorThresh) {
+                var _misclass5 = data[_i17];
+                misclasses.push({
+                  input: _misclass5.input,
+                  output: _misclass5.output,
+                  actual: _output5
+                });
+              }
+            }
+
+            break;
+          }
+
+        case 'array,datum,array,object,number':
+          {
+            for (var _i18 = 0; _i18 < formattedData.length; _i18++) {
+              var _datum6 = formattedData[_i18];
+
+              var _output6 = this.forecast(_datum6.input, _datum6.output.length);
+
+              var _errors5 = 0;
+
+              for (var _j3 = 0; _j3 < _output6.length; _j3++) {
+                for (var _p2 in _output6[_j3]) {
+                  var _error6 = data[_i18].output[_j3][_p2] - _output6[_j3][_p2];
+
+                  _errors5 += _error6 * _error6;
+                }
+              }
+
+              errorSum += _errors5;
+
+              var _errorsAbs6 = Math.abs(_errors5);
+
+              if (_errorsAbs6 > this.trainOpts.errorThresh) {
+                var _misclass6 = data[_i18];
+                misclasses.push({
+                  input: _misclass6.input,
+                  output: _misclass6.output,
+                  actual: _output6
+                });
+              }
+            }
+
+            break;
+          }
+
+        default:
+          throw new Error('unknown data shape or configuration');
+      }
+
+      return {
+        error: errorSum / formattedData.length,
+        misclasses: misclasses,
+        total: formattedData.length
+      };
+    }
+  }, {
+    key: "addFormat",
+    value: function addFormat(value) {
+      var dataShape = lookup.dataShape(value).join(',');
+
+      switch (dataShape) {
+        case 'array,array,number':
+        case 'datum,array,array,number':
+        case 'array,number':
+        case 'datum,array,number':
+          return;
+
+        case 'datum,object,number':
+          {
+            this.inputLookup = lookup.addKeys(value.input, this.inputLookup);
+
+            if (this.inputLookup) {
+              this.inputLookupLength = Object.keys(this.inputLookup).length;
+            }
+
+            this.outputLookup = lookup.addKeys(value.output, this.outputLookup);
+
+            if (this.outputLookup) {
+              this.outputLookupLength = Object.keys(this.outputLookup).length;
+            }
+
+            break;
+          }
+
+        case 'object,number':
+          {
+            this.inputLookup = this.outputLookup = lookup.addKeys(value, this.inputLookup);
+
+            if (this.inputLookup) {
+              this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
+            }
+
+            break;
+          }
+
+        case 'array,object,number':
+          {
+            for (var i = 0; i < value.length; i++) {
+              this.inputLookup = this.outputLookup = lookup.addKeys(value[i], this.inputLookup);
+
+              if (this.inputLookup) {
+                this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
+              }
+            }
+
+            break;
+          }
+
+        case 'datum,array,object,number':
+          {
+            for (var _i19 = 0; _i19 < value.input.length; _i19++) {
+              this.inputLookup = lookup.addKeys(value.input[_i19], this.inputLookup);
+
+              if (this.inputLookup) {
+                this.inputLookupLength = Object.keys(this.inputLookup).length;
+              }
+            }
+
+            for (var _i20 = 0; _i20 < value.output.length; _i20++) {
+              this.outputLookup = lookup.addKeys(value.output[_i20], this.outputLookup);
+
+              if (this.outputLookup) {
+                this.outputLookupLength = Object.keys(this.outputLookup).length;
+              }
+            }
+
+            break;
+          }
+
+        default:
+          throw new Error('unknown data shape or configuration');
+      }
+    }
+    /**
+     *
+     * @returns {Object}
+     */
+
+  }, {
+    key: "toJSON",
+    value: function toJSON() {
+      var defaults = this.constructor.defaults;
+
+      if (!this.model) {
+        this.initialize();
+      }
+
+      var model = this.model;
+      var options = {};
+
+      for (var p in defaults) {
+        if (defaults.hasOwnProperty(p)) {
+          options[p] = this[p];
+        }
+      }
+
+      return {
+        type: this.constructor.name,
+        options: options,
+        hiddenLayers: model.hiddenLayers.map(function (hiddenLayer) {
+          var layers = {};
+
+          for (var _p3 in hiddenLayer) {
+            layers[_p3] = hiddenLayer[_p3].toJSON();
+          }
+
+          return layers;
+        }),
+        outputConnector: this.model.outputConnector.toJSON(),
+        output: this.model.output.toJSON(),
+        inputLookup: this.inputLookup,
+        inputLookupLength: this.inputLookupLength,
+        outputLookup: this.outputLookup,
+        outputLookupLength: this.outputLookupLength
+      };
+    }
+  }, {
+    key: "fromJSON",
+    value: function fromJSON(json) {
+      var defaults = this.constructor.defaults;
+      var options = json.options;
+      this.model = null;
+      this.hiddenLayers = null;
+      var allMatrices = [];
+      var hiddenLayers = []; // backward compatibility for hiddenSizes
+
+      (json.hiddenLayers || json.hiddenSizes).forEach(function (hiddenLayer) {
+        var layers = {};
+
+        for (var p in hiddenLayer) {
+          layers[p] = matrix.fromJSON(hiddenLayer[p]);
+          allMatrices.push(layers[p]);
+        }
+
+        hiddenLayers.push(layers);
+      });
+      var outputConnector = matrix.fromJSON(json.outputConnector);
+      allMatrices.push(outputConnector);
+      var output = matrix.fromJSON(json.output);
+      allMatrices.push(output);
+      Object.assign(this, defaults, options); // backward compatibility
+
+      if (options.hiddenSizes) {
+        this.hiddenLayers = options.hiddenSizes;
+      }
+
+      this.inputLookup = json.inputLookup;
+      this.inputLookupLength = json.inputLookupLength;
+      this.outputLookup = json.outputLookup;
+      this.outputLookupLength = json.outputLookupLength;
+      this.model = {
+        hiddenLayers: hiddenLayers,
+        output: output,
+        allMatrices: allMatrices,
+        outputConnector: outputConnector,
+        equations: [],
+        equationConnections: []
+      };
+      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
+        return new matrix(size, 1);
+      });
+      this.bindEquation();
+    }
+    /**
+     * @param {Function} [cb]
+     * @returns {Function}
+     */
+
+  }, {
+    key: "toFunction",
+    value: function toFunction(cb) {
+      var model = this.model;
+      var equations = this.model.equations;
+      var inputSize = this.inputSize;
+      var inputLookup = this.inputLookup;
+      var inputLookupLength = this.inputLookupLength;
+      var outputLookup = this.outputLookup;
+      var outputLookupLength = this.outputLookupLength;
+      var equation = equations[1];
+      var states = equation.states;
+      var jsonString = JSON.stringify(this.toJSON());
+
+      function previousConnectionIndex(m) {
+        var connection = model.equationConnections[0];
+        var states = equations[0].states;
+
+        for (var i = 0, max = states.length; i < max; i++) {
+          if (states[i].product === m) {
+            return i;
+          }
+        }
+
+        return connection.indexOf(m);
+      }
+
+      function matrixOrigin(m, stateIndex) {
+        for (var i = 0, max = states.length; i < max; i++) {
+          var state = states[i];
+
+          if (i === stateIndex) {
+            var j = previousConnectionIndex(m);
+
+            switch (m) {
+              case state.left:
+                if (j > -1) {
+                  return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
+                }
+
+              // eslint-disable-next-line no-fallthrough
+
+              case state.right:
+                if (j > -1) {
+                  return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
+                }
+
+              // eslint-disable-next-line no-fallthrough
+
+              case state.product:
+                return "new Matrix(".concat(m.rows, ", ").concat(m.columns, ")");
+
+              default:
+                throw Error('unknown state');
+            }
+          }
+
+          if (m === state.product) return "states[".concat(i, "].product");
+          if (m === state.right) return "states[".concat(i, "].right");
+          if (m === state.left) return "states[".concat(i, "].left");
+        }
+      }
+
+      function matrixToString(m, stateIndex) {
+        if (!m || !m.rows || !m.columns) return 'null';
+        if (m === model.outputConnector) return "json.outputConnector";
+        if (m === model.output) return "json.output";
+
+        for (var i = 0, max = model.hiddenLayers.length; i < max; i++) {
+          var hiddenLayer = model.hiddenLayers[i];
+
+          for (var p in hiddenLayer) {
+            if (!hiddenLayer.hasOwnProperty(p)) continue;
+            if (hiddenLayer[p] !== m) continue;
+            return "json.hiddenLayers[".concat(i, "].").concat(p);
+          }
+        }
+
+        return matrixOrigin(m, stateIndex);
+      }
+
+      function formatInputData() {
+        if (!inputLookup) return '';
+
+        if (inputSize === 1) {
+          if (inputLookup === outputLookup) {
+            return "function lookupInput(input) {\n            var table = ".concat(JSON.stringify(inputLookup), ";\n            var result = [];\n            for (var p in table) {\n              if (!input.hasOwnProperty(p)) break;\n              result.push(Float32Array.from([input[p]]));\n            }\n            return result;\n          }");
+          }
+
+          return "function lookupInput(input) {\n          var table = ".concat(JSON.stringify(inputLookup), ";\n          var result = [];\n          for (var p in table) {\n            result.push(Float32Array.from([input[p]]));\n          }\n          return result;\n        }");
+        }
+
+        return "function lookupInput(rawInputs) {\n        var table = ".concat(JSON.stringify(inputLookup), ";\n        var result = [];\n        for (var i = 0; i < rawInputs.length; i++) {\n          var rawInput = rawInputs[i];\n          var input = new Float32Array(").concat(inputLookupLength, ");\n          for (var p in table) {\n            input[table[p]] = rawInput.hasOwnProperty(p) ? rawInput[p] : 0;\n          }\n          result.push(input);\n        }\n        return result;\n      }");
+      }
+
+      function formatOutputData() {
+        if (!outputLookup) return '';
+
+        if (inputSize === 1) {
+          if (inputLookup === outputLookup) {
+            return "function lookupOutputPartial(output, input) {\n            var table = ".concat(JSON.stringify(outputLookup), ";\n            var offset = input.length;\n            var result = {};\n            var i = 0;\n            for (var p in table) {\n              if (i++ < offset) continue;\n              result[p] = output[table[p] - offset][0];\n            }\n            return result;\n          }");
+          }
+
+          return "function lookupOutput(output) {\n          var table = ".concat(JSON.stringify(outputLookup), ";\n          var result = {};\n          for (var p in table) {\n            result[p] = output[table[p]][0];\n          }\n          return result;\n        }");
+        }
+
+        return "function lookupOutput(output) {\n        var table = ".concat(JSON.stringify(outputLookup), ";\n        var result = {};\n        for (var p in table) {\n          result[p] = output[table[p]];\n        }\n        return result;\n      }");
+      }
+
+      function toInner(fnString) {
+        // crude, but should be sufficient for now
+        // function() { body }
+        fnString = fnString.toString().split('{');
+        fnString.shift(); // body }
+
+        fnString = fnString.join('{');
+        fnString = fnString.split('}');
+        fnString.pop(); // body
+
+        return fnString.join('}').split('\n').join('\n        ').replace('product.weights = input.weights = this.inputValue;', inputLookup && inputSize === 1 ? 'product.weights = _i < input.length ? input[_i]: prevStates[prevStates.length - 1].product.weights;' : inputSize === 1 ? 'product.weights = [input[_i]];' : 'product.weights = input[_i];').replace('product.deltas[i] = 0;', '').replace('product.deltas[column] = 0;', '').replace('left.deltas[leftIndex] = 0;', '').replace('right.deltas[rightIndex] = 0;', '').replace('product.deltas = left.deltas.slice(0);', '');
+      }
+
+      function fileName(fnName) {
+        return "src/recurrent/matrix/".concat(fnName.replace(/[A-Z]/g, function (value) {
+          return "-".concat(value.toLowerCase());
+        }), ".js");
+      }
+
+      var statesRaw = [];
+      var usedFunctionNames = {};
+      var innerFunctionsSwitch = [];
+
+      for (var i = 0, max = states.length; i < max; i++) {
+        var state = states[i];
+        statesRaw.push("states[".concat(i, "] = {\n      name: '").concat(state.forwardFn.name, "',\n      left: ").concat(matrixToString(state.left, i), ",\n      right: ").concat(matrixToString(state.right, i), ",\n      product: ").concat(matrixToString(state.product, i), "\n    }"));
+        var fnName = state.forwardFn.name;
+
+        if (!usedFunctionNames[fnName]) {
+          usedFunctionNames[fnName] = true;
+          innerFunctionsSwitch.push("        case '".concat(fnName, "':").concat(fnName !== 'forwardFn' ? " //compiled from ".concat(fileName(fnName)) : '', "\n          ").concat(toInner(state.forwardFn.toString()), "\n          break;"));
+        }
+      }
+
+      var forceForecast = this.inputSize === 1 && this.outputLookup;
+      var src = "\n  var input = ".concat(this.inputLookup ? 'lookupInput(rawInput)' : 'rawInput', ";\n  var json = ").concat(jsonString, ";\n  var output = [];\n  var states = [];\n  var prevStates;\n  var state;\n  var max = ").concat(forceForecast ? inputLookup === outputLookup ? inputLookupLength : "input.length + ".concat(outputLookupLength - 1) : 'input.length', ";\n  for (var _i = 0; _i < max; _i++) {\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n    ").concat(inputSize === 1 && inputLookup ? 'if (_i >= input.length - 1) { output.push(state.product.weights); }' : 'output = state.product.weights;', "\n  }\n  ").concat(outputLookup ? outputLookup === inputLookup ? 'return lookupOutputPartial(output, input)' : 'return lookupOutput(output)' : inputSize === 1 ? 'return output[0]' : 'return output', ";\n  ").concat(formatInputData(), "\n  ").concat(formatOutputData(), "\n\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros$d.toString(), "\n  ").concat(softmax.toString().replace('_2.default', 'Matrix'), "\n  ").concat(randomFloat$5.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString()); // eslint-disable-next-line no-new-func
+
+      return new Function('rawInput', cb ? cb(src) : src);
+    }
+  }]);
+
+  return RNNTimeStep;
+}(rnn);
+
+RNNTimeStep.defaults = {
+  inputSize: 1,
+  hiddenLayers: [20],
+  outputSize: 1,
+  learningRate: rnn.defaults.learningRate,
+  decayRate: rnn.defaults.decayRate,
+  smoothEps: rnn.defaults.smoothEps,
+  regc: rnn.defaults.regc,
+  clipval: rnn.defaults.clipval
+};
+RNNTimeStep.trainDefaults = rnn.trainDefaults;
+var rnnTimeStep = RNNTimeStep;
+
+var GRUTimeStep = /*#__PURE__*/function (_RNNTimeStep) {
+  _inherits(GRUTimeStep, _RNNTimeStep);
+
+  var _super = _createSuper(GRUTimeStep);
+
+  function GRUTimeStep() {
+    _classCallCheck(this, GRUTimeStep);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(GRUTimeStep, null, [{
+    key: "getModel",
+    value: function getModel(hiddenSize, prevSize) {
+      return gru$2.getModel(hiddenSize, prevSize);
+    }
+    /**
+     *
+     * @param {Equation} equation
+     * @param {Matrix} inputMatrix
+     * @param {Matrix} previousResult
+     * @param {Object} hiddenLayer
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "getEquation",
+    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+      return gru$2.getEquation(equation, inputMatrix, previousResult, hiddenLayer);
+    }
+  }]);
+
+  return GRUTimeStep;
+}(rnnTimeStep);
+
+var gruTimeStep = GRUTimeStep;
+
+var LSTM = /*#__PURE__*/function (_RNN) {
+  _inherits(LSTM, _RNN);
+
+  var _super = _createSuper(LSTM);
+
+  function LSTM() {
+    _classCallCheck(this, LSTM);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(LSTM, null, [{
+    key: "getModel",
+    value: function getModel(hiddenSize, prevSize) {
+      return {
+        // gates parameters
+        // wix
+        inputMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
+        // wih
+        inputHidden: new randomMatrix(hiddenSize, hiddenSize, 0.08),
+        // bi
+        inputBias: new matrix(hiddenSize, 1),
+        // wfx
+        forgetMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
+        // wfh
+        forgetHidden: new randomMatrix(hiddenSize, hiddenSize, 0.08),
+        // bf
+        forgetBias: new matrix(hiddenSize, 1),
+        // wox
+        outputMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
+        // woh
+        outputHidden: new randomMatrix(hiddenSize, hiddenSize, 0.08),
+        // bo
+        outputBias: new matrix(hiddenSize, 1),
+        // cell write params
+        // wcx
+        cellActivationMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
+        // wch
+        cellActivationHidden: new randomMatrix(hiddenSize, hiddenSize, 0.08),
+        // bc
+        cellActivationBias: new matrix(hiddenSize, 1)
+      };
+    }
+    /**
+     *
+     * @param {Equation} equation
+     * @param {Matrix} inputMatrix
+     * @param {Matrix} previousResult
+     * @param {Object} hiddenLayer
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "getEquation",
+    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+      var sigmoid = equation.sigmoid.bind(equation);
+      var add = equation.add.bind(equation);
+      var multiply = equation.multiply.bind(equation);
+      var multiplyElement = equation.multiplyElement.bind(equation);
+      var tanh = equation.tanh.bind(equation);
+      var inputGate = sigmoid(add(add(multiply(hiddenLayer.inputMatrix, inputMatrix), multiply(hiddenLayer.inputHidden, previousResult)), hiddenLayer.inputBias));
+      var forgetGate = sigmoid(add(add(multiply(hiddenLayer.forgetMatrix, inputMatrix), multiply(hiddenLayer.forgetHidden, previousResult)), hiddenLayer.forgetBias)); // output gate
+
+      var outputGate = sigmoid(add(add(multiply(hiddenLayer.outputMatrix, inputMatrix), multiply(hiddenLayer.outputHidden, previousResult)), hiddenLayer.outputBias)); // write operation on cells
+
+      var cellWrite = tanh(add(add(multiply(hiddenLayer.cellActivationMatrix, inputMatrix), multiply(hiddenLayer.cellActivationHidden, previousResult)), hiddenLayer.cellActivationBias)); // compute new cell activation
+
+      var retainCell = multiplyElement(forgetGate, previousResult); // what do we keep from cell
+
+      var writeCell = multiplyElement(inputGate, cellWrite); // what do we write to cell
+
+      var cell = add(retainCell, writeCell); // new cell contents
+      // compute hidden state as gated, saturated cell activations
+
+      return multiplyElement(outputGate, tanh(cell));
+    }
+  }]);
+
+  return LSTM;
+}(rnn);
+
+var lstm = LSTM;
+
+var LSTMTimeStep = /*#__PURE__*/function (_RNNTimeStep) {
+  _inherits(LSTMTimeStep, _RNNTimeStep);
+
+  var _super = _createSuper(LSTMTimeStep);
+
+  function LSTMTimeStep() {
+    _classCallCheck(this, LSTMTimeStep);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(LSTMTimeStep, null, [{
+    key: "getModel",
+    value: function getModel(hiddenSize, prevSize) {
+      return lstm.getModel.call(this, hiddenSize, prevSize);
+    }
+    /**
+     *
+     * @param {Equation} equation
+     * @param {Matrix} inputMatrix
+     * @param {Matrix} previousResult
+     * @param {Object} hiddenLayer
+     * @returns {Matrix}
+     */
+
+  }, {
+    key: "getEquation",
+    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+      return lstm.getEquation.call(this, equation, inputMatrix, previousResult, hiddenLayer);
+    }
+  }]);
+
+  return LSTMTimeStep;
+}(rnnTimeStep);
+
+var lstmTimeStep = LSTMTimeStep;
 
 var domain;
 
@@ -31479,7 +35527,7 @@ function write (buffer, value, offset, isLE, mLen, nBytes) {
 
 var toString$1 = {}.toString;
 
-var isArray$1 = Array.isArray || function (arr) {
+var isArray = Array.isArray || function (arr) {
   return toString$1.call(arr) == '[object Array]';
 };
 
@@ -31747,7 +35795,7 @@ function fromObject (that, obj) {
       return fromArrayLike(that, obj)
     }
 
-    if (obj.type === 'Buffer' && isArray$1(obj.data)) {
+    if (obj.type === 'Buffer' && isArray(obj.data)) {
       return fromArrayLike(that, obj.data)
     }
   }
@@ -31812,7 +35860,7 @@ Buffer.isEncoding = function isEncoding (encoding) {
 };
 
 Buffer.concat = function concat (list, length) {
-  if (!isArray$1(list)) {
+  if (!isArray(list)) {
     throw new TypeError('"list" argument must be an Array of Buffers')
   }
 
@@ -32134,7 +36182,7 @@ function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
     if (val.length === 0) {
       return -1
     }
-    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
+    return arrayIndexOf$1(buffer, val, byteOffset, encoding, dir)
   } else if (typeof val === 'number') {
     val = val & 0xFF; // Search for a byte value [0-255]
     if (Buffer.TYPED_ARRAY_SUPPORT &&
@@ -32145,13 +36193,13 @@ function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
         return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
       }
     }
-    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
+    return arrayIndexOf$1(buffer, [ val ], byteOffset, encoding, dir)
   }
 
   throw new TypeError('val must be string, number or Buffer')
 }
 
-function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
+function arrayIndexOf$1 (arr, val, byteOffset, encoding, dir) {
   var indexSize = 1;
   var arrLength = arr.length;
   var valLength = val.length;
@@ -33442,7 +37490,7 @@ function format(f) {
     }
   });
   for (var x = args[i]; i < len; x = args[++i]) {
-    if (isNull(x) || !isObject$1(x)) {
+    if (isNull(x) || !isObject(x)) {
       str += ' ' + x;
     } else {
       str += ' ' + inspect(x);
@@ -33646,7 +37694,7 @@ function formatValue(ctx, value, recurseTimes) {
   var base = '', array = false, braces = ['{', '}'];
 
   // Make Array say that they are Array
-  if (isArray$2(value)) {
+  if (isArray$1(value)) {
     array = true;
     braces = ['[', ']'];
   }
@@ -33825,7 +37873,7 @@ function reduceToSingleString(output, base, braces) {
 
 // NOTE: These type checking functions intentionally don't use `instanceof`
 // because it is fragile and can be easily faked with `Object.create()`.
-function isArray$2(ar) {
+function isArray$1(ar) {
   return Array.isArray(ar);
 }
 
@@ -33850,33 +37898,33 @@ function isUndefined(arg) {
 }
 
 function isRegExp(re) {
-  return isObject$1(re) && objectToString$1(re) === '[object RegExp]';
+  return isObject(re) && objectToString(re) === '[object RegExp]';
 }
 
-function isObject$1(arg) {
+function isObject(arg) {
   return typeof arg === 'object' && arg !== null;
 }
 
 function isDate(d) {
-  return isObject$1(d) && objectToString$1(d) === '[object Date]';
+  return isObject(d) && objectToString(d) === '[object Date]';
 }
 
 function isError(e) {
-  return isObject$1(e) &&
-      (objectToString$1(e) === '[object Error]' || e instanceof Error);
+  return isObject(e) &&
+      (objectToString(e) === '[object Error]' || e instanceof Error);
 }
 
 function isFunction(arg) {
   return typeof arg === 'function';
 }
 
-function objectToString$1(o) {
+function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
 function _extend(origin, add) {
   // Don't do anything if add isn't an object
-  if (!add || !isObject$1(add)) return origin;
+  if (!add || !isObject(add)) return origin;
 
   var keys = Object.keys(add);
   var i = keys.length;
@@ -34640,7 +38688,7 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
       // to get stuck in a permanently paused state if that write
       // also returned false.
       // => Check whether `dest` is still a piping destination.
-      if ((state.pipesCount === 1 && state.pipes === dest || state.pipesCount > 1 && indexOf$1(state.pipes, dest) !== -1) && !cleanedUp) {
+      if ((state.pipesCount === 1 && state.pipes === dest || state.pipesCount > 1 && indexOf(state.pipes, dest) !== -1) && !cleanedUp) {
         debug('false write response, pause', src._readableState.awaitDrain);
         src._readableState.awaitDrain++;
         increasedAwaitDrain = true;
@@ -34740,7 +38788,7 @@ Readable.prototype.unpipe = function (dest) {
   }
 
   // try to find the right one.
-  var i = indexOf$1(state.pipes, dest);
+  var i = indexOf(state.pipes, dest);
   if (i === -1) return this;
 
   state.pipes.splice(i, 1);
@@ -35024,7 +39072,7 @@ function forEach(xs, f) {
   }
 }
 
-function indexOf$1(xs, x) {
+function indexOf(xs, x) {
   for (var i = 0, l = xs.length; i < l; i++) {
     if (xs[i] === x) return i;
   }
@@ -35506,9 +39554,9 @@ function CorkedRequest(state) {
 
 inherits$1(Duplex, Readable);
 
-var keys$3 = Object.keys(Writable.prototype);
-for (var v = 0; v < keys$3.length; v++) {
-  var method = keys$3[v];
+var keys$1 = Object.keys(Writable.prototype);
+for (var v = 0; v < keys$1.length; v++) {
+  var method = keys$1[v];
   if (!Duplex.prototype[method]) Duplex.prototype[method] = Writable.prototype[method];
 }
 function Duplex(options) {
@@ -35781,7 +39829,18 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-var Writable$1 = Stream.Writable;
+var stream = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  'default': Stream,
+  Readable: Readable,
+  Writable: Writable,
+  Duplex: Duplex,
+  Transform: Transform,
+  PassThrough: PassThrough,
+  Stream: Stream
+});
+
+var Writable$1 = stream.Writable;
 /**
  *
  * @param opts
@@ -35932,5230 +39991,6 @@ var TrainStream = /*#__PURE__*/function (_Writable) {
 }(Writable$1);
 
 var trainStream = TrainStream;
-
-var FAILS_ON_PRIMITIVES$1 = fails(function () { objectGetPrototypeOf(1); });
-
-// `Object.getPrototypeOf` method
-// https://tc39.github.io/ecma262/#sec-object.getprototypeof
-_export({ target: 'Object', stat: true, forced: FAILS_ON_PRIMITIVES$1, sham: !correctPrototypeGetter }, {
-  getPrototypeOf: function getPrototypeOf(it) {
-    return objectGetPrototypeOf(toObject(it));
-  }
-});
-
-var Internal$2 = types.Internal; // const zeros2D = require('../utilities/zeros-2d');
-
-var release$j = kernel.release;
-
-var RecurrentConnection = /*#__PURE__*/function (_Internal) {
-  _inherits(RecurrentConnection, _Internal);
-
-  var _super = _createSuper(RecurrentConnection);
-
-  function RecurrentConnection() {
-    _classCallCheck(this, RecurrentConnection);
-
-    return _super.apply(this, arguments);
-  }
-
-  _createClass(RecurrentConnection, [{
-    key: "setLayer",
-    value: function setLayer(layer) {
-      this.layer = layer;
-    }
-  }, {
-    key: "predict",
-    value: function predict() {// throw new Error(`${this.constructor.name}-predict is not yet implemented`)
-    }
-  }, {
-    key: "compare",
-    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
-    }
-  }, {
-    key: "learn",
-    value: function learn() {
-      throw new Error('no longer using');
-    }
-  }, {
-    key: "setupKernels",
-    value: function setupKernels() {// throw new Error(
-      //   `${this.constructor.name}-setupKernels is not yet implemented`
-      // )
-    }
-  }, {
-    key: "reuseKernels",
-    value: function reuseKernels() {// throw new Error(
-      //   `${this.constructor.name}-reuseKernels is not yet implemented`
-      // )
-    }
-  }, {
-    key: "width",
-    get: function get() {
-      return this.layer.width;
-    },
-    set: function set(value) {
-      throw new Error("".concat(this.constructor.name, "-width is not yet implemented"));
-    }
-  }, {
-    key: "height",
-    get: function get() {
-      return this.layer.height;
-    },
-    set: function set(value) {
-      throw new Error("".concat(this.constructor.name, "-height is not yet implemented"));
-    }
-  }, {
-    key: "deltas",
-    get: function get() {
-      return this.layer.deltas;
-    },
-    set: function set(deltas) {
-      release$j(this.layer.deltas);
-      this.layer.deltas = deltas;
-    }
-  }, {
-    key: "weights",
-    get: function get() {
-      return this.layer.weights;
-    },
-    set: function set(weights) {
-      release$j(this.layer.weights);
-      this.layer.weights = weights;
-    }
-  }]);
-
-  return RecurrentConnection;
-}(Internal$2);
-
-var recurrentConnection = {
-  RecurrentConnection: RecurrentConnection
-};
-
-var Internal$3 = types.Internal;
-var Base$a = base.Base;
-var release$k = kernel.release; // const zeros2D = require('../utilities/zeros-2d');
-
-var RecurrentInput = /*#__PURE__*/function (_Internal) {
-  _inherits(RecurrentInput, _Internal);
-
-  var _super = _createSuper(RecurrentInput);
-
-  function RecurrentInput(recurrentInput) {
-    var _this;
-
-    _classCallCheck(this, RecurrentInput);
-
-    _this = _super.call(this);
-    _this.recurrentInput = recurrentInput;
-
-    _this.validate();
-
-    return _this;
-  }
-
-  _createClass(RecurrentInput, [{
-    key: "validate",
-    value: function validate() {
-      Base$a.prototype.validate.call(this);
-
-      if (this.width !== this.recurrentInput.width) {
-        throw new Error("".concat(this.constructor.name, " layer width ").concat(this.width, " and ").concat(this.recurrentInput.constructor.name, " width (").concat(this.recurrentInput.width, ") are not same"));
-      }
-
-      if (this.height !== this.recurrentInput.height) {
-        throw new Error("".concat(this.constructor.name, " layer height ").concat(this.height, " and ").concat(this.recurrentInput.constructor.name, " width (").concat(this.recurrentInput.height, ") are not same"));
-      }
-    }
-  }, {
-    key: "setDimensions",
-    value: function setDimensions() {
-      throw new Error('should just listen');
-    }
-  }, {
-    key: "predict",
-    value: function predict() {// throw new Error(`${this.constructor.name}-predict is not yet implemented`)
-    }
-  }, {
-    key: "compare",
-    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
-    }
-  }, {
-    key: "learn",
-    value: function learn() {// throw new Error(`${this.constructor.name}-learn is not yet implemented`)
-    }
-  }, {
-    key: "setupKernels",
-    value: function setupKernels() {// throw new Error(
-      //   `${this.constructor.name}-setupKernels is not yet implemented`
-      // )
-    }
-  }, {
-    key: "reuseKernels",
-    value: function reuseKernels() {// throw new Error(
-      //   `${this.constructor.name}-reuseKernels is not yet implemented`
-      // )
-    }
-  }, {
-    key: "width",
-    get: function get() {
-      return this.recurrentInput.width;
-    }
-  }, {
-    key: "height",
-    get: function get() {
-      return this.recurrentInput.height;
-    }
-  }, {
-    key: "deltas",
-    get: function get() {
-      return this.recurrentInput.deltas;
-    },
-    set: function set(deltas) {
-      var recurrentInputDeltas = this.recurrentInput.deltas;
-      this.recurrentInput.deltas = deltas;
-      release$k(recurrentInputDeltas);
-    }
-  }, {
-    key: "weights",
-    get: function get() {
-      return this.recurrentInput.weights;
-    },
-    set: function set(weights) {
-      var recurrentInputWeights = this.recurrentInput.weights;
-      this.recurrentInput.weights = weights;
-      release$k(recurrentInputWeights);
-    }
-  }]);
-
-  return RecurrentInput;
-}(Internal$3);
-
-var recurrentInput = {
-  RecurrentInput: RecurrentInput
-};
-
-var Internal$4 = types.Internal;
-var release$l = kernel.release,
-    clear$e = kernel.clear;
-
-var RecurrentZeros = /*#__PURE__*/function (_Internal) {
-  _inherits(RecurrentZeros, _Internal);
-
-  var _super = _createSuper(RecurrentZeros);
-
-  function RecurrentZeros() {
-    _classCallCheck(this, RecurrentZeros);
-
-    return _super.apply(this, arguments);
-  }
-
-  _createClass(RecurrentZeros, [{
-    key: "setDimensions",
-    value: function setDimensions(width, height) {
-      this.praxis = null;
-      this.width = width;
-      this.height = height;
-      this.weights = zeros2d(width, height);
-      this.deltas = zeros2d(width, height);
-    }
-  }, {
-    key: "setupKernels",
-    value: function setupKernels() {// throw new Error(
-      //   `${this.constructor.name}-setupKernels is not yet implemented`
-      // )
-    }
-  }, {
-    key: "reuseKernels",
-    value: function reuseKernels() {// throw new Error(
-      //   `${this.constructor.name}-reuseKernels is not yet implemented`
-      // )
-    }
-  }, {
-    key: "predict",
-    value: function predict() {// throw new Error(`${this.constructor.name}-predict is not yet implemented`)
-    }
-  }, {
-    key: "compare",
-    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
-    }
-  }, {
-    key: "learn",
-    value: function learn(previousLayer, nextLayer, learningRate) {
-      var oldWeights = this.weights;
-      this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate); // this.deltas = deltas;
-
-      release$l(oldWeights);
-      clear$e(this.deltas);
-    }
-  }, {
-    key: "validate",
-    value: function validate() {
-      throw new Error("".concat(this.constructor.name, "-validate is not yet implemented"));
-    }
-  }, {
-    key: "reset",
-    value: function reset() {
-      throw new Error("".concat(this.constructor.name, "-reset is not yet implemented"));
-    }
-  }]);
-
-  return RecurrentZeros;
-}(Internal$4);
-
-function recurrentZeros() {
-  return new RecurrentZeros();
-}
-
-var recurrentZeros_1 = {
-  RecurrentZeros: RecurrentZeros,
-  recurrentZeros: recurrentZeros
-};
-
-var RecurrentConnection$1 = recurrentConnection.RecurrentConnection;
-var RecurrentInput$1 = recurrentInput.RecurrentInput;
-var RecurrentZeros$1 = recurrentZeros_1.RecurrentZeros;
-var Model$5 = types.Model,
-    InternalModel$1 = types.InternalModel; // const { Target } = require('./layer/target');
-
-var FeedForward$1 = feedForward$2.FeedForward;
-var release$m = kernel.release,
-    clone$6 = kernel.clone;
-
-var Recurrent = /*#__PURE__*/function (_FeedForward) {
-  _inherits(Recurrent, _FeedForward);
-
-  var _super = _createSuper(Recurrent);
-
-  function Recurrent() {
-    _classCallCheck(this, Recurrent);
-
-    return _super.apply(this, arguments);
-  }
-
-  _createClass(Recurrent, [{
-    key: "_connectLayers",
-    value: function _connectLayers() {
-      var inputLayer = this.inputLayer();
-
-      var hiddenLayers = this._connectHiddenLayers(inputLayer);
-
-      var outputLayer = this.outputLayer(hiddenLayers[hiddenLayers.length - 1]);
-      return {
-        inputLayer: inputLayer,
-        hiddenLayers: hiddenLayers,
-        outputLayer: outputLayer
-      };
-    }
-  }, {
-    key: "_connectLayersDeep",
-    value: function _connectLayersDeep() {
-      var layers = [];
-      var previousLayers = this._layerSets[this._layerSets.length - 1];
-      var usedHiddenLayerOutputIndex = 0;
-
-      function findInputLayer(inputLayer) {
-        var index = previousLayers.indexOf(inputLayer);
-        if (index < 0) throw new Error('unable to find layer');
-        return layers[index];
-      }
-
-      function layerSettings(layer) {
-        return _objectSpread2(_objectSpread2({}, layer), {}, {
-          weights: null,
-          deltas: null,
-          errors: null,
-          praxis: null
-        });
-      }
-
-      for (var i = 0; i < previousLayers.length; i++) {
-        var previousLayer = previousLayers[i];
-        var layer = null;
-
-        switch (Object.getPrototypeOf(previousLayer.constructor).name) {
-          case 'Activation':
-            {
-              layer = new previousLayer.constructor(findInputLayer(previousLayer.inputLayer));
-              break;
-            }
-
-          case 'EntryPoint':
-            {
-              layer = new previousLayer.constructor(layerSettings(previousLayer));
-              break;
-            }
-
-          case 'Filter':
-            {
-              layer = new previousLayer.constructor(layerSettings(previousLayer.inputLayer), findInputLayer(previousLayer.inputLayer));
-              break;
-            }
-
-          case 'Internal':
-            {
-              var previousHiddenLayerOutput = previousLayers[this._hiddenLayerOutputIndices[usedHiddenLayerOutputIndex++]];
-
-              switch (previousLayer.constructor.name) {
-                case 'RecurrentConnection':
-                  throw new Error('unfinished');
-
-                case 'RecurrentInput':
-                  layer = new RecurrentInput$1(previousHiddenLayerOutput);
-                  break;
-
-                case 'RecurrentZeros':
-                default:
-                  layer = new RecurrentInput$1(previousHiddenLayerOutput);
-                  break;
-              }
-
-              break;
-            }
-
-          case 'InternalModel':
-          case 'Model':
-            {
-              layer = previousLayer;
-              break;
-            }
-
-          case 'Modifier':
-            {
-              layer = new previousLayer.constructor(findInputLayer(previousLayer.inputLayer));
-              break;
-            }
-
-          case 'Operator':
-            {
-              layer = new previousLayer.constructor(findInputLayer(previousLayer.inputLayer1), findInputLayer(previousLayer.inputLayer2), layerSettings(previousLayer));
-              break;
-            }
-
-          default:
-            throw new Error("hidden layer ".concat(previousLayer.constructor.name, " extends unknown hidden layer ").concat(Object.getPrototypeOf(previousLayer.constructor).name));
-        }
-
-        layers.push(layer);
-      }
-
-      return layers;
-    }
-  }, {
-    key: "_connectHiddenLayers",
-    value: function _connectHiddenLayers(previousLayer) {
-      var hiddenLayers = [];
-
-      for (var i = 0; i < this.hiddenLayers.length; i++) {
-        var recurrentInput = new RecurrentZeros$1();
-        var hiddenLayer = this.hiddenLayers[i](previousLayer, recurrentInput, i);
-        previousLayer = hiddenLayer;
-        hiddenLayers.push(hiddenLayer);
-      }
-
-      return hiddenLayers;
-    }
-  }, {
-    key: "initialize",
-    value: function initialize() {
-      this.layers = [];
-      this._outputConnection = new RecurrentConnection$1();
-
-      var _this$_connectLayers = this._connectLayers(),
-          inputLayer = _this$_connectLayers.inputLayer,
-          hiddenLayers = _this$_connectLayers.hiddenLayers,
-          outputLayer = _this$_connectLayers.outputLayer;
-
-      var layerSet = flattenLayers([inputLayer].concat(_toConsumableArray(hiddenLayers), [outputLayer]));
-      this._hiddenLayerOutputIndices = hiddenLayers.map(function (l) {
-        return layerSet.indexOf(l);
-      });
-      this._layerSets = [layerSet];
-      this._model = layerSet.filter(function (l) {
-        return l instanceof Model$5 || l instanceof InternalModel$1;
-      });
-      this.initializeLayers(layerSet);
-    }
-  }, {
-    key: "initializeDeep",
-    value: function initializeDeep() {
-      var layers = this._connectLayersDeep();
-
-      for (var i = 0; i < layers.length; i++) {
-        var layer = layers[i];
-        layer.reuseKernels(this._layerSets[0][i]);
-      }
-
-      this._layerSets.push(layers);
-    }
-  }, {
-    key: "run",
-    value: function run(input) {
-      while (this._layerSets.length <= input.length) {
-        this.initializeDeep();
-      }
-
-      return _get(_getPrototypeOf(Recurrent.prototype), "run", this).call(this, input);
-    }
-  }, {
-    key: "runInput",
-    value: function runInput(input) {
-      while (this._layerSets.length < input.length) {
-        this.initializeDeep();
-      }
-
-      var max = input.length - 1; // last output will be compared with last index
-
-      for (var x = 0; x <= max; x++) {
-        var layerSet = this._layerSets[x];
-        layerSet[0].predict([new Float32Array([input[x]])]);
-
-        for (var i = 1; i < layerSet.length; i++) {
-          layerSet[i].predict();
-        }
-      }
-
-      var lastLayerUsed = this._layerSets[max];
-      var result = lastLayerUsed[lastLayerUsed.length - 1].weights;
-      this.end();
-      return result;
-    }
-  }, {
-    key: "end",
-    value: function end() {
-      var x = this._layerSets.length - 1;
-      var lastLayerSet = this._layerSets[x];
-      lastLayerSet[0].predict([new Float32Array([0])]);
-
-      for (var i = 1; i < lastLayerSet.length; i++) {
-        lastLayerSet[i].predict();
-      }
-    }
-  }, {
-    key: "transferData",
-    value: function transferData(formattedData) {
-      return formattedData;
-    }
-  }, {
-    key: "_prepTraining",
-    value: function _prepTraining(data, options) {
-      var stats = _get(_getPrototypeOf(Recurrent.prototype), "_prepTraining", this).call(this, data, options);
-
-      this.verifyIsInitialized(data);
-      return stats;
-    }
-    /**
-     *
-     * @param data
-     * @returns {Number} error
-     */
-
-  }, {
-    key: "_calculateTrainingError",
-    value: function _calculateTrainingError(data) {
-      var sum = new Float32Array(1);
-
-      for (var i = 0; i < data.length; ++i) {
-        var prevSum = sum;
-
-        var error = this._trainPattern(data[i], true);
-
-        sum = this.meanSquaredError.add(sum, error);
-        release$m(error);
-        release$m(prevSum);
-      }
-
-      var result = this.meanSquaredError.divide(data.length, sum);
-      release$m(sum);
-
-      if (result.toArray) {
-        var resultArray = result.toArray();
-        return resultArray[0];
-      }
-
-      return result[0];
-    }
-  }, {
-    key: "formatData",
-    value: function formatData(data) {
-      return data;
-    }
-  }, {
-    key: "_calculateDeltas",
-    value: function _calculateDeltas(target) {
-      var lastLayerSet = this._layerSets[this._layerSets.length - 1]; // Iterate from the second to last layer backwards, propagating 0's
-
-      for (var i = lastLayerSet.length - 2; i >= 0; i--) {
-        lastLayerSet[i].compare();
-      }
-
-      for (var x = target.length - 2; x >= 0; x--) {
-        var layerSet = this._layerSets[x];
-        layerSet[layerSet.length - 1].compare(new Float32Array([target[x + 1]]));
-
-        for (var _i = layerSet.length - 2; _i >= 0; _i--) {
-          layerSet[_i].compare();
-        }
-      }
-    }
-  }, {
-    key: "adjustWeights",
-    value: function adjustWeights() {
-      var _model = this._model;
-
-      for (var i = 0; i < _model.length; i++) {
-        _model[i].learn();
-      }
-    }
-    /**
-     * @param data
-     * @private
-     */
-
-  }, {
-    key: "_trainPatterns",
-    value: function _trainPatterns(data) {
-      for (var i = 0; i < data.length; ++i) {
-        this._trainPattern(data[i], false);
-      }
-    }
-    /**
-     *
-     * @param {number[]} input
-     * @param {Boolean} [logErrorRate]
-     */
-
-  }, {
-    key: "_trainPattern",
-    value: function _trainPattern(input, logErrorRate) {
-      // forward propagate
-      this.runInput(input); // back propagate
-
-      this._calculateDeltas(input);
-
-      this.adjustWeights();
-
-      if (logErrorRate) {
-        var meanSquaredError = this.meanSquaredError;
-        var error = new Float32Array(1);
-
-        for (var i = 0, max = input.length - 1; i < max; i++) {
-          var layerSet = this._layerSets[i];
-          var lastLayer = layerSet[layerSet.length - 1];
-          var prevError = error;
-          error = meanSquaredError.addAbsolute(prevError, lastLayer.errors);
-          release$m(prevError);
-        }
-
-        return clone$6(meanSquaredError.divide(input.length, error));
-      }
-
-      return null;
-    }
-  }], [{
-    key: "structure",
-    get: function get() {
-      return {
-        /**
-         *
-         * _inputLayers are a 1 dimensional array of input layers defined once
-         * @type Object[]
-         * @private
-         */
-        _inputLayers: null,
-
-        /**
-         * _hiddenLayers are a 1 dimensional array of hidden layers defined from results from settings.hiddenLayers
-         * @type Object[]
-         * @private
-         */
-        _hiddenLayers: null,
-
-        /**
-         * _hiddenLayerSets are a 2 dimensional array of hidden layers defined for each recursion
-         * @type Object[][]
-         * @private
-         */
-        _hiddenLayerSets: null,
-
-        /**
-         * a 2 dimensional array of layers defined for each recursion
-         */
-        _layerSets: null,
-        _hiddenLayerOutputIndices: null,
-
-        /**
-         * _outputLayers are a 1 dimensional array of output layers defined once
-         * @type Object[]
-         * @private
-         */
-        _outputLayers: null,
-        _outputConnection: null,
-        _previousInputs: null,
-        _model: null,
-        _recurrentIndices: null
-      };
-    }
-  }]);
-
-  return Recurrent;
-}(FeedForward$1);
-
-var recurrent = {
-  Recurrent: Recurrent
-};
-
-// `RegExp.prototype.flags` getter implementation
-// https://tc39.github.io/ecma262/#sec-get-regexp.prototype.flags
-var regexpFlags = function () {
-  var that = anObject(this);
-  var result = '';
-  if (that.global) result += 'g';
-  if (that.ignoreCase) result += 'i';
-  if (that.multiline) result += 'm';
-  if (that.dotAll) result += 's';
-  if (that.unicode) result += 'u';
-  if (that.sticky) result += 'y';
-  return result;
-};
-
-// babel-minify transpiles RegExp('a', 'y') -> /a/y and it causes SyntaxError,
-// so we use an intermediate function.
-function RE(s, f) {
-  return RegExp(s, f);
-}
-
-var UNSUPPORTED_Y = fails(function () {
-  // babel-minify transpiles RegExp('a', 'y') -> /a/y and it causes SyntaxError
-  var re = RE('a', 'y');
-  re.lastIndex = 2;
-  return re.exec('abcd') != null;
-});
-
-var BROKEN_CARET = fails(function () {
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=773687
-  var re = RE('^r', 'gy');
-  re.lastIndex = 2;
-  return re.exec('str') != null;
-});
-
-var regexpStickyHelpers = {
-	UNSUPPORTED_Y: UNSUPPORTED_Y,
-	BROKEN_CARET: BROKEN_CARET
-};
-
-var nativeExec = RegExp.prototype.exec;
-// This always refers to the native implementation, because the
-// String#replace polyfill uses ./fix-regexp-well-known-symbol-logic.js,
-// which loads this file before patching the method.
-var nativeReplace = String.prototype.replace;
-
-var patchedExec = nativeExec;
-
-var UPDATES_LAST_INDEX_WRONG = (function () {
-  var re1 = /a/;
-  var re2 = /b*/g;
-  nativeExec.call(re1, 'a');
-  nativeExec.call(re2, 'a');
-  return re1.lastIndex !== 0 || re2.lastIndex !== 0;
-})();
-
-var UNSUPPORTED_Y$1 = regexpStickyHelpers.UNSUPPORTED_Y || regexpStickyHelpers.BROKEN_CARET;
-
-// nonparticipating capturing group, copied from es5-shim's String#split patch.
-var NPCG_INCLUDED = /()??/.exec('')[1] !== undefined;
-
-var PATCH = UPDATES_LAST_INDEX_WRONG || NPCG_INCLUDED || UNSUPPORTED_Y$1;
-
-if (PATCH) {
-  patchedExec = function exec(str) {
-    var re = this;
-    var lastIndex, reCopy, match, i;
-    var sticky = UNSUPPORTED_Y$1 && re.sticky;
-    var flags = regexpFlags.call(re);
-    var source = re.source;
-    var charsAdded = 0;
-    var strCopy = str;
-
-    if (sticky) {
-      flags = flags.replace('y', '');
-      if (flags.indexOf('g') === -1) {
-        flags += 'g';
-      }
-
-      strCopy = String(str).slice(re.lastIndex);
-      // Support anchored sticky behavior.
-      if (re.lastIndex > 0 && (!re.multiline || re.multiline && str[re.lastIndex - 1] !== '\n')) {
-        source = '(?: ' + source + ')';
-        strCopy = ' ' + strCopy;
-        charsAdded++;
-      }
-      // ^(? + rx + ) is needed, in combination with some str slicing, to
-      // simulate the 'y' flag.
-      reCopy = new RegExp('^(?:' + source + ')', flags);
-    }
-
-    if (NPCG_INCLUDED) {
-      reCopy = new RegExp('^' + source + '$(?!\\s)', flags);
-    }
-    if (UPDATES_LAST_INDEX_WRONG) lastIndex = re.lastIndex;
-
-    match = nativeExec.call(sticky ? reCopy : re, strCopy);
-
-    if (sticky) {
-      if (match) {
-        match.input = match.input.slice(charsAdded);
-        match[0] = match[0].slice(charsAdded);
-        match.index = re.lastIndex;
-        re.lastIndex += match[0].length;
-      } else re.lastIndex = 0;
-    } else if (UPDATES_LAST_INDEX_WRONG && match) {
-      re.lastIndex = re.global ? match.index + match[0].length : lastIndex;
-    }
-    if (NPCG_INCLUDED && match && match.length > 1) {
-      // Fix browsers whose `exec` methods don't consistently return `undefined`
-      // for NPCG, like IE8. NOTE: This doesn' work for /(.?)?/
-      nativeReplace.call(match[0], reCopy, function () {
-        for (i = 1; i < arguments.length - 2; i++) {
-          if (arguments[i] === undefined) match[i] = undefined;
-        }
-      });
-    }
-
-    return match;
-  };
-}
-
-var regexpExec = patchedExec;
-
-_export({ target: 'RegExp', proto: true, forced: /./.exec !== regexpExec }, {
-  exec: regexpExec
-});
-
-var TO_STRING = 'toString';
-var RegExpPrototype = RegExp.prototype;
-var nativeToString = RegExpPrototype[TO_STRING];
-
-var NOT_GENERIC = fails(function () { return nativeToString.call({ source: 'a', flags: 'b' }) != '/a/b'; });
-// FF44- RegExp#toString has a wrong name
-var INCORRECT_NAME = nativeToString.name != TO_STRING;
-
-// `RegExp.prototype.toString` method
-// https://tc39.github.io/ecma262/#sec-regexp.prototype.tostring
-if (NOT_GENERIC || INCORRECT_NAME) {
-  redefine(RegExp.prototype, TO_STRING, function toString() {
-    var R = anObject(this);
-    var p = String(R.source);
-    var rf = R.flags;
-    var f = String(rf === undefined && R instanceof RegExp && !('flags' in RegExpPrototype) ? regexpFlags.call(R) : rf);
-    return '/' + p + '/' + f;
-  }, { unsafe: true });
-}
-
-// TODO: Remove from `core-js@4` since it's moved to entry points
-
-
-
-
-
-
-
-var SPECIES$6 = wellKnownSymbol('species');
-
-var REPLACE_SUPPORTS_NAMED_GROUPS = !fails(function () {
-  // #replace needs built-in support for named groups.
-  // #match works fine because it just return the exec results, even if it has
-  // a "grops" property.
-  var re = /./;
-  re.exec = function () {
-    var result = [];
-    result.groups = { a: '7' };
-    return result;
-  };
-  return ''.replace(re, '$<a>') !== '7';
-});
-
-// IE <= 11 replaces $0 with the whole match, as if it was $&
-// https://stackoverflow.com/questions/6024666/getting-ie-to-replace-a-regex-with-the-literal-string-0
-var REPLACE_KEEPS_$0 = (function () {
-  return 'a'.replace(/./, '$0') === '$0';
-})();
-
-var REPLACE = wellKnownSymbol('replace');
-// Safari <= 13.0.3(?) substitutes nth capture where n>m with an empty string
-var REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE = (function () {
-  if (/./[REPLACE]) {
-    return /./[REPLACE]('a', '$0') === '';
-  }
-  return false;
-})();
-
-// Chrome 51 has a buggy "split" implementation when RegExp#exec !== nativeExec
-// Weex JS has frozen built-in prototypes, so use try / catch wrapper
-var SPLIT_WORKS_WITH_OVERWRITTEN_EXEC = !fails(function () {
-  var re = /(?:)/;
-  var originalExec = re.exec;
-  re.exec = function () { return originalExec.apply(this, arguments); };
-  var result = 'ab'.split(re);
-  return result.length !== 2 || result[0] !== 'a' || result[1] !== 'b';
-});
-
-var fixRegexpWellKnownSymbolLogic = function (KEY, length, exec, sham) {
-  var SYMBOL = wellKnownSymbol(KEY);
-
-  var DELEGATES_TO_SYMBOL = !fails(function () {
-    // String methods call symbol-named RegEp methods
-    var O = {};
-    O[SYMBOL] = function () { return 7; };
-    return ''[KEY](O) != 7;
-  });
-
-  var DELEGATES_TO_EXEC = DELEGATES_TO_SYMBOL && !fails(function () {
-    // Symbol-named RegExp methods call .exec
-    var execCalled = false;
-    var re = /a/;
-
-    if (KEY === 'split') {
-      // We can't use real regex here since it causes deoptimization
-      // and serious performance degradation in V8
-      // https://github.com/zloirock/core-js/issues/306
-      re = {};
-      // RegExp[@@split] doesn't call the regex's exec method, but first creates
-      // a new one. We need to return the patched regex when creating the new one.
-      re.constructor = {};
-      re.constructor[SPECIES$6] = function () { return re; };
-      re.flags = '';
-      re[SYMBOL] = /./[SYMBOL];
-    }
-
-    re.exec = function () { execCalled = true; return null; };
-
-    re[SYMBOL]('');
-    return !execCalled;
-  });
-
-  if (
-    !DELEGATES_TO_SYMBOL ||
-    !DELEGATES_TO_EXEC ||
-    (KEY === 'replace' && !(
-      REPLACE_SUPPORTS_NAMED_GROUPS &&
-      REPLACE_KEEPS_$0 &&
-      !REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE
-    )) ||
-    (KEY === 'split' && !SPLIT_WORKS_WITH_OVERWRITTEN_EXEC)
-  ) {
-    var nativeRegExpMethod = /./[SYMBOL];
-    var methods = exec(SYMBOL, ''[KEY], function (nativeMethod, regexp, str, arg2, forceStringMethod) {
-      if (regexp.exec === regexpExec) {
-        if (DELEGATES_TO_SYMBOL && !forceStringMethod) {
-          // The native String method already delegates to @@method (this
-          // polyfilled function), leasing to infinite recursion.
-          // We avoid it by directly calling the native @@method method.
-          return { done: true, value: nativeRegExpMethod.call(regexp, str, arg2) };
-        }
-        return { done: true, value: nativeMethod.call(str, regexp, arg2) };
-      }
-      return { done: false };
-    }, {
-      REPLACE_KEEPS_$0: REPLACE_KEEPS_$0,
-      REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE: REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE
-    });
-    var stringMethod = methods[0];
-    var regexMethod = methods[1];
-
-    redefine(String.prototype, KEY, stringMethod);
-    redefine(RegExp.prototype, SYMBOL, length == 2
-      // 21.2.5.8 RegExp.prototype[@@replace](string, replaceValue)
-      // 21.2.5.11 RegExp.prototype[@@split](string, limit)
-      ? function (string, arg) { return regexMethod.call(string, this, arg); }
-      // 21.2.5.6 RegExp.prototype[@@match](string)
-      // 21.2.5.9 RegExp.prototype[@@search](string)
-      : function (string) { return regexMethod.call(string, this); }
-    );
-  }
-
-  if (sham) createNonEnumerableProperty(RegExp.prototype[SYMBOL], 'sham', true);
-};
-
-var charAt$1 = stringMultibyte.charAt;
-
-// `AdvanceStringIndex` abstract operation
-// https://tc39.github.io/ecma262/#sec-advancestringindex
-var advanceStringIndex = function (S, index, unicode) {
-  return index + (unicode ? charAt$1(S, index).length : 1);
-};
-
-// `RegExpExec` abstract operation
-// https://tc39.github.io/ecma262/#sec-regexpexec
-var regexpExecAbstract = function (R, S) {
-  var exec = R.exec;
-  if (typeof exec === 'function') {
-    var result = exec.call(R, S);
-    if (typeof result !== 'object') {
-      throw TypeError('RegExp exec method returned something other than an Object or null');
-    }
-    return result;
-  }
-
-  if (classofRaw(R) !== 'RegExp') {
-    throw TypeError('RegExp#exec called on incompatible receiver');
-  }
-
-  return regexpExec.call(R, S);
-};
-
-var max$4 = Math.max;
-var min$5 = Math.min;
-var floor$3 = Math.floor;
-var SUBSTITUTION_SYMBOLS = /\$([$&'`]|\d\d?|<[^>]*>)/g;
-var SUBSTITUTION_SYMBOLS_NO_NAMED = /\$([$&'`]|\d\d?)/g;
-
-var maybeToString = function (it) {
-  return it === undefined ? it : String(it);
-};
-
-// @@replace logic
-fixRegexpWellKnownSymbolLogic('replace', 2, function (REPLACE, nativeReplace, maybeCallNative, reason) {
-  var REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE = reason.REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE;
-  var REPLACE_KEEPS_$0 = reason.REPLACE_KEEPS_$0;
-  var UNSAFE_SUBSTITUTE = REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE ? '$' : '$0';
-
-  return [
-    // `String.prototype.replace` method
-    // https://tc39.github.io/ecma262/#sec-string.prototype.replace
-    function replace(searchValue, replaceValue) {
-      var O = requireObjectCoercible(this);
-      var replacer = searchValue == undefined ? undefined : searchValue[REPLACE];
-      return replacer !== undefined
-        ? replacer.call(searchValue, O, replaceValue)
-        : nativeReplace.call(String(O), searchValue, replaceValue);
-    },
-    // `RegExp.prototype[@@replace]` method
-    // https://tc39.github.io/ecma262/#sec-regexp.prototype-@@replace
-    function (regexp, replaceValue) {
-      if (
-        (!REGEXP_REPLACE_SUBSTITUTES_UNDEFINED_CAPTURE && REPLACE_KEEPS_$0) ||
-        (typeof replaceValue === 'string' && replaceValue.indexOf(UNSAFE_SUBSTITUTE) === -1)
-      ) {
-        var res = maybeCallNative(nativeReplace, regexp, this, replaceValue);
-        if (res.done) return res.value;
-      }
-
-      var rx = anObject(regexp);
-      var S = String(this);
-
-      var functionalReplace = typeof replaceValue === 'function';
-      if (!functionalReplace) replaceValue = String(replaceValue);
-
-      var global = rx.global;
-      if (global) {
-        var fullUnicode = rx.unicode;
-        rx.lastIndex = 0;
-      }
-      var results = [];
-      while (true) {
-        var result = regexpExecAbstract(rx, S);
-        if (result === null) break;
-
-        results.push(result);
-        if (!global) break;
-
-        var matchStr = String(result[0]);
-        if (matchStr === '') rx.lastIndex = advanceStringIndex(S, toLength(rx.lastIndex), fullUnicode);
-      }
-
-      var accumulatedResult = '';
-      var nextSourcePosition = 0;
-      for (var i = 0; i < results.length; i++) {
-        result = results[i];
-
-        var matched = String(result[0]);
-        var position = max$4(min$5(toInteger(result.index), S.length), 0);
-        var captures = [];
-        // NOTE: This is equivalent to
-        //   captures = result.slice(1).map(maybeToString)
-        // but for some reason `nativeSlice.call(result, 1, result.length)` (called in
-        // the slice polyfill when slicing native arrays) "doesn't work" in safari 9 and
-        // causes a crash (https://pastebin.com/N21QzeQA) when trying to debug it.
-        for (var j = 1; j < result.length; j++) captures.push(maybeToString(result[j]));
-        var namedCaptures = result.groups;
-        if (functionalReplace) {
-          var replacerArgs = [matched].concat(captures, position, S);
-          if (namedCaptures !== undefined) replacerArgs.push(namedCaptures);
-          var replacement = String(replaceValue.apply(undefined, replacerArgs));
-        } else {
-          replacement = getSubstitution(matched, S, position, captures, namedCaptures, replaceValue);
-        }
-        if (position >= nextSourcePosition) {
-          accumulatedResult += S.slice(nextSourcePosition, position) + replacement;
-          nextSourcePosition = position + matched.length;
-        }
-      }
-      return accumulatedResult + S.slice(nextSourcePosition);
-    }
-  ];
-
-  // https://tc39.github.io/ecma262/#sec-getsubstitution
-  function getSubstitution(matched, str, position, captures, namedCaptures, replacement) {
-    var tailPos = position + matched.length;
-    var m = captures.length;
-    var symbols = SUBSTITUTION_SYMBOLS_NO_NAMED;
-    if (namedCaptures !== undefined) {
-      namedCaptures = toObject(namedCaptures);
-      symbols = SUBSTITUTION_SYMBOLS;
-    }
-    return nativeReplace.call(replacement, symbols, function (match, ch) {
-      var capture;
-      switch (ch.charAt(0)) {
-        case '$': return '$';
-        case '&': return matched;
-        case '`': return str.slice(0, position);
-        case "'": return str.slice(tailPos);
-        case '<':
-          capture = namedCaptures[ch.slice(1, -1)];
-          break;
-        default: // \d\d?
-          var n = +ch;
-          if (n === 0) return match;
-          if (n > m) {
-            var f = floor$3(n / 10);
-            if (f === 0) return match;
-            if (f <= m) return captures[f - 1] === undefined ? ch.charAt(1) : captures[f - 1] + ch.charAt(1);
-            return match;
-          }
-          capture = captures[n - 1];
-      }
-      return capture === undefined ? '' : capture;
-    });
-  }
-});
-
-var MATCH = wellKnownSymbol('match');
-
-// `IsRegExp` abstract operation
-// https://tc39.github.io/ecma262/#sec-isregexp
-var isRegexp = function (it) {
-  var isRegExp;
-  return isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : classofRaw(it) == 'RegExp');
-};
-
-var arrayPush = [].push;
-var min$6 = Math.min;
-var MAX_UINT32 = 0xFFFFFFFF;
-
-// babel-minify transpiles RegExp('x', 'y') -> /x/y and it causes SyntaxError
-var SUPPORTS_Y = !fails(function () { return !RegExp(MAX_UINT32, 'y'); });
-
-// @@split logic
-fixRegexpWellKnownSymbolLogic('split', 2, function (SPLIT, nativeSplit, maybeCallNative) {
-  var internalSplit;
-  if (
-    'abbc'.split(/(b)*/)[1] == 'c' ||
-    'test'.split(/(?:)/, -1).length != 4 ||
-    'ab'.split(/(?:ab)*/).length != 2 ||
-    '.'.split(/(.?)(.?)/).length != 4 ||
-    '.'.split(/()()/).length > 1 ||
-    ''.split(/.?/).length
-  ) {
-    // based on es5-shim implementation, need to rework it
-    internalSplit = function (separator, limit) {
-      var string = String(requireObjectCoercible(this));
-      var lim = limit === undefined ? MAX_UINT32 : limit >>> 0;
-      if (lim === 0) return [];
-      if (separator === undefined) return [string];
-      // If `separator` is not a regex, use native split
-      if (!isRegexp(separator)) {
-        return nativeSplit.call(string, separator, lim);
-      }
-      var output = [];
-      var flags = (separator.ignoreCase ? 'i' : '') +
-                  (separator.multiline ? 'm' : '') +
-                  (separator.unicode ? 'u' : '') +
-                  (separator.sticky ? 'y' : '');
-      var lastLastIndex = 0;
-      // Make `global` and avoid `lastIndex` issues by working with a copy
-      var separatorCopy = new RegExp(separator.source, flags + 'g');
-      var match, lastIndex, lastLength;
-      while (match = regexpExec.call(separatorCopy, string)) {
-        lastIndex = separatorCopy.lastIndex;
-        if (lastIndex > lastLastIndex) {
-          output.push(string.slice(lastLastIndex, match.index));
-          if (match.length > 1 && match.index < string.length) arrayPush.apply(output, match.slice(1));
-          lastLength = match[0].length;
-          lastLastIndex = lastIndex;
-          if (output.length >= lim) break;
-        }
-        if (separatorCopy.lastIndex === match.index) separatorCopy.lastIndex++; // Avoid an infinite loop
-      }
-      if (lastLastIndex === string.length) {
-        if (lastLength || !separatorCopy.test('')) output.push('');
-      } else output.push(string.slice(lastLastIndex));
-      return output.length > lim ? output.slice(0, lim) : output;
-    };
-  // Chakra, V8
-  } else if ('0'.split(undefined, 0).length) {
-    internalSplit = function (separator, limit) {
-      return separator === undefined && limit === 0 ? [] : nativeSplit.call(this, separator, limit);
-    };
-  } else internalSplit = nativeSplit;
-
-  return [
-    // `String.prototype.split` method
-    // https://tc39.github.io/ecma262/#sec-string.prototype.split
-    function split(separator, limit) {
-      var O = requireObjectCoercible(this);
-      var splitter = separator == undefined ? undefined : separator[SPLIT];
-      return splitter !== undefined
-        ? splitter.call(separator, O, limit)
-        : internalSplit.call(String(O), separator, limit);
-    },
-    // `RegExp.prototype[@@split]` method
-    // https://tc39.github.io/ecma262/#sec-regexp.prototype-@@split
-    //
-    // NOTE: This cannot be properly polyfilled in engines that don't support
-    // the 'y' flag.
-    function (regexp, limit) {
-      var res = maybeCallNative(internalSplit, regexp, this, limit, internalSplit !== nativeSplit);
-      if (res.done) return res.value;
-
-      var rx = anObject(regexp);
-      var S = String(this);
-      var C = speciesConstructor(rx, RegExp);
-
-      var unicodeMatching = rx.unicode;
-      var flags = (rx.ignoreCase ? 'i' : '') +
-                  (rx.multiline ? 'm' : '') +
-                  (rx.unicode ? 'u' : '') +
-                  (SUPPORTS_Y ? 'y' : 'g');
-
-      // ^(? + rx + ) is needed, in combination with some S slicing, to
-      // simulate the 'y' flag.
-      var splitter = new C(SUPPORTS_Y ? rx : '^(?:' + rx.source + ')', flags);
-      var lim = limit === undefined ? MAX_UINT32 : limit >>> 0;
-      if (lim === 0) return [];
-      if (S.length === 0) return regexpExecAbstract(splitter, S) === null ? [S] : [];
-      var p = 0;
-      var q = 0;
-      var A = [];
-      while (q < S.length) {
-        splitter.lastIndex = SUPPORTS_Y ? q : 0;
-        var z = regexpExecAbstract(splitter, SUPPORTS_Y ? S : S.slice(q));
-        var e;
-        if (
-          z === null ||
-          (e = min$6(toLength(splitter.lastIndex + (SUPPORTS_Y ? 0 : q)), S.length)) === p
-        ) {
-          q = advanceStringIndex(S, q, unicodeMatching);
-        } else {
-          A.push(S.slice(p, q));
-          if (A.length === lim) return A;
-          for (var i = 1; i <= z.length - 1; i++) {
-            A.push(z[i]);
-            if (A.length === lim) return A;
-          }
-          q = p = e;
-        }
-      }
-      A.push(S.slice(p));
-      return A;
-    }
-  ];
-}, !SUPPORTS_Y);
-
-/**
- * A matrix
- * @param {Number} [rows]
- * @param {Number} [columns]
- * @constructor
- */
-
-var Matrix = /*#__PURE__*/function () {
-  function Matrix(rows, columns) {
-    _classCallCheck(this, Matrix);
-
-    if (rows === undefined) return;
-    if (columns === undefined) return;
-    this.rows = rows;
-    this.columns = columns;
-    this.weights = zeros(rows * columns);
-    this.deltas = zeros(rows * columns);
-  }
-  /**
-   *
-   * @param {Number} row
-   * @param {Number} col
-   * @returns {Float32Array|Array}
-   */
-
-
-  _createClass(Matrix, [{
-    key: "getWeights",
-    value: function getWeights(row, col) {
-      // slow but careful accessor function
-      // we want row-major order
-      var ix = this.columns * row + col;
-      if (ix < 0 && ix >= this.weights.length) throw new Error('get accessor is skewed');
-      return this.weights[ix];
-    }
-    /**
-     *
-     * @param {Number} row
-     * @param {Number} col
-     * @param v
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "setWeight",
-    value: function setWeight(row, col, v) {
-      // slow but careful accessor function
-      var ix = this.columns * row + col;
-      if (ix < 0 && ix >= this.weights.length) throw new Error('set accessor is skewed');
-      this.weights[ix] = v;
-    }
-    /**
-     *
-     * @param {Number} row
-     * @param {Number} col
-     * @param v
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "setDeltas",
-    value: function setDeltas(row, col, v) {
-      // slow but careful accessor function
-      var ix = this.columns * row + col;
-      if (ix < 0 && ix >= this.weights.length) throw new Error('set accessor is skewed');
-      this.deltas[ix] = v;
-    }
-    /**
-     *
-     * @returns {{rows: *, columns: *, weights: Array}}
-     */
-
-  }, {
-    key: "toJSON",
-    value: function toJSON() {
-      return {
-        rows: this.rows,
-        columns: this.columns,
-        weights: this.weights.slice(0)
-      };
-    }
-  }, {
-    key: "weightsToArray",
-    value: function weightsToArray() {
-      var deltas = [];
-      var row = 0;
-      var column = 0;
-
-      for (var i = 0; i < this.weights.length; i++) {
-        if (column === 0) {
-          deltas.push([]);
-        }
-
-        deltas[row].push(this.weights[i]);
-        column++;
-
-        if (column >= this.columns) {
-          column = 0;
-          row++;
-        }
-      }
-
-      return deltas;
-    }
-  }, {
-    key: "deltasToArray",
-    value: function deltasToArray() {
-      var deltas = [];
-      var row = 0;
-      var column = 0;
-
-      for (var i = 0; i < this.deltas.length; i++) {
-        if (column === 0) {
-          deltas.push([]);
-        }
-
-        deltas[row].push(this.deltas[i]);
-        column++;
-
-        if (column >= this.columns) {
-          column = 0;
-          row++;
-        }
-      }
-
-      return deltas;
-    }
-  }], [{
-    key: "fromJSON",
-    value: function fromJSON(json) {
-      var matrix = new Matrix(json.rows, json.columns);
-
-      for (var i = 0, max = json.rows * json.columns; i < max; i++) {
-        matrix.weights[i] = json.weights[i]; // copy over weights
-      }
-
-      return matrix;
-    }
-    /**
-     *
-     * @param weightRows
-     * @param [deltasRows]
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "fromArray",
-    value: function fromArray(weightRows, deltasRows) {
-      var rows = weightRows.length;
-      var columns = weightRows[0].length;
-      var m = new Matrix(rows, columns);
-      deltasRows = deltasRows || weightRows;
-
-      for (var rowIndex = 0; rowIndex < rows; rowIndex++) {
-        var weightValues = weightRows[rowIndex];
-        var deltasValues = deltasRows[rowIndex];
-
-        for (var columnIndex = 0; columnIndex < columns; columnIndex++) {
-          m.setWeight(rowIndex, columnIndex, weightValues[columnIndex]);
-          m.setDeltas(rowIndex, columnIndex, deltasValues[columnIndex]);
-        }
-      }
-
-      return m;
-    }
-  }]);
-
-  return Matrix;
-}();
-
-var matrix = Matrix;
-
-var randomFloat$2 = random.randomFloat;
-/** return Matrix but filled with random numbers from gaussian
- * @param {Number} [rows]
- * @param {Number} [columns]
- * @param std
- * @constructor
- */
-
-var RandomMatrix = /*#__PURE__*/function (_Matrix) {
-  _inherits(RandomMatrix, _Matrix);
-
-  var _super = _createSuper(RandomMatrix);
-
-  function RandomMatrix(rows, columns, std) {
-    var _this;
-
-    _classCallCheck(this, RandomMatrix);
-
-    _this = _super.call(this, rows, columns);
-    _this.rows = rows;
-    _this.columns = columns;
-    _this.std = std;
-
-    for (var i = 0, max = _this.weights.length; i < max; i++) {
-      _this.weights[i] = randomFloat$2(-std, std);
-    }
-
-    return _this;
-  }
-
-  return RandomMatrix;
-}(matrix);
-
-var randomMatrix = RandomMatrix;
-
-var log$1 = Math.log;
-var LN2$1 = Math.LN2;
-
-// `Math.log2` method
-// https://tc39.github.io/ecma262/#sec-math.log2
-_export({ target: 'Math', stat: true }, {
-  log2: function log2(x) {
-    return log$1(x) / LN2$1;
-  }
-});
-
-/**
- *
- * @param {Matrix} product
- * @param {Matrix} left
- */
-var cloneNegative = function cloneNegative(product, left) {
-  product.rows = parseInt(left.rows, 10);
-  product.columns = parseInt(left.columns, 10);
-  product.weights = left.weights.slice(0);
-  product.deltas = left.deltas.slice(0);
-
-  for (var i = 0; i < left.weights.length; i++) {
-    product.weights[i] = -left.weights[i];
-    product.deltas[i] = 0;
-  }
-};
-
-/**
- * add {left} and {right} matrix weights into {into}
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
- */
-var add$8 = function add(product, left, right) {
-  for (var i = 0; i < left.weights.length; i++) {
-    product.weights[i] = left.weights[i] + right.weights[i];
-    product.deltas[i] = 0;
-  }
-};
-
-/**
- * adds {from} deltas to {left} and {right} deltas
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
- */
-var addB = function addB(product, left, right) {
-  for (var i = 0; i < product.deltas.length; i++) {
-    left.deltas[i] = product.deltas[i];
-    right.deltas[i] = product.deltas[i];
-  }
-};
-
-/**
- * makes matrix weights and deltas all ones
- * @param {Matrix} product
- */
-var allOnes = function allOnes(product) {
-  for (var i = 0; i < product.weights.length; i++) {
-    product.weights[i] = 1;
-    product.deltas[i] = 0;
-  }
-};
-
-/**
- * multiply {left} and {right} matrix weights to {into}
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
- */
-var multiply$8 = function multiply(product, left, right) {
-  var leftRows = left.rows;
-  var leftColumns = left.columns;
-  var rightColumns = right.columns; // loop over rows of left
-
-  for (var leftRow = 0; leftRow < leftRows; leftRow++) {
-    var leftRowBase = leftColumns * leftRow;
-    var rightRowBase = rightColumns * leftRow; // loop over cols of right
-
-    for (var rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
-      // dot product loop
-      var dot = 0; // loop over columns of left
-
-      for (var leftColumn = 0; leftColumn < leftColumns; leftColumn++) {
-        var rightColumnBase = rightColumns * leftColumn;
-        var leftIndex = leftRowBase + leftColumn;
-        var rightIndex = rightColumnBase + rightColumn;
-        dot += left.weights[leftIndex] * right.weights[rightIndex];
-        left.deltas[leftIndex] = 0;
-        right.deltas[rightIndex] = 0;
-      }
-
-      product.weights[rightRowBase + rightColumn] = dot;
-    }
-  }
-};
-
-/**
- * multiplies {from} deltas to {left} and {right}
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
- */
-var multiplyB = function multiplyB(product, left, right) {
-  var leftRows = left.rows;
-  var leftColumns = left.columns;
-  var rightColumns = right.columns; // loop over rows of left
-
-  for (var leftRowRoot = 0; leftRowRoot < leftRows; leftRowRoot++) {
-    var leftRowBase = leftColumns * leftRowRoot;
-    var rightRowBase = rightColumns * leftRowRoot; // loop over cols of right
-
-    for (var rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
-      // loop over columns of left
-      for (var leftColumn = 0; leftColumn < leftColumns; leftColumn++) {
-        var rightColumnBase = rightColumns * leftColumn;
-        var leftRow = leftRowBase + leftColumn;
-        var rightRow = rightColumnBase + rightColumn;
-        var backPropagateValue = product.deltas[rightRowBase + rightColumn];
-        left.deltas[leftRow] += right.weights[rightRow] * backPropagateValue;
-        right.deltas[rightRow] += left.weights[leftRow] * backPropagateValue;
-      }
-    }
-  }
-};
-
-/**
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
- */
-var multiplyElement$4 = function multiplyElement(product, left, right) {
-  var weights = left.weights;
-
-  for (var i = 0; i < weights.length; i++) {
-    product.weights[i] = left.weights[i] * right.weights[i];
-    product.deltas[i] = 0;
-  }
-};
-
-/**
- * multiplies {left} and {right} weight by {from} deltas into {left} and {right} deltas
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
- */
-var multiplyElementB = function multiplyElementB(product, left, right) {
-  for (var i = 0; i < left.weights.length; i++) {
-    left.deltas[i] = right.weights[i] * product.deltas[i];
-    right.deltas[i] = left.weights[i] * product.deltas[i];
-  }
-};
-
-/**
- *
- * relu {m} weights to {into} weights
- * @param {Matrix} product
- * @param {Matrix} left
- */
-var relu$4 = function relu(product, left) {
-  for (var i = 0; i < left.weights.length; i++) {
-    product.weights[i] = Math.max(0, left.weights[i]); // relu
-
-    product.deltas[i] = 0;
-  }
-};
-
-/**
- * adds {from} deltas to {m} deltas when {m} weights are above other a threshold of 0
- * @param {Matrix} product
- * @param {Matrix} left
- */
-var reluB = function reluB(product, left) {
-  for (var i = 0; i < product.deltas.length; i++) {
-    left.deltas[i] = left.weights[i] > 0 ? product.deltas[i] : 0;
-  }
-};
-
-/**
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Number} rowPluckIndex
- */
-var rowPluck = function rowPluck(product, left, rowPluckIndex) {
-  var columns = left.columns;
-  var rowBase = columns * rowPluckIndex;
-
-  for (var column = 0; column < columns; column++) {
-    product.weights[column] = left.weights[rowBase + column];
-    product.deltas[column] = 0;
-  }
-};
-
-/**
- * adds {from} deltas into {m} deltas
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Number} rowIndex
- */
-var rowPluckB = function rowPluckB(product, left, rowIndex) {
-  var columns = left.columns;
-  var rowBase = columns * rowIndex;
-
-  for (var column = 0; column < columns; column++) {
-    left.deltas[rowBase + column] = product.deltas[column];
-  }
-};
-
-/**
- * @param {Matrix} product
- * @param {Matrix} left
- */
-var sigmoid$7 = function sigmoid(product, left) {
-  // sigmoid nonlinearity
-  for (var i = 0; i < left.weights.length; i++) {
-    product.weights[i] = 1 / (1 + Math.exp(-left.weights[i]));
-    product.deltas[i] = 0;
-  }
-}; // function sig(x) {
-
-/**
- *
- * @param {Matrix} product
- * @param {Matrix} left
- */
-var sigmoidB = function sigmoidB(product, left) {
-  for (var i = 0; i < product.deltas.length; i++) {
-    var mwi = product.weights[i];
-    left.deltas[i] = mwi * (1 - mwi) * product.deltas[i];
-  }
-};
-
-/**
- * @param {Matrix} product
- * @param {Matrix} left
- */
-var tanh$5 = function tanh(product, left) {
-  // tanh nonlinearity
-  for (var i = 0; i < left.weights.length; i++) {
-    product.weights[i] = Math.tanh(left.weights[i]);
-    product.deltas[i] = 0;
-  }
-};
-
-/**
- *
- * @param {Matrix} product
- * @param {Matrix} left
- */
-var tanhB = function tanhB(product, left) {
-  for (var i = 0; i < product.deltas.length; i++) {
-    // grad for z = tanh(x) is (1 - z^2)
-    var mwi = product.weights[i];
-    left.deltas[i] = (1 - mwi * mwi) * product.deltas[i];
-  }
-};
-
-/**
- *
- * @param {Matrix} m
- * @returns {Matrix}
- */
-
-var softmax = function softmax(m) {
-  var result = new matrix(m.rows, m.columns); // probability volume
-
-  var maxVal = -999999;
-
-  for (var i = 0; i < m.weights.length; i++) {
-    if (m.weights[i] > maxVal) {
-      maxVal = m.weights[i];
-    }
-  }
-
-  var s = 0;
-
-  for (var _i = 0; _i < m.weights.length; _i++) {
-    result.weights[_i] = Math.exp(m.weights[_i] - maxVal);
-    s += result.weights[_i];
-  }
-
-  for (var _i2 = 0; _i2 < m.weights.length; _i2++) {
-    result.weights[_i2] /= s;
-  } // no backward pass here needed
-  // since we will use the computed probabilities outside
-  // to set gradients directly on m
-
-
-  return result;
-};
-
-// const copy = require('./copy');
-
-var Equation = /*#__PURE__*/function () {
-  function Equation() {
-    _classCallCheck(this, Equation);
-
-    this.inputRow = 0;
-    this.inputValue = null;
-    this.states = [];
-  }
-  /**
-   * connects two matrices together by add
-   * @param {Matrix} left
-   * @param {Matrix} right
-   * @returns {Matrix}
-   */
-
-
-  _createClass(Equation, [{
-    key: "add",
-    value: function add(left, right) {
-      if (left.weights.length !== right.weights.length) {
-        throw new Error('misaligned matrices');
-      }
-
-      var product = new matrix(left.rows, left.columns);
-      this.states.push({
-        left: left,
-        right: right,
-        product: product,
-        forwardFn: add$8,
-        backpropagationFn: addB
-      });
-      return product;
-    }
-    /**
-     *
-     * @param {Number} rows
-     * @param {Number} columns
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "allOnes",
-    value: function allOnes$1(rows, columns) {
-      var product = new matrix(rows, columns);
-      this.states.push({
-        left: product,
-        product: product,
-        forwardFn: allOnes
-      });
-      return product;
-    }
-    /**
-     *
-     * @param {Matrix} m
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "cloneNegative",
-    value: function cloneNegative$1(m) {
-      var product = new matrix(m.rows, m.columns);
-      this.states.push({
-        left: m,
-        product: product,
-        forwardFn: cloneNegative
-      });
-      return product;
-    }
-    /**
-     * connects two matrices together by subtract
-     * @param {Matrix} left
-     * @param {Matrix} right
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "subtract",
-    value: function subtract(left, right) {
-      if (left.weights.length !== right.weights.length) {
-        throw new Error('misaligned matrices');
-      }
-
-      return this.add(this.add(this.allOnes(left.rows, left.columns), this.cloneNegative(left)), right);
-    }
-    /**
-     * connects two matrices together by multiply
-     * @param {Matrix} left
-     * @param {Matrix} right
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "multiply",
-    value: function multiply(left, right) {
-      if (left.columns !== right.rows) {
-        throw new Error('misaligned matrices');
-      }
-
-      var product = new matrix(left.rows, right.columns);
-      this.states.push({
-        left: left,
-        right: right,
-        product: product,
-        forwardFn: multiply$8,
-        backpropagationFn: multiplyB
-      });
-      return product;
-    }
-    /**
-     * connects two matrices together by multiplyElement
-     * @param {Matrix} left
-     * @param {Matrix} right
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "multiplyElement",
-    value: function multiplyElement(left, right) {
-      if (left.weights.length !== right.weights.length) {
-        throw new Error('misaligned matrices');
-      }
-
-      var product = new matrix(left.rows, left.columns);
-      this.states.push({
-        left: left,
-        right: right,
-        product: product,
-        forwardFn: multiplyElement$4,
-        backpropagationFn: multiplyElementB
-      });
-      return product;
-    }
-    /**
-     * connects a matrix to relu
-     * @param {Matrix} m
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "relu",
-    value: function relu(m) {
-      var product = new matrix(m.rows, m.columns);
-      this.states.push({
-        left: m,
-        product: product,
-        forwardFn: relu$4,
-        backpropagationFn: reluB
-      });
-      return product;
-    }
-    /**
-     * copy a matrix
-     * @param {Matrix} input
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "input",
-    value: function input(_input) {
-      var _this = this;
-
-      this.states.push({
-        product: _input,
-        forwardFn: function forwardFn(product) {
-          product.weights = _input.weights = _this.inputValue;
-        }
-      });
-      return _input;
-    }
-    /**
-     * connects a matrix via a row
-     * @param {Matrix} m
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "inputMatrixToRow",
-    value: function inputMatrixToRow(m) {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
-      var self = this;
-      var product = new matrix(m.columns, 1);
-      this.states.push({
-        left: m,
-
-        get right() {
-          return self.inputRow;
-        },
-
-        product: product,
-        forwardFn: rowPluck,
-        backpropagationFn: rowPluckB
-      });
-      return product;
-    }
-    /**
-     * connects a matrix to sigmoid
-     * @param {Matrix} m
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "sigmoid",
-    value: function sigmoid(m) {
-      var product = new matrix(m.rows, m.columns);
-      this.states.push({
-        left: m,
-        product: product,
-        forwardFn: sigmoid$7,
-        backpropagationFn: sigmoidB
-      });
-      return product;
-    }
-    /**
-     * connects a matrix to tanh
-     * @param {Matrix} m
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "tanh",
-    value: function tanh(m) {
-      var product = new matrix(m.rows, m.columns);
-      this.states.push({
-        left: m,
-        product: product,
-        forwardFn: tanh$5,
-        backpropagationFn: tanhB
-      });
-      return product;
-    }
-    /**
-     *
-     * @param m
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "observe",
-    value: function observe(m) {
-      this.states.push({
-        forwardFn: function forwardFn() {
-        },
-        backpropagationFn: function backpropagationFn() {
-        }
-      });
-      return m;
-    }
-    /**
-     * @patam {Number} [rowIndex]
-     * @output {Matrix}
-     */
-
-  }, {
-    key: "runIndex",
-    value: function runIndex() {
-      var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-      this.inputRow = rowIndex;
-      var state;
-
-      for (var i = 0, max = this.states.length; i < max; i++) {
-        state = this.states[i];
-
-        if (!state.hasOwnProperty('forwardFn')) {
-          continue;
-        }
-
-        state.forwardFn(state.product, state.left, state.right);
-      }
-
-      return state.product;
-    }
-    /**
-     * @patam {Number} [rowIndex]
-     * @output {Matrix}
-     */
-
-  }, {
-    key: "runInput",
-    value: function runInput(inputValue) {
-      this.inputValue = inputValue;
-      var state;
-
-      for (var i = 0, max = this.states.length; i < max; i++) {
-        state = this.states[i];
-
-        if (!state.hasOwnProperty('forwardFn')) {
-          continue;
-        }
-
-        state.forwardFn(state.product, state.left, state.right);
-      }
-
-      return state.product;
-    }
-    /**
-     * @patam {Number} [rowIndex]
-     * @output {Matrix}
-     */
-
-  }, {
-    key: "backpropagate",
-    value: function backpropagate() {
-      var i = this.states.length;
-      var state;
-
-      while (i-- > 0) {
-        state = this.states[i];
-
-        if (!state.hasOwnProperty('backpropagationFn')) {
-          continue;
-        } // console.log('backfn', state.backpropagationFn.name);
-        // console.log('before', state.product.deltas);
-
-
-        state.backpropagationFn(state.product, state.left, state.right); // console.log('after', state.product.deltas);
-      }
-
-      return state.product;
-    }
-    /**
-     * @patam {Number} [rowIndex]
-     * @output {Matrix}
-     */
-
-  }, {
-    key: "backpropagateIndex",
-    value: function backpropagateIndex() {
-      var rowIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-      this.inputRow = rowIndex;
-      var i = this.states.length;
-      var state;
-
-      while (i-- > 0) {
-        state = this.states[i];
-
-        if (!state.hasOwnProperty('backpropagationFn')) {
-          continue;
-        }
-
-        state.backpropagationFn(state.product, state.left, state.right);
-      }
-
-      return state.product;
-    }
-  }, {
-    key: "predictTarget",
-    value: function predictTarget(input, target) {
-      var output = this.runInput(input);
-      var errorSum = 0;
-
-      for (var i = 0; i < output.weights.length; i++) {
-        var error = output.weights[i] - target[i]; // set gradients into log probabilities
-
-        errorSum += Math.abs(error); // write gradients into log probabilities
-
-        output.deltas[i] = error;
-      }
-
-      return errorSum;
-    }
-  }, {
-    key: "predictTargetIndex",
-    value: function predictTargetIndex(input, target) {
-      var output = this.runIndex(input); // set gradients into log probabilities
-
-      var logProbabilities = output; // interpret output as log probabilities
-
-      var probabilities = softmax(output); // compute the softmax probabilities
-      // write gradients into log probabilities
-
-      logProbabilities.deltas = probabilities.weights.slice(0);
-      logProbabilities.deltas[target] -= 1; // accumulate base 2 log prob and do smoothing
-
-      return -Math.log2(probabilities.weights[target]);
-    }
-  }]);
-
-  return Equation;
-}();
-
-var equation = Equation;
-
-var randomFloat$3 = random.randomFloat;
-/**
- *
- * @param {Matrix} m
- * @returns {number}
- */
-
-var sampleI = function sampleI(m) {
-  // sample argmax from w, assuming w are
-  // probabilities that sum to one
-  var r = randomFloat$3(0, 1);
-  var x = 0;
-  var i = 0;
-  var w = m.weights;
-
-  while (true) {
-    x += w[i];
-
-    if (x > r) {
-      return i;
-    }
-
-    i++;
-  }
-};
-
-/**
- *
- * @param {Matrix} m
- * @returns {number}
- */
-var maxI = function maxI(m) {
-  // argmax of array w
-  var weights = m.weights;
-  var maxv = weights[0];
-  var maxix = 0;
-
-  for (var i = 1; i < weights.length; i++) {
-    var v = weights[i];
-    if (v < maxv) continue;
-    maxix = i;
-    maxv = v;
-  }
-
-  return maxix;
-};
-
-/*
- *
- * @param {Matrix} product
- * @param {Matrix} left
- */
-var copy = function copy(product, left) {
-  product.rows = parseInt(left.rows, 10);
-  product.columns = parseInt(left.columns, 10);
-  product.weights = left.weights.slice(0);
-  product.deltas = left.deltas.slice(0);
-};
-
-var freezing = !fails(function () {
-  return Object.isExtensible(Object.preventExtensions({}));
-});
-
-var internalMetadata = createCommonjsModule(function (module) {
-var defineProperty = objectDefineProperty.f;
-
-
-
-var METADATA = uid('meta');
-var id = 0;
-
-var isExtensible = Object.isExtensible || function () {
-  return true;
-};
-
-var setMetadata = function (it) {
-  defineProperty(it, METADATA, { value: {
-    objectID: 'O' + ++id, // object ID
-    weakData: {}          // weak collections IDs
-  } });
-};
-
-var fastKey = function (it, create) {
-  // return a primitive with prefix
-  if (!isObject(it)) return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
-  if (!has(it, METADATA)) {
-    // can't set metadata to uncaught frozen object
-    if (!isExtensible(it)) return 'F';
-    // not necessary to add metadata
-    if (!create) return 'E';
-    // add missing metadata
-    setMetadata(it);
-  // return object ID
-  } return it[METADATA].objectID;
-};
-
-var getWeakData = function (it, create) {
-  if (!has(it, METADATA)) {
-    // can't set metadata to uncaught frozen object
-    if (!isExtensible(it)) return true;
-    // not necessary to add metadata
-    if (!create) return false;
-    // add missing metadata
-    setMetadata(it);
-  // return the store of weak collections IDs
-  } return it[METADATA].weakData;
-};
-
-// add metadata on freeze-family methods calling
-var onFreeze = function (it) {
-  if (freezing && meta.REQUIRED && isExtensible(it) && !has(it, METADATA)) setMetadata(it);
-  return it;
-};
-
-var meta = module.exports = {
-  REQUIRED: false,
-  fastKey: fastKey,
-  getWeakData: getWeakData,
-  onFreeze: onFreeze
-};
-
-hiddenKeys[METADATA] = true;
-});
-var internalMetadata_1 = internalMetadata.REQUIRED;
-var internalMetadata_2 = internalMetadata.fastKey;
-var internalMetadata_3 = internalMetadata.getWeakData;
-var internalMetadata_4 = internalMetadata.onFreeze;
-
-var collection = function (CONSTRUCTOR_NAME, wrapper, common) {
-  var IS_MAP = CONSTRUCTOR_NAME.indexOf('Map') !== -1;
-  var IS_WEAK = CONSTRUCTOR_NAME.indexOf('Weak') !== -1;
-  var ADDER = IS_MAP ? 'set' : 'add';
-  var NativeConstructor = global_1[CONSTRUCTOR_NAME];
-  var NativePrototype = NativeConstructor && NativeConstructor.prototype;
-  var Constructor = NativeConstructor;
-  var exported = {};
-
-  var fixMethod = function (KEY) {
-    var nativeMethod = NativePrototype[KEY];
-    redefine(NativePrototype, KEY,
-      KEY == 'add' ? function add(value) {
-        nativeMethod.call(this, value === 0 ? 0 : value);
-        return this;
-      } : KEY == 'delete' ? function (key) {
-        return IS_WEAK && !isObject(key) ? false : nativeMethod.call(this, key === 0 ? 0 : key);
-      } : KEY == 'get' ? function get(key) {
-        return IS_WEAK && !isObject(key) ? undefined : nativeMethod.call(this, key === 0 ? 0 : key);
-      } : KEY == 'has' ? function has(key) {
-        return IS_WEAK && !isObject(key) ? false : nativeMethod.call(this, key === 0 ? 0 : key);
-      } : function set(key, value) {
-        nativeMethod.call(this, key === 0 ? 0 : key, value);
-        return this;
-      }
-    );
-  };
-
-  // eslint-disable-next-line max-len
-  if (isForced_1(CONSTRUCTOR_NAME, typeof NativeConstructor != 'function' || !(IS_WEAK || NativePrototype.forEach && !fails(function () {
-    new NativeConstructor().entries().next();
-  })))) {
-    // create collection constructor
-    Constructor = common.getConstructor(wrapper, CONSTRUCTOR_NAME, IS_MAP, ADDER);
-    internalMetadata.REQUIRED = true;
-  } else if (isForced_1(CONSTRUCTOR_NAME, true)) {
-    var instance = new Constructor();
-    // early implementations not supports chaining
-    var HASNT_CHAINING = instance[ADDER](IS_WEAK ? {} : -0, 1) != instance;
-    // V8 ~ Chromium 40- weak-collections throws on primitives, but should return false
-    var THROWS_ON_PRIMITIVES = fails(function () { instance.has(1); });
-    // most early implementations doesn't supports iterables, most modern - not close it correctly
-    // eslint-disable-next-line no-new
-    var ACCEPT_ITERABLES = checkCorrectnessOfIteration(function (iterable) { new NativeConstructor(iterable); });
-    // for early implementations -0 and +0 not the same
-    var BUGGY_ZERO = !IS_WEAK && fails(function () {
-      // V8 ~ Chromium 42- fails only with 5+ elements
-      var $instance = new NativeConstructor();
-      var index = 5;
-      while (index--) $instance[ADDER](index, index);
-      return !$instance.has(-0);
-    });
-
-    if (!ACCEPT_ITERABLES) {
-      Constructor = wrapper(function (dummy, iterable) {
-        anInstance(dummy, Constructor, CONSTRUCTOR_NAME);
-        var that = inheritIfRequired(new NativeConstructor(), dummy, Constructor);
-        if (iterable != undefined) iterate_1(iterable, that[ADDER], that, IS_MAP);
-        return that;
-      });
-      Constructor.prototype = NativePrototype;
-      NativePrototype.constructor = Constructor;
-    }
-
-    if (THROWS_ON_PRIMITIVES || BUGGY_ZERO) {
-      fixMethod('delete');
-      fixMethod('has');
-      IS_MAP && fixMethod('get');
-    }
-
-    if (BUGGY_ZERO || HASNT_CHAINING) fixMethod(ADDER);
-
-    // weak collections should not contains .clear method
-    if (IS_WEAK && NativePrototype.clear) delete NativePrototype.clear;
-  }
-
-  exported[CONSTRUCTOR_NAME] = Constructor;
-  _export({ global: true, forced: Constructor != NativeConstructor }, exported);
-
-  setToStringTag(Constructor, CONSTRUCTOR_NAME);
-
-  if (!IS_WEAK) common.setStrong(Constructor, CONSTRUCTOR_NAME, IS_MAP);
-
-  return Constructor;
-};
-
-var defineProperty$7 = objectDefineProperty.f;
-
-
-
-
-
-
-
-
-var fastKey = internalMetadata.fastKey;
-
-
-var setInternalState$4 = internalState.set;
-var internalStateGetterFor = internalState.getterFor;
-
-var collectionStrong = {
-  getConstructor: function (wrapper, CONSTRUCTOR_NAME, IS_MAP, ADDER) {
-    var C = wrapper(function (that, iterable) {
-      anInstance(that, C, CONSTRUCTOR_NAME);
-      setInternalState$4(that, {
-        type: CONSTRUCTOR_NAME,
-        index: objectCreate(null),
-        first: undefined,
-        last: undefined,
-        size: 0
-      });
-      if (!descriptors) that.size = 0;
-      if (iterable != undefined) iterate_1(iterable, that[ADDER], that, IS_MAP);
-    });
-
-    var getInternalState = internalStateGetterFor(CONSTRUCTOR_NAME);
-
-    var define = function (that, key, value) {
-      var state = getInternalState(that);
-      var entry = getEntry(that, key);
-      var previous, index;
-      // change existing entry
-      if (entry) {
-        entry.value = value;
-      // create new entry
-      } else {
-        state.last = entry = {
-          index: index = fastKey(key, true),
-          key: key,
-          value: value,
-          previous: previous = state.last,
-          next: undefined,
-          removed: false
-        };
-        if (!state.first) state.first = entry;
-        if (previous) previous.next = entry;
-        if (descriptors) state.size++;
-        else that.size++;
-        // add to index
-        if (index !== 'F') state.index[index] = entry;
-      } return that;
-    };
-
-    var getEntry = function (that, key) {
-      var state = getInternalState(that);
-      // fast case
-      var index = fastKey(key);
-      var entry;
-      if (index !== 'F') return state.index[index];
-      // frozen object case
-      for (entry = state.first; entry; entry = entry.next) {
-        if (entry.key == key) return entry;
-      }
-    };
-
-    redefineAll(C.prototype, {
-      // 23.1.3.1 Map.prototype.clear()
-      // 23.2.3.2 Set.prototype.clear()
-      clear: function clear() {
-        var that = this;
-        var state = getInternalState(that);
-        var data = state.index;
-        var entry = state.first;
-        while (entry) {
-          entry.removed = true;
-          if (entry.previous) entry.previous = entry.previous.next = undefined;
-          delete data[entry.index];
-          entry = entry.next;
-        }
-        state.first = state.last = undefined;
-        if (descriptors) state.size = 0;
-        else that.size = 0;
-      },
-      // 23.1.3.3 Map.prototype.delete(key)
-      // 23.2.3.4 Set.prototype.delete(value)
-      'delete': function (key) {
-        var that = this;
-        var state = getInternalState(that);
-        var entry = getEntry(that, key);
-        if (entry) {
-          var next = entry.next;
-          var prev = entry.previous;
-          delete state.index[entry.index];
-          entry.removed = true;
-          if (prev) prev.next = next;
-          if (next) next.previous = prev;
-          if (state.first == entry) state.first = next;
-          if (state.last == entry) state.last = prev;
-          if (descriptors) state.size--;
-          else that.size--;
-        } return !!entry;
-      },
-      // 23.2.3.6 Set.prototype.forEach(callbackfn, thisArg = undefined)
-      // 23.1.3.5 Map.prototype.forEach(callbackfn, thisArg = undefined)
-      forEach: function forEach(callbackfn /* , that = undefined */) {
-        var state = getInternalState(this);
-        var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
-        var entry;
-        while (entry = entry ? entry.next : state.first) {
-          boundFunction(entry.value, entry.key, this);
-          // revert to the last existing entry
-          while (entry && entry.removed) entry = entry.previous;
-        }
-      },
-      // 23.1.3.7 Map.prototype.has(key)
-      // 23.2.3.7 Set.prototype.has(value)
-      has: function has(key) {
-        return !!getEntry(this, key);
-      }
-    });
-
-    redefineAll(C.prototype, IS_MAP ? {
-      // 23.1.3.6 Map.prototype.get(key)
-      get: function get(key) {
-        var entry = getEntry(this, key);
-        return entry && entry.value;
-      },
-      // 23.1.3.9 Map.prototype.set(key, value)
-      set: function set(key, value) {
-        return define(this, key === 0 ? 0 : key, value);
-      }
-    } : {
-      // 23.2.3.1 Set.prototype.add(value)
-      add: function add(value) {
-        return define(this, value = value === 0 ? 0 : value, value);
-      }
-    });
-    if (descriptors) defineProperty$7(C.prototype, 'size', {
-      get: function () {
-        return getInternalState(this).size;
-      }
-    });
-    return C;
-  },
-  setStrong: function (C, CONSTRUCTOR_NAME, IS_MAP) {
-    var ITERATOR_NAME = CONSTRUCTOR_NAME + ' Iterator';
-    var getInternalCollectionState = internalStateGetterFor(CONSTRUCTOR_NAME);
-    var getInternalIteratorState = internalStateGetterFor(ITERATOR_NAME);
-    // add .keys, .values, .entries, [@@iterator]
-    // 23.1.3.4, 23.1.3.8, 23.1.3.11, 23.1.3.12, 23.2.3.5, 23.2.3.8, 23.2.3.10, 23.2.3.11
-    defineIterator(C, CONSTRUCTOR_NAME, function (iterated, kind) {
-      setInternalState$4(this, {
-        type: ITERATOR_NAME,
-        target: iterated,
-        state: getInternalCollectionState(iterated),
-        kind: kind,
-        last: undefined
-      });
-    }, function () {
-      var state = getInternalIteratorState(this);
-      var kind = state.kind;
-      var entry = state.last;
-      // revert to the last existing entry
-      while (entry && entry.removed) entry = entry.previous;
-      // get next entry
-      if (!state.target || !(state.last = entry = entry ? entry.next : state.state.first)) {
-        // or finish the iteration
-        state.target = undefined;
-        return { value: undefined, done: true };
-      }
-      // return step by kind
-      if (kind == 'keys') return { value: entry.key, done: false };
-      if (kind == 'values') return { value: entry.value, done: false };
-      return { value: [entry.key, entry.value], done: false };
-    }, IS_MAP ? 'entries' : 'values', !IS_MAP, true);
-
-    // add [@@species], 23.1.2.2, 23.2.2.2
-    setSpecies(CONSTRUCTOR_NAME);
-  }
-};
-
-// `Set` constructor
-// https://tc39.github.io/ecma262/#sec-set-objects
-var es_set = collection('Set', function (init) {
-  return function Set() { return init(this, arguments.length ? arguments[0] : undefined); };
-}, collectionStrong);
-
-var ITERATOR$6 = wellKnownSymbol('iterator');
-var TO_STRING_TAG$4 = wellKnownSymbol('toStringTag');
-var ArrayValues = es_array_iterator.values;
-
-for (var COLLECTION_NAME$1 in domIterables) {
-  var Collection$1 = global_1[COLLECTION_NAME$1];
-  var CollectionPrototype$1 = Collection$1 && Collection$1.prototype;
-  if (CollectionPrototype$1) {
-    // some Chrome versions have non-configurable methods on DOMTokenList
-    if (CollectionPrototype$1[ITERATOR$6] !== ArrayValues) try {
-      createNonEnumerableProperty(CollectionPrototype$1, ITERATOR$6, ArrayValues);
-    } catch (error) {
-      CollectionPrototype$1[ITERATOR$6] = ArrayValues;
-    }
-    if (!CollectionPrototype$1[TO_STRING_TAG$4]) {
-      createNonEnumerableProperty(CollectionPrototype$1, TO_STRING_TAG$4, COLLECTION_NAME$1);
-    }
-    if (domIterables[COLLECTION_NAME$1]) for (var METHOD_NAME in es_array_iterator) {
-      // some Chrome versions have non-configurable methods on DOMTokenList
-      if (CollectionPrototype$1[METHOD_NAME] !== es_array_iterator[METHOD_NAME]) try {
-        createNonEnumerableProperty(CollectionPrototype$1, METHOD_NAME, es_array_iterator[METHOD_NAME]);
-      } catch (error) {
-        CollectionPrototype$1[METHOD_NAME] = es_array_iterator[METHOD_NAME];
-      }
-    }
-  }
-}
-
-/**
- *
- * @param {String[]|Number[]} values
- * @param maxThreshold
- * @constructor
- */
-var DataFormatter = /*#__PURE__*/function () {
-  function DataFormatter(values) {
-    var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-
-    _classCallCheck(this, DataFormatter);
-
-    if (values === undefined) return;
-    this.values = values; // go over all characters and keep track of all unique ones seen
-    // count up all characters
-
-    this.indexTable = {};
-    this.characterTable = {};
-    this.characters = [];
-    this.specialIndexes = [];
-    this.buildCharactersFromIterable(values);
-    this.buildTables(maxThreshold);
-  }
-
-  _createClass(DataFormatter, [{
-    key: "buildCharactersFromIterable",
-    value: function buildCharactersFromIterable(values) {
-      var tempCharactersTable = {};
-
-      for (var dataFormatterIndex = 0, dataFormatterLength = values.length; dataFormatterIndex < dataFormatterLength; dataFormatterIndex++) {
-        var characters = values[dataFormatterIndex];
-
-        if (characters.hasOwnProperty('length')) {
-          for (var characterIndex = 0, charactersLength = characters.length; characterIndex < charactersLength; characterIndex++) {
-            var character = characters[characterIndex];
-            if (tempCharactersTable.hasOwnProperty(character)) continue;
-            tempCharactersTable[character] = true;
-            this.characters.push(character);
-          }
-        } else {
-          var _character = values[dataFormatterIndex];
-          if (tempCharactersTable.hasOwnProperty(_character)) continue;
-          tempCharactersTable[dataFormatterIndex] = true;
-          this.characters.push(_character);
-        }
-      }
-    }
-  }, {
-    key: "buildTables",
-    value: function buildTables(maxThreshold) {
-      // filter by count threshold and create pointers
-      var charactersLength = this.characters.length;
-
-      for (var characterIndex = 0; characterIndex < charactersLength; characterIndex++) {
-        var character = this.characters[characterIndex];
-
-        if (characterIndex >= maxThreshold) {
-          // add character to dataFormatter
-          this.indexTable[character] = characterIndex;
-          this.characterTable[characterIndex] = character;
-        }
-      }
-    }
-  }, {
-    key: "toIndexes",
-    value: function toIndexes(value) {
-      var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-      var result = [];
-      var indexTable = this.indexTable;
-
-      for (var i = 0, max = value.length; i < max; i++) {
-        var character = value[i];
-        var index = indexTable[character];
-
-        if (index === undefined) {
-          if (indexTable.unrecognized) {
-            index = indexTable.unrecognized;
-          } else {
-            throw new Error("unrecognized character \"".concat(character, "\""));
-          }
-        }
-
-        if (index < maxThreshold) continue;
-        result.push(index);
-      }
-
-      return result;
-    }
-  }, {
-    key: "toIndexesInputOutput",
-    value: function toIndexesInputOutput(value1) {
-      var value2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-      var maxThreshold = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-      var result = null;
-
-      if (typeof value1 === 'string') {
-        result = this.toIndexes(value1.split('').concat(['stop-input', 'start-output']), maxThreshold);
-      } else if (typeof value1 === 'number') {
-        result = this.toIndexes(value1.toString().split('').concat(['stop-input', 'start-output']), maxThreshold);
-      } else {
-        result = this.toIndexes(value1.concat(['stop-input', 'start-output']), maxThreshold);
-      }
-
-      if (value2 === null) return result;
-
-      if (typeof value2 === 'string') {
-        return result.concat(this.toIndexes(value2.split(''), maxThreshold));
-      } else {
-        return result.concat(this.toIndexes(value2, maxThreshold));
-      }
-    }
-  }, {
-    key: "toCharacters",
-    value: function toCharacters(indices) {
-      var maxThreshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-      var result = [];
-      var indexTable = this.indexTable,
-          characterTable = this.characterTable;
-
-      for (var i = 0, max = indices.length; i < max; i++) {
-        var index = indices[i];
-        if (index < maxThreshold) continue;
-        var character = characterTable[index];
-
-        if (character === undefined) {
-          if (indexTable.unrecognized) {
-            character = characterTable[indexTable.unrecognized];
-          } else {
-            throw new Error("unrecognized index \"".concat(index, "\""));
-          }
-        } else if (character !== null) {
-          result.push(character);
-        }
-      }
-
-      return result;
-    }
-  }, {
-    key: "toString",
-    value: function toString(indices, maxThreshold) {
-      return this.toCharacters(indices, maxThreshold).join('');
-    }
-  }, {
-    key: "addInputOutput",
-    value: function addInputOutput() {
-      this.addSpecial('stop-input');
-      this.addSpecial('start-output');
-    }
-  }, {
-    key: "addUnrecognized",
-    value: function addUnrecognized() {
-      this.addSpecial('unrecognized');
-    }
-  }, {
-    key: "addSpecial",
-    value: function addSpecial(special) {
-      var character = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-      var specialIndex = this.indexTable[special] = this.characters.length;
-      this.characterTable[specialIndex] = character;
-      this.specialIndexes.push(this.characters.length);
-      this.characters.push(special);
-    }
-  }, {
-    key: "countSpecial",
-    value: function countSpecial(output) {
-      var sum = 0;
-
-      for (var i = 0; i < this.specialIndexes; i++) {
-        var index = -1;
-
-        while (index = output.indexOf(this.specialIndexes[i], index) > -1) {
-          sum++;
-        }
-      }
-
-      return sum;
-    }
-  }, {
-    key: "toFunctionString",
-    value: function toFunctionString() {
-      return "\nvar characterTable = ".concat(JSON.stringify(this.characterTable), ";\nvar indexTable = ").concat(JSON.stringify(this.indexTable), ";\nvar characters = ").concat(JSON.stringify(this.characters), ";\nvar dataFormatter = {\n  ").concat(this.toIndexes.toString(), ",\n  ").concat(this.toIndexesInputOutput.toString(), ",\n  ").concat(this.toCharacters.toString(), "\n};");
-    }
-  }], [{
-    key: "fromAllPrintable",
-    value: function fromAllPrintable(maxThreshold) {
-      var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['\n'];
-
-      for (var i = 32; i <= 126; i++) {
-        values.push(String.fromCharCode(i));
-      }
-
-      return new DataFormatter(values, maxThreshold);
-    }
-  }, {
-    key: "fromAllPrintableInputOutput",
-    value: function fromAllPrintableInputOutput(maxThreshold) {
-      var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['\n'];
-      var dataFormatter = DataFormatter.fromAllPrintable(maxThreshold, values);
-      dataFormatter.addInputOutput();
-      return dataFormatter;
-    }
-  }, {
-    key: "fromStringInputOutput",
-    value: function fromStringInputOutput(string, maxThreshold) {
-      var _String$prototype;
-
-      var values = (_String$prototype = String.prototype).concat.apply(_String$prototype, _toConsumableArray(new Set(string)));
-
-      var dataFormatter = new DataFormatter(values, maxThreshold);
-      dataFormatter.addInputOutput();
-      return dataFormatter;
-    }
-  }, {
-    key: "fromArrayInputOutput",
-    value: function fromArrayInputOutput(array, maxThreshold) {
-      var dataFormatter = new DataFormatter(array.filter(function (v, i, a) {
-        return a.indexOf(v) === i;
-      }), maxThreshold);
-      dataFormatter.addInputOutput();
-      return dataFormatter;
-    }
-  }, {
-    key: "fromString",
-    value: function fromString(string, maxThreshold) {
-      var _String$prototype2;
-
-      var values = (_String$prototype2 = String.prototype).concat.apply(_String$prototype2, _toConsumableArray(new Set(string)));
-
-      return new DataFormatter(values, maxThreshold);
-    }
-  }, {
-    key: "fromJSON",
-    value: function fromJSON(json) {
-      var dataFormatter = new DataFormatter();
-      dataFormatter.indexTable = json.indexTable;
-      dataFormatter.characterTable = json.characterTable;
-      dataFormatter.values = json.values;
-      dataFormatter.characters = json.characters;
-      dataFormatter.specialIndexes = json.specialIndexes;
-      return dataFormatter;
-    }
-  }]);
-
-  return DataFormatter;
-}();
-
-function validateAndCast(value) {
-  if (typeof value === 'string') return value;
-  if (typeof value === 'number') return value.toString();
-  if (typeof value[0] === 'string') return value;
-
-  if (typeof value[0] === 'number') {
-    return value.map(function (value) {
-      return value.toString();
-    });
-  }
-
-  throw new Error('unrecognized value, expected string[], string, number[], or number');
-}
-/**
- *
- * @param {*[]} data
- * @returns {Number[]}
- */
-
-
-function defaultRNNFormatter(data) {
-  if (typeof data[0] !== 'string' && !Array.isArray(data[0]) && (!data[0].hasOwnProperty('input') || !data[0].hasOwnProperty('output'))) {
-    return data;
-  }
-
-  var values = [];
-  var result = [];
-
-  if (typeof data[0] === 'string' || typeof data[0] === 'number' || Array.isArray(data[0])) {
-    if (!this.dataFormatter) {
-      for (var i = 0; i < data.length; i++) {
-        values.push(validateAndCast(data[i]));
-      }
-
-      this.dataFormatter = new DataFormatter(values);
-      this.dataFormatter.addUnrecognized();
-    }
-
-    for (var _i = 0, max = data.length; _i < max; _i++) {
-      result.push(this.formatDataIn(data[_i]));
-    }
-  } else if (data[0].input && data[0].output) {
-    if (!this.dataFormatter) {
-      for (var _i2 = 0; _i2 < data.length; _i2++) {
-        var datum = data[_i2];
-        values.push(validateAndCast(datum.input), validateAndCast(datum.output));
-      }
-
-      this.dataFormatter = DataFormatter.fromArrayInputOutput(values);
-      this.dataFormatter.addUnrecognized();
-    }
-
-    for (var _i3 = 0, _max = data.length; _i3 < _max; _i3++) {
-      result.push(this.formatDataIn(validateAndCast(data[_i3].input), validateAndCast(data[_i3].output)));
-    }
-  } else {
-    throw new Error('unrecognized data');
-  }
-
-  return result;
-}
-
-var dataFormatter = {
-  DataFormatter: DataFormatter,
-  defaultRNNFormatter: defaultRNNFormatter
-};
-
-var randomFloat$4 = random.randomFloat;
-var DataFormatter$1 = dataFormatter.DataFormatter,
-    defaultRNNFormatter$1 = dataFormatter.defaultRNNFormatter;
-
-var RNN = /*#__PURE__*/function () {
-  function RNN() {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _classCallCheck(this, RNN);
-
-    var defaults = this.constructor.defaults;
-    Object.assign(this, defaults, options);
-    this.trainOpts = {};
-    this.updateTrainingOptions(_objectSpread2(_objectSpread2({}, this.constructor.trainDefaults), options));
-    this.stepCache = {};
-    this.runs = 0;
-    this.ratioClipped = null;
-    this.model = null;
-    this.inputLookup = null;
-    this.inputLookupLength = null;
-    this.outputLookup = null;
-    this.outputLookupLength = null;
-
-    if (options.json) {
-      this.fromJSON(options.json);
-    }
-  }
-
-  _createClass(RNN, [{
-    key: "initialize",
-    value: function initialize() {
-      this.model = {
-        input: null,
-        hiddenLayers: [],
-        output: null,
-        equations: [],
-        allMatrices: [],
-        equationConnections: [],
-        outputConnector: null
-      };
-
-      if (this.dataFormatter) {
-        this.inputSize = this.inputRange = this.outputSize = this.dataFormatter.characters.length;
-      }
-
-      this.mapModel();
-    }
-  }, {
-    key: "createHiddenLayers",
-    value: function createHiddenLayers() {
-      // 0 is end, so add 1 to offset
-      this.model.hiddenLayers.push(this.constructor.getModel(this.hiddenLayers[0], this.inputSize));
-      var prevSize = this.hiddenLayers[0];
-
-      for (var d = 1; d < this.hiddenLayers.length; d++) {
-        // loop over depths
-        var hiddenSize = this.hiddenLayers[d];
-        this.model.hiddenLayers.push(this.constructor.getModel(hiddenSize, prevSize));
-        prevSize = hiddenSize;
-      }
-    }
-    /**
-     *
-     * @param {Number} hiddenSize
-     * @param {Number} prevSize
-     * @returns {object}
-     */
-
-  }, {
-    key: "createInputMatrix",
-    value: function createInputMatrix() {
-      // 0 is end, so add 1 to offset
-      this.model.input = new randomMatrix(this.inputRange + 1, this.inputSize, 0.08);
-    }
-  }, {
-    key: "createOutputMatrix",
-    value: function createOutputMatrix() {
-      var model = this.model;
-      var outputSize = this.outputSize;
-      var lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1]; // 0 is end, so add 1 to offset
-      // whd
-
-      model.outputConnector = new randomMatrix(outputSize + 1, lastHiddenSize, 0.08); // 0 is end, so add 1 to offset
-      // bd
-
-      model.output = new matrix(outputSize + 1, 1);
-    }
-  }, {
-    key: "bindEquation",
-    value: function bindEquation() {
-      var model = this.model;
-      var equation$1 = new equation();
-      var outputs = [];
-      var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs; // 0 index
-
-      var output = this.constructor.getEquation(equation$1, equation$1.inputMatrixToRow(model.input), equationConnection[0], model.hiddenLayers[0]);
-      outputs.push(output); // 1+ indices
-
-      for (var i = 1, max = this.hiddenLayers.length; i < max; i++) {
-        output = this.constructor.getEquation(equation$1, output, equationConnection[i], model.hiddenLayers[i]);
-        outputs.push(output);
-      }
-
-      model.equationConnections.push(outputs);
-      equation$1.add(equation$1.multiply(model.outputConnector, output), model.output);
-      model.equations.push(equation$1);
-    }
-  }, {
-    key: "mapModel",
-    value: function mapModel() {
-      var model = this.model;
-      var hiddenLayers = model.hiddenLayers;
-      var allMatrices = model.allMatrices;
-      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
-        return new matrix(size, 1);
-      });
-      this.createInputMatrix();
-      if (!model.input) throw new Error('net.model.input not set');
-      allMatrices.push(model.input);
-      this.createHiddenLayers();
-      if (!model.hiddenLayers.length) throw new Error('net.hiddenLayers not set');
-
-      for (var i = 0, max = hiddenLayers.length; i < max; i++) {
-        var hiddenMatrix = hiddenLayers[i];
-
-        for (var property in hiddenMatrix) {
-          if (!hiddenMatrix.hasOwnProperty(property)) continue;
-          allMatrices.push(hiddenMatrix[property]);
-        }
-      }
-
-      this.createOutputMatrix();
-      if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
-      if (!model.output) throw new Error('net.model.output not set');
-      allMatrices.push(model.outputConnector);
-      allMatrices.push(model.output);
-    }
-    /**
-     *
-     * @param {Number[]|string[]|string} input
-     * @param {boolean} [logErrorRate]
-     * @returns {number}
-     */
-
-  }, {
-    key: "trainPattern",
-    value: function trainPattern(input, logErrorRate) {
-      var error = this.trainInput(input);
-      this.backpropagate(input);
-      this.adjustWeights();
-
-      if (logErrorRate) {
-        return error;
-      }
-    }
-    /**
-     *
-     * @param {Number[]} input
-     * @returns {number}
-     */
-
-  }, {
-    key: "trainInput",
-    value: function trainInput(input) {
-      this.runs++;
-      var model = this.model;
-      var max = input.length;
-      var log2ppl = 0;
-      var equation;
-
-      while (model.equations.length <= input.length + 1) {
-        // last is zero
-        this.bindEquation();
-      }
-
-      for (var inputIndex = -1, inputMax = input.length; inputIndex < inputMax; inputIndex++) {
-        // start and end tokens are zeros
-        var equationIndex = inputIndex + 1;
-        equation = model.equations[equationIndex];
-        var source = inputIndex === -1 ? 0 : input[inputIndex] + 1; // first step: start with START token
-
-        var target = inputIndex === max - 1 ? 0 : input[inputIndex + 1] + 1; // last step: end with END token
-
-        log2ppl += equation.predictTargetIndex(source, target);
-      }
-
-      return Math.pow(2, log2ppl / (max - 1)) / 100;
-    }
-    /**
-     * @param {Number[]} input
-     */
-
-  }, {
-    key: "backpropagate",
-    value: function backpropagate(input) {
-      var i = input.length;
-      var model = this.model;
-      var equations = model.equations;
-
-      while (i > 0) {
-        equations[i].backpropagateIndex(input[i - 1] + 1);
-        i--;
-      }
-
-      equations[0].backpropagateIndex(0);
-    }
-  }, {
-    key: "adjustWeights",
-    value: function adjustWeights() {
-      var regc = this.regc,
-          clipval = this.clipval,
-          model = this.model,
-          decayRate = this.decayRate,
-          stepCache = this.stepCache,
-          smoothEps = this.smoothEps,
-          trainOpts = this.trainOpts;
-      var learningRate = trainOpts.learningRate;
-      var allMatrices = model.allMatrices;
-      var numClipped = 0;
-      var numTot = 0;
-
-      for (var matrixIndex = 0; matrixIndex < allMatrices.length; matrixIndex++) {
-        var matrix = allMatrices[matrixIndex];
-        var weights = matrix.weights,
-            deltas = matrix.deltas;
-
-        if (!(matrixIndex in stepCache)) {
-          stepCache[matrixIndex] = zeros(matrix.rows * matrix.columns);
-        }
-
-        var cache = stepCache[matrixIndex];
-
-        for (var i = 0; i < weights.length; i++) {
-          var r = deltas[i];
-          var w = weights[i]; // rmsprop adaptive learning rate
-
-          cache[i] = cache[i] * decayRate + (1 - decayRate) * r * r; // gradient clip
-
-          if (r > clipval) {
-            r = clipval;
-            numClipped++;
-          }
-
-          if (r < -clipval) {
-            r = -clipval;
-            numClipped++;
-          }
-
-          numTot++; // update (and regularize)
-
-          weights[i] = w + -learningRate * r / Math.sqrt(cache[i] + smoothEps) - regc * w;
-        }
-      }
-
-      this.ratioClipped = numClipped / numTot;
-    }
-    /**
-     *
-     * @returns boolean
-     */
-
-  }, {
-    key: "run",
-
-    /**
-     *
-     * @param {Number[]|*} [rawInput]
-     * @param {Boolean} [isSampleI]
-     * @param {Number} temperature
-     * @returns {*}
-     */
-    value: function run() {
-      var rawInput = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var isSampleI = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      var temperature = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
-      var maxPredictionLength = this.maxPredictionLength + rawInput.length + (this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0);
-      if (!this.isRunnable) return null;
-      var input = this.formatDataIn(rawInput);
-      var model = this.model;
-      var output = [];
-      var i = 0;
-
-      while (true) {
-        var previousIndex = i === 0 ? 0 : i < input.length ? input[i - 1] + 1 : output[i - 1];
-
-        while (model.equations.length <= i) {
-          this.bindEquation();
-        }
-
-        var equation = model.equations[i]; // sample predicted letter
-
-        var outputMatrix = equation.runIndex(previousIndex);
-        var logProbabilities = new matrix(model.output.rows, model.output.columns);
-        copy(logProbabilities, outputMatrix);
-
-        if (temperature !== 1 && isSampleI) {
-          /**
-           * scale log probabilities by temperature and re-normalize
-           * if temperature is high, logProbabilities will go towards zero
-           * and the softmax outputs will be more diffuse. if temperature is
-           * very low, the softmax outputs will be more peaky
-           */
-          for (var j = 0, max = logProbabilities.weights.length; j < max; j++) {
-            logProbabilities.weights[j] /= temperature;
-          }
-        }
-
-        var probs = softmax(logProbabilities);
-        var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);
-        i++;
-
-        if (nextIndex === 0) {
-          // END token predicted, break out
-          break;
-        }
-
-        if (i >= maxPredictionLength) {
-          // something is wrong
-          break;
-        }
-
-        output.push(nextIndex);
-      }
-      /**
-       * we slice the input length here, not because output contains it, but it will be erroneous as we are sending the
-       * network what is contained in input, so the data is essentially guessed by the network what could be next, till it
-       * locks in on a value.
-       * Kind of like this, values are from input:
-       * 0 -> 4 (or in English: "beginning on input" -> "I have no idea? I'll guess what they want next!")
-       * 2 -> 2 (oh how interesting, I've narrowed down values...)
-       * 1 -> 9 (oh how interesting, I've now know what the values are...)
-       * then the output looks like: [4, 2, 9,...]
-       * so we then remove the erroneous data to get our true output
-       */
-
-
-      return this.formatDataOut(input, output.slice(input.length).map(function (value) {
-        return value - 1;
-      }));
-    }
-    /**
-     *
-     * Verifies network sizes are initilaized
-     * If they are not it will initialize them
-     */
-
-  }, {
-    key: "verifyIsInitialized",
-    value: function verifyIsInitialized() {
-      if (!this.model) {
-        this.initialize();
-      }
-    }
-    /**
-     *
-     * @param options
-     *    Supports all `trainDefaults` properties
-     *    also supports:
-     *       learningRate: (number),
-     *       momentum: (number),
-     *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
-     */
-
-  }, {
-    key: "updateTrainingOptions",
-    value: function updateTrainingOptions(options) {
-      var _this = this;
-
-      Object.keys(this.constructor.trainDefaults).forEach(function (p) {
-        return _this.trainOpts[p] = options.hasOwnProperty(p) ? options[p] : _this.trainOpts[p];
-      });
-      this.validateTrainingOptions(this.trainOpts);
-      this.setLogMethod(options.log || this.trainOpts.log);
-      this.activation = options.activation || this.activation;
-    }
-  }, {
-    key: "validateTrainingOptions",
-    value: function validateTrainingOptions(options) {
-      neuralNetwork.prototype.validateTrainingOptions.call(this, options);
-    }
-    /**
-     *
-     * @param log
-     * if a method is passed in method is used
-     * if false passed in nothing is logged
-     * @returns error
-     */
-
-  }, {
-    key: "setLogMethod",
-    value: function setLogMethod(log) {
-      if (typeof log === 'function') {
-        this.trainOpts.log = log;
-      } else if (log) {
-        this.trainOpts.log = console.log;
-      } else {
-        this.trainOpts.log = false;
-      }
-    }
-    /**
-     *
-     * @param data
-     * @param options
-     * @protected
-     * @return {object} { data, status, endTime }
-     */
-
-  }, {
-    key: "prepTraining",
-    value: function prepTraining(data, options) {
-      this.updateTrainingOptions(options);
-      data = this.formatData(data);
-      var endTime = Date.now() + this.trainOpts.timeout;
-      var status = {
-        error: 1,
-        iterations: 0
-      };
-      this.verifyIsInitialized(data);
-      return {
-        data: data,
-        status: status,
-        endTime: endTime
-      };
-    }
-    /**
-     *
-     * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
-     * @param {Object} [options]
-     * @returns {{error: number, iterations: number}}
-     */
-
-  }, {
-    key: "train",
-    value: function train(data) {
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      this.trainOpts = options = _objectSpread2(_objectSpread2({}, this.constructor.trainDefaults), options);
-      var _options = options,
-          iterations = _options.iterations;
-      var _options2 = options,
-          errorThresh = _options2.errorThresh;
-      var log = options.log === true ? console.log : options.log;
-      var _options3 = options,
-          logPeriod = _options3.logPeriod;
-      var _options4 = options,
-          callback = _options4.callback;
-      var _options5 = options,
-          callbackPeriod = _options5.callbackPeriod;
-      var error = Infinity;
-      var i;
-
-      if (this.hasOwnProperty('setupData')) {
-        data = this.setupData(data);
-      }
-
-      this.verifyIsInitialized();
-
-      for (i = 0; i < iterations && error > errorThresh; i++) {
-        var sum = 0;
-
-        for (var j = 0; j < data.length; j++) {
-          var err = this.trainPattern(data[j], true);
-          sum += err;
-        }
-
-        error = sum / data.length;
-
-        if (isNaN(error)) {
-          throw new Error('Network error rate is unexpected NaN, check network configurations and try again. Most probably input format is not correct or training data is not enough. ');
-        }
-
-        if (log && i % logPeriod === 0) {
-          log("iterations: ".concat(i, ", training error: ").concat(error));
-        }
-
-        if (callback && i % callbackPeriod === 0) {
-          callback({
-            error: error,
-            iterations: i
-          });
-        }
-      }
-
-      return {
-        error: error,
-        iterations: i
-      };
-    }
-  }, {
-    key: "addFormat",
-    value: function addFormat() {
-      throw new Error('not yet implemented');
-    }
-    /**
-     *
-     * @returns {Object}
-     */
-
-  }, {
-    key: "toJSON",
-    value: function toJSON() {
-      var defaults = this.constructor.defaults;
-
-      if (!this.model) {
-        this.initialize();
-      }
-
-      var model = this.model;
-      var options = {};
-
-      for (var p in defaults) {
-        if (defaults.hasOwnProperty(p)) {
-          options[p] = this[p];
-        }
-      }
-
-      return {
-        type: this.constructor.name,
-        options: options,
-        input: model.input.toJSON(),
-        hiddenLayers: model.hiddenLayers.map(function (hiddenLayer) {
-          var layers = {};
-
-          for (var _p in hiddenLayer) {
-            layers[_p] = hiddenLayer[_p].toJSON();
-          }
-
-          return layers;
-        }),
-        outputConnector: this.model.outputConnector.toJSON(),
-        output: this.model.output.toJSON()
-      };
-    }
-  }, {
-    key: "fromJSON",
-    value: function fromJSON(json) {
-      var defaults = this.constructor.defaults;
-      var options = json.options;
-      this.model = null;
-      this.hiddenLayers = null;
-      var allMatrices = [];
-      var input = matrix.fromJSON(json.input);
-      allMatrices.push(input);
-      var hiddenLayers = []; // backward compatibility for hiddenSizes
-
-      (json.hiddenLayers || json.hiddenSizes).forEach(function (hiddenLayer) {
-        var layers = {};
-
-        for (var p in hiddenLayer) {
-          layers[p] = matrix.fromJSON(hiddenLayer[p]);
-          allMatrices.push(layers[p]);
-        }
-
-        hiddenLayers.push(layers);
-      });
-      var outputConnector = matrix.fromJSON(json.outputConnector);
-      allMatrices.push(outputConnector);
-      var output = matrix.fromJSON(json.output);
-      allMatrices.push(output);
-      Object.assign(this, defaults, options); // backward compatibility
-
-      if (options.hiddenSizes) {
-        this.hiddenLayers = options.hiddenSizes;
-      }
-
-      if (options.dataFormatter) {
-        this.dataFormatter = DataFormatter$1.fromJSON(options.dataFormatter);
-      }
-
-      this.model = {
-        input: input,
-        hiddenLayers: hiddenLayers,
-        output: output,
-        allMatrices: allMatrices,
-        outputConnector: outputConnector,
-        equations: [],
-        equationConnections: []
-      };
-      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
-        return new matrix(size, 1);
-      });
-      this.bindEquation();
-    }
-    /**
-     * @param {Function} [cb]
-     * @returns {Function}
-     */
-
-  }, {
-    key: "toFunction",
-    value: function toFunction(cb) {
-      var model = this.model;
-      var equations = this.model.equations;
-      var equation = equations[1];
-      var states = equation.states;
-      var jsonString = JSON.stringify(this.toJSON());
-
-      function previousConnectionIndex(m) {
-        var connection = model.equationConnections[0];
-        var states = equations[0].states;
-
-        for (var i = 0, max = states.length; i < max; i++) {
-          if (states[i].product === m) {
-            return i;
-          }
-        }
-
-        return connection.indexOf(m);
-      }
-
-      function matrixOrigin(m, stateIndex) {
-        for (var i = 0, max = states.length; i < max; i++) {
-          var state = states[i];
-
-          if (i === stateIndex) {
-            var j = previousConnectionIndex(m);
-
-            if (j > -1 && (m === state.left || m === state.right)) {
-              return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
-            }
-
-            return "new Matrix(".concat(m.rows, ", ").concat(m.columns, ")");
-          }
-
-          if (m === state.product) return "states[".concat(i, "].product");
-          if (m === state.right) return "states[".concat(i, "].right");
-          if (m === state.left) return "states[".concat(i, "].left");
-        }
-      }
-
-      function matrixToString(m, stateIndex) {
-        if (!m || !m.rows || !m.columns) return 'null';
-        if (m === model.input) return "json.input";
-        if (m === model.outputConnector) return "json.outputConnector";
-        if (m === model.output) return "json.output";
-
-        for (var i = 0, max = model.hiddenLayers.length; i < max; i++) {
-          var hiddenLayer = model.hiddenLayers[i];
-
-          for (var p in hiddenLayer) {
-            if (!hiddenLayer.hasOwnProperty(p)) continue;
-            if (hiddenLayer[p] !== m) continue;
-            return "json.hiddenLayers[".concat(i, "].").concat(p);
-          }
-        }
-
-        return matrixOrigin(m, stateIndex);
-      }
-
-      function toInner(fnString) {
-        // crude, but should be sufficient for now
-        // function() { body }
-        fnString = fnString.toString().split('{');
-        fnString.shift(); // body }
-
-        fnString = fnString.join('{');
-        fnString = fnString.split('}');
-        fnString.pop(); // body
-
-        return fnString.join('}').split('\n').join('\n        ').replace('product.deltas[i] = 0;', '').replace('product.deltas[column] = 0;', '').replace('left.deltas[leftIndex] = 0;', '').replace('right.deltas[rightIndex] = 0;', '').replace('product.deltas = left.deltas.slice(0);', '');
-      }
-
-      function fileName(fnName) {
-        return "src/recurrent/matrix/".concat(fnName.replace(/[A-Z]/g, function (value) {
-          return "-".concat(value.toLowerCase());
-        }), ".js");
-      }
-
-      var statesRaw = [];
-      var usedFunctionNames = {};
-      var innerFunctionsSwitch = [];
-
-      for (var i = 0, max = states.length; i < max; i++) {
-        var state = states[i];
-        statesRaw.push("states[".concat(i, "] = {\n      name: '").concat(state.forwardFn.name, "',\n      left: ").concat(matrixToString(state.left, i), ",\n      right: ").concat(matrixToString(state.right, i), ",\n      product: ").concat(matrixToString(state.product, i), "\n    }"));
-        var fnName = state.forwardFn.name;
-
-        if (!usedFunctionNames[fnName]) {
-          usedFunctionNames[fnName] = true;
-          innerFunctionsSwitch.push("        case '".concat(fnName, "': //compiled from ").concat(fileName(fnName), "\n          ").concat(toInner(state.forwardFn.toString()), "\n          break;"));
-        }
-      }
-
-      var src = "\n  if (typeof rawInput === 'undefined') rawInput = [];\n  if (typeof isSampleI === 'undefined') isSampleI = false;\n  if (typeof temperature === 'undefined') temperature = 1;\n  var json = ".concat(jsonString, ";\n  ").concat(this.dataFormatter ? "".concat(this.dataFormatter.toFunctionString(), ";\n  Object.assign(dataFormatter, json.options.dataFormatter);") : '', "\n  ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? "const formatDataIn = function (input, output) { ".concat(toInner(this.formatDataIn.toString()), " }.bind({ dataFormatter });") : '', "\n  ").concat(this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? "const formatDataOut = function formatDataOut(input, output) { ".concat(toInner(this.formatDataOut.toString()), " }.bind({ dataFormatter });") : '', "\n  var input = ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput', ";\n  var maxPredictionLength = input.length + ").concat(this.maxPredictionLength, ";\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n\n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n\n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ").concat(this.dataFormatter && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })', ";\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros.toString(), "\n  ").concat(softmax.toString(), "\n  ").concat(randomFloat$4.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString()); // eslint-disable-next-line no-new-func
-
-      return new Function('rawInput', 'isSampleI', 'temperature', cb ? cb(src) : src);
-    }
-  }, {
-    key: "isRunnable",
-    get: function get() {
-      if (this.model.equations.length === 0) {
-        console.error("No equations bound, did you run train()?");
-        return false;
-      }
-
-      return true;
-    }
-  }], [{
-    key: "getModel",
-    value: function getModel(hiddenSize, prevSize) {
-      return {
-        // wxh
-        weight: new randomMatrix(hiddenSize, prevSize, 0.08),
-        // whh
-        transition: new randomMatrix(hiddenSize, hiddenSize, 0.08),
-        // bhh
-        bias: new matrix(hiddenSize, 1)
-      };
-    }
-    /**
-     *
-     * @param {Equation} equation
-     * @param {Matrix} inputMatrix
-     * @param {Matrix} previousResult
-     * @param {Object} hiddenLayer
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "getEquation",
-    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-      var relu = equation.relu.bind(equation);
-      var add = equation.add.bind(equation);
-      var multiply = equation.multiply.bind(equation);
-      return relu(add(add(multiply(hiddenLayer.weight, inputMatrix), multiply(hiddenLayer.transition, previousResult)), hiddenLayer.bias));
-    }
-  }]);
-
-  return RNN;
-}();
-
-RNN.defaults = {
-  inputSize: 20,
-  inputRange: 20,
-  hiddenLayers: [20, 20],
-  outputSize: 20,
-  decayRate: 0.999,
-  smoothEps: 1e-8,
-  regc: 0.000001,
-  clipval: 5,
-  maxPredictionLength: 100,
-
-  /**
-   *
-   * @param {*[]} data
-   * @returns {Number[]}
-   */
-  setupData: defaultRNNFormatter$1,
-
-  /**
-   *
-   * @param {*[]} input
-   * @param {*[]} output
-   * @returns {Number[]}
-   */
-  formatDataIn: function formatDataIn(input) {
-    var output = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
-    if (this.dataFormatter) {
-      if (this.dataFormatter.indexTable.hasOwnProperty('stop-input')) {
-        return this.dataFormatter.toIndexesInputOutput(input, output);
-      }
-
-      return this.dataFormatter.toIndexes(input);
-    }
-
-    return input;
-  },
-
-  /**
-   *
-   * @param {Number[]} input
-   * @param {Number[]} output
-   * @returns {*}
-   */
-  formatDataOut: function formatDataOut(input, output) {
-    if (this.dataFormatter) {
-      return this.dataFormatter.toCharacters(output).join('');
-    }
-
-    return output;
-  },
-  dataFormatter: null
-};
-RNN.trainDefaults = {
-  iterations: 20000,
-  errorThresh: 0.005,
-  log: false,
-  logPeriod: 10,
-  learningRate: 0.01,
-  callback: null,
-  callbackPeriod: 10
-};
-var rnn = RNN;
-
-function ArrayLookupTable(data, prop) {
-  this.length = 0;
-  this.prop = prop;
-  var table = this.table = {};
-
-  for (var i = 0; i < data.length; i++) {
-    var datum = data[i];
-    var input = datum[prop];
-
-    for (var j = 0; j < input.length; j++) {
-      for (var p in input[j]) {
-        if (table.hasOwnProperty(p)) continue;
-        table[p] = this.length++;
-      }
-    }
-  }
-}
-
-var arrayLookupTable = ArrayLookupTable;
-
-var randomFloat$5 = random.randomFloat;
-var arraysToFloat32Arrays$1 = cast.arraysToFloat32Arrays,
-    arrayToFloat32Arrays$1 = cast.arrayToFloat32Arrays,
-    objectsToFloat32Arrays$1 = cast.objectsToFloat32Arrays,
-    objectToFloat32Arrays$1 = cast.objectToFloat32Arrays,
-    objectToFloat32Array$1 = cast.objectToFloat32Array;
-
-var RNNTimeStep = /*#__PURE__*/function (_RNN) {
-  _inherits(RNNTimeStep, _RNN);
-
-  var _super = _createSuper(RNNTimeStep);
-
-  // eslint-disable-next-line
-  function RNNTimeStep(options) {
-    _classCallCheck(this, RNNTimeStep);
-
-    return _super.call(this, options);
-  }
-
-  _createClass(RNNTimeStep, [{
-    key: "createInputMatrix",
-    value: function createInputMatrix() {}
-  }, {
-    key: "createOutputMatrix",
-    value: function createOutputMatrix() {
-      var model = this.model;
-      var outputSize = this.outputSize;
-      var lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1]; // whd
-
-      model.outputConnector = new randomMatrix(outputSize, lastHiddenSize, 0.08); // bd
-
-      model.output = new randomMatrix(outputSize, 1, 0.08);
-    }
-  }, {
-    key: "bindEquation",
-    value: function bindEquation() {
-      var model = this.model;
-      var hiddenLayers = this.hiddenLayers;
-      var layers = model.hiddenLayers;
-      var equation$1 = new equation();
-      var outputs = [];
-      var equationConnection = model.equationConnections.length > 0 ? model.equationConnections[model.equationConnections.length - 1] : this.initialLayerInputs; // 0 index
-
-      var output = this.constructor.getEquation(equation$1, equation$1.input(new matrix(this.inputSize, 1)), equationConnection[0], layers[0]);
-      outputs.push(output); // 1+ indices
-
-      for (var i = 1, max = hiddenLayers.length; i < max; i++) {
-        output = this.constructor.getEquation(equation$1, output, equationConnection[i], layers[i]);
-        outputs.push(output);
-      }
-
-      model.equationConnections.push(outputs);
-      equation$1.add(equation$1.multiply(model.outputConnector, output), model.output);
-      model.equations.push(equation$1);
-    }
-  }, {
-    key: "mapModel",
-    value: function mapModel() {
-      var model = this.model;
-      var hiddenLayers = model.hiddenLayers;
-      var allMatrices = model.allMatrices;
-      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
-        return new matrix(size, 1);
-      });
-      this.createHiddenLayers();
-      if (!model.hiddenLayers.length) throw new Error('net.hiddenLayers not set');
-
-      for (var i = 0, max = hiddenLayers.length; i < max; i++) {
-        var hiddenMatrix = hiddenLayers[i];
-
-        for (var property in hiddenMatrix) {
-          if (!hiddenMatrix.hasOwnProperty(property)) continue;
-          allMatrices.push(hiddenMatrix[property]);
-        }
-      }
-
-      this.createOutputMatrix();
-      if (!model.outputConnector) throw new Error('net.model.outputConnector not set');
-      if (!model.output) throw new Error('net.model.output not set');
-      allMatrices.push(model.outputConnector);
-      allMatrices.push(model.output);
-    }
-  }, {
-    key: "backpropagate",
-    value: function backpropagate() {
-      for (var i = this.model.equations.length - 1; i > -1; i--) {
-        this.model.equations[i].backpropagate();
-      }
-    }
-    /**
-     *
-     * @param {number[]|number[][]|object|object[][]} [rawInput]
-     * @returns {number[]|number|object|object[]|object[][]}
-     */
-
-  }, {
-    key: "run",
-    value: function run(rawInput) {
-      if (this.inputSize === 1) {
-        if (this.outputLookup) {
-          this.run = this.runObject;
-          return this.runObject(rawInput);
-        }
-
-        this.run = this.runNumbers;
-        return this.runNumbers(rawInput);
-      }
-
-      if (this.outputLookup) {
-        this.run = this.runObjects;
-        return this.runObjects(rawInput);
-      }
-
-      this.run = this.runArrays;
-      return this.runArrays(rawInput);
-    }
-  }, {
-    key: "forecast",
-    value: function forecast(input, count) {
-      if (this.inputSize === 1) {
-        if (this.outputLookup) {
-          this.forecast = this.runObject;
-          return this.runObject(input);
-        }
-
-        this.forecast = this.forecastNumbers;
-        return this.forecastNumbers(input, count);
-      }
-
-      if (this.outputLookup) {
-        this.forecast = this.forecastObjects;
-        return this.forecastObjects(input, count);
-      }
-
-      this.forecast = this.forecastArrays;
-      return this.forecastArrays(input, count);
-    }
-    /**
-     *
-     * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
-     * @param {Object} [options]
-     * @returns {{error: number, iterations: number}}
-     */
-
-  }, {
-    key: "train",
-    value: function train(data) {
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      this.trainOpts = options = _objectSpread2(_objectSpread2({}, this.constructor.trainDefaults), options);
-      var _options = options,
-          iterations = _options.iterations;
-      var _options2 = options,
-          errorThresh = _options2.errorThresh;
-      var log = options.log === true ? console.log : options.log;
-      var _options3 = options,
-          logPeriod = _options3.logPeriod;
-      var _options4 = options,
-          callback = _options4.callback;
-      var _options5 = options,
-          callbackPeriod = _options5.callbackPeriod;
-
-      if (this.inputSize === 1 || !this.inputSize) {
-        this.setSize(data);
-      }
-
-      data = this.formatData(data);
-      var error = Infinity;
-      var i;
-      this.verifyIsInitialized(data);
-
-      for (i = 0; i < iterations && error > errorThresh; i++) {
-        var sum = 0;
-
-        for (var j = 0; j < data.length; j++) {
-          var err = this.trainPattern(data[j], true);
-          sum += err;
-        }
-
-        error = sum / data.length;
-        if (isNaN(error)) throw new Error('Network error rate is unexpected NaN, check network configurations and try again. Most probably input format is not correct or training data is not enough. ');
-
-        if (log && i % logPeriod === 0) {
-          log("iterations: ".concat(i, ", training error: ").concat(error));
-        }
-
-        if (callback && i % callbackPeriod === 0) {
-          callback({
-            error: error,
-            iterations: i
-          });
-        }
-      }
-
-      return {
-        error: error,
-        iterations: i
-      };
-    }
-    /**
-     *
-     * @param data
-     * Verifies network sizes are initialized
-     * If they are not it will initialize them based off the data set.
-     */
-
-  }, {
-    key: "verifyIsInitialized",
-    value: function verifyIsInitialized(data) {
-      if (data[0].input) {
-        this.trainInput = this.trainInputOutput;
-      } else if (data[0].length > 0) {
-        if (data[0][0].length > 0) {
-          this.trainInput = this.trainArrays;
-        } else if (this.inputSize > 1) {
-          this.trainInput = this.trainArrays;
-        } else {
-          this.trainInput = this.trainNumbers;
-        }
-      }
-
-      if (!this.model) {
-        this.initialize();
-      }
-    }
-  }, {
-    key: "setSize",
-    value: function setSize(data) {
-      var dataShape = lookup.dataShape(data).join(',');
-
-      switch (dataShape) {
-        case 'array,array,number':
-        case 'array,object,number':
-        case 'array,datum,array,number':
-        case 'array,datum,object,number':
-          // probably 1
-          break;
-
-        case 'array,array,array,number':
-          this.inputSize = this.outputSize = data[0][0].length;
-          break;
-
-        case 'array,array,object,number':
-          this.inputSize = this.outputSize = Object.keys(lookup.toTable2D(data)).length;
-          break;
-
-        case 'array,datum,array,array,number':
-          this.inputSize = this.outputSize = data[0].input[0].length;
-          break;
-
-        case 'array,datum,array,object,number':
-          this.inputSize = Object.keys(lookup.toInputTable2D(data)).length;
-          this.outputSize = Object.keys(lookup.toOutputTable2D(data)).length;
-          break;
-
-        default:
-          throw new Error('unknown data shape or configuration');
-      }
-    }
-  }, {
-    key: "trainNumbers",
-    value: function trainNumbers(input) {
-      var model = this.model;
-      var equations = model.equations;
-
-      while (equations.length < input.length) {
-        this.bindEquation();
-      }
-
-      var errorSum = 0;
-
-      for (var i = 0, max = input.length - 1; i < max; i++) {
-        errorSum += equations[i].predictTarget([input[i]], [input[i + 1]]);
-      }
-
-      this.end();
-      return errorSum / input.length;
-    }
-  }, {
-    key: "runNumbers",
-    value: function runNumbers(input) {
-      if (!this.isRunnable) return null;
-      var model = this.model;
-      var equations = model.equations;
-
-      if (this.inputLookup) {
-        input = lookup.toArray(this.inputLookup, input, this.inputLookupLength);
-      }
-
-      while (equations.length <= input.length) {
-        this.bindEquation();
-      }
-
-      var lastOutput;
-
-      for (var i = 0; i < input.length; i++) {
-        lastOutput = equations[i].runInput(new Float32Array([input[i]]));
-      }
-
-      this.end();
-      return lastOutput.weights[0];
-    }
-  }, {
-    key: "forecastNumbers",
-    value: function forecastNumbers(input, count) {
-      if (!this.isRunnable) return null;
-      var model = this.model;
-      var equations = model.equations;
-      var length = input.length + count;
-
-      while (equations.length <= length) {
-        this.bindEquation();
-      }
-
-      var lastOutput;
-      var equationIndex = 0;
-
-      for (var i = 0; i < input.length; i++) {
-        lastOutput = equations[equationIndex++].runInput([input[i]]);
-      }
-
-      var result = [lastOutput.weights[0]];
-
-      for (var _i = 0, max = count - 1; _i < max; _i++) {
-        lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
-        result.push(lastOutput.weights[0]);
-      }
-
-      this.end();
-      return result;
-    }
-  }, {
-    key: "runObject",
-    value: function runObject(input) {
-      if (this.inputLookup === this.outputLookup) {
-        var inputArray = lookup.toArrayShort(this.inputLookup, input);
-        return lookup.toObjectPartial(this.outputLookup, this.forecastNumbers(inputArray, this.outputLookupLength - inputArray.length), inputArray.length);
-      }
-
-      return lookup.toObject(this.outputLookup, this.forecastNumbers(lookup.toArray(this.inputLookup, input, this.inputLookupLength), this.outputLookupLength));
-    }
-  }, {
-    key: "runObjects",
-    value: function runObjects(input) {
-      var _this = this;
-
-      input = input.map(function (value) {
-        return lookup.toArray(_this.inputLookup, value, _this.inputLookupLength);
-      });
-      return this.forecastArrays(input, 1).map(function (value) {
-        return lookup.toObject(_this.outputLookup, value);
-      })[0];
-    }
-  }, {
-    key: "forecastObjects",
-    value: function forecastObjects(input, count) {
-      var _this2 = this;
-
-      input = input.map(function (value) {
-        return lookup.toArray(_this2.inputLookup, value, _this2.inputLookupLength);
-      });
-      return this.forecastArrays(input, count).map(function (value) {
-        return lookup.toObject(_this2.outputLookup, value);
-      });
-    }
-  }, {
-    key: "trainInputOutput",
-    value: function trainInputOutput(object) {
-      var model = this.model;
-      var input = object.input;
-      var output = object.output;
-      var totalSize = input.length + output.length;
-      var equations = model.equations;
-
-      while (equations.length < totalSize) {
-        this.bindEquation();
-      }
-
-      var errorSum = 0;
-      var equationIndex = 0;
-
-      for (var inputIndex = 0, max = input.length - 1; inputIndex < max; inputIndex++) {
-        errorSum += equations[equationIndex++].predictTarget(input[inputIndex], input[inputIndex + 1]);
-      }
-
-      errorSum += equations[equationIndex++].predictTarget(input[input.length - 1], output[0]);
-
-      for (var outputIndex = 0, _max = output.length - 1; outputIndex < _max; outputIndex++) {
-        errorSum += equations[equationIndex++].predictTarget(output[outputIndex], output[outputIndex + 1]);
-      }
-
-      this.end();
-      return errorSum / totalSize;
-    }
-  }, {
-    key: "trainArrays",
-    value: function trainArrays(input) {
-      var model = this.model;
-      var equations = model.equations;
-
-      while (equations.length < input.length) {
-        this.bindEquation();
-      }
-
-      var errorSum = 0;
-
-      for (var i = 0, max = input.length - 1; i < max; i++) {
-        errorSum += equations[i].predictTarget(input[i], input[i + 1]);
-      }
-
-      this.end();
-      return errorSum / input.length;
-    }
-  }, {
-    key: "runArrays",
-    value: function runArrays(input) {
-      if (!this.isRunnable) return null;
-      var model = this.model;
-      var equations = model.equations;
-
-      while (equations.length <= input.length) {
-        this.bindEquation();
-      }
-
-      if (this.inputLookup) {
-        input = lookup.toArrays(this.inputLookup, input, this.inputLookupLength);
-      }
-
-      var lastOutput;
-
-      for (var i = 0; i < input.length; i++) {
-        var outputMatrix = equations[i].runInput(input[i]);
-        lastOutput = outputMatrix.weights;
-      }
-
-      this.end();
-
-      if (this.outputLookup) {
-        return lookup.toObject(this.outputLookup, lastOutput);
-      }
-
-      return lastOutput;
-    }
-  }, {
-    key: "forecastArrays",
-    value: function forecastArrays(input, count) {
-      if (!this.isRunnable) return null;
-      var model = this.model;
-      var equations = model.equations;
-      var length = input.length + count;
-
-      while (equations.length <= length) {
-        this.bindEquation();
-      }
-
-      var lastOutput;
-      var equationIndex = 0;
-
-      for (var i = 0; i < input.length; i++) {
-        lastOutput = equations[equationIndex++].runInput(input[i]);
-      }
-
-      var result = [lastOutput.weights];
-
-      for (var _i2 = 0, max = count - 1; _i2 < max; _i2++) {
-        lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
-        result.push(lastOutput.weights.slice(0));
-      }
-
-      this.end();
-      return result;
-    }
-  }, {
-    key: "end",
-    value: function end() {
-      this.model.equations[this.model.equations.length - 1].runInput(new Float32Array(this.outputSize));
-    }
-    /**
-     *
-     * @param data
-     * @returns {*}
-     */
-
-  }, {
-    key: "formatData",
-    value: function formatData(data) {
-      var dataShape = lookup.dataShape(data).join(',');
-      var result = [];
-
-      switch (dataShape) {
-        case 'array,number':
-          {
-            if (this.inputSize !== 1) {
-              throw new Error('inputSize must be 1 for this data size');
-            }
-
-            if (this.outputSize !== 1) {
-              throw new Error('outputSize must be 1 for this data size');
-            }
-
-            for (var i = 0; i < data.length; i++) {
-              result.push(Float32Array.from([data[i]]));
-            }
-
-            return [result];
-          }
-
-        case 'array,array,number':
-          {
-            if (this.inputSize === 1 && this.outputSize === 1) {
-              for (var _i3 = 0; _i3 < data.length; _i3++) {
-                result.push(arrayToFloat32Arrays$1(data[_i3]));
-              }
-
-              return result;
-            }
-
-            if (this.inputSize !== data[0].length) {
-              throw new Error('inputSize must match data input size');
-            }
-
-            if (this.outputSize !== data[0].length) {
-              throw new Error('outputSize must match data input size');
-            }
-
-            for (var _i4 = 0; _i4 < data.length; _i4++) {
-              result.push(Float32Array.from(data[_i4]));
-            }
-
-            return [result];
-          }
-
-        case 'array,object,number':
-          {
-            if (this.inputSize !== 1) {
-              throw new Error('inputSize must be 1 for this data size');
-            }
-
-            if (this.outputSize !== 1) {
-              throw new Error('outputSize must be 1 for this data size');
-            }
-
-            if (!this.inputLookup) {
-              var lookupTable$1 = new lookupTable(data);
-              this.inputLookup = this.outputLookup = lookupTable$1.table;
-              this.inputLookupLength = this.outputLookupLength = lookupTable$1.length;
-            }
-
-            for (var _i5 = 0; _i5 < data.length; _i5++) {
-              result.push(objectToFloat32Arrays$1(data[_i5]));
-            }
-
-            return result;
-          }
-
-        case 'array,datum,array,number':
-          {
-            if (this.inputSize !== 1) {
-              throw new Error('inputSize must be 1 for this data size');
-            }
-
-            if (this.outputSize !== 1) {
-              throw new Error('outputSize must be 1 for this data size');
-            }
-
-            for (var _i6 = 0; _i6 < data.length; _i6++) {
-              var datum = data[_i6];
-              result.push({
-                input: arrayToFloat32Arrays$1(datum.input),
-                output: arrayToFloat32Arrays$1(datum.output)
-              });
-            }
-
-            return result;
-          }
-
-        case 'array,datum,object,number':
-          {
-            if (this.inputSize !== 1) {
-              throw new Error('inputSize must be 1 for this data size');
-            }
-
-            if (this.outputSize !== 1) {
-              throw new Error('outputSize must be 1 for this data size');
-            }
-
-            if (!this.inputLookup) {
-              var inputLookup = new lookupTable(data, 'input');
-              this.inputLookup = inputLookup.table;
-              this.inputLookupLength = inputLookup.length;
-            }
-
-            if (!this.outputLookup) {
-              var outputLookup = new lookupTable(data, 'output');
-              this.outputLookup = outputLookup.table;
-              this.outputLookupLength = outputLookup.length;
-            }
-
-            for (var _i7 = 0; _i7 < data.length; _i7++) {
-              var _datum = data[_i7];
-              result.push({
-                input: objectToFloat32Arrays$1(_datum.input),
-                output: objectToFloat32Arrays$1(_datum.output)
-              });
-            }
-
-            return result;
-          }
-
-        case 'array,array,array,number':
-          {
-            for (var _i8 = 0; _i8 < data.length; _i8++) {
-              result.push(arraysToFloat32Arrays$1(data[_i8]));
-            }
-
-            return result;
-          }
-
-        case 'array,array,object,number':
-          {
-            if (!this.inputLookup) {
-              var _lookupTable = new lookupTable(data);
-
-              this.inputLookup = this.outputLookup = _lookupTable.table;
-              this.inputLookupLength = this.outputLookupLength = _lookupTable.length;
-            }
-
-            for (var _i9 = 0; _i9 < data.length; _i9++) {
-              var array = [];
-
-              for (var j = 0; j < data[_i9].length; j++) {
-                array.push(objectToFloat32Array$1(data[_i9][j], this.inputLookup, this.inputLookupLength));
-              }
-
-              result.push(array);
-            }
-
-            return result;
-          }
-
-        case 'array,datum,array,array,number':
-          {
-            if (this.inputSize === 1 && this.outputSize === 1) {
-              for (var _i10 = 0; _i10 < data.length; _i10++) {
-                var _datum2 = data[_i10];
-                result.push({
-                  input: Float32Array.from(_datum2.input),
-                  output: Float32Array.from(_datum2.output)
-                });
-              }
-            } else {
-              if (this.inputSize !== data[0].input[0].length) {
-                throw new Error('inputSize must match data input size');
-              }
-
-              if (this.outputSize !== data[0].output[0].length) {
-                throw new Error('outputSize must match data output size');
-              }
-
-              for (var _i11 = 0; _i11 < data.length; _i11++) {
-                var _datum3 = data[_i11];
-                result.push({
-                  input: arraysToFloat32Arrays$1(_datum3.input),
-                  output: arraysToFloat32Arrays$1(_datum3.output)
-                });
-              }
-            }
-
-            return result;
-          }
-
-        case 'array,datum,array,object,number':
-          {
-            if (!this.inputLookup) {
-              var _inputLookup = new arrayLookupTable(data, 'input');
-
-              this.inputLookup = _inputLookup.table;
-              this.inputLookupLength = _inputLookup.length;
-            }
-
-            if (!this.outputLookup) {
-              var _outputLookup = new arrayLookupTable(data, 'output');
-
-              this.outputLookup = _outputLookup.table;
-              this.outputLookupLength = _outputLookup.length;
-            }
-
-            for (var _i12 = 0; _i12 < data.length; _i12++) {
-              var _datum4 = data[_i12];
-              result.push({
-                input: objectsToFloat32Arrays$1(_datum4.input, this.inputLookup, this.inputLookupLength),
-                output: objectsToFloat32Arrays$1(_datum4.output, this.outputLookup, this.outputLookupLength)
-              });
-            }
-
-            return result;
-          }
-
-        default:
-          throw new Error('unknown data shape or configuration');
-      }
-    }
-    /**
-     *
-     * @param data
-     * @returns {
-     *  {
-     *    error: number,
-     *    misclasses: Array
-     *  }
-     * }
-     */
-
-  }, {
-    key: "test",
-    value: function test(data) {
-      var formattedData = this.formatData(data); // for classification problems
-
-      var misclasses = []; // run each pattern through the trained network and collect
-      // error and misclassification statistics
-
-      var errorSum = 0;
-      var dataShape = lookup.dataShape(data).join(',');
-
-      switch (dataShape) {
-        case 'array,array,number':
-          {
-            if (this.inputSize === 1) {
-              for (var i = 0; i < formattedData.length; i++) {
-                var input = formattedData[i];
-                var output = this.run(input.splice(0, input.length - 1));
-                var target = input[input.length - 1][0];
-                var error = target - output;
-                var errorMSE = error * error;
-                errorSum += errorMSE;
-                var errorsAbs = Math.abs(errorMSE);
-
-                if (errorsAbs > this.trainOpts.errorThresh) {
-                  var misclass = data[i];
-                  Object.assign(misclass, {
-                    value: input,
-                    actual: output
-                  });
-                  misclasses.push(misclass);
-                }
-              }
-
-              break;
-            }
-
-            throw new Error('unknown data shape or configuration');
-          }
-
-        case 'array,array,array,number':
-          {
-            for (var _i13 = 0; _i13 < formattedData.length; _i13++) {
-              var _input = formattedData[_i13];
-
-              var _output = this.run(_input.splice(0, _input.length - 1));
-
-              var _target = _input[_input.length - 1];
-              var errors = 0;
-              var errorCount = 0;
-
-              for (var j = 0; j < _output.length; j++) {
-                errorCount++;
-
-                var _error = _target[j] - _output[j]; // mse
-
-
-                errors += _error * _error;
-              }
-
-              errorSum += errors / errorCount;
-
-              var _errorsAbs = Math.abs(errors);
-
-              if (_errorsAbs > this.trainOpts.errorThresh) {
-                var _misclass = data[_i13];
-                misclasses.push({
-                  value: _misclass,
-                  actual: _output
-                });
-              }
-            }
-
-            break;
-          }
-
-        case 'array,object,number':
-          {
-            for (var _i14 = 0; _i14 < formattedData.length; _i14++) {
-              var _input2 = formattedData[_i14];
-
-              var _output2 = this.run(lookup.toObjectPartial(this.outputLookup, _input2, 0, _input2.length - 1));
-
-              var _target2 = _input2[_input2.length - 1];
-              var _errors = 0;
-              var p = void 0; // for (p in output) {
-              // }
-
-              var _error2 = _target2[_i14] - _output2[p]; // mse
-
-
-              _errors += _error2 * _error2;
-              errorSum += _errors;
-
-              var _errorsAbs2 = Math.abs(_errors);
-
-              if (_errorsAbs2 > this.trainOpts.errorThresh) {
-                var _misclass2 = data[_i14];
-                misclasses.push({
-                  value: _misclass2,
-                  actual: _output2
-                });
-              }
-            }
-
-            break;
-          }
-
-        case 'array,array,object,number':
-          {
-            for (var _i15 = 0; _i15 < formattedData.length; _i15++) {
-              var _input3 = formattedData[_i15];
-
-              var _output3 = this.run(_input3.slice(0, _input3.length - 1));
-
-              var _target3 = data[_i15][_input3.length - 1];
-              var _errors2 = 0;
-              var _errorCount = 0;
-
-              for (var _p in _output3) {
-                var _error3 = _target3[_p] - _output3[_p]; // mse
-
-
-                _errors2 += _error3 * _error3;
-                _errorCount++;
-              }
-
-              errorSum += _errors2 / _errorCount;
-
-              var _errorsAbs3 = Math.abs(_errors2);
-
-              if (_errorsAbs3 > this.trainOpts.errorThresh) {
-                var _misclass3 = data[_i15];
-                misclasses.push({
-                  value: _misclass3,
-                  actual: _output3
-                });
-              }
-            }
-
-            break;
-          }
-
-        case 'array,datum,array,number':
-        case 'array,datum,object,number':
-          {
-            for (var _i16 = 0; _i16 < formattedData.length; _i16++) {
-              var datum = formattedData[_i16];
-
-              var _output4 = this.forecast(datum.input, datum.output.length);
-
-              var _errors3 = 0;
-              var _errorCount2 = 0;
-
-              for (var _j = 0; _j < _output4.length; _j++) {
-                var _error4 = datum.output[_j][0] - _output4[_j];
-
-                _errors3 += _error4 * _error4;
-                _errorCount2++;
-              }
-
-              errorSum += _errors3 / _errorCount2;
-
-              var _errorsAbs4 = Math.abs(_errors3);
-
-              if (_errorsAbs4 > this.trainOpts.errorThresh) {
-                var _misclass4 = data[_i16];
-                Object.assign(_misclass4, {
-                  actual: this.outputLookup ? lookup.toObject(this.outputLookup, _output4) : _output4
-                });
-                misclasses.push(_misclass4);
-              }
-            }
-
-            break;
-          }
-
-        case 'array,datum,array,array,number':
-          {
-            for (var _i17 = 0; _i17 < formattedData.length; _i17++) {
-              var _datum5 = formattedData[_i17];
-
-              var _output5 = this.forecast(_datum5.input, _datum5.output.length);
-
-              var _errors4 = 0;
-
-              for (var _j2 = 0; _j2 < _output5.length; _j2++) {
-                for (var k = 0; k < _output5[_j2].length; k++) {
-                  var _error5 = _datum5.output[_j2][k] - _output5[_j2][k];
-
-                  _errors4 += _error5 * _error5;
-                }
-              }
-
-              errorSum += _errors4;
-
-              var _errorsAbs5 = Math.abs(_errors4);
-
-              if (_errorsAbs5 > this.trainOpts.errorThresh) {
-                var _misclass5 = data[_i17];
-                misclasses.push({
-                  input: _misclass5.input,
-                  output: _misclass5.output,
-                  actual: _output5
-                });
-              }
-            }
-
-            break;
-          }
-
-        case 'array,datum,array,object,number':
-          {
-            for (var _i18 = 0; _i18 < formattedData.length; _i18++) {
-              var _datum6 = formattedData[_i18];
-
-              var _output6 = this.forecast(_datum6.input, _datum6.output.length);
-
-              var _errors5 = 0;
-
-              for (var _j3 = 0; _j3 < _output6.length; _j3++) {
-                for (var _p2 in _output6[_j3]) {
-                  var _error6 = data[_i18].output[_j3][_p2] - _output6[_j3][_p2];
-
-                  _errors5 += _error6 * _error6;
-                }
-              }
-
-              errorSum += _errors5;
-
-              var _errorsAbs6 = Math.abs(_errors5);
-
-              if (_errorsAbs6 > this.trainOpts.errorThresh) {
-                var _misclass6 = data[_i18];
-                misclasses.push({
-                  input: _misclass6.input,
-                  output: _misclass6.output,
-                  actual: _output6
-                });
-              }
-            }
-
-            break;
-          }
-
-        default:
-          throw new Error('unknown data shape or configuration');
-      }
-
-      return {
-        error: errorSum / formattedData.length,
-        misclasses: misclasses,
-        total: formattedData.length
-      };
-    }
-  }, {
-    key: "addFormat",
-    value: function addFormat(value) {
-      var dataShape = lookup.dataShape(value).join(',');
-
-      switch (dataShape) {
-        case 'array,array,number':
-        case 'datum,array,array,number':
-        case 'array,number':
-        case 'datum,array,number':
-          return;
-
-        case 'datum,object,number':
-          {
-            this.inputLookup = lookup.addKeys(value.input, this.inputLookup);
-
-            if (this.inputLookup) {
-              this.inputLookupLength = Object.keys(this.inputLookup).length;
-            }
-
-            this.outputLookup = lookup.addKeys(value.output, this.outputLookup);
-
-            if (this.outputLookup) {
-              this.outputLookupLength = Object.keys(this.outputLookup).length;
-            }
-
-            break;
-          }
-
-        case 'object,number':
-          {
-            this.inputLookup = this.outputLookup = lookup.addKeys(value, this.inputLookup);
-
-            if (this.inputLookup) {
-              this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
-            }
-
-            break;
-          }
-
-        case 'array,object,number':
-          {
-            for (var i = 0; i < value.length; i++) {
-              this.inputLookup = this.outputLookup = lookup.addKeys(value[i], this.inputLookup);
-
-              if (this.inputLookup) {
-                this.inputLookupLength = this.outputLookupLength = Object.keys(this.inputLookup).length;
-              }
-            }
-
-            break;
-          }
-
-        case 'datum,array,object,number':
-          {
-            for (var _i19 = 0; _i19 < value.input.length; _i19++) {
-              this.inputLookup = lookup.addKeys(value.input[_i19], this.inputLookup);
-
-              if (this.inputLookup) {
-                this.inputLookupLength = Object.keys(this.inputLookup).length;
-              }
-            }
-
-            for (var _i20 = 0; _i20 < value.output.length; _i20++) {
-              this.outputLookup = lookup.addKeys(value.output[_i20], this.outputLookup);
-
-              if (this.outputLookup) {
-                this.outputLookupLength = Object.keys(this.outputLookup).length;
-              }
-            }
-
-            break;
-          }
-
-        default:
-          throw new Error('unknown data shape or configuration');
-      }
-    }
-    /**
-     *
-     * @returns {Object}
-     */
-
-  }, {
-    key: "toJSON",
-    value: function toJSON() {
-      var defaults = this.constructor.defaults;
-
-      if (!this.model) {
-        this.initialize();
-      }
-
-      var model = this.model;
-      var options = {};
-
-      for (var p in defaults) {
-        if (defaults.hasOwnProperty(p)) {
-          options[p] = this[p];
-        }
-      }
-
-      return {
-        type: this.constructor.name,
-        options: options,
-        hiddenLayers: model.hiddenLayers.map(function (hiddenLayer) {
-          var layers = {};
-
-          for (var _p3 in hiddenLayer) {
-            layers[_p3] = hiddenLayer[_p3].toJSON();
-          }
-
-          return layers;
-        }),
-        outputConnector: this.model.outputConnector.toJSON(),
-        output: this.model.output.toJSON(),
-        inputLookup: this.inputLookup,
-        inputLookupLength: this.inputLookupLength,
-        outputLookup: this.outputLookup,
-        outputLookupLength: this.outputLookupLength
-      };
-    }
-  }, {
-    key: "fromJSON",
-    value: function fromJSON(json) {
-      var defaults = this.constructor.defaults;
-      var options = json.options;
-      this.model = null;
-      this.hiddenLayers = null;
-      var allMatrices = [];
-      var hiddenLayers = []; // backward compatibility for hiddenSizes
-
-      (json.hiddenLayers || json.hiddenSizes).forEach(function (hiddenLayer) {
-        var layers = {};
-
-        for (var p in hiddenLayer) {
-          layers[p] = matrix.fromJSON(hiddenLayer[p]);
-          allMatrices.push(layers[p]);
-        }
-
-        hiddenLayers.push(layers);
-      });
-      var outputConnector = matrix.fromJSON(json.outputConnector);
-      allMatrices.push(outputConnector);
-      var output = matrix.fromJSON(json.output);
-      allMatrices.push(output);
-      Object.assign(this, defaults, options); // backward compatibility
-
-      if (options.hiddenSizes) {
-        this.hiddenLayers = options.hiddenSizes;
-      }
-
-      this.inputLookup = json.inputLookup;
-      this.inputLookupLength = json.inputLookupLength;
-      this.outputLookup = json.outputLookup;
-      this.outputLookupLength = json.outputLookupLength;
-      this.model = {
-        hiddenLayers: hiddenLayers,
-        output: output,
-        allMatrices: allMatrices,
-        outputConnector: outputConnector,
-        equations: [],
-        equationConnections: []
-      };
-      this.initialLayerInputs = this.hiddenLayers.map(function (size) {
-        return new matrix(size, 1);
-      });
-      this.bindEquation();
-    }
-    /**
-     * @param {Function} [cb]
-     * @returns {Function}
-     */
-
-  }, {
-    key: "toFunction",
-    value: function toFunction(cb) {
-      var model = this.model;
-      var equations = this.model.equations;
-      var inputSize = this.inputSize;
-      var inputLookup = this.inputLookup;
-      var inputLookupLength = this.inputLookupLength;
-      var outputLookup = this.outputLookup;
-      var outputLookupLength = this.outputLookupLength;
-      var equation = equations[1];
-      var states = equation.states;
-      var jsonString = JSON.stringify(this.toJSON());
-
-      function previousConnectionIndex(m) {
-        var connection = model.equationConnections[0];
-        var states = equations[0].states;
-
-        for (var i = 0, max = states.length; i < max; i++) {
-          if (states[i].product === m) {
-            return i;
-          }
-        }
-
-        return connection.indexOf(m);
-      }
-
-      function matrixOrigin(m, stateIndex) {
-        for (var i = 0, max = states.length; i < max; i++) {
-          var state = states[i];
-
-          if (i === stateIndex) {
-            var j = previousConnectionIndex(m);
-
-            switch (m) {
-              case state.left:
-                if (j > -1) {
-                  return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
-                }
-
-              // eslint-disable-next-line no-fallthrough
-
-              case state.right:
-                if (j > -1) {
-                  return "typeof prevStates[".concat(j, "] === 'object' ? prevStates[").concat(j, "].product : new Matrix(").concat(m.rows, ", ").concat(m.columns, ")");
-                }
-
-              // eslint-disable-next-line no-fallthrough
-
-              case state.product:
-                return "new Matrix(".concat(m.rows, ", ").concat(m.columns, ")");
-
-              default:
-                throw Error('unknown state');
-            }
-          }
-
-          if (m === state.product) return "states[".concat(i, "].product");
-          if (m === state.right) return "states[".concat(i, "].right");
-          if (m === state.left) return "states[".concat(i, "].left");
-        }
-      }
-
-      function matrixToString(m, stateIndex) {
-        if (!m || !m.rows || !m.columns) return 'null';
-        if (m === model.outputConnector) return "json.outputConnector";
-        if (m === model.output) return "json.output";
-
-        for (var i = 0, max = model.hiddenLayers.length; i < max; i++) {
-          var hiddenLayer = model.hiddenLayers[i];
-
-          for (var p in hiddenLayer) {
-            if (!hiddenLayer.hasOwnProperty(p)) continue;
-            if (hiddenLayer[p] !== m) continue;
-            return "json.hiddenLayers[".concat(i, "].").concat(p);
-          }
-        }
-
-        return matrixOrigin(m, stateIndex);
-      }
-
-      function formatInputData() {
-        if (!inputLookup) return '';
-
-        if (inputSize === 1) {
-          if (inputLookup === outputLookup) {
-            return "function lookupInput(input) {\n            var table = ".concat(JSON.stringify(inputLookup), ";\n            var result = [];\n            for (var p in table) {\n              if (!input.hasOwnProperty(p)) break;\n              result.push(Float32Array.from([input[p]]));\n            }\n            return result;\n          }");
-          }
-
-          return "function lookupInput(input) {\n          var table = ".concat(JSON.stringify(inputLookup), ";\n          var result = [];\n          for (var p in table) {\n            result.push(Float32Array.from([input[p]]));\n          }\n          return result;\n        }");
-        }
-
-        return "function lookupInput(rawInputs) {\n        var table = ".concat(JSON.stringify(inputLookup), ";\n        var result = [];\n        for (var i = 0; i < rawInputs.length; i++) {\n          var rawInput = rawInputs[i];\n          var input = new Float32Array(").concat(inputLookupLength, ");\n          for (var p in table) {\n            input[table[p]] = rawInput.hasOwnProperty(p) ? rawInput[p] : 0;\n          }\n          result.push(input);\n        }\n        return result;\n      }");
-      }
-
-      function formatOutputData() {
-        if (!outputLookup) return '';
-
-        if (inputSize === 1) {
-          if (inputLookup === outputLookup) {
-            return "function lookupOutputPartial(output, input) {\n            var table = ".concat(JSON.stringify(outputLookup), ";\n            var offset = input.length;\n            var result = {};\n            var i = 0;\n            for (var p in table) {\n              if (i++ < offset) continue;\n              result[p] = output[table[p] - offset][0];\n            }\n            return result;\n          }");
-          }
-
-          return "function lookupOutput(output) {\n          var table = ".concat(JSON.stringify(outputLookup), ";\n          var result = {};\n          for (var p in table) {\n            result[p] = output[table[p]][0];\n          }\n          return result;\n        }");
-        }
-
-        return "function lookupOutput(output) {\n        var table = ".concat(JSON.stringify(outputLookup), ";\n        var result = {};\n        for (var p in table) {\n          result[p] = output[table[p]];\n        }\n        return result;\n      }");
-      }
-
-      function toInner(fnString) {
-        // crude, but should be sufficient for now
-        // function() { body }
-        fnString = fnString.toString().split('{');
-        fnString.shift(); // body }
-
-        fnString = fnString.join('{');
-        fnString = fnString.split('}');
-        fnString.pop(); // body
-
-        return fnString.join('}').split('\n').join('\n        ').replace('product.weights = input.weights = this.inputValue;', inputLookup && inputSize === 1 ? 'product.weights = _i < input.length ? input[_i]: prevStates[prevStates.length - 1].product.weights;' : inputSize === 1 ? 'product.weights = [input[_i]];' : 'product.weights = input[_i];').replace('product.deltas[i] = 0;', '').replace('product.deltas[column] = 0;', '').replace('left.deltas[leftIndex] = 0;', '').replace('right.deltas[rightIndex] = 0;', '').replace('product.deltas = left.deltas.slice(0);', '');
-      }
-
-      function fileName(fnName) {
-        return "src/recurrent/matrix/".concat(fnName.replace(/[A-Z]/g, function (value) {
-          return "-".concat(value.toLowerCase());
-        }), ".js");
-      }
-
-      var statesRaw = [];
-      var usedFunctionNames = {};
-      var innerFunctionsSwitch = [];
-
-      for (var i = 0, max = states.length; i < max; i++) {
-        var state = states[i];
-        statesRaw.push("states[".concat(i, "] = {\n      name: '").concat(state.forwardFn.name, "',\n      left: ").concat(matrixToString(state.left, i), ",\n      right: ").concat(matrixToString(state.right, i), ",\n      product: ").concat(matrixToString(state.product, i), "\n    }"));
-        var fnName = state.forwardFn.name;
-
-        if (!usedFunctionNames[fnName]) {
-          usedFunctionNames[fnName] = true;
-          innerFunctionsSwitch.push("        case '".concat(fnName, "':").concat(fnName !== 'forwardFn' ? " //compiled from ".concat(fileName(fnName)) : '', "\n          ").concat(toInner(state.forwardFn.toString()), "\n          break;"));
-        }
-      }
-
-      var forceForecast = this.inputSize === 1 && this.outputLookup;
-      var src = "\n  var input = ".concat(this.inputLookup ? 'lookupInput(rawInput)' : 'rawInput', ";\n  var json = ").concat(jsonString, ";\n  var output = [];\n  var states = [];\n  var prevStates;\n  var state;\n  var max = ").concat(forceForecast ? inputLookup === outputLookup ? inputLookupLength : "input.length + ".concat(outputLookupLength - 1) : 'input.length', ";\n  for (var _i = 0; _i < max; _i++) {\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n    ").concat(inputSize === 1 && inputLookup ? 'if (_i >= input.length - 1) { output.push(state.product.weights); }' : 'output = state.product.weights;', "\n  }\n  ").concat(outputLookup ? outputLookup === inputLookup ? 'return lookupOutputPartial(output, input)' : 'return lookupOutput(output)' : inputSize === 1 ? 'return output[0]' : 'return output', ";\n  ").concat(formatInputData(), "\n  ").concat(formatOutputData(), "\n\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros.toString(), "\n  ").concat(softmax.toString().replace('_2.default', 'Matrix'), "\n  ").concat(randomFloat$5.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString()); // eslint-disable-next-line no-new-func
-
-      return new Function('rawInput', cb ? cb(src) : src);
-    }
-  }]);
-
-  return RNNTimeStep;
-}(rnn);
-
-RNNTimeStep.defaults = {
-  inputSize: 1,
-  hiddenLayers: [20],
-  outputSize: 1,
-  learningRate: rnn.defaults.learningRate,
-  decayRate: rnn.defaults.decayRate,
-  smoothEps: rnn.defaults.smoothEps,
-  regc: rnn.defaults.regc,
-  clipval: rnn.defaults.clipval
-};
-RNNTimeStep.trainDefaults = rnn.trainDefaults;
-var rnnTimeStep = RNNTimeStep;
-
-var LSTM = /*#__PURE__*/function (_RNN) {
-  _inherits(LSTM, _RNN);
-
-  var _super = _createSuper(LSTM);
-
-  function LSTM() {
-    _classCallCheck(this, LSTM);
-
-    return _super.apply(this, arguments);
-  }
-
-  _createClass(LSTM, null, [{
-    key: "getModel",
-    value: function getModel(hiddenSize, prevSize) {
-      return {
-        // gates parameters
-        // wix
-        inputMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
-        // wih
-        inputHidden: new randomMatrix(hiddenSize, hiddenSize, 0.08),
-        // bi
-        inputBias: new matrix(hiddenSize, 1),
-        // wfx
-        forgetMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
-        // wfh
-        forgetHidden: new randomMatrix(hiddenSize, hiddenSize, 0.08),
-        // bf
-        forgetBias: new matrix(hiddenSize, 1),
-        // wox
-        outputMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
-        // woh
-        outputHidden: new randomMatrix(hiddenSize, hiddenSize, 0.08),
-        // bo
-        outputBias: new matrix(hiddenSize, 1),
-        // cell write params
-        // wcx
-        cellActivationMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
-        // wch
-        cellActivationHidden: new randomMatrix(hiddenSize, hiddenSize, 0.08),
-        // bc
-        cellActivationBias: new matrix(hiddenSize, 1)
-      };
-    }
-    /**
-     *
-     * @param {Equation} equation
-     * @param {Matrix} inputMatrix
-     * @param {Matrix} previousResult
-     * @param {Object} hiddenLayer
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "getEquation",
-    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-      var sigmoid = equation.sigmoid.bind(equation);
-      var add = equation.add.bind(equation);
-      var multiply = equation.multiply.bind(equation);
-      var multiplyElement = equation.multiplyElement.bind(equation);
-      var tanh = equation.tanh.bind(equation);
-      var inputGate = sigmoid(add(add(multiply(hiddenLayer.inputMatrix, inputMatrix), multiply(hiddenLayer.inputHidden, previousResult)), hiddenLayer.inputBias));
-      var forgetGate = sigmoid(add(add(multiply(hiddenLayer.forgetMatrix, inputMatrix), multiply(hiddenLayer.forgetHidden, previousResult)), hiddenLayer.forgetBias)); // output gate
-
-      var outputGate = sigmoid(add(add(multiply(hiddenLayer.outputMatrix, inputMatrix), multiply(hiddenLayer.outputHidden, previousResult)), hiddenLayer.outputBias)); // write operation on cells
-
-      var cellWrite = tanh(add(add(multiply(hiddenLayer.cellActivationMatrix, inputMatrix), multiply(hiddenLayer.cellActivationHidden, previousResult)), hiddenLayer.cellActivationBias)); // compute new cell activation
-
-      var retainCell = multiplyElement(forgetGate, previousResult); // what do we keep from cell
-
-      var writeCell = multiplyElement(inputGate, cellWrite); // what do we write to cell
-
-      var cell = add(retainCell, writeCell); // new cell contents
-      // compute hidden state as gated, saturated cell activations
-
-      return multiplyElement(outputGate, tanh(cell));
-    }
-  }]);
-
-  return LSTM;
-}(rnn);
-
-var lstm = LSTM;
-
-var LSTMTimeStep = /*#__PURE__*/function (_RNNTimeStep) {
-  _inherits(LSTMTimeStep, _RNNTimeStep);
-
-  var _super = _createSuper(LSTMTimeStep);
-
-  function LSTMTimeStep() {
-    _classCallCheck(this, LSTMTimeStep);
-
-    return _super.apply(this, arguments);
-  }
-
-  _createClass(LSTMTimeStep, null, [{
-    key: "getModel",
-    value: function getModel(hiddenSize, prevSize) {
-      return lstm.getModel.call(this, hiddenSize, prevSize);
-    }
-    /**
-     *
-     * @param {Equation} equation
-     * @param {Matrix} inputMatrix
-     * @param {Matrix} previousResult
-     * @param {Object} hiddenLayer
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "getEquation",
-    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-      return lstm.getEquation.call(this, equation, inputMatrix, previousResult, hiddenLayer);
-    }
-  }]);
-
-  return LSTMTimeStep;
-}(rnnTimeStep);
-
-var lstmTimeStep = LSTMTimeStep;
-
-var GRU = /*#__PURE__*/function (_RNN) {
-  _inherits(GRU, _RNN);
-
-  var _super = _createSuper(GRU);
-
-  function GRU() {
-    _classCallCheck(this, GRU);
-
-    return _super.apply(this, arguments);
-  }
-
-  _createClass(GRU, null, [{
-    key: "getModel",
-    value: function getModel(hiddenSize, prevSize) {
-      return {
-        // update Gate
-        // wzxh
-        updateGateInputMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
-        // wzhh
-        updateGateHiddenMatrix: new randomMatrix(hiddenSize, hiddenSize, 0.08),
-        // bz
-        updateGateBias: new matrix(hiddenSize, 1),
-        // reset Gate
-        // wrxh
-        resetGateInputMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
-        // wrhh
-        resetGateHiddenMatrix: new randomMatrix(hiddenSize, hiddenSize, 0.08),
-        // br
-        resetGateBias: new matrix(hiddenSize, 1),
-        // cell write parameters
-        // wcxh
-        cellWriteInputMatrix: new randomMatrix(hiddenSize, prevSize, 0.08),
-        // wchh
-        cellWriteHiddenMatrix: new randomMatrix(hiddenSize, hiddenSize, 0.08),
-        // bc
-        cellWriteBias: new matrix(hiddenSize, 1)
-      };
-    }
-    /**
-     *
-     * @param {Equation} equation
-     * @param {Matrix} inputMatrix
-     * @param {Matrix} previousResult
-     * @param {Object} hiddenLayer
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "getEquation",
-    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-      var sigmoid = equation.sigmoid.bind(equation);
-      var add = equation.add.bind(equation);
-      var multiply = equation.multiply.bind(equation);
-      var multiplyElement = equation.multiplyElement.bind(equation);
-      var tanh = equation.tanh.bind(equation);
-      var allOnes = equation.allOnes.bind(equation);
-      var cloneNegative = equation.cloneNegative.bind(equation); // update gate
-
-      var updateGate = sigmoid(add(add(multiply(hiddenLayer.updateGateInputMatrix, inputMatrix), multiply(hiddenLayer.updateGateHiddenMatrix, previousResult)), hiddenLayer.updateGateBias)); // reset gate
-
-      var resetGate = sigmoid(add(add(multiply(hiddenLayer.resetGateInputMatrix, inputMatrix), multiply(hiddenLayer.resetGateHiddenMatrix, previousResult)), hiddenLayer.resetGateBias)); // cell
-
-      var cell = tanh(add(add(multiply(hiddenLayer.cellWriteInputMatrix, inputMatrix), multiply(hiddenLayer.cellWriteHiddenMatrix, multiplyElement(resetGate, previousResult))), hiddenLayer.cellWriteBias)); // compute hidden state as gated, saturated cell activations
-      // negate updateGate
-
-      return add(multiplyElement(add(allOnes(updateGate.rows, updateGate.columns), cloneNegative(updateGate)), cell), multiplyElement(previousResult, updateGate));
-    }
-  }]);
-
-  return GRU;
-}(rnn);
-
-var gru$2 = GRU;
-
-var GRUTimeStep = /*#__PURE__*/function (_RNNTimeStep) {
-  _inherits(GRUTimeStep, _RNNTimeStep);
-
-  var _super = _createSuper(GRUTimeStep);
-
-  function GRUTimeStep() {
-    _classCallCheck(this, GRUTimeStep);
-
-    return _super.apply(this, arguments);
-  }
-
-  _createClass(GRUTimeStep, null, [{
-    key: "getModel",
-    value: function getModel(hiddenSize, prevSize) {
-      return gru$2.getModel(hiddenSize, prevSize);
-    }
-    /**
-     *
-     * @param {Equation} equation
-     * @param {Matrix} inputMatrix
-     * @param {Matrix} previousResult
-     * @param {Object} hiddenLayer
-     * @returns {Matrix}
-     */
-
-  }, {
-    key: "getEquation",
-    value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-      return gru$2.getEquation(equation, inputMatrix, previousResult, hiddenLayer);
-    }
-  }]);
-
-  return GRUTimeStep;
-}(rnnTimeStep);
-
-var gruTimeStep = GRUTimeStep;
-
-var $every$1 = arrayIteration.every;
-
-
-
-var STRICT_METHOD$5 = arrayMethodIsStrict('every');
-var USES_TO_LENGTH$8 = arrayMethodUsesToLength('every');
-
-// `Array.prototype.every` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.every
-_export({ target: 'Array', proto: true, forced: !STRICT_METHOD$5 || !USES_TO_LENGTH$8 }, {
-  every: function every(callbackfn /* , thisArg */) {
-    return $every$1(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-  }
-});
 
 var FeedForward$2 = feedForward$2.FeedForward;
 var Recurrent$1 = recurrent.Recurrent;
@@ -41459,53 +40294,50 @@ function toSVG(net, options) {
 
 var toSvg = toSVG;
 
-var src = createCommonjsModule(function (module) {
-  var FeedForward = feedForward$2.FeedForward;
-  var Recurrent = recurrent.Recurrent;
-  var brain = {
-    activation: activation,
-    CrossValidate: crossValidate,
-    likely: likely,
-    layer: layer,
-    layerTypes: types,
-    lookup: lookup,
-    praxis: praxis,
-    FeedForward: FeedForward,
-    NeuralNetwork: neuralNetwork,
-    NeuralNetworkGPU: neuralNetworkGpu,
-    Recurrent: Recurrent,
-    TrainStream: trainStream,
-    recurrent: {
-      RNNTimeStep: rnnTimeStep,
-      LSTMTimeStep: lstmTimeStep,
-      GRUTimeStep: gruTimeStep,
-      RNN: rnn,
-      LSTM: lstm,
-      GRU: gru$2
-    },
-    utilities: {
-      max: max$3,
-      mse: mse,
-      ones: ones,
-      random: random,
-      randomWeight: randomWeight,
-      randos: randos,
-      range: range,
-      toArray: toArray,
-      DataFormatter: dataFormatter,
-      zeros: zeros,
-      toSVG: toSvg
-    }
-  };
-
-  if (typeof window !== 'undefined') {
-    window.brain = brain; //eslint-disable-line
+var brain = {
+  activation: activation,
+  CrossValidate: crossValidate,
+  likely: likely,
+  layer: layer,
+  layerTypes: types,
+  lookup: lookup,
+  praxis: praxis,
+  FeedForward: feedForward$2.FeedForward,
+  NeuralNetwork: neuralNetwork,
+  NeuralNetworkGPU: neuralNetworkGpu,
+  Recurrent: recurrent.Recurrent,
+  TrainStream: trainStream,
+  recurrent: {
+    RNNTimeStep: rnnTimeStep,
+    LSTMTimeStep: lstmTimeStep,
+    GRUTimeStep: gruTimeStep,
+    RNN: rnn,
+    LSTM: lstm,
+    GRU: gru$2
+  },
+  utilities: {
+    max: max$1,
+    mse: mse,
+    ones: ones,
+    random: random,
+    randomWeight: randomWeight,
+    randos: randos,
+    range: range,
+    toArray: toArray,
+    DataFormatter: dataFormatter,
+    zeros: zeros,
+    toSVG: toSvg
   }
+};
 
-  {
-    module.exports = brain;
-  }
-});
+if (typeof window !== 'undefined') {
+  // @ts-expect-error window.brain
+  window.brain = brain;
+}
 
-export default src;
+if (typeof module !== 'undefined') {
+  module.exports = brain;
+}
+
+export { brain };
 //# sourceMappingURL=brain-browser.mjs.map

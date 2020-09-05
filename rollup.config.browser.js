@@ -2,15 +2,15 @@ import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
-import typescript from '@rollup/plugin-typescript';
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
 import { terser } from 'rollup-plugin-terser';
 
 const name = 'brain';
+const extensions = ['.mjs', '.js', '.json', '.node', '.ts'];
 
 export default {
-  input: './src/index.js',
+  input: './src/index.ts',
 
   // Specify here external modules which you don't want to include in your bundle (for instance: 'lodash', 'moment' etc.)
   // https://rollupjs.org/guide/en#external-e-external
@@ -18,7 +18,11 @@ export default {
 
   plugins: [
     // Allows node_modules resolution
-    resolve({ preferBuiltins: true, browser: true }),
+    resolve({
+      preferBuiltins: true,
+      browser: true,
+      extensions,
+    }),
 
     // allow json importing
     json(),
@@ -30,15 +34,10 @@ export default {
     globals(),
     builtins(),
 
-    // compile typescript
-    typescript({
-      tsconfig: './tsconfig.build.json',
-    }),
-
     // Compile TypeScript/JavaScript files
     babel({
+      extensions,
       babelHelpers: 'bundled',
-      exclude: 'node_modules/**',
       include: ['src/**/*'],
     }),
   ],

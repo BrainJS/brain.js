@@ -1,5 +1,5 @@
 const assert = require('assert');
-const brain = require('../../src');
+const brain = require('../../dist/brain');
 
 const trainingData = [
   // xor data, repeating to simulate that we have a lot of data

@@ -77,7 +77,7 @@
         padding-left: 100px;
       }
     </style>
-    <script src="../../dist/brain-browser.js"></script>
+    <script src="https://unpkg.com/brain.js"></script>
   </head>
   <body>
     <div class="flex-container">
@@ -86,16 +86,16 @@
           <div class="input-wrapper">
             <div class="input-label">Network type</div>
             <select name="network-type">
-              <option value="NeuralNetwork"
-                >FeedForward (brain.NeuralNetwork)</option
-              >
+              <option value="NeuralNetwork">
+                FeedForward (brain.NeuralNetwork)
+              </option>
               <option value="RNN">Recurrent (brain.recurrent.RNN)</option>
-              <option value="RNNTimeStep"
-                >Recurrent Time Step (brain.recurrent.RNNTimeStep)</option
-              >
-              <option value="FeedForward"
-                >FeedForward (brain.FeedForward)</option
-              >
+              <option value="RNNTimeStep">
+                Recurrent Time Step (brain.recurrent.RNNTimeStep)
+              </option>
+              <option value="FeedForward">
+                FeedForward (brain.FeedForward)
+              </option>
               <option value="Recurrent">Recurrent (brain.Recurrent)</option>
             </select>
           </div>
@@ -208,7 +208,9 @@
               name="inp-labels"
               cols="23"
               placeholder="inputs' labels separated by commas"
-            >a,b,c,d,e,f,g,h,i,j</textarea>
+            >
+a,b,c,d,e,f,g,h,i,j</textarea
+            >
           </div>
           <div class="input-wrapper">
             <label class="input-label"
