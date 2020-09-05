@@ -7,8 +7,8 @@ export function zeros3D(
   width: number,
   height: number,
   depth: number
-): Float32Array[][][] {
-  const result = new Array(depth);
+): Float32Array[][] {
+  const result: Float32Array[][] = new Array(depth);
   for (let z = 0; z < depth; z++) {
     result[z] = zeros2D(width, height);
   }
