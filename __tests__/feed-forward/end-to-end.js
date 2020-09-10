@@ -1,5 +1,5 @@
 const { GPU } = require('gpu.js');
-const NeuralNetwork = require('../../src/neural-network');
+const { NeuralNetwork } = require('../../src/neural-network');
 const { FeedForward } = require('../../src/feed-forward');
 // const { add } = require('../../src/layer/add');
 // const { random } = require('../../src/layer/random');

@@ -1,4 +1,4 @@
-const NeuralNetwork = require('../neural-network');
+const { NeuralNetwork } = require('../neural-network');
 const RNN = require('../recurrent/rnn');
 const RNNTimeStep = require('../recurrent/rnn-time-step');
 const { FeedForward } = require('../feed-forward');

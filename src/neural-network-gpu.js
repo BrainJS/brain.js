@@ -1,5 +1,5 @@
 const { GPU, alias, utils: gpuUtils } = require('gpu.js');
-const NeuralNetwork = require('./neural-network');
+const { NeuralNetwork } = require('./neural-network');
 const lookup = require('./lookup');
 const { release } = require('./utilities/kernel');
 

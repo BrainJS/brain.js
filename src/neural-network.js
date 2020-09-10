@@ -31,7 +31,7 @@ function getTypedArrayFn(value, table) {
  * @param {object} options
  * @constructor
  */
-class NeuralNetwork {
+export class NeuralNetwork {
   static get trainDefaults() {
     return {
       iterations: 20000, // the maximum times to iterate the training data

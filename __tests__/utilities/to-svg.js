@@ -1,4 +1,4 @@
-const NeuralNetwork = require('../../src/neural-network');
+const { NeuralNetwork } = require('../../src/neural-network');
 const RNN = require('../../src/recurrent/rnn');
 const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
 const toSVG = require('../../src/utilities/to-svg');

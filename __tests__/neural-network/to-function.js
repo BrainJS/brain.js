@@ -1,4 +1,4 @@
-const NeuralNetwork = require('../../src/neural-network');
+const { NeuralNetwork } = require('../../src/neural-network');
 const istanbulLinkerUtil = require('../istanbul-linker-util');
 
 describe('.toFunction()', () => {
