@@ -1,4 +1,4 @@
-const toArray = require('../../src/utilities/to-array');
+const { toArray } = require('../../src/utilities/to-array');
 const { zeros } = require('../../src/utilities/zeros');
 
 describe('mse', () => {
