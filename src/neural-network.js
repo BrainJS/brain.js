@@ -5,7 +5,7 @@ const { max } = require('./utilities/max');
 const mse = require('./utilities/mse');
 const randos = require('./utilities/randos');
 const range = require('./utilities/range');
-const { toArray } = require('./utilities/to-array');
+import { toArray } from './utilities/to-array';
 const { zeros } = require('./utilities/zeros');
 const LookupTable = require('./utilities/lookup-table');
 const { arrayToFloat32Array } = require('./utilities/cast');
