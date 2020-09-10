@@ -1,7 +1,7 @@
 const { Thaw } = require('thaw.js');
 const lookup = require('./lookup');
 // const TrainStream = require('./train-stream');
-const { max } = require('./utilities/max');
+import { max } from './utilities/max';
 const mse = require('./utilities/mse');
 const randos = require('./utilities/randos');
 const range = require('./utilities/range');
