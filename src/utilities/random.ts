@@ -39,8 +39,8 @@ export function randomInteger(min: number, max: number): number {
 
 /**
  * If you know what this is: https://en.wikipedia.org/wiki/Normal_distribution
- * @param mu 
- * @param std 
+ * @param mu
+ * @param std
  */
 export function randomN(mu: number, std: number) {
   return mu + gaussRandom() * std;
