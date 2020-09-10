@@ -1,4 +1,5 @@
-const { toArray } = require('./to-array');
+import { toArray } from './to-array';
+
 /**
  *
  * @param values
