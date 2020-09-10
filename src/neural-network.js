@@ -1,11 +1,11 @@
-const { Thaw } = require('thaw.js');
-const lookup = require('./lookup');
 // const TrainStream = require('./train-stream');
 import { max } from './utilities/max';
+import { toArray } from './utilities/to-array';
+const { Thaw } = require('thaw.js');
+const lookup = require('./lookup');
 const mse = require('./utilities/mse');
 const randos = require('./utilities/randos');
 const range = require('./utilities/range');
-import { toArray } from './utilities/to-array';
 const { zeros } = require('./utilities/zeros');
 const LookupTable = require('./utilities/lookup-table');
 const { arrayToFloat32Array } = require('./utilities/cast');
@@ -1227,4 +1227,5 @@ class NeuralNetwork {
   }
 }
 
-module.exports = NeuralNetwork;
+// module.exports = NeuralNetwork;
+export default NeuralNetwork;
