@@ -20,7 +20,7 @@ import DataFormatter from './utilities/data-formatter';
 import { max } from './utilities/max';
 import mse from './utilities/mse';
 import ones from './utilities/ones';
-import random from './utilities/random';
+import * as random from './utilities/random';
 import randomWeight from './utilities/random-weight';
 import randos from './utilities/randos';
 import range from './utilities/range';
