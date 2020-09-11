@@ -1,4 +1,4 @@
-const randomWeight = require('./random-weight');
+const { randomWeight } = require('./random-weight');
 const { randomFloat } = require('./random');
 
 module.exports = function randos(size, std) {
