@@ -22,7 +22,7 @@ import mse from './utilities/mse';
 import ones from './utilities/ones';
 import * as random from './utilities/random';
 import { randomWeight } from './utilities/random-weight';
-import randos from './utilities/randos';
+import { randos } from './utilities/randos';
 import range from './utilities/range';
 import { toArray } from './utilities/to-array';
 import toSVG from './utilities/to-svg';

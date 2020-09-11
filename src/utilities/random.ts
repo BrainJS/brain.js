@@ -42,7 +42,7 @@ export function randomInteger(min: number, max: number): number {
  * @param mu
  * @param std
  */
-export function randomN(mu: number, std: number) {
+export function randomN(mu: number, std: number): number {
   return mu + gaussRandom() * std;
 }
 

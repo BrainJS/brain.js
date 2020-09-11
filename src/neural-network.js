@@ -4,7 +4,7 @@ import { toArray } from './utilities/to-array';
 const { Thaw } = require('thaw.js');
 const lookup = require('./lookup');
 const mse = require('./utilities/mse');
-const randos = require('./utilities/randos');
+const { randos } = require('./utilities/randos');
 const range = require('./utilities/range');
 const { zeros } = require('./utilities/zeros');
 const LookupTable = require('./utilities/lookup-table');
