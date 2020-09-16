@@ -1,8 +1,6 @@
 const { makeKernel, release, clone } = require('../utilities/kernel');
 const { Filter } = require('./types');
-const randos = require('../utilities/randos');
-const randos2D = require('../utilities/randos-2d');
-const randos3D = require('../utilities/randos-3d');
+const { randos, randos2D, randos3D } = require('../utilities/randos');
 const { zeros } = require('../utilities/zeros');
 const { zeros2D } = require('../utilities/zeros-2d');
 const { zeros3D } = require('../utilities/zeros-3d');

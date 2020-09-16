@@ -1,8 +1,7 @@
 const { Filter } = require('./types');
 const { makeKernel, release } = require('../utilities/kernel');
 const values = require('../utilities/values');
-const randos2D = require('../utilities/randos-2d');
-const randos3D = require('../utilities/randos-3d');
+const { randos2D, randos3D } = require('../utilities/randos');
 const { zeros } = require('../utilities/zeros');
 const { zeros2D } = require('../utilities/zeros-2d');
 const { zeros3D } = require('../utilities/zeros-3d');
