@@ -1,26 +1,33 @@
+
+/**TODO: might need to be extended to include string[][] */
+type Values = string[] | number[] | string;
+
 /**
  *
- * @param {String[]|Number[]} values
+ * @param {String|String[]|Number[]} values
  * @param maxThreshold
  * @constructor
  */
-class DataFormatter {
-  constructor(values, maxThreshold = 0) {
+export class DataFormatter {
+
+  indexTable: { [key: string]: number, [key: number]: number } = {};
+  characterTable: { [key: number]: string | number | null } = {};
+  characters: (string | number)[] = [];
+  specialIndexes: number[] = [];
+
+  constructor(private values?: Values | undefined, maxThreshold = 0) {
     if (values === undefined) return;
 
     this.values = values;
     // go over all characters and keep track of all unique ones seen
     // count up all characters
-    this.indexTable = {};
-    this.characterTable = {};
-    this.characters = [];
-    this.specialIndexes = [];
+
     this.buildCharactersFromIterable(values);
     this.buildTables(maxThreshold);
   }
 
-  buildCharactersFromIterable(values) {
-    const tempCharactersTable = {};
+  buildCharactersFromIterable(values: Values) {
+    const tempCharactersTable: any = {};
     for (
       let dataFormatterIndex = 0, dataFormatterLength = values.length;
       dataFormatterIndex < dataFormatterLength;
@@ -28,27 +35,31 @@ class DataFormatter {
     ) {
       const characters = values[dataFormatterIndex];
 
-      if (characters.hasOwnProperty('length')) {
+      if ((characters as any).hasOwnProperty('length')) {
+        const iteratable = characters as string[] | string;
         for (
-          let characterIndex = 0, charactersLength = characters.length;
+          let characterIndex = 0, charactersLength = iteratable.length;
           characterIndex < charactersLength;
           characterIndex++
         ) {
-          const character = characters[characterIndex];
+          const character = iteratable[characterIndex];
           if (tempCharactersTable.hasOwnProperty(character)) continue;
           tempCharactersTable[character] = true;
           this.characters.push(character);
         }
-      } else {
+      } else if (typeof characters === 'number') {
         const character = values[dataFormatterIndex];
         if (tempCharactersTable.hasOwnProperty(character)) continue;
         tempCharactersTable[dataFormatterIndex] = true;
         this.characters.push(character);
+      } else {
+        //  remove check after TS conversion is complete
+        throw new Error('Should never happen')
       }
     }
   }
 
-  buildTables(maxThreshold) {
+  buildTables(maxThreshold: number) {
     // filter by count threshold and create pointers
     const charactersLength = this.characters.length;
     for (
@@ -65,7 +76,7 @@ class DataFormatter {
     }
   }
 
-  toIndexes(value, maxThreshold = 0) {
+  toIndexes(value: string[], maxThreshold = 0) {
     const result = [];
     const { indexTable } = this;
 
@@ -85,7 +96,7 @@ class DataFormatter {
     return result;
   }
 
-  toIndexesInputOutput(value1, value2 = null, maxThreshold = 0) {
+  toIndexesInputOutput(value1: string | number | string[], value2: string | string[] | null = null, maxThreshold = 0) {
     let result = null;
     if (typeof value1 === 'string') {
       result = this.toIndexes(
@@ -113,7 +124,7 @@ class DataFormatter {
     }
   }
 
-  toCharacters(indices, maxThreshold = 0) {
+  toCharacters(indices: number[], maxThreshold = 0) {
     const result = [];
     const { indexTable, characterTable } = this;
 
@@ -135,7 +146,7 @@ class DataFormatter {
     return result;
   }
 
-  toString(indices, maxThreshold) {
+  toString(indices: number[], maxThreshold: number) {
     return this.toCharacters(indices, maxThreshold).join('');
   }
 
@@ -148,27 +159,27 @@ class DataFormatter {
     this.addSpecial('unrecognized');
   }
 
-  static fromAllPrintable(maxThreshold, values = ['\n']) {
+  static fromAllPrintable(maxThreshold: number, values = ['\n']) {
     for (let i = 32; i <= 126; i++) {
       values.push(String.fromCharCode(i));
     }
     return new DataFormatter(values, maxThreshold);
   }
 
-  static fromAllPrintableInputOutput(maxThreshold, values = ['\n']) {
+  static fromAllPrintableInputOutput(maxThreshold: number, values = ['\n']) {
     const dataFormatter = DataFormatter.fromAllPrintable(maxThreshold, values);
     dataFormatter.addInputOutput();
     return dataFormatter;
   }
 
-  static fromStringInputOutput(string, maxThreshold) {
+  static fromStringInputOutput(string: string, maxThreshold: number) {
     const values = String.prototype.concat(...new Set(string));
     const dataFormatter = new DataFormatter(values, maxThreshold);
     dataFormatter.addInputOutput();
     return dataFormatter;
   }
 
-  static fromArrayInputOutput(array, maxThreshold) {
+  static fromArrayInputOutput(array: any[], maxThreshold?: number) {
     const dataFormatter = new DataFormatter(
       array.filter((v, i, a) => a.indexOf(v) === i),
       maxThreshold
@@ -177,12 +188,15 @@ class DataFormatter {
     return dataFormatter;
   }
 
-  static fromString(string, maxThreshold) {
+  static fromString(string: string, maxThreshold: number) {
     const values = String.prototype.concat(...new Set(string));
     return new DataFormatter(values, maxThreshold);
   }
 
-  static fromJSON(json) {
+  /** TODO: Type better, The type of json is not "string that is a valid JSON", it is a POJO in the shape of DataFormatter.
+   * this method re-hydrates the the data as an instance of DataFormatter.
+   */
+  static fromJSON(json: any) {
     const dataFormatter = new DataFormatter();
     dataFormatter.indexTable = json.indexTable;
     dataFormatter.characterTable = json.characterTable;
@@ -192,22 +206,11 @@ class DataFormatter {
     return dataFormatter;
   }
 
-  addSpecial(special, character = null) {
+  addSpecial(special: string | number, character = null) {
     const specialIndex = (this.indexTable[special] = this.characters.length);
     this.characterTable[specialIndex] = character;
     this.specialIndexes.push(this.characters.length);
     this.characters.push(special);
-  }
-
-  countSpecial(output) {
-    let sum = 0;
-    for (let i = 0; i < this.specialIndexes; i++) {
-      let index = -1;
-      while ((index = output.indexOf(this.specialIndexes[i], index) > -1)) {
-        sum++;
-      }
-    }
-    return sum;
   }
 
   toFunctionString() {
@@ -223,24 +226,30 @@ var dataFormatter = {
   }
 }
 
-function validateAndCast(value) {
+function validateAndCast(value: string | number | string[] | number[]): string | string[] {
   if (typeof value === 'string') return value;
   if (typeof value === 'number') return value.toString();
-  if (typeof value[0] === 'string') return value;
+  if (typeof value[0] === 'string') return value as string[];
   if (typeof value[0] === 'number') {
-    return value.map((value) => value.toString());
+    return (value as number[]).map((v: number) => v.toString());
   }
   throw new Error(
     'unrecognized value, expected string[], string, number[], or number'
   );
 }
 
+
+/**
+ * TODO: Tighten formatDataIn type once we convert caller to TS
+ */
+type DefaultRNNFormatterThis = { dataFormatter?: DataFormatter, formatDataIn: Function };
+
 /**
  *
  * @param {*[]} data
  * @returns {Number[]}
  */
-function defaultRNNFormatter(data) {
+export function defaultRNNFormatter(this: DefaultRNNFormatterThis, data: any[]): number[] {
   if (
     typeof data[0] !== 'string' &&
     !Array.isArray(data[0]) &&
@@ -248,7 +257,7 @@ function defaultRNNFormatter(data) {
   ) {
     return data;
   }
-  const values = [];
+  const values: any[] = [];
   const result = [];
   if (
     typeof data[0] === 'string' ||
@@ -291,4 +300,4 @@ function defaultRNNFormatter(data) {
   return result;
 }
 
-module.exports = { DataFormatter, defaultRNNFormatter };
+export default DataFormatter;
