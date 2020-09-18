@@ -4,7 +4,7 @@ const {
   ArthurDeviationBiases,
 } = require('../../../src/praxis/arthur-deviation-biases');
 const { random } = require('../../../src/layer/random');
-const NeuralNetwork = require('../../../src/neural-network');
+const { NeuralNetwork } = require('../../../src/neural-network');
 const { setup, teardown } = require('../../../src/utilities/kernel');
 const { injectIstanbulCoverage } = require('../../test-utils');
 

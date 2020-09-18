@@ -2,7 +2,7 @@ const { Filter } = require('./types');
 const { makeKernel, release } = require('../utilities/kernel');
 const { setPadding, setStride } = require('../utilities/layer-setup');
 const { zeros3D } = require('../utilities/zeros-3d');
-const randos3D = require('../utilities/randos-3d');
+const { randos3D } = require('../utilities/randos');
 
 function setSwitchY(value) {
   return value;

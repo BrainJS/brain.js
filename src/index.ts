@@ -17,14 +17,14 @@ import RNN from './recurrent/rnn';
 import RNNTimeStep from './recurrent/rnn-time-step';
 import TrainStream from './train-stream';
 import DataFormatter from './utilities/data-formatter';
-import max from './utilities/max';
+import { max } from './utilities/max';
 import mse from './utilities/mse';
 import ones from './utilities/ones';
-import { randomFloat } from './utilities/random';
+import * as random from './utilities/random';
 import { randomWeight } from './utilities/random-weight';
 import { randos } from './utilities/randos';
 import range from './utilities/range';
-import toArray from './utilities/to-array';
+import { toArray } from './utilities/to-array';
 import toSVG from './utilities/to-svg';
 import { zeros } from './utilities/zeros';
 
@@ -53,7 +53,7 @@ export const brain = {
     max,
     mse,
     ones,
-    randomFloat,
+    random,
     randomWeight,
     randos,
     range,

@@ -1,12 +1,20 @@
-export function randomFloat(a: number, b: number): number {
-  return Math.random() * (b - a) + a;
+/**
+ * Returns a random float between given min and max bounds (inclusive)
+ * @param min Minimum value of the ranfom float
+ * @param max Maximum value of the random float
+ */
+export function randomFloat(min: number, max: number): number {
+  return Math.random() * (max - min) + min;
 }
 
-// Random numbers utils
+/**
+ * Complicated math. All you need to know is that it returns a random number.
+ * More info: https://en.wikipedia.org/wiki/Normal_distribution
+ */
 export function gaussRandom(): number {
-  if (returnV) {
-    returnV = false;
-    return vVal;
+  if (gaussRandom.returnV) {
+    gaussRandom.returnV = false;
+    return gaussRandom.vVal;
   }
   const u = 2 * Math.random() - 1;
   const v = 2 * Math.random() - 1;
@@ -15,18 +23,28 @@ export function gaussRandom(): number {
     return gaussRandom();
   }
   const c = Math.sqrt((-2 * Math.log(r)) / r);
-  vVal = v * c; // cache this
-  returnV = true;
+  gaussRandom.vVal = v * c; // cache this
+  gaussRandom.returnV = true;
   return u * c;
 }
 
-let returnV = false;
-let vVal = 0;
-
-export function randomInteger(a: number, b: number): number {
-  return Math.floor(Math.random() * (b - a) + a);
+/**
+ * Returns a random integer between given min and max bounds
+ * @param min Minimum value of the random integer
+ * @param max Maximum value of the random integer
+ */
+export function randomInteger(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min) + min);
 }
 
+/**
+ * If you know what this is: https://en.wikipedia.org/wiki/Normal_distribution
+ * @param mu
+ * @param std
+ */
 export function randomN(mu: number, std: number): number {
   return mu + gaussRandom() * std;
 }
+
+gaussRandom.returnV = false;
+gaussRandom.vVal = 0;

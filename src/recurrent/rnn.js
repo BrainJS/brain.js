@@ -11,7 +11,7 @@ const {
   DataFormatter,
   defaultRNNFormatter,
 } = require('../utilities/data-formatter');
-const NeuralNetwork = require('../neural-network');
+const { NeuralNetwork } = require('../neural-network');
 
 class RNN {
   constructor(options = {}) {

@@ -1,4 +1,4 @@
-const max = require('../../src/utilities/max');
+const { max } = require('../../src/utilities/max');
 
 describe('max', () => {
   test('should find max in object', () => {

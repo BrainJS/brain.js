@@ -1,4 +1,4 @@
-const NeuralNetwork = require('../src/neural-network');
+const { NeuralNetwork } = require('../src/neural-network');
 const NeuralNetworkGPU = require('../src/neural-network-gpu');
 
 describe('NeuralNetworkGPU', () => {

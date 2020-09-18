@@ -1,7 +1,7 @@
 import { IPraxisSettings } from './base-layer';
 
 import { Model } from './types';
-import { randos2D } from '../utilities/randos-2d';
+import { randos2D } from '../utilities/randos';
 import { zeros2D } from '../utilities/zeros-2d';
 
 export interface IRandomSettings extends IPraxisSettings {

@@ -1,5 +1,5 @@
 const CrossValidate = require('../src/cross-validate');
-const NeuralNetwork = require('../src/neural-network');
+const { NeuralNetwork } = require('../src/neural-network');
 const LSTMTimeStep = require('../src/recurrent/lstm-time-step');
 
 describe('CrossValidate', () => {

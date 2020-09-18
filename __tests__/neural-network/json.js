@@ -1,4 +1,4 @@
-const NeuralNetwork = require('../../src/neural-network');
+const { NeuralNetwork } = require('../../src/neural-network');
 
 function typedArrayToObject(value) {
   return JSON.parse(JSON.stringify(value));

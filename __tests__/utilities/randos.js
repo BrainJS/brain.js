@@ -1,4 +1,4 @@
-const randos = require('../../src/utilities/randos');
+const { randos } = require('../../src/utilities/randos');
 
 describe('randos', () => {
   test('should return an array of finite random weights', () => {

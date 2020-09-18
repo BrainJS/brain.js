@@ -1,8 +1,7 @@
 const { makeKernel, release, clone, clear } = require('../utilities/kernel');
 const { setStride, setPadding } = require('../utilities/layer-setup');
 const { Filter } = require('./types');
-const randos = require('../utilities/randos');
-const randos3D = require('../utilities/randos-3d');
+const { randos, randos3D } = require('../utilities/randos');
 const { zeros3D } = require('../utilities/zeros-3d');
 const values = require('../utilities/values');
 
