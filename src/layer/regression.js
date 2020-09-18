@@ -1,6 +1,6 @@
-const { Base } = require('./base');
+const { BaseLayer } = require('./base-layer');
 
-class Regression extends Base {
+class Regression extends BaseLayer {
   constructor(settings) {
     super(settings);
     this.validate();

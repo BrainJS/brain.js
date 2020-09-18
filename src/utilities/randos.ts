@@ -1,7 +1,10 @@
-const randomWeight = require('./random-weight');
-const { randomFloat } = require('./random');
+import { randomWeight } from './random-weight';
+import { randomFloat } from './random';
 
-module.exports = function randos(size, std) {
+export function randos(
+  size: number,
+  std: number | undefined | null
+): Float32Array {
   const array = new Float32Array(size);
   if (std) {
     for (let i = 0; i < size; i++) {
@@ -13,4 +16,4 @@ module.exports = function randos(size, std) {
     }
   }
   return array;
-};
+}

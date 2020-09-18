@@ -1,5 +1,5 @@
 const { Internal } = require('./types');
-const { Base } = require('./base');
+const { BaseLayer } = require('./base-layer');
 const { release } = require('../utilities/kernel');
 // const { zeros2D } = require('../utilities/zeros-2d');
 
@@ -39,7 +39,7 @@ class RecurrentInput extends Internal {
   }
 
   validate() {
-    Base.prototype.validate.call(this);
+    BaseLayer.prototype.validate.call(this);
     if (this.width !== this.recurrentInput.width) {
       throw new Error(
         `${this.constructor.name} layer width ${this.width} and ${this.recurrentInput.constructor.name} width (${this.recurrentInput.width}) are not same`

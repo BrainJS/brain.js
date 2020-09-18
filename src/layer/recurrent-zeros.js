@@ -31,14 +31,9 @@ class RecurrentZeros extends Internal {
     // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 
-  learn(previousLayer, nextLayer, learningRate) {
+  learn(learningRate) {
     const { weights: oldWeights } = this;
-    this.weights = this.praxis.run(
-      this,
-      previousLayer,
-      nextLayer,
-      learningRate
-    );
+    this.weights = this.praxis.run(this, learningRate);
     // this.deltas = deltas;
     release(oldWeights);
     clear(this.deltas);

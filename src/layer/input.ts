@@ -1,0 +1,92 @@
+import { IKernelFunctionThis, IKernelRunShortcut, KernelOutput } from 'gpu.js';
+import { EntryPoint } from './types';
+import { IPraxisSettings } from './base-layer';
+import { zeros2D } from '../utilities/zeros-2d';
+import {
+  makeKernel,
+  release,
+  kernelInput,
+  clear,
+  clone,
+} from '../utilities/kernel';
+
+export const defaults: IPraxisSettings = {
+  weights: null,
+};
+
+export class Input extends EntryPoint {
+  reshapeInput: IKernelRunShortcut | null = null;
+  constructor(settings: IPraxisSettings) {
+    super({ ...defaults, ...settings });
+    this.validate();
+    this.reshapeInput = null;
+    this.deltas = zeros2D(this.width, this.height);
+  }
+
+  setupKernels(): void {
+    if (this.width === 1) {
+      this.predict = this.predict1D;
+      this.reshapeInput = makeKernel(
+        function (this: IKernelFunctionThis, value: number[]) {
+          return value[this.thread.y];
+        },
+        {
+          output: [1, this.height],
+          immutable: true,
+        }
+      );
+    }
+  }
+
+  reuseKernels(layer: Input): void {
+    super.reuseKernels(layer);
+    this.reshapeInput = layer.reshapeInput;
+  }
+
+  predict(inputs: KernelOutput): void {
+    if (
+      (Array.isArray(inputs) || inputs instanceof Float32Array) &&
+      typeof inputs[0] === 'number' &&
+      inputs.length === this.height * this.width
+    ) {
+      release(this.weights);
+      this.weights = kernelInput(inputs as number[], [this.width, this.height]);
+    } else if (
+      Array.isArray(inputs) &&
+      inputs.length === this.height &&
+      (Array.isArray(inputs[0]) || inputs[0] instanceof Float32Array) &&
+      inputs[0].length === this.width
+    ) {
+      this.weights = clone(inputs);
+    } else {
+      throw new Error('Inputs are not of sized correctly');
+    }
+    clear(this.deltas);
+  }
+
+  predict1D(inputs: KernelOutput): void {
+    if (this.weights) release(this.weights);
+    if (this.reshapeInput) {
+      this.weights = this.reshapeInput(inputs);
+    } else {
+      this.weights = inputs;
+    }
+    clear(this.deltas);
+  }
+
+  compare(): void {
+    // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
+  }
+
+  toJSON(): IPraxisSettings {
+    return {
+      ...this.settings,
+      weights: null,
+      deltas: null,
+    };
+  }
+}
+
+export function input(settings: IPraxisSettings): Input {
+  return new Input(settings);
+}

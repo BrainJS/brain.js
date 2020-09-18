@@ -1,15 +1,15 @@
-const { GPU } = require('gpu.js');
-const { gpuMock } = require('gpu-mock.js');
-const { Input } = require('../../src/layer/input');
-const {
+import { GPU } from 'gpu.js';
+import { gpuMock } from 'gpu-mock.js';
+import { Input } from '../../src/layer/input';
+import {
   Multiply,
   predict,
   compareFromX,
   compareFromY,
-} = require('../../src/layer/multiply');
-const { Random } = require('../../src/layer/random');
-const { setup, teardown } = require('../../src/utilities/kernel');
-const { injectIstanbulCoverage } = require('../test-utils');
+} from '../../src/layer/multiply';
+import { Random } from '../../src/layer/random';
+import { setup, teardown } from '../../src/utilities/kernel';
+import { injectIstanbulCoverage, mockLayer, mockPraxis } from '../test-utils';
 
 describe('Multiply Layer', () => {
   beforeEach(() => {
@@ -34,12 +34,13 @@ describe('Multiply Layer', () => {
         [9, 10],
         [11, 12],
       ];
-      const results = gpuMock(predict, {
+      const predictKernel = gpuMock(predict, {
         output: [2, 2],
         constants: {
           size: inputs2.length,
         },
-      })(inputs1, inputs2);
+      });
+      const results = predictKernel(inputs1, inputs2);
 
       expect(results).toEqual([
         new Float32Array([58, 64]),
@@ -181,15 +182,15 @@ describe('Multiply Layer', () => {
   describe('instance', () => {
     describe('.predict method', () => {
       test('validates, multiplies, and sets .weights', () => {
-        const inputLayer1 = {
+        const inputLayer1 = mockLayer({
           width: 3,
           height: 2,
           weights: [
             [1, 2, 3],
             [4, 5, 6],
           ],
-        };
-        const inputLayer2 = {
+        });
+        const inputLayer2 = mockLayer({
           width: 2,
           height: 3,
           weights: [
@@ -197,7 +198,7 @@ describe('Multiply Layer', () => {
             [9, 10],
             [11, 12],
           ],
-        };
+        });
         const multiplyLayer = new Multiply(inputLayer1, inputLayer2);
         multiplyLayer.validate();
         multiplyLayer.setupKernels();
@@ -211,8 +212,9 @@ describe('Multiply Layer', () => {
     });
     describe('when used with Input layer', () => {
       test('is compatible', () => {
-        const random = new Random({ height: 3, width: 2 });
-        const input = new Input({ height: 2 });
+        const praxis = mockPraxis();
+        const random = new Random({ height: 3, width: 2, praxis });
+        const input = new Input({ height: 2, praxis });
         const multiply = new Multiply(random, input);
 
         random.validate();

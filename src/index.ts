@@ -1,13 +1,13 @@
 import * as activation from './activation';
 import CrossValidate from './cross-validate';
 import { FeedForward } from './feed-forward';
-import layer from './layer';
-import layerTypes from './layer/types';
+import * as layer from './layer';
+import { layerTypes } from './layer';
 import likely from './likely';
 import lookup from './lookup';
 import NeuralNetwork from './neural-network';
 import NeuralNetworkGPU from './neural-network-gpu';
-import praxis from './praxis';
+import * as praxis from './praxis';
 import { Recurrent } from './recurrent';
 import GRU from './recurrent/gru';
 import GRUTimeStep from './recurrent/gru-time-step';
@@ -20,9 +20,9 @@ import DataFormatter from './utilities/data-formatter';
 import max from './utilities/max';
 import mse from './utilities/mse';
 import ones from './utilities/ones';
-import random from './utilities/random';
-import randomWeight from './utilities/random-weight';
-import randos from './utilities/randos';
+import { randomFloat } from './utilities/random';
+import { randomWeight } from './utilities/random-weight';
+import { randos } from './utilities/randos';
 import range from './utilities/range';
 import toArray from './utilities/to-array';
 import toSVG from './utilities/to-svg';
@@ -53,7 +53,7 @@ export const brain = {
     max,
     mse,
     ones,
-    random,
+    randomFloat,
     randomWeight,
     randos,
     range,

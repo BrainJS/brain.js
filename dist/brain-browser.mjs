@@ -2685,6 +2685,144 @@ _export(_export.S + _export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
   }
 });
 
+// Works with __proto__ only. Old v8 can't work with null proto objects.
+/* eslint-disable no-proto */
+
+
+var check = function (O, proto) {
+  _anObject(O);
+  if (!_isObject(proto) && proto !== null) throw TypeError(proto + ": can't set as prototype!");
+};
+var _setProto = {
+  set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
+    function (test, buggy, set) {
+      try {
+        set = _ctx(Function.call, _objectGopd.f(Object.prototype, '__proto__').set, 2);
+        set(test, []);
+        buggy = !(test instanceof Array);
+      } catch (e) { buggy = true; }
+      return function setPrototypeOf(O, proto) {
+        check(O, proto);
+        if (buggy) O.__proto__ = proto;
+        else set(O, proto);
+        return O;
+      };
+    }({}, false) : undefined),
+  check: check
+};
+
+var setPrototypeOf = _setProto.set;
+var _inheritIfRequired = function (that, target, C) {
+  var S = target.constructor;
+  var P;
+  if (S !== C && typeof S == 'function' && (P = S.prototype) !== C.prototype && _isObject(P) && setPrototypeOf) {
+    setPrototypeOf(that, P);
+  } return that;
+};
+
+var _stringWs = '\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003' +
+  '\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
+
+var space = '[' + _stringWs + ']';
+var non = '\u200b\u0085';
+var ltrim = RegExp('^' + space + space + '*');
+var rtrim = RegExp(space + space + '*$');
+
+var exporter = function (KEY, exec, ALIAS) {
+  var exp = {};
+  var FORCE = _fails(function () {
+    return !!_stringWs[KEY]() || non[KEY]() != non;
+  });
+  var fn = exp[KEY] = FORCE ? exec(trim) : _stringWs[KEY];
+  if (ALIAS) exp[ALIAS] = fn;
+  _export(_export.P + _export.F * FORCE, 'String', exp);
+};
+
+// 1 -> String#trimLeft
+// 2 -> String#trimRight
+// 3 -> String#trim
+var trim = exporter.trim = function (string, TYPE) {
+  string = String(_defined(string));
+  if (TYPE & 1) string = string.replace(ltrim, '');
+  if (TYPE & 2) string = string.replace(rtrim, '');
+  return string;
+};
+
+var _stringTrim = exporter;
+
+var gOPN = _objectGopn.f;
+var gOPD$1 = _objectGopd.f;
+var dP$2 = _objectDp.f;
+var $trim = _stringTrim.trim;
+var NUMBER = 'Number';
+var $Number = _global[NUMBER];
+var Base = $Number;
+var proto$1 = $Number.prototype;
+// Opera ~12 has broken Object#toString
+var BROKEN_COF = _cof(_objectCreate(proto$1)) == NUMBER;
+var TRIM = 'trim' in String.prototype;
+
+// 7.1.3 ToNumber(argument)
+var toNumber = function (argument) {
+  var it = _toPrimitive(argument, false);
+  if (typeof it == 'string' && it.length > 2) {
+    it = TRIM ? it.trim() : $trim(it, 3);
+    var first = it.charCodeAt(0);
+    var third, radix, maxCode;
+    if (first === 43 || first === 45) {
+      third = it.charCodeAt(2);
+      if (third === 88 || third === 120) return NaN; // Number('+0x1') should be NaN, old V8 fix
+    } else if (first === 48) {
+      switch (it.charCodeAt(1)) {
+        case 66: case 98: radix = 2; maxCode = 49; break; // fast equal /^0b[01]+$/i
+        case 79: case 111: radix = 8; maxCode = 55; break; // fast equal /^0o[0-7]+$/i
+        default: return +it;
+      }
+      for (var digits = it.slice(2), i = 0, l = digits.length, code; i < l; i++) {
+        code = digits.charCodeAt(i);
+        // parseInt parses a string to a first unavailable symbol
+        // but ToNumber should return NaN if a string contains unavailable symbols
+        if (code < 48 || code > maxCode) return NaN;
+      } return parseInt(digits, radix);
+    }
+  } return +it;
+};
+
+if (!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')) {
+  $Number = function Number(value) {
+    var it = arguments.length < 1 ? 0 : value;
+    var that = this;
+    return that instanceof $Number
+      // check on 1..constructor(foo) case
+      && (BROKEN_COF ? _fails(function () { proto$1.valueOf.call(that); }) : _cof(that) != NUMBER)
+        ? _inheritIfRequired(new Base(toNumber(it)), that, $Number) : toNumber(it);
+  };
+  for (var keys = _descriptors ? gOPN(Base) : (
+    // ES3:
+    'MAX_VALUE,MIN_VALUE,NaN,NEGATIVE_INFINITY,POSITIVE_INFINITY,' +
+    // ES6 (in case, if modules with ES6 Number statics required before):
+    'EPSILON,isFinite,isInteger,isNaN,isSafeInteger,MAX_SAFE_INTEGER,' +
+    'MIN_SAFE_INTEGER,parseFloat,parseInt,isInteger'
+  ).split(','), j = 0, key$1; keys.length > j; j++) {
+    if (_has(Base, key$1 = keys[j]) && !_has($Number, key$1)) {
+      dP$2($Number, key$1, gOPD$1(Base, key$1));
+    }
+  }
+  $Number.prototype = proto$1;
+  proto$1.constructor = $Number;
+  _redefine(_global, NUMBER, $Number);
+}
+
+// 20.1.2.4 Number.isNaN(number)
+
+
+_export(_export.S, 'Number', {
+  isNaN: function isNaN(number) {
+    // eslint-disable-next-line no-self-compare
+    return number != number;
+  }
+});
+
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 
 
@@ -22383,364 +22521,250 @@ module.exports = {
 });
 });
 
-var GPU = gpuBrowser.GPU,
-    input = gpuBrowser.input;
 var gpuInstance = null;
+/**
+ * Sets up the gpu.js instance
+ * @param value Instance of gpu.js
+ */
 
 function setup(value) {
   gpuInstance = value;
 }
+/**
+ * Destroys any existing gpu.js instance
+ */
 
 function teardown() {
-  if (gpuInstance) {
-    gpuInstance.destroy();
+  if (gpuInstance !== null) {
+    gpuInstance.destroy().catch(console.log);
   }
 
   gpuInstance = null;
 }
+/**
+ * Compiles a function into a gpu.js kernel
+ * @param fn The function to be compiled
+ * @param settings Kernel settings/options
+ */
 
 function makeKernel(fn, settings) {
-  if (gpuInstance === null) {
-    setup(new GPU({
+  var _gpuInstance = gpuInstance;
+
+  if (_gpuInstance === null) {
+    _gpuInstance = new gpuBrowser.GPU({
       mode: 'gpu'
-    }));
+    });
+    setup(_gpuInstance);
   }
 
-  if (settings.hasOwnProperty('map')) {
-    return gpuInstance.createKernelMap(settings.map, fn, settings).setPipeline(true);
-  }
-
-  return gpuInstance.createKernel(fn, settings).setPipeline(true);
+  return _gpuInstance.createKernel(fn, settings).setPipeline(true);
 }
+function makeKernelMap(map, fn, settings) {
+  var _gpuInstance = gpuInstance;
 
-function makeDevKernel(fn, settings) {
-  if (settings && settings.map) {
-    throw new Error('map kernels are not supported by dev kernels');
+  if (_gpuInstance === null) {
+    _gpuInstance = new gpuBrowser.GPU({
+      mode: 'gpu'
+    });
+    setup(_gpuInstance);
   }
 
-  var gpu = new GPU({
-    mode: 'dev'
-  });
-  return gpu.createKernel(fn, settings);
+  return _gpuInstance.createKernelMap(map, fn, settings).setPipeline(true);
 }
+/**
+ * Compiles a function into a gpu.js dev mode kernel
+ * @param fn The function to be compiled
+ * @param settings Kernel settings/options
+ */
+// export function makeDevKernel(
+//   fn: ThreadFunction,
+//   settings: makeKernelSettings
+// ): IKernelRunShortcut {
+//   if ('map' in settings) {
+//     throw new Error('map kernels are not supported by dev kernels');
+//   }
+//   const gpu = new GPU({ mode: 'dev' });
+//   return gpu.createKernel(fn, settings);
+// }
 
 function kernelInput(value, size) {
-  return input(value, size);
+  return new gpuBrowser.Input(value, size);
 }
+/**
+ * Deletes a gpu.js texture and frees VRAM
+ * @param possibleTexture Texture to be deleted
+ */
 
-function release(texture) {
-  if (texture && texture.delete) {
-    texture.delete();
+function release(possibleTexture) {
+  if (possibleTexture instanceof gpuBrowser.Texture) {
+    possibleTexture.delete();
   }
 }
+/**
+ * Cleans ie sets all elements to 0 of a Texture or a js array
+ * @param value The value to be cleared
+ */
 
-function clear(texture) {
-  if (texture.clear) {
-    texture.clear();
+function clear(value) {
+  if (value instanceof gpuBrowser.Texture) {
+    value.clear();
     return;
-  }
+  } // array
 
-  if (texture instanceof Float32Array) {
-    texture.fill(0);
-  } else if (texture[0] instanceof Float32Array) {
-    for (var x = 0; x < texture.length; x++) {
-      texture[x].fill(0);
-    }
-  } else if (texture[0][0] instanceof Float32Array) {
-    for (var y = 0; y < texture.length; y++) {
-      var row = texture[y];
 
-      for (var _x = 0; _x < row.length; _x++) {
-        row[_x].fill(0);
+  if (Array.isArray(value)) {
+    if (typeof value[0] === 'number') {
+      value.fill(0);
+    } else if (typeof value[0][0] === 'number') {
+      for (var x = 0; x < value.length; x++) {
+        value[x].fill(0);
       }
+
+      return;
+    } else if (typeof value[0][0][0] === 'number') {
+      // cube
+      for (var y = 0; y < value.length; y++) {
+        var row = value[y];
+
+        for (var _x = 0; _x < row.length; _x++) {
+          row[_x].fill(0);
+        }
+      }
+
+      return;
     }
   }
+
+  throw new Error('unhandled value');
+}
+/**
+ * Clones a value
+ * @param value to be cloned
+ */
+
+function clone(value) {
+  if (value instanceof gpuBrowser.Texture) {
+    return value.clone();
+  }
+
+  if (Array.isArray(value)) {
+    if (typeof value[0] === 'number') {
+      return value.slice(0);
+    } else if (typeof value[0][0] === 'number') {
+      var matrix = new Array(value.length);
+
+      for (var x = 0; x < value.length; x++) {
+        matrix[x] = value[x].slice(0);
+      }
+
+      return matrix;
+    } else if (typeof value[0][0][0] === 'number') {
+      var cube = new Array(value.length);
+
+      for (var y = 0; y < value.length; y++) {
+        var row = value[y];
+
+        var _matrix = new Array(row.length);
+
+        for (var _x2 = 0; _x2 < row.length; _x2++) {
+          _matrix[_x2] = row[_x2].slice(0);
+        }
+      }
+
+      return cube;
+    }
+  }
+
+  throw new Error('unhandled value');
 }
 
-function clone(texture) {
-  if (texture.clone) {
-    return texture.clone();
-  }
-
-  if (typeof texture[0] === 'number') {
-    return texture.slice(0);
-  } else if (typeof texture[0][0] === 'number') {
-    var matrix = new Array(texture.length);
-
-    for (var x = 0; x < texture.length; x++) {
-      matrix[x] = texture[x].slice(0);
-    }
-
-    return matrix;
-  } else if (typeof texture[0][0][0] === 'number') {
-    var cube = new Array(texture.length);
-
-    for (var y = 0; y < texture.length; y++) {
-      var row = texture[y];
-
-      var _matrix = new Array(row.length);
-
-      for (var _x2 = 0; _x2 < row.length; _x2++) {
-        _matrix[_x2] = row[_x2].slice(0);
-      }
-    }
-
-    return cube;
-  }
-
-  throw new Error('unknown state!');
-}
-
-var kernel = {
+var kernel = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   setup: setup,
   teardown: teardown,
   makeKernel: makeKernel,
-  makeDevKernel: makeDevKernel,
+  makeKernelMap: makeKernelMap,
   kernelInput: kernelInput,
   release: release,
-  clone: clone,
-  clear: clear
-};
-
-/**
- * Returns an array of zeros
- */
-function zeros(size) {
-  return new Float32Array(size);
-}
-
-var zeros$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  zeros: zeros
+  clear: clear,
+  clone: clone
 });
 
-/**
- * Returns a 2D tensor(matrix) of zeros
- */
-
-function zeros2D(width, height) {
-  var result = new Array(height);
-
-  for (var y = 0; y < height; y++) {
-    result[y] = zeros(width);
-  }
-
-  return result;
-}
-
-var zeros2d = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  zeros2D: zeros2D
-});
-
-/**
- *
- * @param {Base} layer1
- * @param {Base} layer2
- */
-function checkSameSize(layer1, layer2) {
-  if (layer1.width !== layer2.width) {
-    throw new Error("Layer width mismatch of ".concat(layer1.width, " and ").concat(layer2.width));
-  }
-
-  if (layer1.height !== layer2.height) {
-    throw new Error("Layer height mismatch of ".concat(layer1.height, " and ").concat(layer2.height));
-  }
-}
-
-var layerSize = {
-  checkSameSize: checkSameSize
+var defaults = {
+  width: 1,
+  height: 1,
+  depth: null,
+  weights: null,
+  deltas: null,
+  praxis: null,
+  praxisOpts: null
 };
-
-// Works with __proto__ only. Old v8 can't work with null proto objects.
-/* eslint-disable no-proto */
-
-
-var check = function (O, proto) {
-  _anObject(O);
-  if (!_isObject(proto) && proto !== null) throw TypeError(proto + ": can't set as prototype!");
-};
-var _setProto = {
-  set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
-    function (test, buggy, set) {
-      try {
-        set = _ctx(Function.call, _objectGopd.f(Object.prototype, '__proto__').set, 2);
-        set(test, []);
-        buggy = !(test instanceof Array);
-      } catch (e) { buggy = true; }
-      return function setPrototypeOf(O, proto) {
-        check(O, proto);
-        if (buggy) O.__proto__ = proto;
-        else set(O, proto);
-        return O;
-      };
-    }({}, false) : undefined),
-  check: check
-};
-
-var setPrototypeOf = _setProto.set;
-var _inheritIfRequired = function (that, target, C) {
-  var S = target.constructor;
-  var P;
-  if (S !== C && typeof S == 'function' && (P = S.prototype) !== C.prototype && _isObject(P) && setPrototypeOf) {
-    setPrototypeOf(that, P);
-  } return that;
-};
-
-var _stringWs = '\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003' +
-  '\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
-
-var space = '[' + _stringWs + ']';
-var non = '\u200b\u0085';
-var ltrim = RegExp('^' + space + space + '*');
-var rtrim = RegExp(space + space + '*$');
-
-var exporter = function (KEY, exec, ALIAS) {
-  var exp = {};
-  var FORCE = _fails(function () {
-    return !!_stringWs[KEY]() || non[KEY]() != non;
-  });
-  var fn = exp[KEY] = FORCE ? exec(trim) : _stringWs[KEY];
-  if (ALIAS) exp[ALIAS] = fn;
-  _export(_export.P + _export.F * FORCE, 'String', exp);
-};
-
-// 1 -> String#trimLeft
-// 2 -> String#trimRight
-// 3 -> String#trim
-var trim = exporter.trim = function (string, TYPE) {
-  string = String(_defined(string));
-  if (TYPE & 1) string = string.replace(ltrim, '');
-  if (TYPE & 2) string = string.replace(rtrim, '');
-  return string;
-};
-
-var _stringTrim = exporter;
-
-var gOPN = _objectGopn.f;
-var gOPD$1 = _objectGopd.f;
-var dP$2 = _objectDp.f;
-var $trim = _stringTrim.trim;
-var NUMBER = 'Number';
-var $Number = _global[NUMBER];
-var Base = $Number;
-var proto$1 = $Number.prototype;
-// Opera ~12 has broken Object#toString
-var BROKEN_COF = _cof(_objectCreate(proto$1)) == NUMBER;
-var TRIM = 'trim' in String.prototype;
-
-// 7.1.3 ToNumber(argument)
-var toNumber = function (argument) {
-  var it = _toPrimitive(argument, false);
-  if (typeof it == 'string' && it.length > 2) {
-    it = TRIM ? it.trim() : $trim(it, 3);
-    var first = it.charCodeAt(0);
-    var third, radix, maxCode;
-    if (first === 43 || first === 45) {
-      third = it.charCodeAt(2);
-      if (third === 88 || third === 120) return NaN; // Number('+0x1') should be NaN, old V8 fix
-    } else if (first === 48) {
-      switch (it.charCodeAt(1)) {
-        case 66: case 98: radix = 2; maxCode = 49; break; // fast equal /^0b[01]+$/i
-        case 79: case 111: radix = 8; maxCode = 55; break; // fast equal /^0o[0-7]+$/i
-        default: return +it;
-      }
-      for (var digits = it.slice(2), i = 0, l = digits.length, code; i < l; i++) {
-        code = digits.charCodeAt(i);
-        // parseInt parses a string to a first unavailable symbol
-        // but ToNumber should return NaN if a string contains unavailable symbols
-        if (code < 48 || code > maxCode) return NaN;
-      } return parseInt(digits, radix);
-    }
-  } return +it;
-};
-
-if (!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')) {
-  $Number = function Number(value) {
-    var it = arguments.length < 1 ? 0 : value;
-    var that = this;
-    return that instanceof $Number
-      // check on 1..constructor(foo) case
-      && (BROKEN_COF ? _fails(function () { proto$1.valueOf.call(that); }) : _cof(that) != NUMBER)
-        ? _inheritIfRequired(new Base(toNumber(it)), that, $Number) : toNumber(it);
-  };
-  for (var keys = _descriptors ? gOPN(Base) : (
-    // ES3:
-    'MAX_VALUE,MIN_VALUE,NaN,NEGATIVE_INFINITY,POSITIVE_INFINITY,' +
-    // ES6 (in case, if modules with ES6 Number statics required before):
-    'EPSILON,isFinite,isInteger,isNaN,isSafeInteger,MAX_SAFE_INTEGER,' +
-    'MIN_SAFE_INTEGER,parseFloat,parseInt,isInteger'
-  ).split(','), j = 0, key$1; keys.length > j; j++) {
-    if (_has(Base, key$1 = keys[j]) && !_has($Number, key$1)) {
-      dP$2($Number, key$1, gOPD$1(Base, key$1));
-    }
-  }
-  $Number.prototype = proto$1;
-  proto$1.constructor = $Number;
-  _redefine(_global, NUMBER, $Number);
-}
-
-// 20.1.2.4 Number.isNaN(number)
-
-
-_export(_export.S, 'Number', {
-  isNaN: function isNaN(number) {
-    // eslint-disable-next-line no-self-compare
-    return number != number;
-  }
-});
-
-var release$1 = kernel.release,
-    clear$1 = kernel.clear;
-
-var Base$1 = /*#__PURE__*/function () {
-  _createClass(Base, null, [{
-    key: "defaults",
+var BaseLayer = /*#__PURE__*/function () {
+  _createClass(BaseLayer, [{
+    key: "width",
     get: function get() {
-      return {
-        width: 1,
-        height: 1,
-        depth: null,
-        weights: null,
-        deltas: null,
-        name: null,
-        praxisOpts: null
-      };
+      return this.settings.width;
+    }
+  }, {
+    key: "height",
+    get: function get() {
+      return this.settings.height;
+    }
+  }, {
+    key: "depth",
+    get: function get() {
+      return this.settings.depth;
+    }
+  }, {
+    key: "weights",
+    get: function get() {
+      return this.settings.weights;
+    },
+    set: function set(weights) {
+      this.settings.weights = weights;
+    }
+  }, {
+    key: "deltas",
+    get: function get() {
+      return this.settings.deltas;
+    },
+    set: function set(deltas) {
+      this.settings.deltas = deltas;
     }
   }]);
 
-  function Base(settings) {
-    _classCallCheck(this, Base);
+  function BaseLayer(settings) {
+    _classCallCheck(this, BaseLayer);
 
-    // size
-    this.width = null;
-    this.height = null;
-    this.depth = null; // what matters :P
+    _defineProperty(this, "praxis", null);
 
-    this.deltas = null;
-    this.weights = null;
-    this.praxis = null;
-    this.praxisOpts = null;
+    _defineProperty(this, "predictKernel", null);
 
-    if (this.constructor !== Base) {
-      Object.assign(this, Base.defaults, settings);
-    }
+    _defineProperty(this, "compareKernel", null);
 
-    Object.assign(this, this.constructor.defaults, settings); // special settings
+    _defineProperty(this, "settings", void 0);
 
-    this.setupPraxis(settings);
+    this.settings = _objectSpread2(_objectSpread2({}, defaults), settings);
+    this.setupPraxis();
   }
 
-  _createClass(Base, [{
+  _createClass(BaseLayer, [{
     key: "setupPraxis",
-    value: function setupPraxis(settings) {
-      if (!settings) return;
+    value: function setupPraxis() {
+      var _this$settings = this.settings,
+          initPraxis = _this$settings.initPraxis,
+          praxis = _this$settings.praxis,
+          praxisOpts = _this$settings.praxisOpts;
 
-      if (settings.hasOwnProperty('praxis')) {
-        if (typeof settings.praxis === 'function') {
-          this.praxis = settings.praxis(this, settings.praxisOpts);
-        } else {
-          this.praxis = settings.praxis;
+      if (!this.praxis) {
+        if (initPraxis) {
+          if (!praxisOpts) {
+            throw new Error('settings.praxisOpts not included with settings.initPraxis');
+          }
+
+          this.praxis = initPraxis(this, praxisOpts);
+        } else if (praxis) {
+          this.praxis = praxis;
         }
       }
     }
@@ -22813,8 +22837,7 @@ var Base$1 = /*#__PURE__*/function () {
     }
   }, {
     key: "setupKernels",
-    value: function setupKernels() {// console.log(`${this.constructor.name}-setupKernels is not yet implemented`)
-    }
+    value: function setupKernels() {}
   }, {
     key: "reuseKernels",
     value: function reuseKernels(layer) {
@@ -22846,59 +22869,76 @@ var Base$1 = /*#__PURE__*/function () {
     }
   }, {
     key: "predict",
-    value: function predict() {// throw new Error(`${this.constructor.name}-predict is not yet implemented`)
-    } // eslint-disable-next-line
-
+    value: function predict(inputs) {}
   }, {
     key: "compare",
-    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
-    }
+    value: function compare() {}
   }, {
     key: "learn",
-    value: function learn(previousLayer, nextLayer, learningRate) {
+    value: function learn(learningRate) {
       // TODO: do we need to release here?
       var oldWeights = this.weights;
-      this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
-      release$1(oldWeights);
-      clear$1(this.deltas);
+      if (!this.praxis) throw new Error('this.praxis not defined');
+      this.weights = this.praxis.run(this, learningRate);
+      release(oldWeights);
+      clear(this.deltas);
     }
   }, {
     key: "toArray",
     value: function toArray() {
-      return this.weights.toArray();
+      return Array.isArray(this.weights) ? this.weights : this.weights.toArray();
     }
   }, {
     key: "toJSON",
     value: function toJSON() {
-      var jsonLayer = {};
-      var _this$constructor = this.constructor,
-          defaults = _this$constructor.defaults,
-          name = _this$constructor.name;
-
-      if (this.constructor !== Base) {
-        Object.assign(defaults, Base.defaults, defaults);
-      }
-
-      var keys = Object.keys(defaults);
-
-      for (var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        if (key === 'deltas') continue;
-        if (key === 'name' && this[key] === null) continue;
-        jsonLayer[key] = this[key];
-      }
-
-      jsonLayer.type = name;
-      return jsonLayer;
+      return _objectSpread2(_objectSpread2({}, this.settings), {}, {
+        weights: Array.isArray(this.weights) ? this.weights : this.weights.toArray(),
+        deltas: null,
+        praxis: null,
+        name: this.constructor.name
+      });
     }
   }]);
 
-  return Base;
+  return BaseLayer;
 }();
 
-var base = {
-  Base: Base$1
-};
+var baseLayer = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  defaults: defaults,
+  BaseLayer: BaseLayer
+});
+
+/**
+ * Returns an array of zeros
+ */
+function zeros(size) {
+  return new Float32Array(size);
+}
+
+var zeros$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  zeros: zeros
+});
+
+/**
+ * Returns a 2D tensor(matrix) of zeros
+ */
+
+function zeros2D(width, height) {
+  var result = new Array(height);
+
+  for (var y = 0; y < height; y++) {
+    result[y] = zeros(width);
+  }
+
+  return result;
+}
+
+var zeros2d = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  zeros2D: zeros2D
+});
 
 /**
  * Returns a 3D tensor of arrays
@@ -22919,66 +22959,112 @@ var zeros3d = /*#__PURE__*/Object.freeze({
   zeros3D: zeros3D
 });
 
-var Base$2 = base.Base;
-var zeros2D$1 = zeros2d.zeros2D;
-var zeros3D$1 = zeros3d.zeros3D;
-
-var Activation = /*#__PURE__*/function (_Base) {
-  _inherits(Activation, _Base);
+var Activation = /*#__PURE__*/function (_BaseLayer) {
+  _inherits(Activation, _BaseLayer);
 
   var _super = _createSuper(Activation);
+
+  _createClass(Activation, [{
+    key: "width",
+    get: function get() {
+      return this.inputLayer.width;
+    }
+  }, {
+    key: "height",
+    get: function get() {
+      return this.inputLayer.height;
+    }
+  }, {
+    key: "depth",
+    get: function get() {
+      return this.inputLayer.depth;
+    }
+  }]);
 
   function Activation(inputLayer, settings) {
     var _this;
 
     _classCallCheck(this, Activation);
 
-    _this = _super.call(this);
+    _this = _super.call(this, settings);
+
+    _defineProperty(_assertThisInitialized(_this), "inputLayer", void 0);
+
     _this.inputLayer = inputLayer;
-    var width = inputLayer.width,
-        height = inputLayer.height,
-        depth = inputLayer.depth;
+
+    var _assertThisInitialize = _assertThisInitialized(_this),
+        width = _assertThisInitialize.width,
+        height = _assertThisInitialize.height,
+        depth = _assertThisInitialize.depth;
+
     _this.predictKernel = null;
     _this.compareKernel = null;
-    _this.width = width;
-    _this.height = height;
 
     _this.validate();
 
     if (depth > 0) {
-      _this.depth = depth;
-      _this.weights = zeros3D$1(width, height, depth);
-      _this.deltas = zeros3D$1(width, height, depth);
-    } else {
-      _this.weights = zeros2D$1(width, height);
-      _this.deltas = zeros2D$1(width, height);
+      _this.weights = zeros3D(width, height, depth);
+      _this.deltas = zeros3D(width, height, depth);
+    } else if (height > 0) {
+      _this.weights = zeros2D(width, height);
+      _this.deltas = zeros2D(width, height);
     }
 
-    _this.setupPraxis(settings);
+    _this.setupPraxis();
 
     return _this;
   }
 
   return Activation;
-}(Base$2);
+}(BaseLayer);
 
-var activation$1 = {
+var activation$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   Activation: Activation
-};
+});
 
-var Base$3 = base.Base;
-var Activation$1 = activation$1.Activation;
+var Operator = /*#__PURE__*/function (_BaseLayer) {
+  _inherits(Operator, _BaseLayer);
+
+  var _super = _createSuper(Operator);
+
+  function Operator(inputLayer1, inputLayer2, settings) {
+    var _this;
+
+    _classCallCheck(this, Operator);
+
+    _this = _super.call(this, settings);
+
+    _defineProperty(_assertThisInitialized(_this), "inputLayer1", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "inputLayer2", void 0);
+
+    _this.inputLayer1 = inputLayer1;
+    _this.inputLayer2 = inputLayer2;
+
+    _this.validate();
+
+    _this.weights = zeros2D(_this.width, _this.height);
+    _this.deltas = zeros2D(_this.width, _this.height);
+
+    _this.setupPraxis();
+
+    return _this;
+  }
+
+  return Operator;
+}(BaseLayer);
 
 var Internal = function Internal() {
   _classCallCheck(this, Internal);
-};
+}; // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 
 var InternalModel = function InternalModel() {
   _classCallCheck(this, InternalModel);
-};
+}; // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 
-var EntryPoint = /*#__PURE__*/function (_Base) {
-  _inherits(EntryPoint, _Base);
+var EntryPoint = /*#__PURE__*/function (_BaseLayer) {
+  _inherits(EntryPoint, _BaseLayer);
 
   var _super = _createSuper(EntryPoint);
 
@@ -22989,10 +23075,10 @@ var EntryPoint = /*#__PURE__*/function (_Base) {
   }
 
   return EntryPoint;
-}(Base$3);
+}(BaseLayer); // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 
-var Filter = /*#__PURE__*/function (_Base2) {
-  _inherits(Filter, _Base2);
+var Filter = /*#__PURE__*/function (_BaseLayer2) {
+  _inherits(Filter, _BaseLayer2);
 
   var _super2 = _createSuper(Filter);
 
@@ -23003,10 +23089,10 @@ var Filter = /*#__PURE__*/function (_Base2) {
   }
 
   return Filter;
-}(Base$3);
+}(BaseLayer); // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 
-var Model = /*#__PURE__*/function (_Base3) {
-  _inherits(Model, _Base3);
+var Model = /*#__PURE__*/function (_BaseLayer3) {
+  _inherits(Model, _BaseLayer3);
 
   var _super3 = _createSuper(Model);
 
@@ -23017,10 +23103,10 @@ var Model = /*#__PURE__*/function (_Base3) {
   }
 
   return Model;
-}(Base$3);
+}(BaseLayer); // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 
-var Modifier = /*#__PURE__*/function (_Base4) {
-  _inherits(Modifier, _Base4);
+var Modifier = /*#__PURE__*/function (_BaseLayer4) {
+  _inherits(Modifier, _BaseLayer4);
 
   var _super4 = _createSuper(Modifier);
 
@@ -23031,69 +23117,50 @@ var Modifier = /*#__PURE__*/function (_Base4) {
   }
 
   return Modifier;
-}(Base$3);
+}(BaseLayer);
 
-var Operator = /*#__PURE__*/function (_Base5) {
-  _inherits(Operator, _Base5);
-
-  var _super5 = _createSuper(Operator);
-
-  function Operator() {
-    _classCallCheck(this, Operator);
-
-    return _super5.apply(this, arguments);
-  }
-
-  return Operator;
-}(Base$3);
-
-var types = {
-  Activation: Activation$1,
+var types = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   Internal: Internal,
   InternalModel: InternalModel,
   EntryPoint: EntryPoint,
   Filter: Filter,
   Model: Model,
   Modifier: Modifier,
-  Operator: Operator
-};
+  Activation: Activation
+});
 
-var makeKernel$1 = kernel.makeKernel,
-    release$2 = kernel.release,
-    clone$1 = kernel.clone,
-    clear$2 = kernel.clear;
-var zeros2D$2 = zeros2d.zeros2D;
-var checkSameSize$1 = layerSize.checkSameSize;
-var Operator$1 = types.Operator;
+/**
+ *
+ * @param {Base} layer1
+ * @param {Base} layer2
+ */
+function checkSameSize(layer1, layer2) {
+  if (layer1.width !== layer2.width) {
+    throw new Error("Layer width mismatch of ".concat(layer1.width, " and ").concat(layer2.width));
+  }
+
+  if (layer1.height !== layer2.height) {
+    throw new Error("Layer height mismatch of ".concat(layer1.height, " and ").concat(layer2.height));
+  }
+}
+
+var layerSize = {
+  checkSameSize: checkSameSize
+};
 
 function predict(inputWeights1, inputWeights2) {
   return inputWeights1[this.thread.y][this.thread.x] + inputWeights2[this.thread.y][this.thread.x];
 }
-
 var Add = /*#__PURE__*/function (_Operator) {
   _inherits(Add, _Operator);
 
   var _super = _createSuper(Add);
 
-  function Add(inputLayer1, inputLayer2, settings) {
-    var _this;
-
+  function Add() {
     _classCallCheck(this, Add);
 
-    _this = _super.call(this);
-    _this.inputLayer1 = inputLayer1;
-    _this.inputLayer2 = inputLayer2;
-    _this.width = _this.inputLayer1.width;
-    _this.height = _this.inputLayer1.height;
-
-    _this.validate();
-
-    _this.weights = zeros2D$2(_this.width, _this.height);
-    _this.deltas = zeros2D$2(_this.width, _this.height);
-
-    _this.setupPraxis(settings);
-
-    return _this;
+    return _super.apply(this, arguments);
   }
 
   _createClass(Add, [{
@@ -23101,12 +23168,12 @@ var Add = /*#__PURE__*/function (_Operator) {
     value: function validate() {
       _get(_getPrototypeOf(Add.prototype), "validate", this).call(this);
 
-      checkSameSize$1(this.inputLayer1, this.inputLayer2);
+      layerSize.checkSameSize(this.inputLayer1, this.inputLayer2);
     }
   }, {
     key: "setupKernels",
     value: function setupKernels() {
-      this.predictKernel = makeKernel$1(predict, {
+      this.predictKernel = makeKernel(predict, {
         output: [this.width, this.height],
         immutable: true
       });
@@ -23114,18 +23181,18 @@ var Add = /*#__PURE__*/function (_Operator) {
   }, {
     key: "predict",
     value: function predict() {
-      release$2(this.weights);
+      release(this.weights);
       this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
-      clear$2(this.deltas);
+      clear(this.deltas);
     }
   }, {
     key: "compare",
     value: function compare() {
       // TODO: Do we need release and clone here?
-      release$2(this.inputLayer1.deltas);
-      release$2(this.inputLayer2.deltas);
-      this.inputLayer1.deltas = clone$1(this.deltas);
-      this.inputLayer2.deltas = clone$1(this.deltas);
+      release(this.inputLayer1.deltas);
+      release(this.inputLayer2.deltas);
+      this.inputLayer1.deltas = clone(this.deltas);
+      this.inputLayer2.deltas = clone(this.deltas);
     }
     /**
      * @abstract
@@ -23137,39 +23204,51 @@ var Add = /*#__PURE__*/function (_Operator) {
   }]);
 
   return Add;
-}(Operator$1);
-
+}(Operator);
 function add(inputLayer1, inputLayer2, settings) {
   return new Add(inputLayer1, inputLayer2, settings);
 }
 
-var add_1 = {
+var add$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  predict: predict,
   Add: Add,
-  add: add,
-  predict: predict
-};
+  add: add
+});
 
-var Base$4 = /*#__PURE__*/function () {
-  _createClass(Base, null, [{
-    key: "defaults",
+var BasePraxis = /*#__PURE__*/function () {
+  _createClass(BasePraxis, [{
+    key: "width",
     get: function get() {
-      return {};
+      return this.layerTemplate.width;
+    }
+  }, {
+    key: "height",
+    get: function get() {
+      return this.layerTemplate.height;
+    }
+  }, {
+    key: "depth",
+    get: function get() {
+      return this.layerTemplate.depth;
     }
   }]);
 
-  function Base(layerTemplate) {
-    var settings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  function BasePraxis(layerTemplate, settings) {
+    _classCallCheck(this, BasePraxis);
 
-    _classCallCheck(this, Base);
+    _defineProperty(this, "settings", void 0);
+
+    _defineProperty(this, "layerTemplate", void 0);
+
+    _defineProperty(this, "kernel", void 0);
 
     this.layerTemplate = layerTemplate;
-    this.width = layerTemplate.width || null;
-    this.height = layerTemplate.height || null;
-    this.depth = layerTemplate.depth || null;
-    Object.assign(this, this.constructor.defaults, settings);
+    this.settings = _objectSpread2({}, settings);
+    this.kernel = null;
   }
 
-  _createClass(Base, [{
+  _createClass(BasePraxis, [{
     key: "setupKernels",
     value: function setupKernels() {}
   }, {
@@ -23187,21 +23266,15 @@ var Base$4 = /*#__PURE__*/function () {
         this.kernel = praxis.kernel;
       }
     }
-  }, {
-    key: "run",
-    value: function run() {}
   }]);
 
-  return Base;
+  return BasePraxis;
 }();
 
-var base$1 = {
-  Base: Base$4
-};
-
-var makeKernel$2 = kernel.makeKernel;
-var zeros2D$3 = zeros2d.zeros2D;
-var Base$5 = base$1.Base;
+var basePraxis = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  BasePraxis: BasePraxis
+});
 
 function updateChange(value) {
   return value;
@@ -23216,12 +23289,22 @@ function update(changes, weights, incomingWeights, inputDeltas) {
   return weight + change;
 }
 
-var ArthurDeviationWeights = /*#__PURE__*/function (_Base) {
-  _inherits(ArthurDeviationWeights, _Base);
+var ArthurDeviationWeights = /*#__PURE__*/function (_BasePraxis) {
+  _inherits(ArthurDeviationWeights, _BasePraxis);
 
   var _super = _createSuper(ArthurDeviationWeights);
 
-  _createClass(ArthurDeviationWeights, null, [{
+  _createClass(ArthurDeviationWeights, [{
+    key: "learningRate",
+    get: function get() {
+      return this.settings.learningRate;
+    }
+  }, {
+    key: "momentum",
+    get: function get() {
+      return this.settings.momentum;
+    }
+  }], [{
     key: "defaults",
     get: function get() {
       return {
@@ -23237,9 +23320,16 @@ var ArthurDeviationWeights = /*#__PURE__*/function (_Base) {
     _classCallCheck(this, ArthurDeviationWeights);
 
     _this = _super.call(this, layer, settings);
-    _this.weightsLayer = null;
-    _this.incomingLayer = null;
-    _this.deltaLayer = null;
+
+    _defineProperty(_assertThisInitialized(_this), "weightsLayer", null);
+
+    _defineProperty(_assertThisInitialized(_this), "incomingLayer", null);
+
+    _defineProperty(_assertThisInitialized(_this), "deltaLayer", null);
+
+    _defineProperty(_assertThisInitialized(_this), "changes", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "kernelMap", null);
 
     if (settings) {
       if (settings.weightsLayer) {
@@ -23255,24 +23345,23 @@ var ArthurDeviationWeights = /*#__PURE__*/function (_Base) {
       }
     }
 
-    _this.changes = zeros2D$3(layer.width, layer.height);
+    _this.changes = zeros2D(layer.width, layer.height);
     return _this;
   }
 
   _createClass(ArthurDeviationWeights, [{
     key: "run",
     value: function run() {
-      var output = this.kernel(this.changes, this.weightsLayer.weights, this.incomingLayer.weights, this.deltaLayer.deltas);
+      var output = this.kernelMap(this.changes, this.weightsLayer.weights, this.incomingLayer.weights, this.deltaLayer.deltas);
       this.changes = output.changes;
       return output.result;
     }
   }, {
     key: "setupKernels",
     value: function setupKernels() {
-      this.kernel = makeKernel$2(update, {
-        map: {
-          changes: updateChange
-        },
+      this.kernelMap = makeKernelMap({
+        changes: updateChange
+      }, update, {
         output: [this.width, this.height],
         constants: {
           learningRate: this.learningRate,
@@ -23283,28 +23372,22 @@ var ArthurDeviationWeights = /*#__PURE__*/function (_Base) {
   }]);
 
   return ArthurDeviationWeights;
-}(Base$5);
-
+}(BasePraxis);
 function arthurDeviationWeights(layer, settings) {
   return new ArthurDeviationWeights(layer, settings);
 }
 
-var arthurDeviationWeights_1 = {
+var arthurDeviationWeights$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   ArthurDeviationWeights: ArthurDeviationWeights,
-  arthurDeviationWeights: arthurDeviationWeights,
-  update: update,
-  updateChange: updateChange
-};
-
-var makeKernel$3 = kernel.makeKernel;
-var Base$6 = base$1.Base;
+  arthurDeviationWeights: arthurDeviationWeights
+});
 
 function update$1(weights, deltas) {
   return weights[this.thread.y][this.thread.x] + this.constants.learningRate * deltas[this.thread.y][this.thread.x];
 }
-
-var ArthurDeviationBiases = /*#__PURE__*/function (_Base) {
-  _inherits(ArthurDeviationBiases, _Base);
+var ArthurDeviationBiases = /*#__PURE__*/function (_BasePraxis) {
+  _inherits(ArthurDeviationBiases, _BasePraxis);
 
   var _super = _createSuper(ArthurDeviationBiases);
 
@@ -23329,48 +23412,46 @@ var ArthurDeviationBiases = /*#__PURE__*/function (_Base) {
 
   _createClass(ArthurDeviationBiases, [{
     key: "run",
-    value: function run(layer) {
-      var output = this.kernel(layer.weights, layer.deltas);
-      return output;
+    value: function run(layer, learningRate) {
+      return this.kernel(layer.weights, layer.deltas);
     }
   }, {
     key: "setupKernels",
     value: function setupKernels() {
-      this.kernel = makeKernel$3(update$1, {
+      this.kernel = makeKernel(update$1, {
         output: [this.width, this.height],
         constants: {
-          learningRate: this.learningRate
+          learningRate: this.settings.learningRate
         }
       });
     }
   }]);
 
   return ArthurDeviationBiases;
-}(Base$6);
-
+}(BasePraxis);
 function arthurDeviationBiases(layer, settings) {
   return new ArthurDeviationBiases(layer, settings);
 }
 
-var arthurDeviationBiases_1 = {
+var arthurDeviationBiases$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  update: update$1,
   ArthurDeviationBiases: ArthurDeviationBiases,
-  arthurDeviationBiases: arthurDeviationBiases,
-  update: update$1
-};
+  arthurDeviationBiases: arthurDeviationBiases
+});
 
-var randomWeight = function randomWeight() {
+function randomWeight() {
   return Math.random() * 0.4 - 0.2;
-};
+}
 
 function randomFloat(a, b) {
   return Math.random() * (b - a) + a;
 } // Random numbers utils
 
-
 function gaussRandom() {
-  if (gaussRandom.returnV) {
-    gaussRandom.returnV = false;
-    return gaussRandom.vVal;
+  if (returnV) {
+    returnV = false;
+    return vVal;
   }
 
   var u = 2 * Math.random() - 1;
@@ -23382,36 +23463,34 @@ function gaussRandom() {
   }
 
   var c = Math.sqrt(-2 * Math.log(r) / r);
-  gaussRandom.vVal = v * c; // cache this
+  vVal = v * c; // cache this
 
-  gaussRandom.returnV = true;
+  returnV = true;
   return u * c;
 }
-
+var returnV = false;
+var vVal = 0;
 function randomInteger(a, b) {
   return Math.floor(Math.random() * (b - a) + a);
 }
-
 function randomN(mu, std) {
   return mu + gaussRandom() * std;
 }
 
-gaussRandom.returnV = false;
-gaussRandom.vVal = 0;
-var random = {
+var random = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   randomFloat: randomFloat,
+  gaussRandom: gaussRandom,
   randomInteger: randomInteger,
   randomN: randomN
-};
+});
 
-var randomFloat$1 = random.randomFloat;
-
-var randos = function randos(size, std) {
+function randos(size, std) {
   var array = new Float32Array(size);
 
   if (std) {
     for (var i = 0; i < size; i++) {
-      array[i] = randomFloat$1(-std, std);
+      array[i] = randomFloat(-std, std);
     }
   } else {
     for (var _i = 0; _i < size; _i++) {
@@ -23420,10 +23499,14 @@ var randos = function randos(size, std) {
   }
 
   return array;
-};
+}
 
-var randos2d = function randos2D(width, height) {
-  var std = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+var randos$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  randos: randos
+});
+
+function randos2D(width, height, std) {
   var result = new Array(height);
 
   for (var y = 0; y < height; y++) {
@@ -23431,25 +23514,20 @@ var randos2d = function randos2D(width, height) {
   }
 
   return result;
+}
+
+var randos2d = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  randos2D: randos2D
+});
+
+var defaults$1 = {
+  std: null
 };
-
-var Model$1 = types.Model;
-var zeros2D$4 = zeros2d.zeros2D;
-
 var Random = /*#__PURE__*/function (_Model) {
   _inherits(Random, _Model);
 
   var _super = _createSuper(Random);
-
-  _createClass(Random, null, [{
-    key: "defaults",
-    get: function get() {
-      return {
-        std: null // standard deviation
-
-      };
-    }
-  }]);
 
   function Random(settings) {
     var _this;
@@ -23461,11 +23539,13 @@ var Random = /*#__PURE__*/function (_Model) {
     _this.validate();
 
     if (!_this.weights) {
-      _this.weights = settings.std ? randos2d(_this.width, _this.height, settings.std) : randos2d(_this.width, _this.height);
+      // @ts-ignore
+      _this.weights = randos2D(_this.width, _this.height, settings.std);
     }
 
     if (!_this.deltas) {
-      _this.deltas = zeros2D$4(_this.width, _this.height);
+      // @ts-ignore
+      _this.deltas = zeros2D(_this.width, _this.height);
     }
 
     return _this;
@@ -23473,31 +23553,24 @@ var Random = /*#__PURE__*/function (_Model) {
 
   _createClass(Random, [{
     key: "predict",
-    value: function predict() {// throw new Error(`${this.constructor.name}-predict is not yet implemented`)
-    }
+    value: function predict() {}
   }, {
     key: "compare",
-    value: function compare() {// throw new Error(`${this.constructor.name}-compare is not yet implemented`)
-    }
+    value: function compare() {}
   }]);
 
   return Random;
-}(Model$1);
-
+}(Model);
 function random$1(settings) {
   return new Random(settings);
 }
 
-var random_1 = {
+var random$2 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  defaults: defaults$1,
   Random: Random,
   random: random$1
-};
-
-var makeKernel$4 = kernel.makeKernel,
-    release$3 = kernel.release,
-    clear$3 = kernel.clear;
-var zeros2D$5 = zeros2d.zeros2D;
-var Operator$2 = types.Operator;
+});
 
 function predict$1(weights1, weights2) {
   var sum = 0;
@@ -23508,7 +23581,6 @@ function predict$1(weights1, weights2) {
 
   return sum;
 }
-
 function compareFromX(deltas, inputDeltas, inputWeights) {
   var sum = inputDeltas[this.thread.y][this.thread.x];
 
@@ -23518,7 +23590,6 @@ function compareFromX(deltas, inputDeltas, inputWeights) {
 
   return sum;
 }
-
 function compareFromY(deltas, inputDeltas, inputWeights) {
   var sum = inputDeltas[this.thread.y][this.thread.x];
 
@@ -23528,37 +23599,25 @@ function compareFromY(deltas, inputDeltas, inputWeights) {
 
   return sum;
 }
-
 var Multiply = /*#__PURE__*/function (_Operator) {
   _inherits(Multiply, _Operator);
 
   var _super = _createSuper(Multiply);
 
-  function Multiply(inputLayer1, inputLayer2) {
+  function Multiply() {
     var _this;
-
-    var settings = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
     _classCallCheck(this, Multiply);
 
-    _this = _super.call(this);
-    _this.inputLayer1 = inputLayer1;
-    _this.inputLayer2 = inputLayer2;
-    _this.compareKernel1 = null;
-    _this.compareKernel2 = null;
-    _this.width = inputLayer2.width;
-    _this.height = inputLayer1.height;
-
-    _this.validate();
-
-    _this.weights = zeros2D$5(_this.width, _this.height);
-    _this.deltas = zeros2D$5(_this.width, _this.height);
-
-    if (settings && settings.name) {
-      _this.name = settings.name;
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
     }
 
-    _this.setupPraxis(settings);
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "compareKernel1", null);
+
+    _defineProperty(_assertThisInitialized(_this), "compareKernel2", null);
 
     return _this;
   }
@@ -23575,21 +23634,21 @@ var Multiply = /*#__PURE__*/function (_Operator) {
   }, {
     key: "setupKernels",
     value: function setupKernels() {
-      this.predictKernel = makeKernel$4(predict$1, {
+      this.predictKernel = makeKernel(predict$1, {
         output: [this.width, this.height],
         constants: {
           size: this.inputLayer2.height
         },
         immutable: true
       });
-      this.compareKernel1 = makeKernel$4(compareFromX, {
+      this.compareKernel1 = makeKernel(compareFromX, {
         output: [this.inputLayer1.width, this.inputLayer1.height],
         constants: {
           size: this.inputLayer2.width
         },
         immutable: true
       });
-      this.compareKernel2 = makeKernel$4(compareFromY, {
+      this.compareKernel2 = makeKernel(compareFromY, {
         output: [this.inputLayer2.width, this.inputLayer2.height],
         constants: {
           size: this.inputLayer1.height
@@ -23608,46 +23667,76 @@ var Multiply = /*#__PURE__*/function (_Operator) {
   }, {
     key: "predict",
     value: function predict() {
-      release$3(this.weights);
+      release(this.weights);
+      if (!this.predictKernel) throw new Error('this.predictKernel is not set');
       this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
-      clear$3(this.deltas);
+      clear(this.deltas);
     }
   }, {
     key: "compare",
     value: function compare() {
+      if (!this.compareKernel1) throw new Error('this.compareKernel1 not set');
+      if (!this.compareKernel2) throw new Error('this.compareKernel2 not set');
       var inputLayer1Deltas = this.inputLayer1.deltas;
       var inputLayer2Deltas = this.inputLayer2.deltas;
       var newDeltas1 = this.compareKernel1(this.deltas, this.inputLayer1.deltas, this.inputLayer2.weights);
       var newDeltas2 = this.compareKernel2(this.deltas, this.inputLayer2.deltas, this.inputLayer1.weights);
       this.inputLayer2.deltas = newDeltas2;
       this.inputLayer1.deltas = newDeltas1;
-      release$3(inputLayer1Deltas);
-      release$3(inputLayer2Deltas);
+      release(inputLayer1Deltas);
+      release(inputLayer2Deltas);
     }
+  }, {
+    key: "setupPraxis",
+    value: function setupPraxis() {}
   }, {
     key: "learn",
     value: function learn() {}
+  }, {
+    key: "toJSON",
+    value: function toJSON() {
+      return _objectSpread2(_objectSpread2({}, _get(_getPrototypeOf(Multiply.prototype), "toJSON", this).call(this)), {}, {
+        width: this.width,
+        height: this.height
+      });
+    }
+  }, {
+    key: "width",
+    get: function get() {
+      return this.inputLayer2.width;
+    },
+    set: function set(width) {
+      throw new Error('Cannot set width on Multiply');
+    }
+  }, {
+    key: "height",
+    get: function get() {
+      return this.inputLayer1.height;
+    },
+    set: function set(height) {
+      throw new Error('Cannot set height on Multiply');
+    }
   }]);
 
   return Multiply;
-}(Operator$2);
-
+}(Operator);
 function multiply(inputLayer1, inputLayer2, settings) {
   return new Multiply(inputLayer1, inputLayer2, settings);
 }
 
-var multiply_1 = {
-  Multiply: Multiply,
-  multiply: multiply,
+var multiply$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   predict: predict$1,
   compareFromX: compareFromX,
-  compareFromY: compareFromY
-};
+  compareFromY: compareFromY,
+  Multiply: Multiply,
+  multiply: multiply
+});
 
-var Activation$2 = types.Activation;
-var makeKernel$5 = kernel.makeKernel,
-    release$4 = kernel.release,
-    clear$4 = kernel.clear;
+var Activation$1 = types.Activation;
+var makeKernel$1 = kernel.makeKernel,
+    release$1 = kernel.release,
+    clear$1 = kernel.clear;
 var activate$4 = sigmoid.activate,
     measure$4 = sigmoid.measure;
 
@@ -23686,23 +23775,23 @@ var Sigmoid = /*#__PURE__*/function (_Activation) {
     key: "setupKernels",
     value: function setupKernels() {
       if (this.depth > 0) {
-        this.predictKernel = makeKernel$5(predict3D, {
+        this.predictKernel = makeKernel$1(predict3D, {
           output: [this.width, this.height, this.depth],
           functions: [activate$4],
           immutable: true
         });
-        this.compareKernel = makeKernel$5(compare3D, {
+        this.compareKernel = makeKernel$1(compare3D, {
           output: [this.width, this.height, this.depth],
           functions: [measure$4],
           immutable: true
         });
       } else {
-        this.predictKernel = makeKernel$5(predict2D, {
+        this.predictKernel = makeKernel$1(predict2D, {
           output: [this.width, this.height],
           functions: [activate$4],
           immutable: true
         });
-        this.compareKernel = makeKernel$5(compare2D, {
+        this.compareKernel = makeKernel$1(compare2D, {
           output: [this.width, this.height],
           functions: [measure$4],
           immutable: true
@@ -23712,20 +23801,20 @@ var Sigmoid = /*#__PURE__*/function (_Activation) {
   }, {
     key: "predict",
     value: function predict() {
-      release$4(this.weights);
+      release$1(this.weights);
       this.weights = this.predictKernel(this.inputLayer.weights);
-      clear$4(this.deltas);
+      clear$1(this.deltas);
     }
   }, {
     key: "compare",
     value: function compare() {
-      release$4(this.inputLayer.deltas);
+      release$1(this.inputLayer.deltas);
       this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
     }
   }]);
 
   return Sigmoid;
-}(Activation$2);
+}(Activation$1);
 
 function sigmoid$1(inputLayer, settings) {
   return new Sigmoid(inputLayer, settings);
@@ -23740,41 +23829,41 @@ var sigmoid_1 = {
   compare3D: compare3D
 };
 
-var arthurDeviationWeights$1 = arthurDeviationWeights_1.arthurDeviationWeights;
-var arthurDeviationBiases$1 = arthurDeviationBiases_1.arthurDeviationBiases;
-var add$1 = add_1.add;
-var random$2 = random_1.random;
-var multiply$1 = multiply_1.multiply;
+var arthurDeviationWeights$2 = arthurDeviationWeights$1.arthurDeviationWeights;
+var arthurDeviationBiases$2 = arthurDeviationBiases$1.arthurDeviationBiases;
+var add$2 = add$1.add;
+var random$3 = random$2.random;
+var multiply$2 = multiply$1.multiply;
 var sigmoid$2 = sigmoid_1.sigmoid;
 
 function arthurFeedForward(settings, inputLayer) {
   var height = settings.height;
 
   function weightsPraxis(layer, settings) {
-    var praxis = arthurDeviationWeights$1(layer, settings);
+    var praxis = arthurDeviationWeights$2(layer, settings);
     praxis.setupKernels();
     return praxis;
   }
 
   function biasesPraxis(layer, settings) {
-    var praxis = arthurDeviationBiases$1(layer, settings);
+    var praxis = arthurDeviationBiases$2(layer, settings);
     praxis.setupKernels();
     return praxis;
   }
 
-  var weightsLayer = random$2({
+  var weightsLayer = random$3({
     name: 'weights',
     height: height,
     width: inputLayer.height,
     praxis: weightsPraxis
   });
-  var biasesLayer = random$2({
+  var biasesLayer = random$3({
     name: 'biases',
     height: height,
     praxis: biasesPraxis
   });
-  var multiplyLayer = multiply$1(weightsLayer, inputLayer);
-  var addLayer = add$1(multiplyLayer, biasesLayer);
+  var multiplyLayer = multiply$2(weightsLayer, inputLayer);
+  var addLayer = add$2(multiplyLayer, biasesLayer);
   var sigmoidLayer = sigmoid$2(addLayer);
   weightsLayer.praxis.weightsLayer = weightsLayer;
   weightsLayer.praxis.incomingLayer = inputLayer;
@@ -23833,28 +23922,41 @@ var layerSetup = {
   setPadding: setPadding
 };
 
-var randos3d = function randos3D(width, height, depth) {
+function randos3D(width, height, depth, std) {
   var result = new Array(depth);
 
   for (var z = 0; z < depth; z++) {
-    result[z] = randos2d(width, height);
+    result[z] = randos2D(width, height, std);
   }
 
   return result;
-};
+}
 
-var values = function values(size, value) {
+var randos3d = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  randos3D: randos3D
+});
+
+/**
+ * Returns an array of a given size with each element filled with a single value
+ */
+function values(size, value) {
   return new Float32Array(size).fill(value);
-};
+}
 
-var makeKernel$6 = kernel.makeKernel,
-    release$5 = kernel.release,
-    clone$2 = kernel.clone,
-    clear$5 = kernel.clear;
+var values$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  values: values
+});
+
+var makeKernel$2 = kernel.makeKernel,
+    release$2 = kernel.release,
+    clone$1 = kernel.clone,
+    clear$2 = kernel.clear;
 var setStride$1 = layerSetup.setStride,
     setPadding$1 = layerSetup.setPadding;
 var Filter$1 = types.Filter;
-var zeros3D$2 = zeros3d.zeros3D;
+var zeros3D$1 = zeros3d.zeros3D;
 
 function predict$2(inputs, filters, biases) {
   var startFilterX = this.constants.paddingX - this.thread.x * this.constants.strideX;
@@ -23969,11 +24071,11 @@ var Convolution = /*#__PURE__*/function (_Filter) {
     _this.height = Math.floor((inputLayer.height + _this.paddingY * 2 - _this.filterHeight) / _this.strideY + 1);
     _this.depth = _this.filterCount;
     _this.weights = randos3d(_this.width, _this.height, _this.depth);
-    _this.deltas = zeros3D$2(_this.width, _this.height, _this.depth);
-    _this.biases = values(_this.depth, _this.bias);
-    _this.biasDeltas = randos(_this.depth);
+    _this.deltas = zeros3D$1(_this.width, _this.height, _this.depth);
+    _this.biases = values$1(_this.depth, _this.bias);
+    _this.biasDeltas = randos$1(_this.depth);
     _this.filters = randos3d(_this.filterWidth, _this.filterHeight, _this.filterCount);
-    _this.filterDeltas = zeros3D$2(_this.filterWidth, _this.filterHeight, _this.filterCount);
+    _this.filterDeltas = zeros3D$1(_this.filterWidth, _this.filterHeight, _this.filterCount);
     _this.learnFilters = null;
     _this.learnInputs = null;
     _this.inputLayer = inputLayer;
@@ -23986,7 +24088,7 @@ var Convolution = /*#__PURE__*/function (_Filter) {
   _createClass(Convolution, [{
     key: "setupKernels",
     value: function setupKernels() {
-      this.predictKernel = makeKernel$6(predict$2, {
+      this.predictKernel = makeKernel$2(predict$2, {
         constants: {
           inputWidth: this.inputLayer.width,
           inputHeight: this.inputLayer.height,
@@ -24001,7 +24103,7 @@ var Convolution = /*#__PURE__*/function (_Filter) {
         output: [this.width, this.height, this.depth],
         immutable: true
       });
-      this.compareFilterDeltasKernel = makeKernel$6(compareFilterDeltas, {
+      this.compareFilterDeltasKernel = makeKernel$2(compareFilterDeltas, {
         constants: {
           deltasWidth: this.width,
           deltasHeight: this.height,
@@ -24019,14 +24121,14 @@ var Convolution = /*#__PURE__*/function (_Filter) {
         output: [this.width, this.height, this.depth],
         immutable: true
       });
-      this.compareInputDeltasKernel = makeKernel$6(compareInputDeltas, {
+      this.compareInputDeltasKernel = makeKernel$2(compareInputDeltas, {
         constants: {
           filterCount: this.filterCount
         },
         output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth],
         immutable: true
       });
-      this.compareBiasesKernel = makeKernel$6(compareBiases, {
+      this.compareBiasesKernel = makeKernel$2(compareBiases, {
         output: [1, 1, this.depth],
         constants: {
           deltaWidth: this.width,
@@ -24046,24 +24148,24 @@ var Convolution = /*#__PURE__*/function (_Filter) {
       var filterDeltas = this.filterDeltas,
           biasDeltas = this.biasDeltas;
       this.filterDeltas = this.compareFilterDeltasKernel(filterDeltas, this.inputLayer.weights, this.deltas);
-      release$5(filterDeltas);
+      release$2(filterDeltas);
       this.biasDeltas = this.compareBiasesKernel(biasDeltas, this.deltas);
-      release$5(biasDeltas);
-      release$5(this.deltas);
+      release$2(biasDeltas);
+      release$2(this.deltas);
       this.deltas = this.compareInputDeltasKernel(this.filters, this.inputLayer.deltas);
-      release$5(this.inputLayer.deltas); // TODO: do we need to clone here?
+      release$2(this.inputLayer.deltas); // TODO: do we need to clone here?
 
-      this.inputLayer.deltas = clone$2(this.deltas);
+      this.inputLayer.deltas = clone$1(this.deltas);
     }
   }, {
     key: "learn",
-    value: function learn(previousLayer, nextLayer, learningRate) {
+    value: function learn(learningRate) {
       // TODO: handle filters
       // TODO: do we need to release here?
       var oldWeights = this.weights;
-      this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate);
-      release$5(oldWeights);
-      clear$5(this.deltas);
+      this.weights = this.praxis.run(this, learningRate);
+      release$2(oldWeights);
+      clear$2(this.deltas);
     }
   }]);
 
@@ -24084,8 +24186,8 @@ var convolution_1 = {
 };
 
 var Filter$2 = types.Filter;
-var makeKernel$7 = kernel.makeKernel,
-    release$6 = kernel.release;
+var makeKernel$3 = kernel.makeKernel,
+    release$3 = kernel.release;
 
 function setDropout(dropout) {
   return dropout;
@@ -24150,19 +24252,19 @@ var Dropout = /*#__PURE__*/function (_Filter) {
       var output = [this.width, this.height];
 
       if (isTraining) {
-        this.predictKernel = makeKernel$7(trainingPredict, {
+        this.predictKernel = makeKernel$3(trainingPredict, {
           output: output,
           map: {
             dropouts: setDropout
           },
           immutable: true
         });
-        this.compareKernel = makeKernel$7(compare, {
+        this.compareKernel = makeKernel$3(compare, {
           output: output,
           immutable: true
         });
       } else {
-        this.predictKernel = makeKernel$7(predict$3, {
+        this.predictKernel = makeKernel$3(predict$3, {
           output: output,
           immutable: true
         });
@@ -24171,8 +24273,8 @@ var Dropout = /*#__PURE__*/function (_Filter) {
   }, {
     key: "predict",
     value: function predict() {
-      release$6(this.weights);
-      release$6(this.dropouts);
+      release$3(this.weights);
+      release$3(this.dropouts);
 
       var _this$predictKernel = this.predictKernel(this.inputLayer.weights),
           result = _this$predictKernel.result,
@@ -24184,7 +24286,7 @@ var Dropout = /*#__PURE__*/function (_Filter) {
   }, {
     key: "compare",
     value: function compare() {
-      release$6(this.deltas);
+      release$3(this.deltas);
       this.deltas = this.compareKernel(this.dropouts, this.inputLayer.deltas);
     }
   }]);
@@ -24205,26 +24307,26 @@ var dropout_1 = {
   compare: compare
 };
 
-var random$3 = random_1.random;
-var add$2 = add_1.add;
-var multiply$2 = multiply_1.multiply;
+var random$4 = random$2.random;
+var add$3 = add$1.add;
+var multiply$3 = multiply$1.multiply;
 var sigmoid$3 = sigmoid_1.sigmoid;
 
 function feedForward(settings, input) {
   var height = settings.height,
       praxisOpts = settings.praxisOpts;
-  var weights = random$3({
+  var weights = random$4({
     name: 'weights',
     height: height,
     width: input.height,
     praxisOpts: praxisOpts
   });
-  var biases = random$3({
+  var biases = random$4({
     name: 'biases',
     height: height,
     praxisOpts: praxisOpts
   });
-  return sigmoid$3(add$2(multiply$2(weights, input, {
+  return sigmoid$3(add$3(multiply$3(weights, input, {
     praxisOpts: praxisOpts
   }), biases, {
     praxisOpts: praxisOpts
@@ -24238,11 +24340,11 @@ var feedForward_1 = {
 };
 
 var Filter$3 = types.Filter;
-var makeKernel$8 = kernel.makeKernel,
-    release$7 = kernel.release;
+var makeKernel$4 = kernel.makeKernel,
+    release$4 = kernel.release;
 var zeros$2 = zeros$1.zeros;
-var zeros2D$6 = zeros2d.zeros2D;
-var zeros3D$3 = zeros3d.zeros3D;
+var zeros2D$1 = zeros2d.zeros2D;
+var zeros3D$2 = zeros3d.zeros3D;
 
 function predict$4(inputs, filters, biases) {
   var output = 0;
@@ -24339,17 +24441,17 @@ var FullyConnected = /*#__PURE__*/function (_Filter) {
     _this.compareInputDeltasKernel = null;
     _this.compareBiasesKernel = null;
     var connectionCount = inputLayer.width * inputLayer.height * inputLayer.depth;
-    _this.biases = values(_this.height, _this.bias);
+    _this.biases = values$1(_this.height, _this.bias);
     _this.biasDeltas = zeros$2(_this.height);
     _this.filters = randos2d(connectionCount, _this.height);
-    _this.filterDeltas = zeros2D$6(connectionCount, _this.height);
+    _this.filterDeltas = zeros2D$1(connectionCount, _this.height);
 
     if (_this.depth > 0) {
       _this.weights = randos3d(_this.width, _this.height);
-      _this.deltas = zeros3D$3(_this.width, _this.height);
+      _this.deltas = zeros3D$2(_this.width, _this.height);
     } else if (_this.height > 0) {
       _this.weights = randos2d(_this.width, _this.height);
-      _this.deltas = zeros2D$6(_this.width, _this.height);
+      _this.deltas = zeros2D$1(_this.width, _this.height);
     }
 
     return _this;
@@ -24369,7 +24471,7 @@ var FullyConnected = /*#__PURE__*/function (_Filter) {
       var connectionCount = inputLayer.width * inputLayer.height * inputLayer.depth;
 
       if (inputLayer.depth > 0) {
-        this.predictKernel = makeKernel$8(predict3D$1, {
+        this.predictKernel = makeKernel$4(predict3D$1, {
           output: [this.width, this.height],
           constants: {
             inputHeight: inputLayer.height,
@@ -24377,7 +24479,7 @@ var FullyConnected = /*#__PURE__*/function (_Filter) {
             inputDepth: inputLayer.depth
           }
         });
-        this.compareFilterDeltasKernel = makeKernel$8(compareFilterDeltas3D, {
+        this.compareFilterDeltasKernel = makeKernel$4(compareFilterDeltas3D, {
           output: [connectionCount, this.height],
           constants: {
             inputWidth: inputLayer.width,
@@ -24385,7 +24487,7 @@ var FullyConnected = /*#__PURE__*/function (_Filter) {
           },
           immutable: true
         });
-        this.compareInputDeltasKernel = makeKernel$8(compareInputDeltas3D, {
+        this.compareInputDeltasKernel = makeKernel$4(compareInputDeltas3D, {
           output: [inputLayer.width, inputLayer.height, inputLayer.depth],
           constants: {
             filterCount: this.height
@@ -24393,20 +24495,20 @@ var FullyConnected = /*#__PURE__*/function (_Filter) {
           immutable: true
         });
       } else {
-        this.predictKernel = makeKernel$8(predict$4, {
+        this.predictKernel = makeKernel$4(predict$4, {
           output: [this.width, this.height],
           constants: {
             inputHeight: inputLayer.height,
             inputWidth: inputLayer.width
           }
         });
-        this.compareFilterDeltasKernel = makeKernel$8(compareFilterDeltas$1, {
+        this.compareFilterDeltasKernel = makeKernel$4(compareFilterDeltas$1, {
           output: [connectionCount, this.height],
           constants: {
             inputWidth: inputLayer.width
           }
         });
-        this.compareInputDeltasKernel = makeKernel$8(compareInputDeltas$1, {
+        this.compareInputDeltasKernel = makeKernel$4(compareInputDeltas$1, {
           output: [inputLayer.width, inputLayer.height],
           constants: {
             filterCount: this.height
@@ -24414,7 +24516,7 @@ var FullyConnected = /*#__PURE__*/function (_Filter) {
         });
       }
 
-      this.compareBiasesKernel = makeKernel$8(compareBiases$1, {
+      this.compareBiasesKernel = makeKernel$4(compareBiases$1, {
         output: [this.width, this.height]
       });
     }
@@ -24428,15 +24530,15 @@ var FullyConnected = /*#__PURE__*/function (_Filter) {
     value: function compare() {
       var inputLayerDeltas = this.inputLayer.deltas;
       this.inputLayer.deltas = this.compareInputDeltasKernel(inputLayerDeltas, this.deltas, this.filters);
-      release$7(inputLayerDeltas);
+      release$4(inputLayerDeltas);
       var biasDeltas = this.biasDeltas,
           filterDeltas = this.filterDeltas; // TODO: handle biasDeltas learn
 
       this.biasDeltas = this.compareBiasesKernel(this.biases, this.deltas); // TODO: handle filterDeltas learn
 
       this.filterDeltas = this.compareFilterDeltasKernel(filterDeltas, this.inputLayer.weights, this.deltas);
-      release$7(biasDeltas);
-      release$7(filterDeltas);
+      release$4(biasDeltas);
+      release$4(filterDeltas);
     }
   }]);
 
@@ -24459,7 +24561,7 @@ var fullyConnected_1 = {
   compareFilterDeltas3D: compareFilterDeltas3D
 };
 
-var makeKernel$9 = kernel.makeKernel;
+var makeKernel$5 = kernel.makeKernel;
 var Modifier$1 = types.Modifier;
 
 function predict$5(weights) {
@@ -24487,7 +24589,7 @@ var Negative = /*#__PURE__*/function (_Modifier) {
   _createClass(Negative, [{
     key: "setupKernels",
     value: function setupKernels() {
-      this.predictKernel = makeKernel$9(predict$5, {
+      this.predictKernel = makeKernel$5(predict$5, {
         output: [this.width, this.height]
       });
     }
@@ -24511,12 +24613,12 @@ var negative_1 = {
   predict: predict$5
 };
 
-var makeKernel$a = kernel.makeKernel,
-    release$8 = kernel.release,
-    clear$6 = kernel.clear;
-var Operator$3 = types.Operator;
-var zeros2D$7 = zeros2d.zeros2D;
-var checkSameSize$2 = layerSize.checkSameSize;
+var makeKernel$6 = kernel.makeKernel,
+    release$5 = kernel.release,
+    clear$3 = kernel.clear;
+var Operator$1 = types.Operator;
+var zeros2D$2 = zeros2d.zeros2D;
+var checkSameSize$1 = layerSize.checkSameSize;
 
 function predict$6(inputLayerWeights1, inputLayerWeights2) {
   return inputLayerWeights1[this.thread.y][this.thread.x] * inputLayerWeights2[this.thread.y][this.thread.x];
@@ -24544,8 +24646,8 @@ var MultiplyElement = /*#__PURE__*/function (_Operator) {
 
     _this.validate();
 
-    _this.weights = zeros2D$7(_this.width, _this.height);
-    _this.deltas = zeros2D$7(_this.width, _this.height);
+    _this.weights = zeros2D$2(_this.width, _this.height);
+    _this.deltas = zeros2D$2(_this.width, _this.height);
     return _this;
   }
 
@@ -24554,16 +24656,16 @@ var MultiplyElement = /*#__PURE__*/function (_Operator) {
     value: function validate() {
       _get(_getPrototypeOf(MultiplyElement.prototype), "validate", this).call(this);
 
-      checkSameSize$2(this.inputLayer1, this.inputLayer2);
+      checkSameSize$1(this.inputLayer1, this.inputLayer2);
     }
   }, {
     key: "setupKernels",
     value: function setupKernels() {
-      this.predictKernel = makeKernel$a(predict$6, {
+      this.predictKernel = makeKernel$6(predict$6, {
         output: [this.width, this.height],
         immutable: true
       });
-      this.compareKernel = makeKernel$a(compare$1, {
+      this.compareKernel = makeKernel$6(compare$1, {
         output: [this.width, this.height],
         immutable: true
       });
@@ -24571,22 +24673,22 @@ var MultiplyElement = /*#__PURE__*/function (_Operator) {
   }, {
     key: "predict",
     value: function predict() {
-      release$8(this.weights);
+      release$5(this.weights);
       this.weights = this.predictKernel(this.inputLayer1.weights, this.inputLayer2.weights);
-      clear$6(this.deltas);
+      clear$3(this.deltas);
     }
   }, {
     key: "compare",
     value: function compare() {
-      release$8(this.inputLayer1.deltas);
-      release$8(this.inputLayer2.deltas);
+      release$5(this.inputLayer1.deltas);
+      release$5(this.inputLayer2.deltas);
       this.inputLayer1.deltas = this.compareKernel(this.inputLayer2.weights, this.deltas);
       this.inputLayer2.deltas = this.compareKernel(this.inputLayer1.weights, this.deltas);
     }
   }]);
 
   return MultiplyElement;
-}(Operator$3);
+}(Operator$1);
 
 function multiplyElement(inputLayer1, inputLayer2) {
   return new MultiplyElement(inputLayer1, inputLayer2);
@@ -24613,8 +24715,8 @@ var ones2d = function ones2D(width, height) {
   return result;
 };
 
-var zeros2D$8 = zeros2d.zeros2D;
-var Model$2 = types.Model;
+var zeros2D$3 = zeros2d.zeros2D;
+var Model$1 = types.Model;
 
 var Ones = /*#__PURE__*/function (_Model) {
   _inherits(Ones, _Model);
@@ -24631,12 +24733,12 @@ var Ones = /*#__PURE__*/function (_Model) {
     _this.validate();
 
     _this.weights = ones2d(_this.width, _this.height);
-    _this.deltas = zeros2D$8(_this.width, _this.height);
+    _this.deltas = zeros2D$3(_this.width, _this.height);
     return _this;
   }
 
   return Ones;
-}(Model$2);
+}(Model$1);
 
 function ones$1(settings) {
   return new Ones(settings);
@@ -24647,12 +24749,12 @@ var ones_1 = {
   ones: ones$1
 };
 
-var Activation$3 = activation$1.Activation;
-var makeKernel$b = kernel.makeKernel;
+var Activation$2 = activation$1.Activation;
+var makeKernel$7 = kernel.makeKernel;
 var activate$5 = tanh.activate,
     measure$5 = tanh.measure;
-var release$9 = kernel.release,
-    clear$7 = kernel.clear;
+var release$6 = kernel.release,
+    clear$4 = kernel.clear;
 
 function predict2D$1(inputs) {
   return activate$5(inputs[this.thread.y][this.thread.x]);
@@ -24685,23 +24787,23 @@ var Tanh = /*#__PURE__*/function (_Activation) {
     key: "setupKernels",
     value: function setupKernels() {
       if (this.depth > 0) {
-        this.predictKernel = makeKernel$b(predict3D$2, {
+        this.predictKernel = makeKernel$7(predict3D$2, {
           output: [this.width, this.height, this.depth],
           functions: [activate$5],
           immutable: true
         });
-        this.compareKernel = makeKernel$b(compare3D$1, {
+        this.compareKernel = makeKernel$7(compare3D$1, {
           output: [this.width, this.height, this.depth],
           functions: [measure$5],
           immutable: true
         });
       } else {
-        this.predictKernel = makeKernel$b(predict2D$1, {
+        this.predictKernel = makeKernel$7(predict2D$1, {
           output: [this.width, this.height],
           functions: [activate$5],
           immutable: true
         });
-        this.compareKernel = makeKernel$b(compare2D$1, {
+        this.compareKernel = makeKernel$7(compare2D$1, {
           output: [this.width, this.height],
           functions: [measure$5],
           immutable: true
@@ -24711,20 +24813,20 @@ var Tanh = /*#__PURE__*/function (_Activation) {
   }, {
     key: "predict",
     value: function predict() {
-      release$9(this.weights);
+      release$6(this.weights);
       this.weights = this.predictKernel(this.inputLayer.weights);
-      clear$7(this.deltas);
+      clear$4(this.deltas);
     }
   }, {
     key: "compare",
     value: function compare() {
-      release$9(this.inputLayer.deltas);
+      release$6(this.inputLayer.deltas);
       this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
     }
   }]);
 
   return Tanh;
-}(Activation$3);
+}(Activation$2);
 
 function tanh$1(inputLayer, settings) {
   return new Tanh(inputLayer, settings);
@@ -24739,8 +24841,8 @@ var tanh_1 = {
   compare3D: compare3D$1
 };
 
-var zeros2D$9 = zeros2d.zeros2D;
-var Model$3 = types.Model;
+var zeros2D$4 = zeros2d.zeros2D;
+var Model$2 = types.Model;
 
 var Zeros = /*#__PURE__*/function (_Model) {
   _inherits(Zeros, _Model);
@@ -24756,8 +24858,8 @@ var Zeros = /*#__PURE__*/function (_Model) {
 
     _this.validate();
 
-    _this.weights = zeros2D$9(_this.width, _this.height);
-    _this.deltas = zeros2D$9(_this.width, _this.height);
+    _this.weights = zeros2D$4(_this.width, _this.height);
+    _this.deltas = zeros2D$4(_this.width, _this.height);
     return _this;
   }
 
@@ -24772,7 +24874,7 @@ var Zeros = /*#__PURE__*/function (_Model) {
   }]);
 
   return Zeros;
-}(Model$3);
+}(Model$2);
 
 function zeros$3(settings) {
   return new Zeros(settings);
@@ -24783,71 +24885,66 @@ var zeros_1 = {
   zeros: zeros$3
 };
 
-var add$3 = add_1.add;
+var add$4 = add$1.add;
 var negative$1 = negative_1.negative;
-var multiply$3 = multiply_1.multiply;
+var multiply$4 = multiply$1.multiply;
 var multiplyElement$1 = multiplyElement_1.multiplyElement;
 var ones$2 = ones_1.ones;
 var sigmoid$4 = sigmoid_1.sigmoid;
-var random$4 = random_1.random;
+var random$5 = random$2.random;
 var tanh$2 = tanh_1.tanh;
 var zeros$4 = zeros_1.zeros;
 
 function gru(settings, recurrentInput, input) {
   var height = settings.height;
-  var updateGateWeights = random$4({
+  var updateGateWeights = random$5({
     height: height,
     width: input.height
   });
-  var updateGatePeepholes = random$4({
+  var updateGatePeepholes = random$5({
     width: height,
     height: height
   });
   var updateGateBias = zeros$4({
     height: height
   });
-  var updateGate = sigmoid$4(add$3(add$3(multiply$3(updateGateWeights, input), multiply$3(updateGatePeepholes, recurrentInput)), updateGateBias));
-  var resetGateWeights = random$4({
+  var updateGate = sigmoid$4(add$4(add$4(multiply$4(updateGateWeights, input), multiply$4(updateGatePeepholes, recurrentInput)), updateGateBias));
+  var resetGateWeights = random$5({
     height: height,
     width: input.height
   });
-  var resetGatePeepholes = random$4({
+  var resetGatePeepholes = random$5({
     width: height,
     height: height
   });
   var resetGateBias = zeros$4({
     height: height
   });
-  var resetGate = sigmoid$4(add$3(add$3(multiply$3(resetGateWeights, input), multiply$3(resetGatePeepholes, recurrentInput)), resetGateBias));
-  var cellWeights = random$4({
+  var resetGate = sigmoid$4(add$4(add$4(multiply$4(resetGateWeights, input), multiply$4(resetGatePeepholes, recurrentInput)), resetGateBias));
+  var cellWeights = random$5({
     height: height,
     width: input.height
   });
-  var cellPeepholes = random$4({
+  var cellPeepholes = random$5({
     width: height,
     height: height
   });
   var cellBias = zeros$4({
     height: height
   });
-  var cell = tanh$2(add$3(add$3(multiply$3(cellWeights, input), multiply$3(cellPeepholes, multiplyElement$1(resetGate, recurrentInput))), cellBias)); // compute hidden state as gated, saturated cell activations
+  var cell = tanh$2(add$4(add$4(multiply$4(cellWeights, input), multiply$4(cellPeepholes, multiplyElement$1(resetGate, recurrentInput))), cellBias)); // compute hidden state as gated, saturated cell activations
   // negate updateGate
 
-  return add$3(multiplyElement$1(add$3(ones$2(updateGate.rows, updateGate.columns), negative$1(updateGate)), cell), multiplyElement$1(recurrentInput, updateGate));
+  return add$4(multiplyElement$1(add$4(ones$2(updateGate.rows, updateGate.columns), negative$1(updateGate)), cell), multiplyElement$1(recurrentInput, updateGate));
 }
 
 var gru_1 = {
   gru: gru
 };
 
-var EntryPoint$1 = types.EntryPoint;
-var zeros2D$a = zeros2d.zeros2D;
-var makeKernel$c = kernel.makeKernel,
-    release$a = kernel.release,
-    kernelInput$1 = kernel.kernelInput,
-    clear$8 = kernel.clear,
-    clone$3 = kernel.clone;
-
+var defaults$2 = {
+  weights: null
+};
 var Input = /*#__PURE__*/function (_EntryPoint) {
   _inherits(Input, _EntryPoint);
 
@@ -24858,13 +24955,14 @@ var Input = /*#__PURE__*/function (_EntryPoint) {
 
     _classCallCheck(this, Input);
 
-    _this = _super.call(this, settings);
+    _this = _super.call(this, _objectSpread2(_objectSpread2({}, defaults$2), settings));
+
+    _defineProperty(_assertThisInitialized(_this), "reshapeInput", null);
 
     _this.validate();
 
-    _this.weights = null;
     _this.reshapeInput = null;
-    _this.deltas = zeros2D$a(_this.width, _this.height);
+    _this.deltas = zeros2D(_this.width, _this.height);
     return _this;
   }
 
@@ -24873,16 +24971,12 @@ var Input = /*#__PURE__*/function (_EntryPoint) {
     value: function setupKernels() {
       if (this.width === 1) {
         this.predict = this.predict1D;
-        this.reshapeInput = makeKernel$c(function (value) {
+        this.reshapeInput = makeKernel(function (value) {
           return value[this.thread.y];
         }, {
           output: [1, this.height],
           immutable: true
         });
-      } else {
-        this.reshapeInput = function (inputs) {
-          return inputs;
-        };
       }
     }
   }, {
@@ -24895,23 +24989,29 @@ var Input = /*#__PURE__*/function (_EntryPoint) {
   }, {
     key: "predict",
     value: function predict(inputs) {
-      if (_typeof(inputs[0]) !== 'object' && inputs.length === this.height * this.width) {
-        release$a(this.weights);
-        this.weights = kernelInput$1(inputs, [this.width, this.height]);
-      } else if (inputs.length === this.height && inputs[0].length === this.width) {
-        this.weights = clone$3(inputs);
+      if ((Array.isArray(inputs) || inputs instanceof Float32Array) && typeof inputs[0] === 'number' && inputs.length === this.height * this.width) {
+        release(this.weights);
+        this.weights = kernelInput(inputs, [this.width, this.height]);
+      } else if (Array.isArray(inputs) && inputs.length === this.height && (Array.isArray(inputs[0]) || inputs[0] instanceof Float32Array) && inputs[0].length === this.width) {
+        this.weights = clone(inputs);
       } else {
         throw new Error('Inputs are not of sized correctly');
       }
 
-      clear$8(this.deltas);
+      clear(this.deltas);
     }
   }, {
     key: "predict1D",
     value: function predict1D(inputs) {
-      if (this.weights) release$a(this.weights);
-      this.weights = this.reshapeInput(inputs);
-      clear$8(this.deltas);
+      if (this.weights) release(this.weights);
+
+      if (this.reshapeInput) {
+        this.weights = this.reshapeInput(inputs);
+      } else {
+        this.weights = inputs;
+      }
+
+      clear(this.deltas);
     }
   }, {
     key: "compare",
@@ -24920,39 +25020,23 @@ var Input = /*#__PURE__*/function (_EntryPoint) {
   }, {
     key: "toJSON",
     value: function toJSON() {
-      var jsonLayer = {};
-      var _this$constructor = this.constructor,
-          defaults = _this$constructor.defaults,
-          name = _this$constructor.name;
-      var keys = Object.keys(defaults);
-
-      for (var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        if (key === 'deltas' || key === 'weights') continue;
-        jsonLayer[key] = this[key];
-      }
-
-      jsonLayer.type = name;
-      return jsonLayer;
+      return _objectSpread2(_objectSpread2({}, this.settings), {}, {
+        weights: null,
+        deltas: null
+      });
     }
   }]);
 
   return Input;
-}(EntryPoint$1);
-
-function input$1(settings) {
+}(EntryPoint);
+function input(settings) {
   return new Input(settings);
 }
 
-var input_1 = {
-  Input: Input,
-  input: input$1
-};
-
-var Activation$4 = types.Activation;
-var makeKernel$d = kernel.makeKernel,
-    release$b = kernel.release,
-    clear$9 = kernel.clear;
+var Activation$3 = types.Activation;
+var makeKernel$8 = kernel.makeKernel,
+    release$7 = kernel.release,
+    clear$5 = kernel.clear;
 var activate$6 = leakyRelu.activate,
     measure$6 = leakyRelu.measure;
 
@@ -24992,23 +25076,23 @@ var LeakyRelu = /*#__PURE__*/function (_Activation) {
           depth = _this$inputLayer.depth;
 
       if (this.depth > 0) {
-        this.predictKernel = makeKernel$d(predict3D$3, {
+        this.predictKernel = makeKernel$8(predict3D$3, {
           output: [width, height, depth],
           functions: [activate$6],
           immutable: true
         });
-        this.compareKernel = makeKernel$d(compare3D$2, {
+        this.compareKernel = makeKernel$8(compare3D$2, {
           output: [width, height, depth],
           functions: [measure$6],
           immutable: true
         });
       } else {
-        this.predictKernel = makeKernel$d(predict2D$2, {
+        this.predictKernel = makeKernel$8(predict2D$2, {
           output: [width, height],
           functions: [activate$6],
           immutable: true
         });
-        this.compareKernel = makeKernel$d(compare2D$2, {
+        this.compareKernel = makeKernel$8(compare2D$2, {
           output: [width, height],
           functions: [measure$6],
           immutable: true
@@ -25018,21 +25102,21 @@ var LeakyRelu = /*#__PURE__*/function (_Activation) {
   }, {
     key: "predict",
     value: function predict() {
-      release$b(this.weights);
+      release$7(this.weights);
       this.weights = this.predictKernel(this.inputLayer.weights);
-      clear$9(this.deltas);
+      clear$5(this.deltas);
     }
   }, {
     key: "compare",
     value: function compare() {
       var deltas = this.deltas;
       this.deltas = this.compareKernel(this.weights, deltas);
-      release$b(deltas);
+      release$7(deltas);
     }
   }]);
 
   return LeakyRelu;
-}(Activation$4);
+}(Activation$3);
 
 function leakyRelu$1(inputLayer, settings) {
   return new LeakyRelu(inputLayer, settings);
@@ -25047,10 +25131,10 @@ var leakyRelu_1 = {
   compare3D: compare3D$2
 };
 
-var add$4 = add_1.add;
-var multiply$4 = multiply_1.multiply;
+var add$5 = add$1.add;
+var multiply$5 = multiply$1.multiply;
 var multiplyElement$2 = multiplyElement_1.multiplyElement;
-var random$5 = random_1.random;
+var random$6 = random$2.random;
 var sigmoid$5 = sigmoid_1.sigmoid;
 var tanh$3 = tanh_1.tanh;
 var zeros$5 = zeros_1.zeros;
@@ -25058,12 +25142,12 @@ var zeros$5 = zeros_1.zeros;
 function lstmCell(settings, input, recurrentInput) {
   var height = settings.height;
   if (recurrentInput.setDimensions) recurrentInput.setDimensions(1, height);
-  var inputGateWeights = random$5({
+  var inputGateWeights = random$6({
     height: height,
     width: input.height,
     std: 0.08
   });
-  var inputGatePeepholes = random$5({
+  var inputGatePeepholes = random$6({
     width: height,
     height: height,
     std: 0.08
@@ -25071,13 +25155,13 @@ function lstmCell(settings, input, recurrentInput) {
   var inputGateBias = zeros$5({
     height: height
   });
-  var inputGate = sigmoid$5(add$4(add$4(multiply$4(inputGateWeights, input), multiply$4(inputGatePeepholes, recurrentInput)), inputGateBias));
-  var forgetGateWeights = random$5({
+  var inputGate = sigmoid$5(add$5(add$5(multiply$5(inputGateWeights, input), multiply$5(inputGatePeepholes, recurrentInput)), inputGateBias));
+  var forgetGateWeights = random$6({
     height: height,
     width: input.height,
     std: 0.08
   });
-  var forgetGatePeepholes = random$5({
+  var forgetGatePeepholes = random$6({
     width: height,
     height: height,
     std: 0.08
@@ -25085,13 +25169,13 @@ function lstmCell(settings, input, recurrentInput) {
   var forgetGateBias = zeros$5({
     height: height
   });
-  var forgetGate = sigmoid$5(add$4(add$4(multiply$4(forgetGateWeights, input), multiply$4(forgetGatePeepholes, recurrentInput)), forgetGateBias));
-  var outputGateWeights = random$5({
+  var forgetGate = sigmoid$5(add$5(add$5(multiply$5(forgetGateWeights, input), multiply$5(forgetGatePeepholes, recurrentInput)), forgetGateBias));
+  var outputGateWeights = random$6({
     height: height,
     width: input.height,
     std: 0.08
   });
-  var outputGatePeepholes = random$5({
+  var outputGatePeepholes = random$6({
     width: height,
     height: height,
     std: 0.08
@@ -25099,13 +25183,13 @@ function lstmCell(settings, input, recurrentInput) {
   var outputGateBias = zeros$5({
     height: height
   });
-  var outputGate = sigmoid$5(add$4(add$4(multiply$4(outputGateWeights, input), multiply$4(outputGatePeepholes, recurrentInput)), outputGateBias));
-  var memoryWeights = random$5({
+  var outputGate = sigmoid$5(add$5(add$5(multiply$5(outputGateWeights, input), multiply$5(outputGatePeepholes, recurrentInput)), outputGateBias));
+  var memoryWeights = random$6({
     height: height,
     width: input.height,
     std: 0.08
   });
-  var memoryPeepholes = random$5({
+  var memoryPeepholes = random$6({
     width: height,
     height: height,
     std: 0.08
@@ -25113,13 +25197,13 @@ function lstmCell(settings, input, recurrentInput) {
   var memoryBias = zeros$5({
     height: height
   });
-  var memory = tanh$3(add$4(add$4(multiply$4(memoryWeights, input), multiply$4(memoryPeepholes, recurrentInput)), memoryBias)); // compute new cell activation
+  var memory = tanh$3(add$5(add$5(multiply$5(memoryWeights, input), multiply$5(memoryPeepholes, recurrentInput)), memoryBias)); // compute new cell activation
 
   var retainCell = multiplyElement$2(forgetGate, recurrentInput); // what do we keep from cell
 
   var writeCell = multiplyElement$2(inputGate, memory); // what do we write to cell
 
-  var cell = add$4(retainCell, writeCell); // new cell contents
+  var cell = add$5(retainCell, writeCell); // new cell contents
   // compute hidden state as gated, saturated cell activations
 
   return multiplyElement$2(outputGate, tanh$3(cell));
@@ -25129,12 +25213,12 @@ var lstmCell_1 = {
   lstmCell: lstmCell
 };
 
-var makeKernel$e = kernel.makeKernel,
-    release$c = kernel.release,
-    clone$4 = kernel.clone,
-    clear$a = kernel.clear;
+var makeKernel$9 = kernel.makeKernel,
+    release$8 = kernel.release,
+    clone$2 = kernel.clone,
+    clear$6 = kernel.clear;
 var zeros$6 = zeros$1.zeros;
-var zeros2D$b = zeros2d.zeros2D; // const { zeros3D } = require('../utilities/zeros-3d');
+var zeros2D$5 = zeros2d.zeros2D; // const { zeros3D } = require('../utilities/zeros-3d');
 
 var Filter$4 = types.Filter;
 
@@ -25169,9 +25253,9 @@ var Target = /*#__PURE__*/function (_Filter) {
     if (_this.depth) {
       throw new Error('Target layer not implemented for depth');
     } else if (_this.height) {
-      _this.weights = zeros2D$b(_this.width, _this.height);
-      _this.deltas = zeros2D$b(_this.width, _this.height);
-      _this.errors = zeros2D$b(_this.width, _this.height);
+      _this.weights = zeros2D$5(_this.width, _this.height);
+      _this.deltas = zeros2D$5(_this.width, _this.height);
+      _this.errors = zeros2D$5(_this.width, _this.height);
     } else {
       _this.weights = zeros$6(_this.width);
       _this.deltas = zeros$6(_this.width);
@@ -25185,7 +25269,7 @@ var Target = /*#__PURE__*/function (_Filter) {
     key: "setupKernels",
     value: function setupKernels() {
       var compareFn = this.width === 1 ? compare1D : compare2D$3;
-      this.compareKernel = makeKernel$e(compareFn, {
+      this.compareKernel = makeKernel$9(compareFn, {
         output: [this.width, this.height],
         immutable: true
       });
@@ -25195,21 +25279,21 @@ var Target = /*#__PURE__*/function (_Filter) {
     value: function predict() {
       // TODO: should we clone here?
       // NOTE: this looks like it shouldn't be, but the weights are immutable, and this is where they are reused.
-      release$c(this.weights);
-      this.weights = clone$4(this.inputLayer.weights);
-      clear$a(this.deltas);
+      release$8(this.weights);
+      this.weights = clone$2(this.inputLayer.weights);
+      clear$6(this.deltas);
     }
   }, {
     key: "compare",
     value: function compare(targetValues) {
       // this is where weights attach to deltas
       // deltas will be zero on learn, so save it in error for comparing to mse later
-      release$c(this.deltas);
-      release$c(this.errors);
-      release$c(this.inputLayer.deltas);
+      release$8(this.deltas);
+      release$8(this.errors);
+      release$8(this.inputLayer.deltas);
       this.deltas = this.compareKernel(this.weights, targetValues);
-      this.inputLayer.deltas = clone$4(this.deltas);
-      this.errors = clone$4(this.deltas);
+      this.inputLayer.deltas = clone$2(this.deltas);
+      this.errors = clone$2(this.deltas);
     }
   }, {
     key: "setupPraxis",
@@ -25228,30 +25312,30 @@ var target_1 = {
   target: target
 };
 
-var add$5 = add_1.add;
-var multiply$5 = multiply_1.multiply;
-var random$6 = random_1.random;
+var add$6 = add$1.add;
+var multiply$6 = multiply$1.multiply;
+var random$7 = random$2.random;
 var target$1 = target_1.target;
 
 function output(settings, inputLayer) {
   var height = settings.height;
-  var outputGate = random$6({
+  var outputGate = random$7({
     height: height,
     width: inputLayer.height,
     name: 'outputGate',
     std: 0.08
   });
-  var output = random$6({
+  var output = random$7({
     height: height,
     name: 'output',
     std: 0.08
   });
-  var outputGateConnector = multiply$5(outputGate, inputLayer, {
+  var outputGateConnector = multiply$6(outputGate, inputLayer, {
     name: 'outputGateConnected'
   });
   return target$1(_objectSpread2({
     name: 'target'
-  }, settings), add$5(outputGateConnector, output));
+  }, settings), add$6(outputGateConnector, output));
 }
 
 var output_1 = {
@@ -25259,11 +25343,11 @@ var output_1 = {
 };
 
 var Filter$5 = types.Filter;
-var makeKernel$f = kernel.makeKernel,
-    release$d = kernel.release;
+var makeKernel$a = kernel.makeKernel,
+    release$9 = kernel.release;
 var setPadding$2 = layerSetup.setPadding,
     setStride$2 = layerSetup.setStride;
-var zeros3D$4 = zeros3d.zeros3D;
+var zeros3D$3 = zeros3d.zeros3D;
 
 function setSwitchY(value) {
   return value;
@@ -25375,9 +25459,9 @@ var Pool = /*#__PURE__*/function (_Filter) {
 
     _this.depth = _this.filterCount;
     _this.weights = randos3d(_this.width, _this.height, _this.depth);
-    _this.deltas = zeros3D$4(_this.width, _this.height, _this.depth);
+    _this.deltas = zeros3D$3(_this.width, _this.height, _this.depth);
     _this.filters = randos3d(_this.filterWidth, _this.filterHeight, _this.filterCount);
-    _this.filterDeltas = zeros3D$4(_this.filterWidth, _this.filterHeight, _this.filterCount);
+    _this.filterDeltas = zeros3D$3(_this.filterWidth, _this.filterHeight, _this.filterCount);
     _this.learnFilters = null;
     _this.learnInputs = null;
     _this.inputLayer = inputLayer;
@@ -25390,7 +25474,7 @@ var Pool = /*#__PURE__*/function (_Filter) {
   _createClass(Pool, [{
     key: "setupKernels",
     value: function setupKernels() {
-      this.predictKernel = makeKernel$f(predict$7, {
+      this.predictKernel = makeKernel$a(predict$7, {
         output: [this.width, this.height, this.depth],
         map: {
           switchX: setSwitchX,
@@ -25405,7 +25489,7 @@ var Pool = /*#__PURE__*/function (_Filter) {
           filterWidth: this.filterWidth
         }
       });
-      this.compareKernel = makeKernel$f(compare$2, {
+      this.compareKernel = makeKernel$a(compare$2, {
         output: [this.inputLayer.width, this.inputLayer.height, this.inputLayer.depth],
         constants: {
           outputWidth: this.width,
@@ -25439,7 +25523,7 @@ var Pool = /*#__PURE__*/function (_Filter) {
       // const type = typeof this.inputLayer.deltas[0][0][0];
       var inputLayerDeltas = this.inputLayer.deltas;
       this.inputLayer.deltas = this.compareKernel(this.deltas, this.switchX, this.switchY);
-      release$d(inputLayerDeltas); // debugger;
+      release$9(inputLayerDeltas); // debugger;
       // if (depth !== this.inputLayer.deltas.length) debugger;
       // if (height !== this.inputLayer.deltas[0].length) debugger;
       // if (width !== this.inputLayer.deltas[0][0].length) debugger;
@@ -25462,10 +25546,10 @@ var pool_1 = {
   compare3D: compare3D$3
 };
 
-var Activation$5 = types.Activation;
-var makeKernel$g = kernel.makeKernel,
-    release$e = kernel.release,
-    clear$b = kernel.clear;
+var Activation$4 = types.Activation;
+var makeKernel$b = kernel.makeKernel,
+    release$a = kernel.release,
+    clear$7 = kernel.clear;
 var activate$7 = relu.activate,
     measure$7 = relu.measure; // const { zeros2D } = require('../utilities/zeros-2d');
 
@@ -25505,23 +25589,23 @@ var Relu = /*#__PURE__*/function (_Activation) {
           depth = _this$inputLayer.depth;
 
       if (depth > 0) {
-        this.predictKernel = makeKernel$g(predict3D$4, {
+        this.predictKernel = makeKernel$b(predict3D$4, {
           output: [width, height, depth],
           functions: [activate$7],
           immutable: true
         });
-        this.compareKernel = makeKernel$g(compare3D$4, {
+        this.compareKernel = makeKernel$b(compare3D$4, {
           output: [width, height, depth],
           functions: [measure$7],
           immutable: true
         });
       } else {
-        this.predictKernel = makeKernel$g(predict2D$3, {
+        this.predictKernel = makeKernel$b(predict2D$3, {
           output: [width, height],
           functions: [activate$7],
           immutable: true
         });
-        this.compareKernel = makeKernel$g(compare2D$4, {
+        this.compareKernel = makeKernel$b(compare2D$4, {
           output: [width, height],
           functions: [measure$7],
           immutable: true
@@ -25531,20 +25615,20 @@ var Relu = /*#__PURE__*/function (_Activation) {
   }, {
     key: "predict",
     value: function predict() {
-      release$e(this.weights);
+      release$a(this.weights);
       this.weights = this.predictKernel(this.inputLayer.weights);
-      clear$b(this.deltas);
+      clear$7(this.deltas);
     }
   }, {
     key: "compare",
     value: function compare() {
-      release$e(this.inputLayer.deltas);
+      release$a(this.inputLayer.deltas);
       this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
     }
   }]);
 
   return Relu;
-}(Activation$5);
+}(Activation$4);
 
 function relu$1(inputLayer, settings) {
   return new Relu(inputLayer, settings);
@@ -25560,23 +25644,23 @@ var relu_1 = {
 };
 
 var relu$2 = relu_1.relu;
-var add$6 = add_1.add;
-var multiply$6 = multiply_1.multiply;
-var random$7 = random_1.random;
+var add$7 = add$1.add;
+var multiply$7 = multiply$1.multiply;
+var random$8 = random$2.random;
 var zeros$7 = zeros_1.zeros;
 
 function rnnCell(settings, input, recurrentInput) {
   var height = settings.height;
   if (recurrentInput.setDimensions) recurrentInput.setDimensions(1, height); // wxh
 
-  var weight = random$7({
+  var weight = random$8({
     name: 'weight',
     height: height,
     width: input.height,
     std: 0.08
   }); // whh
 
-  var transition = random$7({
+  var transition = random$8({
     name: 'transition',
     height: height,
     width: height,
@@ -25587,17 +25671,17 @@ function rnnCell(settings, input, recurrentInput) {
     name: 'bias',
     height: height
   });
-  return relu$2(add$6(add$6(multiply$6(weight, input), multiply$6(transition, recurrentInput)), bias));
+  return relu$2(add$7(add$7(multiply$7(weight, input), multiply$7(transition, recurrentInput)), bias));
 }
 
 var rnnCell_1 = {
   rnnCell: rnnCell
 };
 
-var Base$7 = base.Base;
+var BaseLayer$1 = baseLayer.BaseLayer;
 
-var Regression = /*#__PURE__*/function (_Base) {
-  _inherits(Regression, _Base);
+var Regression = /*#__PURE__*/function (_BaseLayer) {
+  _inherits(Regression, _BaseLayer);
 
   var _super = _createSuper(Regression);
 
@@ -25625,7 +25709,7 @@ var Regression = /*#__PURE__*/function (_Base) {
   }]);
 
   return Regression;
-}(Base$7);
+}(BaseLayer$1);
 
 function learn(inputs, targets) {
   return inputs[this.thread.x] - targets[this.thread.x];
@@ -25642,13 +25726,13 @@ var regression_1 = {
   learn: learn
 };
 
-var makeKernel$h = kernel.makeKernel,
-    release$f = kernel.release,
-    clone$5 = kernel.clone;
+var makeKernel$c = kernel.makeKernel,
+    release$b = kernel.release,
+    clone$3 = kernel.clone;
 var Filter$6 = types.Filter;
 var zeros$8 = zeros$1.zeros;
-var zeros2D$c = zeros2d.zeros2D;
-var zeros3D$5 = zeros3d.zeros3D;
+var zeros2D$6 = zeros2d.zeros2D;
+var zeros3D$4 = zeros3d.zeros3D;
 
 function getMaxValue(inputs) {
   var maxInput = -Infinity;
@@ -25818,12 +25902,12 @@ var SoftMax = /*#__PURE__*/function (_Filter) {
 
     if (_this.depth > 0) {
       _this.weights = randos3d(_this.width, _this.height, _this.depth);
-      _this.deltas = zeros3D$5(_this.width, _this.height, _this.depth);
+      _this.deltas = zeros3D$4(_this.width, _this.height, _this.depth);
     } else if (_this.height > 0) {
       _this.weights = randos2d(_this.width, _this.height);
-      _this.deltas = zeros2D$c(_this.width, _this.height);
+      _this.deltas = zeros2D$6(_this.width, _this.height);
     } else {
-      _this.weights = randos(_this.width);
+      _this.weights = randos$1(_this.width);
       _this.deltas = zeros$8(_this.width);
     }
 
@@ -25838,10 +25922,10 @@ var SoftMax = /*#__PURE__*/function (_Filter) {
           depth = this.depth;
 
       if (depth > 0) {
-        this.getExponentialsKernel = makeKernel$h(getExponentials3D, {
+        this.getExponentialsKernel = makeKernel$c(getExponentials3D, {
           output: [width, height, depth]
         });
-        this.getMaxValueKernel = makeKernel$h(getMaxValue3D, {
+        this.getMaxValueKernel = makeKernel$c(getMaxValue3D, {
           output: [1, 1, 1],
           constants: {
             inputWidth: width,
@@ -25849,7 +25933,7 @@ var SoftMax = /*#__PURE__*/function (_Filter) {
             inputDepth: depth
           }
         });
-        this.getSumKernel = makeKernel$h(getSum3D, {
+        this.getSumKernel = makeKernel$c(getSum3D, {
           output: [1, 1, 1],
           constants: {
             inputWidth: width,
@@ -25857,35 +25941,35 @@ var SoftMax = /*#__PURE__*/function (_Filter) {
             inputDepth: depth
           }
         });
-        this.predictKernel = makeKernel$h(predict3D$5, {
+        this.predictKernel = makeKernel$c(predict3D$5, {
           output: [width, height, depth]
         });
-        this.compareKernel = makeKernel$h(compare3D$5, {
+        this.compareKernel = makeKernel$c(compare3D$5, {
           output: [width, height, depth],
           immutable: true
         });
       } else {
-        this.getExponentialsKernel = makeKernel$h(getExponentials, {
+        this.getExponentialsKernel = makeKernel$c(getExponentials, {
           output: [width, height]
         });
-        this.getMaxValueKernel = makeKernel$h(getMaxValue2D, {
+        this.getMaxValueKernel = makeKernel$c(getMaxValue2D, {
           output: [1, 1],
           constants: {
             inputWidth: width,
             inputHeight: height
           }
         });
-        this.getSumKernel = makeKernel$h(getSum2D, {
+        this.getSumKernel = makeKernel$c(getSum2D, {
           output: [1, 1],
           constants: {
             inputWidth: width,
             inputHeight: height
           }
         });
-        this.predictKernel = makeKernel$h(predict2D$4, {
+        this.predictKernel = makeKernel$c(predict2D$4, {
           output: [width, height]
         });
-        this.compareKernel = makeKernel$h(compare2D$5, {
+        this.compareKernel = makeKernel$c(compare2D$5, {
           output: [width, height],
           immutable: true
         });
@@ -25905,12 +25989,12 @@ var SoftMax = /*#__PURE__*/function (_Filter) {
       var deltas = this.deltas,
           errors = this.errors;
       this.errors = this.compareKernel(targetValues[0], deltas);
-      this.deltas = clone$5(this.errors);
-      release$f(deltas);
-      release$f(errors);
+      this.deltas = clone$3(this.errors);
+      release$b(deltas);
+      release$b(errors);
       var inputLayerDeltas = this.inputLayer.deltas;
-      this.inputLayer.deltas = clone$5(this.deltas);
-      release$f(inputLayerDeltas);
+      this.inputLayer.deltas = clone$3(this.deltas);
+      release$b(inputLayerDeltas);
     }
   }]);
 
@@ -25942,10 +26026,10 @@ var softMax_1 = {
   loss: loss
 };
 
-var Base$8 = base.Base;
+var BaseLayer$2 = baseLayer.BaseLayer;
 
-var SVM = /*#__PURE__*/function (_Base) {
-  _inherits(SVM, _Base);
+var SVM = /*#__PURE__*/function (_BaseLayer) {
+  _inherits(SVM, _BaseLayer);
 
   var _super = _createSuper(SVM);
 
@@ -25968,7 +26052,7 @@ var SVM = /*#__PURE__*/function (_Base) {
   }]);
 
   return SVM;
-}(Base$8); // function learn(target) {
+}(BaseLayer$2); // function learn(target) {
 //   if (y === i) {
 //     continue;
 //   }
@@ -25992,8 +26076,8 @@ var svm_1 = {
 };
 
 var Modifier$2 = types.Modifier;
-var makeKernel$i = kernel.makeKernel,
-    clear$c = kernel.clear;
+var makeKernel$d = kernel.makeKernel,
+    clear$8 = kernel.clear;
 
 function predict$9(array) {
   return array[this.thread.x][this.thread.y];
@@ -26024,10 +26108,10 @@ var Transpose = /*#__PURE__*/function (_Modifier) {
   _createClass(Transpose, [{
     key: "setupKernels",
     value: function setupKernels() {
-      this.predictKernel = makeKernel$i(predict$9, {
+      this.predictKernel = makeKernel$d(predict$9, {
         output: [this.height, this.width]
       });
-      this.compareKernel = makeKernel$i(compare$4, {
+      this.compareKernel = makeKernel$d(compare$4, {
         output: [this.width, this.height]
       });
     }
@@ -26035,7 +26119,7 @@ var Transpose = /*#__PURE__*/function (_Modifier) {
     key: "predict",
     value: function predict() {
       this.weights = this.predictKernel(this.inputLayer.weights);
-      clear$c(this.deltas);
+      clear$8(this.deltas);
     }
   }, {
     key: "compare",
@@ -26057,111 +26141,70 @@ var transpose_1 = {
   transpose: transpose
 };
 
-var Add$1 = add_1.Add,
-    add$7 = add_1.add;
-var arthurFeedForward$1 = arthurFeedForward_1.arthurFeedForward;
-var Base$9 = base.Base;
-var Convolution$1 = convolution_1.Convolution,
-    convolution$1 = convolution_1.convolution;
-var Dropout$1 = dropout_1.Dropout,
-    dropout$1 = dropout_1.dropout;
-var feedForward$1 = feedForward_1.feedForward;
-var FullyConnected$1 = fullyConnected_1.FullyConnected,
-    fullyConnected$1 = fullyConnected_1.fullyConnected;
-var gru$1 = gru_1.gru;
-var Input$1 = input_1.Input,
-    input$2 = input_1.input;
-var LeakyRelu$1 = leakyRelu_1.LeakyRelu,
-    leakyRelu$2 = leakyRelu_1.leakyRelu;
-var lstmCell$1 = lstmCell_1.lstmCell;
-var Multiply$1 = multiply_1.Multiply,
-    multiply$7 = multiply_1.multiply;
-var MultiplyElement$1 = multiplyElement_1.MultiplyElement,
-    multiplyElement$3 = multiplyElement_1.multiplyElement;
-var Negative$1 = negative_1.Negative,
-    negative$2 = negative_1.negative;
-var Ones$1 = ones_1.Ones,
-    ones$3 = ones_1.ones;
-var output$1 = output_1.output;
-var Pool$1 = pool_1.Pool,
-    pool$1 = pool_1.pool;
-var Random$1 = random_1.Random,
-    random$8 = random_1.random;
-var rnnCell$1 = rnnCell_1.rnnCell;
-var Regression$1 = regression_1.Regression,
-    regression$1 = regression_1.regression;
-var Relu$1 = relu_1.Relu,
-    relu$3 = relu_1.relu;
-var Sigmoid$1 = sigmoid_1.Sigmoid,
-    sigmoid$6 = sigmoid_1.sigmoid;
-var SoftMax$1 = softMax_1.SoftMax,
-    softMax$1 = softMax_1.softMax;
-var SVM$1 = svm_1.SVM,
-    svm$1 = svm_1.svm;
-var Tanh$1 = tanh_1.Tanh,
-    tanh$4 = tanh_1.tanh;
-var Target$1 = target_1.Target,
-    target$2 = target_1.target;
-var Transpose$1 = transpose_1.Transpose,
-    transpose$1 = transpose_1.transpose;
-var Zeros$1 = zeros_1.Zeros,
-    zeros$9 = zeros_1.zeros;
-/**
- * @description Layer API, to make it easier to use layers for the world
- */
-
-var layer = {
-  Add: Add$1,
-  add: add$7,
-  arthurFeedForward: arthurFeedForward$1,
-  Base: Base$9,
-  Convolution: Convolution$1,
-  convolution: convolution$1,
-  Dropout: Dropout$1,
-  dropout: dropout$1,
-  feedForward: feedForward$1,
-  FullyConnected: FullyConnected$1,
-  fullyConnected: fullyConnected$1,
-  gru: gru$1,
-  Input: Input$1,
-  input: input$2,
-  LeakyRelu: LeakyRelu$1,
-  leakyRelu: leakyRelu$2,
-  lstmCell: lstmCell$1,
-  Multiply: Multiply$1,
-  multiply: multiply$7,
-  MultiplyElement: MultiplyElement$1,
-  multiplyElement: multiplyElement$3,
-  Negative: Negative$1,
-  negative: negative$2,
-  Ones: Ones$1,
-  ones: ones$3,
-  output: output$1,
-  Pool: Pool$1,
-  pool: pool$1,
-  Random: Random$1,
-  random: random$8,
-  Regression: Regression$1,
-  regression: regression$1,
-  Relu: Relu$1,
-  relu: relu$3,
-  rnnCell: rnnCell$1,
-  Sigmoid: Sigmoid$1,
-  sigmoid: sigmoid$6,
-  SoftMax: SoftMax$1,
-  softMax: softMax$1,
-  SVM: SVM$1,
-  svm: svm$1,
-  Tanh: Tanh$1,
-  tanh: tanh$4,
-  Target: Target$1,
-  target: target$2,
-  Transpose: Transpose$1,
-  transpose: transpose$1,
-  Zeros: Zeros$1,
-  zeros: zeros$9,
-  types: types
+var layerTypes = {
+  Activation: Activation,
+  Operator: Operator,
+  Internal: Internal,
+  InternalModel: InternalModel,
+  EntryPoint: EntryPoint,
+  Filter: Filter,
+  Model: Model,
+  Modifier: Modifier
 };
+
+var layer = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  layerTypes: layerTypes,
+  Add: Add,
+  add: add,
+  arthurFeedForward: arthurFeedForward_1.arthurFeedForward,
+  BaseLayer: BaseLayer,
+  Convolution: convolution_1.Convolution,
+  convolution: convolution_1.convolution,
+  Dropout: dropout_1.Dropout,
+  dropout: dropout_1.dropout,
+  feedForward: feedForward_1.feedForward,
+  FullyConnected: fullyConnected_1.FullyConnected,
+  fullyConnected: fullyConnected_1.fullyConnected,
+  gru: gru_1.gru,
+  Input: Input,
+  input: input,
+  LeakyRelu: leakyRelu_1.LeakyRelu,
+  leakyRelu: leakyRelu_1.leakyRelu,
+  lstmCell: lstmCell_1.lstmCell,
+  Multiply: Multiply,
+  multiply: multiply,
+  MultiplyElement: multiplyElement_1.MultiplyElement,
+  multiplyElement: multiplyElement_1.multiplyElement,
+  Negative: negative_1.Negative,
+  negative: negative_1.negative,
+  Ones: ones_1.Ones,
+  ones: ones_1.ones,
+  output: output_1.output,
+  Pool: pool_1.Pool,
+  pool: pool_1.pool,
+  Random: Random,
+  random: random$1,
+  rnnCell: rnnCell_1.rnnCell,
+  Regression: regression_1.Regression,
+  regression: regression_1.regression,
+  Relu: relu_1.Relu,
+  relu: relu_1.relu,
+  Sigmoid: sigmoid_1.Sigmoid,
+  sigmoid: sigmoid_1.sigmoid,
+  SoftMax: softMax_1.SoftMax,
+  softMax: softMax_1.softMax,
+  SVM: svm_1.SVM,
+  svm: svm_1.svm,
+  Tanh: tanh_1.Tanh,
+  tanh: tanh_1.tanh,
+  Target: target_1.Target,
+  target: target_1.target,
+  Transpose: transpose_1.Transpose,
+  transpose: transpose_1.transpose,
+  Zeros: zeros_1.Zeros,
+  zeros: zeros_1.zeros
+});
 
 var layerFromJson = function layerFromJSON(jsonLayer) {
   if (!layer.hasOwnProperty(jsonLayer.type)) return null;
@@ -26206,10 +26249,10 @@ var adam_1 = {
   adam: adam
 };
 
-var makeKernel$j = kernel.makeKernel,
-    release$g = kernel.release;
-var zeros2D$d = zeros2d.zeros2D;
-var Base$a = base$1.Base;
+var makeKernel$e = kernel.makeKernel,
+    release$c = kernel.release;
+var zeros2D$7 = zeros2d.zeros2D;
+var Base$1 = basePraxis.Base;
 
 function getMomentum(delta, decay, previousMomentum) {
   return previousMomentum * decay + (1 - decay) * delta * delta;
@@ -26279,7 +26322,7 @@ var MomentumRootMeanSquaredPropagation = /*#__PURE__*/function (_Base) {
     _classCallCheck(this, MomentumRootMeanSquaredPropagation);
 
     _this = _super.call(this, layerTemplate, settings);
-    _this.momenta = zeros2D$d(layerTemplate.width, layerTemplate.height);
+    _this.momenta = zeros2D$7(layerTemplate.width, layerTemplate.height);
     return _this;
   }
 
@@ -26290,14 +26333,14 @@ var MomentumRootMeanSquaredPropagation = /*#__PURE__*/function (_Base) {
           momenta = _this$kernel.momenta,
           result = _this$kernel.result;
 
-      release$g(this.momenta);
+      release$c(this.momenta);
       this.momenta = momenta;
       return result;
     }
   }, {
     key: "setupKernels",
     value: function setupKernels() {
-      this.kernel = makeKernel$j(update$2, {
+      this.kernel = makeKernel$e(update$2, {
         output: [this.width, this.height],
         constants: {
           clipValue: this.clipValue,
@@ -26316,7 +26359,7 @@ var MomentumRootMeanSquaredPropagation = /*#__PURE__*/function (_Base) {
   }]);
 
   return MomentumRootMeanSquaredPropagation;
-}(Base$a);
+}(Base$1);
 
 function momentumRootMeanSquaredPropagation(layer, settings) {
   return new MomentumRootMeanSquaredPropagation(layer, settings);
@@ -26339,28 +26382,19 @@ var momentumRootMeanSquaredPropagation_1 = {
   isClippedByValue: isClippedByValue
 };
 
-var Adam$1 = adam_1.Adam,
-    adam$1 = adam_1.adam;
-var ArthurDeviationBiases$1 = arthurDeviationBiases_1.ArthurDeviationBiases,
-    arthurDeviationBiases$2 = arthurDeviationBiases_1.arthurDeviationBiases;
-var ArthurDeviationWeights$1 = arthurDeviationWeights_1.ArthurDeviationWeights,
-    arthurDeviationWeights$2 = arthurDeviationWeights_1.arthurDeviationWeights;
-var MomentumRootMeanSquaredPropagation$1 = momentumRootMeanSquaredPropagation_1.MomentumRootMeanSquaredPropagation,
-    momentumRootMeanSquaredPropagation$1 = momentumRootMeanSquaredPropagation_1.momentumRootMeanSquaredPropagation,
-    MRmsProp$1 = momentumRootMeanSquaredPropagation_1.MRmsProp,
-    mRmsProp$1 = momentumRootMeanSquaredPropagation_1.mRmsProp;
-var praxis = {
-  Adam: Adam$1,
-  adam: adam$1,
-  ArthurDeviationBiases: ArthurDeviationBiases$1,
-  arthurDeviationBiases: arthurDeviationBiases$2,
-  ArthurDeviationWeights: ArthurDeviationWeights$1,
-  arthurDeviationWeights: arthurDeviationWeights$2,
-  MomentumRootMeanSquaredPropagation: MomentumRootMeanSquaredPropagation$1,
-  momentumRootMeanSquaredPropagation: momentumRootMeanSquaredPropagation$1,
-  MRmsProp: MRmsProp$1,
-  mRmsProp: mRmsProp$1
-};
+var praxis = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  Adam: adam_1.Adam,
+  adam: adam_1.adam,
+  ArthurDeviationBiases: ArthurDeviationBiases,
+  arthurDeviationBiases: arthurDeviationBiases,
+  ArthurDeviationWeights: ArthurDeviationWeights,
+  arthurDeviationWeights: arthurDeviationWeights,
+  MomentumRootMeanSquaredPropagation: momentumRootMeanSquaredPropagation_1.MomentumRootMeanSquaredPropagation,
+  momentumRootMeanSquaredPropagation: momentumRootMeanSquaredPropagation_1.momentumRootMeanSquaredPropagation,
+  MRmsProp: momentumRootMeanSquaredPropagation_1.MRmsProp,
+  mRmsProp: momentumRootMeanSquaredPropagation_1.mRmsProp
+});
 
 var traverseLayersFrom = function traverseLayersFrom(layer, cb) {
   if (layer.hasOwnProperty('inputLayer')) {
@@ -26401,7 +26435,6 @@ var flattenLayers = function flattenLayers(layers) {
 /**
  * 2D Mean Squared Error
  */
-
 function mse2d(errors) {
   var sum = 0;
 
@@ -26435,7 +26468,7 @@ function MeanSquaredError(_ref) {
 
   _defineProperty(this, "divide", void 0);
 
-  this.calculate = kernel.makeKernel(mse2d, {
+  this.calculate = makeKernel(mse2d, {
     output: [1],
     constants: {
       width: width,
@@ -26444,19 +26477,19 @@ function MeanSquaredError(_ref) {
     },
     immutable: true
   });
-  this.addAbsolute = kernel.makeKernel(function (prevError, prevLayerErrors) {
+  this.addAbsolute = makeKernel(function (prevError, prevLayerErrors) {
     return prevError[0] + Math.abs(prevLayerErrors[0][0]);
   }, {
     output: [1],
     immutable: true
   });
-  this.add = kernel.makeKernel(function (value1, value2) {
+  this.add = makeKernel(function (value1, value2) {
     return value1[0] + value2[0];
   }, {
     output: [1],
     immutable: true
   });
-  this.divide = kernel.makeKernel(function (length, mseSum) {
+  this.divide = makeKernel(function (length, mseSum) {
     var value = mseSum[0];
 
     if (value > 0) {
@@ -26476,10 +26509,10 @@ var meanSquaredError = /*#__PURE__*/Object.freeze({
   MeanSquaredError: MeanSquaredError
 });
 
-var makeKernel$k = kernel.makeKernel,
-    release$h = kernel.release;
+var makeKernel$f = kernel.makeKernel,
+    release$d = kernel.release;
 var MeanSquaredError$1 = meanSquaredError.MeanSquaredError;
-var Model$4 = types.Model;
+var Model$3 = types.Model;
 
 var FeedForward = /*#__PURE__*/function () {
   _createClass(FeedForward, [{
@@ -26676,7 +26709,7 @@ var FeedForward = /*#__PURE__*/function () {
 
       this.initializeLayers(this.layers);
       this._model = this.layers.filter(function (l) {
-        return l instanceof Model$4;
+        return l instanceof Model$3;
       });
     }
   }, {
@@ -26687,7 +26720,7 @@ var FeedForward = /*#__PURE__*/function () {
 
         layer.setupKernels(true);
 
-        if (layer instanceof Model$4 && layer.hasOwnProperty('praxis') && layer.praxis === null) {
+        if (layer instanceof Model$3 && layer.hasOwnProperty('praxis') && layer.praxis === null) {
           layer.praxis = this.praxis(layer, layer.praxisOpts || this.praxisOpts);
           layer.praxis.setupKernels();
         }
@@ -26861,16 +26894,16 @@ var FeedForward = /*#__PURE__*/function () {
         var error = this._trainPattern(data[i].input, data[i].output, true);
 
         sum = this.meanSquaredError.add(sum, error);
-        release$h(error);
-        release$h(prevSum);
+        release$d(error);
+        release$d(prevSum);
       }
 
       var result = this.meanSquaredError.divide(data.length, sum);
-      release$h(sum);
+      release$d(sum);
 
       if (result.toArray) {
         var resultArray = result.toArray();
-        release$h(result);
+        release$d(result);
         return resultArray[0];
       }
 
@@ -26928,7 +26961,7 @@ var FeedForward = /*#__PURE__*/function () {
       var _model = this._model;
 
       for (var i = 0; i < _model.length; i++) {
-        _model[i].learn(null, null, this.trainOpts.learningRate);
+        _model[i].learn(this.trainOpts.learningRate);
       }
     }
     /**
@@ -26990,13 +27023,13 @@ var FeedForward = /*#__PURE__*/function () {
     key: "transferData",
     value: function transferData(formattedData) {
       var transferredData = new Array(formattedData.length);
-      var transferInput = makeKernel$k(function (value) {
+      var transferInput = makeKernel$f(function (value) {
         return value[this.thread.x];
       }, {
         output: [formattedData[0].input.length],
         immutable: true
       });
-      var transferOutput = makeKernel$k(function (value) {
+      var transferOutput = makeKernel$f(function (value) {
         return value[this.thread.x];
       }, {
         output: [formattedData[0].output.length],
@@ -27126,7 +27159,7 @@ var FeedForward = /*#__PURE__*/function () {
   return FeedForward;
 }();
 
-var feedForward$2 = {
+var feedForward$1 = {
   FeedForward: FeedForward
 };
 
@@ -27799,7 +27832,6 @@ function arraysToFloat32Arrays(arrays) {
 
   return result;
 }
-
 function arrayToFloat32Arrays(array) {
   var result = [];
 
@@ -27809,11 +27841,9 @@ function arrayToFloat32Arrays(array) {
 
   return result;
 }
-
 function arrayToFloat32Array(array) {
   return Float32Array.from(array);
 }
-
 function objectsToFloat32Arrays(objects, table, length) {
   var results = [];
 
@@ -27832,7 +27862,6 @@ function objectsToFloat32Arrays(objects, table, length) {
 
   return results;
 }
-
 function objectToFloat32Arrays(object) {
   var result = [];
 
@@ -27842,7 +27871,6 @@ function objectToFloat32Arrays(object) {
 
   return result;
 }
-
 function objectToFloat32Array(object, table, length) {
   var result = new Float32Array(length);
 
@@ -27855,18 +27883,19 @@ function objectToFloat32Array(object, table, length) {
   return result;
 }
 
-var cast = {
+var cast = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   arraysToFloat32Arrays: arraysToFloat32Arrays,
   arrayToFloat32Arrays: arrayToFloat32Arrays,
   arrayToFloat32Array: arrayToFloat32Array,
   objectsToFloat32Arrays: objectsToFloat32Arrays,
   objectToFloat32Arrays: objectToFloat32Arrays,
   objectToFloat32Array: objectToFloat32Array
-};
+});
 
 var Thaw$1 = browser_min.Thaw; // const TrainStream = require('./train-stream');
 
-var zeros$a = zeros$1.zeros;
+var zeros$9 = zeros$1.zeros;
 var arrayToFloat32Array$1 = cast.arrayToFloat32Array;
 
 function getTypedArrayFn(value, table) {
@@ -28001,19 +28030,19 @@ var NeuralNetwork = /*#__PURE__*/function () {
 
       for (var layer = 0; layer <= this.outputLayer; layer++) {
         var size = this.sizes[layer];
-        this.deltas[layer] = zeros$a(size);
-        this.errors[layer] = zeros$a(size);
-        this.outputs[layer] = zeros$a(size);
+        this.deltas[layer] = zeros$9(size);
+        this.errors[layer] = zeros$9(size);
+        this.outputs[layer] = zeros$9(size);
 
         if (layer > 0) {
-          this.biases[layer] = randos(size);
+          this.biases[layer] = randos$1(size);
           this.weights[layer] = new Array(size);
           this.changes[layer] = new Array(size);
 
           for (var node = 0; node < size; node++) {
             var prevSize = this.sizes[layer - 1];
-            this.weights[layer][node] = randos(prevSize);
-            this.changes[layer][node] = zeros$a(prevSize);
+            this.weights[layer][node] = randos$1(prevSize);
+            this.changes[layer][node] = zeros$9(prevSize);
           }
         }
       }
@@ -28728,15 +28757,15 @@ var NeuralNetwork = /*#__PURE__*/function () {
         var size = this.sizes[layer];
 
         if (layer > 0) {
-          this.biasChangesLow[layer] = zeros$a(size);
-          this.biasChangesHigh[layer] = zeros$a(size);
+          this.biasChangesLow[layer] = zeros$9(size);
+          this.biasChangesHigh[layer] = zeros$9(size);
           this.changesLow[layer] = new Array(size);
           this.changesHigh[layer] = new Array(size);
 
           for (var node = 0; node < size; node++) {
             var prevSize = this.sizes[layer - 1];
-            this.changesLow[layer][node] = zeros$a(prevSize);
-            this.changesHigh[layer][node] = zeros$a(prevSize);
+            this.changesLow[layer][node] = zeros$9(prevSize);
+            this.changesHigh[layer][node] = zeros$9(prevSize);
           }
         }
       }
@@ -29302,10 +29331,10 @@ _export(_export.S + _export.F * !_iterDetect(function (iter) { Array.from(iter);
   }
 });
 
-var GPU$1 = gpuBrowser.GPU,
+var GPU = gpuBrowser.GPU,
     alias = gpuBrowser.alias,
     gpuUtils = gpuBrowser.utils;
-var release$i = kernel.release;
+var release$e = kernel.release;
 
 function weightedSumSigmoid(weights, biases, inputs) {
   var sum = biases[this.thread.x];
@@ -29432,7 +29461,7 @@ var NeuralNetworkGPU = /*#__PURE__*/function (_NeuralNetwork) {
     _this.changesPropagate = [];
     _this.biasesPropagate = [];
     _this.errorCheckInterval = 100;
-    _this.gpu = new GPU$1({
+    _this.gpu = new GPU({
       mode: options.mode
     });
     return _this;
@@ -29486,13 +29515,13 @@ var NeuralNetworkGPU = /*#__PURE__*/function (_NeuralNetwork) {
         var prevSum = sum;
         var error = this.trainPattern(data[i], true);
         sum = this._addMSE(sum, error);
-        release$i(error);
-        release$i(prevSum);
+        release$e(error);
+        release$e(prevSum);
       }
 
       var result = this._divideMSESum(data.length, sum)[0];
 
-      release$i(sum);
+      release$e(sum);
       return result;
     }
   }, {
@@ -29559,7 +29588,7 @@ var NeuralNetworkGPU = /*#__PURE__*/function (_NeuralNetwork) {
       this.outputs[0] = input;
 
       for (var layer = 1; layer <= this.outputLayer; layer++) {
-        release$i(this.outputs[layer]);
+        release$e(this.outputs[layer]);
         this.outputs[layer] = this.forwardPropagate[layer](this.weights[layer], this.biases[layer], input);
         output = input = this.outputs[layer];
       }
@@ -29631,8 +29660,8 @@ var NeuralNetworkGPU = /*#__PURE__*/function (_NeuralNetwork) {
     value: function calculateDeltas(target) {
       for (var layer = this.outputLayer; layer > 0; layer--) {
         var output = void 0;
-        release$i(this.deltas[layer]);
-        release$i(this.errors[layer]);
+        release$e(this.deltas[layer]);
+        release$e(this.errors[layer]);
 
         if (layer === this.outputLayer) {
           output = this.backwardPropagate[layer](this.outputs[layer], target);
@@ -29673,11 +29702,11 @@ var NeuralNetworkGPU = /*#__PURE__*/function (_NeuralNetwork) {
         var weights = this.weights[layer];
         var changes = this.changes[layer];
         var output = this.changesPropagate[layer](this.outputs[layer - 1], this.deltas[layer], weights, changes);
-        release$i(weights);
-        release$i(changes);
+        release$e(weights);
+        release$e(changes);
         this.weights[layer] = output.weights;
         this.changes[layer] = output.changes;
-        release$i(output.result);
+        release$e(output.result);
       }
     }
   }, {
@@ -29700,7 +29729,7 @@ var NeuralNetworkGPU = /*#__PURE__*/function (_NeuralNetwork) {
       for (var layer = 1; layer <= this.outputLayer; layer++) {
         var biases = this.biases[layer];
         this.biases[layer] = this.biasesPropagate[layer](biases, this.deltas[layer]);
-        release$i(biases);
+        release$e(biases);
       }
     }
   }, {
@@ -29843,7 +29872,7 @@ var neuralNetworkGpu = NeuralNetworkGPU;
 
 var Internal$2 = types.Internal; // const zeros2D = require('../utilities/zeros-2d');
 
-var release$j = kernel.release;
+var release$f = kernel.release;
 
 var RecurrentConnection = /*#__PURE__*/function (_Internal) {
   _inherits(RecurrentConnection, _Internal);
@@ -29908,7 +29937,7 @@ var RecurrentConnection = /*#__PURE__*/function (_Internal) {
       return this.layer.deltas;
     },
     set: function set(deltas) {
-      release$j(this.layer.deltas);
+      release$f(this.layer.deltas);
       this.layer.deltas = deltas;
     }
   }, {
@@ -29917,7 +29946,7 @@ var RecurrentConnection = /*#__PURE__*/function (_Internal) {
       return this.layer.weights;
     },
     set: function set(weights) {
-      release$j(this.layer.weights);
+      release$f(this.layer.weights);
       this.layer.weights = weights;
     }
   }]);
@@ -29930,8 +29959,8 @@ var recurrentConnection = {
 };
 
 var Internal$3 = types.Internal;
-var Base$b = base.Base;
-var release$k = kernel.release; // const { zeros2D } = require('../utilities/zeros-2d');
+var BaseLayer$3 = baseLayer.BaseLayer;
+var release$g = kernel.release; // const { zeros2D } = require('../utilities/zeros-2d');
 
 var RecurrentInput = /*#__PURE__*/function (_Internal) {
   _inherits(RecurrentInput, _Internal);
@@ -29954,7 +29983,7 @@ var RecurrentInput = /*#__PURE__*/function (_Internal) {
   _createClass(RecurrentInput, [{
     key: "validate",
     value: function validate() {
-      Base$b.prototype.validate.call(this);
+      BaseLayer$3.prototype.validate.call(this);
 
       if (this.width !== this.recurrentInput.width) {
         throw new Error("".concat(this.constructor.name, " layer width ").concat(this.width, " and ").concat(this.recurrentInput.constructor.name, " width (").concat(this.recurrentInput.width, ") are not same"));
@@ -30011,7 +30040,7 @@ var RecurrentInput = /*#__PURE__*/function (_Internal) {
     set: function set(deltas) {
       var recurrentInputDeltas = this.recurrentInput.deltas;
       this.recurrentInput.deltas = deltas;
-      release$k(recurrentInputDeltas);
+      release$g(recurrentInputDeltas);
     }
   }, {
     key: "weights",
@@ -30021,7 +30050,7 @@ var RecurrentInput = /*#__PURE__*/function (_Internal) {
     set: function set(weights) {
       var recurrentInputWeights = this.recurrentInput.weights;
       this.recurrentInput.weights = weights;
-      release$k(recurrentInputWeights);
+      release$g(recurrentInputWeights);
     }
   }]);
 
@@ -30032,10 +30061,10 @@ var recurrentInput = {
   RecurrentInput: RecurrentInput
 };
 
-var zeros2D$e = zeros2d.zeros2D;
+var zeros2D$8 = zeros2d.zeros2D;
 var Internal$4 = types.Internal;
-var release$l = kernel.release,
-    clear$d = kernel.clear;
+var release$h = kernel.release,
+    clear$9 = kernel.clear;
 
 var RecurrentZeros = /*#__PURE__*/function (_Internal) {
   _inherits(RecurrentZeros, _Internal);
@@ -30054,8 +30083,8 @@ var RecurrentZeros = /*#__PURE__*/function (_Internal) {
       this.praxis = null;
       this.width = width;
       this.height = height;
-      this.weights = zeros2D$e(width, height);
-      this.deltas = zeros2D$e(width, height);
+      this.weights = zeros2D$8(width, height);
+      this.deltas = zeros2D$8(width, height);
     }
   }, {
     key: "setupKernels",
@@ -30079,12 +30108,12 @@ var RecurrentZeros = /*#__PURE__*/function (_Internal) {
     }
   }, {
     key: "learn",
-    value: function learn(previousLayer, nextLayer, learningRate) {
+    value: function learn(learningRate) {
       var oldWeights = this.weights;
-      this.weights = this.praxis.run(this, previousLayer, nextLayer, learningRate); // this.deltas = deltas;
+      this.weights = this.praxis.run(this, learningRate); // this.deltas = deltas;
 
-      release$l(oldWeights);
-      clear$d(this.deltas);
+      release$h(oldWeights);
+      clear$9(this.deltas);
     }
   }, {
     key: "validate",
@@ -30113,12 +30142,12 @@ var recurrentZeros_1 = {
 var RecurrentConnection$1 = recurrentConnection.RecurrentConnection;
 var RecurrentInput$1 = recurrentInput.RecurrentInput;
 var RecurrentZeros$1 = recurrentZeros_1.RecurrentZeros;
-var Model$5 = types.Model,
+var Model$4 = types.Model,
     InternalModel$1 = types.InternalModel; // const { Target } = require('./layer/target');
 
-var FeedForward$1 = feedForward$2.FeedForward;
-var release$m = kernel.release,
-    clone$6 = kernel.clone;
+var FeedForward$1 = feedForward$1.FeedForward;
+var release$i = kernel.release,
+    clone$4 = kernel.clone;
 
 var Recurrent = /*#__PURE__*/function (_FeedForward) {
   _inherits(Recurrent, _FeedForward);
@@ -30270,7 +30299,7 @@ var Recurrent = /*#__PURE__*/function (_FeedForward) {
       });
       this._layerSets = [layerSet];
       this._model = layerSet.filter(function (l) {
-        return l instanceof Model$5 || l instanceof InternalModel$1;
+        return l instanceof Model$4 || l instanceof InternalModel$1;
       });
       this.initializeLayers(layerSet);
     }
@@ -30359,12 +30388,12 @@ var Recurrent = /*#__PURE__*/function (_FeedForward) {
         var error = this._trainPattern(data[i], true);
 
         sum = this.meanSquaredError.add(sum, error);
-        release$m(error);
-        release$m(prevSum);
+        release$i(error);
+        release$i(prevSum);
       }
 
       var result = this.meanSquaredError.divide(data.length, sum);
-      release$m(sum);
+      release$i(sum);
 
       if (result.toArray) {
         var resultArray = result.toArray();
@@ -30442,10 +30471,10 @@ var Recurrent = /*#__PURE__*/function (_FeedForward) {
           var lastLayer = layerSet[layerSet.length - 1];
           var prevError = error;
           error = meanSquaredError.addAbsolute(prevError, lastLayer.errors);
-          release$m(prevError);
+          release$i(prevError);
         }
 
-        return clone$6(meanSquaredError.divide(input.length, error));
+        return clone$4(meanSquaredError.divide(input.length, error));
       }
 
       return null;
@@ -30503,7 +30532,7 @@ var recurrent = {
   Recurrent: Recurrent
 };
 
-var zeros$b = zeros$1.zeros;
+var zeros$a = zeros$1.zeros;
 /**
  * A matrix
  * @param {Number} [rows]
@@ -30519,8 +30548,8 @@ var Matrix = /*#__PURE__*/function () {
     if (columns === undefined) return;
     this.rows = rows;
     this.columns = columns;
-    this.weights = zeros$b(rows * columns);
-    this.deltas = zeros$b(rows * columns);
+    this.weights = zeros$a(rows * columns);
+    this.deltas = zeros$a(rows * columns);
   }
   /**
    *
@@ -30676,7 +30705,7 @@ var Matrix = /*#__PURE__*/function () {
 
 var matrix = Matrix;
 
-var randomFloat$2 = random.randomFloat;
+var randomFloat$1 = random.randomFloat;
 /** return Matrix but filled with random numbers from gaussian
  * @param {Number} [rows]
  * @param {Number} [columns]
@@ -30700,7 +30729,7 @@ var RandomMatrix = /*#__PURE__*/function (_Matrix) {
     _this.std = std;
 
     for (var i = 0, max = _this.weights.length; i < max; i++) {
-      _this.weights[i] = randomFloat$2(-std, std);
+      _this.weights[i] = randomFloat$1(-std, std);
     }
 
     return _this;
@@ -31304,7 +31333,7 @@ var multiplyB = function multiplyB(product, left, right) {
  * @param {Matrix} left
  * @param {Matrix} right
  */
-var multiplyElement$4 = function multiplyElement(product, left, right) {
+var multiplyElement$3 = function multiplyElement(product, left, right) {
   var weights = left.weights;
 
   for (var i = 0; i < weights.length; i++) {
@@ -31332,7 +31361,7 @@ var multiplyElementB = function multiplyElementB(product, left, right) {
  * @param {Matrix} product
  * @param {Matrix} left
  */
-var relu$4 = function relu(product, left) {
+var relu$3 = function relu(product, left) {
   for (var i = 0; i < left.weights.length; i++) {
     product.weights[i] = Math.max(0, left.weights[i]); // relu
 
@@ -31385,7 +31414,7 @@ var rowPluckB = function rowPluckB(product, left, rowIndex) {
  * @param {Matrix} product
  * @param {Matrix} left
  */
-var sigmoid$7 = function sigmoid(product, left) {
+var sigmoid$6 = function sigmoid(product, left) {
   // sigmoid nonlinearity
   for (var i = 0; i < left.weights.length; i++) {
     product.weights[i] = 1 / (1 + Math.exp(-left.weights[i]));
@@ -31409,7 +31438,7 @@ var sigmoidB = function sigmoidB(product, left) {
  * @param {Matrix} product
  * @param {Matrix} left
  */
-var tanh$5 = function tanh(product, left) {
+var tanh$4 = function tanh(product, left) {
   // tanh nonlinearity
   for (var i = 0; i < left.weights.length; i++) {
     product.weights[i] = Math.tanh(left.weights[i]);
@@ -31593,7 +31622,7 @@ var Equation = /*#__PURE__*/function () {
         left: left,
         right: right,
         product: product,
-        forwardFn: multiplyElement$4,
+        forwardFn: multiplyElement$3,
         backpropagationFn: multiplyElementB
       });
       return product;
@@ -31611,7 +31640,7 @@ var Equation = /*#__PURE__*/function () {
       this.states.push({
         left: m,
         product: product,
-        forwardFn: relu$4,
+        forwardFn: relu$3,
         backpropagationFn: reluB
       });
       return product;
@@ -31673,7 +31702,7 @@ var Equation = /*#__PURE__*/function () {
       this.states.push({
         left: m,
         product: product,
-        forwardFn: sigmoid$7,
+        forwardFn: sigmoid$6,
         backpropagationFn: sigmoidB
       });
       return product;
@@ -31691,7 +31720,7 @@ var Equation = /*#__PURE__*/function () {
       this.states.push({
         left: m,
         product: product,
-        forwardFn: tanh$5,
+        forwardFn: tanh$4,
         backpropagationFn: tanhB
       });
       return product;
@@ -31846,7 +31875,7 @@ var Equation = /*#__PURE__*/function () {
 
 var equation = Equation;
 
-var randomFloat$3 = random.randomFloat;
+var randomFloat$2 = random.randomFloat;
 /**
  *
  * @param {Matrix} m
@@ -31856,7 +31885,7 @@ var randomFloat$3 = random.randomFloat;
 var sampleI = function sampleI(m) {
   // sample argmax from w, assuming w are
   // probabilities that sum to one
-  var r = randomFloat$3(0, 1);
+  var r = randomFloat$2(0, 1);
   var x = 0;
   var i = 0;
   var w = m.weights;
@@ -32507,8 +32536,8 @@ var dataFormatter = {
   defaultRNNFormatter: defaultRNNFormatter
 };
 
-var randomFloat$4 = random.randomFloat;
-var zeros$c = zeros$1.zeros;
+var randomFloat$3 = random.randomFloat;
+var zeros$b = zeros$1.zeros;
 var DataFormatter$1 = dataFormatter.DataFormatter,
     defaultRNNFormatter$1 = dataFormatter.defaultRNNFormatter;
 
@@ -32735,7 +32764,7 @@ var RNN = /*#__PURE__*/function () {
             deltas = matrix.deltas;
 
         if (!(matrixIndex in stepCache)) {
-          stepCache[matrixIndex] = zeros$c(matrix.rows * matrix.columns);
+          stepCache[matrixIndex] = zeros$b(matrix.rows * matrix.columns);
         }
 
         var cache = stepCache[matrixIndex];
@@ -33190,7 +33219,7 @@ var RNN = /*#__PURE__*/function () {
         }
       }
 
-      var src = "\n  if (typeof rawInput === 'undefined') rawInput = [];\n  if (typeof isSampleI === 'undefined') isSampleI = false;\n  if (typeof temperature === 'undefined') temperature = 1;\n  var json = ".concat(jsonString, ";\n  ").concat(this.dataFormatter ? "".concat(this.dataFormatter.toFunctionString(), ";\n  Object.assign(dataFormatter, json.options.dataFormatter);") : '', "\n  ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? "const formatDataIn = function (input, output) { ".concat(toInner(this.formatDataIn.toString()), " }.bind({ dataFormatter });") : '', "\n  ").concat(this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? "const formatDataOut = function formatDataOut(input, output) { ".concat(toInner(this.formatDataOut.toString()), " }.bind({ dataFormatter });") : '', "\n  var maxPredictionLength =\n    ").concat(this.maxPredictionLength, " +\n    rawInput.length +\n    ").concat(this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0, ";\n  var input = ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput', ";\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n\n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n\n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ").concat(this.dataFormatter && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })', ";\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros$c.toString(), "\n  ").concat(softmax.toString(), "\n  ").concat(randomFloat$4.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString()); // eslint-disable-next-line no-new-func
+      var src = "\n  if (typeof rawInput === 'undefined') rawInput = [];\n  if (typeof isSampleI === 'undefined') isSampleI = false;\n  if (typeof temperature === 'undefined') temperature = 1;\n  var json = ".concat(jsonString, ";\n  ").concat(this.dataFormatter ? "".concat(this.dataFormatter.toFunctionString(), ";\n  Object.assign(dataFormatter, json.options.dataFormatter);") : '', "\n  ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? "const formatDataIn = function (input, output) { ".concat(toInner(this.formatDataIn.toString()), " }.bind({ dataFormatter });") : '', "\n  ").concat(this.dataFormatter !== null && typeof this.formatDataOut === 'function' ? "const formatDataOut = function formatDataOut(input, output) { ".concat(toInner(this.formatDataOut.toString()), " }.bind({ dataFormatter });") : '', "\n  var maxPredictionLength =\n    ").concat(this.maxPredictionLength, " +\n    rawInput.length +\n    ").concat(this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0, ";\n  var input = ").concat(this.dataFormatter && typeof this.formatDataIn === 'function' ? 'formatDataIn(rawInput)' : 'rawInput', ";\n  var _i = 0;\n  var output = [];\n  var states = [];\n  var prevStates;\n  while (true) {\n    var previousIndex = (_i === 0\n        ? 0\n        : _i < input.length\n          ? input[_i - 1] + 1\n          : output[_i - 1])\n          ;\n    var rowPluckIndex = previousIndex;\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      var state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n\n    var logProbabilities = state.product;\n    if (temperature !== 1 && isSampleI) {\n      for (var q = 0, nq = logProbabilities.weights.length; q < nq; q++) {\n        logProbabilities.weights[q] /= temperature;\n      }\n    }\n\n    var probs = softmax(logProbabilities);\n    var nextIndex = isSampleI ? sampleI(probs) : maxI(probs);\n\n    _i++;\n    if (nextIndex === 0) {\n      break;\n    }\n    if (_i >= maxPredictionLength) {\n      break;\n    }\n\n    output.push(nextIndex);\n  }\n  ").concat(this.dataFormatter && typeof this.formatDataOut === 'function' ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))' : 'return output.slice(input.length).map(function(value) { return value - 1; })', ";\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros$b.toString(), "\n  ").concat(softmax.toString(), "\n  ").concat(randomFloat$3.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString()); // eslint-disable-next-line no-new-func
 
       return new Function('rawInput', 'isSampleI', 'temperature', cb ? cb(src) : src);
     }
@@ -33374,7 +33403,7 @@ var GRU = /*#__PURE__*/function (_RNN) {
   return GRU;
 }(rnn);
 
-var gru$2 = GRU;
+var gru$1 = GRU;
 
 function ArrayLookupTable(data, prop) {
   this.length = 0;
@@ -33396,8 +33425,8 @@ function ArrayLookupTable(data, prop) {
 
 var arrayLookupTable = ArrayLookupTable;
 
-var zeros$d = zeros$1.zeros;
-var randomFloat$5 = random.randomFloat;
+var zeros$c = zeros$1.zeros;
+var randomFloat$4 = random.randomFloat;
 var arraysToFloat32Arrays$1 = cast.arraysToFloat32Arrays,
     arrayToFloat32Arrays$1 = cast.arrayToFloat32Arrays,
     objectsToFloat32Arrays$1 = cast.objectsToFloat32Arrays,
@@ -34681,7 +34710,7 @@ var RNNTimeStep = /*#__PURE__*/function (_RNN) {
       }
 
       var forceForecast = this.inputSize === 1 && this.outputLookup;
-      var src = "\n  var input = ".concat(this.inputLookup ? 'lookupInput(rawInput)' : 'rawInput', ";\n  var json = ").concat(jsonString, ";\n  var output = [];\n  var states = [];\n  var prevStates;\n  var state;\n  var max = ").concat(forceForecast ? inputLookup === outputLookup ? inputLookupLength : "input.length + ".concat(outputLookupLength - 1) : 'input.length', ";\n  for (var _i = 0; _i < max; _i++) {\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n    ").concat(inputSize === 1 && inputLookup ? 'if (_i >= input.length - 1) { output.push(state.product.weights); }' : 'output = state.product.weights;', "\n  }\n  ").concat(outputLookup ? outputLookup === inputLookup ? 'return lookupOutputPartial(output, input)' : 'return lookupOutput(output)' : inputSize === 1 ? 'return output[0]' : 'return output', ";\n  ").concat(formatInputData(), "\n  ").concat(formatOutputData(), "\n\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros$d.toString(), "\n  ").concat(softmax.toString().replace('_2.default', 'Matrix'), "\n  ").concat(randomFloat$5.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString()); // eslint-disable-next-line no-new-func
+      var src = "\n  var input = ".concat(this.inputLookup ? 'lookupInput(rawInput)' : 'rawInput', ";\n  var json = ").concat(jsonString, ";\n  var output = [];\n  var states = [];\n  var prevStates;\n  var state;\n  var max = ").concat(forceForecast ? inputLookup === outputLookup ? inputLookupLength : "input.length + ".concat(outputLookupLength - 1) : 'input.length', ";\n  for (var _i = 0; _i < max; _i++) {\n    prevStates = states;\n    states = [];\n    ").concat(statesRaw.join(';\n    '), ";\n    for (var stateIndex = 0, stateMax = ").concat(statesRaw.length, "; stateIndex < stateMax; stateIndex++) {\n      state = states[stateIndex];\n      var product = state.product;\n      var left = state.left;\n      var right = state.right;\n\n      switch (state.name) {\n").concat(innerFunctionsSwitch.join('\n'), "\n      }\n    }\n    ").concat(inputSize === 1 && inputLookup ? 'if (_i >= input.length - 1) { output.push(state.product.weights); }' : 'output = state.product.weights;', "\n  }\n  ").concat(outputLookup ? outputLookup === inputLookup ? 'return lookupOutputPartial(output, input)' : 'return lookupOutput(output)' : inputSize === 1 ? 'return output[0]' : 'return output', ";\n  ").concat(formatInputData(), "\n  ").concat(formatOutputData(), "\n\n  function Matrix(rows, columns) {\n    this.rows = rows;\n    this.columns = columns;\n    this.weights = zeros(rows * columns);\n  }\n  ").concat(zeros$c.toString(), "\n  ").concat(softmax.toString().replace('_2.default', 'Matrix'), "\n  ").concat(randomFloat$4.toString(), "\n  ").concat(sampleI.toString(), "\n  ").concat(maxI.toString()); // eslint-disable-next-line no-new-func
 
       return new Function('rawInput', cb ? cb(src) : src);
     }
@@ -34717,7 +34746,7 @@ var GRUTimeStep = /*#__PURE__*/function (_RNNTimeStep) {
   _createClass(GRUTimeStep, null, [{
     key: "getModel",
     value: function getModel(hiddenSize, prevSize) {
-      return gru$2.getModel(hiddenSize, prevSize);
+      return gru$1.getModel(hiddenSize, prevSize);
     }
     /**
      *
@@ -34731,7 +34760,7 @@ var GRUTimeStep = /*#__PURE__*/function (_RNNTimeStep) {
   }, {
     key: "getEquation",
     value: function getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
-      return gru$2.getEquation(equation, inputMatrix, previousResult, hiddenLayer);
+      return gru$1.getEquation(equation, inputMatrix, previousResult, hiddenLayer);
     }
   }]);
 
@@ -39992,7 +40021,7 @@ var TrainStream = /*#__PURE__*/function (_Writable) {
 
 var trainStream = TrainStream;
 
-var FeedForward$2 = feedForward$2.FeedForward;
+var FeedForward$2 = feedForward$1.FeedForward;
 var Recurrent$1 = recurrent.Recurrent;
 var recurrentZeros$1 = recurrentZeros_1.recurrentZeros;
 var recurrentJSONTypes = ['RNN', 'LSTM', 'GRU', 'RNNTimeStep', 'LSTMTimeStep', 'GRUTimeStep', 'Recurrent'];
@@ -40299,10 +40328,10 @@ var brain = {
   CrossValidate: crossValidate,
   likely: likely,
   layer: layer,
-  layerTypes: types,
+  layerTypes: layerTypes,
   lookup: lookup,
   praxis: praxis,
-  FeedForward: feedForward$2.FeedForward,
+  FeedForward: feedForward$1.FeedForward,
   NeuralNetwork: neuralNetwork,
   NeuralNetworkGPU: neuralNetworkGpu,
   Recurrent: recurrent.Recurrent,
@@ -40313,13 +40342,13 @@ var brain = {
     GRUTimeStep: gruTimeStep,
     RNN: rnn,
     LSTM: lstm,
-    GRU: gru$2
+    GRU: gru$1
   },
   utilities: {
     max: max$1,
     mse: mse,
     ones: ones,
-    random: random,
+    randomFloat: randomFloat,
     randomWeight: randomWeight,
     randos: randos,
     range: range,

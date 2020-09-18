@@ -317,16 +317,11 @@ class Convolution extends Filter {
     this.inputLayer.deltas = clone(this.deltas);
   }
 
-  learn(previousLayer, nextLayer, learningRate) {
+  learn(learningRate) {
     // TODO: handle filters
     // TODO: do we need to release here?
     const { weights: oldWeights } = this;
-    this.weights = this.praxis.run(
-      this,
-      previousLayer,
-      nextLayer,
-      learningRate
-    );
+    this.weights = this.praxis.run(this, learningRate);
     release(oldWeights);
     clear(this.deltas);
   }

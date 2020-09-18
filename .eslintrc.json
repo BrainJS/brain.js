@@ -24,6 +24,7 @@
     "@typescript-eslint/no-var-requires": "off",
     "@typescript-eslint/semi": "off",
     "@typescript-eslint/space-before-function-paren": "off",
+    "@typescript-eslint/strict-boolean-expressions": "off",
     "arrow-parens": "off",
     "class-methods-use-this": "off",
     "max-classes-per-file": "off",

@@ -3,9 +3,15 @@ import {
   Input,
   IKernelSettings,
   IKernelRunShortcut,
+  IKernelMapRunShortcut,
   KernelFunction,
   OutputDimensions,
   Texture,
+  ThreadKernelVariable,
+  KernelOutput,
+  IConstantsThis,
+  ISubKernelObject,
+  ThreadFunction,
 } from 'gpu.js';
 
 let gpuInstance: GPU | null = null;
@@ -28,31 +34,46 @@ export function teardown(): void {
   gpuInstance = null;
 }
 
-export interface makeKernelSettings extends IKernelSettings {
-  map?: {
-    [targetLocation: string]: KernelFunction;
-  };
-}
-
 /**
  * Compiles a function into a gpu.js kernel
  * @param fn The function to be compiled
  * @param settings Kernel settings/options
  */
-export function makeKernel(
-  fn: KernelFunction,
-  settings: makeKernelSettings
+export function makeKernel<
+  ArgTypes extends ThreadKernelVariable[] = ThreadKernelVariable[],
+  ConstantsTypes extends IConstantsThis = IConstantsThis
+>(
+  fn: KernelFunction<ArgTypes, ConstantsTypes>,
+  settings: IKernelSettings
 ): IKernelRunShortcut {
-  if (gpuInstance === null) {
-    setup(new GPU({ mode: 'gpu' }));
+  let _gpuInstance: GPU = gpuInstance as GPU;
+  if (_gpuInstance === null) {
+    _gpuInstance = new GPU({ mode: 'gpu' });
+    setup(_gpuInstance);
   }
 
-  if (settings.map !== undefined) {
-    return gpuInstance!
-      .createKernelMap(settings.map, fn, settings)
-      .setPipeline(true);
+  return _gpuInstance
+    .createKernel<ArgTypes, ConstantsTypes>(fn, settings)
+    .setPipeline(true);
+}
+
+export function makeKernelMap<
+  ArgTypes extends ThreadKernelVariable[],
+  ConstantsTypes extends IConstantsThis
+>(
+  map: ISubKernelObject,
+  fn: ThreadFunction<ArgTypes, ConstantsTypes>,
+  settings: IKernelSettings
+): IKernelMapRunShortcut<ISubKernelObject> {
+  let _gpuInstance: GPU = gpuInstance as GPU;
+  if (_gpuInstance === null) {
+    _gpuInstance = new GPU({ mode: 'gpu' });
+    setup(_gpuInstance);
   }
-  return gpuInstance!.createKernel(fn, settings).setPipeline(true);
+
+  return _gpuInstance
+    .createKernelMap<ArgTypes, ConstantsTypes>(map, fn, settings)
+    .setPipeline(true);
 }
 
 /**
@@ -60,16 +81,16 @@ export function makeKernel(
  * @param fn The function to be compiled
  * @param settings Kernel settings/options
  */
-export function makeDevKernel(
-  fn: KernelFunction,
-  settings: makeKernelSettings
-): IKernelRunShortcut {
-  if ('map' in settings) {
-    throw new Error('map kernels are not supported by dev kernels');
-  }
-  const gpu = new GPU({ mode: 'dev' });
-  return gpu.createKernel(fn, settings);
-}
+// export function makeDevKernel(
+//   fn: ThreadFunction,
+//   settings: makeKernelSettings
+// ): IKernelRunShortcut {
+//   if ('map' in settings) {
+//     throw new Error('map kernels are not supported by dev kernels');
+//   }
+//   const gpu = new GPU({ mode: 'dev' });
+//   return gpu.createKernel(fn, settings);
+// }
 
 export function kernelInput(value: number[], size: OutputDimensions): Input {
   return new Input(value, size);
@@ -77,71 +98,76 @@ export function kernelInput(value: number[], size: OutputDimensions): Input {
 
 /**
  * Deletes a gpu.js texture and frees VRAM
- * @param texture Texture to be deleted
+ * @param possibleTexture Texture to be deleted
  */
-export function release(texture: Texture): void {
-  if ('delete' in texture) {
-    texture.delete();
+export function release(possibleTexture: KernelOutput | Input): void {
+  if (possibleTexture instanceof Texture) {
+    possibleTexture.delete();
   }
 }
 
 /**
  * Cleans ie sets all elements to 0 of a Texture or a js array
- * @param texture The texture or js array to be cleared
+ * @param value The value to be cleared
  */
-export function clear(
-  texture: Texture | Float32Array | Float32Array[] | Float32Array[][]
-): void {
-  if ('clear' in texture) {
-    texture.clear();
+export function clear(value: KernelOutput): void {
+  if (value instanceof Texture) {
+    value.clear();
     return;
   }
-  if (texture instanceof Float32Array) {
-    texture.fill(0);
-  } else if (texture[0] instanceof Float32Array) {
-    for (let x = 0; x < texture.length; x++) {
-      (texture[x] as Float32Array).fill(0);
-    }
-  } else if (texture[0][0] instanceof Float32Array) {
-    for (let y = 0; y < texture.length; y++) {
-      const row = texture[y];
-      for (let x = 0; x < row.length; x++) {
-        (row[x] as Float32Array).fill(0);
+
+  // array
+  if (Array.isArray(value)) {
+    if (typeof value[0] === 'number') {
+      (value as number[]).fill(0);
+    } else if (typeof value[0][0] === 'number') {
+      for (let x = 0; x < value.length; x++) {
+        (value[x] as number[]).fill(0);
       }
+      return;
+    } else if (typeof value[0][0][0] === 'number') {
+      // cube
+      for (let y = 0; y < value.length; y++) {
+        const row: number[][] = value[y] as number[][];
+        for (let x = 0; x < row.length; x++) {
+          row[x].fill(0);
+        }
+      }
+      return;
     }
   }
+  throw new Error('unhandled value');
 }
 
 /**
- * Clones a texture or a js array
- * @param texture The texture or js array to be cloned
+ * Clones a value
+ * @param value to be cloned
  */
-export function clone(
-  texture: Texture | number[] | number[][] | number[][][]
-): Texture | number[] | number[][] | number[][][] {
-  if ('clone' in texture) {
-    return texture.clone();
+export function clone(value: KernelOutput): KernelOutput {
+  if (value instanceof Texture) {
+    return value.clone();
   }
 
-  if (typeof texture[0] === 'number') {
-    return texture.slice(0);
-  } else if (typeof texture[0][0] === 'number') {
-    const matrix = new Array(texture.length);
-    for (let x = 0; x < texture.length; x++) {
-      matrix[x] = (texture[x] as number[]).slice(0);
-    }
-    return matrix;
-  } else if (typeof texture[0][0][0] === 'number') {
-    const cube = new Array(texture.length);
-    for (let y = 0; y < texture.length; y++) {
-      const row = texture[y] as number[][];
-      const matrix = new Array(row.length);
-      for (let x = 0; x < row.length; x++) {
-        matrix[x] = row[x].slice(0);
+  if (Array.isArray(value)) {
+    if (typeof value[0] === 'number') {
+      return value.slice(0);
+    } else if (typeof value[0][0] === 'number') {
+      const matrix = new Array(value.length);
+      for (let x = 0; x < value.length; x++) {
+        matrix[x] = (value[x] as Float32Array).slice(0);
       }
+      return matrix;
+    } else if (typeof value[0][0][0] === 'number') {
+      const cube = new Array(value.length);
+      for (let y = 0; y < value.length; y++) {
+        const row = value[y] as number[][];
+        const matrix = new Array(row.length);
+        for (let x = 0; x < row.length; x++) {
+          matrix[x] = row[x].slice(0);
+        }
+      }
+      return cube;
     }
-    return cube;
   }
-
-  throw new Error('unknown state!');
+  throw new Error('unhandled value');
 }

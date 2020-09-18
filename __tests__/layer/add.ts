@@ -1,18 +1,29 @@
-const { GPU } = require('gpu.js');
-const { gpuMock } = require('gpu-mock.js');
+import { GPU } from 'gpu.js';
+import { gpuMock } from 'gpu-mock.js';
 
-const { predict, Add, add } = require('../../src/layer/add');
-const {
+import { predict, Add, add } from '../../src/layer/add';
+import {
   setup,
   teardown,
   makeKernel,
   release,
-} = require('../../src/utilities/kernel');
-const { checkSameSize } = require('../../src/utilities/layer-size');
-const { injectIstanbulCoverage } = require('../test-utils');
+} from '../../src/utilities/kernel';
+import { checkSameSize } from '../../src/utilities/layer-size';
+import { injectIstanbulCoverage, mockLayer, mockPraxis } from '../test-utils';
 
 jest.mock('../../src/utilities/layer-size');
-jest.mock('../../src/utilities/kernel');
+jest.mock('../../src/utilities/kernel', () => {
+  return {
+    makeKernel: jest.fn((fn) => () => [fn()]),
+    setup: jest.fn(),
+    release: jest.fn(),
+    clear: jest.fn(),
+    teardown: jest.fn(),
+    clone: jest.fn((matrix: Float32Array[]) =>
+      matrix.map((row: Float32Array) => row.slice(0))
+    ),
+  };
+});
 
 describe('Add Layer', () => {
   beforeEach(() => {
@@ -27,36 +38,47 @@ describe('Add Layer', () => {
     teardown();
   });
   describe('.constructor', () => {
+    let validateSpy: jest.SpyInstance;
+    let setupPraxisSpy: jest.SpyInstance;
     beforeEach(() => {
-      jest.spyOn(Add.prototype, 'validate');
-      jest.spyOn(Add.prototype, 'setupPraxis');
+      validateSpy = jest.spyOn(Add.prototype, 'validate');
+      setupPraxisSpy = jest.spyOn(Add.prototype, 'setupPraxis');
     });
     afterEach(() => {
-      Add.prototype.validate.mockRestore();
-      Add.prototype.setupPraxis.mockRestore();
+      validateSpy.mockRestore();
+      setupPraxisSpy.mockRestore();
     });
     it('sets up the instance', () => {
-      const mockInputLayer1 = {
-        width: 1,
-        height: 1,
+      const mockInputLayer1 = mockLayer({ width: 1, height: 1 });
+      const mockInputLayer2 = mockLayer({ width: 1, height: 1 });
+      const praxis = mockPraxis();
+      const settings = {
+        praxis,
       };
-      const mockInputLayer2 = {
-        width: 1,
-        height: 1,
-      };
-      const settings = {};
       const add = new Add(mockInputLayer1, mockInputLayer2, settings);
       expect(add.inputLayer1).toBe(mockInputLayer1);
       expect(add.inputLayer2).toBe(mockInputLayer2);
       expect(add.validate).toBeCalled();
-      expect(add.setupPraxis).toBeCalledWith(settings);
+      expect(add.setupPraxis).toBeCalled();
     });
   });
   describe('.predict (forward propagation)', () => {
     test('releases this.weights', () => {
-      const add = new Add({ width: 1, height: 1 }, { width: 1, height: 1 });
-      add.predictKernel = () => {};
-      const mockWeights = (add.weights = {});
+      const praxis = mockPraxis();
+      const add = new Add(
+        mockLayer({ width: 1, height: 1, weights: [new Float32Array(1)] }),
+        mockLayer({ width: 1, height: 1, weights: [new Float32Array(1)] }),
+        {
+          praxis,
+        }
+      );
+      add.predictKernel = makeKernel(
+        function (weights1: number[][], weights2: number[][]) {
+          return 1;
+        },
+        { output: [1, 1] }
+      );
+      const mockWeights = (add.weights = [new Float32Array(1)]);
       add.predict();
       expect(release).toHaveBeenCalledWith(mockWeights);
     });
@@ -109,6 +131,7 @@ describe('Add Layer', () => {
       Add.prototype.setupKernels.apply(mockInstance);
       expect(makeKernel).toHaveBeenCalledWith(predict, {
         output: [1, 1],
+        immutable: true,
       });
       expect(mockInstance.predictKernel).not.toBe(null);
     });
@@ -142,6 +165,9 @@ describe('Add Layer', () => {
     });
   });
   describe('.compare', () => {
+    beforeEach(() => {
+      jest.unmock('../../src/utilities/kernel');
+    });
     it('sets this.inputLayer1.deltas & this.inputLayer2.deltas from this.deltas', () => {
       const mockDeltas = [new Float32Array([1])];
       const mockInstance = {
@@ -154,31 +180,35 @@ describe('Add Layer', () => {
         },
       };
       Add.prototype.compare.apply(mockInstance);
-      expect(mockInstance.inputLayer1.deltas).toBe(mockDeltas);
-      expect(mockInstance.inputLayer2.deltas).toBe(mockDeltas);
+      expect(mockInstance.inputLayer1.deltas).toEqual(mockDeltas);
+      expect(mockInstance.inputLayer2.deltas).toEqual(mockDeltas);
     });
   });
   describe('add()', () => {
+    let setupPraxisMock: jest.SpyInstance;
     beforeEach(() => {
-      jest.spyOn(Add.prototype, 'setupPraxis');
+      setupPraxisMock = jest.spyOn(Add.prototype, 'setupPraxis');
     });
     afterEach(() => {
-      Add.prototype.setupPraxis.mockRestore();
+      setupPraxisMock.mockRestore();
     });
     it('instantiates Add with inputLayer1, inputLayer2, and settings', () => {
-      const mockInputLayer1 = {
+      const mockInputLayer1 = mockLayer({
         width: 1,
         height: 1,
-      };
-      const mockInputLayer2 = {
+      });
+      const mockInputLayer2 = mockLayer({
         width: 1,
         height: 1,
+      });
+      const praxis = mockPraxis();
+      const settings = {
+        praxis,
       };
-      const settings = {};
       const layer = add(mockInputLayer1, mockInputLayer2, settings);
       expect(layer.inputLayer1).toBe(mockInputLayer1);
       expect(layer.inputLayer2).toBe(mockInputLayer2);
-      expect(layer.setupPraxis).toBeCalledWith(settings);
+      expect(layer.setupPraxis).toHaveBeenCalled();
     });
   });
 });

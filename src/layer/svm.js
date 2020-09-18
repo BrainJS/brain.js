@@ -1,6 +1,6 @@
-const { Base } = require('./base');
+const { BaseLayer } = require('./base-layer');
 
-class SVM extends Base {
+class SVM extends BaseLayer {
   predict() {
     this.weights = this.inputs;
     this.validate();
