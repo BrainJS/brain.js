@@ -6,6 +6,7 @@ import {
   predict,
   compareFromX,
   compareFromY,
+  IMultiplyConstants,
 } from '../../src/layer/multiply';
 import { Random } from '../../src/layer/random';
 import { setup, teardown } from '../../src/utilities/kernel';
@@ -34,7 +35,10 @@ describe('Multiply Layer', () => {
         [9, 10],
         [11, 12],
       ];
-      const predictKernel = gpuMock(predict, {
+      const predictKernel = gpuMock<
+      Parameters<typeof predict>,
+      IMultiplyConstants
+      >(predict, {
         output: [2, 2],
         constants: {
           size: inputs2.length,
