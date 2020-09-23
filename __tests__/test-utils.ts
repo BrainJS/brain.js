@@ -162,7 +162,7 @@ export function shave3D(value: Float32Array[][]): Float32Array[][] {
 
 // it was found that coverage breaks when you compare leftFunction.toString() === rightString.toString()
 // this does a check on the first line of the function source, which is good enough for knowing the function signature
-export function expectFunction(source: string, fn: KernelFunction): void {
+export function expectFunction(source: string, fn: Function): void {
   expect(source.toString().split(/\n/g)[0]).toBe(fn.toString().split(/\n/g)[0]);
 }
 

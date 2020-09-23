@@ -1,31 +1,48 @@
-const { Activation } = require('./types');
-const { makeKernel, release, clear } = require('../utilities/kernel');
-const { activate, measure } = require('../activation/sigmoid');
+import { ILayer, ILayerSettings } from './base-layer';
+import { IKernelFunctionThis, IKernelRunShortcut } from 'gpu.js';
 
-function predict2D(inputs) {
+import { Activation } from './types';
+import { makeKernel, release, clear } from '../utilities/kernel';
+import { activate, measure } from '../activation/sigmoid';
+
+export function predict2D(
+  this: IKernelFunctionThis,
+  inputs: number[][]
+): number {
   return 1 / (1 + Math.exp(-inputs[this.thread.y][this.thread.x]));
 }
 
-function predict3D(inputs) {
+export function predict3D(
+  this: IKernelFunctionThis,
+  inputs: number[][][]
+): number {
   return (
     1 / (1 + Math.exp(-inputs[this.thread.z][this.thread.y][this.thread.x]))
   );
 }
 
-function compare2D(weights, deltas) {
+export function compare2D(
+  this: IKernelFunctionThis,
+  weights: number[][],
+  deltas: number[][]
+): number {
   const weight = weights[this.thread.y][this.thread.x];
   const delta = deltas[this.thread.y][this.thread.x];
   return weight * (1 - weight) * delta;
 }
 
-function compare3D(weights, deltas) {
+export function compare3D(
+  this: IKernelFunctionThis,
+  weights: number[][][],
+  deltas: number[][][]
+): number {
   const weight = weights[this.thread.z][this.thread.y][this.thread.x];
   const delta = deltas[this.thread.z][this.thread.y][this.thread.x];
   return weight * (1 - weight) * delta;
 }
 
-class Sigmoid extends Activation {
-  setupKernels() {
+export class Sigmoid extends Activation {
+  setupKernels(): void {
     if (this.depth > 0) {
       this.predictKernel = makeKernel(predict3D, {
         output: [this.width, this.height, this.depth],
@@ -53,27 +70,23 @@ class Sigmoid extends Activation {
     }
   }
 
-  predict() {
+  predict(): void {
     release(this.weights);
-    this.weights = this.predictKernel(this.inputLayer.weights);
+    this.weights = (this.predictKernel as IKernelRunShortcut)(
+      this.inputLayer.weights
+    );
     clear(this.deltas);
   }
 
-  compare() {
+  compare(): void {
     release(this.inputLayer.deltas);
-    this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
+    this.inputLayer.deltas = (this.compareKernel as IKernelRunShortcut)(
+      this.weights,
+      this.deltas
+    );
   }
 }
 
-function sigmoid(inputLayer, settings) {
+export function sigmoid(inputLayer: ILayer, settings?: ILayerSettings) {
   return new Sigmoid(inputLayer, settings);
 }
-
-module.exports = {
-  Sigmoid,
-  sigmoid,
-  predict2D,
-  predict3D,
-  compare2D,
-  compare3D,
-};

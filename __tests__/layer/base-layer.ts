@@ -26,7 +26,7 @@ class MockPraxis extends BasePraxis implements IPraxis {
     this.settings = settings;
   }
 
-  run(layer: BaseLayer, learningRate: number): KernelOutput {
+  run(layer: ILayer, learningRate: number): KernelOutput {
     return new Float32Array();
   }
 }

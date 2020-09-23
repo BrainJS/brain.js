@@ -1,4 +1,4 @@
-import { BaseLayer, ILayer } from '../layer/base-layer';
+import { ILayer } from '../layer/base-layer';
 import { IKernelRunShortcut, KernelOutput } from 'gpu.js';
 
 export interface IPraxisSettings {
@@ -14,12 +14,13 @@ export interface IPraxis {
   width: number;
   height: number;
   depth: number;
-  run: (layer: BaseLayer, learningRate: number) => KernelOutput;
+  run: (layer: ILayer, learningRate: number) => KernelOutput;
 }
 
 export abstract class BasePraxis implements IPraxis {
   layerTemplate: ILayer;
   kernel: IKernelRunShortcut | null;
+  settings: Partial<IPraxisSettings>;
 
   get width(): number {
     return this.layerTemplate.width;
@@ -33,14 +34,15 @@ export abstract class BasePraxis implements IPraxis {
     return this.layerTemplate.depth;
   }
 
-  constructor(layerTemplate: ILayer) {
+  constructor(layerTemplate: ILayer, settings: IPraxisSettings = {}) {
     this.layerTemplate = layerTemplate;
+    this.settings = { ...settings };
     this.kernel = null;
   }
 
   setupKernels(): void {}
 
-  reuseKernels(praxis: BasePraxis): void {
+  reuseKernels(praxis: IPraxis): void {
     if (praxis.width !== this.width) {
       throw new Error(
         `${this.constructor.name} kernel width mismatch ${praxis.width} is not ${this.width}`
@@ -56,5 +58,5 @@ export abstract class BasePraxis implements IPraxis {
     }
   }
 
-  abstract run(layer: BaseLayer, learningRate: number): KernelOutput;
+  abstract run(layer: ILayer, learningRate: number): KernelOutput;
 }

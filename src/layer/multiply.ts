@@ -6,7 +6,7 @@ import {
   IKernelRunShortcut,
   Texture,
 } from 'gpu.js';
-import { BaseLayer, ILayerSettings } from './base-layer';
+import { ILayer, ILayerSettings } from './base-layer';
 
 export interface IMultiplyConstants extends IConstantsThis {
   size: number;
@@ -165,9 +165,9 @@ export class Multiply extends Operator {
 }
 
 export function multiply(
-  inputLayer1: BaseLayer,
-  inputLayer2: BaseLayer,
-  settings: ILayerSettings
+  inputLayer1: ILayer,
+  inputLayer2: ILayer,
+  settings?: ILayerSettings
 ): Multiply {
   return new Multiply(inputLayer1, inputLayer2, settings);
 }

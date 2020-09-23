@@ -1,6 +1,6 @@
 import { makeKernelMap } from '../utilities/kernel';
 import { zeros2D } from '../utilities/zeros-2d';
-import { BasePraxis } from './base-praxis';
+import { BasePraxis, IPraxisSettings } from './base-praxis';
 import { ILayer } from '../layer/base-layer';
 import {
   IConstantsThis,
@@ -39,12 +39,12 @@ function update(
   return weight + change;
 }
 
-export interface IArthurDeviationWeightsSettings {
-  learningRate: number;
-  momentum: number;
-  weightsLayer: ILayer | null;
-  incomingLayer: ILayer | null;
-  deltaLayer: ILayer | null;
+export interface IArthurDeviationWeightsSettings extends IPraxisSettings {
+  learningRate?: number;
+  momentum?: number;
+  weightsLayer?: ILayer | null;
+  incomingLayer?: ILayer | null;
+  deltaLayer?: ILayer | null;
 }
 
 export interface IKernelMapResults extends ISubKernelsResults {
@@ -64,26 +64,38 @@ export class ArthurDeviationWeights extends BasePraxis {
   kernelMap: IKernelMapRunShortcut<ISubKernelObject> | null = null;
   settings: IArthurDeviationWeightsSettings;
   get learningRate(): number {
-    return this.settings.learningRate;
+    return this.settings.learningRate as number;
   }
 
   get momentum(): number {
-    return this.settings.momentum;
+    return this.settings.momentum as number;
   }
 
   get weightsLayer(): ILayer {
     return this.settings.weightsLayer as ILayer;
   }
 
+  set weightsLayer(layer: ILayer) {
+    this.settings.weightsLayer = layer;
+  }
+
   get deltaLayer(): ILayer {
     return this.settings.deltaLayer as ILayer;
+  }
+
+  set deltaLayer(layer: ILayer) {
+    this.settings.deltaLayer = layer;
   }
 
   get incomingLayer(): ILayer {
     return this.settings.incomingLayer as ILayer;
   }
 
-  constructor(layer: ILayer, settings: IArthurDeviationWeightsSettings) {
+  set incomingLayer(layer: ILayer) {
+    this.settings.incomingLayer = layer;
+  }
+
+  constructor(layer: ILayer, settings?: IArthurDeviationWeightsSettings) {
     super(layer);
     this.settings = { ...defaultSettings, ...settings };
     this.changes = zeros2D(layer.width, layer.height);
@@ -119,7 +131,7 @@ export class ArthurDeviationWeights extends BasePraxis {
 
 export function arthurDeviationWeights(
   layer: ILayer,
-  settings: IArthurDeviationWeightsSettings
+  settings?: Partial<IArthurDeviationWeightsSettings>
 ): ArthurDeviationWeights {
   return new ArthurDeviationWeights(layer, settings);
 }

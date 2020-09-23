@@ -1,6 +1,6 @@
 import { makeKernel } from '../utilities/kernel';
-import { BasePraxis } from './base-praxis';
-import { BaseLayer, ILayer } from '../layer/base-layer';
+import { BasePraxis, IPraxisSettings } from './base-praxis';
+import { ILayer } from '../layer/base-layer';
 import { IKernelFunctionThis, IKernelRunShortcut, KernelOutput } from 'gpu.js';
 
 export interface IUpdateThis extends IKernelFunctionThis {
@@ -20,22 +20,20 @@ export function update(
   );
 }
 
-export interface IArthurDeviationBiasesSettings {
-  learningRate: number;
+export interface IArthurDeviationBiasesSettings extends IPraxisSettings {
+  learningRate?: number;
 }
 
-export class ArthurDeviationBiases extends BasePraxis {
-  static get defaults(): IArthurDeviationBiasesSettings {
-    return {
-      learningRate: 0.3,
-    };
-  }
+export const defaultSettings = {
+  learningRate: 0.3,
+};
 
+export class ArthurDeviationBiases extends BasePraxis {
   settings: IArthurDeviationBiasesSettings;
   kernel: IKernelRunShortcut | null;
-  constructor(layer: BaseLayer, settings: IArthurDeviationBiasesSettings) {
+  constructor(layer: ILayer, settings?: IArthurDeviationBiasesSettings) {
     super(layer);
-    this.settings = { ...settings };
+    this.settings = { ...settings, ...defaultSettings };
     this.kernel = null;
   }
 
@@ -54,8 +52,8 @@ export class ArthurDeviationBiases extends BasePraxis {
 }
 
 export function arthurDeviationBiases(
-  layer: BaseLayer,
-  settings: IArthurDeviationBiasesSettings
+  layer: ILayer,
+  settings?: Partial<IArthurDeviationBiasesSettings>
 ): ArthurDeviationBiases {
   return new ArthurDeviationBiases(layer, settings);
 }

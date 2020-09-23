@@ -18,7 +18,7 @@ export interface ILayer {
   praxis: IPraxis | null;
   predictKernel: IKernelRunShortcut | null;
   compareKernel: IKernelRunShortcut | null;
-  settings: ILayerSettings;
+  settings: Partial<ILayerSettings>;
 }
 
 export interface ILayerSettings {
@@ -29,11 +29,13 @@ export interface ILayerSettings {
   deltas?: KernelOutput | null;
   name?: string | null;
   praxis?: IPraxis | null;
-  praxisOpts?: IPraxisSettings | null;
-  initPraxis?: (layerTemplate: ILayer, settings?: IPraxisSettings) => IPraxis;
+  praxisOpts?: Partial<IPraxisSettings> | null;
+  initPraxis?:
+    | ((layerTemplate: ILayer, settings?: IPraxisSettings) => IPraxis)
+    | null;
 }
 
-export const defaults: ILayerSettings = {
+export const baseLayerDefaultSettings: ILayerSettings = {
   width: 1,
   height: 1,
   depth: null,
@@ -81,7 +83,7 @@ export class BaseLayer implements ILayer {
     if (settings) {
       this.settings = { ...settings };
     } else {
-      this.settings = { ...defaults };
+      this.settings = { ...baseLayerDefaultSettings };
     }
     this.setupPraxis();
   }
@@ -90,12 +92,11 @@ export class BaseLayer implements ILayer {
     const { initPraxis, praxis, praxisOpts } = this.settings;
     if (!this.praxis) {
       if (initPraxis) {
-        if (!praxisOpts) {
-          throw new Error(
-            'settings.praxisOpts not included with settings.initPraxis'
-          );
+        if (praxisOpts) {
+          this.praxis = initPraxis(this, praxisOpts);
+        } else {
+          this.praxis = initPraxis(this);
         }
-        this.praxis = initPraxis(this, praxisOpts);
       } else if (praxis) {
         this.praxis = praxis;
       }
@@ -219,7 +220,7 @@ export class BaseLayer implements ILayer {
       : (this.weights as Texture).toArray();
   }
 
-  toJSON(): ILayerSettings {
+  toJSON(): Partial<ILayerSettings> {
     return {
       ...this.settings,
       weights: Array.isArray(this.weights)
@@ -228,6 +229,7 @@ export class BaseLayer implements ILayer {
       deltas: null,
       praxis: null,
       name: this.constructor.name,
+      initPraxis: null,
     };
   }
 }

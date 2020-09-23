@@ -1,17 +1,29 @@
-const { GPU } = require('gpu.js');
-const { gpuMock } = require('gpu-mock.js');
-const {
+import { GPU } from 'gpu.js';
+import { gpuMock } from 'gpu-mock.js';
+import {
   Sigmoid,
-  sigmoid: sigmoidLayer,
+  sigmoid as sigmoidLayer,
   predict2D,
   predict3D,
   compare2D,
   compare3D,
-} = require('../../src/layer/sigmoid');
-const { expectFunction, shave } = require('../test-utils');
-const sigmoidActivation = require('../../src/activation/sigmoid');
-const { setup, teardown } = require('../../src/utilities/kernel');
-const { injectIstanbulCoverage } = require('../test-utils');
+} from '../../src/layer/sigmoid';
+import { expectFunction, mockLayer, mockPraxis, shave2D, shave3D } from '../test-utils';
+import { activate, activate as sigmoidActivation, measure } from '../../src/activation/sigmoid';
+import { setup, teardown, makeKernel, release, clear } from '../../src/utilities/kernel';
+import { ILayerSettings } from '../../src/layer/base-layer';
+
+jest.mock('../../src/utilities/kernel', () => {
+  return {
+    setup: jest.fn(),
+    teardown: jest.fn(),
+    makeKernel: jest.fn(() => {
+      return [[1]];
+    }),
+    release: jest.fn(),
+    clear: jest.fn(),
+  }
+});
 
 describe('Sigmoid Layer', () => {
   describe('predict2D() (forward propagation)', () => {
@@ -23,14 +35,14 @@ describe('Sigmoid Layer', () => {
       ];
       const width = 4;
       const height = 3;
-      const results = gpuMock(predict2D, { output: [width, height] })(inputs);
+      const results = gpuMock(predict2D, { output: [width, height] })(inputs) as Float32Array[];
       expect(results.length).toBe(height);
       expect(results[0].length).toBe(width);
-      expect(shave(results)).toEqual(
-        shave([
-          [0.52497917, 0.54983401, 0.57444251, 0.59868765],
-          [0.62245935, 0.64565629, 0.6681878, 0.68997449],
-          [0.71094948, 0.7310586, 0.75026011, 0.76852477],
+      expect(shave2D(results)).toEqual(
+        shave2D([
+          Float32Array.from([0.52497917, 0.54983401, 0.57444251, 0.59868765]),
+          Float32Array.from([0.62245935, 0.64565629, 0.6681878, 0.68997449]),
+          Float32Array.from([0.71094948, 0.7310586, 0.75026011, 0.76852477]),
         ])
       );
     });
@@ -55,21 +67,21 @@ describe('Sigmoid Layer', () => {
       const depth = 2;
       const results = gpuMock(predict3D, { output: [width, height, depth] })(
         inputs
-      );
+      ) as Float32Array[][];
       expect(results.length).toBe(depth);
       expect(results[0].length).toBe(height);
       expect(results[0][0].length).toBe(width);
-      expect(shave(results)).toEqual(
-        shave([
+      expect(shave3D(results)).toEqual(
+        shave3D([
           [
-            [0.52497917, 0.54983401, 0.57444251, 0.59868765],
-            [0.62245935, 0.64565629, 0.6681878, 0.68997449],
-            [0.71094948, 0.7310586, 0.75026011, 0.76852477],
+            Float32Array.from([0.52497917, 0.54983401, 0.57444251, 0.59868765]),
+            Float32Array.from([0.62245935, 0.64565629, 0.6681878, 0.68997449]),
+            Float32Array.from([0.71094948, 0.7310586, 0.75026011, 0.76852477]),
           ],
           [
-            [0.52497917, 0.54983401, 0.57444251, 0.59868765],
-            [0.62245935, 0.64565629, 0.6681878, 0.68997449],
-            [0.71094948, 0.7310586, 0.75026011, 0.76852477],
+            Float32Array.from([0.52497917, 0.54983401, 0.57444251, 0.59868765]),
+            Float32Array.from([0.62245935, 0.64565629, 0.6681878, 0.68997449]),
+            Float32Array.from([0.71094948, 0.7310586, 0.75026011, 0.76852477]),
           ],
         ])
       );
@@ -93,15 +105,15 @@ describe('Sigmoid Layer', () => {
       const results = gpuMock(compare2D, { output: [width, height] })(
         inputs,
         deltas
-      );
+      ) as Float32Array[];
 
       expect(results.length).toBe(height);
       expect(results[0].length).toBe(width);
-      expect(shave(results)).toEqual(
-        shave([
-          [0.09000000000000001, 0.16000000000000003, 0.20999999, 0.23999999],
-          [0.25, 0.23999999, 0.20999999, 0.15999999999999998],
-          [0.08999999999999998, 0.0, -0.11, -0.23999999],
+      expect(shave2D(results)).toEqual(
+        shave2D([
+          Float32Array.from([0.09000000000000001, 0.16000000000000003, 0.20999999, 0.23999999]),
+          Float32Array.from([0.25, 0.23999999, 0.20999999, 0.15999999999999998]),
+          Float32Array.from([0.08999999999999998, 0.0, -0.11, -0.23999999]),
         ])
       );
     });
@@ -139,22 +151,22 @@ describe('Sigmoid Layer', () => {
       const results = gpuMock(compare3D, { output: [width, height, depth] })(
         inputs,
         deltas
-      );
+      ) as Float32Array[][];
 
       expect(results.length).toBe(depth);
       expect(results[0].length).toBe(height);
       expect(results[0][0].length).toBe(width);
-      expect(shave(results)).toEqual(
-        shave([
+      expect(shave3D(results)).toEqual(
+        shave3D([
           [
-            [0.09000000000000001, 0.16000000000000003, 0.20999999, 0.23999999],
-            [0.25, 0.23999999, 0.20999999, 0.15999999999999998],
-            [0.08999999999999998, 0.0, -0.11, -0.23999999],
+            Float32Array.from([0.09000000000000001, 0.16000000000000003, 0.20999999, 0.23999999]),
+            Float32Array.from([0.25, 0.23999999, 0.20999999, 0.15999999999999998]),
+            Float32Array.from([0.08999999999999998, 0.0, -0.11, -0.23999999]),
           ],
           [
-            [0.09000000000000001, 0.16000000000000003, 0.20999999, 0.23999999],
-            [0.25, 0.23999999, 0.20999999, 0.15999999999999998],
-            [0.08999999999999998, 0.0, -0.11, -0.23999999],
+            Float32Array.from([0.09000000000000001, 0.16000000000000003, 0.20999999, 0.23999999]),
+            Float32Array.from([0.25, 0.23999999, 0.20999999, 0.15999999999999998]),
+            Float32Array.from([0.08999999999999998, 0.0, -0.11, -0.23999999]),
           ],
         ])
       );
@@ -162,42 +174,19 @@ describe('Sigmoid Layer', () => {
   });
 
   describe('.setupKernels()', () => {
-    beforeEach(() => {
-      setup(
-        new GPU({
-          mode: 'cpu',
-          onIstanbulCoverageVariable: injectIstanbulCoverage,
-        })
-      );
-    });
-    afterEach(() => {
-      teardown();
-    });
     describe('2d', () => {
       it('sets up kernels correctly', () => {
         const width = 3;
         const height = 4;
-        const mockInputLayer = { width, height };
+        const mockInputLayer = mockLayer({ width, height });
         const l = new Sigmoid(mockInputLayer);
         expect(l.predictKernel).toBe(null);
         expect(l.compareKernel).toBe(null);
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
-        expectFunction(l.predictKernel.source, predict2D);
-        expect(l.predictKernel.output).toEqual([width, height]);
-        expect(l.predictKernel.functions.length).toBe(1);
-        expectFunction(
-          l.predictKernel.functions[0].source,
-          sigmoidActivation.activate
-        );
         expect(l.compareKernel).not.toBe(null);
-        expectFunction(l.compareKernel.source, compare2D);
-        expect(l.compareKernel.output).toEqual([width, height]);
-        expect(l.compareKernel.functions.length).toBe(1);
-        expectFunction(
-          l.compareKernel.functions[0].source,
-          sigmoidActivation.measure
-        );
+        expect(makeKernel).toHaveBeenCalledWith(predict2D, { functions: [activate], immutable: true, output: [3, 4] });
+        expect(makeKernel).toHaveBeenCalledWith(compare2D, { functions: [measure], immutable: true, output: [3, 4] });
       });
     });
     describe('3d', () => {
@@ -205,42 +194,30 @@ describe('Sigmoid Layer', () => {
         const width = 3;
         const height = 4;
         const depth = 5;
-        const mockInputLayer = { width, height, depth };
+        const mockInputLayer = mockLayer({ width, height, depth });
         const l = new Sigmoid(mockInputLayer);
         expect(l.predictKernel).toBe(null);
         expect(l.compareKernel).toBe(null);
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
-        expectFunction(l.predictKernel.source, predict3D);
-        expect(l.predictKernel.output).toEqual([width, height, depth]);
-        expect(l.predictKernel.functions.length).toBe(1);
-        expectFunction(
-          l.predictKernel.functions[0].source,
-          sigmoidActivation.activate
-        );
         expect(l.compareKernel).not.toBe(null);
-        expectFunction(l.compareKernel.source, compare3D);
-        expect(l.compareKernel.output).toEqual([width, height, depth]);
-        expect(l.compareKernel.functions.length).toBe(1);
-        expectFunction(
-          l.compareKernel.functions[0].source,
-          sigmoidActivation.measure
-        );
+        expect(makeKernel).toHaveBeenCalledWith(predict3D, { functions: [activate], immutable: true, output: [3, 4, 5] });
+        expect(makeKernel).toHaveBeenCalledWith(compare3D, { functions: [measure], immutable: true, output: [3, 4, 5] });
       });
     });
   });
 
   describe('.predict()', () => {
     it('calls this.predictKernel() with this.inputLayer.weights', () => {
-      const mockWeights = {};
-      const mockInputLayer = {
+      const mockWeights = [[new Float32Array(1)]];
+      const mockInputLayer = mockLayer({
         weights: mockWeights,
         width: 1,
         height: 1,
         depth: 1,
-      };
+      });
       const l = new Sigmoid(mockInputLayer);
-      l.predictKernel = jest.fn((weights) => weights);
+      (l as any).predictKernel = jest.fn((weights) => weights);
       l.predict();
       expect(l.predictKernel).toBeCalledWith(mockWeights);
       expect(l.weights).toBe(mockWeights);
@@ -249,20 +226,17 @@ describe('Sigmoid Layer', () => {
 
   describe('.compare()', () => {
     it('calls this.compareKernel() with this.inputLayer.weights & this.inputLayer.deltas', () => {
-      const mockWeights = {};
-      const mockDeltas = {};
-      const mockInputLayer = {
+      const mockWeights = [[new Float32Array(1)]];
+      const mockDeltas = [[new Float32Array(1)]];
+      const mockInputLayer = mockLayer({
         width: 1,
         height: 1,
         depth: 1,
-      };
+      });
       const l = new Sigmoid(mockInputLayer);
       l.weights = mockWeights;
       l.deltas = mockDeltas;
-      l.compareKernel = jest.fn((weights, deltas) => deltas);
-      l.inputLayer = {
-        deltas: {},
-      };
+      (l as any).compareKernel = jest.fn((weights, deltas) => deltas);
       l.compare();
       expect(l.compareKernel).toBeCalledWith(mockWeights, mockDeltas);
       expect(l.deltas).toBe(mockDeltas);
@@ -270,20 +244,18 @@ describe('Sigmoid Layer', () => {
   });
 
   describe('sigmoid lambda', () => {
-    test('creates a new instance of Sigmoid', () => {
+    test('creates a new instance of Sigmoid and uses settings', () => {
       const width = 3;
       const height = 4;
       const depth = 5;
-      const mockInputLayer = { width, height, depth };
-      const mockPraxisInstance = {};
-      const mockPraxis = jest.fn(() => mockPraxisInstance);
-      const settings = { praxis: mockPraxis };
+      const mockInputLayer = mockLayer({ width, height, depth });
+      const mockPraxisInstance = mockPraxis();
+      const settings: ILayerSettings = { initPraxis: () => mockPraxisInstance };
       const l = sigmoidLayer(mockInputLayer, settings);
       expect(l.constructor).toBe(Sigmoid);
       expect(l.width).toBe(width);
       expect(l.height).toBe(height);
       expect(l.depth).toBe(depth);
-      expect(mockPraxis).toBeCalled();
       expect(l.praxis).toBe(mockPraxisInstance);
     });
   });

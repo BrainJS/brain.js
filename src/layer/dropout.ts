@@ -8,11 +8,7 @@ import {
   ISubKernelObject,
   KernelOutput,
 } from 'gpu.js';
-import {
-  ILayer,
-  ILayerSettings,
-  defaults as baseLayerDefaults,
-} from './base-layer';
+import { ILayer, ILayerSettings, baseLayerDefaultSettings } from './base-layer';
 
 export function setDropout(dropout: number): number {
   return dropout;
@@ -54,8 +50,8 @@ export interface IDropoutSettings extends ILayerSettings {
   probability: number;
 }
 
-export const defaults: IDropoutSettings = {
-  ...baseLayerDefaults,
+export const dropoutDefaults: IDropoutSettings = {
+  ...baseLayerDefaultSettings,
   probability: 0.5,
 };
 
@@ -65,7 +61,7 @@ export class Dropout extends Filter {
   settings: Partial<IDropoutSettings>;
   constructor(inputLayer: ILayer, settings?: Partial<IDropoutSettings>) {
     super(inputLayer);
-    this.settings = { ...defaults, ...settings };
+    this.settings = { ...dropoutDefaults, ...settings };
     this.dropouts = null;
     this.validate();
   }

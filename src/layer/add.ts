@@ -54,7 +54,7 @@ export class Add extends Operator {
 export function add(
   inputLayer1: ILayer,
   inputLayer2: ILayer,
-  settings: ILayerSettings
+  settings?: ILayerSettings
 ): Add {
   return new Add(inputLayer1, inputLayer2, settings);
 }
