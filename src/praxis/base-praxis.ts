@@ -1,6 +1,13 @@
 import { BaseLayer, ILayer } from '../layer/base-layer';
 import { IKernelRunShortcut, KernelOutput } from 'gpu.js';
 
+export interface IPraxisSettings {
+  width?: number;
+  height?: number;
+  depth?: number;
+  kernel?: IKernelRunShortcut | null;
+}
+
 export interface IPraxis {
   layerTemplate: ILayer | null;
   kernel: IKernelRunShortcut | null;

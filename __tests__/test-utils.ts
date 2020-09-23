@@ -1,8 +1,8 @@
 import assert from 'assert';
 import { getFileCoverageDataByName } from 'istanbul-spy';
-import { Kernel, KernelFunction } from 'gpu.js';
+import { IGPUTextureSettings, Kernel, KernelFunction, Texture } from 'gpu.js';
 import { IPraxis } from '../src/praxis/base-praxis';
-import { BaseLayer, IPraxisSettings, ILayer } from '../src/layer/base-layer';
+import { BaseLayer, ILayerSettings, ILayer } from '../src/layer/base-layer';
 
 export function onePlusPlus3D(width: number, height: number, depth: number): number[][][] {
   const grid = [];
@@ -178,15 +178,30 @@ export function injectIstanbulCoverage(name: string, kernel: Kernel): void {
   }
 }
 
-export class TestLayer extends BaseLayer {}
+export class TestLayer extends BaseLayer {
+  constructor(settings: ILayerSettings) {
+    super(settings);
+  }
+}
 
-export function mockLayer(settings: IPraxisSettings): ILayer {
+export function mockLayer(settings: ILayerSettings): ILayer {
   return new TestLayer(settings);
+}
+
+export function mockTexture(settings?: Partial<IGPUTextureSettings>): Texture {
+  return new Texture({
+    ...settings,
+    texture: {} as WebGLTexture,
+    size: [1, 1],
+    dimensions: [1, 1],
+    output: [1, 1],
+    context: {} as WebGLRenderingContext,
+    kernel: {} as Kernel,
+  });
 }
 
 export function mockPraxis(): IPraxis {
   return {
-    settings: {},
     layerTemplate: null,
     kernel: null,
     width: 1,

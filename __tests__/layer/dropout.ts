@@ -1,20 +1,27 @@
-const { GPU } = require('gpu.js');
-const { gpuMock } = require('gpu-mock.js');
+import { GPU } from 'gpu.js';
+import { gpuMock } from 'gpu-mock.js';
 
-const {
+import {
   dropout,
   Dropout,
   trainingPredict,
   predict,
   compare,
   setDropout,
-} = require('../../src/layer/dropout');
-const { setup, teardown, makeKernel } = require('../../src/utilities/kernel');
-const { injectIstanbulCoverage } = require('../test-utils');
+  IDropoutSettings,
+} from '../../src/layer/dropout';
+import {
+  setup,
+  teardown,
+  makeKernel,
+  makeKernelMap,
+} from '../../src/utilities/kernel';
+import { injectIstanbulCoverage, mockLayer } from '../test-utils';
 
 jest.mock('../../src/utilities/kernel');
 
 describe('Dropout Layer', () => {
+  let validateMock: jest.SpyInstance;
   beforeEach(() => {
     setup(
       new GPU({
@@ -22,49 +29,49 @@ describe('Dropout Layer', () => {
         onIstanbulCoverageVariable: injectIstanbulCoverage,
       })
     );
-    jest.spyOn(Dropout.prototype, 'validate');
+    validateMock = jest.spyOn(Dropout.prototype, 'validate');
   });
   afterEach(() => {
     teardown();
-    Dropout.prototype.validate.mockRestore();
+    validateMock.mockRestore();
   });
   describe('dropout', () => {
     it('sends inputLayer and settings through and instantiates a Dropout', () => {
-      const mockInputLayer = {};
-      const settings = {
+      const mockInputLayer = mockLayer({});
+      const settings: IDropoutSettings = {
         probability: 100,
       };
       const layer = dropout(mockInputLayer, settings);
       expect(layer.constructor).toBe(Dropout);
-      expect(layer.probability).toBe(settings.probability);
+      expect(layer.settings.probability).toBe(settings.probability);
     });
   });
   describe('.constructor', () => {
     it('sets inputLayer', () => {
-      const mockInputLayer = {};
+      const mockInputLayer = mockLayer({});
       const layer = new Dropout(mockInputLayer);
       expect(layer.inputLayer).toBe(mockInputLayer);
     });
     it('sets height & width from inputLayer', () => {
-      const mockInputLayer = {
+      const mockInputLayer = mockLayer({
         width: 1,
         height: 2,
-      };
+      });
       const layer = new Dropout(mockInputLayer);
       expect(layer.width).toBe(mockInputLayer.width);
       expect(layer.height).toBe(mockInputLayer.height);
     });
     it('sets probability from settings', () => {
-      const mockInputLayer = {};
-      const settings = {
+      const mockInputLayer = mockLayer({});
+      const settings: IDropoutSettings = {
         probability: 123,
       };
       const layer = new Dropout(mockInputLayer, settings);
-      expect(layer.probability).toBe(settings.probability);
+      expect(layer.settings.probability).toBe(settings.probability);
     });
     it('calls this.validate', () => {
-      const mockInputLayer = {};
-      const settings = {
+      const mockInputLayer = mockLayer({});
+      const settings: IDropoutSettings = {
         probability: 123,
       };
       // eslint-disable-next-line no-new
@@ -72,7 +79,7 @@ describe('Dropout Layer', () => {
       expect(Dropout.prototype.validate).toHaveBeenCalled();
     });
     it('sets dropouts to null', () => {
-      const mockInputLayer = {};
+      const mockInputLayer = mockLayer({});
       const layer = new Dropout(mockInputLayer);
       expect(layer.dropouts).toBe(null);
     });
@@ -90,7 +97,7 @@ describe('Dropout Layer', () => {
         constants: {
           probability: 0.5,
         },
-      })(inputs);
+      })(inputs) as number[][];
 
       let hasZero = false;
       let hasNumber = false;
@@ -137,104 +144,97 @@ describe('Dropout Layer', () => {
   describe('.setupKernels', () => {
     describe('isTraining is true', () => {
       it('this.predictKernel should be set', () => {
-        const mockInstance = {
-          width: 1,
-          height: 2,
-          predictKernel: null,
-        };
-        Dropout.prototype.setupKernels.call(mockInstance, true);
-        expect(makeKernel).toHaveBeenCalledWith(trainingPredict, {
-          output: [1, 2],
-          map: { dropouts: setDropout },
-          immutable: true,
-        });
-        expect(mockInstance.predictKernel).not.toBe(null);
+        const inputLayer = mockLayer({ height: 2, width: 1 });
+        const layer = new Dropout(inputLayer);
+        layer.setupKernels(true);
+        expect(makeKernelMap).toHaveBeenCalledWith(
+          { dropouts: setDropout },
+          trainingPredict,
+          {
+            output: [1, 2],
+            immutable: true,
+          }
+        );
+        expect(layer.predictKernelMap).not.toBe(null);
       });
       it('this.compareKernel should be set', () => {
-        const mockInstance = {
-          width: 1,
-          height: 2,
-          compareKernel: null,
-        };
-        Dropout.prototype.setupKernels.call(mockInstance, true);
+        const inputLayer = mockLayer({ height: 2, width: 1 });
+        const layer = new Dropout(inputLayer);
+        layer.setupKernels(true);
         expect(makeKernel).toHaveBeenCalledWith(compare, {
           output: [1, 2],
           immutable: true,
         });
-        expect(mockInstance.compareKernel).not.toBe(null);
+        expect(layer.compareKernel).not.toBe(null);
       });
     });
     describe('isTraining is false', () => {
-      it('this.predictKernel should be set', () => {
-        const mockInstance = {
-          width: 1,
-          height: 2,
-          predictKernel: null,
-        };
-        Dropout.prototype.setupKernels.call(mockInstance, false);
-        expect(makeKernel).toHaveBeenCalledWith(predict, {
+      it('this.predictKernelMap should be set', () => {
+        const inputLayer = mockLayer({ width: 1, height: 2 });
+        const layer = new Dropout(inputLayer);
+        layer.setupKernels(false);
+        expect(makeKernelMap).toHaveBeenCalledWith({}, predict, {
           output: [1, 2],
           immutable: true,
         });
-        expect(mockInstance.predictKernel).not.toBe(null);
+        expect(layer.predictKernelMap).not.toBe(null);
       });
     });
   });
   describe('.predict', () => {
-    let mockPredictKernel;
-    let mockInputLayer;
-    let mockInstance;
-    const mockResult = 'result';
-    const mockDropouts = 'dropout';
-    beforeEach(() => {
-      mockPredictKernel = jest.fn(() => {
-        return {
-          result: mockResult,
-          dropouts: mockDropouts,
-        };
-      });
-      mockInputLayer = {
-        weights: {},
-      };
-      mockInstance = {
-        predictKernel: mockPredictKernel,
-        inputLayer: mockInputLayer,
-      };
-    });
-    it('calls this.predictKernel with this.inputLayer.weights', () => {
-      Dropout.prototype.predict.call(mockInstance);
-      expect(mockPredictKernel).toHaveBeenCalledWith(mockInputLayer.weights);
+    it('calls this.predictKernelMap with this.inputLayer.weights', () => {
+      const inputLayer = mockLayer({ weights: [[[0]]] });
+      const layer = new Dropout(inputLayer);
+      const spy = ((layer as any).predictKernelMap = jest.fn(() => {
+        return [1];
+      }));
+      layer.predict();
+      expect(spy).toHaveBeenCalledWith(inputLayer.weights);
     });
     it('sets this.weights from result', () => {
-      Dropout.prototype.predict.call(mockInstance);
-      expect(mockInstance.weights).toBe(mockResult);
+      const inputLayer = mockLayer({ weights: [[[0]]] });
+      const layer = new Dropout(inputLayer);
+      const weights = [[[1]]];
+      (layer as any).predictKernelMap = jest.fn(() => {
+        return {
+          result: weights,
+        };
+      });
+      layer.predict();
+      expect(layer.weights).toBe(weights);
     });
     it('sets this.dropouts from dropouts', () => {
-      Dropout.prototype.predict.call(mockInstance);
-      expect(mockInstance.dropouts).toBe(mockDropouts);
+      const inputLayer = mockLayer({ weights: [[[0]]] });
+      const layer = new Dropout(inputLayer);
+      const dropouts = [[[1]]];
+      (layer as any).predictKernelMap = jest.fn(() => {
+        return {
+          dropouts: dropouts,
+        };
+      });
+      layer.predict();
+      expect(layer.dropouts).toBe(dropouts);
     });
   });
   describe('.compare', () => {
-    let mockCompareKernel;
-    const mockDropouts = 'dropouts';
-    const mockDeltas = 'deltas';
-    const mockResult = 'result';
-    let mockInstance;
-    beforeEach(() => {
-      mockCompareKernel = jest.fn(() => mockResult);
-      mockInstance = {
-        compareKernel: mockCompareKernel,
-        dropouts: mockDropouts,
-        inputLayer: { deltas: mockDeltas },
-      };
-    });
     it('calls this.compareKernel with this.dropouts and this.inputLayer.deltas', () => {
-      Dropout.prototype.compare.call(mockInstance);
-      expect(mockCompareKernel).toBeCalledWith(mockDropouts, mockDeltas);
+      const inputLayer = mockLayer({ width: 1, height: 2 });
+      const layer = new Dropout(inputLayer);
+      const dropouts = (layer.dropouts = [1]);
+      const inputLayerDeltas = (inputLayer.deltas = [42]);
+      const compareKernel = ((layer as any).compareKernel = jest.fn());
+      layer.compare();
+      expect(compareKernel).toBeCalledWith(dropouts, inputLayerDeltas);
     });
     it('sets this.deltas', () => {
-      Dropout.prototype.compare.call(mockInstance);
-      expect(mockInstance.deltas).toBe(mockResult);
+      const inputLayer = mockLayer({ width: 1, height: 2 });
+      const layer = new Dropout(inputLayer);
+      const expectedResult = [42];
+      (layer as any).compareKernel = jest.fn(() => {
+        return expectedResult;
+      });
+      layer.compare();
+      expect(layer.deltas).toBe(expectedResult);
     });
   });
 

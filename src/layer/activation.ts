@@ -1,4 +1,4 @@
-import { BaseLayer, IPraxisSettings, ILayer } from './base-layer';
+import { BaseLayer, ILayerSettings, ILayer } from './base-layer';
 import { zeros2D } from '../utilities/zeros-2d';
 import { zeros3D } from '../utilities/zeros-3d';
 
@@ -17,7 +17,7 @@ export class Activation extends BaseLayer {
     return this.inputLayer.depth;
   }
 
-  constructor(inputLayer: ILayer, settings?: IPraxisSettings) {
+  constructor(inputLayer: ILayer, settings?: ILayerSettings) {
     super(settings);
     this.inputLayer = inputLayer;
     const { width, height, depth } = this;

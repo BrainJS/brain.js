@@ -6,7 +6,7 @@ import {
   IKernelRunShortcut,
   Texture,
 } from 'gpu.js';
-import { BaseLayer, IPraxisSettings } from './base-layer';
+import { BaseLayer, ILayerSettings } from './base-layer';
 
 export interface IMultiplyConstants extends IConstantsThis {
   size: number;
@@ -155,7 +155,7 @@ export class Multiply extends Operator {
   setupPraxis(): void {}
   learn(): void {}
 
-  toJSON(): IPraxisSettings {
+  toJSON(): ILayerSettings {
     return {
       ...super.toJSON(),
       width: this.width,
@@ -167,7 +167,7 @@ export class Multiply extends Operator {
 export function multiply(
   inputLayer1: BaseLayer,
   inputLayer2: BaseLayer,
-  settings: IPraxisSettings
+  settings: ILayerSettings
 ): Multiply {
   return new Multiply(inputLayer1, inputLayer2, settings);
 }

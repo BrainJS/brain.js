@@ -1,10 +1,10 @@
-import { IPraxisSettings } from './base-layer';
+import { ILayerSettings } from './base-layer';
 
 import { Model } from './types';
 import { randos2D } from '../utilities/randos';
 import { zeros2D } from '../utilities/zeros-2d';
 
-export interface IRandomSettings extends IPraxisSettings {
+export interface IRandomSettings extends ILayerSettings {
   std?: number | null;
 }
 

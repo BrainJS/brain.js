@@ -1,4 +1,4 @@
-import { BaseLayer, IPraxisSettings, ILayer } from './base-layer';
+import { BaseLayer, ILayerSettings, ILayer } from './base-layer';
 import { zeros2D } from '../utilities/zeros-2d';
 
 export abstract class Operator extends BaseLayer {
@@ -7,7 +7,7 @@ export abstract class Operator extends BaseLayer {
   constructor(
     inputLayer1: ILayer,
     inputLayer2: ILayer,
-    settings?: IPraxisSettings
+    settings?: ILayerSettings
   ) {
     super(settings);
     this.inputLayer1 = inputLayer1;

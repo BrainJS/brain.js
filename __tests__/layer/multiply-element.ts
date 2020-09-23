@@ -1,14 +1,15 @@
-const { GPU } = require('gpu.js');
-const { gpuMock } = require('gpu-mock.js');
-// const { Input } = require('../../src/layer/input');
-const {
+import { GPU } from 'gpu.js';
+import { gpuMock } from 'gpu-mock.js';
+
+import {
   MultiplyElement,
   multiplyElement,
   predict,
   compare,
-} = require('../../src/layer/multiply-element');
-const { setup, teardown } = require('../../src/utilities/kernel');
-const { injectIstanbulCoverage } = require('../test-utils');
+} from '../../src/layer/multiply-element';
+import { setup, teardown } from '../../src/utilities/kernel';
+import { injectIstanbulCoverage, mockLayer, mockTexture } from '../test-utils';
+import { ILayer } from '../../src/layer/base-layer';
 
 describe('MultiplyElement Layer', () => {
   beforeEach(() => {
@@ -24,12 +25,12 @@ describe('MultiplyElement Layer', () => {
   });
 
   describe('.constructor', () => {
-    let mockInputLayer1;
-    let mockInputLayer2;
-    let layer;
+    let mockInputLayer1: ILayer;
+    let mockInputLayer2: ILayer;
+    let layer: MultiplyElement;
     beforeEach(() => {
-      mockInputLayer1 = { width: 3, height: 2 };
-      mockInputLayer2 = { width: 3, height: 2 };
+      mockInputLayer1 = mockLayer({ width: 3, height: 2 });
+      mockInputLayer2 = mockLayer({ width: 3, height: 2 });
       layer = new MultiplyElement(mockInputLayer1, mockInputLayer2);
     });
     test('sets inputLayer1 and inputLayer2', () => {
@@ -41,15 +42,15 @@ describe('MultiplyElement Layer', () => {
       expect(layer.height).toBe(mockInputLayer1.height);
     });
     test('throws if widths are mismatched', () => {
-      mockInputLayer1 = { width: 3, height: 2 };
-      mockInputLayer2 = { width: 1, height: 2 };
+      mockInputLayer1 = mockLayer({ width: 3, height: 2 });
+      mockInputLayer2 = mockLayer({ width: 1, height: 2 });
       expect(() => {
         layer = new MultiplyElement(mockInputLayer1, mockInputLayer2);
       }).toThrow();
     });
     test('throws if heights are mismatched', () => {
-      mockInputLayer1 = { width: 3, height: 2 };
-      mockInputLayer2 = { width: 3, height: 1 };
+      mockInputLayer1 = mockLayer({ width: 3, height: 2 });
+      mockInputLayer2 = mockLayer({ width: 3, height: 1 });
       expect(() => {
         layer = new MultiplyElement(mockInputLayer1, mockInputLayer2);
       }).toThrow();
@@ -69,32 +70,34 @@ describe('MultiplyElement Layer', () => {
   });
 
   describe('.predict (forward propagation)', () => {
-    let mockInputLayer1;
-    let mockInputLayer2;
-    let layer;
+    let mockInputLayer1: ILayer;
+    let mockInputLayer2: ILayer;
+    let layer: MultiplyElement;
     beforeEach(() => {
-      mockInputLayer1 = {
+      mockInputLayer1 = mockLayer({
         width: 3,
         height: 2,
         weights: [
           [1, 2, 3],
           [4, 5, 6],
         ],
-      };
-      mockInputLayer2 = {
+      });
+      mockInputLayer2 = mockLayer({
         width: 3,
         height: 2,
         weights: [
           [7, 8, 9],
           [10, 11, 12],
         ],
-      };
+      });
       layer = new MultiplyElement(mockInputLayer1, mockInputLayer2);
       layer.setupKernels();
     });
     it('releases .weights', () => {
       const deleteMock = jest.fn();
-      layer.weights.delete = deleteMock;
+      const texture = mockTexture();
+      layer.weights = texture;
+      texture.delete = deleteMock;
       layer.predict();
       expect(deleteMock).toBeCalled();
     });
@@ -106,19 +109,21 @@ describe('MultiplyElement Layer', () => {
       ]);
     });
     it('clears deltas', () => {
+      const texture = mockTexture();
       const clearMock = jest.fn();
-      layer.deltas.clear = clearMock;
+      texture.clear = clearMock;
+      layer.deltas = texture;
       layer.predict();
       expect(clearMock).toBeCalled();
     });
   });
 
   describe('.compare (back propagation)', () => {
-    let mockInputLayer1;
-    let mockInputLayer2;
-    let layer;
+    let mockInputLayer1: ILayer;
+    let mockInputLayer2: ILayer;
+    let layer: MultiplyElement;
     beforeEach(() => {
-      mockInputLayer1 = {
+      mockInputLayer1 = mockLayer({
         width: 3,
         height: 2,
         weights: [
@@ -126,8 +131,8 @@ describe('MultiplyElement Layer', () => {
           [4, 5, 6],
         ],
         deltas: null,
-      };
-      mockInputLayer2 = {
+      });
+      mockInputLayer2 = mockLayer({
         width: 3,
         height: 2,
         weights: [
@@ -135,7 +140,7 @@ describe('MultiplyElement Layer', () => {
           [10, 11, 12],
         ],
         deltas: null,
-      };
+      });
       layer = new MultiplyElement(mockInputLayer1, mockInputLayer2);
       layer.setupKernels();
       layer.deltas = [
@@ -157,8 +162,12 @@ describe('MultiplyElement Layer', () => {
     test('releases inputLayer textures', () => {
       const deleteTexture1Mock = jest.fn();
       const deleteTexture2Mock = jest.fn();
-      mockInputLayer1.deltas = { delete: deleteTexture1Mock };
-      mockInputLayer2.deltas = { delete: deleteTexture2Mock };
+      const deltas1 = mockTexture();
+      const deltas2 = mockTexture();
+      deltas1.delete = deleteTexture1Mock;
+      deltas2.delete = deleteTexture2Mock;
+      mockInputLayer1.deltas = deltas1;
+      mockInputLayer2.deltas = deltas2;
       layer.compare();
       expect(deleteTexture1Mock).toHaveBeenCalled();
       expect(deleteTexture2Mock).toHaveBeenCalled();
@@ -210,8 +219,8 @@ describe('MultiplyElement Layer', () => {
 
   describe('multiplyElement function', () => {
     it('calls new MultiplyElement with inputLayer1 and inputLayer2', () => {
-      const mockInputLayer1 = {};
-      const mockInputLayer2 = {};
+      const mockInputLayer1 = mockLayer({});
+      const mockInputLayer2 = mockLayer({});
       const layer = multiplyElement(mockInputLayer1, mockInputLayer2);
       expect(layer.inputLayer1).toBe(mockInputLayer1);
       expect(layer.inputLayer2).toBe(mockInputLayer2);

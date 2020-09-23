@@ -7,7 +7,7 @@ import {
   TextureArrayOutput,
   Input,
 } from 'gpu.js';
-import { IPraxis } from '../praxis/base-praxis';
+import { IPraxis, IPraxisSettings } from '../praxis/base-praxis';
 
 export interface ILayer {
   width: number;
@@ -18,10 +18,10 @@ export interface ILayer {
   praxis: IPraxis | null;
   predictKernel: IKernelRunShortcut | null;
   compareKernel: IKernelRunShortcut | null;
-  settings: IPraxisSettings;
+  settings: ILayerSettings;
 }
 
-export interface IPraxisSettings {
+export interface ILayerSettings {
   width?: number | null;
   height?: number | null;
   depth?: number | null;
@@ -33,7 +33,7 @@ export interface IPraxisSettings {
   initPraxis?: (layerTemplate: ILayer, settings?: IPraxisSettings) => IPraxis;
 }
 
-export const defaults: IPraxisSettings = {
+export const defaults: ILayerSettings = {
   width: 1,
   height: 1,
   depth: null,
@@ -43,11 +43,11 @@ export const defaults: IPraxisSettings = {
   praxisOpts: null,
 };
 
-export abstract class BaseLayer implements ILayer {
+export class BaseLayer implements ILayer {
   praxis: IPraxis | null = null;
   predictKernel: IKernelRunShortcut | null = null;
   compareKernel: IKernelRunShortcut | null = null;
-  settings: IPraxisSettings;
+  settings: Partial<ILayerSettings>;
 
   get width(): number {
     return this.settings.width as number;
@@ -77,8 +77,12 @@ export abstract class BaseLayer implements ILayer {
     this.settings.deltas = deltas;
   }
 
-  constructor(settings?: IPraxisSettings) {
-    this.settings = { ...defaults, ...settings };
+  constructor(settings?: Partial<ILayerSettings>) {
+    if (settings) {
+      this.settings = { ...settings };
+    } else {
+      this.settings = { ...defaults };
+    }
     this.setupPraxis();
   }
 
@@ -164,7 +168,7 @@ export abstract class BaseLayer implements ILayer {
     }
   }
 
-  setupKernels(): void {}
+  setupKernels(isTraining?: boolean): void {}
 
   reuseKernels(layer: ILayer): void {
     if (layer.width !== this.width) {
@@ -215,7 +219,7 @@ export abstract class BaseLayer implements ILayer {
       : (this.weights as Texture).toArray();
   }
 
-  toJSON(): IPraxisSettings {
+  toJSON(): ILayerSettings {
     return {
       ...this.settings,
       weights: Array.isArray(this.weights)

@@ -2,7 +2,7 @@ import { makeKernel, release, clone, clear } from '../utilities/kernel';
 import { checkSameSize } from '../utilities/layer-size';
 import { Operator } from './operator';
 import { IKernelFunctionThis, IKernelRunShortcut, Texture } from 'gpu.js';
-import { IPraxisSettings, ILayer } from './base-layer';
+import { ILayerSettings, ILayer } from './base-layer';
 
 export function predict(
   this: IKernelFunctionThis,
@@ -54,7 +54,7 @@ export class Add extends Operator {
 export function add(
   inputLayer1: ILayer,
   inputLayer2: ILayer,
-  settings: IPraxisSettings
+  settings: ILayerSettings
 ): Add {
   return new Add(inputLayer1, inputLayer2, settings);
 }

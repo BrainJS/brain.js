@@ -1,5 +1,5 @@
 import { Activation } from '../../src/layer/activation';
-import { IPraxisSettings, ILayer } from '../../src/layer/base-layer';
+import { ILayerSettings, ILayer } from '../../src/layer/base-layer';
 import { mockPraxis, mockLayer } from '../test-utils';
 
 describe('Activation Abstract Layer', () => {
@@ -75,7 +75,7 @@ describe('Activation Abstract Layer', () => {
     test('initPraxis', () => {
       const mockPraxisInstance = mockPraxis();
       const mockInitPraxis = jest.fn(() => mockPraxisInstance);
-      const settings: IPraxisSettings = {
+      const settings: ILayerSettings = {
         initPraxis: mockInitPraxis,
         praxisOpts: {},
       };

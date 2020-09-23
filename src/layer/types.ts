@@ -12,9 +12,6 @@ export class InternalModel {}
 export class EntryPoint extends BaseLayer {}
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class Filter extends BaseLayer {}
-
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class Model extends BaseLayer {}
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class

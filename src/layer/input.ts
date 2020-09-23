@@ -1,6 +1,6 @@
 import { IKernelFunctionThis, IKernelRunShortcut, KernelOutput } from 'gpu.js';
 import { EntryPoint } from './types';
-import { IPraxisSettings } from './base-layer';
+import { ILayerSettings } from './base-layer';
 import { zeros2D } from '../utilities/zeros-2d';
 import {
   makeKernel,
@@ -10,13 +10,13 @@ import {
   clone,
 } from '../utilities/kernel';
 
-export const defaults: IPraxisSettings = {
+export const defaults: ILayerSettings = {
   weights: null,
 };
 
 export class Input extends EntryPoint {
   reshapeInput: IKernelRunShortcut | null = null;
-  constructor(settings: IPraxisSettings) {
+  constructor(settings: ILayerSettings) {
     super({ ...defaults, ...settings });
     this.validate();
     this.reshapeInput = null;
@@ -78,7 +78,7 @@ export class Input extends EntryPoint {
     // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 
-  toJSON(): IPraxisSettings {
+  toJSON(): ILayerSettings {
     return {
       ...this.settings,
       weights: null,
@@ -87,6 +87,6 @@ export class Input extends EntryPoint {
   }
 }
 
-export function input(settings: IPraxisSettings): Input {
+export function input(settings: ILayerSettings): Input {
   return new Input(settings);
 }
