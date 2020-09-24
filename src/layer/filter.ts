@@ -1,5 +1,11 @@
 import { BaseLayer, ILayer, ILayerSettings } from './base-layer';
 
+export interface IFilterSettings extends ILayerSettings {
+  filterCount: number;
+  filterWidth: number;
+  filterHeight: number;
+}
+
 export class Filter extends BaseLayer {
   get width(): number {
     return this.inputLayer.width;
@@ -13,10 +19,23 @@ export class Filter extends BaseLayer {
     return this.inputLayer.depth;
   }
 
-  inputLayer: ILayer;
+  get filterCount(): number {
+    return this.settings.filterCount as number;
+  }
 
-  constructor(inputLayer: ILayer, settings?: Partial<ILayerSettings>) {
-    super(settings);
+  get filterWidth(): number {
+    return this.settings.filterWidth as number;
+  }
+
+  get filterHeight(): number {
+    return this.settings.filterHeight as number;
+  }
+
+  inputLayer: ILayer;
+  settings: Partial<IFilterSettings>;
+  constructor(inputLayer: ILayer, settings: Partial<IFilterSettings> = {}) {
+    super();
+    this.settings = settings;
     this.inputLayer = inputLayer;
   }
 }

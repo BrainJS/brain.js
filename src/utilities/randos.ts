@@ -4,15 +4,15 @@ const { randomFloat } = require('./random');
 /**
  * Returns an array of given size, full of randomness
  */
-export function randos(size: number, std: number | null): Float32Array {
+export function randos(size: number, std: number | null = null): Float32Array {
   const array: Float32Array = new Float32Array(size);
-  if (std !== null) {
+  if (std === null) {
     for (let i = 0; i < size; i++) {
-      array[i] = randomFloat(-std, std);
+      array[i] = randomWeight();
     }
   } else {
     for (let i = 0; i < size; i++) {
-      array[i] = randomWeight();
+      array[i] = randomFloat(-std, std);
     }
   }
   return array;
@@ -24,7 +24,7 @@ export function randos(size: number, std: number | null): Float32Array {
 export function randos2D(
   width: number,
   height: number,
-  std: number | null = null
+  std?: number | null
 ): Float32Array[] {
   const result: Float32Array[] = new Array(height);
   for (let y = 0; y < height; y++) {
@@ -39,11 +39,12 @@ export function randos2D(
 export function randos3D(
   width: number,
   height: number,
-  depth: number
+  depth: number,
+  std?: number | null
 ): Float32Array[][] {
   const result: Float32Array[][] = new Array(depth);
   for (let z = 0; z < depth; z++) {
-    result[z] = randos2D(width, height);
+    result[z] = randos2D(width, height, std);
   }
   return result;
 }

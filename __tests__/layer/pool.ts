@@ -1,8 +1,8 @@
-const { GPU } = require('gpu.js');
-const { gpuMock } = require('gpu-mock.js');
-const { Pool, predict, compare, compare3D } = require('../../src/layer/pool');
-const { setup, teardown } = require('../../src/utilities/kernel');
-const { injectIstanbulCoverage } = require('../test-utils');
+import { GPU } from 'gpu.js';
+import { gpuMock } from 'gpu-mock.js';
+import { Pool, predict, compare, compare3D } from '../../src/layer/pool';
+import { setup, teardown } from '../../src/utilities/kernel';
+import { injectIstanbulCoverage, mockLayer } from '../test-utils';
 
 describe('Pool Layer', () => {
   beforeEach(() => {
@@ -25,10 +25,10 @@ describe('Pool Layer', () => {
           filterCount: 8,
           stride: 2,
         },
-        {
+        mockLayer({
           width: 24,
           height: 24,
-        }
+        })
       );
       expect(layer.width).toEqual(12);
       expect(layer.height).toEqual(12);

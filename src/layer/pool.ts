@@ -1,18 +1,38 @@
-const { Filter } = require('./types');
-const { makeKernel, release } = require('../utilities/kernel');
-const { setPadding, setStride } = require('../utilities/layer-setup');
-const { zeros3D } = require('../utilities/zeros-3d');
-const { randos3D } = require('../utilities/randos');
+import { Filter } from './filter';
+import { makeKernel, makeKernelMap, release } from '../utilities/kernel';
+import { getPadding, getStride } from '../utilities/layer-setup';
+import { zeros3D } from '../utilities/zeros-3d';
+import { randos3D } from '../utilities/randos';
+import {
+  IKernelFunctionThis,
+  IKernelMapRunShortcut,
+  IKernelRunShortcut,
+  ISubKernelObject,
+  KernelOutput,
+} from 'gpu.js';
+import {
+  IConvolutionSettingsBase,
+  IConvolutionConstantsBase,
+} from './convolution';
+import { ILayer, ILayerSettings } from './base-layer';
 
-function setSwitchY(value) {
+export function setSwitchY(value: number): number {
   return value;
 }
 
-function setSwitchX(value) {
+export function setSwitchX(value: number): number {
   return value;
 }
 
-function predict(inputs) {
+export interface IPredictConstants extends IConvolutionConstantsBase {
+  inputWidth: number;
+  inputHeight: number;
+}
+
+export function predict(
+  this: IKernelFunctionThis<IPredictConstants>,
+  inputs: number[][][]
+): number {
   const x = Math.floor(
     (this.thread.x / this.output.x) * this.constants.inputWidth -
       this.constants.paddingX
@@ -51,7 +71,17 @@ function predict(inputs) {
   return largestValue;
 }
 
-function compare(deltas, switchY, switchX) {
+export interface ICompareConstants extends IConvolutionConstantsBase {
+  outputWidth: number;
+  outputHeight: number;
+}
+
+export function compare(
+  this: IKernelFunctionThis<ICompareConstants>,
+  deltas: number[][],
+  switchY: number[][],
+  switchX: number[][]
+): number {
   const x = Math.floor(
     (this.thread.x / this.output.x) * this.constants.outputWidth
   );
@@ -74,7 +104,12 @@ function compare(deltas, switchY, switchX) {
   return value;
 }
 
-function compare3D(deltas, switchY, switchX) {
+export function compare3D(
+  this: IKernelFunctionThis<ICompareConstants>,
+  deltas: number[][][],
+  switchY: number[][][],
+  switchX: number[][][]
+): number {
   const x = Math.floor(
     (this.thread.x / this.output.x) * this.constants.outputWidth
   );
@@ -97,45 +132,91 @@ function compare3D(deltas, switchY, switchX) {
   return value;
 }
 
-class Pool extends Filter {
-  static get defaults() {
-    return {
-      padding: 0,
-      bias: 0,
-      filterWidth: 0,
-      filterHeight: 0,
-      filterCount: 0,
-    };
+export interface IPoolSettings
+  extends ILayerSettings,
+    IConvolutionSettingsBase {
+  switchX?: KernelOutput;
+  switchY?: KernelOutput;
+}
+
+export const defaults: IPoolSettings = {
+  padding: 0,
+  stride: 0,
+  filterWidth: 0,
+  filterHeight: 0,
+  filterCount: 0,
+};
+
+export class Pool extends Filter {
+  settings: Partial<IPoolSettings>;
+
+  get strideX(): number {
+    return this.settings.strideX as number;
   }
 
-  constructor(settings, inputLayer) {
-    super(settings);
+  get strideY(): number {
+    return this.settings.strideY as number;
+  }
 
-    this.stride = null;
-    this.strideX = null;
-    this.strideY = null;
-    setStride(this, settings);
+  get paddingX(): number {
+    return this.settings.paddingX as number;
+  }
 
-    this.padding = null;
-    this.paddingX = null;
-    this.paddingY = null;
-    setPadding(this, settings);
+  get paddingY(): number {
+    return this.settings.paddingY as number;
+  }
 
-    this.filterCount = settings.filterCount;
-    this.filterWidth = settings.filterWidth;
-    this.filterHeight = settings.filterHeight;
-
-    this.width = Math.floor(
-      (inputLayer.width + this.paddingX * 2 - this.filterWidth) / this.strideX +
+  get width(): number {
+    return Math.floor(
+      (this.inputLayer.width + this.paddingX * 2 - this.filterWidth) /
+        this.strideX +
         1
     );
-    this.height = Math.floor(
-      (inputLayer.height + this.paddingY * 2 - this.filterHeight) /
+  }
+
+  get height(): number {
+    return Math.floor(
+      (this.inputLayer.height + this.paddingY * 2 - this.filterHeight) /
         this.strideY +
         1
     );
+  }
+
+  get depth(): number {
+    return this.settings.filterCount as number;
+  }
+
+  get filterCount(): number {
     // TODO: handle 1 depth?
-    this.depth = this.filterCount;
+    return this.settings.filterCount as number;
+  }
+
+  get switchX(): KernelOutput {
+    return this.settings.switchX;
+  }
+
+  set switchX(switchX: KernelOutput) {
+    this.settings.switchX = switchX;
+  }
+
+  get switchY(): KernelOutput {
+    return this.settings.switchY;
+  }
+
+  set switchY(switchY: KernelOutput) {
+    this.settings.switchY = switchY;
+  }
+
+  filters: KernelOutput;
+  filterDeltas: KernelOutput;
+  predictKernelMap: IKernelMapRunShortcut<ISubKernelObject> | null = null;
+  constructor(settings: IPoolSettings, inputLayer: ILayer) {
+    super(inputLayer);
+    this.settings = {
+      ...settings,
+      ...getStride(settings, defaults),
+      ...getPadding(settings, defaults),
+    };
 
     this.weights = randos3D(this.width, this.height, this.depth);
     this.deltas = zeros3D(this.width, this.height, this.depth);
@@ -150,29 +231,31 @@ class Pool extends Filter {
       this.filterHeight,
       this.filterCount
     );
-
-    this.learnFilters = null;
-    this.learnInputs = null;
-    this.inputLayer = inputLayer;
     this.validate();
   }
 
-  setupKernels() {
-    this.predictKernel = makeKernel(predict, {
-      output: [this.width, this.height, this.depth],
-      map: {
+  setupKernels(): void {
+    this.predictKernelMap = makeKernelMap<
+      Parameters<typeof predict>,
+      IPredictConstants
+    >(
+      {
         switchX: setSwitchX,
         switchY: setSwitchY,
       },
-      constants: {
-        inputWidth: this.inputLayer.width,
-        inputHeight: this.inputLayer.height,
-        paddingX: this.paddingX,
-        paddingY: this.paddingY,
-        filterHeight: this.filterHeight,
-        filterWidth: this.filterWidth,
-      },
-    });
+      predict,
+      {
+        output: [this.width, this.height, this.depth],
+        constants: {
+          inputWidth: this.inputLayer.width,
+          inputHeight: this.inputLayer.height,
+          paddingX: this.paddingX,
+          paddingY: this.paddingY,
+          filterHeight: this.filterHeight,
+          filterWidth: this.filterWidth,
+        },
+      }
+    );
 
     this.compareKernel = makeKernel(compare, {
       output: [
@@ -190,24 +273,24 @@ class Pool extends Filter {
     });
   }
 
-  predict() {
-    const { result: weights, switchX, switchY } = this.predictKernel(
+  predict(): void {
+    const { result: weights, switchX, switchY } = (this
+      .predictKernelMap as IKernelMapRunShortcut<ISubKernelObject>)(
       this.inputLayer.weights
     );
     this.switchX = switchX;
     this.switchY = switchY;
     this.weights = weights;
-    return this.weights;
   }
 
-  compare() {
+  compare(): void {
     // debugger;
     // const depth = this.inputLayer.deltas.length;
     // const height = this.inputLayer.deltas[0].length;
     // const width = this.inputLayer.deltas[0][0].length;
     // const type = typeof this.inputLayer.deltas[0][0][0];
     const inputLayerDeltas = this.inputLayer.deltas;
-    this.inputLayer.deltas = this.compareKernel(
+    this.inputLayer.deltas = (this.compareKernel as IKernelRunShortcut)(
       this.deltas,
       this.switchX,
       this.switchY
@@ -221,8 +304,6 @@ class Pool extends Filter {
   }
 }
 
-function pool(settings, inputLayer) {
+export function pool(settings: IPoolSettings, inputLayer: ILayer): Pool {
   return new Pool(settings, inputLayer);
 }
-
-module.exports = { Pool, pool, predict, compare, compare3D };

@@ -1,14 +1,14 @@
-const { GPU } = require('gpu.js');
-const { gpuMock } = require('gpu-mock.js');
-const {
+import { GPU } from 'gpu.js';
+import { gpuMock } from 'gpu-mock.js';
+import {
   predict,
   compareFilterDeltas,
   compareInputDeltas,
   compareBiases,
-} = require('../../src/layer/convolution');
-const { setup, teardown } = require('../../src/utilities/kernel');
-const { onePlusPlus3D } = require('../test-utils');
-const { injectIstanbulCoverage } = require('../test-utils');
+} from '../../src/layer/convolution';
+import { setup, teardown } from '../../src/utilities/kernel';
+import { onePlusPlus3D } from '../test-utils';
+import { injectIstanbulCoverage } from '../test-utils';
 
 describe('Convolution Layer', () => {
   beforeEach(() => {

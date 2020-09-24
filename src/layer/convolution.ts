@@ -1,11 +1,38 @@
-const { makeKernel, release, clone, clear } = require('../utilities/kernel');
-const { setStride, setPadding } = require('../utilities/layer-setup');
-const { Filter } = require('./types');
-const { randos, randos3D } = require('../utilities/randos');
-const { zeros3D } = require('../utilities/zeros-3d');
-const values = require('../utilities/values');
+import { makeKernel, release, clone, clear } from '../utilities/kernel';
+import { getStride, getPadding } from '../utilities/layer-setup';
+import { Filter } from './filter';
+import { randos, randos3D } from '../utilities/randos';
+import { zeros3D } from '../utilities/zeros-3d';
+import { values } from '../utilities/values';
+import {
+  IConstantsThis,
+  IKernelFunctionThis,
+  IKernelRunShortcut,
+  KernelOutput,
+} from 'gpu.js';
+import { ILayer, ILayerSettings } from './base-layer';
+import { IPraxis } from '../praxis/base-praxis';
 
-function predict(inputs, filters, biases) {
+export interface IConvolutionConstantsBase extends IConstantsThis {
+  paddingX: number;
+  paddingY: number;
+  strideX: number;
+  strideY: number;
+  filterWidth: number;
+  filterHeight: number;
+}
+
+export interface IPredictConstants extends IConvolutionConstantsBase {
+  inputWidth: number;
+  inputHeight: number;
+}
+
+export function predict(
+  this: IKernelFunctionThis<IPredictConstants>,
+  inputs: number[][][],
+  filters: number[][][],
+  biases: number[]
+): number {
   const startFilterX =
     this.constants.paddingX - this.thread.x * this.constants.strideX;
   const startInputX =
@@ -45,7 +72,21 @@ function predict(inputs, filters, biases) {
   return sum + biases[this.thread.z];
 }
 
-function compareFilterDeltas(filterDeltas, inputs, deltas) {
+export interface ICompareFilterDeltasConstants
+  extends IConvolutionConstantsBase {
+  deltaWidth: number;
+  deltaHeight: number;
+  inputWidth: number;
+  inputHeight: number;
+  deltaZ: number;
+}
+
+export function compareFilterDeltas(
+  this: IKernelFunctionThis<ICompareFilterDeltasConstants>,
+  filterDeltas: number[][][],
+  inputs: number[][][],
+  deltas: number[][][]
+): number {
   const startDeltaX = Math.max(
     0,
     Math.ceil(
@@ -107,7 +148,19 @@ function compareFilterDeltas(filterDeltas, inputs, deltas) {
   return sum;
 }
 
-function compareInputDeltas(inputDeltas, filters, deltas) {
+export interface ICompareInputDeltasConstants
+  extends IConvolutionConstantsBase {
+  deltaHeight: number;
+  deltaWidth: number;
+  deltaZ: number;
+}
+
+export function compareInputDeltas(
+  this: IKernelFunctionThis<ICompareInputDeltasConstants>,
+  inputDeltas: number[][][],
+  filters: number[][][],
+  deltas: number[][][]
+) {
   const x = this.thread.x + this.constants.paddingX;
   const startDeltaX =
     x < this.constants.filterWidth
@@ -157,7 +210,16 @@ function compareInputDeltas(inputDeltas, filters, deltas) {
   return sum;
 }
 
-function compareBiases(biasDeltas, deltas) {
+export interface ICompareBiasesConstants extends IConstantsThis {
+  deltaHeight: number;
+  deltaWdith: number;
+}
+
+export function compareBiases(
+  this: IKernelFunctionThis<ICompareBiasesConstants>,
+  biasDeltas: number[][][],
+  deltas: number[][][]
+) {
   let sum = 0;
   for (let y = 0; y < this.constants.deltaHeight; y++) {
     for (let x = 0; x < this.constants.deltaWidth; x++) {
@@ -167,45 +229,121 @@ function compareBiases(biasDeltas, deltas) {
   return biasDeltas[this.thread.z][this.thread.y][this.thread.x] + sum;
 }
 
+export interface IConvolutionSettingsBase {
+  stride?: number;
+  strideX?: number;
+  strideY?: number;
+  padding?: number;
+  paddingX?: number;
+  paddingY?: number;
+  filterCount?: number;
+  filterWidth?: number;
+  filterHeight?: number;
+}
+
+export interface IConvolutionSettings
+  extends ILayerSettings,
+    IConvolutionSettingsBase {
+  bias?: number;
+  biases?: KernelOutput;
+  biasDeltas?: KernelOutput;
+  filters?: KernelOutput;
+  filterDeltas?: KernelOutput;
+}
+
+export const defaults: IConvolutionSettings = {
+  stride: 0,
+  padding: 0,
+  bias: 0.1,
+  filterCount: 1,
+  filterWidth: 0,
+  filterHeight: 0,
+};
+
 class Convolution extends Filter {
-  static get defaults() {
-    return {
-      stride: 0,
-      padding: 0,
-      bias: 0.1,
-      filterCount: 1,
-      filterWidth: 0,
-      filterHeight: 0,
-    };
+  settings: Partial<IConvolutionSettings>;
+
+  get strideX(): number {
+    return this.settings.strideX as number;
   }
 
-  constructor(settings, inputLayer) {
-    super(settings);
+  get strideY(): number {
+    return this.settings.strideY as number;
+  }
 
-    this.stride = null;
-    this.strideX = null;
-    this.strideY = null;
-    setStride(this, settings);
+  get paddingX(): number {
+    return this.settings.paddingX as number;
+  }
 
-    this.padding = null;
-    this.paddingX = null;
-    this.paddingY = null;
-    setPadding(this, settings);
+  get paddingY(): number {
+    return this.settings.paddingX as number;
+  }
 
-    this.filterCount = settings.filterCount;
-    this.filterWidth = settings.filterWidth;
-    this.filterHeight = settings.filterHeight;
-
-    this.width = Math.floor(
-      (inputLayer.width + this.paddingX * 2 - this.filterWidth) / this.strideX +
+  get width(): number {
+    return Math.floor(
+      (this.inputLayer.width + this.paddingX * 2 - this.filterWidth) /
+        this.strideX +
         1
     );
-    this.height = Math.floor(
-      (inputLayer.height + this.paddingY * 2 - this.filterHeight) /
+  }
+
+  get height(): number {
+    return Math.floor(
+      (this.inputLayer.height + this.paddingY * 2 - this.filterHeight) /
         this.strideY +
         1
     );
-    this.depth = this.filterCount;
+  }
+
+  get bias(): number {
+    return this.settings.bias as number;
+  }
+
+  get depth(): number {
+    return this.filterCount;
+  }
+
+  get biases(): KernelOutput {
+    return this.settings.biases;
+  }
+
+  set biases(biases: KernelOutput) {
+    this.settings.biases = biases;
+  }
+
+  get biasDeltas(): KernelOutput {
+    return this.settings.biasDeltas;
+  }
+
+  set biasDeltas(weights: KernelOutput) {
+    this.settings.biasDeltas = weights;
+  }
+
+  get filters(): KernelOutput {
+    return this.settings.filters;
+  }
+
+  set filters(filters: KernelOutput) {
+    this.settings.filters = filters;
+  }
+
+  get filterDeltas(): KernelOutput {
+    return this.settings.filterDeltas;
+  }
+
+  set filterDeltas(filterDeltas: KernelOutput) {
+    this.settings.filterDeltas = filterDeltas;
+  }
+
+  constructor(settings: IConvolutionSettings, inputLayer: ILayer) {
+    super(inputLayer);
+    this.settings = {
+      ...settings,
+      ...getPadding(settings, defaults),
+      ...getStride(settings, defaults),
+      ...defaults,
+    };
+
     this.weights = randos3D(this.width, this.height, this.depth);
     this.deltas = zeros3D(this.width, this.height, this.depth);
 
@@ -222,15 +360,17 @@ class Convolution extends Filter {
       this.filterHeight,
       this.filterCount
     );
-
-    this.learnFilters = null;
-    this.learnInputs = null;
-    this.inputLayer = inputLayer;
     this.validate();
   }
 
+  compareFilterDeltasKernel: IKernelRunShortcut | null = null;
+  compareInputDeltasKernel: IKernelRunShortcut | null = null;
+  compareBiasesKernel: IKernelRunShortcut | null = null;
   setupKernels() {
-    this.predictKernel = makeKernel(predict, {
+    this.predictKernel = makeKernel<
+      Parameters<typeof predict>,
+      IPredictConstants
+    >(predict, {
       constants: {
         inputWidth: this.inputLayer.width,
         inputHeight: this.inputLayer.height,
@@ -288,7 +428,7 @@ class Convolution extends Filter {
   }
 
   predict() {
-    this.weights = this.predictKernel(
+    this.weights = (this.predictKernel as IKernelRunShortcut)(
       this.inputLayer.weights,
       this.filters,
       this.biases
@@ -297,16 +437,19 @@ class Convolution extends Filter {
 
   compare() {
     const { filterDeltas, biasDeltas } = this;
-    this.filterDeltas = this.compareFilterDeltasKernel(
+    this.filterDeltas = (this.compareFilterDeltasKernel as IKernelRunShortcut)(
       filterDeltas,
       this.inputLayer.weights,
       this.deltas
     );
     release(filterDeltas);
-    this.biasDeltas = this.compareBiasesKernel(biasDeltas, this.deltas);
+    this.biasDeltas = (this.compareBiasesKernel as IKernelRunShortcut)(
+      biasDeltas,
+      this.deltas
+    );
     release(biasDeltas);
     release(this.deltas);
-    this.deltas = this.compareInputDeltasKernel(
+    this.deltas = (this.compareInputDeltasKernel as IKernelRunShortcut)(
       this.filters,
       this.inputLayer.deltas
     );
@@ -316,25 +459,19 @@ class Convolution extends Filter {
     this.inputLayer.deltas = clone(this.deltas);
   }
 
-  learn(learningRate) {
+  learn(learningRate: number): void {
     // TODO: handle filters
     // TODO: do we need to release here?
     const { weights: oldWeights } = this;
-    this.weights = this.praxis.run(this, learningRate);
+    this.weights = (this.praxis as IPraxis).run(this, learningRate);
     release(oldWeights);
     clear(this.deltas);
   }
 }
 
-function convolution(settings, inputLayer) {
+export function convolution(
+  settings: IConvolutionSettings,
+  inputLayer: ILayer
+): Convolution {
   return new Convolution(settings, inputLayer);
 }
-
-module.exports = {
-  Convolution,
-  convolution,
-  predict,
-  compareFilterDeltas,
-  compareInputDeltas,
-  compareBiases,
-};
