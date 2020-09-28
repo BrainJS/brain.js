@@ -1,12 +1,29 @@
-const { Filter } = require('./types');
-const { makeKernel, release } = require('../utilities/kernel');
-const values = require('../utilities/values');
-const { randos2D, randos3D } = require('../utilities/randos');
-const { zeros } = require('../utilities/zeros');
-const { zeros2D } = require('../utilities/zeros-2d');
-const { zeros3D } = require('../utilities/zeros-3d');
+import {
+  IConstantsThis,
+  IKernelFunctionThis,
+  IKernelRunShortcut,
+  KernelOutput,
+} from 'gpu.js';
+import { Filter, IFilterSettings } from './filter';
+import { makeKernel, release } from '../utilities/kernel';
+import { values } from '../utilities/values';
+import { randos2D, randos3D } from '../utilities/randos';
+import { zeros } from '../utilities/zeros';
+import { zeros2D } from '../utilities/zeros-2d';
+import { zeros3D } from '../utilities/zeros-3d';
+import { ILayer } from './base-layer';
 
-function predict(inputs, filters, biases) {
+export interface IPredictConstants extends IConstantsThis {
+  inputWidth: number;
+  inputHeight: number;
+}
+
+export function predict(
+  this: IKernelFunctionThis<IPredictConstants>,
+  inputs: number[][],
+  filters: number[][],
+  biases: number[]
+): number {
   let output = 0;
   let i = 0;
   for (let y = 0; y < this.constants.inputHeight; y++) {
@@ -18,7 +35,12 @@ function predict(inputs, filters, biases) {
   return output + biases[this.thread.x];
 }
 
-function predict3D(inputs, filters, biases) {
+export function predict3D(
+  this: IKernelFunctionThis<IPredictConstants>,
+  inputs: number[][][],
+  filters: number[][],
+  biases: number[]
+): number {
   let output = 0;
   let i = 0;
   for (let z = 0; z < this.constants.inputDepth; z++) {
@@ -32,7 +54,16 @@ function predict3D(inputs, filters, biases) {
   return output + biases[this.thread.x];
 }
 
-function compareInputDeltas(inputDeltas, deltas, filters) {
+export interface ICompareInputDeltasConstants extends IConstantsThis {
+  filterCount: number;
+}
+
+export function compareInputDeltas(
+  this: IKernelFunctionThis<ICompareInputDeltasConstants>,
+  inputDeltas: number[][],
+  deltas: number[][],
+  filters: number[][]
+): number {
   let sum = 0;
   const filterX = this.thread.x + this.thread.y * this.output.x;
   for (let filterY = 0; filterY < this.constants.filterCount; filterY++) {
@@ -41,7 +72,12 @@ function compareInputDeltas(inputDeltas, deltas, filters) {
   return sum + inputDeltas[this.thread.y][this.thread.x];
 }
 
-function compareInputDeltas3D(inputDeltas, deltas, filters) {
+export function compareInputDeltas3D(
+  this: IKernelFunctionThis<ICompareInputDeltasConstants>,
+  inputDeltas: number[][][],
+  deltas: number[][],
+  filters: number[][]
+): number {
   let sum = 0;
   const filterX = this.thread.x + this.thread.y * this.output.x;
   for (let filterY = 0; filterY < this.constants.filterCount; filterY++) {
@@ -50,11 +86,27 @@ function compareInputDeltas3D(inputDeltas, deltas, filters) {
   return sum + inputDeltas[this.thread.z][this.thread.y][this.thread.x];
 }
 
-function compareBiases(biases, deltas) {
+export function compareBiases(
+  this: IKernelFunctionThis,
+  biases: number[],
+  deltas: number[][]
+): number {
   return biases[this.thread.x] + deltas[this.thread.y][this.thread.x];
 }
 
-function compareFilterDeltas(filterDeltas, inputWeights, deltas) {
+export interface ICompareFiltersDeltas extends IConstantsThis {
+  deltaX: number;
+  deltaY: number;
+  inputWidth: number;
+  inputHeight: number;
+}
+
+export function compareFilterDeltas(
+  this: IKernelFunctionThis<ICompareFiltersDeltas>,
+  filterDeltas: number[][],
+  inputWeights: number[][],
+  deltas: number[][]
+): number {
   return (
     filterDeltas[this.thread.y][this.thread.x] +
     inputWeights[this.thread.y][this.thread.x] *
@@ -62,7 +114,12 @@ function compareFilterDeltas(filterDeltas, inputWeights, deltas) {
   );
 }
 
-function compareFilterDeltas3D(filterDeltas, inputWeights, deltas) {
+export function compareFilterDeltas3D(
+  this: IKernelFunctionThis<ICompareFiltersDeltas>,
+  filterDeltas: number[][],
+  inputWeights: number[][][],
+  deltas: number[][]
+): number {
   const inputZ = Math.floor(
     this.thread.x / (this.constants.inputWidth * this.constants.inputHeight)
   );
@@ -80,20 +137,46 @@ function compareFilterDeltas3D(filterDeltas, inputWeights, deltas) {
   );
 }
 
-class FullyConnected extends Filter {
-  static get defaults() {
-    return {
-      bias: 0.1,
-    };
+export interface IFullyConnectedDefaultSettings
+  extends Partial<IFilterSettings> {
+  bias?: number;
+  biases?: KernelOutput;
+  biasDeltas?: KernelOutput;
+}
+
+export const defaults: IFullyConnectedDefaultSettings = {
+  bias: 0.1,
+};
+
+export class FullyConnected extends Filter {
+  get bias(): number {
+    return this.settings.bias as number;
   }
 
-  constructor(settings, inputLayer) {
-    super(settings);
-    this.inputLayer = inputLayer;
+  get biases(): KernelOutput {
+    return this.settings.biases;
+  }
+
+  set biases(biases: KernelOutput) {
+    this.settings.biases = biases;
+  }
+
+  get biasDeltas(): KernelOutput {
+    return this.settings.biases;
+  }
+
+  set biasDeltas(biasDeltas: KernelOutput) {
+    this.settings.biasDeltas = biasDeltas;
+  }
+
+  settings: Partial<IFullyConnectedDefaultSettings>;
+  compareFilterDeltasKernel: IKernelRunShortcut | null = null;
+  compareInputDeltasKernel: IKernelRunShortcut | null = null;
+  compareBiasesKernel: IKernelRunShortcut | null = null;
+  constructor(settings: IFullyConnectedDefaultSettings, inputLayer: ILayer) {
+    super(inputLayer);
+    this.settings = { ...settings };
     this.validate();
-    this.compareFilterDeltasKernel = null;
-    this.compareInputDeltasKernel = null;
-    this.compareBiasesKernel = null;
 
     const connectionCount =
       inputLayer.width * inputLayer.height * inputLayer.depth;
@@ -105,20 +188,20 @@ class FullyConnected extends Filter {
     this.filterDeltas = zeros2D(connectionCount, this.height);
 
     if (this.depth > 0) {
-      this.weights = randos3D(this.width, this.height);
-      this.deltas = zeros3D(this.width, this.height);
+      this.weights = randos3D(this.width, this.height, this.depth);
+      this.deltas = zeros3D(this.width, this.height, this.depth);
     } else if (this.height > 0) {
       this.weights = randos2D(this.width, this.height);
       this.deltas = zeros2D(this.width, this.height);
     }
   }
 
-  validate() {
+  validate(): void {
     super.validate();
     if (this.depth > 0) throw new Error('depth not supported');
   }
 
-  setupKernels() {
+  setupKernels(): void {
     const { inputLayer } = this;
     const connectionCount =
       inputLayer.width * inputLayer.height * inputLayer.depth;
@@ -177,17 +260,18 @@ class FullyConnected extends Filter {
     });
   }
 
-  predict() {
-    this.weights = this.predictKernel(
+  predict(): void {
+    this.weights = (this.predictKernel as IKernelRunShortcut)(
       this.inputLayer.weights,
       this.filters,
       this.biases
     );
   }
 
-  compare() {
+  compare(): void {
     const inputLayerDeltas = this.inputLayer.deltas;
-    this.inputLayer.deltas = this.compareInputDeltasKernel(
+    this.inputLayer.deltas = (this
+      .compareInputDeltasKernel as IKernelRunShortcut)(
       inputLayerDeltas,
       this.deltas,
       this.filters
@@ -196,10 +280,13 @@ class FullyConnected extends Filter {
 
     const { biasDeltas, filterDeltas } = this;
     // TODO: handle biasDeltas learn
-    this.biasDeltas = this.compareBiasesKernel(this.biases, this.deltas);
+    this.biasDeltas = (this.compareBiasesKernel as IKernelRunShortcut)(
+      this.biases,
+      this.deltas
+    );
 
     // TODO: handle filterDeltas learn
-    this.filterDeltas = this.compareFilterDeltasKernel(
+    this.filterDeltas = (this.compareFilterDeltasKernel as IKernelRunShortcut)(
       filterDeltas,
       this.inputLayer.weights,
       this.deltas
@@ -209,18 +296,9 @@ class FullyConnected extends Filter {
   }
 }
 
-function fullyConnected(settings, inputLayer) {
+export function fullyConnected(
+  settings: IFullyConnectedDefaultSettings,
+  inputLayer: ILayer
+): FullyConnected {
   return new FullyConnected(settings, inputLayer);
 }
-
-module.exports = {
-  FullyConnected,
-  fullyConnected,
-  predict,
-  predict3D,
-  compareInputDeltas,
-  compareInputDeltas3D,
-  compareBiases,
-  compareFilterDeltas,
-  compareFilterDeltas3D,
-};

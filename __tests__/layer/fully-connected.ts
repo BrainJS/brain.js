@@ -1,7 +1,7 @@
-const { GPU } = require('gpu.js');
-const { gpuMock } = require('gpu-mock.js');
+import { GPU } from 'gpu.js';
+import { gpuMock } from 'gpu-mock.js';
 
-const {
+import {
   predict,
   predict3D,
   compareBiases,
@@ -9,10 +9,10 @@ const {
   compareFilterDeltas3D,
   compareInputDeltas,
   compareInputDeltas3D,
-} = require('../../src/layer/fully-connected');
-const { onePlusPlus2D, zero2D } = require('../test-utils');
-const { setup, teardown } = require('../../src/utilities/kernel');
-const { injectIstanbulCoverage } = require('../test-utils');
+} from '../../src/layer/fully-connected';
+import { onePlusPlus2D, zero2D } from '../test-utils';
+import { setup, teardown } from '../../src/utilities/kernel';
+import { injectIstanbulCoverage } from '../test-utils';
 
 describe('FullyConnected Layer', () => {
   beforeEach(() => {

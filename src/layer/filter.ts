@@ -1,9 +1,12 @@
 import { BaseLayer, ILayer, ILayerSettings } from './base-layer';
+import { KernelOutput } from 'gpu.js';
 
 export interface IFilterSettings extends ILayerSettings {
   filterCount: number;
   filterWidth: number;
   filterHeight: number;
+  filters?: KernelOutput;
+  filterDeltas?: KernelOutput;
 }
 
 export class Filter extends BaseLayer {
@@ -29,6 +32,22 @@ export class Filter extends BaseLayer {
 
   get filterHeight(): number {
     return this.settings.filterHeight as number;
+  }
+
+  get filters(): KernelOutput {
+    return this.settings.filters;
+  }
+
+  set filters(filters: KernelOutput) {
+    this.settings.filters = filters;
+  }
+
+  get filterDeltas(): KernelOutput {
+    return this.settings.filterDeltas;
+  }
+
+  set filterDeltas(filterDeltas: KernelOutput) {
+    this.settings.filterDeltas = filterDeltas;
   }
 
   inputLayer: ILayer;
