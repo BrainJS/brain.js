@@ -1,9 +1,9 @@
-const { GPU } = require('gpu.js');
-const { gpuMock } = require('gpu-mock.js');
+import { GPU } from 'gpu.js';
+import { gpuMock } from 'gpu-mock.js';
 
-const { setup, teardown } = require('../../src/utilities/kernel');
+import { setup, teardown } from '../../src/utilities/kernel';
 
-const {
+import {
   compare,
   compare2D,
   compare3D,
@@ -19,8 +19,8 @@ const {
   // predict,
   predict2D,
   predict3D,
-} = require('../../src/layer/soft-max');
-const { injectIstanbulCoverage } = require('../test-utils');
+} from '../../src/layer/soft-max';
+import { injectIstanbulCoverage } from '../test-utils';
 
 describe('SoftMax', () => {
   beforeEach(() => {

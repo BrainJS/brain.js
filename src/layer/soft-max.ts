@@ -1,11 +1,27 @@
-const { makeKernel, release, clone } = require('../utilities/kernel');
-const { Filter } = require('./types');
-const { randos, randos2D, randos3D } = require('../utilities/randos');
-const { zeros } = require('../utilities/zeros');
-const { zeros2D } = require('../utilities/zeros-2d');
-const { zeros3D } = require('../utilities/zeros-3d');
+import {
+  IConstantsThis,
+  IKernelFunctionThis,
+  IKernelRunShortcut,
+  KernelOutput,
+  Texture,
+} from 'gpu.js';
 
-function getMaxValue(inputs) {
+import { makeKernel, release, clone } from '../utilities/kernel';
+import { Filter } from './filter';
+import { randos, randos2D, randos3D } from '../utilities/randos';
+import { zeros } from '../utilities/zeros';
+import { zeros2D } from '../utilities/zeros-2d';
+import { zeros3D } from '../utilities/zeros-3d';
+import { ILayer, ILayerSettings } from './base-layer';
+
+interface ISoftMaxConstants extends IConstantsThis {
+  inputWidth: number;
+}
+
+export function getMaxValue(
+  this: IKernelFunctionThis<ISoftMaxConstants>,
+  inputs: number[]
+): number {
   let maxInput = -Infinity;
   for (let x = 0; x < this.constants.inputWidth; x++) {
     const input = inputs[x];
@@ -16,7 +32,10 @@ function getMaxValue(inputs) {
   return maxInput;
 }
 
-function getMaxValue2D(inputs) {
+export function getMaxValue2D(
+  this: IKernelFunctionThis<ISoftMaxConstants>,
+  inputs: number[][]
+): number {
   let maxInput = -Infinity;
   for (let y = 0; y < this.constants.inputHeight; y++) {
     for (let x = 0; x < this.constants.inputWidth; x++) {
@@ -29,7 +48,10 @@ function getMaxValue2D(inputs) {
   return maxInput;
 }
 
-function getMaxValue3D(inputs) {
+export function getMaxValue3D(
+  this: IKernelFunctionThis<ISoftMaxConstants>,
+  inputs: number[][][]
+): number {
   let maxInput = -Infinity;
   for (let z = 0; z < this.constants.inputDepth; z++) {
     for (let y = 0; y < this.constants.inputHeight; y++) {
@@ -44,7 +66,10 @@ function getMaxValue3D(inputs) {
   return maxInput;
 }
 
-function getSum(inputs) {
+export function getSum(
+  this: IKernelFunctionThis<ISoftMaxConstants>,
+  inputs: number[]
+): number {
   let sum = 0;
   for (let x = 0; x < this.constants.inputWidth; x++) {
     sum += inputs[x];
@@ -52,7 +77,10 @@ function getSum(inputs) {
   return sum;
 }
 
-function getSum2D(inputs) {
+export function getSum2D(
+  this: IKernelFunctionThis<ISoftMaxConstants>,
+  inputs: number[][]
+): number {
   let sum = 0;
   for (let y = 0; y < this.constants.inputHeight; y++) {
     for (let x = 0; x < this.constants.inputWidth; x++) {
@@ -62,7 +90,10 @@ function getSum2D(inputs) {
   return sum;
 }
 
-function getSum3D(inputs) {
+export function getSum3D(
+  this: IKernelFunctionThis<ISoftMaxConstants>,
+  inputs: number[][][]
+): number {
   let sum = 0;
   for (let z = 0; z < this.constants.inputDepth; z++) {
     for (let y = 0; y < this.constants.inputHeight; y++) {
@@ -74,36 +105,64 @@ function getSum3D(inputs) {
   return sum;
 }
 
-function getExponentials(inputs, maxInput) {
+export function getExponentials(
+  this: IKernelFunctionThis,
+  inputs: number[],
+  maxInput: number[]
+): number {
   return Math.exp(inputs[this.thread.x] - maxInput[0]);
 }
 
-function getExponentials2D(inputs, maxInput) {
+export function getExponentials2D(
+  this: IKernelFunctionThis,
+  inputs: number[][],
+  maxInput: number[]
+): number {
   return Math.exp(inputs[this.thread.y][this.thread.x] - maxInput[0]);
 }
 
-function getExponentials3D(inputs, maxInput) {
+export function getExponentials3D(
+  this: IKernelFunctionThis,
+  inputs: number[][][],
+  maxInput: number[]
+): number {
   return Math.exp(
     inputs[this.thread.z][this.thread.y][this.thread.x] - maxInput[0]
   );
 }
 
-function predict(exponentials, exponentialsSum) {
+export function predict(
+  this: IKernelFunctionThis,
+  exponentials: number[],
+  exponentialsSum: number[]
+): number {
   return exponentials[this.thread.x] / exponentialsSum[0];
 }
 
-function predict2D(exponentials, exponentialsSum) {
+export function predict2D(
+  this: IKernelFunctionThis,
+  exponentials: number[][],
+  exponentialsSum: number[]
+): number {
   return exponentials[this.thread.y][this.thread.x] / exponentialsSum[0];
 }
 
-function predict3D(exponentials, exponentialsSum) {
+export function predict3D(
+  this: IKernelFunctionThis,
+  exponentials: number[][][],
+  exponentialsSum: number[]
+): number {
   return (
     exponentials[this.thread.z][this.thread.y][this.thread.x] /
     exponentialsSum[0]
   );
 }
 
-function compare(target, exponentials) {
+export function compare(
+  this: IKernelFunctionThis,
+  target: number,
+  exponentials: number[]
+): number {
   let indicator = 0;
   if (this.thread.x === target) {
     indicator = 1;
@@ -111,7 +170,11 @@ function compare(target, exponentials) {
   return -(indicator - exponentials[this.thread.x]);
 }
 
-function compare2D(target, exponentials) {
+export function compare2D(
+  this: IKernelFunctionThis,
+  target: number,
+  exponentials: number[][]
+): number {
   let indicator = 0;
   const index = this.thread.x + this.thread.y * this.output.x;
   if (index === target) {
@@ -120,7 +183,11 @@ function compare2D(target, exponentials) {
   return -(indicator - exponentials[this.thread.y][this.thread.x]);
 }
 
-function compare3D(target, exponentials) {
+export function compare3D(
+  this: IKernelFunctionThis,
+  target: number,
+  exponentials: number[][][]
+): number {
   let indicator = 0;
   const index =
     this.thread.x +
@@ -134,22 +201,22 @@ function compare3D(target, exponentials) {
   );
 }
 
-function loss() {
-  return -Math.log();
+export function loss(): number {
+  return -Math.log(0);
 }
 
 // TODO: handle: `return -Math.log(this.es[y]);` in learn
 
-class SoftMax extends Filter {
-  constructor(inputLayer) {
-    super();
-    this.width = inputLayer.width;
-    this.height = inputLayer.height;
-    this.depth = inputLayer.depth;
+export class SoftMax extends Filter {
+  getExponentialsKernel: IKernelRunShortcut | null;
+  getMaxValueKernel: IKernelRunShortcut | null;
+  getSumKernel: IKernelRunShortcut | null;
+  errors: KernelOutput | null = null;
+  constructor(inputLayer: ILayer, settings?: ILayerSettings) {
+    super(inputLayer, settings);
     this.getExponentialsKernel = null;
     this.getMaxValueKernel = null;
     this.getSumKernel = null;
-    this.inputLayer = inputLayer;
     this.validate();
 
     if (this.depth > 0) {
@@ -164,7 +231,7 @@ class SoftMax extends Filter {
     }
   }
 
-  setupKernels() {
+  setupKernels(): void {
     const { width, height, depth } = this;
     if (depth > 0) {
       this.getExponentialsKernel = makeKernel(getExponentials3D, {
@@ -221,22 +288,32 @@ class SoftMax extends Filter {
     }
   }
 
-  predict() {
-    const maxValue = this.getMaxValueKernel(this.inputLayer.weights);
-    const exponentials = this.getExponentialsKernel(
+  predict(): void {
+    const maxValue = (this.getMaxValueKernel as IKernelRunShortcut)(
+      this.inputLayer.weights
+    );
+    const exponentials = (this.getExponentialsKernel as IKernelRunShortcut)(
       this.inputLayer.weights,
       maxValue
     );
-    const exponentialsSum = this.getSumKernel(exponentials);
-    this.weights = this.predictKernel(exponentials, exponentialsSum);
+    const exponentialsSum = (this.getSumKernel as IKernelRunShortcut)(
+      exponentials
+    );
+    this.weights = (this.predictKernel as IKernelRunShortcut)(
+      exponentials,
+      exponentialsSum
+    );
   }
 
-  compare(targetValues) {
+  compare(targetValues: KernelOutput): void {
     const { deltas, errors } = this;
-    this.errors = this.compareKernel(targetValues[0], deltas);
+    this.errors = (this.compareKernel as IKernelRunShortcut)(
+      (targetValues as number[])[0],
+      deltas
+    );
     this.deltas = clone(this.errors);
     release(deltas);
-    release(errors);
+    release(errors as Texture);
 
     const inputLayerDeltas = this.inputLayer.deltas;
     this.inputLayer.deltas = clone(this.deltas);
@@ -244,27 +321,9 @@ class SoftMax extends Filter {
   }
 }
 
-function softMax(settings, inputLayer) {
-  return new SoftMax(settings, inputLayer);
+export function softMax(
+  inputLayer: ILayer,
+  settings?: ILayerSettings
+): SoftMax {
+  return new SoftMax(inputLayer, settings);
 }
-
-module.exports = {
-  SoftMax,
-  softMax,
-  getMaxValue,
-  getMaxValue2D,
-  getMaxValue3D,
-  getSum,
-  getSum2D,
-  getSum3D,
-  getExponentials,
-  getExponentials2D,
-  getExponentials3D,
-  predict,
-  predict2D,
-  predict3D,
-  compare,
-  compare2D,
-  compare3D,
-  loss,
-};
