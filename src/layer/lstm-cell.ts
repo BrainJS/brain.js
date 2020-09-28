@@ -1,14 +1,23 @@
-const { add } = require('./add');
-const { multiply } = require('./multiply');
-const { multiplyElement } = require('./multiply-element');
-const { random } = require('./random');
-const { sigmoid } = require('./sigmoid');
-const { tanh } = require('./tanh');
-const { zeros } = require('./zeros');
+import { add } from './add';
+import { multiply } from './multiply';
+import { multiplyElement } from './multiply-element';
+import { random } from './random';
+import { sigmoid } from './sigmoid';
+import { tanh } from './tanh';
+import { zeros } from './zeros';
+import { ILayer, ILayerSettings } from './base-layer';
+import { RecurrentZeros } from './recurrent-zeros';
 
-function lstmCell(settings, input, recurrentInput) {
+export function lstmCell(
+  settings: ILayerSettings,
+  input: ILayer,
+  recurrentInput: RecurrentZeros
+): ILayer {
   const { height } = settings;
 
+  if (typeof height !== 'number') {
+    throw new Error('no settings.height given');
+  }
   if (recurrentInput.setDimensions) recurrentInput.setDimensions(1, height);
 
   const inputGateWeights = random({ height, width: input.height, std: 0.08 });
@@ -71,7 +80,3 @@ function lstmCell(settings, input, recurrentInput) {
   // compute hidden state as gated, saturated cell activations
   return multiplyElement(outputGate, tanh(cell));
 }
-
-module.exports = {
-  lstmCell,
-};
