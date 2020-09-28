@@ -1,32 +1,48 @@
-const { Activation } = require('./types');
-const { makeKernel, release, clear } = require('../utilities/kernel');
-const { activate, measure } = require('../activation/relu');
-// const { zeros2D } = require('../utilities/zeros-2d');
+import { IKernelFunctionThis, IKernelRunShortcut } from 'gpu.js';
 
-function predict2D(inputs) {
+import { Activation } from './types';
+import { makeKernel, release, clear } from '../utilities/kernel';
+import { activate, measure } from '../activation/relu';
+import { ILayer, ILayerSettings } from './base-layer';
+
+export function predict2D(
+  this: IKernelFunctionThis,
+  inputs: number[][]
+): number {
   return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-function compare2D(weights, deltas) {
+export function compare2D(
+  this: IKernelFunctionThis,
+  weights: number[][],
+  deltas: number[][]
+): number {
   return measure(
     weights[this.thread.y][this.thread.x],
     deltas[this.thread.y][this.thread.x]
   );
 }
 
-function predict3D(inputs) {
+export function predict3D(
+  this: IKernelFunctionThis,
+  inputs: number[][][]
+): number {
   return activate(inputs[this.thread.z][this.thread.y][this.thread.x]);
 }
 
-function compare3D(weights, deltas) {
+export function compare3D(
+  this: IKernelFunctionThis,
+  weights: number[][][],
+  deltas: number[][][]
+): number {
   return measure(
     weights[this.thread.z][this.thread.y][this.thread.x],
     deltas[this.thread.z][this.thread.y][this.thread.x]
   );
 }
 
-class Relu extends Activation {
-  setupKernels() {
+export class Relu extends Activation {
+  setupKernels(): void {
     const { width, height, depth } = this.inputLayer;
     if (depth > 0) {
       this.predictKernel = makeKernel(predict3D, {
@@ -55,20 +71,23 @@ class Relu extends Activation {
     }
   }
 
-  predict() {
+  predict(): void {
     release(this.weights);
-    this.weights = this.predictKernel(this.inputLayer.weights);
+    this.weights = (this.predictKernel as IKernelRunShortcut)(
+      this.inputLayer.weights
+    );
     clear(this.deltas);
   }
 
-  compare() {
+  compare(): void {
     release(this.inputLayer.deltas);
-    this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
+    this.inputLayer.deltas = (this.compareKernel as IKernelRunShortcut)(
+      this.weights,
+      this.deltas
+    );
   }
 }
 
-function relu(inputLayer, settings) {
+export function relu(inputLayer: ILayer, settings: ILayerSettings): Relu {
   return new Relu(inputLayer, settings);
 }
-
-module.exports = { Relu, relu, predict2D, compare2D, predict3D, compare3D };

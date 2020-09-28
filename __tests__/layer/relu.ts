@@ -1,17 +1,31 @@
-const { GPU } = require('gpu.js');
-const { gpuMock } = require('gpu-mock.js');
-const {
+import { GPU } from 'gpu.js';
+import { gpuMock } from 'gpu-mock.js';
+import {
   Relu,
-  relu: reluLayer,
+  relu,
   predict2D,
   predict3D,
   compare2D,
   compare3D,
-} = require('../../src/layer/relu');
-const reluActivation = require('../../src/activation/relu');
-const { expectFunction } = require('../test-utils');
-const { setup, teardown } = require('../../src/utilities/kernel');
-const { injectIstanbulCoverage } = require('../test-utils');
+} from '../../src/layer/relu';
+import * as reluActivation from '../../src/activation/relu';
+import { mockLayer, mockPraxis } from '../test-utils';
+import { makeKernel, setup, teardown } from '../../src/utilities/kernel';
+import { injectIstanbulCoverage } from '../test-utils';
+import { randos2D } from '../../src/utilities/randos';
+import { ILayerSettings } from '../../src/layer/base-layer';
+
+jest.mock('../../src/utilities/kernel', () => {
+  return {
+    setup: jest.fn(),
+    teardown: jest.fn(),
+    makeKernel: jest.fn(() => {
+      return [[1]];
+    }),
+    release: jest.fn(),
+    clear: jest.fn(),
+  }
+});
 
 describe('Relu Layer', () => {
   describe('predict2D() (forward propagation)', () => {
@@ -139,27 +153,15 @@ describe('Relu Layer', () => {
       it('sets up kernels correctly', () => {
         const width = 3;
         const height = 4;
-        const mockInputLayer = { width, height };
+        const mockInputLayer = mockLayer({ width, height });
         const l = new Relu(mockInputLayer);
         expect(l.predictKernel).toBe(null);
         expect(l.compareKernel).toBe(null);
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
-        expectFunction(l.predictKernel.source, predict2D);
-        expect(l.predictKernel.output).toEqual([width, height]);
-        expect(l.predictKernel.functions.length).toBe(1);
-        expectFunction(
-          l.predictKernel.functions[0].source,
-          reluActivation.activate
-        );
         expect(l.compareKernel).not.toBe(null);
-        expectFunction(l.compareKernel.source, compare2D);
-        expect(l.compareKernel.output).toEqual([width, height]);
-        expect(l.compareKernel.functions.length).toBe(1);
-        expectFunction(
-          l.compareKernel.functions[0].source,
-          reluActivation.measure
-        );
+        expect(makeKernel).toHaveBeenCalledWith(predict2D, { functions: [reluActivation.activate], immutable: true, output: [3, 4] });
+        expect(makeKernel).toHaveBeenCalledWith(compare2D, { functions: [reluActivation.measure], immutable: true, output: [3, 4] });
       });
     });
     describe('3d', () => {
@@ -167,42 +169,30 @@ describe('Relu Layer', () => {
         const width = 3;
         const height = 4;
         const depth = 5;
-        const mockInputLayer = { width, height, depth };
+        const mockInputLayer = mockLayer({ width, height, depth });
         const l = new Relu(mockInputLayer);
         expect(l.predictKernel).toBe(null);
         expect(l.compareKernel).toBe(null);
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
-        expectFunction(l.predictKernel.source, predict3D);
-        expect(l.predictKernel.output).toEqual([width, height, depth]);
-        expect(l.predictKernel.functions.length).toBe(1);
-        expectFunction(
-          l.predictKernel.functions[0].source,
-          reluActivation.activate
-        );
         expect(l.compareKernel).not.toBe(null);
-        expectFunction(l.compareKernel.source, compare3D);
-        expect(l.compareKernel.output).toEqual([width, height, depth]);
-        expect(l.compareKernel.functions.length).toBe(1);
-        expectFunction(
-          l.compareKernel.functions[0].source,
-          reluActivation.measure
-        );
+        expect(makeKernel).toHaveBeenCalledWith(predict3D, { functions: [reluActivation.activate], immutable: true, output: [3, 4, 5] });
+        expect(makeKernel).toHaveBeenCalledWith(compare3D, { functions: [reluActivation.measure], immutable: true, output: [3, 4, 5] });
       });
     });
   });
 
   describe('.predict()', () => {
     it('calls this.predictKernel() with this.inputLayer.weights', () => {
-      const mockWeights = {};
-      const mockInputLayer = {
+      const mockWeights = randos2D(1, 1);
+      const mockInputLayer = mockLayer({
         weights: mockWeights,
         width: 1,
         height: 1,
         depth: 1,
-      };
+      });
       const l = new Relu(mockInputLayer);
-      l.predictKernel = jest.fn((weights) => weights);
+      (l as any).predictKernel = jest.fn((weights) => weights);
       l.predict();
       expect(l.predictKernel).toBeCalledWith(mockWeights);
       expect(l.weights).toBe(mockWeights);
@@ -211,23 +201,23 @@ describe('Relu Layer', () => {
 
   describe('.compare()', () => {
     it('calls this.compareKernel() with this.inputLayer.weights & this.inputLayer.deltas', () => {
-      const mockWeights = {};
-      const mockDeltas = {};
-      const mockInputLayer = {
+      const mockWeights = randos2D(1, 1);
+      const mockDeltas = randos2D(1, 1);
+      const mockInputDeltas = randos2D(1, 1);
+      const mockInputLayer = mockLayer({
         width: 1,
         height: 1,
         depth: 1,
-      };
+        deltas: mockInputDeltas,
+      });
       const l = new Relu(mockInputLayer);
-      l.inputLayer = {
-        deltas: {},
-      };
       l.weights = mockWeights;
       l.deltas = mockDeltas;
-      l.compareKernel = jest.fn((weights, deltas) => deltas);
+      const expectedDeltas = randos2D(1, 1);
+      (l as any).compareKernel = jest.fn((weights, deltas) => expectedDeltas);
       l.compare();
       expect(l.compareKernel).toBeCalledWith(mockWeights, mockDeltas);
-      expect(l.deltas).toBe(mockDeltas);
+      expect(l.inputLayer.deltas).toBe(expectedDeltas);
     });
   });
 
@@ -236,17 +226,21 @@ describe('Relu Layer', () => {
       const width = 3;
       const height = 4;
       const depth = 5;
-      const mockInputLayer = { width, height, depth };
-      const mockPraxisInstance = {};
-      const mockPraxis = jest.fn(() => mockPraxisInstance);
-      const settings = { praxis: mockPraxis };
-      const l = reluLayer(mockInputLayer, settings);
+      const mockInputLayer = mockLayer({ width, height, depth });
+      const praxis = mockPraxis();
+      const praxisSettings = {};
+      const settings: ILayerSettings = {
+        praxisOpts: praxisSettings,
+        initPraxis: jest.fn((settings: typeof praxisSettings) => {
+          return praxis
+        })
+      };
+      const l = relu(mockInputLayer, settings);
       expect(l.constructor).toBe(Relu);
       expect(l.width).toBe(width);
       expect(l.height).toBe(height);
       expect(l.depth).toBe(depth);
-      expect(mockPraxis).toBeCalled();
-      expect(l.praxis).toBe(mockPraxisInstance);
+      expect(l.praxis).toBe(praxis);
     });
   });
 });
