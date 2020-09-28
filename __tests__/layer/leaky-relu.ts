@@ -1,17 +1,32 @@
-const { GPU } = require('gpu.js');
-const { gpuMock } = require('gpu-mock.js');
-const {
+import { GPU } from 'gpu.js';
+import { gpuMock } from 'gpu-mock.js';
+import {
   LeakyRelu,
-  leakyRelu: leakyReluLayer,
+  leakyRelu,
   predict2D,
   predict3D,
   compare2D,
-  compare3D,
-} = require('../../src/layer/leaky-relu');
-const leakyReluActivation = require('../../src/activation/leaky-relu');
-const { expectFunction } = require('../test-utils');
-const { setup, teardown } = require('../../src/utilities/kernel');
-const { injectIstanbulCoverage } = require('../test-utils');
+  compare3D
+} from '../../src/layer/leaky-relu';
+import * as leakyReluActivation from '../../src/activation/leaky-relu';
+import { expectFunction, mockLayer, mockPraxis } from '../test-utils';
+import { makeKernel, setup, teardown } from '../../src/utilities/kernel';
+import { injectIstanbulCoverage } from '../test-utils';
+import { ones2D } from '../../src/utilities/ones';
+import { ILayerSettings } from '../../src/layer/base-layer';
+import { randos2D } from '../../src/utilities/randos';
+
+jest.mock('../../src/utilities/kernel', () => {
+  return {
+    setup: jest.fn(),
+    teardown: jest.fn(),
+    makeKernel: jest.fn(() => {
+      return [[1]];
+    }),
+    release: jest.fn(),
+    clear: jest.fn(),
+  }
+});
 
 describe('Leaky Relu Layer', () => {
   describe('predict2D() (forward propagation)', () => {
@@ -151,27 +166,15 @@ describe('Leaky Relu Layer', () => {
       it('sets up kernels correctly', () => {
         const width = 3;
         const height = 4;
-        const mockInputLayer = { width, height };
+        const mockInputLayer = mockLayer({ width, height });
         const l = new LeakyRelu(mockInputLayer);
         expect(l.predictKernel).toBe(null);
         expect(l.compareKernel).toBe(null);
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
-        expectFunction(l.predictKernel.source, predict2D);
-        expect(l.predictKernel.output).toEqual([width, height]);
-        expect(l.predictKernel.functions.length).toBe(1);
-        expectFunction(
-          l.predictKernel.functions[0].source,
-          leakyReluActivation.activate
-        );
         expect(l.compareKernel).not.toBe(null);
-        expectFunction(l.compareKernel.source, compare2D);
-        expect(l.compareKernel.output).toEqual([width, height]);
-        expect(l.compareKernel.functions.length).toBe(1);
-        expectFunction(
-          l.compareKernel.functions[0].source,
-          leakyReluActivation.measure
-        );
+        expect(makeKernel).toHaveBeenCalledWith(predict2D, { functions: [leakyReluActivation.activate], immutable: true, output: [3, 4] });
+        expect(makeKernel).toHaveBeenCalledWith(compare2D, { functions: [leakyReluActivation.measure], immutable: true, output: [3, 4] });
       });
     });
     describe('3d', () => {
@@ -179,64 +182,51 @@ describe('Leaky Relu Layer', () => {
         const width = 3;
         const height = 4;
         const depth = 5;
-        const mockInputLayer = { width, height, depth };
+        const mockInputLayer = mockLayer({ width, height, depth });
         const l = new LeakyRelu(mockInputLayer);
         expect(l.predictKernel).toBe(null);
         expect(l.compareKernel).toBe(null);
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
-        expectFunction(l.predictKernel.source, predict3D);
-        expect(l.predictKernel.output).toEqual([width, height, depth]);
-        expect(l.predictKernel.functions.length).toBe(1);
-        expectFunction(
-          l.predictKernel.functions[0].source,
-          leakyReluActivation.activate
-        );
         expect(l.compareKernel).not.toBe(null);
-        expectFunction(l.compareKernel.source, compare3D);
-        expect(l.compareKernel.output).toEqual([width, height, depth]);
-        expect(l.compareKernel.functions.length).toBe(1);
-        expectFunction(
-          l.compareKernel.functions[0].source,
-          leakyReluActivation.measure
-        );
+        expect(makeKernel).toHaveBeenCalledWith(predict3D, { functions: [leakyReluActivation.activate], immutable: true, output: [3, 4, 5] });
+        expect(makeKernel).toHaveBeenCalledWith(compare3D, { functions: [leakyReluActivation.measure], immutable: true, output: [3, 4, 5] });
       });
     });
   });
 
   describe('.predict()', () => {
     it('calls this.predictKernel() with this.inputLayer.weights', () => {
-      const mockWeights = {};
-      const mockInputLayer = {
+      const mockWeights = ones2D(1, 1);
+      const mockInputLayer = mockLayer({
         weights: mockWeights,
         width: 1,
         height: 1,
         depth: 1,
-      };
+      });
       const l = new LeakyRelu(mockInputLayer);
-      l.predictKernel = jest.fn((weights) => weights);
+      const spy = (l as any).predictKernel = jest.fn(values => values);
       l.predict();
-      expect(l.predictKernel).toBeCalledWith(mockWeights);
+      expect(spy).toBeCalledWith(mockWeights);
       expect(l.weights).toBe(mockWeights);
     });
   });
 
   describe('.compare()', () => {
     it('calls this.compareKernel() with this.inputLayer.weights & this.inputLayer.deltas', () => {
-      const mockWeights = {};
-      const mockDeltas = {};
-      const mockInputLayer = {
+      const mockInputLayer = mockLayer({
         width: 1,
         height: 1,
         depth: 1,
-      };
+      });
       const l = new LeakyRelu(mockInputLayer);
-      l.weights = mockWeights;
-      l.deltas = mockDeltas;
-      l.compareKernel = jest.fn((weights, deltas) => deltas);
+      const weights = l.weights = randos2D(1, 1);
+      const deltas = l.deltas = randos2D(1, 1);
+      const results = randos2D(1, 1);
+      (l as any).compareKernel = jest.fn((weights, deltas) => results);
       l.compare();
-      expect(l.compareKernel).toBeCalledWith(mockWeights, mockDeltas);
-      expect(l.deltas).toBe(mockDeltas);
+      expect(l.compareKernel).toBeCalledWith(weights, deltas);
+      expect(l.deltas).toBe(results);
     });
   });
 
@@ -245,17 +235,21 @@ describe('Leaky Relu Layer', () => {
       const width = 3;
       const height = 4;
       const depth = 5;
-      const mockInputLayer = { width, height, depth };
-      const mockPraxisInstance = {};
-      const mockPraxis = jest.fn(() => mockPraxisInstance);
-      const settings = { praxis: mockPraxis };
-      const l = leakyReluLayer(mockInputLayer, settings);
+      const mockInputLayer = mockLayer({ width, height, depth });
+      const praxis = mockPraxis();
+      const praxisSettings = {};
+      const settings: ILayerSettings = {
+        praxisOpts: praxisSettings,
+        initPraxis: jest.fn((settings: typeof praxisSettings) => {
+          return praxis
+        })
+      };
+      const l = leakyRelu(mockInputLayer, settings);
       expect(l.constructor).toBe(LeakyRelu);
       expect(l.width).toBe(width);
       expect(l.height).toBe(height);
       expect(l.depth).toBe(depth);
-      expect(mockPraxis).toBeCalled();
-      expect(l.praxis).toBe(mockPraxisInstance);
+      expect(l.praxis).toBe(praxis);
     });
   });
 });

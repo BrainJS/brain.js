@@ -260,7 +260,7 @@ export const defaults: IConvolutionSettings = {
   filterHeight: 0,
 };
 
-class Convolution extends Filter {
+export class Convolution extends Filter {
   settings: Partial<IConvolutionSettings>;
 
   get strideX(): number {

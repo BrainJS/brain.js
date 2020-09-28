@@ -1,31 +1,47 @@
-const { Activation } = require('./types');
-const { makeKernel, release, clear } = require('../utilities/kernel');
-const { activate, measure } = require('../activation/leaky-relu');
+import { Activation } from './types';
+import { makeKernel, release, clear } from '../utilities/kernel';
+import { activate, measure } from '../activation/leaky-relu';
+import { IKernelFunctionThis, IKernelRunShortcut } from 'gpu.js';
+import { ILayer, ILayerSettings } from './base-layer';
 
-function predict2D(inputs) {
+export function predict2D(
+  this: IKernelFunctionThis,
+  inputs: number[][]
+): number {
   return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-function predict3D(inputs) {
+export function predict3D(
+  this: IKernelFunctionThis,
+  inputs: number[][][]
+): number {
   return activate(inputs[this.thread.z][this.thread.y][this.thread.x]);
 }
 
-function compare2D(weights, deltas) {
+export function compare2D(
+  this: IKernelFunctionThis,
+  weights: number[][],
+  deltas: number[][]
+): number {
   return measure(
     weights[this.thread.y][this.thread.x],
     deltas[this.thread.y][this.thread.x]
   );
 }
 
-function compare3D(weights, deltas) {
+export function compare3D(
+  this: IKernelFunctionThis,
+  weights: number[][][],
+  deltas: number[][][]
+): number {
   return measure(
     weights[this.thread.z][this.thread.y][this.thread.x],
     deltas[this.thread.z][this.thread.y][this.thread.x]
   );
 }
 
-class LeakyRelu extends Activation {
-  setupKernels() {
+export class LeakyRelu extends Activation {
+  setupKernels(): void {
     const { width, height, depth } = this.inputLayer;
     if (this.depth > 0) {
       this.predictKernel = makeKernel(predict3D, {
@@ -54,28 +70,27 @@ class LeakyRelu extends Activation {
     }
   }
 
-  predict() {
+  predict(): void {
     release(this.weights);
-    this.weights = this.predictKernel(this.inputLayer.weights);
+    this.weights = (this.predictKernel as IKernelRunShortcut)(
+      this.inputLayer.weights
+    );
     clear(this.deltas);
   }
 
-  compare() {
+  compare(): void {
     const { deltas } = this;
-    this.deltas = this.compareKernel(this.weights, deltas);
+    this.deltas = (this.compareKernel as IKernelRunShortcut)(
+      this.weights,
+      deltas
+    );
     release(deltas);
   }
 }
 
-function leakyRelu(inputLayer, settings) {
+export function leakyRelu(
+  inputLayer: ILayer,
+  settings: ILayerSettings
+): LeakyRelu {
   return new LeakyRelu(inputLayer, settings);
 }
-
-module.exports = {
-  LeakyRelu,
-  leakyRelu,
-  predict2D,
-  predict3D,
-  compare2D,
-  compare3D,
-};
