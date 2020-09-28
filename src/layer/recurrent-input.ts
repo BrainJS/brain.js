@@ -1,4 +1,4 @@
-import { Internal } from './types';
+import { Internal } from './internal';
 import { BaseLayer, ILayer } from './base-layer';
 import { release } from '../utilities/kernel';
 import { KernelOutput } from 'gpu.js';

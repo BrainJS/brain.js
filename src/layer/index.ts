@@ -1,6 +1,7 @@
 import { Activation } from './activation';
 import { Operator } from './operator';
-import { Internal, InternalModel, EntryPoint, Model, Modifier } from './types';
+import { Internal } from './internal';
+import { InternalModel, EntryPoint, Model, Modifier } from './types';
 
 export { Add, add } from './add';
 export { arthurFeedForward } from './arthur-feed-forward';
