@@ -203,7 +203,7 @@ export class BaseLayer implements ILayer {
 
   predict(inputs?: KernelOutput): void {}
 
-  compare(): void {}
+  compare(targetValues?: KernelOutput): void {}
 
   learn(learningRate: number): void {
     // TODO: do we need to release here?

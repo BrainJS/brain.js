@@ -1,9 +1,10 @@
-const { add } = require('./add');
-const { multiply } = require('./multiply');
-const { random } = require('./random');
-const { target } = require('./target');
+import { add } from './add';
+import { multiply } from './multiply';
+import { random } from './random';
+import { target } from './target';
+import { ILayer, ILayerSettings } from './base-layer';
 
-function output(settings, inputLayer) {
+export function output(settings: ILayerSettings, inputLayer: ILayer): ILayer {
   const { height } = settings;
   const outputGate = random({
     height,
@@ -20,7 +21,3 @@ function output(settings, inputLayer) {
     add(outputGateConnector, output)
   );
 }
-
-module.exports = {
-  output,
-};
