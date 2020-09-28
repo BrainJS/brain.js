@@ -1,9 +1,6 @@
-/**
- *
- * @param {Base} layer1
- * @param {Base} layer2
- */
-function checkSameSize(layer1, layer2) {
+import { ILayer } from '../layer/base-layer';
+
+export function checkSameSize(layer1: ILayer, layer2: ILayer): void {
   if (layer1.width !== layer2.width) {
     throw new Error(
       `Layer width mismatch of ${layer1.width} and ${layer2.width}`
@@ -16,7 +13,3 @@ function checkSameSize(layer1, layer2) {
     );
   }
 }
-
-module.exports = {
-  checkSameSize,
-};

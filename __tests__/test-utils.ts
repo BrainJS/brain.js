@@ -179,6 +179,15 @@ export function injectIstanbulCoverage(name: string, kernel: Kernel): void {
 }
 
 export class TestLayer extends BaseLayer {
+  get width(): number {
+    return this.settings.width as number;
+  }
+  get height(): number {
+    return this.settings.height as number;
+  }
+  get depth(): number {
+    return this.settings.depth as number;
+  }
   constructor(settings: ILayerSettings) {
     super(settings);
   }

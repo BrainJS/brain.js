@@ -81,7 +81,7 @@ export class BaseLayer implements ILayer {
 
   constructor(settings?: Partial<ILayerSettings>) {
     if (settings) {
-      this.settings = { ...settings };
+      this.settings = { ...baseLayerDefaultSettings, ...settings };
     } else {
       this.settings = { ...baseLayerDefaultSettings };
     }

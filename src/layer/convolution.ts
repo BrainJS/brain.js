@@ -338,10 +338,10 @@ class Convolution extends Filter {
   constructor(settings: IConvolutionSettings, inputLayer: ILayer) {
     super(inputLayer);
     this.settings = {
+      ...defaults,
       ...settings,
       ...getPadding(settings, defaults),
       ...getStride(settings, defaults),
-      ...defaults,
     };
 
     this.weights = randos3D(this.width, this.height, this.depth);

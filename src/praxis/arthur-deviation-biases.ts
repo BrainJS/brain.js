@@ -33,7 +33,7 @@ export class ArthurDeviationBiases extends BasePraxis {
   kernel: IKernelRunShortcut | null;
   constructor(layer: ILayer, settings?: IArthurDeviationBiasesSettings) {
     super(layer);
-    this.settings = { ...settings, ...defaultSettings };
+    this.settings = { ...defaultSettings, ...settings };
     this.kernel = null;
   }
 

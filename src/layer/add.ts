@@ -16,6 +16,18 @@ export function predict(
 }
 
 export class Add extends Operator {
+  get width(): number {
+    return this.inputLayer1.width;
+  }
+
+  get height(): number {
+    return this.inputLayer1.height;
+  }
+
+  get depth(): number {
+    return this.inputLayer1.depth;
+  }
+
   validate(): void {
     super.validate();
     checkSameSize(this.inputLayer1, this.inputLayer2);

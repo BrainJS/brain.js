@@ -1,4 +1,4 @@
-import { ILayer, ILayerSettings } from './base-layer';
+import { baseLayerDefaultSettings, ILayer, ILayerSettings } from './base-layer';
 
 import { Model } from './types';
 import { randos2D } from '../utilities/randos';
@@ -9,12 +9,13 @@ export interface IRandomSettings extends ILayerSettings {
 }
 
 export const defaults: IRandomSettings = {
+  ...baseLayerDefaultSettings,
   std: null,
 };
 
 export class Random extends Model implements ILayer {
   constructor(settings: IRandomSettings) {
-    super({ ...settings, ...defaults });
+    super({ ...defaults, ...settings });
     this.validate();
 
     if (!this.weights) {

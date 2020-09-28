@@ -87,6 +87,9 @@ export class Sigmoid extends Activation {
   }
 }
 
-export function sigmoid(inputLayer: ILayer, settings?: ILayerSettings) {
+export function sigmoid(
+  inputLayer: ILayer,
+  settings?: ILayerSettings
+): Sigmoid {
   return new Sigmoid(inputLayer, settings);
 }

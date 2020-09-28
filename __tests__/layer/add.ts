@@ -49,8 +49,8 @@ describe('Add Layer', () => {
       setupPraxisSpy.mockRestore();
     });
     it('sets up the instance', () => {
-      const mockInputLayer1 = mockLayer({ width: 1, height: 1 });
-      const mockInputLayer2 = mockLayer({ width: 1, height: 1 });
+      const mockInputLayer1 = mockLayer({ width: 1, height: 3 });
+      const mockInputLayer2 = mockLayer({ width: 1, height: 3 });
       const praxis = mockPraxis();
       const settings = {
         praxis,
@@ -60,6 +60,8 @@ describe('Add Layer', () => {
       expect(add.inputLayer2).toBe(mockInputLayer2);
       expect(add.validate).toBeCalled();
       expect(add.setupPraxis).toBeCalled();
+      expect(add.width).toBe(1);
+      expect(add.height).toBe(3);
     });
   });
   describe('.predict (forward propagation)', () => {
