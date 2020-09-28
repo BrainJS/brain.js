@@ -296,8 +296,7 @@ class RNN {
         if (r > clipval) {
           r = clipval;
           numClipped++;
-        }
-        if (r < -clipval) {
+        } else if (r < -clipval) {
           r = -clipval;
           numClipped++;
         }
