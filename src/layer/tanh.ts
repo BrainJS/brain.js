@@ -1,32 +1,48 @@
-const { Activation } = require('./activation');
-const { makeKernel } = require('../utilities/kernel');
-const { activate, measure } = require('../activation/tanh');
-const { release, clear } = require('../utilities/kernel');
+import { IKernelFunctionThis, IKernelRunShortcut } from 'gpu.js';
 
-function predict2D(inputs) {
+import { Activation } from './activation';
+import { activate, measure } from '../activation/tanh';
+import { release, clear, makeKernel } from '../utilities/kernel';
+import { ILayer, ILayerSettings } from './base-layer';
+
+export function predict2D(
+  this: IKernelFunctionThis,
+  inputs: number[][]
+): number {
   return activate(inputs[this.thread.y][this.thread.x]);
 }
 
-function predict3D(inputs) {
+export function predict3D(
+  this: IKernelFunctionThis,
+  inputs: number[][][]
+): number {
   return activate(inputs[this.thread.z][this.thread.y][this.thread.x]);
 }
 
-function compare2D(weights, errors) {
+export function compare2D(
+  this: IKernelFunctionThis,
+  weights: number[][],
+  errors: number[][]
+): number {
   return measure(
     weights[this.thread.y][this.thread.x],
     errors[this.thread.y][this.thread.x]
   );
 }
 
-function compare3D(weights, errors) {
+export function compare3D(
+  this: IKernelFunctionThis,
+  weights: number[][][],
+  errors: number[][][]
+): number {
   return measure(
     weights[this.thread.z][this.thread.y][this.thread.x],
     errors[this.thread.z][this.thread.y][this.thread.x]
   );
 }
 
-class Tanh extends Activation {
-  setupKernels() {
+export class Tanh extends Activation {
+  setupKernels(): void {
     if (this.depth > 0) {
       this.predictKernel = makeKernel(predict3D, {
         output: [this.width, this.height, this.depth],
@@ -54,20 +70,23 @@ class Tanh extends Activation {
     }
   }
 
-  predict() {
+  predict(): void {
     release(this.weights);
-    this.weights = this.predictKernel(this.inputLayer.weights);
+    this.weights = (this.predictKernel as IKernelRunShortcut)(
+      this.inputLayer.weights
+    );
     clear(this.deltas);
   }
 
-  compare() {
+  compare(): void {
     release(this.inputLayer.deltas);
-    this.inputLayer.deltas = this.compareKernel(this.weights, this.deltas);
+    this.inputLayer.deltas = (this.compareKernel as IKernelRunShortcut)(
+      this.weights,
+      this.deltas
+    );
   }
 }
 
-function tanh(inputLayer, settings) {
+export function tanh(inputLayer: ILayer, settings: ILayerSettings): Tanh {
   return new Tanh(inputLayer, settings);
 }
-
-module.exports = { Tanh, tanh, predict2D, predict3D, compare2D, compare3D };

@@ -1,16 +1,15 @@
-import { GPU } from 'gpu.js';
 import { gpuMock } from 'gpu-mock.js';
 import {
   Sigmoid,
-  sigmoid as sigmoidLayer,
+  sigmoid,
   predict2D,
   predict3D,
   compare2D,
   compare3D,
 } from '../../src/layer/sigmoid';
-import { expectFunction, mockLayer, mockPraxis, shave2D, shave3D } from '../test-utils';
-import { activate, activate as sigmoidActivation, measure } from '../../src/activation/sigmoid';
-import { setup, teardown, makeKernel, release, clear } from '../../src/utilities/kernel';
+import { mockLayer, mockPraxis, shave2D, shave3D } from '../test-utils';
+import * as sigmoidActivation from '../../src/activation/sigmoid';
+import { makeKernel } from '../../src/utilities/kernel';
 import { ILayerSettings } from '../../src/layer/base-layer';
 
 jest.mock('../../src/utilities/kernel', () => {
@@ -185,8 +184,8 @@ describe('Sigmoid Layer', () => {
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
         expect(l.compareKernel).not.toBe(null);
-        expect(makeKernel).toHaveBeenCalledWith(predict2D, { functions: [activate], immutable: true, output: [3, 4] });
-        expect(makeKernel).toHaveBeenCalledWith(compare2D, { functions: [measure], immutable: true, output: [3, 4] });
+        expect(makeKernel).toHaveBeenCalledWith(predict2D, { functions: [sigmoidActivation.activate], immutable: true, output: [3, 4] });
+        expect(makeKernel).toHaveBeenCalledWith(compare2D, { functions: [sigmoidActivation.measure], immutable: true, output: [3, 4] });
       });
     });
     describe('3d', () => {
@@ -201,8 +200,8 @@ describe('Sigmoid Layer', () => {
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
         expect(l.compareKernel).not.toBe(null);
-        expect(makeKernel).toHaveBeenCalledWith(predict3D, { functions: [activate], immutable: true, output: [3, 4, 5] });
-        expect(makeKernel).toHaveBeenCalledWith(compare3D, { functions: [measure], immutable: true, output: [3, 4, 5] });
+        expect(makeKernel).toHaveBeenCalledWith(predict3D, { functions: [sigmoidActivation.activate], immutable: true, output: [3, 4, 5] });
+        expect(makeKernel).toHaveBeenCalledWith(compare3D, { functions: [sigmoidActivation.measure], immutable: true, output: [3, 4, 5] });
       });
     });
   });
@@ -251,7 +250,7 @@ describe('Sigmoid Layer', () => {
       const mockInputLayer = mockLayer({ width, height, depth });
       const mockPraxisInstance = mockPraxis();
       const settings: ILayerSettings = { initPraxis: () => mockPraxisInstance };
-      const l = sigmoidLayer(mockInputLayer, settings);
+      const l = sigmoid(mockInputLayer, settings);
       expect(l.constructor).toBe(Sigmoid);
       expect(l.width).toBe(width);
       expect(l.height).toBe(height);
