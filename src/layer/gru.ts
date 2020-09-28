@@ -1,14 +1,20 @@
-const { add } = require('./add');
-const { negative } = require('./negative');
-const { multiply } = require('./multiply');
-const { multiplyElement } = require('./multiply-element');
-const { ones } = require('./ones');
-const { sigmoid } = require('./sigmoid');
-const { random } = require('./random');
-const { tanh } = require('./tanh');
-const { zeros } = require('./zeros');
+import { add } from './add';
+import { negative } from './negative';
+import { multiply } from './multiply';
+import { multiplyElement } from './multiply-element';
+import { ones } from './ones';
+import { sigmoid } from './sigmoid';
+import { random } from './random';
+import { tanh } from './tanh';
+import { zeros } from './zeros';
+import { ILayer, ILayerSettings } from './base-layer';
+import { RecurrentInput } from './recurrent-input';
 
-function gru(settings, recurrentInput, input) {
+export function gru(
+  settings: ILayerSettings,
+  recurrentInput: RecurrentInput,
+  input: ILayer
+): ILayer {
   const { height } = settings;
   const updateGateWeights = random({ height, width: input.height });
   const updateGatePeepholes = random({ width: height, height });
@@ -53,13 +59,12 @@ function gru(settings, recurrentInput, input) {
   // negate updateGate
   return add(
     multiplyElement(
-      add(ones(updateGate.rows, updateGate.columns), negative(updateGate)),
+      add(
+        ones({ width: updateGate.width, height: updateGate.height }),
+        negative(updateGate)
+      ),
       cell
     ),
     multiplyElement(recurrentInput, updateGate)
   );
 }
-
-module.exports = {
-  gru,
-};

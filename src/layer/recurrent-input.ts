@@ -1,44 +1,53 @@
-const { Internal } = require('./types');
-const { BaseLayer } = require('./base-layer');
-const { release } = require('../utilities/kernel');
-// const { zeros2D } = require('../utilities/zeros-2d');
+import { Internal } from './types';
+import { BaseLayer, ILayer } from './base-layer';
+import { release } from '../utilities/kernel';
+import { KernelOutput } from 'gpu.js';
 
-class RecurrentInput extends Internal {
-  constructor(recurrentInput) {
+export class RecurrentInput extends Internal implements ILayer {
+  recurrentInput: ILayer;
+  praxis = null;
+  predictKernel = null;
+  compareKernel = null;
+  settings = {};
+  constructor(recurrentInput: ILayer) {
     super();
     this.recurrentInput = recurrentInput;
     this.validate();
   }
 
-  get width() {
+  get width(): number {
     return this.recurrentInput.width;
   }
 
-  get height() {
+  get height(): number {
     return this.recurrentInput.height;
   }
 
-  get deltas() {
+  get depth(): number {
+    return this.recurrentInput.depth;
+  }
+
+  get deltas(): KernelOutput {
     return this.recurrentInput.deltas;
   }
 
-  set deltas(deltas) {
+  set deltas(deltas: KernelOutput) {
     const recurrentInputDeltas = this.recurrentInput.deltas;
     this.recurrentInput.deltas = deltas;
     release(recurrentInputDeltas);
   }
 
-  get weights() {
-    return this.recurrentInput.weights;
+  get weights(): KernelOutput {
+    return this.recurrentInput.weights as KernelOutput;
   }
 
-  set weights(weights) {
+  set weights(weights: KernelOutput) {
     const recurrentInputWeights = this.recurrentInput.weights;
     this.recurrentInput.weights = weights;
     release(recurrentInputWeights);
   }
 
-  validate() {
+  validate(): void {
     BaseLayer.prototype.validate.call(this);
     if (this.width !== this.recurrentInput.width) {
       throw new Error(
@@ -53,35 +62,31 @@ class RecurrentInput extends Internal {
     }
   }
 
-  setDimensions() {
+  setDimensions(): void {
     throw new Error('should just listen');
   }
 
-  predict() {
+  predict(): void {
     // throw new Error(`${this.constructor.name}-predict is not yet implemented`)
   }
 
-  compare() {
+  compare(): void {
     // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
 
-  learn() {
+  learn(): void {
     // throw new Error(`${this.constructor.name}-learn is not yet implemented`)
   }
 
-  setupKernels() {
+  setupKernels(): void {
     // throw new Error(
     //   `${this.constructor.name}-setupKernels is not yet implemented`
     // )
   }
 
-  reuseKernels() {
+  reuseKernels(): void {
     // throw new Error(
     //   `${this.constructor.name}-reuseKernels is not yet implemented`
     // )
   }
 }
-
-module.exports = {
-  RecurrentInput,
-};
