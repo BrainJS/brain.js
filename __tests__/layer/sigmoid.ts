@@ -21,7 +21,7 @@ jest.mock('../../src/utilities/kernel', () => {
     }),
     release: jest.fn(),
     clear: jest.fn(),
-  }
+  };
 });
 
 describe('Sigmoid Layer', () => {
@@ -34,7 +34,9 @@ describe('Sigmoid Layer', () => {
       ];
       const width = 4;
       const height = 3;
-      const results = gpuMock(predict2D, { output: [width, height] })(inputs) as Float32Array[];
+      const results = gpuMock(predict2D, { output: [width, height] })(
+        inputs
+      ) as Float32Array[];
       expect(results.length).toBe(height);
       expect(results[0].length).toBe(width);
       expect(shave2D(results)).toEqual(
@@ -110,8 +112,18 @@ describe('Sigmoid Layer', () => {
       expect(results[0].length).toBe(width);
       expect(shave2D(results)).toEqual(
         shave2D([
-          Float32Array.from([0.09000000000000001, 0.16000000000000003, 0.20999999, 0.23999999]),
-          Float32Array.from([0.25, 0.23999999, 0.20999999, 0.15999999999999998]),
+          Float32Array.from([
+            0.09000000000000001,
+            0.16000000000000003,
+            0.20999999,
+            0.23999999,
+          ]),
+          Float32Array.from([
+            0.25,
+            0.23999999,
+            0.20999999,
+            0.15999999999999998,
+          ]),
           Float32Array.from([0.08999999999999998, 0.0, -0.11, -0.23999999]),
         ])
       );
@@ -158,13 +170,33 @@ describe('Sigmoid Layer', () => {
       expect(shave3D(results)).toEqual(
         shave3D([
           [
-            Float32Array.from([0.09000000000000001, 0.16000000000000003, 0.20999999, 0.23999999]),
-            Float32Array.from([0.25, 0.23999999, 0.20999999, 0.15999999999999998]),
+            Float32Array.from([
+              0.09000000000000001,
+              0.16000000000000003,
+              0.20999999,
+              0.23999999,
+            ]),
+            Float32Array.from([
+              0.25,
+              0.23999999,
+              0.20999999,
+              0.15999999999999998,
+            ]),
             Float32Array.from([0.08999999999999998, 0.0, -0.11, -0.23999999]),
           ],
           [
-            Float32Array.from([0.09000000000000001, 0.16000000000000003, 0.20999999, 0.23999999]),
-            Float32Array.from([0.25, 0.23999999, 0.20999999, 0.15999999999999998]),
+            Float32Array.from([
+              0.09000000000000001,
+              0.16000000000000003,
+              0.20999999,
+              0.23999999,
+            ]),
+            Float32Array.from([
+              0.25,
+              0.23999999,
+              0.20999999,
+              0.15999999999999998,
+            ]),
             Float32Array.from([0.08999999999999998, 0.0, -0.11, -0.23999999]),
           ],
         ])
@@ -184,8 +216,16 @@ describe('Sigmoid Layer', () => {
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
         expect(l.compareKernel).not.toBe(null);
-        expect(makeKernel).toHaveBeenCalledWith(predict2D, { functions: [sigmoidActivation.activate], immutable: true, output: [3, 4] });
-        expect(makeKernel).toHaveBeenCalledWith(compare2D, { functions: [sigmoidActivation.measure], immutable: true, output: [3, 4] });
+        expect(makeKernel).toHaveBeenCalledWith(predict2D, {
+          functions: [sigmoidActivation.activate],
+          immutable: true,
+          output: [3, 4],
+        });
+        expect(makeKernel).toHaveBeenCalledWith(compare2D, {
+          functions: [sigmoidActivation.measure],
+          immutable: true,
+          output: [3, 4],
+        });
       });
     });
     describe('3d', () => {
@@ -200,8 +240,16 @@ describe('Sigmoid Layer', () => {
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
         expect(l.compareKernel).not.toBe(null);
-        expect(makeKernel).toHaveBeenCalledWith(predict3D, { functions: [sigmoidActivation.activate], immutable: true, output: [3, 4, 5] });
-        expect(makeKernel).toHaveBeenCalledWith(compare3D, { functions: [sigmoidActivation.measure], immutable: true, output: [3, 4, 5] });
+        expect(makeKernel).toHaveBeenCalledWith(predict3D, {
+          functions: [sigmoidActivation.activate],
+          immutable: true,
+          output: [3, 4, 5],
+        });
+        expect(makeKernel).toHaveBeenCalledWith(compare3D, {
+          functions: [sigmoidActivation.measure],
+          immutable: true,
+          output: [3, 4, 5],
+        });
       });
     });
   });
@@ -248,7 +296,7 @@ describe('Sigmoid Layer', () => {
       const height = 4;
       const depth = 5;
       const mockInputLayer = mockLayer({ width, height, depth });
-      const mockPraxisInstance = mockPraxis();
+      const mockPraxisInstance = mockPraxis(mockInputLayer);
       const settings: ILayerSettings = { initPraxis: () => mockPraxisInstance };
       const l = sigmoid(mockInputLayer, settings);
       expect(l.constructor).toBe(Sigmoid);

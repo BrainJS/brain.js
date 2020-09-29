@@ -10,9 +10,15 @@ import {
   compare3D,
 } from '../../src/layer/tanh';
 import * as tanhActivation from '../../src/activation/tanh';
-import { mockLayer, mockPraxis, shave2D, shave3D } from '../test-utils';
+import {
+  mockLayer,
+  mockPraxis,
+  shave2D,
+  shave3D,
+  injectIstanbulCoverage,
+} from '../test-utils';
 import { makeKernel, setup, teardown } from '../../src/utilities/kernel';
-import { injectIstanbulCoverage } from '../test-utils';
+
 import { randos2D } from '../../src/utilities/randos';
 import { ILayerSettings } from '../../src/layer/base-layer';
 
@@ -25,7 +31,7 @@ jest.mock('../../src/utilities/kernel', () => {
     }),
     release: jest.fn(),
     clear: jest.fn(),
-  }
+  };
 });
 
 describe('Tanh Layer', () => {
@@ -38,10 +44,12 @@ describe('Tanh Layer', () => {
       ];
       const width = 4;
       const height = 3;
-      const results = gpuMock(predict2D, { output: [width, height] })(inputs) as Float32Array[];
+      const results = gpuMock(predict2D, { output: [width, height] })(
+        inputs
+      ) as Float32Array[];
       expect(results.length).toBe(height);
       expect(results[0].length).toBe(width);
-      expect(shave2D(results as Float32Array[])).toEqual(
+      expect(shave2D(results)).toEqual(
         shave2D([
           Float32Array.from([0.099668, 0.19737533, 0.29131261, 0.37994897]),
           Float32Array.from([0.46211717, 0.53704959, 0.60436779, 0.66403675]),
@@ -198,8 +206,16 @@ describe('Tanh Layer', () => {
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
         expect(l.compareKernel).not.toBe(null);
-        expect(makeKernel).toHaveBeenCalledWith(predict2D, { functions: [tanhActivation.activate], immutable: true, output: [3, 4] });
-        expect(makeKernel).toHaveBeenCalledWith(compare2D, { functions: [tanhActivation.measure], immutable: true, output: [3, 4] });
+        expect(makeKernel).toHaveBeenCalledWith(predict2D, {
+          functions: [tanhActivation.activate],
+          immutable: true,
+          output: [3, 4],
+        });
+        expect(makeKernel).toHaveBeenCalledWith(compare2D, {
+          functions: [tanhActivation.measure],
+          immutable: true,
+          output: [3, 4],
+        });
       });
     });
     describe('3d', () => {
@@ -214,8 +230,16 @@ describe('Tanh Layer', () => {
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
         expect(l.compareKernel).not.toBe(null);
-        expect(makeKernel).toHaveBeenCalledWith(predict3D, { functions: [tanhActivation.activate], immutable: true, output: [3, 4, 5] });
-        expect(makeKernel).toHaveBeenCalledWith(compare3D, { functions: [tanhActivation.measure], immutable: true, output: [3, 4, 5] });
+        expect(makeKernel).toHaveBeenCalledWith(predict3D, {
+          functions: [tanhActivation.activate],
+          immutable: true,
+          output: [3, 4, 5],
+        });
+        expect(makeKernel).toHaveBeenCalledWith(compare3D, {
+          functions: [tanhActivation.measure],
+          immutable: true,
+          output: [3, 4, 5],
+        });
       });
     });
   });
@@ -263,7 +287,7 @@ describe('Tanh Layer', () => {
       const height = 4;
       const depth = 5;
       const mockInputLayer = mockLayer({ width, height, depth });
-      const mockPraxisInstance = mockPraxis();
+      const mockPraxisInstance = mockPraxis(mockInputLayer);
       const settings: ILayerSettings = { initPraxis: () => mockPraxisInstance };
       const l = tanh(mockInputLayer, settings);
       expect(l.constructor).toBe(Tanh);

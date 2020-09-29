@@ -87,6 +87,6 @@ export class Tanh extends Activation {
   }
 }
 
-export function tanh(inputLayer: ILayer, settings: ILayerSettings): Tanh {
+export function tanh(inputLayer: ILayer, settings?: ILayerSettings): Tanh {
   return new Tanh(inputLayer, settings);
 }

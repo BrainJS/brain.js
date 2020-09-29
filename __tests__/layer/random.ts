@@ -11,7 +11,7 @@ describe('Random Layer', () => {
         expect(layer.height).toBe(settings.height);
         expect(layer.depth).toBe(null);
         expect((layer.weights as number[][]).length).toBe(7);
-        expect(((layer.weights as number[][])[0] as number[]).length).toBe(5);
+        expect((layer.weights as number[][])[0].length).toBe(5);
       });
     });
     describe('layer.weights', () => {

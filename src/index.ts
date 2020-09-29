@@ -19,7 +19,7 @@ import TrainStream from './train-stream';
 import DataFormatter from './utilities/data-formatter';
 import { max } from './utilities/max';
 import mse from './utilities/mse';
-import ones from './utilities/ones';
+import { ones, ones2D } from './utilities/ones';
 import * as random from './utilities/random';
 import { randomWeight } from './utilities/random-weight';
 import { randos } from './utilities/randos';
@@ -53,6 +53,7 @@ export const brain = {
     max,
     mse,
     ones,
+    ones2D,
     random,
     randomWeight,
     randos,

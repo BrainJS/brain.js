@@ -1,7 +1,7 @@
 import { Modifier } from './types';
 import { makeKernel, clear } from '../utilities/kernel';
 import { ILayer } from './base-layer';
-import { IKernelFunctionThis } from 'gpu.js';
+import { IKernelFunctionThis, IKernelRunShortcut } from 'gpu.js';
 
 export function predict(this: IKernelFunctionThis, value: number[][]): number {
   return value[this.thread.x][this.thread.y];
@@ -36,13 +36,16 @@ export class Transpose extends Modifier {
   }
 
   predict(): void {
-    this.weights = this.predictKernel(this.inputLayer.weights);
+    this.weights = (this.predictKernel as IKernelRunShortcut)(
+      this.inputLayer.weights
+    );
     clear(this.deltas);
   }
 
-  compare() {
-    // TODO: needs switched to this.compareKernel?
-    this.inputLayer.deltas = this.predictKernel(this.deltas);
+  compare(): void {
+    this.inputLayer.deltas = (this.compareKernel as IKernelRunShortcut)(
+      this.deltas
+    );
   }
 }
 

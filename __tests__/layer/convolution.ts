@@ -7,8 +7,7 @@ import {
   compareBiases,
 } from '../../src/layer/convolution';
 import { setup, teardown } from '../../src/utilities/kernel';
-import { onePlusPlus3D } from '../test-utils';
-import { injectIstanbulCoverage } from '../test-utils';
+import { onePlusPlus3D, injectIstanbulCoverage } from '../test-utils';
 
 describe('Convolution Layer', () => {
   beforeEach(() => {

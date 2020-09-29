@@ -6,12 +6,17 @@ import {
   predict2D,
   predict3D,
   compare2D,
-  compare3D
+  compare3D,
 } from '../../src/layer/leaky-relu';
 import * as leakyReluActivation from '../../src/activation/leaky-relu';
-import { expectFunction, mockLayer, mockPraxis } from '../test-utils';
+import {
+  expectFunction,
+  mockLayer,
+  mockPraxis,
+  injectIstanbulCoverage,
+} from '../test-utils';
 import { makeKernel, setup, teardown } from '../../src/utilities/kernel';
-import { injectIstanbulCoverage } from '../test-utils';
+
 import { ones2D } from '../../src/utilities/ones';
 import { ILayerSettings } from '../../src/layer/base-layer';
 import { randos2D } from '../../src/utilities/randos';
@@ -25,7 +30,7 @@ jest.mock('../../src/utilities/kernel', () => {
     }),
     release: jest.fn(),
     clear: jest.fn(),
-  }
+  };
 });
 
 describe('Leaky Relu Layer', () => {
@@ -173,8 +178,16 @@ describe('Leaky Relu Layer', () => {
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
         expect(l.compareKernel).not.toBe(null);
-        expect(makeKernel).toHaveBeenCalledWith(predict2D, { functions: [leakyReluActivation.activate], immutable: true, output: [3, 4] });
-        expect(makeKernel).toHaveBeenCalledWith(compare2D, { functions: [leakyReluActivation.measure], immutable: true, output: [3, 4] });
+        expect(makeKernel).toHaveBeenCalledWith(predict2D, {
+          functions: [leakyReluActivation.activate],
+          immutable: true,
+          output: [3, 4],
+        });
+        expect(makeKernel).toHaveBeenCalledWith(compare2D, {
+          functions: [leakyReluActivation.measure],
+          immutable: true,
+          output: [3, 4],
+        });
       });
     });
     describe('3d', () => {
@@ -189,8 +202,16 @@ describe('Leaky Relu Layer', () => {
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
         expect(l.compareKernel).not.toBe(null);
-        expect(makeKernel).toHaveBeenCalledWith(predict3D, { functions: [leakyReluActivation.activate], immutable: true, output: [3, 4, 5] });
-        expect(makeKernel).toHaveBeenCalledWith(compare3D, { functions: [leakyReluActivation.measure], immutable: true, output: [3, 4, 5] });
+        expect(makeKernel).toHaveBeenCalledWith(predict3D, {
+          functions: [leakyReluActivation.activate],
+          immutable: true,
+          output: [3, 4, 5],
+        });
+        expect(makeKernel).toHaveBeenCalledWith(compare3D, {
+          functions: [leakyReluActivation.measure],
+          immutable: true,
+          output: [3, 4, 5],
+        });
       });
     });
   });
@@ -205,7 +226,7 @@ describe('Leaky Relu Layer', () => {
         depth: 1,
       });
       const l = new LeakyRelu(mockInputLayer);
-      const spy = (l as any).predictKernel = jest.fn(values => values);
+      const spy = ((l as any).predictKernel = jest.fn((values) => values));
       l.predict();
       expect(spy).toBeCalledWith(mockWeights);
       expect(l.weights).toBe(mockWeights);
@@ -220,8 +241,8 @@ describe('Leaky Relu Layer', () => {
         depth: 1,
       });
       const l = new LeakyRelu(mockInputLayer);
-      const weights = l.weights = randos2D(1, 1);
-      const deltas = l.deltas = randos2D(1, 1);
+      const weights = (l.weights = randos2D(1, 1));
+      const deltas = (l.deltas = randos2D(1, 1));
       const results = randos2D(1, 1);
       (l as any).compareKernel = jest.fn((weights, deltas) => results);
       l.compare();
@@ -236,13 +257,13 @@ describe('Leaky Relu Layer', () => {
       const height = 4;
       const depth = 5;
       const mockInputLayer = mockLayer({ width, height, depth });
-      const praxis = mockPraxis();
+      const praxis = mockPraxis(mockInputLayer);
       const praxisSettings = {};
       const settings: ILayerSettings = {
         praxisOpts: praxisSettings,
         initPraxis: jest.fn((settings: typeof praxisSettings) => {
-          return praxis
-        })
+          return praxis;
+        }),
       };
       const l = leakyRelu(mockInputLayer, settings);
       expect(l.constructor).toBe(LeakyRelu);

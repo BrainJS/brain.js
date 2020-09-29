@@ -1,6 +1,12 @@
 import { ILayer } from '../layer/base-layer';
 import { IKernelRunShortcut, KernelOutput } from 'gpu.js';
 
+export interface ILayerTemplate {
+  width: number;
+  height: number;
+  depth: number;
+}
+
 export interface IPraxisSettings {
   width?: number;
   height?: number;
@@ -9,16 +15,19 @@ export interface IPraxisSettings {
 }
 
 export interface IPraxis {
-  layerTemplate: ILayer | null;
+  layerTemplate: ILayerTemplate | null;
   kernel: IKernelRunShortcut | null;
+  settings: Partial<IPraxisSettings>;
   width: number;
   height: number;
   depth: number;
-  run: (layer: ILayer, learningRate: number) => KernelOutput;
+  run:
+    | ((layer: ILayer, learningRate: number) => KernelOutput)
+    | ((layer: ILayer, learningRate?: number) => KernelOutput);
 }
 
 export abstract class BasePraxis implements IPraxis {
-  layerTemplate: ILayer;
+  layerTemplate: ILayerTemplate;
   kernel: IKernelRunShortcut | null;
   settings: Partial<IPraxisSettings>;
 
@@ -34,7 +43,7 @@ export abstract class BasePraxis implements IPraxis {
     return this.layerTemplate.depth;
   }
 
-  constructor(layerTemplate: ILayer, settings: IPraxisSettings = {}) {
+  constructor(layerTemplate: ILayerTemplate, settings: IPraxisSettings = {}) {
     this.layerTemplate = layerTemplate;
     this.settings = { ...settings };
     this.kernel = null;
@@ -58,5 +67,5 @@ export abstract class BasePraxis implements IPraxis {
     }
   }
 
-  abstract run(layer: ILayer, learningRate: number): KernelOutput;
+  abstract run(layer: ILayer, learningRate?: number): KernelOutput;
 }
