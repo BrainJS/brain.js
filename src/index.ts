@@ -1,13 +1,13 @@
 import * as activation from './activation';
 import CrossValidate from './cross-validate';
 import { FeedForward } from './feed-forward';
-import layer from './layer';
-import layerTypes from './layer/types';
+import * as layer from './layer';
+import { layerTypes } from './layer';
 import likely from './likely';
 import lookup from './lookup';
 import NeuralNetwork from './neural-network';
 import NeuralNetworkGPU from './neural-network-gpu';
-import praxis from './praxis';
+import * as praxis from './praxis';
 import { Recurrent } from './recurrent';
 import GRU from './recurrent/gru';
 import GRUTimeStep from './recurrent/gru-time-step';

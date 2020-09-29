@@ -8,6 +8,7 @@ npm-debug.log
 
 # Yarn
 yarn.lock
+yarn-error.log
 
 # parcel bundler cache
 .cache

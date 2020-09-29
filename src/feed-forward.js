@@ -398,7 +398,7 @@ class FeedForward {
   adjustWeights() {
     const { _model } = this;
     for (let i = 0; i < _model.length; i++) {
-      _model[i].learn(null, null, this.trainOpts.learningRate);
+      _model[i].learn(this.trainOpts.learningRate);
     }
   }
 

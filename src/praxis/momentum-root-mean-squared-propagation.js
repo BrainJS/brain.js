@@ -1,7 +1,7 @@
 const { makeKernel, release } = require('../utilities/kernel');
 const { zeros2D } = require('../utilities/zeros-2d');
 
-const { Base } = require('./base');
+const { Base } = require('./base-praxis');
 
 function getMomentum(delta, decay, previousMomentum) {
   return previousMomentum * decay + (1 - decay) * delta * delta;
