@@ -19,6 +19,9 @@ export interface ILayer {
   predictKernel: IKernelRunShortcut | null;
   compareKernel: IKernelRunShortcut | null;
   settings: Partial<ILayerSettings>;
+  predict: (inputs?: KernelOutput) => void;
+  compare: (targetValues?: KernelOutput) => void;
+  learn: ((learningRate?: number) => void) | ((learningRate: number) => void);
 }
 
 export interface ILayerSettings {
@@ -205,11 +208,11 @@ export class BaseLayer implements ILayer {
 
   compare(targetValues?: KernelOutput): void {}
 
-  learn(learningRate: number): void {
+  learn(learningRate?: number): void {
     // TODO: do we need to release here?
     const { weights: oldWeights } = this;
     if (!this.praxis) throw new Error('this.praxis not defined');
-    this.weights = this.praxis.run(this, learningRate);
+    this.weights = this.praxis.run(this, learningRate as number);
     release(oldWeights);
     clear(this.deltas);
   }

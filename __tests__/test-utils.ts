@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { getFileCoverageDataByName } from 'istanbul-spy';
 import { IGPUTextureSettings, Kernel, KernelFunction, Texture } from 'gpu.js';
-import { IPraxis } from '../src/praxis/base-praxis';
+import { ILayerTemplate, IPraxis, IPraxisSettings } from '../src/praxis/base-praxis';
 import { BaseLayer, ILayerSettings, ILayer } from '../src/layer/base-layer';
 
 export function onePlusPlus3D(width: number, height: number, depth: number): number[][][] {
@@ -194,7 +194,7 @@ export class TestLayer extends BaseLayer {
 }
 
 export function mockLayer(settings: ILayerSettings): ILayer {
-  return new TestLayer(settings);
+  return new TestLayer({ name: 'MockLayer', ...settings });
 }
 
 export function mockTexture(settings?: Partial<IGPUTextureSettings>): Texture {
@@ -209,13 +209,20 @@ export function mockTexture(settings?: Partial<IGPUTextureSettings>): Texture {
   });
 }
 
-export function mockPraxis(): IPraxis {
+export function mockPraxis(layerTemplate: ILayerTemplate, praxisSettings: Partial<IPraxisSettings> = {}): IPraxis {
   return {
-    layerTemplate: null,
+    layerTemplate,
+    settings: praxisSettings,
     kernel: null,
-    width: 1,
-    height: 1,
-    depth: 0,
+    get width() {
+      return layerTemplate.width;
+    },
+    get height() {
+      return layerTemplate.height;
+    },
+    get depth() {
+      return layerTemplate.depth;
+    },
     run: () => {},
   };
 }

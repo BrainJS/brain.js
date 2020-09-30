@@ -1,7 +1,6 @@
 import {
   GPU,
   Input,
-  IKernelSettings,
   IKernelRunShortcut,
   IKernelMapRunShortcut,
   KernelFunction,
@@ -12,6 +11,7 @@ import {
   IConstantsThis,
   ISubKernelObject,
   ThreadFunction,
+  IGPUKernelSettings,
 } from 'gpu.js';
 
 let gpuInstance: GPU | null = null;
@@ -44,7 +44,7 @@ export function makeKernel<
   ConstantsTypes extends IConstantsThis = IConstantsThis
 >(
   fn: KernelFunction<ArgTypes, ConstantsTypes>,
-  settings: IKernelSettings
+  settings: IGPUKernelSettings
 ): IKernelRunShortcut {
   let _gpuInstance: GPU = gpuInstance as GPU;
   if (_gpuInstance === null) {
@@ -63,7 +63,7 @@ export function makeKernelMap<
 >(
   map: ISubKernelObject,
   fn: ThreadFunction<ArgTypes, ConstantsTypes>,
-  settings: IKernelSettings
+  settings: IGPUKernelSettings
 ): IKernelMapRunShortcut<ISubKernelObject> {
   let _gpuInstance: GPU = gpuInstance as GPU;
   if (_gpuInstance === null) {

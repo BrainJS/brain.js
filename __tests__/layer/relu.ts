@@ -9,9 +9,9 @@ import {
   compare3D,
 } from '../../src/layer/relu';
 import * as reluActivation from '../../src/activation/relu';
-import { mockLayer, mockPraxis } from '../test-utils';
+import { mockLayer, mockPraxis, injectIstanbulCoverage } from '../test-utils';
 import { makeKernel, setup, teardown } from '../../src/utilities/kernel';
-import { injectIstanbulCoverage } from '../test-utils';
+
 import { randos2D } from '../../src/utilities/randos';
 import { ILayerSettings } from '../../src/layer/base-layer';
 
@@ -24,7 +24,7 @@ jest.mock('../../src/utilities/kernel', () => {
     }),
     release: jest.fn(),
     clear: jest.fn(),
-  }
+  };
 });
 
 describe('Relu Layer', () => {
@@ -160,8 +160,16 @@ describe('Relu Layer', () => {
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
         expect(l.compareKernel).not.toBe(null);
-        expect(makeKernel).toHaveBeenCalledWith(predict2D, { functions: [reluActivation.activate], immutable: true, output: [3, 4] });
-        expect(makeKernel).toHaveBeenCalledWith(compare2D, { functions: [reluActivation.measure], immutable: true, output: [3, 4] });
+        expect(makeKernel).toHaveBeenCalledWith(predict2D, {
+          functions: [reluActivation.activate],
+          immutable: true,
+          output: [3, 4],
+        });
+        expect(makeKernel).toHaveBeenCalledWith(compare2D, {
+          functions: [reluActivation.measure],
+          immutable: true,
+          output: [3, 4],
+        });
       });
     });
     describe('3d', () => {
@@ -176,8 +184,16 @@ describe('Relu Layer', () => {
         l.setupKernels();
         expect(l.predictKernel).not.toBe(null);
         expect(l.compareKernel).not.toBe(null);
-        expect(makeKernel).toHaveBeenCalledWith(predict3D, { functions: [reluActivation.activate], immutable: true, output: [3, 4, 5] });
-        expect(makeKernel).toHaveBeenCalledWith(compare3D, { functions: [reluActivation.measure], immutable: true, output: [3, 4, 5] });
+        expect(makeKernel).toHaveBeenCalledWith(predict3D, {
+          functions: [reluActivation.activate],
+          immutable: true,
+          output: [3, 4, 5],
+        });
+        expect(makeKernel).toHaveBeenCalledWith(compare3D, {
+          functions: [reluActivation.measure],
+          immutable: true,
+          output: [3, 4, 5],
+        });
       });
     });
   });
@@ -227,13 +243,13 @@ describe('Relu Layer', () => {
       const height = 4;
       const depth = 5;
       const mockInputLayer = mockLayer({ width, height, depth });
-      const praxis = mockPraxis();
+      const praxis = mockPraxis(mockInputLayer);
       const praxisSettings = {};
       const settings: ILayerSettings = {
         praxisOpts: praxisSettings,
         initPraxis: jest.fn((settings: typeof praxisSettings) => {
-          return praxis
-        })
+          return praxis;
+        }),
       };
       const l = relu(mockInputLayer, settings);
       expect(l.constructor).toBe(Relu);

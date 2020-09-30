@@ -36,8 +36,8 @@ describe('Multiply Layer', () => {
         [11, 12],
       ];
       const predictKernel = gpuMock<
-      Parameters<typeof predict>,
-      IMultiplyConstants
+        Parameters<typeof predict>,
+        IMultiplyConstants
       >(predict, {
         output: [2, 2],
         constants: {
@@ -216,7 +216,7 @@ describe('Multiply Layer', () => {
     });
     describe('when used with Input layer', () => {
       test('is compatible', () => {
-        const praxis = mockPraxis();
+        const praxis = mockPraxis(mockLayer({}));
         const random = new Random({ height: 3, width: 2, praxis });
         const input = new Input({ height: 2, praxis });
         const multiply = new Multiply(random, input);

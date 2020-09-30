@@ -223,8 +223,6 @@ export class Pool extends Filter {
     this.settings.switchY = switchY;
   }
 
-  filters: KernelOutput;
-  filterDeltas: KernelOutput;
   predictKernelMap: IKernelMapRunShortcut<ISubKernelObject> | null = null;
   constructor(settings: IPoolSettings, inputLayer: ILayer) {
     super(inputLayer);

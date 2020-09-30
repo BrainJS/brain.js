@@ -10,9 +10,8 @@ import {
   compareInputDeltas,
   compareInputDeltas3D,
 } from '../../src/layer/fully-connected';
-import { onePlusPlus2D, zero2D } from '../test-utils';
+import { onePlusPlus2D, zero2D, injectIstanbulCoverage } from '../test-utils';
 import { setup, teardown } from '../../src/utilities/kernel';
-import { injectIstanbulCoverage } from '../test-utils';
 
 describe('FullyConnected Layer', () => {
   beforeEach(() => {

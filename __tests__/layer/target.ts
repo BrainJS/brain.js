@@ -14,9 +14,8 @@ jest.mock('../../src/utilities/kernel', () => {
     release: jest.fn(),
     clear: jest.fn(),
     clone: jest.fn(),
-  }
+  };
 });
-
 
 describe('Target Layer', () => {
   beforeEach(() => {
@@ -31,7 +30,12 @@ describe('Target Layer', () => {
     teardown();
   });
   test('is fully back propagating values to deltas', () => {
-    const input = mockLayer({ width: 1, height: 1, weights: [[1]], deltas: [[0]] });
+    const input = mockLayer({
+      width: 1,
+      height: 1,
+      weights: [[1]],
+      deltas: [[0]],
+    });
     const target = new Target({ width: 1, height: 1 }, input);
     target.validate();
     target.setupKernels();

@@ -57,9 +57,6 @@ export class Add extends Operator {
     this.inputLayer2.deltas = clone(this.deltas);
   }
 
-  /**
-   * @abstract
-   */
   learn(): void {}
 }
 

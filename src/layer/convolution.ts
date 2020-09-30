@@ -160,7 +160,7 @@ export function compareInputDeltas(
   inputDeltas: number[][][],
   filters: number[][][],
   deltas: number[][][]
-) {
+): number {
   const x = this.thread.x + this.constants.paddingX;
   const startDeltaX =
     x < this.constants.filterWidth
@@ -219,7 +219,7 @@ export function compareBiases(
   this: IKernelFunctionThis<ICompareBiasesConstants>,
   biasDeltas: number[][][],
   deltas: number[][][]
-) {
+): number {
   let sum = 0;
   for (let y = 0; y < this.constants.deltaHeight; y++) {
     for (let x = 0; x < this.constants.deltaWidth; x++) {
@@ -366,7 +366,7 @@ export class Convolution extends Filter {
   compareFilterDeltasKernel: IKernelRunShortcut | null = null;
   compareInputDeltasKernel: IKernelRunShortcut | null = null;
   compareBiasesKernel: IKernelRunShortcut | null = null;
-  setupKernels() {
+  setupKernels(): void {
     this.predictKernel = makeKernel<
       Parameters<typeof predict>,
       IPredictConstants
@@ -427,7 +427,7 @@ export class Convolution extends Filter {
     });
   }
 
-  predict() {
+  predict(): void {
     this.weights = (this.predictKernel as IKernelRunShortcut)(
       this.inputLayer.weights,
       this.filters,
@@ -435,7 +435,7 @@ export class Convolution extends Filter {
     );
   }
 
-  compare() {
+  compare(): void {
     const { filterDeltas, biasDeltas } = this;
     this.filterDeltas = (this.compareFilterDeltasKernel as IKernelRunShortcut)(
       filterDeltas,

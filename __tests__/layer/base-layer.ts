@@ -1,45 +1,19 @@
-import { KernelOutput } from 'gpu.js';
-import { BaseLayer, ILayer, ILayerSettings } from '../../src/layer/base-layer';
+import { ILayer } from '../../src/layer/base-layer';
 import { release } from '../../src/utilities/kernel';
-import {
-  BasePraxis,
-  IPraxis,
-  IPraxisSettings,
-} from '../../src/praxis/base-praxis';
+import { IPraxis, IPraxisSettings } from '../../src/praxis/base-praxis';
+import { mockLayer, mockPraxis } from '../test-utils';
 
 jest.mock('../../src/utilities/kernel');
-
-class MockLayer extends BaseLayer implements ILayer {
-  constructor(settings: ILayerSettings) {
-    super(settings);
-  }
-}
-
-interface IMockPraxisSettings extends IPraxisSettings {
-  test?: number;
-}
-
-class MockPraxis extends BasePraxis implements IPraxis {
-  settings: IPraxisSettings;
-  constructor(layerTemplate: ILayer, settings: IPraxisSettings = {}) {
-    super(layerTemplate);
-    this.settings = settings;
-  }
-
-  run(layer: ILayer, learningRate: number): KernelOutput {
-    return new Float32Array();
-  }
-}
 
 describe('BaseLayer Layer', () => {
   describe('dimensions', () => {
     describe('when given undefined for width, height, and depth', () => {
       test('automatically assigns 1 to width, height, and depth', () => {
-        const base = new MockLayer({
+        const base = mockLayer({
           initPraxis: (
             layerTemplate: ILayer,
             praxisSettings?: IPraxisSettings
-          ): IPraxis => new MockPraxis(layerTemplate, praxisSettings),
+          ): IPraxis => mockPraxis(layerTemplate, praxisSettings),
           praxisOpts: {},
         });
 
@@ -53,10 +27,13 @@ describe('BaseLayer Layer', () => {
   describe('.praxisOpts', () => {
     test('are inherited to .praxis() call', () => {
       const initPraxis = jest.fn();
-      const praxisOpts: IMockPraxisSettings = {
+      interface IPraxisExtendedSettings extends IPraxisSettings {
+        test: number;
+      }
+      const praxisOpts: IPraxisExtendedSettings = {
         test: 100,
       };
-      const base = new MockLayer({
+      const base = mockLayer({
         initPraxis,
         praxisOpts,
       });
@@ -66,10 +43,10 @@ describe('BaseLayer Layer', () => {
 
   describe('.learn', () => {
     it('releases both this.weights and this.deltas', () => {
-      const base = new MockLayer({
+      const base = mockLayer({
         praxisOpts: {},
-        initPraxis(layerTemplate: ILayer, settings?: IMockPraxisSettings) {
-          return new MockPraxis(layerTemplate, settings);
+        initPraxis(layerTemplate: ILayer, settings?: IPraxisSettings) {
+          return mockPraxis(layerTemplate, settings);
         },
       });
       const mockWeights = (base.settings.weights = new Float32Array());

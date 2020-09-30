@@ -12,7 +12,7 @@ export function predict(
 
 export class Negative extends Modifier {
   inputLayer: ILayer;
-  constructor(settings: ILayerSettings, inputLayer: ILayer) {
+  constructor(inputLayer: ILayer, settings?: ILayerSettings) {
     super(settings);
     this.inputLayer = inputLayer;
     this.validate();
@@ -32,8 +32,8 @@ export class Negative extends Modifier {
 }
 
 export function negative(
-  settings: ILayerSettings,
-  inputLayer: ILayer
+  inputLayer: ILayer,
+  settings?: ILayerSettings
 ): Negative {
-  return new Negative(settings, inputLayer);
+  return new Negative(inputLayer, settings);
 }

@@ -51,7 +51,7 @@ describe('Add Layer', () => {
     it('sets up the instance', () => {
       const mockInputLayer1 = mockLayer({ width: 1, height: 3 });
       const mockInputLayer2 = mockLayer({ width: 1, height: 3 });
-      const praxis = mockPraxis();
+      const praxis = mockPraxis(mockLayer({}));
       const settings = {
         praxis,
       };
@@ -66,7 +66,7 @@ describe('Add Layer', () => {
   });
   describe('.predict (forward propagation)', () => {
     test('releases this.weights', () => {
-      const praxis = mockPraxis();
+      const praxis = mockPraxis(mockLayer({}));
       const add = new Add(
         mockLayer({ width: 1, height: 1, weights: [new Float32Array(1)] }),
         mockLayer({ width: 1, height: 1, weights: [new Float32Array(1)] }),
@@ -203,7 +203,7 @@ describe('Add Layer', () => {
         width: 1,
         height: 1,
       });
-      const praxis = mockPraxis();
+      const praxis = mockPraxis(mockLayer({}));
       const settings = {
         praxis,
       };
