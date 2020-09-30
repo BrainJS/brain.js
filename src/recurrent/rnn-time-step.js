@@ -7,7 +7,7 @@ const softmax = require('./matrix/softmax');
 const { randomFloat } = require('../utilities/random');
 const sampleI = require('./matrix/sample-i');
 const maxI = require('./matrix/max-i');
-const lookup = require('../lookup');
+const { lookup } = require('../lookup');
 const LookupTable = require('../utilities/lookup-table');
 const ArrayLookupTable = require('../utilities/array-lookup-table');
 const {
