@@ -257,7 +257,6 @@ export const lookup = {
 
   addKeys(value: number[] | INumberHash, table: INumberHash): INumberHash {
     if (Array.isArray(value)) return table;
-    table = table || {};
     let i = Object.keys(table).length;
     for (const p in value) {
       if (!value.hasOwnProperty(p)) continue;
