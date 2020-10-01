@@ -1,22 +1,24 @@
+import { KernelOutput } from 'gpu.js';
+
 export interface INumberHash {
   [character: string]: number;
 }
 
-export interface IArrayDatum {
+export interface INumberArray {
   length: number;
   buffer?: ArrayBuffer;
   [index: number]: number;
 }
 
-export interface IObjectDatum {
+export interface INumberObject {
   [name: string]: number;
 }
 
-export type Datum = IArrayDatum | IObjectDatum;
+export type InputOutputValue = INumberArray | INumberObject;
 
-export interface ITrainingData {
-  input: Datum | Datum[];
-  output: Datum | Datum[];
+export interface ITrainingDatum {
+  input: InputOutputValue | InputOutputValue[] | KernelOutput;
+  output: InputOutputValue | InputOutputValue[] | KernelOutput;
 }
 
 /* Functions for turning sparse hashes into arrays and vice versa */
@@ -112,7 +114,7 @@ export const lookup = {
    */
   toArray(
     lookup: INumberHash,
-    object: IObjectDatum,
+    object: INumberObject,
     arrayLength: number
   ): Float32Array {
     const result = new Float32Array(arrayLength);
@@ -182,35 +184,53 @@ export const lookup = {
   },
 
   dataShape(
-    data: ITrainingData | ITrainingData[] | Datum | Datum[] | Datum[][]
+    data:
+      | ITrainingDatum
+      | ITrainingDatum[]
+      | InputOutputValue
+      | InputOutputValue[]
+      | InputOutputValue[][]
   ): string[] {
     const shape = [];
-    let lastData: Datum | Datum[] | Datum[][];
+    let lastData:
+      | InputOutputValue
+      | InputOutputValue[]
+      | InputOutputValue[][]
+      | KernelOutput;
     if (data.hasOwnProperty('input')) {
       shape.push('datum');
-      lastData = (data as ITrainingData).input;
+      lastData = (data as ITrainingDatum).input;
     } else if (Array.isArray(data)) {
-      if ((data as ITrainingData[])[0].input) {
+      if ((data as ITrainingDatum[])[0].input) {
         shape.push('array', 'datum');
-        lastData = (data as ITrainingData[])[0].input;
+        lastData = (data as ITrainingDatum[])[0].input;
       } else if (Array.isArray(data[0])) {
         shape.push('array');
         lastData = data[0];
       } else {
-        lastData = data as Datum | Datum[] | Datum[][];
+        lastData = data as
+          | InputOutputValue
+          | InputOutputValue[]
+          | InputOutputValue[][];
       }
     } else {
-      lastData = data as Datum | Datum[] | Datum[][];
+      lastData = data as
+        | InputOutputValue
+        | InputOutputValue[]
+        | InputOutputValue[][];
     }
 
     let p;
     while (lastData) {
       p = Object.keys(lastData)[0];
-      if (Array.isArray(lastData) || lastData.buffer instanceof ArrayBuffer) {
+      if (
+        Array.isArray(lastData) ||
+        (lastData as Float32Array).buffer instanceof ArrayBuffer
+      ) {
         shape.push('array');
         const possibleNumber:
           | number
-          | IArrayDatum = (lastData as IArrayDatum[])[parseInt(p)];
+          | INumberArray = (lastData as INumberArray[])[parseInt(p)];
         if (typeof possibleNumber === 'number') {
           shape.push('number');
           break;
@@ -221,7 +241,7 @@ export const lookup = {
         shape.push('object');
         const possibleNumber:
           | number
-          | IObjectDatum = (lastData as IObjectDatum)[p];
+          | INumberObject = (lastData as INumberObject)[p];
         if (typeof possibleNumber === 'number') {
           shape.push('number');
           break;
