@@ -2,7 +2,7 @@
 import { max } from './utilities/max';
 import { toArray } from './utilities/to-array';
 const { Thaw } = require('thaw.js');
-const lookup = require('./lookup');
+const { lookup } = require('./lookup');
 const mse = require('./utilities/mse');
 const { randos } = require('./utilities/randos');
 const range = require('./utilities/range');

@@ -1,4 +1,4 @@
-const lookup = require('./lookup');
+const { lookup } = require('./lookup');
 const layerFromJSON = require('./utilities/layer-from-json');
 const praxis = require('./praxis');
 const flattenLayers = require('./utilities/flatten-layers');

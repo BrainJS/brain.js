@@ -1,4 +1,4 @@
-const lookup = require('../src/lookup');
+import { lookup } from '../src/lookup';
 
 describe('lookup', () => {
   it('toHash()', () => {

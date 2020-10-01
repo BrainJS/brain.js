@@ -1,6 +1,6 @@
 const { GPU, alias, utils: gpuUtils } = require('gpu.js');
 const { NeuralNetwork } = require('./neural-network');
-const lookup = require('./lookup');
+const { lookup } = require('./lookup');
 const { release } = require('./utilities/kernel');
 
 function weightedSumSigmoid(weights, biases, inputs) {
