@@ -1,14 +1,14 @@
-// const TrainStream = require('./train-stream');
+// const TrainStream from './train-stream');
 import { max } from './utilities/max';
 import { toArray } from './utilities/to-array';
-const { Thaw } = require('thaw.js');
-const { lookup } = require('./lookup');
-const mse = require('./utilities/mse');
-const { randos } = require('./utilities/randos');
-const range = require('./utilities/range');
-const { zeros } = require('./utilities/zeros');
-const LookupTable = require('./utilities/lookup-table');
-const { arrayToFloat32Array } = require('./utilities/cast');
+import { Thaw } from 'thaw.js';
+import { lookup } from './lookup';
+import mse from './utilities/mse';
+import { randos } from './utilities/randos';
+import range from './utilities/range';
+import { zeros } from './utilities/zeros';
+import { LookupTable } from './utilities/lookup-table';
+import { arrayToFloat32Array } from './utilities/cast';
 
 function getTypedArrayFn(value, table) {
   if (value.buffer instanceof ArrayBuffer) {

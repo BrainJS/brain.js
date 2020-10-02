@@ -1,10 +1,8 @@
-const { GPU } = require('gpu.js');
+import { GPU } from 'gpu.js';
 
-const {
-  MomentumRootMeanSquaredPropagation,
-} = require('../../src/praxis/momentum-root-mean-squared-propagation');
-const { setup, teardown } = require('../../src/utilities/kernel');
-const { injectIstanbulCoverage } = require('../test-utils');
+import { MomentumRootMeanSquaredPropagation } from '../../src/praxis/momentum-root-mean-squared-propagation';
+import { setup, teardown } from '../../src/utilities/kernel';
+import { injectIstanbulCoverage, mockLayer } from '../test-utils';
 
 describe('MomentumRootMeanSquaredPropagation', () => {
   beforeEach(() => {
@@ -20,7 +18,12 @@ describe('MomentumRootMeanSquaredPropagation', () => {
   });
   describe('.run()', () => {
     test('correctly runs values', () => {
-      const layer = { weights: [[1]], deltas: [[1]], width: 1, height: 1 };
+      const layer = mockLayer({
+        weights: [[1]],
+        deltas: [[1]],
+        width: 1,
+        height: 1,
+      });
       const praxis = new MomentumRootMeanSquaredPropagation(layer, {
         decayRate: 0.999,
         clipValue: 5,
@@ -30,10 +33,17 @@ describe('MomentumRootMeanSquaredPropagation', () => {
       });
       praxis.setupKernels();
       const result = praxis.run(layer);
-      expect(result[0][0].toFixed(5)).toEqual((0.68377).toString());
+      expect((result as number[][])[0][0].toFixed(5)).toEqual(
+        (0.68377).toString()
+      );
     });
     test('correctly adjusts decayRate', () => {
-      const layer = { weights: [[1]], deltas: [[1]], width: 1, height: 1 };
+      const layer = mockLayer({
+        weights: [[1]],
+        deltas: [[1]],
+        width: 1,
+        height: 1,
+      });
       const praxis = new MomentumRootMeanSquaredPropagation(layer, {
         decayRate: 0.299,
         clipValue: 5,
@@ -43,7 +53,9 @@ describe('MomentumRootMeanSquaredPropagation', () => {
       });
       praxis.setupKernels();
       const result = praxis.run(layer);
-      expect(result[0][0].toFixed(5)).toEqual((0.98806).toString());
+      expect((result as number[][])[0][0].toFixed(5)).toEqual(
+        (0.98806).toString()
+      );
     });
   });
 });

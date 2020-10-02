@@ -194,7 +194,7 @@ export class TestLayer extends BaseLayer {
 }
 
 export function mockLayer(settings: ILayerSettings): ILayer {
-  return new TestLayer({ name: 'MockLayer', ...settings });
+  return new TestLayer({ title: 'MockLayer', ...settings });
 }
 
 export function mockTexture(settings?: Partial<IGPUTextureSettings>): Texture {
@@ -224,5 +224,9 @@ export function mockPraxis(layerTemplate: ILayerTemplate, praxisSettings: Partia
       return layerTemplate.depth;
     },
     run: () => {},
+    setupKernels: () => {},
+    toJSON: () => {
+      return praxisSettings;
+    },
   };
 }

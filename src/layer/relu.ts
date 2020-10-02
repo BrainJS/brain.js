@@ -88,6 +88,6 @@ export class Relu extends Activation {
   }
 }
 
-export function relu(inputLayer: ILayer, settings: ILayerSettings): Relu {
+export function relu(inputLayer: ILayer, settings?: ILayerSettings): Relu {
   return new Relu(inputLayer, settings);
 }
