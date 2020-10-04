@@ -1,9 +1,9 @@
-const { NeuralNetwork } = require('../neural-network');
-const RNN = require('../recurrent/rnn');
-const RNNTimeStep = require('../recurrent/rnn-time-step');
-const { FeedForward } = require('../feed-forward');
-const { Recurrent } = require('../recurrent');
-const { recurrentZeros } = require('../layer/recurrent-zeros');
+import { NeuralNetwork } from '../neural-network';
+import RNN from '../recurrent/rnn';
+import RNNTimeStep from '../recurrent/rnn-time-step';
+import { FeedForward } from '../feed-forward';
+import { Recurrent } from '../recurrent';
+import { recurrentZeros } from '../layer/recurrent-zeros';
 
 const recurrentJSONTypes = [
   'RNN',
@@ -15,6 +15,31 @@ const recurrentJSONTypes = [
   'Recurrent',
 ];
 
+interface LineDrawInfo {
+  className: string;
+  color: string;
+  width: number;
+}
+
+interface NodeDrawInfo {
+  className: string;
+  color: string;
+}
+
+interface BaseDrawArgs {
+  pixelX: number;
+  pixelY: number;
+  radius: number;
+  row: number;
+}
+
+interface InputDrawArgs extends BaseDrawArgs {
+  line: LineDrawInfo;
+  inputs: NodeDrawInfo & { labels?: string[] | null };
+  fontSize: string;
+  fontClassName: string;
+}
+
 function drawInput({
   pixelX,
   pixelY,
@@ -24,7 +49,7 @@ function drawInput({
   line,
   fontSize,
   fontClassName,
-}) {
+}: InputDrawArgs) {
   let svg = `<rect
               x="${pixelX / 2 - radius}"
               y="${pixelY / 2 + row * pixelY - radius}"
@@ -52,7 +77,19 @@ function drawInput({
   return svg;
 }
 
-function drawNeuron({ pixelX, pixelY, row, column, radius, hidden }) {
+interface NeuronDrawArgs extends BaseDrawArgs {
+  column: number;
+  hidden: NodeDrawInfo;
+}
+
+function drawNeuron({
+  pixelX,
+  pixelY,
+  row,
+  column,
+  radius,
+  hidden,
+}: NeuronDrawArgs) {
   return `<circle
             cx="${pixelX / 2 + column * pixelX}"
             cy="${pixelY / 2 + row * pixelY}"
@@ -63,7 +100,21 @@ function drawNeuron({ pixelX, pixelY, row, column, radius, hidden }) {
             class="${hidden.className}" />`;
 }
 
-function drawOutput({ pixelX, pixelY, row, column, line, outputs, radius }) {
+interface OutputDrawArgs extends BaseDrawArgs {
+  column: number;
+  line: LineDrawInfo;
+  outputs: NodeDrawInfo;
+}
+
+function drawOutput({
+  pixelX,
+  pixelY,
+  row,
+  column,
+  line,
+  outputs,
+  radius,
+}: OutputDrawArgs) {
   return `<circle
             cx="${pixelX / 2 + column * pixelX}"
             cy="${pixelY / 2 + row * pixelY}"
@@ -81,6 +132,13 @@ function drawOutput({ pixelX, pixelY, row, column, line, outputs, radius }) {
             class="${line.className}" />`;
 }
 
+interface BackwardConnectionsDrawArgs extends BaseDrawArgs {
+  column: number;
+  lineY: number;
+  previousConnectionIndex: number;
+  line: LineDrawInfo;
+}
+
 function drawBackwardConnections({
   pixelX,
   pixelY,
@@ -90,7 +148,7 @@ function drawBackwardConnections({
   lineY,
   line,
   previousConnectionIndex,
-}) {
+}: BackwardConnectionsDrawArgs) {
   return `<line
             x1="${pixelX / 2 + (column - 1) * pixelX + radius}"
             y1="${lineY / 2 + previousConnectionIndex * lineY}"
@@ -100,7 +158,20 @@ function drawBackwardConnections({
             class="${line.className}" />`;
 }
 
-function neuralNetworkToSVG(options) {
+interface NeuralNetworkDrawOptions {
+  sizes: number[];
+  height: number;
+  width: number;
+  radius: number;
+  line: LineDrawInfo;
+  inputs: NodeDrawInfo & { labels?: string[] | null };
+  hidden: NodeDrawInfo;
+  outputs: NodeDrawInfo;
+  fontSize: string;
+  fontClassName: string;
+}
+
+function neuralNetworkToSVG(options: NeuralNetworkDrawOptions) {
   const { sizes, height, width } = options;
   let svg = '';
   const pixelX = width / sizes.length;
@@ -142,6 +213,11 @@ function neuralNetworkToSVG(options) {
   return svg;
 }
 
+interface RecurrentConnectionsDrawArgs extends BaseDrawArgs {
+  column: number;
+  recurrentLine: LineDrawInfo;
+}
+
 function drawRecurrentConnections({
   pixelX,
   pixelY,
@@ -149,7 +225,7 @@ function drawRecurrentConnections({
   column,
   radius,
   recurrentLine,
-}) {
+}: RecurrentConnectionsDrawArgs) {
   const moveX = pixelX / 2 + column * pixelX + radius + 1;
   const moveY = pixelY / 2 + row * pixelY;
   const x = moveX - radius * 2 - 2;
@@ -168,7 +244,11 @@ function drawRecurrentConnections({
               class="${recurrentLine.className}" />`;
 }
 
-function rnnToSVG(options) {
+interface RecurrentNeuralNetworkDrawOptions extends NeuralNetworkDrawOptions {
+  recurrentLine: LineDrawInfo;
+}
+
+function rnnToSVG(options: RecurrentNeuralNetworkDrawOptions) {
   const { width, height, recurrentLine, sizes, radius } = options;
   const pixelX = width / sizes.length;
   let svg = `<defs>
@@ -194,7 +274,8 @@ function rnnToSVG(options) {
   return svg;
 }
 
-function getFeedForwardLayers(network) {
+// TODO: Constrain type once neural networks get typed
+function getFeedForwardLayers(network: any) {
   const inputLayer = network.inputLayer();
   const hiddenLayers = [];
   hiddenLayers.push(network.hiddenLayers[0](inputLayer));
@@ -212,7 +293,8 @@ function getFeedForwardLayers(network) {
   };
 }
 
-function getRecurrentLayers(network) {
+// TODO: Constrain type once neural networks get typed
+function getRecurrentLayers(network: any) {
   const inputLayer = network.inputLayer();
   const hiddenLayers = [];
   hiddenLayers.push(network.hiddenLayers[0](inputLayer, recurrentZeros(), 0));
@@ -232,7 +314,7 @@ function getRecurrentLayers(network) {
   };
 }
 
-function wrapSVG(svgBody, width, height) {
+function wrapSVG(svgBody: string, width: number, height: number) {
   return `<svg
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -241,7 +323,21 @@ function wrapSVG(svgBody, width, height) {
             height="${height}">${svgBody}</svg>`;
 }
 
-function getSizes({ sizes, inputSize, outputSize, hiddenLayers }) {
+interface SizeArgsList {
+  sizes: number[];
+}
+
+interface SizeArgsNamed {
+  inputSize: number;
+  outputSize: number;
+  hiddenLayers: number[];
+}
+
+type SizeArgs =
+  | (SizeArgsList & Partial<SizeArgsNamed>)
+  | (SizeArgsNamed & Partial<SizeArgsList>);
+
+function getSizes({ sizes, inputSize, outputSize, hiddenLayers }: SizeArgs) {
   return typeof inputSize === 'number' &&
     Array.isArray(hiddenLayers) &&
     hiddenLayers.every((l) => typeof l === 'number') &&
@@ -250,7 +346,11 @@ function getSizes({ sizes, inputSize, outputSize, hiddenLayers }) {
     : sizes;
 }
 
-function toSVG(net, options) {
+// TODO: Constrain type once neural networks get typed
+export default function toSVG(
+  net: any,
+  options: Partial<RecurrentNeuralNetworkDrawOptions>
+): string {
   // default values
   const defaultOptions = {
     line: {
@@ -289,7 +389,7 @@ function toSVG(net, options) {
   const isRNN =
     net.hasOwnProperty('model') ||
     net instanceof Recurrent ||
-    (net.type && recurrentJSONTypes.indexOf(net.type) !== -1);
+    (net.type && recurrentJSONTypes.includes(net.type));
 
   // Get network size array for NeuralNetwork or NeuralNetworkGPU
   let sizes = null;
@@ -298,6 +398,7 @@ function toSVG(net, options) {
     net instanceof RNN ||
     net instanceof RNNTimeStep
   ) {
+    // @ts-expect-error Remove this comment once neural networks are properly typed
     sizes = getSizes(net);
   }
   // Get network size array for NeuralNetwork json
@@ -344,5 +445,3 @@ function toSVG(net, options) {
     );
   }
 }
-
-module.exports = toSVG;
