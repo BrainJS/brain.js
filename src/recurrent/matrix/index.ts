@@ -7,16 +7,17 @@ import { zeros } from '../../utilities/zeros';
  * @constructor
  */
 export class Matrix {
-  rows: number;
-  columns: number;
+  rows = 0;
+  columns = 0;
   weights: Float32Array;
   deltas: Float32Array;
 
-  constructor(rows: number, columns: number) {
-    this.rows = rows;
-    this.columns = columns;
-    this.weights = zeros(rows * columns);
-    this.deltas = zeros(rows * columns);
+  constructor(rows?: number, columns?: number) {
+    if (rows) this.rows = rows;
+    if (columns) this.columns = columns;
+
+    this.weights = zeros(this.rows * this.columns);
+    this.deltas = zeros(this.rows * this.columns);
   }
 
   /**
