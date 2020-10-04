@@ -1,12 +1,12 @@
-const { NeuralNetwork } = require('../src/neural-network');
-const likely = require('../src/likely');
+import { NeuralNetwork } from '../src/neural-network';
+import likely from '../src/likely';
 
 /**
  * Return 0 or 1 for '#'
  * @param character
  * @returns {number}
  */
-function integer(character) {
+function integer(character: string): number {
   if (character === '#') return 1;
   return 0;
 }
@@ -16,7 +16,7 @@ function integer(character) {
  * @param string
  * @returns {Array}
  */
-function character(string) {
+function character(string: string): number[] {
   return string.trim().split('').map(integer);
 }
 
