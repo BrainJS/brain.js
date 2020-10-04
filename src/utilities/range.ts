@@ -4,10 +4,10 @@
  * @param end
  * @returns {Array}
  */
-module.exports = function range(start, end) {
-  const result = [];
+export function range(start: number, end: number): number[] {
+  const result: number[] = [];
   for (; start < end; start++) {
     result.push(start);
   }
   return result;
-};
+}
