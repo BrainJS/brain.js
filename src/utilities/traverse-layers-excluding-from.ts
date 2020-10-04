@@ -1,13 +1,15 @@
-module.exports = function traverseLayersExcludingFrom(
-  layer,
-  inputLayer,
-  recurrentLayer,
-  cb
-) {
+import { ILayer } from '../layer/base-layer';
+
+export default function traverseLayersExcludingFrom(
+  layer: ILayer,
+  inputLayer: ILayer,
+  recurrentLayer: ILayer,
+  cb: (layer: ILayer) => void
+): void {
   if (layer === inputLayer || layer === recurrentLayer) return;
   if (layer.hasOwnProperty('inputLayer')) {
     traverseLayersExcludingFrom(
-      layer.inputLayer,
+      (layer as ILayer & { inputLayer: ILayer }).inputLayer,
       inputLayer,
       recurrentLayer,
       cb
@@ -15,7 +17,7 @@ module.exports = function traverseLayersExcludingFrom(
   } else {
     if (layer.hasOwnProperty('inputLayer1')) {
       traverseLayersExcludingFrom(
-        layer.inputLayer1,
+        (layer as ILayer & { inputLayer1: ILayer }).inputLayer1,
         inputLayer,
         recurrentLayer,
         cb
@@ -23,7 +25,7 @@ module.exports = function traverseLayersExcludingFrom(
     }
     if (layer.hasOwnProperty('inputLayer2')) {
       traverseLayersExcludingFrom(
-        layer.inputLayer2,
+        (layer as ILayer & { inputLayer2: ILayer }).inputLayer2,
         inputLayer,
         recurrentLayer,
         cb
@@ -31,4 +33,4 @@ module.exports = function traverseLayersExcludingFrom(
     }
   }
   cb(layer);
-};
+}
