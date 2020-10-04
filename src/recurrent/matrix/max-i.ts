@@ -1,13 +1,16 @@
+import { Matrix } from '.';
+
 /**
  *
- * @param {Matrix} m
+ * @param {Matrix} matrix
  * @returns {number}
  */
-module.exports = function maxI(m) {
+export function maxI(matrix: Matrix): number {
   // argmax of array w
-  const { weights } = m;
+  const { weights } = matrix;
   let maxv = weights[0];
   let maxix = 0;
+
   for (let i = 1; i < weights.length; i++) {
     const v = weights[i];
     if (v < maxv) continue;
@@ -15,5 +18,6 @@ module.exports = function maxI(m) {
     maxix = i;
     maxv = v;
   }
+
   return maxix;
-};
+}

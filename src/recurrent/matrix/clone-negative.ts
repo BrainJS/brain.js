@@ -5,7 +5,7 @@ import { Matrix } from '.';
  * @param {Matrix} product
  * @param {Matrix} left
  */
-module.exports = function cloneNegative(product: Matrix, left: Matrix) {
+export function cloneNegative(product: Matrix, left: Matrix): void {
   product.rows = left.rows;
   product.columns = left.columns;
   product.weights = left.weights.slice(0);
@@ -15,4 +15,4 @@ module.exports = function cloneNegative(product: Matrix, left: Matrix) {
     product.weights[i] = -left.weights[i];
     product.deltas[i] = 0;
   }
-};
+}
