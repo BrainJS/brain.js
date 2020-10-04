@@ -19,27 +19,45 @@ import { tanhB } from './tanh-b';
 // const OnesMatrix = require('./ones-matrix');
 // const copy = require('./copy');
 
-type ForwardFunction = function(
-  Matrix,
-  Matrix,
-  Matrix
-): Matrix;
-
-type BackpropagationFunction = (
-  product: Matrix,
-  left: Matrix,
-  right: Matrix
-) => Matrix;
-
 export class Equation {
   inputRow = 0;
-  inputValue: number | null = 0;
+  inputValue: Float32Array | null = null;
   states: Array<{
-    left: Matrix;
-    Right: Matrix;
     product: Matrix;
-    forwardFn: ForwardFunction;
-    backpropagationFn: BackpropagationFunction;
+    left?: Matrix;
+    right?: Matrix;
+    forwardFn:
+      | ((product: Matrix, left: Matrix, right: Matrix) => Matrix)
+      | ((product: Matrix, left: Matrix, right: Matrix) => void)
+      | ((
+          product: Matrix,
+          left: Matrix,
+          right: undefined,
+          index?: number
+        ) => void)
+      | ((
+          product: Matrix,
+          left: Matrix,
+          // right: undefined,
+          index?: number
+        ) => void)
+      | (() => void);
+    backpropagationFn?:
+      | ((product: Matrix, left: Matrix, right: Matrix) => Matrix)
+      | ((product: Matrix, left: Matrix, right: Matrix) => void)
+      | ((
+          product: Matrix,
+          left: Matrix,
+          right: undefined,
+          index?: number
+        ) => void)
+      | ((
+          product: Matrix,
+          left: Matrix,
+          // right: undefined,
+          index?: number
+        ) => void)
+      | (() => void);
   }> = [];
 
   // constructor() {}
@@ -58,9 +76,9 @@ export class Equation {
     const product = new Matrix(left.rows, left.columns);
 
     this.states.push({
+      product,
       left,
       right,
-      product,
       forwardFn: add,
       backpropagationFn: addB,
     });
@@ -78,8 +96,8 @@ export class Equation {
     const product = new Matrix(rows, columns);
 
     this.states.push({
-      left: product,
       product,
+      left: product,
       forwardFn: allOnes,
     });
 
@@ -95,8 +113,8 @@ export class Equation {
     const product = new Matrix(matrix.rows, matrix.columns);
 
     this.states.push({
-      left: matrix,
       product,
+      left: matrix,
       forwardFn: cloneNegative,
     });
 
@@ -134,9 +152,9 @@ export class Equation {
     const product = new Matrix(left.rows, right.columns);
 
     this.states.push({
+      product,
       left,
       right,
-      product,
       forwardFn: multiply,
       backpropagationFn: multiplyB,
     });
@@ -158,9 +176,9 @@ export class Equation {
     const product = new Matrix(left.rows, left.columns);
 
     this.states.push({
+      product,
       left,
       right,
-      product,
       forwardFn: multiplyElement,
       backpropagationFn: multiplyElementB,
     });
@@ -177,8 +195,8 @@ export class Equation {
     const product = new Matrix(matrix.rows, matrix.columns);
 
     this.states.push({
-      left: matrix,
       product,
+      left: matrix,
       forwardFn: relu,
       backpropagationFn: reluB,
     });
@@ -194,7 +212,7 @@ export class Equation {
   input(input: Matrix): Matrix {
     this.states.push({
       product: input,
-      forwardFn: (product) => {
+      forwardFn: (product: Matrix) => {
         if (this.inputValue === null) return;
 
         product.weights = input.weights = this.inputValue;
@@ -215,11 +233,11 @@ export class Equation {
     const product = new Matrix(matrix.columns, 1);
 
     this.states.push({
+      product,
       left: matrix,
       get right() {
         return self.inputRow;
       },
-      product,
       forwardFn: rowPluck,
       backpropagationFn: rowPluckB,
     });
@@ -236,8 +254,8 @@ export class Equation {
     const product = new Matrix(matrix.rows, matrix.columns);
 
     this.states.push({
-      left: matrix,
       product,
+      left: matrix,
       forwardFn: sigmoid,
       backpropagationFn: sigmoidB,
     });
@@ -254,8 +272,8 @@ export class Equation {
     const product = new Matrix(matrix.rows, matrix.columns);
 
     this.states.push({
-      left: matrix,
       product,
+      left: matrix,
       forwardFn: tanh,
       backpropagationFn: tanhB,
     });
@@ -270,8 +288,9 @@ export class Equation {
    */
   observe(matrix: Matrix): Matrix {
     this.states.push({
-      forwardFn() {},
-      backpropagationFn() {},
+      product: new Matrix(),
+      forwardFn: () => {},
+      backpropagationFn: () => {},
     });
 
     return matrix;
@@ -283,12 +302,15 @@ export class Equation {
    */
   runIndex(rowIndex = 0): Matrix {
     this.inputRow = rowIndex;
-    let state;
+    let state = this.states[0];
 
     for (let i = 0, max = this.states.length; i < max; i++) {
       state = this.states[i];
 
       if (!state.hasOwnProperty('forwardFn')) continue;
+      if (!state.product) continue;
+      if (!state.left) continue;
+      if (!state.right) continue;
 
       state.forwardFn(state.product, state.left, state.right);
     }
@@ -300,15 +322,18 @@ export class Equation {
    * @patam {Number} [rowIndex]
    * @output {Matrix}
    */
-  runInput(inputValue): Matrix {
+  runInput(inputValue: Float32Array): Matrix {
     this.inputValue = inputValue;
-    let state;
+    let state = this.states[0];
 
     for (let i = 0, max = this.states.length; i < max; i++) {
       state = this.states[i];
-      if (!state.hasOwnProperty('forwardFn')) {
-        continue;
-      }
+
+      if (!state.hasOwnProperty('forwardFn')) continue;
+      if (!state.product) continue;
+      if (!state.left) continue;
+      if (!state.right) continue;
+
       state.forwardFn(state.product, state.left, state.right);
     }
 
@@ -321,17 +346,17 @@ export class Equation {
    */
   backpropagate(): Matrix {
     let i = this.states.length;
-    let state;
+    let state = this.states[0];
 
     while (i-- > 0) {
       state = this.states[i];
-      if (!state.hasOwnProperty('backpropagationFn')) {
-        continue;
-      }
-      // console.log('backfn', state.backpropagationFn.name);
-      // console.log('before', state.product.deltas);
+
+      if (!state.hasOwnProperty('backpropagationFn')) continue;
+      if (!state.product) continue;
+      if (!state.left) continue;
+      if (!state.right) continue;
+
       state.backpropagationFn(state.product, state.left, state.right);
-      // console.log('after', state.product.deltas);
     }
 
     return state.product;
@@ -345,22 +370,25 @@ export class Equation {
     this.inputRow = rowIndex;
 
     let i = this.states.length;
-    let state;
+    let state = this.states[0];
 
     while (i-- > 0) {
       state = this.states[i];
-      if (!state.hasOwnProperty('backpropagationFn')) {
-        continue;
-      }
+
+      if (!state.hasOwnProperty('backpropagationFn')) continue;
+      if (!state.product) continue;
+      if (!state.left) continue;
+      if (!state.right) continue;
+
       state.backpropagationFn(state.product, state.left, state.right);
     }
 
     return state.product;
   }
 
-  predictTarget(input: number, target: number): number {
-    const output = this.runInput(input);
+  predictTarget(input: Float32Array, target: Float32Array): number {
     let errorSum = 0;
+    const output = this.runInput(input);
 
     for (let i = 0; i < output.weights.length; i++) {
       const error = output.weights[i] - target[i];
