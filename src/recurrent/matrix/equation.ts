@@ -19,46 +19,29 @@ import { tanhB } from './tanh-b';
 // const OnesMatrix = require('./ones-matrix');
 // const copy = require('./copy');
 
+type ForwardFunction<T1, T2, T3> = (
+  product: Matrix,
+  left: Matrix,
+  right: T1,
+  rowIndex?: T2
+) => T3;
+
+interface State {
+  product: Matrix;
+  left?: Matrix;
+  right?: Matrix;
+  forwardFn:
+    | ForwardFunction<Matrix, undefined, void>
+    | ForwardFunction<Matrix, number, void>;
+  backpropagationFn:
+    | ForwardFunction<Matrix, undefined, void>
+    | ForwardFunction<Matrix, number, void>;
+}
+
 export class Equation {
+  states: State[] = [];
+  inputValue?: Float32Array;
   inputRow = 0;
-  inputValue: Float32Array | null = null;
-  states: Array<{
-    product: Matrix;
-    left?: Matrix;
-    right?: Matrix;
-    forwardFn:
-      | ((product: Matrix, left: Matrix, right: Matrix) => Matrix)
-      | ((product: Matrix, left: Matrix, right: Matrix) => void)
-      | ((
-          product: Matrix,
-          left: Matrix,
-          right: undefined,
-          index?: number
-        ) => void)
-      | ((
-          product: Matrix,
-          left: Matrix,
-          // right: undefined,
-          index?: number
-        ) => void)
-      | (() => void);
-    backpropagationFn?:
-      | ((product: Matrix, left: Matrix, right: Matrix) => Matrix)
-      | ((product: Matrix, left: Matrix, right: Matrix) => void)
-      | ((
-          product: Matrix,
-          left: Matrix,
-          right: undefined,
-          index?: number
-        ) => void)
-      | ((
-          product: Matrix,
-          left: Matrix,
-          // right: undefined,
-          index?: number
-        ) => void)
-      | (() => void);
-  }> = [];
 
   // constructor() {}
 
@@ -99,6 +82,7 @@ export class Equation {
       product,
       left: product,
       forwardFn: allOnes,
+      backpropagationFn: () => {},
     });
 
     return product;
@@ -116,6 +100,7 @@ export class Equation {
       product,
       left: matrix,
       forwardFn: cloneNegative,
+      backpropagationFn: () => {},
     });
 
     return product;
@@ -213,10 +198,11 @@ export class Equation {
     this.states.push({
       product: input,
       forwardFn: (product: Matrix) => {
-        if (this.inputValue === null) return;
+        if (!this.inputValue) return;
 
         product.weights = input.weights = this.inputValue;
       },
+      backpropagationFn: () => {},
     });
 
     return input;
@@ -229,17 +215,22 @@ export class Equation {
    */
   inputMatrixToRow(matrix: Matrix): Matrix {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const self = this;
+    // const self = this;
     const product = new Matrix(matrix.columns, 1);
 
     this.states.push({
       product,
       left: matrix,
-      get right() {
-        return self.inputRow;
-      },
-      forwardFn: rowPluck,
-      backpropagationFn: rowPluckB,
+      // TOFIX: returns `number` but expected `Matrix`
+      // get right() {
+      //   return self.inputRow;
+      // },
+      forwardFn: (rowPluck as unknown) as ForwardFunction<Matrix, number, void>,
+      backpropagationFn: (rowPluckB as unknown) as ForwardFunction<
+        Matrix,
+        number,
+        void
+      >,
     });
 
     return product;
@@ -308,7 +299,6 @@ export class Equation {
       state = this.states[i];
 
       if (!state.hasOwnProperty('forwardFn')) continue;
-      if (!state.product) continue;
       if (!state.left) continue;
       if (!state.right) continue;
 
@@ -330,7 +320,6 @@ export class Equation {
       state = this.states[i];
 
       if (!state.hasOwnProperty('forwardFn')) continue;
-      if (!state.product) continue;
       if (!state.left) continue;
       if (!state.right) continue;
 
@@ -352,7 +341,6 @@ export class Equation {
       state = this.states[i];
 
       if (!state.hasOwnProperty('backpropagationFn')) continue;
-      if (!state.product) continue;
       if (!state.left) continue;
       if (!state.right) continue;
 
@@ -376,7 +364,6 @@ export class Equation {
       state = this.states[i];
 
       if (!state.hasOwnProperty('backpropagationFn')) continue;
-      if (!state.product) continue;
       if (!state.left) continue;
       if (!state.right) continue;
 
