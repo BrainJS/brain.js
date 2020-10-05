@@ -33,7 +33,11 @@ export { Target, target } from './target';
 export { Transpose, transpose } from './transpose';
 export { Zeros, zeros } from './zeros';
 
-export const layerTypes = {
+interface layerTypesMap {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+export const layerTypes: layerTypesMap = {
   Activation,
   Operator,
   Internal,
