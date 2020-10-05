@@ -1,4 +1,4 @@
-const sigmoid = require('../../src/activation/sigmoid');
+import * as sigmoid from '../../src/activation/sigmoid';
 
 describe('sigmoid', () => {
   describe('.active()', () => {
