@@ -1,10 +1,12 @@
+import { NeuralNetwork } from './neural-network';
+
 /**
  *
  * @param {*} input
  * @param {brain.NeuralNetwork} net
  * @returns {*}
  */
-module.exports = function likely(input, net) {
+export function likely<T>(input: T, net: NeuralNetwork): T | null {
   if (!net) {
     throw new TypeError(
       `Required parameter 'net' is of type ${typeof net}. Must be of type 'brain.NeuralNetwork'`
@@ -24,4 +26,4 @@ module.exports = function likely(input, net) {
   });
 
   return maxProp;
-};
+}
