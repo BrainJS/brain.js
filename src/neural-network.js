@@ -295,7 +295,7 @@ export class NeuralNetwork {
           sum += weights[k] * input[k];
         }
         // leaky relu
-        currentOutputs[node] = sum < 0 ? 0 : alpha * sum;
+        currentOutputs[node] = Math.max(sum, alpha * sum);
       }
       output = input = currentOutputs;
     }
