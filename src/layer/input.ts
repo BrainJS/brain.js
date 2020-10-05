@@ -77,14 +77,6 @@ export class Input extends EntryPoint {
   compare(): void {
     // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
-
-  toJSON(): ILayerSettings {
-    return {
-      ...this.settings,
-      weights: null,
-      deltas: null,
-    };
-  }
 }
 
 export function input(settings: ILayerSettings): Input {

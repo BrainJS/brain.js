@@ -7,6 +7,12 @@ export interface ILayerTemplate {
   depth: number;
 }
 
+export interface IPraxisJSON {
+  width: number;
+  height: number;
+  depth: number;
+}
+
 export interface IPraxisSettings {
   width?: number;
   height?: number;
@@ -18,12 +24,14 @@ export interface IPraxis {
   layerTemplate: ILayerTemplate | null;
   kernel: IKernelRunShortcut | null;
   settings: Partial<IPraxisSettings>;
+  setupKernels: () => void;
   width: number;
   height: number;
   depth: number;
   run:
     | ((layer: ILayer, learningRate: number) => KernelOutput)
     | ((layer: ILayer, learningRate?: number) => KernelOutput);
+  toJSON: () => Partial<IPraxisSettings>;
 }
 
 export abstract class BasePraxis implements IPraxis {
@@ -43,7 +51,10 @@ export abstract class BasePraxis implements IPraxis {
     return this.layerTemplate.depth;
   }
 
-  constructor(layerTemplate: ILayerTemplate, settings: IPraxisSettings = {}) {
+  constructor(
+    layerTemplate: ILayerTemplate,
+    settings: Partial<IPraxisSettings> = {}
+  ) {
     this.layerTemplate = layerTemplate;
     this.settings = { ...settings };
     this.kernel = null;
@@ -68,4 +79,8 @@ export abstract class BasePraxis implements IPraxis {
   }
 
   abstract run(layer: ILayer, learningRate?: number): KernelOutput;
+
+  toJSON(): Partial<IPraxisSettings> {
+    return { ...this.settings };
+  }
 }

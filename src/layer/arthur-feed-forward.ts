@@ -47,14 +47,14 @@ export function arthurFeedForward(
     return praxis;
   }
   const weightsLayer = random({
-    name: 'weights',
+    title: 'weights',
     height,
     width: inputLayer.height,
     initPraxis: initWeightsPraxis,
   });
 
   const biasesLayer = random({
-    name: 'biases',
+    title: 'biases',
     height,
     initPraxis: initBiasesPraxis,
   });

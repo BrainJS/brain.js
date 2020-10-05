@@ -1,9 +1,9 @@
-const { GPU } = require('gpu.js');
-const { setup, teardown } = require('../../src/utilities/kernel');
-const { FeedForward } = require('../../src');
-const {
+import { GPU } from 'gpu.js';
+import { setup, teardown } from '../../src/utilities/kernel';
+import { FeedForward } from '../../src/feed-forward';
+import {
   Add,
-  Base,
+  BaseLayer,
   Convolution,
   convolution,
   feedForward,
@@ -22,9 +22,11 @@ const {
   softMax,
   Target,
   // Zeros,
-  types,
-} = require('../../src/layer');
-const { injectIstanbulCoverage } = require('../test-utils');
+  layerTypes,
+} from '../../src/layer';
+import { injectIstanbulCoverage, mockLayer, mockPraxis } from '../test-utils';
+import { ILayer, ILayerJSON, ILayerSettings } from '../../src/layer/base-layer';
+import SpyInstance = jest.SpyInstance;
 
 describe('FeedForward Class: Unit', () => {
   beforeEach(() => {
@@ -55,9 +57,9 @@ describe('FeedForward Class: Unit', () => {
     describe('flat', () => {
       test('can setup and traverse entire network as needed', () => {
         const net = new FeedForward({
-          inputLayer: () => input(),
+          inputLayer: () => input({ width: 1 }),
           hiddenLayers: [
-            (inputLayer) =>
+            (inputLayer: ILayer) =>
               convolution(
                 {
                   filterCount: 8,
@@ -68,8 +70,8 @@ describe('FeedForward Class: Unit', () => {
                 },
                 inputLayer
               ),
-            (inputLayer) => relu(inputLayer),
-            (inputLayer) =>
+            (inputLayer: ILayer) => relu(inputLayer),
+            (inputLayer: ILayer) =>
               pool(
                 {
                   filterHeight: 3,
@@ -79,7 +81,7 @@ describe('FeedForward Class: Unit', () => {
                 },
                 inputLayer
               ),
-            (inputLayer) =>
+            (inputLayer: ILayer) =>
               convolution(
                 {
                   padding: 2,
@@ -90,8 +92,8 @@ describe('FeedForward Class: Unit', () => {
                 },
                 inputLayer
               ),
-            (inputLayer) => relu(inputLayer),
-            (inputLayer) =>
+            (inputLayer: ILayer) => relu(inputLayer),
+            (inputLayer: ILayer) =>
               pool(
                 {
                   padding: 2,
@@ -101,15 +103,17 @@ describe('FeedForward Class: Unit', () => {
                 },
                 inputLayer
               ),
-            (inputLayer) => softMax(inputLayer),
+            (inputLayer: ILayer) => softMax(inputLayer),
           ],
-          outputLayer: (inputLayer) => output({ height: 10 }, inputLayer),
+          outputLayer: (inputLayer: ILayer) =>
+            output({ height: 10 }, inputLayer),
         });
 
         net.initialize();
 
-        expect(net.layers.length).toBe(13);
-        expect(net.layers.map((l) => l.constructor)).toEqual([
+        const layers = net.layers as ILayer[];
+        expect(layers.length).toBe(13);
+        expect(layers.map((l: ILayer) => l.constructor)).toEqual([
           Input,
           Convolution,
           Relu,
@@ -137,8 +141,9 @@ describe('FeedForward Class: Unit', () => {
 
         net.initialize();
 
-        expect(net.layers.length).toBe(11);
-        expect(net.layers.map((l) => l.constructor)).toEqual([
+        const layers = net.layers as ILayer[];
+        expect(layers.length).toBe(11);
+        expect(layers.map((l) => l.constructor)).toEqual([
           Input,
           Random,
           Multiply,
@@ -157,7 +162,7 @@ describe('FeedForward Class: Unit', () => {
     describe('functional', () => {
       test('can setup and traverse entire network as needed', () => {
         const net = new FeedForward({
-          inputLayer: () => input(),
+          inputLayer: () => input({ width: 1 }),
           hiddenLayers: [
             (inputParam) =>
               softMax(
@@ -206,8 +211,9 @@ describe('FeedForward Class: Unit', () => {
         });
         net.initialize();
 
-        expect(net.layers.length).toBe(13);
-        expect(net.layers.map((l) => l.constructor)).toEqual([
+        const layers = net.layers as ILayer[];
+        expect(layers.length).toBe(13);
+        expect(layers.map((l) => l.constructor)).toEqual([
           Input,
           Convolution,
           Relu,
@@ -228,7 +234,8 @@ describe('FeedForward Class: Unit', () => {
 
   describe('.initialize()', () => {
     test('initializes all layers', () => {
-      class TestLayer extends Base {
+      class TestLayer extends BaseLayer {
+        called?: boolean;
         setupKernels() {
           this.called = true;
         }
@@ -245,8 +252,9 @@ describe('FeedForward Class: Unit', () => {
       });
       net.initialize();
 
-      expect(net.layers.length).toBe(5);
-      expect(net.layers.map((l) => l.constructor !== undefined)).toEqual([
+      const layers = net.layers as ILayer[];
+      expect(layers.length).toBe(5);
+      expect(layers.map((l) => l.constructor !== undefined)).toEqual([
         true,
         true,
         true,
@@ -256,7 +264,8 @@ describe('FeedForward Class: Unit', () => {
     });
 
     test('populates praxis on all layers when it is null', () => {
-      class TestLayer extends types.Model {
+      class TestLayer extends layerTypes.Model {
+        called?: boolean;
         setupKernels() {
           this.called = true;
         }
@@ -273,15 +282,16 @@ describe('FeedForward Class: Unit', () => {
       });
       net.initialize();
 
-      expect(net.layers.length).toBe(5);
-      expect(net.layers.map((l) => l.called)).toEqual([
+      const layers = net.layers as ILayer[];
+      expect(layers.length).toBe(5);
+      expect(layers.map((l) => (l as TestLayer).called)).toEqual([
         true,
         true,
         true,
         true,
         true,
       ]);
-      expect(net.layers.map((l) => Boolean(l.praxis))).toEqual([
+      expect(layers.map((l) => Boolean(l.praxis))).toEqual([
         true,
         true,
         true,
@@ -290,16 +300,18 @@ describe('FeedForward Class: Unit', () => {
       ]);
     });
     test('populates praxis when defined as setting on layer', () => {
-      class TestLayer extends Base {
+      class TestLayer extends BaseLayer {
+        called?: boolean;
         setupKernels() {
           this.called = true;
         }
       }
 
+      const praxis = mockPraxis(mockLayer({}));
       const net = new FeedForward({
         inputLayer: () => new TestLayer(),
         hiddenLayers: [
-          () => new TestLayer({ praxis: () => true }),
+          (l: ILayer) => new TestLayer({ initPraxis: () => praxis }),
           () => new TestLayer(),
           () => new TestLayer(),
         ],
@@ -307,15 +319,16 @@ describe('FeedForward Class: Unit', () => {
       });
       net.initialize();
 
-      expect(net.layers.length).toBe(5);
-      expect(net.layers.map((l) => l.called)).toEqual([
+      const layers = net.layers as ILayer[];
+      expect(layers.length).toBe(5);
+      expect(layers.map((l) => (l as TestLayer).called)).toEqual([
         true,
         true,
         true,
         true,
         true,
       ]);
-      expect(net.layers.map((l) => l.praxis === true)).toEqual([
+      expect(layers.map((l) => l.praxis === praxis)).toEqual([
         false,
         true,
         false,
@@ -327,10 +340,11 @@ describe('FeedForward Class: Unit', () => {
 
   describe('.runInput()', () => {
     test('calls .predict() on all layers', () => {
-      class TestLayer extends Base {
+      class TestLayer extends BaseLayer {
         // eslint-disable-next-line
         setupKernels() {}
 
+        called?: boolean;
         predict() {
           this.called = true;
         }
@@ -349,7 +363,8 @@ describe('FeedForward Class: Unit', () => {
       net.initialize();
       net.runInput();
 
-      expect(net.layers.map((l) => l.called)).toEqual([
+      const layers = net.layers as ILayer[];
+      expect(layers.map((l) => (l as TestLayer).called)).toEqual([
         true,
         true,
         true,
@@ -361,13 +376,14 @@ describe('FeedForward Class: Unit', () => {
 
   describe('._calculateDeltas()', () => {
     test('calls .compare() on all layers', () => {
-      class TestLayer extends Base {
+      class TestLayer extends BaseLayer {
         // eslint-disable-next-line
         setupKernels() {}
 
         // eslint-disable-next-line
         predict() {}
 
+        called?: boolean;
         compare() {
           this.called = true;
         }
@@ -386,7 +402,8 @@ describe('FeedForward Class: Unit', () => {
       net.initialize();
       net._calculateDeltas();
 
-      expect(net.layers.map((l) => l.called)).toEqual([
+      const layers = net.layers as ILayer[];
+      expect(layers.map((l) => (l as TestLayer).called)).toEqual([
         true,
         true,
         true,
@@ -398,7 +415,7 @@ describe('FeedForward Class: Unit', () => {
 
   describe('.adjustWeights()', () => {
     test('calls .learn() on all layers', () => {
-      class TestLayer extends types.Model {
+      class TestLayer extends layerTypes.Model {
         // eslint-disable-next-line
         setupKernels() {}
 
@@ -408,6 +425,7 @@ describe('FeedForward Class: Unit', () => {
         // eslint-disable-next-line
         compare() {}
 
+        called?: boolean;
         learn() {
           this.called = true;
         }
@@ -426,7 +444,8 @@ describe('FeedForward Class: Unit', () => {
       net.initialize();
       net.adjustWeights();
 
-      expect(net.layers.map((l) => l.called)).toEqual([
+      const layers = net.layers as ILayer[];
+      expect(layers.map((l) => (l as TestLayer).called)).toEqual([
         true,
         true,
         true,
@@ -438,18 +457,15 @@ describe('FeedForward Class: Unit', () => {
 
   describe('.toJSON()', () => {
     test('can serialize to json', () => {
-      class TestInputLayer extends Base {
-        constructor(settings) {
+      class TestInputLayer extends BaseLayer {
+        constructor(settings: ILayerSettings) {
           super(settings);
           this.weights = [0, 1, 3, 4, 5, 6, 7, 8, 9];
         }
       }
-      class TestLayer1 extends Base {
-        static get defaults() {
-          return { foo: null };
-        }
-
-        constructor(settings, inputLayer) {
+      class TestLayer1 extends BaseLayer {
+        inputLayer: ILayer;
+        constructor(settings: ILayerSettings, inputLayer: ILayer) {
           super(settings);
           this.inputLayer = inputLayer;
         }
@@ -458,8 +474,9 @@ describe('FeedForward Class: Unit', () => {
         setupKernels() {}
       }
 
-      class TestLayer2 extends Base {
-        constructor(settings, inputLayer) {
+      class TestLayer2 extends BaseLayer {
+        inputLayer: ILayer;
+        constructor(settings: ILayerSettings, inputLayer: ILayer) {
           super(settings);
           this.inputLayer = inputLayer;
         }
@@ -468,9 +485,11 @@ describe('FeedForward Class: Unit', () => {
         setupKernels() {}
       }
 
-      class TestOperatorLayer extends Base {
-        constructor(settings, inputLayer1, inputLayer2) {
-          super(settings);
+      class TestOperatorLayer extends BaseLayer {
+        inputLayer1: ILayer;
+        inputLayer2: ILayer;
+        constructor(inputLayer1: ILayer, inputLayer2: ILayer) {
+          super();
           this.inputLayer1 = inputLayer1;
           this.inputLayer2 = inputLayer2;
         }
@@ -479,8 +498,9 @@ describe('FeedForward Class: Unit', () => {
         setupKernels() {}
       }
 
-      class TestOutputLayer extends Base {
-        constructor(settings, inputLayer) {
+      class TestOutputLayer extends BaseLayer {
+        inputLayer: ILayer;
+        constructor(settings: ILayerSettings, inputLayer: ILayer) {
           super(settings);
           this.inputLayer = inputLayer;
         }
@@ -491,8 +511,7 @@ describe('FeedForward Class: Unit', () => {
         hiddenLayers: [
           (inputParam) =>
             new TestOperatorLayer(
-              { foo: true },
-              new TestLayer1({ foo: true }, inputParam),
+              new TestLayer1({}, inputParam),
               new TestLayer2({}, inputParam)
             ),
         ],
@@ -512,17 +531,16 @@ describe('FeedForward Class: Unit', () => {
         weights: [0, 1, 3, 4, 5, 6, 7, 8, 9],
         width: 10,
         height: 1,
-        depth: null,
+        depth: 0,
       });
       expect(json.layers[1]).toEqual({
         type: 'TestLayer1',
         praxisOpts: null,
         weights: null,
         inputLayerIndex: 0,
-        foo: true,
         width: 1,
         height: 1,
-        depth: null,
+        depth: 0,
       });
       expect(json.layers[2]).toEqual({
         type: 'TestLayer2',
@@ -531,7 +549,7 @@ describe('FeedForward Class: Unit', () => {
         inputLayerIndex: 0,
         width: 1,
         height: 1,
-        depth: null,
+        depth: 0,
       });
       expect(json.layers[3]).toEqual({
         type: 'TestOperatorLayer',
@@ -541,7 +559,7 @@ describe('FeedForward Class: Unit', () => {
         inputLayer2Index: 2,
         width: 1,
         height: 1,
-        depth: null,
+        depth: 0,
       });
       expect(json.layers[4]).toEqual({
         height: 5,
@@ -550,19 +568,16 @@ describe('FeedForward Class: Unit', () => {
         weights: null,
         praxisOpts: null,
         width: 10,
-        depth: null,
+        depth: 0,
       });
     });
   });
 
   describe('.fromJSON()', () => {
     test('can deserialize to object from json using inputLayerIndex', () => {
-      class TestLayer extends Base {
-        static get defaults() {
-          return { foo: null };
-        }
-
-        constructor(settings, inputLayer) {
+      class TestLayer extends BaseLayer implements ILayer {
+        inputLayer?: ILayer;
+        constructor(settings: ILayerSettings, inputLayer?: ILayer) {
           super(settings);
           this.inputLayer = inputLayer;
         }
@@ -573,45 +588,46 @@ describe('FeedForward Class: Unit', () => {
 
       const net = FeedForward.fromJSON(
         {
+          type: '',
+          sizes: [],
+          inputLayerIndex: 0,
+          outputLayerIndex: 3,
           layers: [
             {
               type: 'TestLayer',
-              foo: true,
             },
             {
               type: 'TestLayer',
-              foo: true,
               inputLayerIndex: 0,
             },
             {
               type: 'TestLayer',
-              foo: true,
               inputLayerIndex: 1,
             },
             {
               type: 'TestLayer',
-              foo: true,
               inputLayerIndex: 2,
             },
           ],
         },
-        (jsonLayer, inputParam) => {
+        (jsonLayer: ILayerJSON, inputLayer1?: ILayer, inputLayer2?: ILayer) => {
           switch (jsonLayer.type) {
             case 'TestLayer':
-              return new TestLayer(jsonLayer, inputParam);
+              return new TestLayer(jsonLayer, inputLayer1);
             default:
               throw new Error(`unknown layer ${jsonLayer.type}`);
           }
         }
       );
 
-      expect(net.layers.map((l) => l instanceof TestLayer)).toEqual([
+      const layers = net.layers as ILayer[];
+      expect(layers.map((l) => l instanceof TestLayer)).toEqual([
         true,
         true,
         true,
         true,
       ]);
-      expect(net.layers.map((l) => l.inputLayer instanceof TestLayer)).toEqual([
+      expect(layers.map((l) => l.inputLayer instanceof TestLayer)).toEqual([
         false,
         true,
         true,
@@ -620,12 +636,13 @@ describe('FeedForward Class: Unit', () => {
     });
 
     test('can deserialize to object from json using inputLayer1Index & inputLayer2Index', () => {
-      class TestLayer extends Base {
+      class TestLayer extends BaseLayer {
         static get defaults() {
           return { foo: null };
         }
 
-        constructor(settings, inputLayer) {
+        inputLayer?: ILayer;
+        constructor(settings: ILayerSettings, inputLayer?: ILayer) {
           super(settings);
           this.inputLayer = inputLayer;
         }
@@ -634,12 +651,18 @@ describe('FeedForward Class: Unit', () => {
         setupKernels() {}
       }
 
-      class TestOperatorLayer extends Base {
+      class TestOperatorLayer extends BaseLayer {
         static get defaults() {
           return { foo: null };
         }
 
-        constructor(settings, inputLayer1, inputLayer2) {
+        inputLayer1?: ILayer;
+        inputLayer2?: ILayer;
+        constructor(
+          settings: ILayerSettings,
+          inputLayer1?: ILayer,
+          inputLayer2?: ILayer
+        ) {
           super(settings);
           this.inputLayer1 = inputLayer1;
           this.inputLayer2 = inputLayer2;
@@ -651,43 +674,45 @@ describe('FeedForward Class: Unit', () => {
 
       const net = FeedForward.fromJSON(
         {
+          sizes: [],
+          type: '',
+          inputLayerIndex: 0,
+          outputLayerIndex: 2,
           layers: [
             {
               type: 'TestLayer',
-              foo: true,
             },
             {
               type: 'TestLayer',
-              foo: true,
               inputLayerIndex: 0,
             },
             {
               type: 'TestOperatorLayer',
-              foo: true,
               inputLayer1Index: 0,
               inputLayer2Index: 1,
             },
           ],
         },
-        (jsonLayer, input1, input2) => {
+        (jsonLayer: ILayerJSON, inputLayer1?: ILayer, inputLayer2?: ILayer) => {
           switch (jsonLayer.type) {
             case 'TestLayer':
-              return new TestLayer(jsonLayer, input1);
+              return new TestLayer(jsonLayer, inputLayer1);
             case 'TestOperatorLayer':
-              return new TestOperatorLayer(jsonLayer, input1, input2);
+              return new TestOperatorLayer(jsonLayer, inputLayer1, inputLayer2);
             default:
               throw new Error(`unknown layer ${jsonLayer.type}`);
           }
         }
       );
 
-      expect(net.layers.length).toBe(3);
-      expect(net.layers[0] instanceof TestLayer).toBeTruthy();
-      expect(net.layers[0] instanceof TestLayer).toBeTruthy();
-      expect(net.layers[1] instanceof TestLayer).toBeTruthy();
-      expect(net.layers[2] instanceof TestOperatorLayer).toBeTruthy();
-      expect(net.layers[2].inputLayer1).toEqual(net.layers[0]);
-      expect(net.layers[2].inputLayer2).toEqual(net.layers[1]);
+      const layers = net.layers as ILayer[];
+      expect(layers.length).toBe(3);
+      expect(layers[0] instanceof TestLayer).toBeTruthy();
+      expect(layers[0] instanceof TestLayer).toBeTruthy();
+      expect(layers[1] instanceof TestLayer).toBeTruthy();
+      expect(layers[2] instanceof TestOperatorLayer).toBeTruthy();
+      expect(layers[2].inputLayer1).toEqual(layers[0]);
+      expect(layers[2].inputLayer2).toEqual(layers[1]);
     });
   });
 
@@ -699,7 +724,8 @@ describe('FeedForward Class: Unit', () => {
         outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
       });
       net.initialize();
-      net._outputLayer = { errors: [0] };
+      net._outputLayer = mockLayer({});
+      net._outputLayer.errors = [0];
 
       const runInput = jest.spyOn(net, 'runInput');
       const _calculateDeltas = jest.spyOn(net, '_calculateDeltas');
@@ -713,27 +739,31 @@ describe('FeedForward Class: Unit', () => {
     });
   });
   describe('.trainOpts', () => {
+    let net: FeedForward;
+    let _calculateTrainingErrorSpy: SpyInstance;
+    beforeEach(() => {
+      const layer1 = mockLayer({ width: 1, height: 1 });
+      const layer2 = mockLayer({ width: 1, height: 1 });
+      layer2.errors = [1];
+      net = new FeedForward({
+        inputLayerIndex: 0,
+        layers: [layer1, layer2],
+        outputLayerIndex: 1,
+      });
+      _calculateTrainingErrorSpy = jest.spyOn(net, '_calculateTrainingError');
+    });
+    afterEach(() => {
+      _calculateTrainingErrorSpy.mockRestore();
+    });
     test('.errorCheckInterval', () => {
-      const mockInstance = {
-        trainOpts: {
-          iterations: 2,
-          errorCheckInterval: 1,
-          errorThresh: 1,
-        },
-        _calculateTrainingError: jest.fn(),
+      const trainOpts = {
+        iterations: 2,
+        errorCheckInterval: 1,
+        errorThresh: 0.5,
       };
-      const mockData = [];
-      const mockStatus = {
-        iterations: 0,
-        error: 5,
-      };
-      const mockEndTime = Date.now() + 1000000;
-      FeedForward.prototype._trainingTick.apply(mockInstance, [
-        mockData,
-        mockStatus,
-        mockEndTime,
-      ]);
-      expect(mockInstance._calculateTrainingError).toHaveBeenCalled();
+      const mockData = [{ input: [1, 1], output: [1] }];
+      net.train(mockData, trainOpts);
+      expect(_calculateTrainingErrorSpy).toHaveBeenCalled();
     });
   });
 });
