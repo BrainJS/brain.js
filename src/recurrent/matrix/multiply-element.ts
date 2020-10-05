@@ -1,12 +1,19 @@
+import { Matrix } from '.';
+
 /**
  * @param {Matrix} product
  * @param {Matrix} left
  * @param {Matrix} right
  */
-module.exports = function multiplyElement(product, left, right) {
+export function multiplyElement(
+  product: Matrix,
+  left: Matrix,
+  right: Matrix
+): void {
   const { weights } = left;
+
   for (let i = 0; i < weights.length; i++) {
     product.weights[i] = left.weights[i] * right.weights[i];
     product.deltas[i] = 0;
   }
-};
+}

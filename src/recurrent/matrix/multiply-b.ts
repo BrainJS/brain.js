@@ -1,10 +1,12 @@
+import { Matrix } from '.';
+
 /**
  * multiplies {from} deltas to {left} and {right}
  * @param {Matrix} product
  * @param {Matrix} left
  * @param {Matrix} right
  */
-module.exports = function multiplyB(product, left, right) {
+export function multiplyB(product: Matrix, left: Matrix, right: Matrix): void {
   const leftRows = left.rows;
   const leftColumns = left.columns;
   const rightColumns = right.columns;
@@ -13,6 +15,7 @@ module.exports = function multiplyB(product, left, right) {
   for (let leftRowRoot = 0; leftRowRoot < leftRows; leftRowRoot++) {
     const leftRowBase = leftColumns * leftRowRoot;
     const rightRowBase = rightColumns * leftRowRoot;
+
     // loop over cols of right
     for (let rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
       // loop over columns of left
@@ -26,4 +29,4 @@ module.exports = function multiplyB(product, left, right) {
       }
     }
   }
-};
+}

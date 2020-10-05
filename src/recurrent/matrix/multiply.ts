@@ -1,10 +1,12 @@
+import { Matrix } from '.';
+
 /**
  * multiply {left} and {right} matrix weights to {into}
  * @param {Matrix} product
  * @param {Matrix} left
  * @param {Matrix} right
  */
-module.exports = function multiply(product, left, right) {
+export function multiply(product: Matrix, left: Matrix, right: Matrix): void {
   const leftRows = left.rows;
   const leftColumns = left.columns;
   const rightColumns = right.columns;
@@ -13,10 +15,12 @@ module.exports = function multiply(product, left, right) {
   for (let leftRow = 0; leftRow < leftRows; leftRow++) {
     const leftRowBase = leftColumns * leftRow;
     const rightRowBase = rightColumns * leftRow;
+
     // loop over cols of right
     for (let rightColumn = 0; rightColumn < rightColumns; rightColumn++) {
       // dot product loop
       let dot = 0;
+
       // loop over columns of left
       for (let leftColumn = 0; leftColumn < leftColumns; leftColumn++) {
         const rightColumnBase = rightColumns * leftColumn;
@@ -26,7 +30,8 @@ module.exports = function multiply(product, left, right) {
         left.deltas[leftIndex] = 0;
         right.deltas[rightIndex] = 0;
       }
+
       product.weights[rightRowBase + rightColumn] = dot;
     }
   }
-};
+}
