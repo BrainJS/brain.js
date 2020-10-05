@@ -221,7 +221,7 @@ export class Equation {
     this.states.push({
       product,
       left: matrix,
-      // TOFIX: returns `number` but expected `Matrix`
+      // review: disabled until updated, returns `number` but expected `Matrix`
       // get right() {
       //   return self.inputRow;
       // },
