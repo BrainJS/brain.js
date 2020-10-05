@@ -1,4 +1,4 @@
-const tanh = require('../../src/activation/tanh');
+import * as tanh from '../../src/activation/tanh';
 
 describe('tanh', () => {
   describe('.active()', () => {
