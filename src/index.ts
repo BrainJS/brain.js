@@ -3,7 +3,7 @@ import CrossValidate from './cross-validate';
 import { FeedForward } from './feed-forward';
 import * as layer from './layer';
 import { layerTypes } from './layer';
-import likely from './likely';
+import * as likely from './likely';
 import { lookup } from './lookup';
 import NeuralNetwork from './neural-network';
 import NeuralNetworkGPU from './neural-network-gpu';
