@@ -1,14 +1,14 @@
 // const TrainStream from './train-stream');
-import { max } from './utilities/max';
-import { toArray } from './utilities/to-array';
 import { Thaw } from 'thaw.js';
 import { lookup } from './lookup';
-import mse from './utilities/mse';
-import { randos } from './utilities/randos';
-import range from './utilities/range';
-import { zeros } from './utilities/zeros';
-import { LookupTable } from './utilities/lookup-table';
 import { arrayToFloat32Array } from './utilities/cast';
+import { LookupTable } from './utilities/lookup-table';
+import { max } from './utilities/max';
+import { mse } from './utilities/mse';
+import { randos } from './utilities/randos';
+import { range } from './utilities/range';
+import { toArray } from './utilities/to-array';
+import { zeros } from './utilities/zeros';
 
 function getTypedArrayFn(value, table) {
   if (value.buffer instanceof ArrayBuffer) {
