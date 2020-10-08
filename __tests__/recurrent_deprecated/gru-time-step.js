@@ -1,5 +1,5 @@
 const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
-const GRUTimeStep = require('../../src/recurrent/gru-time-step');
+const { GRUTimeStep } = require('../../src/recurrent/gru-time-step');
 
 describe('GRUTimeStep', () => {
   describe('getModel', () => {
