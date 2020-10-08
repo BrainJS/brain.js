@@ -1,9 +1,22 @@
-const Matrix = require('./matrix');
-const RandomMatrix = require('./matrix/random-matrix');
-const RNN = require('./rnn');
+import { Matrix } from './matrix';
+import { Equation } from './matrix/equation';
+import { RandomMatrix } from './matrix/random-matrix';
+import RNN from './rnn';
 
-class GRU extends RNN {
-  static getModel(hiddenSize, prevSize) {
+export interface GRUModel {
+  updateGateInputMatrix: RandomMatrix;
+  updateGateHiddenMatrix: RandomMatrix;
+  updateGateBias: Matrix;
+  resetGateInputMatrix: RandomMatrix;
+  resetGateHiddenMatrix: RandomMatrix;
+  resetGateBias: Matrix;
+  cellWriteInputMatrix: RandomMatrix;
+  cellWriteHiddenMatrix: RandomMatrix;
+  cellWriteBias: Matrix;
+}
+
+export class GRU extends RNN {
+  static getModel(hiddenSize: number, prevSize: number): GRUModel {
     return {
       // update Gate
       // wzxh
@@ -23,15 +36,12 @@ class GRU extends RNN {
     };
   }
 
-  /**
-   *
-   * @param {Equation} equation
-   * @param {Matrix} inputMatrix
-   * @param {Matrix} previousResult
-   * @param {Object} hiddenLayer
-   * @returns {Matrix}
-   */
-  static getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+  static getEquation(
+    equation: Equation,
+    inputMatrix: Matrix,
+    previousResult: Matrix,
+    hiddenLayer: GRUModel
+  ): Matrix {
     const sigmoid = equation.sigmoid.bind(equation);
     const add = equation.add.bind(equation);
     const multiply = equation.multiply.bind(equation);
@@ -90,5 +100,3 @@ class GRU extends RNN {
     );
   }
 }
-
-module.exports = GRU;
