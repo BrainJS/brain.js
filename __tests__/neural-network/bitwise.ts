@@ -2,17 +2,20 @@ const { NeuralNetwork } = require('../../src/neural-network');
 
 const wiggle = 0.1;
 
-function isAround(actual, expected) {
-  if (actual > expected + wiggle) {
+function isAround(actual: number, expected: number) {
+  if (actual < expected - wiggle || actual > expected + wiggle) {
     return false;
   }
-  if (actual < expected - wiggle) {
-    return false;
-  }
+
   return true;
 }
 
-function testBitwise(data) {
+function testBitwise(
+  data: Array<{
+    input: number[];
+    output: number[];
+  }>
+) {
   const net = new NeuralNetwork();
   net.train(data, { errorThresh: 0.003 });
 
@@ -23,7 +26,12 @@ function testBitwise(data) {
   });
 }
 
-function testBitwiseAdam(data) {
+function testBitwiseAdam(
+  data: Array<{
+    input: number[];
+    output: number[];
+  }>
+) {
   const net = new NeuralNetwork();
   net.train(data, {
     errorThresh: 0.003,
@@ -61,7 +69,7 @@ describe('bitwise functions sync training', () => {
       { input: [0], output: [1] },
       { input: [1], output: [0] },
     ];
-    testBitwise(not, 'not');
+    testBitwise(not);
   });
 
   it('XOR function', () => {
@@ -71,7 +79,7 @@ describe('bitwise functions sync training', () => {
       { input: [1, 0.001], output: [1] },
       { input: [1, 1], output: [0.001] },
     ];
-    testBitwise(xor, 'xor');
+    testBitwise(xor);
   });
 
   it('OR function', () => {
@@ -81,7 +89,7 @@ describe('bitwise functions sync training', () => {
       { input: [1, 0], output: [1] },
       { input: [1, 1], output: [1] },
     ];
-    testBitwise(or, 'or');
+    testBitwise(or);
   });
 
   it('AND function', () => {
@@ -91,7 +99,7 @@ describe('bitwise functions sync training', () => {
       { input: [1, 0], output: [0] },
       { input: [1, 1], output: [1] },
     ];
-    testBitwise(and, 'and');
+    testBitwise(and);
   });
 });
 
@@ -101,7 +109,7 @@ describe('bitwise using adam praxis functions sync training', () => {
       { input: [0], output: [1] },
       { input: [1], output: [0] },
     ];
-    testBitwiseAdam(not, 'not');
+    testBitwiseAdam(not);
   });
 
   it('XOR function', () => {
@@ -111,7 +119,7 @@ describe('bitwise using adam praxis functions sync training', () => {
       { input: [1, 0.001], output: [1] },
       { input: [1, 1], output: [0.001] },
     ];
-    testBitwiseAdam(xor, 'xor');
+    testBitwiseAdam(xor);
   });
 
   it('OR function', () => {
@@ -121,7 +129,7 @@ describe('bitwise using adam praxis functions sync training', () => {
       { input: [1, 0], output: [1] },
       { input: [1, 1], output: [1] },
     ];
-    testBitwiseAdam(or, 'or');
+    testBitwiseAdam(or);
   });
 
   it('AND function', () => {
@@ -131,6 +139,6 @@ describe('bitwise using adam praxis functions sync training', () => {
       { input: [1, 0], output: [0] },
       { input: [1, 1], output: [1] },
     ];
-    testBitwiseAdam(and, 'and');
+    testBitwiseAdam(and);
   });
 });
