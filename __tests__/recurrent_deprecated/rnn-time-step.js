@@ -1,6 +1,6 @@
 const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
 const RNN = require('../../src/recurrent/rnn');
-const LSTMTimeStep = require('../../src/recurrent/lstm-time-step');
+const { LSTMTimeStep } = require('../../src/recurrent/lstm-time-step');
 const Equation = require('../../src/recurrent/matrix/equation');
 const istanbulLinkerUtil = require('../istanbul-linker-util');
 

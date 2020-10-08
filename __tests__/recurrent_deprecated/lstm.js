@@ -1,4 +1,4 @@
-const LSTM = require('../../src/recurrent/lstm');
+const { LSTM } = require('../../src/recurrent/lstm');
 const RNN = require('../../src/recurrent/rnn');
 const { DataFormatter } = require('../../src/utilities/data-formatter');
 const istanbulLinkerUtil = require('../istanbul-linker-util');
