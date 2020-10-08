@@ -1,9 +1,25 @@
-const Matrix = require('./matrix');
-const RandomMatrix = require('./matrix/random-matrix');
-const RNN = require('./rnn');
+import { Matrix } from './matrix';
+import { Equation } from './matrix/equation';
+import { RandomMatrix } from './matrix/random-matrix';
+import RNN from './rnn';
 
-class LSTM extends RNN {
-  static getModel(hiddenSize, prevSize) {
+export interface LSTMModel {
+  inputMatrix: Matrix;
+  inputHidden: Matrix;
+  inputBias: Matrix;
+  forgetMatrix: Matrix;
+  forgetHidden: Matrix;
+  forgetBias: Matrix;
+  outputMatrix: Matrix;
+  outputHidden: Matrix;
+  outputBias: Matrix;
+  cellActivationMatrix: Matrix;
+  cellActivationHidden: Matrix;
+  cellActivationBias: Matrix;
+}
+
+export class LSTM extends RNN {
+  static getModel(hiddenSize: number, prevSize: number): LSTMModel {
     return {
       // gates parameters
       // wix
@@ -26,15 +42,12 @@ class LSTM extends RNN {
     };
   }
 
-  /**
-   *
-   * @param {Equation} equation
-   * @param {Matrix} inputMatrix
-   * @param {Matrix} previousResult
-   * @param {Object} hiddenLayer
-   * @returns {Matrix}
-   */
-  static getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+  static getEquation(
+    equation: Equation,
+    inputMatrix: Matrix,
+    previousResult: Matrix,
+    hiddenLayer: LSTMModel
+  ): Matrix {
     const sigmoid = equation.sigmoid.bind(equation);
     const add = equation.add.bind(equation);
     const multiply = equation.multiply.bind(equation);
@@ -92,5 +105,3 @@ class LSTM extends RNN {
     return multiplyElement(outputGate, tanh(cell));
   }
 }
-
-module.exports = LSTM;
