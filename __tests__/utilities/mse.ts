@@ -1,5 +1,5 @@
-const { toArray } = require('../../src/utilities/to-array');
-const { zeros } = require('../../src/utilities/zeros');
+import { toArray } from '../../src/utilities/to-array';
+import { zeros } from '../../src/utilities/zeros';
 
 describe('mse', () => {
   test('should return the same array if an array are passed', () => {
