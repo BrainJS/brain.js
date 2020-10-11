@@ -1,3 +1,9 @@
+---
+name: Bug Report 💡
+about: Create a report to help us improve.
+labels: bug
+---
+
 <!-- If you don't mind add a fun gif or meme, but no pressure -->
 
 ![A GIF or MEME to give some spice of the internet](url)

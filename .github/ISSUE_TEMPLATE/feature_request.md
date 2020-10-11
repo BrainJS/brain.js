@@ -4,6 +4,10 @@ about: Suggest a new idea for the project.
 labels: enhancement
 ---
 
+<!-- If you don't mind add a fun gif or meme, but no pressure -->
+
+![A GIF or MEME to give some spice of the internet](url)
+
 ## Summary
 
 Brief explanation of the feature.
