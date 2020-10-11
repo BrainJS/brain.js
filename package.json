@@ -109,11 +109,12 @@
     "build": "run-p build:**",
     "build:browser": "rollup -c rollup.config.browser.js",
     "build:node": "rollup -c rollup.config.js",
+    "build:typings": "tsc --declaration --emitDeclarationOnly --declarationMap",
     "coverage": "jest --coverage --coverage-provider v8 && codecov",
     "dist": "npm run build",
     "lint": "run-p lint:**",
     "lint:eslint": "eslint --fix --ext .js,.ts __tests__ src",
-    "lint:typecheck": "tsc --project tsconfig.source.json",
+    "lint:typecheck": "tsc --noEmit",
     "postinstall": "npm rebuild gpu.js",
     "test": "jest",
     "watch": "run-p watch:**",
@@ -121,7 +122,7 @@
     "watch:node": "rollup -c rollup.config.js -w",
     "watch:test": "jest --watch"
   },
-  "typings": "./src/index.d.ts",
+  "typings": "dist/brain.d.ts",
   "unpkg": "dist/brain-browser.min.js",
   "version": "2.0.0-beta.2"
 }

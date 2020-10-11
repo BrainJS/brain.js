@@ -4,6 +4,9 @@
     "allowSyntheticDefaultImports": true,
     "checkJs": false,
     "esModuleInterop": true,
+    // "declaration": true,
+    // "emitDeclarationOnly": true,
+    // "declarationMap": true,
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
@@ -14,5 +17,5 @@
     "strict": true,
     "target": "esnext"
   },
-  "exclude": ["node_modules", "**/*.json", "**/*.d.ts", "./dist"]
+  "exclude": ["node_modules/**/*", "**/*.json", "**/*.d.ts", "./dist/**/*"]
 }
