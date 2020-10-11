@@ -4,7 +4,7 @@
  * @returns {*}
  */
 export function toArray(
-  values: Record<string, number> | number[] | Float32Array
+  values: number[] | Float32Array | { [key: string]: number | string | boolean }
 ): number[] | Float32Array {
   if (Array.isArray(values)) {
     return values;

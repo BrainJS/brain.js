@@ -6,7 +6,7 @@ describe('mse', () => {
     const collection = zeros(10);
     const temp = toArray(collection);
 
-    expect(collection.prototype).toBe(temp.prototype);
+    expect(collection.constructor).toBe(temp.constructor);
   });
 
   test('should return an array if object is passed', () => {
