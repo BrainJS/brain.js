@@ -1,4 +1,3 @@
-export { Adam, adam } from './adam';
 export {
   ArthurDeviationBiases,
   arthurDeviationBiases,
