@@ -1,4 +1,4 @@
-import * as brain from '../../src';
+import { brain } from '../../src';
 const net = new brain.NeuralNetworkGPU();
 
 const xorTrainingData = [

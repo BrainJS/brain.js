@@ -1,4 +1,4 @@
-import * as brain from '../../src';
+import { brain } from '../../src';
 
 const LSTM = brain.recurrent.LSTM;
 const net = new LSTM();

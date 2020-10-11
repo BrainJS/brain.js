@@ -15,6 +15,7 @@ export interface GRUModel {
   cellWriteBias: Matrix;
 }
 
+// @ts-expect-error rnn is js
 export class GRU extends RNN {
   static getModel(hiddenSize: number, prevSize: number): GRUModel {
     return {

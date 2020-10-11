@@ -1,5 +1,5 @@
 import assert from 'assert';
-import * as brain from '../../src';
+import { brain } from '../../src';
 
 const a = character(
   '.#####.' +
@@ -42,7 +42,7 @@ net.train([
 /**
  * Predict the letter A, even with a pixel off.
  */
-const result = brain.likely(
+const result = brain.likely<string>(
   character(
     '.#####.' +
       '#.....#' +
@@ -56,7 +56,7 @@ const result = brain.likely(
 );
 
 assert(result === 'a');
-console.log(result); // 'a'
+// console.log(result); // 'a'
 
 /**
  * Turn the # into 1s and . into 0s. for whole string

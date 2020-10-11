@@ -258,7 +258,10 @@ function validateAndCast(
  */
 interface DefaultRNNFormatterThis {
   dataFormatter?: DataFormatter;
-  formatDataIn: Function;
+  formatDataIn: (
+    inData: string | string[],
+    outData?: string | string[]
+  ) => number;
 }
 
 /**
