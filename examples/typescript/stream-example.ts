@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { brain } from '../../src';
+import TrainStream from '../../src/train-stream';
 
 const net = new brain.NeuralNetwork();
 const xor = [
@@ -7,7 +8,7 @@ const xor = [
   { input: [0, 1], output: [1] },
   { input: [1, 0], output: [1] },
   { input: [1, 1], output: [0] },
-] as brain.INeuralNetworkTrainingData[];
+];
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const trainingStream = new brain.TrainStream({
@@ -22,9 +23,11 @@ const trainingStream = new brain.TrainStream({
   /**
    * Called when the network is done training.
    */
-  doneTrainingCallback: function (obj: brain.INeuralNetworkState) {
+  doneTrainingCallback: function (obj: { iterations: number; error: string }) {
     console.log(
-      `trained in ${obj.iterations} iterations with error: ${obj.error}`
+      `trained in ${obj.iterations.toString()} iterations with error: ${
+        obj.error
+      }`
     );
 
     const result01 = net.run([0, 1]);
@@ -42,18 +45,16 @@ const trainingStream = new brain.TrainStream({
     console.log('1 XOR 1: ', result11); // 0.087
     console.log('1 XOR 0: ', result10); // 0.934
   },
-} as brain.ITrainStreamOptions);
+});
 
 // kick it off
 readInputs(trainingStream, xor);
 
-function readInputs(
-  stream: brain.TrainStream,
-  data: brain.INeuralNetworkTrainingData[]
-) {
+function readInputs(stream: TrainStream, data: string | any[]) {
   for (let i = 0; i < data.length; i++) {
     stream.write(data[i]);
   }
+
   // let it know we've reached the end of the inputs
   stream.endInputs();
 }

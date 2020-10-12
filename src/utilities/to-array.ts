@@ -4,11 +4,11 @@
  * @returns {*}
  */
 export function toArray(
-  values: Record<string, number> | number[] | Float32Array
-): number[] | Float32Array {
+  values: number[] | Float32Array | { [key: string]: number }
+): number[] {
   if (Array.isArray(values)) {
     return values;
   }
 
-  return new Float32Array(Object.values(values));
+  return Object.values(values);
 }

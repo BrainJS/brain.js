@@ -9,7 +9,7 @@
     // "declarationMap": true,
     "module": "esnext",
     "moduleResolution": "node",
-    "noEmit": true,
+    // "noEmit": true,
     "noEmitOnError": true,
     "outDir": "./dist",
     "rootDir": "./",
@@ -17,5 +17,11 @@
     "strict": true,
     "target": "esnext"
   },
-  "exclude": ["node_modules/**/*", "**/*.json", "**/*.d.ts", "dist/**/*"]
+  "exclude": [
+    "node_modules",
+    "**/*.json",
+    "**/*.d.ts",
+    "dist",
+    "examples/javascript"
+  ]
 }

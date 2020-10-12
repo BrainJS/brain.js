@@ -115,18 +115,20 @@ const mathProblems = [
   '8+9=17',
   '9+8=17',
   '9+9=18',
-] as brain.RNNTrainingValue[];
+];
 
 net.train(mathProblems, { log: true, errorThresh: 0.03 });
 
 let errors = 0;
 for (let i = 0; i < mathProblems.length; i++) {
   const input = mathProblems[i].split('=')[0] + '=';
-  const output = net.run(input);
+  const output: string = net.run(input);
   const predictedMathProblem = input + output;
   const error = !mathProblems.includes(predictedMathProblem) ? 1 : 0;
+
   errors += error;
-  console.log(input + output + (error === 1 ? ' - error' : ''));
+
+  console.log(predictedMathProblem + (error === 1 ? ' - error' : ''));
 }
 
 console.log(`Errors: ${errors / mathProblems.length}`);
