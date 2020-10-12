@@ -1,3 +1,7 @@
+import { ILayer } from '../../src/layer/base-layer';
+import { RecurrentInput } from '../../src/layer/recurrent-input';
+import { Matrix } from '../../src/recurrent/matrix';
+
 const { GPU } = require('gpu.js');
 const { Recurrent, layer } = require('../../src');
 const { add, input, multiply, output, random, rnnCell } = layer;
@@ -5,10 +9,7 @@ const { setup, teardown } = require('../../src/utilities/kernel');
 const { Filter } = require('../../src/layer/types');
 const { injectIstanbulCoverage } = require('../test-utils');
 
-function copy2D(matrix) {
-  if (matrix.clone) {
-    return matrix.clone();
-  }
+function copy2D(matrix: any[][]) {
   return matrix.map((row) => Float32Array.from(row));
 }
 
@@ -29,18 +30,18 @@ describe('Recurrent Class: Unit', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 2 }),
         hiddenLayers: [
-          (inputLayer, recurrentInput) => {
+          (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
             recurrentInput.setDimensions(1, 3);
             return rnnCell({ height: 3 }, inputLayer, recurrentInput);
           },
         ],
-        outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
+        outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
       });
 
       net.initialize();
 
       const layers = net._layerSets[net._layerSets.length - 1];
-      expect(layers.map((l) => l.constructor.name)).toEqual([
+      expect(layers.map((l: ILayer) => l.constructor.name)).toEqual([
         'Input',
         'Random',
         'Multiply',
@@ -64,7 +65,7 @@ describe('Recurrent Class: Unit', () => {
       const net = new Recurrent({
         inputLayer: () => input({ width: 1 }),
         hiddenLayers: [
-          (inputLayer, recurrentInput) => {
+          (inputLayer: ILayer, recurrentInput: any) => {
             recurrentInput.setDimensions(1, 1);
             return multiply(
               multiply(random({ width: 1, height: 1 }), inputLayer),
@@ -72,14 +73,14 @@ describe('Recurrent Class: Unit', () => {
             );
           },
         ],
-        outputLayer: (inputLayer) =>
+        outputLayer: (inputLayer: ILayer) =>
           output({ width: 1, height: 1 }, inputLayer),
       });
 
       net.initialize();
       net.initializeDeep();
 
-      const spySets = net._layerSets.map((layerSet) =>
+      const spySets = net._layerSets.map((layerSet: ILayer[]) =>
         layerSet.map((l) => jest.spyOn(l, 'predict'))
       );
 
@@ -97,7 +98,7 @@ describe('Recurrent Class: Unit', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
-          (inputLayer, recurrentInput) => {
+          (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
             recurrentInput.setDimensions(1, 3);
             return add(
               multiply(random({ height: 3 }), inputLayer),
@@ -105,7 +106,7 @@ describe('Recurrent Class: Unit', () => {
             );
           },
         ],
-        outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
+        outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
       });
 
       net.initialize();
@@ -117,14 +118,14 @@ describe('Recurrent Class: Unit', () => {
       for (let i = 0; i < net._layerSets.length; i++) {
         for (let j = 0; j < net._layerSets[i].length; j++) {
           expect(
-            net._layerSets[i][j].deltas.every((row) =>
+            (net._layerSets[i][j].deltas as number[][]).every((row) =>
               row.every((delta) => delta === 0)
             )
           ).toBeTruthy();
         }
       }
 
-      const spySets = net._layerSets.map((layerSet) =>
+      const spySets = net._layerSets.map((layerSet: ILayer[]) =>
         layerSet.map((l) => jest.spyOn(l, 'compare'))
       );
 
@@ -132,7 +133,7 @@ describe('Recurrent Class: Unit', () => {
       // The last layer propagates delta from target, the last layer propagates zero
       for (let i = 0; i < net._layerSets[0].length; i++) {
         expect(
-          net._layerSets[0][i].deltas.every((row) =>
+          net._layerSets[0][i].deltas.every((row: number[]) =>
             row.every((delta) => delta !== 0)
           )
         ).toBeTruthy();
@@ -155,7 +156,7 @@ describe('Recurrent Class: Unit', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
-          (inputLayer, recurrentInput) => {
+          (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
             recurrentInput.setDimensions(1, 3);
             return add(
               multiply(random({ height: 3 }), inputLayer),
@@ -163,7 +164,7 @@ describe('Recurrent Class: Unit', () => {
             );
           },
         ],
-        outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
+        outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
       });
 
       net.initialize();
@@ -171,8 +172,8 @@ describe('Recurrent Class: Unit', () => {
       net.runInput([1, 1]);
       expect(net._model.length).toEqual(3);
       expect(net._layerSets[0].length).toEqual(10);
-      const weightSets = net._model.map((l) => copy2D(l.weights));
-      const spys = net._model.map((l) => jest.spyOn(l, 'learn'));
+      const weightSets = net._model.map((l: any) => copy2D(l.weights));
+      const spys = net._model.map((l: any) => jest.spyOn(l, 'learn'));
 
       net._calculateDeltas([1, 1]);
       net.adjustWeights();
@@ -197,7 +198,7 @@ describe('Recurrent Class: Unit', () => {
   describe('._trainPattern()', () => {
     test('steps back through values correctly', () => {
       class SuperLayer extends Filter {
-        constructor(inputLayer) {
+        constructor(inputLayer: ILayer) {
           super();
           this.inputLayer = inputLayer;
           this.width = 1;
@@ -218,8 +219,8 @@ describe('Recurrent Class: Unit', () => {
       }
       const net = new Recurrent({
         inputLayer: () => input({ width: 1 }),
-        hiddenLayers: [(inputLayer) => new SuperLayer(inputLayer)],
-        outputLayer: (inputLayer) => new SuperLayer(inputLayer),
+        hiddenLayers: [(inputLayer: ILayer) => new SuperLayer(inputLayer)],
+        outputLayer: (inputLayer: ILayer) => new SuperLayer(inputLayer),
       });
 
       net.initialize();
@@ -241,10 +242,11 @@ describe('Recurrent Class: Unit', () => {
         const net = new Recurrent({
           inputLayer: () => input({ height: 1 }),
           hiddenLayers: [
-            (inputLayer, recurrentInput) =>
+            (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
               rnnCell({ height: 3 }, inputLayer, recurrentInput),
           ],
-          outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
+          outputLayer: (inputLayer: ILayer) =>
+            output({ height: 1 }, inputLayer),
         });
         net.initialize();
         net.initializeDeep();
