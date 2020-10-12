@@ -11,8 +11,8 @@ describe('mse', () => {
 
   test('should return an array if object is passed', () => {
     const collection = {
-      name: 'Steve Jobs',
-      alive: false,
+      name: 0, // 'Steve Jobs',
+      alive: 1, // false,
     };
     const temp = toArray(collection);
 

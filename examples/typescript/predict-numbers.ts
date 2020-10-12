@@ -25,7 +25,7 @@ const closeToFiveAndOne = net.run([
   [2, 4],
   [3, 3],
   [4, 2],
-]);
+]) as number[];
 
 assert(
   Math.round(closeToFiveAndOne[0]) === 5,
@@ -46,7 +46,7 @@ const forecast = net.forecast(
     [2, 4],
   ],
   3
-);
+) as number[][];
 
 assert(
   Math.round(forecast[2][0]) === 5,
