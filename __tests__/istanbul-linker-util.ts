@@ -9,7 +9,7 @@ import { getFileCoverageDataByName } from 'istanbul-spy';
 
 type TSettings = {
   onIstanbulCoverageVariable: (name: string) => any
-}
+};
 
 class Recurse {
   settings: TSettings;
