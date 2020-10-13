@@ -9,7 +9,7 @@ const { setup, teardown } = require('../../src/utilities/kernel');
 const { Filter } = require('../../src/layer/types');
 const { injectIstanbulCoverage } = require('../test-utils');
 
-function copy2D(matrix: any[][]) {
+function copy2D(matrix: Partial<Matrix> & any[][]) {
   return matrix.map((row) => Float32Array.from(row));
 }
 
@@ -65,7 +65,7 @@ describe('Recurrent Class: Unit', () => {
       const net = new Recurrent({
         inputLayer: () => input({ width: 1 }),
         hiddenLayers: [
-          (inputLayer: ILayer, recurrentInput: any) => {
+          (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
             recurrentInput.setDimensions(1, 1);
             return multiply(
               multiply(random({ width: 1, height: 1 }), inputLayer),
@@ -172,8 +172,10 @@ describe('Recurrent Class: Unit', () => {
       net.runInput([1, 1]);
       expect(net._model.length).toEqual(3);
       expect(net._layerSets[0].length).toEqual(10);
-      const weightSets = net._model.map((l: any) => copy2D(l.weights));
-      const spys = net._model.map((l: any) => jest.spyOn(l, 'learn'));
+      const weightSets = net._model.map((l: ILayer) =>
+        copy2D(l.weights as number[][])
+      );
+      const spys = net._model.map((l: ILayer) => jest.spyOn(l, 'learn'));
 
       net._calculateDeltas([1, 1]);
       net.adjustWeights();
