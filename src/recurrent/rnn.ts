@@ -1,84 +1,141 @@
-const Matrix = require('./matrix');
-const RandomMatrix = require('./matrix/random-matrix');
-const Equation = require('./matrix/equation');
-const sampleI = require('./matrix/sample-i');
-const maxI = require('./matrix/max-i');
-const softmax = require('./matrix/softmax');
-const copy = require('./matrix/copy');
-const { randomFloat } = require('../utilities/random');
-const { zeros } = require('../utilities/zeros');
-const {
+import { Matrix } from './matrix';
+import { RandomMatrix } from './matrix/random-matrix';
+import { Equation } from './matrix/equation';
+import { sampleI } from './matrix/sample-i';
+import { maxI } from './matrix/max-i';
+import { softmax } from './matrix/softmax';
+import { copy } from './matrix/copy';
+import { randomFloat } from '../utilities/random';
+import { zeros } from '../utilities/zeros';
+import {
   DataFormatter,
   defaultRNNFormatter,
-} = require('../utilities/data-formatter');
-const { NeuralNetwork } = require('../neural-network');
+  IDataFormatter,
+} from '../utilities/data-formatter';
+import { NeuralNetwork } from '../neural-network';
+import { Value, IRNNDatum } from './rnn-data-types';
 
-class RNN {
-  constructor(options = {}) {
-    const { defaults } = this.constructor;
+export interface IRNNModel {
+  input: Matrix;
+  hiddenLayers: IRNNHiddenLayerModel[];
+  output: Matrix;
+  equations: Equation[];
+  allMatrices: Matrix[];
+  equationConnections: Matrix[];
+  outputConnector: RandomMatrix;
+}
 
-    Object.assign(this, defaults, options);
-    this.trainOpts = {};
+interface IRNNOptions<IOType extends Value | IRNNDatum> {
+  inputSize: number;
+  inputRange: number;
+  hiddenLayers: number[];
+  outputSize: number;
+  decayRate: number;
+  smoothEps: number;
+  regc: number;
+  clipval: number;
+  maxPredictionLength: number;
+  setupData?: (data: IOType[]) => string[];
+  dataFormatter: IDataFormatter<IOType>;
+  json?: unknown;
+}
+
+interface IRNNTrainingOptions {
+  iterations: number;
+  errorThresh: number;
+  log: boolean;
+  logPeriod: number;
+  learningRate: number;
+  callback?: () => void;
+  callbackPeriod: number;
+  timeout?: number;
+}
+
+export const trainDefaults: IRNNTrainingOptions = {
+  iterations: 20000,
+  errorThresh: 0.005,
+  log: false,
+  logPeriod: 10,
+  learningRate: 0.01,
+  callbackPeriod: 10,
+};
+
+interface IRNNHiddenLayerModel {
+  [key: string]: RandomMatrix | Matrix;
+  // wxh
+  weight: RandomMatrix;
+  // whh
+  transition: RandomMatrix;
+  // bhh
+  bias: Matrix;
+}
+
+export const defaults: IRNNOptions<Value | IRNNDatum> = {
+  inputSize: 20,
+  inputRange: 20,
+  hiddenLayers: [20, 20],
+  outputSize: 20,
+  decayRate: 0.999,
+  smoothEps: 1e-8,
+  regc: 0.000001,
+  clipval: 5,
+  maxPredictionLength: 100,
+  setupData: defaultRNNFormatter,
+};
+
+export class RNN<IOType extends Value | IRNNDatum> {
+  options: IRNNOptions<IOType> = { ...defaults };
+  trainOpts: IRNNTrainingOptions = { ...trainDefaults };
+  stepCache: { [index: number]: Float32Array } = {};
+  runs = 0;
+  ratioClipped = 0;
+  model: IRNNModel = {
+    input: new Matrix(0, 0),
+    hiddenLayers: [],
+    output: new Matrix(0, 0),
+    equations: [],
+    allMatrices: [],
+    equationConnections: [],
+    outputConnector: new RandomMatrix(0, 0, 0.08),
+  };
+  initialLayerInputs: Matrix[] = [];
+
+  constructor(options: Partial<IRNNOptions<IOType>> = {}) {
+    this.options = { ...defaults, ...options };
     this.updateTrainingOptions({
-      ...this.constructor.trainDefaults,
+      ...trainDefaults,
       ...options,
     });
-
-    this.stepCache = {};
-    this.runs = 0;
-    this.ratioClipped = null;
-    this.model = null;
-    this.inputLookup = null;
-    this.inputLookupLength = null;
-    this.outputLookup = null;
-    this.outputLookupLength = null;
 
     if (options.json) {
       this.fromJSON(options.json);
     }
   }
 
-  initialize() {
-    this.model = {
-      input: null,
-      hiddenLayers: [],
-      output: null,
-      equations: [],
-      allMatrices: [],
-      equationConnections: [],
-      outputConnector: null,
-    };
-
-    if (this.dataFormatter) {
-      this.inputSize = this.inputRange = this.outputSize = this.dataFormatter.characters.length;
+  initialize(): void {
+    if (this.options.dataFormatter) {
+      this.options.inputSize = this.options.inputRange = this.options.outputSize = this.options.dataFormatter.characters.length;
     }
-    this.mapModel();
+    this.model = this.mapModel();
   }
 
-  createHiddenLayers() {
+  createHiddenLayers(): IRNNHiddenLayerModel[] {
+    const { hiddenLayers, inputSize } = this.options;
+    const hiddenLayersModel: IRNNHiddenLayerModel[] = [];
     // 0 is end, so add 1 to offset
-    this.model.hiddenLayers.push(
-      this.constructor.getModel(this.hiddenLayers[0], this.inputSize)
-    );
-    let prevSize = this.hiddenLayers[0];
+    hiddenLayersModel.push(this.getHiddenLayer(hiddenLayers[0], inputSize));
+    let prevSize = hiddenLayers[0];
 
-    for (let d = 1; d < this.hiddenLayers.length; d++) {
+    for (let d = 1; d < hiddenLayers.length; d++) {
       // loop over depths
-      const hiddenSize = this.hiddenLayers[d];
-      this.model.hiddenLayers.push(
-        this.constructor.getModel(hiddenSize, prevSize)
-      );
+      const hiddenSize = hiddenLayers[d];
+      hiddenLayersModel.push(this.getHiddenLayer(hiddenSize, prevSize));
       prevSize = hiddenSize;
     }
+    return hiddenLayersModel;
   }
 
-  /**
-   *
-   * @param {Number} hiddenSize
-   * @param {Number} prevSize
-   * @returns {object}
-   */
-  static getModel(hiddenSize, prevSize) {
+  getHiddenLayer(hiddenSize: number, prevSize: number): IRNNHiddenLayerModel {
     return {
       // wxh
       weight: new RandomMatrix(hiddenSize, prevSize, 0.08),
@@ -89,15 +146,12 @@ class RNN {
     };
   }
 
-  /**
-   *
-   * @param {Equation} equation
-   * @param {Matrix} inputMatrix
-   * @param {Matrix} previousResult
-   * @param {Object} hiddenLayer
-   * @returns {Matrix}
-   */
-  static getEquation(equation, inputMatrix, previousResult, hiddenLayer) {
+  getEquation(
+    equation: Equation,
+    inputMatrix: Matrix,
+    previousResult: Matrix,
+    hiddenLayer: IRNNHiddenLayerModel
+  ): Matrix {
     const relu = equation.relu.bind(equation);
     const add = equation.add.bind(equation);
     const multiply = equation.multiply.bind(equation);
@@ -113,42 +167,42 @@ class RNN {
     );
   }
 
-  createInputMatrix() {
+  createInputMatrix(): RandomMatrix {
+    const { inputRange, inputSize } = this.options;
+    if (inputRange < 1)
+      throw new Error('this.options.inputRange not an expected number');
+    if (inputSize < 1)
+      throw new Error('this.options.inputSize not an expected number');
+
     // 0 is end, so add 1 to offset
-    this.model.input = new RandomMatrix(
-      this.inputRange + 1,
-      this.inputSize,
-      0.08
-    );
+    return new RandomMatrix(inputRange + 1, inputSize, 0.08);
   }
 
-  createOutputMatrix() {
-    const { model } = this;
-    const { outputSize } = this;
-    const lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1];
+  createOutputMatrix(): { outputConnector: RandomMatrix; output: Matrix } {
+    const { outputSize, hiddenLayers } = this.options;
+    const lastHiddenSize = last(hiddenLayers);
 
     // 0 is end, so add 1 to offset
-    // whd
-    model.outputConnector = new RandomMatrix(
-      outputSize + 1,
-      lastHiddenSize,
-      0.08
-    );
-    // 0 is end, so add 1 to offset
-    // bd
-    model.output = new Matrix(outputSize + 1, 1);
+    return {
+      // whd
+      outputConnector: new RandomMatrix(outputSize + 1, lastHiddenSize, 0.08),
+      // 0 is end, so add 1 to offset
+      // bd
+      output: new Matrix(outputSize + 1, 1),
+    };
   }
 
-  bindEquation() {
+  bindEquation(): void {
     const { model } = this;
+    const { hiddenLayers } = this.options;
     const equation = new Equation();
     const outputs = [];
     const equationConnection =
       model.equationConnections.length > 0
-        ? model.equationConnections[model.equationConnections.length - 1]
+        ? [last(model.equationConnections)]
         : this.initialLayerInputs;
     // 0 index
-    let output = this.constructor.getEquation(
+    let output = this.getEquation(
       equation,
       equation.inputMatrixToRow(model.input),
       equationConnection[0],
@@ -156,8 +210,8 @@ class RNN {
     );
     outputs.push(output);
     // 1+ indices
-    for (let i = 1, max = this.hiddenLayers.length; i < max; i++) {
-      output = this.constructor.getEquation(
+    for (let i = 1, max = hiddenLayers.length; i < max; i++) {
+      output = this.getEquation(
         equation,
         output,
         equationConnection[i],
@@ -166,7 +220,7 @@ class RNN {
       outputs.push(output);
     }
 
-    model.equationConnections.push(outputs);
+    model.equationConnections.push(output);
     equation.add(
       equation.multiply(model.outputConnector, output),
       model.output
@@ -174,44 +228,41 @@ class RNN {
     model.equations.push(equation);
   }
 
-  mapModel() {
-    const { model } = this;
-    const { hiddenLayers } = model;
-    const { allMatrices } = model;
-    this.initialLayerInputs = this.hiddenLayers.map(
+  mapModel(): IRNNModel {
+    const allMatrices: Matrix[] = [];
+    this.initialLayerInputs = this.options.hiddenLayers.map(
       (size) => new Matrix(size, 1)
     );
 
-    this.createInputMatrix();
-    if (!model.input) throw new Error('net.model.input not set');
-    allMatrices.push(model.input);
+    const input = this.createInputMatrix();
+    allMatrices.push(input);
 
-    this.createHiddenLayers();
-    if (!model.hiddenLayers.length) throw new Error('net.hiddenLayers not set');
+    const hiddenLayers = this.createHiddenLayers();
+    if (!hiddenLayers.length) throw new Error('net.hiddenLayers not set');
     for (let i = 0, max = hiddenLayers.length; i < max; i++) {
-      const hiddenMatrix = hiddenLayers[i];
+      const hiddenMatrix: IRNNHiddenLayerModel = hiddenLayers[i];
       for (const property in hiddenMatrix) {
         if (!hiddenMatrix.hasOwnProperty(property)) continue;
         allMatrices.push(hiddenMatrix[property]);
       }
     }
 
-    this.createOutputMatrix();
-    if (!model.outputConnector)
-      throw new Error('net.model.outputConnector not set');
-    if (!model.output) throw new Error('net.model.output not set');
+    const { output, outputConnector } = this.createOutputMatrix();
+    allMatrices.push(outputConnector);
+    allMatrices.push(output);
 
-    allMatrices.push(model.outputConnector);
-    allMatrices.push(model.output);
+    return {
+      input,
+      hiddenLayers,
+      output,
+      equations: [],
+      allMatrices,
+      equationConnections: [],
+      outputConnector,
+    };
   }
 
-  /**
-   *
-   * @param {Number[]|string[]|string} input
-   * @param {boolean} [logErrorRate]
-   * @returns {number}
-   */
-  trainPattern(input, logErrorRate) {
+  trainPattern(input: number[], logErrorRate?: boolean): number {
     const error = this.trainInput(input);
     this.backpropagate(input);
     this.adjustWeights();
@@ -219,14 +270,10 @@ class RNN {
     if (logErrorRate) {
       return error;
     }
+    return 0;
   }
 
-  /**
-   *
-   * @param {Number[]} input
-   * @returns {number}
-   */
-  trainInput(input) {
+  trainInput(input: number[]): number {
     this.runs++;
     const { model } = this;
     const max = input.length;
@@ -252,10 +299,7 @@ class RNN {
     return Math.pow(2, log2ppl / (max - 1)) / 100;
   }
 
-  /**
-   * @param {Number[]} input
-   */
-  backpropagate(input) {
+  backpropagate(input: number[]): void {
     let i = input.length;
     const { model } = this;
     const { equations } = model;
@@ -266,16 +310,9 @@ class RNN {
     equations[0].backpropagateIndex(0);
   }
 
-  adjustWeights() {
-    const {
-      regc,
-      clipval,
-      model,
-      decayRate,
-      stepCache,
-      smoothEps,
-      trainOpts,
-    } = this;
+  adjustWeights(): void {
+    const { regc, clipval, decayRate, smoothEps } = this.options;
+    const { trainOpts, model, stepCache } = this;
     const { learningRate } = trainOpts;
     const { allMatrices } = model;
     let numClipped = 0;
@@ -314,7 +351,7 @@ class RNN {
    * @returns boolean
    */
   get isRunnable() {
-    if (this.model.equations.length === 0) {
+    if (this.model && this.model.equations.length === 0) {
       console.error(`No equations bound, did you run train()?`);
       return false;
     }
@@ -322,20 +359,20 @@ class RNN {
     return true;
   }
 
-  /**
-   *
-   * @param {Number[]|*} [rawInput]
-   * @param {Boolean} [isSampleI]
-   * @param {Number} temperature
-   * @returns {*}
-   */
-  run(rawInput = [], isSampleI = false, temperature = 1) {
+  run(
+    rawInput: IOType | null = null,
+    isSampleI = false,
+    temperature = 1
+  ): IOType | null {
     const maxPredictionLength =
-      this.maxPredictionLength +
-      rawInput.length +
-      (this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0);
+      this.options.maxPredictionLength +
+      (rawInput !== null ? (rawInput as string).length : 0) +
+      (this.options.dataFormatter ? this.options.dataFormatter.specialIndexes.length : 0);
+
     if (!this.isRunnable) return null;
-    const input = this.formatDataIn(rawInput);
+    const input = this.dataFormatter
+      ? this.dataFormatter.formatDataIn(this, rawInput)
+      : rawInput;
     const { model } = this;
     const output = [];
     let i = 0;
@@ -392,7 +429,7 @@ class RNN {
      * then the output looks like: [4, 2, 9,...]
      * so we then remove the erroneous data to get our true output
      */
-    return this.formatDataOut(
+    return this.dataFormatter.formatDataOut(
       input,
       output.slice(input.length).map((value) => value - 1)
     );
@@ -418,13 +455,8 @@ class RNN {
    *       momentum: (number),
    *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
    */
-  updateTrainingOptions(options) {
-    Object.keys(this.constructor.trainDefaults).forEach(
-      (p) =>
-        (this.trainOpts[p] = options.hasOwnProperty(p)
-          ? options[p]
-          : this.trainOpts[p])
-    );
+  updateTrainingOptions(options: Partial<IRNNTrainingOptions>) {
+    this.trainOpts = { ...trainDefaults, ...options };
     this.validateTrainingOptions(this.trainOpts);
     this.setLogMethod(options.log || this.trainOpts.log);
     this.activation = options.activation || this.activation;
@@ -477,28 +509,27 @@ class RNN {
     };
   }
 
-  /**
-   *
-   * @param {Object[]|String[]} data an array of objects: `{input: 'string', output: 'string'}` or an array of strings
-   * @param {Object} [options]
-   * @returns {{error: number, iterations: number}}
-   */
-  train(data, options = {}) {
+  train(
+    data: IOType[],
+    options: Partial<IRNNTrainingOptions> = {}
+  ): { error: number; iterations: number } {
     this.trainOpts = options = {
-      ...this.constructor.trainDefaults,
+      ...trainDefaults,
       ...options,
     };
-    const { iterations } = options;
-    const { errorThresh } = options;
+    const {
+      iterations,
+      errorThresh,
+      logPeriod,
+      callback,
+      callbackPeriod,
+    } = options;
     const log = options.log === true ? console.log : options.log;
-    const { logPeriod } = options;
-    const { callback } = options;
-    const { callbackPeriod } = options;
     let error = Infinity;
     let i;
 
-    if (this.hasOwnProperty('setupData')) {
-      data = this.setupData(data);
+    if (this.options.setupData) {
+      data = this.options.setupData(data);
     }
 
     this.verifyIsInitialized();
@@ -539,21 +570,14 @@ class RNN {
    * @returns {Object}
    */
   toJSON() {
-    const { defaults } = this.constructor;
     if (!this.model) {
       this.initialize();
     }
-    const { model } = this;
-    const options = {};
-    for (const p in defaults) {
-      if (defaults.hasOwnProperty(p)) {
-        options[p] = this[p];
-      }
-    }
+    const { model, options } = this;
 
     return {
       type: this.constructor.name,
-      options,
+      options: { ...options },
       input: model.input.toJSON(),
       hiddenLayers: model.hiddenLayers.map((hiddenLayer) => {
         const layers = {};
@@ -568,7 +592,6 @@ class RNN {
   }
 
   fromJSON(json) {
-    const { defaults } = this.constructor;
     const { options } = json;
     this.model = null;
     this.hiddenLayers = null;
@@ -612,24 +635,20 @@ class RNN {
       equations: [],
       equationConnections: [],
     };
-    this.initialLayerInputs = this.hiddenLayers.map(
+    this.initialLayerInputs = this.options.hiddenLayers.map(
       (size) => new Matrix(size, 1)
     );
     this.bindEquation();
   }
 
-  /**
-   * @param {Function} [cb]
-   * @returns {Function}
-   */
-  toFunction(cb) {
+  toFunction(cb: (src: string) => void): RNNFunction<IOType> {
     const { model } = this;
     const { equations } = this.model;
     const equation = equations[1];
     const { states } = equation;
     const jsonString = JSON.stringify(this.toJSON());
 
-    function previousConnectionIndex(m) {
+    function previousConnectionIndex(m: Matrix): number {
       const connection = model.equationConnections[0];
       const { states } = equations[0];
       for (let i = 0, max = states.length; i < max; i++) {
@@ -640,7 +659,7 @@ class RNN {
       return connection.indexOf(m);
     }
 
-    function matrixOrigin(m, stateIndex) {
+    function matrixOrigin(m: Matrix, stateIndex: number): string {
       for (let i = 0, max = states.length; i < max; i++) {
         const state = states[i];
 
@@ -656,9 +675,10 @@ class RNN {
         if (m === state.right) return `states[${i}].right`;
         if (m === state.left) return `states[${i}].left`;
       }
+      return '';
     }
 
-    function matrixToString(m, stateIndex) {
+    function matrixToString(m: Matrix, stateIndex: number): string {
       if (!m || !m.rows || !m.columns) return 'null';
 
       if (m === model.input) return `json.input`;
@@ -677,17 +697,17 @@ class RNN {
       return matrixOrigin(m, stateIndex);
     }
 
-    function toInner(fnString) {
+    function toInner(fnString: string): string {
       // crude, but should be sufficient for now
       // function() { body }
-      fnString = fnString.toString().split('{');
-      fnString.shift();
+      const fnParts = fnString.toString().split('{');
+      fnParts.shift();
       // body }
-      fnString = fnString.join('{');
-      fnString = fnString.split('}');
-      fnString.pop();
+      const fnBodyString = fnParts.join('{');
+      const fnBodyParts = fnBodyString.split('}');
+      fnBodyParts.pop();
       // body
-      return fnString
+      return fnBodyParts
         .join('}')
         .split('\n')
         .join('\n        ')
@@ -698,7 +718,7 @@ class RNN {
         .replace('product.deltas = left.deltas.slice(0);', '');
     }
 
-    function fileName(fnName) {
+    function fileName(fnName: string): string {
       return `src/recurrent/matrix/${fnName.replace(/[A-Z]/g, function (value) {
         return `-${value.toLowerCase()}`;
       })}.js`;
@@ -739,25 +759,26 @@ class RNN {
       : ''
   }
   ${
-    this.dataFormatter && typeof this.formatDataIn === 'function'
+    this.dataFormatter && typeof this.options.formatDataIn === 'function'
       ? `const formatDataIn = function (input, output) { ${toInner(
-          this.formatDataIn.toString()
+          this.options.formatDataIn.toString()
         )} }.bind({ dataFormatter });`
       : ''
   }
   ${
-    this.dataFormatter !== null && typeof this.formatDataOut === 'function'
+    this.dataFormatter !== null &&
+    typeof this.options.formatDataOut === 'function'
       ? `const formatDataOut = function formatDataOut(input, output) { ${toInner(
-          this.formatDataOut.toString()
+          this.options.formatDataOut.toString()
         )} }.bind({ dataFormatter });`
       : ''
   }
   var maxPredictionLength =
-    ${this.maxPredictionLength} +
+    ${this.options.maxPredictionLength} +
     rawInput.length +
     ${this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0};
   var input = ${
-    this.dataFormatter && typeof this.formatDataIn === 'function'
+    this.dataFormatter && typeof this.options.formatDataIn === 'function'
       ? 'formatDataIn(rawInput)'
       : 'rawInput'
   };
@@ -809,7 +830,7 @@ ${innerFunctionsSwitch.join('\n')}
     output.push(nextIndex);
   }
   ${
-    this.dataFormatter && typeof this.formatDataOut === 'function'
+    this.dataFormatter && typeof this.options.formatDataOut === 'function'
       ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))'
       : 'return output.slice(input.length).map(function(value) { return value - 1; })'
   };
@@ -829,64 +850,16 @@ ${innerFunctionsSwitch.join('\n')}
       'isSampleI',
       'temperature',
       cb ? cb(src) : src
-    );
+    ) as RNNFunction<IOType>;
   }
 }
 
-RNN.defaults = {
-  inputSize: 20,
-  inputRange: 20,
-  hiddenLayers: [20, 20],
-  outputSize: 20,
-  decayRate: 0.999,
-  smoothEps: 1e-8,
-  regc: 0.000001,
-  clipval: 5,
-  maxPredictionLength: 100,
-  /**
-   *
-   * @param {*[]} data
-   * @returns {Number[]}
-   */
-  setupData: defaultRNNFormatter,
-  /**
-   *
-   * @param {*[]} input
-   * @param {*[]} output
-   * @returns {Number[]}
-   */
-  formatDataIn(input, output = null) {
-    if (this.dataFormatter) {
-      if (this.dataFormatter.indexTable.hasOwnProperty('stop-input')) {
-        return this.dataFormatter.toIndexesInputOutput(input, output);
-      }
-      return this.dataFormatter.toIndexes(input);
-    }
-    return input;
-  },
-  /**
-   *
-   * @param {Number[]} input
-   * @param {Number[]} output
-   * @returns {*}
-   */
-  formatDataOut(input, output) {
-    if (this.dataFormatter) {
-      return this.dataFormatter.toCharacters(output).join('');
-    }
-    return output;
-  },
-  dataFormatter: null,
-};
+function last<T>(values: T[]): T {
+  return values[values.length - 1];
+}
 
-RNN.trainDefaults = {
-  iterations: 20000,
-  errorThresh: 0.005,
-  log: false,
-  logPeriod: 10,
-  learningRate: 0.01,
-  callback: null,
-  callbackPeriod: 10,
-};
-
-module.exports = RNN;
+export type RNNFunction<IOType extends Value | IRNNDatum> = (
+  rawInput?: IOType,
+  isSampleI?: boolean,
+  temperature?: number
+) => IOType;
