@@ -1,26 +1,21 @@
-const { NeuralNetwork } = require('../../src/neural-network');
-const RNN = require('../../src/recurrent/rnn');
-const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
-const toSVG = require('../../src/utilities/to-svg');
-const { FeedForward } = require('../../src/feed-forward');
-const { Recurrent } = require('../../src/recurrent');
-const parser = require('fast-xml-parser');
-const { input, feedForward, target } = require('../../src/layer');
+import { NeuralNetwork } from '../../src/neural-network';
+import RNN from '../../src/recurrent/rnn';
+import RNNTimeStep from '../../src/recurrent/rnn-time-step';
+import toSVG from '../../src/utilities/to-svg';
+import { FeedForward } from '../../src/feed-forward';
+import { Recurrent } from '../../src/recurrent';
+import parser from 'fast-xml-parser';
+import { input, feedForward, target } from '../../src/layer';
 
 describe('svg', () => {
   const options = {
     height: 200,
     width: 300,
-    r: 4,
+    radius: 4,
     line: {
       width: 0.5,
       color: 'black',
       className: 'test-connection',
-    },
-    recurrentLine: {
-      width: '1',
-      color: 'red',
-      className: 'test-recurrence',
     },
     inputs: {
       color: 'rgba(0, 128, 0, 0.5)',
@@ -142,9 +137,9 @@ describe('svg', () => {
   describe('`RNN` input', () => {
     it('should throw when empty net object provided', () => {
       const empty = new RNN();
-      empty.inputSize = null;
+      empty.inputSize = undefined;
       empty.hiddenLayers = [];
-      empty.outputSize = null;
+      empty.outputSize = undefined;
       expect(() => {
         toSVG(empty, options);
       }).toThrow();
@@ -174,9 +169,9 @@ describe('svg', () => {
   describe('`RNNTimeStep` input', () => {
     it('should throw when empty net object provided', () => {
       const empty = new RNNTimeStep();
-      empty.inputSize = null;
+      empty.inputSize = undefined;
       empty.hiddenLayers = [];
-      empty.outputSize = null;
+      empty.outputSize = undefined;
       expect(() => {
         toSVG(empty, options);
       }).toThrow();
