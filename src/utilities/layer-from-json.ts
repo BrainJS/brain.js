@@ -1,5 +1,5 @@
-import * as layer from '../layer'
-import { get } from 'lodash'
+import * as layer from '../layer';
+import { get } from 'lodash';
 import { ILayer, ILayerJSON } from '../layer/base-layer';
 
 export default function layerFromJSON(jsonLayer: ILayerJSON, inputLayer1?: ILayer) { 
@@ -8,7 +8,7 @@ export default function layerFromJSON(jsonLayer: ILayerJSON, inputLayer1?: ILaye
   const Layer: Function = get(layer, `${layer}.${jsonLayer.type}`);
 
   // eslint-disable-next-line
-  const realLayer: ILayer | any = Reflect.construct(Layer, arguments)
+  const realLayer: ILayer | any = Reflect.construct(Layer, arguments);
 
   Object.keys(jsonLayer).forEach((param: string) => {
     if (param !== 'type') {
