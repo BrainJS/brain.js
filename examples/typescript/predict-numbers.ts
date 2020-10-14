@@ -16,7 +16,7 @@ const trainingData = [
     [4, 2],
     [5, 1],
   ],
-] as brain.RNNTimeStepInput[];
+];
 
 net.train(trainingData, { log: true, errorThresh: 0.09 });
 
@@ -25,12 +25,13 @@ const closeToFiveAndOne = net.run([
   [2, 4],
   [3, 3],
   [4, 2],
-]);
+]) as number[];
 
 assert(
   Math.round(closeToFiveAndOne[0]) === 5,
   `${closeToFiveAndOne[0]} does not round to 5`
 );
+
 assert(
   Math.round(closeToFiveAndOne[1]) === 1,
   `${closeToFiveAndOne[1]} does not round to 1`
@@ -45,11 +46,13 @@ const forecast = net.forecast(
     [2, 4],
   ],
   3
-);
+) as number[][];
+
 assert(
   Math.round(forecast[2][0]) === 5,
   `${forecast[2][0]} does not round to 5`
 );
+
 assert(
   Math.round(forecast[2][1]) === 1,
   `${forecast[2][1]} does not round to 1`
