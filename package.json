@@ -29,7 +29,6 @@
     "@types/babel__preset-env": "7.9.1",
     "@types/eslint": "^7.2.4",
     "@types/eslint-plugin-prettier": "^3.1.0",
-    "@types/lodash": "^4.14.162",
     "@types/prettier": "^2.1.1",
     "@types/rollup-plugin-node-builtins": "^2.1.1",
     "@types/rollup-plugin-node-globals": "^1.4.0",
