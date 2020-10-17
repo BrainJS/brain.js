@@ -18,7 +18,7 @@ class Recurse {
     this.settings = settings;
   }
 
-  into(ast: Node | any) {
+  into(ast?: Node | any) {
     if (!ast) return;
     if (Array.isArray(ast)) {
       for (let i = 0; i < ast.length; i++) {
@@ -142,7 +142,7 @@ class Recurse {
   }
 }
 
-module.exports = function (fn: Object) {
+module.exports = function (fn: () => void) {
   const source = fn.toString();
   const links = new Set();
   const ast = parse(`function fakeFunction() {${source}}`, {
