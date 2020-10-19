@@ -3,21 +3,31 @@
   <head>
     <title>brain.js tutorial</title>
     <style>
-      .articleImage {
+      .container {
+        margin-top: 134px;
+        text-align: center;
+      }
+
+      .contaner__rate {
+        margin-bottom: 18px;
+      }
+
+      .article__image {
         width: 180px;
       }
 
-      .ratingItem {
+      .rating__item {
         padding-bottom: 30px;
       }
 
-      .suggestedItems {
+      .suggested__items {
         display: flex;
         flex-wrap: wrap;
+        margin: 0 auto;
         width: 650px;
       }
 
-      .suggestionItem {
+      .suggestion__item {
         padding-right: 15px;
         padding-top: 30px;
       }
@@ -69,35 +79,33 @@
           suggestionItems.push(item);
         }
 
-        suggestionItems.sort(function (a, b) {
-          return b.wanted - a.wanted;
-        });
+        suggestionItems.sort((a, b) => b.wanted - a.wanted);
 
         for (let i = 0; i < suggestionItems.length; i++) {
           const suggestionItem = suggestionItems[i];
-          suggestionItemsText +=
-            '<div class="suggestionItem">' +
-            getFormattedItem(suggestionItem) +
-            ' <br/> ' +
-            'wanted: ' +
-            Math.round(suggestionItem.wanted * 100) +
-            '%' +
-            '</div>';
+          const suggestionPercentage = Math.round(suggestionItem.wanted * 100);
+          suggestionItemsText += `
+            <div class="suggestion__item">
+              ${getFormattedItem(suggestionItem)}
+              <br/>
+              wanted: ${suggestionPercentage}%
+            </div>
+          `;
         }
 
         ratingItem = getNormalizedItemFromStock(
           Math.floor(Math.random() * itemsInStock.length - 1 + 1)
         );
         document.getElementById('result').innerHTML +=
-          '<div class="ratingItem">' +
-          'Rate this:<br/>' +
-          getFormattedItem(ratingItem) +
-          '<br/>' +
-          '</div>' +
-          'Suggested items:<br/>' +
-          '<div class="suggestedItems">' +
-          suggestionItemsText +
-          '</div>';
+          `<div class="rating__item">
+            Rate this<br/>
+            ${getFormattedItem(ratingItem)}
+          </div>
+          Suggested items<br/>
+          <div class="suggested__items">
+            ${suggestionItemsText}
+          </div>
+          `;
       }
 
       function getNormalizedItemFromStock(index) {
@@ -117,25 +125,18 @@
 
       function getFormattedItem(item) {
         const trainingInformation = item.trainingInformation;
-        const formattedItem =
-          '<img class="articleImage" src="images/articles/' +
-          item.displayingInformation.imageFile +
-          '"/><br/>' +
-          'color: ' +
-          getColorName(trainingInformation.color) +
-          '<br/>' +
-          'has printing?: ' +
-          (1 === trainingInformation.hasPrinting ? 'yes' : 'no') +
-          '<br/>' +
-          'neckline: ' +
-          getNecklineName(trainingInformation.neckline) +
-          '<br/>' +
-          'price: ' +
-          Math.round(
+        const hasPrinting = 1 === trainingInformation.hasPrinting ? 'yes' : 'no';
+        const price = Math.round(
             trainingInformation.price * price_normalization_factor * 100
-          ) /
-            100 +
-          ' &euro;';
+          ) / 100;
+
+        const formattedItem =
+          `<img class="article__image" src="images/articles/${item.displayingInformation.imageFile}"/><br/>
+          color: ${getColorName(trainingInformation.color)}<br/>
+          has printing?: ${hasPrinting}<br/>
+          neckline: ${getNecklineName(trainingInformation.neckline)}<br/>
+          price: ${price} &euro;
+          `;
         return formattedItem;
       }
 
@@ -169,23 +170,15 @@
         return name;
       }
     </script>
-
-    <center>
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <input type="button" value="1" onClick="nextTry(0);" />
-      <input type="button" value="2" onClick="nextTry(1);" />
-      <input type="button" value="3" onClick="nextTry(2);" />
-      <input type="button" value="4" onClick="nextTry(3);" />
-      <input type="button" value="5" onClick="nextTry(4);" />
-      <br />
-      <br />
+    <div class="container">
+      <div class="contaner__rate">
+        <input type="button" value="1" onClick="nextTry(0);" />
+        <input type="button" value="2" onClick="nextTry(1);" />
+        <input type="button" value="3" onClick="nextTry(2);" />
+        <input type="button" value="4" onClick="nextTry(3);" />
+        <input type="button" value="5" onClick="nextTry(4);" />
+      </div>
       <div id="result"></div>
-    </center>
+    </div>
   </body>
 </html>
