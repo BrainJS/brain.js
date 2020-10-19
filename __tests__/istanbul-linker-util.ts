@@ -7,9 +7,9 @@ import { getFileCoverageDataByName } from 'istanbul-spy';
 
 // hah! damn...
 
-type TSettings = {
-  onIstanbulCoverageVariable: (name: string) => any
-};
+interface TSettings {
+  onIstanbulCoverageVariable: (name: string) => any;
+}
 
 class Recurse {
   settings: TSettings;
@@ -85,7 +85,7 @@ class Recurse {
         this.into(ast.argument);
         break;
       case 'MemberExpression':
-        if (ast.object.name && ast.object.name.match(/cov_[0-9a-z]+/)) {
+        if (ast.object.name?.match(/cov_[0-9a-z]+/)) {
           this.settings.onIstanbulCoverageVariable(ast.object.name);
         }
         this.into(ast.object);
@@ -137,7 +137,7 @@ class Recurse {
       case 'ContinueStatement':
         break;
       default:
-        throw new Error(`unhandled type "${ast.type}"`);
+        throw new Error('unhandled type "' + (ast.type as string) + '"');
     }
   }
 }
