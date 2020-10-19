@@ -1,6 +1,6 @@
-const { NeuralNetwork } = require('../src/neural-network');
-const TrainStream = require('../src/train-stream');
-const { LSTMTimeStep } = require('../src/recurrent/lstm-time-step');
+import { NeuralNetwork } from '../src/neural-network';
+import { LSTMTimeStep } from '../src/recurrent/lstm-time-step';
+import { TrainStream } from '../src/train-stream';
 
 describe('TrainStream', () => {
   const wiggle = 0.1;

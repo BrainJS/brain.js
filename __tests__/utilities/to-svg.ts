@@ -1,11 +1,11 @@
+import parser from 'fast-xml-parser';
+import { FeedForward } from '../../src/feed-forward';
+import { feedForward, input, target } from '../../src/layer';
 import { NeuralNetwork } from '../../src/neural-network';
+import { Recurrent } from '../../src/recurrent';
 import RNN from '../../src/recurrent/rnn';
 import RNNTimeStep from '../../src/recurrent/rnn-time-step';
-import toSVG from '../../src/utilities/to-svg';
-import { FeedForward } from '../../src/feed-forward';
-import { Recurrent } from '../../src/recurrent';
-import parser from 'fast-xml-parser';
-import { input, feedForward, target } from '../../src/layer';
+import { toSVG } from '../../src/utilities/to-svg';
 
 describe('svg', () => {
   const options = {

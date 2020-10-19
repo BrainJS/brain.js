@@ -12,7 +12,7 @@ interface ITrainStreamOptions {
  * @returns {TrainStream}
  * @constructor
  */
-class TrainStream extends Writable {
+export class TrainStream extends Writable {
   // TODO: Once neural network classes are typed, change this `any`
   neuralNetwork: any;
   dataFormatDetermined: boolean;
@@ -160,5 +160,3 @@ class TrainStream extends Writable {
     }
   }
 }
-
-export default TrainStream;

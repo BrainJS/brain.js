@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { brain } from '../../src';
-import TrainStream from '../../src/train-stream';
+import { TrainStream } from '../../src/train-stream';
 
 const net = new brain.NeuralNetwork();
 const xor = [
