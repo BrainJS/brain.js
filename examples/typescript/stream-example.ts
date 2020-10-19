@@ -23,11 +23,9 @@ const trainingStream = new brain.TrainStream({
   /**
    * Called when the network is done training.
    */
-  doneTrainingCallback: function (obj: { iterations: number; error: string }) {
+  doneTrainingCallback: function (stats) {
     console.log(
-      `trained in ${obj.iterations.toString()} iterations with error: ${
-        obj.error
-      }`
+      `trained in ${stats.iterations} iterations with error: ${stats.error}`
     );
 
     const result01 = net.run([0, 1]);
