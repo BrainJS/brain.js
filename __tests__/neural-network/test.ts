@@ -1,4 +1,4 @@
-const NeuralNetwork = require('../../src/neural-network');
+import NeuralNetwork from '../../src/neural-network';
 
 describe('test()', () => {
   describe('using binary data', () => {
