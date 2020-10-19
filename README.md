@@ -473,7 +473,7 @@ net.fromJSON(json);
 net.run(input);
 
 // recurrent
-const net = new brain.LSTMTimeStep();
+const net = new brain.LSTM();
 net.fromJSON(json);
 net.run(input);
 ```
