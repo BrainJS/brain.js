@@ -1,4 +1,10 @@
-const { Writable } = require('stream');
+import { Writable } from 'stream';
+
+interface ITrainStreamOptions {
+  neuralNetwork: any;
+  floodCallback?: () => void;
+  doneTrainingCallback?: (stats: { error: number; iterations: number }) => void;
+}
 
 /**
  *
@@ -7,7 +13,24 @@ const { Writable } = require('stream');
  * @constructor
  */
 class TrainStream extends Writable {
-  constructor(options) {
+  // TODO: Once neural network classes are typed, change this `any`
+  neuralNetwork: any;
+  dataFormatDetermined: boolean;
+  i: number;
+  size: number;
+  count: number;
+  sum: number;
+  floodCallback?: () => void;
+  doneTrainingCallback?: (stats: { error: number; iterations: number }) => void;
+  iterations: number;
+  errorThresh: number;
+  log: (message: string) => void;
+  logPeriod: number;
+  callbackPeriod: number;
+  callback: (stats: { error: number; iterations: number }) => void;
+  firstDatum: any;
+
+  constructor(options: ITrainStreamOptions) {
     super({
       objectMode: true,
     });
@@ -17,7 +40,7 @@ class TrainStream extends Writable {
     // require the neuralNetwork
     if (!options.neuralNetwork) {
       throw new Error(
-        'No neural network specified. PLease see lis of available networks types: https://github.com/BrainJS/brain.js#neural-network-types'
+        'No neural network specified. Please see list of available network types: https://github.com/BrainJS/brain.js#neural-network-types'
       );
     }
 
@@ -44,7 +67,7 @@ class TrainStream extends Writable {
     this.on('finish', this.finishStreamIteration.bind(this));
   }
 
-  endInputs() {
+  endInputs(): void {
     this.write(false);
   }
 
@@ -56,7 +79,11 @@ class TrainStream extends Writable {
    * @returns {*}
    * @private
    */
-  _write(chunk, enc, next) {
+  _write(
+    chunk: any,
+    enc: BufferEncoding,
+    next: (error?: Error | null) => void
+  ): void {
     if (!chunk) {
       // check for the end of one iteration of the stream
       this.emit('finish');
@@ -73,7 +100,8 @@ class TrainStream extends Writable {
     this.count++;
 
     const data = this.neuralNetwork.formatData(chunk);
-    this.sum += this.neuralNetwork.trainPattern(data[0], true);
+    // TODO: Remove this typecast once neural network classes are typed
+    this.sum += this.neuralNetwork.trainPattern(data[0], true) as number;
 
     // tell the Readable Stream that we are ready for more data
     next();
@@ -83,7 +111,7 @@ class TrainStream extends Writable {
    *
    * @returns {*}
    */
-  finishStreamIteration() {
+  finishStreamIteration(): void {
     if (this.dataFormatDetermined && this.size !== this.count) {
       this.log("This iteration's data length was different from the first.");
     }
@@ -133,4 +161,4 @@ class TrainStream extends Writable {
   }
 }
 
-module.exports = TrainStream;
+export default TrainStream;
