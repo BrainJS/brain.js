@@ -1,5 +1,5 @@
-const { parse } = require('acorn');
-const { getFileCoverageDataByName } = require('istanbul-spy');
+import { parse } from 'acorn';
+import { getFileCoverageDataByName } from 'istanbul-spy';
 
 // Istanbul.js, why did you make me do this, I trusted you...
 // This would have probably been a whole lot easier with regex, maybe, but probably not as clear.
@@ -7,12 +7,18 @@ const { getFileCoverageDataByName } = require('istanbul-spy');
 
 // hah! damn...
 
+type TSettings = {
+  onIstanbulCoverageVariable: (name: string) => any
+};
+
 class Recurse {
-  constructor(settings) {
+  settings: TSettings;
+
+  constructor(settings: TSettings) {
     this.settings = settings;
   }
 
-  into(ast) {
+  into(ast?: Node | any) {
     if (!ast) return;
     if (Array.isArray(ast)) {
       for (let i = 0; i < ast.length; i++) {
@@ -136,14 +142,14 @@ class Recurse {
   }
 }
 
-module.exports = function (fn) {
+module.exports = function (fn: () => void) {
   const source = fn.toString();
   const links = new Set();
   const ast = parse(`function fakeFunction() {${source}}`, {
     ecmaVersion: 2020,
   });
   const recurse = new Recurse({
-    onIstanbulCoverageVariable: (name) => {
+    onIstanbulCoverageVariable: (name: string) => {
       const data = getFileCoverageDataByName(name);
       if (!data) {
         throw new Error(`Could not find istanbul identifier ${name}`);
