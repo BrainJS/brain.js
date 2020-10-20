@@ -44,7 +44,11 @@ describe('ArthurDeviationWeights Class: Unit', () => {
         inputDeltas
       );
       // Corrected this array, need to recheck
-      const value: any = [new Float32Array([1.70000005, 3.4000001, 5.0999999])];
+      const value: Float32Array = new Float32Array([
+        1.70000005,
+        3.4000001,
+        5.0999999,
+      ]);
       expect(shave(result)).toEqual(shave(value));
     });
   });
@@ -80,7 +84,7 @@ describe('ArthurDeviationWeights Class: Unit', () => {
     describe('.incomingLayer', () => {
       const mockLayer: any = { width: 1, height: 1 };
       const incomingLayerMock: any = {};
-      const p: ArthurDeviationWeights = new ArthurDeviationWeights(mockLayer, {
+      const p = new ArthurDeviationWeights(mockLayer, {
         incomingLayer: incomingLayerMock,
       });
       expect(p.incomingLayer).toBe(incomingLayerMock);
@@ -140,10 +144,7 @@ describe('ArthurDeviationWeights Class: Unit', () => {
         deltaLayer: mockDeltasLayer, // deltasLayer did not exist, so changed to deltaLayer
         incomingLayer: mockIncomingLayer,
       };
-      const p: ArthurDeviationWeights = arthurDeviationWeights(
-        mockLayer,
-        settings
-      );
+      const p = arthurDeviationWeights(mockLayer, settings);
       expect(p.weightsLayer).toBe(mockWeightsLayer);
       expect(p.deltaLayer).toBe(mockDeltasLayer); // deltasLayer did not exist, so changed to deltaLayer
       expect(p.incomingLayer).toBe(mockIncomingLayer);
