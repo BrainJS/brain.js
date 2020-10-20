@@ -1,8 +1,9 @@
-import { GPU } from 'gpu.js';
+import { GPU, IKernelRunShortcut } from 'gpu.js';
 import { gpuMock } from 'gpu-mock.js';
 import {
   ArthurDeviationWeights,
   arthurDeviationWeights,
+  IArthurDeviationWeightsSettings,
   update,
   updateChange,
 } from '../../../src/praxis/arthur-deviation-weights';
@@ -29,20 +30,21 @@ describe('ArthurDeviationWeights Class: Unit', () => {
       const inputDeltas = [[1]];
       const width = 3;
       const height = 1;
-      const kernel: any = gpuMock(update, {
+      const kernel: IKernelRunShortcut = gpuMock(update, {
         output: [width, height],
         constants: {
           learningRate: 0.5,
           momentum: 0.2,
         },
       });
-      const result = kernel(changes, weights, incomingWeights, inputDeltas);
+      const result: any = kernel(
+        changes,
+        weights,
+        incomingWeights,
+        inputDeltas
+      );
       // Corrected this array, need to recheck
-      const value: Float32Array = new Float32Array([
-        1.70000005,
-        3.4000001,
-        5.0999999,
-      ]);
+      const value: any = [new Float32Array([1.70000005, 3.4000001, 5.0999999])];
       expect(shave(result)).toEqual(shave(value));
     });
   });
@@ -78,7 +80,7 @@ describe('ArthurDeviationWeights Class: Unit', () => {
     describe('.incomingLayer', () => {
       const mockLayer: any = { width: 1, height: 1 };
       const incomingLayerMock: any = {};
-      const p = new ArthurDeviationWeights(mockLayer, {
+      const p: ArthurDeviationWeights = new ArthurDeviationWeights(mockLayer, {
         incomingLayer: incomingLayerMock,
       });
       expect(p.incomingLayer).toBe(incomingLayerMock);
@@ -130,17 +132,20 @@ describe('ArthurDeviationWeights Class: Unit', () => {
   describe('arthurDeviationWeights lambda', () => {
     it('creates a new instance of ArthurDeviationWeights', () => {
       const mockLayer: any = {};
-      const mockWeightsLayer = {};
-      const mockDeltasLayer = {};
-      const mockIncomingLayer = {};
-      const settings: any = {
+      const mockWeightsLayer: any = {};
+      const mockDeltasLayer: any = {};
+      const mockIncomingLayer: any = {};
+      const settings: Partial<IArthurDeviationWeightsSettings> = {
         weightsLayer: mockWeightsLayer,
-        deltasLayer: mockDeltasLayer,
+        deltaLayer: mockDeltasLayer, // deltasLayer did not exist, so changed to deltaLayer
         incomingLayer: mockIncomingLayer,
       };
-      const p: any = arthurDeviationWeights(mockLayer, settings);
+      const p: ArthurDeviationWeights = arthurDeviationWeights(
+        mockLayer,
+        settings
+      );
       expect(p.weightsLayer).toBe(mockWeightsLayer);
-      expect(p.deltasLayer).toBe(mockDeltasLayer);
+      expect(p.deltaLayer).toBe(mockDeltasLayer); // deltasLayer did not exist, so changed to deltaLayer
       expect(p.incomingLayer).toBe(mockIncomingLayer);
       expect(p.layerTemplate).toBe(mockLayer);
     });
