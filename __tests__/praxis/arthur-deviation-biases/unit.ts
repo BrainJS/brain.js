@@ -1,13 +1,12 @@
-const { GPU } = require('gpu.js');
-const { gpuMock } = require('gpu-mock.js');
-const {
+import { GPU } from 'gpu.js';
+import { gpuMock } from 'gpu-mock.js';
+import {
   ArthurDeviationBiases,
   arthurDeviationBiases,
   update,
-} = require('../../../src/praxis/arthur-deviation-biases');
-const { shave } = require('../../test-utils');
-const { setup, teardown } = require('../../../src/utilities/kernel');
-const { injectIstanbulCoverage } = require('../../test-utils');
+} from '../../../src/praxis/arthur-deviation-biases';
+import { shave, injectIstanbulCoverage } from '../../test-utils';
+import { setup, teardown } from '../../../src/utilities/kernel';
 
 describe('ArthurDeviationBiases Class: Unit', () => {
   beforeEach(() => {
@@ -34,14 +33,16 @@ describe('ArthurDeviationBiases Class: Unit', () => {
           momentum: 0.2,
         },
       });
-      const result = kernel(weights, deltas);
-      expect(shave(result)).toEqual(shave([[1.25, 2.20000005, 3.1500001]]));
+      const result: Float32Array = kernel(weights, deltas);
+      const value = new Float32Array([1.25, 2.20000005, 3.1500001]);
+      expect(shave(result)).toEqual(shave(value));
     });
   });
 
   describe('.setupKernels()', () => {
     test('instantiates .kernel', () => {
-      const p = new ArthurDeviationBiases({ width: 2, height: 2 });
+      const mockLayer: any = { width: 2, height: 2 };
+      const p = new ArthurDeviationBiases(mockLayer);
       p.setupKernels();
       expect(p.kernel).not.toBe(null);
     });
@@ -51,16 +52,16 @@ describe('ArthurDeviationBiases Class: Unit', () => {
     it('calls this.kernel() returns kernel output', () => {
       const mockWeights = 1;
       const mockDeltas = 2;
-      const mockLayer = {
+      const mockLayer: any = {
         width: 2,
         height: 2,
         deltas: mockDeltas,
         weights: mockWeights,
       };
-      const p = new ArthurDeviationBiases(mockLayer);
+      const p: any = new ArthurDeviationBiases(mockLayer);
       const mockResult = {};
       p.kernel = jest.fn(() => mockResult);
-      const result = p.run(mockLayer);
+      const result = p.run(mockLayer, NaN);
       expect(result).toBe(mockResult);
       expect(p.kernel).toHaveBeenCalledWith(mockWeights, mockDeltas);
     });
@@ -68,7 +69,7 @@ describe('ArthurDeviationBiases Class: Unit', () => {
 
   describe('arthurDeviationBiases lambda', () => {
     it('creates a new instance of ArthurDeviationBiases', () => {
-      const mockLayer = {};
+      const mockLayer: any = {};
       const p = arthurDeviationBiases(mockLayer);
       expect(p.layerTemplate).toBe(mockLayer);
     });
