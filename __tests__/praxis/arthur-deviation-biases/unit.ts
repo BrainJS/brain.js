@@ -33,7 +33,8 @@ describe('ArthurDeviationBiases Class: Unit', () => {
           momentum: 0.2,
         },
       });
-      const result: Float32Array = kernel(weights, deltas) as Float32Array;
+      
+      const result = kernel(weights, deltas) as Float32Array;
       const value = new Float32Array([1.25, 2.20000005, 3.1500001]);
       expect(shave(result)).toEqual(shave(value));
     });
