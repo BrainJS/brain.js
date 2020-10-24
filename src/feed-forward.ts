@@ -1,19 +1,19 @@
+import { IKernelFunctionThis, KernelOutput, Texture } from 'gpu.js';
+import { MeanSquaredError } from './estimator/mean-squared-error';
+import { ILayer, ILayerJSON } from './layer/base-layer';
+import { Model } from './layer/types';
 import {
-  INumberHash,
-  lookup,
   InputOutputValue,
-  INumberObject,
   INumberArray,
+  INumberHash,
+  INumberObject,
+  lookup,
 } from './lookup';
-import layerFromJSON from './utilities/layer-from-json';
 import * as praxis from './praxis';
+import { IPraxis, IPraxisSettings } from './praxis/base-praxis';
 import flattenLayers from './utilities/flatten-layers';
 import { makeKernel, release } from './utilities/kernel';
-import { MeanSquaredError } from './estimator/mean-squared-error';
-import { Model } from './layer/types';
-import { IPraxis, IPraxisSettings } from './praxis/base-praxis';
-import { ILayer, ILayerJSON } from './layer/base-layer';
-import { IKernelFunctionThis, KernelOutput, Texture } from 'gpu.js';
+import { layerFromJSON } from './utilities/layer-from-json';
 import { LookupTable } from './utilities/lookup-table';
 
 export interface IFeedForwardTrainingData<

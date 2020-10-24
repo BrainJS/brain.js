@@ -25,7 +25,11 @@ export class DataFormatter {
   }
 
   buildCharactersFromIterable(values: Values): void {
-    const tempCharactersTable: any = {};
+    const tempCharactersTable: {
+      [key: string]: boolean;
+      [key: number]: boolean;
+    } = {};
+
     for (
       let dataFormatterIndex = 0, dataFormatterLength = values.length;
       dataFormatterIndex < dataFormatterLength;
@@ -33,8 +37,14 @@ export class DataFormatter {
     ) {
       const characters = values[dataFormatterIndex];
 
-      if ((characters as any).hasOwnProperty('length')) {
-        const iteratable = characters as string[] | string;
+      if (typeof characters === 'number') {
+        if (tempCharactersTable.hasOwnProperty(characters)) continue;
+
+        tempCharactersTable[dataFormatterIndex] = true;
+        this.characters.push(characters);
+      } else {
+        const iteratable = characters;
+
         for (
           let characterIndex = 0, charactersLength = iteratable.length;
           characterIndex < charactersLength;
@@ -45,13 +55,6 @@ export class DataFormatter {
           tempCharactersTable[character] = true;
           this.characters.push(character);
         }
-      } else if (typeof characters === 'number') {
-        if (tempCharactersTable.hasOwnProperty(characters)) continue;
-        tempCharactersTable[dataFormatterIndex] = true;
-        this.characters.push(characters);
-      } else {
-        //  remove check after TS conversion is complete
-        throw new Error('Should never happen');
       }
     }
   }
@@ -80,16 +83,18 @@ export class DataFormatter {
     for (let i = 0, max = value.length; i < max; i++) {
       const character = value[i];
       let index = indexTable[character];
+
       if (index === undefined) {
         if (indexTable.unrecognized) {
           index = indexTable.unrecognized;
         } else {
           throw new Error(`unrecognized character "${character}"`);
         }
-      }
-      if (index < maxThreshold) continue;
+      } else if (index < maxThreshold) continue;
+
       result.push(index);
     }
+
     return result;
   }
 

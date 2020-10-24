@@ -1,5 +1,5 @@
 import { ILayerJSON } from '../../src/layer/base-layer';
-import layerFromJSON from '../../src/utilities/layer-from-json';
+import { layerFromJSON } from '../../src/utilities/layer-from-json';
 import { mockLayer } from '../test-utils';
 
 describe('layerFromJSON', () => {

@@ -16,11 +16,11 @@ const getStringKeyValue = (
   return pathArrayFlat.reduce((obj, key) => obj?.[key], object) || defaultValue;
 };
 
-export default function layerFromJSON(
+export function layerFromJSON(
   jsonLayer: ILayerJSON,
   inputLayer1?: ILayer
-) {
-  if (!layer.hasOwnProperty(jsonLayer.type)) return null;
+): ILayer {
+  // if (!layer.hasOwnProperty(jsonLayer.type)) return null;
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   const Layer: Function = getStringKeyValue(
