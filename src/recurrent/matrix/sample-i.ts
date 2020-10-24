@@ -1,6 +1,5 @@
 import { Matrix } from '.';
-
-const { randomFloat } = require('../../utilities/random');
+import { randomFloat } from '../../utilities/random';
 
 /**
  *

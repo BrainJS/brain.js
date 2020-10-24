@@ -3,8 +3,9 @@ import { Matrix } from '.';
 /**
  *
  * @param {Matrix} product
+ * @return {Matrix}
  */
-module.exports = function clone(product: Matrix) {
+function clone(product: Matrix): Matrix {
   const cloned = new Matrix();
 
   cloned.rows = product.rows;
@@ -13,4 +14,6 @@ module.exports = function clone(product: Matrix) {
   cloned.deltas = product.deltas.slice(0);
 
   return cloned;
-};
+}
+
+export default clone;
