@@ -1,11 +1,10 @@
 import { ILayer, ILayerSettings } from './base-layer';
 import { RecurrentZeros } from './recurrent-zeros';
-
-const { relu } = require('./relu');
-const { add } = require('./add');
-const { multiply } = require('./multiply');
-const { random } = require('./random');
-const { zeros } = require('./zeros');
+import { relu } from './relu';
+import { add } from './add';
+import { multiply } from './multiply';
+import { random } from './random';
+import { zeros } from './zeros';
 
 export function rnnCell(
   settings: ILayerSettings,
