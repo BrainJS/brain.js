@@ -37,7 +37,7 @@ export class ArthurDeviationBiases extends BasePraxis {
     this.kernel = null;
   }
 
-  run(layer: ILayer, learningRate: number): KernelOutput {
+  run(layer: ILayer): KernelOutput {
     return (this.kernel as IKernelRunShortcut)(layer.weights, layer.deltas);
   }
 
