@@ -1,9 +1,9 @@
-import { ILayer, ILayerSettings } from './base-layer';
-import { RecurrentZeros } from './recurrent-zeros';
-import { relu } from './relu';
 import { add } from './add';
+import { ILayer, ILayerSettings } from './base-layer';
 import { multiply } from './multiply';
 import { random } from './random';
+import { RecurrentZeros } from './recurrent-zeros';
+import { relu } from './relu';
 import { zeros } from './zeros';
 
 export function rnnCell(

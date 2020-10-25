@@ -1,6 +1,7 @@
 import { IKernelFunctionThis, KernelOutput, Texture } from 'gpu.js';
 import { MeanSquaredError } from './estimator/mean-squared-error';
 import { ILayer, ILayerJSON } from './layer/base-layer';
+import { RecurrentInput } from './layer/recurrent-input';
 import { Model } from './layer/types';
 import {
   InputOutputValue,
@@ -57,7 +58,9 @@ interface IFeedForwardTrainingOptions {
 interface IFeedForwardOptions {
   learningRate?: number;
   binaryThresh?: number;
-  hiddenLayers?: Array<(inputLayer: ILayer, index: number) => ILayer>;
+  hiddenLayers?: Array<
+    (inputLayer: ILayer, recurrentInput: RecurrentInput) => ILayer
+  >;
   inputLayer?: () => ILayer;
   outputLayer?: (inputLayer: ILayer, index: number) => ILayer;
   praxisOpts?: Partial<IPraxisSettings>;
@@ -258,13 +261,17 @@ export class FeedForward<
     this._hiddenLayers = [];
     const result: ILayer[] = [];
     const { hiddenLayers } = this.options;
+
     if (!hiddenLayers) throw new Error('hiddenLayers not defined');
+
     for (let i = 0; i < hiddenLayers.length; i++) {
+      // @ts-expect-error not sure about the definiton Integer or ReccurrentInput?
       const hiddenLayer = hiddenLayers[i](previousLayer, i);
       result.push(hiddenLayer);
       this._hiddenLayers.push(hiddenLayer);
       previousLayer = hiddenLayer;
     }
+
     return result;
   }
 

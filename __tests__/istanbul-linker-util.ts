@@ -147,8 +147,9 @@ class Recurse {
  * @param {Function} fn
  * @returns string
  */
-function istanbulLinkerUtil(fn) {
-  const source = fn.toString();
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function istanbulLinkerUtil(fn: Function): string {
+  const source: string = fn.toString();
   const links = new Set();
   const ast = parse(`function fakeFunction() {${source}}`, {
     ecmaVersion: 2020,
@@ -167,5 +168,3 @@ function istanbulLinkerUtil(fn) {
   recurse.into(ast);
   return Array.from(links).join('') + source;
 }
-
-export default istanbulLinkerUtil;

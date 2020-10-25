@@ -1,13 +1,13 @@
-import { release, clear } from '../utilities/kernel';
 import {
   IKernelRunShortcut,
+  Input,
   Kernel,
   KernelOutput,
   Texture,
   TextureArrayOutput,
-  Input,
 } from 'gpu.js';
 import { IPraxis, IPraxisSettings } from '../praxis/base-praxis';
+import { clear, release } from '../utilities/kernel';
 
 export interface ILayerJSON {
   width?: number;
@@ -45,6 +45,7 @@ export interface ILayer {
 }
 
 export interface ILayerSettings {
+  name?: string;
   width?: number | null;
   height?: number | null;
   depth?: number | null;

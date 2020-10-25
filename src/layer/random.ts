@@ -1,8 +1,7 @@
-import { baseLayerDefaultSettings, ILayer, ILayerSettings } from './base-layer';
-
-import { Model } from './types';
 import { randos2D } from '../utilities/randos';
 import { zeros2D } from '../utilities/zeros-2d';
+import { baseLayerDefaultSettings, ILayer, ILayerSettings } from './base-layer';
+import { Model } from './types';
 
 export interface IRandomSettings extends ILayerSettings {
   std?: number | null;

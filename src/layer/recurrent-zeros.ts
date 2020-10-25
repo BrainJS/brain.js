@@ -1,8 +1,8 @@
-import { zeros2D } from '../utilities/zeros-2d';
-import { Internal } from './internal';
-import { release, clear } from '../utilities/kernel';
-import { ILayer, ILayerSettings } from './base-layer';
 import { IPraxis } from '../praxis/base-praxis';
+import { clear, release } from '../utilities/kernel';
+import { zeros2D } from '../utilities/zeros-2d';
+import { ILayer, ILayerSettings } from './base-layer';
+import { Internal } from './internal';
 
 export class RecurrentZeros extends Internal implements ILayer {
   praxis: IPraxis | null = null;
@@ -48,13 +48,13 @@ export class RecurrentZeros extends Internal implements ILayer {
     clear(this.deltas);
   }
 
-  validate(): void {
-    throw new Error(`${this.constructor.name}-validate is not yet implemented`);
-  }
+  // validate(): void {
+  //   throw new Error(`${this.constructor.name}-validate is not yet implemented`);
+  // }
 
-  reset(): void {
-    throw new Error(`${this.constructor.name}-reset is not yet implemented`);
-  }
+  // reset(): void {
+  //   throw new Error(`${this.constructor.name}-reset is not yet implemented`);
+  // }
 }
 
 export function recurrentZeros(): RecurrentZeros {
