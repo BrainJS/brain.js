@@ -23,7 +23,7 @@ describe('ArthurDeviationBiases', () => {
       const layer: any = { weights: [[1]], deltas: [[1]], width: 1, height: 1 };
       const praxis = new ArthurDeviationBiases(layer);
       praxis.setupKernels();
-      const result: any = praxis.run(layer, 0);
+      const result: any = praxis.run(layer);
       expect(result[0][0].toFixed(5)).toEqual((1.3).toFixed(5).toString());
     });
     test('matches NeuralNetwork.adjustWeights output', () => {
@@ -61,7 +61,7 @@ describe('ArthurDeviationBiases', () => {
       (net.biases as any)[2][0] = 10;
       net.adjustWeights();
       praxis.setupKernels();
-      const result = praxis.run(layer1, 0);
+      const result = praxis.run(layer1);
       expect((result as any)[0][0]).not.toBe(0);
       expect((result as any)[0][0]).toBe((net.biases as any)[1][0]);
       expect((result as any)[1][0]).not.toBe(0);
