@@ -142,7 +142,12 @@ class Recurse {
   }
 }
 
-module.exports = function (fn: () => void) {
+/**
+ *
+ * @param {Function} fn
+ * @returns string
+ */
+function istanbulLinkerUtil(fn) {
   const source = fn.toString();
   const links = new Set();
   const ast = parse(`function fakeFunction() {${source}}`, {
@@ -161,4 +166,6 @@ module.exports = function (fn: () => void) {
   });
   recurse.into(ast);
   return Array.from(links).join('') + source;
-};
+}
+
+export default istanbulLinkerUtil;
