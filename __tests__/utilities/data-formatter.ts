@@ -1,7 +1,6 @@
-const {
+import {
   DataFormatter,
-  defaultRNNFormatter,
-} = require('../../src/utilities/data-formatter');
+} from '../../src/utilities/data-formatter';
 
 describe('DataFormatter', () => {
   test('does not have zeros', () => {
@@ -143,7 +142,7 @@ describe('DataFormatter', () => {
   });
 
   test('can handle strings', () => {
-    const dataFormatter = new DataFormatter('a big string');
+    const dataFormatter = new DataFormatter(['a big string']);
     const indices = dataFormatter.toIndexes('a big string');
     indices.forEach((value) => expect(value >= 0));
 
@@ -185,7 +184,7 @@ describe('DataFormatter', () => {
     const indices = dataFormatter.toIndexes([1, 2, 3]);
     indices.forEach((value) => expect(value >= 0));
 
-    expect(dataFormatter.toCharacters(indices)).toEqual([1, 2, 3]);
+    expect(dataFormatter.toCharacters(indices)).toEqual(['1', '2', '3']);
   });
 
   test('can handle array of array of numbers', () => {
@@ -196,12 +195,12 @@ describe('DataFormatter', () => {
     let indices = dataFormatter.toIndexes([1, 2, 3]);
     indices.forEach((value) => expect(value >= 0));
 
-    expect(dataFormatter.toCharacters(indices)).toEqual([1, 2, 3]);
+    expect(dataFormatter.toCharacters(indices)).toEqual(['1', '2', '3']);
 
     indices = dataFormatter.toIndexes([4, 5, 6]);
     indices.forEach((value) => expect(value >= 3));
 
-    expect(dataFormatter.toCharacters(indices)).toEqual([4, 5, 6]);
+    expect(dataFormatter.toCharacters(indices)).toEqual(['4', '5', '6']);
   });
 
   test('can handle array of booleans', () => {
@@ -210,10 +209,10 @@ describe('DataFormatter', () => {
     indices.forEach((value) => expect(value >= 0));
 
     expect(dataFormatter.toCharacters(indices)).toEqual([
-      true,
-      false,
-      true,
-      false,
+      'true',
+      'false',
+      'true',
+      'false',
     ]);
   });
 
@@ -222,71 +221,73 @@ describe('DataFormatter', () => {
     const indices = dataFormatter.toIndexes([true, false]);
     indices.forEach((value) => expect(value >= 0));
 
-    expect(dataFormatter.toCharacters(indices)).toEqual([true, false]);
+    expect(dataFormatter.toCharacters(indices)).toEqual(['true', 'false']);
   });
 
   test('when splitting values to input/output', () => {
-    const dataFormatter = DataFormatter.fromArrayInputOutput([
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      0,
-    ]);
+    const dataFormatter = DataFormatter.fromArrayInputOutput([{
+      input: [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        0,
+      ],
+      output: [0],
+    }]);
     const indices = dataFormatter.toIndexesInputOutput(
       [1, 2, 3, 4, 5],
       [1, 2, 3, 4, 5]
     );
 
     expect(dataFormatter.toCharacters(indices)).toEqual([
-      1,
-      2,
-      3,
-      4,
-      5,
-      1,
-      2,
-      3,
-      4,
-      5,
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
     ]);
+  });
+  describe('.format()', () => {
+    test('handles data.input & data.output of string', () => {
+      const dataFormatter = new DataFormatter();
+      const formatDataInSpy = jest.spyOn(dataFormatter, 'formatDataIn');
+      dataFormatter.format([{ input: '1', output: '2' }]);
+      expect(formatDataInSpy).toBeCalledWith('1', '2');
+    });
+    // test('handles data.input & data.output of number', () => {
+    //   const mockNet = {
+    //     formatDataIn: jest.fn(),
+    //   };
+    //   defaultRNNFormatter.call(mockNet, [{ input: 1, output: 2 }]);
+    //   expect(mockNet.formatDataIn).toBeCalledWith('1', '2');
+    // });
+    // test('handles data.input & data.output of string[]', () => {
+    //   const mockNet = {
+    //     formatDataIn: jest.fn(),
+    //   };
+    //   defaultRNNFormatter.call(mockNet, [
+    //     { input: ['1', '2'], output: ['3', '4'] },
+    //   ]);
+    //   expect(mockNet.formatDataIn).toBeCalledWith(['1', '2'], ['3', '4']);
+    // });
+    // test('handles data.input & data.output of number[]', () => {
+    //   const mockNet = {
+    //     formatDataIn: jest.fn(),
+    //   };
+    //   defaultRNNFormatter.call(mockNet, [{ input: [1, 2], output: [3, 4] }]);
+    //   expect(mockNet.formatDataIn).toBeCalledWith(['1', '2'], ['3', '4']);
+    // });
   });
 });
 
-describe('defaultRNNFormatter', () => {
-  test('handles data.input & data.output of string', () => {
-    const mockNet = {
-      formatDataIn: jest.fn(),
-    };
-    defaultRNNFormatter.call(mockNet, [{ input: '1', output: '2' }]);
-    expect(mockNet.formatDataIn).toBeCalledWith('1', '2');
-  });
-  test('handles data.input & data.output of number', () => {
-    const mockNet = {
-      formatDataIn: jest.fn(),
-    };
-    defaultRNNFormatter.call(mockNet, [{ input: 1, output: 2 }]);
-    expect(mockNet.formatDataIn).toBeCalledWith('1', '2');
-  });
-  test('handles data.input & data.output of string[]', () => {
-    const mockNet = {
-      formatDataIn: jest.fn(),
-    };
-    defaultRNNFormatter.call(mockNet, [
-      { input: ['1', '2'], output: ['3', '4'] },
-    ]);
-    expect(mockNet.formatDataIn).toBeCalledWith(['1', '2'], ['3', '4']);
-  });
-  test('handles data.input & data.output of number[]', () => {
-    const mockNet = {
-      formatDataIn: jest.fn(),
-    };
-    defaultRNNFormatter.call(mockNet, [{ input: [1, 2], output: [3, 4] }]);
-    expect(mockNet.formatDataIn).toBeCalledWith(['1', '2'], ['3', '4']);
-  });
-});

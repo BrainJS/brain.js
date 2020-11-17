@@ -1,5 +1,10 @@
 import { zeros } from '../../utilities/zeros';
 
+export interface IMatrixJSON {
+  rows: number;
+  columns: number;
+  weights: Float32Array;
+}
 /**
  * A matrix
  * @param {Number} [rows]
@@ -82,7 +87,7 @@ export class Matrix {
    *
    * @returns {{rows: *, columns: *, weights: Array}}
    */
-  toJSON(): { rows: number; columns: number; weights: Float32Array } {
+  toJSON(): IMatrixJSON {
     return {
       rows: this.rows,
       columns: this.columns,

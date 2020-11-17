@@ -1,4 +1,4 @@
-import { Matrix } from './matrix';
+import { IMatrixJSON, Matrix } from './matrix';
 import { RandomMatrix } from './matrix/random-matrix';
 import { Equation } from './matrix/equation';
 import { sampleI } from './matrix/sample-i';
@@ -7,13 +7,10 @@ import { softmax } from './matrix/softmax';
 import { copy } from './matrix/copy';
 import { randomFloat } from '../utilities/random';
 import { zeros } from '../utilities/zeros';
-import {
-  DataFormatter,
-  defaultRNNFormatter,
-  IDataFormatter,
-} from '../utilities/data-formatter';
+import { DataFormatter, IDataFormatter } from '../utilities/data-formatter';
 import { NeuralNetwork } from '../neural-network';
 import { Value, IRNNDatum } from './rnn-data-types';
+import { Log } from '../feed-forward';
 
 export interface IRNNModel {
   input: Matrix;
@@ -35,18 +32,18 @@ interface IRNNOptions<IOType extends Value | IRNNDatum> {
   regc: number;
   clipval: number;
   maxPredictionLength: number;
-  setupData?: (data: IOType[]) => string[];
-  dataFormatter: IDataFormatter<IOType>;
-  json?: unknown;
+  setupData?: (data: IOType[]) => number[][];
+  dataFormatter: IDataFormatter;
+  json?: IRNNJSON<IOType>;
 }
 
 interface IRNNTrainingOptions {
   iterations: number;
   errorThresh: number;
-  log: boolean;
+  log: boolean | ((message: string) => void);
   logPeriod: number;
   learningRate: number;
-  callback?: () => void;
+  callback?: (status: IRNNStatus) => void;
   callbackPeriod: number;
   timeout?: number;
 }
@@ -80,8 +77,19 @@ export const defaults: IRNNOptions<Value | IRNNDatum> = {
   regc: 0.000001,
   clipval: 5,
   maxPredictionLength: 100,
-  setupData: defaultRNNFormatter,
+  dataFormatter: new DataFormatter(),
 };
+
+interface IRNNStatus {
+  iterations: number;
+  error: number;
+}
+
+interface IRNNPreppedTrainingData {
+  status: IRNNStatus;
+  preparedData: number[][];
+  endTime: number;
+}
 
 export class RNN<IOType extends Value | IRNNDatum> {
   options: IRNNOptions<IOType> = { ...defaults };
@@ -98,6 +106,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
     equationConnections: [],
     outputConnector: new RandomMatrix(0, 0, 0.08),
   };
+
   initialLayerInputs: Matrix[] = [];
 
   constructor(options: Partial<IRNNOptions<IOType>> = {}) {
@@ -359,20 +368,18 @@ export class RNN<IOType extends Value | IRNNDatum> {
     return true;
   }
 
-  run(
-    rawInput: IOType | null = null,
-    isSampleI = false,
-    temperature = 1
-  ): IOType | null {
+  run(rawInput: Value = [], isSampleI = false, temperature = 1): Value | null {
     const maxPredictionLength =
       this.options.maxPredictionLength +
       (rawInput !== null ? (rawInput as string).length : 0) +
-      (this.options.dataFormatter ? this.options.dataFormatter.specialIndexes.length : 0);
+      (this.options.dataFormatter
+        ? this.options.dataFormatter.specialIndexes.length
+        : 0);
 
     if (!this.isRunnable) return null;
-    const input = this.dataFormatter
-      ? this.dataFormatter.formatDataIn(this, rawInput)
-      : rawInput;
+    const input = this.options.dataFormatter
+      ? this.options.dataFormatter.formatDataIn(rawInput)
+      : (rawInput as number[]);
     const { model } = this;
     const output = [];
     let i = 0;
@@ -429,7 +436,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
      * then the output looks like: [4, 2, 9,...]
      * so we then remove the erroneous data to get our true output
      */
-    return this.dataFormatter.formatDataOut(
+    return this.options.dataFormatter.formatDataOut(
       input,
       output.slice(input.length).map((value) => value - 1)
     );
@@ -437,10 +444,10 @@ export class RNN<IOType extends Value | IRNNDatum> {
 
   /**
    *
-   * Verifies network sizes are initilaized
+   * Verifies network sizes are initialized
    * If they are not it will initialize them
    */
-  verifyIsInitialized() {
+  verifyIsInitialized(): void {
     if (!this.model) {
       this.initialize();
     }
@@ -455,14 +462,15 @@ export class RNN<IOType extends Value | IRNNDatum> {
    *       momentum: (number),
    *       activation: 'sigmoid', 'relu', 'leaky-relu', 'tanh'
    */
-  updateTrainingOptions(options: Partial<IRNNTrainingOptions>) {
+  updateTrainingOptions(options: Partial<IRNNTrainingOptions>): void {
     this.trainOpts = { ...trainDefaults, ...options };
     this.validateTrainingOptions(this.trainOpts);
-    this.setLogMethod(options.log || this.trainOpts.log);
-    this.activation = options.activation || this.activation;
+    this.setLogMethod(options.log ?? this.trainOpts.log);
+    // TODO: Remove this?
+    // this.activation = options.activation || this.activation;
   }
 
-  validateTrainingOptions(options) {
+  validateTrainingOptions(options: IRNNTrainingOptions): void {
     NeuralNetwork.prototype.validateTrainingOptions.call(this, options);
   }
 
@@ -473,7 +481,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
    * if false passed in nothing is logged
    * @returns error
    */
-  setLogMethod(log) {
+  setLogMethod(log: Log | undefined | boolean): void {
     if (typeof log === 'function') {
       this.trainOpts.log = log;
     } else if (log) {
@@ -483,27 +491,23 @@ export class RNN<IOType extends Value | IRNNDatum> {
     }
   }
 
-  /**
-   *
-   * @param data
-   * @param options
-   * @protected
-   * @return {object} { data, status, endTime }
-   */
-  prepTraining(data, options) {
+  protected prepTraining(
+    data: IOType[],
+    options: Partial<IRNNTrainingOptions>
+  ): IRNNPreppedTrainingData {
     this.updateTrainingOptions(options);
-    data = this.formatData(data);
-    const endTime = Date.now() + this.trainOpts.timeout;
+    const preparedData = this.options.dataFormatter.format(data);
+    const endTime = Date.now() + (this.trainOpts.timeout ?? 0);
 
     const status = {
       error: 1,
       iterations: 0,
     };
 
-    this.verifyIsInitialized(data);
+    this.verifyIsInitialized();
 
     return {
-      data,
+      preparedData,
       status,
       endTime,
     };
@@ -512,7 +516,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
   train(
     data: IOType[],
     options: Partial<IRNNTrainingOptions> = {}
-  ): { error: number; iterations: number } {
+  ): IRNNStatus {
     this.trainOpts = options = {
       ...trainDefaults,
       ...options,
@@ -523,21 +527,24 @@ export class RNN<IOType extends Value | IRNNDatum> {
       logPeriod,
       callback,
       callbackPeriod,
-    } = options;
+    } = this.trainOpts;
     const log = options.log === true ? console.log : options.log;
     let error = Infinity;
     let i;
 
+    let inputs: number[][];
     if (this.options.setupData) {
-      data = this.options.setupData(data);
+      inputs = this.options.setupData(data);
+    } else {
+      inputs = data as number[][];
     }
 
     this.verifyIsInitialized();
 
     for (i = 0; i < iterations && error > errorThresh; i++) {
       let sum = 0;
-      for (let j = 0; j < data.length; j++) {
-        const err = this.trainPattern(data[j], true);
+      for (let j = 0; j < inputs.length; j++) {
+        const err = this.trainPattern(inputs[j], true);
         sum += err;
       }
       error = sum / data.length;
@@ -561,15 +568,11 @@ export class RNN<IOType extends Value | IRNNDatum> {
     };
   }
 
-  addFormat() {
+  addFormat(): void {
     throw new Error('not yet implemented');
   }
 
-  /**
-   *
-   * @returns {Object}
-   */
-  toJSON() {
+  toJSON(): IRNNJSON<IOType> {
     if (!this.model) {
       this.initialize();
     }
@@ -580,8 +583,9 @@ export class RNN<IOType extends Value | IRNNDatum> {
       options: { ...options },
       input: model.input.toJSON(),
       hiddenLayers: model.hiddenLayers.map((hiddenLayer) => {
-        const layers = {};
+        const layers: { [index: string]: IMatrixJSON } = {};
         for (const p in hiddenLayer) {
+          if (!hiddenLayer.hasOwnProperty(p)) continue;
           layers[p] = hiddenLayer[p].toJSON();
         }
         return layers;
@@ -591,18 +595,16 @@ export class RNN<IOType extends Value | IRNNDatum> {
     };
   }
 
-  fromJSON(json) {
+  fromJSON(json: IRNNJSON<IOType>): void {
     const { options } = json;
-    this.model = null;
-    this.hiddenLayers = null;
+    this.model = {};
     const allMatrices = [];
     const input = Matrix.fromJSON(json.input);
     allMatrices.push(input);
-    const hiddenLayers = [];
+    const hiddenLayers: Array<{ [index: string]: Matrix }> = [];
 
-    // backward compatibility for hiddenSizes
-    (json.hiddenLayers || json.hiddenSizes).forEach((hiddenLayer) => {
-      const layers = {};
+    json.hiddenLayers.forEach((hiddenLayer) => {
+      const layers: { [index: string]: Matrix } = {};
       for (const p in hiddenLayer) {
         layers[p] = Matrix.fromJSON(hiddenLayer[p]);
         allMatrices.push(layers[p]);
@@ -617,13 +619,8 @@ export class RNN<IOType extends Value | IRNNDatum> {
 
     Object.assign(this, defaults, options);
 
-    // backward compatibility
-    if (options.hiddenSizes) {
-      this.hiddenLayers = options.hiddenSizes;
-    }
-
     if (options.dataFormatter) {
-      this.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);
+      options.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);
     }
 
     this.model = {
@@ -725,7 +722,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
     }
 
     const statesRaw = [];
-    const usedFunctionNames = {};
+    const usedFunctionNames: { [methodName: string]: boolean } = {};
     const innerFunctionsSwitch = [];
     for (let i = 0, max = states.length; i < max; i++) {
       const state = states[i];
@@ -753,32 +750,37 @@ export class RNN<IOType extends Value | IRNNDatum> {
   if (typeof temperature === 'undefined') temperature = 1;
   var json = ${jsonString};
   ${
-    this.dataFormatter
-      ? `${this.dataFormatter.toFunctionString()};
+    this.options.dataFormatter
+      ? `${this.options.dataFormatter.toFunctionString()};
   Object.assign(dataFormatter, json.options.dataFormatter);`
       : ''
   }
   ${
-    this.dataFormatter && typeof this.options.formatDataIn === 'function'
+    this.options.dataFormatter && typeof this.options.dataFormatter.formatDataIn === 'function'
       ? `const formatDataIn = function (input, output) { ${toInner(
-          this.options.formatDataIn.toString()
+          this.options.dataFormatter.formatDataIn.toString()
         )} }.bind({ dataFormatter });`
       : ''
   }
   ${
-    this.dataFormatter !== null &&
-    typeof this.options.formatDataOut === 'function'
+    this.options.dataFormatter !== null &&
+    typeof this.options.dataFormatter.formatDataOut === 'function'
       ? `const formatDataOut = function formatDataOut(input, output) { ${toInner(
-          this.options.formatDataOut.toString()
+          this.options.dataFormatter.formatDataOut.toString()
         )} }.bind({ dataFormatter });`
       : ''
   }
   var maxPredictionLength =
     ${this.options.maxPredictionLength} +
     rawInput.length +
-    ${this.dataFormatter ? this.dataFormatter.specialIndexes.length : 0};
+    ${
+      this.options.dataFormatter
+        ? this.options.dataFormatter.specialIndexes.length
+        : 0
+    };
   var input = ${
-    this.dataFormatter && typeof this.options.formatDataIn === 'function'
+    this.options.dataFormatter &&
+    typeof this.options.dataFormatter.formatDataIn === 'function'
       ? 'formatDataIn(rawInput)'
       : 'rawInput'
   };
@@ -830,7 +832,8 @@ ${innerFunctionsSwitch.join('\n')}
     output.push(nextIndex);
   }
   ${
-    this.dataFormatter && typeof this.options.formatDataOut === 'function'
+    this.options.dataFormatter &&
+    typeof this.options.dataFormatter.formatDataOut === 'function'
       ? 'return formatDataOut(input, output.slice(input.length).map(function(value) { return value - 1; }))'
       : 'return output.slice(input.length).map(function(value) { return value - 1; })'
   };
@@ -852,6 +855,15 @@ ${innerFunctionsSwitch.join('\n')}
       cb ? cb(src) : src
     ) as RNNFunction<IOType>;
   }
+}
+
+export interface IRNNJSON<IOType extends Value | IRNNDatum> {
+  type: string;
+  options: IRNNOptions<IOType>;
+  input: IMatrixJSON;
+  hiddenLayers: Array<{ [index: string]: IMatrixJSON }>;
+  outputConnector: IMatrixJSON;
+  output: IMatrixJSON;
 }
 
 function last<T>(values: T[]): T {

@@ -1,40 +1,44 @@
 import { Value, IRNNDatum } from '../recurrent/rnn-data-types';
 
-export interface IDataFormatter<IOType> {
+export interface IDataFormatter {
   indexTable: { [value: string]: number };
-  toIndexesInputOutput: (input: IOType, output?: IOType) => number[];
-  toIndexes: (input: IOType) => number[];
+  toIndexesInputOutput: (input: Value, output?: Value) => number[];
+  toIndexes: (input: string) => number[];
   toCharacters: (output: number[]) => string[];
   characters: Array<string | number>;
   specialIndexes: number[];
   toFunctionString: () => string;
-  formatDataIn: (
-    input: Value | IRNNDatum | null,
-    output?: Value | IRNNDatum
-  ) => number[];
+  formatDataIn: (input?: Value, output?: Value) => number[];
   formatDataOut: (input: number[], output: number[]) => string;
+  format: (data: Array<IRNNDatum | Value>) => number[][];
   isSetup: boolean;
 }
 
-export class DataFormatter<IOType> implements IDataFormatter<IOType> {
+export class DataFormatter implements IDataFormatter {
   indexTable: { [key: string]: number; [key: number]: number } = {};
   characterTable: { [key: number]: string | number | null } = {};
   characters: Array<string | number> = [];
   specialIndexes: number[] = [];
   isSetup = false;
 
-  constructor(private values?: Value[], maxThreshold = 0) {
+  constructor(private values?: Array<IRNNDatum | Value>, maxThreshold = 0) {
     if (values === undefined) return;
 
+    this.setup(values, maxThreshold);
+  }
+
+  setup(values: Array<IRNNDatum | Value>, maxThreshold = 0): void {
+    if (this.isSetup) throw new Error('DataFormatter is already setup');
     this.values = values;
     // go over all characters and keep track of all unique ones seen
     // count up all characters
 
     this.buildCharactersFromIterable(values);
     this.buildTables(maxThreshold);
+    this.isSetup = true;
   }
 
-  buildCharactersFromIterable(values: Value[]): void {
+  buildCharactersFromIterable(values: Array<IRNNDatum | Value>): void {
     const tempCharactersTable: { [character: string]: boolean } = {};
     for (
       let dataFormatterIndex = 0, dataFormatterLength = values.length;
@@ -59,6 +63,32 @@ export class DataFormatter<IOType> implements IDataFormatter<IOType> {
         if (tempCharactersTable.hasOwnProperty(characters)) continue;
         tempCharactersTable[dataFormatterIndex] = true;
         this.characters.push(characters);
+      } else if (typeof characters === 'boolean') {
+        const character = characters.toString();
+        if (tempCharactersTable.hasOwnProperty(character)) continue;
+        tempCharactersTable[dataFormatterIndex] = true;
+        this.characters.push(character);
+      } else if (
+        Array.isArray(characters) &&
+        typeof characters[0] === 'string'
+      ) {
+        for (let i = 0; i < characters.length; i++) {
+          const character = characters[i] as string;
+          if (tempCharactersTable.hasOwnProperty(character)) continue;
+          tempCharactersTable[dataFormatterIndex] = true;
+          this.characters.push(character);
+        }
+      } else if (
+        Array.isArray(characters) &&
+        (typeof characters[0] === 'number' ||
+          typeof characters[0] === 'boolean')
+      ) {
+        for (let i = 0; i < characters.length; i++) {
+          const character = characters[i].toString();
+          if (tempCharactersTable.hasOwnProperty(character)) continue;
+          tempCharactersTable[dataFormatterIndex] = true;
+          this.characters.push(character);
+        }
       } else {
         //  remove check after TS conversion is complete
         throw new Error('Should never happen');
@@ -87,10 +117,14 @@ export class DataFormatter<IOType> implements IDataFormatter<IOType> {
     const result = [];
     const { indexTable } = this;
 
-    if (typeof value === 'number') value = value.toString();
+    switch (typeof value) {
+      case 'number':
+      case 'boolean':
+        value = value.toString();
+    }
 
     for (let i = 0, max = value.length; i < max; i++) {
-      const character = value[i];
+      const character = value[i].toString();
       let index = indexTable[character];
       if (index === undefined) {
         if (indexTable.unrecognized) {
@@ -110,30 +144,44 @@ export class DataFormatter<IOType> implements IDataFormatter<IOType> {
     value2?: Value,
     maxThreshold = 0
   ): number[] {
-    let result = null;
+    let result: number[] = [];
     if (typeof value1 === 'string') {
       result = this.toIndexes(
         value1.split('').concat(['stop-input', 'start-output']),
         maxThreshold
       );
-    } else if (typeof value1 === 'number') {
+    } else if (typeof value1 === 'number' || typeof value1 === 'boolean') {
       result = this.toIndexes(
         value1.toString().split('').concat(['stop-input', 'start-output']),
         maxThreshold
       );
-    } else if (Array.isArray(value1)) {
+    } else if (
+      typeof (value1 as number[])[0] === 'number' ||
+      typeof (value1 as boolean[])[0] === 'boolean'
+    ) {
       result = this.toIndexes(
-        value1.concat(['stop-input', 'start-output']),
+        value1.toString().split('').concat(['stop-input', 'start-output']),
         maxThreshold
       );
+    } else {
+      throw new Error('unrecognized value');
     }
 
     if (typeof value2 === 'undefined') return result;
 
     if (typeof value2 === 'string') {
-      return result.concat(this.toIndexes(value2.split(''), maxThreshold));
-    } else {
       return result.concat(this.toIndexes(value2, maxThreshold));
+    } else if (typeof value2 === 'number' || typeof value2 === 'boolean') {
+      return result.concat(this.toIndexes(value2.toString(), maxThreshold));
+    } else if (
+      typeof (value2 as number[])[0] === 'number' ||
+      typeof (value2 as boolean[])[0] === 'boolean'
+    ) {
+      return result.concat(
+        this.toIndexes(value2.toString().split(''), maxThreshold)
+      );
+    } else {
+      throw new Error('unrecognized value');
     }
   }
 
@@ -182,42 +230,39 @@ export class DataFormatter<IOType> implements IDataFormatter<IOType> {
     return new DataFormatter(values, maxThreshold);
   }
 
-  static fromAllPrintableInputOutput<IOType>(
+  static fromAllPrintableInputOutput(
     maxThreshold: number,
     values = ['\n']
-  ): DataFormatter<IOType> {
+  ): DataFormatter {
     const dataFormatter = DataFormatter.fromAllPrintable(maxThreshold, values);
     dataFormatter.addInputOutput();
     dataFormatter.addUnrecognized();
     return dataFormatter;
   }
 
-  static fromStringInputOutput<IOType>(
+  static fromStringInputOutput(
     string: string,
     maxThreshold: number
-  ): DataFormatter<IOType> {
+  ): DataFormatter {
     const values = String.prototype.concat(...new Set(string));
-    const dataFormatter = new DataFormatter<IOType>(
-      values.split(''),
-      maxThreshold
-    );
+    const dataFormatter = new DataFormatter(values.split(''), maxThreshold);
     dataFormatter.addInputOutput();
     dataFormatter.addUnrecognized();
     dataFormatter.isSetup = true;
     return dataFormatter;
   }
 
-  static fromArrayInputOutput<IOType extends IRNNDatum>(
-    data: IOType[],
+  static fromArrayInputOutput(
+    data: IRNNDatum[],
     maxThreshold?: number
-  ): DataFormatter<IOType> {
+  ): DataFormatter {
     const values: Array<string | string[]> = [];
 
     for (let i = 0; i < data.length; i++) {
       const datum = data[i];
       values.push(validateAndCast(datum.input), validateAndCast(datum.output));
     }
-    const dataFormatter = new DataFormatter<IOType>(
+    const dataFormatter = new DataFormatter(
       values.filter((v, i, a) => a.indexOf(v) === i),
       maxThreshold
     );
@@ -227,10 +272,7 @@ export class DataFormatter<IOType> implements IDataFormatter<IOType> {
     return dataFormatter;
   }
 
-  static fromString<IOType>(
-    string: string,
-    maxThreshold: number
-  ): DataFormatter<IOType> {
+  static fromString(string: string, maxThreshold: number): DataFormatter {
     const values = String.prototype.concat(...new Set(string));
     return new DataFormatter(values.split(''), maxThreshold);
   }
@@ -238,7 +280,7 @@ export class DataFormatter<IOType> implements IDataFormatter<IOType> {
   /** TODO: Type better, The type of json is not "string that is a valid JSON", it is a POJO in the shape of DataFormatter.
    * this method re-hydrates the the data as an instance of DataFormatter.
    */
-  static fromJSON<IOType>(json: IDataFormatterJSON): DataFormatter<IOType> {
+  static fromJSON(json: IDataFormatterJSON): DataFormatter {
     const dataFormatter = new DataFormatter();
     dataFormatter.indexTable = json.indexTable;
     dataFormatter.characterTable = json.characterTable;
@@ -267,11 +309,8 @@ var dataFormatter = {
 };`;
   }
 
-  formatDataIn(
-    input: Value | IRNNDatum | null,
-    output?: Value | IRNNDatum
-  ): number[] {
-    if (!input) return [];
+  formatDataIn(input?: Value, output?: Value): number[] {
+    if (input === undefined) return [];
     if (Array.isArray(input) && typeof input[0] === 'number') {
       return input as number[];
     }
@@ -285,37 +324,39 @@ var dataFormatter = {
     return this.toCharacters(output).join('');
   }
 
-  format(data: Array<IRNNDatum | Value>): string[] {
+  format(data: Array<IRNNDatum | Value>): number[][] {
     if (
-      typeof data[0] !== 'string' &&
+      typeof data[0] === 'number' &&
       !Array.isArray(data[0]) &&
       (!data[0].hasOwnProperty('input') || !data[0].hasOwnProperty('output'))
     ) {
-      return data;
+      return data as number[][];
     }
-    const values: any[] = [];
-    const result = [];
+    const result: number[][] = [];
     if (
       typeof data[0] === 'string' ||
       typeof data[0] === 'number' ||
       Array.isArray(data[0])
     ) {
       if (!this.isSetup) {
+        this.setup(data);
         for (let i = 0; i < data.length; i++) {
-          values.push(validateAndCast(data[i]));
+          result.push(this.formatDataIn(validateAndCast(data[i] as Value)));
         }
         this.addUnrecognized();
-        this.isSetup = true;
       }
       for (let i = 0, max = data.length; i < max; i++) {
-        result.push(this.formatDataIn(data[i]));
+        result.push(this.formatDataIn(data[i] as Value));
       }
-    } else if (data[0].input && data[0].output) {
+    } else if ((data[0] as IRNNDatum).input && (data[0] as IRNNDatum).output) {
+      if (!this.isSetup) {
+        this.setup(data);
+      }
       for (let i = 0, max = data.length; i < max; i++) {
         result.push(
           this.formatDataIn(
-            validateAndCast(data[i].input),
-            validateAndCast(data[i].output)
+            validateAndCast((data[i] as IRNNDatum).input),
+            validateAndCast((data[i] as IRNNDatum).output)
           )
         );
       }
@@ -326,17 +367,19 @@ var dataFormatter = {
   }
 }
 
-function validateAndCast(
-  value: string | number | string[] | number[]
-): string | string[] {
+function validateAndCast(value: Value): string | string[] {
   if (typeof value === 'string') return value;
   if (typeof value === 'number') return value.toString();
+  if (typeof value === 'boolean') return value.toString();
   if (typeof value[0] === 'string') return value as string[];
+  if (typeof value[0] === 'boolean') {
+    return (value as boolean[]).map((v: boolean) => v.toString());
+  }
   if (typeof value[0] === 'number') {
     return (value as number[]).map((v: number) => v.toString());
   }
   throw new Error(
-    'unrecognized value, expected string[], string, number[], or number'
+    'unrecognized value, expected string[], string, number[], number, boolean[], or boolean'
   );
 }
 

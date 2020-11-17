@@ -13,7 +13,7 @@ import { GRU } from './recurrent/gru';
 import { GRUTimeStep } from './recurrent/gru-time-step';
 import { LSTM } from './recurrent/lstm';
 import { LSTMTimeStep } from './recurrent/lstm-time-step';
-import RNN from './recurrent/rnn';
+import { RNN } from './recurrent/rnn';
 import RNNTimeStep from './recurrent/rnn-time-step';
 import TrainStream from './train-stream';
 import { DataFormatter } from './utilities/data-formatter';

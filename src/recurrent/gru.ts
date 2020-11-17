@@ -1,7 +1,8 @@
 import { Matrix } from './matrix';
 import { Equation } from './matrix/equation';
 import { RandomMatrix } from './matrix/random-matrix';
-import RNN from './rnn';
+import { RNN } from './rnn';
+import { IRNNDatum, Value } from './rnn-data-types';
 
 export interface GRUModel {
   updateGateInputMatrix: RandomMatrix;
@@ -15,7 +16,7 @@ export interface GRUModel {
   cellWriteBias: Matrix;
 }
 
-export class GRU extends RNN {
+export class GRU<IOType extends Value | IRNNDatum> extends RNN<IOType> {
   static getModel(hiddenSize: number, prevSize: number): GRUModel {
     return {
       // update Gate

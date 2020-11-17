@@ -39,13 +39,13 @@ interface IFeedForwardStatus {
   error: number;
 }
 
-export type FeedForwardLog = (status: string) => void;
+export type Log = (status: string) => void;
 export type FeedForwardCallback = (status: IFeedForwardStatus) => void;
 
 interface IFeedForwardTrainingOptions {
   iterations?: number;
   errorThresh?: number;
-  log?: boolean | FeedForwardLog;
+  log?: boolean | Log;
   logPeriod?: number;
   learningRate?: number;
   callback?: FeedForwardCallback;
@@ -165,7 +165,7 @@ export class FeedForward<
    * if false passed in nothing is logged
    * @returns error
    */
-  _setLogMethod(log: FeedForwardLog | undefined | boolean): void {
+  _setLogMethod(log: Log | undefined | boolean): void {
     if (typeof log === 'function') {
       this.trainOpts.log = log;
     } else if (log) {

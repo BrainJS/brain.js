@@ -1,7 +1,8 @@
 import { Matrix } from './matrix';
 import { Equation } from './matrix/equation';
 import { RandomMatrix } from './matrix/random-matrix';
-import RNN from './rnn';
+import { RNN } from './rnn';
+import { IRNNDatum, Value } from './rnn-data-types';
 
 export interface LSTMModel {
   inputMatrix: Matrix;
@@ -18,7 +19,7 @@ export interface LSTMModel {
   cellActivationBias: Matrix;
 }
 
-export class LSTM extends RNN {
+export class LSTM<IOType extends Value | IRNNDatum> extends RNN<IOType> {
   static getModel(hiddenSize: number, prevSize: number): LSTMModel {
     return {
       // gates parameters
