@@ -1,11 +1,12 @@
-const CrossValidate = require('../src/cross-validate');
-const { NeuralNetwork } = require('../src/neural-network');
-const { LSTMTimeStep } = require('../src/recurrent/lstm-time-step');
+import CrossValidate from '../src/cross-validate';
+import { NeuralNetwork } from '../src/neural-network';
+import { LSTMTimeStep } from '../src/recurrent/lstm-time-step';
 
 describe('CrossValidate', () => {
   describe('.train()', () => {
     class FakeNN extends NeuralNetwork {
-      constructor(run) {
+      hiddenLayers: number[];
+      constructor(run: (inputs: []) => void) {
         super();
         if (run) {
           this.run = run;
@@ -20,9 +21,9 @@ describe('CrossValidate', () => {
         };
       }
 
-      runInput(inputs) {
+      runInput = (inputs: []) => {
         return this.run(inputs);
-      }
+      };
 
       toJSON() {
         return null;
@@ -47,7 +48,7 @@ describe('CrossValidate', () => {
         { input: [1, 1], output: [0] },
         { input: [1, 0], output: [1] },
       ];
-      const net = new CrossValidate(FakeNN, (inputs) => {
+      const net = new CrossValidate(FakeNN, (inputs: number[]) => {
         if (inputs[0] === 0 && inputs[1] === 1) return [1];
         if (inputs[0] === 0 && inputs[1] === 0) return [0];
         if (inputs[0] === 1 && inputs[1] === 1) return [0];
@@ -101,7 +102,7 @@ describe('CrossValidate', () => {
         { input: [1, 1], output: [0] },
         { input: [1, 0], output: [1] },
       ];
-      const net = new CrossValidate(FakeNN, (inputs) => {
+      const net = new CrossValidate(FakeNN, (inputs: number[]) => {
         // invert output, showing worst possible training
         if (inputs[0] === 0 && inputs[1] === 1) return [0];
         if (inputs[0] === 0 && inputs[1] === 0) return [1];
@@ -168,7 +169,8 @@ describe('CrossValidate', () => {
   });
   describe('.fromJSON()', () => {
     class FakeNN {
-      fromJSON(json) {
+      json = {};
+      fromJSON(json: Record<string, unknown>) {
         this.json = json;
       }
     }
@@ -186,7 +188,8 @@ describe('CrossValidate', () => {
   });
   describe('.toNeuralNetwork()', () => {
     class FakeNN {
-      fromJSON(json) {
+      json = {};
+      fromJSON(json: Record<string, unknown>) {
         this.json = json;
       }
     }
@@ -198,6 +201,8 @@ describe('CrossValidate', () => {
           { error: 5, network: 5 },
           { error: 1, network: 1 },
         ],
+        avgs: { trainTime: 0, testTime: 0, iterations: 0, error: 0 },
+        stats: { total: 0 },
       };
       const net = cv.toNeuralNetwork();
       expect(net.json).toBe(1);

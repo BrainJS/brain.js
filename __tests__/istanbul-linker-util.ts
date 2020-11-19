@@ -1,5 +1,5 @@
-const { parse } = require('acorn');
-const { getFileCoverageDataByName } = require('istanbul-spy');
+import { parse } from 'acorn';
+import { getFileCoverageDataByName } from 'istanbul-spy';
 
 // Istanbul.js, why did you make me do this, I trusted you...
 // This would have probably been a whole lot easier with regex, maybe, but probably not as clear.
@@ -7,12 +7,18 @@ const { getFileCoverageDataByName } = require('istanbul-spy');
 
 // hah! damn...
 
+interface TSettings {
+  onIstanbulCoverageVariable: (name: string) => any;
+}
+
 class Recurse {
-  constructor(settings) {
+  settings: TSettings;
+
+  constructor(settings: TSettings) {
     this.settings = settings;
   }
 
-  into(ast) {
+  into(ast?: Node | any) {
     if (!ast) return;
     if (Array.isArray(ast)) {
       for (let i = 0; i < ast.length; i++) {
@@ -79,7 +85,7 @@ class Recurse {
         this.into(ast.argument);
         break;
       case 'MemberExpression':
-        if (ast.object.name && ast.object.name.match(/cov_[0-9a-z]+/)) {
+        if (ast.object.name?.match(/cov_[0-9a-z]+/)) {
           this.settings.onIstanbulCoverageVariable(ast.object.name);
         }
         this.into(ast.object);
@@ -131,19 +137,25 @@ class Recurse {
       case 'ContinueStatement':
         break;
       default:
-        throw new Error(`unhandled type "${ast.type}"`);
+        throw new Error('unhandled type "' + (ast.type as string) + '"');
     }
   }
 }
 
-module.exports = function (fn) {
-  const source = fn.toString();
+/**
+ *
+ * @param {Function} fn
+ * @returns string
+ */
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function istanbulLinkerUtil(fn: Function): string {
+  const source: string = fn.toString();
   const links = new Set();
   const ast = parse(`function fakeFunction() {${source}}`, {
     ecmaVersion: 2020,
   });
   const recurse = new Recurse({
-    onIstanbulCoverageVariable: (name) => {
+    onIstanbulCoverageVariable: (name: string) => {
       const data = getFileCoverageDataByName(name);
       if (!data) {
         throw new Error(`Could not find istanbul identifier ${name}`);
@@ -155,4 +167,4 @@ module.exports = function (fn) {
   });
   recurse.into(ast);
   return Array.from(links).join('') + source;
-};
+}

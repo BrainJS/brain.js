@@ -43,7 +43,7 @@ describe('DataFormatter', () => {
     const dataFormatter = new DataFormatter(['cat']);
     const asIndexes = [0, 1, 2];
 
-    dataFormatter.toIndexes('cat').forEach((v, i) => {
+    dataFormatter.toIndexes(['cat']).forEach((v, i) => {
       expect(v).toBe(asIndexes[i]);
     });
   });
@@ -65,7 +65,7 @@ describe('DataFormatter', () => {
     ]);
     const asIndexes = [0, 11, 8, 10, 8];
 
-    dataFormatter.toIndexes('0+8=8').forEach((v, i) => {
+    dataFormatter.toIndexes(['0+8=8']).forEach((v, i) => {
       expect(v).toBe(asIndexes[i]);
     });
   });
@@ -181,31 +181,31 @@ describe('DataFormatter', () => {
 
   test('can handle array of numbers', () => {
     const dataFormatter = new DataFormatter([1, 2, 3]);
-    const indices = dataFormatter.toIndexes([1, 2, 3]);
-    indices.forEach((value) => expect(value >= 0));
+    const indices = dataFormatter.toIndexes(['1', '2', '3']);
+    indices.forEach((value) => expect(Number(value) >= 0));
 
     expect(dataFormatter.toCharacters(indices)).toEqual(['1', '2', '3']);
   });
 
   test('can handle array of array of numbers', () => {
     const dataFormatter = new DataFormatter([
-      [1, 2, 3],
-      [4, 5, 6],
+      ['1', '2', '3'],
+      ['4', '5', '6'],
     ]);
-    let indices = dataFormatter.toIndexes([1, 2, 3]);
-    indices.forEach((value) => expect(value >= 0));
+    let indices = dataFormatter.toIndexes(['1', '2', '3']);
+    indices.forEach((value) => expect(Number(value) >= 0));
 
     expect(dataFormatter.toCharacters(indices)).toEqual(['1', '2', '3']);
 
-    indices = dataFormatter.toIndexes([4, 5, 6]);
-    indices.forEach((value) => expect(value >= 3));
+    indices = dataFormatter.toIndexes(['4', '5', '6']);
+    indices.forEach((value) => expect(Number(value) >= 3));
 
     expect(dataFormatter.toCharacters(indices)).toEqual(['4', '5', '6']);
   });
 
   test('can handle array of booleans', () => {
-    const dataFormatter = new DataFormatter([true, false]);
-    const indices = dataFormatter.toIndexes([true, false, true, false]);
+    const dataFormatter = new DataFormatter(['true', 'false']);
+    const indices = dataFormatter.toIndexes(['true', 'false', 'true', 'false']);
     indices.forEach((value) => expect(value >= 0));
 
     expect(dataFormatter.toCharacters(indices)).toEqual([
@@ -217,8 +217,8 @@ describe('DataFormatter', () => {
   });
 
   test('can handle array of array of booleans', () => {
-    const dataFormatter = new DataFormatter([[true], [false]]);
-    const indices = dataFormatter.toIndexes([true, false]);
+    const dataFormatter = new DataFormatter([['true'], ['false']]);
+    const indices = dataFormatter.toIndexes(['true', 'false']);
     indices.forEach((value) => expect(value >= 0));
 
     expect(dataFormatter.toCharacters(indices)).toEqual(['true', 'false']);
@@ -241,8 +241,8 @@ describe('DataFormatter', () => {
       output: [0],
     }]);
     const indices = dataFormatter.toIndexesInputOutput(
-      [1, 2, 3, 4, 5],
-      [1, 2, 3, 4, 5]
+      ['1', '2', '3', '4', '5'],
+      ['1', '2', '3', '4', '5']
     );
 
     expect(dataFormatter.toCharacters(indices)).toEqual([

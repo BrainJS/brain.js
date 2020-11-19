@@ -53,6 +53,10 @@
         width: 50px;
       }
 
+      select {
+        width: 100%;
+      }
+
       button {
         background-color: rgb(0, 75, 0);
         color: #fff;
@@ -232,6 +236,7 @@ a,b,c,d,e,f,g,h,i,j</textarea
         .addEventListener('submit', function (e) {
           // Stop it from submitting
           e.preventDefault();
+
           const networkType = this.elements.namedItem('network-type').value;
           const size = this.elements
             .namedItem('size')
@@ -239,25 +244,23 @@ a,b,c,d,e,f,g,h,i,j</textarea
             .map((item) => {
               return parseInt(item, 10);
             });
-
-          const config = {
+          const networkConfig = {
             inputSize: size[0],
             inputRange: size[0],
             hiddenLayers: size.slice(1, size.length - 1),
             outputSize: size[size.length - 1],
           };
-
           const networkTypes = {
-            NeuralNetwork: () => {
+            NeuralNetwork: (config) => {
               return new brain.NeuralNetwork(config);
             },
-            RNN: () => {
+            RNN: (config) => {
               return new brain.recurrent.RNN(config);
             },
-            RNNTimeStep: () => {
+            RNNTimeStep: (config) => {
               return new brain.recurrent.RNNTimeStep(config);
             },
-            FeedForward: () => {
+            FeedForward: (config) => {
               // constructor shim
               const { input, feedForward, target } = brain.layer;
               return new brain.FeedForward({
@@ -269,7 +272,7 @@ a,b,c,d,e,f,g,h,i,j</textarea
                   target({ height: config.outputSize }, inputLayer),
               });
             },
-            Recurrent: function () {
+            Recurrent: (config) => {
               // constructor shim
               const { input, recurrent, output } = brain.layer;
               return new brain.Recurrent({
@@ -288,43 +291,41 @@ a,b,c,d,e,f,g,h,i,j</textarea
               });
             },
           };
-
           const options = constructOptions(this);
-          const network = networkTypes[networkType](config);
-          document.getElementById('result').innerHTML = this.elements.namedItem(
-            'use-json'
-          ).checked
+          const network = networkTypes[networkType](networkConfig);
+          const resultElement = document.getElementById('result');
+          const useJson = this.elements.namedItem('use-json').checked;
+
+          resultElement.innerHTML = useJson
             ? brain.utilities.toSVG(network.toJSON(), options)
             : brain.utilities.toSVG(network, options);
         });
 
-      function constructOptions(form) {
-        return {
-          height: Number(form.elements.namedItem('height').value),
-          width: Number(form.elements.namedItem('width').value),
-          radius: Number(form.elements.namedItem('radius').value),
-          line: {
-            width: Number(form.elements.namedItem('line-width').value),
-            color: form.elements.namedItem('line-color').value,
-          },
-          inputs: {
-            color: form.elements.namedItem('inp-color').value,
-            labels: (form.elements.namedItem('inp-labels').value || '').split(
-              ','
-            ),
-          },
-          hidden: {
-            color: form.elements.namedItem('hid-color').value,
-          },
-          outputs: {
-            color: form.elements.namedItem('out-color').value,
-          },
-          recurrentLine: {
-            color: form.elements.namedItem('recurrent-line-color').value,
-          },
-          fontSize: form.elements.namedItem('font-size').value,
-        };
-      }
+      const constructOptions = (form) => ({
+        height: Number(form.elements.namedItem('height').value),
+        width: Number(form.elements.namedItem('width').value),
+        radius: Number(form.elements.namedItem('radius').value),
+        line: {
+          width: Number(form.elements.namedItem('line-width').value),
+          color: form.elements.namedItem('line-color').value,
+        },
+        inputs: {
+          color: form.elements.namedItem('inp-color').value,
+          labels: (form.elements.namedItem('inp-labels').value || '').split(
+            ','
+          ),
+        },
+        hidden: {
+          color: form.elements.namedItem('hid-color').value,
+        },
+        outputs: {
+          color: form.elements.namedItem('out-color').value,
+        },
+        recurrentLine: {
+          color: form.elements.namedItem('recurrent-line-color').value,
+        },
+        fontSize: form.elements.namedItem('font-size').value,
+      });
 
       // Click programmatically
       document.getElementById('submit').click();

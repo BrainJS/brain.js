@@ -1,4 +1,4 @@
-import * as brain from '../../src';
+import { brain } from '../../src';
 
 // create configuration for training
 const config = {
@@ -42,12 +42,12 @@ const data = [
   { input: 'Cristiano', output: 'c' },
   { input: 'Choke', output: 'c' },
   { input: 'Cut', output: 'c' },
-] as brain.IRNNTrainingData[];
+];
 
 // the thing we would test
 const test = 'Code';
 
 const network = new brain.recurrent.LSTM();
 network.train(data, config);
-const output = network.run(test);
+const output: string = network.run(test);
 console.log(`It starts with: ${output}`); // It starts with: c

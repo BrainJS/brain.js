@@ -1,5 +1,5 @@
-import { BaseLayer, ILayer, ILayerSettings } from './base-layer';
 import { KernelOutput } from 'gpu.js';
+import { BaseLayer, ILayer, ILayerSettings } from './base-layer';
 
 export interface IFilterSettings extends ILayerSettings {
   filterCount: number;

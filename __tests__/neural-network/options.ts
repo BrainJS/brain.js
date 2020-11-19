@@ -1,4 +1,5 @@
-const { NeuralNetwork } = require('../../src/neural-network');
+import { ITrainingOptions } from '../../src/ITrainingOptions';
+import NeuralNetwork from '../../src/neural-network';
 
 describe('neural network options', () => {
   it('hiddenLayers', () => {
@@ -35,70 +36,82 @@ describe('neural network constructor values', () => {
   it('iterations should be settable in the constructor', () => {
     const opts = { iterations: 5 };
     const net = new NeuralNetwork(opts);
-    expect(opts.iterations).toBe(net.trainOpts.iterations);
+    expect(opts.iterations).toBe(
+      (net.trainOpts as ITrainingOptions).iterations
+    );
   });
 
   it('errorThresh should be settable in the constructor', () => {
     const opts = { errorThresh: 0.1 };
     const net = new NeuralNetwork(opts);
-    expect(opts.errorThresh).toBe(net.trainOpts.errorThresh);
+    expect(opts.errorThresh).toBe(
+      (net.trainOpts as ITrainingOptions).errorThresh
+    );
   });
 
   it('log should allow setting the training options to the constructor', () => {
     const log = function () {};
     const opts = { log: log };
     const net = new NeuralNetwork(opts);
-    expect(typeof net.trainOpts.log === 'function').toBeTruthy();
+    expect(
+      typeof (net.trainOpts as ITrainingOptions).log === 'function'
+    ).toBeTruthy();
   });
 
   it('logPeriod should be settable in the constructor', () => {
     const opts = { logPeriod: 5 };
     const net = new NeuralNetwork(opts);
-    expect(opts.logPeriod).toBe(net.trainOpts.logPeriod);
+    expect(opts.logPeriod).toBe((net.trainOpts as ITrainingOptions).logPeriod);
   });
 
   it('learningRate should be settable in the constructor', () => {
     const opts = { learningRate: 0.5 };
     const net = new NeuralNetwork(opts);
-    expect(opts.learningRate).toBe(net.trainOpts.learningRate);
+    expect(opts.learningRate).toBe(
+      (net.trainOpts as ITrainingOptions).learningRate
+    );
   });
 
   it('momentum should be settable in the constructor', () => {
     const opts = { momentum: 0.2 };
     const net = new NeuralNetwork(opts);
-    expect(opts.momentum).toBe(net.trainOpts.momentum);
+    expect(opts.momentum).toBe((net.trainOpts as ITrainingOptions).momentum);
   });
 
   it('callback should be settable in the constructor', () => {
     const cb = function () {};
     const opts = { callback: cb };
     const net = new NeuralNetwork(opts);
-    expect(typeof net.trainOpts.callback === 'function').toBeTruthy();
+    expect(
+      typeof (net.trainOpts as ITrainingOptions).callback === 'function'
+    ).toBeTruthy();
   });
 
   it('callbackPeriod should be settable in the constructor', () => {
     const opts = { callbackPeriod: 2 };
     const net = new NeuralNetwork(opts);
-    expect(opts.callbackPeriod).toBe(net.trainOpts.callbackPeriod);
+    expect(opts.callbackPeriod).toBe(
+      (net.trainOpts as ITrainingOptions).callbackPeriod
+    );
   });
 
   it('timeout should be settable in the constructor', () => {
     const opts = { timeout: 1500 };
     const net = new NeuralNetwork(opts);
-    expect(opts.timeout).toBe(net.trainOpts.timeout);
+    expect(opts.timeout).toBe((net.trainOpts as ITrainingOptions).timeout);
   });
 
   it('binaryThresh should be settable in the constructor', () => {
     const opts = { binaryThresh: 0.2 };
     const net = new NeuralNetwork(opts);
-    expect(opts.binaryThresh).toBe(net.binaryThresh);
+    expect(opts.binaryThresh).toBe((net as any).binaryThresh);
   });
 
   it('hiddenLayers should be settable in the constructor', () => {
     const opts = { hiddenLayers: [2, 3, 4] };
     const net = new NeuralNetwork(opts);
     expect(JSON.stringify(opts.hiddenLayers)).toBe(
-      JSON.stringify(net.hiddenLayers)
+      JSON.stringify((net as any).hiddenLayers)
     );
   });
 
@@ -111,6 +124,6 @@ describe('neural network constructor values', () => {
   it('leakyReluAlpha should be settable in the constructor', () => {
     const opts = { leakyReluAlpha: 0.1337 };
     const net = new NeuralNetwork(opts);
-    expect(opts.leakyReluAlpha).toBe(net.leakyReluAlpha);
+    expect(opts.leakyReluAlpha).toBe((net as any).leakyReluAlpha);
   });
 });

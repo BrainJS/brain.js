@@ -3,7 +3,7 @@ import CrossValidate from './cross-validate';
 import { FeedForward } from './feed-forward';
 import * as layer from './layer';
 import { layerTypes } from './layer';
-import * as likely from './likely';
+import { likely } from './likely';
 import { lookup } from './lookup';
 import NeuralNetwork from './neural-network';
 import NeuralNetworkGPU from './neural-network-gpu';
@@ -15,7 +15,7 @@ import { LSTM } from './recurrent/lstm';
 import { LSTMTimeStep } from './recurrent/lstm-time-step';
 import { RNN } from './recurrent/rnn';
 import RNNTimeStep from './recurrent/rnn-time-step';
-import TrainStream from './train-stream';
+import { TrainStream } from './train-stream';
 import { DataFormatter } from './utilities/data-formatter';
 import { max } from './utilities/max';
 import { mse } from './utilities/mse';
@@ -25,7 +25,7 @@ import { randomWeight } from './utilities/random-weight';
 import { randos } from './utilities/randos';
 import { range } from './utilities/range';
 import { toArray } from './utilities/to-array';
-import toSVG from './utilities/to-svg';
+import { toSVG } from './utilities/to-svg';
 import { zeros } from './utilities/zeros';
 
 export const brain = {
@@ -65,8 +65,13 @@ export const brain = {
   },
 };
 
+declare global {
+  interface Window {
+    brain: typeof brain;
+  }
+}
+
 if (typeof window !== 'undefined') {
-  // @ts-expect-error window.brain
   window.brain = brain;
 }
 

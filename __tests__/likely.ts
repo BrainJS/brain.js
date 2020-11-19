@@ -1,5 +1,5 @@
+import { likely } from '../src/likely';
 import { NeuralNetwork } from '../src/neural-network';
-import * as likely from '../src/likely';
 
 /**
  * Return 0 or 1 for '#'

@@ -4,9 +4,11 @@
   "coverageDirectory": "__coverage__",
   "globalSetup": "",
   "globals": {
-    "ts-jest": {}
+    "ts-jest": {
+      "tsConfig": "tsconfig.test.json"
+    }
   },
-  "preset": "ts-jest/presets/js-with-babel",
+  "preset": "ts-jest/presets/js-with-ts",
   "setupFiles": [],
   "testEnvironment": "node",
   "testPathIgnorePatterns": [

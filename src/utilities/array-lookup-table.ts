@@ -1,6 +1,5 @@
 export class ArrayLookupTable<TDatum extends { [key: string]: any[] }> {
-
-  length: number = 0;
+  length = 0;
   table: any = {};
 
   constructor(data: TDatum[], public prop: keyof TDatum) {

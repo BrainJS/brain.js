@@ -1,19 +1,20 @@
+import { IKernelFunctionThis, KernelOutput, Texture } from 'gpu.js';
+import { MeanSquaredError } from './estimator/mean-squared-error';
+import { ILayer, ILayerJSON } from './layer/base-layer';
+import { RecurrentInput } from './layer/recurrent-input';
+import { Model } from './layer/types';
 import {
-  INumberHash,
-  lookup,
   InputOutputValue,
-  INumberObject,
   INumberArray,
+  INumberHash,
+  INumberObject,
+  lookup,
 } from './lookup';
-import layerFromJSON from './utilities/layer-from-json';
 import * as praxis from './praxis';
+import { IPraxis, IPraxisSettings } from './praxis/base-praxis';
 import flattenLayers from './utilities/flatten-layers';
 import { makeKernel, release } from './utilities/kernel';
-import { MeanSquaredError } from './estimator/mean-squared-error';
-import { Model } from './layer/types';
-import { IPraxis, IPraxisSettings } from './praxis/base-praxis';
-import { ILayer, ILayerJSON } from './layer/base-layer';
-import { IKernelFunctionThis, KernelOutput, Texture } from 'gpu.js';
+import { layerFromJSON } from './utilities/layer-from-json';
 import { LookupTable } from './utilities/lookup-table';
 
 export interface IFeedForwardTrainingData<
@@ -57,7 +58,9 @@ interface IFeedForwardTrainingOptions {
 interface IFeedForwardOptions {
   learningRate?: number;
   binaryThresh?: number;
-  hiddenLayers?: Array<(inputLayer: ILayer, index: number) => ILayer>;
+  hiddenLayers?: Array<
+    (inputLayer: ILayer, recurrentInput: RecurrentInput) => ILayer
+  >;
   inputLayer?: () => ILayer;
   outputLayer?: (inputLayer: ILayer, index: number) => ILayer;
   praxisOpts?: Partial<IPraxisSettings>;
@@ -258,13 +261,17 @@ export class FeedForward<
     this._hiddenLayers = [];
     const result: ILayer[] = [];
     const { hiddenLayers } = this.options;
+
     if (!hiddenLayers) throw new Error('hiddenLayers not defined');
+
     for (let i = 0; i < hiddenLayers.length; i++) {
+      // @ts-expect-error not sure about the definiton Integer or ReccurrentInput?
       const hiddenLayer = hiddenLayers[i](previousLayer, i);
       result.push(hiddenLayer);
       this._hiddenLayers.push(hiddenLayer);
       previousLayer = hiddenLayer;
     }
+
     return result;
   }
 

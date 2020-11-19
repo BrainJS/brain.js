@@ -1,4 +1,4 @@
-import * as brain from '../../src';
+import { brain } from '../../src';
 const net = new brain.NeuralNetworkGPU();
 
 const xorTrainingData = [
@@ -6,7 +6,7 @@ const xorTrainingData = [
   { input: [0, 1], output: [1] },
   { input: [1, 0], output: [1] },
   { input: [1, 1], output: [0] },
-] as brain.INeuralNetworkTrainingData[];
+];
 
 net.train(xorTrainingData);
 

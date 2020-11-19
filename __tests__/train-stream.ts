@@ -1,13 +1,23 @@
-const { NeuralNetwork } = require('../src/neural-network');
-const TrainStream = require('../src/train-stream');
-const { LSTMTimeStep } = require('../src/recurrent/lstm-time-step');
+import { INumberObject, ITrainingDatum } from '../src/lookup';
+import { NeuralNetwork } from '../src/neural-network';
+import { LSTMTimeStep } from '../src/recurrent/lstm-time-step';
+import { TrainStream } from '../src/train-stream';
 
 describe('TrainStream', () => {
   const wiggle = 0.1;
   const errorThresh = 0.003;
-  function testTrainer(net, opts) {
+
+  async function testTrainer(
+    net: NeuralNetwork | LSTMTimeStep,
+    opts: {
+      data: ITrainingDatum[] | number[] | number[][];
+      errorThresh?: number;
+      iterations?: number;
+    }
+  ): Promise<{ error: number; iterations: number }> {
     const { data } = opts;
-    return new Promise((resolve) => {
+
+    return await new Promise((resolve) => {
       const trainStream = new TrainStream(
         Object.assign({}, opts, {
           neuralNetwork: net,
@@ -20,12 +30,14 @@ describe('TrainStream', () => {
       /**
        * Every time you finish an epoch of flood call `trainStream.endInputs()`
        */
-      function flood() {
+      function flood(): void {
         for (let i = data.length - 1; i >= 0; i--) {
           trainStream.write(data[i]);
         }
+
         trainStream.endInputs();
       }
+
       /**
        * kick off the stream
        */
@@ -34,8 +46,8 @@ describe('TrainStream', () => {
   }
 
   describe('using sparse training values', () => {
-    it('can train fruit', () => {
-      const trainingData = [
+    it('can train fruit', async () => {
+      const trainingData: ITrainingDatum[] = [
         { input: { apple: 1 }, output: { pome: 1 } },
         { input: { pear: 1 }, output: { pome: 1 } },
         { input: { hawthorn: 1 }, output: { pome: 1 } },
@@ -58,26 +70,33 @@ describe('TrainStream', () => {
         { input: { orange: 1 }, output: { modified: 1 } },
       ];
 
-      function largestKey(object) {
+      function largestKey(object: INumberObject) {
         let max = -Infinity;
         let maxKey = null;
+
         for (const key in object) {
           if (object[key] > max) {
             max = object[key];
             maxKey = key;
           }
         }
+
         return maxKey;
       }
+
       const net = new NeuralNetwork();
+
       return testTrainer(net, { data: trainingData, errorThresh: 0.001 }).then(
         () => {
-          for (const i in trainingData) {
-            const output = net.run(trainingData[i].input);
-            const target = trainingData[i].output;
+          for (const data of trainingData) {
+            const output = net.run(data.input);
+            const target = data.output as INumberObject;
 
             const outputKey = largestKey(output);
             const targetKey = largestKey(target);
+
+            if (!outputKey || !targetKey) fail();
+
             expect(outputKey).toBe(targetKey);
             expect(
               output[outputKey] < target[targetKey] + wiggle &&
@@ -90,7 +109,7 @@ describe('TrainStream', () => {
   });
   describe('bitwise functions', () => {
     describe('using arrays', () => {
-      it('NOT function', () => {
+      it('NOT function', async () => {
         const not = [
           {
             input: [0],
@@ -102,10 +121,12 @@ describe('TrainStream', () => {
           },
         ];
         const net = new NeuralNetwork();
-        return testTrainer(net, { data: not, errorThresh }).then(() => {
-          for (const i in not) {
-            const output = net.run(not[i].input)[0];
-            const target = not[i].output[0];
+
+        return await testTrainer(net, { data: not, errorThresh }).then(() => {
+          for (const i of not) {
+            const output = net.run(i.input)[0];
+            const target = i.output[0];
+
             expect(
               output < target + wiggle && output > target - wiggle
             ).toBeTruthy();
@@ -113,7 +134,7 @@ describe('TrainStream', () => {
         });
       });
 
-      it('XOR function', () => {
+      it('XOR function', async () => {
         const xor = [
           {
             input: [0, 0],
@@ -133,10 +154,12 @@ describe('TrainStream', () => {
           },
         ];
         const net = new NeuralNetwork();
-        return testTrainer(net, { data: xor, errorThresh }).then(() => {
-          for (const i in xor) {
-            const output = net.run(xor[i].input)[0];
-            const target = xor[i].output[0];
+
+        return await testTrainer(net, { data: xor, errorThresh }).then(() => {
+          for (const i of xor) {
+            const output = net.run(i.input)[0];
+            const target = i.output[0];
+
             expect(
               output < target + wiggle && output > target - wiggle
             ).toBeTruthy();
@@ -144,7 +167,7 @@ describe('TrainStream', () => {
         });
       });
 
-      it('OR function', () => {
+      it('OR function', async () => {
         const or = [
           {
             input: [0, 0],
@@ -164,10 +187,12 @@ describe('TrainStream', () => {
           },
         ];
         const net = new NeuralNetwork();
-        return testTrainer(net, { data: or, errorThresh }).then(() => {
-          for (const i in or) {
-            const output = net.run(or[i].input)[0];
-            const target = or[i].output[0];
+
+        return await testTrainer(net, { data: or, errorThresh }).then(() => {
+          for (const i of or) {
+            const output = net.run(i.input)[0];
+            const target = i.output[0];
+
             expect(
               output < target + wiggle && output > target - wiggle
             ).toBeTruthy();
@@ -175,7 +200,7 @@ describe('TrainStream', () => {
         });
       });
 
-      it('AND function', () => {
+      it('AND function', async () => {
         const and = [
           {
             input: [0, 0],
@@ -195,10 +220,12 @@ describe('TrainStream', () => {
           },
         ];
         const net = new NeuralNetwork();
-        return testTrainer(net, { data: and, errorThresh }).then(() => {
-          for (const i in and) {
-            const output = net.run(and[i].input)[0];
-            const target = and[i].output[0];
+
+        return await testTrainer(net, { data: and, errorThresh }).then(() => {
+          for (const i of and) {
+            const output = net.run(i.input)[0];
+            const target = i.output[0];
+
             expect(
               output < target + wiggle && output > target - wiggle
             ).toBeTruthy();
@@ -206,8 +233,9 @@ describe('TrainStream', () => {
         });
       });
     });
+
     describe('objects', () => {
-      it('AND function', () => {
+      it('AND function', async () => {
         const and = [
           {
             input: { left: 0, right: 0 },
@@ -227,10 +255,12 @@ describe('TrainStream', () => {
           },
         ];
         const net = new NeuralNetwork();
-        return testTrainer(net, { data: and, errorThresh }).then(() => {
-          for (const i in and) {
-            const output = net.run(and[i].input).product;
-            const target = and[i].output.product;
+
+        return await testTrainer(net, { data: and, errorThresh }).then(() => {
+          for (const i of and) {
+            const output = net.run(i.input).product;
+            const target = i.output.product;
+
             expect(
               output < target + wiggle && output > target - wiggle
             ).toBeTruthy();
@@ -241,7 +271,7 @@ describe('TrainStream', () => {
   });
 
   describe('RNNTimeStep compatibility', () => {
-    it('can average error for array,array, counting forwards and backwards', () => {
+    it('can average error for array,array, counting forwards and backwards', async () => {
       const iterations = 50;
       const data = [
         [0.1, 0.2, 0.3, 0.4, 0.5],
@@ -250,16 +280,15 @@ describe('TrainStream', () => {
         [0.4, 0.5, 0.6, 0.7, 0.8],
         [0.5, 0.6, 0.7, 0.8, 0.9],
       ];
-
       const net = new LSTMTimeStep({ hiddenLayers: [10] });
 
-      return testTrainer(net, { data, iterations }).then((info) => {
+      return await testTrainer(net, { data, iterations }).then((info) => {
         expect(info.error).toBeLessThan(0.05);
         expect(info.iterations).toBe(iterations);
 
         for (let i = 0; i < data.length; i++) {
           const value = data[i];
-          expect(net.run(value.slice(0, 4)).toFixed(1)).toBe(
+          expect((net.run(value.slice(0, 4)) as number).toFixed(1)).toBe(
             value[4].toFixed(1)
           );
         }

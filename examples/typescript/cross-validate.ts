@@ -1,5 +1,5 @@
 import assert from 'assert';
-import * as brain from '../../src';
+import { brain } from '../../src';
 
 const trainingData = [
   // xor data, repeating to simulate that we have a lot of data
@@ -13,18 +13,18 @@ const trainingData = [
   { input: [0, 0], output: [0] },
   { input: [1, 1], output: [0] },
   { input: [1, 0], output: [1] },
-] as brain.INeuralNetworkTrainingData[];
+];
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const netOptions = {
   hiddenLayers: [3],
-} as brain.INeuralNetworkOptions;
+};
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const trainingOptions = {
   iterations: 20000,
-  log: (details) => console.log(details),
-} as brain.INeuralNetworkTrainingOptions;
+  log: (details: string) => console.log(details),
+};
 
 const crossValidate = new brain.CrossValidate(brain.NeuralNetwork, netOptions);
 const stats = crossValidate.train(trainingData, trainingOptions);

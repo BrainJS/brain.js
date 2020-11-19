@@ -1,20 +1,15 @@
-const { GPU } = require('gpu.js');
-const {
-  add,
-  input,
-  multiply,
-  output,
-  random,
-  rnnCell,
-  lstmCell,
-} = require('../../src/layer');
-const { setup, teardown } = require('../../src/utilities/kernel');
-
-const { Recurrent } = require('../../src/recurrent');
-const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
+import { GPU } from 'gpu.js';
+import { setup, teardown } from '../../src/utilities/kernel';
 // const { zeros2D } = require('../../src/utilities/zeros-2d');
 
-const { injectIstanbulCoverage } = require('../test-utils');
+import { injectIstanbulCoverage } from '../test-utils';
+import { RecurrentInput } from '../../src/layer/recurrent-input';
+import { ILayer } from '../../src/layer/base-layer';
+
+const { Recurrent, layer } = require('../../src');
+const { add, input, multiply, output, random, rnnCell, lstmCell } = layer;
+
+const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
 
 describe('Recurrent Class: End to End', () => {
   beforeEach(() => {
@@ -42,10 +37,11 @@ describe('Recurrent Class: End to End', () => {
         },
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
-          (inputLayer, recurrentInput) =>
-            rnnCell({ width: 1, height: 3 }, inputLayer, recurrentInput),
+          (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
+            return rnnCell({ width: 1, height: 3 }, inputLayer, recurrentInput);
+          },
         ],
-        outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
+        outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
       });
       timeStep.initialize();
       recurrentNet.initialize();
@@ -62,7 +58,7 @@ describe('Recurrent Class: End to End', () => {
       // zero out
       const recurrentLayers = recurrentNet._layerSets[0];
       const recurrentModelWeight = recurrentLayers.find(
-        (l) => l.name === 'weight'
+        (l: ILayer) => l.constructor.name === 'weight'
       );
       weight.weights = weight.weights.map(amplify);
       recurrentModelWeight.weights[0] = new Float32Array([weight.weights[0]]);
@@ -70,7 +66,7 @@ describe('Recurrent Class: End to End', () => {
       recurrentModelWeight.weights[2] = new Float32Array([weight.weights[2]]);
 
       const recurrentModelTransition = recurrentLayers.find(
-        (l) => l.name === 'transition'
+        (l: ILayer) => l.constructor.name === 'transition'
       );
       transition.weights = transition.weights.map(amplify);
       recurrentModelTransition.weights[0] = new Float32Array([
@@ -89,14 +85,16 @@ describe('Recurrent Class: End to End', () => {
         transition.weights[8],
       ]);
 
-      const recurrentModelBias = recurrentLayers.find((l) => l.name === 'bias');
+      const recurrentModelBias = recurrentLayers.find(
+        (l: ILayer) => l.constructor.name === 'bias'
+      );
       bias.weights = bias.weights.map(amplify);
       recurrentModelBias.weights[0] = new Float32Array([bias.weights[0]]);
       recurrentModelBias.weights[1] = new Float32Array([bias.weights[1]]);
       recurrentModelBias.weights[2] = new Float32Array([bias.weights[2]]);
 
       const recurrentModelOutputGate = recurrentLayers.find(
-        (l) => l.name === 'outputGate'
+        (l: ILayer) => l.constructor.name === 'outputGate'
       );
       recurrentModelOutputGate.weights = [new Float32Array(3)];
       outputConnector.weights = outputConnector.weights.map(amplify);
@@ -105,7 +103,7 @@ describe('Recurrent Class: End to End', () => {
       recurrentModelOutputGate.weights[0][2] = outputConnector.weights[2];
 
       const recurrentModelOutput = recurrentLayers.find(
-        (l) => l.name === 'output'
+        (l: ILayer) => l.constructor.name === 'output'
       );
       recurrentModelOutput.weights = [new Float32Array(1)];
       _output.weights = _output.weights.map(amplify);
@@ -114,7 +112,11 @@ describe('Recurrent Class: End to End', () => {
       return { timeStep, recurrentNet };
     }
     describe('forward propagation', () => {
-      function testRecurrentLayerSet(timeStep, recurrentNet, index) {
+      function testRecurrentLayerSet(
+        timeStep: any,
+        recurrentNet: any,
+        index: number
+      ) {
         expect(recurrentNet._layerSets[index][0].weights[0][0]).toBe(
           timeStep.model.equations[index].inputValue[0]
         );
@@ -267,7 +269,7 @@ describe('Recurrent Class: End to End', () => {
       test('.compare() via .train() is equivalent to baseline', () => {
         const { timeStep, recurrentNet } = setupNets();
 
-        function testRecurrentLayerSet(index) {
+        function testRecurrentLayerSet(index: number) {
           expect(recurrentNet._layerSets[index][14].deltas[0][0]).toBe(
             timeStep.model.equations[index].states[7].product.deltas[0]
           );
@@ -489,7 +491,11 @@ describe('Recurrent Class: End to End', () => {
     describe('forward propagate and backpropagate', () => {
       test('.train() is equivalent to baseline', () => {
         const { timeStep, recurrentNet } = setupNets();
-        function testRecurrentLayerSetWeights(timeStep, recurrentNet, index) {
+        function testRecurrentLayerSetWeights(
+          timeStep: any,
+          recurrentNet: any,
+          index: any
+        ) {
           expect(
             recurrentNet._layerSets[index][14].weights[0][0].toFixed(5)
           ).toBe(
@@ -745,7 +751,7 @@ describe('Recurrent Class: End to End', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
-          (inputLayer, recurrentInput) => {
+          (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
             recurrentInput.setDimensions(1, 3);
             return add(
               multiply(random({ height: 3 }), inputLayer),
@@ -753,7 +759,7 @@ describe('Recurrent Class: End to End', () => {
             );
           },
         ],
-        outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
+        outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
       });
 
       net.initialize();
@@ -765,44 +771,51 @@ describe('Recurrent Class: End to End', () => {
       expect(net._layerSets[0].length).toEqual(10);
       expect(net._layerSets[1].length).toEqual(10);
 
-      const clonedModelWeights = net._model.map((l) =>
-        l.weights.map((row) => row.slice(0))
-      );
+      const clonedModelWeights = net._model.map((l: ILayer) => {
+        (l.weights as any[]).map((row) => row.slice(0));
+      });
 
       function deltasAreZero() {
         expect(
-          net._layerSets[0].every((l) =>
-            l.deltas.every((row) => row.every((delta) => delta === 0))
+          net._layerSets[0].every((l: ILayer) =>
+            (l.deltas as any[]).every((row) =>
+              row.every((delta: number) => delta === 0)
+            )
           )
         ).toBeTruthy();
       }
 
       function deltasAreSet() {
         expect(
-          net._layerSets[0].every((l) =>
-            l.deltas.every((row) => row.every((delta) => delta !== 0))
+          net._layerSets[0].every((l: ILayer) =>
+            (l.deltas as any[]).every((row) =>
+              row.every((delta: number) => delta !== 0)
+            )
           )
         ).toBeTruthy();
       }
 
       function modelWeightsAreUpdated() {
         expect(
-          clonedModelWeights.every((oldLayerWeights, layerIndex) =>
-            oldLayerWeights.every((row, rowIndex) =>
-              row.every((oldWeight, columnIndex) => {
-                const newLayerWeights = net._model[layerIndex].weights;
-                if (layerIndex === 0) return true;
-                return oldWeight !== newLayerWeights[rowIndex][columnIndex];
-              })
-            )
+          clonedModelWeights.every(
+            (oldLayerWeights: any[], layerIndex: number) =>
+              oldLayerWeights.every((row: any[], rowIndex: number) =>
+                row.every((oldWeight, columnIndex) => {
+                  const newLayerWeights = net._model[layerIndex].weights;
+                  if (layerIndex === 0) return true;
+                  return oldWeight !== newLayerWeights[rowIndex][columnIndex];
+                })
+              )
           )
         ).toBeTruthy();
       }
 
       function modelDeltasAreZero() {
         expect(
-          net._model.every((l) =>
-            l.deltas.every((row) => row.every((delta) => delta === 0))
+          net._model.every((l: ILayer) =>
+            (l.deltas as any[]).every((row) =>
+              row.every((delta: number) => delta === 0)
+            )
           )
         ).toBeTruthy();
       }
@@ -828,13 +841,14 @@ describe('Recurrent Class: End to End', () => {
         const net = new Recurrent({
           inputLayer: () => inputLayer,
           hiddenLayers: [
-            (inputLayer, recurrentInput) => {
+            (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
               recurrentInput.setDimensions(1, 3);
               recurrentZeros = recurrentInput;
               return add(multiply(weights, inputLayer), recurrentInput);
             },
           ],
-          outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
+          outputLayer: (inputLayer: ILayer) =>
+            output({ height: 1 }, inputLayer),
         });
 
         // single
@@ -877,10 +891,11 @@ describe('Recurrent Class: End to End', () => {
     const net = new Recurrent({
       inputLayer: () => input({ width: 1 }),
       hiddenLayers: [
-        (inputLayer, recurrentInput) =>
+        (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
           rnnCell({ width: 1, height: 1 }, inputLayer, recurrentInput),
       ],
-      outputLayer: (inputLayer) => output({ width: 1, height: 1 }, inputLayer),
+      outputLayer: (inputLayer: ILayer) =>
+        output({ width: 1, height: 1 }, inputLayer),
     });
     net.initialize();
     net.initializeDeep();
@@ -900,12 +915,13 @@ describe('Recurrent Class: End to End', () => {
         const net = new Recurrent({
           inputLayer: () => input({ width: 1 }),
           hiddenLayers: [
-            (inputLayer, recurrentInput) =>
+            (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
               rnnCell({ height: 3, width: 1 }, inputLayer, recurrentInput),
-            (inputLayer, recurrentInput) =>
+            (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
               rnnCell({ height: 1, width: 1 }, inputLayer, recurrentInput),
           ],
-          outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
+          outputLayer: (inputLayer: ILayer) =>
+            output({ height: 1 }, inputLayer),
         });
         net.initialize();
       } catch (e) {
@@ -918,10 +934,10 @@ describe('Recurrent Class: End to End', () => {
     const net = new Recurrent({
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
-        (inputLayer, recurrentInput) =>
+        (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
           rnnCell({ height: 3 }, inputLayer, recurrentInput),
       ],
-      outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
+      outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
     });
     net.initialize();
     net.initializeDeep();
@@ -944,10 +960,10 @@ describe('Recurrent Class: End to End', () => {
       },
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
-        (input, recurrentInput) =>
+        (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
           lstmCell({ height: 20 }, input, recurrentInput),
       ],
-      outputLayer: (input) => output({ height: 1 }, input),
+      outputLayer: (inputLayer: ILayer) => output({ height: 1 }, input),
     });
     const xorNetValues = [
       [0.001, 0.001, 0.001],
@@ -965,10 +981,10 @@ describe('Recurrent Class: End to End', () => {
     const net = new Recurrent({
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
-        (inputLayer, recurrentInput) =>
+        (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
           lstmCell({ height: 10 }, inputLayer, recurrentInput),
       ],
-      outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
+      outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
     });
     net.initialize();
     net.initializeDeep();
@@ -986,10 +1002,10 @@ describe('Recurrent Class: End to End', () => {
     const net = new Recurrent({
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
-        (inputLayer, recurrentInput) =>
+        (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
           rnnCell({ height: 3 }, inputLayer, recurrentInput),
       ],
-      outputLayer: (inputLayer) => output({ height: 1 }, inputLayer),
+      outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
     });
     const results = net.train([[1, 2, 3]], {
       errorCheckInterval: 1,

@@ -3,6 +3,7 @@ import { Matrix } from './matrix';
 import { Equation } from './matrix/equation';
 import RNNTimeStep from './rnn-time-step';
 
+// @ts-expect-error rnn is js
 export class GRUTimeStep extends RNNTimeStep {
   static getModel(hiddenSize: number, prevSize: number): GRUModel {
     return GRU.getModel(hiddenSize, prevSize);

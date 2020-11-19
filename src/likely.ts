@@ -6,7 +6,7 @@ import { NeuralNetwork } from './neural-network';
  * @param {brain.NeuralNetwork} net
  * @returns {*}
  */
-export function likely<T>(input: T, net: NeuralNetwork): T | null {
+export function likely<T>(input: number[], net: NeuralNetwork): T | null {
   if (!net) {
     throw new TypeError(
       `Required parameter 'net' is of type ${typeof net}. Must be of type 'brain.NeuralNetwork'`
