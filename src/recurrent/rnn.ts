@@ -7,7 +7,11 @@ import { softmax } from './matrix/softmax';
 import { copy } from './matrix/copy';
 import { randomFloat } from '../utilities/random';
 import { zeros } from '../utilities/zeros';
-import { DataFormatter, IDataFormatter } from '../utilities/data-formatter';
+import {
+  DataFormatter,
+  IDataFormatter,
+  IDataFormatterJSON,
+} from '../utilities/data-formatter';
 import { NeuralNetwork } from '../neural-network';
 import { Value, IRNNDatum } from './rnn-data-types';
 import { Log } from '../feed-forward';
@@ -19,7 +23,7 @@ export interface IRNNModel {
   equations: Equation[];
   allMatrices: Matrix[];
   equationConnections: Matrix[];
-  outputConnector: RandomMatrix;
+  outputConnector: RandomMatrix | Matrix;
 }
 
 interface IRNNOptions<IOType extends Value | IRNNDatum> {
@@ -35,6 +39,20 @@ interface IRNNOptions<IOType extends Value | IRNNDatum> {
   setupData?: (data: IOType[]) => number[][];
   dataFormatter: IDataFormatter;
   json?: IRNNJSON<IOType>;
+}
+
+interface IRNNJSONOptions<IOType extends Value | IRNNDatum> {
+  inputSize: number;
+  inputRange: number;
+  hiddenLayers: number[];
+  outputSize: number;
+  decayRate: number;
+  smoothEps: number;
+  regc: number;
+  clipval: number;
+  maxPredictionLength: number;
+  setupData?: (data: IOType[]) => number[][];
+  dataFormatter: IDataFormatterJSON;
 }
 
 interface IRNNTrainingOptions {
@@ -369,7 +387,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
   }
 
   run(rawInput: Value = [], isSampleI = false, temperature = 1): Value | null {
-    const maxPredictionLength =
+    const maxPredictionLength: number =
       this.options.maxPredictionLength +
       (rawInput !== null ? (rawInput as string).length : 0) +
       (this.options.dataFormatter
@@ -377,7 +395,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
         : 0);
 
     if (!this.isRunnable) return null;
-    const input = this.options.dataFormatter
+    const input: number[] = this.options.dataFormatter
       ? this.options.dataFormatter.formatDataIn(rawInput)
       : (rawInput as number[]);
     const { model } = this;
@@ -580,7 +598,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
 
     return {
       type: this.constructor.name,
-      options: { ...options },
+      options: { ...options, dataFormatter: options.dataFormatter.toJSON() },
       input: model.input.toJSON(),
       hiddenLayers: model.hiddenLayers.map((hiddenLayer) => {
         const layers: { [index: string]: IMatrixJSON } = {};
@@ -597,11 +615,10 @@ export class RNN<IOType extends Value | IRNNDatum> {
 
   fromJSON(json: IRNNJSON<IOType>): void {
     const { options } = json;
-    this.model = {};
     const allMatrices = [];
     const input = Matrix.fromJSON(json.input);
     allMatrices.push(input);
-    const hiddenLayers: Array<{ [index: string]: Matrix }> = [];
+    const hiddenLayers: IRNNHiddenLayerModel[] = [];
 
     json.hiddenLayers.forEach((hiddenLayer) => {
       const layers: { [index: string]: Matrix } = {};
@@ -609,7 +626,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
         layers[p] = Matrix.fromJSON(hiddenLayer[p]);
         allMatrices.push(layers[p]);
       }
-      hiddenLayers.push(layers);
+      hiddenLayers.push(layers as IRNNHiddenLayerModel);
     });
 
     const outputConnector = Matrix.fromJSON(json.outputConnector);
@@ -617,10 +634,18 @@ export class RNN<IOType extends Value | IRNNDatum> {
     const output = Matrix.fromJSON(json.output);
     allMatrices.push(output);
 
-    Object.assign(this, defaults, options);
-
     if (options.dataFormatter) {
-      options.dataFormatter = DataFormatter.fromJSON(options.dataFormatter);
+      this.options = {
+        ...defaults,
+        ...options,
+        dataFormatter: DataFormatter.fromJSON(options.dataFormatter),
+      };
+    } else {
+      this.options = {
+        ...defaults,
+        ...options,
+        dataFormatter: new DataFormatter(),
+      };
     }
 
     this.model = {
@@ -638,7 +663,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
     this.bindEquation();
   }
 
-  toFunction(cb: (src: string) => void): RNNFunction<IOType> {
+  toFunction(cb: (src: string) => string): RNNFunction<IOType> {
     const { model } = this;
     const { equations } = this.model;
     const equation = equations[1];
@@ -646,7 +671,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
     const jsonString = JSON.stringify(this.toJSON());
 
     function previousConnectionIndex(m: Matrix): number {
-      const connection = model.equationConnections[0];
+      const connection = model.equationConnections;
       const { states } = equations[0];
       for (let i = 0, max = states.length; i < max; i++) {
         if (states[i].product === m) {
@@ -728,8 +753,8 @@ export class RNN<IOType extends Value | IRNNDatum> {
       const state = states[i];
       statesRaw.push(`states[${i}] = {
       name: '${state.forwardFn.name}',
-      left: ${matrixToString(state.left, i)},
-      right: ${matrixToString(state.right, i)},
+      left: ${state.left ? matrixToString(state.left, i) : 'undefined'},
+      right: ${state.right ? matrixToString(state.right, i) : 'undefined'},
       product: ${matrixToString(state.product, i)}
     }`);
 
@@ -756,7 +781,8 @@ export class RNN<IOType extends Value | IRNNDatum> {
       : ''
   }
   ${
-    this.options.dataFormatter && typeof this.options.dataFormatter.formatDataIn === 'function'
+    this.options.dataFormatter &&
+    typeof this.options.dataFormatter.formatDataIn === 'function'
       ? `const formatDataIn = function (input, output) { ${toInner(
           this.options.dataFormatter.formatDataIn.toString()
         )} }.bind({ dataFormatter });`
@@ -847,7 +873,7 @@ ${innerFunctionsSwitch.join('\n')}
   ${randomFloat.toString()}
   ${sampleI.toString()}
   ${maxI.toString()}`;
-    // eslint-disable-next-line no-new-func
+    // eslint-disable-next-line
     return new Function(
       'rawInput',
       'isSampleI',
@@ -859,7 +885,7 @@ ${innerFunctionsSwitch.join('\n')}
 
 export interface IRNNJSON<IOType extends Value | IRNNDatum> {
   type: string;
-  options: IRNNOptions<IOType>;
+  options: IRNNJSONOptions<IOType>;
   input: IMatrixJSON;
   hiddenLayers: Array<{ [index: string]: IMatrixJSON }>;
   outputConnector: IMatrixJSON;

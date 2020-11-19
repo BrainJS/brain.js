@@ -1,8 +1,8 @@
 const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
-const RNN = require('../../src/recurrent/rnn');
-const { LSTMTimeStep } = require('../../src/recurrent/lstm-time-step');
-const Equation = require('../../src/recurrent/matrix/equation');
-const istanbulLinkerUtil = require('../istanbul-linker-util');
+import { RNN } from '../../src/recurrent/rnn';
+import { LSTMTimeStep } from '../../src/recurrent/lstm-time-step';
+import { Equation } from '../../src/recurrent/matrix/equation';
+import { istanbulLinkerUtil } from '../istanbul-linker-util';
 
 // TODO: break out LSTMTimeStep into its own tests
 

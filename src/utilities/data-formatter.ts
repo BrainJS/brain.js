@@ -12,6 +12,7 @@ export interface IDataFormatter {
   formatDataOut: (input: number[], output: number[]) => string;
   format: (data: Array<IRNNDatum | Value>) => number[][];
   isSetup: boolean;
+  toJSON: () => IDataFormatterJSON;
 }
 
 export class DataFormatter implements IDataFormatter {
@@ -275,6 +276,16 @@ export class DataFormatter implements IDataFormatter {
   static fromString(string: string, maxThreshold: number): DataFormatter {
     const values = String.prototype.concat(...new Set(string));
     return new DataFormatter(values.split(''), maxThreshold);
+  }
+
+  toJSON(): IDataFormatterJSON {
+    return {
+      indexTable: this.indexTable,
+      characterTable: this.characterTable,
+      values: this.values as Value[],
+      characters: this.characters,
+      specialIndexes: this.specialIndexes,
+    };
   }
 
   /** TODO: Type better, The type of json is not "string that is a valid JSON", it is a POJO in the shape of DataFormatter.

@@ -1,9 +1,9 @@
-const RNN = require('../../src/recurrent/rnn');
-const { DataFormatter } = require('../../src/utilities/data-formatter');
-const { allMatrices } = require('../test-utils');
-const istanbulLinkerUtil = require('../istanbul-linker-util');
+import { RNN } from '../../src/recurrent/rnn';
+import { DataFormatter } from '../../src/utilities/data-formatter';
+import { allMatrices } from '../test-utils';
+import { istanbulLinkerUtil } from '../istanbul-linker-util';
 
-function notZero(v) {
+function notZero(v: number) {
   return v !== 0;
 }
 
@@ -24,37 +24,40 @@ describe('RNN', () => {
         net.initialize();
         return net.toJSON();
       })();
+      let fromJSONMock: jest.SpyInstance;
       beforeEach(() => {
-        jest.spyOn(RNN.prototype, 'fromJSON');
+        fromJSONMock = jest.spyOn(RNN.prototype, 'fromJSON');
       });
       afterEach(() => {
-        RNN.prototype.fromJSON.mockRestore();
+        fromJSONMock.mockRestore();
       });
       it('calls this.fromJSON() with it', () => {
         const net = new RNN({ json });
-        expect(net.fromJSON).toBeCalledWith(json);
+        expect(fromJSONMock).toBeCalledWith(json);
       });
     });
   });
   describe('.initialize()', () => {
     describe('when creating hidden layers', () => {
+      let createHiddenLayersMock: jest.SpyInstance
+      let getHiddenLayerMock: jest.SpyInstance;
       beforeEach(() => {
-        jest.spyOn(RNN.prototype, 'createHiddenLayers');
-        jest.spyOn(RNN, 'getModel');
+        createHiddenLayersMock = jest.spyOn(RNN.prototype, 'createHiddenLayers');
+        getHiddenLayerMock = jest.spyOn(RNN.prototype, 'getHiddenLayer');
       });
       afterEach(() => {
-        RNN.prototype.createHiddenLayers.mockRestore();
-        RNN.getModel.mockRestore();
+        createHiddenLayersMock.mockRestore();
+        getHiddenLayerMock.mockRestore();
       });
       it('calls createHiddenLayers', () => {
         const net = new RNN();
         net.initialize();
         expect(RNN.prototype.createHiddenLayers).toBeCalled();
       });
-      it('calls static getModel method', () => {
+      it('calls static getHiddenLayer method', () => {
         const net = new RNN();
         net.initialize();
-        expect(RNN.getModel).toBeCalled();
+        expect(getHiddenLayerMock).toBeCalled();
       });
     });
     it('initializes model', () => {

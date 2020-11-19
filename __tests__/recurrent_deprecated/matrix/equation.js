@@ -1,6 +1,6 @@
-const Matrix = require('../../../src/recurrent/matrix');
-const OnesMatrix = require('../../../src/recurrent/matrix/ones-matrix');
-const Equation = require('../../../src/recurrent/matrix/equation');
+import { Matrix } from '../../../src/recurrent/matrix';
+import { OnesMatrix } from '../../../src/recurrent/matrix/ones-matrix';
+import { Equation } from '../../../src/recurrent/matrix/equation';
 
 function fourSquareMatrix(value) {
   const result = new Matrix(4, 4);
