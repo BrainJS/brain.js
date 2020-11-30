@@ -16,26 +16,27 @@ import { sigmoidB } from './sigmoid-b';
 import { softmax } from './softmax';
 import { tanh } from './tanh';
 import { tanhB } from './tanh-b';
-// const OnesMatrix = require('./ones-matrix');
-// const copy = require('./copy');
 
-type ForwardFunction<T1, T2, T3> = (
+type PropagateIndex = (product: Matrix, left: Matrix, index: number) => void;
+type PropagateProduct = (product: Matrix) => void;
+type PropagateProductFromLeft = (product: Matrix, left: Matrix) => void;
+type PropagateProductFromLeftRight = (
   product: Matrix,
   left: Matrix,
-  right: T1,
-  rowIndex?: T2
-) => T3;
+  right: Matrix
+) => void;
+type PropagateFunction =
+  | PropagateIndex
+  | PropagateProduct
+  | PropagateProductFromLeft
+  | PropagateProductFromLeftRight;
 
 interface State {
   product: Matrix;
   left?: Matrix;
   right?: Matrix;
-  forwardFn:
-    | ForwardFunction<Matrix, undefined, void>
-    | ForwardFunction<Matrix, number, void>;
-  backpropagationFn:
-    | ForwardFunction<Matrix, undefined, void>
-    | ForwardFunction<Matrix, number, void>;
+  forwardFn: PropagateFunction;
+  backpropagationFn: PropagateFunction;
 }
 
 export class Equation {
@@ -43,14 +44,6 @@ export class Equation {
   inputValue?: Float32Array;
   inputRow = 0;
 
-  // constructor() {}
-
-  /**
-   * connects two matrices together by add
-   * @param {Matrix} left
-   * @param {Matrix} right
-   * @returns {Matrix}
-   */
   add(left: Matrix, right: Matrix): Matrix {
     if (left.weights.length !== right.weights.length) {
       throw new Error('misaligned matrices');
@@ -69,12 +62,6 @@ export class Equation {
     return product;
   }
 
-  /**
-   *
-   * @param {Number} rows
-   * @param {Number} columns
-   * @returns {Matrix}
-   */
   allOnes(rows: number, columns: number): Matrix {
     const product = new Matrix(rows, columns);
 
@@ -88,11 +75,6 @@ export class Equation {
     return product;
   }
 
-  /**
-   *
-   * @param {Matrix} matrix
-   * @returns {Matrix}
-   */
   cloneNegative(matrix: Matrix): Matrix {
     const product = new Matrix(matrix.rows, matrix.columns);
 
@@ -108,9 +90,6 @@ export class Equation {
 
   /**
    * connects two matrices together by subtract
-   * @param {Matrix} left
-   * @param {Matrix} right
-   * @returns {Matrix}
    */
   subtract(left: Matrix, right: Matrix): Matrix {
     if (left.weights.length !== right.weights.length) {
@@ -125,9 +104,6 @@ export class Equation {
 
   /**
    * connects two matrices together by multiply
-   * @param {Matrix} left
-   * @param {Matrix} right
-   * @returns {Matrix}
    */
   multiply(left: Matrix, right: Matrix): Matrix {
     if (left.columns !== right.rows) {
@@ -149,9 +125,6 @@ export class Equation {
 
   /**
    * connects two matrices together by multiplyElement
-   * @param {Matrix} left
-   * @param {Matrix} right
-   * @returns {Matrix}
    */
   multiplyElement(left: Matrix, right: Matrix): Matrix {
     if (left.weights.length !== right.weights.length) {
@@ -173,8 +146,6 @@ export class Equation {
 
   /**
    * connects a matrix to relu
-   * @param {Matrix} matrix
-   * @returns {Matrix}
    */
   relu(matrix: Matrix): Matrix {
     const product = new Matrix(matrix.rows, matrix.columns);
@@ -190,9 +161,7 @@ export class Equation {
   }
 
   /**
-   * copy a matrix
-   * @param {Matrix} input
-   * @returns {Matrix}
+   * input a matrix
    */
   input(input: Matrix): Matrix {
     this.states.push({
@@ -210,27 +179,20 @@ export class Equation {
 
   /**
    * connects a matrix via a row
-   * @param {Matrix} matrix
-   * @returns {Matrix}
    */
   inputMatrixToRow(matrix: Matrix): Matrix {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    // const self = this;
+    const self = this;
     const product = new Matrix(matrix.columns, 1);
 
     this.states.push({
       product,
       left: matrix,
-      // review: disabled until updated, returns `number` but expected `Matrix`
-      // get right() {
-      //   return self.inputRow;
-      // },
-      forwardFn: (rowPluck as unknown) as ForwardFunction<Matrix, number, void>,
-      backpropagationFn: (rowPluckB as unknown) as ForwardFunction<
-        Matrix,
-        number,
-        void
-      >,
+      get right() {
+        return (self.inputRow as unknown) as Matrix;
+      },
+      forwardFn: rowPluck,
+      backpropagationFn: rowPluckB,
     });
 
     return product;
@@ -238,8 +200,6 @@ export class Equation {
 
   /**
    * connects a matrix to sigmoid
-   * @param {Matrix} matrix
-   * @returns {Matrix}
    */
   sigmoid(matrix: Matrix): Matrix {
     const product = new Matrix(matrix.rows, matrix.columns);
@@ -256,8 +216,6 @@ export class Equation {
 
   /**
    * connects a matrix to tanh
-   * @param {Matrix} matrix
-   * @returns {Matrix}
    */
   tanh(matrix: Matrix): Matrix {
     const product = new Matrix(matrix.rows, matrix.columns);
@@ -274,8 +232,7 @@ export class Equation {
 
   /**
    *
-   * @param matrix
-   * @returns {Matrix}
+   * Observe a matrix for debugging
    */
   observe(matrix: Matrix): Matrix {
     this.states.push({
@@ -288,8 +245,7 @@ export class Equation {
   }
 
   /**
-   * @patam {Number} [rowIndex]
-   * @output {Matrix}
+   * Run index through equations via forward propagation
    */
   runIndex(rowIndex = 0): Matrix {
     this.inputRow = rowIndex;
@@ -299,18 +255,18 @@ export class Equation {
       state = this.states[i];
 
       if (!state.hasOwnProperty('forwardFn')) continue;
-      if (!state.left) continue;
-      if (!state.right) continue;
-
-      state.forwardFn(state.product, state.left, state.right);
+      (state.forwardFn as PropagateProductFromLeftRight)(
+        state.product,
+        state.left as Matrix,
+        state.right as Matrix
+      );
     }
 
     return state.product;
   }
 
   /**
-   * @patam {Number} [rowIndex]
-   * @output {Matrix}
+   * Run value through equations via forward propagation
    */
   runInput(inputValue: Float32Array): Matrix {
     this.inputValue = inputValue;
@@ -320,18 +276,18 @@ export class Equation {
       state = this.states[i];
 
       if (!state.hasOwnProperty('forwardFn')) continue;
-      if (!state.left) continue;
-      if (!state.right) continue;
-
-      state.forwardFn(state.product, state.left, state.right);
+      (state.forwardFn as PropagateProductFromLeftRight)(
+        state.product,
+        state.left as Matrix,
+        state.right as Matrix
+      );
     }
 
     return state.product;
   }
 
   /**
-   * @patam {Number} [rowIndex]
-   * @output {Matrix}
+   * Run value through equations via back propagation
    */
   backpropagate(): Matrix {
     let i = this.states.length;
@@ -341,18 +297,18 @@ export class Equation {
       state = this.states[i];
 
       if (!state.hasOwnProperty('backpropagationFn')) continue;
-      if (!state.left) continue;
-      if (!state.right) continue;
-
-      state.backpropagationFn(state.product, state.left, state.right);
+      (state.backpropagationFn as PropagateProductFromLeftRight)(
+        state.product,
+        state.left as Matrix,
+        state.right as Matrix
+      );
     }
 
     return state.product;
   }
 
   /**
-   * @patam {Number} [rowIndex]
-   * @output {Matrix}
+   * Run index through equations via back propagation
    */
   backpropagateIndex(rowIndex = 0): Matrix {
     this.inputRow = rowIndex;
@@ -364,15 +320,19 @@ export class Equation {
       state = this.states[i];
 
       if (!state.hasOwnProperty('backpropagationFn')) continue;
-      if (!state.left) continue;
-      if (!state.right) continue;
-
-      state.backpropagationFn(state.product, state.left, state.right);
+      (state.backpropagationFn as PropagateProductFromLeftRight)(
+        state.product,
+        state.left as Matrix,
+        state.right as Matrix
+      );
     }
 
     return state.product;
   }
 
+  /**
+   * Predict a target value from equation
+   */
   predictTarget(input: Float32Array, target: Float32Array): number {
     let errorSum = 0;
     const output = this.runInput(input);
@@ -388,6 +348,9 @@ export class Equation {
     return errorSum;
   }
 
+  /**
+   * Predict a target index from equation
+   */
   predictTargetIndex(input: number, target: number): number {
     const output = this.runIndex(input);
     // set gradients into log probabilities

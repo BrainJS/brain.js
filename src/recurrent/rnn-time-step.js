@@ -26,7 +26,7 @@ class RNNTimeStep extends RNN {
 
   createInputMatrix() {}
 
-  createOutputMatrix() {
+  createOutputMatrices() {
     const { model } = this;
     const { outputSize } = this;
     const lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1];
@@ -92,7 +92,7 @@ class RNNTimeStep extends RNN {
       }
     }
 
-    this.createOutputMatrix();
+    this.createOutputMatrices();
     if (!model.outputConnector)
       throw new Error('net.model.outputConnector not set');
     if (!model.output) throw new Error('net.model.output not set');

@@ -3,7 +3,6 @@ import { Matrix } from './matrix';
 import { Equation } from './matrix/equation';
 import RNNTimeStep from './rnn-time-step';
 
-// @ts-expect-error rnn is js
 export class LSTMTimeStep extends RNNTimeStep {
   static getModel(hiddenSize: number, prevSize: number): LSTMModel {
     return LSTM.getModel.call(this, hiddenSize, prevSize);

@@ -200,11 +200,11 @@ export function mockLayer(settings: ILayerSettings): ILayer {
 export function mockTexture(settings?: Partial<IGPUTextureSettings>): Texture {
   return new Texture({
     ...settings,
-    texture: {} as WebGLTexture,
+    texture: {} as any,
     size: [1, 1],
     dimensions: [1, 1],
     output: [1, 1],
-    context: {} as WebGLRenderingContext,
+    context: {} as any,
     kernel: {} as Kernel,
   });
 }

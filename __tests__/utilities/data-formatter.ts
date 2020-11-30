@@ -40,7 +40,7 @@ describe('DataFormatter', () => {
   });
 
   test('should properly be able to reference indices of cat', () => {
-    const dataFormatter = new DataFormatter(['cat']);
+    const dataFormatter = new DataFormatter([['cat']]);
     const asIndexes = [0, 1, 2];
 
     dataFormatter.toIndexes(['cat']).forEach((v, i) => {
@@ -65,7 +65,7 @@ describe('DataFormatter', () => {
     ]);
     const asIndexes = [0, 11, 8, 10, 8];
 
-    dataFormatter.toIndexes(['0+8=8']).forEach((v, i) => {
+    dataFormatter.toIndexes('0+8=8'.split('')).forEach((v, i) => {
       expect(v).toBe(asIndexes[i]);
     });
   });
@@ -132,17 +132,15 @@ describe('DataFormatter', () => {
   });
 
   test('should properly be able to reference characters of cat', () => {
-    const dataFormatter = new DataFormatter(['cat']);
-    const asIndexes = [0, 1, 2];
+    const dataFormatter = new DataFormatter([['cat']]);
+    const asIndexes = [0];
     const asCharacters = 'cat';
 
-    dataFormatter.toCharacters(asIndexes).forEach((v, i) => {
-      expect(v).toBe(asCharacters[i]);
-    });
+    expect(dataFormatter.toCharacters(asIndexes)).toEqual([asCharacters]);
   });
 
   test('can handle strings', () => {
-    const dataFormatter = new DataFormatter(['a big string']);
+    const dataFormatter = new DataFormatter('a big string'.split(''));
     const indices = dataFormatter.toIndexes('a big string');
     indices.forEach((value) => expect(value >= 0));
 
@@ -204,7 +202,7 @@ describe('DataFormatter', () => {
   });
 
   test('can handle array of booleans', () => {
-    const dataFormatter = new DataFormatter(['true', 'false']);
+    const dataFormatter = new DataFormatter([['true', 'false']]);
     const indices = dataFormatter.toIndexes(['true', 'false', 'true', 'false']);
     indices.forEach((value) => expect(value >= 0));
 
@@ -265,29 +263,116 @@ describe('DataFormatter', () => {
       dataFormatter.format([{ input: '1', output: '2' }]);
       expect(formatDataInSpy).toBeCalledWith('1', '2');
     });
-    // test('handles data.input & data.output of number', () => {
-    //   const mockNet = {
-    //     formatDataIn: jest.fn(),
-    //   };
-    //   defaultRNNFormatter.call(mockNet, [{ input: 1, output: 2 }]);
-    //   expect(mockNet.formatDataIn).toBeCalledWith('1', '2');
-    // });
-    // test('handles data.input & data.output of string[]', () => {
-    //   const mockNet = {
-    //     formatDataIn: jest.fn(),
-    //   };
-    //   defaultRNNFormatter.call(mockNet, [
-    //     { input: ['1', '2'], output: ['3', '4'] },
-    //   ]);
-    //   expect(mockNet.formatDataIn).toBeCalledWith(['1', '2'], ['3', '4']);
-    // });
-    // test('handles data.input & data.output of number[]', () => {
-    //   const mockNet = {
-    //     formatDataIn: jest.fn(),
-    //   };
-    //   defaultRNNFormatter.call(mockNet, [{ input: [1, 2], output: [3, 4] }]);
-    //   expect(mockNet.formatDataIn).toBeCalledWith(['1', '2'], ['3', '4']);
-    // });
+    test('handles data.input & data.output of number', () => {
+      const dataFormatter = new DataFormatter();
+      const formatDataInSpy = jest.spyOn(dataFormatter, 'formatDataIn');
+      dataFormatter.format([{ input: 1, output: 2 }]);
+      expect(formatDataInSpy).toBeCalledWith('1', '2');
+    });
+    test('handles data.input & data.output of string[]', () => {
+      const dataFormatter = new DataFormatter();
+      const formatDataInSpy = jest.spyOn(dataFormatter, 'formatDataIn');
+      dataFormatter.format([
+        { input: ['1', '2'], output: ['3', '4'] },
+      ]);
+      expect(formatDataInSpy).toBeCalledWith(['1', '2'], ['3', '4']);
+    });
+    test('handles data.input & data.output of number[]', () => {
+      const dataFormatter = new DataFormatter();
+      const formatDataInSpy = jest.spyOn(dataFormatter, 'formatDataIn');
+      dataFormatter.format([{ input: [1, 2], output: [3, 4] }]);
+      expect(formatDataInSpy).toBeCalledWith(['1', '2'], ['3', '4']);
+    });
+    describe('when working with array of strings', () => {
+      it('creates an appropriate DataFormatter', () => {
+        const dataFormatter = new DataFormatter();
+        const result = dataFormatter.format(['foo', 'bar', 'baz']);
+        expect(result).toEqual([
+          [0, 1, 1],
+          [2, 3, 4],
+          [2, 3, 5],
+        ]);
+        expect(dataFormatter.characters).toEqual([
+          'f',
+          'o',
+          'b',
+          'a',
+          'r',
+          'z',
+          'unrecognized',
+        ]);
+      });
+    });
+    describe('when working with array of input & output strings', () => {
+      it('creates an appropriate DataFormatter', () => {
+        const dataFormatter = new DataFormatter();
+        const result = dataFormatter.format([
+          { input: 'foo', output: 'bar' },
+          { input: 'bar', output: 'baz' },
+          { input: 'baz', output: 'foo' },
+        ]);
+        expect(result).toEqual([
+          [0, 1, 1, 6, 7, 2, 3, 4],
+          [2, 3, 4, 6, 7, 2, 3, 5],
+          [2, 3, 5, 6, 7, 0, 1, 1],
+        ]);
+        expect(dataFormatter.characters).toEqual([
+          'f',
+          'o',
+          'b',
+          'a',
+          'r',
+          'z',
+          'stop-input',
+          'start-output',
+          'unrecognized',
+        ]);
+      });
+    });
+    describe('when working with array of tokens', () => {
+      it('creates an appropraite DataFormatter', () => {
+        const dataFormatter = new DataFormatter();
+        const result = dataFormatter.format([
+          ['foo', 'bar', 'baz'],
+          ['bar', 'baz', 'foo'],
+          ['baz', 'foo', 'bar'],
+        ]);
+        expect(result).toEqual([
+          [0, 1, 2],
+          [1, 2, 0],
+          [2, 0, 1],
+        ]);
+        expect(dataFormatter.characters).toEqual([
+          'foo',
+          'bar',
+          'baz',
+          'unrecognized',
+        ]);
+      });
+    });
+    describe('when working with array of input & output tokens', () => {
+      it('creates an appropriate DataFormatter', () => {
+        const dataFormatter = new DataFormatter();
+        const result = dataFormatter.format([
+          { input: ['foo', 'bar'], output: ['baz'] },
+          { input: ['bar', 'baz'], output: ['foo'] },
+          { input: ['baz', 'foo'], output: ['bar'] },
+        ]);
+        expect(result).toEqual([
+          [0, 1, 3, 4, 2],
+          [1, 2, 3, 4, 0],
+          [2, 0, 3, 4, 1],
+        ]);
+        expect(dataFormatter.characters).toEqual([
+          'foo',
+          'bar',
+          'baz',
+          'stop-input',
+          'start-output',
+          'unrecognized',
+        ]);
+      });
+    });
   });
 });
 

@@ -3,7 +3,7 @@ import { FeedForward } from '../../src/feed-forward';
 import { feedForward, input, target } from '../../src/layer';
 import { NeuralNetwork } from '../../src/neural-network';
 import { Recurrent } from '../../src/recurrent';
-import RNN from '../../src/recurrent/rnn';
+import { RNN } from '../../src/recurrent/rnn';
 import RNNTimeStep from '../../src/recurrent/rnn-time-step';
 import { toSVG } from '../../src/utilities/to-svg';
 
@@ -136,10 +136,11 @@ describe('svg', () => {
 
   describe('`RNN` input', () => {
     it('should throw when empty net object provided', () => {
-      const empty = new RNN();
-      empty.inputSize = undefined;
-      empty.hiddenLayers = [];
-      empty.outputSize = undefined;
+      const empty = new RNN({
+        inputSize: 0,
+        hiddenLayers: [],
+        outputSize: 0
+      });
       expect(() => {
         toSVG(empty, options);
       }).toThrow();

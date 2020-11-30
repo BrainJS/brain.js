@@ -15,7 +15,11 @@
     "rootDir": "./",
     "skipLibCheck": true,
     "strict": true,
-    "target": "esnext"
+    "target": "esnext",
+    "lib": [
+      "es2019",
+      "dom"
+    ]
   },
   "exclude": [
     "node_modules",

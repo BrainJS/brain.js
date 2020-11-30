@@ -2,7 +2,7 @@ import { FeedForward } from '../feed-forward';
 import { recurrentZeros } from '../layer/recurrent-zeros';
 import { NeuralNetwork } from '../neural-network';
 import { Recurrent } from '../recurrent';
-import RNN from '../recurrent/rnn';
+import { RNN } from '../recurrent/rnn';
 import RNNTimeStep from '../recurrent/rnn-time-step';
 
 const recurrentJSONTypes = [
@@ -276,13 +276,13 @@ function rnnToSVG(options: RecurrentNeuralNetworkDrawOptions) {
 
 // TODO: Constrain type once neural networks get typed
 function getFeedForwardLayers(network: any) {
-  const inputLayer = network.inputLayer();
+  const inputLayer = network.options.inputLayer();
   const hiddenLayers = [];
-  hiddenLayers.push(network.hiddenLayers[0](inputLayer));
-  for (let i = 1; i < network.hiddenLayers.length; i++) {
-    hiddenLayers.push(network.hiddenLayers[i](hiddenLayers[i - 1]));
+  hiddenLayers.push(network.options.hiddenLayers[0](inputLayer));
+  for (let i = 1; i < network.options.hiddenLayers.length; i++) {
+    hiddenLayers.push(network.options.hiddenLayers[i](hiddenLayers[i - 1]));
   }
-  const outputLayer = network.outputLayer(
+  const outputLayer = network.options.outputLayer(
     hiddenLayers[hiddenLayers.length - 1]
   );
   return {
@@ -338,9 +338,19 @@ type SizeArgs =
   | (SizeArgsNamed & Partial<SizeArgsList>);
 
 function getSizes({ sizes, inputSize, outputSize, hiddenLayers }: SizeArgs) {
+  if (!sizes) {
+    if (typeof inputSize === 'number' && inputSize < 1) {
+      throw new Error('inputSize not set');
+    }
+    if (typeof outputSize === 'number' && outputSize < 1) {
+      throw new Error('outputSize not set');
+    }
+    if (hiddenLayers?.some((v) => v < 1)) {
+      throw new Error('hiddenLayers not set');
+    }
+  }
   return typeof inputSize === 'number' &&
     Array.isArray(hiddenLayers) &&
-    hiddenLayers.every((l) => typeof l === 'number') &&
     typeof outputSize === 'number'
     ? [inputSize].concat(hiddenLayers).concat([outputSize])
     : sizes;
@@ -394,12 +404,11 @@ export function toSVG(
   // Get network size array for NeuralNetwork or NeuralNetworkGPU
   let sizes = null;
   if (
-    net instanceof NeuralNetwork ||
-    net instanceof RNN ||
-    net instanceof RNNTimeStep
+    net.options?.inputSize &&
+    net.options?.hiddenLayers &&
+    net.options?.outputSize
   ) {
-    // @ts-expect-error Remove this comment once neural networks are properly typed
-    sizes = getSizes(net);
+    sizes = getSizes(net.options);
   }
   // Get network size array for NeuralNetwork json
   else if (net.sizes) {

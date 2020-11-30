@@ -17,12 +17,13 @@ import { Value, IRNNDatum } from './rnn-data-types';
 import { Log } from '../feed-forward';
 
 export interface IRNNModel {
+  isInitialized: boolean;
   input: Matrix;
   hiddenLayers: IRNNHiddenLayerModel[];
   output: Matrix;
   equations: Equation[];
   allMatrices: Matrix[];
-  equationConnections: Matrix[];
+  equationConnections: Matrix[][];
   outputConnector: RandomMatrix | Matrix;
 }
 
@@ -36,7 +37,6 @@ interface IRNNOptions<IOType extends Value | IRNNDatum> {
   regc: number;
   clipval: number;
   maxPredictionLength: number;
-  setupData?: (data: IOType[]) => number[][];
   dataFormatter: IDataFormatter;
   json?: IRNNJSON<IOType>;
 }
@@ -51,7 +51,6 @@ interface IRNNJSONOptions<IOType extends Value | IRNNDatum> {
   regc: number;
   clipval: number;
   maxPredictionLength: number;
-  setupData?: (data: IOType[]) => number[][];
   dataFormatter: IDataFormatterJSON;
 }
 
@@ -115,7 +114,8 @@ export class RNN<IOType extends Value | IRNNDatum> {
   stepCache: { [index: number]: Float32Array } = {};
   runs = 0;
   ratioClipped = 0;
-  model: IRNNModel = {
+  model: IRNNModel = Object.seal({
+    isInitialized: false,
     input: new Matrix(0, 0),
     hiddenLayers: [],
     output: new Matrix(0, 0),
@@ -123,7 +123,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
     allMatrices: [],
     equationConnections: [],
     outputConnector: new RandomMatrix(0, 0, 0.08),
-  };
+  });
 
   initialLayerInputs: Matrix[] = [];
 
@@ -140,8 +140,10 @@ export class RNN<IOType extends Value | IRNNDatum> {
   }
 
   initialize(): void {
-    if (this.options.dataFormatter) {
-      this.options.inputSize = this.options.inputRange = this.options.outputSize = this.options.dataFormatter.characters.length;
+    const { dataFormatter } = this.options;
+    if (dataFormatter?.characters.length) {
+      this.options.inputSize = this.options.inputRange = this.options.outputSize =
+        dataFormatter.characters.length;
     }
     this.model = this.mapModel();
   }
@@ -205,7 +207,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
     return new RandomMatrix(inputRange + 1, inputSize, 0.08);
   }
 
-  createOutputMatrix(): { outputConnector: RandomMatrix; output: Matrix } {
+  createOutputMatrices(): { outputConnector: RandomMatrix; output: Matrix } {
     const { outputSize, hiddenLayers } = this.options;
     const lastHiddenSize = last(hiddenLayers);
 
@@ -223,10 +225,10 @@ export class RNN<IOType extends Value | IRNNDatum> {
     const { model } = this;
     const { hiddenLayers } = this.options;
     const equation = new Equation();
-    const outputs = [];
+    const outputs: Matrix[] = [];
     const equationConnection =
       model.equationConnections.length > 0
-        ? [last(model.equationConnections)]
+        ? last(model.equationConnections)
         : this.initialLayerInputs;
     // 0 index
     let output = this.getEquation(
@@ -238,6 +240,9 @@ export class RNN<IOType extends Value | IRNNDatum> {
     outputs.push(output);
     // 1+ indices
     for (let i = 1, max = hiddenLayers.length; i < max; i++) {
+      if (!equationConnection[i]) {
+        throw new Error(`Cannot find equation at index ${i}`);
+      }
       output = this.getEquation(
         equation,
         output,
@@ -247,7 +252,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
       outputs.push(output);
     }
 
-    model.equationConnections.push(output);
+    model.equationConnections.push(outputs);
     equation.add(
       equation.multiply(model.outputConnector, output),
       model.output
@@ -274,11 +279,12 @@ export class RNN<IOType extends Value | IRNNDatum> {
       }
     }
 
-    const { output, outputConnector } = this.createOutputMatrix();
+    const { output, outputConnector } = this.createOutputMatrices();
     allMatrices.push(outputConnector);
     allMatrices.push(output);
 
-    return {
+    return Object.seal({
+      isInitialized: true,
       input,
       hiddenLayers,
       output,
@@ -286,7 +292,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
       allMatrices,
       equationConnections: [],
       outputConnector,
-    };
+    });
   }
 
   trainPattern(input: number[], logErrorRate?: boolean): number {
@@ -386,7 +392,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
     return true;
   }
 
-  run(rawInput: Value = [], isSampleI = false, temperature = 1): Value | null {
+  run(rawInput: Value = [], isSampleI = false, temperature = 1): string {
     const maxPredictionLength: number =
       this.options.maxPredictionLength +
       (rawInput !== null ? (rawInput as string).length : 0) +
@@ -394,10 +400,14 @@ export class RNN<IOType extends Value | IRNNDatum> {
         ? this.options.dataFormatter.specialIndexes.length
         : 0);
 
-    if (!this.isRunnable) return null;
-    const input: number[] = this.options.dataFormatter
-      ? this.options.dataFormatter.formatDataIn(rawInput)
-      : (rawInput as number[]);
+    if (!this.isRunnable) {
+      throw new Error('Network not runnable');
+    }
+
+    const input: number[] =
+      this.options.dataFormatter && (rawInput as string).length > 0
+        ? this.options.dataFormatter.formatDataIn(rawInput)
+        : (rawInput as number[]);
     const { model } = this;
     const output = [];
     let i = 0;
@@ -466,7 +476,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
    * If they are not it will initialize them
    */
   verifyIsInitialized(): void {
-    if (!this.model) {
+    if (!this.model.isInitialized) {
       this.initialize();
     }
   }
@@ -551,10 +561,16 @@ export class RNN<IOType extends Value | IRNNDatum> {
     let i;
 
     let inputs: number[][];
-    if (this.options.setupData) {
-      inputs = this.options.setupData(data);
-    } else {
+    if (this.options?.dataFormatter) {
+      inputs = this.options.dataFormatter.format(data);
+    } else if (
+      Array.isArray(data) &&
+      Array.isArray(data[0]) &&
+      typeof (data as number[][])[0][0] === 'number'
+    ) {
       inputs = data as number[][];
+    } else {
+      throw new Error('training not in expected format of number[][]');
     }
 
     this.verifyIsInitialized();
@@ -591,7 +607,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
   }
 
   toJSON(): IRNNJSON<IOType> {
-    if (!this.model) {
+    if (!this.model.isInitialized) {
       this.initialize();
     }
     const { model, options } = this;
@@ -648,7 +664,8 @@ export class RNN<IOType extends Value | IRNNDatum> {
       };
     }
 
-    this.model = {
+    this.model = Object.seal({
+      isInitialized: true,
       input,
       hiddenLayers,
       output,
@@ -656,7 +673,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
       outputConnector,
       equations: [],
       equationConnections: [],
-    };
+    });
     this.initialLayerInputs = this.options.hiddenLayers.map(
       (size) => new Matrix(size, 1)
     );
@@ -671,7 +688,7 @@ export class RNN<IOType extends Value | IRNNDatum> {
     const jsonString = JSON.stringify(this.toJSON());
 
     function previousConnectionIndex(m: Matrix): number {
-      const connection = model.equationConnections;
+      const connection = model.equationConnections[0];
       const { states } = equations[0];
       for (let i = 0, max = states.length; i < max; i++) {
         if (states[i].product === m) {

@@ -36,6 +36,10 @@ export class DataFormatter implements IDataFormatter {
 
     this.buildCharactersFromIterable(values);
     this.buildTables(maxThreshold);
+    if ((values[0] as IRNNDatum).input) {
+      this.addInputOutput();
+    }
+    this.addUnrecognized();
     this.isSetup = true;
   }
 
@@ -48,6 +52,11 @@ export class DataFormatter implements IDataFormatter {
     ) {
       const characters = values[dataFormatterIndex];
 
+      // if (typeof characters === 'string') {
+      //   const character = characters;
+      //   if (tempCharactersTable.hasOwnProperty(character)) continue;
+      //   tempCharactersTable[character] = true;
+      //   this.characters.push(character);
       if (characters.hasOwnProperty('length')) {
         const iteratable = characters as string[] | string;
         for (
@@ -62,12 +71,12 @@ export class DataFormatter implements IDataFormatter {
         }
       } else if (typeof characters === 'number') {
         if (tempCharactersTable.hasOwnProperty(characters)) continue;
-        tempCharactersTable[dataFormatterIndex] = true;
+        tempCharactersTable[characters] = true;
         this.characters.push(characters);
       } else if (typeof characters === 'boolean') {
         const character = characters.toString();
         if (tempCharactersTable.hasOwnProperty(character)) continue;
-        tempCharactersTable[dataFormatterIndex] = true;
+        tempCharactersTable[character] = true;
         this.characters.push(character);
       } else if (
         Array.isArray(characters) &&
@@ -76,7 +85,7 @@ export class DataFormatter implements IDataFormatter {
         for (let i = 0; i < characters.length; i++) {
           const character = characters[i] as string;
           if (tempCharactersTable.hasOwnProperty(character)) continue;
-          tempCharactersTable[dataFormatterIndex] = true;
+          tempCharactersTable[character] = true;
           this.characters.push(character);
         }
       } else if (
@@ -86,14 +95,41 @@ export class DataFormatter implements IDataFormatter {
       ) {
         for (let i = 0; i < characters.length; i++) {
           const character = characters[i].toString();
-          if (tempCharactersTable.hasOwnProperty(character)) continue;
-          tempCharactersTable[dataFormatterIndex] = true;
+          if (tempCharactersTable.hasOwnProperty(dataFormatterIndex)) continue;
+          tempCharactersTable[character] = true;
           this.characters.push(character);
         }
+      } else if (
+        characters.hasOwnProperty('input') &&
+        characters.hasOwnProperty('output')
+      ) {
+        const { input, output } = (characters as unknown) as IRNNDatum;
+        if (Array.isArray(input)) {
+          this.addCharacters(input, tempCharactersTable);
+        } else {
+          this.addCharacters(input.toString(), tempCharactersTable);
+        }
+
+        if (Array.isArray(output)) {
+          this.addCharacters(output, tempCharactersTable);
+        } else {
+          this.addCharacters(output.toString(), tempCharactersTable);
+        }
       } else {
-        //  remove check after TS conversion is complete
-        throw new Error('Should never happen');
+        throw new Error('Unhandled value');
       }
+    }
+  }
+
+  addCharacters(
+    characters: string | string[] | boolean[] | number[],
+    charactersTable: { [character: string]: boolean }
+  ): void {
+    for (let i = 0; i < characters.length; i++) {
+      const character = characters[i].toString();
+      if (charactersTable.hasOwnProperty(character)) continue;
+      charactersTable[character] = true;
+      this.characters.push(character);
     }
   }
 
@@ -141,49 +177,39 @@ export class DataFormatter implements IDataFormatter {
   }
 
   toIndexesInputOutput(
-    value1: Value,
-    value2?: Value,
+    input: Value,
+    output?: Value,
     maxThreshold = 0
   ): number[] {
-    let result: number[] = [];
-    if (typeof value1 === 'string') {
-      result = this.toIndexes(
-        value1.split('').concat(['stop-input', 'start-output']),
-        maxThreshold
-      );
-    } else if (typeof value1 === 'number' || typeof value1 === 'boolean') {
-      result = this.toIndexes(
-        value1.toString().split('').concat(['stop-input', 'start-output']),
-        maxThreshold
-      );
+    const result: number[] = this.toIndexesValue(input, maxThreshold, true);
+
+    if (typeof output === 'undefined') return result;
+    return result.concat(this.toIndexesValue(output, maxThreshold, false));
+  }
+
+  toIndexesValue(
+    value: Value,
+    maxThreshold: number,
+    isInput: boolean
+  ): number[] {
+    if (typeof value === 'string') {
+      value = value.split('');
+    } else if (typeof value === 'number' || typeof value === 'boolean') {
+      value = value.toString().split('');
     } else if (
-      typeof (value1 as number[])[0] === 'number' ||
-      typeof (value1 as boolean[])[0] === 'boolean'
+      Array.isArray(value) &&
+      (typeof (value as number[])[0] === 'number' ||
+        typeof (value as boolean[])[0] === 'boolean' ||
+        typeof (value as string[])[0] === 'string')
     ) {
-      result = this.toIndexes(
-        value1.toString().split('').concat(['stop-input', 'start-output']),
-        maxThreshold
-      );
+      value = (value as string[]).map((v) => v.toString());
     } else {
       throw new Error('unrecognized value');
     }
-
-    if (typeof value2 === 'undefined') return result;
-
-    if (typeof value2 === 'string') {
-      return result.concat(this.toIndexes(value2, maxThreshold));
-    } else if (typeof value2 === 'number' || typeof value2 === 'boolean') {
-      return result.concat(this.toIndexes(value2.toString(), maxThreshold));
-    } else if (
-      typeof (value2 as number[])[0] === 'number' ||
-      typeof (value2 as boolean[])[0] === 'boolean'
-    ) {
-      return result.concat(
-        this.toIndexes(value2.toString().split(''), maxThreshold)
-      );
-    } else {
-      throw new Error('unrecognized value');
+    if (isInput) {
+      value = value.concat(['stop-input', 'start-output']);
     }
+    return this.toIndexes(value, maxThreshold);
   }
 
   toCharacters(indices: number[], maxThreshold = 0): string[] {
@@ -263,8 +289,11 @@ export class DataFormatter implements IDataFormatter {
       const datum = data[i];
       values.push(validateAndCast(datum.input), validateAndCast(datum.output));
     }
+    const flatArray: string[] = Array.isArray(values)
+      ? (values as string[][]).flat()
+      : values;
     const dataFormatter = new DataFormatter(
-      values.filter((v, i, a) => a.indexOf(v) === i),
+      Array.from(new Set(flatArray)),
       maxThreshold
     );
     dataFormatter.addInputOutput();
@@ -354,10 +383,10 @@ var dataFormatter = {
         for (let i = 0; i < data.length; i++) {
           result.push(this.formatDataIn(validateAndCast(data[i] as Value)));
         }
-        this.addUnrecognized();
-      }
-      for (let i = 0, max = data.length; i < max; i++) {
-        result.push(this.formatDataIn(data[i] as Value));
+      } else {
+        for (let i = 0, max = data.length; i < max; i++) {
+          result.push(this.formatDataIn(data[i] as Value));
+        }
       }
     } else if ((data[0] as IRNNDatum).input && (data[0] as IRNNDatum).output) {
       if (!this.isSetup) {
@@ -382,7 +411,8 @@ function validateAndCast(value: Value): string | string[] {
   if (typeof value === 'string') return value;
   if (typeof value === 'number') return value.toString();
   if (typeof value === 'boolean') return value.toString();
-  if (typeof value[0] === 'string') return value as string[];
+  if (Array.isArray(value) && typeof value[0] === 'string')
+    return value as string[];
   if (typeof value[0] === 'boolean') {
     return (value as boolean[]).map((v: boolean) => v.toString());
   }
