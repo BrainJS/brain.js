@@ -1,7 +1,7 @@
 const Matrix = require('./matrix');
 const RandomMatrix = require('./matrix/random-matrix');
 const Equation = require('./matrix/equation');
-const RNN = require('./rnn');
+const { RNN, defaults, trainDefaults } = require('./rnn');
 const { zeros } = require('../utilities/zeros');
 const softmax = require('./matrix/softmax');
 const { randomFloat } = require('../utilities/random');
@@ -26,7 +26,7 @@ class RNNTimeStep extends RNN {
 
   createInputMatrix() {}
 
-  createOutputMatrix() {
+  createOutputMatrices() {
     const { model } = this;
     const { outputSize } = this;
     const lastHiddenSize = this.hiddenLayers[this.hiddenLayers.length - 1];
@@ -92,7 +92,7 @@ class RNNTimeStep extends RNN {
       }
     }
 
-    this.createOutputMatrix();
+    this.createOutputMatrices();
     if (!model.outputConnector)
       throw new Error('net.model.outputConnector not set');
     if (!model.output) throw new Error('net.model.output not set');
@@ -154,7 +154,7 @@ class RNNTimeStep extends RNN {
    */
   train(data, options = {}) {
     this.trainOpts = options = {
-      ...this.constructor.trainDefaults,
+      ...trainDefaults,
       ...options,
     };
     const { iterations } = options;
@@ -918,7 +918,6 @@ class RNNTimeStep extends RNN {
    * @returns {Object}
    */
   toJSON() {
-    const { defaults } = this.constructor;
     if (!this.model) {
       this.initialize();
     }
@@ -950,7 +949,6 @@ class RNNTimeStep extends RNN {
   }
 
   fromJSON(json) {
-    const { defaults } = this.constructor;
     const { options } = json;
     this.model = null;
     this.hiddenLayers = null;
@@ -1274,11 +1272,11 @@ RNNTimeStep.defaults = {
   inputSize: 1,
   hiddenLayers: [20],
   outputSize: 1,
-  learningRate: RNN.defaults.learningRate,
-  decayRate: RNN.defaults.decayRate,
-  smoothEps: RNN.defaults.smoothEps,
-  regc: RNN.defaults.regc,
-  clipval: RNN.defaults.clipval,
+  learningRate: defaults.learningRate,
+  decayRate: defaults.decayRate,
+  smoothEps: defaults.smoothEps,
+  regc: defaults.regc,
+  clipval: defaults.clipval,
 };
 
 RNNTimeStep.trainDefaults = RNN.trainDefaults;

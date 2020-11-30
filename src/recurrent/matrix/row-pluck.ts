@@ -1,10 +1,5 @@
 import { Matrix } from '.';
 
-/**
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Number} rowPluckIndex
- */
 export function rowPluck(
   product: Matrix,
   left: Matrix,

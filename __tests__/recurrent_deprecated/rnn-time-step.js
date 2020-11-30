@@ -1,8 +1,8 @@
 const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
-const RNN = require('../../src/recurrent/rnn');
-const { LSTMTimeStep } = require('../../src/recurrent/lstm-time-step');
-const Equation = require('../../src/recurrent/matrix/equation');
-const istanbulLinkerUtil = require('../istanbul-linker-util');
+import { RNN } from '../../src/recurrent/rnn';
+import { LSTMTimeStep } from '../../src/recurrent/lstm-time-step';
+import { Equation } from '../../src/recurrent/matrix/equation';
+import { istanbulLinkerUtil } from '../istanbul-linker-util';
 
 // TODO: break out LSTMTimeStep into its own tests
 
@@ -28,7 +28,7 @@ describe('RNNTimeStep', () => {
       });
       expect(net.model).toBe(null);
       net.model = {};
-      net.createOutputMatrix();
+      net.createOutputMatrices();
       expect(net.model.outputConnector.rows).toBe(5);
       expect(net.model.outputConnector.columns).toBe(11);
       expect(net.model.output.rows).toBe(5);
@@ -79,7 +79,7 @@ describe('RNNTimeStep', () => {
     describe('when .createOutputMatrix() does not provide model.outputConnector', () => {
       it('throws', () => {
         const net = new RNNTimeStep();
-        net.createOutputMatrix = () => {};
+        net.createOutputMatrices = () => {};
         net.model = {
           hiddenLayers: [],
           outputConnector: null,
@@ -93,7 +93,7 @@ describe('RNNTimeStep', () => {
     describe('when .createOutputMatrix() does not provide model.output', () => {
       it('throws', () => {
         const net = new RNNTimeStep();
-        net.createOutputMatrix = () => {};
+        net.createOutputMatrices = () => {};
         net.model = {
           hiddenLayers: [],
           outputConnector: [],

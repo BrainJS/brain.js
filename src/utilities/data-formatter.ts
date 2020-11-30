@@ -1,35 +1,50 @@
-/** TODO: might need to be extended to include string[][] */
-type Values = string[] | number[] | string | string[][];
+import { Value, IRNNDatum } from '../recurrent/rnn-data-types';
 
-/**
- *
- * @param {String|String[]|Number[]} values
- * @param maxThreshold
- * @constructor
- */
-export class DataFormatter {
+export interface IDataFormatter {
+  indexTable: { [value: string]: number };
+  toIndexesInputOutput: (input: Value, output?: Value) => number[];
+  toIndexes: (input: string) => number[];
+  toCharacters: (output: number[]) => string[];
+  characters: Array<string | number>;
+  specialIndexes: number[];
+  toFunctionString: () => string;
+  formatDataIn: (input?: Value, output?: Value) => number[];
+  formatDataOut: (input: number[], output: number[]) => string;
+  format: (data: Array<IRNNDatum | Value>) => number[][];
+  isSetup: boolean;
+  toJSON: () => IDataFormatterJSON;
+}
+
+export class DataFormatter implements IDataFormatter {
   indexTable: { [key: string]: number; [key: number]: number } = {};
   characterTable: { [key: number]: string | number | null } = {};
   characters: Array<string | number> = [];
   specialIndexes: number[] = [];
+  isSetup = false;
 
-  constructor(private values?: Values | undefined, maxThreshold = 0) {
+  constructor(private values?: Array<IRNNDatum | Value>, maxThreshold = 0) {
     if (values === undefined) return;
 
+    this.setup(values, maxThreshold);
+  }
+
+  setup(values: Array<IRNNDatum | Value>, maxThreshold = 0): void {
+    if (this.isSetup) throw new Error('DataFormatter is already setup');
     this.values = values;
     // go over all characters and keep track of all unique ones seen
     // count up all characters
 
     this.buildCharactersFromIterable(values);
     this.buildTables(maxThreshold);
+    if ((values[0] as IRNNDatum).input) {
+      this.addInputOutput();
+    }
+    this.addUnrecognized();
+    this.isSetup = true;
   }
 
-  buildCharactersFromIterable(values: Values): void {
-    const tempCharactersTable: {
-      [key: string]: boolean;
-      [key: number]: boolean;
-    } = {};
-
+  buildCharactersFromIterable(values: Array<IRNNDatum | Value>): void {
+    const tempCharactersTable: { [character: string]: boolean } = {};
     for (
       let dataFormatterIndex = 0, dataFormatterLength = values.length;
       dataFormatterIndex < dataFormatterLength;
@@ -37,14 +52,13 @@ export class DataFormatter {
     ) {
       const characters = values[dataFormatterIndex];
 
-      if (typeof characters === 'number') {
-        if (tempCharactersTable.hasOwnProperty(characters)) continue;
-
-        tempCharactersTable[dataFormatterIndex] = true;
-        this.characters.push(characters);
-      } else {
-        const iteratable = characters;
-
+      // if (typeof characters === 'string') {
+      //   const character = characters;
+      //   if (tempCharactersTable.hasOwnProperty(character)) continue;
+      //   tempCharactersTable[character] = true;
+      //   this.characters.push(character);
+      if (characters.hasOwnProperty('length')) {
+        const iteratable = characters as string[] | string;
         for (
           let characterIndex = 0, charactersLength = iteratable.length;
           characterIndex < charactersLength;
@@ -55,7 +69,67 @@ export class DataFormatter {
           tempCharactersTable[character] = true;
           this.characters.push(character);
         }
+      } else if (typeof characters === 'number') {
+        if (tempCharactersTable.hasOwnProperty(characters)) continue;
+        tempCharactersTable[characters] = true;
+        this.characters.push(characters);
+      } else if (typeof characters === 'boolean') {
+        const character = characters.toString();
+        if (tempCharactersTable.hasOwnProperty(character)) continue;
+        tempCharactersTable[character] = true;
+        this.characters.push(character);
+      } else if (
+        Array.isArray(characters) &&
+        typeof characters[0] === 'string'
+      ) {
+        for (let i = 0; i < characters.length; i++) {
+          const character = characters[i] as string;
+          if (tempCharactersTable.hasOwnProperty(character)) continue;
+          tempCharactersTable[character] = true;
+          this.characters.push(character);
+        }
+      } else if (
+        Array.isArray(characters) &&
+        (typeof characters[0] === 'number' ||
+          typeof characters[0] === 'boolean')
+      ) {
+        for (let i = 0; i < characters.length; i++) {
+          const character = characters[i].toString();
+          if (tempCharactersTable.hasOwnProperty(dataFormatterIndex)) continue;
+          tempCharactersTable[character] = true;
+          this.characters.push(character);
+        }
+      } else if (
+        characters.hasOwnProperty('input') &&
+        characters.hasOwnProperty('output')
+      ) {
+        const { input, output } = (characters as unknown) as IRNNDatum;
+        if (Array.isArray(input)) {
+          this.addCharacters(input, tempCharactersTable);
+        } else {
+          this.addCharacters(input.toString(), tempCharactersTable);
+        }
+
+        if (Array.isArray(output)) {
+          this.addCharacters(output, tempCharactersTable);
+        } else {
+          this.addCharacters(output.toString(), tempCharactersTable);
+        }
+      } else {
+        throw new Error('Unhandled value');
       }
+    }
+  }
+
+  addCharacters(
+    characters: string | string[] | boolean[] | number[],
+    charactersTable: { [character: string]: boolean }
+  ): void {
+    for (let i = 0; i < characters.length; i++) {
+      const character = characters[i].toString();
+      if (charactersTable.hasOwnProperty(character)) continue;
+      charactersTable[character] = true;
+      this.characters.push(character);
     }
   }
 
@@ -76,62 +150,70 @@ export class DataFormatter {
     }
   }
 
-  toIndexes(value: string[], maxThreshold = 0): number[] {
+  toIndexes(value: Value, maxThreshold = 0): number[] {
     const result = [];
     const { indexTable } = this;
 
-    for (let i = 0, max = value.length; i < max; i++) {
-      const character = value[i];
-      let index = indexTable[character];
+    switch (typeof value) {
+      case 'number':
+      case 'boolean':
+        value = value.toString();
+    }
 
+    for (let i = 0, max = value.length; i < max; i++) {
+      const character = value[i].toString();
+      let index = indexTable[character];
       if (index === undefined) {
         if (indexTable.unrecognized) {
           index = indexTable.unrecognized;
         } else {
           throw new Error(`unrecognized character "${character}"`);
         }
-      } else if (index < maxThreshold) continue;
-
+      }
+      if (index < maxThreshold) continue;
       result.push(index);
     }
-
     return result;
   }
 
   toIndexesInputOutput(
-    value1: string | number | string[],
-    value2: string | string[] | null = null,
+    input: Value,
+    output?: Value,
     maxThreshold = 0
   ): number[] {
-    let result = null;
-    if (typeof value1 === 'string') {
-      result = this.toIndexes(
-        value1.split('').concat(['stop-input', 'start-output']),
-        maxThreshold
-      );
-    } else if (typeof value1 === 'number') {
-      result = this.toIndexes(
-        value1.toString().split('').concat(['stop-input', 'start-output']),
-        maxThreshold
-      );
-    } else {
-      result = this.toIndexes(
-        value1.concat(['stop-input', 'start-output']),
-        maxThreshold
-      );
-    }
+    const result: number[] = this.toIndexesValue(input, maxThreshold, true);
 
-    if (value2 === null) return result;
-
-    if (typeof value2 === 'string') {
-      return result.concat(this.toIndexes(value2.split(''), maxThreshold));
-    } else {
-      return result.concat(this.toIndexes(value2, maxThreshold));
-    }
+    if (typeof output === 'undefined') return result;
+    return result.concat(this.toIndexesValue(output, maxThreshold, false));
   }
 
-  toCharacters(indices: number[], maxThreshold = 0): Array<string | number> {
-    const result = [];
+  toIndexesValue(
+    value: Value,
+    maxThreshold: number,
+    isInput: boolean
+  ): number[] {
+    if (typeof value === 'string') {
+      value = value.split('');
+    } else if (typeof value === 'number' || typeof value === 'boolean') {
+      value = value.toString().split('');
+    } else if (
+      Array.isArray(value) &&
+      (typeof (value as number[])[0] === 'number' ||
+        typeof (value as boolean[])[0] === 'boolean' ||
+        typeof (value as string[])[0] === 'string')
+    ) {
+      value = (value as string[]).map((v) => v.toString());
+    } else {
+      throw new Error('unrecognized value');
+    }
+    if (isInput) {
+      value = value.concat(['stop-input', 'start-output']);
+    }
+    return this.toIndexes(value, maxThreshold);
+  }
+
+  toCharacters(indices: number[], maxThreshold = 0): string[] {
+    const result: string[] = [];
     const { indexTable, characterTable } = this;
 
     for (let i = 0, max = indices.length; i < max; i++) {
@@ -145,7 +227,7 @@ export class DataFormatter {
           throw new Error(`unrecognized index "${index}"`);
         }
       } else if (character !== null) {
-        result.push(character);
+        result.push(character.toString());
       }
     }
 
@@ -181,6 +263,7 @@ export class DataFormatter {
   ): DataFormatter {
     const dataFormatter = DataFormatter.fromAllPrintable(maxThreshold, values);
     dataFormatter.addInputOutput();
+    dataFormatter.addUnrecognized();
     return dataFormatter;
   }
 
@@ -189,32 +272,55 @@ export class DataFormatter {
     maxThreshold: number
   ): DataFormatter {
     const values = String.prototype.concat(...new Set(string));
-    const dataFormatter = new DataFormatter(values, maxThreshold);
+    const dataFormatter = new DataFormatter(values.split(''), maxThreshold);
     dataFormatter.addInputOutput();
+    dataFormatter.addUnrecognized();
+    dataFormatter.isSetup = true;
     return dataFormatter;
   }
 
   static fromArrayInputOutput(
-    array: any[],
+    data: IRNNDatum[],
     maxThreshold?: number
   ): DataFormatter {
+    const values: Array<string | string[]> = [];
+
+    for (let i = 0; i < data.length; i++) {
+      const datum = data[i];
+      values.push(validateAndCast(datum.input), validateAndCast(datum.output));
+    }
+    const flatArray: string[] = Array.isArray(values)
+      ? (values as string[][]).flat()
+      : values;
     const dataFormatter = new DataFormatter(
-      array.filter((v, i, a) => a.indexOf(v) === i),
+      Array.from(new Set(flatArray)),
       maxThreshold
     );
     dataFormatter.addInputOutput();
+    dataFormatter.addUnrecognized();
+    dataFormatter.isSetup = true;
     return dataFormatter;
   }
 
   static fromString(string: string, maxThreshold: number): DataFormatter {
     const values = String.prototype.concat(...new Set(string));
-    return new DataFormatter(values, maxThreshold);
+    return new DataFormatter(values.split(''), maxThreshold);
+  }
+
+  toJSON(): IDataFormatterJSON {
+    return {
+      indexTable: this.indexTable,
+      characterTable: this.characterTable,
+      values: this.values as Value[],
+      characters: this.characters,
+      specialIndexes: this.specialIndexes,
+    };
   }
 
   /** TODO: Type better, The type of json is not "string that is a valid JSON", it is a POJO in the shape of DataFormatter.
    * this method re-hydrates the the data as an instance of DataFormatter.
    */
-  static fromJSON(json: any): DataFormatter {
+  static fromJSON(json: IDataFormatterJSON): DataFormatter {
     const dataFormatter = new DataFormatter();
     dataFormatter.indexTable = json.indexTable;
     dataFormatter.characterTable = json.characterTable;
@@ -242,88 +348,86 @@ var dataFormatter = {
   toCharacters: ${this.toCharacters.toString()},
 };`;
   }
+
+  formatDataIn(input?: Value, output?: Value): number[] {
+    if (input === undefined) return [];
+    if (Array.isArray(input) && typeof input[0] === 'number') {
+      return input as number[];
+    }
+    if (this.indexTable.hasOwnProperty('stop-input')) {
+      return this.toIndexesInputOutput(input, output);
+    }
+    return this.toIndexes(input);
+  }
+
+  formatDataOut(input: number[], output: number[]): string {
+    return this.toCharacters(output).join('');
+  }
+
+  format(data: Array<IRNNDatum | Value>): number[][] {
+    if (
+      typeof data[0] === 'number' &&
+      !Array.isArray(data[0]) &&
+      (!data[0].hasOwnProperty('input') || !data[0].hasOwnProperty('output'))
+    ) {
+      return data as number[][];
+    }
+    const result: number[][] = [];
+    if (
+      typeof data[0] === 'string' ||
+      typeof data[0] === 'number' ||
+      Array.isArray(data[0])
+    ) {
+      if (!this.isSetup) {
+        this.setup(data);
+        for (let i = 0; i < data.length; i++) {
+          result.push(this.formatDataIn(validateAndCast(data[i] as Value)));
+        }
+      } else {
+        for (let i = 0, max = data.length; i < max; i++) {
+          result.push(this.formatDataIn(data[i] as Value));
+        }
+      }
+    } else if ((data[0] as IRNNDatum).input && (data[0] as IRNNDatum).output) {
+      if (!this.isSetup) {
+        this.setup(data);
+      }
+      for (let i = 0, max = data.length; i < max; i++) {
+        result.push(
+          this.formatDataIn(
+            validateAndCast((data[i] as IRNNDatum).input),
+            validateAndCast((data[i] as IRNNDatum).output)
+          )
+        );
+      }
+    } else {
+      throw new Error('unrecognized data');
+    }
+    return result;
+  }
 }
 
-function validateAndCast(
-  value: string | number | string[] | number[]
-): string | string[] {
+function validateAndCast(value: Value): string | string[] {
   if (typeof value === 'string') return value;
   if (typeof value === 'number') return value.toString();
-  if (typeof value[0] === 'string') return value as string[];
+  if (typeof value === 'boolean') return value.toString();
+  if (Array.isArray(value) && typeof value[0] === 'string')
+    return value as string[];
+  if (typeof value[0] === 'boolean') {
+    return (value as boolean[]).map((v: boolean) => v.toString());
+  }
   if (typeof value[0] === 'number') {
     return (value as number[]).map((v: number) => v.toString());
   }
   throw new Error(
-    'unrecognized value, expected string[], string, number[], or number'
+    'unrecognized value, expected string[], string, number[], number, boolean[], or boolean'
   );
 }
 
-/**
- * TODO: Tighten formatDataIn type once we convert caller to TS
- */
-interface DefaultRNNFormatterThis {
-  dataFormatter?: DataFormatter;
-  formatDataIn: (
-    inData: string | string[],
-    outData?: string | string[]
-  ) => number;
-}
-
-/**
- *
- * @param {*[]} data
- * @returns {Number[]}
- */
-export function defaultRNNFormatter(
-  this: DefaultRNNFormatterThis,
-  data: any[]
-): number[] {
-  if (
-    typeof data[0] !== 'string' &&
-    !Array.isArray(data[0]) &&
-    (!data[0].hasOwnProperty('input') || !data[0].hasOwnProperty('output'))
-  ) {
-    return data;
-  }
-  const values: any[] = [];
-  const result = [];
-  if (
-    typeof data[0] === 'string' ||
-    typeof data[0] === 'number' ||
-    Array.isArray(data[0])
-  ) {
-    if (!this.dataFormatter) {
-      for (let i = 0; i < data.length; i++) {
-        values.push(validateAndCast(data[i]));
-      }
-      this.dataFormatter = new DataFormatter(values);
-      this.dataFormatter.addUnrecognized();
-    }
-    for (let i = 0, max = data.length; i < max; i++) {
-      result.push(this.formatDataIn(data[i]));
-    }
-  } else if (data[0].input && data[0].output) {
-    if (!this.dataFormatter) {
-      for (let i = 0; i < data.length; i++) {
-        const datum = data[i];
-        values.push(
-          validateAndCast(datum.input),
-          validateAndCast(datum.output)
-        );
-      }
-      this.dataFormatter = DataFormatter.fromArrayInputOutput(values);
-      this.dataFormatter.addUnrecognized();
-    }
-    for (let i = 0, max = data.length; i < max; i++) {
-      result.push(
-        this.formatDataIn(
-          validateAndCast(data[i].input),
-          validateAndCast(data[i].output)
-        )
-      );
-    }
-  } else {
-    throw new Error('unrecognized data');
-  }
-  return result;
+export interface IDataFormatterJSON {
+  indexTable: { [key: string]: number; [key: number]: number };
+  characterTable: { [key: number]: string | number | null };
+  values: Value[];
+  characters: Array<string | number>;
+  specialIndexes: number[];
 }
