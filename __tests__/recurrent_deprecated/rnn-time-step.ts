@@ -197,146 +197,146 @@ describe('RNNTimeStep', () => {
       }).toThrow('this.inputValue is of wrong dimensions');
     });
 
-    // describe('automatically setting inputSize and outputSize', () => {
-    //   describe('numbers', () => {
-    //     it('will set inputSize & outputSize if from data', () => {
-    //       const data = [[0.1, 0.2, 0.3, 0.4, 0.5]];
-    //       const options = {
-    //         iterations: 0,
-    //       };
-    //       const net = new RNNTimeStep();
-    //       net.train(data, options);
-    //       expect(net.inputSize).toBe(1);
-    //       expect(net.outputSize).toBe(1);
-    //     });
-    //   });
-    //   describe('arrays', () => {
-    //     it('will set inputSize & outputSize if from data', () => {
-    //       const data = [
-    //         [
-    //           [0.1, 0.5],
-    //           [0.2, 0.4],
-    //           [0.3, 0.3],
-    //           [0.4, 0.2],
-    //           [0.5, 0.1],
-    //         ],
-    //       ];
-    //       const options = {
-    //         iterations: 1,
-    //       };
-    //       const net = new RNNTimeStep();
-    //       net.train(data, options);
-    //       expect(net.inputSize).toBe(2);
-    //       expect(net.outputSize).toBe(2);
-    //     });
-    //   });
-    //   describe('object', () => {
-    //     it('will set inputSize & outputSize if from data', () => {
-    //       const data = [{ low: 0.1, med: 0.25, high: 0.5 }];
-    //       const options = {
-    //         iterations: 1,
-    //       };
-    //       const net = new RNNTimeStep();
-    //       net.train(data, options);
-    //       expect(net.inputSize).toBe(1);
-    //       expect(net.outputSize).toBe(1);
-    //     });
-    //   });
-    //   describe('objects', () => {
-    //     it('will set inputSize & outputSize if from data', () => {
-    //       const data = [
-    //         [
-    //           { low: 0.1, med: 0.25, high: 0.5 },
-    //           { low: 0.5, med: 0.25, high: 0.1 },
-    //         ],
-    //       ];
-    //       const options = {
-    //         iterations: 1,
-    //       };
-    //       const net = new RNNTimeStep();
-    //       net.train(data, options);
-    //       expect(net.inputSize).toBe(3);
-    //       expect(net.outputSize).toBe(3);
-    //     });
-    //   });
-    //   describe('input/output numbers', () => {
-    //     it('will set inputSize & outputSize if from data', () => {
-    //       const data = [{ input: [0.1, 0.2, 0.3, 0.4], output: [0.5] }];
-    //       const options = {
-    //         iterations: 1,
-    //       };
-    //       const net = new RNNTimeStep();
-    //       net.train(data, options);
-    //       expect(net.inputSize).toBe(1);
-    //       expect(net.outputSize).toBe(1);
-    //     });
-    //   });
-    //   describe('input/output arrays', () => {
-    //     it('will set inputSize & outputSize if from data', () => {
-    //       const data = [
-    //         {
-    //           input: [[0.1, 0.5]],
-    //           output: [[0.5, 0.1]],
-    //         },
-    //       ];
-    //       const options = {
-    //         iterations: 1,
-    //       };
-    //       const net = new RNNTimeStep();
-    //       net.train(data, options);
-    //       expect(net.inputSize).toBe(2);
-    //       expect(net.outputSize).toBe(2);
-    //     });
-    //   });
-    //   describe('input/output object', () => {
-    //     it('will set inputSize & outputSize if from data', () => {
-    //       const data = [
-    //         {
-    //           input: { low: 0.1, high: 0.5 },
-    //           output: { low: 0.5, high: 0.1 },
-    //         },
-    //       ];
-    //       const options = {
-    //         iterations: 1,
-    //       };
-    //       const net = new RNNTimeStep();
-    //       net.train(data, options);
-    //       expect(net.inputSize).toBe(1);
-    //       expect(net.outputSize).toBe(1);
-    //     });
-    //   });
-    //   describe('datum', () => {
-    //     it('will set inputSize & outputSize if from data', () => {
-    //       const data = [
-    //         {
-    //           input: [{ low: 0.1, high: 0.5 }],
-    //           output: [{ low: 0.5, high: 0.1 }],
-    //         },
-    //       ];
-    //       const options = {
-    //         iterations: 1,
-    //       };
-    //       const net = new RNNTimeStep();
-    //       net.train(data, options);
-    //       expect(net.inputSize).toBe(2);
-    //       expect(net.outputSize).toBe(2);
-    //     });
-    //   });
-    //   it('will not set inputSize & outputSize if already set larger than 1', () => {
-    //     const net = new RNNTimeStep({ inputSize: 99, outputSize: 88 });
-    //     net.initialize = () => {
-    //       throw new Error('got passed size check');
-    //     };
-    //     expect(() => {
-    //       net.train([
-    //         [0, 1, 2, 3, 4],
-    //         [4, 3, 2, 1, 0],
-    //       ]);
-    //     }).toThrow();
-    //     expect(net.inputSize).toBe(99);
-    //     expect(net.outputSize).toBe(88);
-    //   });
-    // });
+    describe('automatically setting options.inputSize and options.outputSize', () => {
+      describe('numbers', () => {
+        it('will set inputSize & outputSize if from data', () => {
+          const data = [[0.1, 0.2, 0.3, 0.4, 0.5]];
+          const options = {
+            iterations: 0,
+          };
+          const net = new RNNTimeStep();
+          net.train(data, options);
+          expect(net.options.inputSize).toBe(1);
+          expect(net.options.outputSize).toBe(1);
+        });
+      });
+      describe('arrays', () => {
+        it('will set inputSize & outputSize if from data', () => {
+          const data = [
+            [
+              [0.1, 0.5],
+              [0.2, 0.4],
+              [0.3, 0.3],
+              [0.4, 0.2],
+              [0.5, 0.1],
+            ],
+          ];
+          const options = {
+            iterations: 1,
+          };
+          const net = new RNNTimeStep();
+          net.train(data, options);
+          expect(net.options.inputSize).toBe(2);
+          expect(net.options.outputSize).toBe(2);
+        });
+      });
+      describe('object', () => {
+        it('will set inputSize & outputSize if from data', () => {
+          const data = [{ low: 0.1, med: 0.25, high: 0.5 }];
+          const options = {
+            iterations: 1,
+          };
+          const net = new RNNTimeStep();
+          net.train(data, options);
+          expect(net.options.inputSize).toBe(1);
+          expect(net.options.outputSize).toBe(1);
+        });
+      });
+      describe('objects', () => {
+        it('will set inputSize & outputSize if from data', () => {
+          const data = [
+            [
+              { low: 0.1, med: 0.25, high: 0.5 },
+              { low: 0.5, med: 0.25, high: 0.1 },
+            ],
+          ];
+          const options = {
+            iterations: 1,
+          };
+          const net = new RNNTimeStep();
+          net.train(data, options);
+          expect(net.options.inputSize).toBe(3);
+          expect(net.options.outputSize).toBe(3);
+        });
+      });
+      describe('input/output numbers', () => {
+        it('will set inputSize & outputSize if from data', () => {
+          const data = [{ input: [0.1, 0.2, 0.3, 0.4], output: [0.5] }];
+          const options = {
+            iterations: 1,
+          };
+          const net = new RNNTimeStep();
+          net.train(data, options);
+          expect(net.options.inputSize).toBe(1);
+          expect(net.options.outputSize).toBe(1);
+        });
+      });
+      describe('input/output arrays', () => {
+        it('will set inputSize & outputSize if from data', () => {
+          const data = [
+            {
+              input: [[0.1, 0.5]],
+              output: [[0.5, 0.1]],
+            },
+          ];
+          const options = {
+            iterations: 1,
+          };
+          const net = new RNNTimeStep();
+          net.train(data, options);
+          expect(net.options.inputSize).toBe(2);
+          expect(net.options.outputSize).toBe(2);
+        });
+      });
+      describe('input/output object', () => {
+        it('will set inputSize & outputSize if from data', () => {
+          const data = [
+            {
+              input: { low: 0.1, high: 0.5 },
+              output: { low: 0.5, high: 0.1 },
+            },
+          ];
+          const options = {
+            iterations: 1,
+          };
+          const net = new RNNTimeStep();
+          net.train(data, options);
+          expect(net.options.inputSize).toBe(1);
+          expect(net.options.outputSize).toBe(1);
+        });
+      });
+      describe('datum', () => {
+        it('will set inputSize & outputSize if from data', () => {
+          const data = [
+            {
+              input: [{ low: 0.1, high: 0.5 }],
+              output: [{ low: 0.5, high: 0.1 }],
+            },
+          ];
+          const options = {
+            iterations: 1,
+          };
+          const net = new RNNTimeStep();
+          net.train(data, options);
+          expect(net.options.inputSize).toBe(2);
+          expect(net.options.outputSize).toBe(2);
+        });
+      });
+      it('will not set inputSize & outputSize if already set larger than 1', () => {
+        const net = new RNNTimeStep({ inputSize: 99, outputSize: 88 });
+        net.initialize = () => {
+          throw new Error('got passed size check');
+        };
+        expect(() => {
+          net.train([
+            [0, 1, 2, 3, 4],
+            [4, 3, 2, 1, 0],
+          ]);
+        }).toThrow();
+        expect(net.options.inputSize).toBe(99);
+        expect(net.options.outputSize).toBe(88);
+      });
+    });
     // describe('calling using arrays', () => {
     //   describe('training data with 1D arrays', () => {
     //     describe('end to end', () => {

@@ -6,7 +6,10 @@ export function arraysToFloat32Arrays(arrays: number[][]): Float32Array[] {
   return result;
 }
 
-export function inputOutputArraysToFloat32Arrays(input: number[][], output: number[][]): Float32Array[] {
+export function inputOutputArraysToFloat32Arrays(
+  input: number[][],
+  output: number[][]
+): Float32Array[] {
   const result: Float32Array[] = [];
   for (let i = 0; i < input.length; i++) {
     result.push(Float32Array.from(input[i]));

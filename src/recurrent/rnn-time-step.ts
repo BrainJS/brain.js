@@ -113,8 +113,6 @@ export const defaults: IRNNOptions = {
 };
 
 export class RNNTimeStep extends RNN {
-  inputSize = 0;
-  outputSize = 0;
   inputLookupLength = 0;
   inputLookup: INumberHash | null = null;
   outputLookup: INumberHash | null = null;
@@ -317,8 +315,7 @@ export class RNNTimeStep extends RNN {
       callbackPeriod,
     } = this.trainOpts;
     const log = trainOpts.log === true ? console.log : trainOpts.log;
-
-    if (this.inputSize === 1 || !this.inputSize) {
+    if (this.options.inputSize === 1 || !this.options.inputSize) {
       this.setSize(data);
     }
 
@@ -359,46 +356,44 @@ export class RNNTimeStep extends RNN {
       if (this.options.inputSize !== this.options.outputSize) {
         throw new Error('manually set inputSize and outputSize mismatch');
       }
-      this.inputSize = this.options.inputSize;
-      this.outputSize = this.options.outputSize;
     }
+    let size = 0;
     const dataShape = lookup.dataShape(data).join(',');
     switch (dataShape) {
       case 'array,array,number':
       case 'array,object,number':
       case 'array,datum,array,number':
       case 'array,datum,object,number':
-        this.inputSize = this.outputSize = 1;
+        size = 1;
         // probably 1
         break;
       case 'array,array,array,number':
-        this.inputSize = this.outputSize = (data as number[][][])[0][0].length;
+        size = (data as number[][][])[0][0].length;
         break;
       case 'array,array,object,number':
-        this.inputSize = this.outputSize = Object.keys(
-          lookup.toTable2D(data as INumberHash[][])
-        ).length;
+        // inputs and outputs should match
+        size = Object.keys(lookup.toTable2D(data as INumberHash[][])).length;
         break;
       case 'array,datum,array,array,number':
-        this.inputSize = this.outputSize = ((data as unknown) as Array<{
+        size = ((data as unknown) as Array<{
           [key: string]: number[][];
         }>)[0].input[0].length;
         break;
       case 'array,datum,array,object,number':
-        this.inputSize = Object.keys(
+        size = Object.keys(
           lookup.toInputTable2D(
             data as Array<{ input: Array<{ [key: string]: number }> }>
-          )
-        ).length;
-        this.outputSize = Object.keys(
-          lookup.toOutputTable2D(
-            data as Array<{ output: Array<{ [key: string]: number }> }>
           )
         ).length;
         break;
       default:
         throw new Error('unknown data shape or configuration');
     }
+    this.options = Object.seal({
+      ...this.options,
+      inputSize: size,
+      outputSize: size,
+    });
   }
 
   // trainNumbers(input: Float32Array): number {
@@ -651,15 +646,15 @@ export class RNNTimeStep extends RNN {
 
   end(): void {
     this.model.equations[this.model.equations.length - 1].runInput(
-      new Float32Array(this.outputSize)
+      new Float32Array(this.options.outputSize)
     );
   }
 
   requireInputOutputOfOne(): void {
-    if (this.inputSize !== 1) {
+    if (this.options.inputSize !== 1) {
       throw new Error('inputSize must be 1 for this data size');
     }
-    if (this.outputSize !== 1) {
+    if (this.options.outputSize !== 1) {
       throw new Error('outputSize must be 1 for this data size');
     }
   }
@@ -677,16 +672,17 @@ export class RNNTimeStep extends RNN {
   // Handles data shape of 'array,array,number'
   formatArrayOfArray(data: number[][]): Float32Array[][] {
     const result = [];
-    if (this.inputSize === 1 && this.outputSize === 1) {
+    const { inputSize, outputSize } = this.options;
+    if (inputSize === 1 && outputSize === 1) {
       for (let i = 0; i < data.length; i++) {
         result.push(arrayToFloat32Arrays(data[i]));
       }
       return result;
     }
-    if (this.inputSize !== data[0].length) {
+    if (inputSize !== data[0].length) {
       throw new Error('inputSize must match data input size');
     }
-    if (this.outputSize !== data[0].length) {
+    if (outputSize !== data[0].length) {
       throw new Error('outputSize must match data input size');
     }
     for (let i = 0; i < data.length; i++) {
@@ -788,7 +784,8 @@ export class RNNTimeStep extends RNN {
   // Handles data shape of 'array,datum,array,array,number'
   formatArrayOfDatumOfArrayOfArray(data: ITrainingDatum[]): Float32Array[][] {
     const result = [];
-    if (this.inputSize === 1 && this.outputSize === 1) {
+    const { inputSize, outputSize } = this.options;
+    if (inputSize === 1 && outputSize === 1) {
       for (let i = 0; i < data.length; i++) {
         const datum = data[i];
         result.push(
@@ -799,15 +796,12 @@ export class RNNTimeStep extends RNN {
         );
       }
     } else {
-      if (this.inputSize !== (data[0].input as InputOutputValue[])[0].length) {
+      if (inputSize !== (data[0].input as InputOutputValue[])[0].length) {
         throw new Error('inputSize must match data input size');
       }
-      if (
-        this.outputSize !== (data[0].output as InputOutputValue[])[0].length
-      ) {
+      if (outputSize !== (data[0].output as InputOutputValue[])[0].length) {
         throw new Error('outputSize must match data output size');
       }
-      const result = [];
       for (let i = 0; i < data.length; i++) {
         const datum = data[i];
         result.push(
@@ -1142,12 +1136,12 @@ export class RNNTimeStep extends RNN {
   toFunction(cb?: (src: string) => string): RNNTimeStepFunction {
     const {
       model,
-      inputSize,
       inputLookup,
       inputLookupLength,
       outputLookup,
       outputLookupLength,
     } = this;
+    const { inputSize } = this.options;
     const { equations } = model;
     const equation = equations[1];
     const { states } = equation;
@@ -1347,7 +1341,7 @@ export class RNNTimeStep extends RNN {
       }
     }
 
-    const forceForecast = this.inputSize === 1 && this.outputLookup;
+    const forceForecast = inputSize === 1 && this.outputLookup;
     const src = `
   var input = ${this.inputLookup ? 'lookupInput(rawInput)' : 'rawInput'};
   var json = ${jsonString};
