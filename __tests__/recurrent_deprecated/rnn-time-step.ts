@@ -170,9 +170,9 @@ describe('RNNTimeStep', () => {
         hiddenLayers: [10],
         outputSize: 1,
       });
-      // expect(() => {
+      expect(() => {
         net.train(data);
-      // }).toThrow('not');
+      }).toThrow('manually set inputSize and outputSize mismatch');
     });
     it('throws on array,datum,array w/ outputSize of 2', () => {
       const data = [{ input: [1, 2], output: [3, 4] }];
@@ -183,7 +183,7 @@ describe('RNNTimeStep', () => {
       });
       expect(() => {
         net.train(data);
-      }).toThrow('not');
+      }).toThrow('manually set inputSize and outputSize mismatch');
     });
     it('throws on array,datum,object w/ inputSize of 2', () => {
       const data = [{ input: { a: 1, b: 2 }, output: { c: 3, d: 4 } }];
@@ -194,7 +194,7 @@ describe('RNNTimeStep', () => {
       });
       expect(() => {
         net.train(data);
-      }).toThrow('not');
+      }).toThrow('this.inputValue is of wrong dimensions');
     });
 
     // describe('automatically setting inputSize and outputSize', () => {

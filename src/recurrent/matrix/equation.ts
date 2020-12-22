@@ -168,7 +168,9 @@ export class Equation {
       product: input,
       forwardFn: (product: Matrix) => {
         if (!this.inputValue) return;
-
+        if (this.inputValue.length !== product.weights.length) {
+          throw new Error('this.inputValue is of wrong dimensions');
+        }
         product.weights = input.weights = this.inputValue;
       },
       backpropagationFn: () => {},

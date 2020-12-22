@@ -113,8 +113,8 @@ export const defaults: IRNNOptions = {
 };
 
 export class RNNTimeStep extends RNN {
-  inputSize = 1;
-  outputSize = 1;
+  inputSize = 0;
+  outputSize = 0;
   inputLookupLength = 0;
   inputLookup: INumberHash | null = null;
   outputLookup: INumberHash | null = null;
@@ -355,6 +355,13 @@ export class RNNTimeStep extends RNN {
   }
 
   setSize(data: FormattableData): void {
+    if (this.options.inputSize || this.options.outputSize) {
+      if (this.options.inputSize !== this.options.outputSize) {
+        throw new Error('manually set inputSize and outputSize mismatch');
+      }
+      this.inputSize = this.options.inputSize;
+      this.outputSize = this.options.outputSize;
+    }
     const dataShape = lookup.dataShape(data).join(',');
     switch (dataShape) {
       case 'array,array,number':

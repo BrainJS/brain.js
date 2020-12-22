@@ -7,9 +7,6 @@ export interface IMatrixJSON {
 }
 /**
  * A matrix
- * @param {Number} [rows]
- * @param {Number} [columns]
- * @constructor
  */
 export class Matrix {
   rows = 0;
@@ -25,12 +22,6 @@ export class Matrix {
     this.deltas = zeros(this.rows * this.columns);
   }
 
-  /**
-   *
-   * @param {Number} row
-   * @param {Number} col
-   * @returns {Number}
-   */
   getWeights(row: number, col: number): number {
     // slow but careful accessor function
     // we want row-major order
@@ -43,13 +34,6 @@ export class Matrix {
     return this.weights[ix];
   }
 
-  /**
-   *
-   * @param {Number} row
-   * @param {Number} col
-   * @param {Number}  v
-   * @returns {Matrix}
-   */
   setWeight(row: number, col: number, v: number): Matrix {
     // slow but careful accessor function
     const ix = this.columns * row + col;
@@ -63,13 +47,6 @@ export class Matrix {
     return this;
   }
 
-  /**
-   *
-   * @param {Number} row
-   * @param {Number} col
-   * @param {Number}  v
-   * @returns {Matrix}
-   */
   setDeltas(row: number, col: number, v: number): Matrix {
     // slow but careful accessor function
     const ix = this.columns * row + col;
@@ -83,10 +60,6 @@ export class Matrix {
     return this;
   }
 
-  /**
-   *
-   * @returns {{rows: *, columns: *, weights: Array}}
-   */
   toJSON(): IMatrixJSON {
     return {
       rows: this.rows,
@@ -109,12 +82,6 @@ export class Matrix {
     return matrix;
   }
 
-  /**
-   *
-   * @param weightRows
-   * @param [deltasRows]
-   * @returns {Matrix}
-   */
   static fromArray(
     weightRows: Float32Array[],
     deltasRows?: Float32Array[]
