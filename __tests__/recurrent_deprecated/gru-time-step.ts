@@ -1,5 +1,5 @@
-const RNNTimeStep = require('../../src/recurrent/rnn-time-step');
-const { GRUTimeStep } = require('../../src/recurrent/gru-time-step');
+import { RNNTimeStep } from '../../src/recurrent/rnn-time-step';
+import { GRUTimeStep } from '../../src/recurrent/gru-time-step';
 
 describe('GRUTimeStep', () => {
   describe('getModel', () => {

@@ -16,7 +16,7 @@ export interface GRUModel {
   cellWriteBias: Matrix;
 }
 
-export class GRU<IOType extends Value | IRNNDatum> extends RNN<IOType> {
+export class GRU extends RNN {
   static getModel(hiddenSize: number, prevSize: number): GRUModel {
     return {
       // update Gate

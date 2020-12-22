@@ -19,7 +19,7 @@ export interface LSTMModel {
   cellActivationBias: Matrix;
 }
 
-export class LSTM<IOType extends Value | IRNNDatum> extends RNN<IOType> {
+export class LSTM extends RNN {
   static getModel(hiddenSize: number, prevSize: number): LSTMModel {
     return {
       // gates parameters

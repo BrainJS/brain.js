@@ -1,7 +1,7 @@
-const { GRU } = require('../../src/recurrent/gru');
-const RNN = require('../../src/recurrent/rnn');
-const { DataFormatter } = require('../../src/utilities/data-formatter');
-const istanbulLinkerUtil = require('../istanbul-linker-util');
+import { GRU } from '../../src/recurrent/gru';
+import { RNN } from '../../src/recurrent/rnn';
+import { DataFormatter } from '../../src/utilities/data-formatter';
+import { istanbulLinkerUtil } from '../istanbul-linker-util';
 
 describe('GRU', () => {
   describe('getModel', () => {

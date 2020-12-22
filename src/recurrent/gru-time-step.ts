@@ -1,7 +1,7 @@
 import { GRU, GRUModel } from './gru';
 import { Matrix } from './matrix';
 import { Equation } from './matrix/equation';
-import RNNTimeStep from './rnn-time-step';
+import { RNNTimeStep } from './rnn-time-step';
 
 export class GRUTimeStep extends RNNTimeStep {
   static getModel(hiddenSize: number, prevSize: number): GRUModel {

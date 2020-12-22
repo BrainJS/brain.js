@@ -1,7 +1,7 @@
 import { LSTM, LSTMModel } from './lstm';
 import { Matrix } from './matrix';
 import { Equation } from './matrix/equation';
-import RNNTimeStep from './rnn-time-step';
+import { RNNTimeStep } from './rnn-time-step';
 
 export class LSTMTimeStep extends RNNTimeStep {
   static getModel(hiddenSize: number, prevSize: number): LSTMModel {

@@ -21,6 +21,13 @@ export interface ITrainingDatum {
   output: InputOutputValue | InputOutputValue[] | KernelOutput;
 }
 
+export type FormattableData =
+  | ITrainingDatum
+  | ITrainingDatum[]
+  | InputOutputValue
+  | InputOutputValue[]
+  | InputOutputValue[][];
+
 /* Functions for turning sparse hashes into arrays and vice versa */
 export const lookup = {
   /**
@@ -153,7 +160,7 @@ export const lookup = {
    * @param {Array} array
    * @returns {Object}
    */
-  toObject(lookup: INumberHash, array: number[]): INumberHash {
+  toObject(lookup: INumberHash, array: number[] | Float32Array): INumberHash {
     const object: INumberHash = {};
     for (const p in lookup) {
       if (!lookup.hasOwnProperty(p)) continue;
@@ -164,7 +171,7 @@ export const lookup = {
 
   toObjectPartial(
     lookup: INumberHash,
-    array: number[],
+    array: number[] | Float32Array,
     offset = 0,
     limit = 0
   ): INumberHash {
@@ -183,14 +190,7 @@ export const lookup = {
     return object;
   },
 
-  dataShape(
-    data:
-      | ITrainingDatum
-      | ITrainingDatum[]
-      | InputOutputValue
-      | InputOutputValue[]
-      | InputOutputValue[][]
-  ): string[] {
+  dataShape(data: FormattableData): string[] {
     const shape = [];
     let lastData:
       | InputOutputValue
