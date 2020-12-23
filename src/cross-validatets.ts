@@ -1,40 +1,101 @@
-class CrossValidate {
+import NeuralNetwork from './neural-network';
+import {
+  INeuralNetworkOptions,
+  INeuralNetworkTestResult,
+  INeuralNetworkTrainingData,
+  INeuralNetworkTrainingOptions,
+} from './neural-network-types';
+
+export type ICrossValidateOptions = INeuralNetworkOptions;
+export interface ICrossValidateJSON {
+  avgs: ICrossValidationTestPartitionResults;
+  stats: ICrossValidateStats;
+  sets: ICrossValidationTestPartitionResults[];
+}
+
+export interface ICrossValidateStatsAverages {
+  trainTime: number;
+  testTime: number;
+  iterations: number;
+  error: number;
+}
+
+export interface ICrossValidateStatsResultStats {
+  total: number;
+  testSize: number;
+  trainSize: number;
+}
+
+export interface ICrossValidateStatsResultBinaryStats
+  extends ICrossValidateStatsResultStats {
+  total: number;
+  truePos: number;
+  trueNeg: number;
+  falsePos: number;
+  falseNeg: number;
+  precision: number;
+  recall: number;
+  accuracy: number;
+}
+export interface ICrossValidateStats {
+  avgs: ICrossValidateStatsAverages;
+  stats: ICrossValidateStatsResultStats | ICrossValidateStatsResultBinaryStats;
+  sets: ICrossValidationTestPartitionResults[];
+}
+
+export interface ICrossValidationTestPartitionResults
+  extends INeuralNetworkTestResult {
+  trainTime: number;
+  testTime: number;
+  iterations: number;
+  learningRate: number;
+  hiddenLayers: number[];
+  network: NeuralNetwork;
+  total: number;
+}
+type $TSFixME = any;
+
+export default class CrossValidate {
+  Classifier: typeof NeuralNetwork;
+  options: ICrossValidateOptions = {};
+  json: $TSFixME = null;
+
   /**
    *
    * @param {NeuralNetwork|constructor} Classifier
    * @param {object} [options]
    */
-  constructor(Classifier, options) {
+  constructor(
+    Classifier: typeof NeuralNetwork,
+    options: ICrossValidateOptions = {}
+  ) {
     this.Classifier = Classifier;
     this.options = options;
     this.json = null;
   }
 
-  /**
-   *
-   * @param {object} trainOpts
-   * @param {object} trainSet
-   * @param {object} testSet
-   * @returns {void|*}
-   */
-  testPartition(trainOpts, trainSet, testSet) {
+  testPartition(
+    trainOpts: INeuralNetworkTrainingOptions,
+    trainSet: INeuralNetworkTrainingData[],
+    testSet: INeuralNetworkTrainingData[]
+  ): ICrossValidationTestPartitionResults {
     const classifier = new this.Classifier(this.options);
     const beginTrain = Date.now();
     const trainingStats = classifier.train(trainSet, trainOpts);
     const beginTest = Date.now();
-    const testStats = classifier.test(testSet);
+    const testStats: INeuralNetworkTestResult = classifier.test(testSet);
     const endTest = Date.now();
-    const stats = Object.assign({}, testStats, {
+    const stats: ICrossValidationTestPartitionResults = {
+      ...testStats,
       trainTime: beginTest - beginTrain,
       testTime: endTest - beginTest,
       iterations: trainingStats.iterations,
       error: trainingStats.error,
       total: testStats.total,
-      learningRate: classifier.trainOpts.learningRate,
-      hiddenLayers: classifier.hiddenLayers,
+      learningRate: (classifier.trainOpts as $TSFixME).learningRate,
+      hiddenLayers: (classifier as $TSFixME).hiddenLayers,
       network: classifier.toJSON(),
-    });
-
+    };
     return stats;
   }
 
@@ -43,7 +104,7 @@ class CrossValidate {
    * Using Durstenfeld shuffle algorithm.
    * source: http://stackoverflow.com/a/12646864/1324039
    */
-  shuffleArray(array) {
+  shuffleArray<T>(array: T[]): T[] {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       const temp = array[i];
@@ -53,71 +114,56 @@ class CrossValidate {
     return array;
   }
 
-  /**
-   *
-   * @param {object} data
-   * @param {object} trainOpts
-   * @param {number} [k]
-   * @returns {
-   *  {
-   *    avgs: {
-   *      error: number,
-   *      trainTime: number,
-   *      testTime: number,
-   *      iterations: number,
-   *      error: number
-   *    },
-   *    stats: {
-   *      truePos: number,
-   *      trueNeg: number,
-   *      falsePos: number,
-   *      falseNeg: number,
-   *      total: number
-   *    },
-   *    sets: Array
-   *  }
-   * }
-   */
-  train(data, trainOpts = {}, k = 4) {
+  train<T extends []>(
+    data: INeuralNetworkTrainingData[] | T,
+    trainOpts: INeuralNetworkTrainingOptions = {},
+    k = 4
+  ): ICrossValidateStats {
     if (data.length < k) {
       throw new Error(
         `Training set size is too small for ${data.length} k folds of ${k}`
       );
     }
-
+    this.shuffleArray(data);
     const size = data.length / k;
 
-    if (data.constructor === Array) {
-      this.shuffleArray(data);
-    } else {
-      const newData = {};
-      this.shuffleArray(Object.keys(data)).forEach((key) => {
-        newData[key] = data[key];
-      });
-      data = newData;
-    }
-
-    const avgs = {
+    const avgs: ICrossValidateStatsAverages = {
       trainTime: 0,
       testTime: 0,
       iterations: 0,
       error: 0,
     };
 
-    const stats = {
+    const stats:
+      | ICrossValidateStatsResultStats
+      | ICrossValidateStatsResultBinaryStats = {
       total: 0,
+      testSize: 0,
+      trainSize: 0,
     };
 
-    const binaryStats = {
+    const isBinaryStats = (
+      stats:
+        | ICrossValidateStatsResultStats
+        | ICrossValidateStatsResultBinaryStats
+    ): stats is ICrossValidateStatsResultBinaryStats => {
+      return (stats as ICrossValidateStatsResultBinaryStats) !== undefined;
+    };
+
+    const binaryStats: ICrossValidateStatsResultBinaryStats = {
       total: 0,
+      testSize: 0,
+      trainSize: 0,
       truePos: 0,
       trueNeg: 0,
       falsePos: 0,
       falseNeg: 0,
+      precision: 0,
+      recall: 0,
+      accuracy: 0,
     };
 
     const results = [];
-    let stat;
     let isBinary = null;
 
     for (let i = 0; i < k; i++) {
@@ -137,28 +183,19 @@ class CrossValidate {
         }
       }
 
-      for (stat in avgs) {
-        if (stat in avgs) {
-          avgs[stat] += result[stat];
-        }
-      }
-
-      for (stat in stats) {
-        if (stat in stats) {
-          stats[stat] += result[stat];
-        }
-      }
-
+      avgs.iterations += result.iterations;
+      avgs.testTime += result.testTime;
+      avgs.trainTime += result.trainTime;
+      avgs.error += result.error;
+      stats.total += result.total;
       results.push(result);
     }
+    avgs.error /= k;
+    avgs.iterations /= k;
+    avgs.testTime /= k;
+    avgs.trainTime /= k;
 
-    for (stat in avgs) {
-      if (stat in avgs) {
-        avgs[stat] /= k;
-      }
-    }
-
-    if (isBinary) {
+    if (isBinaryStats(stats)) {
       stats.precision = stats.truePos / (stats.truePos + stats.falsePos);
       stats.recall = stats.truePos / (stats.truePos + stats.falseNeg);
       stats.accuracy = (stats.trueNeg + stats.truePos) / stats.total;
@@ -167,27 +204,27 @@ class CrossValidate {
     stats.testSize = size;
     stats.trainSize = data.length - size;
 
-    return (this.json = {
+    this.json = {
       avgs: avgs,
       stats: stats,
       sets: results,
-    });
-  }
-
-  toNeuralNetwork() {
-    return this.fromJSON(this.json);
-  }
-
-  toJSON() {
+    };
     return this.json;
   }
 
-  fromJSON(crossValidateJson) {
+  toNeuralNetwork(): NeuralNetwork {
+    return this.fromJSON(this.json);
+  }
+
+  toJSON(): ICrossValidateJSON {
+    return this.json;
+  }
+
+  fromJSON(crossValidateJson: ICrossValidateJSON): NeuralNetwork {
     const Classifier = this.Classifier;
-    const json = crossValidateJson.sets.reduce(
-      (prev, cur) => (prev.error < cur.error ? prev : cur),
-      { error: Infinity }
-    ).network;
+    const json: ICrossValidationTestPartitionResults = crossValidateJson.sets.reduce(
+      (prev, cur) => (prev.error < cur.error ? prev : cur)
+    );
     if (Classifier.fromJSON) {
       return Classifier.fromJSON(json);
     }
@@ -196,5 +233,3 @@ class CrossValidate {
     return instance;
   }
 }
-
-module.exports = CrossValidate;

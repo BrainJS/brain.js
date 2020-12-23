@@ -1227,5 +1227,7 @@ export class NeuralNetwork {
   }
 }
 
+NeuralNetwork.fromJSON = undefined;
+
 // module.exports = NeuralNetwork;
 export default NeuralNetwork;
