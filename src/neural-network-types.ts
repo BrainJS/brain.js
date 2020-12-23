@@ -1,4 +1,4 @@
-/** The following should be moved to neural-network.ts once that is converted to typescript. Added here until neural-network.js is converted */
+/** TODO: The following should be moved to neural-network.ts once that is converted to typescript. Added here until neural-network.js is converted */
 export interface INeuralNetworkOptions {
   /**
    * @default 0.5
@@ -25,6 +25,8 @@ export interface INeuralNetworkOptions {
    * @default 0.01
    */
   leakyReluAlpha?: number;
+
+  [x: string]: any;
 }
 export type NeuralNetworkActivation =
   | 'sigmoid'
