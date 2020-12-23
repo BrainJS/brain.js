@@ -1,7 +1,7 @@
 import CrossValidate from '../src/cross-validate';
 import { NeuralNetwork } from '../src/neural-network';
 import { LSTMTimeStep } from '../src/recurrent/lstm-time-step';
-describe.only('CrossValidate', () => {
+describe('CrossValidate', () => {
   describe('.train()', () => {
     class FakeNN extends NeuralNetwork {
       hiddenLayers: number[];
