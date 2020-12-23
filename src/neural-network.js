@@ -555,7 +555,7 @@ export class NeuralNetwork {
    *
    * @param data
    * @param options
-   * @returns {object} {error: number, iterations: number}
+   * @returns {{error: number, iterations: number}} {error: number, iterations: number}
    */
   train(data, options = {}) {
     let status;
