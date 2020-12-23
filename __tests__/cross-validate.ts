@@ -235,17 +235,26 @@ describe('CrossValidate', () => {
     }
     it('creates a new instance of constructor from top .json sets.error', () => {
       const cv = new CrossValidate(FakeNN as any);
+      const details = {
+        trainTime: 0,
+        testTime: 0,
+        total: 0,
+        iterations: 0,
+        misclasses: 0,
+        learningRate: 0,
+        hiddenLayers: [0],
+      };
       cv.json = {
         sets: [
-          { error: 10, network: 10 },
-          { error: 5, network: 5 },
-          { error: 1, network: 1 },
+          { error: 10, network: new NeuralNetwork(), ...details },
+          { error: 5, network: new NeuralNetwork(), ...details },
+          { error: 1, network: new NeuralNetwork(), ...details },
         ],
         avgs: { trainTime: 0, testTime: 0, iterations: 0, error: 0 },
-        stats: { total: 0 },
+        stats: {} as any,
       };
       const net = cv.toNeuralNetwork();
-      expect(net.toJSON().network).toBe(1);
+      expect(net.toJSON().error).toBe(1);
     });
   });
   describe('NeuralNetwork compatibility', () => {

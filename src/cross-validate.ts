@@ -8,17 +8,26 @@ import {
 } from './neural-network-types';
 
 export type ICrossValidateOptions = INeuralNetworkOptions;
-export interface ICrossValidateJSON {
-  avgs: ICrossValidationTestPartitionResults;
-  stats: ICrossValidateStats;
-  sets: ICrossValidationTestPartitionResults[];
-}
+export type ICrossValidateJSON =
+  | ICrossValidateStats
+  | ICrossValidateBinaryStats;
 
 export interface ICrossValidateStatsAverages {
   trainTime: number;
   testTime: number;
   iterations: number;
   error: number;
+}
+
+export interface ICrossValidateStats {
+  avgs: ICrossValidateStatsAverages;
+  stats: ICrossValidateStatsResultStats;
+  sets: ICrossValidationTestPartitionResults[];
+}
+export interface ICrossValidateBinaryStats {
+  avgs: ICrossValidateStatsAverages;
+  stats: ICrossValidateStatsResultBinaryStats;
+  sets: ICrossValidationTestPartitionBinaryResults[];
 }
 
 export interface ICrossValidateStatsResultStats {
@@ -38,16 +47,6 @@ export interface ICrossValidateStatsResultBinaryStats
   recall: number;
   accuracy: number;
 }
-export interface ICrossValidateStats {
-  avgs: ICrossValidateStatsAverages;
-  stats: ICrossValidateStatsResultStats;
-  sets: ICrossValidationTestPartitionResults[];
-}
-export interface ICrossValidateBinaryStats {
-  avgs: ICrossValidateStatsAverages;
-  stats: ICrossValidateStatsResultBinaryStats;
-  sets: ICrossValidationTestPartitionBinaryResults[];
-}
 
 export interface ICrossValidationTestPartitionResults
   extends INeuralNetworkTestResult {
@@ -63,12 +62,10 @@ export interface ICrossValidationTestPartitionResults
 export type ICrossValidationTestPartitionBinaryResults = INeuralNetworkBinaryTestResult &
   ICrossValidationTestPartitionResults;
 
-type $TSFixME = any;
-
 export default class CrossValidate {
   Classifier: typeof NeuralNetwork;
   options: ICrossValidateOptions = {};
-  json: $TSFixME = null;
+  json: ICrossValidateJSON | null = null;
 
   /**
    *
@@ -81,7 +78,6 @@ export default class CrossValidate {
   ) {
     this.Classifier = Classifier;
     this.options = options;
-    this.json = null;
   }
 
   testPartition<T>(
@@ -108,8 +104,9 @@ export default class CrossValidate {
       iterations: trainingStats.iterations,
       error: trainingStats.error,
       total: testStats.total,
-      learningRate: (classifier.trainOpts as $TSFixME).learningRate,
-      hiddenLayers: (classifier as $TSFixME).hiddenLayers,
+      // TODO: fix these type assertions once neural network types are all typed
+      learningRate: (classifier.trainOpts as any).learningRate,
+      hiddenLayers: (classifier as any).hiddenLayers,
       network: classifier.toJSON(),
     };
     return stats;
@@ -255,16 +252,23 @@ export default class CrossValidate {
   }
 
   toNeuralNetwork(): NeuralNetwork {
+    if (this.json == null) {
+      throw new Error(
+        'CV json is null, you must call .train() first before getting the neural network'
+      );
+    }
     return this.fromJSON(this.json);
   }
 
-  toJSON(): ICrossValidateJSON {
+  toJSON(): ICrossValidateJSON | null {
     return this.json;
   }
 
   fromJSON(crossValidateJson: ICrossValidateJSON): NeuralNetwork {
     const Classifier = this.Classifier;
-    const json: ICrossValidationTestPartitionResults = crossValidateJson.sets.reduce(
+    const json:
+      | ICrossValidationTestPartitionResults
+      | ICrossValidationTestPartitionBinaryResults = (crossValidateJson as ICrossValidateStats).sets.reduce(
       (prev, cur) => (prev.error < cur.error ? prev : cur)
     );
     if (Classifier.fromJSON) {
