@@ -23,7 +23,7 @@ const netOptions = {
 // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const trainingOptions = {
   iterations: 20000,
-  log: (details: string) => console.log(details),
+  log: (details: any) => console.log(details),
 };
 
 const crossValidate = new brain.CrossValidate(brain.NeuralNetwork, netOptions);
