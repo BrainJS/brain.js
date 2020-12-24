@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { brain } from '../../src';
+import brain from '../../src';
 
 const trainingData = [
   // xor data, repeating to simulate that we have a lot of data

@@ -274,8 +274,8 @@ export default class CrossValidate {
     if (Classifier.fromJSON) {
       return Classifier.fromJSON(json);
     }
-    const instance = new Classifier();
-    instance.fromJSON(json);
+    const instance = new Classifier(this.options);
+    instance.fromJSON(json.network);
     return instance;
   }
 }

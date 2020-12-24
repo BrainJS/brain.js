@@ -28,7 +28,7 @@ import { toArray } from './utilities/to-array';
 import { toSVG } from './utilities/to-svg';
 import { zeros } from './utilities/zeros';
 
-export const brain = {
+const brain = {
   activation,
   CrossValidate,
   likely,
@@ -70,6 +70,8 @@ declare global {
     brain: typeof brain;
   }
 }
+
+export default brain;
 
 if (typeof window !== 'undefined') {
   window.brain = brain;
