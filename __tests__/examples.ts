@@ -9,7 +9,7 @@ describe('tests', () => {
       require('../examples/javascript/cross-validate');
     }).not.toThrow();
   });
-  test.only('cross validation (ts)', () => {
+  test('cross validation (ts)', () => {
     expect(() => {
       require('../examples/typescript/cross-validate');
     }).not.toThrow();
