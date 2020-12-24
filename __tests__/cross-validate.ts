@@ -196,7 +196,7 @@ describe('CrossValidate', () => {
         learningRate: 0,
         hiddenLayers: [0],
       };
-      const bestNetwork = new NeuralNetwork();
+      const bestNetwork = new NeuralNetwork({ hiddenLayers: 10 });
       const net = cv.fromJSON({
         avgs: {} as any,
         stats: {} as any,
@@ -219,7 +219,7 @@ describe('CrossValidate', () => {
         ],
       });
 
-      expect(net.toJSON().error).toBe(1);
+      expect(net.toJSON().hiddenLayers).toBe(10);
     });
   });
   describe('.toNeuralNetwork()', () => {
@@ -244,17 +244,20 @@ describe('CrossValidate', () => {
         learningRate: 0,
         hiddenLayers: [0],
       };
+      const bestNet = new NeuralNetwork({
+        hiddenLayers: 10,
+      });
       cv.json = {
         sets: [
           { error: 10, network: new NeuralNetwork(), ...details },
           { error: 5, network: new NeuralNetwork(), ...details },
-          { error: 1, network: new NeuralNetwork(), ...details },
+          { error: 1, network: bestNet, ...details },
         ],
         avgs: { trainTime: 0, testTime: 0, iterations: 0, error: 0 },
         stats: {} as any,
       };
       const net = cv.toNeuralNetwork();
-      expect(net.toJSON().error).toBe(1);
+      expect(net.toJSON().hiddenLayers).toBe(10);
     });
   });
   describe('NeuralNetwork compatibility', () => {
