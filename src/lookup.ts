@@ -225,7 +225,7 @@ export const lookup = {
       p = Object.keys(lastData)[0];
       if (
         Array.isArray(lastData) ||
-        (lastData as Float32Array).buffer instanceof ArrayBuffer
+        typeof (lastData as Float32Array).buffer === 'object'
       ) {
         shape.push('array');
         const possibleNumber:
@@ -237,7 +237,10 @@ export const lookup = {
         } else {
           lastData = possibleNumber;
         }
-      } else if (typeof lastData === 'object') {
+      } else if (
+        typeof lastData === 'object' &&
+        typeof (lastData as Float32Array).buffer !== 'object'
+      ) {
         shape.push('object');
         const possibleNumber:
           | number

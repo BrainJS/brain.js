@@ -74,8 +74,11 @@ export const trainDefaults: IRNNTrainingOptions = {
   callbackPeriod: 10,
 };
 
-export interface IRNNHiddenLayerModel {
+export interface IRNNHiddenLayer {
   [key: string]: RandomMatrix | Matrix;
+}
+
+export interface IRNNHiddenLayerModel extends IRNNHiddenLayer {
   // wxh
   weight: RandomMatrix;
   // whh
@@ -84,17 +87,19 @@ export interface IRNNHiddenLayerModel {
   bias: Matrix;
 }
 
-export const defaults: IRNNOptions = {
-  inputSize: 20,
-  inputRange: 20,
-  hiddenLayers: [20, 20],
-  outputSize: 20,
-  decayRate: 0.999,
-  smoothEps: 1e-8,
-  regc: 0.000001,
-  clipval: 5,
-  maxPredictionLength: 100,
-  dataFormatter: new DataFormatter(),
+export const defaults = (): IRNNOptions => {
+  return {
+    inputSize: 20,
+    inputRange: 20,
+    hiddenLayers: [20, 20],
+    outputSize: 20,
+    decayRate: 0.999,
+    smoothEps: 1e-8,
+    regc: 0.000001,
+    clipval: 5,
+    maxPredictionLength: 100,
+    dataFormatter: new DataFormatter(),
+  };
 };
 
 export interface IRNNStatus {
@@ -109,7 +114,7 @@ export interface IRNNPreppedTrainingData {
 }
 
 export class RNN {
-  options: IRNNOptions = { ...defaults };
+  options: IRNNOptions = { ...defaults() };
   trainOpts: IRNNTrainingOptions = { ...trainDefaults };
   stepCache: { [index: number]: Float32Array } = {};
   runs = 0;
@@ -128,7 +133,7 @@ export class RNN {
   initialLayerInputs: Matrix[] = [];
 
   constructor(options: Partial<IRNNOptions> = {}) {
-    this.options = { ...defaults, ...options };
+    this.options = { ...this.options, ...options };
     this.updateTrainingOptions({
       ...trainDefaults,
       ...options,
@@ -148,9 +153,9 @@ export class RNN {
     this.model = this.mapModel();
   }
 
-  createHiddenLayers(): IRNNHiddenLayerModel[] {
+  createHiddenLayers(): IRNNHiddenLayer[] {
     const { hiddenLayers, inputSize } = this.options;
-    const hiddenLayersModel: IRNNHiddenLayerModel[] = [];
+    const hiddenLayersModel: IRNNHiddenLayer[] = [];
     // 0 is end, so add 1 to offset
     hiddenLayersModel.push(this.getHiddenLayer(hiddenLayers[0], inputSize));
     let prevSize = hiddenLayers[0];
@@ -164,7 +169,7 @@ export class RNN {
     return hiddenLayersModel;
   }
 
-  getHiddenLayer(hiddenSize: number, prevSize: number): IRNNHiddenLayerModel {
+  getHiddenLayer(hiddenSize: number, prevSize: number): IRNNHiddenLayer {
     return {
       // wxh
       weight: new RandomMatrix(hiddenSize, prevSize, 0.08),
@@ -179,8 +184,11 @@ export class RNN {
     equation: Equation,
     inputMatrix: Matrix,
     previousResult: Matrix,
-    hiddenLayer: IRNNHiddenLayerModel
+    hiddenLayer: IRNNHiddenLayer
   ): Matrix {
+    if (!hiddenLayer.weight || !hiddenLayer.transition || !hiddenLayer.bias) {
+      throw new Error('hiddenLayer does not have expected properties');
+    }
     const relu = equation.relu.bind(equation);
     const add = equation.add.bind(equation);
     const multiply = equation.multiply.bind(equation);
@@ -269,7 +277,7 @@ export class RNN {
     const input = this.createInputMatrix();
     allMatrices.push(input);
 
-    const hiddenLayers = this.createHiddenLayers();
+    const hiddenLayers = this.createHiddenLayers() as IRNNHiddenLayerModel[];
     if (!hiddenLayers.length) throw new Error('net.hiddenLayers not set');
     for (let i = 0, max = hiddenLayers.length; i < max; i++) {
       const hiddenMatrix: IRNNHiddenLayerModel = hiddenLayers[i];
@@ -641,13 +649,13 @@ export class RNN {
 
     if (options.dataFormatter) {
       this.options = {
-        ...defaults,
+        ...defaults(),
         ...options,
         dataFormatter: DataFormatter.fromJSON(options.dataFormatter),
       };
     } else {
       this.options = {
-        ...defaults,
+        ...defaults(),
         ...options,
         dataFormatter: new DataFormatter(),
       };
@@ -791,7 +799,7 @@ export class RNN {
     typeof this.options.dataFormatter.formatDataIn === 'function'
       ? `const formatDataIn = function (input, output) { ${toInner(
           this.options.dataFormatter.formatDataIn.toString()
-        )} }.bind({ dataFormatter });`
+        )} }.bind(dataFormatter);`
       : ''
   }
   ${
@@ -799,7 +807,7 @@ export class RNN {
     typeof this.options.dataFormatter.formatDataOut === 'function'
       ? `const formatDataOut = function formatDataOut(input, output) { ${toInner(
           this.options.dataFormatter.formatDataOut.toString()
-        )} }.bind({ dataFormatter });`
+        )} }.bind(dataFormatter);`
       : ''
   }
   var maxPredictionLength =
@@ -875,7 +883,7 @@ ${innerFunctionsSwitch.join('\n')}
     this.weights = zeros(rows * columns);
   }
   ${zeros.toString()}
-  ${softmax.toString()}
+  ${softmax.toString().replace('_1.Matrix', 'Matrix')}
   ${randomFloat.toString()}
   ${sampleI.toString()}
   ${maxI.toString()}`;
@@ -918,7 +926,7 @@ export function last<T>(values: T[]): T {
 }
 
 export type RNNFunction = (
-  rawInput?: Array<Value | IRNNDatum>,
+  rawInput?: Array<Value | IRNNDatum> | string,
   isSampleI?: boolean,
   temperature?: number
 ) => string;

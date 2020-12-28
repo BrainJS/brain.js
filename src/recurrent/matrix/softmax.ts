@@ -1,10 +1,5 @@
 import { Matrix } from '.';
 
-/**
- *
- * @param {Matrix} m
- * @returns {Matrix}
- */
 export function softmax(matrix: Matrix): Matrix {
   // probability volume
   const result = new Matrix(matrix.rows, matrix.columns);

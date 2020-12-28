@@ -302,7 +302,7 @@ export class DataFormatter implements IDataFormatter {
     return dataFormatter;
   }
 
-  static fromString(string: string, maxThreshold: number): DataFormatter {
+  static fromString(string: string, maxThreshold = 0): DataFormatter {
     const values = String.prototype.concat(...new Set(string));
     return new DataFormatter(values.split(''), maxThreshold);
   }
@@ -343,9 +343,10 @@ var characterTable = ${JSON.stringify(this.characterTable)};
 var indexTable = ${JSON.stringify(this.indexTable)};
 var characters = ${JSON.stringify(this.characters)};
 var dataFormatter = {
-  toIndexes: ${this.toIndexes.toString()},
-  toIndexesInputOutput: ${this.toIndexesInputOutput.toString()},
-  toCharacters: ${this.toCharacters.toString()},
+  ${this.toIndexes.toString()},
+  ${this.toIndexesInputOutput.toString()},
+  ${this.toCharacters.toString()},
+  ${this.toIndexesValue.toString()},
 };`;
   }
 
@@ -354,7 +355,7 @@ var dataFormatter = {
     if (Array.isArray(input) && typeof input[0] === 'number') {
       return input as number[];
     }
-    if (this.indexTable.hasOwnProperty('stop-input')) {
+    if (this.indexTable?.hasOwnProperty('stop-input')) {
       return this.toIndexesInputOutput(input, output);
     }
     return this.toIndexes(input);

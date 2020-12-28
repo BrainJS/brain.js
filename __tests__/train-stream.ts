@@ -288,7 +288,7 @@ describe('TrainStream', () => {
 
         for (let i = 0; i < data.length; i++) {
           const value = data[i];
-          expect((net.run(value.slice(0, 4)) as number).toFixed(1)).toBe(
+          expect(net.run(value.slice(0, 4)).toFixed(1)).toBe(
             value[4].toFixed(1)
           );
         }

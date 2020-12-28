@@ -1,10 +1,13 @@
-import { RNN, defaults } from '../../src/recurrent/rnn';
+import {
+  RNN,
+  defaults,
+  trainPattern,
+  RNNFunction,
+} from '../../src/recurrent/rnn';
 import { DataFormatter } from '../../src/utilities/data-formatter';
 import { allMatrices } from '../test-utils';
-import { istanbulLinkerUtil } from '../istanbul-linker-util';
 import { Equation } from '../../src/recurrent/matrix/equation';
-import { Matrix } from '../../src/recurrent/matrix';
-import exp from 'constants';
+import { IMatrixJSON } from '../../src/recurrent/matrix';
 
 function notZero(v: number) {
   return v !== 0;
@@ -19,7 +22,7 @@ describe('RNN', () => {
       });
     });
     describe('when called with options.json', () => {
-      const getJSON = (() => {
+      const getJSON = () => {
         const net = new RNN({
           hiddenLayers: [3],
           inputSize: 3,
@@ -28,7 +31,7 @@ describe('RNN', () => {
         });
         net.initialize();
         return net.toJSON();
-      });
+      };
       let fromJSONMock: jest.SpyInstance;
       beforeEach(() => {
         fromJSONMock = jest.spyOn(RNN.prototype, 'fromJSON');
@@ -45,10 +48,13 @@ describe('RNN', () => {
   });
   describe('.initialize()', () => {
     describe('when creating hidden layers', () => {
-      let createHiddenLayersMock: jest.SpyInstance
+      let createHiddenLayersMock: jest.SpyInstance;
       let getHiddenLayerMock: jest.SpyInstance;
       beforeEach(() => {
-        createHiddenLayersMock = jest.spyOn(RNN.prototype, 'createHiddenLayers');
+        createHiddenLayersMock = jest.spyOn(
+          RNN.prototype,
+          'createHiddenLayers'
+        );
         getHiddenLayerMock = jest.spyOn(RNN.prototype, 'getHiddenLayer');
       });
       afterEach(() => {
@@ -149,7 +155,9 @@ describe('RNN', () => {
       net.initialize();
       const error = net.trainInput([1, 1, 0]);
       expect(net.model.input.weights.some(notZero)).toBeTruthy();
-      expect(net.model.hiddenLayers[0].weight.weights.some(notZero)).toBeTruthy();
+      expect(
+        net.model.hiddenLayers[0].weight.weights.some(notZero)
+      ).toBeTruthy();
       expect(net.model.outputConnector.weights.some(notZero)).toBeTruthy();
       expect(error).toBeGreaterThan(0);
       expect(error).toBeLessThan(Infinity);
@@ -256,9 +264,6 @@ describe('RNN', () => {
       expect(backpropagateIndex).toHaveBeenNthCalledWith(4, 0);
     });
 
-    // it('is fully connected and gives values in weights', () => {
-    //
-    // });
     it('is fully connected and gives values in deltas', () => {
       const net = xorNet();
       net.initialize();
@@ -335,13 +340,13 @@ describe('RNN', () => {
 
     it('can learn xor (error goes down)', () => {
       const net = xorNet();
-      let initialError: number = Infinity;
+      let initialError = Infinity;
       let error;
 
       for (let i = 0; i < 10; i++) {
         error = 0;
         for (let j = 0; j < 4; j++) {
-          error += net.trainPattern(xorNetValues[j], true);
+          error += trainPattern(net, xorNetValues[j], true);
         }
         if (i === 0) {
           initialError = error;
@@ -354,148 +359,151 @@ describe('RNN', () => {
       const net = xorNet();
       for (let i = 0; i < 10; i++) {
         xorNetValues.forEach(function (value) {
-          net.trainPattern(value, true);
+          trainPattern(net, value, true);
         });
       }
-      expect((net.run() as string).length).toBe(3);
+      expect(net.run().length).toBe(3);
     });
   });
 
-  // describe('json', () => {
-  //   describe('.toJSON()', () => {
-  //     it('can export model as json', () => {
-  //       const net = new RNN({
-  //         inputSize: 6,
-  //         inputRange: 12,
-  //         outputSize: 6,
-  //       });
-  //       const json = net.toJSON();
-  //
-  //       function compare(left, right) {
-  //         left.weights.forEach((value, i) => {
-  //           expect(value).toBe(right.weights[i]);
-  //         });
-  //         expect(left.rows).toBe(right.rows);
-  //         expect(left.columns).toBe(right.columns);
-  //       }
-  //
-  //       compare(json.input, net.model.input);
-  //       net.model.hiddenLayers.forEach((layer, i) => {
-  //         compare(json.hiddenLayers[i].weight, layer.weight);
-  //         compare(json.hiddenLayers[i].transition, layer.transition);
-  //         compare(json.hiddenLayers[i].bias, layer.bias);
-  //       });
-  //       compare(json.output, net.model.output);
-  //       compare(json.outputConnector, net.model.outputConnector);
-  //     });
-  //   });
-  //
-  //   describe('.fromJSON()', () => {
-  //     it('can import model from json', () => {
-  //       const inputSize = 6;
-  //       const hiddenLayers = [10, 20];
-  //       const dataFormatter = new DataFormatter('abcdef'.split(''));
-  //       const jsonString = JSON.stringify(
-  //         new RNN({
-  //           inputSize, // <- length
-  //           hiddenLayers,
-  //           inputRange: dataFormatter.characters.length,
-  //           outputSize: dataFormatter.characters.length, // <- length
-  //         }).toJSON(),
-  //         null,
-  //         2
-  //       );
-  //
-  //       const clone = new RNN();
-  //       clone.fromJSON(JSON.parse(jsonString));
-  //       const cloneString = JSON.stringify(clone.toJSON(), null, 2);
-  //       expect(jsonString).toBe(cloneString);
-  //       expect(clone.inputSize).toBe(6);
-  //       expect(clone.inputRange).toBe(dataFormatter.characters.length);
-  //       expect(clone.outputSize).toBe(dataFormatter.characters.length);
-  //
-  //       expect(clone.model.hiddenLayers.length).toBe(2);
-  //       expect(clone.model.hiddenLayers[0].weight.columns).toBe(inputSize);
-  //       expect(clone.model.hiddenLayers[0].weight.rows).toBe(hiddenLayers[0]);
-  //       expect(clone.model.hiddenLayers[1].weight.columns).toBe(
-  //         hiddenLayers[0]
-  //       );
-  //       expect(clone.model.hiddenLayers[1].weight.rows).toBe(hiddenLayers[1]);
-  //     });
-  //
-  //     it('can import model from json using .fromJSON()', () => {
-  //       const dataFormatter = new DataFormatter('abcdef'.split(''));
-  //       const jsonString = JSON.stringify(
-  //         new RNN({
-  //           inputSize: 6, // <- length
-  //           inputRange: dataFormatter.characters.length,
-  //           outputSize: dataFormatter.characters.length, // <- length
-  //         }).toJSON()
-  //       );
-  //
-  //       const clone = new RNN();
-  //       clone.fromJSON(JSON.parse(jsonString));
-  //
-  //       expect(jsonString).toBe(JSON.stringify(clone.toJSON()));
-  //       expect(clone.inputSize).toBe(6);
-  //       expect(clone.inputRange).toBe(dataFormatter.characters.length);
-  //       expect(clone.outputSize).toBe(dataFormatter.characters.length);
-  //     });
-  //
-  //     it('will not initialize when importing json', () => {
-  //       const dataFormatter = new DataFormatter('abcdef'.split(''));
-  //       const original = new RNN({
-  //         inputSize: 6, // <- length
-  //         inputRange: dataFormatter.characters.length,
-  //         hiddenLayers: [3, 3],
-  //         outputSize: dataFormatter.characters.length, // <- length
-  //       });
-  //
-  //       original.initialize();
-  //       const jsonString = JSON.stringify(original.toJSON());
-  //
-  //       const json = JSON.parse(jsonString);
-  //       const clone = new RNN();
-  //       clone.fromJSON(json);
-  //       expect(jsonString).toBe(JSON.stringify(clone.toJSON()));
-  //       expect(clone.inputSize).toBe(6);
-  //       expect(clone.inputRange).toBe(dataFormatter.characters.length);
-  //       expect(clone.outputSize).toBe(dataFormatter.characters.length);
-  //     });
-  //
-  //     it('can import model from json and train again', () => {
-  //       const dataFormatter = new DataFormatter('abcdef'.split(''));
-  //       const net = new RNN({
-  //         inputSize: 6, // <- length
-  //         inputRange: dataFormatter.characters.length,
-  //         outputSize: dataFormatter.characters.length, // <- length
-  //       });
-  //
-  //       net.initialize();
-  //
-  //       // over fit on purpose
-  //       for (let i = 0; i < 10; i++) {
-  //         net.trainPattern([0, 1, 1]);
-  //         net.trainPattern([1, 0, 1]);
-  //         net.trainPattern([1, 1, 0]);
-  //         net.trainPattern([0, 0, 0]);
-  //       }
-  //
-  //       const error = net.trainPattern([0, 1, 1], true);
-  //       const jsonString = JSON.stringify(net.toJSON());
-  //       const clone = new RNN();
-  //       clone.fromJSON(JSON.parse(jsonString));
-  //       expect(jsonString).toBe(JSON.stringify(clone.toJSON()));
-  //       const newError = clone.trainPattern([0, 1, 1], true);
-  //       expect(error - newError < 0.02).toBeTruthy();
-  //       expect(jsonString).not.toBe(JSON.stringify(clone.toJSON()));
-  //       expect(clone.inputSize).toBe(6);
-  //       expect(clone.inputRange).toBe(dataFormatter.characters.length);
-  //       expect(clone.outputSize).toBe(dataFormatter.characters.length);
-  //     });
-  //   });
-  // });
-  //
+  describe('json', () => {
+    describe('.toJSON()', () => {
+      it('can export model as json', () => {
+        const net = new RNN({
+          inputSize: 6,
+          inputRange: 12,
+          outputSize: 6,
+        });
+        const json = net.toJSON();
+
+        function compare(left: IMatrixJSON, right: IMatrixJSON) {
+          left.weights.forEach((value, i) => {
+            expect(value).toBe(right.weights[i]);
+          });
+          expect(left.rows).toBe(right.rows);
+          expect(left.columns).toBe(right.columns);
+        }
+
+        compare(json.input, net.model.input);
+        net.model.hiddenLayers.forEach((layer, i) => {
+          compare(json.hiddenLayers[i].weight, layer.weight);
+          compare(json.hiddenLayers[i].transition, layer.transition);
+          compare(json.hiddenLayers[i].bias, layer.bias);
+        });
+        compare(json.output, net.model.output);
+        compare(json.outputConnector, net.model.outputConnector);
+      });
+    });
+
+    describe('.fromJSON()', () => {
+      it('can import model from json', () => {
+        const inputSize = 7;
+        const hiddenLayers = [10, 20];
+        const dataFormatter = new DataFormatter('abcdef'.split(''));
+        const jsonString = JSON.stringify(
+          new RNN({
+            inputSize, // <- length
+            hiddenLayers,
+            inputRange: dataFormatter.characters.length,
+            outputSize: dataFormatter.characters.length, // <- length
+            dataFormatter,
+          }).toJSON(),
+          null,
+          2
+        );
+
+        const clone = new RNN();
+        clone.fromJSON(JSON.parse(jsonString));
+        const cloneString = JSON.stringify(clone.toJSON(), null, 2);
+        expect(jsonString).toBe(cloneString);
+        expect(clone.options.inputSize).toBe(dataFormatter.characters.length);
+        expect(clone.options.inputRange).toBe(dataFormatter.characters.length);
+        expect(clone.options.outputSize).toBe(dataFormatter.characters.length);
+
+        expect(clone.model.hiddenLayers.length).toBe(2);
+        expect(clone.model.hiddenLayers[0].weight.columns).toBe(inputSize);
+        expect(clone.model.hiddenLayers[0].weight.rows).toBe(hiddenLayers[0]);
+        expect(clone.model.hiddenLayers[1].weight.columns).toBe(
+          hiddenLayers[0]
+        );
+        expect(clone.model.hiddenLayers[1].weight.rows).toBe(hiddenLayers[1]);
+      });
+
+      it('can import model from json using .fromJSON()', () => {
+        const dataFormatter = new DataFormatter('abcdef'.split(''));
+        const jsonString = JSON.stringify(
+          new RNN({
+            inputSize: dataFormatter.characters.length, // <- length
+            inputRange: dataFormatter.characters.length,
+            outputSize: dataFormatter.characters.length, // <- length
+          }).toJSON()
+        );
+
+        const clone = new RNN();
+        clone.fromJSON(JSON.parse(jsonString));
+
+        expect(jsonString).toBe(JSON.stringify(clone.toJSON()));
+        expect(clone.options.inputSize).toBe(7);
+        expect(clone.options.inputRange).toBe(dataFormatter.characters.length);
+        expect(clone.options.outputSize).toBe(dataFormatter.characters.length);
+      });
+
+      it('will not initialize when importing json', () => {
+        const dataFormatter = new DataFormatter('abcdef'.split(''));
+        const original = new RNN({
+          inputSize: 6, // <- length
+          inputRange: dataFormatter.characters.length,
+          hiddenLayers: [3, 3],
+          outputSize: dataFormatter.characters.length, // <- length
+          dataFormatter,
+        });
+
+        original.initialize();
+        const jsonString = JSON.stringify(original.toJSON());
+
+        const json = JSON.parse(jsonString);
+        const clone = new RNN();
+        clone.fromJSON(json);
+        expect(jsonString).toBe(JSON.stringify(clone.toJSON()));
+        expect(clone.options.inputSize).toBe(7);
+        expect(clone.options.inputRange).toBe(dataFormatter.characters.length);
+        expect(clone.options.outputSize).toBe(dataFormatter.characters.length);
+      });
+
+      it('can import model from json and train again', () => {
+        const dataFormatter = new DataFormatter('abcdef'.split(''));
+        const net = new RNN({
+          inputSize: 6, // <- length
+          inputRange: dataFormatter.characters.length,
+          outputSize: dataFormatter.characters.length, // <- length
+          dataFormatter,
+        });
+
+        net.initialize();
+
+        // over fit on purpose
+        for (let i = 0; i < 10; i++) {
+          trainPattern(net, [0, 1, 1]);
+          trainPattern(net, [1, 0, 1]);
+          trainPattern(net, [1, 1, 0]);
+          trainPattern(net, [0, 0, 0]);
+        }
+
+        const error = trainPattern(net, [0, 1, 1], true);
+        const jsonString = JSON.stringify(net.toJSON());
+        const clone = new RNN();
+        clone.fromJSON(JSON.parse(jsonString));
+        expect(jsonString).toBe(JSON.stringify(clone.toJSON()));
+        const newError = trainPattern(clone, [0, 1, 1], true);
+        expect(error - newError < 0.02).toBeTruthy();
+        expect(jsonString).not.toBe(JSON.stringify(clone.toJSON()));
+        expect(clone.options.inputSize).toBe(7);
+        expect(clone.options.inputRange).toBe(dataFormatter.characters.length);
+        expect(clone.options.outputSize).toBe(dataFormatter.characters.length);
+      });
+    });
+  });
+
   describe('.trainPattern()', () => {
     it('changes the neural net when ran', () => {
       const net = new RNN({
@@ -521,7 +529,7 @@ describe('RNN', () => {
   describe('maxPredictionLength', () => {
     it('gets a default value', () => {
       expect(new RNN().options.maxPredictionLength).toBe(
-        defaults.maxPredictionLength
+        defaults().maxPredictionLength
       );
     });
     it('restores option', () => {
@@ -546,84 +554,81 @@ describe('RNN', () => {
       expect(output2.length).toBe(1);
     });
   });
-  //
-  // describe('.toFunction()', () => {
-  //   describe('without callback argument', () => {
-  //     it('returns function that works still produces stable output', () => {
-  //       const net = new RNN({
-  //         hiddenLayers: [3],
-  //       });
-  //       net.train([
-  //         { input: '1', output: '2' },
-  //         { input: '2', output: '3' },
-  //       ]);
-  //       const expected1 = net.run('1');
-  //       const expected2 = net.run('2');
-  //       const fn = net.toFunction();
-  //
-  //       expect(fn('1')).toBe(expected1);
-  //       expect(fn('2')).toBe(expected2);
-  //     });
-  //   });
-  //   describe('with callback argument', () => {
-  //     it('returns string, which expects a result that makes a function that works still produces stable output', async () => {
-  //       const net = new RNN({
-  //         hiddenLayers: [3],
-  //       });
-  //       net.train([
-  //         { input: '1', output: '2' },
-  //         { input: '2', output: '3' },
-  //       ]);
-  //       const expected1 = net.run('1');
-  //       const expected2 = net.run('2');
-  //       const fn = await new Promise((resolve, reject) => {
-  //         try {
-  //           resolve(
-  //             net.toFunction((_fnBody) => {
-  //               expect(typeof _fnBody).toBe('string');
-  //               return _fnBody;
-  //             })
-  //           );
-  //         } catch (e) {
-  //           reject(e);
-  //         }
-  //       });
-  //       expect(fn('1')).toBe(expected1);
-  //       expect(fn('2')).toBe(expected2);
-  //     });
-  //   });
-  //   it('can output same as run method', () => {
-  //     const dataFormatter = new DataFormatter(['h', 'i', ' ', 'm', 'o', '!']);
-  //     const net = new RNN({
-  //       inputSize: 7,
-  //       inputRange: dataFormatter.characters.length,
-  //       outputSize: 7,
-  //     });
-  //     net.initialize();
-  //
-  //     for (let i = 0; i < 100; i++) {
-  //       net.trainPattern(dataFormatter.toIndexes('hi mom!'));
-  //       // if (i % 10) {
-  //       //   console.log(dataFormatter.toCharacters(net.run()).join(''));
-  //       // }
-  //     }
-  //
-  //     const lastOutput = dataFormatter.toCharacters(net.run()).join('');
-  //     expect(
-  //       dataFormatter
-  //         .toCharacters(net.toFunction(istanbulLinkerUtil)())
-  //         .join('')
-  //     ).toBe(lastOutput);
-  //   });
-  //   it('can include the DataFormatter', () => {
-  //     const net = new RNN();
-  //     net.train(['hi mom!'], { log: true, errorThresh: 0.011 });
-  //     const expected = net.run('hi');
-  //     const newNet = net.toFunction(istanbulLinkerUtil);
-  //     expect(newNet('hi')).toBe(expected);
-  //   });
-  // });
-  //
+
+  describe('.toFunction()', () => {
+    describe('without callback argument', () => {
+      it('returns function that works still produces stable output', () => {
+        const net = new RNN({
+          hiddenLayers: [3],
+        });
+        net.train([
+          { input: '1', output: '2' },
+          { input: '2', output: '3' },
+        ]);
+        const expected1 = net.run('1');
+        const expected2 = net.run('2');
+        const fn = net.toFunction();
+
+        expect(fn('1')).toBe(expected1);
+        expect(fn('2')).toBe(expected2);
+      });
+    });
+    describe('with callback argument', () => {
+      it('returns string, which expects a result that makes a function that works still produces stable output', async () => {
+        const net = new RNN({
+          hiddenLayers: [3],
+        });
+        net.train([
+          { input: '1', output: '2' },
+          { input: '2', output: '3' },
+        ]);
+        const expected1 = net.run('1');
+        const expected2 = net.run('2');
+        const fn = await new Promise<RNNFunction>((resolve, reject) => {
+          try {
+            resolve(
+              net.toFunction((_fnBody) => {
+                expect(typeof _fnBody).toBe('string');
+                return _fnBody;
+              })
+            );
+          } catch (e) {
+            reject(e);
+          }
+        });
+        expect(fn('1')).toBe(expected1);
+        expect(fn('2')).toBe(expected2);
+      });
+    });
+    it('can output same as run method', () => {
+      const dataFormatter = new DataFormatter(['h', 'i', ' ', 'm', 'o', '!']);
+      const net = new RNN({
+        inputSize: 7,
+        inputRange: dataFormatter.characters.length,
+        outputSize: 7,
+        dataFormatter,
+      });
+      net.initialize();
+
+      for (let i = 0; i < 100; i++) {
+        trainPattern(net, dataFormatter.toIndexes('hi mom!'));
+        // if (i % 10) {
+        //   console.log(dataFormatter.toCharacters(net.run()).join(''));
+        // }
+      }
+
+      const lastOutput = net.run();
+      expect(net.toFunction()()).toBe(lastOutput);
+    });
+    it('can include the DataFormatter', () => {
+      const net = new RNN();
+      net.train(['hi mom!'], { log: true, errorThresh: 0.011 });
+      const expected = net.run('hi');
+      const newNet = net.toFunction();
+      expect(newNet('hi')).toBe(expected);
+    });
+  });
+
   describe('.bindEquation()', () => {
     let getEquation: jest.SpyInstance;
     beforeEach(() => {

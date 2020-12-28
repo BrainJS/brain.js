@@ -10,6 +10,7 @@ import {
   IRNNTrainingOptions,
   last,
   IRNNHiddenLayerModel,
+  IRNNHiddenLayer,
 } from './rnn';
 import { zeros } from '../utilities/zeros';
 import { softmax } from './matrix/softmax';
@@ -19,6 +20,7 @@ import { maxI } from './matrix/max-i';
 import {
   FormattableData,
   InputOutputValue,
+  INumberArray,
   INumberHash,
   INumberObject,
   ITrainingDatum,
@@ -89,14 +91,9 @@ export interface ITestResults {
   total: number;
 }
 
-export interface ILinkedInputOutput<InputT, OutputT> {
-  input: InputT;
-  output: OutputT;
-}
-
 export interface IRNNTimeStepModel {
   isInitialized: boolean;
-  hiddenLayers: IRNNHiddenLayerModel[];
+  hiddenLayers: IRNNHiddenLayer[];
   output: Matrix;
   equations: Equation[];
   allMatrices: Matrix[];
@@ -104,12 +101,14 @@ export interface IRNNTimeStepModel {
   outputConnector: RandomMatrix | Matrix;
 }
 
-export const defaults: IRNNOptions = {
-  ...rnnDefaults,
-  inputSize: 1,
-  hiddenLayers: [20],
-  outputSize: 1,
-  inputRange: 0,
+export const defaults = (): IRNNOptions => {
+  return {
+    ...rnnDefaults(),
+    inputSize: 1,
+    hiddenLayers: [20],
+    outputSize: 1,
+    inputRange: 0,
+  };
 };
 
 export class RNNTimeStep extends RNN {
@@ -132,12 +131,10 @@ export class RNNTimeStep extends RNN {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  options: IRNNTimeStepOptions = { ...defaults };
+  options: IRNNTimeStepOptions = { ...defaults() };
   constructor(options: Partial<IRNNTimeStepOptions> = {}) {
     super();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    this.options = { ...defaults, ...options };
+    this.options = { ...this.options, ...options };
     this.updateTrainingOptions({
       ...trainDefaults,
       ...options,
@@ -253,10 +250,6 @@ export class RNNTimeStep extends RNN {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
         return this.runArray(rawInput as Float32Array);
-      case 'object,number':
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        return this.runObject(rawInput as INumberHash);
       case 'array,array,number':
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
@@ -279,22 +272,99 @@ export class RNNTimeStep extends RNN {
       case 'array,number':
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
-        return this.forecastNumbers(rawInput as Float32Array, count);
+        return this.forecastArray(rawInput as Float32Array, count);
       case 'array,array,number':
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
-        return this.forecastArrays(rawInput as Float32Array[], count);
-      case 'array,object,number':
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        return this.forecastObjects(rawInput as INumberHash[], count);
+        return this.forecastArrayOfArray(rawInput as Float32Array[], count);
       case 'object,number':
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
         return this.runObject(rawInput as INumberHash);
+      case 'array,object,number':
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        return this.forecastArrayOfObject(rawInput as INumberHash[], count);
       default:
         throw new Error(`Unrecognized data shape ${shape}`);
     }
+  }
+
+  forecastArray(input: Float32Array, count = 1): Float32Array {
+    this.checkRunnable();
+    const { model } = this;
+    const { equations } = model;
+    const length = input.length + count;
+    while (equations.length <= length) {
+      this.bindEquation();
+    }
+    let lastOutput;
+    let equationIndex = 0;
+    if (this.options.inputSize === 1) {
+      for (let i = 0; i < input.length; i++) {
+        lastOutput = equations[equationIndex++].runInput(
+          Float32Array.from([input[i]])
+        );
+      }
+    } else {
+      for (let i = 0; i < input.length; i++) {
+        lastOutput = equations[equationIndex++].runInput(Float32Array.from([]));
+      }
+    }
+    if (!lastOutput) {
+      throw new Error('lastOutput not set');
+    }
+    const result = [lastOutput.weights[0]];
+    for (let i = 0, max = count - 1; i < max; i++) {
+      lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
+      result.push(lastOutput.weights[0]);
+    }
+    this.end();
+    return Float32Array.from(result);
+  }
+
+  forecastArrayOfArray(input: Float32Array[], count = 1): Float32Array[] {
+    this.checkRunnable();
+    const { model } = this;
+    const { equations } = model;
+    const length = input.length + count;
+    while (equations.length <= length) {
+      this.bindEquation();
+    }
+    let lastOutput;
+    let equationIndex = 0;
+    for (let i = 0; i < input.length; i++) {
+      lastOutput = equations[equationIndex++].runInput(input[i]);
+    }
+    if (!lastOutput) {
+      throw new Error('lastOutput not set');
+    }
+    const result = [Float32Array.from(lastOutput.weights)];
+    for (let i = 0, max = count - 1; i < max; i++) {
+      lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
+      result.push(Float32Array.from(lastOutput.weights.slice(0)));
+    }
+    this.end();
+    return result;
+  }
+
+  forecastArrayOfObject(input: INumberHash[], count = 1): INumberHash[] {
+    if (!this.inputLookup) {
+      throw new Error('this.inputLookup not set');
+    }
+    if (!this.outputLookup) {
+      throw new Error('this.outputLookup not set');
+    }
+    const formattedData = input.map((value) =>
+      lookup.toArray(
+        this.inputLookup as INumberHash,
+        value,
+        this.inputLookupLength
+      )
+    );
+    return this.forecastArrayOfArray(formattedData, count).map((value) =>
+      lookup.toObject(this.outputLookup as INumberHash, value)
+    );
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -307,6 +377,17 @@ export class RNNTimeStep extends RNN {
       ...rnnTrainDefaults,
       ...trainOpts,
     };
+    // Don't destructure here because this.setSize() can reset this.options.
+    if (this.options.inputSize === 1 && this.options.outputSize === 1) {
+      this.setSize(data);
+    }
+    this.verifySize();
+
+    const formattedData = this.formatData(data);
+    let error = Infinity;
+    let i;
+
+    this.verifyIsInitialized();
     const {
       iterations,
       errorThresh,
@@ -315,16 +396,6 @@ export class RNNTimeStep extends RNN {
       callbackPeriod,
     } = this.trainOpts;
     const log = trainOpts.log === true ? console.log : trainOpts.log;
-    if (this.options.inputSize === 1 || !this.options.inputSize) {
-      this.setSize(data);
-    }
-
-    const formattedData = this.formatData(data);
-    let error = Infinity;
-    let i;
-
-    this.verifyIsInitialized();
-
     for (i = 0; i < iterations && error > errorThresh; i++) {
       let sum = 0;
       for (let j = 0; j < formattedData.length; j++) {
@@ -351,12 +422,23 @@ export class RNNTimeStep extends RNN {
     };
   }
 
-  setSize(data: FormattableData): void {
-    if (this.options.inputSize || this.options.outputSize) {
-      if (this.options.inputSize !== this.options.outputSize) {
-        throw new Error('manually set inputSize and outputSize mismatch');
-      }
+  trainArrayOfArray(input: Float32Array[]): number {
+    if (input.length < 2) {
+      throw new Error('input must be an array of 2 or more');
     }
+    const { equations } = this.model;
+    while (equations.length < input.length) {
+      this.bindEquation();
+    }
+    let errorSum = 0;
+    for (let i = 0, max = input.length - 1; i < max; i++) {
+      errorSum += equations[i].predictTarget(input[i], input[i + 1]);
+    }
+    this.end();
+    return errorSum / input.length;
+  }
+
+  setSize(data: FormattableData): void {
     let size = 0;
     const dataShape = lookup.dataShape(data).join(',');
     switch (dataShape) {
@@ -396,30 +478,12 @@ export class RNNTimeStep extends RNN {
     });
   }
 
-  // trainNumbers(input: Float32Array): number {
-  //   const { model } = this;
-  //   const { equations } = model;
-  //   while (equations.length < input.length) {
-  //     this.bindEquation();
-  //   }
-  //   let errorSum = 0;
-  //   for (let i = 0, max = input.length - 1; i < max; i++) {
-  //     errorSum += equations[i].predictTarget(
-  //       Float32Array.from([input[i]]),
-  //       Float32Array.from([input[i + 1]])
-  //     );
-  //   }
-  //   this.end();
-  //   return errorSum / input.length;
-  // }
-
-  runNumbersObject(input: INumberObject): number {
-    if (!this.inputLookup) {
-      throw new Error('this.inputLookup not set');
+  verifySize(): void {
+    if (this.options.inputSize || this.options.outputSize) {
+      if (this.options.inputSize !== this.options.outputSize) {
+        throw new Error('manually set inputSize and outputSize mismatch');
+      }
     }
-    return this.runArray(
-      lookup.toArray(this.inputLookup, input, this.inputLookupLength)
-    );
   }
 
   runArray(input: Float32Array): number {
@@ -436,31 +500,20 @@ export class RNNTimeStep extends RNN {
     return (lastOutput as Matrix).weights[0];
   }
 
-  forecastNumbers(input: Float32Array, count = 1): Float32Array {
+  runArrayOfArray(input: Float32Array[]): Float32Array {
     this.checkRunnable();
     const { model } = this;
     const { equations } = model;
-    const length = input.length + count;
-    while (equations.length <= length) {
+    while (equations.length <= input.length) {
       this.bindEquation();
     }
     let lastOutput;
-    let equationIndex = 0;
     for (let i = 0; i < input.length; i++) {
-      lastOutput = equations[equationIndex++].runInput(
-        Float32Array.from([input[i]])
-      );
-    }
-    if (!lastOutput) {
-      throw new Error('lastOutput not set');
-    }
-    const result = [lastOutput.weights[0]];
-    for (let i = 0, max = count - 1; i < max; i++) {
-      lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
-      result.push(lastOutput.weights[0]);
+      const outputMatrix = equations[i].runInput(input[i]);
+      lastOutput = outputMatrix.weights;
     }
     this.end();
-    return Float32Array.from(result);
+    return lastOutput ?? Float32Array.from([]);
   }
 
   runObject(input: INumberObject): INumberObject {
@@ -477,7 +530,7 @@ export class RNNTimeStep extends RNN {
       const inputArray = lookup.toArrayShort(this.inputLookup, input);
       return lookup.toObjectPartial(
         this.outputLookup,
-        this.forecastNumbers(
+        this.forecastArray(
           inputArray,
           this.outputLookupLength - inputArray.length
         ),
@@ -486,7 +539,7 @@ export class RNNTimeStep extends RNN {
     }
     return lookup.toObject(
       this.outputLookup,
-      this.forecastNumbers(
+      this.forecastArray(
         lookup.toArray(this.inputLookup, input, this.inputLookupLength),
         this.outputLookupLength
       )
@@ -507,86 +560,12 @@ export class RNNTimeStep extends RNN {
         this.inputLookupLength
       )
     );
-    return this.forecastArrays(formattedInput, 1).map((value) =>
+    return this.forecastArrayOfArray(formattedInput, 1).map((value) =>
       lookup.toObject(this.outputLookup as INumberHash, value)
     )[0];
   }
 
-  forecastObjects(input: INumberHash[], count = 1): INumberHash[] {
-    if (!this.inputLookup) {
-      throw new Error('this.inputLookup not set');
-    }
-    if (!this.outputLookup) {
-      throw new Error('this.outputLookup not set');
-    }
-    const formattedData = input.map((value) =>
-      lookup.toArray(
-        this.inputLookup as INumberHash,
-        value,
-        this.inputLookupLength
-      )
-    );
-    return this.forecastArrays(formattedData, count).map((value) =>
-      lookup.toObject(this.outputLookup as INumberHash, value)
-    );
-  }
-
-  // trainInputOutput(object: {
-  //   input: Float32Array[];
-  //   output: Float32Array[];
-  // }): number {
-  //   const { model } = this;
-  //   const { input } = object;
-  //   const { output } = object;
-  //   const totalSize = input.length + output.length;
-  //   const { equations } = model;
-  //   while (equations.length < totalSize) {
-  //     this.bindEquation();
-  //   }
-  //   let errorSum = 0;
-  //   let equationIndex = 0;
-  //   for (
-  //     let inputIndex = 0, max = input.length - 1;
-  //     inputIndex < max;
-  //     inputIndex++
-  //   ) {
-  //     errorSum += equations[equationIndex++].predictTarget(
-  //       input[inputIndex],
-  //       input[inputIndex + 1]
-  //     );
-  //   }
-  //   errorSum += equations[equationIndex++].predictTarget(
-  //     input[input.length - 1],
-  //     output[0]
-  //   );
-  //   for (
-  //     let outputIndex = 0, max = output.length - 1;
-  //     outputIndex < max;
-  //     outputIndex++
-  //   ) {
-  //     errorSum += equations[equationIndex++].predictTarget(
-  //       output[outputIndex],
-  //       output[outputIndex + 1]
-  //     );
-  //   }
-  //   this.end();
-  //   return errorSum / totalSize;
-  // }
-
-  trainArrays(input: Float32Array[]): number {
-    const { equations } = this.model;
-    while (equations.length < input.length) {
-      this.bindEquation();
-    }
-    let errorSum = 0;
-    for (let i = 0, max = input.length - 1; i < max; i++) {
-      errorSum += equations[i].predictTarget(input[i], input[i + 1]);
-    }
-    this.end();
-    return errorSum / input.length;
-  }
-
-  runArrayOfObjects(input: INumberHash[]): INumberHash {
+  runArrayOfObjectOfArray(input: INumberHash[]): INumberHash {
     if (!this.inputLookup) {
       throw new Error('this.inputLookup not set');
     }
@@ -599,49 +578,6 @@ export class RNNTimeStep extends RNN {
         lookup.toArrays(this.inputLookup, input, this.inputLookupLength)
       )
     );
-  }
-
-  runArrayOfArray(input: Float32Array[]): Float32Array {
-    if (!this.isRunnable) {
-      throw new Error('Network not runnable');
-    }
-    const { model } = this;
-    const { equations } = model;
-    while (equations.length <= input.length) {
-      this.bindEquation();
-    }
-    let lastOutput;
-    for (let i = 0; i < input.length; i++) {
-      const outputMatrix = equations[i].runInput(input[i]);
-      lastOutput = outputMatrix.weights;
-    }
-    this.end();
-    return lastOutput ?? Float32Array.from([]);
-  }
-
-  forecastArrays(input: Float32Array[], count = 1): Float32Array[] {
-    this.checkRunnable();
-    const { model } = this;
-    const { equations } = model;
-    const length = input.length + count;
-    while (equations.length <= length) {
-      this.bindEquation();
-    }
-    let lastOutput;
-    let equationIndex = 0;
-    for (let i = 0; i < input.length; i++) {
-      lastOutput = equations[equationIndex++].runInput(input[i]);
-    }
-    if (!lastOutput) {
-      throw new Error('lastOutput not set');
-    }
-    const result = [Float32Array.from(lastOutput.weights)];
-    for (let i = 0, max = count - 1; i < max; i++) {
-      lastOutput = equations[equationIndex++].runInput(lastOutput.weights);
-      result.push(Float32Array.from(lastOutput.weights.slice(0)));
-    }
-    this.end();
-    return result;
   }
 
   end(): void {
@@ -702,6 +638,22 @@ export class RNNTimeStep extends RNN {
     const result = [];
     for (let i = 0; i < data.length; i++) {
       result.push(objectToFloat32Arrays(data[i]));
+    }
+    return result;
+  }
+
+  // Handles data shape of 'array,object,number' when this.options.inputSize > 1
+  formatArrayOfObjectMulti(data: INumberObject[]): Float32Array[][] {
+    if (!this.inputLookup) {
+      const lookupTable = new LookupTable(data);
+      this.inputLookup = this.outputLookup = lookupTable.table;
+      this.inputLookupLength = this.outputLookupLength = lookupTable.length;
+    }
+    const result = [];
+    for (let i = 0; i < data.length; i++) {
+      result.push([
+        objectToFloat32Array(data[i], this.inputLookup, this.inputLookupLength),
+      ]);
     }
     return result;
   }
@@ -785,32 +737,20 @@ export class RNNTimeStep extends RNN {
   formatArrayOfDatumOfArrayOfArray(data: ITrainingDatum[]): Float32Array[][] {
     const result = [];
     const { inputSize, outputSize } = this.options;
-    if (inputSize === 1 && outputSize === 1) {
-      for (let i = 0; i < data.length; i++) {
-        const datum = data[i];
-        result.push(
-          inputOutputArrayToFloat32Arrays(
-            datum.input as number[],
-            datum.output as number[]
-          )
-        );
-      }
-    } else {
-      if (inputSize !== (data[0].input as InputOutputValue[])[0].length) {
-        throw new Error('inputSize must match data input size');
-      }
-      if (outputSize !== (data[0].output as InputOutputValue[])[0].length) {
-        throw new Error('outputSize must match data output size');
-      }
-      for (let i = 0; i < data.length; i++) {
-        const datum = data[i];
-        result.push(
-          inputOutputArraysToFloat32Arrays(
-            datum.input as number[][],
-            datum.output as number[][]
-          )
-        );
-      }
+    if (inputSize !== (data[0].input as INumberArray[][])[0].length) {
+      throw new Error('inputSize must match data input size');
+    }
+    if (outputSize !== (data[0].output as INumberArray[][])[0].length) {
+      throw new Error('outputSize must match data output size');
+    }
+    for (let i = 0; i < data.length; i++) {
+      const datum = data[i];
+      result.push(
+        inputOutputArraysToFloat32Arrays(
+          datum.input as number[][],
+          datum.output as number[][]
+        )
+      );
     }
     return result;
   }
@@ -860,7 +800,11 @@ export class RNNTimeStep extends RNN {
       case 'array,array,number':
         return this.formatArrayOfArray(data as number[][]);
       case 'array,object,number':
-        return this.formatArrayOfObject(data as INumberObject[]);
+        if (this.options.inputSize === 1) {
+          return this.formatArrayOfObject(data as INumberObject[]);
+        } else {
+          return this.formatArrayOfObjectMulti(data as INumberObject[]);
+        }
       case 'array,datum,array,number':
         return this.formatArrayOfDatumOfArray(data as ITrainingDatum[]);
       case 'array,datum,object,number':
@@ -882,72 +826,6 @@ export class RNNTimeStep extends RNN {
         throw new Error('unknown data shape or configuration');
     }
   }
-
-  // For handling 'array,array,number'
-  // testArrayOfArray(data: number[][]): ITestResults {
-  //   if (this.inputSize !== 1) {
-  //     throw new Error('unknown data shape or configuration');
-  //   }
-  //   const misclasses = [];
-  //   let errorSum = 0;
-  //   const formattedData = this.formatArrayOfArray(data);
-  //   for (let i = 0; i < formattedData.length; i++) {
-  //     const input = formattedData[i];
-  //     const output = this.runArrayOfArray(input.splice(0, input.length - 1))[0];
-  //     const target = input[input.length - 1][0];
-  //     const error = target - output;
-  //     const errorMSE = error * error;
-  //     errorSum += errorMSE;
-  //     const errorsAbs = Math.abs(errorMSE);
-  //     if (errorsAbs > this.trainOpts.errorThresh) {
-  //       const misclass = data[i];
-  //       Object.assign(misclass, {
-  //         value: input,
-  //         actual: output,
-  //       });
-  //       misclasses.push(misclass);
-  //     }
-  //   }
-  //   return {
-  //     error: errorSum / formattedData.length,
-  //     misclasses,
-  //     total: formattedData.length,
-  //   };
-  // }
-
-  // For handling 'array,array,array,number'
-  // testArrayOfArrayOfArray(data: number[][][]): ITestResults {
-  //   const misclasses = [];
-  //   let errorSum = 0;
-  //   const formattedData = this.formatArrayOfArrayOfArray(data);
-  //   for (let i = 0; i < formattedData.length; i++) {
-  //     const input = formattedData[i];
-  //     const output = this.run(input.splice(0, input.length - 1));
-  //     const target = input[input.length - 1];
-  //     let errors = 0;
-  //     let errorCount = 0;
-  //     for (let j = 0; j < output.length; j++) {
-  //       errorCount++;
-  //       const error = target[j] - output[j];
-  //       // mse
-  //       errors += error * error;
-  //     }
-  //     errorSum += errors / errorCount;
-  //     const errorsAbs = Math.abs(errors);
-  //     if (errorsAbs > this.trainOpts.errorThresh) {
-  //       const misclass = data[i];
-  //       misclasses.push({
-  //         value: misclass,
-  //         actual: output,
-  //       });
-  //     }
-  //   }
-  //   return {
-  //     error: errorSum / formattedData.length,
-  //     misclasses,
-  //     total: formattedData.length,
-  //   };
-  // }
 
   test(data: FormattableData): ITestResults {
     // for classification problems
@@ -984,78 +862,6 @@ export class RNNTimeStep extends RNN {
       total: formattedData.length,
     };
   }
-
-  // addFormat(value) {
-  //   const dataShape = lookup.dataShape(value).join(',');
-  //   switch (dataShape) {
-  //     case 'array,array,number':
-  //     case 'datum,array,array,number':
-  //     case 'array,number':
-  //     case 'datum,array,number':
-  //       return;
-  //     case 'datum,object,number': {
-  //       this.inputLookup = lookup.addKeys(value.input, this.inputLookup);
-  //       if (this.inputLookup) {
-  //         this.inputLookupLength = Object.keys(this.inputLookup).length;
-  //       }
-  //       this.outputLookup = lookup.addKeys(value.output, this.outputLookup);
-  //       if (this.outputLookup) {
-  //         this.outputLookupLength = Object.keys(this.outputLookup).length;
-  //       }
-  //       break;
-  //     }
-  //     case 'object,number': {
-  //       if (!this.inputLookup) {
-  //         throw new Error('this.inputLookup not set');
-  //       }
-  //       this.inputLookup = this.outputLookup = lookup.addKeys(
-  //         value,
-  //         this.inputLookup
-  //       );
-  //       if (this.inputLookup) {
-  //         this.inputLookupLength = this.outputLookupLength = Object.keys(
-  //           this.inputLookup
-  //         ).length;
-  //       }
-  //       break;
-  //     }
-  //     case 'array,object,number': {
-  //       for (let i = 0; i < value.length; i++) {
-  //         this.inputLookup = this.outputLookup = lookup.addKeys(
-  //           value[i],
-  //           this.inputLookup
-  //         );
-  //         if (this.inputLookup) {
-  //           this.inputLookupLength = this.outputLookupLength = Object.keys(
-  //             this.inputLookup
-  //           ).length;
-  //         }
-  //       }
-  //       break;
-  //     }
-  //     case 'datum,array,object,number': {
-  //       for (let i = 0; i < value.input.length; i++) {
-  //         this.inputLookup = lookup.addKeys(value.input[i], this.inputLookup);
-  //         if (this.inputLookup) {
-  //           this.inputLookupLength = Object.keys(this.inputLookup).length;
-  //         }
-  //       }
-  //       for (let i = 0; i < value.output.length; i++) {
-  //         this.outputLookup = lookup.addKeys(
-  //           value.output[i],
-  //           this.outputLookup
-  //         );
-  //         if (this.outputLookup) {
-  //           this.outputLookupLength = Object.keys(this.outputLookup).length;
-  //         }
-  //       }
-  //       break;
-  //     }
-  //
-  //     default:
-  //       throw new Error('unknown data shape or configuration');
-  //   }
-  // }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
@@ -1110,7 +916,7 @@ export class RNNTimeStep extends RNN {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
-    this.options = { ...defaults, ...options };
+    this.options = { ...defaults(), ...options };
     this.inputLookup = json.inputLookup;
     this.inputLookupLength = json.inputLookupLength;
     this.outputLookup = json.outputLookup;
@@ -1410,7 +1216,7 @@ export function trainPattern(
   input: Float32Array[],
   logErrorRate?: boolean
 ): number {
-  const error = net.trainArrays(input);
+  const error = net.trainArrayOfArray(input);
   net.backpropagate();
   net.adjustWeights();
 
