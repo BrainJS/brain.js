@@ -2512,8 +2512,8 @@ describe('RNNTimeStep', () => {
             outputSize: 1,
           });
           net.train(trainingData, { iterations: 500 });
-          const misclass = [[1, 2, 3, 4, 5]];
-          const testResult = net.test(misclass);
+          const misclass = [1, 2, 3, 4, 5];
+          const testResult = net.test([misclass]);
           expect(testResult.error).toBeGreaterThan(0.1);
           expect(testResult.misclasses.length).toBe(1);
           expect(testResult.misclasses).toEqual([
