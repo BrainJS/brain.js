@@ -3,6 +3,7 @@ import { LSTMTimeStep } from '../../src/recurrent/lstm-time-step';
 import { Equation } from '../../src/recurrent/matrix/equation';
 import { Matrix } from '../../src/recurrent/matrix';
 import { INumberObject } from '../../src/lookup';
+import { IRNNStatus } from '../../src/recurrent/rnn';
 
 // TODO: break out LSTMTimeStep into its own tests
 
@@ -3088,95 +3089,92 @@ describe('RNNTimeStep', () => {
   //   it('array,object,number', () => {});
   //   it('datum,array,object,number', () => {});
   // });
-  // describe('.toJSON()', () => {
-  //   it('saves network dimensions to json', () => {
-  //     const inputSize = 4;
-  //     const hiddenLayers = [1, 2, 3];
-  //     const outputSize = 5;
-  //     const net = new RNNTimeStep({
-  //       inputSize,
-  //       hiddenLayers,
-  //       outputSize,
-  //     });
-  //     const {
-  //       inputLookup,
-  //       inputLookupLength,
-  //       outputLookup,
-  //       outputLookupLength,
-  //     } = net;
-  //     net.initialize();
-  //     const json = net.toJSON();
-  //     expect(json.options.inputSize).toBe(inputSize);
-  //     expect(json.options.hiddenLayers).toEqual(hiddenLayers);
-  //     expect(json.options.outputSize).toBe(outputSize);
-  //     expect(json.inputLookup).toBe(inputLookup);
-  //     expect(json.inputLookupLength).toBe(inputLookupLength);
-  //     expect(json.outputLookup).toBe(outputLookup);
-  //     expect(json.outputLookupLength).toBe(outputLookupLength);
-  //   });
-  // });
-  // describe('.fromJSON()', () => {
-  //   it('restores network dimensions from json', () => {
-  //     const inputSize = 45;
-  //     const hiddenLayers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  //     const outputSize = 20;
-  //     const net = new RNNTimeStep({
-  //       inputSize,
-  //       hiddenLayers,
-  //       outputSize,
-  //     });
-  //     net.initialize();
-  //     const json = net.toJSON();
-  //     const {
-  //       inputLookup,
-  //       inputLookupLength,
-  //       outputLookup,
-  //       outputLookupLength,
-  //     } = json;
-  //     const serializedNet = new RNNTimeStep();
-  //     serializedNet.fromJSON(json);
-  //     expect(serializedNet.inputSize).toBe(inputSize);
-  //     expect(serializedNet.hiddenLayers).toEqual(hiddenLayers);
-  //     expect(serializedNet.outputSize).toBe(outputSize);
-  //     expect(serializedNet.inputLookup).toBe(inputLookup);
-  //     expect(serializedNet.inputLookupLength).toBe(inputLookupLength);
-  //     expect(serializedNet.outputLookup).toBe(outputLookup);
-  //     expect(serializedNet.outputLookupLength).toBe(outputLookupLength);
-  //   });
-  //   it('error rate stays same after serialization', () => {
-  //     const inputSize = 1;
-  //     const hiddenLayers = [10];
-  //     const outputSize = 1;
-  //     const net = new RNNTimeStep({
-  //       inputSize,
-  //       hiddenLayers,
-  //       outputSize,
-  //     });
-  //     let lastNetStatus;
-  //     const trainingData = [
-  //       { monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 },
-  //     ];
-  //     net.train(trainingData, {
-  //       log: (status) => {
-  //         lastNetStatus = status;
-  //       },
-  //       iterations: 50,
-  //     });
-  //     net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
-  //     const json = net.toJSON();
-  //     const serializedNet = new RNNTimeStep();
-  //     serializedNet.fromJSON(json);
-  //     let lastSerializedNetStatus;
-  //     serializedNet.train(trainingData, {
-  //       iterations: 1,
-  //       log: (status) => {
-  //         lastSerializedNetStatus = status;
-  //       },
-  //     });
-  //     expect(
-  //       lastSerializedNetStatus.split(' ').pop() <
-  //         lastNetStatus.split(' ').pop()
-  //     ).toBeTruthy();
-  //   });
-  // });
+  describe('.toJSON()', () => {
+    it('saves network dimensions to json', () => {
+      const inputSize = 4;
+      const hiddenLayers = [1, 2, 3];
+      const outputSize = 5;
+      const net = new RNNTimeStep({
+        inputSize,
+        hiddenLayers,
+        outputSize,
+      });
+      const {
+        inputLookup,
+        inputLookupLength,
+        outputLookup,
+        outputLookupLength,
+      } = net;
+      net.initialize();
+      const json = net.toJSON();
+      expect(json.options.inputSize).toBe(inputSize);
+      expect(json.options.hiddenLayers).toEqual(hiddenLayers);
+      expect(json.options.outputSize).toBe(outputSize);
+      expect(json.inputLookup).toBe(inputLookup);
+      expect(json.inputLookupLength).toBe(inputLookupLength);
+      expect(json.outputLookup).toBe(outputLookup);
+      expect(json.outputLookupLength).toBe(outputLookupLength);
+    });
+  });
+  describe('.fromJSON()', () => {
+    it('restores network dimensions from json', () => {
+      const inputSize = 45;
+      const hiddenLayers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+      const outputSize = 20;
+      const net = new RNNTimeStep({
+        inputSize,
+        hiddenLayers,
+        outputSize,
+      });
+      net.initialize();
+      const json = net.toJSON();
+      const {
+        inputLookup,
+        inputLookupLength,
+        outputLookup,
+        outputLookupLength,
+      } = json;
+      const serializedNet = new RNNTimeStep();
+      serializedNet.fromJSON(json);
+      expect(serializedNet.options.inputSize).toBe(inputSize);
+      expect(serializedNet.options.hiddenLayers).toEqual(hiddenLayers);
+      expect(serializedNet.options.outputSize).toBe(outputSize);
+      expect(serializedNet.inputLookup).toBe(inputLookup);
+      expect(serializedNet.inputLookupLength).toBe(inputLookupLength);
+      expect(serializedNet.outputLookup).toBe(outputLookup);
+      expect(serializedNet.outputLookupLength).toBe(outputLookupLength);
+    });
+    it('error rate stays same after serialization', () => {
+      const inputSize = 1;
+      const hiddenLayers = [10];
+      const outputSize = 1;
+      const net = new RNNTimeStep({
+        inputSize,
+        hiddenLayers,
+        outputSize,
+      });
+      let lastNetStatus: IRNNStatus = { error: Infinity, iterations: -1 };
+      const trainingData = [
+        { monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 },
+      ];
+      net.train(trainingData, {
+        callback: (status) => {
+          lastNetStatus = status;
+        },
+        iterations: 50,
+      });
+      net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
+      const json = net.toJSON();
+      const serializedNet = new RNNTimeStep();
+      serializedNet.fromJSON(json);
+      let lastSerializedNetStatus: IRNNStatus = { error: Infinity, iterations: -1 };
+      serializedNet.train(trainingData, {
+        iterations: 1,
+        callback: (status: IRNNStatus) => {
+          lastSerializedNetStatus = status;
+        },
+      });
+      expect(lastSerializedNetStatus.error).toBeLessThan(lastNetStatus.error);
+    });
+  });
 });
