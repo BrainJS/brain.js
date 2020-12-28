@@ -2,6 +2,7 @@ import { RNNTimeStep } from '../../src/recurrent/rnn-time-step';
 import { LSTMTimeStep } from '../../src/recurrent/lstm-time-step';
 import { Equation } from '../../src/recurrent/matrix/equation';
 import { Matrix } from '../../src/recurrent/matrix';
+import { INumberObject } from '../../src/lookup';
 
 // TODO: break out LSTMTimeStep into its own tests
 
@@ -2290,180 +2291,180 @@ describe('RNNTimeStep', () => {
       ]);
     });
   });
-  // describe('.toFunction()', () => {
-  //   it('processes array same as net w/ inputSize of 1', () => {
-  //     const data = [{ input: [1, 2], output: [3, 4] }];
-  //     const net = new LSTMTimeStep({
-  //       inputSize: 1,
-  //       hiddenLayers: [10],
-  //       outputSize: 1,
-  //     });
-  //     net.train(data, { iteration: 100, errorThresh: 0.05 });
-  //     const fn = net.toFunction(istanbulLinkerUtil);
-  //     const expected = net.run(data[0].input);
-  //     const result = fn(data[0].input);
-  //     expect(typeof result).toBe('number');
-  //     expect(result).toEqual(expected);
-  //   });
-  //
-  //   it('processes object same as net w/ inputSize of 1', () => {
-  //     const data = [{ input: { a: 1, b: 2 }, output: { c: 3, d: 4 } }];
-  //     const net = new LSTMTimeStep({
-  //       inputSize: 1,
-  //       hiddenLayers: [10],
-  //       outputSize: 1,
-  //     });
-  //     net.train(data, { iteration: 100, errorThresh: 0.05 });
-  //     const fn = net.toFunction(istanbulLinkerUtil);
-  //     const expected = net.run(data[0].input);
-  //     expect(fn(data[0].input)).toEqual(expected);
-  //   });
-  //
-  //   it('processes array,object same as net', () => {
-  //     const data = [
-  //       {
-  //         input: [
-  //           { a: 1, b: 4 },
-  //           { a: 2, b: 3 },
-  //         ],
-  //         output: [
-  //           { c: 3, d: 2 },
-  //           { c: 4, d: 1 },
-  //         ],
-  //       },
-  //     ];
-  //     const net = new LSTMTimeStep({
-  //       inputSize: 2,
-  //       hiddenLayers: [10],
-  //       outputSize: 2,
-  //     });
-  //     net.train(data, { iteration: 100, errorThresh: 0.05 });
-  //     const fn = net.toFunction(istanbulLinkerUtil);
-  //     const expected = net.run(data[0].input);
-  //     expect(fn(data[0].input)).toEqual(expected);
-  //   });
-  //   it('processes array same as net', () => {
-  //     const net = new LSTMTimeStep({
-  //       inputSize: 1,
-  //       hiddenLayers: [10],
-  //       outputSize: 1,
-  //     });
-  //
-  //     // Same test as previous, but combined on a single set
-  //     const trainingData = [
-  //       [0.1, 0.2, 0.3, 0.4, 0.5],
-  //       [0.5, 0.4, 0.3, 0.2, 0.1],
-  //     ];
-  //
-  //     const trainResult = net.train(trainingData);
-  //     expect(trainResult.error).toBeLessThan(0.09);
-  //     const closeToFive = net.run([0.1, 0.2, 0.3, 0.4]);
-  //     const closeToOne = net.run([0.5, 0.4, 0.3, 0.2]);
-  //     const fn = net.toFunction(istanbulLinkerUtil);
-  //     expect(closeToFive.toFixed(1)).toBe('0.5');
-  //     expect(closeToOne.toFixed(1)).toBe('0.1');
-  //     expect(fn([0.1, 0.2, 0.3, 0.4])).toBe(closeToFive);
-  //     expect(fn([0.5, 0.4, 0.3, 0.2])).toBe(closeToOne);
-  //   });
-  //   it('processes array,array same as net', () => {
-  //     const net = new LSTMTimeStep({
-  //       inputSize: 2,
-  //       hiddenLayers: [10],
-  //       outputSize: 2,
-  //     });
-  //
-  //     // Same test as previous, but combined on a single set
-  //     const trainingData = [
-  //       [0.1, 0.5],
-  //       [0.2, 0.4],
-  //       [0.3, 0.3],
-  //       [0.4, 0.2],
-  //       [0.5, 0.1],
-  //     ];
-  //
-  //     const trainResult = net.train(trainingData);
-  //     expect(trainResult.error).toBeLessThan(0.09);
-  //     const closeToFiveAndOne = net.run([
-  //       [0.1, 0.5],
-  //       [0.2, 0.4],
-  //       [0.3, 0.3],
-  //       [0.4, 0.2],
-  //     ]);
-  //     const fn = net.toFunction(istanbulLinkerUtil);
-  //     const result = fn([
-  //       [0.1, 0.5],
-  //       [0.2, 0.4],
-  //       [0.3, 0.3],
-  //       [0.4, 0.2],
-  //     ]);
-  //     expect(closeToFiveAndOne[0].toFixed(1)).toBe('0.5');
-  //     expect(closeToFiveAndOne[1].toFixed(1)).toBe('0.1');
-  //     expect(result[0]).toBe(closeToFiveAndOne[0]);
-  //     expect(result[1]).toBe(closeToFiveAndOne[1]);
-  //   });
-  //   it('processes object same as net', () => {
-  //     const net = new LSTMTimeStep({
-  //       inputSize: 1,
-  //       hiddenLayers: [10],
-  //       outputSize: 1,
-  //     });
-  //
-  //     // Same test as previous, but combined on a single set
-  //     const trainingData = [
-  //       {
-  //         input: { monday: 0.1, tuesday: 0.2, wednesday: 0.3, thursday: 0.4 },
-  //         output: { friday: 0.5 },
-  //       },
-  //       {
-  //         input: { monday: 0.5, tuesday: 0.4, wednesday: 0.3, thursday: 0.2 },
-  //         output: { friday: 0.1 },
-  //       },
-  //     ];
-  //     const trainResult = net.train(trainingData);
-  //     expect(trainResult.error).toBeLessThan(0.09);
-  //     const closeToFive = net.run({
-  //       monday: 0.1,
-  //       tuesday: 0.2,
-  //       wednesday: 0.3,
-  //       thursday: 0.4,
-  //     });
-  //     const closeToOne = net.run({
-  //       monday: 0.5,
-  //       tuesday: 0.4,
-  //       wednesday: 0.3,
-  //       thursday: 0.2,
-  //     });
-  //     const fn = net.toFunction(istanbulLinkerUtil);
-  //     expect(closeToFive.friday.toFixed(1)).toBe('0.5');
-  //     expect(closeToOne.friday.toFixed(1)).toBe('0.1');
-  //     expect(
-  //       fn({ monday: 0.1, tuesday: 0.2, wednesday: 0.3, thursday: 0.4 }).friday
-  //     ).toBe(closeToFive.friday);
-  //     expect(
-  //       fn({ monday: 0.5, tuesday: 0.4, wednesday: 0.3, thursday: 0.2 }).friday
-  //     ).toBe(closeToOne.friday);
-  //   });
-  //   it('handles array,object to array,object with lookup tables being same w/ inputSize of 1', () => {
-  //     const inputSize = 1;
-  //     const hiddenLayers = [10];
-  //     const outputSize = 1;
-  //     const net = new RNNTimeStep({
-  //       inputSize,
-  //       hiddenLayers,
-  //       outputSize,
-  //     });
-  //     net.train([
-  //       { monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 },
-  //     ]);
-  //     const fn = net.toFunction(istanbulLinkerUtil);
-  //     const result = fn({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
-  //     expect(result).toEqual(
-  //       net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 })
-  //     );
-  //     expect(Object.keys(result).length).toBe(1);
-  //     expect(result.friday.toFixed(0)).toBe('5');
-  //   });
-  // });
+  describe('.toFunction()', () => {
+    it('processes array same as net w/ inputSize of 1', () => {
+      const data = [{ input: [1, 2], output: [3, 4] }];
+      const net = new LSTMTimeStep({
+        inputSize: 1,
+        hiddenLayers: [10],
+        outputSize: 1,
+      });
+      net.train(data, { iterations: 100, errorThresh: 0.05 });
+      const fn = net.toFunction();
+      const expected = net.run(data[0].input);
+      const result = fn(data[0].input);
+      expect(typeof result).toBe('number');
+      expect(result).toEqual(expected);
+    });
+
+    it('processes object same as net w/ inputSize of 1', () => {
+      const data = [{ input: { a: 1, b: 2 }, output: { c: 3, d: 4 } }];
+      const net = new LSTMTimeStep({
+        inputSize: 1,
+        hiddenLayers: [10],
+        outputSize: 1,
+      });
+      net.train(data, { iterations: 100, errorThresh: 0.05 });
+      const fn = net.toFunction();
+      const expected = net.run(data[0].input);
+      expect(fn(data[0].input)).toEqual(expected);
+    });
+
+    it('processes array,object same as net', () => {
+      const data = [
+        {
+          input: [
+            { a: 1, b: 4 },
+            { a: 2, b: 3 },
+          ],
+          output: [
+            { c: 3, d: 2 },
+            { c: 4, d: 1 },
+          ],
+        },
+      ];
+      const net = new LSTMTimeStep({
+        inputSize: 2,
+        hiddenLayers: [10],
+        outputSize: 2,
+      });
+      net.train(data, { iterations: 100, errorThresh: 0.05 });
+      const fn = net.toFunction();
+      const expected = net.run(data[0].input);
+      expect(fn(data[0].input)).toEqual(expected);
+    });
+    it('processes array same as net', () => {
+      const net = new LSTMTimeStep({
+        inputSize: 1,
+        hiddenLayers: [10],
+        outputSize: 1,
+      });
+
+      // Same test as previous, but combined on a single set
+      const trainingData = [
+        [0.1, 0.2, 0.3, 0.4, 0.5],
+        [0.5, 0.4, 0.3, 0.2, 0.1],
+      ];
+
+      const trainResult = net.train(trainingData);
+      expect(trainResult.error).toBeLessThan(0.09);
+      const closeToFive = net.run([0.1, 0.2, 0.3, 0.4]);
+      const closeToOne = net.run([0.5, 0.4, 0.3, 0.2]);
+      const fn = net.toFunction();
+      expect(closeToFive.toFixed(1)).toBe('0.5');
+      expect(closeToOne.toFixed(1)).toBe('0.1');
+      expect(fn([0.1, 0.2, 0.3, 0.4])).toBe(closeToFive);
+      expect(fn([0.5, 0.4, 0.3, 0.2])).toBe(closeToOne);
+    });
+    it('processes array,array same as net', () => {
+      const net = new LSTMTimeStep({
+        inputSize: 2,
+        hiddenLayers: [10],
+        outputSize: 2,
+      });
+
+      // Same test as previous, but combined on a single set
+      const trainingData = [
+        [0.1, 0.5],
+        [0.2, 0.4],
+        [0.3, 0.3],
+        [0.4, 0.2],
+        [0.5, 0.1],
+      ];
+
+      const trainResult = net.train(trainingData);
+      expect(trainResult.error).toBeLessThan(0.09);
+      const closeToFiveAndOne = net.run([
+        [0.1, 0.5],
+        [0.2, 0.4],
+        [0.3, 0.3],
+        [0.4, 0.2],
+      ]);
+      const fn = net.toFunction();
+      const result = fn([
+        [0.1, 0.5],
+        [0.2, 0.4],
+        [0.3, 0.3],
+        [0.4, 0.2],
+      ]);
+      expect(closeToFiveAndOne[0].toFixed(1)).toBe('0.5');
+      expect(closeToFiveAndOne[1].toFixed(1)).toBe('0.1');
+      expect(result[0]).toBe(closeToFiveAndOne[0]);
+      expect(result[1]).toBe(closeToFiveAndOne[1]);
+    });
+    it('processes object same as net', () => {
+      const net = new LSTMTimeStep({
+        inputSize: 1,
+        hiddenLayers: [10],
+        outputSize: 1,
+      });
+
+      // Same test as previous, but combined on a single set
+      const trainingData = [
+        {
+          input: { monday: 0.1, tuesday: 0.2, wednesday: 0.3, thursday: 0.4 },
+          output: { friday: 0.5 },
+        },
+        {
+          input: { monday: 0.5, tuesday: 0.4, wednesday: 0.3, thursday: 0.2 },
+          output: { friday: 0.1 },
+        },
+      ];
+      const trainResult = net.train(trainingData);
+      expect(trainResult.error).toBeLessThan(0.09);
+      const closeToFive = net.runObject({
+        monday: 0.1,
+        tuesday: 0.2,
+        wednesday: 0.3,
+        thursday: 0.4,
+      });
+      const closeToOne = net.runObject({
+        monday: 0.5,
+        tuesday: 0.4,
+        wednesday: 0.3,
+        thursday: 0.2,
+      });
+      const fn = net.toFunction();
+      expect(closeToFive.friday.toFixed(1)).toBe('0.5');
+      expect(closeToOne.friday.toFixed(1)).toBe('0.1');
+      expect(
+        (fn as (input: INumberObject) => INumberObject)({ monday: 0.1, tuesday: 0.2, wednesday: 0.3, thursday: 0.4 }).friday
+      ).toBe(closeToFive.friday);
+      expect(
+        (fn as (input: INumberObject) => INumberObject)({ monday: 0.5, tuesday: 0.4, wednesday: 0.3, thursday: 0.2 }).friday
+      ).toBe(closeToOne.friday);
+    });
+    it('handles array,object to array,object with lookup tables being same w/ inputSize of 1', () => {
+      const inputSize = 1;
+      const hiddenLayers = [10];
+      const outputSize = 1;
+      const net = new RNNTimeStep({
+        inputSize,
+        hiddenLayers,
+        outputSize,
+      });
+      net.train([
+        { monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 },
+      ]);
+      const fn = net.toFunction();
+      const result = (fn as (input: INumberObject) => INumberObject)({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
+      expect(result).toEqual(
+        net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 })
+      );
+      expect(Object.keys(result).length).toBe(1);
+      expect(result.friday.toFixed(0)).toBe('5');
+    });
+  });
   // describe('.test()', () => {
   //   describe('using array,array', () => {
   //     describe('inputSize of 1', () => {

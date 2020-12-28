@@ -254,6 +254,10 @@ export class RNNTimeStep extends RNN {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
         return this.runArrayOfArray(rawInput as Float32Array[]);
+      case 'object,number':
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        return this.runObject(rawInput as INumberHash); // Backward compatibility, will be result of `unknown` and need casting.  Better to just use net.runObject() directly
       case 'array,object,number':
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
@@ -1101,14 +1105,6 @@ export class RNNTimeStep extends RNN {
         .join('}')
         .split('\n')
         .join('\n        ')
-        .replace(
-          'product.weights = input.weights = this.inputValue;',
-          inputLookup && inputSize === 1
-            ? 'product.weights = _i < input.length ? input[_i]: prevStates[prevStates.length - 1].product.weights;'
-            : inputSize === 1
-            ? 'product.weights = [input[_i]];'
-            : 'product.weights = input[_i];'
-        )
         .replace('product.deltas[i] = 0;', '')
         .replace('product.deltas[column] = 0;', '')
         .replace('left.deltas[leftIndex] = 0;', '')
@@ -1137,13 +1133,27 @@ export class RNNTimeStep extends RNN {
       const fnName = state.forwardFn.name;
       if (!usedFunctionNames[fnName]) {
         usedFunctionNames[fnName] = true;
-        innerFunctionsSwitch.push(
-          `        case '${fnName}':${
-            fnName !== 'forwardFn' ? ` //compiled from ${fileName(fnName)}` : ''
-          }
+        if (state.name === 'input') {
+          innerFunctionsSwitch.push(`case '${fnName}':`);
+          innerFunctionsSwitch.push(
+            inputLookup && inputSize === 1
+              ? 'product.weights = _i < input.length ? input[_i]: prevStates[prevStates.length - 1].product.weights;'
+              : inputSize === 1
+              ? 'product.weights = [input[_i]];'
+              : 'product.weights = input[_i];'
+          );
+          innerFunctionsSwitch.push('break;');
+        } else {
+          innerFunctionsSwitch.push(
+            `        case '${fnName}':${
+              fnName !== 'forwardFn'
+                ? ` //compiled from ${fileName(fnName)}`
+                : ''
+            }
           ${toInner(state.forwardFn.toString())}
           break;`
-        );
+          );
+        }
       }
     }
 

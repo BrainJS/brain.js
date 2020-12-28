@@ -32,6 +32,7 @@ type PropagateFunction =
   | PropagateProductFromLeftRight;
 
 interface State {
+  name: string;
   product: Matrix;
   left?: Matrix;
   right?: Matrix;
@@ -52,6 +53,7 @@ export class Equation {
     const product = new Matrix(left.rows, left.columns);
 
     this.states.push({
+      name: 'add',
       product,
       left,
       right,
@@ -66,6 +68,7 @@ export class Equation {
     const product = new Matrix(rows, columns);
 
     this.states.push({
+      name: 'allOnes',
       product,
       left: product,
       forwardFn: allOnes,
@@ -79,6 +82,7 @@ export class Equation {
     const product = new Matrix(matrix.rows, matrix.columns);
 
     this.states.push({
+      name: 'cloneNegative',
       product,
       left: matrix,
       forwardFn: cloneNegative,
@@ -113,6 +117,7 @@ export class Equation {
     const product = new Matrix(left.rows, right.columns);
 
     this.states.push({
+      name: 'multiply',
       product,
       left,
       right,
@@ -134,6 +139,7 @@ export class Equation {
     const product = new Matrix(left.rows, left.columns);
 
     this.states.push({
+      name: 'multiplyElement',
       product,
       left,
       right,
@@ -151,6 +157,7 @@ export class Equation {
     const product = new Matrix(matrix.rows, matrix.columns);
 
     this.states.push({
+      name: 'relu',
       product,
       left: matrix,
       forwardFn: relu,
@@ -165,6 +172,7 @@ export class Equation {
    */
   input(input: Matrix): Matrix {
     this.states.push({
+      name: 'input',
       product: input,
       forwardFn: (product: Matrix) => {
         if (!this.inputValue) return;
@@ -188,6 +196,7 @@ export class Equation {
     const product = new Matrix(matrix.columns, 1);
 
     this.states.push({
+      name: 'inputMatrixToRow',
       product,
       left: matrix,
       get right() {
@@ -207,6 +216,7 @@ export class Equation {
     const product = new Matrix(matrix.rows, matrix.columns);
 
     this.states.push({
+      name: 'sigmoid',
       product,
       left: matrix,
       forwardFn: sigmoid,
@@ -223,6 +233,7 @@ export class Equation {
     const product = new Matrix(matrix.rows, matrix.columns);
 
     this.states.push({
+      name: 'tanh',
       product,
       left: matrix,
       forwardFn: tanh,
@@ -238,6 +249,7 @@ export class Equation {
    */
   observe(matrix: Matrix): Matrix {
     this.states.push({
+      name: 'observe',
       product: new Matrix(),
       forwardFn: () => {},
       backpropagationFn: () => {},
