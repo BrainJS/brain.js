@@ -869,6 +869,97 @@ export class RNNTimeStep extends RNN {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
+  addFormat(
+    value:
+      | number[]
+      | number[][]
+      | INumberObject
+      | INumberObject[]
+      | ITrainingDatum
+  ): void {
+    const dataShape = lookup.dataShape(value).join(',');
+    switch (dataShape) {
+      case 'array,array,number':
+      case 'datum,array,array,number':
+      case 'array,number':
+      case 'datum,array,number':
+        return;
+      case 'datum,object,number': {
+        this.inputLookup = lookup.addKeys(
+          (value as ITrainingDatum).input as INumberHash,
+          this.inputLookup ?? {}
+        );
+        if (this.inputLookup) {
+          this.inputLookupLength = Object.keys(this.inputLookup).length;
+        }
+        this.outputLookup = lookup.addKeys(
+          (value as ITrainingDatum).output as INumberHash,
+          this.outputLookup ?? {}
+        );
+        if (this.outputLookup) {
+          this.outputLookupLength = Object.keys(this.outputLookup).length;
+        }
+        break;
+      }
+      case 'object,number': {
+        this.inputLookup = this.outputLookup = lookup.addKeys(
+          value as INumberHash,
+          this.inputLookup ?? {}
+        );
+        if (this.inputLookup) {
+          this.inputLookupLength = this.outputLookupLength = Object.keys(
+            this.inputLookup
+          ).length;
+        }
+        break;
+      }
+      case 'array,object,number': {
+        const typedValue = value as INumberObject[];
+        for (let i = 0; i < typedValue.length; i++) {
+          this.inputLookup = this.outputLookup = lookup.addKeys(
+            typedValue[i],
+            this.inputLookup ?? {}
+          );
+          if (this.inputLookup) {
+            this.inputLookupLength = this.outputLookupLength = Object.keys(
+              this.inputLookup
+            ).length;
+          }
+        }
+        break;
+      }
+      case 'datum,array,object,number': {
+        const typedValue = value as ITrainingDatum;
+        const typedInput = typedValue.input as INumberObject[];
+        for (let i = 0; i < typedInput.length; i++) {
+          this.inputLookup = lookup.addKeys(
+            typedInput[i],
+            this.inputLookup ?? {}
+          );
+          if (this.inputLookup) {
+            this.inputLookupLength = Object.keys(this.inputLookup).length;
+          }
+        }
+        const typedOutput = typedValue.output as INumberObject[];
+        for (let i = 0; i < typedOutput.length; i++) {
+          this.outputLookup = lookup.addKeys(
+            typedOutput[i],
+            this.outputLookup ?? {}
+          );
+          if (this.outputLookup) {
+            this.outputLookupLength = Object.keys(this.outputLookup).length;
+          }
+        }
+        break;
+      }
+
+      default:
+        throw new Error('unknown data shape or configuration');
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   toJSON(): IRNNTimeStepJSON {
     if (!this.model) {
       this.initialize();

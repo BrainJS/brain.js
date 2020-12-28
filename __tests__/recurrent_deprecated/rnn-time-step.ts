@@ -3027,68 +3027,68 @@ describe('RNNTimeStep', () => {
       });
     });
   });
-  // describe('.addFormat()', () => {
-  //   it('array,array,number', () => {
-  //     const instance = {};
-  //     RNNTimeStep.prototype.addFormat.call(instance, [[0]]);
-  //     expect(instance).toEqual({});
-  //   });
-  //   it('datum,array,array,number', () => {
-  //     const instance = {};
-  //     RNNTimeStep.prototype.addFormat.call(instance, {
-  //       input: [[0]],
-  //       output: [[0]],
-  //     });
-  //     expect(instance).toEqual({});
-  //   });
-  //   it('array,number', () => {
-  //     const instance = {};
-  //     RNNTimeStep.prototype.addFormat.call(instance, [0]);
-  //     expect(instance).toEqual({});
-  //   });
-  //   it('datum,array,number', () => {
-  //     const instance = {};
-  //     RNNTimeStep.prototype.addFormat.call(instance, {
-  //       input: [0],
-  //       output: [0],
-  //     });
-  //     expect(instance).toEqual({});
-  //   });
-  //
-  //   it('datum,object,number', () => {
-  //     const instance = {
-  //       inputLookup: { inputOne: 0 },
-  //       outputLookup: { outputOne: 0 },
-  //     };
-  //     RNNTimeStep.prototype.addFormat.call(instance, {
-  //       input: { inputTwo: 1, inputThree: 2 },
-  //       output: { outputTwo: 1, outputThree: 2 },
-  //     });
-  //     expect(instance).toEqual({
-  //       inputLookup: { inputOne: 0, inputTwo: 1, inputThree: 2 },
-  //       inputLookupLength: 3,
-  //       outputLookup: { outputOne: 0, outputTwo: 1, outputThree: 2 },
-  //       outputLookupLength: 3,
-  //     });
-  //   });
-  //   it('object,number', () => {
-  //     const instance = {
-  //       inputLookup: { inputOne: 0 },
-  //     };
-  //     RNNTimeStep.prototype.addFormat.call(instance, {
-  //       inputTwo: 1,
-  //       inputThree: 2,
-  //     });
-  //     expect(instance).toEqual({
-  //       inputLookup: { inputOne: 0, inputTwo: 1, inputThree: 2 },
-  //       inputLookupLength: 3,
-  //       outputLookup: { inputOne: 0, inputTwo: 1, inputThree: 2 },
-  //       outputLookupLength: 3,
-  //     });
-  //   });
-  //   it('array,object,number', () => {});
-  //   it('datum,array,object,number', () => {});
-  // });
+  describe('.addFormat()', () => {
+    it('array,array,number', () => {
+      const instance = {};
+      RNNTimeStep.prototype.addFormat.call(instance, [[0]]);
+      expect(instance).toEqual({});
+    });
+    it('datum,array,array,number', () => {
+      const instance = {};
+      RNNTimeStep.prototype.addFormat.call(instance, {
+        input: [[0]],
+        output: [[0]],
+      });
+      expect(instance).toEqual({});
+    });
+    it('array,number', () => {
+      const instance = {};
+      RNNTimeStep.prototype.addFormat.call(instance, [0]);
+      expect(instance).toEqual({});
+    });
+    it('datum,array,number', () => {
+      const instance = {};
+      RNNTimeStep.prototype.addFormat.call(instance, {
+        input: [0],
+        output: [0],
+      });
+      expect(instance).toEqual({});
+    });
+
+    it('datum,object,number', () => {
+      const instance = {
+        inputLookup: { inputOne: 0 },
+        outputLookup: { outputOne: 0 },
+      };
+      RNNTimeStep.prototype.addFormat.call(instance, {
+        input: { inputTwo: 1, inputThree: 2 },
+        output: { outputTwo: 1, outputThree: 2 },
+      });
+      expect(instance).toEqual({
+        inputLookup: { inputOne: 0, inputTwo: 1, inputThree: 2 },
+        inputLookupLength: 3,
+        outputLookup: { outputOne: 0, outputTwo: 1, outputThree: 2 },
+        outputLookupLength: 3,
+      });
+    });
+    it('object,number', () => {
+      const instance = {
+        inputLookup: { inputOne: 0 },
+      };
+      RNNTimeStep.prototype.addFormat.call(instance, {
+        inputTwo: 1,
+        inputThree: 2,
+      });
+      expect(instance).toEqual({
+        inputLookup: { inputOne: 0, inputTwo: 1, inputThree: 2 },
+        inputLookupLength: 3,
+        outputLookup: { inputOne: 0, inputTwo: 1, inputThree: 2 },
+        outputLookupLength: 3,
+      });
+    });
+    // it('array,object,number', () => {});
+    // it('datum,array,object,number', () => {});
+  });
   describe('.toJSON()', () => {
     it('saves network dimensions to json', () => {
       const inputSize = 4;
