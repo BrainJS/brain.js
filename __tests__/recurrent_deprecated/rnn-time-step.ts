@@ -1994,7 +1994,7 @@ describe('RNNTimeStep', () => {
         it('throws', () => {
           expect(() => {
             net.formatArrayOfArray([[1, 2, 3]]);
-          }).toThrow('outputSize must match data input size');
+          }).toThrow('outputSize must match data output size');
         });
       });
       it('returns a proper Float32Array[][]', () => {
@@ -2465,959 +2465,567 @@ describe('RNNTimeStep', () => {
       expect(result.friday.toFixed(0)).toBe('5');
     });
   });
-  // describe('.test()', () => {
-  //   describe('using array,array', () => {
-  //     describe('inputSize of 1', () => {
-  //       it('accumulates no error or misclasses when no error', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 1,
-  //           hiddenLayers: [10],
-  //           outputSize: 1,
-  //         });
-  //         jest.spyOn(net, 'formatData');
-  //         net.run = jest.fn(() => {
-  //           return [0.5];
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         const testResult = net.test([[0.1, 0.2, 0.3, 0.4, 0.5]]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.run).toBeCalled();
-  //         expect(net.run.mock.calls[0][0]).toEqual(
-  //           [[0.1], [0.2], [0.3], [0.4]].map((v) => Float32Array.from(v))
-  //         );
-  //         expect(testResult.error).toBe(0);
-  //         expect(testResult.misclasses.length).toBe(0);
-  //       });
-  //       it('accumulates error and misclasses when error', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 1,
-  //           hiddenLayers: [10],
-  //           outputSize: 1,
-  //         });
-  //         jest.spyOn(net, 'formatData');
-  //         net.run = jest.fn(() => {
-  //           return [0.1];
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         const testResult = net.test([[0.1, 0.2, 0.3, 0.4, 0.5]]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.run).toBeCalled();
-  //         expect(net.run.mock.calls[0][0]).toEqual(
-  //           [[0.1], [0.2], [0.3], [0.4]].map((v) => Float32Array.from(v))
-  //         );
-  //         expect(testResult.error).toBeGreaterThan(0.1);
-  //         expect(testResult.misclasses.length).toBe(1);
-  //       });
-  //     });
-  //     describe('inputSize of 2', () => {
-  //       it('throws', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 2,
-  //           hiddenLayers: [10],
-  //           outputSize: 2,
-  //         });
-  //         jest.spyOn(net, 'formatData');
-  //         net.run = jest.fn(() => {
-  //           return [0.1];
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         expect(() => {
-  //           net.test([[0.1, 0.2, 0.3, 0.4, 0.5]]);
-  //         }).toThrow();
-  //         // expect(net.formatData).toBeCalled();
-  //         // expect(net.run).toBeCalled();
-  //         // expect(net.run.mock.calls[0][0]).toEqual([[.1],[.2],[.3],[.4]].map(v => Float32Array.from(v)));
-  //         // expect(testResult.error).toBeGreaterThan(.1);
-  //         // expect(testResult.misclasses.length).toBe(1);
-  //       });
-  //     });
-  //   });
-  //   describe('using array,array,array', () => {
-  //     describe('inputSize of 2', () => {
-  //       describe('no error', () => {
-  //         it('can test', () => {
-  //           const net = new LSTMTimeStep({
-  //             inputSize: 2,
-  //             hiddenLayers: [10],
-  //             outputSize: 2,
-  //           });
-  //           jest.spyOn(net, 'formatData');
-  //           net.run = jest.fn(() => {
-  //             return Float32Array.from([0.5, 0.1]);
-  //           });
-  //           net.trainOpts = {
-  //             errorThresh: 0.001,
-  //           };
-  //           const testResult = net.test([
-  //             [
-  //               [0.1, 0.5],
-  //               [0.2, 0.4],
-  //               [0.3, 0.3],
-  //               [0.4, 0.2],
-  //               [0.5, 0.1],
-  //             ],
-  //           ]);
-  //           expect(net.formatData).toBeCalled();
-  //           expect(net.run).toBeCalled();
-  //           expect(testResult.error).toBe(0);
-  //           expect(testResult.misclasses.length).toBe(0);
-  //         });
-  //       });
-  //       describe('some error', () => {
-  //         it('can test', () => {
-  //           const net = new LSTMTimeStep({
-  //             inputSize: 2,
-  //             hiddenLayers: [10],
-  //             outputSize: 2,
-  //           });
-  //           net.trainOpts = {
-  //             errorThresh: 0.001,
-  //           };
-  //           jest.spyOn(net, 'formatData');
-  //           net.run = jest.fn(() => {
-  //             return Float32Array.from([0.1, 0.5]);
-  //           });
-  //           const testResult = net.test([
-  //             [
-  //               [0.1, 0.5],
-  //               [0.2, 0.4],
-  //               [0.3, 0.3],
-  //               [0.4, 0.2],
-  //               [0.5, 0.1],
-  //             ],
-  //           ]);
-  //           expect(net.formatData).toBeCalled();
-  //           expect(net.run).toBeCalled();
-  //           expect(testResult.error).toBeGreaterThanOrEqual(0.1);
-  //           expect(testResult.misclasses.length).toBe(1);
-  //           expect(testResult.misclasses).toEqual([
-  //             {
-  //               value: [
-  //                 [0.1, 0.5],
-  //                 [0.2, 0.4],
-  //                 [0.3, 0.3],
-  //                 [0.4, 0.2],
-  //                 [0.5, 0.1],
-  //               ],
-  //               actual: Float32Array.from([0.1, 0.5]),
-  //             },
-  //           ]);
-  //         });
-  //       });
-  //     });
-  //   });
-  //   describe('using array,object', () => {
-  //     describe('inputSize of 1', () => {
-  //       describe('no error', () => {
-  //         it('can test w/ forecastNumbers of 1', () => {
-  //           const net = new LSTMTimeStep({
-  //             inputSize: 1,
-  //             hiddenLayers: [10],
-  //             outputSize: 1,
-  //           });
-  //           jest.spyOn(net, 'formatData');
-  //           net.forecastNumbers = jest.fn((data, count) => {
-  //             expect(count).toBe(1);
-  //             return [0.5];
-  //           });
-  //           net.trainOpts = {
-  //             errorThresh: 0.001,
-  //           };
-  //           net.inputLookup = net.outputLookup = {
-  //             monday: 0,
-  //             tuesday: 1,
-  //             wednesday: 2,
-  //             thursday: 3,
-  //             friday: 4,
-  //           };
-  //           net.inputLookupLength = net.outputLookupLength = Object.keys(
-  //             net.inputLookup
-  //           ).length;
-  //           const testResult = net.test([
-  //             {
-  //               monday: 0.1,
-  //               tuesday: 0.2,
-  //               wednesday: 0.3,
-  //               thursday: 0.4,
-  //               friday: 0.5,
-  //             },
-  //           ]);
-  //           expect(net.formatData).toBeCalled();
-  //           expect(net.forecastNumbers).toBeCalled();
-  //           expect(net.forecastNumbers.mock.calls[0][0]).toEqual(
-  //             Float32Array.from([0.1, 0.2, 0.3, 0.4])
-  //           );
-  //           expect(net.forecastNumbers.mock.calls[0][1]).toEqual(1);
-  //           expect(testResult.error).toBe(0);
-  //           expect(testResult.misclasses.length).toBe(0);
-  //         });
-  //       });
-  //       describe('some error', () => {
-  //         it('can test w/ forecastNumbers of 1', () => {
-  //           const net = new LSTMTimeStep({
-  //             inputSize: 1,
-  //             hiddenLayers: [10],
-  //             outputSize: 1,
-  //           });
-  //           net.trainOpts = {
-  //             errorThresh: 0.001,
-  //           };
-  //           jest.spyOn(net, 'formatData');
-  //           net.forecastNumbers = jest.fn((data, count) => {
-  //             expect(count).toBeTruthy();
-  //             return [0.1];
-  //           });
-  //           net.inputLookup = net.outputLookup = {
-  //             monday: 0,
-  //             tuesday: 1,
-  //             wednesday: 2,
-  //             thursday: 3,
-  //             friday: 4,
-  //           };
-  //           net.inputLookupLength = net.outputLookupLength = Object.keys(
-  //             net.inputLookup
-  //           ).length;
-  //           const testResult = net.test([
-  //             {
-  //               monday: 0.1,
-  //               tuesday: 0.2,
-  //               wednesday: 0.3,
-  //               thursday: 0.4,
-  //               friday: 0.5,
-  //             },
-  //           ]);
-  //           expect(net.formatData).toBeCalled();
-  //           expect(net.forecastNumbers).toBeCalled();
-  //           expect(net.forecastNumbers.mock.calls[0][0]).toEqual(
-  //             Float32Array.from([0.1, 0.2, 0.3, 0.4])
-  //           );
-  //           expect(testResult.error).toBeGreaterThanOrEqual(0.08);
-  //           expect(testResult.misclasses.length).toBe(1);
-  //           expect(testResult.misclasses).toEqual([
-  //             {
-  //               value: {
-  //                 monday: 0.1,
-  //                 tuesday: 0.2,
-  //                 wednesday: 0.3,
-  //                 thursday: 0.4,
-  //                 friday: 0.5,
-  //               },
-  //               actual: { friday: 0.1 },
-  //             },
-  //           ]);
-  //         });
-  //       });
-  //     });
-  //   });
-  //   describe('using array,array,object', () => {
-  //     describe('inputSize of 2', () => {
-  //       describe('no error', () => {
-  //         it('can test w/ run of 1', () => {
-  //           const net = new LSTMTimeStep({
-  //             inputSize: 2,
-  //             hiddenLayers: [10],
-  //             outputSize: 2,
-  //           });
-  //           jest.spyOn(net, 'formatData');
-  //           net.run = jest.fn(() => {
-  //             return { low: 0.5, high: 0.1 };
-  //           });
-  //           net.trainOpts = {
-  //             errorThresh: 0.001,
-  //           };
-  //           net.inputLookup = net.outputLookup = {
-  //             low: 0,
-  //             high: 1,
-  //           };
-  //           net.inputLookupLength = net.outputLookupLength = Object.keys(
-  //             net.inputLookup
-  //           ).length;
-  //           const testResult = net.test([
-  //             [
-  //               { low: 0.1, high: 0.5 },
-  //               { low: 0.2, high: 0.4 },
-  //               { low: 0.3, high: 0.3 },
-  //               { low: 0.4, high: 0.2 },
-  //               { low: 0.5, high: 0.1 },
-  //             ],
-  //           ]);
-  //           expect(net.formatData).toBeCalled();
-  //           expect(net.run).toBeCalled();
-  //           expect(net.run.mock.calls[0][0]).toEqual(
-  //             [
-  //               [0.1, 0.5],
-  //               [0.2, 0.4],
-  //               [0.3, 0.3],
-  //               [0.4, 0.2],
-  //             ].map((v) => Float32Array.from(v))
-  //           );
-  //           expect(testResult.error).toBe(0);
-  //           expect(testResult.misclasses.length).toBe(0);
-  //         });
-  //       });
-  //       describe('some error', () => {
-  //         it('can test w/ run of 1', () => {
-  //           const net = new LSTMTimeStep({
-  //             inputSize: 2,
-  //             hiddenLayers: [10],
-  //             outputSize: 2,
-  //           });
-  //           jest.spyOn(net, 'formatData');
-  //           net.run = jest.fn(() => {
-  //             return { low: 0.9, high: 0.9 };
-  //           });
-  //           net.trainOpts = {
-  //             errorThresh: 0.001,
-  //           };
-  //           net.inputLookup = net.outputLookup = {
-  //             low: 0,
-  //             high: 1,
-  //           };
-  //           net.inputLookupLength = net.outputLookupLength = Object.keys(
-  //             net.inputLookup
-  //           ).length;
-  //           const testResult = net.test([
-  //             [
-  //               { low: 0.1, high: 0.5 },
-  //               { low: 0.2, high: 0.4 },
-  //               { low: 0.3, high: 0.3 },
-  //               { low: 0.4, high: 0.2 },
-  //               { low: 0.5, high: 0.1 },
-  //             ],
-  //           ]);
-  //           expect(net.formatData).toBeCalled();
-  //           expect(net.run).toBeCalled();
-  //           expect(net.run.mock.calls[0][0]).toEqual(
-  //             [
-  //               [0.1, 0.5],
-  //               [0.2, 0.4],
-  //               [0.3, 0.3],
-  //               [0.4, 0.2],
-  //             ].map((v) => Float32Array.from(v))
-  //           );
-  //           expect(testResult.error).toBeGreaterThan(0.3);
-  //           expect(testResult.misclasses.length).toBe(1);
-  //           expect(testResult.misclasses).toEqual([
-  //             {
-  //               value: [
-  //                 { low: 0.1, high: 0.5 },
-  //                 { low: 0.2, high: 0.4 },
-  //                 { low: 0.3, high: 0.3 },
-  //                 { low: 0.4, high: 0.2 },
-  //                 { low: 0.5, high: 0.1 },
-  //               ],
-  //               actual: { low: 0.9, high: 0.9 },
-  //             },
-  //           ]);
-  //         });
-  //       });
-  //     });
-  //   });
-  //   describe('using array,datum,array', () => {
-  //     describe('no error', () => {
-  //       it('can test w/ forecast of 1', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 1,
-  //           hiddenLayers: [10],
-  //           outputSize: 1,
-  //         });
-  //         jest.spyOn(net, 'formatData');
-  //         net.forecast = jest.fn((data, count) => {
-  //           expect(count).toBe(1);
-  //           return [0.5];
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         const testResult = net.test([
-  //           { input: [0.1, 0.2, 0.3, 0.4], output: [0.5] },
-  //         ]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.forecast).toBeCalled();
-  //         expect(net.forecast.mock.calls[0][0]).toEqual(
-  //           [[0.1], [0.2], [0.3], [0.4]].map((v) => Float32Array.from(v))
-  //         );
-  //         expect(net.forecast.mock.calls[0][1]).toEqual(1);
-  //         expect(testResult.error).toBe(0);
-  //         expect(testResult.misclasses.length).toBe(0);
-  //       });
-  //       it('can test w/ forecast of 2', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 1,
-  //           hiddenLayers: [10],
-  //           outputSize: 1,
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         jest.spyOn(net, 'formatData');
-  //         net.forecast = jest.fn((data, count) => {
-  //           expect(count).toBe(2);
-  //           return Float32Array.from([0.4, 0.5]);
-  //         });
-  //         const testResult = net.test([
-  //           { input: [0.1, 0.2, 0.3], output: [0.4, 0.5] },
-  //         ]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.forecast).toBeCalled();
-  //         expect(net.forecast.mock.calls[0][0]).toEqual(
-  //           [[0.1], [0.2], [0.3]].map((v) => Float32Array.from(v))
-  //         );
-  //         expect(net.forecast.mock.calls[0][1]).toBe(2);
-  //         expect(testResult.error).toBe(0);
-  //         expect(testResult.misclasses.length).toBe(0);
-  //       });
-  //     });
-  //     describe('some error', () => {
-  //       it('can test w/ forecast of 1', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 1,
-  //           hiddenLayers: [10],
-  //           outputSize: 1,
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         jest.spyOn(net, 'formatData');
-  //         net.forecast = jest.fn((data, count) => {
-  //           expect(count).toBeTruthy();
-  //           return [0.1];
-  //         });
-  //         const testResult = net.test([
-  //           { input: [0.1, 0.2, 0.3, 0.4], output: [0.5] },
-  //         ]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.forecast).toBeCalled();
-  //         expect(net.forecast.mock.calls[0][0]).toEqual(
-  //           [[0.1], [0.2], [0.3], [0.4]].map((v) => Float32Array.from(v))
-  //         );
-  //         expect(testResult.error).toBeGreaterThanOrEqual(0.08);
-  //         expect(testResult.misclasses.length).toBe(1);
-  //         expect(testResult.misclasses).toEqual([
-  //           {
-  //             input: [0.1, 0.2, 0.3, 0.4],
-  //             output: [0.5],
-  //             actual: [0.1],
-  //           },
-  //         ]);
-  //       });
-  //       it('can test w/ forecast of 2', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 1,
-  //           hiddenLayers: [10],
-  //           outputSize: 1,
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         jest.spyOn(net, 'formatData');
-  //         net.forecast = jest.fn((data, count) => {
-  //           expect(count).toBe(2);
-  //           return [0.2, 0.1];
-  //         });
-  //         const testResult = net.test([
-  //           { input: [0.1, 0.2, 0.3], output: [0.4, 0.5] },
-  //         ]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.forecast).toBeCalled();
-  //         expect(testResult.error).toBeGreaterThanOrEqual(0.08);
-  //         expect(testResult.misclasses.length).toBe(1);
-  //         expect(testResult.misclasses).toEqual([
-  //           {
-  //             input: [0.1, 0.2, 0.3],
-  //             output: [0.4, 0.5],
-  //             actual: [0.2, 0.1],
-  //           },
-  //         ]);
-  //       });
-  //     });
-  //   });
-  //   describe('using array,datum,object', () => {
-  //     describe('inputSize of 1', () => {
-  //       describe('no error', () => {
-  //         it('can test w/ forecastNumbers of 1', () => {
-  //           const net = new LSTMTimeStep({
-  //             inputSize: 1,
-  //             hiddenLayers: [10],
-  //             outputSize: 1,
-  //           });
-  //           jest.spyOn(net, 'formatData');
-  //           net.forecast = jest.fn((data, count) => {
-  //             expect(count).toBe(1);
-  //             return [0.5];
-  //           });
-  //           net.trainOpts = {
-  //             errorThresh: 0.001,
-  //           };
-  //           net.inputLookup = {
-  //             monday: 0,
-  //             tuesday: 1,
-  //             wednesday: 2,
-  //             thursday: 3,
-  //           };
-  //           net.inputLookupLength = Object.keys(net.inputLookup).length;
-  //           net.outputLookup = {
-  //             friday: 0,
-  //           };
-  //           net.outputLookupLength = Object.keys(net.outputLookup).length;
-  //           const testResult = net.test([
-  //             {
-  //               input: {
-  //                 monday: 0.1,
-  //                 tuesday: 0.2,
-  //                 wednesday: 0.3,
-  //                 thursday: 0.4,
-  //               },
-  //               output: { friday: 0.5 },
-  //             },
-  //           ]);
-  //           expect(net.formatData).toBeCalled();
-  //           expect(net.forecast).toBeCalled();
-  //           expect(net.forecast.mock.calls[0][0]).toEqual(
-  //             [[0.1], [0.2], [0.3], [0.4]].map((v) => Float32Array.from(v))
-  //           );
-  //           expect(net.forecast.mock.calls[0][1]).toEqual(1);
-  //           expect(testResult.error).toBe(0);
-  //           expect(testResult.misclasses.length).toBe(0);
-  //         });
-  //       });
-  //       describe('some error', () => {
-  //         it('can test w/ forecastNumbers of 1', () => {
-  //           const net = new LSTMTimeStep({
-  //             inputSize: 1,
-  //             hiddenLayers: [10],
-  //             outputSize: 1,
-  //           });
-  //           net.trainOpts = {
-  //             errorThresh: 0.001,
-  //           };
-  //           jest.spyOn(net, 'formatData');
-  //           net.forecast = jest.fn((data, count) => {
-  //             expect(count).toBeTruthy();
-  //             return [0.1];
-  //           });
-  //           net.inputLookup = {
-  //             monday: 0,
-  //             tuesday: 1,
-  //             wednesday: 2,
-  //             thursday: 3,
-  //           };
-  //           net.inputLookupLength = Object.keys(net.inputLookup).length;
-  //           net.outputLookup = {
-  //             friday: 0,
-  //           };
-  //           net.outputLookupLength = Object.keys(net.outputLookup).length;
-  //           const testResult = net.test([
-  //             {
-  //               input: {
-  //                 monday: 0.1,
-  //                 tuesday: 0.2,
-  //                 wednesday: 0.3,
-  //                 thursday: 0.4,
-  //               },
-  //               output: { friday: 0.5 },
-  //             },
-  //           ]);
-  //           expect(net.formatData).toBeCalled();
-  //           expect(net.forecast).toBeCalled();
-  //           expect(net.forecast.mock.calls[0][0]).toEqual(
-  //             [[0.1], [0.2], [0.3], [0.4]].map((v) => Float32Array.from(v))
-  //           );
-  //           expect(testResult.error).toBeGreaterThanOrEqual(0.08);
-  //           expect(testResult.misclasses.length).toBe(1);
-  //           expect(testResult.misclasses).toEqual([
-  //             {
-  //               input: {
-  //                 monday: 0.1,
-  //                 tuesday: 0.2,
-  //                 wednesday: 0.3,
-  //                 thursday: 0.4,
-  //               },
-  //               output: { friday: 0.5 },
-  //               actual: { friday: 0.1 },
-  //             },
-  //           ]);
-  //         });
-  //       });
-  //     });
-  //   });
-  //   describe('using array,datum,array,array', () => {
-  //     describe('no error', () => {
-  //       it('can test w/ forecast of 1', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 2,
-  //           hiddenLayers: [10],
-  //           outputSize: 2,
-  //         });
-  //         jest.spyOn(net, 'formatData');
-  //         net.forecast = jest.fn((data, count) => {
-  //           expect(count).toBe(1);
-  //           return [[0.5, 0.1]].map((v) => Float32Array.from(v));
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         const testResult = net.test([
-  //           {
-  //             input: [
-  //               [0.1, 0.5],
-  //               [0.2, 0.4],
-  //               [0.3, 0.3],
-  //               [0.4, 0.2],
-  //             ],
-  //             output: [[0.5, 0.1]],
-  //           },
-  //         ]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.forecast).toBeCalled();
-  //         expect(testResult.error).toBe(0);
-  //         expect(testResult.misclasses.length).toBe(0);
-  //       });
-  //       it('can test w/ forecast of 2', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 2,
-  //           hiddenLayers: [10],
-  //           outputSize: 2,
-  //         });
-  //         jest.spyOn(net, 'formatData');
-  //         net.forecast = jest.fn((data, count) => {
-  //           expect(count).toBe(2);
-  //           return [
-  //             [0.4, 0.2],
-  //             [0.5, 0.1],
-  //           ].map((v) => Float32Array.from(v));
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         const testResult = net.test([
-  //           {
-  //             input: [
-  //               [0.1, 0.5],
-  //               [0.2, 0.4],
-  //               [0.3, 0.3],
-  //             ],
-  //             output: [
-  //               [0.4, 0.2],
-  //               [0.5, 0.1],
-  //             ],
-  //           },
-  //         ]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.forecast).toBeCalled();
-  //         expect(testResult.error).toBe(0);
-  //         expect(testResult.misclasses.length).toBe(0);
-  //       });
-  //     });
-  //     describe('some error', () => {
-  //       it('can test w/ forecast of 1', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 2,
-  //           hiddenLayers: [10],
-  //           outputSize: 2,
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         jest.spyOn(net, 'formatData');
-  //         net.forecast = jest.fn((data, count) => {
-  //           expect(count).toBeTruthy();
-  //           return [[0.1, 0.5]].map((v) => Float32Array.from(v));
-  //         });
-  //         const testResult = net.test([
-  //           {
-  //             input: [
-  //               [0.1, 0.5],
-  //               [0.2, 0.4],
-  //               [0.3, 0.3],
-  //               [0.4, 0.2],
-  //             ],
-  //             output: [[0.5, 0.1]],
-  //           },
-  //         ]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.forecast).toBeCalled();
-  //         expect(testResult.error >= 0.1).toBeTruthy();
-  //         expect(testResult.misclasses.length).toBe(1);
-  //         expect(testResult.misclasses).toEqual([
-  //           {
-  //             input: [
-  //               [0.1, 0.5],
-  //               [0.2, 0.4],
-  //               [0.3, 0.3],
-  //               [0.4, 0.2],
-  //             ],
-  //             output: [[0.5, 0.1]],
-  //             actual: [[0.1, 0.5]].map((v) => Float32Array.from(v)),
-  //           },
-  //         ]);
-  //       });
-  //       it('can test w/ forecast of 2', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 2,
-  //           hiddenLayers: [10],
-  //           outputSize: 2,
-  //         });
-  //         jest.spyOn(net, 'formatData');
-  //         net.forecast = jest.fn((data, count) => {
-  //           expect(count).toBe(2);
-  //           return [
-  //             [0.9, 0.9],
-  //             [0.9, 0.9],
-  //           ].map((v) => Float32Array.from(v));
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         const testResult = net.test([
-  //           {
-  //             input: [
-  //               [0.1, 0.5],
-  //               [0.2, 0.4],
-  //               [0.3, 0.3],
-  //             ],
-  //             output: [
-  //               [0.4, 0.2],
-  //               [0.5, 0.1],
-  //             ],
-  //           },
-  //         ]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.forecast).toBeCalled();
-  //         expect(testResult.error).toBeGreaterThanOrEqual(0.08);
-  //         expect(testResult.misclasses.length).toBe(1);
-  //         expect(testResult.misclasses).toEqual([
-  //           {
-  //             input: [
-  //               [0.1, 0.5],
-  //               [0.2, 0.4],
-  //               [0.3, 0.3],
-  //             ],
-  //             output: [
-  //               [0.4, 0.2],
-  //               [0.5, 0.1],
-  //             ],
-  //             actual: [
-  //               [0.9, 0.9],
-  //               [0.9, 0.9],
-  //             ].map((v) => Float32Array.from(v)),
-  //           },
-  //         ]);
-  //       });
-  //     });
-  //   });
-  //   describe('using array,datum,array,object', () => {
-  //     describe('no error', () => {
-  //       it('can test w/ forecast of 1', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 2,
-  //           hiddenLayers: [10],
-  //           outputSize: 2,
-  //         });
-  //         jest.spyOn(net, 'formatData');
-  //         net.forecast = jest.fn((data, count) => {
-  //           expect(count).toBe(1);
-  //           return [{ low: 0.5, high: 0.1 }];
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         net.inputLookup = {
-  //           low: 0,
-  //           high: 1,
-  //         };
-  //         net.inputLookupLength = Object.keys(net.inputLookup).length;
-  //         net.outputLookup = {
-  //           low: 0,
-  //           high: 1,
-  //         };
-  //         net.outputLookupLength = Object.keys(net.outputLookup).length;
-  //         const testResult = net.test([
-  //           {
-  //             input: [
-  //               { low: 0.1, high: 0.5 },
-  //               { low: 0.2, high: 0.4 },
-  //               { low: 0.3, high: 0.3 },
-  //               { low: 0.4, high: 0.2 },
-  //             ],
-  //             output: [{ low: 0.5, high: 0.1 }],
-  //           },
-  //         ]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.forecast).toBeCalled();
-  //         expect(testResult.error).toBe(0);
-  //         expect(testResult.misclasses.length).toBe(0);
-  //       });
-  //       it('can test w/ forecast of 2', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 2,
-  //           hiddenLayers: [10],
-  //           outputSize: 2,
-  //         });
-  //         jest.spyOn(net, 'formatData');
-  //         net.forecast = jest.fn((data, count) => {
-  //           expect(count).toBe(2);
-  //           return [
-  //             { low: 0.4, high: 0.2 },
-  //             { low: 0.5, high: 0.1 },
-  //           ];
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         net.inputLookup = {
-  //           low: 0,
-  //           high: 1,
-  //         };
-  //         net.inputLookupLength = Object.keys(net.inputLookup).length;
-  //         net.outputLookup = {
-  //           low: 0,
-  //           high: 1,
-  //         };
-  //         net.outputLookupLength = Object.keys(net.outputLookup).length;
-  //         const testResult = net.test([
-  //           {
-  //             input: [
-  //               { low: 0.1, high: 0.5 },
-  //               { low: 0.2, high: 0.4 },
-  //               { low: 0.3, high: 0.3 },
-  //             ],
-  //             output: [
-  //               { low: 0.4, high: 0.2 },
-  //               { low: 0.5, high: 0.1 },
-  //             ],
-  //           },
-  //         ]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.forecast).toBeCalled();
-  //         expect(testResult.error).toBe(0);
-  //         expect(testResult.misclasses.length).toBe(0);
-  //       });
-  //     });
-  //     describe('some error', () => {
-  //       it('can test w/ forecast of 1', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 2,
-  //           hiddenLayers: [10],
-  //           outputSize: 2,
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         net.inputLookup = {
-  //           low: 0,
-  //           high: 1,
-  //         };
-  //         net.inputLookupLength = Object.keys(net.inputLookup).length;
-  //         net.outputLookup = {
-  //           low: 0,
-  //           high: 1,
-  //         };
-  //         net.outputLookupLength = Object.keys(net.outputLookup).length;
-  //         jest.spyOn(net, 'formatData');
-  //         net.forecast = jest.fn((data, count) => {
-  //           expect(count).toBeTruthy();
-  //           return [{ low: 0.1, high: 0.5 }];
-  //         });
-  //         const testResult = net.test([
-  //           {
-  //             input: [
-  //               { low: 0.1, high: 0.5 },
-  //               { low: 0.2, high: 0.4 },
-  //               { low: 0.3, high: 0.3 },
-  //               { low: 0.4, high: 0.2 },
-  //             ],
-  //             output: [{ low: 0.5, high: 0.1 }],
-  //           },
-  //         ]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.forecast).toBeCalled();
-  //         expect(testResult.error >= 0.1).toBeTruthy();
-  //         expect(testResult.misclasses.length).toBe(1);
-  //         expect(testResult.misclasses).toEqual([
-  //           {
-  //             input: [
-  //               { low: 0.1, high: 0.5 },
-  //               { low: 0.2, high: 0.4 },
-  //               { low: 0.3, high: 0.3 },
-  //               { low: 0.4, high: 0.2 },
-  //             ],
-  //             output: [{ low: 0.5, high: 0.1 }],
-  //             actual: [{ low: 0.1, high: 0.5 }],
-  //           },
-  //         ]);
-  //       });
-  //       it('can test w/ forecast of 2', () => {
-  //         const net = new LSTMTimeStep({
-  //           inputSize: 2,
-  //           hiddenLayers: [10],
-  //           outputSize: 2,
-  //         });
-  //         jest.spyOn(net, 'formatData');
-  //         net.forecast = jest.fn((data, count) => {
-  //           expect(count).toBe(2);
-  //           return [
-  //             { low: 0.9, high: 0.9 },
-  //             { low: 0.9, high: 0.9 },
-  //           ];
-  //         });
-  //         net.trainOpts = {
-  //           errorThresh: 0.001,
-  //         };
-  //         net.inputLookup = {
-  //           low: 0,
-  //           high: 1,
-  //         };
-  //         net.inputLookupLength = Object.keys(net.inputLookup).length;
-  //         net.outputLookup = {
-  //           low: 0,
-  //           high: 1,
-  //         };
-  //         net.outputLookupLength = Object.keys(net.outputLookup).length;
-  //         const testResult = net.test([
-  //           {
-  //             input: [
-  //               { low: 0.1, high: 0.5 },
-  //               { low: 0.2, high: 0.4 },
-  //               { low: 0.3, high: 0.3 },
-  //             ],
-  //             output: [
-  //               { low: 0.4, high: 0.2 },
-  //               { low: 0.5, high: 0.1 },
-  //             ],
-  //           },
-  //         ]);
-  //         expect(net.formatData).toBeCalled();
-  //         expect(net.forecast).toBeCalled();
-  //         expect(testResult.error).toBeGreaterThanOrEqual(0.08);
-  //         expect(testResult.misclasses.length).toBe(1);
-  //         expect(testResult.misclasses).toEqual([
-  //           {
-  //             input: [
-  //               { low: 0.1, high: 0.5 },
-  //               { low: 0.2, high: 0.4 },
-  //               { low: 0.3, high: 0.3 },
-  //             ],
-  //             output: [
-  //               { low: 0.4, high: 0.2 },
-  //               { low: 0.5, high: 0.1 },
-  //             ],
-  //             actual: [
-  //               { low: 0.9, high: 0.9 },
-  //               { low: 0.9, high: 0.9 },
-  //             ],
-  //           },
-  //         ]);
-  //       });
-  //     });
-  //   });
-  // });
+  describe('.test()', () => {
+    let runSpy: jest.SpyInstance;
+    beforeEach(() => {
+      runSpy = jest.spyOn(LSTMTimeStep.prototype, 'run');
+    });
+    afterEach(() => {
+      runSpy.mockRestore();
+    });
+    describe('with any data shape', () => {
+      let formatDataSpy: jest.SpyInstance;
+      beforeEach(() => {
+        formatDataSpy = jest.spyOn(RNNTimeStep.prototype, 'formatData');
+      });
+      afterEach(() => {
+        formatDataSpy.mockRestore();
+      });
+      it('calls .formatData()', () => {
+        const data = [[1,2]];
+        const net = new RNNTimeStep();
+        net.train(data);
+        formatDataSpy.mockClear();
+        net.test(data);
+        expect(formatDataSpy).toHaveBeenCalledWith(data);
+      });
+    });
+    describe('using array,array,number', () => {
+      const trainingData = [[0.1, 0.2, 0.3, 0.4, 0.5]];
+      describe('inputSize of 1', () => {
+        it('accumulates no error or misclasses when no error', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 1,
+            hiddenLayers: [10],
+            outputSize: 1,
+          });
+          net.train(trainingData, { iterations: 500 });
+          const testResult = net.test(trainingData);
+          expect(testResult.error).toBeLessThan(0.001);
+          expect(testResult.misclasses.length).toBe(0);
+        });
+        it('accumulates error and misclasses when error', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 1,
+            hiddenLayers: [10],
+            outputSize: 1,
+          });
+          net.train(trainingData, { iterations: 500 });
+          const misclass = [[1, 2, 3, 4, 5]];
+          const testResult = net.test(misclass);
+          expect(testResult.error).toBeGreaterThan(0.1);
+          expect(testResult.misclasses.length).toBe(1);
+          expect(testResult.misclasses).toEqual([
+            {
+              value: misclass,
+              actual: runSpy.mock.results[0].value,
+            },
+          ]);
+        });
+      });
+      describe('inputSize of 2', () => {
+        it('throws', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 2,
+            hiddenLayers: [10],
+            outputSize: 5,
+          });
+          expect(() => {
+            net.test(trainingData);
+          }).toThrow('inputSize must match data input size');
+        });
+      });
+      describe('outputSize of 2', () => {
+        it('throws', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 5,
+            hiddenLayers: [10],
+            outputSize: 2,
+          });
+          expect(() => {
+            net.test(trainingData);
+          }).toThrow('outputSize must match data output size');
+        });
+      });
+    });
+    describe('using array,array,array,number', () => {
+      const trainingData = [
+        [
+          [0.1, 0.5],
+          [0.2, 0.4],
+          [0.3, 0.3],
+          [0.4, 0.2],
+          [0.5, 0.1],
+        ],
+      ];
+      describe('inputSize of 2', () => {
+        describe('no error', () => {
+          it('can test', () => {
+            const net = new LSTMTimeStep({
+              inputSize: 2,
+              hiddenLayers: [10],
+              outputSize: 2,
+            });
+            net.train(trainingData, { iterations: 500 });
+            const testResult = net.test(trainingData);
+            expect(testResult.error).toBeLessThan(0.001);
+            expect(testResult.misclasses.length).toBe(0);
+          });
+        });
+        describe('some error', () => {
+          it('can test', () => {
+            const net = new LSTMTimeStep({
+              inputSize: 2,
+              hiddenLayers: [10],
+              outputSize: 2,
+            });
+            net.train(trainingData, { iterations: 500 });
+            const misclass = [
+                [1, 5],
+                [2, 4],
+                [3, 3],
+                [4, 2],
+                [5, 1],
+              ];
+            const testResult = net.test([
+              misclass
+            ]);
+            expect(testResult.error).toBeGreaterThanOrEqual(0.1);
+            expect(testResult.misclasses.length).toBe(1);
+            expect(testResult.misclasses).toEqual([
+              {
+                value: misclass,
+                actual: runSpy.mock.results[0].value,
+              },
+            ]);
+          });
+        });
+      });
+    });
+    describe('using array,object,number', () => {
+      const trainingData = [{
+        monday: .1,
+        tuesday: .1,
+        wednesday: .2,
+        thursday: .3,
+        friday: .4,
+      }];
+      describe('inputSize of 1', () => {
+        describe('no error', () => {
+          it('can test w/ forecastNumbers of 1', () => {
+            const net = new LSTMTimeStep({
+              inputSize: 1,
+              hiddenLayers: [10],
+              outputSize: 1,
+            });
+            net.train(trainingData, { iterations: 500 });
+            const testResult = net.test(trainingData);
+            expect(testResult.error).toBeLessThan(0.001);
+            expect(testResult.misclasses.length).toBe(0);
+          });
+        });
+        describe('some error', () => {
+          it('can test w/ forecastNumbers of 1', () => {
+            const net = new LSTMTimeStep({
+              inputSize: 1,
+              hiddenLayers: [10],
+              outputSize: 1,
+            });
+            net.train(trainingData, { iterations: 500 });
+            const misclass = {
+              monday: 1,
+              tuesday: 2,
+              wednesday: 3,
+              thursday: 4,
+              friday: 5,
+            };
+            const testResult = net.test([
+              misclass,
+            ]);
+            expect(testResult.error).toBeGreaterThanOrEqual(0.08);
+            expect(testResult.misclasses.length).toBe(1);
+            expect(testResult.misclasses).toEqual([
+              {
+                value: misclass,
+                actual: runSpy.mock.results[0].value,
+              },
+            ]);
+          });
+        });
+      });
+    });
+    describe('using array,array,object,number', () => {
+      const trainingData = [
+        [
+          { low: 0.1, high: 0.5 },
+          { low: 0.2, high: 0.4 },
+          { low: 0.3, high: 0.3 },
+          { low: 0.4, high: 0.2 },
+          { low: 0.5, high: 0.1 },
+        ],
+      ]
+      describe('inputSize of 2', () => {
+        describe('no error', () => {
+          it('can test w/ run of 1', () => {
+            const net = new LSTMTimeStep({
+              inputSize: 2,
+              hiddenLayers: [10],
+              outputSize: 2,
+            });
+            net.train(trainingData);
+            const testResult = net.test(trainingData);
+            expect(testResult.error).toBeLessThan(0.001);
+            expect(testResult.misclasses.length).toBe(0);
+          });
+        });
+        describe('some error', () => {
+          it('can test w/ run of 1', () => {
+            const net = new LSTMTimeStep({
+              inputSize: 2,
+              hiddenLayers: [10],
+              outputSize: 2,
+            });
+            net.train(trainingData, { iterations: 500 });
+            const misclass = [
+              { low: 1, high: 5 },
+              { low: 2, high: 4 },
+              { low: 3, high: 3 },
+              { low: 4, high: 2 },
+              { low: 5, high: 1 },
+            ];
+            const testResult = net.test([
+              misclass,
+            ]);
+
+            expect(testResult.error).toBeGreaterThan(0.3);
+            expect(testResult.misclasses.length).toBe(1);
+            expect(testResult.misclasses).toEqual([
+              {
+                value: misclass,
+                actual: runSpy.mock.results[0].value,
+              },
+            ]);
+          });
+        });
+      });
+    });
+    describe('using array,datum,array,number', () => {
+      const trainingData = [
+        { input: [0.1, 0.2, 0.3, 0.4], output: [0.5] },
+      ]
+      describe('no error', () => {
+        it('can test w/ forecast of 1', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 1,
+            hiddenLayers: [10],
+            outputSize: 1,
+          });
+          net.train(trainingData, { iterations: 500 });
+          const testResult = net.test(trainingData);
+          expect(testResult.error).toBeLessThan(0.001);
+          expect(testResult.misclasses.length).toBe(0);
+        });
+      });
+      describe('some error', () => {
+        it('can test w/ forecast of 1', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 1,
+            hiddenLayers: [10],
+            outputSize: 1,
+          });
+          net.train(trainingData, { iterations: 500 });
+          const misclass = { input: [1, 2, 3, 4], output: [5] };
+          const testResult = net.test([misclass]);
+          expect(testResult.error).toBeGreaterThanOrEqual(0.08);
+          expect(testResult.misclasses.length).toBe(1);
+          expect(testResult.misclasses).toEqual([
+            {
+              value: misclass,
+              actual: runSpy.mock.results[0].value,
+            },
+          ]);
+        });
+      });
+    });
+    describe('using array,datum,object,number', () => {
+      const trainingData = [
+        {
+          input: {
+            monday: 0.1,
+            tuesday: 0.2,
+            wednesday: 0.3,
+            thursday: 0.4,
+          },
+          output: { friday: 0.5 },
+        },
+      ];
+      describe('inputSize of 1', () => {
+        describe('no error', () => {
+          it('can test w/ forecastNumbers of 1', () => {
+            const net = new LSTMTimeStep({
+              inputSize: 1,
+              hiddenLayers: [10],
+              outputSize: 1,
+            });
+            net.train(trainingData, { iterations: 500 });
+            const testResult = net.test(trainingData);
+            expect(testResult.error).toBeLessThan(0.001);
+            expect(testResult.misclasses.length).toBe(0);
+          });
+        });
+        describe('some error', () => {
+          it('can test w/ forecastNumbers of 1', () => {
+            const net = new LSTMTimeStep({
+              inputSize: 1,
+              hiddenLayers: [10],
+              outputSize: 1,
+            });
+            net.train(trainingData);
+            const misclass = {
+              input: {
+                monday: 1,
+                tuesday: 2,
+                wednesday: 3,
+                thursday: 4,
+              },
+              output: { friday: 5 },
+            };
+            const testResult = net.test([
+              misclass,
+            ]);
+            expect(testResult.error).toBeGreaterThanOrEqual(0.08);
+            expect(testResult.misclasses.length).toBe(1);
+            expect(testResult.misclasses).toEqual([
+              {
+                value: misclass,
+                actual: runSpy.mock.results[0].value,
+              },
+            ]);
+          });
+        });
+      });
+    });
+    describe('using array,datum,array,array', () => {
+      const trainingData1 = [
+        {
+          input: [
+            [0.1, 0.5],
+            [0.2, 0.4],
+            [0.3, 0.3],
+            [0.4, 0.2],
+          ],
+          output: [[0.5, 0.1]],
+        },
+      ];
+      const trainingData2 = [
+        {
+          input: [
+            [0.1, 0.5],
+            [0.2, 0.4],
+            [0.3, 0.3],
+          ],
+          output: [
+            [0.4, 0.2],
+            [0.5, 0.1],
+          ],
+        },
+      ];
+      describe('no error', () => {
+        it('can test w/ forecast of 1', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 2,
+            hiddenLayers: [10],
+            outputSize: 2,
+          });
+          net.train(trainingData1, { iterations: 500 });
+          const testResult = net.test(trainingData1);
+          expect(testResult.error).toBeLessThan(0.001);
+          expect(testResult.misclasses.length).toBe(0);
+        });
+        it('can test w/ forecast of 2', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 2,
+            hiddenLayers: [10],
+            outputSize: 2,
+          });
+          net.train(trainingData2, { iterations: 500 });
+          const testResult = net.test(trainingData2);
+          expect(testResult.error).toBeLessThan(0.001);
+          expect(testResult.misclasses.length).toBe(0);
+        });
+      });
+      describe('some error', () => {
+        it('can test w/ forecast of 1', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 2,
+            hiddenLayers: [10],
+            outputSize: 2,
+          });
+          net.train(trainingData1, { iterations: 500 });
+          const misclass = {
+            input: [
+              [1, 5],
+              [2, 4],
+              [3, 3],
+              [4, 2],
+            ],
+            output: [[5, 1]],
+          }
+          const testResult = net.test([
+            misclass,
+          ]);
+          expect(testResult.error).toBeGreaterThan(0.1);
+          expect(testResult.misclasses.length).toBe(1);
+          expect(testResult.misclasses).toEqual([
+            {
+              value: misclass,
+              actual: runSpy.mock.results[0].value,
+            },
+          ]);
+        });
+        it('can test w/ forecast of 2', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 2,
+            hiddenLayers: [10],
+            outputSize: 2,
+          });
+          net.train(trainingData2, { iterations: 500 });
+          const misclass = {
+              input: [
+                [1, 5],
+                [2, 4],
+                [3, 3],
+              ],
+              output: [
+                [4, 2],
+                [5, 1],
+              ],
+            };
+          const testResult = net.test([
+            misclass
+          ]);
+          expect(testResult.error).toBeGreaterThanOrEqual(0.08);
+          expect(testResult.misclasses.length).toBe(1);
+          expect(testResult.misclasses).toEqual([
+            {
+              value: misclass,
+              actual: runSpy.mock.results[0].value,
+            },
+          ]);
+        });
+      });
+    });
+    describe('using array,datum,array,object,number', () => {
+      const trainingData1 = [
+        {
+          input: [
+            { low: 0.1, high: 0.5 },
+            { low: 0.2, high: 0.4 },
+            { low: 0.3, high: 0.3 },
+            { low: 0.4, high: 0.2 },
+          ],
+          output: [{ low: 0.5, high: 0.1 }],
+        },
+      ];
+      const trainingData2 = [
+        {
+          input: [
+            { low: 0.1, high: 0.5 },
+            { low: 0.2, high: 0.4 },
+            { low: 0.3, high: 0.3 },
+          ],
+          output: [
+            { low: 0.4, high: 0.2 },
+            { low: 0.5, high: 0.1 },
+          ],
+        },
+      ];
+      describe('no error', () => {
+        it('can test w/ forecast of 1', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 2,
+            hiddenLayers: [10],
+            outputSize: 2,
+          });
+          net.train(trainingData1, { iterations: 500 });
+          const testResult = net.test(trainingData1);
+          expect(testResult.error).toBeLessThan(0.001);
+          expect(testResult.misclasses.length).toBe(0);
+        });
+        it('can test w/ forecast of 2', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 2,
+            hiddenLayers: [10],
+            outputSize: 2,
+          });
+          net.train(trainingData2, { iterations: 500 });
+          const testResult = net.test(trainingData2);
+          expect(testResult.error).toBeLessThan(0.001);
+          expect(testResult.misclasses.length).toBe(0);
+        });
+      });
+      describe('some error', () => {
+        it('can test w/ forecast of 1', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 2,
+            hiddenLayers: [10],
+            outputSize: 2,
+          });
+          net.train(trainingData1, { iterations: 500 });
+          const misclass = {
+            input: [
+              { low: 1, high: 5 },
+              { low: 2, high: 4 },
+              { low: 3, high: 3 },
+              { low: 4, high: 2 },
+            ],
+            output: [{ low: 0.5, high: 0.1 }],
+          }
+          const testResult = net.test([
+            misclass,
+          ]);
+          expect(testResult.error).toBeGreaterThan(0.1);
+          expect(testResult.misclasses.length).toBe(1);
+          expect(testResult.misclasses).toEqual([
+            {
+              value: misclass,
+              actual: runSpy.mock.results[0].value,
+            },
+          ]);
+        });
+        it('can test w/ forecast of 2', () => {
+          const net = new LSTMTimeStep({
+            inputSize: 2,
+            hiddenLayers: [10],
+            outputSize: 2,
+          });
+          net.train(trainingData2, { iterations: 500 });
+          const misclass = {
+            input: [
+              { low: 1, high: 5 },
+              { low: 2, high: 4 },
+              { low: 3, high: 3 },
+            ],
+            output: [
+              { low: 4, high: 2 },
+              { low: 5, high: 1 },
+            ],
+          }
+          const testResult = net.test([
+            misclass,
+          ]);
+          expect(testResult.error).toBeGreaterThanOrEqual(0.08);
+          expect(testResult.misclasses.length).toBe(1);
+          expect(testResult.misclasses).toEqual([
+            {
+              value: misclass,
+              actual: runSpy.mock.results[0].value,
+            },
+          ]);
+        });
+      });
+    });
+  });
   // describe('.addFormat()', () => {
   //   it('array,array,number', () => {
   //     const instance = {};

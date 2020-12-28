@@ -623,7 +623,7 @@ export class RNNTimeStep extends RNN {
       throw new Error('inputSize must match data input size');
     }
     if (outputSize !== data[0].length) {
-      throw new Error('outputSize must match data input size');
+      throw new Error('outputSize must match data output size');
     }
     for (let i = 0; i < data.length; i++) {
       result.push(Float32Array.from(data[i]));

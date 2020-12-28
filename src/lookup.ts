@@ -201,7 +201,10 @@ export const lookup = {
       shape.push('datum');
       lastData = (data as ITrainingDatum).input;
     } else if (Array.isArray(data)) {
-      if ((data as ITrainingDatum[])[0].input) {
+      if (
+        (data as ITrainingDatum[])[0] &&
+        (data as ITrainingDatum[])[0].input
+      ) {
         shape.push('array', 'datum');
         lastData = (data as ITrainingDatum[])[0].input;
       } else if (Array.isArray(data[0])) {
