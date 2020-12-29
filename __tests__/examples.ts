@@ -9,6 +9,11 @@ describe('tests', () => {
       require('../examples/javascript/cross-validate');
     }).not.toThrow();
   });
+  test('cross validation (ts)', () => {
+    expect(() => {
+      require('../examples/typescript/cross-validate');
+    }).not.toThrow();
+  });
   test('gpu fallback', () => {
     expect(() => {
       require('../examples/javascript/gpu-fallback');

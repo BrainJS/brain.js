@@ -555,7 +555,7 @@ export class NeuralNetwork {
    *
    * @param data
    * @param options
-   * @returns {object} {error: number, iterations: number}
+   * @returns {{error: number, iterations: number}} {error: number, iterations: number}
    */
   train(data, options = {}) {
     let status;
@@ -1226,6 +1226,8 @@ export class NeuralNetwork {
     return new Function('input', cb ? cb(source) : source);
   }
 }
+
+NeuralNetwork.fromJSON = undefined;
 
 // module.exports = NeuralNetwork;
 export default NeuralNetwork;

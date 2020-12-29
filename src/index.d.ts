@@ -194,6 +194,7 @@ export interface ICrossValidationTestPartitionResults {
   learningRate: number;
   hidden: number[];
   network: NeuralNetwork;
+  error: number;
 }
 
 export class CrossValidate {
