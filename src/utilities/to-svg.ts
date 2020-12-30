@@ -3,7 +3,7 @@ import { recurrentZeros } from '../layer/recurrent-zeros';
 import { NeuralNetwork } from '../neural-network';
 import { Recurrent } from '../recurrent';
 import { RNN } from '../recurrent/rnn';
-import RNNTimeStep from '../recurrent/rnn-time-step';
+import { RNNTimeStep } from '../recurrent/rnn-time-step';
 
 const recurrentJSONTypes = [
   'RNN',

@@ -1,25 +1,27 @@
-const { GRU } = require('../../src/recurrent/gru');
-const RNN = require('../../src/recurrent/rnn');
-const { DataFormatter } = require('../../src/utilities/data-formatter');
-const istanbulLinkerUtil = require('../istanbul-linker-util');
+import { GRU } from '../../src/recurrent/gru';
+import { RNN, trainPattern } from '../../src/recurrent/rnn';
+import { DataFormatter } from '../../src/utilities/data-formatter';
+import { IMatrixJSON } from '../../src/recurrent/matrix';
 
 describe('GRU', () => {
-  describe('getModel', () => {
+  describe('.getHiddenLayer()', () => {
     test('overrides RNN', () => {
-      expect(typeof GRU.getModel).toEqual('function');
-      expect(GRU.getModel).not.toEqual(RNN.getModel);
+      expect(typeof GRU.prototype.getHiddenLayer).toEqual('function');
+      expect(GRU.prototype.getHiddenLayer).not.toEqual(
+        RNN.prototype.getHiddenLayer
+      );
     });
   });
-  describe('getEquation', () => {
+  describe('.getEquation()', () => {
     test('overrides RNN', () => {
-      expect(typeof GRU.getEquation).toEqual('function');
-      expect(GRU.getEquation).not.toEqual(RNN.getEquation);
+      expect(typeof GRU.prototype.getEquation).toEqual('function');
+      expect(GRU.prototype.getEquation).not.toEqual(RNN.prototype.getEquation);
     });
   });
   describe('math', () => {
     it('can predict math', () => {
       const net = new GRU();
-      const items = new Set([]);
+      const items = new Set<string>([]);
       for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
           items.add(`${i}+${j}=${i + j}`);
@@ -46,7 +48,8 @@ describe('GRU', () => {
         ],
         { iterations: 100 }
       );
-      expect(net.run('hello world')).toBe('comment');
+      const result = net.run('hello world');
+      expect(result).toBe('comment');
       done();
     });
 
@@ -57,19 +60,17 @@ describe('GRU', () => {
         inputSize: 3,
         inputRange: dataFormatter.characters.length,
         outputSize: 3,
+        dataFormatter,
       });
       net.initialize();
       for (let i = 0; i < 100; i++) {
-        net.trainPattern(dataFormatter.toIndexes(phrase));
+        trainPattern(net, dataFormatter.toIndexes(phrase));
         // if (i % 10 === 0) {
         //   console.log(dataFormatter.toCharacters(net.run()).join(''));
         // }
       }
-      expect(
-        dataFormatter
-          .toCharacters(net.run(dataFormatter.toIndexes('b')))
-          .join('')
-      ).toBe('ob');
+      const result = net.run(dataFormatter.toIndexes('b'));
+      expect(result).toBe('ob');
       done();
     });
 
@@ -81,15 +82,16 @@ describe('GRU', () => {
         inputSize: 40,
         inputRange: dataFormatter.characters.length,
         outputSize: 40,
+        dataFormatter,
       });
       net.initialize();
       for (let i = 0; i < 200; i++) {
-        net.trainPattern(phraseAsIndices);
+        trainPattern(net, phraseAsIndices);
         // if (i % 10 === 0) {
         //   console.log(dataFormatter.toCharacters(net.run()).join(''));
         // }
       }
-      expect(dataFormatter.toCharacters(net.run()).join('')).toBe(phrase);
+      expect(net.run()).toBe(phrase);
       done();
     });
   });
@@ -104,7 +106,7 @@ describe('GRU', () => {
         });
         const json = net.toJSON();
 
-        function compare(left, right) {
+        function compare(left: IMatrixJSON, right: IMatrixJSON) {
           left.weights.forEach((value, i) => {
             expect(value).toBe(right.weights[i]);
           });
@@ -115,6 +117,7 @@ describe('GRU', () => {
         compare(json.input, net.model.input);
         net.model.hiddenLayers.forEach((layer, i) => {
           for (const p in layer) {
+            if (!layer.hasOwnProperty(p)) continue;
             compare(json.hiddenLayers[i][p], layer[p]);
           }
         });
@@ -137,29 +140,38 @@ describe('GRU', () => {
         const clone = new GRU();
         clone.fromJSON(JSON.parse(jsonString));
         expect(jsonString).toEqual(JSON.stringify(clone.toJSON()));
-        expect(clone.inputSize).toEqual(6);
-        expect(clone.inputRange).toEqual(dataFormatter.characters.length);
-        expect(clone.outputSize).toEqual(dataFormatter.characters.length);
+        expect(clone.options.inputSize).toEqual(6);
+        expect(clone.options.inputRange).toEqual(
+          dataFormatter.characters.length
+        );
+        expect(clone.options.outputSize).toEqual(
+          dataFormatter.characters.length
+        );
       });
 
       it('can import model from json and train again', () => {
         const dataFormatter = new DataFormatter('abcdef'.split(''));
         const jsonString = JSON.stringify(
           new GRU({
-            inputSize: 6, // <- length
+            inputSize: dataFormatter.characters.length, // <- length
             inputRange: dataFormatter.characters.length,
             outputSize: dataFormatter.characters.length, // <- length
+            dataFormatter,
           }).toJSON()
         );
 
         const clone = new GRU();
         clone.fromJSON(JSON.parse(jsonString));
-        clone.trainPattern([0, 1, 2, 3, 4, 5]);
+        trainPattern(clone, [0, 1, 2, 3, 4, 5]);
 
         expect(jsonString).not.toEqual(JSON.stringify(clone.toJSON()));
-        expect(clone.inputSize).toEqual(6);
-        expect(clone.inputRange).toEqual(dataFormatter.characters.length);
-        expect(clone.outputSize).toEqual(dataFormatter.characters.length);
+        expect(clone.options.inputSize).toEqual(7); // 6 + also unrecognized
+        expect(clone.options.inputRange).toEqual(
+          dataFormatter.characters.length
+        );
+        expect(clone.options.outputSize).toEqual(
+          dataFormatter.characters.length
+        );
       });
     });
   });
@@ -171,28 +183,26 @@ describe('GRU', () => {
         inputSize: 6,
         inputRange: dataFormatter.characters.length,
         outputSize: 6,
+        dataFormatter,
       });
       net.initialize();
       for (let i = 0; i < 100; i++) {
-        net.trainPattern(dataFormatter.toIndexes('hi mom!'));
+        trainPattern(net, dataFormatter.toIndexes('hi mom!'));
         // if (i % 10) {
         //   console.log(dataFormatter.toCharacters(net.run()).join(''));
         // }
       }
 
-      const lastOutput = dataFormatter.toCharacters(net.run()).join('');
-      expect(
-        dataFormatter
-          .toCharacters(net.toFunction(istanbulLinkerUtil)())
-          .join('')
-      ).toBe(lastOutput);
+      const lastOutput = net.run();
+      const fn = net.toFunction();
+      expect(fn()).toBe(lastOutput);
     });
 
     it('can include the DataFormatter', () => {
       const net = new GRU();
       net.train(['hi mom!'], { iterations: 100, log: true });
       const expected = net.run('hi ');
-      const newNet = net.toFunction(istanbulLinkerUtil);
+      const newNet = net.toFunction();
       const output = newNet('hi ');
       expect(output).toBe(expected);
     });

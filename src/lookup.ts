@@ -21,6 +21,13 @@ export interface ITrainingDatum {
   output: InputOutputValue | InputOutputValue[] | KernelOutput;
 }
 
+export type FormattableData =
+  | ITrainingDatum
+  | ITrainingDatum[]
+  | InputOutputValue
+  | InputOutputValue[]
+  | InputOutputValue[][];
+
 /* Functions for turning sparse hashes into arrays and vice versa */
 export const lookup = {
   /**
@@ -153,7 +160,7 @@ export const lookup = {
    * @param {Array} array
    * @returns {Object}
    */
-  toObject(lookup: INumberHash, array: number[]): INumberHash {
+  toObject(lookup: INumberHash, array: number[] | Float32Array): INumberHash {
     const object: INumberHash = {};
     for (const p in lookup) {
       if (!lookup.hasOwnProperty(p)) continue;
@@ -164,7 +171,7 @@ export const lookup = {
 
   toObjectPartial(
     lookup: INumberHash,
-    array: number[],
+    array: number[] | Float32Array,
     offset = 0,
     limit = 0
   ): INumberHash {
@@ -183,14 +190,7 @@ export const lookup = {
     return object;
   },
 
-  dataShape(
-    data:
-      | ITrainingDatum
-      | ITrainingDatum[]
-      | InputOutputValue
-      | InputOutputValue[]
-      | InputOutputValue[][]
-  ): string[] {
+  dataShape(data: FormattableData): string[] {
     const shape = [];
     let lastData:
       | InputOutputValue
@@ -201,7 +201,10 @@ export const lookup = {
       shape.push('datum');
       lastData = (data as ITrainingDatum).input;
     } else if (Array.isArray(data)) {
-      if ((data as ITrainingDatum[])[0].input) {
+      if (
+        (data as ITrainingDatum[])[0] &&
+        (data as ITrainingDatum[])[0].input
+      ) {
         shape.push('array', 'datum');
         lastData = (data as ITrainingDatum[])[0].input;
       } else if (Array.isArray(data[0])) {
@@ -225,7 +228,7 @@ export const lookup = {
       p = Object.keys(lastData)[0];
       if (
         Array.isArray(lastData) ||
-        (lastData as Float32Array).buffer instanceof ArrayBuffer
+        typeof (lastData as Float32Array).buffer === 'object'
       ) {
         shape.push('array');
         const possibleNumber:
@@ -237,7 +240,10 @@ export const lookup = {
         } else {
           lastData = possibleNumber;
         }
-      } else if (typeof lastData === 'object') {
+      } else if (
+        typeof lastData === 'object' &&
+        typeof (lastData as Float32Array).buffer !== 'object'
+      ) {
         shape.push('object');
         const possibleNumber:
           | number

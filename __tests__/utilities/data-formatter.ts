@@ -1,6 +1,4 @@
-import {
-  DataFormatter,
-} from '../../src/utilities/data-formatter';
+import { DataFormatter } from '../../src/utilities/data-formatter';
 
 describe('DataFormatter', () => {
   test('does not have zeros', () => {
@@ -223,21 +221,12 @@ describe('DataFormatter', () => {
   });
 
   test('when splitting values to input/output', () => {
-    const dataFormatter = DataFormatter.fromArrayInputOutput([{
-      input: [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        0,
-      ],
-      output: [0],
-    }]);
+    const dataFormatter = DataFormatter.fromArrayInputOutput([
+      {
+        input: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
+        output: [0],
+      },
+    ]);
     const indices = dataFormatter.toIndexesInputOutput(
       ['1', '2', '3', '4', '5'],
       ['1', '2', '3', '4', '5']
@@ -272,9 +261,7 @@ describe('DataFormatter', () => {
     test('handles data.input & data.output of string[]', () => {
       const dataFormatter = new DataFormatter();
       const formatDataInSpy = jest.spyOn(dataFormatter, 'formatDataIn');
-      dataFormatter.format([
-        { input: ['1', '2'], output: ['3', '4'] },
-      ]);
+      dataFormatter.format([{ input: ['1', '2'], output: ['3', '4'] }]);
       expect(formatDataInSpy).toBeCalledWith(['1', '2'], ['3', '4']);
     });
     test('handles data.input & data.output of number[]', () => {
@@ -375,4 +362,3 @@ describe('DataFormatter', () => {
     });
   });
 });
-

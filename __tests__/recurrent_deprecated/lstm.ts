@@ -1,26 +1,28 @@
-const { LSTM } = require('../../src/recurrent/lstm');
-const RNN = require('../../src/recurrent/rnn');
-const { DataFormatter } = require('../../src/utilities/data-formatter');
-const istanbulLinkerUtil = require('../istanbul-linker-util');
+import { LSTM } from '../../src/recurrent/lstm';
+import { RNN, trainPattern } from '../../src/recurrent/rnn';
+import { DataFormatter } from '../../src/utilities/data-formatter';
+import { IMatrixJSON } from '../../src/recurrent/matrix';
 
-describe('lstm', () => {
-  describe('getModel', () => {
+describe('LSTM', () => {
+  describe('.getHiddenLayer()', () => {
     test('overrides RNN', () => {
-      expect(typeof LSTM.getModel).toEqual('function');
-      expect(LSTM.getModel).not.toEqual(RNN.getModel);
+      expect(typeof LSTM.prototype.getHiddenLayer).toEqual('function');
+      expect(LSTM.prototype.getHiddenLayer).not.toEqual(
+        RNN.prototype.getHiddenLayer
+      );
     });
   });
   describe('getEquation', () => {
     test('overrides RNN', () => {
-      expect(typeof LSTM.getEquation).toEqual('function');
-      expect(LSTM.getEquation).not.toEqual(RNN.getEquation);
+      expect(typeof LSTM.prototype.getEquation).toEqual('function');
+      expect(LSTM.prototype.getEquation).not.toEqual(RNN.prototype.getEquation);
     });
   });
 
   describe('math', () => {
     it('can predict math', () => {
       const net = new LSTM();
-      const items = new Set([]);
+      const items = new Set<string>([]);
       for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
           items.add(`${i}+${j}=${i + j}`);
@@ -45,7 +47,7 @@ describe('lstm', () => {
         });
         const json = net.toJSON();
 
-        function compare(left, right) {
+        function compare(left: IMatrixJSON, right: IMatrixJSON) {
           left.weights.forEach((value, i) => {
             expect(value).toBe(right.weights[i]);
           });
@@ -79,9 +81,9 @@ describe('lstm', () => {
         clone.fromJSON(JSON.parse(jsonString));
 
         expect(jsonString).toBe(JSON.stringify(clone.toJSON()));
-        expect(clone.inputSize).toBe(6);
-        expect(clone.inputRange).toBe(dataFormatter.characters.length);
-        expect(clone.outputSize).toBe(dataFormatter.characters.length);
+        expect(clone.options.inputSize).toBe(6);
+        expect(clone.options.inputRange).toBe(dataFormatter.characters.length);
+        expect(clone.options.outputSize).toBe(dataFormatter.characters.length);
       });
 
       it('can import model from json and train again', () => {
@@ -96,12 +98,12 @@ describe('lstm', () => {
 
         const clone = new LSTM();
         clone.fromJSON(JSON.parse(jsonString));
-        clone.trainPattern([0, 1, 2, 3, 4, 5]);
+        trainPattern(clone, [0, 1, 2, 3, 4, 5]);
 
         expect(jsonString).not.toEqual(JSON.stringify(clone.toJSON()));
-        expect(clone.inputSize).toBe(6);
-        expect(clone.inputRange).toBe(dataFormatter.characters.length);
-        expect(clone.outputSize).toBe(dataFormatter.characters.length);
+        expect(clone.options.inputSize).toBe(6);
+        expect(clone.options.inputRange).toBe(dataFormatter.characters.length);
+        expect(clone.options.outputSize).toBe(dataFormatter.characters.length);
       });
     });
   });
@@ -113,28 +115,24 @@ describe('lstm', () => {
         inputSize: 7,
         inputRange: dataFormatter.characters.length,
         outputSize: 7,
+        dataFormatter,
       });
       net.initialize();
       for (let i = 0; i < 100; i++) {
-        net.trainPattern(dataFormatter.toIndexes('hi mom!'));
+        trainPattern(net, dataFormatter.toIndexes('hi mom!'));
         // if (i % 10) {
         //   console.log(dataFormatter.toCharacters(net.run()).join(''));
         // }
       }
 
-      const lastOutput = dataFormatter.toCharacters(net.run()).join('');
+      const lastOutput = net.run();
       expect(lastOutput).toBe('hi mom!');
-      expect(
-        dataFormatter
-          .toCharacters(net.toFunction(istanbulLinkerUtil)())
-          .join('')
-      ).toBe(lastOutput);
     });
     it('can include the DataFormatter', () => {
       const net = new LSTM();
       net.train(['hi mom!'], { iterations: 100, log: true });
       const expected = net.run('hi ');
-      const newNet = net.toFunction(istanbulLinkerUtil);
+      const newNet = net.toFunction();
       const output = newNet('hi ');
       expect(output).toBe(expected);
     });
@@ -170,26 +168,26 @@ describe('lstm', () => {
     it('can predict a string from index in 100 trainings', () => {
       const net = new LSTM();
       const transactionTypes = {
-        credit: 0,
-        debit: 1,
-        personalCard: 2,
-        other: 3,
+        credit: '0',
+        debit: '1',
+        personalCard: '2',
+        other: '3',
       };
       const trainingData = [
         {
-          input: [transactionTypes.credit],
+          input: transactionTypes.credit,
           output: 'credit',
         },
         {
-          input: [transactionTypes.debit],
+          input: transactionTypes.debit,
           output: 'debit',
         },
         {
-          input: [transactionTypes.personalCard],
+          input: transactionTypes.personalCard,
           output: 'personal card',
         },
         {
-          input: [transactionTypes.other],
+          input: transactionTypes.other,
           output: 'other',
         },
       ];
