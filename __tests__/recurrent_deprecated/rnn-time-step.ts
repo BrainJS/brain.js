@@ -2364,8 +2364,8 @@ describe('RNNTimeStep', () => {
       const fn = net.toFunction();
       expect(closeToFive.toFixed(1)).toBe('0.5');
       expect(closeToOne.toFixed(1)).toBe('0.1');
-      expect(fn([0.1, 0.2, 0.3, 0.4])).toBe(closeToFive);
-      expect(fn([0.5, 0.4, 0.3, 0.2])).toBe(closeToOne);
+      expect(fn([0.1, 0.2, 0.3, 0.4])).toBeCloseTo(closeToFive);
+      expect(fn([0.5, 0.4, 0.3, 0.2])).toBeCloseTo(closeToOne);
     });
     it('processes array,array same as net', () => {
       const net = new LSTMTimeStep({

@@ -58,6 +58,7 @@ export class Add extends Operator {
   }
 
   learn(): void {}
+
 }
 
 export function add(

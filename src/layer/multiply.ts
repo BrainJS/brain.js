@@ -111,10 +111,10 @@ export class Multiply extends Operator {
     });
   }
 
-  reuseKernels(layer: Multiply): void {
+  reuseKernels(layer: ILayer): void {
     super.reuseKernels(layer);
-    this.compareKernel1 = layer.compareKernel1;
-    this.compareKernel2 = layer.compareKernel2;
+    this.compareKernel1 = (layer as Multiply).compareKernel1;
+    this.compareKernel2 = (layer as Multiply).compareKernel2;
   }
 
   predict(): void {

@@ -12,7 +12,7 @@ import {
 } from './lookup';
 import * as praxis from './praxis';
 import { IPraxis, IPraxisSettings } from './praxis/base-praxis';
-import flattenLayers from './utilities/flatten-layers';
+import { flattenLayers } from './utilities/flatten-layers';
 import { makeKernel, release } from './utilities/kernel';
 import { layerFromJSON } from './utilities/layer-from-json';
 import { LookupTable } from './utilities/lookup-table';
@@ -43,7 +43,7 @@ interface IFeedForwardStatus {
 export type Log = (status: string) => void;
 export type FeedForwardCallback = (status: IFeedForwardStatus) => void;
 
-interface IFeedForwardTrainingOptions {
+export interface IFeedForwardTrainingOptions {
   iterations?: number;
   errorThresh?: number;
   log?: boolean | Log;
@@ -55,7 +55,7 @@ interface IFeedForwardTrainingOptions {
   timeout?: number;
 }
 
-interface IFeedForwardOptions {
+export interface IFeedForwardOptions {
   learningRate?: number;
   binaryThresh?: number;
   hiddenLayers?: Array<
@@ -76,7 +76,7 @@ interface IFeedForwardOptions {
   outputLayerIndex?: number;
 }
 
-interface IPreppedTrainingData {
+export interface IPreppedTrainingData {
   status: IFeedForwardStatus;
   preparedData: IFeedForwardGPUTrainingData[];
   endTime: number;

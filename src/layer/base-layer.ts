@@ -33,6 +33,7 @@ export interface ILayer {
   predictKernel: IKernelRunShortcut | null;
   compareKernel: IKernelRunShortcut | null;
   settings: Partial<ILayerSettings>;
+  reuseKernels: (layer: ILayer) => void;
   predict: (inputs?: KernelOutput) => void;
   compare: (targetValues?: KernelOutput) => void;
   learn: ((learningRate?: number) => void) | ((learningRate: number) => void);
