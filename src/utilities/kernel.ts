@@ -1,17 +1,17 @@
 import {
   GPU,
-  Input,
-  IKernelRunShortcut,
+  IConstantsThis,
+  IGPUKernelSettings,
   IKernelMapRunShortcut,
+  IKernelRunShortcut,
+  Input,
+  ISubKernelObject,
   KernelFunction,
+  KernelOutput,
   OutputDimensions,
   Texture,
-  ThreadKernelVariable,
-  KernelOutput,
-  IConstantsThis,
-  ISubKernelObject,
   ThreadFunction,
-  IGPUKernelSettings,
+  ThreadKernelVariable,
 } from 'gpu.js';
 
 let gpuInstance: GPU | null = null;
@@ -148,7 +148,7 @@ export function clone(value: KernelOutput): KernelOutput {
     return value.clone();
   }
 
-  if (Array.isArray(value)) {
+  if (Array.isArray(value) || value instanceof Float32Array) {
     if (typeof value[0] === 'number') {
       return value.slice(0);
     } else if (typeof value[0][0] === 'number') {
