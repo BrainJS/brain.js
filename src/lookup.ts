@@ -153,7 +153,7 @@ export const lookup = {
    * @param {Array} array
    * @returns {Object}
    */
-  toObject(lookup: INumberHash, array: number[]): INumberHash {
+  toObject(lookup: INumberHash, array: number[] | Float32Array): INumberHash {
     const object: INumberHash = {};
     for (const p in lookup) {
       if (!lookup.hasOwnProperty(p)) continue;
