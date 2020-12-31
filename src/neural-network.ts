@@ -234,9 +234,9 @@ export class NeuralNetwork {
 
   calculateDeltas: (input: number[]) => void = this._calculateDeltasSigmoid;
 
-  inputLookup: INumberHash;
+  inputLookup: INumberHash | null = null;
   inputLookupLength = -1;
-  outputLookup: INumberHash;
+  outputLookup: INumberHash | null = null;
   outputLookupLength = -1;
 
   activation: NeuralNetworkActivation = 'sigmoid';
@@ -1318,11 +1318,12 @@ export class NeuralNetwork {
    * @param {Function} [cb]
    * @returns {Function}
    */
-  toFunction(cb) {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  toFunction(cb: Function): Function {
     const { activation } = this;
     const { leakyReluAlpha } = this;
     let needsVar = false;
-    function nodeHandle(layers, layerNumber, nodeKey) {
+    const nodeHandle = (layers, layerNumber, nodeKey) => {
       if (layerNumber === 0) {
         return typeof nodeKey === 'string'
           ? `(input['${nodeKey}']||0)`
@@ -1344,7 +1345,6 @@ export class NeuralNetwork {
         }
       }
       result.push(')');
-
       switch (activation) {
         case 'sigmoid':
           return `1/(1+1/Math.exp(${result.join('')}))`;
@@ -1366,15 +1366,15 @@ export class NeuralNetwork {
     }
 
     const { layers } = this.toJSON();
-    const layersAsMath = [];
+    const layersAsMath: string[] = [];
     let result;
     for (const i in layers[layers.length - 1]) {
       layersAsMath.push(nodeHandle(layers, layers.length - 1, i));
     }
     if (this.outputLookup) {
-      result = `{${Object.keys(this.outputLookup).map(
-        (key, i) => `'${key}':${layersAsMath[i]}`
-      )}}`;
+      result = `{${Object.keys(this.outputLookup)
+        .map((key, i) => `'${key}':${layersAsMath[i]}`)
+        .join(',')}}`;
     } else {
       result = `[${layersAsMath.join(',')}]`;
     }
