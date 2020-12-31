@@ -1,8 +1,8 @@
-import { Negative, predict } from '../../src/layer/negative';
-import { mockLayer } from '../test-utils';
-import { makeKernel } from '../../src/utilities/kernel';
-import { input } from '../../src/layer/input';
 import { gpuMock } from 'gpu-mock.js';
+import { input } from '../../src/layer/input';
+import { Negative, predict } from '../../src/layer/negative';
+import { makeKernel } from '../../src/utilities/kernel';
+import { mockLayer } from '../test-utils';
 jest.mock('../../src/utilities/kernel', () => {
   return {
     makeKernel: jest.fn((fn, settings) => gpuMock(fn, settings)),
@@ -19,6 +19,7 @@ describe('Negative Layer', () => {
       validateSpy.mockRestore();
     });
     it('calls .validate()', () => {
+      // eslint-disable-next-line no-new
       new Negative(mockLayer({ width: 1, height: 1, depth: 0 }));
       expect(validateSpy).toHaveBeenCalled();
     });

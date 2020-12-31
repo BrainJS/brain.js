@@ -15,12 +15,7 @@ describe('flattenLayers', () => {
     layer3.inputLayer = layer2;
     layer2.inputLayer = layer1;
 
-    expect(flattenLayers([layer4])).toEqual([
-      layer1,
-      layer2,
-      layer3,
-      layer4,
-    ]);
+    expect(flattenLayers([layer4])).toEqual([layer1, layer2, layer3, layer4]);
   });
   it('flattens nested layers from inputLayer1 and inputLayer2 properties', () => {
     const layer1 = mockLayer({ width: 1, height: 1, name: 'layer1' });
@@ -31,11 +26,6 @@ describe('flattenLayers', () => {
     layer4.inputLayer2 = layer3;
     layer2.inputLayer = layer1;
 
-    expect(flattenLayers([layer4])).toEqual([
-      layer1,
-      layer2,
-      layer3,
-      layer4,
-    ]);
+    expect(flattenLayers([layer4])).toEqual([layer1, layer2, layer3, layer4]);
   });
 });

@@ -1,13 +1,13 @@
+import { IMatrixJSON } from '../../src/recurrent/matrix';
+import { Equation } from '../../src/recurrent/matrix/equation';
 import {
-  RNN,
   defaults,
-  trainPattern,
+  RNN,
   RNNFunction,
+  trainPattern,
 } from '../../src/recurrent/rnn';
 import { DataFormatter } from '../../src/utilities/data-formatter';
 import { allMatrices } from '../test-utils';
-import { Equation } from '../../src/recurrent/matrix/equation';
-import { IMatrixJSON } from '../../src/recurrent/matrix';
 
 function notZero(v: number) {
   return v !== 0;
@@ -304,11 +304,9 @@ describe('RNN', () => {
 
       net.model.equations.forEach((equation) => {
         equation.states.forEach((state) => {
-          if (state.left && state.left.deltas) state.left.deltas.some(notZero);
-          if (state.right && state.right.deltas)
-            state.right.deltas.some(notZero);
-          if (state.product && state.product.deltas)
-            state.product.deltas.some(notZero);
+          if (state.left?.deltas) state.left.deltas.some(notZero);
+          if (state.right?.deltas) state.right.deltas.some(notZero);
+          if (state.product?.deltas) state.product.deltas.some(notZero);
         });
       });
     });

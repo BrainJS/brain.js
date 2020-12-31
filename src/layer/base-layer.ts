@@ -229,7 +229,7 @@ export class BaseLayer implements ILayer {
           `${layer.constructor.name}.compareKernel is not reusable, set kernel.immutable = true`
         );
       }
-      this.compareKernel = layer.compareKernel as IKernelRunShortcut;
+      this.compareKernel = layer.compareKernel;
     }
     this.praxis = layer.praxis;
   }
