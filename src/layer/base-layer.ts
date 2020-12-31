@@ -215,7 +215,7 @@ export class BaseLayer implements ILayer {
         `${this.constructor.name} kernel width mismatch ${layer.height} is not ${this.height}`
       );
     }
-    if (layer.hasOwnProperty('predictKernel')) {
+    if (layer.hasOwnProperty('predictKernel') && layer.predictKernel !== null) {
       if (!(layer.predictKernel as Kernel).immutable) {
         throw new Error(
           `${layer.constructor.name}.predictKernel is not reusable, set kernel.immutable = true`
@@ -223,7 +223,7 @@ export class BaseLayer implements ILayer {
       }
       this.predictKernel = layer.predictKernel;
     }
-    if (layer.hasOwnProperty('compareKernel')) {
+    if (layer.hasOwnProperty('compareKernel') && layer.compareKernel !== null) {
       if (!(layer.compareKernel as Kernel).immutable) {
         throw new Error(
           `${layer.constructor.name}.compareKernel is not reusable, set kernel.immutable = true`

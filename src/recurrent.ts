@@ -16,11 +16,11 @@ import {
   FeedForward,
   IFeedForwardOptions,
   IFeedForwardTrainingOptions,
-  IPreppedTrainingData,
+  ITrainingStatus,
 } from './feed-forward';
 import { release, clone } from './utilities/kernel';
 import { ILayer, ILayerSettings } from './layer/base-layer';
-import { Input, KernelOutput } from 'gpu.js';
+import { Input, KernelOutput, Texture } from 'gpu.js';
 
 export interface IRecurrentTrainingOptions
   extends IFeedForwardTrainingOptions {}
@@ -35,6 +35,12 @@ export interface IRecurrentOptions extends IFeedForwardOptions {
       index: number
     ) => ILayer
   >;
+}
+
+export interface IRecurrentPreppedTrainingData {
+  status: ITrainingStatus;
+  preparedData: KernelOutput[];
+  endTime: number;
 }
 
 export class Recurrent extends FeedForward {
@@ -182,7 +188,6 @@ export class Recurrent extends FeedForward {
   }
 
   initialize(): void {
-    this.layers = [];
     this._outputConnection = new RecurrentConnection();
     const { inputLayer, hiddenLayers, outputLayer } = this._connectLayers();
     const layerSet = flattenLayers([inputLayer, ...hiddenLayers, outputLayer]);
@@ -200,7 +205,9 @@ export class Recurrent extends FeedForward {
     const layers = this._connectLayersDeep();
     for (let i = 0; i < layers.length; i++) {
       const layer = layers[i];
-      layer.reuseKernels(this._layerSets[0][i]);
+      layer.setupKernels(true);
+      // TODO: enable this?
+      // layer.reuseKernels(this._layerSets[0][i]);
     }
     this._layerSets.push(layers);
   }
@@ -212,6 +219,8 @@ export class Recurrent extends FeedForward {
     return super.run(input) as number[];
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   runInput(input: Float32Array): KernelOutput | Input {
     while (this._layerSets.length < input.length) {
       this.initializeDeep();
@@ -243,17 +252,33 @@ export class Recurrent extends FeedForward {
     return formattedData;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   _prepTraining(
     data: Float32Array[],
     options: Partial<IRecurrentTrainingOptions>
-  ): IPreppedTrainingData {
-    const stats = super._prepTraining(data, options);
+  ): IRecurrentPreppedTrainingData {
+    this._updateTrainingOptions(options);
+    const endTime = this.trainOpts.timeout
+      ? Date.now() + this.trainOpts.timeout
+      : 0;
 
-    this.verifyIsInitialized(data);
+    const status = {
+      error: 1,
+      iterations: 0,
+    };
 
-    return stats;
+    this.verifyIsInitialized();
+
+    return {
+      preparedData: this.transferData(data),
+      status,
+      endTime,
+    };
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   _calculateTrainingError(data: Float32Array[]): number {
     if (!this.meanSquaredError) {
       throw new Error('this.meanSquaredError not setup');
@@ -268,14 +293,16 @@ export class Recurrent extends FeedForward {
     }
     const result = this.meanSquaredError.divide(data.length, sum);
     release(sum);
-    if (result.toArray) {
-      const resultArray = result.toArray();
+    if (result instanceof Texture) {
+      const resultArray = result.toArray() as number[];
       return resultArray[0];
     }
-    return result[0];
+    return (result as number[])[0];
   }
 
   // TODO: more types
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   formatData(data: Float32Array): Float32Array {
     return data;
   }
@@ -299,16 +326,20 @@ export class Recurrent extends FeedForward {
   adjustWeights(): void {
     const { _model } = this;
     for (let i = 0; i < _model.length; i++) {
-      _model[i].learn(this.options.learningRate);
+      _model[i].learn(this.options.learningRate ?? 0);
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   _trainPatterns(data: Float32Array[]): void {
     for (let i = 0; i < data.length; ++i) {
       this._trainPattern(data[i], false);
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   _trainPattern(
     input: Float32Array,
     logErrorRate: boolean

@@ -39,7 +39,7 @@ export class Input extends EntryPoint {
   }
 
   reuseKernels(layer: ILayer): void {
-    super.reuseKernels(layer);
+    // super.reuseKernels(layer);
     this.reshapeInput = (layer as Input).reshapeInput;
   }
 

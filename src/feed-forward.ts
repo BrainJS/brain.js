@@ -35,13 +35,13 @@ export interface IFeedForwardGPUTrainingData {
   output: KernelOutput;
 }
 
-interface IFeedForwardStatus {
+export interface ITrainingStatus {
   iterations: number;
   error: number;
 }
 
 export type Log = (status: string) => void;
-export type FeedForwardCallback = (status: IFeedForwardStatus) => void;
+export type FeedForwardCallback = (status: ITrainingStatus) => void;
 
 export interface IFeedForwardTrainingOptions {
   iterations?: number;
@@ -76,8 +76,8 @@ export interface IFeedForwardOptions {
   outputLayerIndex?: number;
 }
 
-export interface IPreppedTrainingData {
-  status: IFeedForwardStatus;
+export interface IFeedForwardPreppedTrainingData {
+  status: ITrainingStatus;
   preparedData: IFeedForwardGPUTrainingData[];
   endTime: number;
 }
@@ -353,7 +353,7 @@ export class FeedForward<
   train(
     data: Array<IFeedForwardTrainingData<InputType, OutputType>>,
     options: Partial<IFeedForwardTrainingOptions> = {}
-  ): IFeedForwardStatus {
+  ): ITrainingStatus {
     const { preparedData, status, endTime } = this._prepTraining(data, options);
     let continueTicking = true;
     while (continueTicking) {
@@ -364,7 +364,7 @@ export class FeedForward<
 
   _trainingTick(
     preparedData: IFeedForwardGPUTrainingData[],
-    status: IFeedForwardStatus,
+    status: ITrainingStatus,
     endTime: number
   ): boolean {
     const trainOpts = this.trainOpts;
@@ -407,7 +407,7 @@ export class FeedForward<
   _prepTraining(
     data: Array<IFeedForwardTrainingData<InputType, OutputType>>,
     options: Partial<IFeedForwardTrainingOptions>
-  ): IPreppedTrainingData {
+  ): IFeedForwardPreppedTrainingData {
     this._updateTrainingOptions(options);
 
     const formattedData = this.formatData(data);
