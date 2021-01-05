@@ -142,7 +142,7 @@ describe('Recurrent Class: Unit', () => {
 
       net._calculateDeltas(Float32Array.from([1, 1]));
       // The last layer propagates delta from target, the last layer propagates zero
-      //TODO: fix
+      // TODO: fix
       // for (let i = 0; i < net._layerSets[0].length; i++) {
       //   expect(
       //     net._layerSets[0][i].deltas.every((row: number[]) =>

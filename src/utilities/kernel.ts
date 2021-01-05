@@ -1,17 +1,17 @@
 import {
   GPU,
-  Input,
-  IKernelRunShortcut,
+  IConstantsThis,
+  IGPUKernelSettings,
   IKernelMapRunShortcut,
+  IKernelRunShortcut,
+  Input,
+  ISubKernelObject,
   KernelFunction,
+  KernelOutput,
   OutputDimensions,
   Texture,
-  ThreadKernelVariable,
-  KernelOutput,
-  IConstantsThis,
-  ISubKernelObject,
   ThreadFunction,
-  IGPUKernelSettings,
+  ThreadKernelVariable,
 } from 'gpu.js';
 
 let gpuInstance: GPU | null = null;
