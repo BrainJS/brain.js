@@ -10,8 +10,6 @@ export function predict(this: IKernelFunctionThis, value: number[][]): number {
 const compare = predict;
 
 export class Transpose extends Modifier {
-  inputLayer: ILayer;
-
   get width(): number {
     return this.inputLayer.height;
   }
@@ -21,8 +19,7 @@ export class Transpose extends Modifier {
   }
 
   constructor(inputLayer: ILayer) {
-    super();
-    this.inputLayer = inputLayer;
+    super(inputLayer);
     this.validate();
   }
 

@@ -7,7 +7,6 @@ import { RecurrentInput } from '../../src/layer/recurrent-input';
 import { Recurrent } from '../../src/recurrent';
 import { Matrix } from '../../src/recurrent/matrix';
 import { setup, teardown } from '../../src/utilities/kernel';
-import { injectIstanbulCoverage } from '../test-utils';
 
 function copy2D(matrix: Partial<Matrix> & any[][]) {
   return matrix.map((row) => Float32Array.from(row));
@@ -18,7 +17,6 @@ describe('Recurrent Class: Unit', () => {
     setup(
       new GPU({
         mode: 'cpu',
-        onIstanbulCoverageVariable: injectIstanbulCoverage,
       })
     );
   });

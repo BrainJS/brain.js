@@ -147,7 +147,9 @@ export function clone(value: KernelOutput): KernelOutput {
   if (value instanceof Texture) {
     return value.clone();
   }
-
+  if (value instanceof Float32Array) {
+    return value.slice(0);
+  }
   if (Array.isArray(value)) {
     if (typeof value[0] === 'number') {
       return value.slice(0);
