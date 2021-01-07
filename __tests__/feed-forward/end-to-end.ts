@@ -7,7 +7,7 @@ import { feedForward as feedForwardLayer } from '../../src/layer/feed-forward';
 import { momentumRootMeanSquaredPropagation } from '../../src/praxis';
 import { zeros2D } from '../../src/utilities/zeros-2d';
 import { setup, teardown } from '../../src/utilities/kernel';
-import { injectIstanbulCoverage, mockPraxis } from '../test-utils';
+import { mockPraxis } from '../test-utils';
 import { ILayer, ILayerSettings } from '../../src/layer/base-layer';
 import { IPraxis } from '../../src/praxis/base-praxis';
 
@@ -35,13 +35,13 @@ describe('FeedForward Class: End to End', () => {
     function setupTwinXORNetworks(useDecimals: boolean) {
       const standardNet = new NeuralNetwork();
       const ffNet = new FeedForward({
-        inputLayer: () => input({ height: 2, title: 'input' }),
+        inputLayer: () => input({ height: 2, id: 'input' }),
         hiddenLayers: [
           (inputLayer) => arthurFeedForward({ height: 3 }, inputLayer),
           (inputLayer) => arthurFeedForward({ height: 1 }, inputLayer),
         ],
         outputLayer: (inputLayer) =>
-          target({ height: 1, title: 'output' }, inputLayer),
+          target({ height: 1, id: 'output' }, inputLayer),
       });
 
       ffNet.initialize();
@@ -52,8 +52,8 @@ describe('FeedForward Class: End to End', () => {
 
       // set both nets exactly the same, then train them once, and compare
       const ffNetLayers = ffNet.layers as ILayer[];
-      const biasLayers = ffNetLayers.filter((l) => l.title === 'biases');
-      const weightLayers = ffNetLayers.filter((l) => l.title === 'weights');
+      const biasLayers = ffNetLayers.filter((l) => l.id === 'biases');
+      const weightLayers = ffNetLayers.filter((l) => l.id === 'weights');
       const sigmoidLayers = ffNetLayers.filter((l) => l instanceof Sigmoid);
       const targetLayer = ffNetLayers[ffNetLayers.length - 1];
 
@@ -335,7 +335,7 @@ describe('FeedForward Class: End to End', () => {
       // const errors: number[] = [];
       const net = new FeedForward({
         initPraxis: (layer: ILayer): IPraxis => {
-          switch (layer.title) {
+          switch (layer.id) {
             case 'biases':
               return momentumRootMeanSquaredPropagation(layer, {
                 decayRate: 0.29,

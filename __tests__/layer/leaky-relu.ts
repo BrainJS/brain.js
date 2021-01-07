@@ -13,7 +13,6 @@ import {
   expectFunction,
   mockLayer,
   mockPraxis,
-  injectIstanbulCoverage,
 } from '../test-utils';
 import { makeKernel, setup, teardown } from '../../src/utilities/kernel';
 

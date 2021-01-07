@@ -166,18 +166,6 @@ export function expectFunction(source: string, fn: Function): void {
   expect(source.toString().split(/\n/g)[0]).toBe(fn.toString().split(/\n/g)[0]);
 }
 
-export function injectIstanbulCoverage(name: string, kernel: Kernel): void {
-  const data = getFileCoverageDataByName(name);
-  if (!data) {
-    throw new Error(`Could not find istanbul identifier ${name}`);
-  }
-  const { path } = data;
-  const variable = `const ${name} = __coverage__['${path}'];\n`;
-  if (!kernel.hasPrependString(variable)) {
-    kernel.prependString(variable);
-  }
-}
-
 export class TestLayer extends BaseLayer {
   get width(): number {
     return this.settings.width as number;

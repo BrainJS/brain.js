@@ -4,7 +4,6 @@ import { ArthurDeviationWeights } from '../../../src/praxis/arthur-deviation-wei
 import { random } from '../../../src/layer/random';
 import { NeuralNetwork } from '../../../src/neural-network';
 import { setup, teardown } from '../../../src/utilities/kernel';
-import { injectIstanbulCoverage } from '../../test-utils';
 
 describe('ArthurDeviationWeights Class: End to End', () => {
   beforeEach(() => {

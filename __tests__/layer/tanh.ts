@@ -15,7 +15,6 @@ import {
   mockPraxis,
   shave2D,
   shave3D,
-  injectIstanbulCoverage,
 } from '../test-utils';
 import { makeKernel, setup, teardown } from '../../src/utilities/kernel';
 

@@ -10,7 +10,7 @@ import {
 } from '../../src/layer/multiply';
 import { Random } from '../../src/layer/random';
 import { setup, teardown } from '../../src/utilities/kernel';
-import { injectIstanbulCoverage, mockLayer, mockPraxis } from '../test-utils';
+import { mockLayer, mockPraxis } from '../test-utils';
 
 describe('Multiply Layer', () => {
   beforeEach(() => {

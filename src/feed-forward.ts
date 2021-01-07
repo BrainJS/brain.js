@@ -699,6 +699,8 @@ export class FeedForward<
       ? layerFromJSON(jsonLayers[0]) ?? getLayer(jsonLayers[0])
       : layerFromJSON(jsonLayers[0]);
 
+    if (!inputLayer) throw new Error('unable to find layer');
+
     layers.push(inputLayer);
 
     for (let i = 1; i < jsonLayers.length; i++) {
@@ -708,12 +710,12 @@ export class FeedForward<
         if (!inputLayer1) {
           throw new Error('inputLayer1 not found');
         }
-        layers.push(
-          getLayer
-            ? layerFromJSON(jsonLayer, inputLayer1) ??
-                getLayer(jsonLayer, inputLayer1)
-            : layerFromJSON(jsonLayer, inputLayer1)
-        );
+        const layer = getLayer
+          ? layerFromJSON(jsonLayer, inputLayer1) ??
+            getLayer(jsonLayer, inputLayer1)
+          : layerFromJSON(jsonLayer, inputLayer1);
+        if (!layer) throw new Error('unable to find layer');
+        layers.push(layer);
       } else {
         if (typeof jsonLayer.inputLayer1Index !== 'number') {
           throw new Error(
@@ -737,12 +739,13 @@ export class FeedForward<
             `Cannot create network from provided JSON. layer of index ${jsonLayer.inputLayer2Index} not found.`
           );
 
-        layers.push(
-          getLayer
-            ? layerFromJSON(jsonLayer, inputLayer) ??
-                getLayer(jsonLayer, inputLayer1, inputLayer2)
-            : layerFromJSON(jsonLayer, inputLayer)
-        );
+        const layer = getLayer
+          ? layerFromJSON(jsonLayer, inputLayer) ??
+            getLayer(jsonLayer, inputLayer1, inputLayer2)
+          : layerFromJSON(jsonLayer, inputLayer);
+
+        if (!layer) throw new Error('unable to find layer');
+        layers.push(layer);
       }
     }
 

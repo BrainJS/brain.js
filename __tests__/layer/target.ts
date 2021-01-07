@@ -2,7 +2,7 @@ import { GPU } from 'gpu.js';
 
 import { compare1D, compare2D, Target } from '../../src/layer/target';
 import { setup, teardown, makeKernel } from '../../src/utilities/kernel';
-import { injectIstanbulCoverage, mockLayer } from '../test-utils';
+import { mockLayer } from '../test-utils';
 
 jest.mock('../../src/utilities/kernel', () => {
   return {

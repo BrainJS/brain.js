@@ -619,7 +619,7 @@ describe('FeedForward Class: Unit', () => {
         }
       );
 
-      const layers = net.layers as ILayer[];
+      const layers = net.options.layers as ILayer[];
       expect(layers.map((l) => l instanceof TestLayer)).toEqual([
         true,
         true,
@@ -704,7 +704,7 @@ describe('FeedForward Class: Unit', () => {
         }
       );
 
-      const layers = net.layers as ILayer[];
+      const layers = net.options.layers as ILayer[];
       expect(layers.length).toBe(3);
       expect(layers[0] instanceof TestLayer).toBeTruthy();
       expect(layers[0] instanceof TestLayer).toBeTruthy();
