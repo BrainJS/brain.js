@@ -20,7 +20,6 @@ import {
   predict2D,
   predict3D,
 } from '../../src/layer/soft-max';
-import { injectIstanbulCoverage } from '../test-utils';
 
 describe('SoftMax', () => {
   beforeEach(() => {

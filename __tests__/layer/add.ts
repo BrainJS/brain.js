@@ -9,7 +9,7 @@ import {
   release,
 } from '../../src/utilities/kernel';
 import { checkSameSize } from '../../src/utilities/layer-size';
-import { injectIstanbulCoverage, mockLayer, mockPraxis } from '../test-utils';
+import { mockLayer, mockPraxis } from '../test-utils';
 
 jest.mock('../../src/utilities/layer-size');
 jest.mock('../../src/utilities/kernel', () => {

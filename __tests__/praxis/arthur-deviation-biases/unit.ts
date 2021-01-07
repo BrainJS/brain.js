@@ -5,7 +5,7 @@ import {
   arthurDeviationBiases,
   update,
 } from '../../../src/praxis/arthur-deviation-biases';
-import { shave, injectIstanbulCoverage } from '../../test-utils';
+import { shave } from '../../test-utils';
 import { setup, teardown } from '../../../src/utilities/kernel';
 
 describe('ArthurDeviationBiases Class: Unit', () => {

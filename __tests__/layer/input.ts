@@ -1,7 +1,6 @@
 import { GPU } from 'gpu.js';
 import { Input } from '../../src/layer/input';
 import { setup, teardown } from '../../src/utilities/kernel';
-import { injectIstanbulCoverage } from '../test-utils';
 
 describe('Input Layer', () => {
   beforeEach(() => {

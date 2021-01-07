@@ -9,7 +9,7 @@ import {
   compare3D,
 } from '../../src/layer/relu';
 import * as reluActivation from '../../src/activation/relu';
-import { mockLayer, mockPraxis, injectIstanbulCoverage } from '../test-utils';
+import { mockLayer, mockPraxis } from '../test-utils';
 import { makeKernel, setup, teardown } from '../../src/utilities/kernel';
 
 import { randos2D } from '../../src/utilities/randos';

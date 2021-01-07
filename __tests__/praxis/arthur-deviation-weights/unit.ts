@@ -8,7 +8,7 @@ import {
   updateChange,
 } from '../../../src/praxis/arthur-deviation-weights';
 import { setup, teardown } from '../../../src/utilities/kernel';
-import { injectIstanbulCoverage, shave } from '../../test-utils';
+import { shave } from '../../test-utils';
 
 describe('ArthurDeviationWeights Class: Unit', () => {
   beforeEach(() => {

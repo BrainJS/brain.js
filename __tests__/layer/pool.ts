@@ -2,7 +2,7 @@ import { GPU } from 'gpu.js';
 import { gpuMock } from 'gpu-mock.js';
 import { Pool, predict, compare, compare3D } from '../../src/layer/pool';
 import { setup, teardown } from '../../src/utilities/kernel';
-import { injectIstanbulCoverage, mockLayer } from '../test-utils';
+import { mockLayer } from '../test-utils';
 
 describe('Pool Layer', () => {
   beforeEach(() => {

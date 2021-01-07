@@ -16,7 +16,7 @@ import {
   makeKernel,
   makeKernelMap,
 } from '../../src/utilities/kernel';
-import { injectIstanbulCoverage, mockLayer } from '../test-utils';
+import { mockLayer } from '../test-utils';
 
 jest.mock('../../src/utilities/kernel');
 

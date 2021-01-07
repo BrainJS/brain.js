@@ -19,8 +19,8 @@ const getStringKeyValue = (
 export function layerFromJSON(
   jsonLayer: ILayerJSON,
   inputLayer1?: ILayer
-): ILayer {
-  // if (!layer.hasOwnProperty(jsonLayer.type)) return null;
+): ILayer | null {
+  if (!layer.hasOwnProperty(jsonLayer.type)) return null;
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   const Layer: Function = getStringKeyValue(

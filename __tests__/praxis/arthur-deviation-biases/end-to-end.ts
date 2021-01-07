@@ -4,7 +4,6 @@ import { ArthurDeviationBiases } from '../../../src/praxis/arthur-deviation-bias
 import { random } from '../../../src/layer/random';
 import { NeuralNetwork } from '../../../src/neural-network';
 import { setup, teardown } from '../../../src/utilities/kernel';
-import { injectIstanbulCoverage } from '../../test-utils';
 
 describe('ArthurDeviationBiases', () => {
   beforeEach(() => {

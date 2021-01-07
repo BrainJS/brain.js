@@ -8,7 +8,7 @@ import {
   compare,
 } from '../../src/layer/multiply-element';
 import { setup, teardown } from '../../src/utilities/kernel';
-import { injectIstanbulCoverage, mockLayer, mockTexture } from '../test-utils';
+import { mockLayer, mockTexture } from '../test-utils';
 import { ILayer } from '../../src/layer/base-layer';
 
 describe('MultiplyElement Layer', () => {
