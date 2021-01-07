@@ -20,7 +20,7 @@ import {
 } from './feed-forward';
 import { release, clone } from './utilities/kernel';
 import { ILayer, ILayerSettings } from './layer/base-layer';
-import { Input, KernelOutput, Texture } from 'gpu.js';
+import { KernelOutput, Texture, TextureArrayOutput } from 'gpu.js';
 
 export interface IRecurrentTrainingOptions
   extends IFeedForwardTrainingOptions {}
@@ -39,7 +39,7 @@ export interface IRecurrentOptions extends IFeedForwardOptions {
 
 export interface IRecurrentPreppedTrainingData {
   status: ITrainingStatus;
-  preparedData: KernelOutput[];
+  preparedData: KernelOutput[][];
   endTime: number;
 }
 
@@ -51,7 +51,7 @@ export class Recurrent extends FeedForward {
   _outputConnection: RecurrentConnection | null = null;
   _layerSets: ILayer[][] = [];
   _hiddenLayerOutputIndices: number[] = [];
-  _model: ILayer[] = [];
+  _model: ILayer[] | null = null;
 
   _connectLayers(): {
     inputLayer: ILayer;
@@ -212,23 +212,29 @@ export class Recurrent extends FeedForward {
     this._layerSets.push(layers);
   }
 
-  run(input: number[]): number[] {
-    while (this._layerSets.length <= input.length) {
-      this.initializeDeep();
-    }
-    return super.run(input) as number[];
-  }
-
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  runInput(input: Float32Array): KernelOutput | Input {
-    while (this._layerSets.length < input.length) {
+  run(inputs: KernelOutput[]): TextureArrayOutput {
+    while (this._layerSets.length <= inputs.length) {
       this.initializeDeep();
     }
-    const max = input.length - 1; // last output will be compared with last index
+    const result = this.runInputs(inputs);
+    if (result instanceof Texture) return result.toArray();
+    return result as TextureArrayOutput;
+  }
+
+  runInput(input: KernelOutput): KernelOutput {
+    throw new Error('use .runInputs()');
+  }
+
+  runInputs(inputs: KernelOutput[]): KernelOutput {
+    while (this._layerSets.length < inputs.length) {
+      this.initializeDeep();
+    }
+    const max = inputs.length - 1; // last output will be compared with last index
     for (let x = 0; x <= max; x++) {
       const layerSet = this._layerSets[x];
-      layerSet[0].predict([new Float32Array([input[x]])]);
+      layerSet[0].predict(inputs[x]);
       for (let i = 1; i < layerSet.length; i++) {
         layerSet[i].predict();
       }
@@ -236,7 +242,29 @@ export class Recurrent extends FeedForward {
     const lastLayerUsed = this._layerSets[max];
     const result = lastLayerUsed[lastLayerUsed.length - 1].weights;
     this.end();
-    return result;
+    return result as KernelOutput;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  train(
+    data: KernelOutput[][],
+    options: Partial<IRecurrentTrainingOptions> = {}
+  ): ITrainingStatus {
+    const { preparedData, status, endTime } = this._prepTraining(data, options);
+    let continueTicking = true;
+    const calculateError = (): number =>
+      this._calculateTrainingError(preparedData);
+    const trainPatters = (): void => this._trainPatterns(preparedData);
+    while (continueTicking) {
+      continueTicking = this._trainingTick(
+        status,
+        endTime,
+        calculateError,
+        trainPatters
+      );
+    }
+    return status;
   }
 
   end(): void {
@@ -248,14 +276,16 @@ export class Recurrent extends FeedForward {
     }
   }
 
-  transferData<T>(formattedData: T): T {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  transferData(formattedData: KernelOutput[][]): KernelOutput[][] {
     return formattedData;
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   _prepTraining(
-    data: Float32Array[],
+    data: KernelOutput[][],
     options: Partial<IRecurrentTrainingOptions>
   ): IRecurrentPreppedTrainingData {
     this._updateTrainingOptions(options);
@@ -279,7 +309,7 @@ export class Recurrent extends FeedForward {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  _calculateTrainingError(data: Float32Array[]): number {
+  _calculateTrainingError(data: KernelOutput[][]): number {
     if (!this.meanSquaredError) {
       throw new Error('this.meanSquaredError not setup');
     }
@@ -307,7 +337,9 @@ export class Recurrent extends FeedForward {
     return data;
   }
 
-  _calculateDeltas(target: Float32Array): void {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  _calculateDeltas(target: KernelOutput[]): void {
     const lastLayerSet = this._layerSets[this._layerSets.length - 1];
     // Iterate from the second to last layer backwards, propagating 0's
     for (let i = lastLayerSet.length - 2; i >= 0; i--) {
@@ -316,7 +348,7 @@ export class Recurrent extends FeedForward {
 
     for (let x = target.length - 2; x >= 0; x--) {
       const layerSet = this._layerSets[x];
-      layerSet[layerSet.length - 1].compare(new Float32Array([target[x + 1]]));
+      layerSet[layerSet.length - 1].compare(target[x + 1]);
       for (let i = layerSet.length - 2; i >= 0; i--) {
         layerSet[i].compare();
       }
@@ -324,7 +356,7 @@ export class Recurrent extends FeedForward {
   }
 
   adjustWeights(): void {
-    const { _model } = this;
+    const _model = this._model as ILayer[];
     for (let i = 0; i < _model.length; i++) {
       _model[i].learn(this.options.learningRate ?? 0);
     }
@@ -332,7 +364,7 @@ export class Recurrent extends FeedForward {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  _trainPatterns(data: Float32Array[]): void {
+  _trainPatterns(data: KernelOutput[][]): void {
     for (let i = 0; i < data.length; ++i) {
       this._trainPattern(data[i], false);
     }
@@ -341,14 +373,14 @@ export class Recurrent extends FeedForward {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   _trainPattern(
-    input: Float32Array,
+    inputs: KernelOutput[],
     logErrorRate: boolean
   ): KernelOutput | null {
     // forward propagate
-    this.runInput(input);
+    this.runInputs(inputs);
 
     // back propagate
-    this._calculateDeltas(input);
+    this._calculateDeltas(inputs);
     this.adjustWeights();
 
     if (logErrorRate) {
@@ -356,7 +388,7 @@ export class Recurrent extends FeedForward {
         throw new Error('this.meanSquaredError not setup');
       }
       let error: KernelOutput = new Float32Array(1);
-      for (let i = 0, max = input.length - 1; i < max; i++) {
+      for (let i = 0, max = inputs.length - 1; i < max; i++) {
         const layerSet = this._layerSets[i];
         const lastLayer = layerSet[layerSet.length - 1];
         const prevError: KernelOutput = error;
@@ -366,7 +398,7 @@ export class Recurrent extends FeedForward {
         );
         release(prevError);
       }
-      return clone(this.meanSquaredError.divide(input.length, error));
+      return clone(this.meanSquaredError.divide(inputs.length, error));
     }
     return null;
   }

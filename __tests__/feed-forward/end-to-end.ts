@@ -1,14 +1,10 @@
 import { GPU } from 'gpu.js';
 import { NeuralNetwork } from '../../src/neural-network';
 import { FeedForward } from '../../src/feed-forward';
-import { input } from '../../src/layer/input';
-import { output } from '../../src/layer/output';
-import { Target, target } from '../../src/layer/target';
-import { Sigmoid } from '../../src/layer/sigmoid';
+import { input, output, target, Target, Sigmoid, arthurFeedForward } from '../../src/layer';
 import { feedForward as feedForwardLayer } from '../../src/layer/feed-forward';
-import { arthurFeedForward } from '../../src/layer/arthur-feed-forward';
 
-import { momentumRootMeanSquaredPropagation } from '../../src/praxis/momentum-root-mean-squared-propagation';
+import { momentumRootMeanSquaredPropagation } from '../../src/praxis';
 import { zeros2D } from '../../src/utilities/zeros-2d';
 import { setup, teardown } from '../../src/utilities/kernel';
 import { injectIstanbulCoverage, mockPraxis } from '../test-utils';
@@ -29,19 +25,12 @@ describe('FeedForward Class: End to End', () => {
     setup(
       new GPU({
         mode: 'cpu',
-        onIstanbulCoverageVariable: injectIstanbulCoverage,
       })
     );
   });
   afterEach(() => {
     teardown();
   });
-  /**
-   *
-   * @param {FeedForward} ff
-   * @param {NeuralNetwork} net
-   * @param {String} layerName
-   */
   describe('when configured like NeuralNetwork', () => {
     function setupTwinXORNetworks(useDecimals: boolean) {
       const standardNet = new NeuralNetwork();
@@ -402,7 +391,7 @@ describe('FeedForward Class: End to End', () => {
     describe('on GPU', () => {
       if (!GPU.isGPUSupported) return;
       beforeEach(() => {
-        setup(new GPU({ mode: 'gpu', removeIstanbulCoverage: true }));
+        setup(new GPU({ mode: 'gpu' }));
       });
       afterEach(() => {
         teardown();

@@ -160,7 +160,6 @@ describe('Leaky Relu Layer', () => {
       setup(
         new GPU({
           mode: 'cpu',
-          onIstanbulCoverageVariable: injectIstanbulCoverage,
         })
       );
     });

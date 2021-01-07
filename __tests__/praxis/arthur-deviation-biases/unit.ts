@@ -13,7 +13,6 @@ describe('ArthurDeviationBiases Class: Unit', () => {
     setup(
       new GPU({
         mode: 'cpu',
-        onIstanbulCoverageVariable: injectIstanbulCoverage,
       })
     );
   });

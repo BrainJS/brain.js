@@ -87,7 +87,7 @@ describe('Recurrent Class: Unit', () => {
           )
         : [];
 
-      net.runInput(Float32Array.from([0, 1]));
+      net.runInputs([Float32Array.from([0, 1])]);
 
       if (!net._model) fail();
 
@@ -118,7 +118,7 @@ describe('Recurrent Class: Unit', () => {
 
       net.initialize();
       net.initializeDeep();
-      net.runInput(Float32Array.from([1, 1]));
+      net.runInputs([Float32Array.from([1, 1])]);
 
       if (!net._model) fail();
       if (!net._layerSets) fail();
@@ -140,7 +140,7 @@ describe('Recurrent Class: Unit', () => {
         layerSet.map((l) => jest.spyOn(l, 'compare'))
       );
 
-      net._calculateDeltas(Float32Array.from([1, 1]));
+      net._calculateDeltas([[1, 1], [1, 1]]);
       // The last layer propagates delta from target, the last layer propagates zero
       // TODO: fix
       // for (let i = 0; i < net._layerSets[0].length; i++) {
@@ -181,7 +181,7 @@ describe('Recurrent Class: Unit', () => {
 
       net.initialize();
       net.initializeDeep();
-      net.runInput(Float32Array.from([1, 1]));
+      net.runInputs([Float32Array.from([1, 1])]);
 
       if (!net._model) fail();
       if (!net._layerSets) fail();
@@ -193,7 +193,7 @@ describe('Recurrent Class: Unit', () => {
       );
       const spys = net._model.map((l: ILayer) => jest.spyOn(l, 'learn'));
 
-      net._calculateDeltas(Float32Array.from([1, 1]));
+      net._calculateDeltas([[1, 1]]);
       net.adjustWeights();
 
       for (let i = 0; i < spys.length; i++) {
@@ -249,14 +249,14 @@ describe('Recurrent Class: Unit', () => {
       net.initialize();
       net.initializeDeep();
 
-      const runInputSpy = jest.spyOn(net, 'runInput');
+      const runInputsSpy = jest.spyOn(net, 'runInputs');
       const calculateDeltasSpy = jest.spyOn(net, '_calculateDeltas');
       const adjustWeightsSpy = jest.spyOn(net, 'adjustWeights');
 
-      const inputValue = Float32Array.from([0, 1]);
+      const inputValue = [[0, 1], [1, 1]];
       const errorRate = net._trainPattern(inputValue, true);
-      expect(errorRate).toEqual(new Float32Array([2.5]));
-      expect(runInputSpy).toHaveBeenCalledWith(inputValue);
+      expect(errorRate).toEqual(Float32Array.from([2.5]));
+      expect(runInputsSpy).toHaveBeenCalledWith(inputValue);
       expect(calculateDeltasSpy).toHaveBeenCalledWith(inputValue);
       expect(adjustWeightsSpy).toHaveBeenCalled();
     });
@@ -280,16 +280,16 @@ describe('Recurrent Class: Unit', () => {
 
         const lastOutputLayer = lastLayerSet[lastLayerSet.length - 1];
         expect(lastOutputLayer.weights).toEqual([new Float32Array([0])]);
-        net._trainPattern(Float32Array.from([1, 2]), false);
+        net._trainPattern([[1, 2]], false);
         const weights1 = lastOutputLayer.weights;
         expect(weights1).not.toEqual([[0]]);
-        net._trainPattern(Float32Array.from([3, 2]), false);
+        net._trainPattern([[3, 2]], false);
         const weights2 = lastOutputLayer.weights;
         expect(weights1).not.toEqual(weights2);
-        net._trainPattern(Float32Array.from([1, 1]), false);
+        net._trainPattern([[1, 1]], false);
         const weights3 = lastOutputLayer.weights;
         expect(weights2).not.toEqual(weights3);
-        net._trainPattern(Float32Array.from([3, 3]), false);
+        net._trainPattern([[3, 3]], false);
         const weights4 = lastOutputLayer.weights;
         expect(weights3).not.toEqual(weights4);
       });

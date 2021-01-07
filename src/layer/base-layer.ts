@@ -42,17 +42,16 @@ export interface ILayer {
   inputLayer1?: ILayer;
   inputLayer2?: ILayer;
   index?: number;
-  title?: string;
+  id?: string;
 }
 
 export interface ILayerSettings {
-  name?: string;
   width?: number | null;
   height?: number | null;
   depth?: number | null;
   weights?: KernelOutput | null;
   deltas?: KernelOutput | null;
-  title?: string | null;
+  id?: string;
   praxis?: IPraxis | null;
   praxisOpts?: Partial<IPraxisSettings> | null;
   initPraxis?:
@@ -104,12 +103,12 @@ export class BaseLayer implements ILayer {
     this.settings.deltas = deltas;
   }
 
-  get title(): string {
-    return this.settings.title ?? '';
+  get id(): string {
+    return this.settings.id ?? '';
   }
 
-  set title(title: string) {
-    this.settings.title = title;
+  set id(title: string) {
+    this.settings.id = title;
   }
 
   constructor(settings?: Partial<ILayerSettings>) {

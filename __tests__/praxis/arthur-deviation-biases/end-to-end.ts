@@ -11,7 +11,6 @@ describe('ArthurDeviationBiases', () => {
     setup(
       new GPU({
         mode: 'cpu',
-        onIstanbulCoverageVariable: injectIstanbulCoverage,
       })
     );
   });
@@ -38,7 +37,7 @@ describe('ArthurDeviationBiases', () => {
         iterations: 1,
       });
       // name is not exists in IRandomSettings
-      const layer1 = random({ name: 'biases', height: 3 } as any);
+      const layer1 = random({ id: 'biases', height: 3 } as any);
       const praxis = new ArthurDeviationBiases(layer1, {
         learningRate: (net.trainOpts as any).learningRate,
       });

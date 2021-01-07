@@ -356,16 +356,25 @@ export class FeedForward<
   ): ITrainingStatus {
     const { preparedData, status, endTime } = this._prepTraining(data, options);
     let continueTicking = true;
+    const calculateError = (): number =>
+      this._calculateTrainingError(preparedData);
+    const trainPatters = (): void => this._trainPatterns(preparedData);
     while (continueTicking) {
-      continueTicking = this._trainingTick(preparedData, status, endTime);
+      continueTicking = this._trainingTick(
+        status,
+        endTime,
+        calculateError,
+        trainPatters
+      );
     }
     return status;
   }
 
   _trainingTick(
-    preparedData: IFeedForwardGPUTrainingData[],
     status: ITrainingStatus,
-    endTime: number
+    endTime: number,
+    calculateError: () => number,
+    trainPatterns: () => void
   ): boolean {
     const trainOpts = this.trainOpts;
     if (
@@ -380,7 +389,7 @@ export class FeedForward<
       typeof trainOpts.log === 'function' &&
       status.iterations % (trainOpts.logPeriod as number) === 0
     ) {
-      status.error = this._calculateTrainingError(preparedData);
+      status.error = calculateError();
       trainOpts.log(
         `iterations: ${status.iterations}, training error: ${status.error}`
       );
@@ -388,9 +397,9 @@ export class FeedForward<
       status.iterations % (trainOpts.errorCheckInterval as number) ===
       0
     ) {
-      status.error = this._calculateTrainingError(preparedData);
+      status.error = calculateError();
     } else {
-      this._trainPatterns(preparedData);
+      trainPatterns();
     }
 
     if (
