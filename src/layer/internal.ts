@@ -43,4 +43,6 @@ export abstract class Internal implements ILayer {
   toJSON(): Partial<ILayerJSON> {
     return BaseLayer.toJSON(this);
   }
+
+  abstract reuseKernels(layer: ILayer): void;
 }

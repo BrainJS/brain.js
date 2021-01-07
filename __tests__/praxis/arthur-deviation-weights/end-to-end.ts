@@ -11,7 +11,6 @@ describe('ArthurDeviationWeights Class: End to End', () => {
     setup(
       new GPU({
         mode: 'cpu',
-        onIstanbulCoverageVariable: injectIstanbulCoverage,
       })
     );
   });
@@ -53,9 +52,9 @@ describe('ArthurDeviationWeights Class: End to End', () => {
       iterations: 1,
     });
 
-    const inputs = random({ name: 'input', height: 2 });
-    const weights = random({ name: 'weights', height: 3, width: 2 });
-    const biases = random({ name: 'biases', height: 3 });
+    const inputs = random({ id: 'input', height: 2 });
+    const weights = random({ id: 'weights', height: 3, width: 2 });
+    const biases = random({ id: 'biases', height: 3 });
 
     // TODO: Remove type coercion when NeuralNetwork is typed
     const trainOpts = net.trainOpts as typeof NeuralNetwork.trainDefaults;

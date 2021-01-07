@@ -1,11 +1,12 @@
 {
+  "coverageProvider": "v8",
   "collectCoverage": false,
   "collectCoverageFrom": ["src/**/*"],
   "coverageDirectory": "__coverage__",
   "globalSetup": "",
   "globals": {
     "ts-jest": {
-      "tsConfig": "tsconfig.test.json"
+      "tsconfig": "tsconfig.test.json"
     }
   },
   "preset": "ts-jest/presets/js-with-ts",

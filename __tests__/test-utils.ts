@@ -194,7 +194,7 @@ export class TestLayer extends BaseLayer {
 }
 
 export function mockLayer(settings: ILayerSettings): ILayer {
-  return new TestLayer({ title: 'MockLayer', ...settings });
+  return new TestLayer({ id: 'MockLayer', ...settings });
 }
 
 export function mockTexture(settings?: Partial<IGPUTextureSettings>): Texture {

@@ -1,6 +1,6 @@
 import { IKernelFunctionThis, IKernelRunShortcut, KernelOutput } from 'gpu.js';
 import { EntryPoint } from './types';
-import { ILayerSettings } from './base-layer';
+import { ILayer, ILayerSettings } from './base-layer';
 import { zeros2D } from '../utilities/zeros-2d';
 import {
   makeKernel,
@@ -38,9 +38,9 @@ export class Input extends EntryPoint {
     }
   }
 
-  reuseKernels(layer: Input): void {
-    super.reuseKernels(layer);
-    this.reshapeInput = layer.reshapeInput;
+  reuseKernels(layer: ILayer): void {
+    // super.reuseKernels(layer);
+    this.reshapeInput = (layer as Input).reshapeInput;
   }
 
   predict(inputs: KernelOutput): void {

@@ -26,7 +26,6 @@ describe('Dropout Layer', () => {
     setup(
       new GPU({
         mode: 'cpu',
-        onIstanbulCoverageVariable: injectIstanbulCoverage,
       })
     );
     validateMock = jest.spyOn(Dropout.prototype, 'validate');

@@ -1,9 +1,9 @@
-import { RNNTimeStep } from '../../src/recurrent/rnn-time-step';
-import { LSTMTimeStep } from '../../src/recurrent/lstm-time-step';
-import { Equation } from '../../src/recurrent/matrix/equation';
-import { Matrix } from '../../src/recurrent/matrix';
 import { INumberObject } from '../../src/lookup';
+import { LSTMTimeStep } from '../../src/recurrent/lstm-time-step';
+import { Matrix } from '../../src/recurrent/matrix';
+import { Equation } from '../../src/recurrent/matrix/equation';
 import { IRNNStatus } from '../../src/recurrent/rnn';
+import { RNNTimeStep } from '../../src/recurrent/rnn-time-step';
 
 // TODO: break out LSTMTimeStep into its own tests
 
@@ -53,6 +53,7 @@ describe('RNNTimeStep', () => {
           outputLookup: { a: 0 },
           outputLookupLength: 1,
         };
+        // eslint-disable-next-line no-new
         new RNNTimeStep({ json });
         expect(fromJSONSpy).toHaveBeenCalledWith(json);
       });
@@ -1668,7 +1669,7 @@ describe('RNNTimeStep', () => {
         expect(() => {
           const net = new RNNTimeStep();
           net.train([[1, 2, 3]], { iterations: 1 });
-          // @ts-expect-error
+          // @ts-expect-error need to infer types
           net.forecast({ one: [1] }, 2);
         }).toThrow('Unrecognized data shape object,array,number');
       });
@@ -2364,8 +2365,8 @@ describe('RNNTimeStep', () => {
       const fn = net.toFunction();
       expect(closeToFive.toFixed(1)).toBe('0.5');
       expect(closeToOne.toFixed(1)).toBe('0.1');
-      expect(fn([0.1, 0.2, 0.3, 0.4])).toBe(closeToFive);
-      expect(fn([0.5, 0.4, 0.3, 0.2])).toBe(closeToOne);
+      expect(fn([0.1, 0.2, 0.3, 0.4])).toBeCloseTo(closeToFive);
+      expect(fn([0.5, 0.4, 0.3, 0.2])).toBeCloseTo(closeToOne);
     });
     it('processes array,array same as net', () => {
       const net = new LSTMTimeStep({
@@ -2439,10 +2440,20 @@ describe('RNNTimeStep', () => {
       expect(closeToFive.friday.toFixed(1)).toBe('0.5');
       expect(closeToOne.friday.toFixed(1)).toBe('0.1');
       expect(
-        (fn as (input: INumberObject) => INumberObject)({ monday: 0.1, tuesday: 0.2, wednesday: 0.3, thursday: 0.4 }).friday
+        (fn as (input: INumberObject) => INumberObject)({
+          monday: 0.1,
+          tuesday: 0.2,
+          wednesday: 0.3,
+          thursday: 0.4,
+        }).friday
       ).toBe(closeToFive.friday);
       expect(
-        (fn as (input: INumberObject) => INumberObject)({ monday: 0.5, tuesday: 0.4, wednesday: 0.3, thursday: 0.2 }).friday
+        (fn as (input: INumberObject) => INumberObject)({
+          monday: 0.5,
+          tuesday: 0.4,
+          wednesday: 0.3,
+          thursday: 0.2,
+        }).friday
       ).toBe(closeToOne.friday);
     });
     it('handles array,object to array,object with lookup tables being same w/ inputSize of 1', () => {
@@ -2458,7 +2469,12 @@ describe('RNNTimeStep', () => {
         { monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 },
       ]);
       const fn = net.toFunction();
-      const result = (fn as (input: INumberObject) => INumberObject)({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 });
+      const result = (fn as (input: INumberObject) => INumberObject)({
+        monday: 1,
+        tuesday: 2,
+        wednesday: 3,
+        thursday: 4,
+      });
       expect(result).toEqual(
         net.run({ monday: 1, tuesday: 2, wednesday: 3, thursday: 4 })
       );
@@ -2483,7 +2499,7 @@ describe('RNNTimeStep', () => {
         formatDataSpy.mockRestore();
       });
       it('calls .formatData()', () => {
-        const data = [[1,2]];
+        const data = [[1, 2]];
         const net = new RNNTimeStep();
         net.train(data);
         formatDataSpy.mockClear();
@@ -2582,15 +2598,13 @@ describe('RNNTimeStep', () => {
             });
             net.train(trainingData, { iterations: 500 });
             const misclass = [
-                [1, 5],
-                [2, 4],
-                [3, 3],
-                [4, 2],
-                [5, 1],
-              ];
-            const testResult = net.test([
-              misclass
-            ]);
+              [1, 5],
+              [2, 4],
+              [3, 3],
+              [4, 2],
+              [5, 1],
+            ];
+            const testResult = net.test([misclass]);
             expect(testResult.error).toBeGreaterThanOrEqual(0.1);
             expect(testResult.misclasses.length).toBe(1);
             expect(testResult.misclasses).toEqual([
@@ -2604,13 +2618,15 @@ describe('RNNTimeStep', () => {
       });
     });
     describe('using array,object,number', () => {
-      const trainingData = [{
-        monday: .1,
-        tuesday: .1,
-        wednesday: .2,
-        thursday: .3,
-        friday: .4,
-      }];
+      const trainingData = [
+        {
+          monday: 0.1,
+          tuesday: 0.1,
+          wednesday: 0.2,
+          thursday: 0.3,
+          friday: 0.4,
+        },
+      ];
       describe('inputSize of 1', () => {
         describe('no error', () => {
           it('can test w/ forecastNumbers of 1', () => {
@@ -2640,9 +2656,7 @@ describe('RNNTimeStep', () => {
               thursday: 4,
               friday: 5,
             };
-            const testResult = net.test([
-              misclass,
-            ]);
+            const testResult = net.test([misclass]);
             expect(testResult.error).toBeGreaterThanOrEqual(0.08);
             expect(testResult.misclasses.length).toBe(1);
             expect(testResult.misclasses).toEqual([
@@ -2664,7 +2678,7 @@ describe('RNNTimeStep', () => {
           { low: 0.4, high: 0.2 },
           { low: 0.5, high: 0.1 },
         ],
-      ]
+      ];
       describe('inputSize of 2', () => {
         describe('no error', () => {
           it('can test w/ run of 1', () => {
@@ -2694,9 +2708,7 @@ describe('RNNTimeStep', () => {
               { low: 4, high: 2 },
               { low: 5, high: 1 },
             ];
-            const testResult = net.test([
-              misclass,
-            ]);
+            const testResult = net.test([misclass]);
 
             expect(testResult.error).toBeGreaterThan(0.3);
             expect(testResult.misclasses.length).toBe(1);
@@ -2711,9 +2723,7 @@ describe('RNNTimeStep', () => {
       });
     });
     describe('using array,datum,array,number', () => {
-      const trainingData = [
-        { input: [0.1, 0.2, 0.3, 0.4], output: [0.5] },
-      ]
+      const trainingData = [{ input: [0.1, 0.2, 0.3, 0.4], output: [0.5] }];
       describe('no error', () => {
         it('can test w/ forecast of 1', () => {
           const net = new LSTMTimeStep({
@@ -2791,9 +2801,7 @@ describe('RNNTimeStep', () => {
               },
               output: { friday: 5 },
             };
-            const testResult = net.test([
-              misclass,
-            ]);
+            const testResult = net.test([misclass]);
             expect(testResult.error).toBeGreaterThanOrEqual(0.08);
             expect(testResult.misclasses.length).toBe(1);
             expect(testResult.misclasses).toEqual([
@@ -2871,10 +2879,8 @@ describe('RNNTimeStep', () => {
               [4, 2],
             ],
             output: [[5, 1]],
-          }
-          const testResult = net.test([
-            misclass,
-          ]);
+          };
+          const testResult = net.test([misclass]);
           expect(testResult.error).toBeGreaterThan(0.1);
           expect(testResult.misclasses.length).toBe(1);
           expect(testResult.misclasses).toEqual([
@@ -2892,19 +2898,17 @@ describe('RNNTimeStep', () => {
           });
           net.train(trainingData2, { iterations: 500 });
           const misclass = {
-              input: [
-                [1, 5],
-                [2, 4],
-                [3, 3],
-              ],
-              output: [
-                [4, 2],
-                [5, 1],
-              ],
-            };
-          const testResult = net.test([
-            misclass
-          ]);
+            input: [
+              [1, 5],
+              [2, 4],
+              [3, 3],
+            ],
+            output: [
+              [4, 2],
+              [5, 1],
+            ],
+          };
+          const testResult = net.test([misclass]);
           expect(testResult.error).toBeGreaterThanOrEqual(0.08);
           expect(testResult.misclasses.length).toBe(1);
           expect(testResult.misclasses).toEqual([
@@ -2981,10 +2985,8 @@ describe('RNNTimeStep', () => {
               { low: 4, high: 2 },
             ],
             output: [{ low: 0.5, high: 0.1 }],
-          }
-          const testResult = net.test([
-            misclass,
-          ]);
+          };
+          const testResult = net.test([misclass]);
           expect(testResult.error).toBeGreaterThan(0.1);
           expect(testResult.misclasses.length).toBe(1);
           expect(testResult.misclasses).toEqual([
@@ -3011,10 +3013,8 @@ describe('RNNTimeStep', () => {
               { low: 4, high: 2 },
               { low: 5, high: 1 },
             ],
-          }
-          const testResult = net.test([
-            misclass,
-          ]);
+          };
+          const testResult = net.test([misclass]);
           expect(testResult.error).toBeGreaterThanOrEqual(0.08);
           expect(testResult.misclasses.length).toBe(1);
           expect(testResult.misclasses).toEqual([
@@ -3167,7 +3167,10 @@ describe('RNNTimeStep', () => {
       const json = net.toJSON();
       const serializedNet = new RNNTimeStep();
       serializedNet.fromJSON(json);
-      let lastSerializedNetStatus: IRNNStatus = { error: Infinity, iterations: -1 };
+      let lastSerializedNetStatus: IRNNStatus = {
+        error: Infinity,
+        iterations: -1,
+      };
       serializedNet.train(trainingData, {
         iterations: 1,
         callback: (status: IRNNStatus) => {

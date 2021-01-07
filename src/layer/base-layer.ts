@@ -33,6 +33,7 @@ export interface ILayer {
   predictKernel: IKernelRunShortcut | null;
   compareKernel: IKernelRunShortcut | null;
   settings: Partial<ILayerSettings>;
+  reuseKernels: (layer: ILayer) => void;
   predict: (inputs?: KernelOutput) => void;
   compare: (targetValues?: KernelOutput) => void;
   learn: ((learningRate?: number) => void) | ((learningRate: number) => void);
@@ -41,17 +42,16 @@ export interface ILayer {
   inputLayer1?: ILayer;
   inputLayer2?: ILayer;
   index?: number;
-  title?: string;
+  id?: string;
 }
 
 export interface ILayerSettings {
-  name?: string;
   width?: number | null;
   height?: number | null;
   depth?: number | null;
   weights?: KernelOutput | null;
   deltas?: KernelOutput | null;
-  title?: string | null;
+  id?: string;
   praxis?: IPraxis | null;
   praxisOpts?: Partial<IPraxisSettings> | null;
   initPraxis?:
@@ -103,12 +103,12 @@ export class BaseLayer implements ILayer {
     this.settings.deltas = deltas;
   }
 
-  get title(): string {
-    return this.settings.title ?? '';
+  get id(): string {
+    return this.settings.id ?? '';
   }
 
-  set title(title: string) {
-    this.settings.title = title;
+  set id(title: string) {
+    this.settings.id = title;
   }
 
   constructor(settings?: Partial<ILayerSettings>) {
@@ -214,7 +214,7 @@ export class BaseLayer implements ILayer {
         `${this.constructor.name} kernel width mismatch ${layer.height} is not ${this.height}`
       );
     }
-    if (layer.hasOwnProperty('predictKernel')) {
+    if (layer.hasOwnProperty('predictKernel') && layer.predictKernel !== null) {
       if (!(layer.predictKernel as Kernel).immutable) {
         throw new Error(
           `${layer.constructor.name}.predictKernel is not reusable, set kernel.immutable = true`
@@ -222,13 +222,13 @@ export class BaseLayer implements ILayer {
       }
       this.predictKernel = layer.predictKernel;
     }
-    if (layer.hasOwnProperty('compareKernel')) {
+    if (layer.hasOwnProperty('compareKernel') && layer.compareKernel !== null) {
       if (!(layer.compareKernel as Kernel).immutable) {
         throw new Error(
           `${layer.constructor.name}.compareKernel is not reusable, set kernel.immutable = true`
         );
       }
-      this.compareKernel = layer.compareKernel as IKernelRunShortcut;
+      this.compareKernel = layer.compareKernel;
     }
     this.praxis = layer.praxis;
   }

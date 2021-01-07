@@ -12,7 +12,7 @@ import {
 } from './lookup';
 import * as praxis from './praxis';
 import { IPraxis, IPraxisSettings } from './praxis/base-praxis';
-import flattenLayers from './utilities/flatten-layers';
+import { flattenLayers } from './utilities/flatten-layers';
 import { makeKernel, release } from './utilities/kernel';
 import { layerFromJSON } from './utilities/layer-from-json';
 import { LookupTable } from './utilities/lookup-table';
@@ -35,15 +35,15 @@ export interface IFeedForwardGPUTrainingData {
   output: KernelOutput;
 }
 
-interface IFeedForwardStatus {
+export interface ITrainingStatus {
   iterations: number;
   error: number;
 }
 
 export type Log = (status: string) => void;
-export type FeedForwardCallback = (status: IFeedForwardStatus) => void;
+export type FeedForwardCallback = (status: ITrainingStatus) => void;
 
-interface IFeedForwardTrainingOptions {
+export interface IFeedForwardTrainingOptions {
   iterations?: number;
   errorThresh?: number;
   log?: boolean | Log;
@@ -55,7 +55,7 @@ interface IFeedForwardTrainingOptions {
   timeout?: number;
 }
 
-interface IFeedForwardOptions {
+export interface IFeedForwardOptions {
   learningRate?: number;
   binaryThresh?: number;
   hiddenLayers?: Array<
@@ -76,8 +76,8 @@ interface IFeedForwardOptions {
   outputLayerIndex?: number;
 }
 
-interface IPreppedTrainingData {
-  status: IFeedForwardStatus;
+export interface IFeedForwardPreppedTrainingData {
+  status: ITrainingStatus;
   preparedData: IFeedForwardGPUTrainingData[];
   endTime: number;
 }
@@ -353,19 +353,28 @@ export class FeedForward<
   train(
     data: Array<IFeedForwardTrainingData<InputType, OutputType>>,
     options: Partial<IFeedForwardTrainingOptions> = {}
-  ): IFeedForwardStatus {
+  ): ITrainingStatus {
     const { preparedData, status, endTime } = this._prepTraining(data, options);
     let continueTicking = true;
+    const calculateError = (): number =>
+      this._calculateTrainingError(preparedData);
+    const trainPatters = (): void => this._trainPatterns(preparedData);
     while (continueTicking) {
-      continueTicking = this._trainingTick(preparedData, status, endTime);
+      continueTicking = this._trainingTick(
+        status,
+        endTime,
+        calculateError,
+        trainPatters
+      );
     }
     return status;
   }
 
   _trainingTick(
-    preparedData: IFeedForwardGPUTrainingData[],
-    status: IFeedForwardStatus,
-    endTime: number
+    status: ITrainingStatus,
+    endTime: number,
+    calculateError: () => number,
+    trainPatterns: () => void
   ): boolean {
     const trainOpts = this.trainOpts;
     if (
@@ -380,7 +389,7 @@ export class FeedForward<
       typeof trainOpts.log === 'function' &&
       status.iterations % (trainOpts.logPeriod as number) === 0
     ) {
-      status.error = this._calculateTrainingError(preparedData);
+      status.error = calculateError();
       trainOpts.log(
         `iterations: ${status.iterations}, training error: ${status.error}`
       );
@@ -388,9 +397,9 @@ export class FeedForward<
       status.iterations % (trainOpts.errorCheckInterval as number) ===
       0
     ) {
-      status.error = this._calculateTrainingError(preparedData);
+      status.error = calculateError();
     } else {
-      this._trainPatterns(preparedData);
+      trainPatterns();
     }
 
     if (
@@ -407,7 +416,7 @@ export class FeedForward<
   _prepTraining(
     data: Array<IFeedForwardTrainingData<InputType, OutputType>>,
     options: Partial<IFeedForwardTrainingOptions>
-  ): IPreppedTrainingData {
+  ): IFeedForwardPreppedTrainingData {
     this._updateTrainingOptions(options);
 
     const formattedData = this.formatData(data);

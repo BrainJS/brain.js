@@ -1,7 +1,13 @@
-import { Activation } from './activation';
-import { Operator } from './operator';
-import { Internal } from './internal';
-import { InternalModel, EntryPoint, Model, Modifier } from './types';
+import {
+  Activation,
+  Operator,
+  Internal,
+  InternalModel,
+  EntryPoint,
+  Model,
+  Filter,
+  Modifier,
+} from './types';
 
 export { Add, add } from './add';
 export { arthurFeedForward } from './arthur-feed-forward';
@@ -9,7 +15,6 @@ export { BaseLayer } from './base-layer';
 export { Convolution, convolution } from './convolution';
 export { Dropout, dropout } from './dropout';
 export { feedForward } from './feed-forward';
-export { Filter } from './filter';
 export { FullyConnected, fullyConnected } from './fully-connected';
 export { gru } from './gru';
 export { Input, input } from './input';
@@ -41,4 +46,5 @@ export const layerTypes = {
   EntryPoint,
   Model,
   Modifier,
+  Filter,
 };

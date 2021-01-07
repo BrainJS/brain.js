@@ -24,7 +24,7 @@ import {
   // Zeros,
   layerTypes,
 } from '../../src/layer';
-import { injectIstanbulCoverage, mockLayer, mockPraxis } from '../test-utils';
+import { mockLayer, mockPraxis } from '../test-utils';
 import { ILayer, ILayerJSON, ILayerSettings } from '../../src/layer/base-layer';
 import SpyInstance = jest.SpyInstance;
 
@@ -33,7 +33,6 @@ describe('FeedForward Class: Unit', () => {
     setup(
       new GPU({
         mode: 'cpu',
-        onIstanbulCoverageVariable: injectIstanbulCoverage,
       })
     );
   });

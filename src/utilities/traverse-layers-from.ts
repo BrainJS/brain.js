@@ -1,6 +1,6 @@
 import { ILayer } from '../layer/base-layer';
 
-export default function traverseLayersFrom(
+export function traverseLayersFrom(
   layer: ILayer,
   cb: (layer: ILayer) => void
 ): void {

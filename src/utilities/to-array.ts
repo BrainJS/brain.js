@@ -1,8 +1,3 @@
-/**
- *
- * @param values
- * @returns {*}
- */
 export function toArray(
   values: number[] | Float32Array | { [key: string]: number }
 ): number[] {

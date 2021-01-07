@@ -9,7 +9,6 @@ describe('MomentumRootMeanSquaredPropagation', () => {
     setup(
       new GPU({
         mode: 'cpu',
-        onIstanbulCoverageVariable: injectIstanbulCoverage,
       })
     );
   });

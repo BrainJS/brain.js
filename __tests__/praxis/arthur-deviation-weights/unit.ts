@@ -15,7 +15,6 @@ describe('ArthurDeviationWeights Class: Unit', () => {
     setup(
       new GPU({
         mode: 'cpu',
-        onIstanbulCoverageVariable: injectIstanbulCoverage,
       })
     );
   });
