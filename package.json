@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "gpu.js": "^2.11.0",
-    "thaw.js": "^2.1.0"
+    "thaw.js": "^2.1.1"
   },
   "description": "Neural networks in JavaScript",
   "devDependencies": {
