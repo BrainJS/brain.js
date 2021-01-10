@@ -7,5 +7,12 @@
   "extends": "../.eslintrc.json",
   "parserOptions": {
     "project": "./tsconfig.json"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.js"],
+      "extends": ["eslint:recommended", "plugin:prettier/recommended"],
+      "plugins": ["prettier"]
+    }
+  ]
 }

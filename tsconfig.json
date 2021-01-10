@@ -16,16 +16,13 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "esnext",
-    "lib": [
-      "es2019",
-      "dom"
-    ]
+    "lib": ["es2019", "dom"]
   },
   "exclude": [
     "node_modules",
     "**/*.json",
     "**/*.d.ts",
     "dist",
-    "examples/javascript"
+    "examples/javascript/**/*"
   ]
 }
