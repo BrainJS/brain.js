@@ -1,24 +1,19 @@
-import { GPU } from 'gpu.js';
 import { gpuMock } from 'gpu-mock.js';
+import { GPU } from 'gpu.js';
+import * as leakyReluActivation from '../../src/activation/leaky-relu';
+import { ILayerSettings } from '../../src/layer/base-layer';
 import {
+  compare2D,
+  compare3D,
   LeakyRelu,
   leakyRelu,
   predict2D,
   predict3D,
-  compare2D,
-  compare3D,
 } from '../../src/layer/leaky-relu';
-import * as leakyReluActivation from '../../src/activation/leaky-relu';
-import {
-  expectFunction,
-  mockLayer,
-  mockPraxis,
-} from '../test-utils';
 import { makeKernel, setup, teardown } from '../../src/utilities/kernel';
-
 import { ones2D } from '../../src/utilities/ones';
-import { ILayerSettings } from '../../src/layer/base-layer';
 import { randos2D } from '../../src/utilities/randos';
+import { mockLayer, mockPraxis } from '../test-utils';
 
 jest.mock('../../src/utilities/kernel', () => {
   return {

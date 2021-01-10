@@ -140,7 +140,10 @@ describe('Recurrent Class: Unit', () => {
         layerSet.map((l) => jest.spyOn(l, 'compare'))
       );
 
-      net._calculateDeltas([[1, 1], [1, 1]]);
+      net._calculateDeltas([
+        [1, 1],
+        [1, 1],
+      ]);
       // The last layer propagates delta from target, the last layer propagates zero
       // TODO: fix
       // for (let i = 0; i < net._layerSets[0].length; i++) {
@@ -253,7 +256,10 @@ describe('Recurrent Class: Unit', () => {
       const calculateDeltasSpy = jest.spyOn(net, '_calculateDeltas');
       const adjustWeightsSpy = jest.spyOn(net, 'adjustWeights');
 
-      const inputValue = [[0, 1], [1, 1]];
+      const inputValue = [
+        [0, 1],
+        [1, 1],
+      ];
       const errorRate = net._trainPattern(inputValue, true);
       expect(errorRate).toEqual(Float32Array.from([2.5]));
       expect(runInputsSpy).toHaveBeenCalledWith(inputValue);

@@ -10,12 +10,7 @@ import {
   compare3D,
 } from '../../src/layer/tanh';
 import * as tanhActivation from '../../src/activation/tanh';
-import {
-  mockLayer,
-  mockPraxis,
-  shave2D,
-  shave3D,
-} from '../test-utils';
+import { mockLayer, mockPraxis, shave2D, shave3D } from '../test-utils';
 import { makeKernel, setup, teardown } from '../../src/utilities/kernel';
 
 import { randos2D } from '../../src/utilities/randos';

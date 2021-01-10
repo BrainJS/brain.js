@@ -1,7 +1,14 @@
 import { GPU } from 'gpu.js';
 import { NeuralNetwork } from '../../src/neural-network';
 import { FeedForward } from '../../src/feed-forward';
-import { input, output, target, Target, Sigmoid, arthurFeedForward } from '../../src/layer';
+import {
+  input,
+  output,
+  target,
+  Target,
+  Sigmoid,
+  arthurFeedForward,
+} from '../../src/layer';
 import { feedForward as feedForwardLayer } from '../../src/layer/feed-forward';
 
 import { momentumRootMeanSquaredPropagation } from '../../src/praxis';
