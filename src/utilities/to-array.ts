@@ -1,9 +1,9 @@
 export function toArray(
   values: number[] | Float32Array | { [key: string]: number }
-): number[] {
+): Float32Array {
   if (Array.isArray(values)) {
-    return values;
+    return Float32Array.from(values);
   }
 
-  return Object.values(values);
+  return Float32Array.from(Object.values(values));
 }
