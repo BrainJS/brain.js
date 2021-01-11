@@ -1,12 +1,12 @@
-import { GPU } from 'gpu.js';
 import { gpuMock } from 'gpu-mock.js';
+import { GPU } from 'gpu.js';
 import {
   ArthurDeviationBiases,
   arthurDeviationBiases,
   update,
 } from '../../../src/praxis/arthur-deviation-biases';
-import { shave } from '../../test-utils';
 import { setup, teardown } from '../../../src/utilities/kernel';
+import { shave } from '../../test-utils';
 
 describe('ArthurDeviationBiases Class: Unit', () => {
   beforeEach(() => {
@@ -33,9 +33,10 @@ describe('ArthurDeviationBiases Class: Unit', () => {
         },
       });
 
-      const result = kernel(weights, deltas) as Float32Array;
+      const result = kernel(weights, deltas) as Float32Array[];
       const value = new Float32Array([1.25, 2.20000005, 3.1500001]);
-      expect(shave(result)).toEqual(shave(value));
+
+      expect(shave(result[0])).toEqual(shave(value));
     });
   });
 
