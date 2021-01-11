@@ -1,4 +1,4 @@
-import { brain } from '../../src';
+import { brain } from 'brain.js';
 
 const LSTM = brain.recurrent.LSTM;
 const net = new LSTM();

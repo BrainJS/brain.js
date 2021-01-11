@@ -6,13 +6,17 @@
   },
   "extends": "../.eslintrc.json",
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": "./examples/tsconfig.json"
   },
   "overrides": [
     {
       "files": ["**/*.js"],
       "extends": ["eslint:recommended", "plugin:prettier/recommended"],
-      "plugins": ["prettier"]
+      "plugins": ["prettier"],
+      "parser": "espree",
+      "parserOptions": {
+        "project": null
+      }
     }
   ]
 }

@@ -1,5 +1,4 @@
-const assert = require('assert');
-const brain = require('../../dist/brain');
+const brain = require('brain.js');
 
 const net = new brain.NeuralNetwork();
 const xor = [
@@ -38,11 +37,6 @@ const trainingStream = new brain.TrainStream({
     const result00 = net.run([0, 0]);
     const result11 = net.run([1, 1]);
     const result10 = net.run([1, 0]);
-
-    assert(result01[0] > 0.9);
-    assert(result00[0] < 0.1);
-    assert(result11[0] < 0.1);
-    assert(result10[0] > 0.9);
 
     console.log('0 XOR 1: ', result01); // 0.987
     console.log('0 XOR 0: ', result00); // 0.058

@@ -1,5 +1,4 @@
-const assert = require('assert');
-const brain = require('../../dist/brain');
+const brain = require('brain.js');
 
 const net = new brain.recurrent.LSTMTimeStep({
   inputSize: 2,
@@ -27,14 +26,6 @@ const closeToFiveAndOne = net.run([
   [4, 2],
 ]);
 
-assert(
-  Math.round(closeToFiveAndOne[0]) === 5,
-  `${closeToFiveAndOne[0]} does not round to 5`
-);
-assert(
-  Math.round(closeToFiveAndOne[1]) === 1,
-  `${closeToFiveAndOne[1]} does not round to 1`
-);
 console.log(closeToFiveAndOne);
 
 // now we're cookin' with gas!
@@ -45,12 +36,5 @@ const forecast = net.forecast(
   ],
   3
 );
-assert(
-  Math.round(forecast[2][0]) === 5,
-  `${forecast[2][0]} does not round to 5`
-);
-assert(
-  Math.round(forecast[2][1]) === 1,
-  `${forecast[2][1]} does not round to 1`
-);
+
 console.log('next 3 predictions', forecast);

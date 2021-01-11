@@ -1,5 +1,4 @@
-import assert from 'assert';
-import { brain } from '../../src';
+import { brain } from 'brain.js';
 
 const a = character(
   '.#####.' +
@@ -55,8 +54,7 @@ const result = brain.likely<string>(
   net
 );
 
-assert(result === 'a');
-// console.log(result); // 'a'
+console.log(result); // 'a'
 
 /**
  * Turn the # into 1s and . into 0s. for whole string
