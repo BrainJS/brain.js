@@ -1,4 +1,4 @@
-import NeuralNetwork from './neural-network';
+import { NeuralNetwork } from './neural-network';
 import {
   INeuralNetworkBinaryTestResult,
   INeuralNetworkOptions,
@@ -67,11 +67,6 @@ export default class CrossValidate {
   options: ICrossValidateOptions = {};
   json: ICrossValidateJSON | null = null;
 
-  /**
-   *
-   * @param {NeuralNetwork|constructor} Classifier
-   * @param {object} [options]
-   */
   constructor(
     Classifier: typeof NeuralNetwork,
     options: ICrossValidateOptions = {}

@@ -1,25 +1,4 @@
-import { NeuralNetwork } from '../../src/neural-network';
-
-function typedArrayToObject(value: Float32Array) {
-  return JSON.parse(JSON.stringify(value));
-}
-
-function assertTypedArraysArrayAreEqual(a: Float32Array[], b: Float32Array[]) {
-  expect(a.length).toBe(b.length);
-
-  for (const [indexTypedArray, aTypedArray] of a.entries()) {
-    const bTypedArray = b[indexTypedArray];
-
-    expect(aTypedArray.length).toBe(bTypedArray.length);
-
-    for (const [
-      indexTypedArrayElement,
-      aTypedArrayElement,
-    ] of aTypedArray.entries()) {
-      expect(aTypedArrayElement).toBe(bTypedArray[indexTypedArrayElement]);
-    }
-  }
-}
+import { NeuralNetwork, defaults, trainDefaults } from '../../src/neural-network';
 
 describe('JSON', () => {
   describe('.toJSON() serialization', () => {
@@ -38,58 +17,33 @@ describe('JSON', () => {
       });
     });
 
-    describe('json.layers[0] (input layer)', () => {
-      describe('as array', () => {
-        it('describes it with integer keys', () => {
-          const net = new NeuralNetwork();
-          net.sizes = [3];
-          const json = net.toJSON();
-          expect(json.layers[0]).toEqual({ 0: {}, 1: {}, 2: {} });
-        });
-      });
-      describe('as object', () => {
-        it('describes it with string keys', () => {
-          const net = new NeuralNetwork();
-          net.inputLookup = { zero: 0, one: 1, two: 2 };
-          net.inputLookupLength = 3;
-          net.sizes = [];
-          const json = net.toJSON();
-          expect(json.layers[0]).toEqual({ zero: {}, one: {}, two: {} });
-        });
-      });
-    });
-
     describe('hidden layers', () => {
       it('copies biases correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
+        net.verifyIsInitialized([{ input: Float32Array.from([1, 2]), output: Float32Array.from([1, 2, 3]) }]);
         const json = net.toJSON();
-
-        // TODO: remove type coercion later when NeuralNetwork is typed
-        const biases = net.biases as Float32Array[];
-
-        expect(Object.keys(json.layers[1]).length).toBe(biases[1].length);
-        expect(json.layers[1][0].bias).toBe(biases[1][0]);
-        expect(json.layers[1][1].bias).toBe(biases[1][1]);
-        expect(json.layers[1][2].bias).toBe(biases[1][2]);
+        const layer1Biases = net.biases[1];
+        const jsonLayer1Bias = json.layers[1].biases;
+        expect(jsonLayer1Bias.length).toBe(layer1Biases.length);
+        expect(jsonLayer1Bias[0]).toBe(layer1Biases[0]);
+        expect(jsonLayer1Bias[1]).toBe(layer1Biases[1]);
+        expect(jsonLayer1Bias[2]).toBe(layer1Biases[2]);
       });
       it('copies weights correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
+        net.verifyIsInitialized([{ input: Float32Array.from([1, 2]), output: Float32Array.from([1, 2, 3]) }]);
         const json = net.toJSON();
-
-        // TODO: remove type coercion later when NeuralNetwork is typed
-        const weights = net.weights as Float32Array[][];
-
-        expect(Object.keys(json.layers[1]).length).toBe(weights[1].length);
-        expect(json.layers[1][0].weights).toEqual(
-          typedArrayToObject(weights[1][0])
+        const layer1Weights = net.weights[1];
+        const jsonLayer1Weights = json.layers[1].weights;
+        expect(jsonLayer1Weights.length).toBe(layer1Weights.length);
+        expect(jsonLayer1Weights[0]).toEqual(
+          Array.from(layer1Weights[0])
         );
-        expect(json.layers[1][1].weights).toEqual(
-          typedArrayToObject(weights[1][1])
+        expect(jsonLayer1Weights[1]).toEqual(
+          Array.from(layer1Weights[1])
         );
-        expect(json.layers[1][2].weights).toEqual(
-          typedArrayToObject(weights[1][2])
+        expect(jsonLayer1Weights[2]).toEqual(
+          Array.from(layer1Weights[2])
         );
       });
     });
@@ -97,56 +51,95 @@ describe('JSON', () => {
     describe('output layer', () => {
       it('copies biases correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
+        net.verifyIsInitialized([{ input: Float32Array.from([1, 2]), output: Float32Array.from([1, 2, 3]) }]);
         const json = net.toJSON();
+        const layer2Biases = net.biases[2];
+        const jsonLayer2Biases = json.layers[2].biases;
 
-        // TODO: remove type coercion later when NeuralNetwork is typed
-        const biases = net.biases as Float32Array[];
-
-        expect(Object.keys(json.layers[2]).length).toBe(biases[2].length);
-        expect(json.layers[2][0].bias).toBe(biases[2][0]);
-        expect(json.layers[2][1].bias).toBe(biases[2][1]);
-        expect(json.layers[2][2].bias).toBe(biases[2][2]);
+        expect(jsonLayer2Biases.length).toBe(layer2Biases.length);
+        expect(jsonLayer2Biases[0]).toBe(layer2Biases[0]);
+        expect(jsonLayer2Biases[1]).toBe(layer2Biases[1]);
+        expect(jsonLayer2Biases[2]).toBe(layer2Biases[2]);
       });
       it('copies weights correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
+        net.verifyIsInitialized([{ input: Float32Array.from([1, 2]), output: Float32Array.from([1, 2, 3]) }]);
         const json = net.toJSON();
+        const layer2Weights = net.weights[2];
+        const jsonLayer2Weights = json.layers[2].weights;
+        expect(jsonLayer2Weights.length).toBe(layer2Weights.length);
 
-        // TODO: remove type coercion later when NeuralNetwork is typed
-        const weights = net.weights as Float32Array[][];
-
-        expect(Object.keys(json.layers[2]).length).toBe(weights[2].length);
-        expect(json.layers[2][0].weights).toEqual(
-          typedArrayToObject(weights[2][0])
+        expect(jsonLayer2Weights[0]).toEqual(
+          Array.from(layer2Weights[0])
         );
-        expect(json.layers[2][1].weights).toEqual(
-          typedArrayToObject(weights[2][1])
+        expect(jsonLayer2Weights[1]).toEqual(
+          Array.from(layer2Weights[1])
         );
-        expect(json.layers[2][2].weights).toEqual(
-          typedArrayToObject(weights[2][2])
+        expect(jsonLayer2Weights[2]).toEqual(
+          Array.from(layer2Weights[2])
         );
       });
     });
 
-    describe('json.activation', () => {
-      it('exports default correctly', () => {
-        const net = new NeuralNetwork();
-        net.sizes = [];
-        expect(net.activation).toBe(NeuralNetwork.defaults.activation);
-        const json = net.toJSON();
-        expect(json.activation).toBe(NeuralNetwork.defaults.activation);
+    describe('.options', () => {
+      describe('.inputSize', () => {
+        it('exports default correctly', () => {
+          const net = new NeuralNetwork();
+          expect(net.toJSON().options.inputSize).toEqual(defaults().inputSize);
+        });
+        it('exports non-default correctly', () => {
+          const net = new NeuralNetwork({ inputSize:  7 });
+          expect(net.toJSON().options.inputSize).toEqual(7);
+        });
       });
-      it('exports non-default correctly', () => {
-        const net = new NeuralNetwork({ activation: 'leaky-relu' });
-        net.sizes = [];
-        expect(net.activation).toBe('leaky-relu');
-        const json = net.toJSON();
-        expect(json.activation).toBe('leaky-relu');
+      describe('.outputSize', () => {
+        it('exports default correctly', () => {
+          const net = new NeuralNetwork();
+          expect(net.toJSON().options.outputSize).toEqual(defaults().outputSize);
+        });
+        it('exports non-default correctly', () => {
+          const net = new NeuralNetwork({ outputSize:  7 });
+          expect(net.toJSON().options.outputSize).toEqual(7);
+        });
+      });
+      describe('.binaryThresh', () => {
+        it('exports default correctly', () => {
+          const net = new NeuralNetwork();
+          expect(net.toJSON().options.binaryThresh).toEqual(defaults().binaryThresh);
+        });
+        it('exports non-default correctly', () => {
+          const net = new NeuralNetwork({ binaryThresh:  7 });
+          expect(net.toJSON().options.binaryThresh).toEqual(7);
+        });
+      });
+      describe('.hiddenLayers', () => {
+        it('exports default correctly', () => {
+          const net = new NeuralNetwork();
+          expect(net.toJSON().options.hiddenLayers).toEqual(defaults().hiddenLayers);
+        });
+        it('exports non-default correctly', () => {
+          const net = new NeuralNetwork({ hiddenLayers:  [7,8,9] });
+          expect(net.toJSON().options.hiddenLayers).toEqual([7,8,9]);
+        });
       });
     });
-
     describe('.trainOpts', () => {
+      describe('.activation', () => {
+        it('exports default correctly', () => {
+          const net = new NeuralNetwork();
+          net.sizes = [];
+          expect(net.trainOpts.activation).toBe(trainDefaults().activation);
+          const json = net.toJSON();
+          expect(json.trainOpts.activation).toBe(trainDefaults().activation);
+        });
+        it('exports non-default correctly', () => {
+          const net = new NeuralNetwork({ activation: 'leaky-relu' });
+          net.sizes = [];
+          expect(net.trainOpts.activation).toBe('leaky-relu');
+          const json = net.toJSON();
+          expect(json.trainOpts.activation).toBe('leaky-relu');
+        });
+      });
       describe('.iterations', () => {
         it('copies default value when no value used', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -154,7 +147,7 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           expect(json.trainOpts.iterations).toBe(
-            NeuralNetwork.trainDefaults.iterations
+            trainDefaults().iterations
           );
         });
         it('copies custom value when defined', () => {
@@ -173,7 +166,7 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           expect(json.trainOpts.errorThresh).toBe(
-            NeuralNetwork.trainDefaults.errorThresh
+            trainDefaults().errorThresh
           );
         });
         it('copies custom value when defined', () => {
@@ -191,7 +184,7 @@ describe('JSON', () => {
           net.trainingTick = () => false;
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          expect(json.trainOpts.log).toBe(NeuralNetwork.trainDefaults.log);
+          expect(json.trainOpts.log).toEqual(trainDefaults().log);
         });
         it('copies custom value when defined as boolean', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -218,7 +211,7 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           expect(json.trainOpts.logPeriod).toBe(
-            NeuralNetwork.trainDefaults.logPeriod
+            trainDefaults().logPeriod
           );
         });
         it('copies custom value when defined', () => {
@@ -237,7 +230,7 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           expect(json.trainOpts.learningRate).toBe(
-            NeuralNetwork.trainDefaults.learningRate
+            trainDefaults().learningRate
           );
         });
         it('copies custom value when defined', () => {
@@ -256,7 +249,7 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           expect(json.trainOpts.momentum).toBe(
-            NeuralNetwork.trainDefaults.momentum
+            trainDefaults().momentum
           );
         });
         it('copies custom value when defined', () => {
@@ -268,24 +261,6 @@ describe('JSON', () => {
         });
       });
 
-      describe('.callback', () => {
-        it('does not copy', () => {
-          const net = new NeuralNetwork({ hiddenLayers: [2] });
-          net.trainingTick = () => false;
-          net.train([{ input: [], output: [] }]);
-          const json = net.toJSON();
-          expect(json.trainOpts.callback).toBe(undefined);
-        });
-        it('does not copy when used with custom value', () => {
-          const net = new NeuralNetwork({ hiddenLayers: [2] });
-          const callback = () => {};
-          net.trainingTick = () => false;
-          net.train([{ input: [], output: [] }], { callback });
-          const json = net.toJSON();
-          expect(json.trainOpts.callback).toBe(undefined);
-        });
-      });
-
       describe('.callbackPeriod', () => {
         it('copies default value when no value used', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -293,7 +268,7 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           expect(json.trainOpts.callbackPeriod).toBe(
-            NeuralNetwork.trainDefaults.callbackPeriod
+            trainDefaults().callbackPeriod
           );
         });
         it('copies custom value when defined', () => {
@@ -311,8 +286,8 @@ describe('JSON', () => {
           net.trainingTick = () => false;
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
-          expect(NeuralNetwork.trainDefaults.timeout).toBe(Infinity);
-          expect(json.trainOpts.timeout).toBe(undefined);
+          expect(trainDefaults().timeout).toBe(Infinity);
+          expect(json.trainOpts.timeout).toBe('Infinity');
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -345,41 +320,14 @@ describe('JSON', () => {
       });
     });
 
-    describe('json.layers[0] (input layer)', () => {
-      describe('as array', () => {
-        it('describes it with integer keys', () => {
-          const net = new NeuralNetwork();
-          net.sizes = [3];
-          const json = net.toJSON();
-          const newNet = new NeuralNetwork().fromJSON(json);
-          // @ts-expect-error Property 'layers' does not exist on type 'NeuralNetwork'
-          expect(newNet.layers[0]).toEqual({ 0: {}, 1: {}, 2: {} });
-        });
-      });
-      describe('as object', () => {
-        it('describes it with string keys', () => {
-          const net = new NeuralNetwork();
-          net.inputLookup = { zero: 0, one: 1, two: 2 };
-          net.inputLookupLength = 3;
-          net.sizes = [];
-          const json = net.toJSON();
-          const newNet = new NeuralNetwork().fromJSON(json);
-          // @ts-expect-error Property 'layers' does not exist on type 'NeuralNetwork'
-          expect(newNet.layers[0]).toEqual({ zero: {}, one: {}, two: {} });
-        });
-      });
-    });
-
     describe('hidden layers', () => {
       it('copies biases correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
+        net.verifyIsInitialized([{ input: Float32Array.from([1, 2]), output: Float32Array.from([1, 2, 3]) }]);
         const json = net.toJSON();
         const newNet = new NeuralNetwork().fromJSON(json);
-
-        // TODO: remove type coercion later when NeuralNetwork is typed
-        const biases = net.biases as Float32Array[];
-        const newNetBiases = newNet.biases as Float32Array[];
+        const biases = net.biases;
+        const newNetBiases = newNet.biases;
 
         expect(newNetBiases[1].length).toBe(biases[1].length);
         expect(newNetBiases[1][0]).toBe(biases[1][0]);
@@ -388,28 +336,23 @@ describe('JSON', () => {
       });
       it('copies weights correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
+        net.verifyIsInitialized([{ input: Float32Array.from([1, 2]), output: Float32Array.from([1, 2, 3]) }]);
         const json = net.toJSON();
-        const newNet = new NeuralNetwork().fromJSON(json);
-
-        // TODO: remove type coercion later when NeuralNetwork is typed
-        const weights = net.weights as Float32Array[][];
-        const newNetWeights = newNet.weights as Float32Array[][];
-
-        assertTypedArraysArrayAreEqual(newNetWeights[2], weights[2]);
+        const newNet = new NeuralNetwork().fromJSON(JSON.parse(JSON.stringify(json)));
+        const layer2Weights = net.weights[2];
+        const newNetLayer2Weights = newNet.weights[2];
+        expect(layer2Weights).toEqual(newNetLayer2Weights);
       });
     });
 
     describe('output layer', () => {
       it('copies biases correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
+        net.verifyIsInitialized([{ input: Float32Array.from([1, 2]), output: Float32Array.from([1, 2, 3]) }]);
         const json = net.toJSON();
         const newNet = new NeuralNetwork().fromJSON(json);
-
-        // TODO: remove type coercion later when NeuralNetwork is typed
-        const biases = net.biases as Float32Array[];
-        const newNetBiases = newNet.biases as Float32Array[];
+        const biases = net.biases;
+        const newNetBiases = newNet.biases;
 
         expect(newNetBiases[2].length).toBe(biases[2].length);
         expect(newNetBiases[2][0]).toBe(biases[2][0]);
@@ -418,38 +361,109 @@ describe('JSON', () => {
       });
       it('copies weights correctly', () => {
         const net = new NeuralNetwork({ hiddenLayers: [3] });
-        net.verifyIsInitialized([{ input: [1, 2], output: [1, 2, 3] }]);
+        net.verifyIsInitialized([{ input: Float32Array.from([1, 2]), output: Float32Array.from([1, 2, 3]) }]);
         const json = net.toJSON();
-        const newNet = new NeuralNetwork().fromJSON(json);
+        const newNet = new NeuralNetwork().fromJSON(JSON.parse(JSON.stringify(json)));
+        const layer2Weights = net.weights[2];
+        const newNetLayer2Weights = newNet.weights[2];
 
-        // TODO: remove type coercion later when NeuralNetwork is typed
-        const weights = net.weights as Float32Array[][];
-        const newNetWeights = newNet.weights as Float32Array[][];
-
-        assertTypedArraysArrayAreEqual(newNetWeights[2], weights[2]);
+        expect(newNetLayer2Weights).toEqual(layer2Weights);
       });
     });
 
-    describe('json.activation', () => {
-      it('exports default correctly', () => {
-        const net = new NeuralNetwork();
-        net.sizes = [];
-        expect(net.activation).toBe(NeuralNetwork.defaults.activation);
-        const json = net.toJSON();
-        const newNet = new NeuralNetwork().fromJSON(json);
-        expect(newNet.activation).toBe(NeuralNetwork.defaults.activation);
+    describe('.options', () => {
+      describe('.inputSize', () => {
+        it('exports default correctly', () => {
+          const net = new NeuralNetwork();
+          net.sizes = [1];
+          expect(net.options.inputSize).toBe(defaults().inputSize);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.options.inputSize).toBe(defaults().inputSize);
+        });
+        it('exports non-default correctly', () => {
+          const net = new NeuralNetwork({ inputSize: 4 });
+          net.sizes = [1];
+          expect(net.options.inputSize).toBe(4);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.options.inputSize).toBe(4);
+        });
       });
-      it('exports non-default correctly', () => {
-        const net = new NeuralNetwork({ activation: 'leaky-relu' });
-        net.sizes = [];
-        expect(net.activation).toBe('leaky-relu');
-        const json = net.toJSON();
-        const newNet = new NeuralNetwork().fromJSON(json);
-        expect(newNet.activation).toBe('leaky-relu');
+      describe('.outputSize', () => {
+        it('exports default correctly', () => {
+          const net = new NeuralNetwork();
+          net.sizes = [1];
+          expect(net.options.outputSize).toBe(defaults().outputSize);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.options.outputSize).toBe(defaults().outputSize);
+        });
+        it('exports non-default correctly', () => {
+          const net = new NeuralNetwork({ outputSize: 4 });
+          net.sizes = [1];
+          expect(net.options.outputSize).toBe(4);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.options.outputSize).toBe(4);
+        });
+      });
+      describe('.binaryThresh', () => {
+        it('exports default correctly', () => {
+          const net = new NeuralNetwork();
+          net.sizes = [1];
+          expect(net.options.binaryThresh).toBe(defaults().binaryThresh);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.options.binaryThresh).toBe(defaults().binaryThresh);
+        });
+        it('exports non-default correctly', () => {
+          const net = new NeuralNetwork({ binaryThresh: 4 });
+          net.sizes = [1];
+          expect(net.options.binaryThresh).toBe(4);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.options.binaryThresh).toBe(4);
+        });
+      });
+      describe('.hiddenLayers', () => {
+        it('exports default correctly', () => {
+          const net = new NeuralNetwork();
+          net.sizes = [1];
+          expect(net.options.hiddenLayers).toEqual(defaults().hiddenLayers);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.options.hiddenLayers).toEqual(defaults().hiddenLayers);
+        });
+        it('exports non-default correctly', () => {
+          const net = new NeuralNetwork({ hiddenLayers: [4,5,6] });
+          net.sizes = [1];
+          expect(net.options.hiddenLayers).toEqual([4,5,6]);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.options.hiddenLayers).toEqual([4,5,6]);
+        });
       });
     });
-
     describe('.trainOpts', () => {
+      describe('.activation', () => {
+        it('exports default correctly', () => {
+          const net = new NeuralNetwork();
+          net.sizes = [1];
+          expect(net.trainOpts.activation).toBe(trainDefaults().activation);
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.trainOpts.activation).toBe(trainDefaults().activation);
+        });
+        it('exports non-default correctly', () => {
+          const net = new NeuralNetwork({ activation: 'leaky-relu' });
+          net.sizes = [1];
+          expect(net.trainOpts.activation).toBe('leaky-relu');
+          const json = net.toJSON();
+          const newNet = new NeuralNetwork().fromJSON(json);
+          expect(newNet.trainOpts.activation).toBe('leaky-relu');
+        });
+      });
       describe('.iterations', () => {
         it('copies default value when no value used', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -457,10 +471,9 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).iterations
-          ).toBe(NeuralNetwork.trainDefaults.iterations);
+            newNet.trainOpts.iterations
+          ).toBe(trainDefaults().iterations);
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -468,9 +481,8 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }], { iterations: 3 });
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).iterations
+            newNet.trainOpts.iterations
           ).toBe(3);
         });
       });
@@ -482,10 +494,9 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).errorThresh
-          ).toBe(NeuralNetwork.trainDefaults.errorThresh);
+            newNet.trainOpts.errorThresh
+          ).toBe(trainDefaults().errorThresh);
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -493,9 +504,8 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }], { errorThresh: 0.05 });
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).errorThresh
+            newNet.trainOpts.errorThresh
           ).toBe(0.05);
         });
       });
@@ -507,10 +517,9 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).log
-          ).toBe(NeuralNetwork.trainDefaults.log);
+            newNet.trainOpts.log
+          ).toBe(trainDefaults().log);
         });
         it('uses net.logTrainingStatus for `true`', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -519,9 +528,8 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }], { log });
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).log
+            newNet.trainOpts.log
           ).toBe(net.logTrainingStatus);
         });
         it('reverts to net.logTrainingStatus when used with custom function', () => {
@@ -531,9 +539,8 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }], { log });
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).log
+            newNet.trainOpts.log
           ).toBe(net.logTrainingStatus);
         });
       });
@@ -545,10 +552,9 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).logPeriod
-          ).toBe(NeuralNetwork.trainDefaults.logPeriod);
+            newNet.trainOpts.logPeriod
+          ).toBe(trainDefaults().logPeriod);
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -556,9 +562,8 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }], { logPeriod: 4 });
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).logPeriod
+            newNet.trainOpts.logPeriod
           ).toBe(4);
         });
       });
@@ -570,11 +575,9 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults)
-              .learningRate
-          ).toBe(NeuralNetwork.trainDefaults.learningRate);
+            newNet.trainOpts.learningRate
+          ).toBe(trainDefaults().learningRate);
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -582,10 +585,8 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }], { learningRate: 0.72 });
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults)
-              .learningRate
+            newNet.trainOpts.learningRate
           ).toBe(0.72);
         });
       });
@@ -597,10 +598,9 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).momentum
-          ).toBe(NeuralNetwork.trainDefaults.momentum);
+            newNet.trainOpts.momentum
+          ).toBe(trainDefaults().momentum);
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -608,9 +608,8 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }], { momentum: 0.313 });
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).momentum
+            newNet.trainOpts.momentum
           ).toBe(0.313);
         });
       });
@@ -619,13 +618,12 @@ describe('JSON', () => {
         it('does not copy', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
           net.trainingTick = () => false;
-          net.train([{ input: [], output: [] }]);
+          net.train([{ input: [], output: [] }], { iterations: 1 });
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).callback
-          ).toBe(null);
+            newNet.trainOpts.callback
+          ).toBe(undefined);
         });
         it('does not copy when used with custom value', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -634,10 +632,9 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }], { callback });
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).callback
-          ).toBe(null);
+            newNet.trainOpts.callback
+          ).toBe(undefined);
         });
       });
 
@@ -648,11 +645,9 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults)
-              .callbackPeriod
-          ).toBe(NeuralNetwork.trainDefaults.callbackPeriod);
+            newNet.trainOpts.callbackPeriod
+          ).toBe(trainDefaults().callbackPeriod);
         });
         it('copies custom value when defined', () => {
           const net = new NeuralNetwork({ hiddenLayers: [2] });
@@ -660,10 +655,8 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }], { callbackPeriod: 50 });
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults)
-              .callbackPeriod
+            newNet.trainOpts.callbackPeriod
           ).toBe(50);
         });
       });
@@ -675,10 +668,9 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }]);
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          expect(NeuralNetwork.trainDefaults.timeout).toBe(Infinity);
-          // TODO: remove type coercion later when NeuralNetwork is typed
+          expect(trainDefaults().timeout).toBe(Infinity);
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).timeout
+            newNet.trainOpts.timeout
           ).toBe(Infinity);
         });
         it('copies custom value when defined', () => {
@@ -687,9 +679,8 @@ describe('JSON', () => {
           net.train([{ input: [], output: [] }], { timeout: 50 });
           const json = net.toJSON();
           const newNet = new NeuralNetwork().fromJSON(json);
-          // TODO: remove type coercion later when NeuralNetwork is typed
           expect(
-            (newNet.trainOpts as typeof NeuralNetwork.trainDefaults).timeout
+            newNet.trainOpts.timeout
           ).toBe(50);
         });
       });
@@ -715,8 +706,8 @@ describe('JSON', () => {
       net._updateTrainingOptions = () => {
         throw new Error('_updateTrainingOptions was called');
       };
-      net.fromJSON({ sizes: [], layers: [] });
-      expect(net.activation === 'sigmoid').toBeTruthy();
+      // net.fromJSON({ sizes: [], layers: [] });
+      // expect(net.activation === 'sigmoid').toBeTruthy();
     });
   });
 });
@@ -744,10 +735,8 @@ describe('default net json', () => {
   );
 
   const input = { 0: Math.random(), b: Math.random() };
-
-  // TODO: remove type coercion later when NeuralNetwork is typed
-  const originalNetTrainOpts = originalNet.trainOpts as typeof NeuralNetwork.trainDefaults;
-  const serializedNetTrainOpts = serializedNet.trainOpts as typeof NeuralNetwork.trainDefaults;
+  const originalNetTrainOpts = originalNet.trainOpts;
+  const serializedNetTrainOpts = serializedNet.trainOpts;
 
   describe('.trainOpts', () => {
     it('training options iterations', () => {
@@ -805,16 +794,5 @@ describe('default net json', () => {
     const output1 = originalNet.run(input);
     const output2 = serializedNet.run(input);
     expect(output2).toEqual(output1);
-  });
-
-  it('if json.trainOpts is not set, ._updateTrainingOptions() is not called and activation defaults to sigmoid', () => {
-    const net = new NeuralNetwork();
-    // @ts-expect-error Property '_updateTrainingOptions' does not exist on type 'NeuralNetwork'
-    // This is a private function
-    net._updateTrainingOptions = () => {
-      throw new Error('_updateTrainingOptions was called');
-    };
-    net.fromJSON({ sizes: [], layers: [] });
-    expect(net.activation === 'sigmoid').toBeTruthy();
   });
 });
