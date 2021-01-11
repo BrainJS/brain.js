@@ -1018,7 +1018,7 @@ export class NeuralNetwork {
   }
 
   test(
-    data: INeuralNetworkTrainingData[]
+    data: INeuralNetworkDatum[]
   ): INeuralNetworkTestResult | INeuralNetworkBinaryTestResult {
     const preparedData = this.formatData(data);
     // for binary classification problems with one output node
