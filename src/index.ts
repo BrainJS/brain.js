@@ -75,6 +75,8 @@ if (typeof window !== 'undefined') {
   window.brain = brain;
 }
 
-if (typeof module !== 'undefined') {
-  module.exports = brain;
-}
+// if (typeof module !== 'undefined') {
+//   module.exports = brain;
+// }
+
+export default brain;
