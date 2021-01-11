@@ -1,10 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "allowJs": true,
-    "esModuleInterop": true,
     "module": "es6",
-    "moduleResolution": "node",
     "target": "es6"
   }
 }

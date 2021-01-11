@@ -1,8 +1,8 @@
 {
-  "coverageProvider": "v8",
   "collectCoverage": false,
   "collectCoverageFrom": ["src/**/*"],
   "coverageDirectory": "__coverage__",
+  "coverageProvider": "v8",
   "globalSetup": "",
   "globals": {
     "ts-jest": {
@@ -13,8 +13,8 @@
   "setupFiles": [],
   "testEnvironment": "node",
   "testPathIgnorePatterns": [
-    "__tests__/istanbul-linker-util.js",
-    "__tests__/test-utils.js",
+    "__tests__/istanbul-linker-util.ts",
+    "__tests__/test-utils.ts",
     "__tests__/.eslintrc.json"
   ]
 }
