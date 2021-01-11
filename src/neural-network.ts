@@ -54,9 +54,9 @@ export interface IJSONLayer {
 export interface INeuralNetworkJSON {
   sizes: number[];
   layers: IJSONLayer[];
-  inputLookup: INumberHash;
+  inputLookup: INumberHash | null;
   inputLookupLength: number;
-  outputLookup: INumberHash;
+  outputLookup: INumberHash | null;
   outputLookupLength: number;
   options: INeuralNetworkOptions;
   trainOpts: INeuralNetworkTrainOptionsJSON;
@@ -435,12 +435,11 @@ export class NeuralNetwork {
     this.initialize();
   }
 
-  updateTrainingOptions(options: Partial<INeuralNetworkTrainOptions>): void {
-    const trainOpts = { ...this.trainOpts, ...options };
-    this.validateTrainingOptions(trainOpts);
-    this.trainOpts = trainOpts;
+  updateTrainingOptions(trainOpts: Partial<INeuralNetworkTrainOptions>): void {
+    const merged = { ...this.trainOpts, ...trainOpts };
+    this.validateTrainingOptions(merged);
+    this.trainOpts = merged;
     this.setLogMethod(this.trainOpts.log);
-    this.trainOpts.activation = options.activation ?? this.trainOpts.activation;
   }
 
   validateTrainingOptions(options: INeuralNetworkTrainOptions): void {
@@ -658,7 +657,10 @@ export class NeuralNetwork {
     };
   }
 
-  train(data: INeuralNetworkDatum[], options = {}): INeuralNetworkState {
+  train(
+    data: INeuralNetworkDatum[],
+    options: Partial<INeuralNetworkTrainOptions> = {}
+  ): INeuralNetworkState {
     const { preparedData, status, endTime } = this.prepTraining(data, {
       ...this.trainOpts,
       ...options,
@@ -1135,9 +1137,9 @@ export class NeuralNetwork {
     return {
       sizes: [...this.sizes],
       layers: jsonLayers,
-      inputLookup: { ...this.inputLookup },
+      inputLookup: this.inputLookup ? { ...this.inputLookup } : null,
       inputLookupLength: this.inputLookupLength,
-      outputLookup: { ...this.outputLookup },
+      outputLookup: this.outputLookup ? { ...this.outputLookup } : null,
       outputLookupLength: this.outputLookupLength,
       options: { ...this.options },
       trainOpts: this.getTrainOptsJSON(),
@@ -1149,9 +1151,9 @@ export class NeuralNetwork {
     this.sizes = json.sizes;
     this.initialize();
 
-    this.inputLookup = { ...json.inputLookup };
+    this.inputLookup = json.inputLookup ? { ...json.inputLookup } : null;
     this.inputLookupLength = json.inputLookupLength;
-    this.outputLookup = { ...json.outputLookup };
+    this.outputLookup = json.outputLookup ? { ...json.outputLookup } : null;
     this.outputLookupLength = json.outputLookupLength;
 
     const jsonLayers = json.layers;
