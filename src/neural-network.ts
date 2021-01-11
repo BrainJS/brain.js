@@ -79,7 +79,7 @@ export function defaults(): INeuralNetworkOptions {
 }
 
 export interface INeuralNetworkTrainOptionsJSON {
-  activation: NeuralNetworkActivation;
+  activation: NeuralNetworkActivation | string;
   iterations: number;
   errorThresh: number;
   log: boolean;
@@ -102,7 +102,7 @@ export interface INeuralNetworkPreppedTrainingData {
 }
 
 export interface INeuralNetworkTrainOptions {
-  activation: NeuralNetworkActivation;
+  activation: NeuralNetworkActivation | string;
   iterations: number;
   errorThresh: number;
   log: boolean | ((status: INeuralNetworkState) => void);
@@ -270,9 +270,7 @@ export class NeuralNetwork {
         break;
       default:
         throw new Error(
-          `Unknown activation ${
-            value as string
-          }. Available activations are: 'sigmoid', 'relu', 'leaky-relu', 'tanh'`
+          `Unknown activation ${value}. Available activations are: 'sigmoid', 'relu', 'leaky-relu', 'tanh'`
         );
     }
   }
@@ -1231,9 +1229,7 @@ export class NeuralNetwork {
           return `Math.tanh(${result.join('')})`;
         default:
           throw new Error(
-            `Unknown activation ${
-              activation as string
-            }. Available activations are: 'sigmoid', 'relu', 'leaky-relu', 'tanh'`
+            `Unknown activation ${activation}. Available activations are: 'sigmoid', 'relu', 'leaky-relu', 'tanh'`
           );
       }
     }
