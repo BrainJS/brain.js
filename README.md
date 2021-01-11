@@ -9,7 +9,8 @@ GPU accelerated Neural networks in JavaScript for Browsers and Node.js
 [![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com)
 [![Backers on Open Collective](https://opencollective.com/brainjs/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/brainjs/sponsors/badge.svg)](#sponsors)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brain-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Slack](https://slack.bri.im/badge.svg)](https://slack.bri.im)
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FBrainJS%2Fbrain.js%2Fbadge%3Fref%3Dmaster&style=flat)](https://actions-badge.atrox.dev/BrainJS/brain.js/goto?ref=master)
+![CI](https://github.com/BrainJS/brain.js/workflows/CI/badge.svg)
+[![codecov](https://codecov.io/gh/BrainJS/brain.js/branch/master/graph/badge.svg?token=3SJIBJ1679)](https://codecov.io/gh/BrainJS/brain.js)
 
 [![NPM](https://nodei.co/npm/brain.js.png?compact=true)](https://nodei.co/npm/brain.js/)
 
@@ -682,7 +683,7 @@ Create issues [here](https://github.com/BrainJS/brain.js/issues) and follow the 
 
 ### brain.js.org
 
-Source for `brain.js.org` is available at [Brain.js.org Repository](https://github.com/BrainJS/brain.js.org). Built using awesome `vue.js` & `bulma`. Contributions are always welcome. 
+Source for `brain.js.org` is available at [Brain.js.org Repository](https://github.com/BrainJS/brain.js.org). Built using awesome `vue.js` & `bulma`. Contributions are always welcome.
 
 ## Contributors
 
