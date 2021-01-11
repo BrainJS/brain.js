@@ -11,7 +11,6 @@ import {
   INeuralNetworkBinaryTestResult,
   INeuralNetworkState,
   INeuralNetworkTestResult,
-  INeuralNetworkTrainingData,
 } from './neural-network-types';
 
 type NeuralNetworkFormatter =
@@ -1231,23 +1230,40 @@ export class NeuralNetwork {
       }
     }
 
+    function checkKeys(keys: string[]): void {
+      if (keys.find((v) => v.includes('"'))) {
+        throw new Error(`key contains '"', which is not compatible`);
+      }
+    }
+
     const { layers } = this.toJSON();
     const layersAsMath: string[] = [];
-    let result;
+    let result: string;
+
+    let inputLookup = '';
+    if (this.inputLookup) {
+      const keys = Object.keys(this.inputLookup);
+      checkKeys(keys);
+      inputLookup = `input = new Float32Array([${Object.keys(this.inputLookup)
+        .map((key) => `input["${key}"]`)
+        .join(',')}]);`;
+    }
     if (layers.length < 1) throw new Error('No layers');
     layers[layers.length - 1].weights.forEach((layerWeights, layerIndex) => {
       layersAsMath.push(nodeHandle(layers.length - 1, layerIndex));
     });
     if (this.outputLookup) {
-      const values = Object.keys(this.outputLookup)
-        .map((key, i) => `'${key}':${layersAsMath[i]}`)
+      const keys = Object.keys(this.outputLookup);
+      checkKeys(keys);
+      const values = keys
+        .map((key, i) => `"${key}":${layersAsMath[i]}`)
         .join(',');
       result = `{${values}}`;
     } else {
       result = `[${layersAsMath.join(',')}]`;
     }
 
-    const source = `${needsVar ? 'var v;' : ''}return ${result};`;
+    const source = `${inputLookup}${needsVar ? 'var v;' : ''}return ${result};`;
     // eslint-disable-next-line @typescript-eslint/no-implied-eval,@typescript-eslint/ban-ts-comment
     // @ts-expect-error
     // eslint-disable-next-line @typescript-eslint/no-implied-eval,no-new-func
