@@ -1,4 +1,4 @@
-import NeuralNetwork from '../../src/neural-network';
+import { NeuralNetwork } from '../../src/neural-network';
 
 const wiggle = 0.1;
 
