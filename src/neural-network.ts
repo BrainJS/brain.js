@@ -659,10 +659,7 @@ export class NeuralNetwork {
     data: INeuralNetworkDatum[],
     options: Partial<INeuralNetworkTrainOptions> = {}
   ): INeuralNetworkState {
-    const { preparedData, status, endTime } = this.prepTraining(data, {
-      ...this.trainOpts,
-      ...options,
-    });
+    const { preparedData, status, endTime } = this.prepTraining(data, options);
 
     while (this.trainingTick(preparedData, status, endTime));
     return status;
