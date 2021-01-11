@@ -9,7 +9,7 @@ describe('Random Layer', () => {
         const layer = new Random(settings);
         expect(layer.width).toBe(settings.width);
         expect(layer.height).toBe(settings.height);
-        expect(layer.depth).toBe(null);
+        expect(layer.depth).toBe(0);
         expect((layer.weights as number[][]).length).toBe(7);
         expect((layer.weights as number[][])[0].length).toBe(5);
       });
