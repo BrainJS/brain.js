@@ -10,6 +10,7 @@ import {
   INumberObject,
   lookup,
 } from './lookup';
+import { INeuralNetworkState } from './neural-network-types';
 import * as praxis from './praxis';
 import { IPraxis, IPraxisSettings } from './praxis/base-praxis';
 import { flattenLayers } from './utilities/flatten-layers';
@@ -40,7 +41,7 @@ export interface ITrainingStatus {
   error: number;
 }
 
-export type Log = (status: string) => void;
+export type Log = (status: INeuralNetworkState) => void;
 export type FeedForwardCallback = (status: ITrainingStatus) => void;
 
 export interface IFeedForwardTrainingOptions {
@@ -390,9 +391,7 @@ export class FeedForward<
       status.iterations % (trainOpts.logPeriod as number) === 0
     ) {
       status.error = calculateError();
-      trainOpts.log(
-        `iterations: ${status.iterations}, training error: ${status.error}`
-      );
+      trainOpts.log(status);
     } else if (
       status.iterations % (trainOpts.errorCheckInterval as number) ===
       0

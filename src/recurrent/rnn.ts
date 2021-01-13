@@ -1,20 +1,21 @@
-import { IMatrixJSON, Matrix } from './matrix';
-import { RandomMatrix } from './matrix/random-matrix';
-import { Equation } from './matrix/equation';
-import { sampleI } from './matrix/sample-i';
-import { maxI } from './matrix/max-i';
-import { softmax } from './matrix/softmax';
-import { copy } from './matrix/copy';
-import { randomFloat } from '../utilities/random';
-import { zeros } from '../utilities/zeros';
+import { Log } from '../feed-forward';
+import { INeuralNetworkTrainOptions, NeuralNetwork } from '../neural-network';
+import { INeuralNetworkState } from '../neural-network-types';
 import {
   DataFormatter,
   IDataFormatter,
   IDataFormatterJSON,
 } from '../utilities/data-formatter';
-import { NeuralNetwork } from '../neural-network';
-import { Value, IRNNDatum } from './rnn-data-types';
-import { Log } from '../feed-forward';
+import { randomFloat } from '../utilities/random';
+import { zeros } from '../utilities/zeros';
+import { IMatrixJSON, Matrix } from './matrix';
+import { copy } from './matrix/copy';
+import { Equation } from './matrix/equation';
+import { maxI } from './matrix/max-i';
+import { RandomMatrix } from './matrix/random-matrix';
+import { sampleI } from './matrix/sample-i';
+import { softmax } from './matrix/softmax';
+import { IRNNDatum, Value } from './rnn-data-types';
 
 export interface IRNNModel {
   isInitialized: boolean;
@@ -57,7 +58,7 @@ export interface IRNNJSONOptions {
 export interface IRNNTrainingOptions {
   iterations: number;
   errorThresh: number;
-  log: boolean | ((message: string) => void);
+  log: boolean | ((status: INeuralNetworkState) => void);
   logPeriod: number;
   learningRate: number;
   callback?: (status: IRNNStatus) => void;
@@ -489,13 +490,13 @@ export class RNN {
    */
   updateTrainingOptions(options: Partial<IRNNTrainingOptions>): void {
     this.trainOpts = { ...trainDefaults, ...options };
-    this.validateTrainingOptions(this.trainOpts);
+    this.validateTrainingOptions(this.trainOpts as INeuralNetworkTrainOptions);
     this.setLogMethod(options.log ?? this.trainOpts.log);
     // TODO: Remove this?
     // this.activation = options.activation || this.activation;
   }
 
-  validateTrainingOptions(options: IRNNTrainingOptions): void {
+  validateTrainingOptions(options: INeuralNetworkTrainOptions): void {
     NeuralNetwork.prototype.validateTrainingOptions.call(this, options);
   }
 
