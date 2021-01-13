@@ -1,8 +1,8 @@
 import { Matrix } from '../../../src/recurrent/matrix';
 import { OnesMatrix } from '../../../src/recurrent/matrix/ones-matrix';
-import { Equation } from '../../../src/recurrent/matrix/equation';
+import { Equation, IState } from '../../../src/recurrent/matrix/equation';
 
-function fourSquareMatrix(value) {
+function fourSquareMatrix(value: number): Matrix {
   const result = new Matrix(4, 4);
   result.weights.forEach((_, i) => {
     result.weights[i] = value;
@@ -10,14 +10,23 @@ function fourSquareMatrix(value) {
   return result;
 }
 
+function getState(props: Partial<IState>): IState {
+  return { ...props,
+    name: 'test-state',
+    product: new Matrix(1, 1),
+    left: new Matrix(1, 1),
+    right: new Matrix(1, 1),
+    forwardFn: jest.fn((left: Matrix, right: Matrix, index: number): void => {}),
+    backpropagationFn: jest.fn((left: Matrix, right: Matrix, index: number): void => {}),
+  };
+}
+
 describe('equation', () => {
   describe('run', () => {
     it('calls all forwardFn properties', () => {
       const equation = new Equation();
       for (let i = 0; i < 10; i++) {
-        equation.states.push({
-          forwardFn: jest.fn(),
-        });
+        equation.states.push(getState({ name: `test-state-${i}` }));
       }
       equation.runIndex();
       equation.states.forEach((state) => {
@@ -29,9 +38,7 @@ describe('equation', () => {
     it('calls all forwardFn properties', () => {
       const equation = new Equation();
       for (let i = 0; i < 10; i++) {
-        equation.states.push({
-          backpropagationFn: jest.fn(),
-        });
+        equation.states.push(getState({ name: `test-state-${i}` }));
       }
       equation.backpropagate();
       equation.states.forEach((state) => {
@@ -143,8 +150,7 @@ describe('equation', () => {
         equation.multiply(
           equation.add(input, fourSquareMatrix(2)),
           fourSquareMatrix(2)
-        ),
-        fourSquareMatrix(2)
+        )
       );
       expect(equation.states.length).toBe(3);
       jest.spyOn(equation.states[0], 'backpropagationFn');

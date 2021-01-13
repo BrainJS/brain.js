@@ -31,7 +31,7 @@ type PropagateFunction =
   | PropagateProductFromLeft
   | PropagateProductFromLeftRight;
 
-interface State {
+export interface IState {
   name: string;
   product: Matrix;
   left?: Matrix;
@@ -41,7 +41,7 @@ interface State {
 }
 
 export class Equation {
-  states: State[] = [];
+  states: IState[] = [];
   inputValue?: Float32Array;
   inputRow = 0;
 
