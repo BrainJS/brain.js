@@ -1,5 +1,6 @@
 import * as activation from '../../src/activation';
 import * as leakyRelu from '../../src/activation/leaky-relu';
+import * as mish from '../../src/activation/mish';
 import * as relu from '../../src/activation/relu';
 import * as sigmoid from '../../src/activation/sigmoid';
 import * as tanh from '../../src/activation/tanh';
@@ -10,5 +11,6 @@ describe('activation', () => {
     expect(activation.relu).toBe(relu);
     expect(activation.sigmoid).toBe(sigmoid);
     expect(activation.tanh).toBe(tanh);
+    expect(activation.mish).toBe(mish);
   });
 });

@@ -6,7 +6,7 @@ import { layerTypes } from './layer';
 import { likely } from './likely';
 import { lookup } from './lookup';
 import { NeuralNetwork } from './neural-network';
-import NeuralNetworkGPU from './neural-network-gpu';
+import { NeuralNetworkGPU } from './neural-network-gpu';
 import * as praxis from './praxis';
 import { Recurrent } from './recurrent';
 import { GRU } from './recurrent/gru';
@@ -47,7 +47,7 @@ export const brain = {
     GRUTimeStep,
     RNN,
     LSTM,
-    GRU,
+    GRU
   },
   utilities: {
     max,
@@ -61,8 +61,8 @@ export const brain = {
     toArray,
     DataFormatter,
     zeros,
-    toSVG,
-  },
+    toSVG
+  }
 };
 
 declare global {
