@@ -6,15 +6,21 @@
 
 GPU accelerated Neural networks in JavaScript for Browsers and Node.js
 
-<a href="https://brain.js.org"><img src="https://img.shields.io/website?up_message=brain.js.org&url=https%3A%2F%2Fbrain.js.org" alt="GitHub"></a>
-[![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com)
-[![Backers on Open Collective](https://opencollective.com/brainjs/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/brainjs/sponsors/badge.svg)](#sponsors)
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brain-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Slack](https://slack.bri.im/badge.svg)](https://slack.bri.im)
-![CI](https://github.com/BrainJS/brain.js/workflows/CI/badge.svg)
-[![codecov](https://codecov.io/gh/BrainJS/brain.js/branch/master/graph/badge.svg?token=3SJIBJ1679)](https://codecov.io/gh/BrainJS/brain.js)
-<a href="https://twitter.com/brainjsfnd"><img src="https://img.shields.io/twitter/follow/brainjsfnd?label=Twitter&style=social" alt="Twitter"></a>
+<p style="text-align: center" align="center">
 
-[![NPM](https://nodei.co/npm/brain.js.png?compact=true)](https://nodei.co/npm/brain.js/)
+  <a href="https://brain.js.org"><img src="https://img.shields.io/website?up_message=brain.js.org&url=https%3A%2F%2Fbrain.js.org" alt="GitHub"></a>
+  [![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com)
+  [![Backers on Open Collective](https://opencollective.com/brainjs/backers/badge.svg)](#backers)
+  [![Sponsors on Open Collective](https://opencollective.com/brainjs/sponsors/badge.svg)](#sponsors)
+  [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brain-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+  [![Slack](https://slack.bri.im/badge.svg)](https://slack.bri.im)
+  ![CI](https://github.com/BrainJS/brain.js/workflows/CI/badge.svg)
+  [![codecov](https://codecov.io/gh/BrainJS/brain.js/branch/master/graph/badge.svg?token=3SJIBJ1679)](https://codecov.io/gh/BrainJS/brain.js)
+  <a href="https://twitter.com/brainjsfnd"><img src="https://img.shields.io/twitter/follow/brainjsfnd?label=Twitter&style=social" alt="Twitter"></a>
+  
+  [![NPM](https://nodei.co/npm/brain.js.png?compact=true)](https://nodei.co/npm/brain.js/)
+
+</p>
 
 ## About
 
