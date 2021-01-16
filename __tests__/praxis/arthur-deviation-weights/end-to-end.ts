@@ -1,8 +1,7 @@
-/* istanbul ignore file */
 import { GPU } from 'gpu.js';
 import { ArthurDeviationWeights } from '../../../src/praxis/arthur-deviation-weights';
 import { random } from '../../../src/layer/random';
-import { NeuralNetwork } from '../../../src/neural-network';
+import { NeuralNetwork, trainDefaults } from '../../../src/neural-network';
 import { setup, teardown } from '../../../src/utilities/kernel';
 
 describe('ArthurDeviationWeights Class: End to End', () => {
@@ -55,8 +54,7 @@ describe('ArthurDeviationWeights Class: End to End', () => {
     const weights = random({ id: 'weights', height: 3, width: 2 });
     const biases = random({ id: 'biases', height: 3 });
 
-    // TODO: Remove type coercion when NeuralNetwork is typed
-    const trainOpts = net.trainOpts as typeof NeuralNetwork.trainDefaults;
+    const trainOpts = net.trainOpts;
 
     const praxis = new ArthurDeviationWeights(weights, {
       weightsLayer: weights,
@@ -67,10 +65,10 @@ describe('ArthurDeviationWeights Class: End to End', () => {
     expect(praxis.learningRate).toBe(trainOpts.learningRate);
 
     const inputWeights = inputs.weights as number[][];
-    const netOutputs = net.outputs as number[][];
-    const netChanges = net.changes as number[][][];
-    const netWeights = net.weights as number[][][];
-    const netDeltas = net.deltas as number[][];
+    const netOutputs = net.outputs;
+    const netChanges = net.changes;
+    const netWeights = net.weights;
+    const netDeltas = net.deltas;
     const weightsWeights = weights.weights as number[][];
     const biasesWeights = biases.weights as number[][];
     const biasesDeltas = biases.deltas as number[][];
