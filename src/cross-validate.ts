@@ -1,16 +1,25 @@
-import { NeuralNetwork } from './neural-network';
 import {
   INeuralNetworkBinaryTestResult,
   INeuralNetworkOptions,
+  INeuralNetworkState,
   INeuralNetworkTestResult,
-  INeuralNetworkTrainingData,
-  INeuralNetworkTrainingOptions,
 } from './neural-network-types';
 
 export type ICrossValidateOptions = INeuralNetworkOptions;
-export type ICrossValidateJSON =
-  | ICrossValidateStats
-  | ICrossValidateBinaryStats;
+
+export interface INetwork {
+  options: any;
+  trainOpts: any;
+  toJSON: () => any;
+  train: (data: any[], trainOpts?: any) => INeuralNetworkState;
+  test: (
+    data: any[]
+  ) => INeuralNetworkTestResult | INeuralNetworkBinaryTestResult;
+}
+
+export type ICrossValidateJSON<JsonType> =
+  | ICrossValidateStats<JsonType>
+  | ICrossValidateBinaryStats<JsonType>;
 
 export interface ICrossValidateStatsAverages {
   trainTime: number;
@@ -19,15 +28,15 @@ export interface ICrossValidateStatsAverages {
   error: number;
 }
 
-export interface ICrossValidateStats {
+export interface ICrossValidateStats<JsonType> {
   avgs: ICrossValidateStatsAverages;
   stats: ICrossValidateStatsResultStats;
-  sets: ICrossValidationTestPartitionResults[];
+  sets: Array<ICrossValidationTestPartitionResults<JsonType>>;
 }
-export interface ICrossValidateBinaryStats {
+export interface ICrossValidateBinaryStats<NetworkType> {
   avgs: ICrossValidateStatsAverages;
   stats: ICrossValidateStatsResultBinaryStats;
-  sets: ICrossValidationTestPartitionBinaryResults[];
+  sets: Array<ICrossValidationTestPartitionBinaryResults<NetworkType>>;
 }
 
 export interface ICrossValidateStatsResultStats {
@@ -48,40 +57,64 @@ export interface ICrossValidateStatsResultBinaryStats
   accuracy: number;
 }
 
-export interface ICrossValidationTestPartitionResults
+export interface ICrossValidationTestPartitionResults<JsonType>
   extends INeuralNetworkTestResult {
   trainTime: number;
   testTime: number;
   iterations: number;
-  learningRate: number;
-  hiddenLayers: number[];
-  network: NeuralNetwork;
+  network: JsonType;
   total: number;
 }
 
-export type ICrossValidationTestPartitionBinaryResults = INeuralNetworkBinaryTestResult &
-  ICrossValidationTestPartitionResults;
+export type ICrossValidationTestPartitionBinaryResults<
+  JsonType
+> = INeuralNetworkBinaryTestResult &
+  ICrossValidationTestPartitionResults<JsonType>;
 
-export default class CrossValidate {
-  Classifier: typeof NeuralNetwork;
-  options: ICrossValidateOptions = {};
-  json: ICrossValidateJSON | null = null;
+export type Classifier<NetworkType extends INetwork> = new (
+  options: NetworkType['trainOpts']
+) => NetworkType;
+
+interface IStaticClassifier<NetworkType extends INetwork>
+  extends Classifier<NetworkType> {
+  fromJSON?: (json: ReturnType<NetworkType['toJSON']>) => NetworkType;
+}
+
+export default class CrossValidate<NetworkType extends INetwork> {
+  Classifier: IStaticClassifier<NetworkType>;
+  options: Partial<ICrossValidateOptions> = {};
+  json: ICrossValidateJSON<ReturnType<NetworkType['toJSON']>> = {
+    avgs: {
+      error: 0,
+      iterations: 0,
+      testTime: 0,
+      trainTime: 0,
+    },
+    stats: {
+      total: 0,
+      testSize: 0,
+      trainSize: 0,
+    },
+    sets: [],
+  };
 
   constructor(
-    Classifier: typeof NeuralNetwork,
-    options: ICrossValidateOptions = {}
+    Classifier: IStaticClassifier<NetworkType>,
+    options: Partial<NetworkType['options']> = {}
   ) {
     this.Classifier = Classifier;
     this.options = options;
   }
 
-  testPartition<T>(
-    trainOpts: INeuralNetworkTrainingOptions,
-    trainSet: INeuralNetworkTrainingData[] | T[],
-    testSet: INeuralNetworkTrainingData[] | T[]
+  testPartition(
+    trainOpts: Parameters<NetworkType['train']>[1],
+    trainSet: Parameters<NetworkType['train']>[0],
+    testSet: Parameters<NetworkType['train']>[0]
   ):
-    | ICrossValidationTestPartitionResults
-    | ICrossValidationTestPartitionBinaryResults {
+    | ICrossValidationTestPartitionResults<ReturnType<NetworkType['toJSON']>>
+    | ICrossValidationTestPartitionBinaryResults<
+        ReturnType<NetworkType['toJSON']>
+      > {
     const classifier = new this.Classifier(this.options);
     const beginTrain = Date.now();
     const trainingStats = classifier.train(trainSet, trainOpts);
@@ -90,21 +123,17 @@ export default class CrossValidate {
       | INeuralNetworkTestResult
       | INeuralNetworkBinaryTestResult = classifier.test(testSet);
     const endTest = Date.now();
-    const stats:
-      | ICrossValidationTestPartitionResults
-      | ICrossValidationTestPartitionBinaryResults = {
+    return {
       ...testStats,
       trainTime: beginTest - beginTrain,
       testTime: endTest - beginTest,
       iterations: trainingStats.iterations,
       error: trainingStats.error,
       total: testStats.total,
-      // TODO: fix these type assertions once neural network types are all typed
-      learningRate: (classifier.trainOpts as any).learningRate,
-      hiddenLayers: (classifier as any).hiddenLayers,
-      network: classifier.toJSON(),
+      network: (classifier as {
+        toJSON: () => ReturnType<NetworkType['toJSON']>;
+      }).toJSON(),
     };
-    return stats;
   }
 
   /**
@@ -130,30 +159,30 @@ export default class CrossValidate {
     );
   };
 
-  static isBinaryResults = (
-    stats: ICrossValidateStats | ICrossValidateBinaryStats
-  ): stats is ICrossValidateBinaryStats =>
-    (stats as ICrossValidateBinaryStats).stats.accuracy !== undefined;
+  static isBinaryResults = <JsonType>(
+    stats: ICrossValidateStats<JsonType> | ICrossValidateBinaryStats<JsonType>
+  ): stats is ICrossValidateBinaryStats<JsonType> =>
+    (stats as ICrossValidateBinaryStats<JsonType>).stats.accuracy !== undefined;
 
-  static isBinaryPartitionResults = (
+  static isBinaryPartitionResults = <JsonType>(
     stats:
-      | ICrossValidationTestPartitionResults
-      | ICrossValidationTestPartitionBinaryResults
-  ): stats is ICrossValidationTestPartitionBinaryResults =>
-    (stats as ICrossValidationTestPartitionBinaryResults).accuracy !==
+      | ICrossValidationTestPartitionResults<JsonType>
+      | ICrossValidationTestPartitionBinaryResults<JsonType>
+  ): stats is ICrossValidationTestPartitionBinaryResults<JsonType> =>
+    (stats as ICrossValidationTestPartitionBinaryResults<JsonType>).accuracy !==
     undefined;
 
-  train<T>(
-    data: INeuralNetworkTrainingData[] | T[],
-    trainOpts: INeuralNetworkTrainingOptions = {},
+  train(
+    data: Parameters<NetworkType['train']>[0],
+    trainOpts: Partial<Parameters<NetworkType['train']>[1]> = {},
     k = 4
-  ): ICrossValidateStats {
+  ): ICrossValidateStats<NetworkType> {
     if (data.length < k) {
       throw new Error(
         `Training set size is too small for ${data.length} k folds of ${k}`
       );
     }
-    this.shuffleArray<INeuralNetworkTrainingData | T>(data);
+    this.shuffleArray<Parameters<NetworkType['train']>[0]>(data);
     const size = data.length / k;
 
     const avgs: ICrossValidateStatsAverages = {
@@ -246,31 +275,40 @@ export default class CrossValidate {
     return this.json;
   }
 
-  toNeuralNetwork(): NeuralNetwork {
-    if (this.json == null) {
-      throw new Error(
-        'CV json is null, you must call .train() first before getting the neural network'
-      );
-    }
+  toNeuralNetwork(): NetworkType {
     return this.fromJSON(this.json);
   }
 
-  toJSON(): ICrossValidateJSON | null {
+  toJSON(): ICrossValidateJSON<ReturnType<NetworkType['toJSON']>> | null {
     return this.json;
   }
 
-  fromJSON(crossValidateJson: ICrossValidateJSON): NeuralNetwork {
+  fromJSON(
+    crossValidateJson: ICrossValidateJSON<ReturnType<NetworkType['toJSON']>>
+  ): NetworkType {
     const Classifier = this.Classifier;
-    const json:
-      | ICrossValidationTestPartitionResults
-      | ICrossValidationTestPartitionBinaryResults = (crossValidateJson as ICrossValidateStats).sets.reduce(
-      (prev, cur) => (prev.error < cur.error ? prev : cur)
-    );
+    const winningJSON:
+      | ICrossValidationTestPartitionResults<ReturnType<NetworkType['toJSON']>>
+      | ICrossValidationTestPartitionBinaryResults<
+          ReturnType<NetworkType['toJSON']>
+        > = (crossValidateJson as ICrossValidateStats<
+      ReturnType<NetworkType['toJSON']>
+    >).sets.reduce((prev, cur) => (prev.error < cur.error ? prev : cur));
     if (Classifier.fromJSON) {
-      return Classifier.fromJSON(json);
+      return Classifier.fromJSON(winningJSON.network);
     }
     const instance = new Classifier(this.options);
-    instance.fromJSON(json.network);
-    return instance;
+    if (
+      (instance as {
+        fromJSON?: (json: ReturnType<NetworkType['toJSON']>) => void;
+      }).fromJSON
+    ) {
+      ((instance as unknown) as {
+        fromJSON: (json: ReturnType<NetworkType['toJSON']>) => void;
+      }).fromJSON(winningJSON.network);
+      return instance;
+    } else {
+      throw new Error('no fromJSON method available');
+    }
   }
 }

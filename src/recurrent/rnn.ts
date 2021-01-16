@@ -133,7 +133,7 @@ export class RNN {
 
   initialLayerInputs: Matrix[] = [];
 
-  constructor(options: Partial<IRNNOptions> = {}) {
+  constructor(options: Partial<IRNNOptions & IRNNTrainingOptions> = {}) {
     this.options = { ...this.options, ...options };
     this.updateTrainingOptions({
       ...trainDefaults,

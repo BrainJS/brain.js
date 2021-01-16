@@ -131,8 +131,10 @@ export class RNNTimeStep extends RNN {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  options: IRNNTimeStepOptions = { ...defaults() };
-  constructor(options: Partial<IRNNTimeStepOptions> = {}) {
+  options: IRNNTimeStepOptions = defaults();
+  constructor(
+    options: Partial<IRNNTimeStepOptions & IRNNTrainingOptions> = {}
+  ) {
     super();
     this.options = { ...this.options, ...options };
     this.updateTrainingOptions({
