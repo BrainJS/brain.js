@@ -8,9 +8,9 @@ describe('TrainStream', () => {
   const errorThresh = 0.003;
 
   async function testTrainer(
-    net: NeuralNetwork | LSTMTimeStep,
+    net: NeuralNetwork,
     opts: {
-      data: ITrainingDatum[] | number[] | number[][];
+      data: ITrainingDatum[];
       errorThresh?: number;
       iterations?: number;
     }
