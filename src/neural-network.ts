@@ -65,7 +65,7 @@ export interface INeuralNetworkOptions {
   inputSize: number;
   outputSize: number;
   binaryThresh: number;
-  hiddenLayers: number[] | null;
+  hiddenLayers?: number[];
 }
 
 export function defaults(): INeuralNetworkOptions {
@@ -73,7 +73,6 @@ export function defaults(): INeuralNetworkOptions {
     inputSize: 0,
     outputSize: 0,
     binaryThresh: 0.5,
-    hiddenLayers: null,
   };
 }
 
@@ -196,9 +195,9 @@ export class NeuralNetwork {
     this.options = { ...this.options, ...options };
     this.updateTrainingOptions(options);
 
-    if (options.inputSize && options.hiddenLayers && options.outputSize) {
+    if (options.inputSize && options.outputSize) {
       this.sizes = [options.inputSize]
-        .concat(options.hiddenLayers)
+        .concat(options.hiddenLayers ?? [])
         .concat([options.outputSize]);
     }
   }
@@ -476,7 +475,7 @@ export class NeuralNetwork {
       },
       callback: () => {
         const val = options.callback;
-        return typeof val === 'function' || val === null;
+        return typeof val === 'function' || val === undefined;
       },
       callbackPeriod: () => {
         const val = options.callbackPeriod;
@@ -504,8 +503,6 @@ export class NeuralNetwork {
       },
     };
     for (const p in validations) {
-      if (!validations.hasOwnProperty(p)) continue;
-      if (!options.hasOwnProperty(p)) continue;
       const v = (options as unknown) as { [v: string]: string };
       if (!validations[p]()) {
         throw new Error(
@@ -1019,7 +1016,7 @@ export class NeuralNetwork {
   test(
     data: INeuralNetworkDatum[]
   ): INeuralNetworkTestResult | INeuralNetworkBinaryTestResult {
-    const preparedData = this.formatData(data);
+    const { preparedData } = this.prepTraining(data);
     // for binary classification problems with one output node
     const isBinary = preparedData[0].output.length === 1;
     // for classification problems
@@ -1027,7 +1024,6 @@ export class NeuralNetwork {
     // run each pattern through the trained network and collect
     // error and misclassification statistics
     let errorSum = 0;
-
     if (isBinary) {
       let falsePos = 0;
       let falseNeg = 0;
@@ -1111,7 +1107,7 @@ export class NeuralNetwork {
   }
 
   toJSON(): INeuralNetworkJSON {
-    if (this.sizes === null) {
+    if (!this.sizes.length) {
       this.initialize();
     }
     // use Array.from, keeping json small

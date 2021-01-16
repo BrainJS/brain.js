@@ -12,20 +12,6 @@ export interface INeuralNetworkOptions {
    */
   hiddenLayers?: number[];
 
-  /**
-   * supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
-   *
-   * @default 'sigmoid'
-   */
-  activation?: NeuralNetworkActivation;
-
-  /**
-   * supported for activation type 'leaky-relu'
-   *
-   * @default 0.01
-   */
-  leakyReluAlpha?: number;
-
   [x: string]: any;
 }
 export type NeuralNetworkActivation =
@@ -98,26 +84,6 @@ export interface INeuralNetworkState {
   iterations: number;
   error: number;
 }
-
-export interface INeuralNetworkJSON {
-  sizes: number[];
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  layers: object[];
-  outputLookup: any;
-  inputLookup: any;
-  activation: NeuralNetworkActivation;
-  trainOpts: INeuralNetworkTrainingOptions;
-  leakyReluAlpha?: number;
-}
-
-export interface INeuralNetworkTrainingData {
-  input: NeuralNetworkInput;
-  output: NeuralNetworkOutput;
-}
-
-export type NeuralNetworkInput = number[];
-
-export type NeuralNetworkOutput = number[];
 
 export interface INeuralNetworkTestResult {
   misclasses: any;
