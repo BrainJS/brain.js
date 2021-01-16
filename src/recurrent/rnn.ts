@@ -63,7 +63,18 @@ export interface IRNNTrainingOptions {
   learningRate: number;
   callback?: (status: IRNNStatus) => void;
   callbackPeriod: number;
-  timeout?: number;
+  timeout: number;
+}
+
+export interface IRNNJSONTrainOptions {
+  iterations: number;
+  errorThresh: number;
+  log: boolean | ((status: INeuralNetworkState) => void);
+  logPeriod: number;
+  learningRate: number;
+  callback?: (status: IRNNStatus) => void;
+  callbackPeriod: number;
+  timeout: number | 'Infinity';
 }
 
 export const trainDefaults: IRNNTrainingOptions = {
@@ -73,6 +84,7 @@ export const trainDefaults: IRNNTrainingOptions = {
   logPeriod: 10,
   learningRate: 0.01,
   callbackPeriod: 10,
+  timeout: Infinity,
 };
 
 export interface IRNNHiddenLayer {
@@ -497,7 +509,48 @@ export class RNN {
   }
 
   validateTrainingOptions(options: INeuralNetworkTrainOptions): void {
-    NeuralNetwork.prototype.validateTrainingOptions.call(this, options);
+    const validations: { [fnName: string]: () => boolean } = {
+      iterations: () => {
+        const val = options.iterations;
+        return typeof val === 'number' && val > 0;
+      },
+      errorThresh: () => {
+        const val = options.errorThresh;
+        return typeof val === 'number' && val > 0 && val < 1;
+      },
+      log: () => {
+        const val = options.log;
+        return typeof val === 'function' || typeof val === 'boolean';
+      },
+      logPeriod: () => {
+        const val = options.logPeriod;
+        return typeof val === 'number' && val > 0;
+      },
+      learningRate: () => {
+        const val = options.learningRate;
+        return typeof val === 'number' && val > 0 && val < 1;
+      },
+      callback: () => {
+        const val = options.callback;
+        return typeof val === 'function' || val === undefined;
+      },
+      callbackPeriod: () => {
+        const val = options.callbackPeriod;
+        return typeof val === 'number' && val > 0;
+      },
+      timeout: () => {
+        const val = options.timeout;
+        return typeof val === 'number' && val > 0;
+      },
+    };
+    for (const p in validations) {
+      const v = (options as unknown) as { [v: string]: string };
+      if (!validations[p]()) {
+        throw new Error(
+          `[${p}, ${v[p]}] is out of normal training range, your network will probably not train.`
+        );
+      }
+    }
   }
 
   /**
@@ -613,6 +666,13 @@ export class RNN {
     return {
       type: this.constructor.name,
       options: { ...options, dataFormatter: options.dataFormatter.toJSON() },
+      trainOpts: {
+        ...this.trainOpts,
+        timeout:
+          this.trainOpts.timeout === Infinity
+            ? 'Infinity'
+            : this.trainOpts.timeout,
+      },
       input: model.input.toJSON(),
       hiddenLayers: model.hiddenLayers.map((hiddenLayer) => {
         const layers: { [index: string]: IMatrixJSON } = {};
@@ -916,6 +976,7 @@ export function trainPattern(
 export interface IRNNJSON {
   type: string;
   options: IRNNJSONOptions;
+  trainOpts: IRNNJSONTrainOptions;
   input: IMatrixJSON;
   hiddenLayers: Array<{ [index: string]: IMatrixJSON }>;
   outputConnector: IMatrixJSON;

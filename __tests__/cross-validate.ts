@@ -34,6 +34,17 @@ describe('CrossValidate', () => {
       }).toThrow('Training set size is too small for 1 k folds of 4');
     });
     it('handles successful training', () => {
+      class SpyFakeNN extends FakeNN {
+        setActivation() {
+          this.runInput = (inputs: Float32Array): Float32Array => {
+            if (inputs[0] === 0 && inputs[1] === 1) return Float32Array.from([1]);
+            if (inputs[0] === 0 && inputs[1] === 0) return Float32Array.from([0]);
+            if (inputs[0] === 1 && inputs[1] === 1) return Float32Array.from([0]);
+            if (inputs[0] === 1 && inputs[1] === 0) return Float32Array.from([1]);
+            throw new Error('unknown input');
+          }
+        }
+      }
       const xorTrainingData = [
         { input: [0, 1], output: [1] },
         { input: [0, 0], output: [0] },
@@ -45,7 +56,11 @@ describe('CrossValidate', () => {
         { input: [1, 1], output: [0] },
         { input: [1, 0], output: [1] },
       ];
-      const net = new CrossValidate(FakeNN, { inputSize: 1, hiddenLayers: [10], outputSize: 1 });
+      const net = new CrossValidate(SpyFakeNN, {
+        inputSize: 1,
+        hiddenLayers: [10],
+        outputSize: 1
+      });
       net.shuffleArray = (input) => input;
       const result = net.train(xorTrainingData);
       if (!CrossValidate.isBinaryResults(result)) {
@@ -77,11 +92,22 @@ describe('CrossValidate', () => {
         expect(set.testTime >= 0).toBeTruthy();
         expect(set.trainTime >= 0).toBeTruthy();
         expect(set.total).toBe(2);
-        expect(set.network).toBe(null);
+        expect(set.network).not.toBeFalsy();
         expect(set.misclasses).toEqual([]);
       }
     });
     it('handles unsuccessful training', () => {
+      class SpyFakeNN extends FakeNN {
+        setActivation() {
+          this.runInput = (inputs: Float32Array): Float32Array => {
+            if (inputs[0] === 0 && inputs[1] === 1) return Float32Array.from([0]);
+            if (inputs[0] === 0 && inputs[1] === 0) return Float32Array.from([1]);
+            if (inputs[0] === 1 && inputs[1] === 1) return Float32Array.from([1]);
+            if (inputs[0] === 1 && inputs[1] === 0) return Float32Array.from([0]);
+            throw new Error('unknown input');
+          }
+        }
+      }
       const xorTrainingData = [
         { input: [0, 1], output: [1] },
         { input: [0, 0], output: [0] },
@@ -93,7 +119,7 @@ describe('CrossValidate', () => {
         { input: [1, 1], output: [0] },
         { input: [1, 0], output: [1] },
       ];
-      const net = new CrossValidate(FakeNN);
+      const net = new CrossValidate(SpyFakeNN);
       net.shuffleArray = (input) => input;
       const result = net.train(xorTrainingData);
       if (!CrossValidate.isBinaryResults(result)) {
@@ -127,7 +153,7 @@ describe('CrossValidate', () => {
         expect(set.testTime >= 0).toBeTruthy();
         expect(set.trainTime >= 0).toBeTruthy();
         expect(set.total).toBe(2);
-        expect(set.network).toBe(null);
+        expect(set.network).not.toBeFalsy();
         expect(set.misclasses.length > 0).toBeTruthy();
         expect(set.misclasses[0].hasOwnProperty('input')).toBeTruthy();
         expect(set.misclasses[0].input.length).toBeTruthy();
