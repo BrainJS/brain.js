@@ -66,7 +66,7 @@ describe('FeedForward Class: End to End', () => {
 
       // Use whole numbers to better test accuracy
       // set biases
-      const standardNetBiases = standardNet.biases as number[][];
+      const standardNetBiases = standardNet.biases;
       const biasLayers0Weights = biasLayers[0].weights as number[][];
       expect(standardNetBiases[1].length).toBe(3);
       standardNetBiases[1][0] = biasLayers0Weights[0][0] = useDecimals
@@ -86,7 +86,7 @@ describe('FeedForward Class: End to End', () => {
         : 12;
 
       // set weights
-      const standardNetWeights = standardNet.weights as number[][][];
+      const standardNetWeights = standardNet.weights;
       const weightLayers0Weights = weightLayers[0].weights as number[][];
       expect(standardNetWeights[1].length).toBe(3);
       expect(standardNetWeights[1][0].length).toBe(2);
@@ -171,7 +171,7 @@ describe('FeedForward Class: End to End', () => {
         // Also, NeuralNetwork uses a negative value, while FeedForward uses a positive one
         const sigmoidLayers0InputLayerDeltas = (sigmoidLayers[0]
           .inputLayer as ILayer).deltas as number[][];
-        const standardNetDeltas = standardNet.deltas as number[][];
+        const standardNetDeltas = standardNet.deltas;
         expect(-sigmoidLayers0InputLayerDeltas[0][0]).not.toEqual(0);
         expect(-sigmoidLayers0InputLayerDeltas[0][0]).toEqual(
           standardNetDeltas[1][0]
@@ -194,7 +194,7 @@ describe('FeedForward Class: End to End', () => {
 
         const targetLayerInputLayerDeltas = (targetLayer.inputLayer as ILayer)
           .deltas as number[][];
-        const standardNetErrors = standardNet.errors as number[][];
+        const standardNetErrors = standardNet.errors;
         expect(-targetLayerInputLayerDeltas[0][0]).not.toEqual(0);
         expect(-targetLayerInputLayerDeltas[0][0]).toEqual(
           standardNetErrors[2][0]
@@ -224,7 +224,7 @@ describe('FeedForward Class: End to End', () => {
 
         // test only the sigmoid layers, as that is the final equation location per layer
         const sigmoidLayers0Weights = sigmoidLayers[0].weights as number[][];
-        const standardNetOutputs = standardNet.outputs as number[][];
+        const standardNetOutputs = standardNet.outputs;
         expect(sigmoidLayers0Weights[0][0]).not.toEqual(0);
         expect(sigmoidLayers0Weights[0][0]).toEqual(standardNetOutputs[1][0]);
         expect(sigmoidLayers0Weights[1][0]).not.toEqual(0);
@@ -270,7 +270,7 @@ describe('FeedForward Class: End to End', () => {
         // test only the sigmoid layers, as that is the final equation location per layer
         const sigmoidLayers0WeightsAfterTraining = sigmoidLayers[0]
           .weights as number[][];
-        const standardNetOutputs = standardNet.outputs as number[][];
+        const standardNetOutputs = standardNet.outputs
         expect(sigmoidLayers0WeightsAfterTraining[0][0]).not.toEqual(0);
         expect(sigmoidLayers0WeightsAfterTraining[0][0]).toEqual(
           standardNetOutputs[1][0]
