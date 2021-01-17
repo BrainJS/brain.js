@@ -124,7 +124,7 @@ describe('TrainStream', () => {
 
         return await testTrainer(net, { data: not, errorThresh }).then(() => {
           for (const i of not) {
-            const output = net.run(i.input)[0];
+            const output = net.run<typeof i>(i.input)[0];
             const target = i.output[0];
 
             expect(

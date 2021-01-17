@@ -35,7 +35,7 @@ export class TrainStream extends Writable {
   callback?: (status: { iterations: number; error: number }) => void;
   firstDatum: INeuralNetworkDatum[] | undefined;
 
-  constructor(options: ITrainStreamOptions) {
+  constructor(options: Partial<ITrainStreamOptions>) {
     super({
       objectMode: true,
     });

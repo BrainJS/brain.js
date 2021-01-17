@@ -1,17 +1,17 @@
 import { Thaw } from 'thaw.js';
-import { INumberHash, lookup } from './lookup';
+import { ITrainingStatus } from './feed-forward';
+import { INumberHash, ITrainingDatum, lookup } from './lookup';
+import {
+  INeuralNetworkBinaryTestResult,
+  INeuralNetworkState,
+  INeuralNetworkTestResult,
+} from './neural-network-types';
 import { arrayToFloat32Array } from './utilities/cast';
 import { LookupTable } from './utilities/lookup-table';
 import { max } from './utilities/max';
 import { mse } from './utilities/mse';
 import { randos } from './utilities/randos';
 import { zeros } from './utilities/zeros';
-import { ITrainingStatus } from './feed-forward';
-import {
-  INeuralNetworkBinaryTestResult,
-  INeuralNetworkState,
-  INeuralNetworkTestResult,
-} from './neural-network-types';
 
 type NeuralNetworkFormatter =
   | ((v: INumberHash) => Float32Array)
@@ -277,7 +277,7 @@ export class NeuralNetwork {
     return this.isInitialized;
   }
 
-  run<T extends number[] | Float32Array | INumberHash>(input: T): T {
+  run<T extends ITrainingDatum>(input: T): T {
     if (!this.isRunnable) {
       throw new Error('network not runnable');
     }
