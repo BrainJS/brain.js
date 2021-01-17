@@ -9,8 +9,14 @@ import { INeuralNetworkState } from './neural-network-types';
 import { GRUTimeStep } from './recurrent/gru-time-step';
 import { LSTMTimeStep } from './recurrent/lstm-time-step';
 
+// function instanceOfRNN(
+//   net: NeuralNetwork | NeuralNetworkGPU | LSTMTimeStep | GRUTimeStep
+// ): net is LSTMTimeStep | GRUTimeStep {
+//   return 'model' in net;
+// }
+
 interface ITrainStreamOptions extends INeuralNetworkTrainOptions {
-  neuralNetwork: NeuralNetwork | LSTMTimeStep;
+  neuralNetwork: NeuralNetwork | NeuralNetworkGPU | LSTMTimeStep | GRUTimeStep;
   floodCallback?: () => void;
   doneTrainingCallback?: (stats: { error: number; iterations: number }) => void;
 }
@@ -22,7 +28,7 @@ interface ITrainStreamOptions extends INeuralNetworkTrainOptions {
  * @constructor
  */
 export class TrainStream extends Writable {
-  neuralNetwork: NeuralNetwork | LSTMTimeStep | GRUTimeStep | NeuralNetworkGPU;
+  neuralNetwork: NeuralNetwork | NeuralNetworkGPU | LSTMTimeStep | GRUTimeStep;
 
   dataFormatDetermined: boolean;
   i: number;
@@ -112,7 +118,7 @@ export class TrainStream extends Writable {
     this.count++;
 
     const data = this.neuralNetwork.formatData(chunk);
-    const error = this.neuralNetwork.trainPattern(data[0], true);
+    const error = this.neuralNetwork.trainPattern(data[0], true) as number;
 
     if (error !== null) {
       this.sum += error;
