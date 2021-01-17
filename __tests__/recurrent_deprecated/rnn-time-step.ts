@@ -1,4 +1,4 @@
-import { INumberObject } from '../../src/lookup';
+import { INumberHash } from '../../src/lookup';
 import { LSTMTimeStep } from '../../src/recurrent/lstm-time-step';
 import { Matrix } from '../../src/recurrent/matrix';
 import { Equation } from '../../src/recurrent/matrix/equation';
@@ -2440,7 +2440,7 @@ describe('RNNTimeStep', () => {
       expect(closeToFive.friday.toFixed(1)).toBe('0.5');
       expect(closeToOne.friday.toFixed(1)).toBe('0.1');
       expect(
-        (fn as (input: INumberObject) => INumberObject)({
+        (fn as (input: INumberHash) => INumberHash)({
           monday: 0.1,
           tuesday: 0.2,
           wednesday: 0.3,
@@ -2448,7 +2448,7 @@ describe('RNNTimeStep', () => {
         }).friday
       ).toBe(closeToFive.friday);
       expect(
-        (fn as (input: INumberObject) => INumberObject)({
+        (fn as (input: INumberHash) => INumberHash)({
           monday: 0.5,
           tuesday: 0.4,
           wednesday: 0.3,
@@ -2469,7 +2469,7 @@ describe('RNNTimeStep', () => {
         { monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 },
       ]);
       const fn = net.toFunction();
-      const result = (fn as (input: INumberObject) => INumberObject)({
+      const result = (fn as (input: INumberHash) => INumberHash)({
         monday: 1,
         tuesday: 2,
         wednesday: 3,

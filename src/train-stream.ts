@@ -5,9 +5,10 @@ import {
   NeuralNetwork,
 } from './neural-network';
 import { INeuralNetworkState } from './neural-network-types';
+import { LSTMTimeStep } from './recurrent/lstm-time-step';
 
 interface ITrainStreamOptions extends INeuralNetworkTrainOptions {
-  neuralNetwork: NeuralNetwork;
+  neuralNetwork: NeuralNetwork | LSTMTimeStep;
   floodCallback?: () => void;
   doneTrainingCallback?: (stats: { error: number; iterations: number }) => void;
 }
@@ -19,7 +20,7 @@ interface ITrainStreamOptions extends INeuralNetworkTrainOptions {
  * @constructor
  */
 export class TrainStream extends Writable {
-  neuralNetwork: NeuralNetwork;
+  neuralNetwork: NeuralNetwork | LSTMTimeStep;
   dataFormatDetermined: boolean;
   i: number;
   size: number;

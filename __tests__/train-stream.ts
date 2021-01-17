@@ -1,4 +1,4 @@
-import { INumberObject, ITrainingDatum } from '../src/lookup';
+import { INumberHash, ITrainingDatum } from '../src/lookup';
 import { NeuralNetwork } from '../src/neural-network';
 import { LSTMTimeStep } from '../src/recurrent/lstm-time-step';
 import { TrainStream } from '../src/train-stream';
@@ -8,7 +8,7 @@ describe('TrainStream', () => {
   const errorThresh = 0.003;
 
   async function testTrainer(
-    net: NeuralNetwork,
+    net: NeuralNetwork | LSTMTimeStep,
     opts: {
       data: ITrainingDatum[];
       errorThresh?: number;
@@ -18,15 +18,6 @@ describe('TrainStream', () => {
     const { data } = opts;
 
     return await new Promise((resolve) => {
-      const trainStream = new TrainStream(
-        Object.assign({}, opts, {
-          neuralNetwork: net,
-          // eslint-disable-next-line @typescript-eslint/no-use-before-define
-          floodCallback: flood,
-          doneTrainingCallback: resolve,
-        })
-      );
-
       /**
        * Every time you finish an epoch of flood call `trainStream.endInputs()`
        */
@@ -37,6 +28,14 @@ describe('TrainStream', () => {
 
         trainStream.endInputs();
       }
+
+      const trainStream = new TrainStream(
+        Object.assign({}, opts, {
+          neuralNetwork: net,
+          floodCallback: flood,
+          doneTrainingCallback: resolve,
+        })
+      );
 
       /**
        * kick off the stream
@@ -70,7 +69,7 @@ describe('TrainStream', () => {
         { input: { orange: 1 }, output: { modified: 1 } },
       ];
 
-      function largestKey(object: INumberObject) {
+      function largestKey(object: INumberHash) {
         let max = -Infinity;
         let maxKey = null;
 
@@ -89,8 +88,8 @@ describe('TrainStream', () => {
       return testTrainer(net, { data: trainingData, errorThresh: 0.001 }).then(
         () => {
           for (const data of trainingData) {
-            const output = net.run(data.input);
-            const target = data.output as INumberObject;
+            const output = net.run(data.input) as INumberHash;
+            const target = data.output as INumberHash;
 
             const outputKey = largestKey(output);
             const targetKey = largestKey(target);
@@ -124,7 +123,7 @@ describe('TrainStream', () => {
 
         return await testTrainer(net, { data: not, errorThresh }).then(() => {
           for (const i of not) {
-            const output = net.run<typeof i>(i.input)[0];
+            const output = net.run<number[]>(i.input)[0];
             const target = i.output[0];
 
             expect(

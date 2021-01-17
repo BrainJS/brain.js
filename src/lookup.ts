@@ -10,11 +10,7 @@ export interface INumberArray {
   [index: number]: number;
 }
 
-export interface INumberObject {
-  [name: string]: number;
-}
-
-export type InputOutputValue = INumberArray | INumberObject;
+export type InputOutputValue = INumberArray | INumberHash;
 
 export interface ITrainingDatum {
   input: InputOutputValue | InputOutputValue[] | KernelOutput;
@@ -121,7 +117,7 @@ export const lookup = {
    */
   toArray(
     lookup: INumberHash,
-    object: INumberObject,
+    object: INumberHash,
     arrayLength: number
   ): Float32Array {
     const result = new Float32Array(arrayLength);
@@ -245,9 +241,9 @@ export const lookup = {
         typeof (lastData as Float32Array).buffer !== 'object'
       ) {
         shape.push('object');
-        const possibleNumber:
-          | number
-          | INumberObject = (lastData as INumberObject)[p];
+        const possibleNumber: number | INumberHash = (lastData as INumberHash)[
+          p
+        ];
         if (typeof possibleNumber === 'number') {
           shape.push('number');
           break;

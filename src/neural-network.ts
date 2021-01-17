@@ -1,6 +1,6 @@
 import { Thaw } from 'thaw.js';
 import { ITrainingStatus } from './feed-forward';
-import { INumberHash, ITrainingDatum, lookup } from './lookup';
+import { INumberHash, lookup } from './lookup';
 import {
   INeuralNetworkBinaryTestResult,
   INeuralNetworkState,
@@ -277,7 +277,7 @@ export class NeuralNetwork {
     return this.isInitialized;
   }
 
-  run<T extends ITrainingDatum>(input: T): T {
+  run<T extends number[] | Float32Array | INumberHash>(input: T): T {
     if (!this.isRunnable) {
       throw new Error('network not runnable');
     }
