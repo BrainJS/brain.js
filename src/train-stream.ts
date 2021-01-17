@@ -4,7 +4,9 @@ import {
   INeuralNetworkTrainOptions,
   NeuralNetwork,
 } from './neural-network';
+import { NeuralNetworkGPU } from './neural-network-gpu';
 import { INeuralNetworkState } from './neural-network-types';
+import { GRUTimeStep } from './recurrent/gru-time-step';
 import { LSTMTimeStep } from './recurrent/lstm-time-step';
 
 interface ITrainStreamOptions extends INeuralNetworkTrainOptions {
@@ -20,7 +22,8 @@ interface ITrainStreamOptions extends INeuralNetworkTrainOptions {
  * @constructor
  */
 export class TrainStream extends Writable {
-  neuralNetwork: NeuralNetwork | LSTMTimeStep;
+  neuralNetwork: NeuralNetwork | LSTMTimeStep | GRUTimeStep | NeuralNetworkGPU;
+
   dataFormatDetermined: boolean;
   i: number;
   size: number;
