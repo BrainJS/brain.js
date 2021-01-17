@@ -1,8 +1,12 @@
 import { Writable } from 'stream';
-import { INeuralNetworkDatum, NeuralNetwork } from './neural-network';
+import {
+  INeuralNetworkDatum,
+  INeuralNetworkTrainOptions,
+  NeuralNetwork,
+} from './neural-network';
 import { INeuralNetworkState } from './neural-network-types';
 
-interface ITrainStreamOptions {
+interface ITrainStreamOptions extends INeuralNetworkTrainOptions {
   neuralNetwork: NeuralNetwork;
   floodCallback?: () => void;
   doneTrainingCallback?: (stats: { error: number; iterations: number }) => void;
@@ -29,14 +33,12 @@ export class TrainStream extends Writable {
   logPeriod: number;
   callbackPeriod: number;
   callback?: (status: { iterations: number; error: number }) => void;
-  firstDatum: INeuralNetworkDatum | undefined;
+  firstDatum: INeuralNetworkDatum[] | undefined;
 
   constructor(options: ITrainStreamOptions) {
     super({
       objectMode: true,
     });
-
-    options = options || {};
 
     // require the neuralNetwork
     if (!options.neuralNetwork) {
@@ -97,7 +99,7 @@ export class TrainStream extends Writable {
       this.neuralNetwork.addFormat(chunk[0]);
 
       if (this.firstDatum === undefined) {
-        this.firstDatum = chunk[0];
+        this.firstDatum = chunk;
       }
 
       return next();
