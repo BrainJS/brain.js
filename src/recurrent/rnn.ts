@@ -956,22 +956,17 @@ ${innerFunctionsSwitch.join('\n')}
       cb ? cb(src) : src
     ) as RNNFunction;
   }
-}
 
-// TODO: move inside
-export function trainPattern(
-  net: RNN,
-  input: number[],
-  logErrorRate?: boolean
-): number {
-  const error = net.trainInput(input);
-  net.backpropagate(input);
-  net.adjustWeights();
+  trainPattern(net: RNN, input: number[], logErrorRate?: boolean): number {
+    const error = net.trainInput(input);
+    net.backpropagate(input);
+    net.adjustWeights();
 
-  if (logErrorRate) {
-    return error;
+    if (logErrorRate) {
+      return error;
+    }
+    return 0;
   }
-  return 0;
 }
 
 export interface IRNNJSON {
