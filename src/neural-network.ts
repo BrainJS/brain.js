@@ -1,6 +1,7 @@
+import { KernelOutput } from 'gpu.js';
 import { Thaw } from 'thaw.js';
 import { ITrainingStatus } from './feed-forward';
-import { INumberHash, lookup } from './lookup';
+import { InputOutputValue, INumberHash, lookup } from './lookup';
 import {
   INeuralNetworkBinaryTestResult,
   INeuralNetworkState,
@@ -137,6 +138,7 @@ export function trainDefaults(): INeuralNetworkTrainOptions {
 
 export type INeuralNetworkData = number[] | Float32Array | INumberHash;
 
+// TODO: should be replaced by ITrainingDatum
 export interface INeuralNetworkDatum {
   input: INeuralNetworkData;
   output: INeuralNetworkData;
@@ -277,7 +279,9 @@ export class NeuralNetwork {
     return this.isInitialized;
   }
 
-  run<T extends number[] | Float32Array | INumberHash>(input: T): T {
+  run<T extends InputOutputValue | InputOutputValue[] | KernelOutput>(
+    input: T
+  ): T {
     if (!this.isRunnable) {
       throw new Error('network not runnable');
     }

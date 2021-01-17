@@ -1,12 +1,14 @@
 import {
+  alias,
   GPU,
+  GPUFunction,
   IKernelFunctionThis,
   KernelOutput,
   Texture,
-  alias,
   utils,
-  GPUFunction,
 } from 'gpu.js';
+import { ITrainingStatus } from './feed-forward';
+import { InputOutputValue, INumberHash, lookup } from './lookup';
 import {
   IJSONLayer,
   INeuralNetworkDatum,
@@ -16,9 +18,7 @@ import {
   INeuralNetworkTrainOptions,
   NeuralNetwork,
 } from './neural-network';
-import { INumberHash, lookup } from './lookup';
 import { release } from './utilities/kernel';
-import { ITrainingStatus } from './feed-forward';
 
 export interface INeuralNetworkGPUDatumFormatted {
   input: KernelOutput;
@@ -592,7 +592,9 @@ export class NeuralNetworkGPU extends NeuralNetwork {
     );
   }
 
-  run<T extends number[] | Float32Array | INumberHash>(input: T): T {
+  run<T extends InputOutputValue | InputOutputValue[] | KernelOutput>(
+    input: T
+  ): T {
     if (!this.isRunnable) {
       throw new Error('network not runnable');
     }

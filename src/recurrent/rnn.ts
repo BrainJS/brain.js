@@ -1,5 +1,5 @@
 import { Log } from '../feed-forward';
-import { INeuralNetworkTrainOptions, NeuralNetwork } from '../neural-network';
+import { INeuralNetworkTrainOptions } from '../neural-network';
 import { INeuralNetworkState } from '../neural-network-types';
 import {
   DataFormatter,
@@ -958,6 +958,7 @@ ${innerFunctionsSwitch.join('\n')}
   }
 }
 
+// TODO: move inside
 export function trainPattern(
   net: RNN,
   input: number[],
