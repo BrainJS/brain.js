@@ -1,11 +1,6 @@
 import { IMatrixJSON } from '../../src/recurrent/matrix';
 import { Equation } from '../../src/recurrent/matrix/equation';
-import {
-  defaults,
-  RNN,
-  RNNFunction,
-  trainPattern,
-} from '../../src/recurrent/rnn';
+import { defaults, RNN, RNNFunction } from '../../src/recurrent/rnn';
 import { DataFormatter } from '../../src/utilities/data-formatter';
 import { allMatrices } from '../test-utils';
 
@@ -344,7 +339,7 @@ describe('RNN', () => {
       for (let i = 0; i < 10; i++) {
         error = 0;
         for (let j = 0; j < 4; j++) {
-          error += trainPattern(net, xorNetValues[j], true);
+          error += net.trainPattern(xorNetValues[j], true);
         }
         if (i === 0) {
           initialError = error;
@@ -357,7 +352,7 @@ describe('RNN', () => {
       const net = xorNet();
       for (let i = 0; i < 10; i++) {
         xorNetValues.forEach(function (value) {
-          trainPattern(net, value, true);
+          net.trainPattern(value, true);
         });
       }
       expect(net.run().length).toBe(3);
@@ -481,18 +476,18 @@ describe('RNN', () => {
 
         // over fit on purpose
         for (let i = 0; i < 10; i++) {
-          trainPattern(net, [0, 1, 1]);
-          trainPattern(net, [1, 0, 1]);
-          trainPattern(net, [1, 1, 0]);
-          trainPattern(net, [0, 0, 0]);
+          net.trainPattern([0, 1, 1]);
+          net.trainPattern([1, 0, 1]);
+          net.trainPattern([1, 1, 0]);
+          net.trainPattern([0, 0, 0]);
         }
 
-        const error = trainPattern(net, [0, 1, 1], true);
+        const error = net.trainPattern([0, 1, 1], true);
         const jsonString = JSON.stringify(net.toJSON());
         const clone = new RNN();
         clone.fromJSON(JSON.parse(jsonString));
         expect(jsonString).toBe(JSON.stringify(clone.toJSON()));
-        const newError = trainPattern(clone, [0, 1, 1], true);
+        const newError = clone.trainPattern([0, 1, 1], true);
         expect(error - newError < 0.02).toBeTruthy();
         expect(jsonString).not.toBe(JSON.stringify(clone.toJSON()));
         expect(clone.options.inputSize).toBe(7);
@@ -609,7 +604,7 @@ describe('RNN', () => {
       net.initialize();
 
       for (let i = 0; i < 100; i++) {
-        trainPattern(net, dataFormatter.toIndexes('hi mom!'));
+        net.trainPattern(dataFormatter.toIndexes('hi mom!'));
         // if (i % 10) {
         //   console.log(dataFormatter.toCharacters(net.run()).join(''));
         // }

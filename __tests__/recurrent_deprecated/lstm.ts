@@ -1,7 +1,7 @@
 import { LSTM } from '../../src/recurrent/lstm';
-import { RNN, trainPattern } from '../../src/recurrent/rnn';
-import { DataFormatter } from '../../src/utilities/data-formatter';
 import { IMatrixJSON } from '../../src/recurrent/matrix';
+import { RNN } from '../../src/recurrent/rnn';
+import { DataFormatter } from '../../src/utilities/data-formatter';
 
 describe('LSTM', () => {
   describe('.getHiddenLayer()', () => {
@@ -98,7 +98,7 @@ describe('LSTM', () => {
 
         const clone = new LSTM();
         clone.fromJSON(JSON.parse(jsonString));
-        trainPattern(clone, [0, 1, 2, 3, 4, 5]);
+        clone.trainPattern([0, 1, 2, 3, 4, 5]);
 
         expect(jsonString).not.toEqual(JSON.stringify(clone.toJSON()));
         expect(clone.options.inputSize).toBe(6);
@@ -119,7 +119,7 @@ describe('LSTM', () => {
       });
       net.initialize();
       for (let i = 0; i < 100; i++) {
-        trainPattern(net, dataFormatter.toIndexes('hi mom!'));
+        net.trainPattern(dataFormatter.toIndexes('hi mom!'));
         // if (i % 10) {
         //   console.log(dataFormatter.toCharacters(net.run()).join(''));
         // }

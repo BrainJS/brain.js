@@ -629,7 +629,7 @@ export class RNN {
     for (i = 0; i < iterations && error > errorThresh; i++) {
       let sum = 0;
       for (let j = 0; j < inputs.length; j++) {
-        const err = trainPattern(this, inputs[j], true);
+        const err = this.trainPattern(inputs[j], true);
         sum += err;
       }
       error = sum / data.length;
@@ -957,10 +957,10 @@ ${innerFunctionsSwitch.join('\n')}
     ) as RNNFunction;
   }
 
-  trainPattern(net: RNN, input: number[], logErrorRate?: boolean): number {
-    const error = net.trainInput(input);
-    net.backpropagate(input);
-    net.adjustWeights();
+  trainPattern(input: number[], logErrorRate?: boolean): number {
+    const error = this.trainInput(input);
+    this.backpropagate(input);
+    this.adjustWeights();
 
     if (logErrorRate) {
       return error;
