@@ -1,20 +1,26 @@
 import { INumberHash, ITrainingDatum } from '../src/lookup';
 import { NeuralNetwork } from '../src/neural-network';
 import { LSTMTimeStep } from '../src/recurrent/lstm-time-step';
-import { TrainStream } from '../src/train-stream';
+import { ITrainStreamNetwork, TrainStream } from '../src/train-stream';
+import { INeuralNetworkState } from '../src/neural-network-types';
 
 describe('TrainStream', () => {
   const wiggle = 0.1;
   const errorThresh = 0.003;
 
-  async function testTrainer(
-    net: NeuralNetwork | LSTMTimeStep,
+  async function testTrainer<Network extends ITrainStreamNetwork<
+      Parameters<Network['addFormat']>[0],
+      Parameters<Network['trainPattern']>[0],
+      Network['trainOpts']
+    >
+  >(
+    net: Network,
     opts: {
-      data: ITrainingDatum[];
+      data: Array<Parameters<Network['addFormat']>[0]>;
       errorThresh?: number;
       iterations?: number;
     }
-  ): Promise<{ error: number; iterations: number }> {
+  ): Promise<INeuralNetworkState> {
     const { data } = opts;
 
     return await new Promise((resolve) => {
@@ -30,11 +36,12 @@ describe('TrainStream', () => {
       }
 
       const trainStream = new TrainStream(
-        Object.assign({}, opts, {
+        {
+          ...opts,
           neuralNetwork: net,
           floodCallback: flood,
           doneTrainingCallback: resolve,
-        })
+        }
       );
 
       /**
@@ -85,7 +92,11 @@ describe('TrainStream', () => {
 
       const net = new NeuralNetwork();
 
-      return testTrainer(net, { data: trainingData, errorThresh: 0.001 }).then(
+      return testTrainer(
+        net,
+        // @ts-ignore TODO: better infer objects
+        { data: trainingData, errorThresh: 0.001 }
+      ).then(
         () => {
           for (const data of trainingData) {
             const output = net.run(data.input) as INumberHash;
@@ -257,7 +268,7 @@ describe('TrainStream', () => {
 
         return await testTrainer(net, { data: and, errorThresh }).then(() => {
           for (const i of and) {
-            const output = net.run(i.input).product;
+            const output = (net.run(i.input) as INumberHash).product;
             const target = i.output.product;
 
             expect(

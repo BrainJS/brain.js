@@ -1,34 +1,30 @@
 import { Writable } from 'stream';
-import {
-  INeuralNetworkDatum,
-  INeuralNetworkTrainOptions,
-  NeuralNetwork,
-} from './neural-network';
-import { NeuralNetworkGPU } from './neural-network-gpu';
+import { INeuralNetworkTrainOptions } from './neural-network';
 import { INeuralNetworkState } from './neural-network-types';
-import { GRUTimeStep } from './recurrent/gru-time-step';
-import { LSTMTimeStep } from './recurrent/lstm-time-step';
 
-// function instanceOfRNN(
-//   net: NeuralNetwork | NeuralNetworkGPU | LSTMTimeStep | GRUTimeStep
-// ): net is LSTMTimeStep | GRUTimeStep {
-//   return 'model' in net;
-// }
+export interface ITrainStreamNetwork<InputType, FormattedType, TrainOptsType> {
+  trainOpts: any;
+  updateTrainingOptions: (trainOpts: Partial<TrainOptsType>) => void;
+  addFormat: (data: InputType) => void;
+  formatData: (data: InputType[]) => FormattedType[];
+  trainPattern: (value: FormattedType, logErrorRate?: boolean) => number | null;
+  verifyIsInitialized: (data: FormattedType[]) => void;
+}
 
-interface ITrainStreamOptions extends INeuralNetworkTrainOptions {
-  neuralNetwork: NeuralNetwork | NeuralNetworkGPU | LSTMTimeStep | GRUTimeStep;
+interface ITrainStreamOptions<Network> extends INeuralNetworkTrainOptions {
+  neuralNetwork: Network;
   floodCallback?: () => void;
   doneTrainingCallback?: (stats: { error: number; iterations: number }) => void;
 }
 
-/**
- *
- * @param opts
- * @returns {TrainStream}
- * @constructor
- */
-export class TrainStream extends Writable {
-  neuralNetwork: NeuralNetwork | NeuralNetworkGPU | LSTMTimeStep | GRUTimeStep;
+export class TrainStream<
+  Network extends ITrainStreamNetwork<
+    Parameters<Network['addFormat']>[0],
+    Parameters<Network['trainPattern']>[0],
+    Network['trainOpts']
+  >
+> extends Writable {
+  neuralNetwork: Network;
 
   dataFormatDetermined: boolean;
   i: number;
@@ -43,9 +39,9 @@ export class TrainStream extends Writable {
   logPeriod: number;
   callbackPeriod: number;
   callback?: (status: { iterations: number; error: number }) => void;
-  firstDatum: INeuralNetworkDatum[] | undefined;
+  firstDatum: Array<Parameters<Network['addFormat']>[0]> | undefined;
 
-  constructor(options: Partial<ITrainStreamOptions>) {
+  constructor(options: Partial<ITrainStreamOptions<Network>>) {
     super({
       objectMode: true,
     });
@@ -85,16 +81,8 @@ export class TrainStream extends Writable {
     this.write(false);
   }
 
-  /**
-   * _write expects data to be in the form of a datum. ie. {input: {a: 1 b: 0}, output: {z: 0}}
-   * @param chunk
-   * @param enc
-   * @param next
-   * @returns {*}
-   * @private
-   */
   _write(
-    chunk: INeuralNetworkDatum[],
+    chunk: Array<Parameters<Network['addFormat']>[0]>,
     enc: BufferEncoding,
     next: (error?: Error | null) => void
   ): void {
@@ -128,10 +116,6 @@ export class TrainStream extends Writable {
     next();
   }
 
-  /**
-   *
-   * @returns {*}
-   */
   finishStreamIteration(): void {
     if (this.dataFormatDetermined && this.size !== this.count) {
       console.warn(

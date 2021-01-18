@@ -18,11 +18,10 @@ export interface ITrainingDatum {
 }
 
 export type FormattableData =
+  | number
   | ITrainingDatum
-  | ITrainingDatum[]
   | InputOutputValue
-  | InputOutputValue[]
-  | InputOutputValue[][];
+  | InputOutputValue[];
 
 /* Functions for turning sparse hashes into arrays and vice versa */
 export const lookup = {
@@ -186,13 +185,9 @@ export const lookup = {
     return object;
   },
 
-  dataShape(data: FormattableData): string[] {
+  dataShape(data: FormattableData[] | FormattableData): string[] {
     const shape = [];
-    let lastData:
-      | InputOutputValue
-      | InputOutputValue[]
-      | InputOutputValue[][]
-      | KernelOutput;
+    let lastData;
     if (data.hasOwnProperty('input')) {
       shape.push('datum');
       lastData = (data as ITrainingDatum).input;

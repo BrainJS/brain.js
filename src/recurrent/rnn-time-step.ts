@@ -375,7 +375,7 @@ export class RNNTimeStep extends RNN {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   train(
-    data: FormattableData,
+    data: FormattableData[],
     trainOpts: Partial<IRNNTrainingOptions> = {}
   ): IRNNStatus {
     this.trainOpts = trainOpts = {
@@ -404,7 +404,7 @@ export class RNNTimeStep extends RNN {
     for (i = 0; i < iterations && error > errorThresh; i++) {
       let sum = 0;
       for (let j = 0; j < formattedData.length; j++) {
-        const err = trainPattern(this, formattedData[j], true);
+        const err = this.trainPattern(formattedData[j], true);
         sum += err;
       }
       error = sum / formattedData.length;
@@ -443,7 +443,20 @@ export class RNNTimeStep extends RNN {
     return errorSum / input.length;
   }
 
-  setSize(data: FormattableData): void {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  trainPattern(input: Float32Array[], logErrorRate?: boolean): number {
+    const error = this.trainArrayOfArray(input);
+    this.backpropagate();
+    this.adjustWeights();
+
+    if (logErrorRate) {
+      return error;
+    }
+    return 0;
+  }
+
+  setSize(data: FormattableData[]): void {
     let size = 0;
     const dataShape = lookup.dataShape(data).join(',');
     switch (dataShape) {
@@ -797,7 +810,7 @@ export class RNNTimeStep extends RNN {
     return result;
   }
 
-  formatData(data: FormattableData): Float32Array[][] {
+  formatData(data: FormattableData[]): Float32Array[][] {
     const dataShape = lookup.dataShape(data).join(',');
     switch (dataShape) {
       case 'array,number':
@@ -832,7 +845,7 @@ export class RNNTimeStep extends RNN {
     }
   }
 
-  test(data: FormattableData): ITestResults {
+  test(data: FormattableData[]): ITestResults {
     // for classification problems
     const misclasses = [];
     // run each pattern through the trained network and collect
@@ -870,9 +883,7 @@ export class RNNTimeStep extends RNN {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  addFormat(
-    value: number[] | number[][] | INumberHash | INumberHash[] | ITrainingDatum
-  ): void {
+  addFormat(value: FormattableData): void {
     const dataShape = lookup.dataShape(value).join(',');
     switch (dataShape) {
       case 'array,array,number':
@@ -1306,21 +1317,6 @@ ${innerFunctionsSwitch.join('\n')}
     // eslint-disable-next-line
     return new Function('rawInput', cb ? cb(src) : src) as RNNTimeStepFunction;
   }
-}
-
-export function trainPattern(
-  net: RNNTimeStep,
-  input: Float32Array[],
-  logErrorRate?: boolean
-): number {
-  const error = net.trainArrayOfArray(input);
-  net.backpropagate();
-  net.adjustWeights();
-
-  if (logErrorRate) {
-    return error;
-  }
-  return 0;
 }
 
 export type RNNTimeStepFunction = <
