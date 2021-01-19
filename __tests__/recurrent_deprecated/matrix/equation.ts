@@ -11,13 +11,18 @@ function fourSquareMatrix(value: number): Matrix {
 }
 
 function getState(props: Partial<IState>): IState {
-  return { ...props,
+  return {
+    ...props,
     name: 'test-state',
     product: new Matrix(1, 1),
     left: new Matrix(1, 1),
     right: new Matrix(1, 1),
-    forwardFn: jest.fn((left: Matrix, right: Matrix, index: number): void => {}),
-    backpropagationFn: jest.fn((left: Matrix, right: Matrix, index: number): void => {}),
+    forwardFn: jest.fn(
+      (left: Matrix, right: Matrix, index: number): void => {}
+    ),
+    backpropagationFn: jest.fn(
+      (left: Matrix, right: Matrix, index: number): void => {}
+    ),
   };
 }
 

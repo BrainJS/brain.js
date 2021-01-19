@@ -1,5 +1,5 @@
 import { Log } from '../feed-forward';
-import { INeuralNetworkTrainOptions, NeuralNetwork } from '../neural-network';
+import { INeuralNetworkTrainOptions } from '../neural-network';
 import { INeuralNetworkState } from '../neural-network-types';
 import {
   DataFormatter,
@@ -149,7 +149,7 @@ export class RNN {
     this.options = { ...this.options, ...options };
     this.updateTrainingOptions({
       ...trainDefaults,
-      ...options,
+      // ...options,
     });
 
     if (options.json) {
@@ -629,7 +629,7 @@ export class RNN {
     for (i = 0; i < iterations && error > errorThresh; i++) {
       let sum = 0;
       for (let j = 0; j < inputs.length; j++) {
-        const err = trainPattern(this, inputs[j], true);
+        const err = this.trainPattern(inputs[j], true);
         sum += err;
       }
       error = sum / data.length;
@@ -956,21 +956,17 @@ ${innerFunctionsSwitch.join('\n')}
       cb ? cb(src) : src
     ) as RNNFunction;
   }
-}
 
-export function trainPattern(
-  net: RNN,
-  input: number[],
-  logErrorRate?: boolean
-): number {
-  const error = net.trainInput(input);
-  net.backpropagate(input);
-  net.adjustWeights();
+  trainPattern(input: number[], logErrorRate?: boolean): number {
+    const error = this.trainInput(input);
+    this.backpropagate(input);
+    this.adjustWeights();
 
-  if (logErrorRate) {
-    return error;
+    if (logErrorRate) {
+      return error;
+    }
+    return 0;
   }
-  return 0;
 }
 
 export interface IRNNJSON {

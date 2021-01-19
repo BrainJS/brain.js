@@ -1,43 +1,42 @@
-import { IMatrixJSON, Matrix } from './matrix';
-import { RandomMatrix } from './matrix/random-matrix';
-import { Equation } from './matrix/equation';
-import {
-  RNN,
-  defaults as rnnDefaults,
-  trainDefaults as rnnTrainDefaults,
-  IRNNOptions,
-  IRNNStatus,
-  IRNNTrainingOptions,
-  last,
-  IRNNHiddenLayerModel,
-  IRNNHiddenLayer,
-} from './rnn';
-import { zeros } from '../utilities/zeros';
-import { softmax } from './matrix/softmax';
-import { randomFloat } from '../utilities/random';
-import { sampleI } from './matrix/sample-i';
-import { maxI } from './matrix/max-i';
 import {
   FormattableData,
   InputOutputValue,
   INumberArray,
   INumberHash,
-  INumberObject,
   ITrainingDatum,
   lookup,
 } from '../lookup';
-import { LookupTable } from '../utilities/lookup-table';
 import { ArrayLookupTable } from '../utilities/array-lookup-table';
 import {
   arraysToFloat32Arrays,
   arrayToFloat32Arrays,
-  objectToFloat32Arrays,
-  objectToFloat32Array,
   inputOutputArraysToFloat32Arrays,
-  inputOutputObjectToFloat32Arrays,
   inputOutputArrayToFloat32Arrays,
   inputOutputObjectsToFloat32Arrays,
+  inputOutputObjectToFloat32Arrays,
+  objectToFloat32Array,
+  objectToFloat32Arrays,
 } from '../utilities/cast';
+import { LookupTable } from '../utilities/lookup-table';
+import { randomFloat } from '../utilities/random';
+import { zeros } from '../utilities/zeros';
+import { IMatrixJSON, Matrix } from './matrix';
+import { Equation } from './matrix/equation';
+import { maxI } from './matrix/max-i';
+import { RandomMatrix } from './matrix/random-matrix';
+import { sampleI } from './matrix/sample-i';
+import { softmax } from './matrix/softmax';
+import {
+  defaults as rnnDefaults,
+  IRNNHiddenLayer,
+  IRNNHiddenLayerModel,
+  IRNNOptions,
+  IRNNStatus,
+  IRNNTrainingOptions,
+  last,
+  RNN,
+  trainDefaults as rnnTrainDefaults,
+} from './rnn';
 
 export type ValuesOf<
   T extends InputOutputValue | InputOutputValue[]
@@ -376,7 +375,7 @@ export class RNNTimeStep extends RNN {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   train(
-    data: FormattableData,
+    data: FormattableData[],
     trainOpts: Partial<IRNNTrainingOptions> = {}
   ): IRNNStatus {
     this.trainOpts = trainOpts = {
@@ -405,7 +404,7 @@ export class RNNTimeStep extends RNN {
     for (i = 0; i < iterations && error > errorThresh; i++) {
       let sum = 0;
       for (let j = 0; j < formattedData.length; j++) {
-        const err = trainPattern(this, formattedData[j], true);
+        const err = this.trainPattern(formattedData[j], true);
         sum += err;
       }
       error = sum / formattedData.length;
@@ -444,7 +443,20 @@ export class RNNTimeStep extends RNN {
     return errorSum / input.length;
   }
 
-  setSize(data: FormattableData): void {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  trainPattern(input: Float32Array[], logErrorRate?: boolean): number {
+    const error = this.trainArrayOfArray(input);
+    this.backpropagate();
+    this.adjustWeights();
+
+    if (logErrorRate) {
+      return error;
+    }
+    return 0;
+  }
+
+  setSize(data: FormattableData[]): void {
     let size = 0;
     const dataShape = lookup.dataShape(data).join(',');
     switch (dataShape) {
@@ -522,7 +534,7 @@ export class RNNTimeStep extends RNN {
     return lastOutput ?? Float32Array.from([]);
   }
 
-  runObject(input: INumberObject): INumberObject {
+  runObject(input: INumberHash): INumberHash {
     if (!this.inputLookup) {
       throw new Error('this.inputLookup not set');
     }
@@ -552,7 +564,7 @@ export class RNNTimeStep extends RNN {
     );
   }
 
-  runArrayOfObject(input: INumberObject[]): INumberObject {
+  runArrayOfObject(input: INumberHash[]): INumberHash {
     if (this.inputLookup === null) {
       throw new Error('this.inputLookup not set');
     }
@@ -634,7 +646,7 @@ export class RNNTimeStep extends RNN {
   }
 
   // Handles data shape of 'array,object,number'
-  formatArrayOfObject(data: INumberObject[]): Float32Array[][] {
+  formatArrayOfObject(data: INumberHash[]): Float32Array[][] {
     this.requireInputOutputOfOne();
     if (!this.inputLookup) {
       const lookupTable = new LookupTable(data);
@@ -649,7 +661,7 @@ export class RNNTimeStep extends RNN {
   }
 
   // Handles data shape of 'array,object,number' when this.options.inputSize > 1
-  formatArrayOfObjectMulti(data: INumberObject[]): Float32Array[][] {
+  formatArrayOfObjectMulti(data: INumberHash[]): Float32Array[][] {
     if (!this.inputLookup) {
       const lookupTable = new LookupTable(data);
       this.inputLookup = this.outputLookup = lookupTable.table;
@@ -698,8 +710,8 @@ export class RNNTimeStep extends RNN {
       const datum = data[i];
       result.push(
         inputOutputObjectToFloat32Arrays(
-          datum.input as INumberObject,
-          datum.output as INumberObject
+          datum.input as INumberHash,
+          datum.output as INumberHash
         )
       );
     }
@@ -716,7 +728,7 @@ export class RNNTimeStep extends RNN {
   }
 
   // Handles data shape of 'array,array,object,number'
-  formatArrayOfArrayOfObject(data: INumberObject[][]): Float32Array[][] {
+  formatArrayOfArrayOfObject(data: INumberHash[][]): Float32Array[][] {
     if (!this.inputLookup) {
       const lookupTable = new LookupTable(data);
       this.inputLookup = this.outputLookup = lookupTable.table;
@@ -798,7 +810,7 @@ export class RNNTimeStep extends RNN {
     return result;
   }
 
-  formatData(data: FormattableData): Float32Array[][] {
+  formatData(data: FormattableData[]): Float32Array[][] {
     const dataShape = lookup.dataShape(data).join(',');
     switch (dataShape) {
       case 'array,number':
@@ -807,9 +819,9 @@ export class RNNTimeStep extends RNN {
         return this.formatArrayOfArray(data as number[][]);
       case 'array,object,number':
         if (this.options.inputSize === 1) {
-          return this.formatArrayOfObject(data as INumberObject[]);
+          return this.formatArrayOfObject(data as INumberHash[]);
         } else {
-          return this.formatArrayOfObjectMulti(data as INumberObject[]);
+          return this.formatArrayOfObjectMulti(data as INumberHash[]);
         }
       case 'array,datum,array,number':
         return this.formatArrayOfDatumOfArray(data as ITrainingDatum[]);
@@ -818,7 +830,7 @@ export class RNNTimeStep extends RNN {
       case 'array,array,array,number':
         return this.formatArrayOfArrayOfArray(data as number[][][]);
       case 'array,array,object,number':
-        return this.formatArrayOfArrayOfObject(data as INumberObject[][]);
+        return this.formatArrayOfArrayOfObject(data as INumberHash[][]);
       case 'array,datum,array,array,number':
         return this.formatArrayOfDatumOfArrayOfArray(data as ITrainingDatum[]);
       case 'array,datum,array,object,number':
@@ -833,7 +845,7 @@ export class RNNTimeStep extends RNN {
     }
   }
 
-  test(data: FormattableData): ITestResults {
+  test(data: FormattableData[]): ITestResults {
     // for classification problems
     const misclasses = [];
     // run each pattern through the trained network and collect
@@ -871,14 +883,7 @@ export class RNNTimeStep extends RNN {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  addFormat(
-    value:
-      | number[]
-      | number[][]
-      | INumberObject
-      | INumberObject[]
-      | ITrainingDatum
-  ): void {
+  addFormat(value: FormattableData): void {
     const dataShape = lookup.dataShape(value).join(',');
     switch (dataShape) {
       case 'array,array,number':
@@ -916,7 +921,7 @@ export class RNNTimeStep extends RNN {
         break;
       }
       case 'array,object,number': {
-        const typedValue = value as INumberObject[];
+        const typedValue = value as INumberHash[];
         for (let i = 0; i < typedValue.length; i++) {
           this.inputLookup = this.outputLookup = lookup.addKeys(
             typedValue[i],
@@ -932,7 +937,7 @@ export class RNNTimeStep extends RNN {
       }
       case 'datum,array,object,number': {
         const typedValue = value as ITrainingDatum;
-        const typedInput = typedValue.input as INumberObject[];
+        const typedInput = typedValue.input as INumberHash[];
         for (let i = 0; i < typedInput.length; i++) {
           this.inputLookup = lookup.addKeys(
             typedInput[i],
@@ -942,7 +947,7 @@ export class RNNTimeStep extends RNN {
             this.inputLookupLength = Object.keys(this.inputLookup).length;
           }
         }
-        const typedOutput = typedValue.output as INumberObject[];
+        const typedOutput = typedValue.output as INumberHash[];
         for (let i = 0; i < typedOutput.length; i++) {
           this.outputLookup = lookup.addKeys(
             typedOutput[i],
@@ -1312,21 +1317,6 @@ ${innerFunctionsSwitch.join('\n')}
     // eslint-disable-next-line
     return new Function('rawInput', cb ? cb(src) : src) as RNNTimeStepFunction;
   }
-}
-
-export function trainPattern(
-  net: RNNTimeStep,
-  input: Float32Array[],
-  logErrorRate?: boolean
-): number {
-  const error = net.trainArrayOfArray(input);
-  net.backpropagate();
-  net.adjustWeights();
-
-  if (logErrorRate) {
-    return error;
-  }
-  return 0;
 }
 
 export type RNNTimeStepFunction = <

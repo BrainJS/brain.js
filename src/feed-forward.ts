@@ -3,13 +3,7 @@ import { MeanSquaredError } from './estimator/mean-squared-error';
 import { ILayer, ILayerJSON } from './layer/base-layer';
 import { RecurrentInput } from './layer/recurrent-input';
 import { Model } from './layer/types';
-import {
-  InputOutputValue,
-  INumberArray,
-  INumberHash,
-  INumberObject,
-  lookup,
-} from './lookup';
+import { InputOutputValue, INumberArray, INumberHash, lookup } from './lookup';
 import { INeuralNetworkState } from './neural-network-types';
 import * as praxis from './praxis';
 import { IPraxis, IPraxisSettings } from './praxis/base-praxis';
@@ -320,7 +314,7 @@ export class FeedForward<
       if (this.inputLookup) {
         typeSafeInput = lookup.toArray(
           this.inputLookup,
-          input as INumberObject,
+          input as INumberHash,
           this.inputLookupLength as number
         );
       } else {
@@ -552,7 +546,7 @@ export class FeedForward<
       > => {
         const array = lookup.toArray(
           this.inputLookup as INumberHash,
-          datumParam.input as INumberObject,
+          datumParam.input as INumberHash,
           this.inputLookupLength as number
         );
         return { input: array };
@@ -575,7 +569,7 @@ export class FeedForward<
         (datumParam, index): IFeedForwardNormalizedTrainingData => {
           const array = lookup.toArray(
             this.outputLookup as INumberHash,
-            datumParam.output as INumberObject,
+            datumParam.output as INumberHash,
             this.inputLookupLength as number
           );
           return {

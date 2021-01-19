@@ -94,31 +94,40 @@ describe('.toFunction()', () => {
     ];
 
     const net = new NeuralNetwork({ hiddenLayers: [3] });
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     net.train(trainingData, {
       iterations: 1000,
       errorThresh: 0.01,
     });
 
-    const happyOutput = net.run({ 'I am super happy!': 1 }) as { [value: string]: number };
+    const happyOutput = net.run({ 'I am super happy!': 1 }) as {
+      [value: string]: number;
+    };
     expect(happyOutput.happy).toBeGreaterThan(0.5);
     expect(happyOutput.sarcastic).toBeLessThan(0.5);
     expect(happyOutput.sad).toBeLessThan(0.5);
     expect(happyOutput.excited).toBeLessThan(0.5);
 
-    const sarcasticOutput = net.run({ 'What a pill!': 1 }) as { [value: string]: number };
+    const sarcasticOutput = net.run({ 'What a pill!': 1 }) as {
+      [value: string]: number;
+    };
     expect(sarcasticOutput.happy).toBeLessThan(0.5);
     expect(sarcasticOutput.sarcastic).toBeGreaterThan(0.5);
     expect(sarcasticOutput.sad).toBeLessThan(0.5);
     expect(sarcasticOutput.excited).toBeLessThan(0.5);
 
-    const sadOutput = net.run({ 'I am super unhappy!': 1 }) as { [value: string]: number };
+    const sadOutput = net.run({ 'I am super unhappy!': 1 }) as {
+      [value: string]: number;
+    };
     expect(sadOutput.happy).toBeLessThan(0.5);
     expect(sadOutput.sarcastic).toBeLessThan(0.5);
     expect(sadOutput.sad).toBeGreaterThan(0.5);
     expect(sadOutput.excited).toBeLessThan(0.5);
 
-    const excitedOutput = net.run({ 'Are we there yet?': 1 }) as { [value: string]: number };
+    const excitedOutput = net.run({ 'Are we there yet?': 1 }) as {
+      [value: string]: number;
+    };
     expect(excitedOutput.happy).toBeLessThan(0.5);
     expect(excitedOutput.sarcastic).toBeLessThan(0.5);
     expect(excitedOutput.sad).toBeLessThan(0.5);
@@ -126,25 +135,33 @@ describe('.toFunction()', () => {
 
     const run = net.toFunction();
 
-    const runHappyOutput = run({ 'I am super happy!': 1 }) as { [value: string]: number };
+    const runHappyOutput = run({ 'I am super happy!': 1 }) as {
+      [value: string]: number;
+    };
     expect(runHappyOutput.happy).toBeCloseTo(happyOutput.happy);
     expect(runHappyOutput.sarcastic).toBeCloseTo(happyOutput.sarcastic);
     expect(runHappyOutput.sad).toBeCloseTo(happyOutput.sad);
     expect(runHappyOutput.excited).toBeCloseTo(happyOutput.excited);
 
-    const runSarcasticOutput = run({ 'What a pill!': 1 }) as { [value: string]: number };
+    const runSarcasticOutput = run({ 'What a pill!': 1 }) as {
+      [value: string]: number;
+    };
     expect(runSarcasticOutput.happy).toBeCloseTo(sarcasticOutput.happy);
     expect(runSarcasticOutput.sarcastic).toBeCloseTo(sarcasticOutput.sarcastic);
     expect(runSarcasticOutput.sad).toBeCloseTo(sarcasticOutput.sad);
     expect(runSarcasticOutput.excited).toBeCloseTo(sarcasticOutput.excited);
 
-    const runSadOutput = run({ 'I am super unhappy!': 1 }) as { [value: string]: number };
+    const runSadOutput = run({ 'I am super unhappy!': 1 }) as {
+      [value: string]: number;
+    };
     expect(runSadOutput.happy).toBeCloseTo(sadOutput.happy);
     expect(runSadOutput.sarcastic).toBeCloseTo(sadOutput.sarcastic);
     expect(runSadOutput.sad).toBeCloseTo(sadOutput.sad);
     expect(runSadOutput.excited).toBeCloseTo(sadOutput.excited);
 
-    const runExcitedOutput = run({ 'Are we there yet?': 1 }) as { [value: string]: number };
+    const runExcitedOutput = run({ 'Are we there yet?': 1 }) as {
+      [value: string]: number;
+    };
     expect(runExcitedOutput.happy).toBeCloseTo(excitedOutput.happy);
     expect(runExcitedOutput.sarcastic).toBeCloseTo(excitedOutput.sarcastic);
     expect(runExcitedOutput.sad).toBeCloseTo(excitedOutput.sad);

@@ -35,26 +35,20 @@ describe('neural network constructor values', () => {
   it('iterations should be settable in the constructor', () => {
     const options = { iterations: 5 };
     const net = new NeuralNetwork(options);
-    expect(options.iterations).toBe(
-      net.trainOpts.iterations
-    );
+    expect(options.iterations).toBe(net.trainOpts.iterations);
   });
 
   it('errorThresh should be settable in the constructor', () => {
     const options = { errorThresh: 0.1 };
     const net = new NeuralNetwork(options);
-    expect(options.errorThresh).toBe(
-      net.trainOpts.errorThresh
-    );
+    expect(options.errorThresh).toBe(net.trainOpts.errorThresh);
   });
 
   it('log should allow setting the training options to the constructor', () => {
     const log = function () {};
     const options = { log: log };
     const net = new NeuralNetwork(options);
-    expect(
-      net.trainOpts.log
-    ).toBe(log);
+    expect(net.trainOpts.log).toBe(log);
   });
 
   it('logPeriod should be settable in the constructor', () => {
@@ -66,9 +60,7 @@ describe('neural network constructor values', () => {
   it('learningRate should be settable in the constructor', () => {
     const options = { learningRate: 0.5 };
     const net = new NeuralNetwork(options);
-    expect(options.learningRate).toBe(
-      net.trainOpts.learningRate
-    );
+    expect(options.learningRate).toBe(net.trainOpts.learningRate);
   });
 
   it('momentum should be settable in the constructor', () => {
@@ -81,17 +73,13 @@ describe('neural network constructor values', () => {
     const cb = function () {};
     const options = { callback: cb };
     const net = new NeuralNetwork(options);
-    expect(
-      net.trainOpts.callback
-    ).toBe(cb);
+    expect(net.trainOpts.callback).toBe(cb);
   });
 
   it('callbackPeriod should be settable in the constructor', () => {
     const options = { callbackPeriod: 2 };
     const net = new NeuralNetwork(options);
-    expect(options.callbackPeriod).toBe(
-      net.trainOpts.callbackPeriod
-    );
+    expect(options.callbackPeriod).toBe(net.trainOpts.callbackPeriod);
   });
 
   it('timeout should be settable in the constructor', () => {
@@ -109,9 +97,7 @@ describe('neural network constructor values', () => {
   it('hiddenLayers should be settable in the constructor', () => {
     const options = { hiddenLayers: [2, 3, 4] };
     const net = new NeuralNetwork(options);
-    expect(options.hiddenLayers).toEqual(
-      net.options.hiddenLayers
-    );
+    expect(options.hiddenLayers).toEqual(net.options.hiddenLayers);
   });
 
   it('activation should be settable in the constructor', () => {

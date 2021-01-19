@@ -270,7 +270,7 @@ describe('FeedForward Class: End to End', () => {
         // test only the sigmoid layers, as that is the final equation location per layer
         const sigmoidLayers0WeightsAfterTraining = sigmoidLayers[0]
           .weights as number[][];
-        const standardNetOutputs = standardNet.outputs
+        const standardNetOutputs = standardNet.outputs;
         expect(sigmoidLayers0WeightsAfterTraining[0][0]).not.toEqual(0);
         expect(sigmoidLayers0WeightsAfterTraining[0][0]).toEqual(
           standardNetOutputs[1][0]

@@ -10,11 +10,7 @@ export interface INumberArray {
   [index: number]: number;
 }
 
-export interface INumberObject {
-  [name: string]: number;
-}
-
-export type InputOutputValue = INumberArray | INumberObject;
+export type InputOutputValue = INumberArray | INumberHash;
 
 export interface ITrainingDatum {
   input: InputOutputValue | InputOutputValue[] | KernelOutput;
@@ -22,11 +18,10 @@ export interface ITrainingDatum {
 }
 
 export type FormattableData =
+  | number
   | ITrainingDatum
-  | ITrainingDatum[]
   | InputOutputValue
-  | InputOutputValue[]
-  | InputOutputValue[][];
+  | InputOutputValue[];
 
 /* Functions for turning sparse hashes into arrays and vice versa */
 export const lookup = {
@@ -121,7 +116,7 @@ export const lookup = {
    */
   toArray(
     lookup: INumberHash,
-    object: INumberObject,
+    object: INumberHash,
     arrayLength: number
   ): Float32Array {
     const result = new Float32Array(arrayLength);
@@ -190,13 +185,9 @@ export const lookup = {
     return object;
   },
 
-  dataShape(data: FormattableData): string[] {
+  dataShape(data: FormattableData[] | FormattableData): string[] {
     const shape = [];
-    let lastData:
-      | InputOutputValue
-      | InputOutputValue[]
-      | InputOutputValue[][]
-      | KernelOutput;
+    let lastData;
     if (data.hasOwnProperty('input')) {
       shape.push('datum');
       lastData = (data as ITrainingDatum).input;
@@ -245,9 +236,9 @@ export const lookup = {
         typeof (lastData as Float32Array).buffer !== 'object'
       ) {
         shape.push('object');
-        const possibleNumber:
-          | number
-          | INumberObject = (lastData as INumberObject)[p];
+        const possibleNumber: number | INumberHash = (lastData as INumberHash)[
+          p
+        ];
         if (typeof possibleNumber === 'number') {
           shape.push('number');
           break;

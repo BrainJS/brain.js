@@ -1,20 +1,31 @@
 import { Writable } from 'stream';
+import { INeuralNetworkTrainOptions } from './neural-network';
+import { INeuralNetworkState } from './neural-network-types';
 
-interface ITrainStreamOptions {
-  neuralNetwork: any;
+export interface ITrainStreamNetwork<InputType, FormattedType, TrainOptsType> {
+  trainOpts: any;
+  updateTrainingOptions: (trainOpts: Partial<TrainOptsType>) => void;
+  addFormat: (data: InputType) => void;
+  formatData: (data: InputType[]) => FormattedType[];
+  trainPattern: (value: FormattedType, logErrorRate?: boolean) => number | null;
+  verifyIsInitialized: (data: FormattedType[]) => void;
+}
+
+interface ITrainStreamOptions<Network> extends INeuralNetworkTrainOptions {
+  neuralNetwork: Network;
   floodCallback?: () => void;
   doneTrainingCallback?: (stats: { error: number; iterations: number }) => void;
 }
 
-/**
- *
- * @param opts
- * @returns {TrainStream}
- * @constructor
- */
-export class TrainStream extends Writable {
-  // TODO: Once neural network classes are typed, change this `any`
-  neuralNetwork: any;
+export class TrainStream<
+  Network extends ITrainStreamNetwork<
+    Parameters<Network['addFormat']>[0],
+    Parameters<Network['trainPattern']>[0],
+    Network['trainOpts']
+  >
+> extends Writable {
+  neuralNetwork: Network;
+
   dataFormatDetermined: boolean;
   i: number;
   size: number;
@@ -24,18 +35,16 @@ export class TrainStream extends Writable {
   doneTrainingCallback?: (stats: { error: number; iterations: number }) => void;
   iterations: number;
   errorThresh: number;
-  log: (message: string) => void;
+  log: boolean | ((status: INeuralNetworkState) => void);
   logPeriod: number;
   callbackPeriod: number;
-  callback: (stats: { error: number; iterations: number }) => void;
-  firstDatum: any;
+  callback?: (status: { iterations: number; error: number }) => void;
+  firstDatum: Array<Parameters<Network['addFormat']>[0]> | undefined;
 
-  constructor(options: ITrainStreamOptions) {
+  constructor(options: Partial<ITrainStreamOptions<Network>>) {
     super({
       objectMode: true,
     });
-
-    options = options || {};
 
     // require the neuralNetwork
     if (!options.neuralNetwork) {
@@ -45,6 +54,11 @@ export class TrainStream extends Writable {
     }
 
     const { neuralNetwork } = options;
+    const { trainOpts } = neuralNetwork;
+
+    // inherit trainOpts settings from neuralNetwork
+    neuralNetwork.updateTrainingOptions(options);
+
     this.neuralNetwork = neuralNetwork;
     this.dataFormatDetermined = false;
     this.i = 0; // keep track of internal iterations
@@ -54,33 +68,21 @@ export class TrainStream extends Writable {
     this.floodCallback = options.floodCallback;
     this.doneTrainingCallback = options.doneTrainingCallback;
 
-    // inherit trainOpts settings from neuralNetwork
-    neuralNetwork.updateTrainingOptions(options);
-    const { trainOpts } = neuralNetwork;
     this.iterations = trainOpts.iterations;
     this.errorThresh = trainOpts.errorThresh;
     this.log = trainOpts.log;
     this.logPeriod = trainOpts.logPeriod;
     this.callbackPeriod = trainOpts.callbackPeriod;
-    this.callback = trainOpts.callback;
-
     this.on('finish', this.finishStreamIteration.bind(this));
+    this.callback = trainOpts.callback;
   }
 
   endInputs(): void {
     this.write(false);
   }
 
-  /**
-   * _write expects data to be in the form of a datum. ie. {input: {a: 1 b: 0}, output: {z: 0}}
-   * @param chunk
-   * @param enc
-   * @param next
-   * @returns {*}
-   * @private
-   */
   _write(
-    chunk: any,
+    chunk: Array<Parameters<Network['addFormat']>[0]>,
     enc: BufferEncoding,
     next: (error?: Error | null) => void
   ): void {
@@ -92,31 +94,36 @@ export class TrainStream extends Writable {
 
     if (!this.dataFormatDetermined) {
       this.size++;
-      this.neuralNetwork.addFormat(chunk);
-      this.firstDatum = this.firstDatum || chunk;
+      this.neuralNetwork.addFormat(chunk[0]);
+
+      if (this.firstDatum === undefined) {
+        this.firstDatum = chunk;
+      }
+
       return next();
     }
 
     this.count++;
 
     const data = this.neuralNetwork.formatData(chunk);
-    // TODO: Remove this typecast once neural network classes are typed
-    this.sum += this.neuralNetwork.trainPattern(data[0], true) as number;
+    const error = this.neuralNetwork.trainPattern(data[0], true) as number;
+
+    if (error !== null) {
+      this.sum += error;
+    }
 
     // tell the Readable Stream that we are ready for more data
     next();
   }
 
-  /**
-   *
-   * @returns {*}
-   */
   finishStreamIteration(): void {
     if (this.dataFormatDetermined && this.size !== this.count) {
-      this.log("This iteration's data length was different from the first.");
+      console.warn(
+        "This iteration's data length was different from the first!"
+      );
     }
 
-    if (!this.dataFormatDetermined) {
+    if (!this.dataFormatDetermined && this.firstDatum !== undefined) {
       const data = this.neuralNetwork.formatData(this.firstDatum);
       this.neuralNetwork.verifyIsInitialized(data);
       this.dataFormatDetermined = true;
@@ -124,13 +131,21 @@ export class TrainStream extends Writable {
       if (typeof this.floodCallback === 'function') {
         this.floodCallback();
       }
+
       return;
     }
 
     const error = this.sum / this.size;
 
     if (this.log && this.i % this.logPeriod === 0) {
-      this.log(`iterations: ${this.i}, training error: ${error}`);
+      if (typeof this.log === 'function') {
+        this.log({
+          iterations: this.i,
+          error: error,
+        });
+      } else {
+        console.info(`iterations: ${this.i}, training error: ${error}`);
+      }
     }
     if (this.callback && this.i % this.callbackPeriod === 0) {
       this.callback({

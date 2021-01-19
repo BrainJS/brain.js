@@ -1,7 +1,7 @@
 import { GRU } from '../../src/recurrent/gru';
-import { RNN, trainPattern } from '../../src/recurrent/rnn';
-import { DataFormatter } from '../../src/utilities/data-formatter';
 import { IMatrixJSON } from '../../src/recurrent/matrix';
+import { RNN } from '../../src/recurrent/rnn';
+import { DataFormatter } from '../../src/utilities/data-formatter';
 
 describe('GRU', () => {
   describe('.getHiddenLayer()', () => {
@@ -64,7 +64,7 @@ describe('GRU', () => {
       });
       net.initialize();
       for (let i = 0; i < 100; i++) {
-        trainPattern(net, dataFormatter.toIndexes(phrase));
+        net.trainPattern(dataFormatter.toIndexes(phrase));
         // if (i % 10 === 0) {
         //   console.log(dataFormatter.toCharacters(net.run()).join(''));
         // }
@@ -86,7 +86,7 @@ describe('GRU', () => {
       });
       net.initialize();
       for (let i = 0; i < 200; i++) {
-        trainPattern(net, phraseAsIndices);
+        net.trainPattern(phraseAsIndices);
         // if (i % 10 === 0) {
         //   console.log(dataFormatter.toCharacters(net.run()).join(''));
         // }
@@ -162,7 +162,7 @@ describe('GRU', () => {
 
         const clone = new GRU();
         clone.fromJSON(JSON.parse(jsonString));
-        trainPattern(clone, [0, 1, 2, 3, 4, 5]);
+        clone.trainPattern([0, 1, 2, 3, 4, 5]);
 
         expect(jsonString).not.toEqual(JSON.stringify(clone.toJSON()));
         expect(clone.options.inputSize).toEqual(7); // 6 + also unrecognized
@@ -187,7 +187,7 @@ describe('GRU', () => {
       });
       net.initialize();
       for (let i = 0; i < 100; i++) {
-        trainPattern(net, dataFormatter.toIndexes('hi mom!'));
+        net.trainPattern(dataFormatter.toIndexes('hi mom!'));
         // if (i % 10) {
         //   console.log(dataFormatter.toCharacters(net.run()).join(''));
         // }
