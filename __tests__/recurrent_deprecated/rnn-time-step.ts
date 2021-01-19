@@ -1679,6 +1679,9 @@ describe('RNNTimeStep', () => {
       beforeEach(() => {
         forecastArraysSpy = jest.spyOn(RNNTimeStep.prototype, 'forecastArray');
       });
+      afterEach(() => {
+        forecastArraysSpy.mockRestore();
+      });
       it('calls this.forecastArray with input and count', () => {
         const net = new RNNTimeStep();
         net.train([[1, 2, 3]], { iterations: 1 });
@@ -1693,6 +1696,9 @@ describe('RNNTimeStep', () => {
           RNNTimeStep.prototype,
           'forecastArrayOfArray'
         );
+      });
+      afterEach(() => {
+        forecastArraysOfArraySpy.mockRestore();
       });
       it('calls this.forecastArrayOfArray with input and count', () => {
         const net = new RNNTimeStep();
@@ -1717,6 +1723,9 @@ describe('RNNTimeStep', () => {
           RNNTimeStep.prototype,
           'forecastArrayOfObject'
         );
+      });
+      afterEach(() => {
+        forecastArrayOfObjectSpy.mockRestore();
       });
       it('calls this.forecastArrayOfObject with input and count', () => {
         const net = new RNNTimeStep();

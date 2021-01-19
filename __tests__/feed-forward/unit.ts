@@ -716,6 +716,19 @@ describe('FeedForward Class: Unit', () => {
   });
 
   describe('._trainPattern()', () => {
+    let runInputSpy: jest.SpyInstance;
+    let _calculateDeltasSpy: jest.SpyInstance;
+    let adjustWeightsSpy: jest.SpyInstance;
+    beforeEach(() => {
+      runInputSpy = jest.spyOn(FeedForward.prototype, 'runInput');
+      _calculateDeltasSpy = jest.spyOn(FeedForward.prototype, '_calculateDeltas');
+      adjustWeightsSpy = jest.spyOn(FeedForward.prototype, 'adjustWeights');
+    });
+    afterEach(() => {
+      runInputSpy.mockRestore();
+      _calculateDeltasSpy.mockRestore();
+      adjustWeightsSpy.mockRestore();
+    });
     test('calls training methods and mse2d and returns value', () => {
       const net = new FeedForward({
         inputLayer: () => input({ height: 1 }),
@@ -726,15 +739,11 @@ describe('FeedForward Class: Unit', () => {
       net._outputLayer = mockLayer({});
       net._outputLayer.errors = [0];
 
-      const runInput = jest.spyOn(net, 'runInput');
-      const _calculateDeltas = jest.spyOn(net, '_calculateDeltas');
-      const adjustWeights = jest.spyOn(net, 'adjustWeights');
-
       net._trainPattern([1], [3], true);
 
-      expect(runInput).toHaveBeenCalled();
-      expect(_calculateDeltas).toHaveBeenCalled();
-      expect(adjustWeights).toHaveBeenCalled();
+      expect(runInputSpy).toHaveBeenCalled();
+      expect(_calculateDeltasSpy).toHaveBeenCalled();
+      expect(adjustWeightsSpy).toHaveBeenCalled();
     });
   });
   describe('.trainOpts', () => {

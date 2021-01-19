@@ -16,8 +16,8 @@ describe('NeuralNetworkGPU', () => {
       iterations: 5000,
       errorThresh: 0.01,
     });
-    expect(status.error).toBeLessThan(0.01);
-    expect(status.iterations).toBeLessThan(5000);
+    expect(status.error).toBeCloseTo(0.01);
+    expect(status.iterations).toBeLessThanOrEqual(5000);
   });
 
   describe('.toJSON()', () => {
@@ -124,6 +124,15 @@ describe('NeuralNetworkGPU', () => {
       mockAdjustWeights.mockRestore();
     });
     describe('when called with logErrorRate = falsey', () => {
+      let runInputSpy: jest.SpyInstance;
+      let calculateDeltasSpy: jest.SpyInstance;
+      let getMSESpy: jest.SpyInstance;
+
+      afterEach(() => {
+        if (runInputSpy) runInputSpy.mockRestore();
+        if (calculateDeltasSpy) calculateDeltasSpy.mockRestore();
+        if (getMSESpy) getMSESpy.mockRestore();
+      });
       it('calls .runInput(), .calculateDeltas(), and .adjustWeights()', () => {
         const net = new NeuralNetworkGPU({
           inputSize: 1,
@@ -131,22 +140,30 @@ describe('NeuralNetworkGPU', () => {
           outputSize: 3,
         });
         net.initialize();
-        const mockRunInput = jest.spyOn(net, 'runInput');
-        const mockCalculateDeltas = jest.spyOn(net, 'calculateDeltas');
-        const mockGetMSE = jest.spyOn(net, 'getMSE');
+        runInputSpy = jest.spyOn(net, 'runInput');
+        calculateDeltasSpy = jest.spyOn(net, 'calculateDeltas');
+        getMSESpy = jest.spyOn(net, 'getMSE');
         net.trainPattern({ input: [123], output: [321] });
 
-        expect(mockRunInput).toBeCalled();
-        expect(mockRunInput.mock.calls[0][0]).toEqual([123]);
+        expect(runInputSpy).toBeCalled();
+        expect(runInputSpy.mock.calls[0][0]).toEqual([123]);
 
-        expect(mockCalculateDeltas).toBeCalled();
-        expect(mockCalculateDeltas.mock.calls[0][0]).toEqual([321]);
+        expect(calculateDeltasSpy).toBeCalled();
+        expect(calculateDeltasSpy.mock.calls[0][0]).toEqual([321]);
 
         expect(mockAdjustWeights).toBeCalled();
-        expect(mockGetMSE).not.toBeCalled();
+        expect(getMSESpy).not.toBeCalled();
       });
     });
     describe('when called with logErrorRate = truthy', () => {
+      let runInputSpy: jest.SpyInstance;
+      let calculateDeltasSpy: jest.SpyInstance;
+      let getMSESpy: jest.SpyInstance;
+      afterEach(() => {
+        if (runInputSpy) runInputSpy.mockRestore();
+        if (calculateDeltasSpy) calculateDeltasSpy.mockRestore();
+        if (getMSESpy) getMSESpy.mockRestore();
+      });
       it('calls .runInput(), .calculateDeltas(), and .adjustWeights()', () => {
         const net = new NeuralNetworkGPU({
           inputSize: 1,
@@ -154,21 +171,21 @@ describe('NeuralNetworkGPU', () => {
           outputSize: 3,
         });
         net.initialize();
-        const mockRunInput = jest.spyOn(net, 'runInput');
-        const mockCalculateDeltas = jest.spyOn(net, 'calculateDeltas');
-        const mockGetMSE = jest.spyOn(net, 'getMSE');
+        runInputSpy = jest.spyOn(net, 'runInput');
+        calculateDeltasSpy = jest.spyOn(net, 'calculateDeltas');
+        getMSESpy = jest.spyOn(net, 'getMSE');
 
         net.trainPattern({ input: [123], output: [321] }, true);
 
-        expect(mockRunInput).toBeCalled();
-        expect(mockRunInput.mock.calls[0][0]).toEqual([123]);
+        expect(runInputSpy).toBeCalled();
+        expect(runInputSpy.mock.calls[0][0]).toEqual([123]);
 
-        expect(mockCalculateDeltas).toBeCalled();
-        expect(mockCalculateDeltas.mock.calls[0][0]).toEqual([321]);
+        expect(calculateDeltasSpy).toBeCalled();
+        expect(calculateDeltasSpy.mock.calls[0][0]).toEqual([321]);
 
         expect(mockAdjustWeights).toBeCalled();
 
-        expect(mockGetMSE).toBeCalled();
+        expect(getMSESpy).toBeCalled();
       });
     });
   });
