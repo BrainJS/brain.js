@@ -54,10 +54,9 @@ export class TrainStream<
     }
 
     const { neuralNetwork } = options;
-    const { trainOpts } = neuralNetwork;
-
     // inherit trainOpts settings from neuralNetwork
     neuralNetwork.updateTrainingOptions(options);
+    const { trainOpts } = neuralNetwork; // just updated from above line
 
     this.neuralNetwork = neuralNetwork;
     this.dataFormatDetermined = false;
