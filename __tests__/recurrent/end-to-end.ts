@@ -1258,12 +1258,7 @@ describe('Recurrent Class: End to End', () => {
   });
 
   it('can learn xor', () => {
-    // const praxisOpts: IMomentumRootMeanSquaredPropagationSettings = {
-    //   regularizationStrength: 0.000001,
-    //   learningRate: 0.01,
-    // };
     const net = new Recurrent({
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       praxisOpts: {
         regularizationStrength: 0.000001,
         learningRate: 0.01,
@@ -1282,10 +1277,10 @@ describe('Recurrent Class: End to End', () => {
       [[1], [1], [0.001]],
     ];
     net.train(xorNetValues, { iterations: 300 });
-    expect(net.run([[0.001], [0.001]])[0] < 0.1).toBeTruthy();
-    expect(net.run([[0.001], [1]])[0] > 0.9).toBeTruthy();
-    expect(net.run([[1], [0.001]])[0] > 0.9).toBeTruthy();
-    expect(net.run([[1], [1]])[0] < 0.1).toBeTruthy();
+    expect((net.run([[0.001], [0.001]]) as number[][])[0][0]).toBeLessThan(0.1);
+    expect((net.run([[0.001], [1]]) as number[][])[0][0]).toBeGreaterThan(0.9);
+    expect((net.run([[1], [0.001]]) as number[][])[0][0]).toBeGreaterThan(0.9);
+    expect((net.run([[1], [1]]) as number[][])[0][0]).toBeLessThan(0.1);
   });
   test('can learn 1,2,3', () => {
     const net = new Recurrent({
