@@ -69,38 +69,34 @@ describe('LSTM', () => {
     describe('.fromJSON', () => {
       it('can import model from json', () => {
         const dataFormatter = new DataFormatter('abcdef'.split(''));
-        const jsonString = JSON.stringify(
-          new LSTM({
-            inputSize: 6, // <- length
-            inputRange: dataFormatter.characters.length,
-            outputSize: dataFormatter.characters.length, // <- length
-          }).toJSON()
-        );
+        const json = new LSTM({
+          inputSize: 6, // <- length
+          inputRange: dataFormatter.characters.length,
+          outputSize: dataFormatter.characters.length, // <- length
+        }).toJSON();
 
         const clone = new LSTM();
-        clone.fromJSON(JSON.parse(jsonString));
+        clone.fromJSON(JSON.parse(JSON.stringify(json)));
 
-        expect(jsonString).toBe(JSON.stringify(clone.toJSON()));
+        expect(json).toEqual(clone.toJSON());
         expect(clone.options.inputSize).toBe(6);
         expect(clone.options.inputRange).toBe(dataFormatter.characters.length);
         expect(clone.options.outputSize).toBe(dataFormatter.characters.length);
       });
 
-      it('can import model from json and train again', () => {
+      it('can train imported model from json', () => {
         const dataFormatter = new DataFormatter('abcdef'.split(''));
-        const jsonString = JSON.stringify(
-          new LSTM({
-            inputSize: 6, // <- length
-            inputRange: dataFormatter.characters.length,
-            outputSize: dataFormatter.characters.length, // <- length
-          }).toJSON()
-        );
+        const json = new LSTM({
+          inputSize: 6, // <- length
+          inputRange: dataFormatter.characters.length,
+          outputSize: dataFormatter.characters.length, // <- length
+        }).toJSON();
 
         const clone = new LSTM();
-        clone.fromJSON(JSON.parse(jsonString));
+        clone.fromJSON(JSON.parse(JSON.stringify(json)));
         clone.trainPattern([0, 1, 2, 3, 4, 5]);
 
-        expect(jsonString).not.toEqual(JSON.stringify(clone.toJSON()));
+        expect(json).not.toEqual(clone.toJSON());
         expect(clone.options.inputSize).toBe(6);
         expect(clone.options.inputRange).toBe(dataFormatter.characters.length);
         expect(clone.options.outputSize).toBe(dataFormatter.characters.length);

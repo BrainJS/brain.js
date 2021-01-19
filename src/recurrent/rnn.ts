@@ -149,7 +149,7 @@ export class RNN {
     this.options = { ...this.options, ...options };
     this.updateTrainingOptions({
       ...trainDefaults,
-      ...options,
+      // ...options,
     });
 
     if (options.json) {
