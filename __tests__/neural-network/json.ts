@@ -715,8 +715,8 @@ describe('JSON', () => {
 });
 
 describe('default net json', () => {
-  const originalNet = new NeuralNetwork({ activation: 'leaky-relu' });
-
+  const activation = 'leaky-relu';
+  const originalNet = new NeuralNetwork({ activation });
   originalNet.train(
     [
       {
@@ -740,7 +740,26 @@ describe('default net json', () => {
   const originalNetTrainOpts = originalNet.trainOpts;
   const serializedNetTrainOpts = serializedNet.trainOpts;
 
+  describe('.options', () => {
+    it('option inputSize', () => {
+      expect(originalNet.options.inputSize).toEqual(serialized.options.inputSize);
+    });
+    it('option hiddenLayers', () => {
+      expect(originalNet.options.hiddenLayers).toEqual(serialized.options.hiddenLayers);
+    });
+    it('option outputSize', () => {
+      expect(originalNet.options.outputSize).toEqual(serialized.options.outputSize);
+    });
+    it('option binaryThresh', () => {
+      expect(originalNet.options.binaryThresh).toEqual(serialized.options.binaryThresh);
+    });
+  });
   describe('.trainOpts', () => {
+    it('training options activation', () => {
+      expect(originalNetTrainOpts.activation).toBe(
+        serializedNetTrainOpts.activation
+      );
+    });
     it('training options iterations', () => {
       expect(originalNetTrainOpts.iterations).toBe(
         serializedNetTrainOpts.iterations
@@ -789,6 +808,28 @@ describe('default net json', () => {
 
     it('training options timeout', () => {
       expect(originalNetTrainOpts.timeout).toBe(serializedNetTrainOpts.timeout);
+    });
+
+    it('training options praxis', () => {
+      expect(originalNetTrainOpts.praxis).toBe(serializedNetTrainOpts.praxis);
+    });
+
+    it('training options beta1', () => {
+      expect(originalNetTrainOpts.beta1).toBe(serializedNetTrainOpts.beta1);
+    });
+
+    it('training options beta2', () => {
+      expect(originalNetTrainOpts.beta2).toBe(serializedNetTrainOpts.beta2);
+    });
+
+    it('training options epsilon', () => {
+      expect(originalNetTrainOpts.epsilon).toBe(serializedNetTrainOpts.epsilon);
+    });
+  });
+
+  describe('.sizes', () => {
+    it('sizes are same', () => {
+      expect(serialized.sizes).toEqual(originalNet.sizes);
     });
   });
 

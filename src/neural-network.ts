@@ -1111,7 +1111,7 @@ export class NeuralNetwork {
   }
 
   toJSON(): INeuralNetworkJSON {
-    if (!this.sizes.length) {
+    if (!this.isInitialized) {
       this.initialize();
     }
     // use Array.from, keeping json small
@@ -1142,6 +1142,16 @@ export class NeuralNetwork {
 
   fromJSON(json: INeuralNetworkJSON): this {
     this.options = { ...defaults(), ...json.options };
+    if (json.hasOwnProperty('trainOpts')) {
+      const trainOpts = {
+        ...json.trainOpts,
+        timeout:
+          json.trainOpts.timeout === 'Infinity'
+            ? Infinity
+            : json.trainOpts.timeout,
+      };
+      this.updateTrainingOptions(trainOpts);
+    }
     this.sizes = json.sizes;
     this.initialize();
 
@@ -1162,16 +1172,6 @@ export class NeuralNetwork {
     for (let i = 0; i <= this.outputLayer; i++) {
       this.weights[i] = layerWeights[i] || [];
       this.biases[i] = layerBiases[i] || [];
-    }
-    if (json.hasOwnProperty('trainOpts')) {
-      const trainOpts = {
-        ...json.trainOpts,
-        timeout:
-          json.trainOpts.timeout === 'Infinity'
-            ? Infinity
-            : json.trainOpts.timeout,
-      };
-      this.updateTrainingOptions(trainOpts);
     }
     return this;
   }
