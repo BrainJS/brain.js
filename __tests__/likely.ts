@@ -60,7 +60,7 @@ describe('likely', () => {
     { input: c, output: { c: 1 } },
   ]);
 
-  it('should be able to find a "a"', () => {
+  it('should be able to find a', () => {
     /**
      * Predict the letter A, even with a pixel off.
      */
@@ -80,7 +80,7 @@ describe('likely', () => {
     expect(result).toBe('a');
   });
 
-  it('should be able to find a "b"', () => {
+  it('should be able to find b', () => {
     /**
      * Predict the letter B, even with a pixel off.
      */
@@ -100,7 +100,7 @@ describe('likely', () => {
     expect(result).toBe('b');
   });
 
-  it('should be able to find a "c"', () => {
+  it('should be able to find c', () => {
     /**
      * Predict the letter C, even with a pixel off.
      */

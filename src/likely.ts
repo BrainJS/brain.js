@@ -21,7 +21,7 @@ export function likely<T extends number[] | Float32Array | INumberHash>(
   let maxProp = null;
   let maxValue = -1;
 
-  Object.entries(output).forEach((key, value) => {
+  Object.entries(output).forEach(([key, value]) => {
     if (value > maxValue) {
       maxProp = key;
       maxValue = value;
