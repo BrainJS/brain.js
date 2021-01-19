@@ -95,7 +95,7 @@ describe('NeuralNetwork.train()', () => {
       prepTrainingSpy.mockReset();
 
       const asyncNet = new NeuralNetwork();
-      asyncNet.trainAsync(data, options);
+      asyncNet.trainAsync(data, options).then(console.log).catch(console.error);
       expect(prepTrainingSpy).toHaveBeenCalledWith(data, options);
     });
     test('both call this.trainingTick()', async () => {
@@ -104,8 +104,8 @@ describe('NeuralNetwork.train()', () => {
       const dataFormatted = data.map((datum) => {
         return {
           input: Float32Array.from(datum.input),
-          output: Float32Array.from(datum.output)
-        }
+          output: Float32Array.from(datum.output),
+        };
       });
       syncNet.train(data, options);
       expect(trainingTickSpy.mock.calls[0][0]).toEqual(dataFormatted);
@@ -116,7 +116,7 @@ describe('NeuralNetwork.train()', () => {
       trainingTickSpy.mockReset();
 
       const asyncNet = new NeuralNetwork();
-      asyncNet.trainAsync(data, options);
+      asyncNet.trainAsync(data, options).then(console.log).catch(console.error);
       expect(trainingTickSpy.mock.calls[0][0]).toEqual(dataFormatted);
       expect(trainingTickSpy.mock.calls[0][1].error).toBeLessThan(2);
       expect(trainingTickSpy.mock.calls[0][1].iterations).toEqual(0);
@@ -128,15 +128,15 @@ describe('NeuralNetwork.train()', () => {
     it('iterations validation', () => {
       const net = new NeuralNetwork();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error iterations is expected as number
         net.updateTrainingOptions({ iterations: 'should be a string' });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error iterations is expected as number
         net.updateTrainingOptions({ iterations: () => {} });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error iterations is expected as number
         net.updateTrainingOptions({ iterations: false });
       }).toThrow();
       expect(() => {
@@ -150,11 +150,11 @@ describe('NeuralNetwork.train()', () => {
     it('errorThresh validation', () => {
       const net = new NeuralNetwork();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error errorThresh is expected as number
         net.updateTrainingOptions({ errorThresh: 'no strings' });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error errorThresh is expected as number
         net.updateTrainingOptions({ errorThresh: () => {} });
       }).toThrow();
       expect(() => {
@@ -164,7 +164,7 @@ describe('NeuralNetwork.train()', () => {
         net.updateTrainingOptions({ errorThresh: -1 });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error errorThresh is expected as number
         net.updateTrainingOptions({ errorThresh: false });
       }).toThrow();
       expect(() => {
@@ -175,11 +175,11 @@ describe('NeuralNetwork.train()', () => {
     it('log validation', () => {
       const net = new NeuralNetwork();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error log should be boolean or function
         net.updateTrainingOptions({ log: 'no strings' });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error log should be boolean or function
         net.updateTrainingOptions({ log: 4 });
       }).toThrow();
       expect(() => {
@@ -193,18 +193,18 @@ describe('NeuralNetwork.train()', () => {
     it('logPeriod validation', () => {
       const net = new NeuralNetwork();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error logPeriod should be positive number
         net.updateTrainingOptions({ logPeriod: 'no strings' });
       }).toThrow();
       expect(() => {
         net.updateTrainingOptions({ logPeriod: -50 });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error logPeriod should be positive number
         net.updateTrainingOptions({ logPeriod: () => {} });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error logPeriod should be positive number
         net.updateTrainingOptions({ logPeriod: false });
       }).toThrow();
       expect(() => {
@@ -215,7 +215,7 @@ describe('NeuralNetwork.train()', () => {
     it('learningRate validation', () => {
       const net = new NeuralNetwork();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error learningRate should be positive number
         net.updateTrainingOptions({ learningRate: 'no strings' });
       }).toThrow();
       expect(() => {
@@ -225,11 +225,11 @@ describe('NeuralNetwork.train()', () => {
         net.updateTrainingOptions({ learningRate: 50 });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error learningRate should be positive number
         net.updateTrainingOptions({ learningRate: () => {} });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error learningRate should be positive number
         net.updateTrainingOptions({ learningRate: false });
       }).toThrow();
       expect(() => {
@@ -240,7 +240,7 @@ describe('NeuralNetwork.train()', () => {
     it('momentum validation', () => {
       const net = new NeuralNetwork();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error momentum should be positive number
         net.updateTrainingOptions({ momentum: 'no strings' });
       }).toThrow();
       expect(() => {
@@ -250,11 +250,11 @@ describe('NeuralNetwork.train()', () => {
         net.updateTrainingOptions({ momentum: 50 });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error momentum should be positive number
         net.updateTrainingOptions({ momentum: () => {} });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error momentum should be positive number
         net.updateTrainingOptions({ momentum: false });
       }).toThrow();
       expect(() => {
@@ -265,19 +265,19 @@ describe('NeuralNetwork.train()', () => {
     it('callback validation', () => {
       const net = new NeuralNetwork();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error callback should be a function
         net.updateTrainingOptions({ callback: 'no strings' });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error callback should be a function
         net.updateTrainingOptions({ callback: 4 });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error callback should be a function
         net.updateTrainingOptions({ callback: false });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error callback should be a function
         net.updateTrainingOptions({ callback: null });
       }).not.toThrow();
       expect(() => {
@@ -288,18 +288,18 @@ describe('NeuralNetwork.train()', () => {
     it('callbackPeriod validation', () => {
       const net = new NeuralNetwork();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error callbackPeriod should be a number
         net.updateTrainingOptions({ callbackPeriod: 'no strings' });
       }).toThrow();
       expect(() => {
         net.updateTrainingOptions({ callbackPeriod: -50 });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error callbackPeriod should be a number
         net.updateTrainingOptions({ callbackPeriod: () => {} });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error callbackPeriod should be a number
         net.updateTrainingOptions({ callbackPeriod: false });
       }).toThrow();
       expect(() => {
@@ -310,18 +310,18 @@ describe('NeuralNetwork.train()', () => {
     it('timeout validation', () => {
       const net = new NeuralNetwork();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error timeout should be a number
         net.updateTrainingOptions({ timeout: 'no strings' });
       }).toThrow();
       expect(() => {
         net.updateTrainingOptions({ timeout: -50 });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error timeout should be a number
         net.updateTrainingOptions({ timeout: () => {} });
       }).toThrow();
       expect(() => {
-        // @ts-ignore
+        // @ts-expect-error timeout should be a number
         net.updateTrainingOptions({ timeout: false });
       }).toThrow();
       expect(() => {

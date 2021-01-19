@@ -44,8 +44,8 @@ describe('ArthurDeviationBiases', () => {
         (net.trainOpts as any).learningRate
       );
 
-      net.deltas![0][0] = 1;
-      net.deltas![0][1] = 2;
+      net.deltas[0][0] = 1;
+      net.deltas[0][1] = 2;
 
       (layer1.deltas as any)[0][0] = (net.deltas as any)[1][0] = 3;
       (layer1.deltas as any)[1][0] = (net.deltas as any)[1][1] = 4;

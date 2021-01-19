@@ -67,11 +67,14 @@ describe('NeuralNetworkGPU', () => {
     describe('mocked GPU mode', () => {
       it('converts Textures to Arrays of numbers', () => {
         const net = new NeuralNetworkGPU();
-        net.train([
-          { input: [1,2], output: [3] },
-          { input: [2,1], output: [0] },
-          { input: [3,1], output: [1] }
-        ], { iterations: 1 });
+        net.train(
+          [
+            { input: [1, 2], output: [3] },
+            { input: [2, 1], output: [0] },
+            { input: [3, 1], output: [1] },
+          ],
+          { iterations: 1 }
+        );
         expect(net.weights.length).toBe(3);
         for (let i = 1; i < net.weights.length; i++) {
           expect(net.weights[i] instanceof Texture).toBeTruthy();
@@ -112,14 +115,21 @@ describe('NeuralNetworkGPU', () => {
   describe('.trainPattern()', () => {
     let mockAdjustWeights: jest.SpyInstance;
     beforeEach(() => {
-      mockAdjustWeights = jest.spyOn(NeuralNetworkGPU.prototype, 'adjustWeights');
+      mockAdjustWeights = jest.spyOn(
+        NeuralNetworkGPU.prototype,
+        'adjustWeights'
+      );
     });
     afterEach(() => {
       mockAdjustWeights.mockRestore();
     });
     describe('when called with logErrorRate = falsey', () => {
       it('calls .runInput(), .calculateDeltas(), and .adjustWeights()', () => {
-        const net = new NeuralNetworkGPU({ inputSize: 1, hiddenLayers: [2], outputSize: 3 });
+        const net = new NeuralNetworkGPU({
+          inputSize: 1,
+          hiddenLayers: [2],
+          outputSize: 3,
+        });
         net.initialize();
         const mockRunInput = jest.spyOn(net, 'runInput');
         const mockCalculateDeltas = jest.spyOn(net, 'calculateDeltas');
@@ -138,7 +148,11 @@ describe('NeuralNetworkGPU', () => {
     });
     describe('when called with logErrorRate = truthy', () => {
       it('calls .runInput(), .calculateDeltas(), and .adjustWeights()', () => {
-        const net = new NeuralNetworkGPU({ inputSize: 1, hiddenLayers: [2], outputSize: 3 });
+        const net = new NeuralNetworkGPU({
+          inputSize: 1,
+          hiddenLayers: [2],
+          outputSize: 3,
+        });
         net.initialize();
         const mockRunInput = jest.spyOn(net, 'runInput');
         const mockCalculateDeltas = jest.spyOn(net, 'calculateDeltas');

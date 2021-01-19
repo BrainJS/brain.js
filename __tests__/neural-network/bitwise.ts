@@ -116,12 +116,14 @@ describe('NeuralNetwork bitwise', () => {
   });
 
   describe('bitwise using async training', () => {
-    async function testBitwiseAsync(data: Array<{
-      input: number[];
-      output: number[];
-    }>) {
+    async function testBitwiseAsync(
+      data: Array<{
+        input: number[];
+        output: number[];
+      }>
+    ) {
       const net = new NeuralNetwork();
-      await net.trainAsync(data, { errorThresh: 0.003, timeout: 4800 })
+      await net.trainAsync(data, { errorThresh: 0.003, timeout: 4800 });
       data.forEach((d) => {
         const actual = net.run(d.input);
         const expected = d.output;

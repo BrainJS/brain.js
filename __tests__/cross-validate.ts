@@ -10,17 +10,22 @@ import { LSTMTimeStep } from '../src/recurrent/lstm-time-step';
 describe('CrossValidate', () => {
   describe('.train()', () => {
     class FakeNN extends NeuralNetwork {
-      constructor(options: Partial<INeuralNetworkOptions & INeuralNetworkTrainOptions> = {}) {
+      constructor(
+        options: Partial<
+          INeuralNetworkOptions & INeuralNetworkTrainOptions
+        > = {}
+      ) {
         super(options);
         this.options.hiddenLayers = [1, 2, 3];
       }
 
-      train(data: Array<{ input: number[], output: number[] }>, trainOpts: {}) {
+      train(data: Array<{ input: number[]; output: number[] }>) {
         return {
           iterations: 10,
           error: 0.05,
         };
       }
+
       static fromJSON(json: INeuralNetworkJSON): FakeNN {
         const net = new FakeNN();
         return net.fromJSON(json);
@@ -37,12 +42,16 @@ describe('CrossValidate', () => {
       class SpyFakeNN extends FakeNN {
         setActivation() {
           this.runInput = (inputs: Float32Array): Float32Array => {
-            if (inputs[0] === 0 && inputs[1] === 1) return Float32Array.from([1]);
-            if (inputs[0] === 0 && inputs[1] === 0) return Float32Array.from([0]);
-            if (inputs[0] === 1 && inputs[1] === 1) return Float32Array.from([0]);
-            if (inputs[0] === 1 && inputs[1] === 0) return Float32Array.from([1]);
+            if (inputs[0] === 0 && inputs[1] === 1)
+              return Float32Array.from([1]);
+            if (inputs[0] === 0 && inputs[1] === 0)
+              return Float32Array.from([0]);
+            if (inputs[0] === 1 && inputs[1] === 1)
+              return Float32Array.from([0]);
+            if (inputs[0] === 1 && inputs[1] === 0)
+              return Float32Array.from([1]);
             throw new Error('unknown input');
-          }
+          };
         }
       }
       const xorTrainingData = [
@@ -59,7 +68,7 @@ describe('CrossValidate', () => {
       const net = new CrossValidate(SpyFakeNN, {
         inputSize: 1,
         hiddenLayers: [10],
-        outputSize: 1
+        outputSize: 1,
       });
       net.shuffleArray = (input) => input;
       const result = net.train(xorTrainingData);
@@ -100,12 +109,16 @@ describe('CrossValidate', () => {
       class SpyFakeNN extends FakeNN {
         setActivation() {
           this.runInput = (inputs: Float32Array): Float32Array => {
-            if (inputs[0] === 0 && inputs[1] === 1) return Float32Array.from([0]);
-            if (inputs[0] === 0 && inputs[1] === 0) return Float32Array.from([1]);
-            if (inputs[0] === 1 && inputs[1] === 1) return Float32Array.from([1]);
-            if (inputs[0] === 1 && inputs[1] === 0) return Float32Array.from([0]);
+            if (inputs[0] === 0 && inputs[1] === 1)
+              return Float32Array.from([0]);
+            if (inputs[0] === 0 && inputs[1] === 0)
+              return Float32Array.from([1]);
+            if (inputs[0] === 1 && inputs[1] === 1)
+              return Float32Array.from([1]);
+            if (inputs[0] === 1 && inputs[1] === 0)
+              return Float32Array.from([0]);
             throw new Error('unknown input');
-          }
+          };
         }
       }
       const xorTrainingData = [
@@ -242,7 +255,7 @@ describe('CrossValidate', () => {
       const options = {
         inputSize: 10,
         hiddenLayers: [10],
-        outputSize:7
+        outputSize: 7,
       };
       const bestNet = new FakeNN(options);
       bestNet.initialize();
@@ -304,14 +317,11 @@ describe('CrossValidate', () => {
         [0.9, 0.8, 0.7, 0.6, 0.5],
       ];
 
-      const cv = new CrossValidate(
-        LSTMTimeStep,
-        {
-          inputSize: 1,
-          hiddenLayers: [10],
-          outputSize: 1,
-        }
-      );
+      const cv = new CrossValidate(LSTMTimeStep, {
+        inputSize: 1,
+        hiddenLayers: [10],
+        outputSize: 1,
+      });
       const result = cv.train(trainingData, { iterations: 10 });
       expect(!isNaN(result.avgs.error)).toBeTruthy();
     });

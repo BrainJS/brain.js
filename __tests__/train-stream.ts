@@ -8,7 +8,8 @@ describe('TrainStream', () => {
   const wiggle = 0.1;
   const errorThresh = 0.003;
 
-  async function testTrainer<Network extends ITrainStreamNetwork<
+  async function testTrainer<
+    Network extends ITrainStreamNetwork<
       Parameters<Network['addFormat']>[0],
       Parameters<Network['trainPattern']>[0],
       Network['trainOpts']
@@ -35,14 +36,12 @@ describe('TrainStream', () => {
         trainStream.endInputs();
       }
 
-      const trainStream = new TrainStream(
-        {
-          ...opts,
-          neuralNetwork: net,
-          floodCallback: flood,
-          doneTrainingCallback: resolve,
-        }
-      );
+      const trainStream = new TrainStream({
+        ...opts,
+        neuralNetwork: net,
+        floodCallback: flood,
+        doneTrainingCallback: resolve,
+      });
 
       /**
        * kick off the stream
@@ -94,27 +93,25 @@ describe('TrainStream', () => {
 
       return testTrainer(
         net,
-        // @ts-ignore TODO: better infer objects
+        // @ts-expect-error TODO: better infer objects
         { data: trainingData, errorThresh: 0.001 }
-      ).then(
-        () => {
-          for (const data of trainingData) {
-            const output = net.run(data.input) as INumberHash;
-            const target = data.output as INumberHash;
+      ).then(() => {
+        for (const data of trainingData) {
+          const output = net.run(data.input) as INumberHash;
+          const target = data.output as INumberHash;
 
-            const outputKey = largestKey(output);
-            const targetKey = largestKey(target);
+          const outputKey = largestKey(output);
+          const targetKey = largestKey(target);
 
-            if (!outputKey || !targetKey) fail();
+          if (!outputKey || !targetKey) fail();
 
-            expect(outputKey).toBe(targetKey);
-            expect(
-              output[outputKey] < target[targetKey] + wiggle &&
-                output[outputKey] > target[targetKey] - wiggle
-            ).toBeTruthy();
-          }
+          expect(outputKey).toBe(targetKey);
+          expect(
+            output[outputKey] < target[targetKey] + wiggle &&
+              output[outputKey] > target[targetKey] - wiggle
+          ).toBeTruthy();
         }
-      );
+      });
     });
   });
   describe('bitwise functions', () => {
