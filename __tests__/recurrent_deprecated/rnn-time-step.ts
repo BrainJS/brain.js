@@ -583,7 +583,6 @@ describe('RNNTimeStep', () => {
             [0.5, 0.4, 0.3, 0.2, 0.1],
           ];
           const result = net.train(trainingData, {
-            log: true,
             errorThresh: 0.005,
             iterations: 1000,
           });
@@ -1653,7 +1652,7 @@ describe('RNNTimeStep', () => {
         inputSize: 2,
         outputSize: 2,
       });
-      net.train(trainingData, { iterations: 1000, log: true });
+      net.train(trainingData, { iterations: 1000 });
       const result = net.forecast([{ low: 0.1, high: 0.9 }], 2);
       expect(result.length).toBe(2);
       expect(result[0].low).toBeGreaterThan(0);

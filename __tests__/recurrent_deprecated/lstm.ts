@@ -126,7 +126,7 @@ describe('LSTM', () => {
     });
     it('can include the DataFormatter', () => {
       const net = new LSTM();
-      net.train(['hi mom!'], { iterations: 100, log: true });
+      net.train(['hi mom!'], { iterations: 100 });
       const expected = net.run('hi ');
       const newNet = net.toFunction();
       const output = newNet('hi ');
@@ -155,7 +155,7 @@ describe('LSTM', () => {
           output: 'bro',
         },
       ];
-      net.train(trainingData, { iterations: 100, log: true });
+      net.train(trainingData, { iterations: 100 });
       expect(net.run('hi')).toBe('mom');
       expect(net.run('howdy')).toBe('dad');
       expect(net.run('hello')).toBe('sis');
@@ -187,7 +187,7 @@ describe('LSTM', () => {
           output: 'other',
         },
       ];
-      net.train(trainingData, { iterations: 200, log: true });
+      net.train(trainingData, { iterations: 200 });
       expect(net.run([transactionTypes.credit])).toBe('credit');
       expect(net.run([transactionTypes.debit])).toBe('debit');
       expect(net.run([transactionTypes.personalCard])).toBe('personal card');

@@ -459,7 +459,7 @@ describe('FeedForward Class: Unit', () => {
       class TestInputLayer extends BaseLayer {
         constructor(settings: ILayerSettings) {
           super(settings);
-          this.weights = [0, 1, 3, 4, 5, 6, 7, 8, 9];
+          this.weights = new Float32Array([0, 1, 3, 4, 5, 6, 7, 8, 9]);
         }
       }
       class TestLayer1 extends BaseLayer {

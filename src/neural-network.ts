@@ -197,10 +197,9 @@ export class NeuralNetwork {
     this.options = { ...this.options, ...options };
     this.updateTrainingOptions(options);
 
-    if (options.inputSize && options.outputSize) {
-      this.sizes = [options.inputSize]
-        .concat(options.hiddenLayers ?? [])
-        .concat([options.outputSize]);
+    const { inputSize, hiddenLayers, outputSize } = this.options;
+    if (inputSize && outputSize) {
+      this.sizes = [inputSize].concat(hiddenLayers ?? []).concat([outputSize]);
     }
   }
 

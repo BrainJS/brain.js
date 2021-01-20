@@ -200,7 +200,7 @@ describe('GRU', () => {
 
     it('can include the DataFormatter', () => {
       const net = new GRU();
-      net.train(['hi mom!'], { iterations: 100, log: true });
+      net.train(['hi mom!'], { iterations: 100 });
       const expected = net.run('hi ');
       const newNet = net.toFunction();
       const output = newNet('hi ');

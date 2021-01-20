@@ -1003,7 +1003,7 @@ describe('Recurrent Class: End to End', () => {
             [100, 500, 1000],
             // [1000, 500, 100],
           ],
-          { iterations: 100, log: true }
+          { iterations: 100 }
         );
         recurrentNet.train(
           [
@@ -1014,7 +1014,7 @@ describe('Recurrent Class: End to End', () => {
               // [1000], [500], [100],
             ],
           ],
-          { iterations: 100, errorCheckInterval: 1, log: true }
+          { iterations: 100, errorCheckInterval: 1 }
         );
 
         expect(recurrentNet._layerSets.length).toBe(

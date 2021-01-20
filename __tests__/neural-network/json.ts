@@ -145,14 +145,14 @@ describe('JSON', () => {
       describe('.activation', () => {
         it('exports default correctly', () => {
           const net = new NeuralNetwork();
-          net.sizes = [];
+          net.sizes = [1];
           expect(net.trainOpts.activation).toBe(trainDefaults().activation);
           const json = net.toJSON();
           expect(json.trainOpts.activation).toBe(trainDefaults().activation);
         });
         it('exports non-default correctly', () => {
           const net = new NeuralNetwork({ activation: 'leaky-relu' });
-          net.sizes = [];
+          net.sizes = [1];
           expect(net.trainOpts.activation).toBe('leaky-relu');
           const json = net.toJSON();
           expect(json.trainOpts.activation).toBe('leaky-relu');

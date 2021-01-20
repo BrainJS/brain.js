@@ -344,7 +344,7 @@ describe('NeuralNetwork.train()', () => {
         { input: [1, 0], output: [1] },
         { input: [1, 1], output: [0] },
       ];
-      const trainResult = net.train(trainData, { log: true });
+      const trainResult = net.train(trainData);
       expect(trainResult.iterations).toBe(1);
     });
   });
