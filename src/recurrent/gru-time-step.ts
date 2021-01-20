@@ -1,4 +1,4 @@
-import { GRU, getGRUHiddenLayer, getGRUEquation, IGRUHiddenLayer } from './gru';
+import { getGRUHiddenLayer, getGRUEquation, IGRUHiddenLayer } from './gru';
 import { Matrix } from './matrix';
 import { Equation } from './matrix/equation';
 import { RNNTimeStep } from './rnn-time-step';

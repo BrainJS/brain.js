@@ -261,7 +261,7 @@ export class NeuralNetworkGPU extends NeuralNetwork {
     this.buildGetMSE();
   }
 
-  setActivation() {}
+  setActivation(): void {}
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error

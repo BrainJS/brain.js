@@ -59,7 +59,7 @@ describe('RNN', () => {
       it('calls createHiddenLayers', () => {
         const net = new RNN();
         net.initialize();
-        expect(RNN.prototype.createHiddenLayers).toBeCalled();
+        expect(createHiddenLayersMock).toBeCalled();
       });
       it('calls static getHiddenLayer method', () => {
         const net = new RNN();

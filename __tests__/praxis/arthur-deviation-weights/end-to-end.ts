@@ -1,7 +1,7 @@
 import { GPU } from 'gpu.js';
-import { ArthurDeviationWeights } from '../../../src/praxis/arthur-deviation-weights';
-import { random } from '../../../src/layer/random';
-import { NeuralNetwork, trainDefaults } from '../../../src/neural-network';
+import { ArthurDeviationWeights } from '../../../src/praxis';
+import { random } from '../../../src/layer';
+import { NeuralNetwork } from '../../../src/neural-network';
 import { setup, teardown } from '../../../src/utilities/kernel';
 
 describe('ArthurDeviationWeights Class: End to End', () => {

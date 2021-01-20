@@ -1,5 +1,4 @@
 import * as cast from '../../src/utilities/cast';
-import { ArrayLookupTable } from '../../src/utilities/array-lookup-table';
 import { LookupTable } from '../../src/utilities/lookup-table';
 
 describe('cast', () => {

@@ -742,16 +742,24 @@ describe('default net json', () => {
 
   describe('.options', () => {
     it('option inputSize', () => {
-      expect(originalNet.options.inputSize).toEqual(serialized.options.inputSize);
+      expect(originalNet.options.inputSize).toEqual(
+        serialized.options.inputSize
+      );
     });
     it('option hiddenLayers', () => {
-      expect(originalNet.options.hiddenLayers).toEqual(serialized.options.hiddenLayers);
+      expect(originalNet.options.hiddenLayers).toEqual(
+        serialized.options.hiddenLayers
+      );
     });
     it('option outputSize', () => {
-      expect(originalNet.options.outputSize).toEqual(serialized.options.outputSize);
+      expect(originalNet.options.outputSize).toEqual(
+        serialized.options.outputSize
+      );
     });
     it('option binaryThresh', () => {
-      expect(originalNet.options.binaryThresh).toEqual(serialized.options.binaryThresh);
+      expect(originalNet.options.binaryThresh).toEqual(
+        serialized.options.binaryThresh
+      );
     });
   });
   describe('.trainOpts', () => {

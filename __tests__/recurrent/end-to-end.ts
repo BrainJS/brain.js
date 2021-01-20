@@ -9,7 +9,6 @@ import {
   rnnCell,
 } from '../../src/layer';
 import { ILayer } from '../../src/layer/base-layer';
-// const { zeros2D } = require('../../src/utilities/zeros-2d');
 import { RecurrentInput } from '../../src/layer/recurrent-input';
 import { IMomentumRootMeanSquaredPropagationSettings } from '../../src/praxis/momentum-root-mean-squared-propagation';
 import { Recurrent } from '../../src/recurrent';
@@ -30,10 +29,11 @@ function asMatrix(v?: Matrix): Matrix {
 
 describe('Recurrent Class: End to End', () => {
   beforeEach(() => {
-    const gpu = new GPU({
-      mode: 'cpu',
-    });
-    setup(gpu);
+    setup(
+      new GPU({
+        mode: 'cpu',
+      })
+    );
   });
   afterEach(() => {
     teardown();
@@ -46,12 +46,12 @@ describe('Recurrent Class: End to End', () => {
         hiddenLayers: [3],
         outputSize: 1,
       });
+      const praxisOpts: Partial<IMomentumRootMeanSquaredPropagationSettings> = {
+        regularizationStrength: timeStep.options.regc,
+        learningRate: timeStep.trainOpts.learningRate,
+      };
       const recurrentNet = new Recurrent({
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        praxisOpts: {
-          regularizationStrength: timeStep.options.regc,
-          learningRate: timeStep.trainOpts.learningRate,
-        } as IMomentumRootMeanSquaredPropagationSettings,
+        praxisOpts,
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
           (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
@@ -680,7 +680,10 @@ describe('Recurrent Class: End to End', () => {
         );
 
         expect(recurrentNetResult.iterations).toBe(timeStepResult.iterations);
-        // expect(recurrentNetResult.error.toFixed(5)).toBe(timeStepResult.error.toFixed(5));
+        expect(recurrentNetResult.error).toBeCloseTo(
+          timeStepResult.error,
+          0.005
+        );
         expect(recurrentNet._layerSets.length).toBe(
           timeStep.model.equations.length
         );
@@ -1258,11 +1261,12 @@ describe('Recurrent Class: End to End', () => {
   });
 
   it('can learn xor', () => {
+    const praxisOpts: Partial<IMomentumRootMeanSquaredPropagationSettings> = {
+      regularizationStrength: 0.000001,
+      learningRate: 0.01,
+    };
     const net = new Recurrent({
-      praxisOpts: {
-        regularizationStrength: 0.000001,
-        learningRate: 0.01,
-      } as IMomentumRootMeanSquaredPropagationSettings,
+      praxisOpts,
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
         (inputLayer: ILayer, recurrentInput: RecurrentInput) =>

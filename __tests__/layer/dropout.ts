@@ -75,7 +75,7 @@ describe('Dropout Layer', () => {
       };
       // eslint-disable-next-line no-new
       new Dropout(mockInputLayer, settings);
-      expect(Dropout.prototype.validate).toHaveBeenCalled();
+      expect(validateMock).toHaveBeenCalled();
     });
     it('sets dropouts to null', () => {
       const mockInputLayer = mockLayer({});

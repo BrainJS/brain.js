@@ -721,7 +721,10 @@ describe('FeedForward Class: Unit', () => {
     let adjustWeightsSpy: jest.SpyInstance;
     beforeEach(() => {
       runInputSpy = jest.spyOn(FeedForward.prototype, 'runInput');
-      _calculateDeltasSpy = jest.spyOn(FeedForward.prototype, '_calculateDeltas');
+      _calculateDeltasSpy = jest.spyOn(
+        FeedForward.prototype,
+        '_calculateDeltas'
+      );
       adjustWeightsSpy = jest.spyOn(FeedForward.prototype, 'adjustWeights');
     });
     afterEach(() => {
