@@ -8,7 +8,7 @@ import {
   updateChange,
 } from '../../../src/praxis/arthur-deviation-weights';
 import { setup, teardown } from '../../../src/utilities/kernel';
-import { shave } from '../../test-utils';
+import { shave, shave2D } from '../../test-utils';
 
 describe('ArthurDeviationWeights Class: Unit', () => {
   beforeEach(() => {
@@ -36,19 +36,19 @@ describe('ArthurDeviationWeights Class: Unit', () => {
           momentum: 0.2,
         },
       });
-      const result: any = kernel(
+      const result = kernel(
         changes,
         weights,
         incomingWeights,
         inputDeltas
-      );
+      ) as Float32Array[];
       // Corrected this array, need to recheck
       const value: Float32Array = new Float32Array([
         1.70000005,
         3.4000001,
         5.0999999,
       ]);
-      expect(shave(result)).toEqual(shave(value));
+      expect(shave2D(result)).toEqual([shave(value)]);
     });
   });
   describe('updateChange()', () => {
