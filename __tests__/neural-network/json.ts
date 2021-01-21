@@ -108,55 +108,74 @@ describe('JSON', () => {
       describe('.outputSize', () => {
         it('exports default correctly', () => {
           const net = new NeuralNetwork();
-          net.train([{
-            input: [1],
-            output: [1],
-          }])
+          net.train([
+            {
+              input: [1],
+              output: [1],
+            },
+          ]);
           expect(net.toJSON().options.outputSize).toEqual(
             defaults().outputSize
           );
         });
         it('exports non-default correctly', () => {
           const net = new NeuralNetwork({ outputSize: 7 });
-          net.train([{
-            input: [1],
-            output: [1], //note: different size that that of option on purpose
-          }], { iterations: 1 });
+          net.train(
+            [
+              {
+                input: [1],
+                output: [1], // note: different size that that of option on purpose
+              },
+            ],
+            { iterations: 1 }
+          );
           expect(net.toJSON().options.outputSize).toEqual(7);
         });
       });
       describe('.binaryThresh', () => {
         it('exports default correctly', () => {
           const net = new NeuralNetwork();
-          net.train([{
-            input: [1],
-            output: [1],
-          }], { iterations: 1 });
+          net.train(
+            [
+              {
+                input: [1],
+                output: [1],
+              },
+            ],
+            { iterations: 1 }
+          );
           expect(net.toJSON().options.binaryThresh).toEqual(
             defaults().binaryThresh
           );
         });
         it('exports non-default correctly', () => {
           const net = new NeuralNetwork({ binaryThresh: 7 });
-          net.train([{
-            input: [1],
-            output: [1],
-          }], { iterations: 1 });
+          net.train(
+            [
+              {
+                input: [1],
+                output: [1],
+              },
+            ],
+            { iterations: 1 }
+          );
           expect(net.toJSON().options.binaryThresh).toEqual(7);
         });
       });
       describe('.hiddenLayers', () => {
         it('exports default correctly', () => {
           const net = new NeuralNetwork();
-          net.train([
-            { input: [1], output: [1] }
-          ], { iterations: 1 });
+          net.train([{ input: [1], output: [1] }], { iterations: 1 });
           expect(net.toJSON().options.hiddenLayers).toEqual(
             defaults().hiddenLayers
           );
         });
         it('exports non-default correctly', () => {
-          const net = new NeuralNetwork({ inputSize: 1, hiddenLayers: [7, 8, 9], outputSize: 1 });
+          const net = new NeuralNetwork({
+            inputSize: 1,
+            hiddenLayers: [7, 8, 9],
+            outputSize: 1,
+          });
           expect(net.toJSON().options.hiddenLayers).toEqual([7, 8, 9]);
         });
       });

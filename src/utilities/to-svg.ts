@@ -1,6 +1,7 @@
 import { FeedForward } from '../feed-forward';
 import { recurrentZeros } from '../layer/recurrent-zeros';
-import { Recurrent } from '../recurrent';
+import { IRecurrentOptions, Recurrent } from '../recurrent';
+import { IRNNOptions } from '../recurrent/rnn';
 
 const recurrentJSONTypes = [
   'RNN',
@@ -292,16 +293,20 @@ function getFeedForwardLayers(network: any) {
 
 // TODO: Constrain type once neural networks get typed
 function getRecurrentLayers(network: any) {
-  const inputLayer = network.inputLayer();
   const hiddenLayers = [];
-  hiddenLayers.push(network.hiddenLayers[0](inputLayer, recurrentZeros(), 0));
-  for (let i = 1; i < network.hiddenLayers.length; i++) {
+  const options = network.options as IRecurrentOptions;
+  if (!options.inputLayer) throw new Error('inputLayer not defined');
+  if (!options.outputLayer) throw new Error('outputLayer not defined');
+  const inputLayer = options.inputLayer();
+  hiddenLayers.push(options.hiddenLayers[0](inputLayer, recurrentZeros(), 0));
+  for (let i = 1; i < options.hiddenLayers.length; i++) {
     hiddenLayers.push(
-      network.hiddenLayers[i](hiddenLayers[i - 1], recurrentZeros(), i)
+      options.hiddenLayers[i](hiddenLayers[i - 1], recurrentZeros(), i)
     );
   }
-  const outputLayer = network.outputLayer(
-    hiddenLayers[hiddenLayers.length - 1]
+  const outputLayer = options.outputLayer(
+    hiddenLayers[hiddenLayers.length - 1],
+    -1
   );
   return {
     inputLayer,

@@ -20,6 +20,7 @@ describe('CrossValidate', () => {
       }
 
       train(data: Array<{ input: number[]; output: number[] }>) {
+        this.prepTraining(data, this.trainOpts);
         return {
           iterations: 10,
           error: 0.05,

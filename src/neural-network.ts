@@ -173,13 +173,15 @@ export class NeuralNetwork {
   _formatOutput: NeuralNetworkFormatter | null = null;
 
   runInput: (input: Float32Array) => Float32Array = (input: Float32Array) => {
-    throw new Error('runInput net yet setup');
+    this.setActivation();
+    return this.runInput(input);
   };
 
   calculateDeltas: (output: Float32Array) => void = (
     output: Float32Array
   ): void => {
-    throw new Error('calculateDeltas net yet setup');
+    this.setActivation();
+    return this.calculateDeltas(output);
   };
 
   // adam
