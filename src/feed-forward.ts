@@ -35,7 +35,7 @@ export interface ITrainingStatus {
   error: number;
 }
 
-export type Log = (status: INeuralNetworkState) => void;
+export type Log = (status: string) => void;
 export type FeedForwardCallback = (status: ITrainingStatus) => void;
 
 export interface IFeedForwardTrainingOptions {
@@ -385,7 +385,7 @@ export class FeedForward<
       status.iterations % (trainOpts.logPeriod as number) === 0
     ) {
       status.error = calculateError();
-      trainOpts.log(status);
+      trainOpts.log(`iterations: ${status.iterations}, training error: ${status.error}`);
     } else if (
       status.iterations % (trainOpts.errorCheckInterval as number) ===
       0
@@ -638,6 +638,7 @@ export class FeedForward<
       this.initialize();
     }
     if (
+      !this._model ||
       !this.layers ||
       !this._inputLayer ||
       !this._hiddenLayers ||

@@ -1,10 +1,5 @@
 import { Matrix } from '.';
 
-/**
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
- */
 export function multiplyElement(
   product: Matrix,
   left: Matrix,

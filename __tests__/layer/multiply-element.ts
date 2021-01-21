@@ -224,5 +224,11 @@ describe('MultiplyElement Layer', () => {
       expect(layer.inputLayer1).toBe(mockInputLayer1);
       expect(layer.inputLayer2).toBe(mockInputLayer2);
     });
+    it('calls new MultiplyElement with settings', () => {
+      const mockInputLayer1 = mockLayer({});
+      const mockInputLayer2 = mockLayer({});
+      const layer = multiplyElement(mockInputLayer1, mockInputLayer2, { id: 'id' });
+      expect(layer.id).toBe('id');
+    });
   });
 });

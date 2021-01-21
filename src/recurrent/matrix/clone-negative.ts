@@ -1,10 +1,5 @@
 import { Matrix } from '.';
 
-/**
- *
- * @param {Matrix} product
- * @param {Matrix} left
- */
 export function cloneNegative(product: Matrix, left: Matrix): void {
   product.rows = left.rows;
   product.columns = left.columns;

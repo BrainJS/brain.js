@@ -1,6 +1,5 @@
 import assert from 'assert';
-import { getFileCoverageDataByName } from 'istanbul-spy';
-import { IGPUTextureSettings, Kernel, KernelFunction, Texture } from 'gpu.js';
+import { IGPUTextureSettings, Kernel, Texture } from 'gpu.js';
 import { ILayerTemplate, IPraxis, IPraxisSettings } from '../src/praxis/base-praxis';
 import { BaseLayer, ILayerSettings, ILayer } from '../src/layer/base-layer';
 

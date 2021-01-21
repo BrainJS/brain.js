@@ -1,10 +1,5 @@
 import { Matrix } from '.';
 
-/**
- *
- * @param {Matrix} matrix
- * @returns {number}
- */
 export function maxI(matrix: Matrix): number {
   // argmax of array w
   const { weights } = matrix;

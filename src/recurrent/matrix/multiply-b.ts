@@ -2,9 +2,6 @@ import { Matrix } from '.';
 
 /**
  * multiplies {from} deltas to {left} and {right}
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
  */
 export function multiplyB(product: Matrix, left: Matrix, right: Matrix): void {
   const leftRows = left.rows;

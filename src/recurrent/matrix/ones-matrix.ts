@@ -1,10 +1,7 @@
 import { Matrix } from '.';
 import { ones } from '../../utilities/ones';
 
-/** return Matrix but filled with random numbers from gaussian
- * @param {Number} [rows]
- * @param {Number} [columns]
- * @constructor
+/** return Matrix of ones
  */
 export class OnesMatrix extends Matrix {
   constructor(rows: number, columns: number) {

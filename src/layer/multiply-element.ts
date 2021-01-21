@@ -1,7 +1,7 @@
 import { makeKernel, release, clear } from '../utilities/kernel';
 import { Operator } from './operator';
 import { checkSameSize } from '../utilities/layer-size';
-import { ILayer } from './base-layer';
+import { ILayer, ILayerSettings } from './base-layer';
 import { IKernelFunctionThis, IKernelRunShortcut } from 'gpu.js';
 
 export function predict(
@@ -80,7 +80,8 @@ export class MultiplyElement extends Operator {
 
 export function multiplyElement(
   inputLayer1: ILayer,
-  inputLayer2: ILayer
+  inputLayer2: ILayer,
+  settings?: ILayerSettings
 ): MultiplyElement {
-  return new MultiplyElement(inputLayer1, inputLayer2);
+  return new MultiplyElement(inputLayer1, inputLayer2, settings);
 }

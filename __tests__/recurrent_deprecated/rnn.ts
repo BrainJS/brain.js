@@ -1,4 +1,4 @@
-import { IMatrixJSON } from '../../src/recurrent/matrix';
+import { IMatrixJSON, Matrix } from '../../src/recurrent/matrix';
 import { Equation } from '../../src/recurrent/matrix/equation';
 import { defaults, RNN, RNNFunction } from '../../src/recurrent/rnn';
 import { DataFormatter } from '../../src/utilities/data-formatter';
@@ -369,7 +369,7 @@ describe('RNN', () => {
         });
         const json = net.toJSON();
 
-        function compare(left: IMatrixJSON, right: IMatrixJSON) {
+        function compare(left: IMatrixJSON, right: Matrix) {
           left.weights.forEach((value, i) => {
             expect(value).toBe(right.weights[i]);
           });

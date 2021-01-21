@@ -1,10 +1,5 @@
 import { Matrix } from '.';
 
-/**
- *
- * @param {Matrix} product
- * @return {Matrix}
- */
 function clone(product: Matrix): Matrix {
   const cloned = new Matrix();
 
