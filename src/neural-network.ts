@@ -169,8 +169,6 @@ export class NeuralNetwork {
   outputLookup: INumberHash | null = null;
   outputLookupLength = 0;
 
-  isInitialized = false;
-
   _formatInput: NeuralNetworkFormatter | null = null;
   _formatOutput: NeuralNetworkFormatter | null = null;
 
@@ -245,7 +243,6 @@ export class NeuralNetwork {
     if (this.trainOpts.praxis === 'adam') {
       this._setupAdam();
     }
-    this.isInitialized = true;
   }
 
   setActivation(activation?: NeuralNetworkActivation): void {
@@ -275,7 +272,7 @@ export class NeuralNetwork {
   }
 
   get isRunnable(): boolean {
-    return this.isInitialized;
+    return this.sizes.length > 0;
   }
 
   run<T extends InputOutputValue | InputOutputValue[] | KernelOutput>(
@@ -294,7 +291,9 @@ export class NeuralNetwork {
     } else {
       formattedInput = input as Float32Array;
     }
-
+    if (formattedInput.length !== this.sizes[0]) {
+      throw new Error(`input is not in correct length of ${this.sizes[0]}`);
+    }
     const output = this.runInput(formattedInput).slice(0);
     if (this.outputLookup) {
       return lookup.toObject(this.outputLookup, output) as T;
@@ -416,7 +415,7 @@ export class NeuralNetwork {
    * If they are not it will initialize them based off the data set.
    */
   verifyIsInitialized(preparedData: INeuralNetworkDatumFormatted[]): void {
-    if (this.isInitialized) return;
+    if (this.sizes.length) return;
 
     this.sizes = [];
     this.sizes.push(preparedData[0].input.length);
@@ -1110,7 +1109,7 @@ export class NeuralNetwork {
   }
 
   toJSON(): INeuralNetworkJSON {
-    if (!this.isInitialized) {
+    if (!this.isRunnable) {
       this.initialize();
     }
     // use Array.from, keeping json small
@@ -1121,7 +1120,8 @@ export class NeuralNetwork {
       Array.from(layerBiases)
     );
     const jsonLayers: IJSONLayer[] = [];
-    for (let i = 0; i <= this.outputLayer; i++) {
+    const outputLength = this.sizes.length - 1;
+    for (let i = 0; i <= outputLength; i++) {
       jsonLayers.push({
         weights: jsonLayerWeights[i] ?? [],
         biases: jsonLayerBiases[i] ?? [],
@@ -1180,54 +1180,56 @@ export class NeuralNetwork {
   ): <T extends number[] | Float32Array | INumberHash>(input: T) => T {
     const { activation, leakyReluAlpha } = this.trainOpts;
     let needsVar = false;
-    function nodeHandle(layerIndex: number, nodeIndex: number): string {
+    const nodeHandle = (layerIndex: number, nodeIndex: number): string => {
       if (layerIndex === 0) {
         return `(input[${nodeIndex}]||0)`;
       }
 
-      const layer = layers[layerIndex];
-      const weights = layer.weights[nodeIndex];
-      const bias = layer.biases[nodeIndex];
+      const weights: Float32Array = this.weights[layerIndex][nodeIndex];
+      const bias: number = this.biases[layerIndex][nodeIndex];
       if (!weights) {
-        throw new Error(`weights at nodeIndex ${nodeIndex} not found`);
+        throw new Error(
+          `weights at layerIndex ${layerIndex} & nodeIndex ${nodeIndex} not found`
+        );
       }
       if (!bias) {
-        throw new Error(`bias as notIndex ${nodeIndex} not found`);
+        throw new Error(
+          `bias as layerIndex ${layerIndex} & nodeIndex ${nodeIndex} not found`
+        );
       }
-      const result = [
-        '(',
-        bias,
-        weights
-          .map((weight, subNodeIndex) => {
-            if (weight < 0) {
-              return `${weight}*${nodeHandle(layerIndex - 1, subNodeIndex)}`;
-            } else {
-              return `+${weight}*${nodeHandle(layerIndex - 1, subNodeIndex)}`;
-            }
-          })
-          .join(''),
-        ')',
-      ];
+      const weightsArray: string[] = [];
+      weights.forEach((weight: number, subNodeIndex: number): void => {
+        if (weight < 0) {
+          weightsArray.push(
+            `${weight}*${nodeHandle(layerIndex - 1, subNodeIndex)}`
+          );
+        } else {
+          weightsArray.push(
+            `+${weight}*${nodeHandle(layerIndex - 1, subNodeIndex)}`
+          );
+        }
+      });
+      const result = `(${bias.toString()}${weightsArray.join('')})`;
 
       switch (activation) {
         case 'sigmoid':
-          return `1/(1+1/Math.exp(${result.join('')}))`;
+          return `1/(1+1/Math.exp(${result}))`;
         case 'relu': {
           needsVar = true;
-          return `((v=${result.join('')})<0?0:v)`;
+          return `((v=${result})<0?0:v)`;
         }
         case 'leaky-relu': {
           needsVar = true;
-          return `((v=${result.join('')})<0?0:${leakyReluAlpha}*v)`;
+          return `Math.max((v=${result}),${leakyReluAlpha}*v)`;
         }
         case 'tanh':
-          return `Math.tanh(${result.join('')})`;
+          return `Math.tanh(${result})`;
         default:
           throw new Error(
             `Unknown activation ${activation}. Available activations are: 'sigmoid', 'relu', 'leaky-relu', 'tanh'`
           );
       }
-    }
+    };
 
     function checkKeys(keys: string[]): void {
       if (keys.find((v) => v.includes('"'))) {
@@ -1235,7 +1237,6 @@ export class NeuralNetwork {
       }
     }
 
-    const { layers } = this.toJSON();
     const layersAsMath: string[] = [];
     let result: string;
 
@@ -1247,10 +1248,14 @@ export class NeuralNetwork {
         .map((key) => `input["${key}"]`)
         .join(',')}]);`;
     }
-    if (layers.length < 1) throw new Error('No layers');
-    layers[layers.length - 1].weights.forEach((layerWeights, layerIndex) => {
-      layersAsMath.push(nodeHandle(layers.length - 1, layerIndex));
-    });
+    if (this.sizes.length < 1) throw new Error('No layers');
+    for (
+      let nodeIndex = 0;
+      nodeIndex < this.sizes[this.outputLayer];
+      nodeIndex++
+    ) {
+      layersAsMath.push(nodeHandle(this.outputLayer, nodeIndex));
+    }
     if (this.outputLookup) {
       const keys = Object.keys(this.outputLookup);
       checkKeys(keys);

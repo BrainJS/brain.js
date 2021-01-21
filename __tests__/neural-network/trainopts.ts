@@ -277,8 +277,7 @@ describe('NeuralNetwork.train()', () => {
         net.updateTrainingOptions({ callback: false });
       }).toThrow();
       expect(() => {
-        // @ts-expect-error callback should be a function
-        net.updateTrainingOptions({ callback: null });
+        net.updateTrainingOptions({ callback: undefined });
       }).not.toThrow();
       expect(() => {
         net.updateTrainingOptions({ callback: () => {} });

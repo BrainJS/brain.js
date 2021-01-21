@@ -13,17 +13,17 @@ describe('.toFunction()', () => {
       const originalNet = new NeuralNetwork();
       originalNet.train(xorTrainingData);
       const xor = originalNet.toFunction();
-      expect(xor([0, 0])[0].toFixed(5)).toEqual(
-        originalNet.run([0, 0])[0].toFixed(5)
+      expect(xor([0, 0])[0]).toBeCloseTo(
+        originalNet.run([0, 0])[0]
       );
-      expect(xor([0, 1])[0].toFixed(5)).toEqual(
-        originalNet.run([0, 1])[0].toFixed(5)
+      expect(xor([0, 1])[0]).toBeCloseTo(
+        originalNet.run([0, 1])[0]
       );
-      expect(xor([1, 0])[0].toFixed(5)).toEqual(
-        originalNet.run([1, 0])[0].toFixed(5)
+      expect(xor([1, 0])[0]).toBeCloseTo(
+        originalNet.run([1, 0])[0]
       );
-      expect(xor([1, 1])[0].toFixed(5)).toEqual(
-        originalNet.run([1, 1])[0].toFixed(5)
+      expect(xor([1, 1])[0]).toBeCloseTo(
+        originalNet.run([1, 1])[0]
       );
     });
   });
@@ -32,17 +32,17 @@ describe('.toFunction()', () => {
       const originalNet = new NeuralNetwork({ activation: 'relu' });
       originalNet.train(xorTrainingData);
       const xor = originalNet.toFunction();
-      expect(xor([0, 0])[0].toFixed(5)).toEqual(
-        originalNet.run([0, 0])[0].toFixed(5)
+      expect(xor([0, 0])[0]).toBeCloseTo(
+        originalNet.run([0, 0])[0]
       );
-      expect(xor([0, 1])[0].toFixed(5)).toEqual(
-        originalNet.run([0, 1])[0].toFixed(5)
+      expect(xor([0, 1])[0]).toBeCloseTo(
+        originalNet.run([0, 1])[0]
       );
-      expect(xor([1, 0])[0].toFixed(5)).toEqual(
-        originalNet.run([1, 0])[0].toFixed(5)
+      expect(xor([1, 0])[0]).toBeCloseTo(
+        originalNet.run([1, 0])[0]
       );
-      expect(xor([1, 1])[0].toFixed(5)).toEqual(
-        originalNet.run([1, 1])[0].toFixed(5)
+      expect(xor([1, 1])[0]).toBeCloseTo(
+        originalNet.run([1, 1])[0]
       );
     });
   });
@@ -51,17 +51,17 @@ describe('.toFunction()', () => {
       const originalNet = new NeuralNetwork({ activation: 'leaky-relu' });
       originalNet.train(xorTrainingData);
       const xor = originalNet.toFunction();
-      expect(xor([0, 0])[0].toFixed(5)).toEqual(
-        originalNet.run([0, 0])[0].toFixed(5)
+      expect(xor([0, 0])[0]).toBeCloseTo(
+        originalNet.run([0, 0])[0]
       );
-      expect(xor([0, 1])[0].toFixed(5)).toEqual(
-        originalNet.run([0, 1])[0].toFixed(5)
+      expect(xor([0, 1])[0]).toBeCloseTo(
+        originalNet.run([0, 1])[0]
       );
-      expect(xor([1, 0])[0].toFixed(5)).toEqual(
-        originalNet.run([1, 0])[0].toFixed(5)
+      expect(xor([1, 0])[0]).toBeCloseTo(
+        originalNet.run([1, 0])[0]
       );
-      expect(xor([1, 1])[0].toFixed(5)).toEqual(
-        originalNet.run([1, 1])[0].toFixed(5)
+      expect(xor([1, 1])[0]).toBeCloseTo(
+        originalNet.run([1, 1])[0]
       );
     });
   });
@@ -70,17 +70,17 @@ describe('.toFunction()', () => {
       const originalNet = new NeuralNetwork({ activation: 'tanh' });
       originalNet.train(xorTrainingData);
       const xor = originalNet.toFunction();
-      expect(xor([0, 0])[0].toFixed(5)).toEqual(
-        originalNet.run([0, 0])[0].toFixed(5)
+      expect(xor([0, 0])[0]).toBeCloseTo(
+        originalNet.run([0, 0])[0]
       );
-      expect(xor([0, 1])[0].toFixed(5)).toEqual(
-        originalNet.run([0, 1])[0].toFixed(5)
+      expect(xor([0, 1])[0]).toBeCloseTo(
+        originalNet.run([0, 1])[0]
       );
-      expect(xor([1, 0])[0].toFixed(5)).toEqual(
-        originalNet.run([1, 0])[0].toFixed(5)
+      expect(xor([1, 0])[0]).toBeCloseTo(
+        originalNet.run([1, 0])[0]
       );
-      expect(xor([1, 1])[0].toFixed(5)).toEqual(
-        originalNet.run([1, 1])[0].toFixed(5)
+      expect(xor([1, 1])[0]).toBeCloseTo(
+        originalNet.run([1, 1])[0]
       );
     });
   });
