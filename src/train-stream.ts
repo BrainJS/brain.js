@@ -93,7 +93,7 @@ export class TrainStream<
 
     if (!this.dataFormatDetermined) {
       this.size++;
-      this.neuralNetwork.addFormat(chunk[0]);
+      this.neuralNetwork.addFormat(chunk);
 
       if (this.firstDatum === undefined) {
         this.firstDatum = chunk;
@@ -104,7 +104,7 @@ export class TrainStream<
 
     this.count++;
 
-    const data = this.neuralNetwork.formatData(chunk);
+    const data = this.neuralNetwork.formatData([chunk]);
     const error = this.neuralNetwork.trainPattern(data[0], true) as number;
 
     if (error !== null) {
@@ -123,7 +123,7 @@ export class TrainStream<
     }
 
     if (!this.dataFormatDetermined && this.firstDatum !== undefined) {
-      const data = this.neuralNetwork.formatData(this.firstDatum);
+      const data = this.neuralNetwork.formatData([this.firstDatum]);
       this.neuralNetwork.verifyIsInitialized(data);
       this.dataFormatDetermined = true;
 

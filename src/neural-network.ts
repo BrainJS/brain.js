@@ -1001,19 +1001,23 @@ export class NeuralNetwork {
   }
 
   addFormat(data: INeuralNetworkDatum): void {
-    this.inputLookup = lookup.addKeys(
-      data.input as INumberHash,
-      this.inputLookup ?? {}
-    );
-    if (this.inputLookup) {
-      this.inputLookupLength = Object.keys(this.inputLookup).length;
+    if (!Array.isArray(data.input) || typeof data.input[0] !== 'number') {
+      this.inputLookup = lookup.addKeys(
+        data.input as INumberHash,
+        this.inputLookup ?? {}
+      );
+      if (this.inputLookup) {
+        this.inputLookupLength = Object.keys(this.inputLookup).length;
+      }
     }
-    this.outputLookup = lookup.addKeys(
-      data.output as INumberHash,
-      this.outputLookup ?? {}
-    );
-    if (this.outputLookup) {
-      this.outputLookupLength = Object.keys(this.outputLookup).length;
+    if (!Array.isArray(data.output) || typeof data.output[0] !== 'number') {
+      this.outputLookup = lookup.addKeys(
+        data.output as INumberHash,
+        this.outputLookup ?? {}
+      );
+      if (this.outputLookup) {
+        this.outputLookupLength = Object.keys(this.outputLookup).length;
+      }
     }
   }
 
