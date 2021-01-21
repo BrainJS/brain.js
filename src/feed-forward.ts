@@ -1,10 +1,8 @@
 import { IKernelFunctionThis, KernelOutput, Texture } from 'gpu.js';
 import { MeanSquaredError } from './estimator/mean-squared-error';
 import { ILayer, ILayerJSON } from './layer/base-layer';
-import { RecurrentInput } from './layer/recurrent-input';
 import { Model } from './layer/types';
 import { InputOutputValue, INumberArray, INumberHash, lookup } from './lookup';
-import { INeuralNetworkState } from './neural-network-types';
 import * as praxis from './praxis';
 import { IPraxis, IPraxisSettings } from './praxis/base-praxis';
 import { flattenLayers } from './utilities/flatten-layers';
@@ -53,9 +51,7 @@ export interface IFeedForwardTrainingOptions {
 export interface IFeedForwardOptions {
   learningRate?: number;
   binaryThresh?: number;
-  hiddenLayers?: Array<
-    (inputLayer: ILayer, recurrentInput: RecurrentInput) => ILayer
-  >;
+  hiddenLayers?: Array<(inputLayer: ILayer, layerIndex: number) => ILayer>;
   inputLayer?: () => ILayer;
   outputLayer?: (inputLayer: ILayer, index: number) => ILayer;
   praxisOpts?: Partial<IPraxisSettings>;
@@ -260,7 +256,6 @@ export class FeedForward<
     if (!hiddenLayers) throw new Error('hiddenLayers not defined');
 
     for (let i = 0; i < hiddenLayers.length; i++) {
-      // @ts-expect-error not sure about the definiton Integer or ReccurrentInput?
       const hiddenLayer = hiddenLayers[i](previousLayer, i);
       result.push(hiddenLayer);
       this._hiddenLayers.push(hiddenLayer);
@@ -385,7 +380,9 @@ export class FeedForward<
       status.iterations % (trainOpts.logPeriod as number) === 0
     ) {
       status.error = calculateError();
-      trainOpts.log(`iterations: ${status.iterations}, training error: ${status.error}`);
+      trainOpts.log(
+        `iterations: ${status.iterations}, training error: ${status.error}`
+      );
     } else if (
       status.iterations % (trainOpts.errorCheckInterval as number) ===
       0

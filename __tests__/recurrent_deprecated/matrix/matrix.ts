@@ -155,7 +155,7 @@ describe('Matrix', () => {
       expect(matrix.toJSON()).toEqual({
         rows: 3,
         columns: 3,
-        weights: [1,2,3,4,5,6,7,8,9],
+        weights: [1, 2, 3, 4, 5, 6, 7, 8, 9],
       });
     });
   });
@@ -164,26 +164,26 @@ describe('Matrix', () => {
       const json = {
         rows: 3,
         columns: 3,
-        weights: [1,2,3,4,5,6,7,8,9],
+        weights: [1, 2, 3, 4, 5, 6, 7, 8, 9],
       };
       const matrix = Matrix.fromJSON(json);
       expect(matrix.rows).toBe(json.rows);
       expect(matrix.columns).toBe(json.columns);
-      expect(matrix.weights).toEqual(new Float32Array([1,2,3,4,5,6,7,8,9]));
+      expect(matrix.weights).toEqual(
+        new Float32Array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+      );
     });
   });
   describe('static .fromArray()', () => {
     it('deserializes to Matrix from nested array, populating weights', () => {
       const nestedArray = [
-        [1,2,3],
-        [4,5,6],
+        [1, 2, 3],
+        [4, 5, 6],
       ];
       const matrix = Matrix.fromArray(nestedArray);
       expect(matrix.rows).toBe(2);
       expect(matrix.columns).toBe(3);
-      expect(matrix.weights).toEqual(
-        Float32Array.from([1,2,3,4,5,6])
-      );
+      expect(matrix.weights).toEqual(Float32Array.from([1, 2, 3, 4, 5, 6]));
     });
   });
   describe('.toArray()', () => {
@@ -195,12 +195,10 @@ describe('Matrix', () => {
       matrix.setWeight(1, 0, 4);
       matrix.setWeight(1, 1, 5);
       matrix.setWeight(1, 2, 6);
-      expect(matrix.toArray()).toEqual(
-        [
-          [1,2,3],
-          [4,5,6],
-        ]
-      );
+      expect(matrix.toArray()).toEqual([
+        [1, 2, 3],
+        [4, 5, 6],
+      ]);
     });
   });
   describe('.deltasToArray()', () => {
@@ -220,30 +218,24 @@ describe('Matrix', () => {
   describe('.fromArray()', () => {
     it('deserializes to Matrix from nested array, populating weights by default', () => {
       const nestedArray = [
-        [1,2,3],
-        [4,5,6],
+        [1, 2, 3],
+        [4, 5, 6],
       ];
       const matrix = new Matrix(2, 3).fromArray(nestedArray);
       expect(matrix.rows).toBe(2);
       expect(matrix.columns).toBe(3);
-      expect(matrix.weights).toEqual(
-        Float32Array.from([1,2,3,4,5,6])
-      );
+      expect(matrix.weights).toEqual(Float32Array.from([1, 2, 3, 4, 5, 6]));
     });
     it('deserializes to Matrix from nested array, populating deltas when defined', () => {
       const nestedArray = [
-        [1,2,3],
-        [4,5,6],
+        [1, 2, 3],
+        [4, 5, 6],
       ];
       const matrix = new Matrix(2, 3).fromArray(nestedArray, 'deltas');
       expect(matrix.rows).toBe(2);
       expect(matrix.columns).toBe(3);
-      expect(matrix.weights).toEqual(
-        Float32Array.from([0,0,0,0,0,0])
-      );
-      expect(matrix.deltas).toEqual(
-        Float32Array.from([1,2,3,4,5,6])
-      );
+      expect(matrix.weights).toEqual(Float32Array.from([0, 0, 0, 0, 0, 0]));
+      expect(matrix.deltas).toEqual(Float32Array.from([1, 2, 3, 4, 5, 6]));
     });
   });
   describe('.iterate()', () => {

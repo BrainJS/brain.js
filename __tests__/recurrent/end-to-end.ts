@@ -15,6 +15,7 @@ import { Recurrent } from '../../src/recurrent';
 import { Matrix } from '../../src/recurrent/matrix';
 import { RNNTimeStep } from '../../src/recurrent/rnn-time-step';
 import { setup, teardown } from '../../src/utilities/kernel';
+import { LSTMTimeStep } from '../../src/recurrent/lstm-time-step';
 
 function asArrayOfArrayOfNumber(v: KernelOutput | Input): number[][] {
   if (!Array.isArray(v) || typeof (v as number[][])[0][0] !== 'number') {
@@ -26,7 +27,33 @@ function asMatrix(v?: Matrix): Matrix {
   if (!v) throw new Error('undefined Matrix');
   return v;
 }
+jest.mock('../../src/recurrent/matrix/random-matrix', () => {
+  class MockRandomMatrix extends Matrix {
+    constructor(rows: number, columns: number, std: number) {
+      super(rows, columns);
 
+      let value = 1;
+      for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++) {
+          this.setWeight(row, column, value++);
+        }
+      }
+    }
+  }
+  return {
+    RandomMatrix: MockRandomMatrix,
+  };
+});
+// jest.mock('../../src/layer/random', () => {
+//   class MockRandom extends Model implements ILayer {
+//     constructor(settings: IRandomSettings) {
+//       super(settings);
+//     }
+//   }
+//   return {
+//     Random: MockRandom,
+//   }
+// });
 describe('Recurrent Class: End to End', () => {
   beforeEach(() => {
     setup(
@@ -1274,13 +1301,26 @@ describe('Recurrent Class: End to End', () => {
       ],
       outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
     });
+    const oldNet = new LSTMTimeStep();
     const xorNetValues = [
       [[0.001], [0.001], [0.001]],
       [[0.001], [1], [1]],
       [[1], [0.001], [1]],
       [[1], [1], [0.001]],
     ];
-    net.train(xorNetValues, { iterations: 300 });
+    oldNet.train(xorNetValues, { iterations: 1 });
+    net.train(xorNetValues, { iterations: 1 });
+
+    // expect(((net.layers as ILayer[])[0].weights as Float32Array[])[0]).toEqual(oldNet.model.equations[0].states[0].product.weights);
+    // expect(((net.layers as ILayer[])[1].weights as Float32Array[])[0]).toEqual(oldNet.model.equations[0].states[0].product.weights);
+    oldNet.train(xorNetValues, { iterations: 299, log: true });
+    net.train(xorNetValues, { iterations: 299, log: true });
+
+    expect(oldNet.run([[0.001], [0.001]])[0]).toBeLessThan(0.1);
+    expect(oldNet.run([[0.001], [1]])[0]).toBeGreaterThan(0.9);
+    expect(oldNet.run([[1], [0.001]])[0]).toBeGreaterThan(0.9);
+    expect(oldNet.run([[1], [1]])[0]).toBeLessThan(0.1);
+
     expect((net.run([[0.001], [0.001]]) as number[][])[0][0]).toBeLessThan(0.1);
     expect((net.run([[0.001], [1]]) as number[][])[0][0]).toBeGreaterThan(0.9);
     expect((net.run([[1], [0.001]]) as number[][])[0][0]).toBeGreaterThan(0.9);

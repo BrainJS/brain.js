@@ -1,41 +1,55 @@
 import { RNNTimeStep } from '../../src/recurrent/rnn-time-step';
 import { LSTMTimeStep } from '../../src/recurrent/lstm-time-step';
-import { getHiddenLSTMLayer, getLSTMEquation, ILSTMHiddenLayer } from '../../src/recurrent/lstm';
-import { IMatrixJSON, Matrix } from '../../src/recurrent/matrix';
-import { Equation, IState } from '../../src/recurrent/matrix/equation';
+import {
+  getHiddenLSTMLayer,
+  getLSTMEquation,
+  ILSTMHiddenLayer,
+} from '../../src/recurrent/lstm';
+import { Matrix } from '../../src/recurrent/matrix';
+import { Equation } from '../../src/recurrent/matrix/equation';
 
 jest.mock('../../src/recurrent/matrix/random-matrix', () => {
   class MockRandomMatrix {
     get rows(): number {
       return this.realMatrix.rows;
     }
+
     get columns(): number {
       return this.realMatrix.columns;
     }
+
     get weights(): Float32Array {
       return this.realMatrix.weights;
     }
+
     set weights(weights: Float32Array) {
       this.realMatrix.weights = weights;
     }
+
     get deltas(): Float32Array {
       return this.realMatrix.weights;
     }
+
     set deltas(deltas: Float32Array) {
       this.realMatrix.deltas = deltas;
     }
+
     get setWeight(): (row: number, column: number, value: number) => void {
       return this.realMatrix.setWeight;
     }
+
     get getWeight(): (row: number, column: number) => number {
       return this.realMatrix.getWeight;
     }
+
     get setDelta(): (row: number, column: number, value: number) => void {
       return this.realMatrix.setDelta;
     }
+
     get getDelta(): (row: number, column: number) => number {
       return this.realMatrix.getDelta;
     }
+
     realMatrix: Matrix;
     constructor(rows: number, columns: number, std: number) {
       this.realMatrix = new Matrix(rows, columns);
@@ -43,12 +57,12 @@ jest.mock('../../src/recurrent/matrix/random-matrix', () => {
       this.realMatrix.iterate({
         column: (rowIndex, columnIndex) => {
           this.setWeight(rowIndex, columnIndex, value++);
-        }
+        },
       });
     }
   }
   return {
-    RandomMatrix: MockRandomMatrix
+    RandomMatrix: MockRandomMatrix,
   };
 });
 describe('LSTMTimeStep', () => {
@@ -76,15 +90,20 @@ describe('LSTMTimeStep', () => {
     it('correctly computes a hidden state', () => {
       const equation = new Equation();
       const inputMatrix = new Matrix(3, 1);
-      inputMatrix.setWeight(0, 0, .1);
-      inputMatrix.setWeight(1, 0, .5);
+      inputMatrix.setWeight(0, 0, 0.1);
+      inputMatrix.setWeight(1, 0, 0.5);
       inputMatrix.setWeight(2, 0, 1);
       const previousResult = new Matrix(3, 1);
-      previousResult.setWeight(0, 0, .1);
-      previousResult.setWeight(1, 0, .5);
+      previousResult.setWeight(0, 0, 0.1);
+      previousResult.setWeight(1, 0, 0.5);
       previousResult.setWeight(2, 0, 1);
       equation.input(new Matrix(3, 1));
-      const lstmEquation = getLSTMEquation(equation, inputMatrix, previousResult, hiddenLayer);
+      const lstmEquation = getLSTMEquation(
+        equation,
+        inputMatrix,
+        previousResult,
+        hiddenLayer
+      );
       const result = equation.runInput(new Float32Array([0, 0, 0]));
       expect(result.getWeight(0, 0)).toBeCloseTo(0.8001706600189209);
       expect(result.getWeight(1, 0)).toBeCloseTo(0.9051482677459717);
