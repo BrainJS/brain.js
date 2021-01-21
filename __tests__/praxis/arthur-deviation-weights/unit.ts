@@ -115,7 +115,7 @@ describe('ArthurDeviationWeights Class: Unit', () => {
       const mockResult = {};
       const mockChanges = {};
       const mockInitialChanges = (p.changes = {});
-      p.kernel = jest.fn(() => {
+      p.kernelMap = jest.fn(() => {
         return {
           result: mockResult,
           changes: mockChanges,
@@ -123,7 +123,7 @@ describe('ArthurDeviationWeights Class: Unit', () => {
       });
       const result = p.run();
       expect(result).toBe(mockResult);
-      expect(p.kernel).toHaveBeenCalledWith(
+      expect(p.kernelMap).toHaveBeenCalledWith(
         mockInitialChanges,
         weightsLayerWeightsMock,
         incomingLayerWeightsMock,
