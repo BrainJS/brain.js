@@ -1,10 +1,11 @@
 import { IPraxis } from '../praxis/base-praxis';
 import { clear, release } from '../utilities/kernel';
 import { zeros2D } from '../utilities/zeros-2d';
-import { ILayer, ILayerSettings } from './base-layer';
+import { ILayerSettings } from './base-layer';
 import { Internal } from './internal';
+import { IRecurrentInput } from './recurrent-input';
 
-export class RecurrentZeros extends Internal implements ILayer {
+export class RecurrentZeros extends Internal implements IRecurrentInput {
   praxis: IPraxis | null = null;
   settings: Partial<ILayerSettings> = {};
   predictKernel = null;

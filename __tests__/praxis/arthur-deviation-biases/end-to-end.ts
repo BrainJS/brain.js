@@ -59,12 +59,12 @@ describe('ArthurDeviationBiases', () => {
       net.adjustWeights();
       praxis.setupKernels();
       const result = praxis.run(layer1) as number[][];
-      expect((result)[0][0]).not.toBe(0);
-      expect((result)[0][0]).toBe((net.biases as any)[1][0]);
-      expect((result)[1][0]).not.toBe(0);
-      expect((result)[1][0]).toBe((net.biases as any)[1][1]);
-      expect((result)[2][0]).not.toBe(0);
-      expect((result)[2][0]).toBe((net.biases as any)[1][2]);
+      expect(result[0][0]).not.toBe(0);
+      expect(result[0][0]).toBe((net.biases as any)[1][0]);
+      expect(result[1][0]).not.toBe(0);
+      expect(result[1][0]).toBe((net.biases as any)[1][1]);
+      expect(result[2][0]).not.toBe(0);
+      expect(result[2][0]).toBe((net.biases as any)[1][2]);
     });
   });
 });

@@ -9,7 +9,7 @@ import {
   rnnCell,
 } from '../../src/layer';
 import { ILayer } from '../../src/layer/base-layer';
-import { RecurrentInput } from '../../src/layer/recurrent-input';
+import { IRecurrentInput } from '../../src/layer/recurrent-input';
 import { IMomentumRootMeanSquaredPropagationSettings } from '../../src/praxis/momentum-root-mean-squared-propagation';
 import { Recurrent } from '../../src/recurrent';
 import { Matrix } from '../../src/recurrent/matrix';
@@ -81,7 +81,7 @@ describe('Recurrent Class: End to End', () => {
         praxisOpts,
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
-          (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
+          (inputLayer: ILayer, recurrentInput: IRecurrentInput) => {
             return rnnCell({ width: 1, height: 3 }, inputLayer, recurrentInput);
           },
         ],
@@ -1066,8 +1066,10 @@ describe('Recurrent Class: End to End', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
-          (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
-            recurrentInput.setDimensions(1, 3);
+          (inputLayer: ILayer, recurrentInput: IRecurrentInput) => {
+            if (recurrentInput.setDimensions) {
+              recurrentInput.setDimensions(1, 3);
+            }
             return add(
               multiply(random({ height: 3 }), inputLayer),
               recurrentInput
@@ -1163,14 +1165,16 @@ describe('Recurrent Class: End to End', () => {
       test('can create new hidden layers in the correct structure', () => {
         const inputLayer = input({ height: 1 });
         const weights = random({ height: 3 });
-        let recurrentZeros: RecurrentInput | null = null;
+        let recurrentInput: IRecurrentInput | null = null;
         const net = new Recurrent({
           inputLayer: () => inputLayer,
           hiddenLayers: [
-            (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
-              recurrentInput.setDimensions(1, 3);
-              recurrentZeros = recurrentInput;
-              return add(multiply(weights, inputLayer), recurrentInput);
+            (inputLayer: ILayer, _recurrentInput: IRecurrentInput) => {
+              if (_recurrentInput.setDimensions) {
+                _recurrentInput.setDimensions(1, 3);
+              }
+              recurrentInput = _recurrentInput;
+              return add(multiply(weights, inputLayer), _recurrentInput);
             },
           ],
           outputLayer: (inputLayer: ILayer) =>
@@ -1179,12 +1183,12 @@ describe('Recurrent Class: End to End', () => {
 
         // single
         net.initialize();
-        if (!recurrentZeros) throw new Error('recurrentZeros is not defined');
+        if (!recurrentInput) throw new Error('recurrentInput is not defined');
         expect(net._layerSets.length).toEqual(1);
         expect(net._layerSets[0].length).toEqual(10);
         expect(net._layerSets[0][0]).toEqual(inputLayer);
         expect(net._layerSets[0].indexOf(weights)).toBe(1);
-        expect(net._layerSets[0].indexOf(recurrentZeros)).toBe(3);
+        expect(net._layerSets[0].indexOf(recurrentInput)).toBe(3);
 
         // double
         net.initializeDeep();
@@ -1195,7 +1199,7 @@ describe('Recurrent Class: End to End', () => {
           inputLayer.constructor
         ); // new instance of same type NOT model
         expect(net._layerSets[1].indexOf(weights)).toBe(1); // direct reference IMPORTANT because model
-        expect(net._layerSets[1].indexOf(recurrentZeros)).toBe(-1);
+        expect(net._layerSets[1].indexOf(recurrentInput)).toBe(-1);
         expect(net._layerSets[1][3].deltas).toBe(net._layerSets[0][4].deltas); // recurrence
         expect(net._layerSets[1][3].weights).toBe(net._layerSets[0][4].weights); // recurrence
 
@@ -1218,7 +1222,7 @@ describe('Recurrent Class: End to End', () => {
     const net = new Recurrent({
       inputLayer: () => input({ width: 1 }),
       hiddenLayers: [
-        (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
+        (inputLayer: ILayer, recurrentInput: IRecurrentInput) =>
           rnnCell({ width: 1, height: 1 }, inputLayer, recurrentInput),
       ],
       outputLayer: (inputLayer: ILayer) =>
@@ -1250,9 +1254,9 @@ describe('Recurrent Class: End to End', () => {
         const net = new Recurrent({
           inputLayer: () => input({ width: 1 }),
           hiddenLayers: [
-            (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
+            (inputLayer: ILayer, recurrentInput: IRecurrentInput) =>
               rnnCell({ height: 3, width: 1 }, inputLayer, recurrentInput),
-            (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
+            (inputLayer: ILayer, recurrentInput: IRecurrentInput) =>
               rnnCell({ height: 1, width: 1 }, inputLayer, recurrentInput),
           ],
           outputLayer: (inputLayer: ILayer) =>
@@ -1269,7 +1273,7 @@ describe('Recurrent Class: End to End', () => {
     const net = new Recurrent({
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
-        (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
+        (inputLayer: ILayer, recurrentInput: IRecurrentInput) =>
           rnnCell({ height: 3 }, inputLayer, recurrentInput),
       ],
       outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
@@ -1296,7 +1300,7 @@ describe('Recurrent Class: End to End', () => {
       praxisOpts,
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
-        (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
+        (inputLayer: ILayer, recurrentInput: IRecurrentInput) =>
           lstmCell({ height: 20 }, inputLayer, recurrentInput),
       ],
       outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
@@ -1330,7 +1334,7 @@ describe('Recurrent Class: End to End', () => {
     const net = new Recurrent({
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
-        (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
+        (inputLayer: ILayer, recurrentInput: IRecurrentInput) =>
           lstmCell({ height: 10 }, inputLayer, recurrentInput),
       ],
       outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
@@ -1351,7 +1355,7 @@ describe('Recurrent Class: End to End', () => {
     const net = new Recurrent({
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
-        (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
+        (inputLayer: ILayer, recurrentInput: IRecurrentInput) =>
           rnnCell({ height: 3 }, inputLayer, recurrentInput),
       ],
       outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),

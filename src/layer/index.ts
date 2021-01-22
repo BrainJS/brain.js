@@ -27,6 +27,8 @@ export { Ones, ones } from './ones';
 export { output } from './output';
 export { Pool, pool } from './pool';
 export { Random, random } from './random';
+export { RecurrentInput, IRecurrentInput } from './recurrent-input';
+export { RecurrentZeros } from './recurrent-zeros';
 export { rnnCell } from './rnn-cell';
 export { Regression, regression } from './regression';
 export { Relu, relu } from './relu';

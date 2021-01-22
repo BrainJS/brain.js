@@ -4,7 +4,11 @@ import { release } from '../utilities/kernel';
 import { BaseLayer, ILayer } from './base-layer';
 import { Internal } from './internal';
 
-export class RecurrentInput extends Internal {
+export interface IRecurrentInput extends ILayer {
+  setDimensions?: (width: number, height: number) => void;
+}
+
+export class RecurrentInput extends Internal implements IRecurrentInput {
   recurrentInput: ILayer;
   praxis: IPraxis | null = null;
   predictKernel: any = null;

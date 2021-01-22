@@ -6,19 +6,21 @@ import { sigmoid } from './sigmoid';
 import { tanh } from './tanh';
 import { zeros } from './zeros';
 import { ILayer, ILayerSettings } from './base-layer';
-import { RecurrentZeros } from './recurrent-zeros';
+import { IRecurrentInput } from './recurrent-input';
 
 export function lstmCell(
   settings: ILayerSettings,
   input: ILayer,
-  recurrentInput: RecurrentZeros
+  recurrentInput: IRecurrentInput
 ): ILayer {
   const { height } = settings;
 
   if (typeof height !== 'number') {
     throw new Error('no settings.height given');
   }
-  if (recurrentInput.setDimensions) recurrentInput.setDimensions(1, height);
+  if (recurrentInput.setDimensions) {
+    recurrentInput.setDimensions(1, height);
+  }
 
   const inputGateWeights = random({
     height,
@@ -80,7 +82,7 @@ export function lstmCell(
     std: 0.08,
     id: 'outputGatePeepholes',
   });
-  const outputGateBias = zeros({ height });
+  const outputGateBias = zeros({ height, id: 'outputGateBias' });
   const outputGate = sigmoid(
     add(
       add(

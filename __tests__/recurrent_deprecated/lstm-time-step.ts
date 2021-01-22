@@ -90,13 +90,13 @@ describe('LSTMTimeStep', () => {
     it('correctly computes a hidden state', () => {
       const equation = new Equation();
       const inputMatrix = new Matrix(3, 1);
-      inputMatrix.setWeight(0, 0, 0.1);
-      inputMatrix.setWeight(1, 0, 0.5);
-      inputMatrix.setWeight(2, 0, 1);
+      inputMatrix.setWeight(0, 0, 1);
+      inputMatrix.setWeight(1, 0, 2);
+      inputMatrix.setWeight(2, 0, 3);
       const previousResult = new Matrix(3, 1);
-      previousResult.setWeight(0, 0, 0.1);
-      previousResult.setWeight(1, 0, 0.5);
-      previousResult.setWeight(2, 0, 1);
+      previousResult.setWeight(0, 0, 1);
+      previousResult.setWeight(1, 0, 2);
+      previousResult.setWeight(2, 0, 3);
       equation.input(new Matrix(3, 1));
       const lstmEquation = getLSTMEquation(
         equation,
@@ -105,9 +105,9 @@ describe('LSTMTimeStep', () => {
         hiddenLayer
       );
       const result = equation.runInput(new Float32Array([0, 0, 0]));
-      expect(result.getWeight(0, 0)).toBeCloseTo(0.8001706600189209);
-      expect(result.getWeight(1, 0)).toBeCloseTo(0.9051482677459717);
-      expect(result.getWeight(2, 0)).toBeCloseTo(0.9640275835990906);
+      expect(result.getWeight(0, 0)).toBeCloseTo(0.9640275835990906);
+      expect(result.getWeight(1, 0)).toBeCloseTo(0.9950547814369202);
+      expect(result.getWeight(2, 0)).toBeCloseTo(0.9993293285369873);
       expect(equation.states.length).toBe(26);
       expect(equation.states[0].forwardFn.name).toBe('forwardFn');
       // input gate

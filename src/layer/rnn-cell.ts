@@ -2,14 +2,14 @@ import { add } from './add';
 import { ILayer, ILayerSettings } from './base-layer';
 import { multiply } from './multiply';
 import { random } from './random';
-import { RecurrentZeros } from './recurrent-zeros';
 import { relu } from './relu';
 import { zeros } from './zeros';
+import { IRecurrentInput } from './recurrent-input';
 
 export function rnnCell(
   settings: ILayerSettings,
   input: ILayer,
-  recurrentInput: RecurrentZeros
+  recurrentInput: IRecurrentInput
 ): ILayer {
   const { height } = settings;
 

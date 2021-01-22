@@ -1,5 +1,5 @@
 import { RecurrentConnection } from './layer/recurrent-connection';
-import { RecurrentInput } from './layer/recurrent-input';
+import { IRecurrentInput, RecurrentInput } from './layer/recurrent-input';
 import { RecurrentZeros } from './layer/recurrent-zeros';
 import {
   Activation,
@@ -31,7 +31,7 @@ export interface IRecurrentOptions extends IFeedForwardOptions {
   hiddenLayers: Array<
     (
       inputLayer: ILayer,
-      recurrentInput: RecurrentInput | RecurrentZeros,
+      recurrentInput: IRecurrentInput,
       index: number
     ) => ILayer
   >;
@@ -52,6 +52,15 @@ export class Recurrent extends FeedForward {
   _layerSets: ILayer[][] = [];
   _hiddenLayerOutputIndices: number[] = [];
   _model: ILayer[] | null = null;
+
+  // TODO: use generics in extend
+  constructor(
+    options: Partial<IRecurrentOptions & IRecurrentTrainingOptions> = {}
+  ) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    super(options);
+  }
 
   _connectLayers(): {
     inputLayer: ILayer;

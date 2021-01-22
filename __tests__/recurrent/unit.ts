@@ -1,9 +1,8 @@
 import { GPU } from 'gpu.js';
 import { add, input, multiply, output, random, rnnCell } from '../../src/layer';
-// TODO Recurrent was updated but tests not. Error with typing issues
 import { ILayer } from '../../src/layer/base-layer';
 import { Filter } from '../../src/layer/filter';
-import { RecurrentInput } from '../../src/layer/recurrent-input';
+import { IRecurrentInput } from '../../src/layer/recurrent-input';
 import { Recurrent } from '../../src/recurrent';
 import { Matrix } from '../../src/recurrent/matrix';
 import { setup, teardown } from '../../src/utilities/kernel';
@@ -28,8 +27,10 @@ describe('Recurrent Class: Unit', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 2 }),
         hiddenLayers: [
-          (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
-            recurrentInput.setDimensions(1, 3);
+          (inputLayer: ILayer, recurrentInput: IRecurrentInput) => {
+            if (recurrentInput.setDimensions) {
+              recurrentInput.setDimensions(1, 3);
+            }
             return rnnCell({ height: 3 }, inputLayer, recurrentInput);
           },
         ],
@@ -66,8 +67,10 @@ describe('Recurrent Class: Unit', () => {
       const net = new Recurrent({
         inputLayer: () => input({ width: 1 }),
         hiddenLayers: [
-          (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
-            recurrentInput.setDimensions(1, 1);
+          (inputLayer: ILayer, recurrentInput: IRecurrentInput) => {
+            if (recurrentInput.setDimensions) {
+              recurrentInput.setDimensions(1, 1);
+            }
             return multiply(
               multiply(random({ width: 1, height: 1 }), inputLayer),
               recurrentInput
@@ -105,8 +108,10 @@ describe('Recurrent Class: Unit', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
-          (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
-            recurrentInput.setDimensions(1, 3);
+          (inputLayer: ILayer, recurrentInput: IRecurrentInput) => {
+            if (recurrentInput.setDimensions) {
+              recurrentInput.setDimensions(1, 3);
+            }
             return add(
               multiply(random({ height: 3 }), inputLayer),
               recurrentInput
@@ -171,8 +176,10 @@ describe('Recurrent Class: Unit', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 1 }),
         hiddenLayers: [
-          (inputLayer: ILayer, recurrentInput: RecurrentInput) => {
-            recurrentInput.setDimensions(1, 3);
+          (inputLayer: ILayer, recurrentInput: IRecurrentInput) => {
+            if (recurrentInput.setDimensions) {
+              recurrentInput.setDimensions(1, 3);
+            }
             return add(
               multiply(random({ height: 3 }), inputLayer),
               recurrentInput
@@ -271,7 +278,7 @@ describe('Recurrent Class: Unit', () => {
         const net = new Recurrent({
           inputLayer: () => input({ height: 1 }),
           hiddenLayers: [
-            (inputLayer: ILayer, recurrentInput: RecurrentInput) =>
+            (inputLayer: ILayer, recurrentInput: IRecurrentInput) =>
               rnnCell({ height: 3 }, inputLayer, recurrentInput),
           ],
           outputLayer: (inputLayer: ILayer) =>
@@ -299,6 +306,21 @@ describe('Recurrent Class: Unit', () => {
         const weights4 = lastOutputLayer.weights;
         expect(weights3).not.toEqual(weights4);
       });
+    });
+  });
+  describe.skip('.toJSON', () => {
+    it('serializes and deserializes correctly', () => {
+      const net = new Recurrent({
+        inputLayer: () => input({ height: 1 }),
+        hiddenLayers: [
+          (inputLayer: ILayer, recurrentInput: IRecurrentInput) =>
+            rnnCell({ height: 3 }, inputLayer, recurrentInput),
+        ],
+        outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
+      });
+      net.initialize();
+
+      expect(net.toJSON()).toEqual(Recurrent.fromJSON(net.toJSON()));
     });
   });
 });

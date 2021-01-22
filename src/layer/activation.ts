@@ -17,7 +17,7 @@ export class Activation extends BaseLayer {
     return this.inputLayer.depth;
   }
 
-  constructor(inputLayer: ILayer, settings?: ILayerSettings) {
+  constructor(inputLayer: ILayer, settings?: Partial<ILayerSettings>) {
     super(settings);
     this.inputLayer = inputLayer;
     const { width, height, depth } = this;

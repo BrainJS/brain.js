@@ -13,8 +13,11 @@ export const defaults: IRandomSettings = {
 };
 
 export class Random extends Model implements ILayer {
-  constructor(settings: IRandomSettings) {
-    super({ ...defaults, ...settings });
+  settings: IRandomSettings;
+  constructor(settings: Partial<IRandomSettings>) {
+    super();
+    this.settings = { ...defaults, ...settings };
+    this.setupPraxis();
     this.validate();
 
     if (!this.weights) {
