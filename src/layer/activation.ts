@@ -2,6 +2,11 @@ import { BaseLayer, ILayerSettings, ILayer } from './base-layer';
 import { zeros2D } from '../utilities/zeros-2d';
 import { zeros3D } from '../utilities/zeros-3d';
 
+export type ActivationType = new (
+  inputLayer: ILayer,
+  settings: Partial<ILayerSettings>
+) => ILayer;
+
 export class Activation extends BaseLayer {
   inputLayer: ILayer;
 

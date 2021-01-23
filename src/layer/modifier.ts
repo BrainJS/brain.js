@@ -1,8 +1,13 @@
 import { BaseLayer, ILayer, ILayerSettings } from './base-layer';
 
+export type ModifierType = new (
+  inputLayer: ILayer,
+  settings?: Partial<ILayerSettings>
+) => ILayer;
+
 export class Modifier extends BaseLayer {
   inputLayer: ILayer;
-  constructor(inputLayer: ILayer, settings?: ILayerSettings) {
+  constructor(inputLayer: ILayer, settings?: Partial<ILayerSettings>) {
     super({
       ...settings,
       width: inputLayer.width,

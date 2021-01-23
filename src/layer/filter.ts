@@ -9,6 +9,11 @@ export interface IFilterSettings extends ILayerSettings {
   filterDeltas?: KernelOutput;
 }
 
+export type FilterType = new (
+  settings: Partial<IFilterSettings>,
+  inputLayer: ILayer
+) => ILayer;
+
 export class Filter extends BaseLayer {
   get width(): number {
     return this.inputLayer.width;
@@ -50,9 +55,9 @@ export class Filter extends BaseLayer {
     this.settings.filterDeltas = filterDeltas;
   }
 
-  inputLayer: ILayer;
   settings: Partial<IFilterSettings>;
-  constructor(inputLayer: ILayer, settings: Partial<IFilterSettings> = {}) {
+  inputLayer: ILayer;
+  constructor(settings: Partial<IFilterSettings>, inputLayer: ILayer) {
     super();
     this.settings = settings;
     this.inputLayer = inputLayer;

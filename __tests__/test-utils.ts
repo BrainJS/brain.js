@@ -180,7 +180,7 @@ export class TestLayer extends BaseLayer {
   }
 }
 
-export function mockLayer(settings: ILayerSettings): ILayer {
+export function mockLayer(settings: ILayerSettings = {}): ILayer {
   return new TestLayer({ id: 'MockLayer', ...settings });
 }
 

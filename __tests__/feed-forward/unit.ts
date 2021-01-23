@@ -23,9 +23,11 @@ import {
   Target,
   // Zeros,
   layerTypes,
+  ILayer,
+  ILayerJSON,
+  ILayerSettings
 } from '../../src/layer';
 import { mockLayer, mockPraxis } from '../test-utils';
-import { ILayer, ILayerJSON, ILayerSettings } from '../../src/layer/base-layer';
 import SpyInstance = jest.SpyInstance;
 
 describe('FeedForward Class: Unit', () => {

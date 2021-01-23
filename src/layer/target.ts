@@ -3,8 +3,7 @@ import { IKernelFunctionThis, IKernelRunShortcut, KernelOutput } from 'gpu.js';
 import { makeKernel, release, clone, clear } from '../utilities/kernel';
 import { zeros } from '../utilities/zeros';
 import { zeros2D } from '../utilities/zeros-2d';
-import { Filter } from './filter';
-import { ILayer, ILayerSettings } from './base-layer';
+import { BaseLayer, ILayer, ILayerSettings } from './base-layer';
 
 export function compare1D(
   this: IKernelFunctionThis,
@@ -25,10 +24,17 @@ export function compare2D(
   );
 }
 
-export class Target extends Filter {
+export type TargetType = new (
+  settings: Partial<ILayerSettings>,
+  inputLayer: ILayer
+) => ILayer;
+
+export class Target extends BaseLayer {
   errors: KernelOutput;
-  constructor(settings: ILayerSettings, inputLayer: ILayer) {
-    super(inputLayer, settings);
+  inputLayer: ILayer;
+  constructor(settings: Partial<ILayerSettings>, inputLayer: ILayer) {
+    super(settings);
+    this.inputLayer = inputLayer;
     this.validate();
     if (this.depth) {
       throw new Error('Target layer not implemented for depth');

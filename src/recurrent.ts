@@ -1,15 +1,22 @@
 import { RecurrentConnection } from './layer/recurrent-connection';
-import { IRecurrentInput, RecurrentInput } from './layer/recurrent-input';
-import { RecurrentZeros } from './layer/recurrent-zeros';
+import {
+  IRecurrentInput,
+  RecurrentInput,
+  RecurrentZeros,
+  ILayer,
+  ILayerSettings,
+} from './layer';
 import {
   Activation,
   EntryPoint,
+  EntryPointType,
   Filter,
   Internal,
   InternalModel,
   Model,
   Modifier,
   Operator,
+  Target,
 } from './layer/types';
 import { flattenLayers } from './utilities/flatten-layers';
 import {
@@ -19,8 +26,12 @@ import {
   ITrainingStatus,
 } from './feed-forward';
 import { release, clone } from './utilities/kernel';
-import { ILayer, ILayerSettings } from './layer/base-layer';
 import { KernelOutput, Texture, TextureArrayOutput } from 'gpu.js';
+import { OperatorType } from './layer/operator';
+import { ModifierType } from './layer/modifier';
+import { FilterType } from './layer/filter';
+import { ActivationType } from './layer/activation';
+import { TargetType } from './layer/target';
 
 export interface IRecurrentTrainingOptions
   extends IFeedForwardTrainingOptions {}
@@ -111,19 +122,16 @@ export class Recurrent extends FeedForward {
       let layer: ILayer;
 
       if (previousLayer instanceof Activation) {
-        layer = new (previousLayer.constructor as new (
-          inputLayer: ILayer,
-          settings?: ILayerSettings
-        ) => Activation)(findInputLayer(previousLayer.inputLayer));
+        layer = new (previousLayer.constructor as ActivationType)(
+          findInputLayer(previousLayer.inputLayer),
+          layerSettings(previousLayer)
+        );
       } else if (previousLayer instanceof EntryPoint) {
-        layer = new (previousLayer.constructor as new (
-          settings: ILayerSettings
-        ) => EntryPoint)(layerSettings(previousLayer));
+        layer = new (previousLayer.constructor as EntryPointType)(
+          layerSettings(previousLayer)
+        );
       } else if (previousLayer instanceof Filter) {
-        layer = new (previousLayer.constructor as new (
-          settings: ILayerSettings,
-          inputLayer: ILayer
-        ) => Filter)(
+        layer = new (previousLayer.constructor as FilterType)(
           layerSettings(previousLayer.inputLayer),
           findInputLayer(previousLayer.inputLayer)
         );
@@ -149,22 +157,20 @@ export class Recurrent extends FeedForward {
       ) {
         layer = previousLayer;
       } else if (previousLayer instanceof Modifier) {
-        layer = new (previousLayer.constructor as new (
-          inputLayer: ILayer,
-          settings?: ILayerSettings
-        ) => Modifier)(
+        layer = new (previousLayer.constructor as ModifierType)(
           findInputLayer(previousLayer.inputLayer),
           layerSettings(previousLayer.inputLayer)
         );
       } else if (previousLayer instanceof Operator) {
-        layer = new (previousLayer.constructor as new (
-          inputLayer1: ILayer,
-          inputLayer2: ILayer,
-          settings: ILayerSettings
-        ) => Operator)(
+        layer = new (previousLayer.constructor as OperatorType)(
           findInputLayer(previousLayer.inputLayer1),
           findInputLayer(previousLayer.inputLayer2),
           layerSettings(previousLayer)
+        );
+      } else if (previousLayer instanceof Target) {
+        layer = new (previousLayer.constructor as TargetType)(
+          layerSettings(previousLayer),
+          findInputLayer(previousLayer.inputLayer)
         );
       } else {
         throw new Error(
@@ -198,11 +204,20 @@ export class Recurrent extends FeedForward {
 
   initialize(): void {
     this._outputConnection = new RecurrentConnection();
-    const { inputLayer, hiddenLayers, outputLayer } = this._connectLayers();
-    const layerSet = flattenLayers([inputLayer, ...hiddenLayers, outputLayer]);
-    this._hiddenLayerOutputIndices = hiddenLayers.map((l) =>
-      layerSet.indexOf(l)
-    );
+    let layerSet: ILayer[];
+    if (this.options.layers) {
+      layerSet = this._connectOptionsLayers();
+    } else {
+      const { inputLayer, hiddenLayers, outputLayer } = this._connectLayers();
+      layerSet = flattenLayers([inputLayer, ...hiddenLayers, outputLayer]);
+      this._hiddenLayerOutputIndices = hiddenLayers.map((l) =>
+        layerSet.indexOf(l)
+      );
+      this._inputLayer = inputLayer;
+      this._hiddenLayers = hiddenLayers;
+      this._outputLayer = outputLayer;
+    }
+    this.layers = layerSet;
     this._layerSets = [layerSet];
     this._model = layerSet.filter(
       (l) => l instanceof Model || l instanceof InternalModel

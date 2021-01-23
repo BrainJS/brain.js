@@ -15,7 +15,7 @@ import { momentumRootMeanSquaredPropagation } from '../../src/praxis';
 import { zeros2D } from '../../src/utilities/zeros-2d';
 import { setup, teardown } from '../../src/utilities/kernel';
 import { mockPraxis } from '../test-utils';
-import { ILayer, ILayerSettings } from '../../src/layer/base-layer';
+import { ILayer, ILayerSettings } from '../../src/layer';
 import { IPraxis } from '../../src/praxis/base-praxis';
 
 const xorTrainingData = [

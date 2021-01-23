@@ -1,17 +1,24 @@
 import {
   Activation,
-  Operator,
+  EntryPoint,
+  Filter,
   Internal,
   InternalModel,
-  EntryPoint,
   Model,
-  Filter,
   Modifier,
+  Operator,
+  Target,
 } from './types';
 
 export { Add, add } from './add';
 export { arthurFeedForward } from './arthur-feed-forward';
-export { BaseLayer } from './base-layer';
+export {
+  BaseLayer,
+  ILayer,
+  ILayerSettings,
+  ILayerJSON,
+  baseLayerDefaultSettings,
+} from './base-layer';
 export { Convolution, convolution } from './convolution';
 export { Dropout, dropout } from './dropout';
 export { feedForward } from './feed-forward';
@@ -42,11 +49,12 @@ export { Zeros, zeros } from './zeros';
 
 export const layerTypes = {
   Activation,
-  Operator,
   Internal,
   InternalModel,
   EntryPoint,
+  Filter,
   Model,
   Modifier,
-  Filter,
+  Operator,
+  Target,
 };

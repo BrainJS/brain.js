@@ -1,8 +1,6 @@
 import { GPU } from 'gpu.js';
-import { add, input, multiply, output, random, rnnCell } from '../../src/layer';
-import { ILayer } from '../../src/layer/base-layer';
+import { add, input, multiply, output, random, rnnCell, IRecurrentInput, ILayer } from '../../src/layer';
 import { Filter } from '../../src/layer/filter';
-import { IRecurrentInput } from '../../src/layer/recurrent-input';
 import { Recurrent } from '../../src/recurrent';
 import { Matrix } from '../../src/recurrent/matrix';
 import { setup, teardown } from '../../src/utilities/kernel';
@@ -228,7 +226,7 @@ describe('Recurrent Class: Unit', () => {
       class SuperLayer extends Filter {
         errors?: number[][];
         constructor(inputLayer: ILayer) {
-          super(inputLayer);
+          super({}, inputLayer);
           this.inputLayer = inputLayer;
 
           this.settings.width = 1;
@@ -308,7 +306,7 @@ describe('Recurrent Class: Unit', () => {
       });
     });
   });
-  describe.skip('.toJSON', () => {
+  describe('.toJSON', () => {
     it('serializes and deserializes correctly', () => {
       const net = new Recurrent({
         inputLayer: () => input({ height: 1 }),
@@ -319,8 +317,47 @@ describe('Recurrent Class: Unit', () => {
         outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
       });
       net.initialize();
-
-      expect(net.toJSON()).toEqual(Recurrent.fromJSON(net.toJSON()));
+      const layers = net.layers as ILayer[];
+      expect(net.toJSON()).toEqual({
+        inputLayerIndex: 0,
+        layers: [
+          layers[0].toJSON(),
+          layers[1].toJSON(),
+          { ...layers[2].toJSON(), inputLayer1Index: 1, inputLayer2Index: 0 },
+          layers[3].toJSON(),
+          layers[4].toJSON(),
+          { ...layers[5].toJSON(), inputLayer1Index: 3, inputLayer2Index: 4 },
+          { ...layers[6].toJSON(), inputLayer1Index: 2, inputLayer2Index: 5 },
+          layers[7].toJSON(),
+          { ...layers[8].toJSON(), inputLayer1Index: 6, inputLayer2Index: 7 },
+          { ...layers[9].toJSON(), inputLayerIndex: 8 },
+          layers[10].toJSON(),
+          { ...layers[11].toJSON(), inputLayer1Index: 10, inputLayer2Index: 9 },
+          layers[12].toJSON(),
+          { ...layers[13].toJSON(), inputLayer1Index: 11, inputLayer2Index: 12 },
+          { ...layers[14].toJSON(), inputLayerIndex: 13 },
+        ],
+        outputLayerIndex: 14,
+        sizes: [1, 3, 1],
+        type: 'Recurrent'
+      });
+    });
+  });
+  describe('.fromJSON', () => {
+    it('serializes and deserializes correctly', () => {
+      const net = new Recurrent({
+        inputLayer: () => input({ height: 1 }),
+        hiddenLayers: [
+          (inputLayer: ILayer, recurrentInput: IRecurrentInput) =>
+            rnnCell({ height: 3 }, inputLayer, recurrentInput),
+        ],
+        outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
+      });
+      net.initialize();
+      const json = JSON.parse(JSON.stringify(net.toJSON()));
+      const newNet = Recurrent.fromJSON(json);
+      const newNetJson = newNet.toJSON();
+      expect(newNetJson).toEqual(json);
     });
   });
 });

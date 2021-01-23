@@ -13,7 +13,7 @@ export interface ILayerJSON {
   width?: number;
   height?: number;
   depth?: number;
-  weights?: Float32Array | Float32Array[] | Float32Array[][] | null;
+  weights?: number[] | number[][] | number[][][] | null;
   type: string;
   inputLayerIndex?: number;
   inputLayer1Index?: number;
@@ -68,6 +68,8 @@ export const baseLayerDefaultSettings: ILayerSettings = {
   praxis: null,
   praxisOpts: null,
 };
+
+export type BaseLayerType = new (settings?: Partial<ILayerSettings>) => ILayer;
 
 export class BaseLayer implements ILayer {
   praxis: IPraxis | null = null;
@@ -262,11 +264,60 @@ export class BaseLayer implements ILayer {
       width: layer.width,
       height: layer.height,
       depth: layer.depth,
-      weights: (weights && weights instanceof Texture
-        ? weights.toArray()
-        : weights) as Float32Array | Float32Array[] | Float32Array[][] | null,
+      weights: toUntypedArray(
+        (weights && weights instanceof Texture
+          ? weights.toArray()
+          : weights) as
+          | Float32Array
+          | Float32Array[]
+          | Float32Array[][]
+          | number[]
+          | number[][]
+          | number[][][]
+          | null
+      ),
       type: layer.constructor.name,
       praxisOpts: layer.praxis ? layer.praxis.toJSON() : null,
     };
   }
+}
+
+function toUntypedArray(
+  weights:
+    | Float32Array
+    | Float32Array[]
+    | Float32Array[][]
+    | number[]
+    | number[][]
+    | number[][][]
+    | null
+): number[][][] | number[][] | number[] | null {
+  if (weights === null) return null;
+  if (Array.isArray(weights)) {
+    if (typeof weights[0] === 'number') {
+      return weights as number[];
+    } else if (Array.isArray(weights[0]) && typeof weights[0][0] === 'number') {
+      return weights as number[][];
+    } else if (
+      Array.isArray(weights[0][0]) &&
+      typeof weights[0][0][0] === 'number'
+    ) {
+      return weights as number[][][];
+    } else if (weights[0] instanceof Float32Array) {
+      const matrix = weights as Float32Array[];
+      return matrix.map((row: Float32Array) => {
+        return Array.from(row);
+      });
+    } else if (weights[0][0] instanceof Float32Array) {
+      const cube = weights as Float32Array[][];
+      return cube.map((matrix: Float32Array[]): number[][] => {
+        return matrix.map((row: Float32Array): number[] => {
+          return Array.from(row);
+        });
+      });
+    }
+  } else if (weights) {
+    return Array.from(weights);
+  }
+  throw new Error('unexpected value');
 }

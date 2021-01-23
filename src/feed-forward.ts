@@ -65,6 +65,7 @@ export interface IFeedForwardOptions {
   layers?: ILayer[];
   inputLayerIndex?: number;
   outputLayerIndex?: number;
+  sizes?: number[];
 }
 
 export interface IFeedForwardPreppedTrainingData {
@@ -222,7 +223,7 @@ export class FeedForward<
       throw new Error('outputLayer not found in this.options.layers');
     }
     this._inputLayer = inputLayer;
-    this._hiddenLayers = layers.splice(
+    this._hiddenLayers = layers.slice(
       inputLayerIndex,
       outputLayerIndex - inputLayerIndex
     );
@@ -667,9 +668,11 @@ export class FeedForward<
 
     return {
       type: this.constructor.name,
-      sizes: [this._inputLayer.height]
-        .concat(this._hiddenLayers.map((l) => l.height))
-        .concat([this._outputLayer.height]),
+      sizes:
+        this.options.sizes ??
+        [this._inputLayer.height]
+          .concat(this._hiddenLayers.map((l) => l.height))
+          .concat([this._outputLayer.height]),
       outputLayerIndex: this.layers.indexOf(this._outputLayer),
       layers: jsonLayers as ILayerJSON[],
       inputLayerIndex: this.layers.indexOf(this._inputLayer),
@@ -696,15 +699,25 @@ export class FeedForward<
 
     for (let i = 1; i < jsonLayers.length; i++) {
       const jsonLayer = jsonLayers[i];
-      if (typeof jsonLayer.inputLayerIndex === 'number') {
-        const inputLayer1 = layers[jsonLayer.inputLayerIndex];
-        if (!inputLayer1) {
+      if (
+        typeof jsonLayer.inputLayerIndex === 'undefined' &&
+        typeof jsonLayer.inputLayer1Index === 'undefined' &&
+        typeof jsonLayer.inputLayer2Index === 'undefined'
+      ) {
+        const layer = getLayer
+          ? layerFromJSON(jsonLayer) ?? getLayer(jsonLayer)
+          : layerFromJSON(jsonLayer);
+        if (!layer) throw new Error('unable to find layer');
+        layers.push(layer);
+      } else if (typeof jsonLayer.inputLayerIndex === 'number') {
+        const inputLayer = layers[jsonLayer.inputLayerIndex];
+        if (!inputLayer) {
           throw new Error('inputLayer1 not found');
         }
         const layer = getLayer
-          ? layerFromJSON(jsonLayer, inputLayer1) ??
-            getLayer(jsonLayer, inputLayer1)
-          : layerFromJSON(jsonLayer, inputLayer1);
+          ? layerFromJSON(jsonLayer, inputLayer) ??
+            getLayer(jsonLayer, inputLayer)
+          : layerFromJSON(jsonLayer, inputLayer);
         if (!layer) throw new Error('unable to find layer');
         layers.push(layer);
       } else {
@@ -731,16 +744,16 @@ export class FeedForward<
           );
 
         const layer = getLayer
-          ? layerFromJSON(jsonLayer, inputLayer) ??
+          ? layerFromJSON(jsonLayer, inputLayer1, inputLayer2) ??
             getLayer(jsonLayer, inputLayer1, inputLayer2)
-          : layerFromJSON(jsonLayer, inputLayer);
+          : layerFromJSON(jsonLayer, inputLayer1, inputLayer2);
 
         if (!layer) throw new Error('unable to find layer');
         layers.push(layer);
       }
     }
 
-    return new FeedForward({ ...json, layers });
+    return new this({ ...json, layers });
   }
 
   /**

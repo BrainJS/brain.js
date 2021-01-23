@@ -7,12 +7,12 @@ import {
 } from 'gpu.js';
 
 import { makeKernel, release, clone } from '../utilities/kernel';
-import { Filter } from './filter';
 import { randos, randos2D, randos3D } from '../utilities/randos';
 import { zeros } from '../utilities/zeros';
 import { zeros2D } from '../utilities/zeros-2d';
 import { zeros3D } from '../utilities/zeros-3d';
 import { ILayer, ILayerSettings } from './base-layer';
+import { Modifier } from './modifier';
 
 interface ISoftMaxConstants extends IConstantsThis {
   inputWidth: number;
@@ -207,7 +207,7 @@ export function loss(): number {
 
 // TODO: handle: `return -Math.log(this.es[y]);` in learn
 
-export class SoftMax extends Filter {
+export class SoftMax extends Modifier {
   getExponentialsKernel: IKernelRunShortcut | null;
   getMaxValueKernel: IKernelRunShortcut | null;
   getSumKernel: IKernelRunShortcut | null;

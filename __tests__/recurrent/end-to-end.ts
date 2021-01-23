@@ -7,9 +7,9 @@ import {
   output,
   random,
   rnnCell,
+  ILayer,
+  IRecurrentInput,
 } from '../../src/layer';
-import { ILayer } from '../../src/layer/base-layer';
-import { IRecurrentInput } from '../../src/layer/recurrent-input';
 import { IMomentumRootMeanSquaredPropagationSettings } from '../../src/praxis/momentum-root-mean-squared-propagation';
 import { Recurrent } from '../../src/recurrent';
 import { Matrix } from '../../src/recurrent/matrix';
