@@ -10,6 +10,14 @@ export class RecurrentZeros extends Internal implements IRecurrentInput {
   settings: Partial<ILayerSettings> = {};
   predictKernel = null;
   compareKernel = null;
+
+  constructor(settings?: Partial<ILayerSettings>) {
+    super();
+    if (settings) {
+      this.settings = { ...settings };
+    }
+  }
+
   setDimensions(width: number, height: number): void {
     this.praxis = null;
     this.settings = {

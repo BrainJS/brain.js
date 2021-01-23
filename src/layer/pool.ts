@@ -225,7 +225,7 @@ export class Pool extends Filter {
 
   predictKernelMap: IKernelMapRunShortcut<ISubKernelObject> | null = null;
   constructor(settings: IPoolSettings, inputLayer: ILayer) {
-    super(inputLayer);
+    super(settings, inputLayer);
     this.settings = {
       ...settings,
       ...getStride(settings, defaults),
