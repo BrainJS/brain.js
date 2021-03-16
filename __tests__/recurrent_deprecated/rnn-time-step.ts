@@ -3,7 +3,7 @@ import { LSTMTimeStep } from '../../src/recurrent/lstm-time-step';
 import { Matrix } from '../../src/recurrent/matrix';
 import { Equation } from '../../src/recurrent/matrix/equation';
 import { IRNNStatus } from '../../src/recurrent/rnn';
-import { RNNTimeStep } from '../../src/recurrent/rnn-time-step';
+import { RNNTimeStep, IRNNTimeStepJSON } from '../../src/recurrent/rnn-time-step';
 
 // TODO: break out LSTMTimeStep into its own tests
 
@@ -18,7 +18,7 @@ describe('RNNTimeStep', () => {
         fromJSONSpy.mockRestore();
       });
       it('calls this.fromJSON with this value', () => {
-        const json = {
+        const json: IRNNTimeStepJSON = {
           type: 'RNNTimeStep',
           options: {
             inputSize: 1,
@@ -33,21 +33,21 @@ describe('RNNTimeStep', () => {
           },
           hiddenLayers: [
             {
-              weight: { rows: 1, columns: 1, weights: Float32Array.from([1]) },
+              weight: { rows: 1, columns: 1, weights: [1] },
               transition: {
                 rows: 1,
                 columns: 1,
-                weights: Float32Array.from([1]),
+                weights: [1],
               },
-              bias: { rows: 1, columns: 1, weights: Float32Array.from([1]) },
+              bias: { rows: 1, columns: 1, weights: [1] },
             },
           ],
           outputConnector: {
             rows: 1,
             columns: 1,
-            weights: Float32Array.from([1]),
+            weights: [1],
           },
-          output: { rows: 1, columns: 1, weights: Float32Array.from([1]) },
+          output: { rows: 1, columns: 1, weights: [1] },
           inputLookup: { a: 0 },
           inputLookupLength: 1,
           outputLookup: { a: 0 },

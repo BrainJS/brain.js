@@ -59,8 +59,8 @@ export class Dropout extends Filter {
   dropouts: KernelOutput | null;
   predictKernelMap: IKernelMapRunShortcut<ISubKernelObject> | null = null;
   settings: Partial<IDropoutSettings>;
-  constructor(inputLayer: ILayer, settings?: Partial<IDropoutSettings>) {
-    super(inputLayer);
+  constructor(inputLayer: ILayer, settings: Partial<IDropoutSettings> = {}) {
+    super(settings, inputLayer);
     this.settings = { ...dropoutDefaults, ...settings };
     this.dropouts = null;
     this.validate();
