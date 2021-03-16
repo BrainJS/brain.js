@@ -39,9 +39,7 @@ describe('ArthurDeviationBiases', () => {
       const praxis = new ArthurDeviationBiases(layer1, {
         learningRate: net.trainOpts.learningRate,
       });
-      expect(praxis.settings.learningRate).toBe(
-        net.trainOpts.learningRate
-      );
+      expect(praxis.settings.learningRate).toBe(net.trainOpts.learningRate);
 
       net.deltas[0][0] = 1;
       net.deltas[0][1] = 2;

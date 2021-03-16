@@ -3,7 +3,10 @@ import { LSTMTimeStep } from '../../src/recurrent/lstm-time-step';
 import { Matrix } from '../../src/recurrent/matrix';
 import { Equation } from '../../src/recurrent/matrix/equation';
 import { IRNNStatus } from '../../src/recurrent/rnn';
-import { RNNTimeStep, IRNNTimeStepJSON } from '../../src/recurrent/rnn-time-step';
+import {
+  RNNTimeStep,
+  IRNNTimeStepJSON,
+} from '../../src/recurrent/rnn-time-step';
 
 // TODO: break out LSTMTimeStep into its own tests
 

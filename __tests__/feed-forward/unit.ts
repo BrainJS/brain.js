@@ -25,7 +25,7 @@ import {
   layerTypes,
   ILayer,
   ILayerJSON,
-  ILayerSettings
+  ILayerSettings,
 } from '../../src/layer';
 import { mockLayer, mockPraxis } from '../test-utils';
 import SpyInstance = jest.SpyInstance;
