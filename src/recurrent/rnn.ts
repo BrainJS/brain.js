@@ -58,7 +58,7 @@ export interface IRNNJSONOptions {
 export interface IRNNTrainingOptions {
   iterations: number;
   errorThresh: number;
-  log: boolean | ((status: INeuralNetworkState) => void);
+  log: boolean | ((status: string) => void);
   logPeriod: number;
   learningRate: number;
   callback?: (status: IRNNStatus) => void;
@@ -69,7 +69,7 @@ export interface IRNNTrainingOptions {
 export interface IRNNJSONTrainOptions {
   iterations: number;
   errorThresh: number;
-  log: boolean | ((status: INeuralNetworkState) => void);
+  log: boolean | ((status: string) => void);
   logPeriod: number;
   learningRate: number;
   callback?: (status: IRNNStatus) => void;

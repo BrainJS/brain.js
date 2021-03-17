@@ -1,5 +1,14 @@
 import { GPU } from 'gpu.js';
-import { add, input, multiply, output, random, rnnCell, IRecurrentInput, ILayer } from '../../src/layer';
+import {
+  add,
+  input,
+  multiply,
+  output,
+  random,
+  rnnCell,
+  IRecurrentInput,
+  ILayer,
+} from '../../src/layer';
 import { Filter } from '../../src/layer/filter';
 import { Recurrent } from '../../src/recurrent';
 import { Matrix } from '../../src/recurrent/matrix';
@@ -334,12 +343,16 @@ describe('Recurrent Class: Unit', () => {
           layers[10].toJSON(),
           { ...layers[11].toJSON(), inputLayer1Index: 10, inputLayer2Index: 9 },
           layers[12].toJSON(),
-          { ...layers[13].toJSON(), inputLayer1Index: 11, inputLayer2Index: 12 },
+          {
+            ...layers[13].toJSON(),
+            inputLayer1Index: 11,
+            inputLayer2Index: 12,
+          },
           { ...layers[14].toJSON(), inputLayerIndex: 13 },
         ],
         outputLayerIndex: 14,
         sizes: [1, 3, 1],
-        type: 'Recurrent'
+        type: 'Recurrent',
       });
     });
   });

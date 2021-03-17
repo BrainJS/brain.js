@@ -5,7 +5,8 @@ import {
   MultiplyElement,
   Random,
   RecurrentZeros,
-  Sigmoid, Tanh,
+  Sigmoid,
+  Tanh,
   Zeros,
 } from '../../src/layer';
 import { mockLayer, onePlusPlus2D, TestLayer } from '../test-utils';
@@ -165,15 +166,19 @@ describe('lstm Cell', () => {
       const layer = lstmCell(settings, input, recurrentInput);
       const layers = flattenLayers([layer]);
 
-      recurrentInput.weights = onePlusPlus2D(recurrentInput.width, recurrentInput.height);
-      const memoryLayers = layers.filter((layer: ILayer) => layer instanceof Random);
-      memoryLayers
-        .forEach((layer: ILayer) => {
-          layer.weights = onePlusPlus2D(layer.width, layer.height);
-        });
+      recurrentInput.weights = onePlusPlus2D(
+        recurrentInput.width,
+        recurrentInput.height
+      );
+      const memoryLayers = layers.filter(
+        (layer: ILayer) => layer instanceof Random
+      );
+      memoryLayers.forEach((layer: ILayer) => {
+        layer.weights = onePlusPlus2D(layer.width, layer.height);
+      });
 
-      layers.forEach(layer => layer.setupKernels());
-      layers.forEach(layer => layer.predict());
+      layers.forEach((layer) => layer.setupKernels());
+      layers.forEach((layer) => layer.predict());
 
       expect(layers[layers.length - 1].weights).toEqual([
         Float32Array.from([0.9640275835990906]),

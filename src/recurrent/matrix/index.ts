@@ -80,11 +80,7 @@ export class Matrix {
     };
   }
 
-  static fromJSON(json: {
-    rows: number;
-    columns: number;
-    weights: number[];
-  }): Matrix {
+  static fromJSON(json: IMatrixJSON): Matrix {
     const matrix = new Matrix(json.rows, json.columns);
 
     for (let i = 0, max = json.rows * json.columns; i < max; i++) {

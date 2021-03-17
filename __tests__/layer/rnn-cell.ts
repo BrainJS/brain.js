@@ -1,4 +1,12 @@
-import { rnnCell, RecurrentZeros, Add, Random, Zeros, Multiply, Relu } from '../../src/layer/';
+import {
+  rnnCell,
+  RecurrentZeros,
+  Add,
+  Random,
+  Zeros,
+  Multiply,
+  Relu,
+} from '../../src/layer/';
 import { mockLayer, TestLayer } from '../test-utils';
 import { flattenLayers } from '../../src/utilities/flatten-layers';
 

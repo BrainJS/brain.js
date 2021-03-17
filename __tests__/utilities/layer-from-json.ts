@@ -1,4 +1,11 @@
-import { Add, Convolution, ILayerJSON, RecurrentZeros, Sigmoid, Target } from '../../src/layer';
+import {
+  Add,
+  Convolution,
+  ILayerJSON,
+  RecurrentZeros,
+  Sigmoid,
+  Target,
+} from '../../src/layer';
 import { layerFromJSON } from '../../src/utilities/layer-from-json';
 import { mockLayer } from '../test-utils';
 
@@ -37,7 +44,9 @@ describe('layerFromJSON', () => {
         height: 1,
         depth: 1,
       });
-      expect(layerFromJSON(jsonLayer, inputLayer)).toEqual(new Convolution(jsonLayer, inputLayer));
+      expect(layerFromJSON(jsonLayer, inputLayer)).toEqual(
+        new Convolution(jsonLayer, inputLayer)
+      );
     });
   });
   describe('when used with a Activation layer json', () => {
@@ -53,7 +62,9 @@ describe('layerFromJSON', () => {
     });
     it('should return that type instantiated', () => {
       const inputLayer1 = mockLayer();
-      expect(layerFromJSON(jsonLayer, inputLayer1)).toEqual(new Sigmoid(inputLayer1, jsonLayer));
+      expect(layerFromJSON(jsonLayer, inputLayer1)).toEqual(
+        new Sigmoid(inputLayer1, jsonLayer)
+      );
     });
   });
   describe('when used with a Operator layer json', () => {
@@ -81,12 +92,16 @@ describe('layerFromJSON', () => {
     });
     it('fails if inputLayer2 falsey', () => {
       const inputLayer1 = mockLayer();
-      expect(() => layerFromJSON(jsonLayer, inputLayer1)).toThrow('inputLayer2 missing');
+      expect(() => layerFromJSON(jsonLayer, inputLayer1)).toThrow(
+        'inputLayer2 missing'
+      );
     });
     it('should return that type instantiated', () => {
       const inputLayer1 = mockLayer();
       const inputLayer2 = mockLayer();
-      expect(layerFromJSON(jsonLayer, inputLayer1, inputLayer2)).toEqual(new Add(inputLayer1, inputLayer2, jsonLayer));
+      expect(layerFromJSON(jsonLayer, inputLayer1, inputLayer2)).toEqual(
+        new Add(inputLayer1, inputLayer2, jsonLayer)
+      );
     });
   });
   describe('when used with a TargetType layer json', () => {
@@ -102,7 +117,9 @@ describe('layerFromJSON', () => {
     });
     it('should return that type instantiated', () => {
       const inputLayer = mockLayer();
-      expect(layerFromJSON(jsonLayer, inputLayer)).toEqual(new Target(jsonLayer, inputLayer));
+      expect(layerFromJSON(jsonLayer, inputLayer)).toEqual(
+        new Target(jsonLayer, inputLayer)
+      );
     });
   });
 });
