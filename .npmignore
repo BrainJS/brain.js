@@ -28,7 +28,6 @@ test/
 coverage/
 .github/
 .cache/
-__tests__
 __coverage__
 .cache
 .dist/

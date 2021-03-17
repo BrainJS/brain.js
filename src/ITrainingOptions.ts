@@ -1,3 +1,5 @@
+import { IPraxis } from './praxis/base-praxis';
+
 export interface ITrainingOptions {
   iterations: number;
   errorThresh: number;
@@ -8,7 +10,7 @@ export interface ITrainingOptions {
   callback: (iterations: number, error: number) => void;
   callbackPeriod: number;
   timeout: number;
-  praxis: any;
+  praxis: IPraxis;
   beta1: number;
   beta2: number;
   epsilon: number;

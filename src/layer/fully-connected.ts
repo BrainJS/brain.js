@@ -173,7 +173,10 @@ export class FullyConnected extends Filter {
   compareFilterDeltasKernel: IKernelRunShortcut | null = null;
   compareInputDeltasKernel: IKernelRunShortcut | null = null;
   compareBiasesKernel: IKernelRunShortcut | null = null;
-  constructor(settings: IFullyConnectedDefaultSettings, inputLayer: ILayer) {
+  constructor(
+    settings: Partial<IFullyConnectedDefaultSettings>,
+    inputLayer: ILayer
+  ) {
     super(settings, inputLayer);
     this.settings = { ...settings };
     this.validate();

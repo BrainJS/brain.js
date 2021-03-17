@@ -1,4 +1,4 @@
-import { ILayer } from '../layer/base-layer';
+import { ILayer } from '../layer';
 import { IKernelRunShortcut, KernelOutput } from 'gpu.js';
 
 export interface ILayerTemplate {

@@ -1,7 +1,7 @@
-import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
+import typescript from '@rollup/plugin-typescript';
 import * as pkg from './package.json';
 
 const extensions = ['.mjs', '.js', '.json', '.node', '.ts'];
@@ -28,11 +28,7 @@ export default {
     commonjs(),
 
     // Compile TypeScript/JavaScript files
-    babel({
-      extensions,
-      babelHelpers: 'bundled',
-      include: ['src/**/*'],
-    }),
+    typescript(),
   ],
 
   output: [

@@ -6,15 +6,10 @@
   "globalSetup": "",
   "globals": {
     "ts-jest": {
-      "tsconfig": "tsconfig.test.json"
+      "tsconfig": "tsconfig.json"
     }
   },
   "preset": "ts-jest/presets/js-with-ts",
   "setupFiles": [],
-  "testEnvironment": "node",
-  "testPathIgnorePatterns": [
-    "__tests__/istanbul-linker-util.ts",
-    "__tests__/test-utils.ts",
-    "__tests__/.eslintrc.json"
-  ]
+  "testEnvironment": "node"
 }

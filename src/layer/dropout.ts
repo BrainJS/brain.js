@@ -1,4 +1,4 @@
-import { Filter } from './filter';
+import { Filter, IFilterSettings } from './filter';
 import { makeKernel, makeKernelMap, release } from '../utilities/kernel';
 import {
   IConstantsThis,
@@ -59,8 +59,11 @@ export class Dropout extends Filter {
   dropouts: KernelOutput | null;
   predictKernelMap: IKernelMapRunShortcut<ISubKernelObject> | null = null;
   settings: Partial<IDropoutSettings>;
-  constructor(inputLayer: ILayer, settings: Partial<IDropoutSettings> = {}) {
-    super(settings, inputLayer);
+  constructor(
+    inputLayer: ILayer,
+    settings?: Partial<IDropoutSettings> & Partial<IFilterSettings>
+  ) {
+    super(settings as Partial<IFilterSettings>, inputLayer);
     this.settings = { ...dropoutDefaults, ...settings };
     this.dropouts = null;
     this.validate();

@@ -1,6 +1,5 @@
 import { Log } from '../feed-forward';
 import { INeuralNetworkTrainOptions } from '../neural-network';
-import { INeuralNetworkState } from '../neural-network-types';
 import {
   DataFormatter,
   IDataFormatter,
@@ -553,13 +552,6 @@ export class RNN {
     }
   }
 
-  /**
-   *
-   * @param log
-   * if a method is passed in method is used
-   * if false passed in nothing is logged
-   * @returns error
-   */
   setLogMethod(log: Log | undefined | boolean): void {
     if (typeof log === 'function') {
       this.trainOpts.log = log;

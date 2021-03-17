@@ -693,6 +693,7 @@ export class NeuralNetworkGPU extends NeuralNetwork {
       });
     }
     return {
+      type: 'NeuralNetworkGPU',
       sizes: [...this.sizes],
       layers: jsonLayers,
       inputLookup: this.inputLookup ? { ...this.inputLookup } : null,

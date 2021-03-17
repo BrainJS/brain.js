@@ -1,6 +1,6 @@
 import { IKernelFunctionThis, KernelOutput, Texture } from 'gpu.js';
 import { MeanSquaredError } from './estimator/mean-squared-error';
-import { ILayer, ILayerJSON } from './layer/base-layer';
+import { ILayer, ILayerJSON } from './layer';
 import { Model } from './layer/types';
 import { InputOutputValue, INumberArray, INumberHash, lookup } from './lookup';
 import * as praxis from './praxis';
@@ -98,7 +98,7 @@ export const trainDefaults: IFeedForwardTrainingOptions = {
   timeout: Infinity,
 };
 
-interface IFeedForwardJSON {
+export interface IFeedForwardJSON {
   type: string;
   sizes: number[];
   layers: ILayerJSON[];

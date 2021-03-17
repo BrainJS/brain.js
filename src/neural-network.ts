@@ -52,6 +52,7 @@ export interface IJSONLayer {
 }
 
 export interface INeuralNetworkJSON {
+  type: string;
   sizes: number[];
   layers: IJSONLayer[];
   inputLookup: INumberHash | null;
@@ -1134,6 +1135,7 @@ export class NeuralNetwork {
       });
     }
     return {
+      type: 'NeuralNetwork',
       sizes: [...this.sizes],
       layers: jsonLayers,
       inputLookup: this.inputLookup ? { ...this.inputLookup } : null,

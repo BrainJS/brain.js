@@ -2,8 +2,21 @@ import { Writable } from 'stream';
 import { INeuralNetworkTrainOptions } from './neural-network';
 import { INeuralNetworkState } from './neural-network-types';
 
-export interface ITrainStreamNetwork<InputType, FormattedType, TrainOptsType> {
-  trainOpts: any;
+export interface ITrainStreamTrainOptions {
+  iterations: number;
+  errorThresh: number;
+  log: boolean;
+  logPeriod: number;
+  callbackPeriod: number;
+  callback: (status: { iterations: number; error: number }) => void;
+}
+
+export interface ITrainStreamNetwork<
+  InputType,
+  FormattedType,
+  TrainOptsType extends Partial<ITrainStreamTrainOptions>
+> {
+  trainOpts: TrainOptsType;
   updateTrainingOptions: (trainOpts: Partial<TrainOptsType>) => void;
   addFormat: (data: InputType) => void;
   formatData: (data: InputType[]) => FormattedType[];
@@ -56,7 +69,7 @@ export class TrainStream<
     const { neuralNetwork } = options;
     // inherit trainOpts settings from neuralNetwork
     neuralNetwork.updateTrainingOptions(options);
-    const { trainOpts } = neuralNetwork; // just updated from above line
+    const trainOpts = neuralNetwork?.trainOpts as ITrainStreamTrainOptions; // just updated from above line
 
     this.neuralNetwork = neuralNetwork;
     this.dataFormatDetermined = false;

@@ -18,5 +18,5 @@
     "target": "esnext",
     "lib": ["es2019", "dom"]
   },
-  "exclude": ["node_modules", "**/*.json", "**/*.d.ts", "dist", "examples"]
+  "exclude": ["node_modules", "**/*.json", "**/*.d.ts", "dist", "examples", "__coverage__"]
 }
