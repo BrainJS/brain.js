@@ -367,7 +367,7 @@ export class FeedForward<
     calculateError: () => number,
     trainPatterns: () => void
   ): boolean {
-    const trainOpts = this.trainOpts;
+    const { trainOpts } = this;
     if (
       status.iterations >= (trainOpts.iterations as number) ||
       status.error <= (trainOpts.errorThresh as number) ||
