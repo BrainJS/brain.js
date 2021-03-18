@@ -45,7 +45,10 @@ describe('Target Layer', () => {
   });
 
   test('uses compare1D when width = 1', () => {
-    const target = new Target({}, mockLayer({ height: 10, width: 1 }));
+    const target = new Target(
+      { height: 10, width: 1 },
+      mockLayer({ height: 10, width: 1 })
+    );
     target.setupKernels();
     expect(makeKernel).toHaveBeenCalledWith(compare1D, {
       output: [1, 10],
