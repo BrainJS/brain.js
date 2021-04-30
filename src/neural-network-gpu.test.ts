@@ -77,11 +77,11 @@ describe('NeuralNetworkGPU', () => {
         );
         expect(net.weights.length).toBe(3);
         for (let i = 1; i < net.weights.length; i++) {
-          expect(net.weights[i] instanceof Texture).toBeTruthy();
+          expect(net.biases[i]).toBeInstanceOf(Texture);
         }
         expect(net.biases.length).toBe(3);
         for (let i = 1; i < net.biases.length; i++) {
-          expect(net.biases[i] instanceof Texture).toBeTruthy();
+          expect(net.biases[i]).toBeInstanceOf(Texture);
         }
         const json = net.toJSON();
         expect(json.layers.length).toBe(3);
