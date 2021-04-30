@@ -13,6 +13,7 @@
   },
   "description": "Neural networks in JavaScript",
   "devDependencies": {
+    "@babel/preset-typescript": "^7.13.0",
     "@rollup/plugin-commonjs": "^15.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
