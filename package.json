@@ -48,6 +48,7 @@
     "rollup": "^2.39.1",
     "rollup-plugin-terser": "^7.0.2",
     "ts-jest": "^26.4.2",
+    "ts-node": "^9.1.1",
     "typescript": "^4.0.3"
   },
   "engines": {
