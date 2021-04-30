@@ -77,8 +77,9 @@ describe('NeuralNetworkGPU', () => {
         );
         expect(net.weights.length).toBe(3);
         for (let i = 1; i < net.weights.length; i++) {
-          expect(net.biases[i]).toBeInstanceOf(Texture);
+          expect(net.weights[i]).toBeInstanceOf(Texture);
         }
+
         expect(net.biases.length).toBe(3);
         for (let i = 1; i < net.biases.length; i++) {
           expect(net.biases[i]).toBeInstanceOf(Texture);
