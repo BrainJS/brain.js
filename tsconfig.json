@@ -7,7 +7,7 @@
     // "declaration": true,
     // "emitDeclarationOnly": true,
     // "declarationMap": true,
-    "module": "esnext",
+    "module": "commonjs",
     "moduleResolution": "node",
     // "noEmit": true,
     "noEmitOnError": true,
