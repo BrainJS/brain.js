@@ -67,6 +67,13 @@ describe('NeuralNetworkGPU', () => {
     describe('mocked GPU mode', () => {
       it('converts Textures to Arrays of numbers', () => {
         const net = new NeuralNetworkGPU();
+        const isUsingGPU = net.gpu.mode === 'gpu';
+
+        // When running in a machine with GPU, will the type will be `Texture`
+        // The CI is running on machines WITHOUT GPUs, so in the case of mocking the GPU the return type will be a bit different
+        const expectedWeightsType = isUsingGPU ? Texture : Array;
+        const expectedBiasesType = isUsingGPU ? Texture : Float32Array;
+
         net.train(
           [
             { input: [1, 2], output: [3] },
@@ -75,17 +82,19 @@ describe('NeuralNetworkGPU', () => {
           ],
           { iterations: 1 }
         );
+
         expect(net.weights.length).toBe(3);
         for (let i = 1; i < net.weights.length; i++) {
-          expect(net.weights[i]).toBeInstanceOf(Texture);
+          expect(net.weights[i]).toBeInstanceOf(expectedWeightsType);
         }
 
         expect(net.biases.length).toBe(3);
         for (let i = 1; i < net.biases.length; i++) {
-          expect(net.biases[i]).toBeInstanceOf(Texture);
+          expect(net.biases[i]).toBeInstanceOf(expectedBiasesType);
         }
         const json = net.toJSON();
         expect(json.layers.length).toBe(3);
+
         for (let i = 1; i < json.layers.length; i++) {
           const layer = json.layers[i];
           expect(layer.weights).toBeInstanceOf(Array);
