@@ -15,8 +15,15 @@
     "rootDir": "./",
     "skipLibCheck": true,
     "strict": true,
-    "target": "esnext",
-    "lib": ["es2019", "dom"]
+    "target": "es2018", // To match node 10: https://github.com/microsoft/TypeScript/wiki/Node-Target-Mapping#node-10
+    "lib": ["es2019", "es2019.Array", "dom", "esnext"]
   },
-  "exclude": ["node_modules", "**/*.json", "**/*.d.ts", "dist", "examples", "__coverage__"]
+  "exclude": [
+    "node_modules",
+    "**/*.json",
+    "**/*.d.ts",
+    "dist",
+    "examples",
+    "__coverage__"
+  ]
 }
