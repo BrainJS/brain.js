@@ -1,5 +1,5 @@
-import { INumberHash, ITrainingDatum } from './lookup';
-import { NeuralNetwork } from './neural-network';
+import { INumberHash } from './lookup';
+import { INeuralNetworkDatum, NeuralNetwork } from './neural-network';
 import { LSTMTimeStep } from './recurrent/lstm-time-step';
 import { ITrainStreamNetwork, TrainStream } from './train-stream';
 import { INeuralNetworkState } from './neural-network-types';
@@ -52,7 +52,10 @@ describe('TrainStream', () => {
 
   describe('using sparse training values', () => {
     it('can train fruit', async () => {
-      const trainingData: ITrainingDatum[] = [
+      const trainingData: Array<INeuralNetworkDatum<
+        INumberHash,
+        INumberHash
+      >> = [
         { input: { apple: 1 }, output: { pome: 1 } },
         { input: { pear: 1 }, output: { pome: 1 } },
         { input: { hawthorn: 1 }, output: { pome: 1 } },
@@ -89,29 +92,24 @@ describe('TrainStream', () => {
         return maxKey;
       }
 
-      const net = new NeuralNetwork();
+      const net = new NeuralNetwork<INumberHash, INumberHash>();
 
-      return testTrainer(
-        net,
-        // @ts-expect-error TODO: better infer objects
-        { data: trainingData, errorThresh: 0.001 }
-      ).then(() => {
-        for (const data of trainingData) {
-          const output = net.run(data.input) as INumberHash;
-          const target = data.output as INumberHash;
-
-          const outputKey = largestKey(output);
-          const targetKey = largestKey(target);
-
-          if (!outputKey || !targetKey) fail();
-
-          expect(outputKey).toBe(targetKey);
-          expect(
-            output[outputKey] < target[targetKey] + wiggle &&
-              output[outputKey] > target[targetKey] - wiggle
-          ).toBeTruthy();
+      return testTrainer(net, { data: trainingData, errorThresh: 0.001 }).then(
+        () => {
+          for (const data of trainingData) {
+            const output = net.run(data.input);
+            const target = data.output;
+            const outputKey = largestKey(output);
+            const targetKey = largestKey(target);
+            if (!outputKey || !targetKey) fail();
+            expect(outputKey).toBe(targetKey);
+            expect(
+              output[outputKey] < target[targetKey] + wiggle &&
+                output[outputKey] > target[targetKey] - wiggle
+            ).toBeTruthy();
+          }
         }
-      });
+      );
     });
   });
   describe('bitwise functions', () => {
@@ -127,11 +125,11 @@ describe('TrainStream', () => {
             output: [0],
           },
         ];
-        const net = new NeuralNetwork();
+        const net = new NeuralNetwork<number[], number[]>();
 
         return await testTrainer(net, { data: not, errorThresh }).then(() => {
           for (const i of not) {
-            const output = net.run<number[]>(i.input)[0];
+            const output = net.run(i.input)[0];
             const target = i.output[0];
 
             expect(
@@ -160,7 +158,7 @@ describe('TrainStream', () => {
             output: [0],
           },
         ];
-        const net = new NeuralNetwork();
+        const net = new NeuralNetwork<number[], number[]>();
 
         return await testTrainer(net, { data: xor, errorThresh }).then(() => {
           for (const i of xor) {
@@ -193,7 +191,7 @@ describe('TrainStream', () => {
             output: [1],
           },
         ];
-        const net = new NeuralNetwork();
+        const net = new NeuralNetwork<number[], number[]>();
 
         return await testTrainer(net, { data: or, errorThresh }).then(() => {
           for (const i of or) {
@@ -226,7 +224,7 @@ describe('TrainStream', () => {
             output: [1],
           },
         ];
-        const net = new NeuralNetwork();
+        const net = new NeuralNetwork<number[], number[]>();
 
         return await testTrainer(net, { data: and, errorThresh }).then(() => {
           for (const i of and) {
@@ -243,6 +241,13 @@ describe('TrainStream', () => {
 
     describe('objects', () => {
       it('AND function', async () => {
+        interface MathInput extends INumberHash {
+          left: number;
+          right: number;
+        }
+        interface MathOutput extends INumberHash {
+          product: number;
+        }
         const and = [
           {
             input: { left: 0, right: 0 },
@@ -261,11 +266,11 @@ describe('TrainStream', () => {
             output: { product: 1 },
           },
         ];
-        const net = new NeuralNetwork();
+        const net = new NeuralNetwork<MathInput, MathOutput>();
 
         return await testTrainer(net, { data: and, errorThresh }).then(() => {
           for (const i of and) {
-            const output = (net.run(i.input) as INumberHash).product;
+            const output = net.run(i.input).product;
             const target = i.output.product;
 
             expect(

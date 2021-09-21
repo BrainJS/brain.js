@@ -9,7 +9,7 @@ import { LSTMTimeStep } from './recurrent/lstm-time-step';
 
 describe('CrossValidate', () => {
   describe('.train()', () => {
-    class FakeNN extends NeuralNetwork {
+    class FakeNN extends NeuralNetwork<number[], number[]> {
       constructor(
         options: Partial<
           INeuralNetworkOptions & INeuralNetworkTrainOptions
@@ -195,7 +195,7 @@ describe('CrossValidate', () => {
     });
   });
   describe('.fromJSON()', () => {
-    class FakeNN extends NeuralNetwork {}
+    class FakeNN extends NeuralNetwork<number[], number[]> {}
     it("creates a new instance of constructor from argument's sets.error", () => {
       const cv = new CrossValidate(FakeNN);
       const options = { inputSize: 1, hiddenLayers: [10], outputSize: 1 };
@@ -241,7 +241,7 @@ describe('CrossValidate', () => {
     });
   });
   describe('.toNeuralNetwork()', () => {
-    class FakeNN extends NeuralNetwork {}
+    class FakeNN extends NeuralNetwork<number[], number[]> {}
     it('creates a new instance of constructor from top .json sets.error', () => {
       const cv = new CrossValidate(FakeNN);
       const details = {

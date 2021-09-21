@@ -77,6 +77,7 @@ describe('FeedForward Class: Unit', () => {
                 {
                   filterHeight: 3,
                   filterWidth: 3,
+                  filterCount: 1,
                   padding: 2,
                   stride: 2,
                 },
@@ -100,6 +101,7 @@ describe('FeedForward Class: Unit', () => {
                   padding: 2,
                   filterWidth: 3,
                   filterHeight: 3,
+                  filterCount: 1,
                   stride: 3,
                 },
                 inputLayer
@@ -171,6 +173,7 @@ describe('FeedForward Class: Unit', () => {
                   {
                     filterWidth: 3, // TODO: setting height, width should behave same
                     filterHeight: 3,
+                    filterCount: 3,
                     padding: 2,
                     stride: 3,
                   },
@@ -187,6 +190,7 @@ describe('FeedForward Class: Unit', () => {
                         {
                           filterWidth: 3,
                           filterHeight: 3,
+                          filterCount: 16,
                           padding: 2,
                           stride: 2,
                         },

@@ -27,23 +27,6 @@ function asMatrix(v?: Matrix): Matrix {
   if (!v) throw new Error('undefined Matrix');
   return v;
 }
-jest.mock('./recurrent/matrix/random-matrix', () => {
-  class MockRandomMatrix extends Matrix {
-    constructor(rows: number, columns: number, std: number) {
-      super(rows, columns);
-
-      let value = 1;
-      for (let row = 0; row < rows; row++) {
-        for (let column = 0; column < columns; column++) {
-          this.setWeight(row, column, value++);
-        }
-      }
-    }
-  }
-  return {
-    RandomMatrix: MockRandomMatrix,
-  };
-});
 // jest.mock('../../src/layer/random', () => {
 //   class MockRandom extends Model implements ILayer {
 //     constructor(settings: IRandomSettings) {
@@ -66,6 +49,28 @@ describe('Recurrent Class: End to End', () => {
     teardown();
   });
   describe('when configured like RNNTimeStep', () => {
+    beforeEach(() => {
+      jest.mock('./recurrent/matrix/random-matrix', () => {
+        class MockRandomMatrix extends Matrix {
+          constructor(rows: number, columns: number, std: number) {
+            super(rows, columns);
+
+            let value = 1;
+            for (let row = 0; row < rows; row++) {
+              for (let column = 0; column < columns; column++) {
+                this.setWeight(row, column, value++);
+              }
+            }
+          }
+        }
+        return {
+          RandomMatrix: MockRandomMatrix,
+        };
+      });
+    });
+    afterEach(() => {
+      jest.unmock('./recurrent/matrix/random-matrix');
+    });
     function setupNets(): { timeStep: RNNTimeStep; recurrentNet: Recurrent } {
       const timeStep: RNNTimeStep = new RNNTimeStep({
         regc: 0.001,
@@ -1294,14 +1299,14 @@ describe('Recurrent Class: End to End', () => {
   it('can learn xor', () => {
     const praxisOpts: Partial<IMomentumRootMeanSquaredPropagationSettings> = {
       regularizationStrength: 0.000001,
-      learningRate: 0.01,
+      learningRate: 0.1,
     };
     const net = new Recurrent({
       praxisOpts,
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
         (inputLayer: ILayer, recurrentInput: IRecurrentInput) =>
-          lstmCell({ height: 20 }, inputLayer, recurrentInput),
+          lstmCell({ height: 10 }, inputLayer, recurrentInput),
       ],
       outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
     });
@@ -1312,13 +1317,9 @@ describe('Recurrent Class: End to End', () => {
       [[1], [0.001], [1]],
       [[1], [1], [0.001]],
     ];
-    oldNet.train(xorNetValues, { iterations: 1 });
-    net.train(xorNetValues, { iterations: 1 });
 
-    // expect(((net.layers as ILayer[])[0].weights as Float32Array[])[0]).toEqual(oldNet.model.equations[0].states[0].product.weights);
-    // expect(((net.layers as ILayer[])[1].weights as Float32Array[])[0]).toEqual(oldNet.model.equations[0].states[0].product.weights);
-    oldNet.train(xorNetValues, { iterations: 299, log: true });
-    net.train(xorNetValues, { iterations: 299, log: true });
+    oldNet.train(xorNetValues, { iterations: 1, log: true });
+    net.train(xorNetValues, { iterations: 1, log: true });
 
     expect(oldNet.run([[0.001], [0.001]])[0]).toBeLessThan(0.1);
     expect(oldNet.run([[0.001], [1]])[0]).toBeGreaterThan(0.9);
@@ -1347,7 +1348,7 @@ describe('Recurrent Class: End to End', () => {
     expect(net._layerSets[1].length).toEqual(44);
     let error = Infinity;
     for (let i = 0; i < 101 && error > 0.005; i++) {
-      error = (net._trainPattern([[1, 2, 3]], true) as number[])[0];
+      error = (net._trainPattern([[1], [2], [3]], true) as number[])[0];
     }
     expect(error).toBeLessThan(0.005);
   });

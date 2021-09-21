@@ -40,6 +40,7 @@
     "no-underscore-dangle": "off",
     "prettier/prettier": "error",
     "semi": "off",
-    "standard/no-callback-literal": "off"
+    "standard/no-callback-literal": "off",
+    "no-implied-eval": "off"
   }
 }

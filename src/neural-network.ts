@@ -1,7 +1,6 @@
-import { KernelOutput } from 'gpu.js';
 import { Thaw } from 'thaw.js';
 import { ITrainingStatus } from './feed-forward';
-import { InputOutputValue, INumberHash, lookup } from './lookup';
+import { INumberHash, lookup } from './lookup';
 import {
   INeuralNetworkBinaryTestResult,
   INeuralNetworkState,
@@ -95,9 +94,9 @@ export interface INeuralNetworkTrainOptionsJSON {
   epsilon: number;
 }
 
-export interface INeuralNetworkPreppedTrainingData {
+export interface INeuralNetworkPreppedTrainingData<T> {
   status: ITrainingStatus;
-  preparedData: INeuralNetworkDatumFormatted[];
+  preparedData: Array<INeuralNetworkDatumFormatted<T>>;
   endTime: number;
 }
 
@@ -137,20 +136,23 @@ export function trainDefaults(): INeuralNetworkTrainOptions {
   };
 }
 
-export type INeuralNetworkData = number[] | Float32Array | INumberHash;
+export type INeuralNetworkData = number[] | Float32Array | Partial<INumberHash>;
 
 // TODO: should be replaced by ITrainingDatum
-export interface INeuralNetworkDatum {
-  input: INeuralNetworkData;
-  output: INeuralNetworkData;
+export interface INeuralNetworkDatum<InputType, OutputType> {
+  input: InputType;
+  output: OutputType;
 }
 
-export interface INeuralNetworkDatumFormatted {
-  input: Float32Array;
-  output: Float32Array;
+export interface INeuralNetworkDatumFormatted<T> {
+  input: T;
+  output: T;
 }
 
-export class NeuralNetwork {
+export class NeuralNetwork<
+  InputType extends INeuralNetworkData,
+  OutputType extends INeuralNetworkData
+> {
   options: INeuralNetworkOptions = defaults();
   trainOpts: INeuralNetworkTrainOptions = trainDefaults();
   sizes: number[] = [];
@@ -278,9 +280,7 @@ export class NeuralNetwork {
     return this.sizes.length > 0;
   }
 
-  run<T extends InputOutputValue | InputOutputValue[] | KernelOutput>(
-    input: T
-  ): T {
+  run(input: Partial<InputType>): OutputType {
     if (!this.isRunnable) {
       throw new Error('network not runnable');
     }
@@ -292,16 +292,19 @@ export class NeuralNetwork {
         this.inputLookupLength
       );
     } else {
-      formattedInput = input as Float32Array;
+      formattedInput = (input as unknown) as Float32Array;
     }
     if (formattedInput.length !== this.sizes[0]) {
       throw new Error(`input is not in correct length of ${this.sizes[0]}`);
     }
     const output = this.runInput(formattedInput).slice(0);
     if (this.outputLookup) {
-      return lookup.toObject(this.outputLookup, output) as T;
+      return (lookup.toObject(
+        this.outputLookup,
+        output
+      ) as unknown) as OutputType;
     }
-    return output as T;
+    return (output as unknown) as OutputType;
   }
 
   _runInputSigmoid(input: Float32Array): Float32Array {
@@ -417,7 +420,9 @@ export class NeuralNetwork {
    * Verifies network sizes are initialized
    * If they are not it will initialize them based off the data set.
    */
-  verifyIsInitialized(preparedData: INeuralNetworkDatumFormatted[]): void {
+  verifyIsInitialized(
+    preparedData: Array<INeuralNetworkDatumFormatted<Float32Array>>
+  ): void {
     if (this.sizes.length) return;
 
     this.sizes = [];
@@ -578,7 +583,9 @@ export class NeuralNetwork {
     );
   }
 
-  calculateTrainingError(data: INeuralNetworkDatumFormatted[]): number {
+  calculateTrainingError(
+    data: Array<INeuralNetworkDatumFormatted<Float32Array>>
+  ): number {
     let sum = 0;
     for (let i = 0; i < data.length; ++i) {
       sum += this.trainPattern(data[i], true) as number;
@@ -586,14 +593,14 @@ export class NeuralNetwork {
     return sum / data.length;
   }
 
-  trainPatterns(data: INeuralNetworkDatumFormatted[]): void {
+  trainPatterns(data: Array<INeuralNetworkDatumFormatted<Float32Array>>): void {
     for (let i = 0; i < data.length; ++i) {
       this.trainPattern(data[i]);
     }
   }
 
   trainingTick(
-    data: INeuralNetworkDatumFormatted[],
+    data: Array<INeuralNetworkDatumFormatted<Float32Array>>,
     status: INeuralNetworkState,
     endTime: number
   ): boolean {
@@ -635,9 +642,9 @@ export class NeuralNetwork {
   }
 
   prepTraining(
-    data: INeuralNetworkDatum[],
+    data: Array<INeuralNetworkDatum<InputType, OutputType>>,
     options: Partial<INeuralNetworkTrainOptions> = {}
-  ): INeuralNetworkPreppedTrainingData {
+  ): INeuralNetworkPreppedTrainingData<Float32Array> {
     this.updateTrainingOptions(options);
     const preparedData = this.formatData(data);
     const endTime = Date.now() + this.trainOpts.timeout;
@@ -657,17 +664,21 @@ export class NeuralNetwork {
   }
 
   train(
-    data: INeuralNetworkDatum[],
+    data: Array<INeuralNetworkDatum<InputType, OutputType>> | any,
     options: Partial<INeuralNetworkTrainOptions> = {}
   ): INeuralNetworkState {
     const { preparedData, status, endTime } = this.prepTraining(data, options);
 
-    while (this.trainingTick(preparedData, status, endTime));
+    while (true) {
+      if (!this.trainingTick(preparedData, status, endTime)) {
+        break;
+      }
+    }
     return status;
   }
 
   async trainAsync(
-    data: INeuralNetworkDatum[],
+    data: Array<INeuralNetworkDatum<InputType, OutputType>>,
     options: Partial<INeuralNetworkTrainOptions> = {}
   ): Promise<ITrainingStatus> {
     const { preparedData, status, endTime } = this.prepTraining(data, options);
@@ -692,7 +703,7 @@ export class NeuralNetwork {
   }
 
   trainPattern(
-    value: INeuralNetworkDatumFormatted,
+    value: INeuralNetworkDatumFormatted<Float32Array>,
     logErrorRate?: boolean
   ): number | null {
     // forward propagate
@@ -930,7 +941,9 @@ export class NeuralNetwork {
     }
   }
 
-  formatData(data: INeuralNetworkDatum[]): INeuralNetworkDatumFormatted[] {
+  formatData(
+    data: Array<INeuralNetworkDatum<InputType, OutputType>>
+  ): Array<INeuralNetworkDatumFormatted<Float32Array>> {
     if (!Array.isArray(data[0].input)) {
       if (this.inputLookup) {
         this.inputLookupLength = Object.keys(this.inputLookup).length;
@@ -961,50 +974,52 @@ export class NeuralNetwork {
 
     // turn sparse hash input into arrays with 0s as filler
     if (this._formatInput && this._formatOutput) {
-      const result: INeuralNetworkDatumFormatted[] = [];
+      const result: Array<INeuralNetworkDatumFormatted<Float32Array>> = [];
       for (let i = 0; i < data.length; i++) {
         result.push({
           input: (this._formatInput as (v: INumberHash) => Float32Array)(
-            data[i].input as INumberHash
+            (data[i].input as unknown) as INumberHash
           ),
           output: (this._formatOutput as (v: INumberHash) => Float32Array)(
-            data[i].output as INumberHash
+            (data[i].output as unknown) as INumberHash
           ),
         });
       }
       return result;
     }
     if (this._formatInput) {
-      const result: INeuralNetworkDatumFormatted[] = [];
+      const result: Array<INeuralNetworkDatumFormatted<Float32Array>> = [];
       for (let i = 0; i < data.length; i++) {
         result.push({
           input: (this._formatInput as (v: INumberHash) => Float32Array)(
-            data[i].input as INumberHash
+            (data[i].input as unknown) as INumberHash
           ),
-          output: data[i].output as Float32Array,
+          output: (data[i].output as unknown) as Float32Array,
         });
       }
       return result;
     }
     if (this._formatOutput) {
-      const result: INeuralNetworkDatumFormatted[] = [];
+      const result: Array<INeuralNetworkDatumFormatted<Float32Array>> = [];
       for (let i = 0; i < data.length; i++) {
         result.push({
-          input: data[i].input as Float32Array,
+          input: (data[i].input as unknown) as Float32Array,
           output: (this._formatOutput as (v: INumberHash) => Float32Array)(
-            data[i].output as INumberHash
+            (data[i].output as unknown) as INumberHash
           ),
         });
       }
       return result;
     }
-    return data as INeuralNetworkDatumFormatted[];
+    return (data as unknown) as Array<
+      INeuralNetworkDatumFormatted<Float32Array>
+    >;
   }
 
-  addFormat(data: INeuralNetworkDatum): void {
+  addFormat(data: INeuralNetworkDatum<InputType, OutputType>): void {
     if (!Array.isArray(data.input) || typeof data.input[0] !== 'number') {
       this.inputLookup = lookup.addKeys(
-        data.input as INumberHash,
+        (data.input as unknown) as INumberHash,
         this.inputLookup ?? {}
       );
       if (this.inputLookup) {
@@ -1013,7 +1028,7 @@ export class NeuralNetwork {
     }
     if (!Array.isArray(data.output) || typeof data.output[0] !== 'number') {
       this.outputLookup = lookup.addKeys(
-        data.output as INumberHash,
+        (data.output as unknown) as INumberHash,
         this.outputLookup ?? {}
       );
       if (this.outputLookup) {
@@ -1023,7 +1038,7 @@ export class NeuralNetwork {
   }
 
   test(
-    data: INeuralNetworkDatum[]
+    data: Array<INeuralNetworkDatum<InputType, OutputType>>
   ): INeuralNetworkTestResult | INeuralNetworkBinaryTestResult {
     const { preparedData } = this.prepTraining(data);
     // for binary classification problems with one output node
@@ -1185,7 +1200,7 @@ export class NeuralNetwork {
 
   toFunction(
     cb?: (source: string) => string
-  ): <T extends number[] | Float32Array | INumberHash>(input: T) => T {
+  ): (input: Partial<InputType>) => OutputType {
     const { activation, leakyReluAlpha } = this.trainOpts;
     let needsVar = false;
     const nodeHandle = (layerIndex: number, nodeIndex: number): string => {
@@ -1276,9 +1291,9 @@ export class NeuralNetwork {
     }
 
     const source = `${inputLookup}${needsVar ? 'var v;' : ''}return ${result};`;
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval,@typescript-eslint/ban-ts-comment
-    // @ts-expect-error
     // eslint-disable-next-line @typescript-eslint/no-implied-eval,no-new-func
-    return new Function('input', cb ? cb(source) : source);
+    return new Function('input', cb ? cb(source) : source) as (
+      input: Partial<InputType>
+    ) => OutputType;
   }
 }

@@ -412,7 +412,7 @@ export class Recurrent extends FeedForward {
         throw new Error('this.meanSquaredError not setup');
       }
       let error: KernelOutput = new Float32Array(1);
-      for (let i = 0, max = inputs.length - 1; i < max; i++) {
+      for (let i = 0, max = inputs.length - 1; i <= max; i++) {
         const layerSet = this._layerSets[i];
         const lastLayer = layerSet[layerSet.length - 1];
         const prevError: KernelOutput = error;

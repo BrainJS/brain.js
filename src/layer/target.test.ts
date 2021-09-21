@@ -57,7 +57,10 @@ describe('Target Layer', () => {
   });
 
   test('uses compare2D when width > 1', () => {
-    const target = new Target({}, mockLayer({ height: 10, width: 10 }));
+    const target = new Target(
+      { height: 10, width: 10 },
+      mockLayer({ height: 10, width: 10 })
+    );
     target.setupKernels();
     expect(makeKernel).toHaveBeenCalledWith(compare2D, {
       output: [10, 10],

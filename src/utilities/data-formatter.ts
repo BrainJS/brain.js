@@ -271,7 +271,7 @@ export class DataFormatter implements IDataFormatter {
     string: string,
     maxThreshold: number
   ): DataFormatter {
-    const values = String.prototype.concat(...new Set(string));
+    const values = Array.from(new Set(string)).join('');
     const dataFormatter = new DataFormatter(values.split(''), maxThreshold);
     dataFormatter.addInputOutput();
     dataFormatter.addUnrecognized();
@@ -303,7 +303,7 @@ export class DataFormatter implements IDataFormatter {
   }
 
   static fromString(string: string, maxThreshold = 0): DataFormatter {
-    const values = String.prototype.concat(...new Set(string));
+    const values = Array.from(new Set(string)).join('');
     return new DataFormatter(values.split(''), maxThreshold);
   }
 
@@ -343,10 +343,10 @@ var characterTable = ${JSON.stringify(this.characterTable)};
 var indexTable = ${JSON.stringify(this.indexTable)};
 var characters = ${JSON.stringify(this.characters)};
 var dataFormatter = {
-  ${this.toIndexes.toString()},
-  ${this.toIndexesInputOutput.toString()},
-  ${this.toCharacters.toString()},
-  ${this.toIndexesValue.toString()},
+  toIndexes: function ${this.toIndexes.toString()},
+  toIndexesInputOutput: function ${this.toIndexesInputOutput.toString()},
+  toCharacters: function ${this.toCharacters.toString()},
+  toIndexesValue: function ${this.toIndexesValue.toString()},
 };`;
   }
 

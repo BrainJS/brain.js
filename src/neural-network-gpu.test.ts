@@ -1,6 +1,7 @@
+import { Texture } from 'gpu.js';
+
 import { NeuralNetwork } from './neural-network';
 import { NeuralNetworkGPU } from './neural-network-gpu';
-import { Texture } from 'gpu.js';
 
 describe('NeuralNetworkGPU', () => {
   const xorTrainingData = [
@@ -33,11 +34,11 @@ describe('NeuralNetworkGPU', () => {
     });
 
     it('can serialize from NeuralNetworkGPU & deserialize to NeuralNetwork', () => {
-      const net = new NeuralNetworkGPU();
+      const net = new NeuralNetworkGPU<number[], number[]>();
       net.train(xorTrainingData, { iterations: 1 });
       const target = xorTrainingData.map((datum) => net.run(datum.input));
       const json = net.toJSON();
-      const net2 = new NeuralNetwork();
+      const net2 = new NeuralNetwork<number[], number[]>();
       net2.fromJSON(json);
       for (let i = 0; i < xorTrainingData.length; i++) {
         // there is a wee bit of loss going from GPU to CPU
@@ -49,11 +50,11 @@ describe('NeuralNetworkGPU', () => {
     });
 
     it('can serialize from NeuralNetwork & deserialize to NeuralNetworkGPU', () => {
-      const net = new NeuralNetwork();
+      const net = new NeuralNetwork<number[], number[]>();
       net.train(xorTrainingData, { iterations: 1 });
       const target = xorTrainingData.map((datum) => net.run(datum.input));
       const json = net.toJSON();
-      const net2 = new NeuralNetworkGPU();
+      const net2 = new NeuralNetworkGPU<number[], number[]>();
       net2.fromJSON(json);
       for (let i = 0; i < xorTrainingData.length; i++) {
         // there is a wee bit of loss going from CPU to GPU

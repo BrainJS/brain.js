@@ -3,12 +3,14 @@ import {
   GPU,
   GPUFunction,
   IKernelFunctionThis,
+  IKernelMapRunShortcut,
+  IMappedKernelResult,
   KernelOutput,
   Texture,
   utils,
 } from 'gpu.js';
 import { ITrainingStatus } from './feed-forward';
-import { InputOutputValue, INumberHash, lookup } from './lookup';
+import { INumberHash, lookup } from './lookup';
 import {
   IJSONLayer,
   INeuralNetworkDatum,
@@ -25,12 +27,9 @@ export interface INeuralNetworkGPUDatumFormatted {
   output: KernelOutput;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 export interface INeuralNetworkGPUPreppedTrainingData
-  extends INeuralNetworkPreppedTrainingData {
+  extends INeuralNetworkPreppedTrainingData<KernelOutput> {
   status: ITrainingStatus;
-  preparedData: INeuralNetworkGPUDatumFormatted[];
   endTime: number;
 }
 
@@ -141,25 +140,20 @@ interface ILearningKernelThis extends IKernelFunctionThis {
 }
 
 function calcChanges(
-  this: ILearningKernelThis,
-  previousChanges: number[][],
-  deltas: number[],
-  previousOutputs: number[]
+  learningRate: number,
+  momentum: number,
+  previousChange: number,
+  delta: number,
+  previousOutput: number
 ): number {
-  return (
-    this.constants.learningRate *
-      deltas[this.thread.y] *
-      previousOutputs[this.thread.x] +
-    this.constants.momentum * previousChanges[this.thread.y][this.thread.x]
-  );
+  return learningRate * delta * previousOutput + momentum * previousChange;
 }
 
 function addWeights(
-  this: IKernelFunctionThis,
   change: number,
-  weights: number[][]
+  weight: number
 ): number {
-  return change + weights[this.thread.y][this.thread.x];
+  return change + weight;
 }
 
 function addBiases(
@@ -198,7 +192,10 @@ export type BackPropagateLayer = (
   deltas: KernelOutput
 ) => { result: KernelOutput; error: KernelOutput };
 
-export class NeuralNetworkGPU extends NeuralNetwork {
+export class NeuralNetworkGPU<InputType, OutputType> extends NeuralNetwork<
+  InputType,
+  OutputType
+> {
   gpu: GPU;
 
   texturizeInputData: (value: KernelOutput) => KernelOutput = () => {
@@ -215,8 +212,24 @@ export class NeuralNetworkGPU extends NeuralNetwork {
 
   backwardPropagate: Array<BackPropagateOutput | BackPropagateLayer> = [];
 
-  changesPropagate = [];
-  biasesPropagate = [];
+  changesPropagate: Array<
+    ((
+      this: IKernelFunctionThis<{
+        size: number;
+        learningRate: number;
+        momentum: number;
+      }>,
+      previousOutputs: number[],
+      deltas: number[],
+      weights: number[][],
+      previousChanges: number[][]
+    ) => IMappedKernelResult) &
+      IKernelMapRunShortcut<{ weights: number[][]; changes: number[][] }>
+  > = [];
+
+  biasesPropagate: Array<
+    (biases: KernelOutput, deltas: KernelOutput) => KernelOutput
+  > = [];
 
   getMSE: (error: KernelOutput) => KernelOutput = () => {
     throw new Error('not yet setup');
@@ -242,6 +255,9 @@ export class NeuralNetworkGPU extends NeuralNetwork {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   weights: KernelOutput[] = [];
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  changes: KernelOutput[] = [];
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   biases: KernelOutput[] = [];
@@ -488,14 +504,25 @@ export class NeuralNetworkGPU extends NeuralNetwork {
           weights: addWeights,
           changes: calcChanges,
         },
-        function (previousOutputs, deltas, weights, changes) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          const change = calcChanges(changes, deltas, previousOutputs);
-
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          return addWeights(change, weights);
+        function (
+          this: IKernelFunctionThis<{
+            size: number;
+            learningRate: number;
+            momentum: number;
+          }>,
+          previousOutputs: number[],
+          deltas: number[],
+          weights: number[][],
+          previousChanges: number[][]
+        ) {
+          const change = calcChanges(
+            this.constants.learningRate,
+            this.constants.momentum,
+            previousChanges[this.thread.y][this.thread.x],
+            deltas[this.thread.y],
+            previousOutputs[this.thread.x]
+          );
+          return addWeights(change, weights[this.thread.y][this.thread.x]);
         },
         {
           output: [this.sizes[layer - 1], this.sizes[layer]],
@@ -515,8 +542,6 @@ export class NeuralNetworkGPU extends NeuralNetwork {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       const weights = this.weights[layer];
       const changes = this.changes[layer];
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
       const output = this.changesPropagate[layer](
         this.outputs[layer - 1],
         this.deltas[layer],
@@ -533,8 +558,6 @@ export class NeuralNetworkGPU extends NeuralNetwork {
 
   buildChangeBiases(): void {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
       this.biasesPropagate[layer] = this.gpu.createKernel(addBiases, {
         output: [this.sizes[layer]],
         pipeline: true,
@@ -549,8 +572,6 @@ export class NeuralNetworkGPU extends NeuralNetwork {
   changeBiases(): void {
     for (let layer = 1; layer <= this.outputLayer; layer++) {
       const biases = this.biases[layer];
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
       this.biases[layer] = this.biasesPropagate[layer](
         biases,
         this.deltas[layer]
@@ -592,9 +613,7 @@ export class NeuralNetworkGPU extends NeuralNetwork {
     );
   }
 
-  run<T extends InputOutputValue | InputOutputValue[] | KernelOutput>(
-    input: T
-  ): T {
+  run(input: InputType): OutputType {
     if (!this.isRunnable) {
       throw new Error('network not runnable');
     }
@@ -606,7 +625,7 @@ export class NeuralNetworkGPU extends NeuralNetwork {
         this.inputLookupLength
       );
     } else {
-      formattedInput = input as Float32Array;
+      formattedInput = (input as unknown) as Float32Array;
     }
     const outputTextures = this.runInput(formattedInput);
     const output =
@@ -615,16 +634,18 @@ export class NeuralNetworkGPU extends NeuralNetwork {
         : outputTextures;
 
     if (this.outputLookup) {
-      return lookup.toObject(this.outputLookup, output as Float32Array) as T;
+      return (lookup.toObject(
+        this.outputLookup,
+        output as Float32Array
+      ) as unknown) as OutputType;
     }
 
-    return output as T;
+    return (output as unknown) as OutputType;
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
+  // @ts-ignore
   prepTraining(
-    data: INeuralNetworkDatum[],
+    data: Array<INeuralNetworkDatum<InputType, OutputType>>,
     options: Partial<INeuralNetworkTrainOptions> = {}
   ): INeuralNetworkGPUPreppedTrainingData {
     this.updateTrainingOptions(options);
@@ -643,12 +664,11 @@ export class NeuralNetworkGPU extends NeuralNetwork {
         return value[this.thread.x];
       },
       {
-        output: [data[0].output.length],
+        output: [preparedData[0].output.length],
         pipeline: true,
         immutable: true,
       }
     );
-
     return {
       preparedData: preparedData.map((set) => ({
         input: this.texturizeInputData(set.input),
@@ -659,9 +679,9 @@ export class NeuralNetworkGPU extends NeuralNetwork {
     };
   }
 
-  toFunction(): <T extends number[] | Float32Array | INumberHash>(
-    input: T
-  ) => T {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  toFunction(): (input: InputType) => OutputType {
     throw new Error(
       `${this.constructor.name}-toFunction is not yet implemented`
     );

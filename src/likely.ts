@@ -1,28 +1,24 @@
-import { INumberHash } from './lookup';
-import { NeuralNetwork } from './neural-network';
+import { INeuralNetworkData, NeuralNetwork } from './neural-network';
 
-/**
- *
- * @param {*} input
- * @param {brain.NeuralNetwork} net
- * @returns {*}
- */
-export function likely<T extends number[] | Float32Array | INumberHash>(
-  input: T,
-  net: NeuralNetwork
-): T | null {
+export function likely<
+  InputType extends INeuralNetworkData,
+  OutputType extends INeuralNetworkData
+>(
+  input: InputType,
+  net: NeuralNetwork<InputType, OutputType>
+): OutputType | null {
   if (!net) {
     throw new TypeError(
       `Required parameter 'net' is of type ${typeof net}. Must be of type 'brain.NeuralNetwork'`
     );
   }
 
-  const output = net.run<T>(input);
+  const output = net.run(input);
   let maxProp = null;
   let maxValue = -1;
 
   Object.entries(output).forEach(([key, value]) => {
-    if (value > maxValue) {
+    if (typeof value !== 'undefined' && value > maxValue) {
       maxProp = key;
       maxValue = value;
     }

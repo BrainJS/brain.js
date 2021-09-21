@@ -8,7 +8,7 @@ describe('NeuralNetwork bitwise', () => {
         output: number[];
       }>
     ) {
-      const net = new NeuralNetwork();
+      const net = new NeuralNetwork<number[], number[]>();
       net.train(data, { errorThresh: 0.003 });
 
       data.forEach((d) => {
@@ -63,7 +63,7 @@ describe('NeuralNetwork bitwise', () => {
         output: number[];
       }>
     ) {
-      const net = new NeuralNetwork();
+      const net = new NeuralNetwork<number[], number[]>();
       net.train(data, {
         errorThresh: 0.003,
         learningRate: 0.05,
@@ -122,7 +122,7 @@ describe('NeuralNetwork bitwise', () => {
         output: number[];
       }>
     ) {
-      const net = new NeuralNetwork();
+      const net = new NeuralNetwork<number[], number[]>();
       await net.trainAsync(data, { errorThresh: 0.003, timeout: 4800 });
       data.forEach((d) => {
         const actual = net.run(d.input);

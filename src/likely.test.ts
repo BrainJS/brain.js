@@ -3,8 +3,6 @@ import { NeuralNetwork } from './neural-network';
 
 /**
  * Return 0 or 1 for '#'
- * @param character
- * @returns {number}
  */
 function integer(character: string): number {
   if (character === '#') return 1;
@@ -13,8 +11,6 @@ function integer(character: string): number {
 
 /**
  * Turn the # into 1s and . into 0s. for whole string
- * @param string
- * @returns {Array}
  */
 function character(string: string): number[] {
   return string.trim().split('').map(integer);

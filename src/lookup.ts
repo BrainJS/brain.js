@@ -10,7 +10,7 @@ export interface INumberArray {
   [index: number]: number;
 }
 
-export type InputOutputValue = INumberArray | INumberHash;
+export type InputOutputValue = INumberArray | Partial<INumberHash>;
 
 export interface ITrainingDatum {
   input: InputOutputValue | InputOutputValue[] | KernelOutput;
