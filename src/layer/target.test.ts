@@ -24,6 +24,9 @@ describe('Target Layer', () => {
         mode: 'cpu',
       })
     );
+
+    // Clear the mock call count before each test
+    (makeKernel as jest.Mock).mockClear();
   });
   afterEach(() => {
     teardown();
@@ -50,6 +53,8 @@ describe('Target Layer', () => {
       mockLayer({ height: 10, width: 1 })
     );
     target.setupKernels();
+
+    expect(makeKernel).toBeCalledTimes(1);
     expect(makeKernel).toHaveBeenCalledWith(compare1D, {
       output: [1, 10],
       immutable: true,
@@ -58,10 +63,12 @@ describe('Target Layer', () => {
 
   test('uses compare2D when width > 1', () => {
     const target = new Target(
-      { height: 10, width: 10 },
+      { width: 10, height: 10 },
       mockLayer({ height: 10, width: 10 })
     );
     target.setupKernels();
+
+    expect(makeKernel).toBeCalledTimes(1);
     expect(makeKernel).toHaveBeenCalledWith(compare2D, {
       output: [10, 10],
       immutable: true,

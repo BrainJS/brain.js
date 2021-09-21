@@ -695,7 +695,7 @@ Source for `brain.js.org` is available at [Brain.js.org Repository](https://gith
 
 ## Contributors
 
-This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+This project exists thanks to all the people who contribute. [[Contribute](/.github/CONTRIBUTING.md)].
 <a href="https://github.com/BrainJS/brain.js/graphs/contributors"><img src="https://opencollective.com/brainjs/contributors.svg?width=890&button=false" /></a>
 
 ## Backers
