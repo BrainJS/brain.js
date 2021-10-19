@@ -20,6 +20,7 @@
     "@rollup/plugin-typescript": "^8.2.0",
     "@types/eslint": "^7.2.4",
     "@types/eslint-plugin-prettier": "^3.1.0",
+    "@types/jest": "^27.0.2",
     "@types/node": "^14.14.2",
     "@types/prettier": "^2.1.5",
     "@types/rollup-plugin-node-builtins": "^2.1.1",
