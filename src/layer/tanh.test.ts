@@ -3,7 +3,14 @@ import { gpuMock } from 'gpu-mock.js';
 
 import { Tanh, tanh, predict2D, predict3D, compare2D, compare3D } from './tanh';
 import * as tanhActivation from '../activation/tanh';
-import { mockLayer, mockPraxis, shave2D, shave3D } from '../test-utils';
+import {
+  IWithCompareKernel,
+  IWithPredictKernel,
+  mockLayer,
+  mockPraxis,
+  shave2D,
+  shave3D,
+} from '../test-utils';
 import { makeKernel, setup, teardown } from '../utilities/kernel';
 
 import { randos2D } from '../utilities/randos';
@@ -240,7 +247,9 @@ describe('Tanh Layer', () => {
         depth: 1,
       });
       const l = new Tanh(mockInputLayer);
-      (l as any).predictKernel = jest.fn((weights) => weights);
+      ((l as unknown) as IWithPredictKernel).predictKernel = jest.fn(
+        (weights) => weights
+      );
       l.predict();
       expect(l.predictKernel).toBeCalledWith(mockWeights);
       expect(l.weights).toBe(mockWeights);
@@ -260,7 +269,10 @@ describe('Tanh Layer', () => {
       l.weights = mockWeights;
       l.deltas = mockDeltas;
       const expected = randos2D(1, 1);
-      (l as any).compareKernel = jest.fn((weights, deltas) => expected);
+
+      ((l as unknown) as IWithCompareKernel).compareKernel = jest.fn(
+        (weights, deltas) => expected
+      );
       l.compare();
       expect(l.compareKernel).toBeCalledWith(mockWeights, mockDeltas);
       expect(l.inputLayer.deltas).toBe(expected);

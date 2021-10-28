@@ -352,8 +352,10 @@ export function getNeuralNetworkJSONSizes(json: INeuralNetworkJSON): number[] {
   return json.sizes;
 }
 
-export function getNeuralNetworkSizes(
-  net: NeuralNetwork<any, any> | NeuralNetworkGPU<any, any>
+export function getNeuralNetworkSizes<InputType, OutputType>(
+  net:
+    | NeuralNetwork<InputType, OutputType>
+    | NeuralNetworkGPU<InputType, OutputType>
 ): number[] {
   const { options, sizes } = net;
   const { inputSize, outputSize, hiddenLayers } = options;
@@ -441,9 +443,11 @@ export function toSVG<
     | IRNNJSON
     | GRU
     | LSTM
-    | NeuralNetwork<any, any>
+    | NeuralNetwork<InputType, OutputType>
     | INeuralNetworkJSON
-    | NeuralNetworkGPU<any, any>
+    | NeuralNetworkGPU<InputType, OutputType>,
+  InputType,
+  OutputType
 >(
   net: T,
   options?:

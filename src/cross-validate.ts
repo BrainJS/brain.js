@@ -1,20 +1,27 @@
 import {
   INeuralNetworkBinaryTestResult,
-  INeuralNetworkOptions,
   INeuralNetworkState,
   INeuralNetworkTestResult,
 } from './neural-network-types';
 
-export type ICrossValidateOptions = INeuralNetworkOptions;
+export type InitClassifier<
+  TrainOptsType,
+  JsonType,
+  DatumType
+> = () => IClassifier<TrainOptsType, JsonType, DatumType>;
 
-export interface INetwork {
-  options: any;
-  trainOpts: any;
-  toJSON: () => any;
-  train: (data: any[], trainOpts?: any) => INeuralNetworkState;
+export interface IClassifier<TrainOptsType, JsonType, DatumType> {
+  trainOpts: TrainOptsType;
+  toJSON: () => JsonType;
+  fromJSON: (json: JsonType) => this;
+  train: (
+    data: DatumType[],
+    options?: Partial<TrainOptsType>
+  ) => INeuralNetworkState;
   test: (
-    data: any[]
+    data: DatumType[]
   ) => INeuralNetworkTestResult | INeuralNetworkBinaryTestResult;
+  initialize: () => void;
 }
 
 export type ICrossValidateJSON<JsonType> =
@@ -33,6 +40,7 @@ export interface ICrossValidateStats<JsonType> {
   stats: ICrossValidateStatsResultStats;
   sets: Array<ICrossValidationTestPartitionResults<JsonType>>;
 }
+
 export interface ICrossValidateBinaryStats<NetworkType> {
   avgs: ICrossValidateStatsAverages;
   stats: ICrossValidateStatsResultBinaryStats;
@@ -71,19 +79,17 @@ export type ICrossValidationTestPartitionBinaryResults<
 > = INeuralNetworkBinaryTestResult &
   ICrossValidationTestPartitionResults<JsonType>;
 
-export type Classifier<NetworkType extends INetwork> = new (
-  options: NetworkType['trainOpts']
-) => NetworkType;
-
-interface IStaticClassifier<NetworkType extends INetwork>
-  extends Classifier<NetworkType> {
-  fromJSON?: (json: ReturnType<NetworkType['toJSON']>) => NetworkType;
-}
-
-export default class CrossValidate<NetworkType extends INetwork> {
-  Classifier: IStaticClassifier<NetworkType>;
-  options: Partial<ICrossValidateOptions> = {};
-  json: ICrossValidateJSON<ReturnType<NetworkType['toJSON']>> = {
+export default class CrossValidate<
+  InitClassifierType extends InitClassifier<
+    ReturnType<InitClassifierType>['trainOpts'],
+    ReturnType<ReturnType<InitClassifierType>['toJSON']>,
+    Parameters<ReturnType<InitClassifierType>['train']>[0][0]
+  >
+> {
+  initClassifier: InitClassifierType;
+  json: ICrossValidateJSON<
+    ReturnType<ReturnType<InitClassifierType>['toJSON']>
+  > = {
     avgs: {
       error: 0,
       iterations: 0,
@@ -98,24 +104,22 @@ export default class CrossValidate<NetworkType extends INetwork> {
     sets: [],
   };
 
-  constructor(
-    Classifier: IStaticClassifier<NetworkType>,
-    options: Partial<NetworkType['options']> = {}
-  ) {
-    this.Classifier = Classifier;
-    this.options = options;
+  constructor(initClassifier: InitClassifierType) {
+    this.initClassifier = initClassifier;
   }
 
   testPartition(
-    trainOpts: Parameters<NetworkType['train']>[1],
-    trainSet: Parameters<NetworkType['train']>[0],
-    testSet: Parameters<NetworkType['train']>[0]
+    trainOpts: Parameters<ReturnType<InitClassifierType>['train']>[1],
+    trainSet: Parameters<ReturnType<InitClassifierType>['train']>[0],
+    testSet: Parameters<ReturnType<InitClassifierType>['train']>[0]
   ):
-    | ICrossValidationTestPartitionResults<ReturnType<NetworkType['toJSON']>>
+    | ICrossValidationTestPartitionResults<
+        ReturnType<ReturnType<InitClassifierType>['toJSON']>
+      >
     | ICrossValidationTestPartitionBinaryResults<
-        ReturnType<NetworkType['toJSON']>
+        ReturnType<ReturnType<InitClassifierType>['toJSON']>
       > {
-    const classifier = new this.Classifier(this.options);
+    const classifier = this.initClassifier();
     const beginTrain = Date.now();
     const trainingStats = classifier.train(trainSet, trainOpts);
     const beginTest = Date.now();
@@ -131,7 +135,7 @@ export default class CrossValidate<NetworkType extends INetwork> {
       error: trainingStats.error,
       total: testStats.total,
       network: (classifier as {
-        toJSON: () => ReturnType<NetworkType['toJSON']>;
+        toJSON: () => ReturnType<ReturnType<InitClassifierType>['toJSON']>;
       }).toJSON(),
     };
   }
@@ -173,16 +177,18 @@ export default class CrossValidate<NetworkType extends INetwork> {
     undefined;
 
   train(
-    data: Parameters<NetworkType['train']>[0],
-    trainOpts: Partial<Parameters<NetworkType['train']>[1]> = {},
+    data: Array<Parameters<ReturnType<InitClassifierType>['train']>[0][0]>,
+    trainOpts: Partial<
+      Parameters<ReturnType<InitClassifierType>['train']>[1]
+    > = {},
     k = 4
-  ): ICrossValidateStats<NetworkType> {
+  ): ICrossValidateStats<ReturnType<InitClassifierType>['toJSON']> {
     if (data.length < k) {
       throw new Error(
         `Training set size is too small for ${data.length} k folds of ${k}`
       );
     }
-    this.shuffleArray<Parameters<NetworkType['train']>[0]>(data);
+    this.shuffleArray<unknown>(data);
     const size = data.length / k;
 
     const avgs: ICrossValidateStatsAverages = {
@@ -275,40 +281,32 @@ export default class CrossValidate<NetworkType extends INetwork> {
     return this.json;
   }
 
-  toNeuralNetwork(): NetworkType {
+  toNeuralNetwork(): ReturnType<InitClassifierType> {
     return this.fromJSON(this.json);
   }
 
-  toJSON(): ICrossValidateJSON<ReturnType<NetworkType['toJSON']>> | null {
+  toJSON(): ICrossValidateJSON<
+    ReturnType<ReturnType<InitClassifierType>['toJSON']>
+  > | null {
     return this.json;
   }
 
   fromJSON(
-    crossValidateJson: ICrossValidateJSON<ReturnType<NetworkType['toJSON']>>
-  ): NetworkType {
-    const Classifier = this.Classifier;
+    crossValidateJson: ICrossValidateJSON<
+      ReturnType<ReturnType<InitClassifierType>['toJSON']>
+    >
+  ): ReturnType<InitClassifierType> {
     const winningJSON:
-      | ICrossValidationTestPartitionResults<ReturnType<NetworkType['toJSON']>>
+      | ICrossValidationTestPartitionResults<
+          ReturnType<ReturnType<InitClassifierType>['toJSON']>
+        >
       | ICrossValidationTestPartitionBinaryResults<
-          ReturnType<NetworkType['toJSON']>
+          ReturnType<ReturnType<InitClassifierType>['toJSON']>
         > = (crossValidateJson as ICrossValidateStats<
-      ReturnType<NetworkType['toJSON']>
+      ReturnType<ReturnType<InitClassifierType>['toJSON']>
     >).sets.reduce((prev, cur) => (prev.error < cur.error ? prev : cur));
-    if (Classifier.fromJSON) {
-      return Classifier.fromJSON(winningJSON.network);
-    }
-    const instance = new Classifier(this.options);
-    if (
-      (instance as {
-        fromJSON?: (json: ReturnType<NetworkType['toJSON']>) => void;
-      }).fromJSON
-    ) {
-      ((instance as unknown) as {
-        fromJSON: (json: ReturnType<NetworkType['toJSON']>) => void;
-      }).fromJSON(winningJSON.network);
-      return instance;
-    } else {
-      throw new Error('no fromJSON method available');
-    }
+    return (this.initClassifier() as ReturnType<InitClassifierType>).fromJSON(
+      winningJSON.network
+    );
   }
 }

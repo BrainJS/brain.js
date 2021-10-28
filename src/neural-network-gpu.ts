@@ -149,10 +149,7 @@ function calcChanges(
   return learningRate * delta * previousOutput + momentum * previousChange;
 }
 
-function addWeights(
-  change: number,
-  weight: number
-): number {
+function addWeights(change: number, weight: number): number {
   return change + weight;
 }
 
@@ -643,7 +640,7 @@ export class NeuralNetworkGPU<InputType, OutputType> extends NeuralNetwork<
     return (output as unknown) as OutputType;
   }
 
-  // @ts-ignore
+  // @ts-expect-error the underlying network works as normal, but we are working on the GPU
   prepTraining(
     data: Array<INeuralNetworkDatum<InputType, OutputType>>,
     options: Partial<INeuralNetworkTrainOptions> = {}

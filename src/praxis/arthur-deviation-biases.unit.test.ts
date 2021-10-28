@@ -1,12 +1,12 @@
 import { gpuMock } from 'gpu-mock.js';
-import { GPU } from 'gpu.js';
+import { GPU, IKernelRunShortcut } from 'gpu.js';
 import {
   ArthurDeviationBiases,
   arthurDeviationBiases,
   update,
 } from '../praxis/arthur-deviation-biases';
 import { setup, teardown } from '../utilities/kernel';
-import { shave } from '../test-utils';
+import { mockLayer, shave } from '../test-utils';
 
 describe('ArthurDeviationBiases Class: Unit', () => {
   beforeEach(() => {
@@ -42,8 +42,8 @@ describe('ArthurDeviationBiases Class: Unit', () => {
 
   describe('.setupKernels()', () => {
     test('instantiates .kernel', () => {
-      const mockLayer: any = { width: 2, height: 2 };
-      const p = new ArthurDeviationBiases(mockLayer);
+      const layer = mockLayer({ width: 2, height: 2 });
+      const p = new ArthurDeviationBiases(layer);
       p.setupKernels();
       expect(p.kernel).not.toBe(null);
     });
@@ -53,16 +53,21 @@ describe('ArthurDeviationBiases Class: Unit', () => {
     it('calls this.kernel() returns kernel output', () => {
       const mockWeights = 1;
       const mockDeltas = 2;
-      const mockLayer: any = {
+      const layer = mockLayer({
         width: 2,
         height: 2,
         deltas: mockDeltas,
         weights: mockWeights,
-      };
-      const p: any = new ArthurDeviationBiases(mockLayer);
-      const mockResult = {};
-      p.kernel = jest.fn(() => mockResult);
-      const result = p.run(mockLayer, NaN);
+      });
+      const p = new ArthurDeviationBiases(layer);
+      interface I {
+        kernel: IKernelRunShortcut;
+      }
+      p.setupKernels();
+      const kernelSpy = jest.spyOn(p as I, 'kernel');
+      const mockResult = [[1]];
+      kernelSpy.mockReturnValue(mockResult);
+      const result = p.run(layer);
       expect(result).toBe(mockResult);
       expect(p.kernel).toHaveBeenCalledWith(mockWeights, mockDeltas);
     });
@@ -70,9 +75,9 @@ describe('ArthurDeviationBiases Class: Unit', () => {
 
   describe('arthurDeviationBiases lambda', () => {
     it('creates a new instance of ArthurDeviationBiases', () => {
-      const mockLayer: any = {};
-      const p = arthurDeviationBiases(mockLayer);
-      expect(p.layerTemplate).toBe(mockLayer);
+      const layer = mockLayer({ width: 1, height: 1 });
+      const p = arthurDeviationBiases(layer);
+      expect(p.layerTemplate).toBe(layer);
     });
   });
 });

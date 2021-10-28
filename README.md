@@ -400,10 +400,7 @@ Promise.all([p1, p2])
 [Cross Validation](<https://en.wikipedia.org/wiki/Cross-validation_(statistics)>) can provide a less fragile way of training on larger data sets. The brain.js api provides Cross Validation in this example:
 
 ```js
-const crossValidate = new brain.CrossValidate(
-  brain.NeuralNetwork,
-  networkOptions
-);
+const crossValidate = new brain.CrossValidate(() => new brain.NeuralNetwork(networkOptions));
 crossValidate.train(data, trainingOptions, k); //note k (or KFolds) is optional
 const json = crossValidate.toJSON(); // all stats in json as well as neural networks
 const net = crossValidate.toNeuralNetwork(); // get top performing net out of `crossValidate`

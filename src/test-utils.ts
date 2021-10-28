@@ -217,3 +217,15 @@ export function mockPraxis(layerTemplate: ILayerTemplate, praxisSettings: Partia
     },
   };
 }
+
+export interface IWithCompareKernel {
+  compareKernel: jest.Mock;
+}
+
+export interface IWithPredictKernel {
+  predictKernel: jest.Mock;
+}
+
+export interface IWithPredictKernelMap {
+  predictKernelMap: jest.Mock;
+}

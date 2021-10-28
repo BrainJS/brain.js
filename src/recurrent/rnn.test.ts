@@ -37,6 +37,7 @@ describe('RNN', () => {
       it('calls this.fromJSON() with it', () => {
         const json = getJSON();
         const net = new RNN({ json });
+        expect(net).toBeInstanceOf(RNN);
         expect(fromJSONMock).toBeCalledWith(json);
       });
     });

@@ -2,7 +2,12 @@ import { GPU } from 'gpu.js';
 import { gpuMock } from 'gpu-mock.js';
 import { Relu, relu, predict2D, predict3D, compare2D, compare3D } from './relu';
 import * as reluActivation from '../activation/relu';
-import { mockLayer, mockPraxis } from '../test-utils';
+import {
+  IWithCompareKernel,
+  IWithPredictKernel,
+  mockLayer,
+  mockPraxis,
+} from '../test-utils';
 import { makeKernel, setup, teardown } from '../utilities/kernel';
 
 import { randos2D } from '../utilities/randos';
@@ -200,7 +205,9 @@ describe('Relu Layer', () => {
         depth: 1,
       });
       const l = new Relu(mockInputLayer);
-      (l as any).predictKernel = jest.fn((weights) => weights);
+      ((l as unknown) as IWithPredictKernel).predictKernel = jest.fn(
+        (weights) => weights
+      );
       l.predict();
       expect(l.predictKernel).toBeCalledWith(mockWeights);
       expect(l.weights).toBe(mockWeights);
@@ -222,7 +229,9 @@ describe('Relu Layer', () => {
       l.weights = mockWeights;
       l.deltas = mockDeltas;
       const expectedDeltas = randos2D(1, 1);
-      (l as any).compareKernel = jest.fn((weights, deltas) => expectedDeltas);
+      ((l as unknown) as IWithCompareKernel).compareKernel = jest.fn(
+        (weights, deltas) => expectedDeltas
+      );
       l.compare();
       expect(l.compareKernel).toBeCalledWith(mockWeights, mockDeltas);
       expect(l.inputLayer.deltas).toBe(expectedDeltas);

@@ -8,7 +8,7 @@ import {
   updateChange,
 } from './arthur-deviation-weights';
 import { setup, teardown } from '../utilities/kernel';
-import { shave, shave2D } from '../test-utils';
+import { mockLayer, shave, shave2D } from '../test-utils';
 
 describe('ArthurDeviationWeights Class: Unit', () => {
   beforeEach(() => {
@@ -63,91 +63,74 @@ describe('ArthurDeviationWeights Class: Unit', () => {
       it('gets dimensions from inputLayer', () => {
         const width = 2;
         const height = 3;
-        const mockLayer: any = {
-          width,
-          height,
-        };
-        const p: any = new ArthurDeviationWeights(mockLayer);
-        expect(p.changes.length).toBe(height);
-        expect(p.changes[0].length).toBe(width);
+        const layer = mockLayer({ width, height });
+        const p = new ArthurDeviationWeights(layer);
+        const changes = p.changes as number[][];
+        expect(changes.length).toBe(height);
+        expect(changes[0].length).toBe(width);
       });
     });
     describe('.weightsLayer', () => {
-      const mockLayer: any = { width: 1, height: 1 };
-      const weightsLayerMock: any = {};
-      const p = new ArthurDeviationWeights(mockLayer, {
-        weightsLayer: weightsLayerMock,
+      const layer = mockLayer({ width: 1, height: 1 });
+      const weightsLayer = mockLayer({});
+      const p = new ArthurDeviationWeights(layer, {
+        weightsLayer,
       });
-      expect(p.weightsLayer).toBe(weightsLayerMock);
+      expect(p.weightsLayer).toBe(weightsLayer);
     });
     describe('.incomingLayer', () => {
-      const mockLayer: any = { width: 1, height: 1 };
-      const incomingLayerMock: any = {};
-      const p = new ArthurDeviationWeights(mockLayer, {
-        incomingLayer: incomingLayerMock,
+      const layer = mockLayer({ width: 1, height: 1 });
+      const incomingLayer = mockLayer({ width: 1, height: 1 });
+      const p = new ArthurDeviationWeights(layer, {
+        incomingLayer,
       });
-      expect(p.incomingLayer).toBe(incomingLayerMock);
+      expect(p.incomingLayer).toBe(incomingLayer);
     });
     describe('.deltaLayer', () => {
-      const mockLayer: any = { width: 1, height: 1 };
-      const deltaLayerMock: any = {};
-      const p = new ArthurDeviationWeights(mockLayer, {
-        deltaLayer: deltaLayerMock,
+      const layer = mockLayer({ width: 1, height: 1 });
+      const deltaLayer = mockLayer({ width: 1, height: 1 });
+      const p = new ArthurDeviationWeights(layer, {
+        deltaLayer,
       });
-      expect(p.deltaLayer).toBe(deltaLayerMock);
+      expect(p.deltaLayer).toBe(deltaLayer);
     });
   });
 
   describe('.run()', () => {
     it('calls this.kernel(), sets this.changes, and returns kernel output.results', () => {
-      const mockLayer: any = { width: 2, height: 2 };
-      const weightsLayerWeightsMock = {};
-      const weightsLayerMock: any = { weights: weightsLayerWeightsMock };
-      const incomingLayerWeightsMock = {};
-      const incomingLayerMock: any = { weights: incomingLayerWeightsMock };
-      const deltaLayerDeltasMock = {};
-      const deltaLayerMock: any = { deltas: deltaLayerDeltasMock };
-      const p: any = new ArthurDeviationWeights(mockLayer, {
-        weightsLayer: weightsLayerMock,
-        incomingLayer: incomingLayerMock,
-        deltaLayer: deltaLayerMock,
+      const layer = mockLayer({ width: 1, height: 1, weights: [[1]] });
+      const weightsLayer = mockLayer({ width: 1, height: 1, weights: [[2]] });
+      const incomingLayer = mockLayer({ width: 1, height: 1, weights: [[3]] });
+      const deltaLayer = mockLayer({ width: 1, height: 1, deltas: [[4]] });
+      const p: ArthurDeviationWeights = new ArthurDeviationWeights(layer, {
+        weightsLayer,
+        incomingLayer,
+        deltaLayer,
       });
-      const mockResult = {};
-      const mockChanges = {};
-      const mockInitialChanges = (p.changes = {});
-      p.kernelMap = jest.fn(() => {
-        return {
-          result: mockResult,
-          changes: mockChanges,
-        };
-      });
+      p.setupKernels();
+      const oldChanges = p.changes;
       const result = p.run();
-      expect(result).toBe(mockResult);
-      expect(p.kernelMap).toHaveBeenCalledWith(
-        mockInitialChanges,
-        weightsLayerWeightsMock,
-        incomingLayerWeightsMock,
-        deltaLayerDeltasMock
-      );
+      expect(result).toBeInstanceOf(Array);
+      expect(p.changes).not.toBe(oldChanges);
     });
   });
 
   describe('arthurDeviationWeights lambda', () => {
     it('creates a new instance of ArthurDeviationWeights', () => {
-      const mockLayer: any = {};
-      const mockWeightsLayer: any = {};
-      const mockDeltasLayer: any = {};
-      const mockIncomingLayer: any = {};
+      const layer = mockLayer({ height: 1, width: 1 });
+      const weightsLayer = mockLayer({ height: 1, width: 1 });
+      const deltaLayer = mockLayer({ height: 1, width: 1 });
+      const incomingLayer = mockLayer({ height: 1, width: 1 });
       const settings: Partial<IArthurDeviationWeightsSettings> = {
-        weightsLayer: mockWeightsLayer,
-        deltaLayer: mockDeltasLayer, // deltasLayer did not exist, so changed to deltaLayer
-        incomingLayer: mockIncomingLayer,
+        weightsLayer,
+        deltaLayer,
+        incomingLayer,
       };
-      const p = arthurDeviationWeights(mockLayer, settings);
-      expect(p.weightsLayer).toBe(mockWeightsLayer);
-      expect(p.deltaLayer).toBe(mockDeltasLayer); // deltasLayer did not exist, so changed to deltaLayer
-      expect(p.incomingLayer).toBe(mockIncomingLayer);
-      expect(p.layerTemplate).toBe(mockLayer);
+      const p = arthurDeviationWeights(layer, settings);
+      expect(p.weightsLayer).toBe(weightsLayer);
+      expect(p.deltaLayer).toBe(deltaLayer); // deltasLayer did not exist, so changed to deltaLayer
+      expect(p.incomingLayer).toBe(incomingLayer);
+      expect(p.layerTemplate).toBe(layer);
     });
   });
 });

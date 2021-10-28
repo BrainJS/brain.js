@@ -11,14 +11,7 @@ export interface INeuralNetworkOptions {
    * @default [3]
    */
   hiddenLayers?: number[];
-
-  [x: string]: any;
 }
-export type NeuralNetworkActivation =
-  | 'sigmoid'
-  | 'relu'
-  | 'leaky-relu'
-  | 'tanh';
 
 export interface INeuralNetworkTrainingOptions {
   /**
@@ -86,7 +79,7 @@ export interface INeuralNetworkState {
 }
 
 export interface INeuralNetworkTestResult {
-  misclasses: any;
+  misclasses: unknown[];
   error: number;
   total: number;
 }

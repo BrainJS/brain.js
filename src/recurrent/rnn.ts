@@ -679,7 +679,7 @@ export class RNN {
     };
   }
 
-  fromJSON(json: IRNNJSON): void {
+  fromJSON(json: IRNNJSON): this {
     const { options } = json;
     const allMatrices = [];
     const input = Matrix.fromJSON(json.input);
@@ -728,6 +728,7 @@ export class RNN {
       (size) => new Matrix(size, 1)
     );
     this.bindEquation();
+    return this;
   }
 
   toFunction(cb?: (src: string) => string): RNNFunction {

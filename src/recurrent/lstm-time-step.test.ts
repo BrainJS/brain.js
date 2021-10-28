@@ -100,6 +100,7 @@ describe('LSTMTimeStep', () => {
         previousResult,
         hiddenLayer
       );
+      expect(lstmEquation).toBeInstanceOf(Matrix);
       const result = equation.runInput(new Float32Array([0, 0, 0]));
       expect(result.getWeight(0, 0)).toBeCloseTo(0.9640275835990906);
       expect(result.getWeight(1, 0)).toBeCloseTo(0.9950547814369202);

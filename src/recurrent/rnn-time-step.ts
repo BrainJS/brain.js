@@ -996,7 +996,7 @@ export class RNNTimeStep extends RNN {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  fromJSON(json: IRNNTimeStepJSON): void {
+  fromJSON(json: IRNNTimeStepJSON): this {
     const { options } = json;
     const allMatrices = [];
     const hiddenLayers: IRNNHiddenLayerModel[] = [];
@@ -1037,6 +1037,7 @@ export class RNNTimeStep extends RNN {
       (size) => new Matrix(size, 1)
     );
     this.bindEquation();
+    return this;
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

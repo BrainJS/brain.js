@@ -154,11 +154,8 @@ export class FeedForward<
   }
 
   /**
-   *
-   * @param log
    * if a method is passed in method is used
    * if false passed in nothing is logged
-   * @returns error
    */
   _setLogMethod(log: Log | undefined | boolean): void {
     if (typeof log === 'function') {
@@ -301,10 +298,7 @@ export class FeedForward<
 
   run(input: InputType): OutputType {
     let typeSafeInput: INumberArray | KernelOutput;
-    if (
-      Array.isArray(input) ||
-      (input as Float32Array).buffer instanceof ArrayBuffer
-    ) {
+    if (Array.isArray(input) || (input as Float32Array).buffer) {
       typeSafeInput = input as INumberArray;
     } else {
       if (this.inputLookup) {

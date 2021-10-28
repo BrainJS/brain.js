@@ -1,6 +1,5 @@
 import CrossValidate from './cross-validate';
 import {
-  INeuralNetworkJSON,
   INeuralNetworkOptions,
   INeuralNetworkTrainOptions,
   NeuralNetwork,
@@ -26,15 +25,10 @@ describe('CrossValidate', () => {
           error: 0.05,
         };
       }
-
-      static fromJSON(json: INeuralNetworkJSON): FakeNN {
-        const net = new FakeNN();
-        return net.fromJSON(json);
-      }
     }
     it('throws exception when training set is too small', () => {
       const xorTrainingData = [{ input: [0, 1], output: [1] }];
-      const net = new CrossValidate(FakeNN);
+      const net = new CrossValidate(() => new FakeNN());
       expect(() => {
         net.train(xorTrainingData);
       }).toThrow('Training set size is too small for 1 k folds of 4');
@@ -66,11 +60,14 @@ describe('CrossValidate', () => {
         { input: [1, 1], output: [0] },
         { input: [1, 0], output: [1] },
       ];
-      const net = new CrossValidate(SpyFakeNN, {
-        inputSize: 1,
-        hiddenLayers: [10],
-        outputSize: 1,
-      });
+      const net = new CrossValidate(
+        () =>
+          new SpyFakeNN({
+            inputSize: 1,
+            hiddenLayers: [10],
+            outputSize: 1,
+          })
+      );
       net.shuffleArray = (input) => input;
       const result = net.train(xorTrainingData);
       if (!CrossValidate.isBinaryResults(result)) {
@@ -133,7 +130,7 @@ describe('CrossValidate', () => {
         { input: [1, 1], output: [0] },
         { input: [1, 0], output: [1] },
       ];
-      const net = new CrossValidate(SpyFakeNN);
+      const net = new CrossValidate(() => new SpyFakeNN());
       net.shuffleArray = (input) => input;
       const result = net.train(xorTrainingData);
       if (!CrossValidate.isBinaryResults(result)) {
@@ -168,27 +165,38 @@ describe('CrossValidate', () => {
         expect(set.trainTime >= 0).toBeTruthy();
         expect(set.total).toBe(2);
         expect(set.network).not.toBeFalsy();
-        expect(set.misclasses.length > 0).toBeTruthy();
-        expect(set.misclasses[0].hasOwnProperty('input')).toBeTruthy();
-        expect(set.misclasses[0].input.length).toBeTruthy();
+        interface T {
+          misclasses: [
+            {
+              input: number[];
+              output: number[];
+              actual: number;
+              expected: number;
+            }
+          ];
+        }
+        const misclasses = ((set as unknown) as T).misclasses;
+        expect(misclasses.length > 0).toBeTruthy();
+        expect(misclasses[0].hasOwnProperty('input')).toBeTruthy();
+        expect(misclasses[0].input.length).toBeTruthy();
         expect(
-          xorTrainingData.filter((v) => v.input === set.misclasses[0].input)
+          xorTrainingData.filter((v) => v.input === misclasses[0].input)
         ).toBeTruthy();
         expect(
-          xorTrainingData.filter((v) => v.output === set.misclasses[0].output)
+          xorTrainingData.filter((v) => v.output === misclasses[0].output)
         ).toBeTruthy();
         expect(
-          set.misclasses[0].actual === 0 || set.misclasses[0].actual === 1
+          misclasses[0].actual === 0 || misclasses[0].actual === 1
         ).toBeTruthy();
         expect(
-          set.misclasses[0].expected === 0 || set.misclasses[0].expected === 1
+          misclasses[0].expected === 0 || misclasses[0].expected === 1
         ).toBeTruthy();
       }
     });
   });
   describe('.toJSON()', () => {
     it('returns from this.json', () => {
-      const cv = new CrossValidate(NeuralNetwork);
+      const cv = new CrossValidate(() => new NeuralNetwork());
       const json = cv.json;
       expect(cv.toJSON()?.avgs?.error).toBe(0);
       expect(cv.toJSON()).toBe(json);
@@ -197,14 +205,14 @@ describe('CrossValidate', () => {
   describe('.fromJSON()', () => {
     class FakeNN extends NeuralNetwork<number[], number[]> {}
     it("creates a new instance of constructor from argument's sets.error", () => {
-      const cv = new CrossValidate(FakeNN);
+      const cv = new CrossValidate(() => new FakeNN(options));
       const options = { inputSize: 1, hiddenLayers: [10], outputSize: 1 };
       const details = {
         trainTime: 0,
         testTime: 0,
         total: 0,
         iterations: 0,
-        misclasses: 0,
+        misclasses: [0],
         learningRate: 0,
         hiddenLayers: [0],
       };
@@ -215,23 +223,35 @@ describe('CrossValidate', () => {
       const midNetwork = new FakeNN(options);
       midNetwork.initialize();
 
+      const worstNetworkJSON = worstNetwork.toJSON();
+      const midNetworkJSON = midNetwork.toJSON();
+      const bestNetworkJSON = bestNetwork.toJSON();
       const net = cv.fromJSON({
-        avgs: {} as any,
-        stats: {} as any,
+        avgs: {
+          trainTime: 1,
+          testTime: 2,
+          iterations: 3,
+          error: 4,
+        },
+        stats: {
+          total: 5,
+          testSize: 6,
+          trainSize: 7,
+        },
         sets: [
           {
             error: 10,
-            network: worstNetwork.toJSON(),
+            network: worstNetworkJSON,
             ...details,
           },
           {
             error: 5,
-            network: midNetwork.toJSON(),
+            network: midNetworkJSON,
             ...details,
           },
           {
             error: 1,
-            network: bestNetwork.toJSON(),
+            network: bestNetworkJSON,
             ...details,
           },
         ],
@@ -243,13 +263,13 @@ describe('CrossValidate', () => {
   describe('.toNeuralNetwork()', () => {
     class FakeNN extends NeuralNetwork<number[], number[]> {}
     it('creates a new instance of constructor from top .json sets.error', () => {
-      const cv = new CrossValidate(FakeNN);
+      const cv = new CrossValidate(() => new FakeNN());
       const details = {
         trainTime: 0,
         testTime: 0,
         total: 0,
         iterations: 0,
-        misclasses: 0,
+        misclasses: [0],
         learningRate: 0,
         hiddenLayers: [0],
       };
@@ -271,7 +291,11 @@ describe('CrossValidate', () => {
           { error: 1, network: bestNet.toJSON(), ...details },
         ],
         avgs: { trainTime: 0, testTime: 0, iterations: 0, error: 0 },
-        stats: {} as any,
+        stats: {
+          total: 0,
+          testSize: 0,
+          trainSize: 0,
+        },
       };
       const net = cv.toNeuralNetwork();
       expect(net.toJSON()).toEqual(bestNet.toJSON());
@@ -290,7 +314,9 @@ describe('CrossValidate', () => {
         { input: [1, 1], output: [0] },
         { input: [1, 0], output: [1] },
       ];
-      const net = new CrossValidate(NeuralNetwork);
+      const net = new CrossValidate(
+        () => new NeuralNetwork<number[], number[]>()
+      );
       const result = net.train(xorTrainingData);
       expect(result.avgs.error >= 0).toBeTruthy();
       expect(result.avgs.iterations >= 0).toBeTruthy();
@@ -318,11 +344,14 @@ describe('CrossValidate', () => {
         [0.9, 0.8, 0.7, 0.6, 0.5],
       ];
 
-      const cv = new CrossValidate(LSTMTimeStep, {
-        inputSize: 1,
-        hiddenLayers: [10],
-        outputSize: 1,
-      });
+      const cv = new CrossValidate(
+        () =>
+          new LSTMTimeStep({
+            inputSize: 1,
+            hiddenLayers: [10],
+            outputSize: 1,
+          })
+      );
       const result = cv.train(trainingData, { iterations: 10 });
       expect(!isNaN(result.avgs.error)).toBeTruthy();
     });

@@ -8,12 +8,16 @@ import { OperatorType } from '../layer/operator';
 import { BaseLayerType } from '../layer/base-layer';
 import { TargetType } from '../layer/target';
 
+const layerNameTypes = Object.keys(layer);
+
 export function layerFromJSON(
   jsonLayer: ILayerJSON,
   inputLayer1?: ILayer,
   inputLayer2?: ILayer
 ): ILayer | null {
-  if (!layer.hasOwnProperty(jsonLayer.type)) {
+  if (
+    !layerNameTypes.find((layerNameType) => layerNameType === jsonLayer.type)
+  ) {
     return null;
   }
   const Layer = ((layer as unknown) as {

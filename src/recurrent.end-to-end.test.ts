@@ -1106,7 +1106,7 @@ describe('Recurrent Class: End to End', () => {
       function deltasAreZero() {
         expect(
           net._layerSets[0].every((l: ILayer) =>
-            (l.deltas as any[]).every((row) =>
+            (l.deltas as number[][]).every((row) =>
               row.every((delta: number) => delta === 0)
             )
           )
@@ -1116,7 +1116,7 @@ describe('Recurrent Class: End to End', () => {
       function deltasAreSet() {
         expect(
           net._layerSets[0].every((l: ILayer) =>
-            (l.deltas as any[]).every((row) =>
+            (l.deltas as number[][]).every((row) =>
               row.every((delta: number) => delta !== 0)
             )
           )
@@ -1126,8 +1126,8 @@ describe('Recurrent Class: End to End', () => {
       function modelWeightsAreUpdated() {
         expect(
           clonedModelWeights?.every(
-            (oldLayerWeights: any[], layerIndex: number) =>
-              oldLayerWeights.every((row: any[], rowIndex: number) =>
+            (oldLayerWeights: Float32Array[], layerIndex: number) =>
+              oldLayerWeights.every((row: Float32Array, rowIndex: number) =>
                 row.every((oldWeight, columnIndex) => {
                   const model = net._model;
 
@@ -1146,7 +1146,7 @@ describe('Recurrent Class: End to End', () => {
       function modelDeltasAreZero() {
         expect(
           net._model?.every((l: ILayer) =>
-            (l.deltas as any[]).every((row) =>
+            (l.deltas as number[][]).every((row) =>
               row.every((delta: number) => delta === 0)
             )
           )
@@ -1268,8 +1268,8 @@ describe('Recurrent Class: End to End', () => {
             output({ height: 1 }, inputLayer),
         });
         net.initialize();
-      } catch (e: any) {
-        throw new Error(e);
+      } catch (e: unknown) {
+        throw new Error();
       }
     }).not.toThrow();
   });

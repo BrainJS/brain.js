@@ -16,7 +16,11 @@ import {
   makeKernel,
   makeKernelMap,
 } from '../utilities/kernel';
-import { mockLayer } from '../test-utils';
+import {
+  IWithCompareKernel,
+  IWithPredictKernelMap,
+  mockLayer,
+} from '../test-utils';
 
 jest.mock('../utilities/kernel');
 
@@ -184,9 +188,11 @@ describe('Dropout Layer', () => {
     it('calls this.predictKernelMap with this.inputLayer.weights', () => {
       const inputLayer = mockLayer({ weights: [[[0]]] });
       const layer = new Dropout(inputLayer);
-      const spy = ((layer as any).predictKernelMap = jest.fn(() => {
-        return [1];
-      }));
+      const spy = (((layer as unknown) as IWithPredictKernelMap).predictKernelMap = jest.fn(
+        () => {
+          return [1];
+        }
+      ));
       layer.predict();
       expect(spy).toHaveBeenCalledWith(inputLayer.weights);
     });
@@ -194,11 +200,13 @@ describe('Dropout Layer', () => {
       const inputLayer = mockLayer({ weights: [[[0]]] });
       const layer = new Dropout(inputLayer);
       const weights = [[[1]]];
-      (layer as any).predictKernelMap = jest.fn(() => {
-        return {
-          result: weights,
-        };
-      });
+      ((layer as unknown) as IWithPredictKernelMap).predictKernelMap = jest.fn(
+        () => {
+          return {
+            result: weights,
+          };
+        }
+      );
       layer.predict();
       expect(layer.weights).toBe(weights);
     });
@@ -206,11 +214,13 @@ describe('Dropout Layer', () => {
       const inputLayer = mockLayer({ weights: [[[0]]] });
       const layer = new Dropout(inputLayer);
       const dropouts = [[[1]]];
-      (layer as any).predictKernelMap = jest.fn(() => {
-        return {
-          dropouts: dropouts,
-        };
-      });
+      ((layer as unknown) as IWithPredictKernelMap).predictKernelMap = jest.fn(
+        () => {
+          return {
+            dropouts: dropouts,
+          };
+        }
+      );
       layer.predict();
       expect(layer.dropouts).toBe(dropouts);
     });
@@ -221,7 +231,7 @@ describe('Dropout Layer', () => {
       const layer = new Dropout(inputLayer);
       const dropouts = (layer.dropouts = [1]);
       const inputLayerDeltas = (inputLayer.deltas = [42]);
-      const compareKernel = ((layer as any).compareKernel = jest.fn());
+      const compareKernel = (((layer as unknown) as IWithCompareKernel).compareKernel = jest.fn());
       layer.compare();
       expect(compareKernel).toBeCalledWith(dropouts, inputLayerDeltas);
     });
@@ -229,7 +239,7 @@ describe('Dropout Layer', () => {
       const inputLayer = mockLayer({ width: 1, height: 2 });
       const layer = new Dropout(inputLayer);
       const expectedResult = [42];
-      (layer as any).compareKernel = jest.fn(() => {
+      ((layer as unknown) as IWithCompareKernel).compareKernel = jest.fn(() => {
         return expectedResult;
       });
       layer.compare();

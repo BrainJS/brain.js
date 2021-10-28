@@ -7,7 +7,14 @@ import {
   compare2D,
   compare3D,
 } from './sigmoid';
-import { mockLayer, mockPraxis, shave2D, shave3D } from '../test-utils';
+import {
+  IWithCompareKernel,
+  IWithPredictKernel,
+  mockLayer,
+  mockPraxis,
+  shave2D,
+  shave3D,
+} from '../test-utils';
 import * as sigmoidActivation from '../activation/sigmoid';
 import { makeKernel } from '../utilities/kernel';
 import { ILayerSettings } from './base-layer';
@@ -264,7 +271,9 @@ describe('Sigmoid Layer', () => {
         depth: 1,
       });
       const l = new Sigmoid(mockInputLayer);
-      (l as any).predictKernel = jest.fn((weights) => weights);
+      ((l as unknown) as IWithPredictKernel).predictKernel = jest.fn(
+        (weights) => weights
+      );
       l.predict();
       expect(l.predictKernel).toBeCalledWith(mockWeights);
       expect(l.weights).toBe(mockWeights);
@@ -283,7 +292,9 @@ describe('Sigmoid Layer', () => {
       const l = new Sigmoid(mockInputLayer);
       l.weights = mockWeights;
       l.deltas = mockDeltas;
-      (l as any).compareKernel = jest.fn((weights, deltas) => deltas);
+      ((l as unknown) as IWithCompareKernel).compareKernel = jest.fn(
+        (weights, deltas) => deltas
+      );
       l.compare();
       expect(l.compareKernel).toBeCalledWith(mockWeights, mockDeltas);
       expect(l.deltas).toBe(mockDeltas);

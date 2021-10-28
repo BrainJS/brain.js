@@ -2,7 +2,7 @@ import { GPU } from 'gpu.js';
 
 import { compare1D, compare2D, Target } from './target';
 import { setup, teardown, makeKernel } from '../utilities/kernel';
-import { mockLayer } from '../test-utils';
+import { IWithCompareKernel, mockLayer } from '../test-utils';
 
 jest.mock('../utilities/kernel', () => {
   return {
@@ -42,7 +42,9 @@ describe('Target Layer', () => {
     target.validate();
     target.setupKernels();
     target.predict();
-    (target as any).compareKernel = jest.fn(() => [new Float32Array([1])]);
+    ((target as unknown) as IWithCompareKernel).compareKernel = jest.fn(() => [
+      new Float32Array([1]),
+    ]);
     target.compare([[0]]);
     expect(target.deltas).toEqual([new Float32Array([1])]);
   });

@@ -1,4 +1,4 @@
-import { GPU } from 'gpu.js';
+import { GPU, KernelOutput } from 'gpu.js';
 import {
   add,
   input,
@@ -14,7 +14,7 @@ import { Recurrent } from './recurrent';
 import { Matrix } from './recurrent/matrix';
 import { setup, teardown } from './utilities/kernel';
 
-function copy2D(matrix: Partial<Matrix> & any[][]) {
+function copy2D(matrix: Partial<Matrix> & number[][]) {
   return matrix.map((row) => Float32Array.from(row));
 }
 
@@ -244,13 +244,16 @@ describe('Recurrent Class: Unit', () => {
 
           // this.width = 1;
           // this.height = 1;
+          this.errors = [[0]];
         }
 
         setupKernels() {}
 
         reuseKernels() {}
 
-        predict() {}
+        predict(inputs: KernelOutput) {
+          this.weights = inputs;
+        }
 
         compare() {
           this.errors = [[5]];

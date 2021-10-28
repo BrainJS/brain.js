@@ -1,12 +1,16 @@
-import { INeuralNetworkData, NeuralNetwork } from './neural-network';
+export interface ILikelyNet<InputType, OutputType> {
+  run: (input: InputType) => OutputType;
+}
 
 export function likely<
-  InputType extends INeuralNetworkData,
-  OutputType extends INeuralNetworkData
+  NetworkType extends ILikelyNet<
+    Parameters<NetworkType['run']>[0],
+    ReturnType<NetworkType['run']>
+  >
 >(
-  input: InputType,
-  net: NeuralNetwork<InputType, OutputType>
-): OutputType | null {
+  input: Parameters<NetworkType['run']>[0],
+  net: NetworkType
+): ReturnType<NetworkType['run']> | null {
   if (!net) {
     throw new TypeError(
       `Required parameter 'net' is of type ${typeof net}. Must be of type 'brain.NeuralNetwork'`
@@ -18,7 +22,11 @@ export function likely<
   let maxValue = -1;
 
   Object.entries(output).forEach(([key, value]) => {
-    if (typeof value !== 'undefined' && value > maxValue) {
+    if (
+      typeof value !== 'undefined' &&
+      typeof value === 'number' &&
+      value > maxValue
+    ) {
       maxProp = key;
       maxValue = value;
     }

@@ -664,10 +664,13 @@ export class NeuralNetwork<
   }
 
   train(
-    data: Array<INeuralNetworkDatum<InputType, OutputType>> | any,
+    data: Array<INeuralNetworkDatum<Partial<InputType>, Partial<OutputType>>>,
     options: Partial<INeuralNetworkTrainOptions> = {}
   ): INeuralNetworkState {
-    const { preparedData, status, endTime } = this.prepTraining(data, options);
+    const { preparedData, status, endTime } = this.prepTraining(
+      data as Array<INeuralNetworkDatum<InputType, OutputType>>,
+      options
+    );
 
     while (true) {
       if (!this.trainingTick(preparedData, status, endTime)) {
@@ -1038,9 +1041,11 @@ export class NeuralNetwork<
   }
 
   test(
-    data: Array<INeuralNetworkDatum<InputType, OutputType>>
+    data: Array<INeuralNetworkDatum<Partial<InputType>, Partial<OutputType>>>
   ): INeuralNetworkTestResult | INeuralNetworkBinaryTestResult {
-    const { preparedData } = this.prepTraining(data);
+    const { preparedData } = this.prepTraining(
+      data as Array<INeuralNetworkDatum<InputType, OutputType>>
+    );
     // for binary classification problems with one output node
     const isBinary = preparedData[0].output.length === 1;
     // for classification problems

@@ -11,8 +11,8 @@ export interface IRecurrentInput extends ILayer {
 export class RecurrentInput extends Internal implements IRecurrentInput {
   recurrentInput: ILayer;
   praxis: IPraxis | null = null;
-  predictKernel: any = null;
-  compareKernel: any = null;
+  predictKernel = null;
+  compareKernel = null;
   settings = {};
   constructor(recurrentInput: ILayer) {
     super();

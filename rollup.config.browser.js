@@ -8,11 +8,11 @@ const name = 'brain';
 const extensions = ['.mjs', '.js', '.json', '.node', '.ts'];
 
 export default {
-  input: './src/index.ts',
+  input: './src/browser-index.ts',
 
   // Specify here external modules which you don't want to include in your bundle (for instance: 'lodash', 'moment' etc.)
   // https://rollupjs.org/guide/en#external-e-external
-  external: ['stream'],
+  external: ['gpu.js'],
 
   plugins: [
     // Allows node_modules resolution
