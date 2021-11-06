@@ -18,9 +18,10 @@ jobs:
         uses: actions/setup-node@v2-beta
         with:
           node-version: ${{ matrix.node }}
+          cache: yarn
 
       - name: Install deps and build (with cache)
-        uses: bahmutov/npm-install@v1
+        run: yarn
 
       - name: Lint
         run: yarn lint
