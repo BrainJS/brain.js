@@ -15,12 +15,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Use Node ${{ matrix.node }}
-        uses: actions/setup-node@v2-beta
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
+          cache: yarn
 
       - name: Install deps and build (with cache)
-        uses: bahmutov/npm-install@v1
+        run: yarn
 
       - name: Lint
         run: yarn lint
