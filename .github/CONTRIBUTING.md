@@ -6,7 +6,7 @@ Thanks for taking the time to contribute to brain.js. Follow these guidelines to
 
 2.  One feature per pull request. Each PR should have one focus, and all the code changes should be supporting that one feature or bug fix. Using a [separate branch](https://guides.github.com/introduction/flow/index.html) for each feature should help you manage developing multiple features at once.
 
-3.  Add/update a test for the feature or fix, if possible. See the `__tests__` directory for existing tests. To run these tests:
+3.  Add/update a test for the feature or fix, if possible. To run these tests:
 
 ```bash
 npm run test # run tests

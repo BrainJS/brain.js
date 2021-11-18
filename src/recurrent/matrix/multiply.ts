@@ -2,9 +2,6 @@ import { Matrix } from '.';
 
 /**
  * multiply {left} and {right} matrix weights to {into}
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
  */
 export function multiply(product: Matrix, left: Matrix, right: Matrix): void {
   const leftRows = left.rows;

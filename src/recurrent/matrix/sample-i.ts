@@ -1,12 +1,6 @@
 import { Matrix } from '.';
+import { randomFloat } from '../../utilities/random';
 
-const { randomFloat } = require('../../utilities/random');
-
-/**
- *
- * @param {Matrix} matrix
- * @returns {number}
- */
 export function sampleI(matrix: Matrix): number {
   // sample argmax from w, assuming w are
   // probabilities that sum to one

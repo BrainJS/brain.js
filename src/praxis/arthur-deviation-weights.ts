@@ -11,7 +11,7 @@ import {
   KernelOutput,
 } from 'gpu.js';
 
-function updateChange(value: number): number {
+export function updateChange(value: number): number {
   return value;
 }
 
@@ -20,7 +20,7 @@ export interface IUpdateConstants extends IConstantsThis {
   momentum: number;
 }
 
-function update(
+export function update(
   this: IKernelFunctionThis<IUpdateConstants>,
   changes: number[][],
   weights: number[][],

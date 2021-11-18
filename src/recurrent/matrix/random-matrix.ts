@@ -2,10 +2,6 @@ import { Matrix } from '.';
 import { randomFloat } from '../../utilities/random';
 
 /** return Matrix but filled with random numbers from gaussian
- * @param {Number} [rows]
- * @param {Number} [columns]
- * @param std
- * @constructor
  */
 export class RandomMatrix extends Matrix {
   std: number;

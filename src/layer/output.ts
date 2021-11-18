@@ -9,15 +9,15 @@ export function output(settings: ILayerSettings, inputLayer: ILayer): ILayer {
   const outputGate = random({
     height,
     width: inputLayer.height,
-    title: 'outputGate',
+    id: 'outputGate',
     std: 0.08,
   });
-  const output = random({ height, title: 'output', std: 0.08 });
+  const output = random({ height, id: 'output', std: 0.08 });
   const outputGateConnector = multiply(outputGate, inputLayer, {
-    title: 'outputGateConnected',
+    id: 'outputGateConnected',
   });
   return target(
-    { title: 'target', ...settings },
+    { id: 'target', ...settings },
     add(outputGateConnector, output)
   );
 }

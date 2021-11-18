@@ -2,9 +2,6 @@ import { Matrix } from '.';
 
 /**
  * multiplies {left} and {right} weight by {from} deltas into {left} and {right} deltas
- * @param {Matrix} product
- * @param {Matrix} left
- * @param {Matrix} right
  */
 export function multiplyElementB(
   product: Matrix,

@@ -16,7 +16,8 @@ yarn-error.log
 # code coverage
 __coverage__
 
-test*.*
-
 # webstorm
 .idea
+
+# distribution
+dist

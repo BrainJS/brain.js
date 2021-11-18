@@ -4,6 +4,7 @@ import { getPadding, getStride } from '../utilities/layer-setup';
 import { zeros3D } from '../utilities/zeros-3d';
 import { randos3D } from '../utilities/randos';
 import {
+  IConstantsThis,
   IKernelFunctionThis,
   IKernelMapRunShortcut,
   IKernelRunShortcut,
@@ -87,7 +88,10 @@ export function predict(
   return largestValue;
 }
 
-export interface ICompareConstants extends IConvolutionConstantsBase {
+export interface ICompareConstants extends IConstantsThis {
+  inputWidth: number;
+  inputHeight: number;
+
   outputWidth: number;
   outputHeight: number;
 }
@@ -225,7 +229,7 @@ export class Pool extends Filter {
 
   predictKernelMap: IKernelMapRunShortcut<ISubKernelObject> | null = null;
   constructor(settings: IPoolSettings, inputLayer: ILayer) {
-    super(inputLayer);
+    super(settings, inputLayer);
     this.settings = {
       ...settings,
       ...getStride(settings, defaults),
@@ -278,11 +282,11 @@ export class Pool extends Filter {
         this.inputLayer.depth,
       ],
       constants: {
+        inputWidth: this.inputLayer.width,
+        inputHeight: this.inputLayer.height,
+
         outputWidth: this.width,
         outputHeight: this.height,
-        outputDepth: this.depth,
-        paddingX: this.paddingX,
-        paddingY: this.paddingY,
       },
     });
   }

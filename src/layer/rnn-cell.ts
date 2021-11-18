@@ -1,16 +1,15 @@
+import { add } from './add';
 import { ILayer, ILayerSettings } from './base-layer';
-import { RecurrentZeros } from './recurrent-zeros';
-
-const { relu } = require('./relu');
-const { add } = require('./add');
-const { multiply } = require('./multiply');
-const { random } = require('./random');
-const { zeros } = require('./zeros');
+import { multiply } from './multiply';
+import { random } from './random';
+import { relu } from './relu';
+import { zeros } from './zeros';
+import { IRecurrentInput } from './recurrent-input';
 
 export function rnnCell(
   settings: ILayerSettings,
   input: ILayer,
-  recurrentInput: RecurrentZeros
+  recurrentInput: IRecurrentInput
 ): ILayer {
   const { height } = settings;
 
@@ -21,20 +20,20 @@ export function rnnCell(
 
   // wxh
   const weight = random({
-    name: 'weight',
+    id: 'weight',
     height,
     width: input.height,
     std: 0.08,
   });
   // whh
   const transition = random({
-    name: 'transition',
+    id: 'transition',
     height,
     width: height,
     std: 0.08,
   });
   // bhh
-  const bias = zeros({ name: 'bias', height });
+  const bias = zeros({ id: 'bias', height });
 
   return relu(
     add(

@@ -6,12 +6,21 @@
 
 GPU accelerated Neural networks in JavaScript for Browsers and Node.js
 
-[![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com)
-[![Backers on Open Collective](https://opencollective.com/brainjs/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/brainjs/sponsors/badge.svg)](#sponsors)
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brain-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Slack](https://slack.bri.im/badge.svg)](https://slack.bri.im)
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FBrainJS%2Fbrain.js%2Fbadge%3Fref%3Dmaster&style=flat)](https://actions-badge.atrox.dev/BrainJS/brain.js/goto?ref=master)
+<p style="text-align: center" align="center">
 
-[![NPM](https://nodei.co/npm/brain.js.png?compact=true)](https://nodei.co/npm/brain.js/)
+  <a href="https://brain.js.org"><img src="https://img.shields.io/website?up_message=brain.js.org&url=https%3A%2F%2Fbrain.js.org" alt="GitHub"></a>
+  [![npm](https://img.shields.io/npm/dt/brain.js.svg?style=flat-square)](https://npmjs.com/package/brain.js) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com)
+  [![Backers on Open Collective](https://opencollective.com/brainjs/backers/badge.svg)](#backers)
+  [![Sponsors on Open Collective](https://opencollective.com/brainjs/sponsors/badge.svg)](#sponsors)
+  [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/brain-js/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+  [![Slack](https://slack.bri.im/badge.svg)](https://slack.bri.im)
+  ![CI](https://github.com/BrainJS/brain.js/workflows/CI/badge.svg)
+  [![codecov](https://codecov.io/gh/BrainJS/brain.js/branch/master/graph/badge.svg?token=3SJIBJ1679)](https://codecov.io/gh/BrainJS/brain.js)
+  <a href="https://twitter.com/brainjsfnd"><img src="https://img.shields.io/twitter/follow/brainjsfnd?label=Twitter&style=social" alt="Twitter"></a>
+  
+  [![NPM](https://nodei.co/npm/brain.js.png?compact=true)](https://nodei.co/npm/brain.js/)
+
+</p>
 
 ## About
 
@@ -283,6 +292,16 @@ Each training pattern can either:
 CAUTION: When using an array of values, you can use ANY value, however, the values are represented in the neural network by a single input. So the more _distinct values_ has _the larger your input layer_. If you have a hundreds, thousands, or millions of floating point values _THIS IS NOT THE RIGHT CLASS FOR THE JOB_. Also, when deviating from strings, this gets into beta
 
 Example using direct strings:
+Hello World Using Brainjs
+```javascript
+
+  const net = new brain.recurrent.LSTM();
+
+  net.train(['I am brainjs, Hello World!']);
+
+  const output = net.run('I am brainjs');
+  alert(output);
+```
 
 ```javascript
 const net = new brain.recurrent.LSTM();
@@ -381,10 +400,7 @@ Promise.all([p1, p2])
 [Cross Validation](<https://en.wikipedia.org/wiki/Cross-validation_(statistics)>) can provide a less fragile way of training on larger data sets. The brain.js api provides Cross Validation in this example:
 
 ```js
-const crossValidate = new brain.CrossValidate(
-  brain.NeuralNetwork,
-  networkOptions
-);
+const crossValidate = new brain.CrossValidate(() => new brain.NeuralNetwork(networkOptions));
 crossValidate.train(data, trainingOptions, k); //note k (or KFolds) is optional
 const json = crossValidate.toJSON(); // all stats in json as well as neural networks
 const net = crossValidate.toNeuralNetwork(); // get top performing net out of `crossValidate`
@@ -473,7 +489,7 @@ net.fromJSON(json);
 net.run(input);
 
 // recurrent
-const net = new brain.LSTMTimeStep();
+const net = new brain.LSTM();
 net.fromJSON(json);
 net.run(input);
 ```
@@ -676,7 +692,7 @@ Source for `brain.js.org` is available at [Brain.js.org Repository](https://gith
 
 ## Contributors
 
-This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+This project exists thanks to all the people who contribute. [[Contribute](/.github/CONTRIBUTING.md)].
 <a href="https://github.com/BrainJS/brain.js/graphs/contributors"><img src="https://opencollective.com/brainjs/contributors.svg?width=890&button=false" /></a>
 
 ## Backers

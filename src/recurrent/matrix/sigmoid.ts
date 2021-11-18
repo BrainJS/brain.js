@@ -1,9 +1,5 @@
 import { Matrix } from '.';
 
-/**
- * @param {Matrix} product
- * @param {Matrix} left
- */
 export function sigmoid(product: Matrix, left: Matrix): void {
   // sigmoid nonlinearity
   for (let i = 0; i < left.weights.length; i++) {

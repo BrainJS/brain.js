@@ -2,6 +2,8 @@ import { BaseLayer, ILayer, ILayerJSON, ILayerSettings } from './base-layer';
 import { IKernelRunShortcut, Input, KernelOutput } from 'gpu.js';
 import { IPraxis } from '../praxis/base-praxis';
 
+export type InternalType = new (settings: Partial<ILayerSettings>) => ILayer;
+
 export abstract class Internal implements ILayer {
   abstract settings: ILayerSettings;
   abstract predict(inputs?: KernelOutput): void;
@@ -43,4 +45,6 @@ export abstract class Internal implements ILayer {
   toJSON(): Partial<ILayerJSON> {
     return BaseLayer.toJSON(this);
   }
+
+  abstract reuseKernels(layer: ILayer): void;
 }

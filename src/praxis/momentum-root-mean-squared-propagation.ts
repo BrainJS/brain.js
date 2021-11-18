@@ -9,7 +9,7 @@ import {
   ISubKernelObject,
   KernelOutput,
 } from 'gpu.js';
-import { ILayer } from '../layer/base-layer';
+import { ILayer } from '../layer';
 
 export function getMomentum(
   delta: number,

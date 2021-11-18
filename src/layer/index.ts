@@ -1,15 +1,27 @@
-import { Activation } from './activation';
-import { Operator } from './operator';
-import { Internal } from './internal';
-import { InternalModel, EntryPoint, Model, Modifier } from './types';
+import {
+  Activation,
+  EntryPoint,
+  Filter,
+  Internal,
+  InternalModel,
+  Model,
+  Modifier,
+  Operator,
+  Target,
+} from './types';
 
 export { Add, add } from './add';
 export { arthurFeedForward } from './arthur-feed-forward';
-export { BaseLayer } from './base-layer';
+export {
+  BaseLayer,
+  ILayer,
+  ILayerSettings,
+  ILayerJSON,
+  baseLayerDefaultSettings,
+} from './base-layer';
 export { Convolution, convolution } from './convolution';
 export { Dropout, dropout } from './dropout';
 export { feedForward } from './feed-forward';
-export { Filter } from './filter';
 export { FullyConnected, fullyConnected } from './fully-connected';
 export { gru } from './gru';
 export { Input, input } from './input';
@@ -22,6 +34,8 @@ export { Ones, ones } from './ones';
 export { output } from './output';
 export { Pool, pool } from './pool';
 export { Random, random } from './random';
+export { RecurrentInput, IRecurrentInput } from './recurrent-input';
+export { RecurrentZeros } from './recurrent-zeros';
 export { rnnCell } from './rnn-cell';
 export { Regression, regression } from './regression';
 export { Relu, relu } from './relu';
@@ -35,10 +49,12 @@ export { Zeros, zeros } from './zeros';
 
 export const layerTypes = {
   Activation,
-  Operator,
   Internal,
   InternalModel,
   EntryPoint,
+  Filter,
   Model,
   Modifier,
+  Operator,
+  Target,
 };

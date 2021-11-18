@@ -1,19 +1,19 @@
-import { release, clear } from '../utilities/kernel';
 import {
   IKernelRunShortcut,
+  Input,
   Kernel,
   KernelOutput,
   Texture,
   TextureArrayOutput,
-  Input,
 } from 'gpu.js';
 import { IPraxis, IPraxisSettings } from '../praxis/base-praxis';
+import { clear, release } from '../utilities/kernel';
 
 export interface ILayerJSON {
   width?: number;
   height?: number;
   depth?: number;
-  weights?: Float32Array | Float32Array[] | Float32Array[][] | null;
+  weights?: number[] | number[][] | number[][][] | null;
   type: string;
   inputLayerIndex?: number;
   inputLayer1Index?: number;
@@ -33,6 +33,7 @@ export interface ILayer {
   predictKernel: IKernelRunShortcut | null;
   compareKernel: IKernelRunShortcut | null;
   settings: Partial<ILayerSettings>;
+  reuseKernels: (layer: ILayer) => void;
   predict: (inputs?: KernelOutput) => void;
   compare: (targetValues?: KernelOutput) => void;
   learn: ((learningRate?: number) => void) | ((learningRate: number) => void);
@@ -41,7 +42,7 @@ export interface ILayer {
   inputLayer1?: ILayer;
   inputLayer2?: ILayer;
   index?: number;
-  title?: string;
+  id?: string;
 }
 
 export interface ILayerSettings {
@@ -50,7 +51,7 @@ export interface ILayerSettings {
   depth?: number | null;
   weights?: KernelOutput | null;
   deltas?: KernelOutput | null;
-  title?: string | null;
+  id?: string;
   praxis?: IPraxis | null;
   praxisOpts?: Partial<IPraxisSettings> | null;
   initPraxis?:
@@ -67,6 +68,8 @@ export const baseLayerDefaultSettings: ILayerSettings = {
   praxis: null,
   praxisOpts: null,
 };
+
+export type BaseLayerType = new (settings?: Partial<ILayerSettings>) => ILayer;
 
 export class BaseLayer implements ILayer {
   praxis: IPraxis | null = null;
@@ -102,12 +105,12 @@ export class BaseLayer implements ILayer {
     this.settings.deltas = deltas;
   }
 
-  get title(): string {
-    return this.settings.title ?? '';
+  get id(): string {
+    return this.settings.id ?? '';
   }
 
-  set title(title: string) {
-    this.settings.title = title;
+  set id(title: string) {
+    this.settings.id = title;
   }
 
   constructor(settings?: Partial<ILayerSettings>) {
@@ -213,7 +216,7 @@ export class BaseLayer implements ILayer {
         `${this.constructor.name} kernel width mismatch ${layer.height} is not ${this.height}`
       );
     }
-    if (layer.hasOwnProperty('predictKernel')) {
+    if (layer.hasOwnProperty('predictKernel') && layer.predictKernel !== null) {
       if (!(layer.predictKernel as Kernel).immutable) {
         throw new Error(
           `${layer.constructor.name}.predictKernel is not reusable, set kernel.immutable = true`
@@ -221,13 +224,13 @@ export class BaseLayer implements ILayer {
       }
       this.predictKernel = layer.predictKernel;
     }
-    if (layer.hasOwnProperty('compareKernel')) {
+    if (layer.hasOwnProperty('compareKernel') && layer.compareKernel !== null) {
       if (!(layer.compareKernel as Kernel).immutable) {
         throw new Error(
           `${layer.constructor.name}.compareKernel is not reusable, set kernel.immutable = true`
         );
       }
-      this.compareKernel = layer.compareKernel as IKernelRunShortcut;
+      this.compareKernel = layer.compareKernel;
     }
     this.praxis = layer.praxis;
   }
@@ -261,11 +264,60 @@ export class BaseLayer implements ILayer {
       width: layer.width,
       height: layer.height,
       depth: layer.depth,
-      weights: (weights && weights instanceof Texture
-        ? weights.toArray()
-        : weights) as Float32Array | Float32Array[] | Float32Array[][] | null,
+      weights: toUntypedArray(
+        (weights && weights instanceof Texture
+          ? weights.toArray()
+          : weights) as
+          | Float32Array
+          | Float32Array[]
+          | Float32Array[][]
+          | number[]
+          | number[][]
+          | number[][][]
+          | null
+      ),
       type: layer.constructor.name,
       praxisOpts: layer.praxis ? layer.praxis.toJSON() : null,
     };
   }
+}
+
+function toUntypedArray(
+  weights:
+    | Float32Array
+    | Float32Array[]
+    | Float32Array[][]
+    | number[]
+    | number[][]
+    | number[][][]
+    | null
+): number[][][] | number[][] | number[] | null {
+  if (weights === null) return null;
+  if (Array.isArray(weights)) {
+    if (typeof weights[0] === 'number') {
+      return weights as number[];
+    } else if (Array.isArray(weights[0]) && typeof weights[0][0] === 'number') {
+      return weights as number[][];
+    } else if (
+      Array.isArray(weights[0][0]) &&
+      typeof weights[0][0][0] === 'number'
+    ) {
+      return weights as number[][][];
+    } else if (weights[0] instanceof Float32Array) {
+      const matrix = weights as Float32Array[];
+      return matrix.map((row: Float32Array) => {
+        return Array.from(row);
+      });
+    } else if (weights[0][0] instanceof Float32Array) {
+      const cube = weights as Float32Array[][];
+      return cube.map((matrix: Float32Array[]): number[][] => {
+        return matrix.map((row: Float32Array): number[] => {
+          return Array.from(row);
+        });
+      });
+    }
+  } else if (weights) {
+    return Array.from(weights);
+  }
+  throw new Error('unexpected value');
 }

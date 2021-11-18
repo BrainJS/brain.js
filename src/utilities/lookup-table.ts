@@ -1,9 +1,4 @@
-import {
-  ITrainingDatum,
-  INumberHash,
-  InputOutputValue,
-  INumberObject,
-} from '../lookup';
+import { InputOutputValue, INumberHash, ITrainingDatum } from '../lookup';
 
 export type LookupTableProp = 'input' | 'output';
 
@@ -21,7 +16,7 @@ export class LookupTable {
       this.prop = prop;
       for (let i = 0; i < data.length; i++) {
         const datum = (data as ITrainingDatum[])[i];
-        const object = datum[prop] as INumberObject;
+        const object = datum[prop] as INumberHash;
         for (const p in object) {
           if (!object.hasOwnProperty(p)) continue;
           if (table.hasOwnProperty(p)) continue;
@@ -42,7 +37,7 @@ export class LookupTable {
       }
     } else {
       for (let i = 0; i < data.length; i++) {
-        const object = (data as INumberObject[])[i];
+        const object = (data as INumberHash[])[i];
         for (const p in object) {
           if (!object.hasOwnProperty(p)) continue;
           if (table.hasOwnProperty(p)) continue;

@@ -1,24 +1,23 @@
 import {
   GPU,
-  Input,
-  IKernelRunShortcut,
+  IConstantsThis,
+  IGPUKernelSettings,
   IKernelMapRunShortcut,
+  IKernelRunShortcut,
+  Input,
+  ISubKernelObject,
   KernelFunction,
+  KernelOutput,
   OutputDimensions,
   Texture,
-  ThreadKernelVariable,
-  KernelOutput,
-  IConstantsThis,
-  ISubKernelObject,
   ThreadFunction,
-  IGPUKernelSettings,
+  ThreadKernelVariable,
 } from 'gpu.js';
 
 let gpuInstance: GPU | null = null;
 
 /**
  * Sets up the gpu.js instance
- * @param value Instance of gpu.js
  */
 export function setup(value: GPU): void {
   gpuInstance = value;
@@ -34,11 +33,6 @@ export function teardown(): void {
   gpuInstance = null;
 }
 
-/**
- * Compiles a function into a gpu.js kernel
- * @param fn The function to be compiled
- * @param settings Kernel settings/options
- */
 export function makeKernel<
   ArgTypes extends ThreadKernelVariable[] = ThreadKernelVariable[],
   ConstantsTypes extends IConstantsThis = IConstantsThis
@@ -78,8 +72,6 @@ export function makeKernelMap<
 
 /**
  * Compiles a function into a gpu.js dev mode kernel
- * @param fn The function to be compiled
- * @param settings Kernel settings/options
  */
 // export function makeDevKernel(
 //   fn: ThreadFunction,
@@ -98,7 +90,6 @@ export function kernelInput(value: number[], size: OutputDimensions): Input {
 
 /**
  * Deletes a gpu.js texture and frees VRAM
- * @param possibleTexture Texture to be deleted
  */
 export function release(possibleTexture: KernelOutput | Input): void {
   if (possibleTexture instanceof Texture) {
@@ -108,7 +99,6 @@ export function release(possibleTexture: KernelOutput | Input): void {
 
 /**
  * Cleans ie sets all elements to 0 of a Texture or a js array
- * @param value The value to be cleared
  */
 export function clear(value: KernelOutput): void {
   if (value instanceof Texture) {
@@ -141,13 +131,14 @@ export function clear(value: KernelOutput): void {
 
 /**
  * Clones a value
- * @param value to be cloned
  */
 export function clone(value: KernelOutput): KernelOutput {
   if (value instanceof Texture) {
     return value.clone();
   }
-
+  if (value instanceof Float32Array) {
+    return value.slice(0);
+  }
   if (Array.isArray(value)) {
     if (typeof value[0] === 'number') {
       return value.slice(0);

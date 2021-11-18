@@ -1,5 +1,4 @@
-const assert = require('assert');
-const brain = require('../../dist/brain');
+const brain = require('brain.js');
 
 /**
  * Return 0 or 1 for '#'
@@ -78,7 +77,5 @@ const result = brain.likely(
   ),
   net
 );
-
-assert(result === 'a');
 
 console.log(result); // 'a'

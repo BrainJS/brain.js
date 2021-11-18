@@ -1,14 +1,6 @@
 import { Matrix } from '.';
 import { randomN } from '../../utilities/random';
 
-/**
- *
- * @param {Number} rows
- * @param {Number} columns
- * @param mu
- * @param std
- * @constructor
- */
 export class RandomNMatrix extends Matrix {
   std: number;
   mu: number;

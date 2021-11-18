@@ -1,20 +1,25 @@
-import { GRU, GRUModel } from './gru';
+import { getGRUHiddenLayer, getGRUEquation, IGRUHiddenLayer } from './gru';
 import { Matrix } from './matrix';
 import { Equation } from './matrix/equation';
-import RNNTimeStep from './rnn-time-step';
+import { RNNTimeStep } from './rnn-time-step';
+import { IRNNHiddenLayer } from './rnn';
 
-// @ts-expect-error rnn is js
 export class GRUTimeStep extends RNNTimeStep {
-  static getModel(hiddenSize: number, prevSize: number): GRUModel {
-    return GRU.getModel(hiddenSize, prevSize);
+  getHiddenLayer(hiddenSize: number, prevSize: number): IRNNHiddenLayer {
+    return getGRUHiddenLayer(hiddenSize, prevSize);
   }
 
-  static getEquation(
+  getEquation(
     equation: Equation,
     inputMatrix: Matrix,
     previousResult: Matrix,
-    hiddenLayer: GRUModel
+    hiddenLayer: IRNNHiddenLayer
   ): Matrix {
-    return GRU.getEquation(equation, inputMatrix, previousResult, hiddenLayer);
+    return getGRUEquation(
+      equation,
+      inputMatrix,
+      previousResult,
+      hiddenLayer as IGRUHiddenLayer
+    );
   }
 }

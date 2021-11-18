@@ -1,19 +1,13 @@
-import {
-  INumberHash,
-  lookup,
-  InputOutputValue,
-  INumberObject,
-  INumberArray,
-} from './lookup';
-import layerFromJSON from './utilities/layer-from-json';
-import * as praxis from './praxis';
-import flattenLayers from './utilities/flatten-layers';
-import { makeKernel, release } from './utilities/kernel';
-import { MeanSquaredError } from './estimator/mean-squared-error';
-import { Model } from './layer/types';
-import { IPraxis, IPraxisSettings } from './praxis/base-praxis';
-import { ILayer, ILayerJSON } from './layer/base-layer';
 import { IKernelFunctionThis, KernelOutput, Texture } from 'gpu.js';
+import { MeanSquaredError } from './estimator/mean-squared-error';
+import { ILayer, ILayerJSON } from './layer';
+import { Model } from './layer/types';
+import { InputOutputValue, INumberArray, INumberHash, lookup } from './lookup';
+import * as praxis from './praxis';
+import { IPraxis, IPraxisSettings } from './praxis/base-praxis';
+import { flattenLayers } from './utilities/flatten-layers';
+import { makeKernel, release } from './utilities/kernel';
+import { layerFromJSON } from './utilities/layer-from-json';
 import { LookupTable } from './utilities/lookup-table';
 
 export interface IFeedForwardTrainingData<
@@ -34,18 +28,18 @@ export interface IFeedForwardGPUTrainingData {
   output: KernelOutput;
 }
 
-interface IFeedForwardStatus {
+export interface ITrainingStatus {
   iterations: number;
   error: number;
 }
 
-export type FeedForwardLog = (status: string) => void;
-export type FeedForwardCallback = (status: IFeedForwardStatus) => void;
+export type Log = (status: string) => void;
+export type FeedForwardCallback = (status: ITrainingStatus) => void;
 
-interface IFeedForwardTrainingOptions {
+export interface IFeedForwardTrainingOptions {
   iterations?: number;
   errorThresh?: number;
-  log?: boolean | FeedForwardLog;
+  log?: boolean | Log;
   logPeriod?: number;
   learningRate?: number;
   callback?: FeedForwardCallback;
@@ -54,10 +48,10 @@ interface IFeedForwardTrainingOptions {
   timeout?: number;
 }
 
-interface IFeedForwardOptions {
+export interface IFeedForwardOptions {
   learningRate?: number;
   binaryThresh?: number;
-  hiddenLayers?: Array<(inputLayer: ILayer, index: number) => ILayer>;
+  hiddenLayers?: Array<(inputLayer: ILayer, layerIndex: number) => ILayer>;
   inputLayer?: () => ILayer;
   outputLayer?: (inputLayer: ILayer, index: number) => ILayer;
   praxisOpts?: Partial<IPraxisSettings>;
@@ -71,10 +65,11 @@ interface IFeedForwardOptions {
   layers?: ILayer[];
   inputLayerIndex?: number;
   outputLayerIndex?: number;
+  sizes?: number[];
 }
 
-interface IPreppedTrainingData {
-  status: IFeedForwardStatus;
+export interface IFeedForwardPreppedTrainingData {
+  status: ITrainingStatus;
   preparedData: IFeedForwardGPUTrainingData[];
   endTime: number;
 }
@@ -103,7 +98,7 @@ export const trainDefaults: IFeedForwardTrainingOptions = {
   timeout: Infinity,
 };
 
-interface IFeedForwardJSON {
+export interface IFeedForwardJSON {
   type: string;
   sizes: number[];
   layers: ILayerJSON[];
@@ -159,13 +154,10 @@ export class FeedForward<
   }
 
   /**
-   *
-   * @param log
    * if a method is passed in method is used
    * if false passed in nothing is logged
-   * @returns error
    */
-  _setLogMethod(log: FeedForwardLog | undefined | boolean): void {
+  _setLogMethod(log: Log | undefined | boolean): void {
     if (typeof log === 'function') {
       this.trainOpts.log = log;
     } else if (log) {
@@ -228,7 +220,7 @@ export class FeedForward<
       throw new Error('outputLayer not found in this.options.layers');
     }
     this._inputLayer = inputLayer;
-    this._hiddenLayers = layers.splice(
+    this._hiddenLayers = layers.slice(
       inputLayerIndex,
       outputLayerIndex - inputLayerIndex
     );
@@ -258,13 +250,16 @@ export class FeedForward<
     this._hiddenLayers = [];
     const result: ILayer[] = [];
     const { hiddenLayers } = this.options;
+
     if (!hiddenLayers) throw new Error('hiddenLayers not defined');
+
     for (let i = 0; i < hiddenLayers.length; i++) {
       const hiddenLayer = hiddenLayers[i](previousLayer, i);
       result.push(hiddenLayer);
       this._hiddenLayers.push(hiddenLayer);
       previousLayer = hiddenLayer;
     }
+
     return result;
   }
 
@@ -303,16 +298,13 @@ export class FeedForward<
 
   run(input: InputType): OutputType {
     let typeSafeInput: INumberArray | KernelOutput;
-    if (
-      Array.isArray(input) ||
-      (input as Float32Array).buffer instanceof ArrayBuffer
-    ) {
+    if (Array.isArray(input) || (input as Float32Array).buffer) {
       typeSafeInput = input as INumberArray;
     } else {
       if (this.inputLookup) {
         typeSafeInput = lookup.toArray(
           this.inputLookup,
-          input as INumberObject,
+          input as INumberHash,
           this.inputLookupLength as number
         );
       } else {
@@ -346,21 +338,30 @@ export class FeedForward<
   train(
     data: Array<IFeedForwardTrainingData<InputType, OutputType>>,
     options: Partial<IFeedForwardTrainingOptions> = {}
-  ): IFeedForwardStatus {
+  ): ITrainingStatus {
     const { preparedData, status, endTime } = this._prepTraining(data, options);
     let continueTicking = true;
+    const calculateError = (): number =>
+      this._calculateTrainingError(preparedData);
+    const trainPatters = (): void => this._trainPatterns(preparedData);
     while (continueTicking) {
-      continueTicking = this._trainingTick(preparedData, status, endTime);
+      continueTicking = this._trainingTick(
+        status,
+        endTime,
+        calculateError,
+        trainPatters
+      );
     }
     return status;
   }
 
   _trainingTick(
-    preparedData: IFeedForwardGPUTrainingData[],
-    status: IFeedForwardStatus,
-    endTime: number
+    status: ITrainingStatus,
+    endTime: number,
+    calculateError: () => number,
+    trainPatterns: () => void
   ): boolean {
-    const trainOpts = this.trainOpts;
+    const { trainOpts } = this;
     if (
       status.iterations >= (trainOpts.iterations as number) ||
       status.error <= (trainOpts.errorThresh as number) ||
@@ -373,7 +374,7 @@ export class FeedForward<
       typeof trainOpts.log === 'function' &&
       status.iterations % (trainOpts.logPeriod as number) === 0
     ) {
-      status.error = this._calculateTrainingError(preparedData);
+      status.error = calculateError();
       trainOpts.log(
         `iterations: ${status.iterations}, training error: ${status.error}`
       );
@@ -381,9 +382,9 @@ export class FeedForward<
       status.iterations % (trainOpts.errorCheckInterval as number) ===
       0
     ) {
-      status.error = this._calculateTrainingError(preparedData);
+      status.error = calculateError();
     } else {
-      this._trainPatterns(preparedData);
+      trainPatterns();
     }
 
     if (
@@ -400,7 +401,7 @@ export class FeedForward<
   _prepTraining(
     data: Array<IFeedForwardTrainingData<InputType, OutputType>>,
     options: Partial<IFeedForwardTrainingOptions>
-  ): IPreppedTrainingData {
+  ): IFeedForwardPreppedTrainingData {
     this._updateTrainingOptions(options);
 
     const formattedData = this.formatData(data);
@@ -537,7 +538,7 @@ export class FeedForward<
       > => {
         const array = lookup.toArray(
           this.inputLookup as INumberHash,
-          datumParam.input as INumberObject,
+          datumParam.input as INumberHash,
           this.inputLookupLength as number
         );
         return { input: array };
@@ -560,7 +561,7 @@ export class FeedForward<
         (datumParam, index): IFeedForwardNormalizedTrainingData => {
           const array = lookup.toArray(
             this.outputLookup as INumberHash,
-            datumParam.output as INumberObject,
+            datumParam.output as INumberHash,
             this.inputLookupLength as number
           );
           return {
@@ -629,6 +630,7 @@ export class FeedForward<
       this.initialize();
     }
     if (
+      !this._model ||
       !this.layers ||
       !this._inputLayer ||
       !this._hiddenLayers ||
@@ -660,9 +662,11 @@ export class FeedForward<
 
     return {
       type: this.constructor.name,
-      sizes: [this._inputLayer.height]
-        .concat(this._hiddenLayers.map((l) => l.height))
-        .concat([this._outputLayer.height]),
+      sizes:
+        this.options.sizes ??
+        [this._inputLayer.height]
+          .concat(this._hiddenLayers.map((l) => l.height))
+          .concat([this._outputLayer.height]),
       outputLayerIndex: this.layers.indexOf(this._outputLayer),
       layers: jsonLayers as ILayerJSON[],
       inputLayerIndex: this.layers.indexOf(this._inputLayer),
@@ -683,21 +687,33 @@ export class FeedForward<
       ? layerFromJSON(jsonLayers[0]) ?? getLayer(jsonLayers[0])
       : layerFromJSON(jsonLayers[0]);
 
+    if (!inputLayer) throw new Error('unable to find layer');
+
     layers.push(inputLayer);
 
     for (let i = 1; i < jsonLayers.length; i++) {
       const jsonLayer = jsonLayers[i];
-      if (typeof jsonLayer.inputLayerIndex === 'number') {
-        const inputLayer1 = layers[jsonLayer.inputLayerIndex];
-        if (!inputLayer1) {
+      if (
+        typeof jsonLayer.inputLayerIndex === 'undefined' &&
+        typeof jsonLayer.inputLayer1Index === 'undefined' &&
+        typeof jsonLayer.inputLayer2Index === 'undefined'
+      ) {
+        const layer = getLayer
+          ? layerFromJSON(jsonLayer) ?? getLayer(jsonLayer)
+          : layerFromJSON(jsonLayer);
+        if (!layer) throw new Error('unable to find layer');
+        layers.push(layer);
+      } else if (typeof jsonLayer.inputLayerIndex === 'number') {
+        const inputLayer = layers[jsonLayer.inputLayerIndex];
+        if (!inputLayer) {
           throw new Error('inputLayer1 not found');
         }
-        layers.push(
-          getLayer
-            ? layerFromJSON(jsonLayer, inputLayer1) ??
-                getLayer(jsonLayer, inputLayer1)
-            : layerFromJSON(jsonLayer, inputLayer1)
-        );
+        const layer = getLayer
+          ? layerFromJSON(jsonLayer, inputLayer) ??
+            getLayer(jsonLayer, inputLayer)
+          : layerFromJSON(jsonLayer, inputLayer);
+        if (!layer) throw new Error('unable to find layer');
+        layers.push(layer);
       } else {
         if (typeof jsonLayer.inputLayer1Index !== 'number') {
           throw new Error(
@@ -721,16 +737,17 @@ export class FeedForward<
             `Cannot create network from provided JSON. layer of index ${jsonLayer.inputLayer2Index} not found.`
           );
 
-        layers.push(
-          getLayer
-            ? layerFromJSON(jsonLayer, inputLayer) ??
-                getLayer(jsonLayer, inputLayer1, inputLayer2)
-            : layerFromJSON(jsonLayer, inputLayer)
-        );
+        const layer = getLayer
+          ? layerFromJSON(jsonLayer, inputLayer1, inputLayer2) ??
+            getLayer(jsonLayer, inputLayer1, inputLayer2)
+          : layerFromJSON(jsonLayer, inputLayer1, inputLayer2);
+
+        if (!layer) throw new Error('unable to find layer');
+        layers.push(layer);
       }
     }
 
-    return new FeedForward({ ...json, layers });
+    return new this({ ...json, layers });
   }
 
   /**

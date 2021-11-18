@@ -1,7 +1,7 @@
-import { Modifier } from './types';
-import { makeKernel, clear } from '../utilities/kernel';
-import { ILayer } from './base-layer';
 import { IKernelFunctionThis, IKernelRunShortcut } from 'gpu.js';
+import { clear, makeKernel } from '../utilities/kernel';
+import { ILayer } from './base-layer';
+import { Modifier } from './types';
 
 export function predict(this: IKernelFunctionThis, value: number[][]): number {
   return value[this.thread.x][this.thread.y];
@@ -10,8 +10,6 @@ export function predict(this: IKernelFunctionThis, value: number[][]): number {
 const compare = predict;
 
 export class Transpose extends Modifier {
-  inputLayer: ILayer;
-
   get width(): number {
     return this.inputLayer.height;
   }
@@ -21,8 +19,7 @@ export class Transpose extends Modifier {
   }
 
   constructor(inputLayer: ILayer) {
-    super();
-    this.inputLayer = inputLayer;
+    super(inputLayer);
     this.validate();
   }
 

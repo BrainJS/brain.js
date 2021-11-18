@@ -1,26 +1,25 @@
-import { LSTM, LSTMModel } from './lstm';
+import { getHiddenLSTMLayer, getLSTMEquation, ILSTMHiddenLayer } from './lstm';
 import { Matrix } from './matrix';
 import { Equation } from './matrix/equation';
-import RNNTimeStep from './rnn-time-step';
+import { RNNTimeStep } from './rnn-time-step';
+import { IRNNHiddenLayer } from './rnn';
 
-// @ts-expect-error rnn is js
 export class LSTMTimeStep extends RNNTimeStep {
-  static getModel(hiddenSize: number, prevSize: number): LSTMModel {
-    return LSTM.getModel.call(this, hiddenSize, prevSize);
+  getHiddenLayer(hiddenSize: number, prevSize: number): IRNNHiddenLayer {
+    return getHiddenLSTMLayer(hiddenSize, prevSize);
   }
 
-  static getEquation(
+  getEquation(
     equation: Equation,
     inputMatrix: Matrix,
     previousResult: Matrix,
-    hiddenLayer: LSTMModel
+    hiddenLayer: IRNNHiddenLayer
   ): Matrix {
-    return LSTM.getEquation.call(
-      this,
+    return getLSTMEquation(
       equation,
       inputMatrix,
       previousResult,
-      hiddenLayer
+      hiddenLayer as ILSTMHiddenLayer
     );
   }
 }

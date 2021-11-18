@@ -1,5 +1,5 @@
-const { randomWeight } = require('./random-weight');
-const { randomFloat } = require('./random');
+import { randomWeight } from './random-weight';
+import { randomFloat } from './random';
 
 /**
  * Returns an array of given size, full of randomness

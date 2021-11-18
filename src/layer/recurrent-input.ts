@@ -1,14 +1,18 @@
-import { Internal } from './internal';
-import { BaseLayer, ILayer } from './base-layer';
-import { release } from '../utilities/kernel';
 import { KernelOutput } from 'gpu.js';
 import { IPraxis } from '../praxis/base-praxis';
+import { release } from '../utilities/kernel';
+import { BaseLayer, ILayer } from './base-layer';
+import { Internal } from './internal';
 
-export class RecurrentInput extends Internal implements ILayer {
+export interface IRecurrentInput extends ILayer {
+  setDimensions?: (width: number, height: number) => void;
+}
+
+export class RecurrentInput extends Internal implements IRecurrentInput {
   recurrentInput: ILayer;
   praxis: IPraxis | null = null;
-  predictKernel: any = null;
-  compareKernel: any = null;
+  predictKernel = null;
+  compareKernel = null;
   settings = {};
   constructor(recurrentInput: ILayer) {
     super();
