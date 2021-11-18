@@ -650,14 +650,14 @@ The user interface used:
 
 ## Neural Network Types
 
-- [`brain.NeuralNetwork`](src/neural-network.js) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation
-- [`brain.NeuralNetworkGPU`](src/neural-network-gpu.js) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation, GPU version
-- [`brain.recurrent.RNNTimeStep`](src/recurrent/rnn-time-step.js) - [Time Step Recurrent Neural Network or "RNN"](https://en.wikipedia.org/wiki/Recurrent_neural_network)
-- [`brain.recurrent.LSTMTimeStep`](src/recurrent/lstm-time-step.js) - [Time Step Long Short Term Memory Neural Network or "LSTM"](https://en.wikipedia.org/wiki/Long_short-term_memory)
-- [`brain.recurrent.GRUTimeStep`](src/recurrent/gru-time-step.js) - [Time Step Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
+- [`brain.NeuralNetwork`](src/neural-network.ts) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation
+- [`brain.NeuralNetworkGPU`](src/neural-network-gpu.ts) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation, GPU version
+- [`brain.recurrent.RNNTimeStep`](src/recurrent/rnn-time-step.ts) - [Time Step Recurrent Neural Network or "RNN"](https://en.wikipedia.org/wiki/Recurrent_neural_network)
+- [`brain.recurrent.LSTMTimeStep`](src/recurrent/lstm-time-step.ts) - [Time Step Long Short Term Memory Neural Network or "LSTM"](https://en.wikipedia.org/wiki/Long_short-term_memory)
+- [`brain.recurrent.GRUTimeStep`](src/recurrent/gru-time-step.ts) - [Time Step Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
 - [`brain.recurrent.RNN`](src/recurrent/rnn.ts) - [Recurrent Neural Network or "RNN"](https://en.wikipedia.org/wiki/Recurrent_neural_network)
-- [`brain.recurrent.LSTM`](src/recurrent/lstm.js) - [Long Short Term Memory Neural Network or "LSTM"](https://en.wikipedia.org/wiki/Long_short-term_memory)
-- [`brain.recurrent.GRU`](src/recurrent/gru.js) - [Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
+- [`brain.recurrent.LSTM`](src/recurrent/lstm.ts) - [Long Short Term Memory Neural Network or "LSTM"](https://en.wikipedia.org/wiki/Long_short-term_memory)
+- [`brain.recurrent.GRU`](src/recurrent/gru.ts) - [Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
 
 ### Why different Neural Network Types
 
