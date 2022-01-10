@@ -17,7 +17,7 @@ describe('NeuralNetworkGPU', () => {
       iterations: 5000,
       errorThresh: 0.01,
     });
-    expect(status.error).toBeCloseTo(0.01);
+    expect(status.error).toBeLessThanOrEqual(0.01);
     expect(status.iterations).toBeLessThanOrEqual(5000);
   });
 
