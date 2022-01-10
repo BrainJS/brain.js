@@ -48,13 +48,15 @@ export interface IRecurrentOptions extends IFeedForwardOptions {
   >;
 }
 
-export interface IRecurrentPreppedTrainingData {
+export interface IRecurrentPreppedTrainingData<T> {
   status: ITrainingStatus;
-  preparedData: KernelOutput[][];
+  preparedData: T[][];
   endTime: number;
 }
 
-export class Recurrent extends FeedForward {
+export class Recurrent<
+  T extends TextureArrayOutput = TextureArrayOutput
+> extends FeedForward {
   trainOpts: IRecurrentTrainingOptions = {};
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
@@ -230,28 +232,29 @@ export class Recurrent extends FeedForward {
     for (let i = 0; i < layers.length; i++) {
       const layer = layers[i];
       layer.setupKernels(true);
-      // TODO: enable this?
-      // layer.reuseKernels(this._layerSets[0][i]);
+      layer.reuseKernels(this._layerSets[0][i]);
     }
     this._layerSets.push(layers);
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  run(inputs: KernelOutput[]): TextureArrayOutput {
+  run(inputs: T[]): T[] {
     while (this._layerSets.length <= inputs.length) {
       this.initializeDeep();
     }
     const result = this.runInputs(inputs);
-    if (result instanceof Texture) return result.toArray();
-    return result as TextureArrayOutput;
+    if (result instanceof Texture) {
+      return result.toArray() as T[];
+    }
+    return result as T[];
   }
 
   runInput(input: KernelOutput): KernelOutput {
     throw new Error('use .runInputs()');
   }
 
-  runInputs(inputs: KernelOutput[]): KernelOutput {
+  runInputs(inputs: T[]): KernelOutput {
     while (this._layerSets.length < inputs.length) {
       this.initializeDeep();
     }
@@ -272,7 +275,7 @@ export class Recurrent extends FeedForward {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   train(
-    data: KernelOutput[][],
+    data: T[][],
     options: Partial<IRecurrentTrainingOptions> = {}
   ): ITrainingStatus {
     const { preparedData, status, endTime } = this._prepTraining(data, options);
@@ -302,16 +305,16 @@ export class Recurrent extends FeedForward {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  transferData(formattedData: KernelOutput[][]): KernelOutput[][] {
+  transferData(formattedData: T[][]): T[][] {
     return formattedData;
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   _prepTraining(
-    data: KernelOutput[][],
+    data: T[][],
     options: Partial<IRecurrentTrainingOptions>
-  ): IRecurrentPreppedTrainingData {
+  ): IRecurrentPreppedTrainingData<T> {
     this._updateTrainingOptions(options);
     const endTime = this.trainOpts.timeout
       ? Date.now() + this.trainOpts.timeout
@@ -333,7 +336,7 @@ export class Recurrent extends FeedForward {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  _calculateTrainingError(data: KernelOutput[][]): number {
+  _calculateTrainingError(data: T[][]): number {
     if (!this.meanSquaredError) {
       throw new Error('this.meanSquaredError not setup');
     }
@@ -363,7 +366,7 @@ export class Recurrent extends FeedForward {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  _calculateDeltas(target: KernelOutput[]): void {
+  _calculateDeltas(target: T[]): void {
     const lastLayerSet = this._layerSets[this._layerSets.length - 1];
     // Iterate from the second to last layer backwards, propagating 0's
     for (let i = lastLayerSet.length - 2; i >= 0; i--) {
@@ -388,7 +391,7 @@ export class Recurrent extends FeedForward {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  _trainPatterns(data: KernelOutput[][]): void {
+  _trainPatterns(data: T[][]): void {
     for (let i = 0; i < data.length; ++i) {
       this._trainPattern(data[i], false);
     }
@@ -396,10 +399,7 @@ export class Recurrent extends FeedForward {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  _trainPattern(
-    inputs: KernelOutput[],
-    logErrorRate: boolean
-  ): KernelOutput | null {
+  _trainPattern(inputs: T[], logErrorRate: boolean): KernelOutput | null {
     // forward propagate
     this.runInputs(inputs);
 

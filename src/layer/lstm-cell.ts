@@ -23,8 +23,8 @@ export function lstmCell(
   }
 
   const inputGateWeights = random({
-    height,
     width: input.height,
+    height,
     std: 0.08,
     id: 'inputGateWeights',
   });
@@ -34,7 +34,7 @@ export function lstmCell(
     std: 0.08,
     id: 'inputGatePeepholes',
   });
-  const inputGateBias = zeros({ height, id: 'inputGateBias' });
+  const inputGateBias = zeros({ width: 1, height, id: 'inputGateBias' });
   const inputGate = sigmoid(
     add(
       add(
@@ -47,8 +47,8 @@ export function lstmCell(
   );
 
   const forgetGateWeights = random({
-    height,
     width: input.height,
+    height,
     std: 0.08,
     id: 'forgetGateWeights',
   });
@@ -58,7 +58,7 @@ export function lstmCell(
     std: 0.08,
     id: 'forgetGatePeepholes',
   });
-  const forgetGateBias = zeros({ height, id: 'forgetGateBias' });
+  const forgetGateBias = zeros({ width: 1, height, id: 'forgetGateBias' });
   const forgetGate = sigmoid(
     add(
       add(
@@ -71,8 +71,8 @@ export function lstmCell(
   );
 
   const outputGateWeights = random({
-    height,
     width: input.height,
+    height,
     std: 0.08,
     id: 'outputGateWeights',
   });
@@ -82,7 +82,7 @@ export function lstmCell(
     std: 0.08,
     id: 'outputGatePeepholes',
   });
-  const outputGateBias = zeros({ height, id: 'outputGateBias' });
+  const outputGateBias = zeros({ width: 1, height, id: 'outputGateBias' });
   const outputGate = sigmoid(
     add(
       add(
@@ -95,8 +95,8 @@ export function lstmCell(
   );
 
   const memoryWeights = random({
-    height,
     width: input.height,
+    height,
     std: 0.08,
     id: 'memoryWeights',
   });
@@ -106,7 +106,7 @@ export function lstmCell(
     std: 0.08,
     id: 'memoryPeepholes',
   });
-  const memoryBias = zeros({ height, id: 'memoryBias' });
+  const memoryBias = zeros({ width: 1, height, id: 'memoryBias' });
   const memory = tanh(
     add(
       add(
