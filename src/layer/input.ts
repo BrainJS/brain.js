@@ -61,7 +61,6 @@ export class Input extends EntryPoint {
     } else {
       throw new Error('Inputs are not of sized correctly');
     }
-    clear(this.deltas);
   }
 
   predict1D(inputs: KernelOutput): void {
@@ -71,7 +70,6 @@ export class Input extends EntryPoint {
     } else {
       this.weights = inputs;
     }
-    clear(this.deltas);
   }
 
   compare(): void {

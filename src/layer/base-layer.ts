@@ -57,6 +57,7 @@ export interface ILayerSettings {
   initPraxis?:
     | ((layerTemplate: ILayer, settings?: IPraxisSettings) => IPraxis)
     | null;
+  cleanupDeltas?: boolean;
 }
 
 export const baseLayerDefaultSettings: ILayerSettings = {
@@ -67,6 +68,7 @@ export const baseLayerDefaultSettings: ILayerSettings = {
   deltas: null,
   praxis: null,
   praxisOpts: null,
+  cleanupDeltas: true,
 };
 
 export type BaseLayerType = new (settings?: Partial<ILayerSettings>) => ILayer;
@@ -95,6 +97,9 @@ export class BaseLayer implements ILayer {
 
   set weights(weights: KernelOutput | Input) {
     this.settings.weights = weights as KernelOutput;
+    if (this.settings.cleanupDeltas && this.deltas) {
+      clear(this.deltas);
+    }
   }
 
   get deltas(): KernelOutput {
@@ -245,7 +250,6 @@ export class BaseLayer implements ILayer {
     if (!this.praxis) throw new Error('this.praxis not defined');
     this.weights = this.praxis.run(this, learningRate as number);
     release(oldWeights);
-    clear(this.deltas);
   }
 
   toArray(): TextureArrayOutput {

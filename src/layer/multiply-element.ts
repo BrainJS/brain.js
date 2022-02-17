@@ -61,7 +61,6 @@ export class MultiplyElement extends Operator {
       this.inputLayer1.weights,
       this.inputLayer2.weights
     );
-    clear(this.deltas);
   }
 
   compare(): void {

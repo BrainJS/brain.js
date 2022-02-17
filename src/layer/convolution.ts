@@ -464,7 +464,6 @@ export class Convolution extends Filter {
     const { weights: oldWeights } = this;
     this.weights = (this.praxis as IPraxis).run(this, learningRate);
     release(oldWeights);
-    clear(this.deltas);
   }
 }
 

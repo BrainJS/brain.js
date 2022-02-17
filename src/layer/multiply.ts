@@ -124,7 +124,6 @@ export class Multiply extends Operator {
       this.inputLayer1.weights,
       this.inputLayer2.weights
     ) as Texture;
-    clear(this.deltas);
   }
 
   compare(): void {

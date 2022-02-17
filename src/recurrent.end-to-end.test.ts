@@ -86,7 +86,7 @@ describe('Recurrent Class: End to End', () => {
       recurrentNet: Recurrent<number[]>;
     } {
       const timeStep: RNNTimeStep = new RNNTimeStep({
-        regc: 0.001,
+        regc: 0.000001,
         inputSize: 1,
         hiddenLayers: [3],
         outputSize: 1,
@@ -693,11 +693,13 @@ describe('Recurrent Class: End to End', () => {
           expect(asArrayOfArrayOfNumber(model[2].weights)[0][0]).toBe(
             timeStep.model.allMatrices[2].weights[0]
           );
-          expect(asArrayOfArrayOfNumber(model[2].weights)[1][0]).toBe(
-            timeStep.model.allMatrices[2].weights[1]
+          expect(asArrayOfArrayOfNumber(model[2].weights)[1][0]).toBeCloseTo(
+            timeStep.model.allMatrices[2].weights[1],
+            0.00000000009
           );
-          expect(asArrayOfArrayOfNumber(model[2].weights)[2][0]).toBe(
-            timeStep.model.allMatrices[2].weights[2]
+          expect(asArrayOfArrayOfNumber(model[2].weights)[2][0]).toBeCloseTo(
+            timeStep.model.allMatrices[2].weights[2],
+            0.00000000009
           );
           expect(asArrayOfArrayOfNumber(model[3].weights)[0][0]).toBe(
             timeStep.model.allMatrices[3].weights[0]
@@ -1313,7 +1315,7 @@ describe('Recurrent Class: End to End', () => {
       inputLayer: () => input({ height: 1 }),
       hiddenLayers: [
         (inputLayer: ILayer, recurrentInput: IRecurrentInput) =>
-          lstmCell({ height: 3 }, inputLayer, recurrentInput),
+          lstmCell({ height: 10 }, inputLayer, recurrentInput),
       ],
       outputLayer: (inputLayer: ILayer) => output({ height: 1 }, inputLayer),
     });
@@ -1325,7 +1327,7 @@ describe('Recurrent Class: End to End', () => {
     ];
     const errorThresh = 0.03;
     const iterations = 5000;
-    const status = net.train(xorNetValues);
+    const status = net.train(xorNetValues, { errorThresh, iterations });
     // expect(
     //   status.error <= errorThresh || status.iterations <= iterations
     // ).toBeTruthy();
@@ -1335,8 +1337,8 @@ describe('Recurrent Class: End to End', () => {
     console.log(net.run([[1], [0.001]]));
     console.log(net.run([[1], [1]]));
     expect(net.run([[0.001], [0.001]])[0][0]).toBeLessThan(0.1);
-    expect(net.run([[0.001], [1]])[0][0]).toBeGreaterThan(9);
-    expect(net.run([[1], [0.001]])[0][0]).toBeGreaterThan(9);
+    expect(net.run([[0.001], [1]])[0][0]).toBeGreaterThan(0.9);
+    expect(net.run([[1], [0.001]])[0][0]).toBeGreaterThan(0.9);
     expect(net.run([[1], [1]])[0][0]).toBeLessThan(0.1);
   });
   test('can learn 1,2,3', () => {

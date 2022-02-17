@@ -75,7 +75,6 @@ export class LeakyRelu extends Activation {
     this.weights = (this.predictKernel as IKernelRunShortcut)(
       this.inputLayer.weights
     );
-    clear(this.deltas);
   }
 
   compare(): void {

@@ -36,7 +36,6 @@ export class Transpose extends Modifier {
     this.weights = (this.predictKernel as IKernelRunShortcut)(
       this.inputLayer.weights
     );
-    clear(this.deltas);
   }
 
   compare(): void {

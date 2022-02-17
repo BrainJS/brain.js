@@ -90,7 +90,7 @@ export interface IMomentumRootMeanSquaredPropagationSettings
 
 export const defaults: IMomentumRootMeanSquaredPropagationSettings = {
   decayRate: 0.999,
-  regularizationStrength: 0.0001,
+  regularizationStrength: 0.000001,
   learningRate: 0.01,
   smoothEps: 1e-8,
   clipValue: 5,
