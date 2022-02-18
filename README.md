@@ -181,7 +181,7 @@ net.train([
   { input: [1, 1], output: [0] },
 ]);
 
-const output = net.run([0, 0]); // [0]
+let output = net.run([0, 0]); // [0]
 output = net.run([0, 1]); // [1]
 output = net.run([1, 0]); // [1]
 output = net.run([1, 1]); // [0]
