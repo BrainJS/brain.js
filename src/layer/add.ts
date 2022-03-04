@@ -55,8 +55,6 @@ export class Add extends Operator {
     this.inputLayer1.deltas = clone(this.deltas);
     this.inputLayer2.deltas = clone(this.deltas);
   }
-
-  learn(): void {}
 }
 
 export function add(

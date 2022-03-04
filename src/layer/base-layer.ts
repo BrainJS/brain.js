@@ -244,13 +244,7 @@ export class BaseLayer implements ILayer {
 
   compare(targetValues?: KernelOutput): void {}
 
-  learn(learningRate?: number): void {
-    // TODO: do we need to release here?
-    const { weights: oldWeights } = this;
-    if (!this.praxis) throw new Error('this.praxis not defined');
-    this.weights = this.praxis.run(this, learningRate as number);
-    release(oldWeights);
-  }
+  learn(learningRate?: number): void {}
 
   toArray(): TextureArrayOutput {
     return Array.isArray(this.weights)

@@ -84,6 +84,8 @@ export class Sigmoid extends Activation {
       this.deltas
     );
   }
+
+  learn(learningRate?: number): void {}
 }
 
 export function sigmoid(

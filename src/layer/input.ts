@@ -75,6 +75,8 @@ export class Input extends EntryPoint {
   compare(): void {
     // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
+
+  learn(): void {}
 }
 
 export function input(settings: ILayerSettings): Input {
