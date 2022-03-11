@@ -1,4 +1,4 @@
-import { makeKernel, release, clear } from '../utilities/kernel';
+import { makeKernel, release } from '../utilities/kernel';
 import { Operator } from './operator';
 import {
   IConstantsThis,
@@ -124,7 +124,6 @@ export class Multiply extends Operator {
       this.inputLayer1.weights,
       this.inputLayer2.weights
     ) as Texture;
-    clear(this.deltas);
   }
 
   compare(): void {
@@ -153,7 +152,6 @@ export class Multiply extends Operator {
   }
 
   setupPraxis(): void {}
-  learn(): void {}
 
   toJSON(): Partial<ILayerJSON> {
     return {

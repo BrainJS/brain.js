@@ -19,7 +19,6 @@ describe('LSTMTimeStep', () => {
     expect(
       status.error <= errorThresh || status.iterations <= iterations
     ).toBeTruthy();
-
     expect(net.run([[0.001], [0.001]])[0]).toBeLessThan(0.1);
     expect(net.run([[0.001], [1]])[0]).toBeGreaterThan(0.9);
     expect(net.run([[1], [0.001]])[0]).toBeGreaterThan(0.9);

@@ -54,7 +54,6 @@ export class RecurrentZeros extends Internal implements IRecurrentInput {
     this.weights = (this.praxis as IPraxis).run(this, learningRate);
     // this.deltas = deltas;
     release(oldWeights);
-    clear(this.deltas);
   }
 
   // validate(): void {

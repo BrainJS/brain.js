@@ -68,7 +68,6 @@ export class Target extends BaseLayer {
     // NOTE: this looks like it shouldn't be, but the weights are immutable, and this is where they are reused.
     release(this.weights);
     this.weights = clone(this.inputLayer.weights as KernelOutput);
-    clear(this.deltas);
   }
 
   compare(targetValues: KernelOutput): void {

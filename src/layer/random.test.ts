@@ -1,5 +1,9 @@
 import { random, Random } from './random';
 import { randos2D } from '../utilities/randos';
+import { release } from '../utilities/kernel';
+import { mockLayer, mockPraxis } from '../test-utils';
+
+jest.mock('../utilities/kernel');
 
 describe('Random Layer', () => {
   describe('constructor', () => {
@@ -39,7 +43,26 @@ describe('Random Layer', () => {
       });
     });
   });
-
+  describe('.learn', () => {
+    it('releases both this.weights and this.deltas', () => {
+      const width = 3;
+      const height = 4;
+      const depth = 5;
+      const mockInputLayer = mockLayer({ width, height, depth });
+      const mockPraxisInstance = mockPraxis(mockInputLayer);
+      const settings = {
+        width: 1,
+        height: 1,
+        praxis: mockPraxisInstance,
+      };
+      const layer = new Random(settings);
+      const mockWeights = (layer.settings.weights = new Float32Array());
+      const mockDeltas = (layer.settings.deltas = new Float32Array());
+      layer.learn(0);
+      expect(release).toHaveBeenCalledWith(mockWeights);
+      expect(release).toHaveBeenCalledWith(mockDeltas);
+    });
+  });
   describe('random lambda', () => {
     it('passes settings on to Random constructor, and returns it', () => {
       const settings = { width: 5, height: 7 };

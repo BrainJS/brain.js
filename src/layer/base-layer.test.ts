@@ -1,5 +1,4 @@
 import { ILayer } from './base-layer';
-import { release } from '../utilities/kernel';
 import { IPraxis, IPraxisSettings } from '../praxis/base-praxis';
 import { mockLayer, mockPraxis } from '../test-utils';
 
@@ -38,22 +37,6 @@ describe('BaseLayer Layer', () => {
         praxisOpts,
       });
       expect(initPraxis).toHaveBeenCalledWith(base, praxisOpts);
-    });
-  });
-
-  describe('.learn', () => {
-    it('releases both this.weights and this.deltas', () => {
-      const base = mockLayer({
-        praxisOpts: {},
-        initPraxis(layerTemplate: ILayer, settings?: IPraxisSettings) {
-          return mockPraxis(layerTemplate, settings);
-        },
-      });
-      const mockWeights = (base.settings.weights = new Float32Array());
-      const mockDeltas = (base.settings.deltas = new Float32Array());
-      base.learn(0);
-      expect(release).toHaveBeenCalledWith(mockWeights);
-      expect(release).toHaveBeenCalledWith(mockDeltas);
     });
   });
 });

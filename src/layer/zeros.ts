@@ -17,6 +17,8 @@ export class Zeros extends Model {
   compare(): void {
     // throw new Error(`${this.constructor.name}-compare is not yet implemented`)
   }
+
+  // learn(): void {}
 }
 
 export function zeros(settings: ILayerSettings): Zeros {
