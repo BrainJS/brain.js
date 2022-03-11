@@ -126,6 +126,12 @@ export function clear(value: KernelOutput): void {
       return;
     }
   }
+
+  if (value instanceof Float32Array) {
+    value.fill(0);
+    return;
+  }
+
   throw new Error('unhandled value');
 }
 

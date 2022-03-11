@@ -271,14 +271,9 @@ describe('Recurrent Class: End to End', () => {
     const errorThresh = 0.03;
     const iterations = 5000;
     const status = net.train(xorNetValues, { errorThresh, iterations });
-    // expect(
-    //   status.error <= errorThresh || status.iterations <= iterations
-    // ).toBeTruthy();
-    console.log(status);
-    console.log(net.run([[0.001], [0.001]]));
-    console.log(net.run([[0.001], [1]]));
-    console.log(net.run([[1], [0.001]]));
-    console.log(net.run([[1], [1]]));
+    expect(
+      status.error <= errorThresh || status.iterations <= iterations
+    ).toBeTruthy();
     expect(net.run([[0.001], [0.001]])[0][0]).toBeLessThan(0.1);
     expect(net.run([[0.001], [1]])[0][0]).toBeGreaterThan(0.9);
     expect(net.run([[1], [0.001]])[0][0]).toBeGreaterThan(0.9);
