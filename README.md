@@ -46,7 +46,7 @@ GPU accelerated Neural networks in JavaScript for Browsers and Node.js
   - [Training Options](#training-options)
   - [Async Training](#async-training)
   - [Cross Validation](#cross-validation)
-  - [Train Stream](#train-stream)
+  - [Train Stream](https://www.npmjs.com/package/train-stream)
 - [Methods](#methods)
   - [train](#traintrainingdata---trainingstatus)
   - [run](#runinput---prediction)
@@ -418,36 +418,6 @@ Use `CrossValidate` with these classes:
 - `brain.GRUTimeStep`
 
 An example of using cross validate can be found in [examples/javascript/cross-validate.js](examples/javascript/cross-validate.js)
-
-### Train Stream
-
-Streams are a very powerful tool in node for massive data spread across processes and are provided via the brain.js api in the following way:
-
-```js
-const net = new brain.NeuralNetwork();
-const trainStream = new brain.TrainStream({
-  neuralNetwork: net,
-  floodCallback: function () {
-    flood(trainStream, data);
-  },
-  doneTrainingCallback: function (stats) {
-    // network is done training!  What next?
-  },
-});
-
-// kick it off
-readInputs(trainStream, data);
-
-function readInputs(stream, data) {
-  for (let i = 0; i < data.length; i++) {
-    stream.write(data[i]);
-  }
-  // let it know we've reached the end of the inputs
-  stream.endInputs();
-}
-```
-
-An example of using train stream can be found in [examples/javascript/stream-example.js](examples/javascript/stream-example.js)
 
 ## Methods
 

@@ -1,4 +1,5 @@
 const brain = require('brain.js');
+const TrainStream = require('train-stream');
 
 const net = new brain.NeuralNetwork();
 const xor = [
@@ -16,7 +17,7 @@ function readInputs(stream, data) {
   stream.endInputs();
 }
 
-const trainingStream = new brain.TrainStream({
+const trainingStream = new TrainStream({
   neuralNetwork: net,
   /**
    * Write training data to the stream. Called on each training iteration.
