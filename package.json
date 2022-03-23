@@ -1,18 +1,17 @@
 {
   "author": "Heather Arthur <fayearthur@gmail.com>",
-  "browser": {
-    "dist/brain.js": "dist/brain-browser.js",
-    "dist/brain.mjs": "dist/brain-browser.mjs"
-  },
   "bugs": {
     "url": "https://github.com/brainjs/brain.js/issues"
   },
+  "description": "Neural networks in JavaScript",
   "dependencies": {
-    "gpu.js": "^2.11.2",
     "thaw.js": "^2.1.4"
   },
-  "description": "Neural networks in JavaScript",
+  "peerDependencies": {
+    "gpu.js": "^2.11.2"
+  },
   "devDependencies": {
+    "gpu.js": "^2.11.2",
     "@babel/preset-typescript": "^7.13.0",
     "@rollup/plugin-commonjs": "^15.1.0",
     "@rollup/plugin-json": "^4.1.0",
@@ -58,7 +57,6 @@
   "files": [
     "dist/"
   ],
-  "types": "dist/src/index",
   "homepage": "https://github.com/brainjs/brain.js#readme",
   "husky": {
     "hooks": {
@@ -90,8 +88,7 @@
     "gru"
   ],
   "license": "MIT",
-  "main": "dist/src/index",
-  "module": "dist/brain.mjs",
+  "main": "dist/index.js",
   "name": "brain.js",
   "repository": {
     "type": "git",
@@ -99,9 +96,8 @@
   },
   "scripts": {
     "build": "run-p build:**",
-    "build:browser": "rollup -c rollup.config.browser.js",
     "build:node": "rollup -c rollup.config.js",
-    "build:gs": "tsc --declaration --emitDeclarationOnly --declarationMap",
+    "build:ts": "tsc --declaration --emitDeclarationOnly --declarationMap",
     "coverage": "jest --coverage --coverage-provider v8 && codecov",
     "dist": "npm run build",
     "lint": "run-p lint:**",
@@ -109,12 +105,11 @@
     "lint:typecheck": "tsc --noEmit",
     "test": "jest",
     "watch": "run-p watch:**",
-    "watch:browser": "rollup -c rollup.config.browser.js -w",
     "watch:node": "rollup -c rollup.config.js -w",
     "watch:test": "jest --watch",
     "prepare": "npm run build"
   },
-  "typings": "dist/src",
-  "unpkg": "dist/brain-browser.js",
+  "types": "dist/src",
+  "unpkg": "dist/index.js",
   "version": "2.0.0-beta.5"
 }

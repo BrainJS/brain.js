@@ -4,14 +4,14 @@ import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import * as pkg from './package.json';
 
-const extensions = ['.mjs', '.js', '.json', '.node', '.ts'];
+const extensions = ['.js', '.json', '.node', '.ts'];
 
 export default {
   input: './src/index.ts',
 
   // Specify here external modules which you don't want to include in your bundle (for instance: 'lodash', 'moment' etc.)
   // https://rollupjs.org/guide/en#external-e-external
-  external: ['gpu.js', 'stream'],
+  external: ['gpu.js'],
 
   plugins: [
     // Allows node_modules resolution
@@ -35,11 +35,6 @@ export default {
     {
       file: pkg.main,
       format: 'cjs',
-      sourcemap: true,
-    },
-    {
-      file: pkg.module,
-      format: 'es',
       sourcemap: true,
     },
   ],

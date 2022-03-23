@@ -226,7 +226,7 @@ describe('Recurrent Class: End to End', () => {
             output({ height: 1 }, inputLayer),
         });
         net.initialize();
-      } catch (e: unknown) {
+      } catch (e) {
         throw new Error();
       }
     }).not.toThrow();
