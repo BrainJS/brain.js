@@ -2,13 +2,7 @@ import { IKernelFunctionThis, IKernelRunShortcut, KernelOutput } from 'gpu.js';
 import { EntryPoint } from './types';
 import { ILayer, ILayerSettings } from './base-layer';
 import { zeros2D } from '../utilities/zeros-2d';
-import {
-  makeKernel,
-  release,
-  kernelInput,
-  clear,
-  clone,
-} from '../utilities/kernel';
+import { makeKernel, release, kernelInput, clone } from '../utilities/kernel';
 
 export const defaults: ILayerSettings = {
   weights: null,

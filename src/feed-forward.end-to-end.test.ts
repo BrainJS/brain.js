@@ -374,9 +374,13 @@ describe('FeedForward Class: End to End', () => {
         },
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result1 = net.run([0, 0]);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result2 = net.run([0, 1]);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result3 = net.run([1, 0]);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result4 = net.run([1, 1]);
 
       // TODO: this should be easier than result[0][0] https://github.com/BrainJS/brain.js/issues/439

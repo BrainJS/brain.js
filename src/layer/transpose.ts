@@ -1,5 +1,5 @@
 import { IKernelFunctionThis, IKernelRunShortcut } from 'gpu.js';
-import { clear, makeKernel } from '../utilities/kernel';
+import { makeKernel } from '../utilities/kernel';
 import { ILayer } from './base-layer';
 import { Modifier } from './types';
 

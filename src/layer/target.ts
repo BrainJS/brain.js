@@ -1,6 +1,6 @@
 import { IKernelFunctionThis, IKernelRunShortcut, KernelOutput } from 'gpu.js';
 
-import { makeKernel, release, clone, clear } from '../utilities/kernel';
+import { makeKernel, release, clone } from '../utilities/kernel';
 import { zeros } from '../utilities/zeros';
 import { zeros2D } from '../utilities/zeros-2d';
 import { BaseLayer, ILayer, ILayerSettings } from './base-layer';

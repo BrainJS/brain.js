@@ -2,7 +2,7 @@ import { ILayer, ILayerSettings } from './base-layer';
 import { IKernelFunctionThis, IKernelRunShortcut } from 'gpu.js';
 
 import { Activation } from './types';
-import { makeKernel, release, clear } from '../utilities/kernel';
+import { makeKernel, release } from '../utilities/kernel';
 import { activate, measure } from '../activation/sigmoid';
 
 export function predict2D(

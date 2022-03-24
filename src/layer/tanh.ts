@@ -2,7 +2,7 @@ import { IKernelFunctionThis, IKernelRunShortcut } from 'gpu.js';
 
 import { Activation } from './activation';
 import { activate, measure } from '../activation/tanh';
-import { release, clear, makeKernel } from '../utilities/kernel';
+import { release, makeKernel } from '../utilities/kernel';
 import { ILayer, ILayerSettings } from './base-layer';
 
 export function predict2D(

@@ -7,7 +7,7 @@ import {
   TextureArrayOutput,
 } from 'gpu.js';
 import { IPraxis, IPraxisSettings } from '../praxis/base-praxis';
-import { clear, release } from '../utilities/kernel';
+import { clear } from '../utilities/kernel';
 
 export interface ILayerJSON {
   width?: number;

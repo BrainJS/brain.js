@@ -1,4 +1,4 @@
-import { makeKernel, release, clone, clear } from '../utilities/kernel';
+import { makeKernel, release, clone } from '../utilities/kernel';
 import { checkSameSize } from '../utilities/layer-size';
 import { Operator } from './operator';
 import { IKernelFunctionThis, IKernelRunShortcut, Texture } from 'gpu.js';

@@ -1,4 +1,4 @@
-import { makeKernel, release, clone, clear } from '../utilities/kernel';
+import { makeKernel, release, clone } from '../utilities/kernel';
 import { getStride, getPadding } from '../utilities/layer-setup';
 import { Filter } from './filter';
 import { randos, randos3D } from '../utilities/randos';

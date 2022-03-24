@@ -1,4 +1,4 @@
-import { makeKernel, release, clear } from '../utilities/kernel';
+import { makeKernel, release } from '../utilities/kernel';
 import { Operator } from './operator';
 import { checkSameSize } from '../utilities/layer-size';
 import { ILayer, ILayerSettings } from './base-layer';

@@ -1,5 +1,5 @@
 import { IPraxis } from '../praxis/base-praxis';
-import { clear, release } from '../utilities/kernel';
+import { release } from '../utilities/kernel';
 import { zeros2D } from '../utilities/zeros-2d';
 import { ILayerSettings } from './base-layer';
 import { Internal } from './internal';
