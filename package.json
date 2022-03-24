@@ -112,6 +112,6 @@
     "prepare": "npm run build"
   },
   "types": "dist/src",
-  "unpkg": "dist/index.js",
-  "version": "2.0.0-beta.8"
+  "unpkg": "dist/browser.js",
+  "version": "2.0.0-beta.9"
 }
