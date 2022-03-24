@@ -19,6 +19,7 @@ describe('GRU', () => {
     });
   });
   describe('math', () => {
+    jest.retryTimes(3);
     it('can predict math', () => {
       const net = new GRU();
       const items = new Set<string>([]);
