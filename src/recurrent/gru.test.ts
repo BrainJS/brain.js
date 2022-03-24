@@ -47,7 +47,7 @@ describe('GRU', () => {
             output: 'comment',
           },
         ],
-        { iterations: 100 }
+        { iterations: 200 }
       );
       const result = net.run('hello world');
       expect(result).toBe('comment');
@@ -64,7 +64,7 @@ describe('GRU', () => {
         dataFormatter,
       });
       net.initialize();
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 200; i++) {
         net.trainPattern(dataFormatter.toIndexes(phrase));
         // if (i % 10 === 0) {
         //   console.log(dataFormatter.toCharacters(net.run()).join(''));
@@ -187,7 +187,7 @@ describe('GRU', () => {
         dataFormatter,
       });
       net.initialize();
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 200; i++) {
         net.trainPattern(dataFormatter.toIndexes('hi mom!'));
         // if (i % 10) {
         //   console.log(dataFormatter.toCharacters(net.run()).join(''));
@@ -201,7 +201,7 @@ describe('GRU', () => {
 
     it('can include the DataFormatter', () => {
       const net = new GRU();
-      net.train(['hi mom!'], { iterations: 100 });
+      net.train(['hi mom!'], { iterations: 200 });
       const expected = net.run('hi ');
       const newNet = net.toFunction();
       const output = newNet('hi ');

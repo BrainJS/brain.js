@@ -133,7 +133,7 @@ describe('LSTM', () => {
 
   describe('.run', () => {
     jest.retryTimes(3);
-    it('can predict greetings in 100 trainings', () => {
+    it('can predict greetings in 200 trainings', () => {
       const net = new LSTM();
       const trainingData = [
         {
@@ -153,13 +153,13 @@ describe('LSTM', () => {
           output: 'bro',
         },
       ];
-      net.train(trainingData, { iterations: 100 });
+      net.train(trainingData, { iterations: 200 });
       expect(net.run('hi')).toBe('mom');
       expect(net.run('howdy')).toBe('dad');
       expect(net.run('hello')).toBe('sis');
       expect(net.run('yo')).toBe('bro');
     });
-    it('can predict a string from index in 100 trainings', () => {
+    it('can predict a string from index in 200 trainings', () => {
       const net = new LSTM();
       const transactionTypes = {
         credit: '0',
@@ -185,7 +185,7 @@ describe('LSTM', () => {
           output: 'other',
         },
       ];
-      net.train(trainingData, { iterations: 100 });
+      net.train(trainingData, { iterations: 200 });
       expect(net.run([transactionTypes.credit])).toBe('credit');
       expect(net.run([transactionTypes.debit])).toBe('debit');
       expect(net.run([transactionTypes.personalCard])).toBe('personal card');
