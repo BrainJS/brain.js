@@ -108,17 +108,14 @@ describe('LSTM', () => {
     it('can output same as run method', () => {
       const dataFormatter = new DataFormatter(['h', 'i', ' ', 'm', 'o', '!']);
       const net = new LSTM({
-        inputSize: 7,
+        inputSize: 1,
         inputRange: dataFormatter.characters.length,
-        outputSize: 7,
+        outputSize: 1,
         dataFormatter,
       });
       net.initialize();
       for (let i = 0; i < 100; i++) {
         net.trainPattern(dataFormatter.toIndexes('hi mom!'));
-        // if (i % 10) {
-        //   console.log(dataFormatter.toCharacters(net.run()).join(''));
-        // }
       }
 
       const lastOutput = net.run();
@@ -187,7 +184,7 @@ describe('LSTM', () => {
           output: 'other',
         },
       ];
-      net.train(trainingData, { iterations: 200 });
+      net.train(trainingData, { iterations: 100 });
       expect(net.run([transactionTypes.credit])).toBe('credit');
       expect(net.run([transactionTypes.debit])).toBe('debit');
       expect(net.run([transactionTypes.personalCard])).toBe('personal card');

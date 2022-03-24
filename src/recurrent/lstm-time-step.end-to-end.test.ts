@@ -1,5 +1,5 @@
 import { LSTMTimeStep } from './lstm-time-step';
-
+jest.retryTimes(3);
 describe('LSTMTimeStep', () => {
   it('can learn xor', () => {
     const net = new LSTMTimeStep({
