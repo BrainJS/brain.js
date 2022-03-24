@@ -6,9 +6,6 @@
 node_modules
 npm-debug.log
 
-# Yarn
-yarn.lock
-
 # parcel bundler cache
 .cache
 
