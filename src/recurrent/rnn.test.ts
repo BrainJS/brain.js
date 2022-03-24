@@ -189,6 +189,7 @@ describe('RNN', () => {
     });
   });
   describe('xor', () => {
+    jest.retryTimes(3);
     function xorNet() {
       const net = new RNN({
         hiddenLayers: [20, 20],
