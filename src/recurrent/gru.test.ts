@@ -19,7 +19,7 @@ describe('GRU', () => {
     });
   });
   describe('math', () => {
-    jest.retryTimes(3);
+    jest.retryTimes(5);
     it('can predict math', () => {
       const net = new GRU();
       const items = new Set<string>([]);
@@ -38,7 +38,7 @@ describe('GRU', () => {
   });
 
   describe('printable characters', () => {
-    jest.retryTimes(3);
+    jest.retryTimes(5);
     it('can learn a phrase', (done) => {
       const net = new GRU();
       net.train(

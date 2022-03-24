@@ -132,7 +132,7 @@ describe('LSTM', () => {
   });
 
   describe('.run', () => {
-    jest.retryTimes(3);
+    jest.retryTimes(5);
     it('can predict greetings in 200 trainings', () => {
       const net = new LSTM();
       const trainingData = [
