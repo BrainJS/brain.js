@@ -37,6 +37,7 @@ describe('GRU', () => {
   });
 
   describe('printable characters', () => {
+    jest.retryTimes(3);
     it('can learn a phrase', (done) => {
       const net = new GRU();
       net.train(
