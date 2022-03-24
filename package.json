@@ -1,6 +1,6 @@
 {
   "author": "Heather Arthur <fayearthur@gmail.com>",
-  "browser": "dist/brain-browser.js",
+  "browser": "dist/browser.js",
   "bugs": {
     "url": "https://github.com/brainjs/brain.js/issues"
   },
@@ -113,5 +113,5 @@
   },
   "types": "dist/src",
   "unpkg": "dist/index.js",
-  "version": "2.0.0-beta.7"
+  "version": "2.0.0-beta.8"
 }
