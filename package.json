@@ -1,5 +1,6 @@
 {
   "author": "Heather Arthur <fayearthur@gmail.com>",
+  "browser": "dist/brain-browser.js",
   "bugs": {
     "url": "https://github.com/brainjs/brain.js/issues"
   },
@@ -96,6 +97,7 @@
   },
   "scripts": {
     "build": "run-p build:**",
+    "build:browser": "rollup -c rollup.config.browser.js",
     "build:node": "rollup -c rollup.config.js",
     "build:ts": "tsc --declaration --emitDeclarationOnly --declarationMap",
     "coverage": "jest --coverage --coverage-provider v8 && codecov",
@@ -111,5 +113,5 @@
   },
   "types": "dist/src",
   "unpkg": "dist/index.js",
-  "version": "2.0.0-beta.6"
+  "version": "2.0.0-beta.7"
 }
