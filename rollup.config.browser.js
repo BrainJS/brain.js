@@ -34,13 +34,12 @@ export default {
   output: [
     {
       file,
-      format: 'iife',
+      format: 'umd',
       sourcemap: true,
       globals: {
-        'gpu.js': `(typeof window.gpu !== undefined) ? window.gpu : null`,
+        'gpu.js': `GPU`,
       },
       name,
-      footer: '\nif(typeof window!==undefined){window.brain=brain}',
     },
   ],
 };
