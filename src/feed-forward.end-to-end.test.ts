@@ -410,6 +410,28 @@ describe('FeedForward Class: End to End', () => {
     });
   });
 
+  describe('.trainAsync()', () => {
+    it('can be used to train XOR', async () => {
+      const net = new FeedForward({
+        inputLayer: () => input({ height: 2 }),
+        hiddenLayers: [
+          (inputLayer) => feedForwardLayer({ height: 3 }, inputLayer),
+          (inputLayer) => feedForwardLayer({ height: 1 }, inputLayer),
+        ],
+        outputLayer: (inputLayer) => target({ height: 1 }, inputLayer),
+      });
+      const errors: number[] = [];
+      const result = await net.trainAsync(xorTrainingData, {
+        iterations: 10,
+        callbackPeriod: 1,
+        errorCheckInterval: 1,
+        callback: (info) => errors.push(info.error),
+      });
+      expect(result.error).toBeLessThan(1);
+      expect(result.iterations).toBe(10);
+    });
+  });
+
   describe('._calculateDeltas()', () => {
     test('populates deltas from output to input', () => {
       class SuperOutput extends Target {

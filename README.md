@@ -363,7 +363,13 @@ A boolean property called `invalidTrainOptsShouldThrow` is set to `true` by defa
 
 ### Async Training
 
-`trainAsync()` takes the same arguments as train (data and options). Instead of returning the results object from training, it returns a promise that when resolved will return the training results object.
+`trainAsync()` takes the same arguments as train (data and options). Instead of returning the results object from training, it returns a promise that when resolved will return the training results object.  Does NOT work with:
+* `brain.recurrent.RNN`
+* `brain.recurrent.GRU`
+* `brain.recurrent.LSTM`
+* `brain.recurrent.RNNTimeStep`
+* `brain.recurrent.GRUTimeStep`
+* `brain.recurrent.LSTMTimeStep`
 
 ```javascript
 const net = new brain.NeuralNetwork();
@@ -629,6 +635,8 @@ The user interface used:
 - [`brain.recurrent.RNN`](src/recurrent/rnn.ts) - [Recurrent Neural Network or "RNN"](https://en.wikipedia.org/wiki/Recurrent_neural_network)
 - [`brain.recurrent.LSTM`](src/recurrent/lstm.ts) - [Long Short Term Memory Neural Network or "LSTM"](https://en.wikipedia.org/wiki/Long_short-term_memory)
 - [`brain.recurrent.GRU`](src/recurrent/gru.ts) - [Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)
+- [`brain.FeedForward`](src/feed-forward.ts) - [Highly Customizable Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation
+- [`brain.Recurrent`](src/recurrent.ts) - [Highly Customizable Recurrent Neural Network](https://en.wikipedia.org/wiki/Recurrent_neural_network) with backpropagation
 
 ### Why different Neural Network Types
 
