@@ -2,23 +2,36 @@ import { Texture } from 'gpu.js';
 
 import { NeuralNetwork } from './neural-network';
 import { NeuralNetworkGPU } from './neural-network-gpu';
+import { xorTrainingData } from './test-utils';
 
 describe('NeuralNetworkGPU', () => {
-  const xorTrainingData = [
-    { input: [0, 1], output: [1] },
-    { input: [0, 0], output: [0] },
-    { input: [1, 1], output: [0] },
-    { input: [1, 0], output: [1] },
-  ];
-
-  it('can learn xor', () => {
-    const net = new NeuralNetworkGPU();
-    const status = net.train(xorTrainingData, {
-      iterations: 5000,
-      errorThresh: 0.01,
+  describe('run', () => {
+    describe('when input is not same as options.inputSize', () => {
+      it('throws', () => {
+        const net = new NeuralNetworkGPU({
+          inputSize: 1,
+          hiddenLayers: [1],
+          outputSize: 1,
+        });
+        net.train([{ input: [1], output: [1] }], { iterations: 1 });
+        expect(() => {
+          net.run([1, 1]);
+        }).toThrow();
+      });
     });
-    expect(status.error).toBeLessThanOrEqual(0.01);
-    expect(status.iterations).toBeLessThanOrEqual(5000);
+    describe('when input is same as options.inputSize', () => {
+      it('throws', () => {
+        const net = new NeuralNetworkGPU({
+          inputSize: 1,
+          hiddenLayers: [1],
+          outputSize: 1,
+        });
+        net.train([{ input: [1], output: [1] }], { iterations: 1 });
+        expect(() => {
+          net.run([1]);
+        }).not.toThrow();
+      });
+    });
   });
 
   describe('.toJSON()', () => {

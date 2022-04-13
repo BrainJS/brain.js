@@ -624,6 +624,7 @@ export class NeuralNetworkGPU<InputType, OutputType> extends NeuralNetwork<
     } else {
       formattedInput = (input as unknown) as Float32Array;
     }
+    this.validateInput(formattedInput);
     const outputTextures = this.runInput(formattedInput);
     const output =
       outputTextures instanceof Texture
