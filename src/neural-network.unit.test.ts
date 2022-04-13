@@ -1,4 +1,4 @@
-import { NeuralNetwork } from './neural-network';
+import { getTypedArrayFn, NeuralNetwork } from './neural-network';
 
 describe('NeuralNetwork', () => {
   describe('validateData', () => {
@@ -77,6 +77,16 @@ describe('NeuralNetwork', () => {
           net.run([1]);
         }).not.toThrow();
       });
+    });
+  });
+
+  describe('getTypedArrayFn', () => {
+    it('can handle constructor', () => {
+      // https://github.com/BrainJS/brain.js/issues/681
+      const fn = getTypedArrayFn({ constructor: 0 }, { constructor: 0 });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      expect(fn({ anything: 1 })[0]).toBe(0);
     });
   });
 });

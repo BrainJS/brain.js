@@ -17,7 +17,7 @@ type NeuralNetworkFormatter =
   | ((v: INumberHash) => Float32Array)
   | ((v: number[]) => Float32Array);
 
-function getTypedArrayFn(
+export function getTypedArrayFn(
   value: INeuralNetworkData,
   table: INumberHash | null
 ): null | NeuralNetworkFormatter {
@@ -33,6 +33,7 @@ function getTypedArrayFn(
     const array = new Float32Array(length);
     for (const p in table) {
       if (!table.hasOwnProperty(p)) continue;
+      if (typeof v[p] !== 'number') continue;
       array[table[p]] = v[p] || 0;
     }
     return array;
