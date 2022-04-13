@@ -3,6 +3,13 @@ import { IGPUTextureSettings, Kernel, Texture } from 'gpu.js';
 import { ILayerTemplate, IPraxis, IPraxisSettings } from '../src/praxis/base-praxis';
 import { BaseLayer, ILayerSettings, ILayer } from '../src/layer/base-layer';
 
+export const xorTrainingData = [
+  { input: [0, 1], output: [1] },
+  { input: [0, 0], output: [0] },
+  { input: [1, 1], output: [0] },
+  { input: [1, 0], output: [1] },
+];
+
 export function onePlusPlus3D(width: number, height: number, depth: number): number[][][] {
   const grid = [];
   let i = 1;

@@ -3,7 +3,7 @@ import { ArthurDeviationBiases } from './arthur-deviation-biases';
 import { random } from '../layer';
 import { NeuralNetwork } from '../neural-network';
 import { setup, teardown } from '../utilities/kernel';
-import { mockLayer } from '../test-utils';
+import { mockLayer, xorTrainingData } from '../test-utils';
 
 describe('ArthurDeviationBiases', () => {
   beforeEach(() => {
@@ -30,12 +30,6 @@ describe('ArthurDeviationBiases', () => {
       expect(result[0][0].toFixed(5)).toEqual((1.3).toFixed(5).toString());
     });
     test('matches NeuralNetwork.adjustWeights output', () => {
-      const xorTrainingData = [
-        { input: [0, 1], output: [1] },
-        { input: [0, 0], output: [0] },
-        { input: [1, 1], output: [0] },
-        { input: [1, 0], output: [1] },
-      ];
       const net = new NeuralNetwork();
       net.train(xorTrainingData, {
         iterations: 1,

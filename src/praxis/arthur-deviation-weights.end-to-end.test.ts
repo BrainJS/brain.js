@@ -3,6 +3,7 @@ import { ArthurDeviationWeights } from './';
 import { random } from '../layer';
 import { NeuralNetwork } from '../neural-network';
 import { setup, teardown } from '../utilities/kernel';
+import { xorTrainingData } from '../test-utils';
 
 describe('ArthurDeviationWeights Class: End to End', () => {
   beforeEach(() => {
@@ -39,12 +40,6 @@ describe('ArthurDeviationWeights Class: End to End', () => {
     });
   });
   test('matches NeuralNetwork.adjustWeights output', () => {
-    const xorTrainingData = [
-      { input: [0, 1], output: [1] },
-      { input: [0, 0], output: [0] },
-      { input: [1, 1], output: [0] },
-      { input: [1, 0], output: [1] },
-    ];
     const net = new NeuralNetwork();
     net.train(xorTrainingData, {
       iterations: 1,
