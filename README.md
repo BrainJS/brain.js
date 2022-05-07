@@ -204,6 +204,7 @@ You can check out this fantastic screencast, which explains how to train a simpl
 - [Cryotherapy Success Rate Prediction](https://cryotherapy.surge.sh)
 - [Rock Paper Scissors](https://github.com/arifikhsan/batu-gunting-kertas-nuxt)
 - [Detect the Color of an Image](https://github.com/ChocolateLoverRaj/detect-image-color)
+- [Cat Dog Classifier](https://nelias.github.io/brain.js-examples/cat-dog-classifier/index.html)
 
 ## Training
 
