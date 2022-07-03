@@ -3,17 +3,6 @@ const brain = require('brain.js');
 const LSTM = brain.recurrent.LSTM;
 const net = new LSTM();
 
-// used to build list below
-// const mathProblemsSet = new Set();
-// for (let i = 0; i < 10; i++) {
-//   for (let j = 0; j < 10; j++) {
-//     mathProblemsSet.add(`${i}+${j}=${i + j}`);
-//     mathProblemsSet.add(`${j}+${i}=${i + j}`);
-//   }
-// }
-// const mathProblems = Array.from(mathProblemsSet);
-// console.log(mathProblems);
-
 const mathProblems = [
   '0+0=0',
   '0+1=1',
