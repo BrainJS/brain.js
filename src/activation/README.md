@@ -22,5 +22,5 @@ For programmatic, simplicity, and practicality, we namespace the structure as:
 ```
 relu (activation type)
  |-activate
- |-meassure
+ |-measure
 ```
