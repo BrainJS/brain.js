@@ -654,9 +654,9 @@ If you are a developer or if you just care about how ML API should look like - p
 
 Brain.js is a widely adopted open source machine learning library in the javascript world. There are several reasons for it, but most notable is **simplicity of usage while not sacrificing performance**.
 We would like to keep it also simple to learn, simple to use and performant when it comes to W3C standard. We think that current brain.js API is quite close to what we could expect to become a standard.
-And since supporting doesn't require much effort and still can make a hudge difference feel free to join W3C community group and support us with brain.js like API.
+And since supporting doesn't require much effort and still can make a huge difference feel free to join W3C community group and support us with brain.js like API.
 
-Get involved into W3C machine learning ongoing standardization proces [here](https://www.w3.org/community/webmachinelearning/).
+Get involved into W3C machine learning ongoing standardization process [here](https://www.w3.org/community/webmachinelearning/).
 You can also join our open discussion about standardization [here](https://github.com/BrainJS/brain.js/issues/337).
 
 ## Issues
