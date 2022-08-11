@@ -5,20 +5,18 @@ const network = new brain.NeuralNetwork();
 
 network.train([
 
-  {input: {r:0.62,g:0.72,b:0.88}, output:{light: 1}},
+  {input: {r:0.03,g:0.7,b:0.5}, output:{black: 1}},
 
-  {input: {r:0.1,g:0.84,b:0.72}, output:{light: 1}},
+  {input: {r:0.16,g:0.9,b:0.2}, output:{white: 1}},
 
-  {input: {r:0.33,g:0.24,b:0.29}, output:{dark: 1}},
-
-  {input: {r:0.74,g:0.78,b:0.86}, output:{light: 1}},
+  {input: {r:0.5,g:0.5,b:1.0}, output:{white: 1}}
 
   ]);
   
-  const result = network.run({r:0.0,g:1,b:0.65});
+  const result = network.run({r:1,g:0.4,b:0.0});
 
 console.log(result);
 
- const result2 = brain.likely({r:0.0,g:1,b:0.65}, network);
+ const result2 = brain.likely({r:1,g:0.4,b:0.0}, network);
 
 console.log(result2);

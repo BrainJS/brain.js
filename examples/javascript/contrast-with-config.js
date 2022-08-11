@@ -15,13 +15,11 @@ const net = new brain.NeuralNetwork(config);
 
 network.train([
 
-  {input: {r:0.62,g:0.72,b:0.88}, output:{light: 1}},
+  {input: {r:0.03,g:0.7,b:0.5}, output:{black: 1}},
 
-  {input: {r:0.1,g:0.84,b:0.72}, output:{light: 1}},
+  {input: {r:0.16,g:0.9,b:0.2}, output:{white: 1}},
 
-  {input: {r:0.33,g:0.24,b:0.29}, output:{dark: 1}},
-
-  {input: {r:0.74,g:0.78,b:0.86}, output:{light: 1}},
+  {input: {r:0.5,g:0.5,b:1.0}, output:{white: 1}}
 
   ]);
   
