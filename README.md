@@ -80,7 +80,7 @@ npm install brain.js
 ### CDN
 
 ```html
-<script src="//unpkg.com/brain.js"></script>
+<script src="https://unpkg.com/brain.js"></script>
 ```
 
 ### Download
