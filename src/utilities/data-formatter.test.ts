@@ -1,6 +1,31 @@
 import { DataFormatter } from './data-formatter';
 
 describe('DataFormatter', () => {
+  describe('.fromJSON()', () => {
+    const df1 = new DataFormatter('a'.split(''));
+    const json = df1.toJSON();
+    const df2 = DataFormatter.fromJSON(json);
+    it('sets .indexTable from JSON and matches ', () => {
+      expect(df2.indexTable).toEqual({ a: 0, unrecognized: 1 });
+      expect(df2.indexTable).toEqual(df1.indexTable);
+    });
+    it('sets .characterTable from JSON', () => {
+      expect(df2.characterTable).toEqual({ '0': 'a', '1': null });
+      expect(df2.characterTable).toEqual(df1.characterTable);
+    });
+    it('sets .characters from JSON', () => {
+      expect(df2.characters).toEqual(['a', 'unrecognized']);
+      expect(df2.characters).toEqual(df1.characters);
+    });
+    it('sets .specialIndexes from JSON', () => {
+      expect(json.specialIndexes).toEqual([1]);
+      expect(df1.specialIndexes).toEqual(df1.specialIndexes);
+    });
+    it('sets .isSetup from JSON', () => {
+      expect(df2.isSetup).toEqual(true);
+      expect(df2.isSetup).toEqual(df1.isSetup);
+    });
+  });
   test('does not have zeros', () => {
     const dataFormatter = new DataFormatter(
       'abcdefghijklmnopqrstuvwxyz'.split('')

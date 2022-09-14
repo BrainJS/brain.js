@@ -327,6 +327,7 @@ export class DataFormatter implements IDataFormatter {
     dataFormatter.values = json.values;
     dataFormatter.characters = json.characters;
     dataFormatter.specialIndexes = json.specialIndexes;
+    dataFormatter.isSetup = true;
     return dataFormatter;
   }
 
