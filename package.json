@@ -52,8 +52,14 @@
     "ts-node": "^9.1.1",
     "typescript": "^4.0.3"
   },
+  "overrides": {
+    "gpu.js": {
+      "gl": "6.0.1"
+    }
+  },
   "engines": {
-    "node": ">=8.6.x"
+    "node": ">=16.14",
+    "npm": ">=8.3.0"
   },
   "files": [
     "dist/"
