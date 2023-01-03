@@ -792,15 +792,4 @@ export class FeedForward<
       `${this.constructor.name}-toFunction is not yet implemented`
     );
   }
-
-  /**
-   * This will create a TrainStream (WriteStream) for us to send the training data to.
-   * @param opts training options
-   * @returns {TrainStream|*}
-   */
-  createTrainStream(): void {
-    throw new Error(
-      `${this.constructor.name}-createTrainStream is not yet implemented`
-    );
-  }
 }

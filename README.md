@@ -46,7 +46,7 @@ GPU accelerated Neural networks in JavaScript for Browsers and Node.js
   - [Training Options](#training-options)
   - [Async Training](#async-training)
   - [Cross Validation](#cross-validation)
-  - [Train Stream](https://www.npmjs.com/package/train-stream)
+  - [Train Stream](#streams)
 - [Methods](#methods)
   - [train](#traintrainingdata---trainingstatus)
   - [run](#runinput---prediction)
@@ -58,9 +58,6 @@ GPU accelerated Neural networks in JavaScript for Browsers and Node.js
   - [activation](#activation)
   - [hiddenLayers](#hiddenlayers)
 - [Streams](#streams)
-  - [Example](#example)
-  - [Initialization](#initialization)
-  - [Transform](#transform)
 - [Utilities](#utilities)
   - [`likely`](#likely)
   - [`toSVG`](#toSVG)
@@ -199,7 +196,6 @@ You can check out this fantastic screencast, which explains how to train a simpl
 - experimental (NeuralNetwork only, but more to come!) [using the gpu in a browser](./examples/javascript/gpu.html) or [using node gpu fallback to cpu](./examples/gpu-fallback.js) and [typescript version](./examples/typescript/gpu-fallback.ts)
 - [learning math using a recurrent neural network](./examples/javascript/learn-math.js) and [typescript version](./examples/typescript/learn-math.ts)
 - [predict next number, and forecast numbers](./examples/javascript/predict-numbers.js) and [typescript version](./examples/typescript/predict-numbers.ts)
-- [using node streams](./examples/javascript/stream-example.js) and [typescript version](./examples/typescript/stream-example.ts)
 - [simple letter detection](./examples/javascript/which-letter-simple.js) and [typescript version](./examples/typescript/which-letter-simple.ts)
 - [Cryotherapy Success Rate Prediction](https://cryotherapy.surge.sh)
 - [Rock Paper Scissors](https://github.com/arifikhsan/batu-gunting-kertas-nuxt)
@@ -570,29 +566,7 @@ By default `brain.js` uses one hidden layer with size proportionate to the size 
 
 ## Streams
 
-The network now has a [WriteStream](http://nodejs.org/api/stream.html#stream_class_stream_writable). You can train the network by using `pipe()` to send the training data to the network.
-
-### Example
-
-Refer to [`stream-example.js`](examples/javascript/stream-example.js) for an example on how to train the network with a stream.
-
-### Initialization
-
-To train the network using a stream you must first create the stream by calling `net.createTrainStream()` which takes the following options:
-
-- `floodCallback()` - the callback function to re-populate the stream. This gets called on every training iteration.
-- `doneTrainingCallback(info)` - the callback function to execute when the network is done training. The `info` param will contain a hash of information about how the training went:
-
-```javascript
-{
-  error: 0.0039139985510105032,  // training error
-  iterations: 406                // training iterations
-}
-```
-
-### Transform
-
-Use a [Transform](http://nodejs.org/api/stream.html#stream_class_stream_transform) to coerce the data into the correct format. You might also use a Transform stream to normalize your data on the fly.
+Use https://www.npmjs.com/package/train-stream to stream data to a NeuralNetwork
 
 ## Utilities
 
