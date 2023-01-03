@@ -809,6 +809,8 @@ export class RNNTimeStep extends RNN {
     return result;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   formatData(data: FormattableData[]): Float32Array[][] {
     const dataShape = lookup.dataShape(data).join(',');
     switch (dataShape) {

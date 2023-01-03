@@ -645,8 +645,14 @@ export class RNN {
     };
   }
 
-  addFormat(): void {
-    throw new Error('not yet implemented');
+  addFormat(data: Value): void {}
+
+  formatData(data: Value[]): number[][] {
+    const result = [];
+    for (let i = 0; i < data.length; i++) {
+      result.push(this.options.dataFormatter.formatDataIn(data[i]));
+    }
+    return result;
   }
 
   toJSON(): IRNNJSON {
