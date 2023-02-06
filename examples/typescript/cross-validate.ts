@@ -25,7 +25,7 @@ const trainingOptions = {
   log: (details: any) => console.log(details),
 };
 
-const crossValidate = new brain.CrossValidate(brain.NeuralNetwork, netOptions);
+const crossValidate = new brain.CrossValidate(() => new brain.NeuralNetwork(netOptions));
 const stats = crossValidate.train(trainingData, trainingOptions);
 console.log(stats);
 const net = crossValidate.toNeuralNetwork();
