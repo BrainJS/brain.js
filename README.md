@@ -100,12 +100,12 @@ npm rebuild
 
 ###### Mac OS X
 
-- [Python 2.7](https://www.python.org/)
+- [Python 3.7 or later](https://www.python.org/)
 - [XCode](https://developer.apple.com/xcode/)
 
 ###### Ubuntu/Debian
 
-- [Python 2.7](https://www.python.org/)
+- [Python 3.7 or later](https://www.python.org/)
 - A GNU C++ environment (available via the `build-essential` package on `apt`)
 - [libxi-dev](http://www.x.org/wiki/)
 - Working and up to date OpenGL drivers
@@ -118,10 +118,10 @@ sudo apt-get install -y build-essential libxi-dev libglu1-mesa-dev libglew-dev p
 
 ###### Windows
 
-- [Python 2.7](https://www.python.org/)
-- [Microsoft Visual Studio Build Tools 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48159)
-- run in cmd: `npm config set msvs_version 2015`
-- run in cmd: `npm config set python python2.7`
+- [Python 3.7 or later](https://www.python.org/)
+- [Microsoft Visual Studio Build Tools 2022](https://visualstudio.microsoft.com/downloads)
+- run in cmd: `npm config set msvs_version 2022`
+- run in cmd: `npm config set python python3`
 
 \* If you are using `Build Tools 2017` then run `npm config set msvs_version 2017`
 
