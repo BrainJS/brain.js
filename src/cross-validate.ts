@@ -278,7 +278,9 @@ export default class CrossValidate<
       stats: stats,
       sets: results,
     };
-    return this.json;
+    return this.json as ICrossValidateStats<
+      ReturnType<InitClassifierType>['toJSON']
+    >;
   }
 
   toNeuralNetwork(): ReturnType<InitClassifierType> {

@@ -21,7 +21,7 @@ export function likely<
   let maxProp = null;
   let maxValue = -1;
 
-  Object.entries(output).forEach(([key, value]) => {
+  Object.entries(output as number[]).forEach(([key, value]) => {
     if (
       typeof value !== 'undefined' &&
       typeof value === 'number' &&
