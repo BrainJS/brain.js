@@ -12,12 +12,15 @@
     // "noEmit": true,
     "noEmitOnError": true,
     "outDir": "./dist",
-    "rootDir": "./",
+    "rootDir": "./src",
     "skipLibCheck": true,
     "strict": true,
     "target": "es2018", // To match node 10: https://github.com/microsoft/TypeScript/wiki/Node-Target-Mapping#node-10
     "lib": ["es2019", "es2019.Array", "dom", "esnext"]
   },
+  "include": [
+    "src/"
+  ],
   "exclude": [
     "node_modules",
     "**/*.json",

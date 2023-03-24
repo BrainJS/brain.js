@@ -29,6 +29,7 @@
     "acorn": "^8.0.4",
     "c8": "^7.3.4",
     "codecov": "^3.8.0",
+    "del-cli": "^5.0.0",
     "eslint": "^7.12.0",
     "eslint-config-prettier": "^6.14.0",
     "eslint-config-standard": "^15.0.0",
@@ -109,9 +110,10 @@
     "watch": "run-p watch:**",
     "watch:node": "rollup -c rollup.config.js -w",
     "watch:test": "jest --watch",
-    "prepare": "npm run build"
+    "clean": "del ./dist",
+    "prepare": "npm run clean; npm run build"
   },
-  "types": "dist/src",
+  "types": "dist/",
   "unpkg": "dist/browser.js",
-  "version": "2.0.0-beta.19"
+  "version": "2.0.0-beta.20"
 }
