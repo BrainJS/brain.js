@@ -2,7 +2,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
-import { fileURLToPath } from 'node:url';
+// import { fileURLToPath } from 'node:url';
 
 const name = 'brain';
 const extensions = ['.js', '.json', '.node', '.ts'];
@@ -14,9 +14,13 @@ export default {
   // Specify here external modules which you don't want to include in your bundle (for instance: 'lodash', 'moment' etc.)
   // https://rollupjs.org/guide/en#external-e-external
   external: [
-    fileURLToPath(
-      new URL('./node_modules/gpu.js/src/index.js', import.meta.url)
-    ),
+    // brain js already uses gpu.js as peer dependencies so it shouldn't be like this
+    // fileURLToPath(
+    //   new URL('./node_modules/gpu.js/src/index.js', import.meta.url)
+    // ),
+    
+    // But this
+    'gpu.js'
   ],
 
   plugins: [
