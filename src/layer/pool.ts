@@ -4,7 +4,6 @@ import { getPadding, getStride } from '../utilities/layer-setup';
 import { zeros3D } from '../utilities/zeros-3d';
 import { randos3D } from '../utilities/randos';
 import {
-  IConstantsThis,
   IKernelFunctionThis,
   IKernelMapRunShortcut,
   IKernelRunShortcut,
@@ -34,52 +33,29 @@ export function predict(
   this: IKernelFunctionThis<IPredictConstants>,
   inputs: number[][][]
 ): number {
-  const startFilterX =
-    this.constants.paddingX - this.thread.x * this.constants.strideX;
-  const startInputX =
+  // Ends are exclusive, that is if end=4, the last item is 3
+  const unclippedStartInputX =
     this.thread.x * this.constants.strideX - this.constants.paddingX;
-  const endFilterX = Math.min(
-    this.constants.filterWidth,
-    startFilterX + this.constants.inputWidth
-  );
-
-  const startFilterY =
-    this.constants.paddingY - this.thread.y * this.constants.strideY;
-  const startInputY =
+  const unclippedStartInputY =
     this.thread.y * this.constants.strideY - this.constants.paddingY;
-  const endFilterY = Math.min(
-    this.constants.filterHeight,
-    startFilterY + this.constants.inputHeight
-  );
+  const unclippedEndInputX = unclippedStartInputX + this.constants.filterWidth;
+  const unclippedEndInputY = unclippedStartInputY + this.constants.filterHeight;
+  const startInputX = Math.max(unclippedStartInputX, 0);
+  const startInputY = Math.max(unclippedStartInputY, 0);
+  const endInputX = Math.min(unclippedEndInputX, this.constants.inputWidth);
+  const endInputY = Math.min(unclippedEndInputY, this.constants.inputHeight);
 
-  let largestValue = -99999;
-  let largestX = -1;
-  let largestY = -1;
+  let largestValue = inputs[this.thread.z][startInputY][startInputX];
+  let largestX = startInputX;
+  let largestY = startInputY;
 
-  // convolve centered at this particular location
-  for (
-    let filterY = Math.max(0, startFilterY), inputY = Math.max(0, startInputY);
-    filterY < endFilterY;
-    filterY++, inputY++
-  ) {
-    for (
-      let filterX = Math.max(0, startFilterX),
-        inputX = Math.max(0, startInputX);
-      filterX < endFilterX;
-      filterX++, inputX++
-    ) {
-      if (
-        inputY >= 0 &&
-        inputY < this.constants.inputHeight &&
-        inputX >= 0 &&
-        inputX < this.constants.inputWidth
-      ) {
-        const input = inputs[this.thread.z][inputY][inputX];
-        if (input > largestValue) {
-          largestValue = input;
-          largestY = inputY;
-          largestX = inputX;
-        }
+  for (let y = startInputY; y < endInputY; y++) {
+    for (let x = startInputX; x < endInputX; x++) {
+      const input = inputs[this.thread.z][y][x];
+      if (input > largestValue) {
+        largestValue = input;
+        largestY = y;
+        largestX = x;
       }
     }
   }
@@ -88,7 +64,7 @@ export function predict(
   return largestValue;
 }
 
-export interface ICompareConstants extends IConstantsThis {
+export interface ICompareConstants extends IConvolutionConstantsBase {
   inputWidth: number;
   inputHeight: number;
 
@@ -99,29 +75,52 @@ export interface ICompareConstants extends IConstantsThis {
 export function compare(
   this: IKernelFunctionThis<ICompareConstants>,
   deltas: number[][],
-  switchY: number[][],
-  switchX: number[][]
+  switchX: number[][],
+  switchY: number[][]
 ): number {
-  const x = Math.floor(
-    (this.thread.x / this.output.x) * this.constants.outputWidth
+  const xCenter = this.thread.x + 0.5;
+  const yCenter = this.thread.y + 0.5;
+  const invStrideX = 1 / this.constants.strideX;
+  const invStrideY = 1 / this.constants.strideY;
+
+  const startSourceX = Math.max(
+    0,
+    Math.ceil(
+      (xCenter - this.constants.filterWidth + this.constants.paddingX) *
+        invStrideX
+    )
   );
-  const y = Math.floor(
-    (this.thread.y / this.output.y) * this.constants.outputHeight
+  const startSourceY = Math.max(
+    0,
+    Math.ceil(
+      (yCenter - this.constants.filterHeight + this.constants.paddingY) *
+        invStrideY
+    )
+  );
+  const endSourceX = Math.min(
+    Math.ceil((xCenter + this.constants.paddingX) * invStrideX),
+    this.constants.outputWidth
+  );
+  const endSourceY = Math.min(
+    Math.ceil((yCenter + this.constants.paddingY) * invStrideY),
+    this.constants.outputHeight
   );
 
-  let value = 0;
-
-  for (let deltasY = 0; deltasY < this.constants.inputHeight; deltasY++) {
-    for (let deltasX = 0; deltasX < this.constants.inputWidth; deltasX++) {
-      const switchXValue = switchX[deltasY][deltasX];
-      const switchYValue = switchY[deltasY][deltasX];
-      if (switchXValue === x && switchYValue === y) {
-        value += deltas[deltasY][deltasX];
+  let result = 0;
+  for (let backY = startSourceY; backY < endSourceY; backY++) {
+    for (let backX = startSourceX; backX < endSourceX; backX++) {
+      const switchXValue = switchX[backY][backX];
+      const switchYValue = switchY[backY][backX];
+      if (
+        Math.abs(switchXValue - this.thread.x) < 0.1 &&
+        Math.abs(switchYValue - this.thread.y) < 0.1
+      ) {
+        result += deltas[backY][backX];
       }
     }
   }
 
-  return value;
+  return result;
 }
 
 export function compare3D(
@@ -130,26 +129,51 @@ export function compare3D(
   switchY: number[][][],
   switchX: number[][][]
 ): number {
-  const x = Math.floor(
-    (this.thread.x / this.output.x) * this.constants.outputWidth
+  const xCenter = this.thread.x + 0.5;
+  const yCenter = this.thread.y + 0.5;
+
+  const invStrideX = 1 / this.constants.strideX;
+  const invStrideY = 1 / this.constants.strideY;
+
+  const startSourceX = Math.max(
+    0,
+    Math.ceil(
+      (xCenter - this.constants.filterWidth + this.constants.paddingX) *
+        invStrideX
+    )
   );
-  const y = Math.floor(
-    (this.thread.y / this.output.y) * this.constants.outputHeight
+  const startSourceY = Math.max(
+    0,
+    Math.ceil(
+      (yCenter - this.constants.filterHeight + this.constants.paddingY) *
+        invStrideY
+    )
+  );
+  const endSourceX = Math.min(
+    Math.ceil((xCenter + this.constants.paddingX) * invStrideX),
+    this.constants.inputWidth
+  );
+  const endSourceY = Math.min(
+    Math.ceil((yCenter + this.constants.paddingY) * invStrideY),
+    this.constants.inputHeight
   );
 
-  let value = 0;
+  let result = 0;
 
-  for (let deltasY = 0; deltasY < this.constants.inputHeight; deltasY++) {
-    for (let deltasX = 0; deltasX < this.constants.inputWidth; deltasX++) {
-      const switchXValue = switchX[this.thread.z][deltasY][deltasX];
-      const switchYValue = switchY[this.thread.z][deltasY][deltasX];
-      if (switchXValue === x && switchYValue === y) {
-        value += deltas[this.thread.z][deltasY][deltasX];
+  for (let backY = startSourceY; backY < endSourceY; backY++) {
+    for (let backX = startSourceX; backX < endSourceX; backX++) {
+      const switchXValue = switchX[this.thread.z][backY][backX];
+      const switchYValue = switchY[this.thread.z][backY][backX];
+      if (
+        Math.abs(switchXValue - this.thread.x) < 0.1 &&
+        Math.abs(switchYValue - this.thread.y) < 0.1
+      ) {
+        result += deltas[this.thread.z][backY][backX];
       }
     }
   }
 
-  return value;
+  return result;
 }
 
 export interface IPoolSettings
@@ -187,7 +211,9 @@ export class Pool extends Filter {
   }
 
   get width(): number {
-    return Math.floor(
+    // Using floor prefers to pad less (or use negative padding) on the right
+    // using ceil prefers to pad more
+    return Math.ceil(
       (this.inputLayer.width + this.paddingX * 2 - this.filterWidth) /
         this.strideX +
         1
@@ -195,6 +221,8 @@ export class Pool extends Filter {
   }
 
   get height(): number {
+    // Using floor prefers to pad less (or use negative padding) on the bottom
+    // using ceil prefers to pad more
     return Math.floor(
       (this.inputLayer.height + this.paddingY * 2 - this.filterHeight) /
         this.strideY +
@@ -238,25 +266,11 @@ export class Pool extends Filter {
 
     this.weights = randos3D(this.width, this.height, this.depth);
     this.deltas = zeros3D(this.width, this.height, this.depth);
-
-    this.filters = randos3D(
-      this.filterWidth,
-      this.filterHeight,
-      this.filterCount
-    );
-    this.filterDeltas = zeros3D(
-      this.filterWidth,
-      this.filterHeight,
-      this.filterCount
-    );
     this.validate();
   }
 
   setupKernels(): void {
-    this.predictKernelMap = makeKernelMap<
-      Parameters<typeof predict>,
-      IPredictConstants
-    >(
+    this.predictKernelMap = makeKernelMap(
       {
         switchX: setSwitchX,
         switchY: setSwitchY,
@@ -271,6 +285,8 @@ export class Pool extends Filter {
           paddingY: this.paddingY,
           filterHeight: this.filterHeight,
           filterWidth: this.filterWidth,
+          strideX: this.strideX,
+          strideY: this.strideY,
         },
       }
     );
@@ -284,16 +300,24 @@ export class Pool extends Filter {
       constants: {
         inputWidth: this.inputLayer.width,
         inputHeight: this.inputLayer.height,
-
         outputWidth: this.width,
         outputHeight: this.height,
+        filterWidth: this.filterWidth,
+        filterHeight: this.filterHeight,
+        paddingX: this.paddingX,
+        paddingY: this.paddingY,
+        strideX: this.strideX,
+        strideY: this.strideY,
       },
     });
   }
 
   predict(): void {
-    const { result: weights, switchX, switchY } = (this
-      .predictKernelMap as IKernelMapRunShortcut<ISubKernelObject>)(
+    const {
+      result: weights,
+      switchX,
+      switchY,
+    } = (this.predictKernelMap as IKernelMapRunShortcut<ISubKernelObject>)(
       this.inputLayer.weights
     );
     this.switchX = switchX;
