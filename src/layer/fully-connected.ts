@@ -221,6 +221,8 @@ export class FullyConnected extends Filter {
       this.compareFilterDeltasKernel = makeKernel(compareFilterDeltas3D, {
         output: [connectionCount, this.height],
         constants: {
+          deltaX: 0,
+          deltaY: 0,
           inputWidth: inputLayer.width,
           inputHeight: inputLayer.height,
         },
@@ -246,7 +248,10 @@ export class FullyConnected extends Filter {
       this.compareFilterDeltasKernel = makeKernel(compareFilterDeltas, {
         output: [connectionCount, this.height],
         constants: {
+          deltaX: 0,
+          deltaY: 0,
           inputWidth: inputLayer.width,
+          inputHeight: inputLayer.height,
         },
       });
 
@@ -273,12 +278,9 @@ export class FullyConnected extends Filter {
 
   compare(): void {
     const inputLayerDeltas = this.inputLayer.deltas;
-    this.inputLayer.deltas = (this
-      .compareInputDeltasKernel as IKernelRunShortcut)(
-      inputLayerDeltas,
-      this.deltas,
-      this.filters
-    );
+    this.inputLayer.deltas = (
+      this.compareInputDeltasKernel as IKernelRunShortcut
+    )(inputLayerDeltas, this.deltas, this.filters);
     release(inputLayerDeltas);
 
     const { biasDeltas, filterDeltas } = this;
