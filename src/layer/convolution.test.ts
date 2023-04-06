@@ -21,7 +21,7 @@ describe('Convolution Layer', () => {
     teardown();
   });
   describe('.predict (forward propagation)', () => {
-    test('can convolution a simple matrix', () => {
+    test('can convolve a simple matrix', () => {
       const inputs = [
         [
           [1, 2, 3],
@@ -63,7 +63,7 @@ describe('Convolution Layer', () => {
   });
 
   describe('.compareFilterDeltas (back propagation)', () => {
-    test('can convolution a simple matrix', () => {
+    test('can convolve a simple matrix', () => {
       const filterWidth = 2;
       const filterHeight = 2;
       const inputWidth = 4;
@@ -102,7 +102,7 @@ describe('Convolution Layer', () => {
   });
 
   describe('.compareInputDeltas (back propagation)', () => {
-    test('can convolution a simple matrix', () => {
+    test('can convolve a simple matrix', () => {
       const inputDeltas = [
         [
           [1, 2, 3],

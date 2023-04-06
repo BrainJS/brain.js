@@ -45,7 +45,7 @@ export class ArthurDeviationBiases extends BasePraxis {
     this.kernel = makeKernel(update, {
       output: [this.width, this.height],
       constants: {
-        learningRate: this.settings.learningRate,
+        learningRate: this.settings.learningRate ?? 0.01,
       },
     });
   }

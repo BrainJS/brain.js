@@ -13,6 +13,7 @@ import { ITrainingStatus } from './feed-forward';
 import { INumberHash, lookup } from './lookup';
 import {
   IJSONLayer,
+  INeuralNetworkData,
   INeuralNetworkDatum,
   INeuralNetworkJSON,
   INeuralNetworkOptions,
@@ -189,10 +190,10 @@ export type BackPropagateLayer = (
   deltas: KernelOutput
 ) => { result: KernelOutput; error: KernelOutput };
 
-export class NeuralNetworkGPU<InputType, OutputType> extends NeuralNetwork<
-  InputType,
-  OutputType
-> {
+export class NeuralNetworkGPU<
+  InputType extends INeuralNetworkData,
+  OutputType extends INeuralNetworkData
+> extends NeuralNetwork<InputType, OutputType> {
   gpu: GPU;
 
   texturizeInputData: (value: KernelOutput) => KernelOutput = () => {
@@ -306,9 +307,11 @@ export class NeuralNetworkGPU<InputType, OutputType> extends NeuralNetwork<
     }
     const result = this._divideMSESum(data.length, sum);
     release(sum);
-    return (result instanceof Texture
-      ? (result.toArray() as number[])
-      : (result as number[]))[0];
+    return (
+      result instanceof Texture
+        ? (result.toArray() as number[])
+        : (result as number[])
+    )[0];
   }
 
   adjustWeights(): void {
@@ -618,11 +621,11 @@ export class NeuralNetworkGPU<InputType, OutputType> extends NeuralNetwork<
     if (this.inputLookup) {
       formattedInput = lookup.toArray(
         this.inputLookup,
-        (input as unknown) as INumberHash,
+        input as unknown as INumberHash,
         this.inputLookupLength
       );
     } else {
-      formattedInput = (input as unknown) as Float32Array;
+      formattedInput = input as unknown as Float32Array;
     }
     this.validateInput(formattedInput);
     const outputTextures = this.runInput(formattedInput);
@@ -632,13 +635,13 @@ export class NeuralNetworkGPU<InputType, OutputType> extends NeuralNetwork<
         : outputTextures;
 
     if (this.outputLookup) {
-      return (lookup.toObject(
+      return lookup.toObject(
         this.outputLookup,
         output as Float32Array
-      ) as unknown) as OutputType;
+      ) as unknown as OutputType;
     }
 
-    return (output as unknown) as OutputType;
+    return output as unknown as OutputType;
   }
 
   // @ts-expect-error the underlying network works as normal, but we are working on the GPU
@@ -691,9 +694,10 @@ export class NeuralNetworkGPU<InputType, OutputType> extends NeuralNetwork<
     }
     // use Array.from, keeping json small
     const jsonLayerWeights = this.weights.map((layerWeights) => {
-      return (layerWeights instanceof Texture
-        ? (layerWeights.toArray() as Float32Array[])
-        : (layerWeights as Float32Array[])
+      return (
+        layerWeights instanceof Texture
+          ? (layerWeights.toArray() as Float32Array[])
+          : (layerWeights as Float32Array[])
       ).map((layerWeights) => Array.from(layerWeights));
     });
     const jsonLayerBiases = this.biases.map((layerBiases) =>

@@ -38,7 +38,7 @@ export function makeKernel<
   ConstantsTypes extends IConstantsThis = IConstantsThis
 >(
   fn: KernelFunction<ArgTypes, ConstantsTypes>,
-  settings: IGPUKernelSettings
+  settings: IGPUKernelSettings & { constants?: ConstantsTypes }
 ): IKernelRunShortcut {
   let _gpuInstance: GPU = gpuInstance as GPU;
   if (_gpuInstance === null) {
@@ -57,7 +57,7 @@ export function makeKernelMap<
 >(
   map: ISubKernelObject,
   fn: ThreadFunction<ArgTypes, ConstantsTypes>,
-  settings: IGPUKernelSettings
+  settings: IGPUKernelSettings & { constants?: ConstantsTypes }
 ): IKernelMapRunShortcut<ISubKernelObject> {
   let _gpuInstance: GPU = gpuInstance as GPU;
   if (_gpuInstance === null) {

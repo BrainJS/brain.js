@@ -80,58 +80,77 @@ describe('Pool Layer', () => {
         [3, 4],
       ];
       const switchX = [
-        [1, 0],
-        [1, 0],
+        [0, 2],
+        [1, 1],
       ];
       const switchY = [
         [1, 1],
-        [0, 0],
+        [2, 2],
       ];
+
       const constants: ICompareConstants = {
         inputWidth: 2,
         inputHeight: 2,
 
         outputWidth: 2,
         outputHeight: 2,
+
+        paddingX: 0,
+        paddingY: 0,
+        strideX: 1,
+        strideY: 1,
+        filterWidth: 2,
+        filterHeight: 2,
       };
       const results = gpuMock(compare, {
-        output: [2, 2],
+        output: [3, 3],
         constants,
-      })(deltas, switchY, switchX);
-
+      })(deltas, switchX, switchY);
       expect(results).toEqual([
-        new Float32Array([4, 3]),
-        new Float32Array([2, 1]),
+        new Float32Array([0, 0, 0]),
+        new Float32Array([1, 0, 2]),
+        new Float32Array([0, 7, 0]),
       ]);
     });
-    test('can pool a simple matrix', () => {
+    test('can pool a simple matrix 2', () => {
+      // Tests backprop of 2x2 matrix with 1 padding, resulting in 3x3
       const deltas = [
-        [1, 2],
-        [3, 4],
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
       ];
       const switchX = [
-        [1, 1],
-        [1, 1],
+        [0, 1, 1],
+        [0, 0, 1],
+        [0, 1, 1],
       ];
       const switchY = [
-        [1, 1],
-        [1, 1],
+        [0, 0, 0],
+        [0, 1, 0],
+        [1, 1, 1],
       ];
       const constants: ICompareConstants = {
         inputWidth: 2,
         inputHeight: 2,
 
-        outputWidth: 2,
-        outputHeight: 2,
+        outputWidth: 3,
+        outputHeight: 3,
+
+        paddingX: 1,
+        paddingY: 1,
+        strideX: 1,
+        strideY: 1,
+        filterWidth: 2,
+        filterHeight: 2,
       };
       const results = gpuMock(compare, {
         output: [2, 2],
         constants,
-      })(deltas, switchY, switchX);
+      })(deltas, switchX, switchY);
 
       expect(results).toEqual([
-        new Float32Array([0, 0]),
-        new Float32Array([0, 10]),
+        new Float32Array([5, 11]),
+        new Float32Array([12, 17]),
       ]);
     });
   });
@@ -145,14 +164,14 @@ describe('Pool Layer', () => {
       ];
       const switchX = [
         [
-          [1, 0],
-          [1, 0],
+          [0, 2],
+          [1, 2],
         ],
       ];
       const switchY = [
         [
-          [1, 1],
-          [0, 0],
+          [0, 1],
+          [2, 2],
         ],
       ];
       const constants: ICompareConstants = {
@@ -161,17 +180,28 @@ describe('Pool Layer', () => {
 
         outputWidth: 2,
         outputHeight: 2,
+
+        paddingX: 0,
+        paddingY: 0,
+        strideX: 1,
+        strideY: 1,
+        filterWidth: 2,
+        filterHeight: 2,
       };
       const results = gpuMock(compare3D, {
-        output: [2, 2, 1],
+        output: [3, 3, 1],
         constants,
       })(deltas, switchY, switchX);
 
       expect(results).toEqual([
-        [new Float32Array([4, 3]), new Float32Array([2, 1])],
+        [
+          new Float32Array([1, 0, 0]),
+          new Float32Array([0, 0, 2]),
+          new Float32Array([0, 3, 4]),
+        ],
       ]);
     });
-    test('can pool a simple matrix', () => {
+    test('can pool a simple matrix 2', () => {
       const deltas = [
         [
           [1, 2],
@@ -180,13 +210,13 @@ describe('Pool Layer', () => {
       ];
       const switchX = [
         [
-          [1, 1],
-          [1, 1],
+          [0, 1],
+          [0, 1],
         ],
       ];
       const switchY = [
         [
-          [1, 1],
+          [0, 0],
           [1, 1],
         ],
       ];
@@ -196,6 +226,13 @@ describe('Pool Layer', () => {
 
         outputWidth: 2,
         outputHeight: 2,
+
+        paddingX: 1,
+        paddingY: 1,
+        strideX: 1,
+        strideY: 1,
+        filterWidth: 2,
+        filterHeight: 2,
       };
       const results = gpuMock(compare3D, {
         output: [2, 2, 1],
@@ -203,7 +240,7 @@ describe('Pool Layer', () => {
       })(deltas, switchY, switchX);
 
       expect(results).toEqual([
-        [new Float32Array([0, 0]), new Float32Array([0, 10])],
+        [new Float32Array([1, 2]), new Float32Array([3, 4])],
       ]);
     });
   });
@@ -244,7 +281,7 @@ describe('Pool Layer', () => {
   });
 
   describe('.compare (back propagation)', () => {
-    it.skip('can compare pool a simple matrix', () => {
+    it('can compare pool a simple matrix', () => {
       const deltas = [[9]];
       const switchX = [[0]];
       const switchY = [[0]];
@@ -254,12 +291,18 @@ describe('Pool Layer', () => {
 
         outputWidth: 1,
         outputHeight: 1,
+
+        paddingX: 0,
+        paddingY: 0,
+        strideX: 1,
+        strideY: 1,
+        filterWidth: 3,
+        filterHeight: 3,
       };
       const results = gpuMock(compare, {
         output: [3, 3, 0],
         constants,
       })(deltas, switchX, switchY);
-
       expect(results).toEqual([
         Float32Array.from([9, 0, 0]),
         Float32Array.from([0, 0, 0]),
