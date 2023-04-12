@@ -14,6 +14,7 @@ export default {
   // Specify here external modules which you don't want to include in your bundle (for instance: 'lodash', 'moment' etc.)
   // https://rollupjs.org/guide/en#external-e-external
   external: [
+    // brain js already uses gpu.js as peer dependencies so it shouldn't be like this
     fileURLToPath(
       new URL('./node_modules/gpu.js/src/index.js', import.meta.url)
     ),
