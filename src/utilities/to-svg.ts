@@ -2,7 +2,11 @@ import { FeedForward, IFeedForwardJSON } from '../feed-forward';
 import { recurrentZeros } from '../layer/recurrent-zeros';
 import { Recurrent } from '../recurrent';
 import { IRNNJSON, RNN } from '../recurrent/rnn';
-import { INeuralNetworkData, INeuralNetworkJSON, NeuralNetwork } from '../neural-network'
+import {
+  INeuralNetworkData,
+  INeuralNetworkJSON,
+  NeuralNetwork,
+} from '../neural-network';
 import { GRU } from '../recurrent/gru';
 import { LSTM } from '../recurrent/lstm';
 import { NeuralNetworkGPU } from '../neural-network-gpu';

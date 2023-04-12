@@ -313,11 +313,8 @@ export class Pool extends Filter {
   }
 
   predict(): void {
-    const {
-      result: weights,
-      switchX,
-      switchY,
-    } = (this.predictKernelMap as IKernelMapRunShortcut<ISubKernelObject>)(
+    const { result: weights, switchX, switchY } = (this
+      .predictKernelMap as IKernelMapRunShortcut<ISubKernelObject>)(
       this.inputLayer.weights
     );
     this.switchX = switchX;

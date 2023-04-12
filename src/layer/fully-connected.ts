@@ -278,9 +278,12 @@ export class FullyConnected extends Filter {
 
   compare(): void {
     const inputLayerDeltas = this.inputLayer.deltas;
-    this.inputLayer.deltas = (
-      this.compareInputDeltasKernel as IKernelRunShortcut
-    )(inputLayerDeltas, this.deltas, this.filters);
+    this.inputLayer.deltas = (this
+      .compareInputDeltasKernel as IKernelRunShortcut)(
+      inputLayerDeltas,
+      this.deltas,
+      this.filters
+    );
     release(inputLayerDeltas);
 
     const { biasDeltas, filterDeltas } = this;
