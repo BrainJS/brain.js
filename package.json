@@ -115,5 +115,5 @@
   },
   "types": "dist/",
   "unpkg": "dist/browser.js",
-  "version": "2.0.0-beta.21"
+  "version": "2.0.0-beta.22"
 }
