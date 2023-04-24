@@ -189,7 +189,7 @@ However, there is no reason to use a neural network to figure out XOR. (-: So, h
 
 ## More Examples
 
-[Brain.js Examples Repo](https://github.com/BrainJS/brain.js-examples))
+[Brain.js Examples Repo](https://github.com/BrainJS/brain.js-examples)
 
 You can check out this fantastic screencast, which explains how to train a simple neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
 
@@ -412,7 +412,7 @@ Use `CrossValidate` with these classes:
 - `brain.LSTMTimeStep`
 - `brain.GRUTimeStep`
 
-An example of using cross validate can be found in [examples/javascript/cross-validate.js](examples/javascript/cross-validate.js)
+An example of using cross validate can be found in [cross-validate.ts](https://github.com/BrainJS/brain.js-examples/blob/main/src/cross-validate.ts)
 
 ## Methods
 
@@ -569,7 +569,7 @@ const likely = require('brain/likely');
 const key = likely(input, net);
 ```
 
-Likely example see: [simple letter detection](./examples/javascript/which-letter-simple.js)
+Likely example see: [simple letter detection](https://github.com/BrainJS/brain.js-examples/blob/main/src/which-letter-simple.ts)
 
 ### `toSVG`
 
@@ -586,7 +586,7 @@ document.getElementById('result').innerHTML = brain.utilities.toSVG(
 );
 ```
 
-toSVG example see: [network rendering](./examples/javascript/rendering-svg.html)
+toSVG example see: [network rendering](https://github.com/BrainJS/brain.js-examples/blob/main/src/rendering-svg/index.html)
 
 The user interface used:
 ![screenshot1](https://user-images.githubusercontent.com/43925925/48969024-e526ed80-f000-11e8-85bd-e10967cfaee2.png)
