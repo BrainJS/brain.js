@@ -86,7 +86,7 @@ npm install brain.js
 
 ### Installation note
 
-`Brain.js` depends on a native module `headless-gl` for gpu support. In most cases installing `brain.js` from npm should just work. However, if you run into problems, this mean prebuilt binaries are not able to download from github repositories and you might need to build it yourself.
+`Brain.js` depends on a native module [`headless-gl`](https://www.npmjs.com/package/headless-gl) for GPU support. In most cases installing `brain.js` from npm should just work. However, if you run into problems, this means prebuilt binaries are not able to download from GitHub repositories and you might need to build it yourself.
 
 #### Building from source
 
@@ -100,30 +100,30 @@ npm rebuild
 
 ###### Mac OS X
 
-- [Python 3.7 or later](https://www.python.org/)
+- [A supported version of Python](https://devguide.python.org/versions)
 - [XCode](https://developer.apple.com/xcode/)
 
 ###### Ubuntu/Debian
 
-- [Python 3.7 or later](https://www.python.org/)
+- [A supported version of Python](https://devguide.python.org/versions)
 - A GNU C++ environment (available via the `build-essential` package on `apt`)
 - [libxi-dev](http://www.x.org/wiki/)
-- Working and up to date OpenGL drivers
+- Working and up-to-date OpenGL drivers
 - [GLEW](http://glew.sourceforge.net/)
 - [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/)
 
 ```bash
-sudo apt-get install -y build-essential libxi-dev libglu1-mesa-dev libglew-dev pkg-config
+sudo apt-get install -y build-essential libglew-dev libglu1-mesa-dev libxi-dev pkg-config
 ```
 
 ###### Windows
 
-- [Python 3.7 or later](https://www.python.org/)
+- [A supported version of Python](https://devguide.python.org/versions)  __See:__ https://apps.microsoft.com/store/search/python
 - [Microsoft Visual Studio Build Tools 2022](https://visualstudio.microsoft.com/downloads)
-- run in cmd: `npm config set msvs_version 2022`
-- run in cmd: `npm config set python python3`
+- run in cmd: `npm config set msvs_version 2022`  __Note: This no longer works in modern versions of npm.__
+- run in cmd: `npm config set python python3`  __Note: This no longer works in modern versions of npm.__
 
-\* If you are using `Build Tools 2017` then run `npm config set msvs_version 2017`
+\* If you are using `Build Tools 2017` then run `npm config set msvs_version 2017`  __Note: This no longer works in modern versions of npm.__
 
 ## Examples
 
@@ -141,7 +141,7 @@ const config = {
   leakyReluAlpha: 0.01, // supported for activation type 'leaky-relu'
 };
 
-// create a simple feed forward neural network with backpropagation
+// create a simple feed-forward neural network with backpropagation
 const net = new brain.NeuralNetwork(config);
 
 net.train([
@@ -191,7 +191,7 @@ However, there is no reason to use a neural network to figure out XOR. (-: So, h
 
 [Brain.js Examples Repo](https://github.com/BrainJS/brain.js-examples)
 
-You can check out this fantastic screencast, which explains how to train a simple neural network using a real world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
+You can check out this fantastic screencast, which explains how to train a simple neural network using a real-world dataset: [How to create a neural network in the browser using Brain.js](https://scrimba.com/c/c36zkcb).
 
 ## Training
 
@@ -338,7 +338,7 @@ net.train(data, {
 
 The network will stop training whenever one of the two criteria is met: the training error has gone below the threshold (default `0.005`), or the max number of iterations (default `20000`) has been reached.
 
-By default training will not let you know how it's doing until the end, but set `log` to `true` to get periodic updates on the current training error of the network. The training error should decrease every time. The updates will be printed to console. If you set `log` to a function, this function will be called with the updates instead of printing to the console.
+By default, training will not let you know how it's doing until the end, but set `log` to `true` to get periodic updates on the current training error of the network. The training error should decrease every time. The updates will be printed to the console. If you set `log` to a function, this function will be called with the updates instead of printing to the console.
 However, if you want to use the values of the updates in your own output, the `callback` can be set to a function to do so instead.
 
 The learning rate is a parameter that influences how quickly the network trains. It's a number from `0` to `1`. If the learning rate is close to `0`, it will take longer to train. If the learning rate is closer to `1`, it will train faster, but training results may be constrained to a local minimum and perform badly on new data.(_Overfitting_) The default learning rate is `0.3`.
