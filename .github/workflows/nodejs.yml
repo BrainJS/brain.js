@@ -14,7 +14,9 @@ jobs:
       matrix:
         node: [16.x, 18.x, 20.x]
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        exclude:  # TODO: Get macOS tests passing on Node.js v20
+        exclude:  # TODO: Get macOS tests to pass by upgrading to https://github.com/nodejs/node-gyp/releases
+        - os: macos-latest
+          node: 18.x
         - os: macos-latest
           node: 20.x
 
