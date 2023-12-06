@@ -110,8 +110,8 @@
     "watch": "run-p watch:**",
     "watch:node": "rollup -c rollup.config.js -w",
     "watch:test": "jest --watch",
-    "clean": "del ./dist",
-    "prepare": "npm run clean; npm run build"
+    "clean": "rm ./dist",
+    "prepare": "npm run clean && npm run build"
   },
   "types": "dist/",
   "unpkg": "dist/browser.js",
