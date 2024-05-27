@@ -15,9 +15,9 @@ function deepClone(value: TextureArrayOutput): TextureArrayOutput {
 }
 
 export interface IAutoencoderOptions {
-  binaryThresh?: number;
-  decodedSize?: number;
-  hiddenLayers?: number[];
+  binaryThresh: number;
+  decodedSize: number;
+  hiddenLayers: number[];
 }
 
 /**
