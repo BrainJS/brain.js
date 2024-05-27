@@ -101,7 +101,7 @@ export class AutoEncoder<DecodedData extends INeuralNetworkData, EncodedData ext
     this.#denoiser.run(input);
 
     // Get the auto-encoded input.
-    let encodedInput: TextureArrayOutput = this.decodedLayer as TextureArrayOutput;
+    let encodedInput: TextureArrayOutput = this.encodedLayer as TextureArrayOutput;
 
     // If the encoded input is a `Texture`, convert it into an `Array`.
     if (encodedInput instanceof Texture) encodedInput = encodedInput.toArray();
@@ -142,7 +142,7 @@ export class AutoEncoder<DecodedData extends INeuralNetworkData, EncodedData ext
     const layers: IJSONLayer[] = [];
     const sizes: number[] = [];
 
-    for (let i = this.decodedLayerIndex; i < this.#denoiser.sizes.length; i++) {
+    for (let i = this.encodedLayerIndex; i < this.#denoiser.sizes.length; i++) {
       layers.push(json.layers[i]);
       sizes.push(json.sizes[i]);
     }
@@ -157,14 +157,17 @@ export class AutoEncoder<DecodedData extends INeuralNetworkData, EncodedData ext
     return decoder as unknown as NeuralNetworkGPU<EncodedData, DecodedData>;
   }
 
-  private get decodedLayer(): KernelOutput {
-    return this.#denoiser.outputs[this.decodedLayerIndex];
+  /**
+   * Get the layer containing the encoded representation.
+   */
+  private get encodedLayer(): KernelOutput {
+    return this.#denoiser.outputs[this.encodedLayerIndex];
   }
 
   /**
-   * Get the offset of the decoded layer.
+   * Get the offset of the encoded layer.
    */
-  private get decodedLayerIndex(): number {
+  private get encodedLayerIndex(): number {
     return Math.round(this.#denoiser.outputs.length * 0.5) - 1;
   }
 }
