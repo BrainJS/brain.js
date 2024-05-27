@@ -23,7 +23,7 @@ export interface IAutoencoderOptions {
 /**
  * An autoencoder learns to compress input data down to relevant features and reconstruct input data from its compressed representation.
  */
-export class Autoencoder<DecodedData extends INeuralNetworkData, EncodedData extends INeuralNetworkData> {
+export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeuralNetworkData> {
   #decoder?: NeuralNetworkGPU<EncodedData, DecodedData>;
   #denoiser: NeuralNetworkGPU<DecodedData, DecodedData>;
 
@@ -37,7 +37,7 @@ export class Autoencoder<DecodedData extends INeuralNetworkData, EncodedData ext
     denoiserOptions.binaryThresh = options.binaryThresh;
     denoiserOptions.hiddenLayers = options.hiddenLayers;
 
-    denoiserOptions.inputSize = denoiserOptions.outputSize = options.decodedSize;
+    if (options.decodedSize) denoiserOptions.inputSize = denoiserOptions.outputSize = options.decodedSize;
 
     this.#denoiser = new NeuralNetworkGPU<DecodedData, DecodedData>(options);
   }
@@ -172,4 +172,4 @@ export class Autoencoder<DecodedData extends INeuralNetworkData, EncodedData ext
   }
 }
 
-export default Autoencoder;
+export default AE;
