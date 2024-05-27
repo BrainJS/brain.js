@@ -3,10 +3,13 @@ import { IJSONLayer, INeuralNetworkData, INeuralNetworkDatum, INeuralNetworkTrai
 import { INeuralNetworkGPUOptions, NeuralNetworkGPU } from "./neural-network-gpu";
 import { INeuralNetworkState } from "./neural-network-types";
 
-function shallowClone(value: TextureArrayOutput): TextureArrayOutput {
+function deepClone(value: TextureArrayOutput): TextureArrayOutput {
   const clone: TextureArrayOutput = [];
 
-  for (let i = 0; i < value.length; i++) clone[i] = value[i];
+  for (let i = 0; i < value.length; i++) {
+    if (typeof value[i] === "object") (clone[i] as any) = deepClone(value[i] as any);
+    else clone[i] = value[i];
+  }
 
   return clone;
 }
@@ -104,7 +107,7 @@ export class AutoEncoder<DecodedData extends INeuralNetworkData, EncodedData ext
     if (encodedInput instanceof Texture) encodedInput = encodedInput.toArray();
 
     // Return the encoded input.
-    return shallowClone(encodedInput) as EncodedData;
+    return deepClone(encodedInput) as EncodedData;
   }
 
   /**
