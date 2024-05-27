@@ -15,7 +15,6 @@ export interface IAutoEncoderOptions {
 export class AutoEncoder<DecodedData extends INeuralNetworkData, EncodedData extends INeuralNetworkData> {
   #decoder?: NeuralNetworkGPU<EncodedData, DecodedData>;
   #denoiser: NeuralNetworkGPU<DecodedData, DecodedData>;
-  #encoder?: NeuralNetworkGPU<DecodedData, EncodedData>;
 
   constructor (
     options?: Partial<IAutoEncoderOptions>
