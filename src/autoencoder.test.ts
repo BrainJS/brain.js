@@ -1,4 +1,4 @@
-import AutoEncoder from "./auto-encoder";
+import Autoencoder from "./autoencoder";
 
 const trainingData = [
   [0, 0, 0],
@@ -7,7 +7,7 @@ const trainingData = [
   [1, 1, 0]
 ];
 
-const xornet = new AutoEncoder<number[], number[]>(
+const xornet = new Autoencoder<number[], number[]>(
   {
     decodedSize: 3,
     hiddenLayers: [ 5, 2, 5 ]

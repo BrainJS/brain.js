@@ -14,7 +14,7 @@ function deepClone(value: TextureArrayOutput): TextureArrayOutput {
   return clone;
 }
 
-export interface IAutoEncoderOptions {
+export interface IAutoencoderOptions {
   binaryThresh?: number;
   decodedSize?: number;
   hiddenLayers?: number[];
@@ -23,12 +23,12 @@ export interface IAutoEncoderOptions {
 /**
  * An autoencoder learns to compress input data down to relevant features and reconstruct input data from its compressed representation.
  */
-export class AutoEncoder<DecodedData extends INeuralNetworkData, EncodedData extends INeuralNetworkData> {
+export class Autoencoder<DecodedData extends INeuralNetworkData, EncodedData extends INeuralNetworkData> {
   #decoder?: NeuralNetworkGPU<EncodedData, DecodedData>;
   #denoiser: NeuralNetworkGPU<DecodedData, DecodedData>;
 
   constructor (
-    options?: Partial<IAutoEncoderOptions>
+    options?: Partial<IAutoencoderOptions>
   ) {
     options ??= {};
 
@@ -172,4 +172,4 @@ export class AutoEncoder<DecodedData extends INeuralNetworkData, EncodedData ext
   }
 }
 
-export default AutoEncoder;
+export default Autoencoder;
