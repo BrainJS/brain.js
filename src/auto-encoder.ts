@@ -1,7 +1,15 @@
-import { Texture } from "gpu.js";
+import { KernelOutput, Texture, TextureArrayOutput } from "gpu.js";
 import { IJSONLayer, INeuralNetworkData, INeuralNetworkDatum, INeuralNetworkTrainOptions } from "./neural-network";
 import { INeuralNetworkGPUOptions, NeuralNetworkGPU } from "./neural-network-gpu";
 import { INeuralNetworkState } from "./neural-network-types";
+
+function shallowClone(value: TextureArrayOutput): TextureArrayOutput {
+  const clone: TextureArrayOutput = [];
+
+  for (let i = 0; i < value.length; i++) clone[i] = value[i];
+
+  return clone;
+}
 
 export interface IAutoEncoderOptions {
   binaryThresh?: number;
@@ -89,19 +97,14 @@ export class AutoEncoder<DecodedData extends INeuralNetworkData, EncodedData ext
     // Process the input.
     this.#denoiser.run(input);
 
-    // Calculate the index of the auto-encoded layer.
-    const index = this.decodedLayerIndex;
-
     // Get the auto-encoded input.
-    let encodedInput = ((globalThis as any)["structuredClone"] as any)(this.#denoiser.outputs[index]);
-
-    console.log(this.#denoiser.outputs);
+    let encodedInput: TextureArrayOutput = this.decodedLayer as TextureArrayOutput;
 
     // If the encoded input is a `Texture`, convert it into an `Array`.
     if (encodedInput instanceof Texture) encodedInput = encodedInput.toArray();
 
     // Return the encoded input.
-    return encodedInput as EncodedData;
+    return shallowClone(encodedInput) as EncodedData;
   }
 
   /**
@@ -149,6 +152,10 @@ export class AutoEncoder<DecodedData extends INeuralNetworkData, EncodedData ext
     const decoder = new NeuralNetworkGPU().fromJSON(json);
 
     return decoder as unknown as NeuralNetworkGPU<EncodedData, DecodedData>;
+  }
+
+  private get decodedLayer(): KernelOutput {
+    return this.#denoiser.outputs[this.decodedLayerIndex];
   }
 
   /**
