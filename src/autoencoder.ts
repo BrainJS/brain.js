@@ -14,7 +14,7 @@ function deepClone(value: TextureArrayOutput): TextureArrayOutput {
   return clone;
 }
 
-export interface IAutoencoderOptions {
+export interface IAEOptions {
   binaryThresh: number;
   decodedSize: number;
   hiddenLayers: number[];
@@ -28,7 +28,7 @@ export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeu
   #denoiser: NeuralNetworkGPU<DecodedData, DecodedData>;
 
   constructor (
-    options?: Partial<IAutoencoderOptions>
+    options?: Partial<IAEOptions>
   ) {
     options ??= {};
 
