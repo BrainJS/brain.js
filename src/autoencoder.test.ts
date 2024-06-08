@@ -68,7 +68,7 @@ test(
     expect(result.error).toBeLessThanOrEqual(errorThresh);
 
     function includesAnomalies(...args: number[]) {
-      expect(xornet.includesAnomalies(args)).toBe(false);
+      expect(xornet.likelyIncludesAnomalies(args)).toBe(false);
     }
 
     includesAnomalies(0, 0, 0);

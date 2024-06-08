@@ -2,17 +2,7 @@ import { KernelOutput, Texture, TextureArrayOutput } from "gpu.js";
 import { IJSONLayer, INeuralNetworkData, INeuralNetworkDatum, INeuralNetworkTrainOptions } from "./neural-network";
 import { INeuralNetworkGPUOptions, NeuralNetworkGPU } from "./neural-network-gpu";
 import { INeuralNetworkState } from "./neural-network-types";
-
-function deepClone(value: TextureArrayOutput): TextureArrayOutput {
-  const clone: TextureArrayOutput = [];
-
-  for (let i = 0; i < value.length; i++) {
-    if (typeof value[i] === "object") (clone[i] as any) = deepClone(value[i] as any);
-    else clone[i] = value[i];
-  }
-
-  return clone;
-}
+import { UntrainedNeuralNetworkError } from "./errors/untrained-neural-network-error";
 
 export interface IAEOptions {
   binaryThresh: number;
@@ -24,22 +14,28 @@ export interface IAEOptions {
  * An autoencoder learns to compress input data down to relevant features and reconstruct input data from its compressed representation.
  */
 export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeuralNetworkData> {
-  #decoder?: NeuralNetworkGPU<EncodedData, DecodedData>;
-  #denoiser: NeuralNetworkGPU<DecodedData, DecodedData>;
+  private decoder?: NeuralNetworkGPU<EncodedData, DecodedData>;
+  private denoiser: NeuralNetworkGPU<DecodedData, DecodedData>;
 
   constructor (
     options?: Partial<IAEOptions>
   ) {
+    // Create default options for the autoencoder.
     options ??= {};
 
+    // Create default options for the autoencoder's denoiser subnet.
     const denoiserOptions: Partial<INeuralNetworkGPUOptions> = {};
 
+    // Inherit the binary threshold of the parent autoencoder.
     denoiserOptions.binaryThresh = options.binaryThresh;
+    // Inherit the hidden layers of the parent autoencoder.
     denoiserOptions.hiddenLayers = options.hiddenLayers;
 
+    // Define the denoiser subnet's input and output sizes.
     if (options.decodedSize) denoiserOptions.inputSize = denoiserOptions.outputSize = options.decodedSize;
 
-    this.#denoiser = new NeuralNetworkGPU<DecodedData, DecodedData>(options);
+    // Create the denoiser subnet of the autoencoder.
+    this.denoiser = new NeuralNetworkGPU<DecodedData, DecodedData>(options);
   }
 
   /**
@@ -48,31 +44,14 @@ export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeu
    * @returns {DecodedData}
    */
   denoise(input: DecodedData): DecodedData {
-    return this.#denoiser.run(input);
-  }
-
-  /**
-   * Test a data sample for anomalies.
-   *
-   * @param {DecodedData} input
-   * @returns {boolean}
-   */
-  includesAnomalies(input: DecodedData, anomalyThreshold: number = 0.2): boolean {
-    const anomalies: number[] = [];
-
-    const denoised = this.denoise(input);
-
-    for (let i = 0; i < (input.length ?? 0); i++) {
-      anomalies[i] = Math.abs((input as number[])[i] - (denoised as number[])[i]);
-    }
-
-    const sum = anomalies.reduce(
-      (previousValue, value) => previousValue + value
-    );
-
-    const mean = sum / (input as number[]).length;
-
-    return mean > anomalyThreshold;
+    // Run the input through the generic denoiser.
+    // This isn't the best denoiser implementation, but it's efficient.
+    // Efficiency is important here because training should focus on
+    // optimizing for feature extraction as quickly as possible rather than
+    // denoising and anomaly detection; there are other specialized topologies
+    // better suited for these tasks anyways, many of which can be implemented
+    // by using an autoencoder.
+    return this.denoiser.run(input);
   }
 
   /**
@@ -82,12 +61,11 @@ export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeu
    * @returns {DecodedData}
    */
   decode(input: EncodedData): DecodedData {
+    // If the decoder has not been trained yet, throw an error.
+    if (!this.decoder) throw new UntrainedNeuralNetworkError(this);
+
     // Decode the encoded input.
-    let output = this.#decoder?.run(input);
-
-    if (!output) throw new Error("Cannot decode data before training the auto encoder.");
-
-    return output as DecodedData;
+    return this.decoder.run(input);
   }
 
   /**
@@ -97,17 +75,53 @@ export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeu
    * @returns {EncodedData}
    */
   encode(input: DecodedData): EncodedData {
+    // If the decoder has not been trained yet, throw an error.
+    if (!this.denoiser) throw new UntrainedNeuralNetworkError(this);
+
     // Process the input.
-    this.#denoiser.run(input);
+    this.denoiser.run(input);
 
     // Get the auto-encoded input.
     let encodedInput: TextureArrayOutput = this.encodedLayer as TextureArrayOutput;
 
     // If the encoded input is a `Texture`, convert it into an `Array`.
     if (encodedInput instanceof Texture) encodedInput = encodedInput.toArray();
+    else encodedInput = encodedInput.slice(0);
 
     // Return the encoded input.
-    return deepClone(encodedInput) as EncodedData;
+    return encodedInput as EncodedData;
+  }
+
+  /**
+   * Test whether or not a data sample likely contains anomalies.
+   * If anomalies are likely present in the sample, returns `true`.
+   * Otherwise, returns `false`.
+   *
+   * @param {DecodedData} input
+   * @returns {boolean}
+   */
+  likelyIncludesAnomalies(input: DecodedData, anomalyThreshold: number = 0.2): boolean {
+    // Create the anomaly vector.
+    const anomalies: number[] = [];
+
+    // Attempt to denoise the input.
+    const denoised = this.denoise(input);
+
+    // Calculate the anomaly vector.
+    for (let i = 0; i < (input.length ?? 0); i++) {
+      anomalies[i] = Math.abs((input as number[])[i] - (denoised as number[])[i]);
+    }
+
+    // Calculate the sum of all anomalies within the vector.
+    const sum = anomalies.reduce(
+      (previousValue, value) => previousValue + value
+    );
+
+    // Calculate the mean anomaly.
+    const mean = sum / (input as number[]).length;
+
+    // Return whether or not the mean anomaly rate is greater than the anomaly threshold.
+    return mean > anomalyThreshold;
   }
 
   /**
@@ -124,9 +138,9 @@ export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeu
       preprocessedData.push( { input: datum, output: datum } );
     }
 
-    const results = this.#denoiser.train(preprocessedData, options);
+    const results = this.denoiser.train(preprocessedData, options);
 
-    this.#decoder = this.createDecoder();
+    this.decoder = this.createDecoder();
 
     return results;
   }
@@ -137,12 +151,12 @@ export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeu
    * @returns {NeuralNetworkGPU<EncodedData, DecodedData>}
    */
   private createDecoder() {
-    const json = this.#denoiser.toJSON();
+    const json = this.denoiser.toJSON();
 
     const layers: IJSONLayer[] = [];
     const sizes: number[] = [];
 
-    for (let i = this.encodedLayerIndex; i < this.#denoiser.sizes.length; i++) {
+    for (let i = this.encodedLayerIndex; i < this.denoiser.sizes.length; i++) {
       layers.push(json.layers[i]);
       sizes.push(json.sizes[i]);
     }
@@ -161,14 +175,14 @@ export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeu
    * Get the layer containing the encoded representation.
    */
   private get encodedLayer(): KernelOutput {
-    return this.#denoiser.outputs[this.encodedLayerIndex];
+    return this.denoiser.outputs[this.encodedLayerIndex];
   }
 
   /**
    * Get the offset of the encoded layer.
    */
   private get encodedLayerIndex(): number {
-    return Math.round(this.#denoiser.outputs.length * 0.5) - 1;
+    return Math.round(this.denoiser.outputs.length * 0.5) - 1;
   }
 }
 
