@@ -13,6 +13,8 @@ import { mse } from './utilities/mse';
 import { randos } from './utilities/randos';
 import { zeros } from './utilities/zeros';
 
+export type LossFunction = (actual: number, expected: number) => number;
+
 type NeuralNetworkFormatter =
   | ((v: INumberHash) => Float32Array)
   | ((v: number[]) => Float32Array);
@@ -107,6 +109,7 @@ export interface INeuralNetworkTrainOptions {
   errorThresh: number;
   log: boolean | ((status: INeuralNetworkState) => void);
   logPeriod: number;
+  loss: boolean | LossFunction;
   leakyReluAlpha: number;
   learningRate: number;
   momentum: number;
@@ -126,6 +129,7 @@ export function trainDefaults(): INeuralNetworkTrainOptions {
     errorThresh: 0.005, // the acceptable error percentage from training data
     log: false, // true to use console.log, when a function is supplied it is used
     logPeriod: 10, // iterations between logging out
+    loss: false,
     leakyReluAlpha: 0.01,
     learningRate: 0.3, // multiply's against the input and the delta then adds to momentum
     momentum: 0.1, // multiply's against the specified "change" then adds to learning rate for change
@@ -187,6 +191,8 @@ export class NeuralNetwork<
     this.setActivation();
     return this.calculateDeltas(output);
   };
+
+  loss: boolean | LossFunction = false;
 
   // adam
   biasChangesLow: Float32Array[] = [];
@@ -470,6 +476,10 @@ export class NeuralNetwork<
         const val = options.logPeriod;
         return typeof val === 'number' && val > 0;
       },
+      loss: () => {
+        const val = options.loss;
+        return typeof val === 'function' || typeof val === 'boolean';
+      },
       leakyReluAlpha: () => {
         const val = options.leakyReluAlpha;
         return typeof val === 'number' && val > 0 && val < 1;
@@ -666,6 +676,8 @@ export class NeuralNetwork<
     data: Array<INeuralNetworkDatum<Partial<InputType>, Partial<OutputType>>>,
     options: Partial<INeuralNetworkTrainOptions> = {}
   ): INeuralNetworkState {
+    this.loss = options.loss ?? false;
+
     const { preparedData, status, endTime } = this.prepTraining(
       data as Array<INeuralNetworkDatum<InputType, OutputType>>,
       options
@@ -822,6 +834,33 @@ export class NeuralNetwork<
         }
         currentErrors[node] = error;
         currentDeltas[node] = (1 - output * output) * error;
+      }
+    }
+  }
+
+  _calculateDeltasLoss(target: Float32Array): void {
+    for (let layer = this.outputLayer; layer >= 0; layer--) {
+      const activeSize = this.sizes[layer];
+      const activeOutput = this.outputs[layer];
+      const activeError = this.errors[layer];
+      const activeDeltas = this.deltas[layer];
+      const nextLayer = this.weights[layer + 1];
+
+      for (let node = 0; node < activeSize; node++) {
+        const output = activeOutput[node];
+
+        let error = 0;
+        if (layer === this.outputLayer) {
+          if (typeof this.loss === "function") error = this.loss(output, target[node]);
+          else error = target[node] - output;
+        } else {
+          const deltas = this.deltas[layer + 1];
+          for (let k = 0; k < deltas.length; k++) {
+            error += deltas[k] * nextLayer[k][node];
+          }
+        }
+        activeError[node] = error;
+        activeDeltas[node] = error * output * (1 - output);
       }
     }
   }

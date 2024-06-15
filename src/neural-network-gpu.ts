@@ -96,7 +96,7 @@ function weightedSumTanh(
   return Math.tanh(sum);
 }
 
-function calcErrorOutput(output: number, target: number): number {
+function loss(output: number, target: number): number {
   return target - output;
 }
 
@@ -400,6 +400,8 @@ export class NeuralNetworkGPU<
         );
     }
 
+    let _loss = typeof this.loss === "function" ? this.loss : loss;
+
     calcDeltas = alias(
       utils.getMinifySafeName(() => calcDeltas),
       calcDeltas
@@ -411,7 +413,7 @@ export class NeuralNetworkGPU<
         // @ts-expect-error
         this.backwardPropagate[this.outputLayer] = this.gpu.createKernelMap(
           {
-            error: calcErrorOutput,
+            error: _loss,
           },
           function (
             this: IKernelFunctionThis,
@@ -422,7 +424,7 @@ export class NeuralNetworkGPU<
             const target = targets[this.thread.x];
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
-            return calcDeltas(calcErrorOutput(output, target), output);
+            return calcDeltas(loss(output, target), output);
           },
           {
             output: [this.sizes[this.outputLayer]],
