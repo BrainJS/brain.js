@@ -36,11 +36,12 @@ function loss(
 
 function updateMemory(
   this: IKernelFunctionThis,
+  actual: number,
+  expected: number,
+  inputs: LossFunctionInputs,
   memory: NeuralNetworkMemory,
   memorySize: number,
-  loss: number,
-  outputs: number[][],
-  sizes: number[]
+  loss: number
 ) {
   const layer = this.thread.z;
   const neuron = this.thread.y;
@@ -290,19 +291,10 @@ export class NeuralNetworkGPU<
   // @ts-expect-error
   biases: KernelOutput[] = [];
 
-
-  losses: KernelOutput[] = [];
-  ram: KernelOutput = ;
-
   constructor(options: Partial<INeuralNetworkGPUOptions> = {}) {
     super(options);
     this.errorCheckInterval = 100;
     this.gpu = new GPU({ mode: options.mode });
-    this._memoryFunction = options.memory ?? DEFAULT_MEMORY_FUNCTION;
-  }
-
-  get loss(): number {
-    return this._loss;
   }
 
   get lossFunction(): LossFunction {
@@ -399,14 +391,6 @@ export class NeuralNetworkGPU<
       });
     }
 
-    // Determine whether `options.updateMemory` was passed to the constructor.
-    if (this._memoryFunction) {
-      // Get the defined memory function.
-      const updateMemory = this._memoryKernel;
-      // Update the neural network's memory matrix after each feed-forward pass.
-      updateMemory(this.outputs, this.memory, this.sizes, this.memorySize, this.loss);
-    }
-
     this.texturizeInputData = this.gpu.createKernel(
       function (value: number[]): number {
         return value[this.thread.x];
@@ -458,6 +442,7 @@ export class NeuralNetworkGPU<
     }
 
     const loss: LossFunction = this._lossFunction ?? DEFAULT_LOSS_FUNCTION;
+    const updateMemory: MemoryFunction = this._memoryFunction ?? DEFAULT_MEMORY_FUNCTION;
 
     calcDeltas = alias(
       utils.getMinifySafeName(() => calcDeltas),
@@ -538,7 +523,6 @@ export class NeuralNetworkGPU<
 
       let output;
       if (layer === this.outputLayer) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         output = this.backwardPropagate[layer](this.outputs[layer], target, this.outputs[0], this.memory);
       } else {
