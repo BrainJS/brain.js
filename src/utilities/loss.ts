@@ -1,4 +1,4 @@
-export type LossFunctionInputs = number[] | number[][] | number[][][] | Float32Array | Float32Array[] | Float32Array[][];
+export type LossFunctionInputs = number[] | Float32Array;
 
 export type LossFunctionState = number[][][] | Float32Array[][];
 
