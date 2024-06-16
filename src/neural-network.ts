@@ -768,7 +768,12 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          if (typeof this._lossFunction === "function") error = this._lossFunction.call({thread: {x: node}}, output, target[node], input, this.lossState);
+          if (typeof this._lossFunction === "function") {
+            const kernelFunctionThis = { thread: { x: node, y: layer, z: 0 } };
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.lossState);
+          }
           else error = target[node] - output;
         } else {
           const deltas = this.deltas[layer + 1];
@@ -796,7 +801,12 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          if (typeof this._lossFunction === "function") error = this._lossFunction.call({thread: {x: node}}, output, target[node], input, this.lossState);
+          if (typeof this._lossFunction === "function") {
+            const kernelFunctionThis = { thread: { x: node, y: layer, z: 0 } };
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.lossState);
+          }
           else error = target[node] - output;
         } else {
           for (let k = 0; k < nextDeltas.length; k++) {
@@ -824,7 +834,12 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          if (typeof this._lossFunction === "function") error = this._lossFunction.call({thread: {x: node}}, output, target[node], input, this.lossState);
+          if (typeof this._lossFunction === "function") {
+            const kernelFunctionThis = { thread: { x: node, y: layer, z: 0 } };
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.lossState);
+          }
           else error = target[node] - output;
         } else {
           for (let k = 0; k < nextDeltas.length; k++) {
@@ -851,7 +866,12 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          if (typeof this._lossFunction === "function") error = this._lossFunction.call({thread: {x: node}}, output, target[node], input, this.lossState);
+          if (typeof this._lossFunction === "function") {
+            const kernelFunctionThis = { thread: { x: node, y: layer, z: 0 } };
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.lossState);
+          }
           else error = target[node] - output;
         } else {
           for (let k = 0; k < nextDeltas.length; k++) {
