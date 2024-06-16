@@ -58,7 +58,7 @@ export type NeuralNetworkActivation =
 export interface IJSONLayer {
   biases: number[];
   weights: number[][];
-  memory: number[][];
+  memory?: number[][];
 }
 
 export interface INeuralNetworkJSON {
@@ -78,6 +78,7 @@ export interface INeuralNetworkOptions {
   outputSize: number;
   binaryThresh: number;
   hiddenLayers?: number[];
+  memory?: MemoryFunction;
   memorySize: number;
 }
 
@@ -193,7 +194,7 @@ export class NeuralNetwork<
   _formatInput: NeuralNetworkFormatter | null = null;
   _formatOutput: NeuralNetworkFormatter | null = null;
 
-  _memory: NeuralNetworkMemory;
+  _memory?: NeuralNetworkMemory;
 
   runInput: (input: Float32Array) => Float32Array = (input: Float32Array) => {
     this.setActivation();
@@ -229,9 +230,23 @@ export class NeuralNetwork<
       this.sizes = [inputSize].concat(hiddenLayers ?? []).concat([outputSize]);
     }
 
+    this._memoryFunction = options.memory;
     // Initialize memory matrix
     const { memorySize } = this.options ?? 0;
-    this._memory = this.replaceMemory(memorySize);
+    if (memorySize) this._memory = this.replaceMemory(memorySize);
+  }
+
+  public get memory(): NeuralNetworkMemory | undefined {
+    return this._memory;
+  }
+
+  public get memoryFunction(): MemoryFunction | undefined {
+    return this._memoryFunction;
+  }
+
+  public get memorySize(): number {
+    if (!this._memory || !this._memory[0] || !this._memory[0][0]) return 0;
+    return this._memory[0][0].length;
   }
 
   /**
@@ -306,10 +321,6 @@ export class NeuralNetwork<
 
   get isRunnable(): boolean {
     return this.sizes.length > 0;
-  }
-
-  public get memory(): NeuralNetworkMemory {
-    return this._memory;
   }
 
   run(input: Partial<InputType>): OutputType {
@@ -1234,19 +1245,23 @@ export class NeuralNetwork<
     const jsonLayerBiases = this.biases.map((layerBiases) =>
       Array.from(layerBiases)
     );
-    const jsonLayerMemory = this.memory.map(layerMemory =>
-      layerMemory.map(
-        nodeMemory => Array.from(nodeMemory)
-      )
-    );
+    let jsonLayerMemory;
+    if (this.memory) {
+      jsonLayerMemory = this.memory.map(layerMemory =>
+        layerMemory.map(
+          nodeMemory => Array.from(nodeMemory)
+        )
+      );
+    }
     const jsonLayers: IJSONLayer[] = [];
     const outputLength = this.sizes.length - 1;
     for (let i = 0; i <= outputLength; i++) {
-      jsonLayers.push({
+      const jsonLayer: IJSONLayer = {
         weights: jsonLayerWeights[i] ?? [],
-        biases: jsonLayerBiases[i] ?? [],
-        memory: jsonLayerMemory[i] ?? []
-      });
+        biases: jsonLayerBiases[i] ?? []
+      };
+      if (jsonLayerMemory) jsonLayer.memory = jsonLayerMemory[i] ?? [];
+      jsonLayers.push(jsonLayer);
     }
     return {
       type: 'NeuralNetwork',
@@ -1290,15 +1305,18 @@ export class NeuralNetwork<
     const layerBiases = this.biases.map((layerBiases, layerIndex) =>
       Float32Array.from(jsonLayers[layerIndex].biases)
     );
-    const layerMemory = this.memory.map((memory, layerIndex) =>
-      Array.from(jsonLayers[layerIndex].memory).map(nodeMemory =>
-        Float32Array.from(nodeMemory)
-      )
-    );
+    let layerMemory;
+    if (this.memory) {
+      layerMemory = this.memory.map((memory, layerIndex) =>
+        Array.from(jsonLayers[layerIndex].memory ?? []).map(nodeMemory =>
+          Float32Array.from(nodeMemory)
+        )
+      );
+    }
     for (let i = 0; i <= this.outputLayer; i++) {
       this.weights[i] = layerWeights[i] || [];
       this.biases[i] = layerBiases[i] || [];
-      this.memory[i] = layerMemory[i] || [];
+      if (layerMemory && this.memory) this.memory[i] = (layerMemory && layerMemory[i]) ?? [];
     }
     return this;
   }

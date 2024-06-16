@@ -14,10 +14,9 @@ export type LossFunction = (
 
 export type MemoryFunction = (
   this: IKernelFunctionThis,
-  actual: number,
-  expected: number,
-  inputs: LossFunctionInputs,
   memory: NeuralNetworkMemory,
   memorySize: number,
-  loss: number
+  loss: number,
+  outputs: number[][],
+  sizes: number[]
 ) => number;
