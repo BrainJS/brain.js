@@ -12,8 +12,7 @@ import { max } from './utilities/max';
 import { mse } from './utilities/mse';
 import { randos } from './utilities/randos';
 import { zeros } from './utilities/zeros';
-
-export type LossFunction = (actual: number, expected: number) => number;
+import { LossFunction, LossFunctionInputs, LossFunctionState } from './utilities/loss';
 
 type NeuralNetworkFormatter =
   | ((v: INumberHash) => Float32Array)
@@ -70,6 +69,7 @@ export interface INeuralNetworkOptions {
   outputSize: number;
   binaryThresh: number;
   hiddenLayers?: number[];
+  lossStateSize: number;
 }
 
 export function defaults(): INeuralNetworkOptions {
@@ -77,6 +77,7 @@ export function defaults(): INeuralNetworkOptions {
     inputSize: 0,
     outputSize: 0,
     binaryThresh: 0.5,
+    lossStateSize: 1
   };
 }
 
@@ -110,6 +111,8 @@ export interface INeuralNetworkTrainOptions {
   log: boolean | ((status: INeuralNetworkState) => void);
   logPeriod: number;
   loss: boolean | LossFunction;
+  lossState?: LossFunctionState;
+  lossStateSize: number;
   leakyReluAlpha: number;
   learningRate: number;
   momentum: number;
@@ -130,6 +133,7 @@ export function trainDefaults(): INeuralNetworkTrainOptions {
     log: false, // true to use console.log, when a function is supplied it is used
     logPeriod: 10, // iterations between logging out
     loss: false,
+    lossStateSize: 1,
     leakyReluAlpha: 0.01,
     learningRate: 0.3, // multiply's against the input and the delta then adds to momentum
     momentum: 0.1, // multiply's against the specified "change" then adds to learning rate for change
@@ -180,16 +184,19 @@ export class NeuralNetwork<
   _formatInput: NeuralNetworkFormatter | null = null;
   _formatOutput: NeuralNetworkFormatter | null = null;
 
+  _lossState: LossFunctionState;
+
   runInput: (input: Float32Array) => Float32Array = (input: Float32Array) => {
     this.setActivation();
     return this.runInput(input);
   };
 
-  calculateDeltas: (output: Float32Array) => void = (
-    output: Float32Array
+  calculateDeltas: (output: Float32Array, input: LossFunctionInputs) => void = (
+    output: Float32Array,
+    input: LossFunctionInputs
   ): void => {
     this.setActivation();
-    return this.calculateDeltas(output);
+    return this.calculateDeltas(output, input);
   };
 
   loss: boolean | LossFunction = false;
@@ -211,6 +218,9 @@ export class NeuralNetwork<
     if (inputSize && outputSize) {
       this.sizes = [inputSize].concat(hiddenLayers ?? []).concat([outputSize]);
     }
+
+    const { lossStateSize } = this.options ?? 0;
+    this._lossState = this.trainOpts.lossState ?? this.replaceLossState(lossStateSize);
   }
 
   /**
@@ -285,6 +295,10 @@ export class NeuralNetwork<
 
   get isRunnable(): boolean {
     return this.sizes.length > 0;
+  }
+
+  public get lossState(): LossFunctionState {
+    return this._lossState;
   }
 
   run(input: Partial<InputType>): OutputType {
@@ -724,7 +738,7 @@ export class NeuralNetwork<
     this.runInput(value.input);
 
     // back propagate
-    this.calculateDeltas(value.output);
+    this.calculateDeltas(value.output, value.input);
     this.adjustWeights();
 
     if (logErrorRate) {
@@ -733,7 +747,7 @@ export class NeuralNetwork<
     return null;
   }
 
-  _calculateDeltasSigmoid(target: Float32Array): void {
+  _calculateDeltasSigmoid(target: Float32Array, input: LossFunctionInputs): void {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       const activeSize = this.sizes[layer];
       const activeOutput = this.outputs[layer];
@@ -746,7 +760,8 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          error = target[node] - output;
+          if (typeof this.loss === "function") error = this.loss.call({thread: {x: node}}, output, target[node], input, this.lossState);
+          else error = target[node] - output;
         } else {
           const deltas = this.deltas[layer + 1];
           for (let k = 0; k < deltas.length; k++) {
@@ -759,7 +774,7 @@ export class NeuralNetwork<
     }
   }
 
-  _calculateDeltasRelu(target: Float32Array): void {
+  _calculateDeltasRelu(target: Float32Array, input: LossFunctionInputs): void {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       const currentSize = this.sizes[layer];
       const currentOutputs = this.outputs[layer];
@@ -773,7 +788,8 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          error = target[node] - output;
+          if (typeof this.loss === "function") error = this.loss.call({thread: {x: node}}, output, target[node], input, this.lossState);
+          else error = target[node] - output;
         } else {
           for (let k = 0; k < nextDeltas.length; k++) {
             error += nextDeltas[k] * nextWeights[k][node];
@@ -785,7 +801,7 @@ export class NeuralNetwork<
     }
   }
 
-  _calculateDeltasLeakyRelu(target: Float32Array): void {
+  _calculateDeltasLeakyRelu(target: Float32Array, input: LossFunctionInputs): void {
     const alpha = this.trainOpts.leakyReluAlpha;
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       const currentSize = this.sizes[layer];
@@ -800,7 +816,8 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          error = target[node] - output;
+          if (typeof this.loss === "function") error = this.loss.call({thread: {x: node}}, output, target[node], input, this.lossState);
+          else error = target[node] - output;
         } else {
           for (let k = 0; k < nextDeltas.length; k++) {
             error += nextDeltas[k] * nextWeights[k][node];
@@ -812,7 +829,7 @@ export class NeuralNetwork<
     }
   }
 
-  _calculateDeltasTanh(target: Float32Array): void {
+  _calculateDeltasTanh(target: Float32Array, input: LossFunctionInputs): void {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       const currentSize = this.sizes[layer];
       const currentOutputs = this.outputs[layer];
@@ -826,7 +843,8 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          error = target[node] - output;
+          if (typeof this.loss === "function") error = this.loss.call({thread: {x: node}}, output, target[node], input, this.lossState);
+          else error = target[node] - output;
         } else {
           for (let k = 0; k < nextDeltas.length; k++) {
             error += nextDeltas[k] * nextWeights[k][node];
@@ -834,33 +852,6 @@ export class NeuralNetwork<
         }
         currentErrors[node] = error;
         currentDeltas[node] = (1 - output * output) * error;
-      }
-    }
-  }
-
-  _calculateDeltasLoss(target: Float32Array): void {
-    for (let layer = this.outputLayer; layer >= 0; layer--) {
-      const activeSize = this.sizes[layer];
-      const activeOutput = this.outputs[layer];
-      const activeError = this.errors[layer];
-      const activeDeltas = this.deltas[layer];
-      const nextLayer = this.weights[layer + 1];
-
-      for (let node = 0; node < activeSize; node++) {
-        const output = activeOutput[node];
-
-        let error = 0;
-        if (layer === this.outputLayer) {
-          if (typeof this.loss === "function") error = this.loss(output, target[node]);
-          else error = target[node] - output;
-        } else {
-          const deltas = this.deltas[layer + 1];
-          for (let k = 0; k < deltas.length; k++) {
-            error += deltas[k] * nextLayer[k][node];
-          }
-        }
-        activeError[node] = error;
-        activeDeltas[node] = error * output * (1 - output);
       }
     }
   }
@@ -1366,5 +1357,25 @@ export class NeuralNetwork<
     return new Function('input', cb ? cb(source) : source) as (
       input: Partial<InputType>
     ) => OutputType;
+  }
+
+  private createLossState(
+    lossStateSize: number
+  ): LossFunctionState {
+    const lossState: LossFunctionState = [];
+    for (let layer = 0; layer < this.sizes.length; layer++) {
+      lossState[layer] = [];
+      for (let neuron = 0; neuron < this.sizes.length; neuron++) {
+        lossState[layer][neuron] = new Float32Array(lossStateSize);
+      }
+    }
+    return lossState;
+  }
+
+  private replaceLossState(
+    lossState: number | LossFunctionState
+  ): LossFunctionState {
+    if (typeof lossState === "number") return this._lossState = this.createLossState(lossState);
+    return this._lossState = lossState;
   }
 }
