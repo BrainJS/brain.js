@@ -33,6 +33,8 @@ function loss(
   return expected - actual;
 }
 
+const DEFAULT_LOSS_FUNCTION = loss;
+
 export interface INeuralNetworkGPUDatumFormatted {
   input: KernelOutput;
   output: KernelOutput;
@@ -420,7 +422,7 @@ export class NeuralNetworkGPU<
         );
     }
 
-    const loss: LossFunction = this._lossFunction ?? function loss(actual, expected) { return expected - actual; };
+    const loss: LossFunction = this._lossFunction ?? DEFAULT_LOSS_FUNCTION;
 
     calcDeltas = alias(
       utils.getMinifySafeName(() => calcDeltas),
