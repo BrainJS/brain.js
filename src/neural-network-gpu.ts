@@ -22,6 +22,16 @@ import {
   NeuralNetwork,
 } from './neural-network';
 import { release } from './utilities/kernel';
+import { LossFunction, LossFunctionInputs, LossFunctionState } from './utilities/loss';
+
+function loss(
+  actual: number,
+  expected: number,
+  inputs: LossFunctionInputs,
+  state: LossFunctionState
+) {
+  return expected - actual;
+}
 
 export interface INeuralNetworkGPUDatumFormatted {
   input: KernelOutput;
@@ -96,8 +106,8 @@ function weightedSumTanh(
   return Math.tanh(sum);
 }
 
-function loss(output: number, target: number): number {
-  return target - output;
+function calcErrorOutput(value: number): number {
+  return value;
 }
 
 function calcDeltasSigmoid(error: number, output: number): number {
@@ -266,6 +276,16 @@ export class NeuralNetworkGPU<
     this.gpu = new GPU({ mode: options.mode });
   }
 
+  get lossFunction(): LossFunction {
+    return typeof this._lossFunction === "function" ? this._lossFunction : loss
+  }
+
+  set lossFunction(
+    value: LossFunction
+  ) {
+    this._lossFunction = value;
+  }
+
   initialize(): void {
     super.initialize();
     this.buildRunInput();
@@ -380,7 +400,7 @@ export class NeuralNetworkGPU<
   };
 
   buildCalculateDeltas(): void {
-    let calcDeltas: GPUFunction<[number, number]>;
+    let calcDeltas: GPUFunction<[number, number, LossFunctionInputs, LossFunctionState]>;
     switch (this.trainOpts.activation) {
       case 'sigmoid':
         calcDeltas = calcDeltasSigmoid;
@@ -400,31 +420,34 @@ export class NeuralNetworkGPU<
         );
     }
 
-    let _loss = typeof this.loss === "function" ? this.loss : loss;
+    const loss: LossFunction = this._lossFunction ?? function loss(actual, expected) { return expected - actual; };
 
     calcDeltas = alias(
       utils.getMinifySafeName(() => calcDeltas),
       calcDeltas
     );
     this.gpu.addFunction(calcDeltas);
+    this.gpu.addFunction(loss);
     for (let layer = this.outputLayer; layer > 0; layer--) {
       if (layer === this.outputLayer) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
         this.backwardPropagate[this.outputLayer] = this.gpu.createKernelMap(
           {
-            error: _loss,
+            error: calcErrorOutput,
           },
           function (
             this: IKernelFunctionThis,
             outputs: number[],
-            targets: number[]
+            targets: number[],
+            inputs: LossFunctionInputs,
+            state: LossFunctionState
           ): number {
             const output = outputs[this.thread.x];
             const target = targets[this.thread.x];
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
-            return calcDeltas(loss(output, target), output);
+            return calcDeltas(calcErrorOutput(loss(output, target, inputs, state)), output);
           },
           {
             output: [this.sizes[this.outputLayer]],
@@ -480,7 +503,7 @@ export class NeuralNetworkGPU<
       if (layer === this.outputLayer) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
-        output = this.backwardPropagate[layer](this.outputs[layer], target);
+        output = this.backwardPropagate[layer](this.outputs[layer], target, this.outputs[0], this.lossState);
       } else {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
