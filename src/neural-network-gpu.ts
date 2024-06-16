@@ -22,18 +22,37 @@ import {
   NeuralNetwork,
 } from './neural-network';
 import { release } from './utilities/kernel';
-import { LossFunction, LossFunctionInputs, LossFunctionState } from './utilities/loss';
+import { LossFunction, LossFunctionInputs, MemoryFunction, NeuralNetworkMemory } from './utilities/loss';
 
 function loss(
+  this: IKernelFunctionThis,
   actual: number,
   expected: number,
   inputs: LossFunctionInputs,
-  state: LossFunctionState
+  memory: NeuralNetworkMemory
 ) {
   return expected - actual;
 }
 
+function updateMemory(
+  this: IKernelFunctionThis,
+  actual: number,
+  expected: number,
+  inputs: LossFunctionInputs,
+  memory: NeuralNetworkMemory,
+  memorySize: number,
+  loss: number
+) {
+  const layer = this.thread.z;
+  const neuron = this.thread.y;
+  const signal = this.thread.x;
+
+  // Maintain the same signal magnitude.
+  return memory[layer][neuron][signal];
+}
+
 const DEFAULT_LOSS_FUNCTION = loss;
+const DEFAULT_MEMORY_FUNCTION = updateMemory;
 
 export interface INeuralNetworkGPUDatumFormatted {
   input: KernelOutput;
@@ -402,7 +421,7 @@ export class NeuralNetworkGPU<
   };
 
   buildCalculateDeltas(): void {
-    let calcDeltas: GPUFunction<[number, number, LossFunctionInputs, LossFunctionState]>;
+    let calcDeltas: GPUFunction<[number, number, LossFunctionInputs, NeuralNetworkMemory]>;
     switch (this.trainOpts.activation) {
       case 'sigmoid':
         calcDeltas = calcDeltasSigmoid;
@@ -423,6 +442,7 @@ export class NeuralNetworkGPU<
     }
 
     const loss: LossFunction = this._lossFunction ?? DEFAULT_LOSS_FUNCTION;
+    const updateMemory: MemoryFunction = this._memoryFunction ?? DEFAULT_MEMORY_FUNCTION;
 
     calcDeltas = alias(
       utils.getMinifySafeName(() => calcDeltas),
@@ -436,14 +456,14 @@ export class NeuralNetworkGPU<
         // @ts-expect-error
         this.backwardPropagate[this.outputLayer] = this.gpu.createKernelMap(
           {
-            error: calcErrorOutput,
+            error: calcErrorOutput
           },
           function (
             this: IKernelFunctionThis,
             outputs: number[],
             targets: number[],
             inputs: LossFunctionInputs,
-            state: LossFunctionState
+            state: NeuralNetworkMemory
           ): number {
             const output = outputs[this.thread.x];
             const target = targets[this.thread.x];
@@ -503,9 +523,8 @@ export class NeuralNetworkGPU<
 
       let output;
       if (layer === this.outputLayer) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        output = this.backwardPropagate[layer](this.outputs[layer], target, this.outputs[0], this.lossState);
+        // @ts-ignore
+        output = this.backwardPropagate[layer](this.outputs[layer], target, this.outputs[0], this.memory);
       } else {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
@@ -731,11 +750,17 @@ export class NeuralNetworkGPU<
           : (layerBiases as Float32Array)
       )
     );
+    const jsonLayerMemory = this.memory.map((layerMemory, layerIndex) =>
+      layerMemory.map(nodeMemory =>
+        Array.from(nodeMemory)
+      )
+    );
     const jsonLayers: IJSONLayer[] = [];
     for (let i = 0; i <= this.outputLayer; i++) {
       jsonLayers.push({
         weights: jsonLayerWeights[i] ?? [],
         biases: jsonLayerBiases[i] ?? [],
+        memory: jsonLayerMemory[i] ?? []
       });
     }
     return {

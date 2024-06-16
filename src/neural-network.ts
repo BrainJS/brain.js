@@ -12,7 +12,7 @@ import { max } from './utilities/max';
 import { mse } from './utilities/mse';
 import { randos } from './utilities/randos';
 import { zeros } from './utilities/zeros';
-import { LossFunction, LossFunctionInputs, LossFunctionState } from './utilities/loss';
+import { LossFunction, LossFunctionInputs, MemoryFunction, NeuralNetworkMemory } from './utilities/loss';
 type NeuralNetworkFormatter =
   | ((v: INumberHash) => Float32Array)
   | ((v: number[]) => Float32Array);
@@ -44,7 +44,7 @@ function loss(
   actual: number,
   expected: number,
   inputs: LossFunctionInputs,
-  state: LossFunctionState
+  state: NeuralNetworkMemory
 ) {
   return expected - actual;
 }
@@ -58,6 +58,7 @@ export type NeuralNetworkActivation =
 export interface IJSONLayer {
   biases: number[];
   weights: number[][];
+  memory: number[][];
 }
 
 export interface INeuralNetworkJSON {
@@ -77,7 +78,7 @@ export interface INeuralNetworkOptions {
   outputSize: number;
   binaryThresh: number;
   hiddenLayers?: number[];
-  lossStateSize: number;
+  memorySize: number;
 }
 
 export function defaults(): INeuralNetworkOptions {
@@ -85,7 +86,7 @@ export function defaults(): INeuralNetworkOptions {
     inputSize: 0,
     outputSize: 0,
     binaryThresh: 0.5,
-    lossStateSize: 1
+    memorySize: 1
   };
 }
 
@@ -119,8 +120,8 @@ export interface INeuralNetworkTrainOptions {
   log: boolean | ((status: INeuralNetworkState) => void);
   logPeriod: number;
   loss?: LossFunction;
-  lossState?: LossFunctionState;
-  lossStateSize: number;
+  memory?: MemoryFunction;
+  memorySize: number;
   leakyReluAlpha: number;
   learningRate: number;
   momentum: number;
@@ -141,7 +142,7 @@ export function trainDefaults(): INeuralNetworkTrainOptions {
     log: false, // true to use console.log, when a function is supplied it is used
     logPeriod: 10, // iterations between logging out
     loss,
-    lossStateSize: 1,
+    memorySize: 1,
     leakyReluAlpha: 0.01,
     learningRate: 0.3, // multiply's against the input and the delta then adds to momentum
     momentum: 0.1, // multiply's against the specified "change" then adds to learning rate for change
@@ -192,7 +193,7 @@ export class NeuralNetwork<
   _formatInput: NeuralNetworkFormatter | null = null;
   _formatOutput: NeuralNetworkFormatter | null = null;
 
-  _lossState: LossFunctionState;
+  _memory: NeuralNetworkMemory;
 
   runInput: (input: Float32Array) => Float32Array = (input: Float32Array) => {
     this.setActivation();
@@ -208,6 +209,7 @@ export class NeuralNetwork<
   };
 
   _lossFunction?: LossFunction;
+  _memoryFunction?: MemoryFunction;
 
   // adam
   biasChangesLow: Float32Array[] = [];
@@ -227,8 +229,9 @@ export class NeuralNetwork<
       this.sizes = [inputSize].concat(hiddenLayers ?? []).concat([outputSize]);
     }
 
-    const { lossStateSize } = this.options ?? 0;
-    this._lossState = this.trainOpts.lossState ?? this.replaceLossState(lossStateSize);
+    // Initialize memory matrix
+    const { memorySize } = this.options ?? 0;
+    this._memory = this.replaceMemory(memorySize);
   }
 
   /**
@@ -305,8 +308,8 @@ export class NeuralNetwork<
     return this.sizes.length > 0;
   }
 
-  public get lossState(): LossFunctionState {
-    return this._lossState;
+  public get memory(): NeuralNetworkMemory {
+    return this._memory;
   }
 
   run(input: Partial<InputType>): OutputType {
@@ -772,7 +775,7 @@ export class NeuralNetwork<
             const kernelFunctionThis = { thread: { x: node, y: layer, z: 0 } };
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.lossState);
+            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.memory);
           }
           else error = target[node] - output;
         } else {
@@ -805,7 +808,7 @@ export class NeuralNetwork<
             const kernelFunctionThis = { thread: { x: node, y: layer, z: 0 } };
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.lossState);
+            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.memory);
           }
           else error = target[node] - output;
         } else {
@@ -838,7 +841,7 @@ export class NeuralNetwork<
             const kernelFunctionThis = { thread: { x: node, y: layer, z: 0 } };
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.lossState);
+            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.memory);
           }
           else error = target[node] - output;
         } else {
@@ -870,7 +873,7 @@ export class NeuralNetwork<
             const kernelFunctionThis = { thread: { x: node, y: layer, z: 0 } };
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.lossState);
+            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.memory);
           }
           else error = target[node] - output;
         } else {
@@ -1231,12 +1234,18 @@ export class NeuralNetwork<
     const jsonLayerBiases = this.biases.map((layerBiases) =>
       Array.from(layerBiases)
     );
+    const jsonLayerMemory = this.memory.map(layerMemory =>
+      layerMemory.map(
+        nodeMemory => Array.from(nodeMemory)
+      )
+    );
     const jsonLayers: IJSONLayer[] = [];
     const outputLength = this.sizes.length - 1;
     for (let i = 0; i <= outputLength; i++) {
       jsonLayers.push({
         weights: jsonLayerWeights[i] ?? [],
         biases: jsonLayerBiases[i] ?? [],
+        memory: jsonLayerMemory[i] ?? []
       });
     }
     return {
@@ -1281,9 +1290,15 @@ export class NeuralNetwork<
     const layerBiases = this.biases.map((layerBiases, layerIndex) =>
       Float32Array.from(jsonLayers[layerIndex].biases)
     );
+    const layerMemory = this.memory.map((memory, layerIndex) =>
+      Array.from(jsonLayers[layerIndex].memory).map(nodeMemory =>
+        Float32Array.from(nodeMemory)
+      )
+    );
     for (let i = 0; i <= this.outputLayer; i++) {
       this.weights[i] = layerWeights[i] || [];
       this.biases[i] = layerBiases[i] || [];
+      this.memory[i] = layerMemory[i] || [];
     }
     return this;
   }
@@ -1387,23 +1402,23 @@ export class NeuralNetwork<
     ) => OutputType;
   }
 
-  private createLossState(
-    lossStateSize: number
-  ): LossFunctionState {
-    const lossState: LossFunctionState = [];
+  private createMemory(
+    memorySize: number
+  ): NeuralNetworkMemory {
+    const memory: NeuralNetworkMemory = [];
     for (let layer = 0; layer < this.sizes.length; layer++) {
-      lossState[layer] = [];
+      memory[layer] = [];
       for (let neuron = 0; neuron < this.sizes.length; neuron++) {
-        lossState[layer][neuron] = new Float32Array(lossStateSize);
+        memory[layer][neuron] = new Float32Array(memorySize);
       }
     }
-    return lossState;
+    return memory;
   }
 
-  private replaceLossState(
-    lossState: number | LossFunctionState
-  ): LossFunctionState {
-    if (typeof lossState === "number") return this._lossState = this.createLossState(lossState);
-    return this._lossState = lossState;
+  private replaceMemory(
+    memory: number | NeuralNetworkMemory
+  ): NeuralNetworkMemory {
+    if (typeof memory === "number") return this._memory = this.createMemory(memory);
+    return this._memory = memory;
   }
 }
