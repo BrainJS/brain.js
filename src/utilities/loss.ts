@@ -2,23 +2,23 @@ import { IKernelFunctionThis } from "gpu.js";
 
 export type LossFunctionInputs = number[] | number[][] | number[][][] | Float32Array | Float32Array[] | Float32Array[][];
 
-export type NeuralNetworkMemory = Float32Array[][];
+export type NeuralNetworkRAM = Float32Array[][];
 
 export type LossFunction = (
   this: IKernelFunctionThis,
   actual: number,
   expected: number,
   inputs: LossFunctionInputs,
-  memory: NeuralNetworkMemory
+  memory: NeuralNetworkRAM
 ) => number;
 
-export type MemoryFunction = (
+export type RAMFunction = (
   this: IKernelFunctionThis,
   actual: number,
   expected: number,
   inputs: LossFunctionInputs,
-  memory: NeuralNetworkMemory,
-  memorySize: number,
+  ram: NeuralNetworkRAM,
+  ramSize: number,
   loss: number,
   lossDelta: number
 ) => number;

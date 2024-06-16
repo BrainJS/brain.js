@@ -12,7 +12,7 @@ import { max } from './utilities/max';
 import { mse } from './utilities/mse';
 import { randos } from './utilities/randos';
 import { zeros } from './utilities/zeros';
-import { LossFunction, LossFunctionInputs, MemoryFunction, NeuralNetworkMemory } from './utilities/loss';
+import { LossFunction, LossFunctionInputs, RAMFunction, NeuralNetworkRAM } from './utilities/loss';
 type NeuralNetworkFormatter =
   | ((v: INumberHash) => Float32Array)
   | ((v: number[]) => Float32Array);
@@ -44,7 +44,7 @@ function loss(
   actual: number,
   expected: number,
   inputs: LossFunctionInputs,
-  state: NeuralNetworkMemory
+  state: NeuralNetworkRAM
 ) {
   return expected - actual;
 }
@@ -120,8 +120,8 @@ export interface INeuralNetworkTrainOptions {
   log: boolean | ((status: INeuralNetworkState) => void);
   logPeriod: number;
   loss?: LossFunction;
-  memory?: MemoryFunction;
-  memorySize: number;
+  updateRAM?: RAMFunction;
+  ramSize: number;
   leakyReluAlpha: number;
   learningRate: number;
   momentum: number;
@@ -142,7 +142,7 @@ export function trainDefaults(): INeuralNetworkTrainOptions {
     log: false, // true to use console.log, when a function is supplied it is used
     logPeriod: 10, // iterations between logging out
     loss,
-    memorySize: 1,
+    ramSize: 1,
     leakyReluAlpha: 0.01,
     learningRate: 0.3, // multiply's against the input and the delta then adds to momentum
     momentum: 0.1, // multiply's against the specified "change" then adds to learning rate for change
@@ -193,7 +193,7 @@ export class NeuralNetwork<
   _formatInput: NeuralNetworkFormatter | null = null;
   _formatOutput: NeuralNetworkFormatter | null = null;
 
-  _memory: NeuralNetworkMemory;
+  _memory: NeuralNetworkRAM;
 
   runInput: (input: Float32Array) => Float32Array = (input: Float32Array) => {
     this.setActivation();
@@ -209,7 +209,7 @@ export class NeuralNetwork<
   };
 
   _lossFunction?: LossFunction;
-  _memoryFunction?: MemoryFunction;
+  _ramFunction?: RAMFunction;
 
   // adam
   biasChangesLow: Float32Array[] = [];
@@ -308,7 +308,7 @@ export class NeuralNetwork<
     return this.sizes.length > 0;
   }
 
-  public get memory(): NeuralNetworkMemory {
+  public get memory(): NeuralNetworkRAM {
     return this._memory;
   }
 
@@ -1404,8 +1404,8 @@ export class NeuralNetwork<
 
   private createMemory(
     memorySize: number
-  ): NeuralNetworkMemory {
-    const memory: NeuralNetworkMemory = [];
+  ): NeuralNetworkRAM {
+    const memory: NeuralNetworkRAM = [];
     for (let layer = 0; layer < this.sizes.length; layer++) {
       memory[layer] = [];
       for (let neuron = 0; neuron < this.sizes.length; neuron++) {
@@ -1416,8 +1416,8 @@ export class NeuralNetwork<
   }
 
   private replaceMemory(
-    memory: number | NeuralNetworkMemory
-  ): NeuralNetworkMemory {
+    memory: number | NeuralNetworkRAM
+  ): NeuralNetworkRAM {
     if (typeof memory === "number") return this._memory = this.createMemory(memory);
     return this._memory = memory;
   }

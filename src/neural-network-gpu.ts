@@ -22,24 +22,24 @@ import {
   NeuralNetwork,
 } from './neural-network';
 import { release } from './utilities/kernel';
-import { LossFunction, LossFunctionInputs, MemoryFunction, NeuralNetworkMemory } from './utilities/loss';
+import { LossFunction, LossFunctionInputs, RAMFunction, NeuralNetworkRAM } from './utilities/loss';
 
 function loss(
   this: IKernelFunctionThis,
   actual: number,
   expected: number,
   inputs: LossFunctionInputs,
-  memory: NeuralNetworkMemory
+  memory: NeuralNetworkRAM
 ) {
   return expected - actual;
 }
 
-function updateMemory(
+function updateRAM(
   this: IKernelFunctionThis,
   actual: number,
   expected: number,
   inputs: LossFunctionInputs,
-  memory: NeuralNetworkMemory,
+  memory: NeuralNetworkRAM,
   memorySize: number,
   loss: number
 ) {
@@ -52,7 +52,7 @@ function updateMemory(
 }
 
 const DEFAULT_LOSS_FUNCTION = loss;
-const DEFAULT_MEMORY_FUNCTION = updateMemory;
+const DEFAULT_MEMORY_FUNCTION = updateRAM;
 
 export interface INeuralNetworkGPUDatumFormatted {
   input: KernelOutput;
@@ -421,7 +421,7 @@ export class NeuralNetworkGPU<
   };
 
   buildCalculateDeltas(): void {
-    let calcDeltas: GPUFunction<[number, number, LossFunctionInputs, NeuralNetworkMemory]>;
+    let calcDeltas: GPUFunction<[number, number, LossFunctionInputs, NeuralNetworkRAM]>;
     switch (this.trainOpts.activation) {
       case 'sigmoid':
         calcDeltas = calcDeltasSigmoid;
@@ -442,7 +442,7 @@ export class NeuralNetworkGPU<
     }
 
     const loss: LossFunction = this._lossFunction ?? DEFAULT_LOSS_FUNCTION;
-    const updateMemory: MemoryFunction = this._memoryFunction ?? DEFAULT_MEMORY_FUNCTION;
+    const updateRAM: RAMFunction = this._ramFunction ?? DEFAULT_MEMORY_FUNCTION;
 
     calcDeltas = alias(
       utils.getMinifySafeName(() => calcDeltas),
@@ -463,13 +463,13 @@ export class NeuralNetworkGPU<
             outputs: number[],
             targets: number[],
             inputs: LossFunctionInputs,
-            state: NeuralNetworkMemory
+            ram: NeuralNetworkRAM
           ): number {
             const output = outputs[this.thread.x];
             const target = targets[this.thread.x];
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
-            return calcDeltas(calcErrorOutput(loss(output, target, inputs, state)), output);
+            return calcDeltas(calcErrorOutput(loss(output, target, inputs, ram)), output);
           },
           {
             output: [this.sizes[this.outputLayer]],
