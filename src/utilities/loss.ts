@@ -19,5 +19,6 @@ export type MemoryFunction = (
   inputs: LossFunctionInputs,
   memory: NeuralNetworkMemory,
   memorySize: number,
-  loss: number
+  loss: number,
+  lossDelta: number
 ) => number;
