@@ -467,7 +467,9 @@ export function toSVG<
   // Get network size array for NeuralNetwork or NeuralNetworkGPU
   let sizes: number[] = [];
   if (net instanceof NeuralNetwork || net instanceof NeuralNetworkGPU) {
-    sizes = getNeuralNetworkSizes(net);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    sizes = getNeuralNetworkSizes((net as unknown) as NeuralNetwork);
   }
   // get network size for Recurrent
   else if (net instanceof Recurrent) {

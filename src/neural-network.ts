@@ -323,7 +323,12 @@ export class NeuralNetwork<
   constructor(
     options: Partial<INeuralNetworkOptions & INeuralNetworkTrainOptions> = {}
   ) {
-    this.options = { ...this.options, ...options };
+    this.options.binaryThresh = options.binaryThresh ?? 0.5;
+    this.options.hiddenLayers = options.hiddenLayers ?? [];
+    this.options.inputSize = options.inputSize ?? 1;
+    this.options.loss = options.loss ?? loss;
+    this.options.outputSize = options.outputSize ?? options.inputSize ?? 1;
+    this.options.ramSize = options.ramSize ?? 1;
     this.updateTrainingOptions(options);
 
     const { inputSize, hiddenLayers, outputSize } = this.options;
