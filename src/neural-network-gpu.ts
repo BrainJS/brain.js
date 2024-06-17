@@ -4,6 +4,7 @@ import {
   GPUFunction,
   IKernelFunctionThis,
   IKernelMapRunShortcut,
+  IKernelRunShortcut,
   IMappedKernelResult,
   KernelOutput,
   Texture,
@@ -22,37 +23,7 @@ import {
   NeuralNetwork,
 } from './neural-network';
 import { release } from './utilities/kernel';
-import { LossFunction, LossFunctionInputs, RAMFunction, NeuralNetworkRAM } from './utilities/loss';
-
-function loss(
-  this: IKernelFunctionThis,
-  actual: number,
-  expected: number,
-  inputs: LossFunctionInputs,
-  memory: NeuralNetworkRAM
-) {
-  return expected - actual;
-}
-
-function updateRAM(
-  this: IKernelFunctionThis,
-  actual: number,
-  expected: number,
-  inputs: LossFunctionInputs,
-  memory: NeuralNetworkRAM,
-  memorySize: number,
-  loss: number
-) {
-  const layer = this.thread.z;
-  const neuron = this.thread.y;
-  const signal = this.thread.x;
-
-  // Maintain the same signal magnitude.
-  return memory[layer][neuron][signal];
-}
-
-const DEFAULT_LOSS_FUNCTION = loss;
-const DEFAULT_MEMORY_FUNCTION = updateRAM;
+import { LossFunction, NeuralNetworkIO, RAMFunction, NeuralNetworkRAM } from './neural-network';
 
 export interface INeuralNetworkGPUDatumFormatted {
   input: KernelOutput;
@@ -211,7 +182,9 @@ export interface INeuralNetworkGPUOptions extends INeuralNetworkOptions {
 export type BackPropagateOutput = (
   this: IKernelFunctionThis,
   outputs: KernelOutput,
-  targets: KernelOutput
+  targets: KernelOutput,
+  inputs: NeuralNetworkIO,
+  ram: NeuralNetworkRAM
 ) => { result: KernelOutput; error: KernelOutput };
 
 export type BackPropagateLayer = (
@@ -291,20 +264,36 @@ export class NeuralNetworkGPU<
   // @ts-expect-error
   biases: KernelOutput[] = [];
 
+  _ramKernel?: IKernelRunShortcut;
+
   constructor(options: Partial<INeuralNetworkGPUOptions> = {}) {
     super(options);
     this.errorCheckInterval = 100;
     this.gpu = new GPU({ mode: options.mode });
+    // Compile the accelerated learning functions.
+    this.lossFunction = this._lossFunction;
+    this.ramFunction = this._ramFunction;
   }
 
-  get lossFunction(): LossFunction {
-    return typeof this._lossFunction === "function" ? this._lossFunction : loss
+  public get lossFunction(): LossFunction {
+    return super.lossFunction;
   }
 
-  set lossFunction(
+  public set lossFunction(
     value: LossFunction
   ) {
-    this._lossFunction = value;
+    this.gpu.addFunction(value);
+    super.lossFunction = value;
+  }
+
+  public set ramFunction(
+    value: RAMFunction | undefined
+  ) {
+    if (!value) {
+      if (this._ramKernel) delete this._ramKernel;
+    }
+    else this._ramKernel = this.gpu.createKernel(value);
+    super.ramFunction = value;
   }
 
   initialize(): void {
@@ -391,6 +380,16 @@ export class NeuralNetworkGPU<
       });
     }
 
+    const updateRAM: IKernelRunShortcut | undefined = this._ramKernel;
+
+    if (updateRAM) {
+      const input = this.outputs[0];
+      const output = this.outputs[this.outputLayer];
+      const loss = this.loss.current.mean;
+      const deltaLoss = loss - this.loss.previous.mean;
+      updateRAM(this.ram, this.ramSize, input, output, this.sizes, loss, deltaLoss);
+    }
+
     this.texturizeInputData = this.gpu.createKernel(
       function (value: number[]): number {
         return value[this.thread.x];
@@ -421,7 +420,7 @@ export class NeuralNetworkGPU<
   };
 
   buildCalculateDeltas(): void {
-    let calcDeltas: GPUFunction<[number, number, LossFunctionInputs, NeuralNetworkRAM]>;
+    let calcDeltas: GPUFunction<[number, number, NeuralNetworkIO, NeuralNetworkRAM]>;
     switch (this.trainOpts.activation) {
       case 'sigmoid':
         calcDeltas = calcDeltasSigmoid;
@@ -441,8 +440,7 @@ export class NeuralNetworkGPU<
         );
     }
 
-    const loss: LossFunction = this._lossFunction ?? DEFAULT_LOSS_FUNCTION;
-    const updateRAM: RAMFunction = this._ramFunction ?? DEFAULT_MEMORY_FUNCTION;
+    const loss: LossFunction = this.lossFunction;
 
     calcDeltas = alias(
       utils.getMinifySafeName(() => calcDeltas),
@@ -462,7 +460,7 @@ export class NeuralNetworkGPU<
             this: IKernelFunctionThis,
             outputs: number[],
             targets: number[],
-            inputs: LossFunctionInputs,
+            inputs: NeuralNetworkIO,
             ram: NeuralNetworkRAM
           ): number {
             const output = outputs[this.thread.x];
@@ -523,8 +521,9 @@ export class NeuralNetworkGPU<
 
       let output;
       if (layer === this.outputLayer) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        output = this.backwardPropagate[layer](this.outputs[layer], target, this.outputs[0], this.memory);
+        output = this.backwardPropagate[layer](this.outputs[layer], target, this.outputs[0], this.ram);
       } else {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
@@ -750,18 +749,19 @@ export class NeuralNetworkGPU<
           : (layerBiases as Float32Array)
       )
     );
-    const jsonLayerMemory = this.memory.map((layerMemory, layerIndex) =>
+    const jsonLayerMemory = this.ram?.map((layerMemory, layerIndex) =>
       layerMemory.map(nodeMemory =>
         Array.from(nodeMemory)
       )
     );
     const jsonLayers: IJSONLayer[] = [];
     for (let i = 0; i <= this.outputLayer; i++) {
-      jsonLayers.push({
+      const jsonLayer: IJSONLayer = {
         weights: jsonLayerWeights[i] ?? [],
-        biases: jsonLayerBiases[i] ?? [],
-        memory: jsonLayerMemory[i] ?? []
-      });
+        biases: jsonLayerBiases[i] ?? []
+      };
+      if (jsonLayerMemory) jsonLayer.ram = jsonLayerMemory[i] ?? [];
+      jsonLayers.push(jsonLayer);
     }
     return {
       type: 'NeuralNetworkGPU',
