@@ -170,7 +170,7 @@ export function defaults(): INeuralNetworkOptions {
     outputSize: 0,
     binaryThresh: 0.5,
     loss,
-    ramSize: NaN
+    ramSize: 1
   };
 }
 
@@ -314,7 +314,7 @@ export class NeuralNetwork<
 
     // Initialize the memory matrix.
     const { ramSize } = this.options ?? NaN;
-    this._ram = this.replaceRAM(ramSize ?? 0);
+    this._ram = this.replaceRAM(ramSize ?? 1);
     // Initialize the loss function.
     this._lossAnalytics = createLossAnalytics();
     if (options.loss) this._lossFunction = options.loss;
@@ -1463,7 +1463,7 @@ export class NeuralNetwork<
       this.biases[i] = layerBiases[i] || [];
     }
     if (layerRAM) {
-      if (!this.ram) this._ram = this.replaceRAM(ramSize ?? 0);
+      if (!this.ram) this._ram = this.replaceRAM(ramSize ?? 1);
     }
     return this;
   }
@@ -1570,7 +1570,7 @@ export class NeuralNetwork<
   private createRAM(
     ramSize: number
   ): NeuralNetworkRAM {
-    if (!isFinite(ramSize) || ramSize < 0) ramSize = 0;
+    if (!isFinite(ramSize) || ramSize < 0) ramSize = 1;
     const memory: NeuralNetworkRAM = [];
     for (let layer = 0; layer < this.sizes.length; layer++) {
       memory[layer] = [];
