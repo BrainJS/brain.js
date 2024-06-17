@@ -114,23 +114,6 @@ function loss(
   return expected - actual;
 }
 
-// function updateRAM(
-//   this: IKernelFunctionThis,
-//   inputs: NeuralNetworkIO,
-//   ram: NeuralNetworkRAM,
-//   ramSize: number,
-//   loss: number
-// ) {
-//   const layer = this.thread.z;
-//   const neuron = this.thread.y;
-//   const signal = this.thread.x;
-
-//   // Maintain the same signal magnitude.
-//   return ram[layer][neuron][signal];
-// }
-
-const DEFAULT_LOSS_FUNCTION = loss;
-
 export type NeuralNetworkActivation =
   | 'sigmoid'
   | 'relu'
