@@ -1,13 +1,15 @@
-import { NeuralNetwork } from "../neural-network";
+interface IErrorableNeuralNetworkConstructor {
+  name: string;
+}
 
 interface IErrorableNeuralNetwork {
-  constructor: Function;
+  constructor: IErrorableNeuralNetworkConstructor;
 }
 
 export class UntrainedNeuralNetworkError extends Error {
-  constructor (
-    neuralNetwork: IErrorableNeuralNetwork
-  ) {
-    super(`Cannot run a ${neuralNetwork.constructor.name} before it is trained.`);
+  constructor(neuralNetwork: IErrorableNeuralNetwork) {
+    super(
+      `Cannot run a ${neuralNetwork.constructor.name} before it is trained.`
+    );
   }
 }

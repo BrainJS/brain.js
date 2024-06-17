@@ -1,8 +1,23 @@
-import { IKernelFunctionThis, KernelOutput, Texture, TextureArrayOutput } from "gpu.js";
-import { IJSONLayer, INeuralNetworkData, INeuralNetworkDatum, INeuralNetworkTrainOptions, NeuralNetworkIO, NeuralNetworkRAM } from "./neural-network";
-import { INeuralNetworkGPUOptions, NeuralNetworkGPU } from "./neural-network-gpu";
-import { INeuralNetworkState } from "./neural-network-types";
-import { UntrainedNeuralNetworkError } from "./errors/untrained-neural-network-error";
+import {
+  IKernelFunctionThis,
+  KernelOutput,
+  Texture,
+  TextureArrayOutput,
+} from 'gpu.js';
+import {
+  IJSONLayer,
+  INeuralNetworkData,
+  INeuralNetworkDatum,
+  INeuralNetworkTrainOptions,
+  NeuralNetworkIO,
+  NeuralNetworkRAM,
+} from './neural-network';
+import {
+  INeuralNetworkGPUOptions,
+  NeuralNetworkGPU,
+} from './neural-network-gpu';
+import { INeuralNetworkState } from './neural-network-types';
+import { UntrainedNeuralNetworkError } from './errors/untrained-neural-network-error';
 
 function loss(
   this: IKernelFunctionThis,
@@ -16,7 +31,7 @@ function loss(
   // if ( o ≈ i0 ) then return 10% of the loss value.
   // Otherwise, return 1000% of the full loss value.
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error
   if (Math.round(actual) !== Math.round(inputs[this.thread.x])) error *= 32;
   else error *= 0.03125;
 
@@ -26,12 +41,13 @@ function loss(
 /**
  * An autoencoder learns to compress input data down to relevant features and reconstruct input data from its compressed representation.
  */
-export class AutoencoderGPU<DecodedData extends INeuralNetworkData, EncodedData extends INeuralNetworkData> extends NeuralNetworkGPU<DecodedData, DecodedData> {
+export class AutoencoderGPU<
+  DecodedData extends INeuralNetworkData,
+  EncodedData extends INeuralNetworkData
+> extends NeuralNetworkGPU<DecodedData, DecodedData> {
   private decoder?: NeuralNetworkGPU<EncodedData, DecodedData>;
 
-  constructor (
-    options?: Partial<INeuralNetworkGPUOptions>
-  ) {
+  constructor(options?: Partial<INeuralNetworkGPUOptions>) {
     // Create default options for the autoencoder.
     options ??= {};
 
@@ -40,7 +56,7 @@ export class AutoencoderGPU<DecodedData extends INeuralNetworkData, EncodedData 
     // Define the denoiser subnet's input and output sizes.
     options.inputSize = options.outputSize = decodedSize;
 
-    options.hiddenLayers ??= [ Math.round(decodedSize * 0.66) ];
+    options.hiddenLayers ??= [Math.round(decodedSize * 0.66)];
 
     options.loss ??= loss;
 
@@ -92,7 +108,8 @@ export class AutoencoderGPU<DecodedData extends INeuralNetworkData, EncodedData 
     this.run(input);
 
     // Get the auto-encoded input.
-    let encodedInput: TextureArrayOutput = this.encodedLayer as TextureArrayOutput;
+    let encodedInput: TextureArrayOutput = this
+      .encodedLayer as TextureArrayOutput;
 
     // If the encoded input is a `Texture`, convert it into an `Array`.
     if (encodedInput instanceof Texture) encodedInput = encodedInput.toArray();
@@ -110,7 +127,7 @@ export class AutoencoderGPU<DecodedData extends INeuralNetworkData, EncodedData 
    * @param {DecodedData} input
    * @returns {boolean}
    */
-  likelyIncludesAnomalies(input: DecodedData, anomalyThreshold: number = 0.2): boolean {
+  likelyIncludesAnomalies(input: DecodedData, anomalyThreshold = 0.2): boolean {
     // Create the anomaly vector.
     const anomalies: number[] = [];
 
@@ -119,7 +136,9 @@ export class AutoencoderGPU<DecodedData extends INeuralNetworkData, EncodedData 
 
     // Calculate the anomaly vector.
     for (let i = 0; i < (input.length ?? 0); i++) {
-      anomalies[i] = Math.abs((input as number[])[i] - (denoised as number[])[i]);
+      anomalies[i] = Math.abs(
+        (input as number[])[i] - (denoised as number[])[i]
+      );
     }
 
     // Calculate the sum of all anomalies within the vector.
@@ -141,13 +160,24 @@ export class AutoencoderGPU<DecodedData extends INeuralNetworkData, EncodedData 
    * @param {Partial<INeuralNetworkTrainOptions>} options
    * @returns {INeuralNetworkState}
    */
-  train(data: Partial<DecodedData>[] | INeuralNetworkDatum<Partial<DecodedData>, Partial<DecodedData>>[], options?: Partial<INeuralNetworkTrainOptions>): INeuralNetworkState {
-    const preprocessedData: INeuralNetworkDatum<Partial<DecodedData>, Partial<DecodedData>>[] = [];
+  train(
+    data:
+      | Array<Partial<DecodedData>>
+      | Array<INeuralNetworkDatum<Partial<DecodedData>, Partial<DecodedData>>>,
+    options?: Partial<INeuralNetworkTrainOptions>
+  ): INeuralNetworkState {
+    const preprocessedData: Array<INeuralNetworkDatum<
+      Partial<DecodedData>,
+      Partial<DecodedData>
+    >> = [];
 
     if (data.length && data.length > 0)
-    for (let datum of data) {
-      preprocessedData.push( { input: datum as Partial<DecodedData>, output: datum as Partial<DecodedData> } );
-    }
+      for (const datum of data) {
+        preprocessedData.push({
+          input: datum as Partial<DecodedData>,
+          output: datum as Partial<DecodedData>,
+        });
+      }
 
     const results = super.train(preprocessedData, options);
 
@@ -179,7 +209,7 @@ export class AutoencoderGPU<DecodedData extends INeuralNetworkData, EncodedData 
 
     const decoder = new NeuralNetworkGPU().fromJSON(json);
 
-    return decoder as unknown as NeuralNetworkGPU<EncodedData, DecodedData>;
+    return (decoder as unknown) as NeuralNetworkGPU<EncodedData, DecodedData>;
   }
 
   /**

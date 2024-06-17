@@ -21,9 +21,12 @@ import {
   INeuralNetworkPreppedTrainingData,
   INeuralNetworkTrainOptions,
   NeuralNetwork,
+  LossFunction,
+  NeuralNetworkIO,
+  RAMFunction,
+  NeuralNetworkRAM,
 } from './neural-network';
 import { release } from './utilities/kernel';
-import { LossFunction, NeuralNetworkIO, RAMFunction, NeuralNetworkRAM } from './neural-network';
 
 export interface INeuralNetworkGPUDatumFormatted {
   input: KernelOutput;
@@ -279,9 +282,7 @@ export class NeuralNetworkGPU<
     return super.lossFunction;
   }
 
-  public set lossFunction(
-    value: LossFunction
-  ) {
+  public set lossFunction(value: LossFunction) {
     this.gpu.addFunction(value);
     super.lossFunction = value;
   }
@@ -290,27 +291,21 @@ export class NeuralNetworkGPU<
     return super.ramFunction;
   }
 
-  public set ramFunction(
-    value: RAMFunction | undefined
-  ) {
+  public set ramFunction(value: RAMFunction | undefined) {
     if (!value) {
       if (this._ramKernel) delete this._ramKernel;
-    }
-    else {
+    } else {
       const layerCount = this.sizes.length;
-      const maxNeuronsPerLayer = this.sizes.reduce(
-        (eax, edx) => edx > eax ? edx : eax
+      const maxNeuronsPerLayer = this.sizes.reduce((eax, edx) =>
+        edx > eax ? edx : eax
       );
       const ramSize = this.ramSize;
-      this._ramKernel = this.gpu.createKernel(
-        value,
-        {
-          constants: {
-            ramSize
-          },
-          output: [ layerCount, maxNeuronsPerLayer, ramSize ]
-        }
-      );
+      this._ramKernel = this.gpu.createKernel(value, {
+        constants: {
+          ramSize,
+        },
+        output: [layerCount, maxNeuronsPerLayer, ramSize],
+      });
     }
     super.ramFunction = value;
   }
@@ -432,14 +427,21 @@ export class NeuralNetworkGPU<
       const loss = this.loss.current.mean;
       const deltaLoss = loss - this.loss.previous.mean;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      this._ram = updateRAM(this.ram, input, output, this.sizes, loss, deltaLoss);
+      // @ts-expect-error
+      this._ram = updateRAM(
+        this.ram,
+        input,
+        output,
+        this.sizes,
+        loss,
+        deltaLoss
+      );
     }
     return output;
   };
 
   buildCalculateDeltas(): void {
-    let calcDeltas: GPUFunction<[number, number, NeuralNetworkIO, NeuralNetworkRAM]>;
+    let calcDeltas: GPUFunction<[number, number]>;
     switch (this.trainOpts.activation) {
       case 'sigmoid':
         calcDeltas = calcDeltasSigmoid;
@@ -473,7 +475,7 @@ export class NeuralNetworkGPU<
         // @ts-expect-error
         this.backwardPropagate[this.outputLayer] = this.gpu.createKernelMap(
           {
-            error: calcErrorOutput
+            error: calcErrorOutput,
           },
           function (
             this: IKernelFunctionThis,
@@ -486,7 +488,12 @@ export class NeuralNetworkGPU<
             const target = targets[this.thread.x];
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
-            return calcDeltas(calcErrorOutput(loss(output, target, inputs, ram)), output);
+            return calcDeltas(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-expect-error
+              calcErrorOutput(loss(output, target, inputs, ram)),
+              output
+            );
           },
           {
             output: [this.sizes[this.outputLayer]],
@@ -541,8 +548,13 @@ export class NeuralNetworkGPU<
       let output;
       if (layer === this.outputLayer) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        output = this.backwardPropagate[layer](this.outputs[layer], target, this.outputs[0], this.ram);
+        // @ts-expect-error
+        output = this.backwardPropagate[layer](
+          this.outputs[layer],
+          target,
+          this.outputs[0],
+          this.ram
+        );
       } else {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
@@ -769,15 +781,13 @@ export class NeuralNetworkGPU<
       )
     );
     const jsonLayerMemory = this.ram?.map((layerMemory, layerIndex) =>
-      layerMemory.map(nodeMemory =>
-        Array.from(nodeMemory)
-      )
+      layerMemory.map((nodeMemory) => Array.from(nodeMemory))
     );
     const jsonLayers: IJSONLayer[] = [];
     for (let i = 0; i <= this.outputLayer; i++) {
       const jsonLayer: IJSONLayer = {
         weights: jsonLayerWeights[i] ?? [],
-        biases: jsonLayerBiases[i] ?? []
+        biases: jsonLayerBiases[i] ?? [],
       };
       if (jsonLayerMemory) jsonLayer.ram = jsonLayerMemory[i] ?? [];
       jsonLayers.push(jsonLayer);

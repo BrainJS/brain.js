@@ -77,7 +77,7 @@ export interface ILossAnalyticsSnapshot {
 const EMPTY_LOSS_SNAPSHOT: ILossAnalyticsSnapshot = {
   mean: Number.MAX_SAFE_INTEGER,
   median: Number.MAX_SAFE_INTEGER,
-  total: Number.MAX_SAFE_INTEGER
+  total: Number.MAX_SAFE_INTEGER,
 };
 
 Object.freeze(EMPTY_LOSS_SNAPSHOT);
@@ -102,7 +102,7 @@ const EMPTY_LOSS: ILossAnalytics = {
   max: createLossAnalyticsSnapshot(),
   min: createLossAnalyticsSnapshot(),
   previous: createLossAnalyticsSnapshot(),
-  projected: createLossAnalyticsSnapshot()
+  projected: createLossAnalyticsSnapshot(),
 };
 
 Object.freeze(EMPTY_LOSS);
@@ -187,7 +187,7 @@ export function defaults(): INeuralNetworkOptions {
     outputSize: 0,
     binaryThresh: 0.5,
     loss,
-    ramSize: 1
+    ramSize: 1,
   };
 }
 
@@ -419,12 +419,10 @@ export class NeuralNetwork<
   }
 
   public get lossFunction(): LossFunction {
-    return typeof this._lossFunction === "function" ? this._lossFunction : loss
+    return typeof this._lossFunction === 'function' ? this._lossFunction : loss;
   }
 
-  public set lossFunction(
-    value: LossFunction
-  ) {
+  public set lossFunction(value: LossFunction) {
     this._lossFunction = value;
   }
 
@@ -436,9 +434,7 @@ export class NeuralNetwork<
     return this._ramFunction;
   }
 
-  public set ramFunction(
-    value: RAMFunction | undefined
-  ) {
+  public set ramFunction(value: RAMFunction | undefined) {
     this._ramFunction = value;
   }
 
@@ -476,42 +472,73 @@ export class NeuralNetwork<
   protected _updateRAM(): void {
     if (this.ram) {
       const updateRAM: RAMFunction | undefined = this.ramFunction;
-
       if (updateRAM) {
-        const ramSize = this.ramSize;
         const input = this.outputs[0];
         const output = this.outputs[this.outputLayer];
         const loss = this.loss.current.mean;
         const deltaLoss = loss - this.loss.previous.mean;
-        this._ram = this.ram.map(
-          (layerRAM, layer) => layerRAM.map(
-            (neuronRAM, neuron) => neuronRAM.map(
-              (value, index) => {
-                const kernelFunctionThis: IKernelFunctionThis = {
-                  color: function color(r: number, g: number = 0, b: number = 0, a: number = 0) {},
-                  constants: {
-                    ramSize
-                  },
-                  output: {
-                    x: NaN,
-                    y: NaN,
-                    z: NaN
-                  },
-                  thread: {
-                    x: index,
-                    y: neuron,
-                    z: layer
-                  }
-                };
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                return updateRAM.call(kernelFunctionThis, this.ram, this.ramSize, input, output, this.sizes, loss, deltaLoss);
-              }
-            )
+        this._ram = this.ram.map((layerRAM, layer) =>
+          layerRAM.map((neuronRAM, neuron) =>
+            neuronRAM.map((value, index) => {
+              return updateRAM.call(
+                this._getRAMKernelFunctionThis(layer, neuron, index),
+                this.ram,
+                (input as unknown) as NeuralNetworkIO,
+                (output as unknown) as NeuralNetworkIO,
+                this.sizes,
+                loss,
+                deltaLoss
+              );
+            })
           )
         );
       }
     }
+  }
+
+  private _getLossKernelFunctionThis(
+    layer: number,
+    neuron: number
+  ): IKernelFunctionThis {
+    return {
+      color: function color(r: number, g = 0, b = 0, a = 0) {},
+      constants: {
+        ramSize: this.ramSize,
+      },
+      output: {
+        x: this.ram[0][0].length,
+        y: this.ram[0].length,
+        z: this.ram.length,
+      },
+      thread: {
+        x: neuron,
+        y: layer,
+        z: 0,
+      },
+    };
+  }
+
+  private _getRAMKernelFunctionThis(
+    layer: number,
+    neuron: number,
+    index: number
+  ): IKernelFunctionThis {
+    return {
+      color: function color(r: number, g = 0, b = 0, a = 0) {},
+      constants: {
+        ramSize: this.ramSize,
+      },
+      output: {
+        x: this.ram[0][0].length,
+        y: this.ram[0].length,
+        z: this.ram.length,
+      },
+      thread: {
+        x: index,
+        y: neuron,
+        z: layer,
+      },
+    };
   }
 
   _runInputSigmoid(input: Float32Array): Float32Array {
@@ -956,13 +983,15 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          if (typeof this._lossFunction === "function") {
-            const kernelFunctionThis = { thread: { x: node, y: layer, z: 0 } };
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.ram);
-          }
-          else error = target[node] - output;
+          if (typeof this._lossFunction === 'function') {
+            error = this._lossFunction.call(
+              this._getLossKernelFunctionThis(layer, node),
+              output,
+              target[node],
+              (input as unknown) as NeuralNetworkIO,
+              this.ram
+            );
+          } else error = target[node] - output;
         } else {
           const deltas = this.deltas[layer + 1];
           for (let k = 0; k < deltas.length; k++) {
@@ -989,13 +1018,15 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          if (typeof this._lossFunction === "function") {
-            const kernelFunctionThis = { thread: { x: node, y: layer, z: 0 } };
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.ram);
-          }
-          else error = target[node] - output;
+          if (typeof this._lossFunction === 'function') {
+            error = this._lossFunction.call(
+              this._getLossKernelFunctionThis(layer, node),
+              output,
+              target[node],
+              (input as unknown) as NeuralNetworkIO,
+              this.ram
+            );
+          } else error = target[node] - output;
         } else {
           for (let k = 0; k < nextDeltas.length; k++) {
             error += nextDeltas[k] * nextWeights[k][node];
@@ -1022,13 +1053,15 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          if (typeof this._lossFunction === "function") {
-            const kernelFunctionThis = { thread: { x: node, y: layer, z: 0 } };
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.ram);
-          }
-          else error = target[node] - output;
+          if (typeof this._lossFunction === 'function') {
+            error = this._lossFunction.call(
+              this._getLossKernelFunctionThis(layer, node),
+              output,
+              target[node],
+              (input as unknown) as NeuralNetworkIO,
+              this.ram
+            );
+          } else error = target[node] - output;
         } else {
           for (let k = 0; k < nextDeltas.length; k++) {
             error += nextDeltas[k] * nextWeights[k][node];
@@ -1054,13 +1087,15 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          if (typeof this._lossFunction === "function") {
-            const kernelFunctionThis = { thread: { x: node, y: layer, z: 0 } };
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            error = this._lossFunction.call(kernelFunctionThis, output, target[node], input, this.ram);
-          }
-          else error = target[node] - output;
+          if (typeof this._lossFunction === 'function') {
+            error = this._lossFunction.call(
+              this._getLossKernelFunctionThis(layer, node),
+              output,
+              target[node],
+              (input as unknown) as NeuralNetworkIO,
+              this.ram
+            );
+          } else error = target[node] - output;
         } else {
           for (let k = 0; k < nextDeltas.length; k++) {
             error += nextDeltas[k] * nextWeights[k][node];
@@ -1421,17 +1456,15 @@ export class NeuralNetwork<
     const jsonLayerBiases = this.biases.map((layerBiases) =>
       Array.from(layerBiases)
     );
-    const jsonLayerMemory = this.ram?.map(layerMemory =>
-      layerMemory.map(
-        nodeMemory => Array.from(nodeMemory)
-      )
+    const jsonLayerMemory = this.ram?.map((layerMemory) =>
+      layerMemory.map((nodeMemory) => Array.from(nodeMemory))
     );
     const jsonLayers: IJSONLayer[] = [];
     const outputLength = this.sizes.length - 1;
     for (let i = 0; i <= outputLength; i++) {
       const jsonLayer: IJSONLayer = {
         weights: jsonLayerWeights[i] ?? [],
-        biases: jsonLayerBiases[i] ?? []
+        biases: jsonLayerBiases[i] ?? [],
       };
       if (jsonLayerMemory) jsonLayer.ram = jsonLayerMemory[i] ?? [];
       jsonLayers.push(jsonLayer);
@@ -1479,13 +1512,12 @@ export class NeuralNetwork<
       Float32Array.from(jsonLayers[layerIndex].biases)
     );
     const ramSize = this.ramSize;
-    const layerRAM
-      = isFinite(ramSize)
+    const layerRAM = isFinite(ramSize)
       ? this.ram?.map((ram, layerIndex) =>
-        Array.from(jsonLayers[layerIndex].ram ?? []).map(nodeRAM =>
-          Float32Array.from(nodeRAM)
+          Array.from(jsonLayers[layerIndex].ram ?? []).map((nodeRAM) =>
+            Float32Array.from(nodeRAM)
+          )
         )
-      )
       : undefined;
     for (let i = 0; i <= this.outputLayer; i++) {
       this.weights[i] = layerWeights[i] || [];
@@ -1596,9 +1628,7 @@ export class NeuralNetwork<
     ) => OutputType;
   }
 
-  private createRAM(
-    ramSize: number
-  ): NeuralNetworkRAM {
+  private createRAM(ramSize: number): NeuralNetworkRAM {
     if (!isFinite(ramSize) || ramSize < 0) ramSize = 1;
     const memory: NeuralNetworkRAM = [];
     for (let layer = 0; layer < this.sizes.length; layer++) {
@@ -1610,10 +1640,8 @@ export class NeuralNetwork<
     return memory;
   }
 
-  private replaceRAM(
-    ram: number | NeuralNetworkRAM
-  ): NeuralNetworkRAM {
-    if (typeof ram === "number") return this._ram = this.createRAM(ram);
-    return this._ram = ram;
+  private replaceRAM(ram: number | NeuralNetworkRAM): NeuralNetworkRAM {
+    if (typeof ram === 'number') return (this._ram = this.createRAM(ram));
+    return (this._ram = ram);
   }
 }
