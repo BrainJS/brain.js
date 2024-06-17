@@ -35,15 +35,12 @@ export class AutoencoderGPU<DecodedData extends INeuralNetworkData, EncodedData 
     // Create default options for the autoencoder.
     options ??= {};
 
-    // Inherit the binary threshold of the parent autoencoder.
-    options.binaryThresh = options.binaryThresh;
-    // Inherit the hidden layers of the parent autoencoder.
-    options.hiddenLayers = options.hiddenLayers;
-
     const decodedSize = options.inputSize ?? options.outputSize ?? 1;
 
     // Define the denoiser subnet's input and output sizes.
-    if (decodedSize) options.inputSize = options.outputSize = decodedSize;
+    options.inputSize = options.outputSize = decodedSize;
+
+    options.hiddenLayers ??= [ Math.round(decodedSize * 0.66) ];
 
     options.loss ??= loss;
 
