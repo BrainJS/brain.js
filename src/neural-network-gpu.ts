@@ -292,7 +292,22 @@ export class NeuralNetworkGPU<
     if (!value) {
       if (this._ramKernel) delete this._ramKernel;
     }
-    else this._ramKernel = this.gpu.createKernel(value);
+    else {
+      const layerCount = this.sizes.length;
+      const maxNeuronsPerLayer = this.sizes.reduce(
+        (eax, edx) => edx > eax ? edx : eax
+      );
+      const ramSize = this.ramSize;
+      this._ramKernel = this.gpu.createKernel(
+        value,
+        {
+          constants: {
+            ramSize
+          },
+          output: [ layerCount, maxNeuronsPerLayer, ramSize ]
+        }
+      );
+    }
     super.ramFunction = value;
   }
 
@@ -380,16 +395,6 @@ export class NeuralNetworkGPU<
       });
     }
 
-    const updateRAM: IKernelRunShortcut | undefined = this._ramKernel;
-
-    if (updateRAM) {
-      const input = this.outputs[0];
-      const output = this.outputs[this.outputLayer];
-      const loss = this.loss.current.mean;
-      const deltaLoss = loss - this.loss.previous.mean;
-      updateRAM(this.ram, this.ramSize, input, output, this.sizes, loss, deltaLoss);
-    }
-
     this.texturizeInputData = this.gpu.createKernel(
       function (value: number[]): number {
         return value[this.thread.x];
@@ -415,6 +420,16 @@ export class NeuralNetworkGPU<
         input
       );
       output = input = this.outputs[layer];
+    }
+    const updateRAM: IKernelRunShortcut | undefined = this._ramKernel;
+    if (updateRAM) {
+      const input = this.outputs[0];
+      const output = this.outputs[this.outputLayer];
+      const loss = this.loss.current.mean;
+      const deltaLoss = loss - this.loss.previous.mean;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      this._ram = updateRAM(this.ram, input, output, this.sizes, loss, deltaLoss);
     }
     return output;
   };
