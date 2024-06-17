@@ -1,6 +1,4 @@
-import { NeuralNetwork, NeuralNetworkIO } from "../neural-network";
-
-export class UntrainedNeuralNetworkError<NeuralNetworkType extends NeuralNetwork<NeuralNetworkIO, NeuralNetworkIO>> extends Error {
+export class UntrainedNeuralNetworkError extends Error {
   constructor (
     neuralNetwork: object
   ) {
