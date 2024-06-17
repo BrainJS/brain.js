@@ -23,7 +23,7 @@ export type LossFunction = (
   actual: number,
   expected: number,
   inputs: NeuralNetworkIO,
-  memory: NeuralNetworkRAM
+  ram: NeuralNetworkRAM
 ) => number;
 
 export type RAMFunction = (
@@ -108,7 +108,7 @@ function loss(
   actual: number,
   expected: number,
   inputs: NeuralNetworkIO,
-  memory: NeuralNetworkRAM
+  ram: NeuralNetworkRAM
 ) {
   return expected - actual;
 }

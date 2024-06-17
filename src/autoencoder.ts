@@ -1,41 +1,54 @@
-import { KernelOutput, Texture, TextureArrayOutput } from "gpu.js";
-import { IJSONLayer, INeuralNetworkData, INeuralNetworkDatum, INeuralNetworkTrainOptions } from "./neural-network";
+import { IKernelFunctionThis, KernelOutput, Texture, TextureArrayOutput } from "gpu.js";
+import { IJSONLayer, INeuralNetworkData, INeuralNetworkDatum, INeuralNetworkTrainOptions, NeuralNetworkIO, NeuralNetworkRAM } from "./neural-network";
 import { INeuralNetworkGPUOptions, NeuralNetworkGPU } from "./neural-network-gpu";
 import { INeuralNetworkState } from "./neural-network-types";
 import { UntrainedNeuralNetworkError } from "./errors/untrained-neural-network-error";
 
-export interface IAEOptions {
-  binaryThresh: number;
-  decodedSize: number;
-  hiddenLayers: number[];
+function loss(
+  this: IKernelFunctionThis,
+  actual: number,
+  expected: number,
+  inputs: NeuralNetworkIO,
+  ram: NeuralNetworkRAM
+) {
+  let error = expected - actual;
+
+  // if ( o ≈ i0 ) then return 10% of the loss value.
+  // Otherwise, return 1000% of the full loss value.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  if (Math.round(actual) !== Math.round(inputs[this.thread.x])) error *= 32;
+  else error *= 0.03125;
+
+  return error;
 }
 
 /**
  * An autoencoder learns to compress input data down to relevant features and reconstruct input data from its compressed representation.
  */
-export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeuralNetworkData> {
+export class AutoencoderGPU<DecodedData extends INeuralNetworkData, EncodedData extends INeuralNetworkData> extends NeuralNetworkGPU<DecodedData, DecodedData> {
   private decoder?: NeuralNetworkGPU<EncodedData, DecodedData>;
-  private denoiser: NeuralNetworkGPU<DecodedData, DecodedData>;
 
   constructor (
-    options?: Partial<IAEOptions>
+    options?: Partial<INeuralNetworkGPUOptions>
   ) {
     // Create default options for the autoencoder.
     options ??= {};
 
-    // Create default options for the autoencoder's denoiser subnet.
-    const denoiserOptions: Partial<INeuralNetworkGPUOptions> = {};
-
     // Inherit the binary threshold of the parent autoencoder.
-    denoiserOptions.binaryThresh = options.binaryThresh;
+    options.binaryThresh = options.binaryThresh;
     // Inherit the hidden layers of the parent autoencoder.
-    denoiserOptions.hiddenLayers = options.hiddenLayers;
+    options.hiddenLayers = options.hiddenLayers;
+
+    const decodedSize = options.inputSize ?? options.outputSize ?? 1;
 
     // Define the denoiser subnet's input and output sizes.
-    if (options.decodedSize) denoiserOptions.inputSize = denoiserOptions.outputSize = options.decodedSize;
+    if (decodedSize) options.inputSize = options.outputSize = decodedSize;
 
-    // Create the denoiser subnet of the autoencoder.
-    this.denoiser = new NeuralNetworkGPU<DecodedData, DecodedData>(options);
+    options.loss ??= loss;
+
+    // Create the autoencoder.
+    super(options);
   }
 
   /**
@@ -51,7 +64,7 @@ export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeu
     // denoising and anomaly detection; there are other specialized topologies
     // better suited for these tasks anyways, many of which can be implemented
     // by using an autoencoder.
-    return this.denoiser.run(input);
+    return this.run(input);
   }
 
   /**
@@ -76,10 +89,10 @@ export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeu
    */
   encode(input: DecodedData): EncodedData {
     // If the decoder has not been trained yet, throw an error.
-    if (!this.denoiser) throw new UntrainedNeuralNetworkError(this);
+    if (!this) throw new UntrainedNeuralNetworkError(this);
 
     // Process the input.
-    this.denoiser.run(input);
+    this.run(input);
 
     // Get the auto-encoded input.
     let encodedInput: TextureArrayOutput = this.encodedLayer as TextureArrayOutput;
@@ -131,14 +144,15 @@ export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeu
    * @param {Partial<INeuralNetworkTrainOptions>} options
    * @returns {INeuralNetworkState}
    */
-  train(data: DecodedData[], options?: Partial<INeuralNetworkTrainOptions>): INeuralNetworkState {
+  train(data: Partial<DecodedData>[] | INeuralNetworkDatum<Partial<DecodedData>, Partial<DecodedData>>[], options?: Partial<INeuralNetworkTrainOptions>): INeuralNetworkState {
     const preprocessedData: INeuralNetworkDatum<Partial<DecodedData>, Partial<DecodedData>>[] = [];
 
+    if (data.length && data.length > 0)
     for (let datum of data) {
-      preprocessedData.push( { input: datum, output: datum } );
+      preprocessedData.push( { input: datum as Partial<DecodedData>, output: datum as Partial<DecodedData> } );
     }
 
-    const results = this.denoiser.train(preprocessedData, options);
+    const results = super.train(preprocessedData, options);
 
     this.decoder = this.createDecoder();
 
@@ -151,12 +165,12 @@ export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeu
    * @returns {NeuralNetworkGPU<EncodedData, DecodedData>}
    */
   private createDecoder() {
-    const json = this.denoiser.toJSON();
+    const json = this.toJSON();
 
     const layers: IJSONLayer[] = [];
     const sizes: number[] = [];
 
-    for (let i = this.encodedLayerIndex; i < this.denoiser.sizes.length; i++) {
+    for (let i = this.encodedLayerIndex; i < this.sizes.length; i++) {
       layers.push(json.layers[i]);
       sizes.push(json.sizes[i]);
     }
@@ -175,15 +189,15 @@ export class AE<DecodedData extends INeuralNetworkData, EncodedData extends INeu
    * Get the layer containing the encoded representation.
    */
   private get encodedLayer(): KernelOutput {
-    return this.denoiser.outputs[this.encodedLayerIndex];
+    return this.outputs[this.encodedLayerIndex];
   }
 
   /**
    * Get the offset of the encoded layer.
    */
   private get encodedLayerIndex(): number {
-    return Math.round(this.denoiser.outputs.length * 0.5) - 1;
+    return Math.round(this.outputs.length * 0.5) - 1;
   }
 }
 
-export default AE;
+export default AutoencoderGPU;
