@@ -1,7 +1,6 @@
-import { INeuralNetworkData, NeuralNetwork } from "../neural-network";
-import { NeuralNetworkGPU } from "../neural-network-gpu";
+import { NeuralNetwork, NeuralNetworkIO } from "../neural-network";
 
-export class UntrainedNeuralNetworkError extends Error {
+export class UntrainedNeuralNetworkError<NeuralNetworkType extends NeuralNetwork<NeuralNetworkIO, NeuralNetworkIO>> extends Error {
   constructor (
     neuralNetwork: object
   ) {

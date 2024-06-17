@@ -286,6 +286,10 @@ export class NeuralNetworkGPU<
     super.lossFunction = value;
   }
 
+  public get ramFunction(): RAMFunction | undefined {
+    return super.ramFunction;
+  }
+
   public set ramFunction(
     value: RAMFunction | undefined
   ) {

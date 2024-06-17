@@ -12,12 +12,33 @@ import { max } from './utilities/max';
 import { mse } from './utilities/mse';
 import { randos } from './utilities/randos';
 import { zeros } from './utilities/zeros';
-import { IKernelFunctionThis, KernelOutput } from 'gpu.js';
+import { IKernelFunctionThis } from 'gpu.js';
 
+/**
+ * An input or output layer of a neural network.
+ * This data type exists to allow kernel functions to operate on individual layers.
+ * This functionality is essential to custom loss functions.
+ */
 export type NeuralNetworkIO = number[] | number[][] | number[][][];
 
+/**
+ * A read-write state matrix designed to hold metadata for use by `loss` functions.
+ * This data is read-only to the `loss` function.
+ * To the `updateRAM` kernel function, this data is read-write.
+ * To the neural network consumer,
+ * the `ram` property is made public to allow for modifications to be made in addition to reading.
+ */
 export type NeuralNetworkRAM = number[][][];
 
+/**
+ * A loss function determines how fit a neural network currently is.
+ * The higher the value returned by this function,
+ * the less accurate the network is.
+ * The lower the value returned by this function is,
+ * the more accurate the network is.
+ *
+ * Here, `ram` is read-only.
+ */
 export type LossFunction = (
   this: IKernelFunctionThis,
   actual: number,
@@ -26,6 +47,13 @@ export type LossFunction = (
   ram: NeuralNetworkRAM
 ) => number;
 
+/**
+ * A RAM function updates the RAM matrix of the neural network.
+ *
+ * Here, `ram` is read-write.
+ * The actual matrix passed to the function is read-only.
+ * However, the return value of the function directly corresponds to a value within the RAM matrix.
+ */
 export type RAMFunction = (
   this: IKernelFunctionThis,
   ram: NeuralNetworkRAM,
@@ -36,6 +64,10 @@ export type RAMFunction = (
   lossDelta: number
 ) => number;
 
+/**
+ * Each time the loss is calculated,
+ * a snapshot is taken of various loss analytics.
+ */
 export interface ILossAnalyticsSnapshot {
   mean: number;
   median: number;
@@ -50,10 +82,13 @@ const EMPTY_LOSS_SNAPSHOT: ILossAnalyticsSnapshot = {
 
 Object.freeze(EMPTY_LOSS_SNAPSHOT);
 
-function createLossAnalyticsSnapshot() {
+function createLossAnalyticsSnapshot(): ILossAnalyticsSnapshot {
   return JSON.parse(JSON.stringify(EMPTY_LOSS_SNAPSHOT));
 }
 
+/**
+ * A collection of analytics pertaining to the results of the loss function.
+ */
 export interface ILossAnalytics {
   current: ILossAnalyticsSnapshot;
   max: ILossAnalyticsSnapshot;
@@ -72,7 +107,7 @@ const EMPTY_LOSS: ILossAnalytics = {
 
 Object.freeze(EMPTY_LOSS);
 
-export function createLossAnalytics() {
+export function createLossAnalytics(): ILossAnalytics {
   return JSON.parse(JSON.stringify(EMPTY_LOSS));
 }
 
@@ -109,7 +144,7 @@ function loss(
   expected: number,
   inputs: NeuralNetworkIO,
   ram: NeuralNetworkRAM
-) {
+): number {
   return expected - actual;
 }
 
@@ -438,7 +473,7 @@ export class NeuralNetwork<
     return (output as unknown) as OutputType;
   }
 
-  protected _updateRAM() {
+  protected _updateRAM(): void {
     if (this.ram) {
       const updateRAM: RAMFunction | undefined = this.ramFunction;
 
