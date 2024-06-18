@@ -154,8 +154,6 @@ export class AutoencoderGPU<
     // Calculate the mean anomaly.
     const mean = sum / (input as number[]).length;
 
-    console.log(sum, mean, anomalyThreshold);
-
     // Return whether or not the mean anomaly rate is greater than the anomaly threshold.
     return mean > anomalyThreshold;
   }
