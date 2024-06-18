@@ -780,16 +780,16 @@ export class NeuralNetworkGPU<
           : (layerBiases as Float32Array)
       )
     );
-    const jsonLayerMemory = this.ram?.map((layerMemory, layerIndex) =>
-      layerMemory.map((nodeMemory) => Array.from(nodeMemory))
+    const jsonLayerRAM = this.ram.map((layerMemory, layerIndex) =>
+      layerMemory.map((nodeRAM) => Array.from(nodeRAM))
     );
     const jsonLayers: IJSONLayer[] = [];
     for (let i = 0; i <= this.outputLayer; i++) {
       const jsonLayer: IJSONLayer = {
         weights: jsonLayerWeights[i] ?? [],
         biases: jsonLayerBiases[i] ?? [],
+        ram: jsonLayerRAM[i] ?? [],
       };
-      if (jsonLayerMemory) jsonLayer.ram = jsonLayerMemory[i] ?? [];
       jsonLayers.push(jsonLayer);
     }
     return {
@@ -802,6 +802,7 @@ export class NeuralNetworkGPU<
       outputLookupLength: this.outputLookupLength,
       options: { ...this.options },
       trainOpts: this.getTrainOptsJSON(),
+      ramSize: this.ramSize,
     };
   }
 }

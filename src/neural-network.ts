@@ -28,7 +28,7 @@ export type NeuralNetworkIO = number[] | number[][] | number[][][];
  * To the neural network consumer,
  * the `ram` property is made public to allow for modifications to be made in addition to reading.
  */
-export type NeuralNetworkRAM = number[][][];
+export type NeuralNetworkRAM = Float32Array[][];
 
 /**
  * A loss function determines how fit a neural network currently is.
@@ -157,7 +157,7 @@ export type NeuralNetworkActivation =
 export interface IJSONLayer {
   biases: number[];
   weights: number[][];
-  ram?: number[][];
+  ram: number[][];
 }
 
 export interface INeuralNetworkJSON {
@@ -170,6 +170,7 @@ export interface INeuralNetworkJSON {
   outputLookupLength: number;
   options: INeuralNetworkOptions;
   trainOpts: INeuralNetworkTrainOptionsJSON;
+  ramSize: number;
 }
 
 export interface INeuralNetworkOptions {
@@ -292,8 +293,9 @@ export class NeuralNetwork<
   _formatInput: NeuralNetworkFormatter | null = null;
   _formatOutput: NeuralNetworkFormatter | null = null;
 
-  _lossAnalytics: ILossAnalytics;
-  _ram: NeuralNetworkRAM;
+  _lossAnalytics: ILossAnalytics = createLossAnalytics();
+  _ram: NeuralNetworkRAM = [];
+  _ramSize = 1;
 
   runInput: (input: Float32Array) => Float32Array = (input: Float32Array) => {
     this.setActivation();
@@ -323,12 +325,15 @@ export class NeuralNetwork<
   constructor(
     options: Partial<INeuralNetworkOptions & INeuralNetworkTrainOptions> = {}
   ) {
-    this.options.binaryThresh = options.binaryThresh ?? 0.5;
-    this.options.hiddenLayers = options.hiddenLayers ?? [];
-    this.options.inputSize = options.inputSize ?? 1;
-    this.options.loss = options.loss ?? loss;
-    this.options.outputSize = options.outputSize ?? options.inputSize ?? 1;
-    this.options.ramSize = options.ramSize ?? 1;
+    const defaultOptions = defaults();
+    this.options.binaryThresh =
+      options.binaryThresh ?? defaultOptions.binaryThresh;
+    this.options.hiddenLayers =
+      options.hiddenLayers ?? defaultOptions.hiddenLayers;
+    this.options.inputSize = options.inputSize ?? defaultOptions.inputSize;
+    this.options.loss = options.loss ?? defaultOptions.loss;
+    this.options.outputSize = options.outputSize ?? defaultOptions.outputSize;
+    this.options.ramSize = options.ramSize ?? defaultOptions.ramSize;
     this.updateTrainingOptions(options);
 
     const { inputSize, hiddenLayers, outputSize } = this.options;
@@ -337,10 +342,9 @@ export class NeuralNetwork<
     }
 
     // Initialize the memory matrix.
-    const { ramSize } = this.options ?? NaN;
-    this._ram = this.replaceRAM(ramSize ?? 1);
+    if (options.ramSize) this._ramSize = options.ramSize;
+    this.ram = this.createRAM(this.ramSize);
     // Initialize the loss function.
-    this._lossAnalytics = createLossAnalytics();
     if (options.loss) this._lossFunction = options.loss;
     if (options.updateRAM) this._ramFunction = options.updateRAM;
   }
@@ -358,6 +362,7 @@ export class NeuralNetwork<
     this.biases = new Array(this.outputLayer); // weights for bias nodes
     this.weights = new Array(this.outputLayer);
     this.outputs = new Array(this.outputLayer);
+    this.ram = this.createRAM(this.ramSize);
 
     // state for training
     this.deltas = new Array(this.outputLayer);
@@ -435,6 +440,10 @@ export class NeuralNetwork<
     return this._ram;
   }
 
+  public set ram(ram: NeuralNetworkRAM) {
+    this._ram = ram;
+  }
+
   public get ramFunction(): RAMFunction | undefined {
     return this._ramFunction;
   }
@@ -444,8 +453,8 @@ export class NeuralNetwork<
   }
 
   public get ramSize(): number {
-    if (!this.ram || !this.ram[0] || !this.ram[0][0]) return NaN;
-    return this.ram[0][0].length;
+    if (!isFinite(this._ramSize) || this._ramSize < 1) return 1;
+    return this._ramSize;
   }
 
   run(input: Partial<InputType>): OutputType {
@@ -1461,17 +1470,19 @@ export class NeuralNetwork<
     const jsonLayerBiases = this.biases.map((layerBiases) =>
       Array.from(layerBiases)
     );
-    const jsonLayerMemory = this.ram?.map((layerMemory) =>
-      layerMemory.map((nodeMemory) => Array.from(nodeMemory))
+    const jsonLayerRAM = this.ram?.map((layerMemory) =>
+      layerMemory.map((nodeRAM) => Array.from(nodeRAM))
     );
     const jsonLayers: IJSONLayer[] = [];
     const outputLength = this.sizes.length - 1;
+    const ramSize = this.ramSize;
     for (let i = 0; i <= outputLength; i++) {
       const jsonLayer: IJSONLayer = {
         weights: jsonLayerWeights[i] ?? [],
         biases: jsonLayerBiases[i] ?? [],
+        ram:
+          jsonLayerRAM[i] ?? new Array(this.sizes[i]).fill(new Array(ramSize)),
       };
-      if (jsonLayerMemory) jsonLayer.ram = jsonLayerMemory[i] ?? [];
       jsonLayers.push(jsonLayer);
     }
     return {
@@ -1484,6 +1495,7 @@ export class NeuralNetwork<
       outputLookupLength: this.outputLookupLength,
       options: { ...this.options },
       trainOpts: this.getTrainOptsJSON(),
+      ramSize: this.ramSize,
     };
   }
 
@@ -1516,20 +1528,19 @@ export class NeuralNetwork<
     const layerBiases = this.biases.map((layerBiases, layerIndex) =>
       Float32Array.from(jsonLayers[layerIndex].biases)
     );
-    const ramSize = this.ramSize;
+    const ramSize = (this._ramSize = json.ramSize);
     const layerRAM = isFinite(ramSize)
-      ? this.ram?.map((ram, layerIndex) =>
-          Array.from(jsonLayers[layerIndex].ram ?? []).map((nodeRAM) =>
-            Float32Array.from(nodeRAM)
+      ? this.ram.map((ram, layerIndex) =>
+          Array.from(jsonLayers[layerIndex].ram).map((nodeRAM) =>
+            Float32Array.from(nodeRAM ?? new Float32Array(ramSize))
           )
         )
       : undefined;
+    this.ram = this.createRAM(ramSize);
     for (let i = 0; i <= this.outputLayer; i++) {
       this.weights[i] = layerWeights[i] || [];
       this.biases[i] = layerBiases[i] || [];
-    }
-    if (layerRAM) {
-      if (!this.ram) this._ram = this.replaceRAM(ramSize ?? 1);
+      if (layerRAM) this._ram[i] = layerRAM[i] || new Float32Array(ramSize);
     }
     return this;
   }
@@ -1635,18 +1646,16 @@ export class NeuralNetwork<
 
   private createRAM(ramSize: number): NeuralNetworkRAM {
     if (!isFinite(ramSize) || ramSize < 0) ramSize = 1;
-    const memory: NeuralNetworkRAM = [];
+    const ram: NeuralNetworkRAM = [];
     for (let layer = 0; layer < this.sizes.length; layer++) {
-      memory[layer] = [];
+      ram[layer] = [];
       for (let neuron = 0; neuron < this.sizes.length; neuron++) {
-        memory[layer][neuron] = new Array(ramSize).fill(0);
+        ram[layer][neuron] = new Float32Array(ramSize).fill(0);
       }
     }
-    return memory;
-  }
-
-  private replaceRAM(ram: number | NeuralNetworkRAM): NeuralNetworkRAM {
-    if (typeof ram === 'number') return (this._ram = this.createRAM(ram));
-    return (this._ram = ram);
+    if (!ram[0]) ram[0] = [];
+    if (!ram[0][0]) ram[0][0] = new Float32Array(ramSize);
+    if (!ram[0][0][0]) ram[0][0][0] = 0;
+    return ram;
   }
 }
