@@ -18,6 +18,8 @@ import {
 import { INeuralNetworkState } from './neural-network-types';
 import { UntrainedNeuralNetworkError } from './errors/untrained-neural-network-error';
 
+export const DEFAULT_ANOMALY_THRESHOLD = 0.5;
+
 function loss(
   this: IKernelFunctionThis,
   actual: number,
@@ -61,6 +63,20 @@ export class Autoencoder<
 
     // Create the autoencoder.
     super(options);
+  }
+
+  /**
+   * Get the layer containing the encoded representation.
+   */
+  private get encodedLayer(): KernelOutput {
+    return this.outputs[this.encodedLayerIndex];
+  }
+
+  /**
+   * Get the offset of the encoded layer.
+   */
+  private get encodedLayerIndex(): number {
+    return Math.round(this.outputs.length * 0.5) - 1;
   }
 
   /**
@@ -130,6 +146,8 @@ export class Autoencoder<
     input: DecodedData,
     anomalyThreshold: number
   ): boolean {
+    anomalyThreshold ??= DEFAULT_ANOMALY_THRESHOLD;
+
     // Create the anomaly vector.
     const anomalies: number[] = [];
 
@@ -150,8 +168,6 @@ export class Autoencoder<
 
     // Calculate the mean anomaly.
     const mean = sum / (input as number[]).length;
-
-    console.log(sum, mean, anomalyThreshold);
 
     // Return whether or not the mean anomaly rate is greater than the anomaly threshold.
     return mean > anomalyThreshold;
@@ -195,7 +211,7 @@ export class Autoencoder<
    *
    * @returns {NeuralNetwork<EncodedData, DecodedData>}
    */
-  private createDecoder() {
+  private createDecoder(): NeuralNetwork<EncodedData, DecodedData> {
     const json = this.toJSON();
 
     const layers: IJSONLayer[] = [];
@@ -214,20 +230,6 @@ export class Autoencoder<
     const decoder = new NeuralNetwork().fromJSON(json);
 
     return (decoder as unknown) as NeuralNetwork<EncodedData, DecodedData>;
-  }
-
-  /**
-   * Get the layer containing the encoded representation.
-   */
-  private get encodedLayer(): KernelOutput {
-    return this.outputs[this.encodedLayerIndex];
-  }
-
-  /**
-   * Get the offset of the encoded layer.
-   */
-  private get encodedLayerIndex(): number {
-    return Math.round(this.outputs.length * 0.5) - 1;
   }
 }
 

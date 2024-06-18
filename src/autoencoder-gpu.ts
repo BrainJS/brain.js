@@ -18,6 +18,7 @@ import {
 } from './neural-network-gpu';
 import { INeuralNetworkState } from './neural-network-types';
 import { UntrainedNeuralNetworkError } from './errors/untrained-neural-network-error';
+import { DEFAULT_ANOMALY_THRESHOLD } from './autoencoder';
 
 function loss(
   this: IKernelFunctionThis,
@@ -131,6 +132,7 @@ export class AutoencoderGPU<
     input: DecodedData,
     anomalyThreshold: number
   ): boolean {
+    anomalyThreshold ??= DEFAULT_ANOMALY_THRESHOLD;
     // Create the anomaly vector.
     const anomalies: number[] = [];
 
