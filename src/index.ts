@@ -1,5 +1,5 @@
 import * as activation from './activation';
-import { AutoencoderGPU } from './autoencoder';
+import { AutoencoderGPU } from './autoencoder-gpu';
 import CrossValidate from './cross-validate';
 import { FeedForward } from './feed-forward';
 import * as layer from './layer';

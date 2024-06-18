@@ -11,10 +11,11 @@ import {
   INeuralNetworkTrainOptions,
   NeuralNetworkIO,
   NeuralNetworkRAM,
-  INeuralNetworkOptions,
-  NeuralNetwork,
 } from './neural-network';
-
+import {
+  INeuralNetworkGPUOptions,
+  NeuralNetworkGPU,
+} from './neural-network-gpu';
 import { INeuralNetworkState } from './neural-network-types';
 import { UntrainedNeuralNetworkError } from './errors/untrained-neural-network-error';
 
@@ -40,13 +41,13 @@ function loss(
 /**
  * An autoencoder learns to compress input data down to relevant features and reconstruct input data from its compressed representation.
  */
-export class Autoencoder<
+export class AutoencoderGPU<
   DecodedData extends INeuralNetworkData,
   EncodedData extends INeuralNetworkData
-> extends NeuralNetwork<DecodedData, DecodedData> {
-  private decoder?: NeuralNetwork<EncodedData, DecodedData>;
+> extends NeuralNetworkGPU<DecodedData, DecodedData> {
+  private decoder?: NeuralNetworkGPU<EncodedData, DecodedData>;
 
-  constructor(options?: Partial<INeuralNetworkOptions>) {
+  constructor(options?: Partial<INeuralNetworkGPUOptions>) {
     // Create default options for the autoencoder.
     options ??= {};
 
@@ -193,7 +194,7 @@ export class Autoencoder<
   /**
    * Create a new decoder from the trained denoiser.
    *
-   * @returns {NeuralNetwork<EncodedData, DecodedData>}
+   * @returns {NeuralNetworkGPU<EncodedData, DecodedData>}
    */
   private createDecoder() {
     const json = this.toJSON();
@@ -211,9 +212,9 @@ export class Autoencoder<
 
     json.options.inputSize = json.sizes[0];
 
-    const decoder = new NeuralNetwork().fromJSON(json);
+    const decoder = new NeuralNetworkGPU().fromJSON(json);
 
-    return (decoder as unknown) as NeuralNetwork<EncodedData, DecodedData>;
+    return (decoder as unknown) as NeuralNetworkGPU<EncodedData, DecodedData>;
   }
 
   /**
@@ -231,4 +232,4 @@ export class Autoencoder<
   }
 }
 
-export default Autoencoder;
+export default AutoencoderGPU;
