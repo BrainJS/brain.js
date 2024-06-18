@@ -1,4 +1,5 @@
 import AutoencoderGPU from './autoencoder';
+import { INeuralNetworkTrainOptions } from './neural-network';
 
 const trainingData = [
   [0, 0, 0],
@@ -9,15 +10,22 @@ const trainingData = [
 
 const xornet = new AutoencoderGPU<number[], number[]>({
   inputSize: 3,
-  hiddenLayers: [5, 2, 5],
+  hiddenLayers: [4, 2, 4],
+  outputSize: 3,
 });
 
-const errorThresh = 0.011;
+const errorThresh = 0.0011;
 
-const result = xornet.train(trainingData, {
-  iterations: 100000,
+const trainOptions: Partial<INeuralNetworkTrainOptions> = {
   errorThresh,
-});
+  iterations: 250000,
+  learningRate: 0.1,
+  log: (details) => console.log(details),
+  // logPeriod: 500,
+  logPeriod: 500,
+};
+
+const result = xornet.train(trainingData, trainOptions);
 
 test('denoise a data sample', async () => {
   expect(result.error).toBeLessThanOrEqual(errorThresh);
@@ -58,7 +66,7 @@ test('test a data sample for anomalies', async () => {
   expect(result.error).toBeLessThanOrEqual(errorThresh);
 
   function includesAnomalies(...args: number[]) {
-    expect(xornet.likelyIncludesAnomalies(args)).toBe(false);
+    expect(xornet.likelyIncludesAnomalies(args, 0.5)).toBe(false);
   }
 
   includesAnomalies(0, 0, 0);

@@ -28,8 +28,8 @@ function loss(
 ) {
   let error = expected - actual;
 
-  // if ( o ≈ i0 ) then return 10% of the loss value.
-  // Otherwise, return 1000% of the full loss value.
+  // if ( o ≈ i0 ) then return 3.125% of the loss value.
+  // Otherwise, return 3200% of the full loss value.
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   if (Math.round(actual) !== Math.round(inputs[this.thread.x])) error *= 32;
@@ -127,7 +127,10 @@ export class AutoencoderGPU<
    * @param {DecodedData} input
    * @returns {boolean}
    */
-  likelyIncludesAnomalies(input: DecodedData, anomalyThreshold = 0.2): boolean {
+  likelyIncludesAnomalies(
+    input: DecodedData,
+    anomalyThreshold: number
+  ): boolean {
     // Create the anomaly vector.
     const anomalies: number[] = [];
 
@@ -148,6 +151,8 @@ export class AutoencoderGPU<
 
     // Calculate the mean anomaly.
     const mean = sum / (input as number[]).length;
+
+    console.log(sum, mean, anomalyThreshold);
 
     // Return whether or not the mean anomaly rate is greater than the anomaly threshold.
     return mean > anomalyThreshold;
