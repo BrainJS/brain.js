@@ -362,8 +362,8 @@ const data = net.denoise(noisyData);
 Test for anomalies in data samples:
 
 ```javascript
-const shouldBeFalse = net.includesAnomalies([0, 1, 1]);
-const shouldBeTrue = net.includesAnomalies([0, 1, 0]);
+const shouldBeFalse = net.likelyIncludesAnomalies([0, 1, 1]);
+const shouldBeTrue = net.likelyIncludesAnomalies([0, 1, 0]);
 ```
 
 ### Training Options

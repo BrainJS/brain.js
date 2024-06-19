@@ -65,12 +65,12 @@ test('encode and decode a data sample', async () => {
 test('test a data sample for anomalies', async () => {
   expect(result.error).toBeLessThanOrEqual(errorThresh);
 
-  function includesAnomalies(...args: number[]) {
+  function likelyIncludesAnomalies(...args: number[]) {
     expect(xornet.likelyIncludesAnomalies(args, 0.5)).toBe(false);
   }
 
-  includesAnomalies(0, 0, 0);
-  includesAnomalies(0, 1, 1);
-  includesAnomalies(1, 0, 1);
-  includesAnomalies(1, 1, 0);
+  likelyIncludesAnomalies(0, 0, 0);
+  likelyIncludesAnomalies(0, 1, 1);
+  likelyIncludesAnomalies(1, 0, 1);
+  likelyIncludesAnomalies(1, 1, 0);
 });
