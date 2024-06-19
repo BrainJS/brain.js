@@ -43,7 +43,7 @@ GPU accelerated Neural networks in JavaScript for Browsers and Node.js
     - [For training with NeuralNetwork](#for-training-with-neuralnetwork)
     - [For training with `RNNTimeStep`, `LSTMTimeStep` and `GRUTimeStep`](#for-training-with-rnntimestep-lstmtimestep-and-grutimestep)
     - [For training with `RNN`, `LSTM` and `GRU`](#for-training-with-rnn-lstm-and-gru)
-    - [For training with `AE`](#for-training-with-ae)
+    - [For training with `AutoencoderGPU`](#for-training-with-ae)
   - [Training Options](#training-options)
   - [Async Training](#async-training)
   - [Cross Validation](#cross-validation)
@@ -318,7 +318,7 @@ net.train([
 const output = net.run('I feel great about the world!'); // 'happy'
 ```
 
-#### For training with `AE`
+#### For training with `AutoencoderGPU`
 
 Each training pattern can either:
 
@@ -328,7 +328,7 @@ Each training pattern can either:
 Training an autoencoder to compress the values of a XOR calculation:
 
 ```javascript
-const net = new brain.AE(
+const net = new brain.AutoencoderGPU(
   {
     hiddenLayers: [ 5, 2, 5 ]
   }
@@ -362,8 +362,8 @@ const data = net.denoise(noisyData);
 Test for anomalies in data samples:
 
 ```javascript
-const shouldBeFalse = net.includesAnomalies([0, 1, 1]);
-const shouldBeTrue = net.includesAnomalies([0, 1, 0]);
+const shouldBeFalse = net.likelyIncludesAnomalies([0, 1, 1]);
+const shouldBeTrue = net.likelyIncludesAnomalies([0, 1, 0]);
 ```
 
 ### Training Options
@@ -644,7 +644,7 @@ The user interface used:
 
 - [`brain.NeuralNetwork`](src/neural-network.ts) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation
 - [`brain.NeuralNetworkGPU`](src/neural-network-gpu.ts) - [Feedforward Neural Network](https://en.wikipedia.org/wiki/Feedforward_neural_network) with backpropagation, GPU version
-- [`brain.AE`](src/autoencoder.ts) - [Autoencoder or "AE"](https://en.wikipedia.org/wiki/Autoencoder) with backpropogation and GPU support
+- [`brain.AutoencoderGPU`](src/autoencoder.ts) - [Autoencoder or "AutoencoderGPU"](https://en.wikipedia.org/wiki/Autoencoder) with backpropogation and GPU support
 - [`brain.recurrent.RNNTimeStep`](src/recurrent/rnn-time-step.ts) - [Time Step Recurrent Neural Network or "RNN"](https://en.wikipedia.org/wiki/Recurrent_neural_network)
 - [`brain.recurrent.LSTMTimeStep`](src/recurrent/lstm-time-step.ts) - [Time Step Long Short Term Memory Neural Network or "LSTM"](https://en.wikipedia.org/wiki/Long_short-term_memory)
 - [`brain.recurrent.GRUTimeStep`](src/recurrent/gru-time-step.ts) - [Time Step Gated Recurrent Unit or "GRU"](https://en.wikipedia.org/wiki/Gated_recurrent_unit)

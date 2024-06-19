@@ -1,5 +1,6 @@
 import * as activation from './activation';
-import { AE } from './autoencoder';
+import { Autoencoder } from './autoencoder';
+import { AutoencoderGPU } from './autoencoder-gpu';
 import CrossValidate from './cross-validate';
 import { FeedForward } from './feed-forward';
 import * as layer from './layer';
@@ -54,7 +55,8 @@ const utilities = {
 
 export {
   activation,
-  AE,
+  Autoencoder,
+  AutoencoderGPU,
   CrossValidate,
   likely,
   layer,

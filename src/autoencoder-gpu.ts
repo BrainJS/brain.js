@@ -11,14 +11,14 @@ import {
   INeuralNetworkTrainOptions,
   NeuralNetworkIO,
   NeuralNetworkRAM,
-  INeuralNetworkOptions,
-  NeuralNetwork,
 } from './neural-network';
-
+import {
+  INeuralNetworkGPUOptions,
+  NeuralNetworkGPU,
+} from './neural-network-gpu';
 import { INeuralNetworkState } from './neural-network-types';
 import { UntrainedNeuralNetworkError } from './errors/untrained-neural-network-error';
-
-export const DEFAULT_ANOMALY_THRESHOLD = 0.5;
+import { DEFAULT_ANOMALY_THRESHOLD } from './autoencoder';
 
 function loss(
   this: IKernelFunctionThis,
@@ -42,13 +42,13 @@ function loss(
 /**
  * An autoencoder learns to compress input data down to relevant features and reconstruct input data from its compressed representation.
  */
-export class Autoencoder<
+export class AutoencoderGPU<
   DecodedData extends INeuralNetworkData,
   EncodedData extends INeuralNetworkData
-> extends NeuralNetwork<DecodedData, DecodedData> {
-  private decoder?: NeuralNetwork<EncodedData, DecodedData>;
+> extends NeuralNetworkGPU<DecodedData, DecodedData> {
+  private decoder?: NeuralNetworkGPU<EncodedData, DecodedData>;
 
-  constructor(options?: Partial<INeuralNetworkOptions>) {
+  constructor(options?: Partial<INeuralNetworkGPUOptions>) {
     // Create default options for the autoencoder.
     options ??= {};
 
@@ -63,20 +63,6 @@ export class Autoencoder<
 
     // Create the autoencoder.
     super(options);
-  }
-
-  /**
-   * Get the layer containing the encoded representation.
-   */
-  private get encodedLayer(): KernelOutput {
-    return this.outputs[this.encodedLayerIndex];
-  }
-
-  /**
-   * Get the offset of the encoded layer.
-   */
-  private get encodedLayerIndex(): number {
-    return Math.round(this.outputs.length * 0.5) - 1;
   }
 
   /**
@@ -147,7 +133,6 @@ export class Autoencoder<
     anomalyThreshold: number
   ): boolean {
     anomalyThreshold ??= DEFAULT_ANOMALY_THRESHOLD;
-
     // Create the anomaly vector.
     const anomalies: number[] = [];
 
@@ -209,9 +194,9 @@ export class Autoencoder<
   /**
    * Create a new decoder from the trained denoiser.
    *
-   * @returns {NeuralNetwork<EncodedData, DecodedData>}
+   * @returns {NeuralNetworkGPU<EncodedData, DecodedData>}
    */
-  private createDecoder(): NeuralNetwork<EncodedData, DecodedData> {
+  private createDecoder() {
     const json = this.toJSON();
 
     const layers: IJSONLayer[] = [];
@@ -227,10 +212,24 @@ export class Autoencoder<
 
     json.options.inputSize = json.sizes[0];
 
-    const decoder = new NeuralNetwork().fromJSON(json);
+    const decoder = new NeuralNetworkGPU().fromJSON(json);
 
-    return (decoder as unknown) as NeuralNetwork<EncodedData, DecodedData>;
+    return (decoder as unknown) as NeuralNetworkGPU<EncodedData, DecodedData>;
+  }
+
+  /**
+   * Get the layer containing the encoded representation.
+   */
+  private get encodedLayer(): KernelOutput {
+    return this.outputs[this.encodedLayerIndex];
+  }
+
+  /**
+   * Get the offset of the encoded layer.
+   */
+  private get encodedLayerIndex(): number {
+    return Math.round(this.outputs.length * 0.5) - 1;
   }
 }
 
-export default Autoencoder;
+export default AutoencoderGPU;
