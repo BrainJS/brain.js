@@ -6,6 +6,7 @@
   },
   "description": "Neural networks in JavaScript",
   "dependencies": {
+    "rimraf": "^6.0.0",
     "thaw.js": "^2.1.4"
   },
   "peerDependencies": {
@@ -110,7 +111,7 @@
     "watch": "run-p watch:**",
     "watch:node": "rollup -c rollup.config.js -w",
     "watch:test": "jest --watch",
-    "clean": "rm ./dist",
+    "clean": "rimraf ./dist",
     "prepare": "npm run clean && npm run build"
   },
   "types": "dist/",
