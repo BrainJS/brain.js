@@ -6,13 +6,13 @@
   },
   "description": "Neural networks in JavaScript",
   "dependencies": {
-    "rimraf": "^6.0.0",
     "thaw.js": "^2.1.4"
   },
   "peerDependencies": {
     "gpu.js": "^2.16.0"
   },
   "devDependencies": {
+    "rimraf": "^6.0.0",
     "@babel/preset-typescript": "^7.13.0",
     "@rollup/plugin-commonjs": "^15.1.0",
     "@rollup/plugin-json": "^4.1.0",
@@ -116,5 +116,5 @@
   },
   "types": "dist/",
   "unpkg": "dist/browser.js",
-  "version": "2.0.0-beta.23"
+  "version": "2.0.0-beta.24"
 }
