@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         node: [18.x, 20.x, 22.x]
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         exclude:  # TODO: Get macOS tests to pass by upgrading to https://github.com/nodejs/node-gyp/releases
         - os: macos-latest
           node: 18.x
@@ -24,10 +24,10 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node ${{ matrix.node }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: npm
