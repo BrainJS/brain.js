@@ -12,6 +12,104 @@ import { max } from './utilities/max';
 import { mse } from './utilities/mse';
 import { randos } from './utilities/randos';
 import { zeros } from './utilities/zeros';
+import { IKernelFunctionThis } from 'gpu.js';
+
+/**
+ * An input or output layer of a neural network.
+ * This data type exists to allow kernel functions to operate on individual layers.
+ * This functionality is essential to custom loss functions.
+ */
+export type NeuralNetworkIO = number[] | number[][] | number[][][];
+
+/**
+ * A read-write state matrix designed to hold metadata for use by `loss` functions.
+ * This data is read-only to the `loss` function.
+ * To the `updateRAM` kernel function, this data is read-write.
+ * To the neural network consumer,
+ * the `ram` property is made public to allow for modifications to be made in addition to reading.
+ */
+export type NeuralNetworkRAM = Float32Array[][];
+
+/**
+ * A loss function determines how fit a neural network currently is.
+ * The higher the value returned by this function,
+ * the less accurate the network is.
+ * The lower the value returned by this function is,
+ * the more accurate the network is.
+ *
+ * Here, `ram` is read-only.
+ */
+export type LossFunction = (
+  this: IKernelFunctionThis,
+  actual: number,
+  expected: number,
+  inputs: NeuralNetworkIO,
+  ram: NeuralNetworkRAM
+) => number;
+
+/**
+ * A RAM function updates the RAM matrix of the neural network.
+ *
+ * Here, `ram` is read-write.
+ * The actual matrix passed to the function is read-only.
+ * However, the return value of the function directly corresponds to a value within the RAM matrix.
+ */
+export type RAMFunction = (
+  this: IKernelFunctionThis,
+  ram: NeuralNetworkRAM,
+  inputs: NeuralNetworkIO,
+  outputs: NeuralNetworkIO,
+  sizes: number[],
+  loss: number,
+  lossDelta: number
+) => number;
+
+/**
+ * Each time the loss is calculated,
+ * a snapshot is taken of various loss analytics.
+ */
+export interface ILossAnalyticsSnapshot {
+  mean: number;
+  median: number;
+  total: number;
+}
+
+const EMPTY_LOSS_SNAPSHOT: ILossAnalyticsSnapshot = {
+  mean: Number.MAX_SAFE_INTEGER,
+  median: Number.MAX_SAFE_INTEGER,
+  total: Number.MAX_SAFE_INTEGER,
+};
+
+Object.freeze(EMPTY_LOSS_SNAPSHOT);
+
+function createLossAnalyticsSnapshot(): ILossAnalyticsSnapshot {
+  return JSON.parse(JSON.stringify(EMPTY_LOSS_SNAPSHOT));
+}
+
+/**
+ * A collection of analytics pertaining to the results of the loss function.
+ */
+export interface ILossAnalytics {
+  current: ILossAnalyticsSnapshot;
+  max: ILossAnalyticsSnapshot;
+  min: ILossAnalyticsSnapshot;
+  previous: ILossAnalyticsSnapshot;
+  projected: ILossAnalyticsSnapshot;
+}
+
+const EMPTY_LOSS: ILossAnalytics = {
+  current: createLossAnalyticsSnapshot(),
+  max: createLossAnalyticsSnapshot(),
+  min: createLossAnalyticsSnapshot(),
+  previous: createLossAnalyticsSnapshot(),
+  projected: createLossAnalyticsSnapshot(),
+};
+
+Object.freeze(EMPTY_LOSS);
+
+export function createLossAnalytics(): ILossAnalytics {
+  return JSON.parse(JSON.stringify(EMPTY_LOSS));
+}
 
 type NeuralNetworkFormatter =
   | ((v: INumberHash) => Float32Array)
@@ -40,6 +138,16 @@ export function getTypedArrayFn(
   };
 }
 
+function loss(
+  this: IKernelFunctionThis,
+  actual: number,
+  expected: number,
+  inputs: NeuralNetworkIO,
+  ram: NeuralNetworkRAM
+): number {
+  return expected - actual;
+}
+
 export type NeuralNetworkActivation =
   | 'sigmoid'
   | 'relu'
@@ -49,6 +157,7 @@ export type NeuralNetworkActivation =
 export interface IJSONLayer {
   biases: number[];
   weights: number[][];
+  ram: number[][];
 }
 
 export interface INeuralNetworkJSON {
@@ -61,6 +170,7 @@ export interface INeuralNetworkJSON {
   outputLookupLength: number;
   options: INeuralNetworkOptions;
   trainOpts: INeuralNetworkTrainOptionsJSON;
+  ramSize: number;
 }
 
 export interface INeuralNetworkOptions {
@@ -68,6 +178,8 @@ export interface INeuralNetworkOptions {
   outputSize: number;
   binaryThresh: number;
   hiddenLayers?: number[];
+  loss: LossFunction;
+  ramSize: number;
 }
 
 export function defaults(): INeuralNetworkOptions {
@@ -75,6 +187,8 @@ export function defaults(): INeuralNetworkOptions {
     inputSize: 0,
     outputSize: 0,
     binaryThresh: 0.5,
+    loss,
+    ramSize: 1,
   };
 }
 
@@ -107,6 +221,8 @@ export interface INeuralNetworkTrainOptions {
   errorThresh: number;
   log: boolean | ((status: INeuralNetworkState) => void);
   logPeriod: number;
+  loss?: LossFunction;
+  updateRAM?: RAMFunction;
   leakyReluAlpha: number;
   learningRate: number;
   momentum: number;
@@ -126,6 +242,7 @@ export function trainDefaults(): INeuralNetworkTrainOptions {
     errorThresh: 0.005, // the acceptable error percentage from training data
     log: false, // true to use console.log, when a function is supplied it is used
     logPeriod: 10, // iterations between logging out
+    loss,
     leakyReluAlpha: 0.01,
     learningRate: 0.3, // multiply's against the input and the delta then adds to momentum
     momentum: 0.1, // multiply's against the specified "change" then adds to learning rate for change
@@ -176,17 +293,27 @@ export class NeuralNetwork<
   _formatInput: NeuralNetworkFormatter | null = null;
   _formatOutput: NeuralNetworkFormatter | null = null;
 
+  _lossAnalytics: ILossAnalytics = createLossAnalytics();
+  _ram: NeuralNetworkRAM = [];
+  _ramSize = 1;
+
   runInput: (input: Float32Array) => Float32Array = (input: Float32Array) => {
     this.setActivation();
-    return this.runInput(input);
+    const output = this.runInput(input);
+    this._updateRAM();
+    return output;
   };
 
-  calculateDeltas: (output: Float32Array) => void = (
-    output: Float32Array
+  calculateDeltas: (output: Float32Array, input: Float32Array) => void = (
+    output: Float32Array,
+    input: Float32Array
   ): void => {
     this.setActivation();
-    return this.calculateDeltas(output);
+    return this.calculateDeltas(output, input);
   };
+
+  _lossFunction: LossFunction = loss;
+  _ramFunction?: RAMFunction;
 
   // adam
   biasChangesLow: Float32Array[] = [];
@@ -198,13 +325,28 @@ export class NeuralNetwork<
   constructor(
     options: Partial<INeuralNetworkOptions & INeuralNetworkTrainOptions> = {}
   ) {
-    this.options = { ...this.options, ...options };
+    const defaultOptions = defaults();
+    this.options.binaryThresh =
+      options.binaryThresh ?? defaultOptions.binaryThresh;
+    this.options.hiddenLayers =
+      options.hiddenLayers ?? defaultOptions.hiddenLayers;
+    this.options.inputSize = options.inputSize ?? defaultOptions.inputSize;
+    this.options.loss = options.loss ?? defaultOptions.loss;
+    this.options.outputSize = options.outputSize ?? defaultOptions.outputSize;
+    this.options.ramSize = options.ramSize ?? defaultOptions.ramSize;
     this.updateTrainingOptions(options);
 
     const { inputSize, hiddenLayers, outputSize } = this.options;
     if (inputSize && outputSize) {
       this.sizes = [inputSize].concat(hiddenLayers ?? []).concat([outputSize]);
     }
+
+    // Initialize the memory matrix.
+    if (options.ramSize) this._ramSize = options.ramSize;
+    this.ram = this.createRAM(this.ramSize);
+    // Initialize the loss function.
+    if (options.loss) this._lossFunction = options.loss;
+    if (options.updateRAM) this._ramFunction = options.updateRAM;
   }
 
   /**
@@ -220,6 +362,7 @@ export class NeuralNetwork<
     this.biases = new Array(this.outputLayer); // weights for bias nodes
     this.weights = new Array(this.outputLayer);
     this.outputs = new Array(this.outputLayer);
+    this.ram = this.createRAM(this.ramSize);
 
     // state for training
     this.deltas = new Array(this.outputLayer);
@@ -281,6 +424,39 @@ export class NeuralNetwork<
     return this.sizes.length > 0;
   }
 
+  public get loss(): ILossAnalytics {
+    return this._lossAnalytics;
+  }
+
+  public get lossFunction(): LossFunction {
+    return typeof this._lossFunction === 'function' ? this._lossFunction : loss;
+  }
+
+  public set lossFunction(value: LossFunction) {
+    this._lossFunction = value;
+  }
+
+  public get ram(): NeuralNetworkRAM {
+    return this._ram;
+  }
+
+  public set ram(ram: NeuralNetworkRAM) {
+    this._ram = ram;
+  }
+
+  public get ramFunction(): RAMFunction | undefined {
+    return this._ramFunction;
+  }
+
+  public set ramFunction(value: RAMFunction | undefined) {
+    this._ramFunction = value;
+  }
+
+  public get ramSize(): number {
+    if (!isFinite(this._ramSize) || this._ramSize < 1) return 1;
+    return this._ramSize;
+  }
+
   run(input: Partial<InputType>): OutputType {
     if (!this.isRunnable) {
       throw new Error('network not runnable');
@@ -297,6 +473,7 @@ export class NeuralNetwork<
     }
     this.validateInput(formattedInput);
     const output = this.runInput(formattedInput).slice(0);
+    this._updateRAM();
     if (this.outputLookup) {
       return (lookup.toObject(
         this.outputLookup,
@@ -304,6 +481,78 @@ export class NeuralNetwork<
       ) as unknown) as OutputType;
     }
     return (output as unknown) as OutputType;
+  }
+
+  protected _updateRAM(): void {
+    if (this.ram) {
+      const updateRAM: RAMFunction | undefined = this.ramFunction;
+      if (updateRAM) {
+        const input = this.outputs[0];
+        const output = this.outputs[this.outputLayer];
+        const loss = this.loss.current.mean;
+        const deltaLoss = loss - this.loss.previous.mean;
+        this._ram = this.ram.map((layerRAM, layer) =>
+          layerRAM.map((neuronRAM, neuron) =>
+            neuronRAM.map((value, index) => {
+              return updateRAM.call(
+                this._getRAMKernelFunctionThis(layer, neuron, index),
+                this.ram,
+                (input as unknown) as NeuralNetworkIO,
+                (output as unknown) as NeuralNetworkIO,
+                this.sizes,
+                loss,
+                deltaLoss
+              );
+            })
+          )
+        );
+      }
+    }
+  }
+
+  private _getLossKernelFunctionThis(
+    layer: number,
+    neuron: number
+  ): IKernelFunctionThis {
+    return {
+      color: function color(r: number, g = 0, b = 0, a = 0) {},
+      constants: {
+        ramSize: this.ramSize,
+      },
+      output: {
+        x: this.ram[0][0].length,
+        y: this.ram[0].length,
+        z: this.ram.length,
+      },
+      thread: {
+        x: neuron,
+        y: layer,
+        z: 0,
+      },
+    };
+  }
+
+  private _getRAMKernelFunctionThis(
+    layer: number,
+    neuron: number,
+    index: number
+  ): IKernelFunctionThis {
+    return {
+      color: function color(r: number, g = 0, b = 0, a = 0) {},
+      constants: {
+        ramSize: this.ramSize,
+      },
+      output: {
+        x: this.ram[0][0].length,
+        y: this.ram[0].length,
+        z: this.ram.length,
+      },
+      thread: {
+        x: index,
+        y: neuron,
+        z: layer,
+      },
+    };
   }
 
   _runInputSigmoid(input: Float32Array): Float32Array {
@@ -469,6 +718,10 @@ export class NeuralNetwork<
       logPeriod: () => {
         const val = options.logPeriod;
         return typeof val === 'number' && val > 0;
+      },
+      loss: () => {
+        const val = options.loss;
+        return typeof val === 'function' || typeof val === 'boolean';
       },
       leakyReluAlpha: () => {
         const val = options.leakyReluAlpha;
@@ -666,6 +919,12 @@ export class NeuralNetwork<
     data: Array<INeuralNetworkDatum<Partial<InputType>, Partial<OutputType>>>,
     options: Partial<INeuralNetworkTrainOptions> = {}
   ): INeuralNetworkState {
+    let lossFunctionBackup;
+    if (options.loss) {
+      lossFunctionBackup = this.lossFunction;
+      this.lossFunction = options.loss;
+    }
+
     const { preparedData, status, endTime } = this.prepTraining(
       data as Array<INeuralNetworkDatum<InputType, OutputType>>,
       options
@@ -676,6 +935,9 @@ export class NeuralNetwork<
         break;
       }
     }
+
+    if (lossFunctionBackup) this.lossFunction = lossFunctionBackup;
+
     return status;
   }
 
@@ -710,9 +972,10 @@ export class NeuralNetwork<
   ): number | null {
     // forward propagate
     this.runInput(value.input);
+    this._updateRAM();
 
     // back propagate
-    this.calculateDeltas(value.output);
+    this.calculateDeltas(value.output, value.input);
     this.adjustWeights();
 
     if (logErrorRate) {
@@ -721,7 +984,7 @@ export class NeuralNetwork<
     return null;
   }
 
-  _calculateDeltasSigmoid(target: Float32Array): void {
+  _calculateDeltasSigmoid(target: Float32Array, input: Float32Array): void {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       const activeSize = this.sizes[layer];
       const activeOutput = this.outputs[layer];
@@ -734,7 +997,15 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          error = target[node] - output;
+          if (typeof this._lossFunction === 'function') {
+            error = this._lossFunction.call(
+              this._getLossKernelFunctionThis(layer, node),
+              output,
+              target[node],
+              (input as unknown) as NeuralNetworkIO,
+              this.ram
+            );
+          } else error = target[node] - output;
         } else {
           const deltas = this.deltas[layer + 1];
           for (let k = 0; k < deltas.length; k++) {
@@ -747,7 +1018,7 @@ export class NeuralNetwork<
     }
   }
 
-  _calculateDeltasRelu(target: Float32Array): void {
+  _calculateDeltasRelu(target: Float32Array, input: Float32Array): void {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       const currentSize = this.sizes[layer];
       const currentOutputs = this.outputs[layer];
@@ -761,7 +1032,15 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          error = target[node] - output;
+          if (typeof this._lossFunction === 'function') {
+            error = this._lossFunction.call(
+              this._getLossKernelFunctionThis(layer, node),
+              output,
+              target[node],
+              (input as unknown) as NeuralNetworkIO,
+              this.ram
+            );
+          } else error = target[node] - output;
         } else {
           for (let k = 0; k < nextDeltas.length; k++) {
             error += nextDeltas[k] * nextWeights[k][node];
@@ -773,7 +1052,7 @@ export class NeuralNetwork<
     }
   }
 
-  _calculateDeltasLeakyRelu(target: Float32Array): void {
+  _calculateDeltasLeakyRelu(target: Float32Array, input: Float32Array): void {
     const alpha = this.trainOpts.leakyReluAlpha;
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       const currentSize = this.sizes[layer];
@@ -788,7 +1067,15 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          error = target[node] - output;
+          if (typeof this._lossFunction === 'function') {
+            error = this._lossFunction.call(
+              this._getLossKernelFunctionThis(layer, node),
+              output,
+              target[node],
+              (input as unknown) as NeuralNetworkIO,
+              this.ram
+            );
+          } else error = target[node] - output;
         } else {
           for (let k = 0; k < nextDeltas.length; k++) {
             error += nextDeltas[k] * nextWeights[k][node];
@@ -800,7 +1087,7 @@ export class NeuralNetwork<
     }
   }
 
-  _calculateDeltasTanh(target: Float32Array): void {
+  _calculateDeltasTanh(target: Float32Array, input: Float32Array): void {
     for (let layer = this.outputLayer; layer >= 0; layer--) {
       const currentSize = this.sizes[layer];
       const currentOutputs = this.outputs[layer];
@@ -814,7 +1101,15 @@ export class NeuralNetwork<
 
         let error = 0;
         if (layer === this.outputLayer) {
-          error = target[node] - output;
+          if (typeof this._lossFunction === 'function') {
+            error = this._lossFunction.call(
+              this._getLossKernelFunctionThis(layer, node),
+              output,
+              target[node],
+              (input as unknown) as NeuralNetworkIO,
+              this.ram
+            );
+          } else error = target[node] - output;
         } else {
           for (let k = 0; k < nextDeltas.length; k++) {
             error += nextDeltas[k] * nextWeights[k][node];
@@ -1088,6 +1383,7 @@ export class NeuralNetwork<
 
       for (let i = 0; i < preparedData.length; i++) {
         const output = this.runInput(preparedData[i].input);
+        this._updateRAM();
         const target = preparedData[i].output;
         const actual = output[0] > this.options.binaryThresh ? 1 : 0;
         const expected = target[0];
@@ -1135,6 +1431,7 @@ export class NeuralNetwork<
 
     for (let i = 0; i < preparedData.length; i++) {
       const output = this.runInput(preparedData[i].input);
+      this._updateRAM();
       const target = preparedData[i].output;
       const actual = output.indexOf(max(output));
       const expected = target.indexOf(max(target));
@@ -1173,13 +1470,20 @@ export class NeuralNetwork<
     const jsonLayerBiases = this.biases.map((layerBiases) =>
       Array.from(layerBiases)
     );
+    const jsonLayerRAM = this.ram?.map((layerMemory) =>
+      layerMemory.map((nodeRAM) => Array.from(nodeRAM))
+    );
     const jsonLayers: IJSONLayer[] = [];
     const outputLength = this.sizes.length - 1;
+    const ramSize = this.ramSize;
     for (let i = 0; i <= outputLength; i++) {
-      jsonLayers.push({
+      const jsonLayer: IJSONLayer = {
         weights: jsonLayerWeights[i] ?? [],
         biases: jsonLayerBiases[i] ?? [],
-      });
+        ram:
+          jsonLayerRAM[i] ?? new Array(this.sizes[i]).fill(new Array(ramSize)),
+      };
+      jsonLayers.push(jsonLayer);
     }
     return {
       type: 'NeuralNetwork',
@@ -1191,6 +1495,7 @@ export class NeuralNetwork<
       outputLookupLength: this.outputLookupLength,
       options: { ...this.options },
       trainOpts: this.getTrainOptsJSON(),
+      ramSize: this.ramSize,
     };
   }
 
@@ -1223,9 +1528,19 @@ export class NeuralNetwork<
     const layerBiases = this.biases.map((layerBiases, layerIndex) =>
       Float32Array.from(jsonLayers[layerIndex].biases)
     );
+    const ramSize = (this._ramSize = json.ramSize);
+    const layerRAM = isFinite(ramSize)
+      ? this.ram.map((ram, layerIndex) =>
+          Array.from(jsonLayers[layerIndex].ram).map((nodeRAM) =>
+            Float32Array.from(nodeRAM ?? new Float32Array(ramSize))
+          )
+        )
+      : undefined;
+    this.ram = this.createRAM(ramSize);
     for (let i = 0; i <= this.outputLayer; i++) {
       this.weights[i] = layerWeights[i] || [];
       this.biases[i] = layerBiases[i] || [];
+      if (layerRAM) this._ram[i] = layerRAM[i] || new Float32Array(ramSize);
     }
     return this;
   }
@@ -1327,5 +1642,20 @@ export class NeuralNetwork<
     return new Function('input', cb ? cb(source) : source) as (
       input: Partial<InputType>
     ) => OutputType;
+  }
+
+  private createRAM(ramSize: number): NeuralNetworkRAM {
+    if (!isFinite(ramSize) || ramSize < 0) ramSize = 1;
+    const ram: NeuralNetworkRAM = [];
+    for (let layer = 0; layer < this.sizes.length; layer++) {
+      ram[layer] = [];
+      for (let neuron = 0; neuron < this.sizes.length; neuron++) {
+        ram[layer][neuron] = new Float32Array(ramSize).fill(0);
+      }
+    }
+    if (!ram[0]) ram[0] = [];
+    if (!ram[0][0]) ram[0][0] = new Float32Array(ramSize);
+    if (!ram[0][0][0]) ram[0][0][0] = 0;
+    return ram;
   }
 }

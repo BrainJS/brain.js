@@ -1,4 +1,4 @@
-import Autoencoder from './autoencoder';
+import AutoencoderGPU from './autoencoder-gpu';
 import { INeuralNetworkTrainOptions } from './neural-network';
 
 const trainingData = [
@@ -6,10 +6,9 @@ const trainingData = [
   [0, 1, 1],
   [1, 0, 1],
   [1, 1, 0],
-  [1, 1, 0],
 ];
 
-const xornet = new Autoencoder<number[], number[]>({
+const xornet = new AutoencoderGPU<number[], number[]>({
   inputSize: 3,
   hiddenLayers: [4, 2, 4],
   outputSize: 3,

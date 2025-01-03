@@ -4,6 +4,7 @@ import {
   GPUFunction,
   IKernelFunctionThis,
   IKernelMapRunShortcut,
+  IKernelRunShortcut,
   IMappedKernelResult,
   KernelOutput,
   Texture,
@@ -20,6 +21,10 @@ import {
   INeuralNetworkPreppedTrainingData,
   INeuralNetworkTrainOptions,
   NeuralNetwork,
+  LossFunction,
+  NeuralNetworkIO,
+  RAMFunction,
+  NeuralNetworkRAM,
 } from './neural-network';
 import { release } from './utilities/kernel';
 
@@ -96,8 +101,8 @@ function weightedSumTanh(
   return Math.tanh(sum);
 }
 
-function calcErrorOutput(output: number, target: number): number {
-  return target - output;
+function calcErrorOutput(value: number): number {
+  return value;
 }
 
 function calcDeltasSigmoid(error: number, output: number): number {
@@ -180,7 +185,9 @@ export interface INeuralNetworkGPUOptions extends INeuralNetworkOptions {
 export type BackPropagateOutput = (
   this: IKernelFunctionThis,
   outputs: KernelOutput,
-  targets: KernelOutput
+  targets: KernelOutput,
+  inputs: NeuralNetworkIO,
+  ram: NeuralNetworkRAM
 ) => { result: KernelOutput; error: KernelOutput };
 
 export type BackPropagateLayer = (
@@ -260,10 +267,47 @@ export class NeuralNetworkGPU<
   // @ts-expect-error
   biases: KernelOutput[] = [];
 
+  _ramKernel?: IKernelRunShortcut;
+
   constructor(options: Partial<INeuralNetworkGPUOptions> = {}) {
     super(options);
     this.errorCheckInterval = 100;
     this.gpu = new GPU({ mode: options.mode });
+    // Compile the accelerated learning functions.
+    this.lossFunction = this._lossFunction;
+    this.ramFunction = this._ramFunction;
+  }
+
+  public get lossFunction(): LossFunction {
+    return super.lossFunction;
+  }
+
+  public set lossFunction(value: LossFunction) {
+    this.gpu.addFunction(value);
+    super.lossFunction = value;
+  }
+
+  public get ramFunction(): RAMFunction | undefined {
+    return super.ramFunction;
+  }
+
+  public set ramFunction(value: RAMFunction | undefined) {
+    if (!value) {
+      if (this._ramKernel) delete this._ramKernel;
+    } else {
+      const layerCount = this.sizes.length;
+      const maxNeuronsPerLayer = this.sizes.reduce((eax, edx) =>
+        edx > eax ? edx : eax
+      );
+      const ramSize = this.ramSize;
+      this._ramKernel = this.gpu.createKernel(value, {
+        constants: {
+          ramSize,
+        },
+        output: [layerCount, maxNeuronsPerLayer, ramSize],
+      });
+    }
+    super.ramFunction = value;
   }
 
   initialize(): void {
@@ -376,6 +420,23 @@ export class NeuralNetworkGPU<
       );
       output = input = this.outputs[layer];
     }
+    const updateRAM: IKernelRunShortcut | undefined = this._ramKernel;
+    if (updateRAM) {
+      const input = this.outputs[0];
+      const output = this.outputs[this.outputLayer];
+      const loss = this.loss.current.mean;
+      const deltaLoss = loss - this.loss.previous.mean;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      this._ram = updateRAM(
+        this.ram,
+        input,
+        output,
+        this.sizes,
+        loss,
+        deltaLoss
+      );
+    }
     return output;
   };
 
@@ -400,11 +461,14 @@ export class NeuralNetworkGPU<
         );
     }
 
+    const loss: LossFunction = this.lossFunction;
+
     calcDeltas = alias(
       utils.getMinifySafeName(() => calcDeltas),
       calcDeltas
     );
     this.gpu.addFunction(calcDeltas);
+    this.gpu.addFunction(loss);
     for (let layer = this.outputLayer; layer > 0; layer--) {
       if (layer === this.outputLayer) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -416,13 +480,20 @@ export class NeuralNetworkGPU<
           function (
             this: IKernelFunctionThis,
             outputs: number[],
-            targets: number[]
+            targets: number[],
+            inputs: NeuralNetworkIO,
+            ram: NeuralNetworkRAM
           ): number {
             const output = outputs[this.thread.x];
             const target = targets[this.thread.x];
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
-            return calcDeltas(calcErrorOutput(output, target), output);
+            return calcDeltas(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-expect-error
+              calcErrorOutput(loss(output, target, inputs, ram)),
+              output
+            );
           },
           {
             output: [this.sizes[this.outputLayer]],
@@ -478,7 +549,12 @@ export class NeuralNetworkGPU<
       if (layer === this.outputLayer) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
-        output = this.backwardPropagate[layer](this.outputs[layer], target);
+        output = this.backwardPropagate[layer](
+          this.outputs[layer],
+          target,
+          this.outputs[0],
+          this.ram
+        );
       } else {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
@@ -704,12 +780,17 @@ export class NeuralNetworkGPU<
           : (layerBiases as Float32Array)
       )
     );
+    const jsonLayerRAM = this.ram.map((layerMemory, layerIndex) =>
+      layerMemory.map((nodeRAM) => Array.from(nodeRAM))
+    );
     const jsonLayers: IJSONLayer[] = [];
     for (let i = 0; i <= this.outputLayer; i++) {
-      jsonLayers.push({
+      const jsonLayer: IJSONLayer = {
         weights: jsonLayerWeights[i] ?? [],
         biases: jsonLayerBiases[i] ?? [],
-      });
+        ram: jsonLayerRAM[i] ?? [],
+      };
+      jsonLayers.push(jsonLayer);
     }
     return {
       type: 'NeuralNetworkGPU',
@@ -721,6 +802,7 @@ export class NeuralNetworkGPU<
       outputLookupLength: this.outputLookupLength,
       options: { ...this.options },
       trainOpts: this.getTrainOptsJSON(),
+      ramSize: this.ramSize,
     };
   }
 }
