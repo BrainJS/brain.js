@@ -3,6 +3,7 @@ import {
   IJSONLayer,
   INeuralNetworkData,
   INeuralNetworkDatum,
+  INeuralNetworkJSON,
   INeuralNetworkTrainOptions,
 } from './neural-network';
 import {
@@ -16,6 +17,7 @@ export interface IAEOptions {
   binaryThresh: number;
   decodedSize: number;
   hiddenLayers: number[];
+  json?: INeuralNetworkJSON;
 }
 
 /**
@@ -26,7 +28,7 @@ export class AE<
   EncodedData extends INeuralNetworkData
 > {
   private decoder?: NeuralNetworkGPU<EncodedData, DecodedData>;
-  private readonly denoiser: NeuralNetworkGPU<DecodedData, DecodedData>;
+  private denoiser: NeuralNetworkGPU<DecodedData, DecodedData>;
 
   constructor(options?: Partial<IAEOptions>) {
     // Create default options for the autoencoder.
@@ -47,6 +49,10 @@ export class AE<
 
     // Create the denoiser subnet of the autoencoder.
     this.denoiser = new NeuralNetworkGPU<DecodedData, DecodedData>(options);
+
+    if (options.json) {
+      this.denoiser = this.denoiser.fromJSON(options.json);
+    }
   }
 
   /**
@@ -189,6 +195,15 @@ export class AE<
     const decoder = new NeuralNetworkGPU().fromJSON(json);
 
     return (decoder as unknown) as NeuralNetworkGPU<EncodedData, DecodedData>;
+  }
+
+  toJSON(): INeuralNetworkJSON {
+    return this.denoiser.toJSON();
+  }
+
+  fromJSON(json: INeuralNetworkJSON): this {
+    this.denoiser = this.denoiser.fromJSON(json);
+    return this;
   }
 
   /**

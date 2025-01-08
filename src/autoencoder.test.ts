@@ -66,3 +66,25 @@ test('test a data sample for anomalies', async () => {
   includesAnomalies(1, 0, 1);
   includesAnomalies(1, 1, 0);
 });
+
+test('restores a net fromJSON', () => {
+  expect(result.error).toBeLessThanOrEqual(errorThresh);
+  function xor(net: AE<number[], number[]>, ...args: number[]) {
+    return Math.round(net.denoise(args)[2]);
+  }
+
+  const json = xornet.toJSON();
+  const net = new AE<number[], number[]>({
+    json,
+  });
+
+  const run1 = xor(net, 0, 0, 0);
+  const run2 = xor(net, 0, 1, 1);
+  const run3 = xor(net, 1, 0, 1);
+  const run4 = xor(net, 1, 1, 0);
+
+  expect(run1).toBe(0);
+  expect(run2).toBe(1);
+  expect(run3).toBe(1);
+  expect(run4).toBe(0);
+});
