@@ -426,4 +426,15 @@ export class Recurrent<
     }
     return null;
   }
+
+  fromJSON(json: any): void {
+    super.fromJSON(json);
+    this._layerSets = json.layerSets.map((layerSet: any) =>
+      layerSet.map((layer: any) => {
+        const newLayer = new (layer.constructor as any)();
+        newLayer.fromJSON(layer);
+        return newLayer;
+      })
+    );
+  }
 }
