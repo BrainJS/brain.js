@@ -5,6 +5,13 @@ import { RNNTimeStep } from './rnn-time-step';
 import { IRNNHiddenLayer } from './rnn';
 
 export class LSTMTimeStep extends RNNTimeStep {
+  equations: Equation[];
+
+  constructor(options: any) {
+    super(options);
+    this.equations = [];
+  }
+
   getHiddenLayer(hiddenSize: number, prevSize: number): IRNNHiddenLayer {
     return getHiddenLSTMLayer(hiddenSize, prevSize);
   }
@@ -15,6 +22,9 @@ export class LSTMTimeStep extends RNNTimeStep {
     previousResult: Matrix,
     hiddenLayer: IRNNHiddenLayer
   ): Matrix {
+    if (!this.equations) {
+      this.equations = [];
+    }
     return getLSTMEquation(
       equation,
       inputMatrix,

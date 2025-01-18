@@ -143,4 +143,26 @@ describe('LSTMTimeStep', () => {
       expect(equation.states[25].forwardFn.name).toBe('multiplyElement');
     });
   });
+
+  describe('equations property', () => {
+    it('should initialize equations property in the constructor', () => {
+      const lstmTimeStep = new LSTMTimeStep({});
+      expect(lstmTimeStep.equations).toBeInstanceOf(Array);
+    });
+
+    it('should populate equations property before accessing in getEquation method', () => {
+      const lstmTimeStep = new LSTMTimeStep({});
+      const equation = new Equation();
+      const inputMatrix = new Matrix(3, 1);
+      const previousResult = new Matrix(3, 1);
+      const hiddenLayer = getHiddenLSTMLayer(3, 3);
+      const result = lstmTimeStep.getEquation(
+        equation,
+        inputMatrix,
+        previousResult,
+        hiddenLayer
+      );
+      expect(result).toBeInstanceOf(Matrix);
+    });
+  });
 });

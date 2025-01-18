@@ -19,6 +19,13 @@ export interface ILSTMHiddenLayer extends IRNNHiddenLayer {
 }
 
 export class LSTM extends RNN {
+  equations: Equation[];
+
+  constructor(options: any) {
+    super(options);
+    this.equations = [];
+  }
+
   getHiddenLayer(hiddenSize: number, prevSize: number): IRNNHiddenLayer {
     return getHiddenLSTMLayer(hiddenSize, prevSize);
   }
@@ -29,6 +36,9 @@ export class LSTM extends RNN {
     previousResult: Matrix,
     hiddenLayer: IRNNHiddenLayer
   ): Matrix {
+    if (!this.equations) {
+      this.equations = [];
+    }
     return getLSTMEquation(
       equation,
       inputMatrix,
