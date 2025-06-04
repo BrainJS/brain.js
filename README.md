@@ -67,8 +67,32 @@ GPU accelerated Neural networks in JavaScript for Browsers and Node.js
 
 ## Installation and Usage
 
-### NPM
+> [!CAUTION]
+> Before installing brain.js, make sure `setuptools` is installed with administrative privileges.
+> Since **Python 3.12**, the `distutils` module has been removed from the standard library. Many tools that previously depended on `distutils` now rely on `setuptools`.
+> To avoid installation errors, open PowerShell as Administrator and run:
+> ```ps
+> pip install setuptools
+>```
+> [Reference: GitHub Issue Comment](https://github.com/BrainJS/brain.js/issues/930#issuecomment-2155350536)\
+> [Reference: Python Standard Library: distutils](https://docs.python.org/3/library/distutils.html)
 
+> [!NOTE]
+> Some users may encounter issues due to an outdated `node-gyp` version (< 10), which leads to similar errors related to the missing `distutils` module.
+> To fix this, you can use the overrides field in your `package.json` file to force compatible versions of sub-dependencies:
+> ```json
+> "overrides": {
+>   "brain.js": {
+>     "gpu.js": {
+>       "gl": "^8.1.6"
+>    }
+>  },
+>   "node-gyp": "^10.2.0"
+>}
+>```
+> [Reference: GitHub Issue Comment](https://github.com/BrainJS/brain.js/issues/930#issuecomment-2818251889)
+
+### NPM
 If you can install `brain.js` with [npm](http://npmjs.org):
 
 ```bash
